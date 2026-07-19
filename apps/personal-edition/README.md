@@ -31,3 +31,27 @@ user material
 All product code, tests, configuration examples, scripts, migrations, and product-local fixtures belong in this directory.
 
 The current implementation entry issue is GitHub Issue #3. No real credentials or private pilot material may be committed.
+
+## Local setup
+
+```bash
+python3 -m venv /tmp/ai-revenue-lab-personal-edition-venv
+source /tmp/ai-revenue-lab-personal-edition-venv/bin/activate
+python -m pip install -e '.[dev]'
+```
+
+## Run the application
+
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+## Run tests
+
+```bash
+pytest -q
+```
+
+## Configuration
+
+Copy `.env.example` to `.env` and adjust as needed. Defaults use the `mock` provider, which requires no external dependencies.
