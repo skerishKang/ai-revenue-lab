@@ -15,12 +15,31 @@ The project therefore focuses on four capabilities:
 3. **Personalization** — turn common source material into a different edition for each user.
 4. **Revenue evidence** — measure whether AI-produced outputs create traffic, subscriptions, purchases, or other direct revenue.
 
+## Repository model
+
+This repository is the portfolio-level workspace. Each revenue experiment has an independent product directory under `apps/`.
+
+```text
+apps/
+├─ personal-edition/   # active first implementation
+├─ living-travel/      # active product-design track
+├─ world-feed/         # active information-research track
+└─ living-fiction/     # active narrative-design track
+```
+
+Product-specific code, tests, configuration, migrations, scripts, and fixtures must remain inside the corresponding workspace. Shared code is extracted only after at least two working products demonstrate the same requirement.
+
+See:
+
+- `apps/README.md`
+- `docs/decisions/ADR-0002-product-workspaces.md`
+
 ## Initial product tracks
 
-- **World Feed** — a personalized global-local information feed.
+- **Personal Edition** — conversations and life records edited into recurring letters, magazines, and books. This is the first active revenue experiment.
 - **Living Travel** — travel letters that adapt to the reader's daily feedback.
+- **World Feed** — a personalized global-local information feed.
 - **Living Fiction** — serialized stories whose optional branches react to reader choices and comments.
-- **Personal Edition** — conversations and life records edited into letters, magazines, and books.
 
 ## Operating model
 
@@ -30,9 +49,14 @@ The project therefore focuses on four capabilities:
 - Strong paid models may be used for exceptional design, diagnosis, or final audit, but the project must record where and why they were used.
 - Models must remain replaceable through provider adapters rather than being embedded directly into product code.
 
-## Repository status
+## Current status
 
-The repository is private and at project-foundation stage. No product implementation has started.
+- portfolio and governance documents established;
+- Personal Edition selected as the first revenue experiment;
+- product-specific workspace structure established;
+- Personal Edition implementation contract and HY3 benchmark established;
+- implementation begins with GitHub Issue #3 under `apps/personal-edition/`;
+- other product tracks continue in parallel through research and product contracts, not speculative code.
 
 ## Governance rule
 
