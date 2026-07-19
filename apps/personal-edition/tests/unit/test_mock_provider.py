@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from app.ai.mock import MockProvider
 from app.domain.enums import ProviderErrorCategory
@@ -14,7 +14,7 @@ from app.domain.models import (
 
 
 class DummySchema(BaseModel):
-    name: str = "test"
+    name: str
 
 
 EDITORIAL_PLAN_FIXTURE = {
@@ -94,6 +94,7 @@ class TestMockProvider:
         )
         assert result.success is False
         assert result.error_category == ProviderErrorCategory.SCHEMA_MISMATCH
+        assert "name" in result.error_message
 
     def test_no_fixture_with_required_fields_fails(self):
         provider = MockProvider()

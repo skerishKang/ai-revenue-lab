@@ -35,24 +35,16 @@ The current implementation entry issue is GitHub Issue #3. No real credentials o
 ## Local setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+python3 -m venv /tmp/ai-revenue-lab-personal-edition-venv
+source /tmp/ai-revenue-lab-personal-edition-venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
 ## Run the application
 
 ```bash
-python -m app.main
+uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
-
-Alternatively, use Uvicorn directly:
-
-```bash
-uvicorn app.main:app --reload
-```
-
-The application listens on `http://127.0.0.1:8000` by default.
 
 ## Run tests
 

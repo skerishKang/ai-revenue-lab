@@ -1,7 +1,8 @@
 import pytest
+from pydantic import ValidationError
 from fastapi.testclient import TestClient
 
-from app.config import settings
+from app.config import Settings, settings
 from app.main import app
 
 
@@ -31,3 +32,13 @@ class TestHealthEndpoint:
         assert data["status"] == "ok"
         assert data["ai_provider"] == "mock"
         assert data["ai_model"] == "mock-personal-edition-v1"
+
+
+class TestSettingsValidation:
+    def test_timeout_must_be_positive(self):
+        with pytest.raises(ValidationError):
+            Settings(ai_timeout_seconds=0)
+
+    def test_timeout_negative_rejected(self):
+        with pytest.raises(ValidationError):
+            Settings(ai_timeout_seconds=-5)

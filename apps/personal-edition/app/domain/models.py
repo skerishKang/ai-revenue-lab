@@ -1,7 +1,13 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
 
 from app.domain.enums import (
     CostClass,
@@ -9,6 +15,9 @@ from app.domain.enums import (
     Language,
     ProviderErrorCategory,
 )
+
+NonEmptyStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+QuestionStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
 
 
 class ParticipantPreferences(BaseModel):
@@ -61,7 +70,7 @@ class FeedbackInput(BaseModel):
 class AppliedFeedback(BaseModel):
     feedback_id: str
     action: str = Field(min_length=1)
-    affected_section_ids: list[str] = Field(min_length=1)
+    affected_section_ids: list[NonEmptyStr] = Field(min_length=1)
     evidence: str = Field(min_length=1)
 
 
@@ -69,7 +78,7 @@ class EditorialPlanSection(BaseModel):
     section_id: str = Field(min_length=1, pattern=r"^[a-zA-Z0-9_-]+$")
     working_title: str = Field(min_length=1)
     purpose: str = Field(min_length=1)
-    source_segment_ids: list[str] = Field(min_length=1)
+    source_segment_ids: list[NonEmptyStr] = Field(min_length=1)
     allowed_interpretations: list[str] = Field(default_factory=list)
     prohibited_inferences: list[str] = Field(default_factory=list)
     feedback_action: str | None = None
@@ -94,24 +103,17 @@ class EditorialPlan(BaseModel):
             raise ValueError("section_id values must be unique")
         return self
 
-    @model_validator(mode="after")
-    def check_all_segment_refs_valid(self):
-        all_refs = set()
-        for s in self.sections:
-            all_refs.update(s.source_segment_ids)
-        return self
-
 
 class EditionSection(BaseModel):
     section_id: str = Field(min_length=1, pattern=r"^[a-zA-Z0-9_-]+$")
     title: str = Field(min_length=1)
-    paragraphs: list[str] = Field(min_length=1)
-    source_segment_ids: list[str] = Field(min_length=1)
+    paragraphs: list[NonEmptyStr] = Field(min_length=1)
+    source_segment_ids: list[NonEmptyStr] = Field(min_length=1)
     contains_interpretation: bool = False
 
 
 class NextEditionPrompt(BaseModel):
-    question: str = Field(max_length=200)
+    question: QuestionStr
     choices: list[str] = Field(default_factory=list)
 
 
@@ -127,7 +129,7 @@ class EditionContent(BaseModel):
     continuity_note: str | None = None
     applied_feedback: AppliedFeedback | None = None
     next_edition_prompt: NextEditionPrompt | None = None
-    provenance_note: str = (
+    provenance_note: NonEmptyStr = (
         "This edition was created from material supplied by the reader."
     )
 

@@ -190,6 +190,24 @@ class TestEditorialPlan:
                 source_segment_ids=[],
             )
 
+    def test_blank_source_segment_ref(self):
+        with pytest.raises(ValidationError):
+            EditorialPlanSection(
+                section_id="s1",
+                working_title="A",
+                purpose="purpose",
+                source_segment_ids=["seg1", ""],
+            )
+
+    def test_whitespace_source_segment_ref(self):
+        with pytest.raises(ValidationError):
+            EditorialPlanSection(
+                section_id="s1",
+                working_title="A",
+                purpose="purpose",
+                source_segment_ids=["   "],
+            )
+
 
 class TestFeedbackInput:
     def test_unknown_direction(self):
@@ -302,6 +320,137 @@ class TestEditionContent:
                 source_segment_ids=["s001"],
             )
 
+    def test_empty_paragraph_string(self):
+        with pytest.raises(ValidationError):
+            EditionContent(
+                content_version="v1",
+                language="ko",
+                publication_title="T",
+                edition_title="E1",
+                deck="D",
+                opening="O",
+                sections=[
+                    EditionSection(
+                        section_id="sec1",
+                        title="S1",
+                        paragraphs=[""],
+                        source_segment_ids=["s001"],
+                    ),
+                    EditionSection(
+                        section_id="sec2",
+                        title="S2",
+                        paragraphs=["P2"],
+                        source_segment_ids=["s002"],
+                    ),
+                ],
+                highlighted_insight="I",
+            )
+
+    def test_whitespace_paragraph_string(self):
+        with pytest.raises(ValidationError):
+            EditionContent(
+                content_version="v1",
+                language="ko",
+                publication_title="T",
+                edition_title="E1",
+                deck="D",
+                opening="O",
+                sections=[
+                    EditionSection(
+                        section_id="sec1",
+                        title="S1",
+                        paragraphs=["   "],
+                        source_segment_ids=["s001"],
+                    ),
+                    EditionSection(
+                        section_id="sec2",
+                        title="S2",
+                        paragraphs=["P2"],
+                        source_segment_ids=["s002"],
+                    ),
+                ],
+                highlighted_insight="I",
+            )
+
+    def test_blank_source_segment_ref(self):
+        with pytest.raises(ValidationError):
+            EditionContent(
+                content_version="v1",
+                language="ko",
+                publication_title="T",
+                edition_title="E1",
+                deck="D",
+                opening="O",
+                sections=[
+                    EditionSection(
+                        section_id="sec1",
+                        title="S1",
+                        paragraphs=["P1"],
+                        source_segment_ids=[""],
+                    ),
+                    EditionSection(
+                        section_id="sec2",
+                        title="S2",
+                        paragraphs=["P2"],
+                        source_segment_ids=["s002"],
+                    ),
+                ],
+                highlighted_insight="I",
+            )
+
+    def test_whitespace_source_segment_ref(self):
+        with pytest.raises(ValidationError):
+            EditionContent(
+                content_version="v1",
+                language="ko",
+                publication_title="T",
+                edition_title="E1",
+                deck="D",
+                opening="O",
+                sections=[
+                    EditionSection(
+                        section_id="sec1",
+                        title="S1",
+                        paragraphs=["P1"],
+                        source_segment_ids=["   "],
+                    ),
+                    EditionSection(
+                        section_id="sec2",
+                        title="S2",
+                        paragraphs=["P2"],
+                        source_segment_ids=["s002"],
+                    ),
+                ],
+                highlighted_insight="I",
+            )
+
+    def test_empty_provenance_note(self):
+        with pytest.raises(ValidationError):
+            EditionContent(
+                content_version="v1",
+                language="ko",
+                publication_title="T",
+                edition_title="E1",
+                deck="D",
+                opening="O",
+                sections=[
+                    EditionSection(
+                        section_id="sec1",
+                        title="S1",
+                        paragraphs=["P1"],
+                        source_segment_ids=["s001"],
+                    ),
+                    EditionSection(
+                        section_id="sec2",
+                        title="S2",
+                        paragraphs=["P2"],
+                        source_segment_ids=["s002"],
+                    ),
+                ],
+                highlighted_insight="I",
+                provenance_note="",
+            )
+
 
 class TestProviderMetrics:
     def test_negative_retry(self):
@@ -357,8 +506,34 @@ class TestAppliedFeedback:
                 evidence="Evidence",
             )
 
+    def test_blank_affected_section_item(self):
+        with pytest.raises(ValidationError):
+            AppliedFeedback(
+                feedback_id="fb1",
+                action="Action",
+                affected_section_ids=["s1", ""],
+                evidence="Evidence",
+            )
+
+    def test_whitespace_affected_section_item(self):
+        with pytest.raises(ValidationError):
+            AppliedFeedback(
+                feedback_id="fb1",
+                action="Action",
+                affected_section_ids=["   "],
+                evidence="Evidence",
+            )
+
 
 class TestNextEditionPrompt:
     def test_max_length(self):
         with pytest.raises(ValidationError):
             NextEditionPrompt(question="x" * 201)
+
+    def test_empty_question(self):
+        with pytest.raises(ValidationError):
+            NextEditionPrompt(question="")
+
+    def test_whitespace_question(self):
+        with pytest.raises(ValidationError):
+            NextEditionPrompt(question="   ")

@@ -1,7 +1,7 @@
 import time
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from app.domain.enums import CostClass, ProviderErrorCategory
 from app.domain.models import ProviderResult
@@ -60,26 +60,24 @@ class MockProvider:
             elapsed = time.monotonic() - start
             try:
                 response_schema.model_validate({"bad": "data"})
-                error_msg = "payload did not match expected schema"
-            except Exception as exc:
-                error_msg = str(exc)
-            return ProviderResult(
-                provider="mock",
-                advertised_model=self._model,
-                cost_class=CostClass.FREE,
-                latency_seconds=elapsed,
-                retry_count=0,
-                request_id=request_id,
-                error_category=ProviderErrorCategory.SCHEMA_MISMATCH,
-                error_message=error_msg,
-                success=False,
-            )
+            except ValidationError as exc:
+                return ProviderResult(
+                    provider="mock",
+                    advertised_model=self._model,
+                    cost_class=CostClass.FREE,
+                    latency_seconds=elapsed,
+                    retry_count=0,
+                    request_id=request_id,
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH,
+                    error_message=str(exc),
+                    success=False,
+                )
 
         fixture = self._fixture_payload if self._fixture_payload is not None else {}
         try:
             validated = response_schema.model_validate(fixture)
             payload = validated.model_dump()
-        except Exception as exc:
+        except ValidationError as exc:
             elapsed = time.monotonic() - start
             return ProviderResult(
                 provider="mock",
