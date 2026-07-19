@@ -30,7 +30,7 @@ user material
 
 All product code, tests, configuration examples, scripts, migrations, and product-local fixtures belong in this directory.
 
-The current implementation entry issue is GitHub Issue #3. No real credentials or private pilot material may be committed.
+The current implementation entry issue is GitHub Issue #20. No real credentials or private pilot material may be committed.
 
 ## Local setup
 

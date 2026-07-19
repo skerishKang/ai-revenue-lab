@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     app_env: str = "development"
     app_base_url: str = "http://127.0.0.1:8000"
+    database_path: str = "var/personal-edition.db"
     ai_provider: str = "mock"
     ai_model: str = "mock-personal-edition-v1"
     ai_base_url: str = ""
