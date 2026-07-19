@@ -1,5 +1,7 @@
+import hmac
 import sqlite3
-from dataclasses import dataclass
+import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -323,6 +325,55 @@ class TestLookup:
         assert found is None
         conn.close()
 
+    def test_constant_time_lookup_uses_hmac(self, monkeypatch):
+        spy_calls = []
+        original = hmac.compare_digest
+
+        def spy(a, b):
+            spy_calls.append((a, b))
+            return original(a, b)
+
+        monkeypatch.setattr(hmac, "compare_digest", spy)
+
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        result = repo.create_participant(
+            conn,
+            participant_id="p-ct",
+            display_name="Const Time",
+            preferred_language="ko",
+        )
+
+        spy_calls.clear()
+        found = repo.get_active_participant_by_token(
+            conn, result.one_time_token
+        )
+        assert found is not None
+        assert found.id == "p-ct"
+        assert len(spy_calls) >= 1
+
+        spy_calls.clear()
+        wrong = repo.get_active_participant_by_token(
+            conn, "wrong-token-value"
+        )
+        assert wrong is None
+        assert len(spy_calls) == 0
+
+        spy_calls.clear()
+        found_again = repo.get_active_participant_by_token(
+            conn, result.one_time_token
+        )
+        assert found_again is not None
+        assert len(spy_calls) >= 1
+
+        row = conn.execute(
+            "SELECT access_token_hash FROM participants WHERE id = ?",
+            ("p-ct",),
+        ).fetchone()
+        assert row["access_token_hash"] != result.one_time_token
+        conn.close()
+
 
 class TestDelete:
     def test_delete_sets_deleted_status_and_timestamp(self):
@@ -345,6 +396,136 @@ class TestDelete:
         assert row["deleted_at"] is not None
         assert "T" in row["deleted_at"]
         assert row["deleted_at"].endswith("Z")
+        conn.close()
+
+    def test_delete_persists_after_reopen(self):
+        with tempfile.TemporaryDirectory() as td:
+            db_path = str(Path(td) / "test.db")
+            conn = get_connection(db_path)
+            apply_migrations(conn, "migrations")
+
+            repo.create_participant(
+                conn,
+                participant_id="p-persists",
+                display_name="Persist Test",
+                preferred_language="ko",
+            )
+            result = repo.delete_participant(conn, "p-persists")
+            assert result is True
+            conn.close()
+
+            conn2 = get_connection(db_path)
+            row = conn2.execute(
+                "SELECT status, deleted_at FROM participants "
+                "WHERE id = ?",
+                ("p-persists",),
+            ).fetchone()
+            assert row["status"] == "deleted"
+            assert row["deleted_at"] is not None
+            assert "T" in row["deleted_at"]
+            assert row["deleted_at"].endswith("Z")
+
+            found = repo.get_active_participant_by_token(
+                conn2, "any-token"
+            )
+            assert found is None
+            conn2.close()
+
+
+class TestExistingTransaction:
+    def test_create_rejects_existing_transaction(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute("BEGIN")
+
+        with pytest.raises(repo.RepositoryTransactionError):
+            repo.create_participant(
+                conn,
+                participant_id="p1",
+                display_name="Test",
+                preferred_language="ko",
+            )
+
+        assert conn.in_transaction is True
+        cnt = conn.execute(
+            "SELECT COUNT(*) AS c FROM participants"
+        ).fetchone()["c"]
+        assert cnt == 0
+        conn.close()
+
+    def test_create_does_not_generate_token_on_existing_tx(self, monkeypatch):
+        call_count = [0]
+        monkeypatch.setattr(
+            security,
+            "generate_token",
+            lambda: (call_count.__setitem__(0, call_count[0] + 1) or "tok"),
+        )
+
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute("BEGIN")
+
+        with pytest.raises(repo.RepositoryTransactionError):
+            repo.create_participant(
+                conn,
+                participant_id="p1",
+                display_name="Test",
+                preferred_language="ko",
+            )
+
+        assert call_count[0] == 0
+        assert conn.in_transaction is True
+        conn.close()
+
+    def test_create_does_not_modify_caller_transaction(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute("BEGIN")
+
+        with pytest.raises(repo.RepositoryTransactionError):
+            repo.create_participant(
+                conn,
+                participant_id="p1",
+                display_name="Test",
+                preferred_language="ko",
+            )
+
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, preferred_language, "
+            "status, created_at, updated_at) "
+            "VALUES (?, 'CallerRow', 'hash', 'ko', 'active', "
+            "'2026-01-01', '2026-01-01')",
+            ("caller-p1",),
+        )
+        conn.commit()
+        assert conn.in_transaction is False
+        cnt = conn.execute(
+            "SELECT COUNT(*) AS c FROM participants"
+        ).fetchone()["c"]
+        assert cnt == 1
+        conn.close()
+
+    def test_delete_rejects_existing_transaction(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        repo.create_participant(
+            conn,
+            participant_id="p1",
+            display_name="First",
+            preferred_language="ko",
+        )
+
+        conn.execute("BEGIN")
+        with pytest.raises(repo.RepositoryTransactionError):
+            repo.delete_participant(conn, "p1")
+
+        assert conn.in_transaction is True
+        row = conn.execute(
+            "SELECT status FROM participants WHERE id = ?", ("p1",)
+        ).fetchone()
+        assert row["status"] == "active"
         conn.close()
 
 
@@ -429,6 +610,37 @@ class TestCollision:
             "SELECT COUNT(*) AS c FROM participants"
         ).fetchone()["c"]
         assert count_after == count_before
+        assert conn.in_transaction is False
+        conn.close()
+
+    def test_collision_exhaustion_connection_reusable(self, monkeypatch):
+        monkeypatch.setattr(
+            security, "generate_token", lambda: "always_same"
+        )
+
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        repo.create_participant(
+            conn,
+            participant_id="existing",
+            display_name="First",
+            preferred_language="ko",
+        )
+
+        with pytest.raises(repo.TokenProvisioningError):
+            repo.create_participant(
+                conn,
+                participant_id="another",
+                display_name="Second",
+                preferred_language="ko",
+            )
+
+        assert conn.in_transaction is False
+        cnt = conn.execute(
+            "SELECT COUNT(*) AS c FROM participants"
+        ).fetchone()["c"]
+        assert cnt == 1
         conn.close()
 
     def test_collision_exception_no_raw_token(self, monkeypatch):
@@ -588,6 +800,32 @@ class TestDuplicateId:
         conn.close()
 
     def test_duplicate_id_transaction_closed(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        repo.create_participant(
+            conn,
+            participant_id="p1",
+            display_name="First",
+            preferred_language="ko",
+        )
+
+        with pytest.raises(repo.DuplicateParticipantError):
+            repo.create_participant(
+                conn,
+                participant_id="p1",
+                display_name="Second",
+                preferred_language="ko",
+            )
+
+        assert conn.in_transaction is False
+        cnt = conn.execute(
+            "SELECT COUNT(*) AS c FROM participants"
+        ).fetchone()["c"]
+        assert cnt == 1
+        conn.close()
+
+    def test_duplicate_id_connection_reusable(self):
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
 

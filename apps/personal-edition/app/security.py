@@ -25,7 +25,13 @@ def hash_token(token: str) -> str:
 
 
 def verify_token(token: str, token_hash: str) -> bool:
-    if not isinstance(token, str) or not isinstance(token_hash, str):
-        return False
+    if not isinstance(token, str):
+        raise TypeError("token must be a string")
+    if not token:
+        raise ValueError("token must not be empty")
+    if not isinstance(token_hash, str):
+        raise TypeError("token_hash must be a string")
+    if not token_hash:
+        raise ValueError("token_hash must not be empty")
     computed = _compute_hash(token)
     return hmac.compare_digest(computed, token_hash)

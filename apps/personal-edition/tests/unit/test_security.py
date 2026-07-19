@@ -75,15 +75,29 @@ class TestVerifyToken:
         wrong_hash = "a" * 64
         assert security.verify_token(token, wrong_hash) is False
 
-    def test_non_string_token_returns_false(self):
+    def test_non_string_token_raises_type_error(self):
         token_hash = security.hash_token(security.generate_token())
-        assert security.verify_token(123, token_hash) is False
-        assert security.verify_token(None, token_hash) is False
+        with pytest.raises(TypeError):
+            security.verify_token(123, token_hash)
+        with pytest.raises(TypeError):
+            security.verify_token(None, token_hash)
 
-    def test_non_string_hash_returns_false(self):
+    def test_empty_token_raises_value_error(self):
+        token_hash = security.hash_token(security.generate_token())
+        with pytest.raises(ValueError):
+            security.verify_token("", token_hash)
+
+    def test_non_string_hash_raises_type_error(self):
         token = security.generate_token()
-        assert security.verify_token(token, 123) is False
-        assert security.verify_token(token, None) is False
+        with pytest.raises(TypeError):
+            security.verify_token(token, 123)
+        with pytest.raises(TypeError):
+            security.verify_token(token, None)
+
+    def test_empty_hash_raises_value_error(self):
+        token = security.generate_token()
+        with pytest.raises(ValueError):
+            security.verify_token(token, "")
 
     def test_uses_hmac_compare_digest(self, monkeypatch):
         calls = []
