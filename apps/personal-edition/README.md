@@ -31,3 +31,35 @@ user material
 All product code, tests, configuration examples, scripts, migrations, and product-local fixtures belong in this directory.
 
 The current implementation entry issue is GitHub Issue #3. No real credentials or private pilot material may be committed.
+
+## Local setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+```
+
+## Run the application
+
+```bash
+python -m app.main
+```
+
+Alternatively, use Uvicorn directly:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+The application listens on `http://127.0.0.1:8000` by default.
+
+## Run tests
+
+```bash
+pytest -q
+```
+
+## Configuration
+
+Copy `.env.example` to `.env` and adjust as needed. Defaults use the `mock` provider, which requires no external dependencies.
