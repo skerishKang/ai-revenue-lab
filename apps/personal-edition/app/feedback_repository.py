@@ -1,9 +1,34 @@
 import json
+import re
 import sqlite3
 import uuid
 from dataclasses import dataclass
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+_UTC_ISO_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
+)
+
+_VALID_FEEDBACK_DIRECTIONS = frozenset({
+    "continue_direction",
+    "more_practical",
+    "more_reflective",
+    "deeper_on_section",
+    "reduce_topic",
+    "exclude_topic",
+    "shorter",
+    "longer",
+    "change_tone",
+})
+
+
+def _validate_timestamp(value: str, field_name: str) -> None:
+    if not isinstance(value, str) or not _UTC_ISO_RE.match(value):
+        raise FeedbackValidationError(
+            f"{field_name} must be UTC ISO-8601 "
+            "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
+        )
 
 
 @dataclass(frozen=True)
@@ -57,6 +82,29 @@ def _validate_feedback(
             "direction_choices must be a non-empty string"
         )
 
+    try:
+        parsed = json.loads(direction_choices)
+    except (json.JSONDecodeError, TypeError) as exc:
+        raise FeedbackValidationError(
+            "direction_choices must be valid JSON"
+        ) from exc
+
+    if not isinstance(parsed, list) or len(parsed) == 0:
+        raise FeedbackValidationError(
+            "direction_choices must be a non-empty JSON array"
+        )
+
+    for item in parsed:
+        if not isinstance(item, str):
+            raise FeedbackValidationError(
+                "each direction must be a string"
+            )
+        if item not in _VALID_FEEDBACK_DIRECTIONS:
+            raise FeedbackValidationError(
+                f"invalid direction: '{item}'. "
+                f"allowed: {sorted(_VALID_FEEDBACK_DIRECTIONS)}"
+            )
+
 
 def _validate_json_field(value: str | None, field_name: str) -> None:
     if value is None:
@@ -94,6 +142,9 @@ def create_feedback(
 ) -> FeedbackRecord:
     _validate_feedback(participant_id, edition_id, direction_choices)
 
+    if submitted_at is not None:
+        _validate_timestamp(submitted_at, "submitted_at")
+
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
@@ -101,7 +152,6 @@ def create_feedback(
 
     participant_id = participant_id.strip()
     edition_id = edition_id.strip()
-    direction_choices = direction_choices.strip()
     now = submitted_at or _now_utc_iso()
 
     conn.execute("BEGIN IMMEDIATE")

@@ -1,9 +1,22 @@
 import json
+import re
 import sqlite3
 import uuid
 from dataclasses import dataclass
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+_UTC_ISO_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
+)
+
+
+def _validate_timestamp(value: str, field_name: str) -> None:
+    if not isinstance(value, str) or not _UTC_ISO_RE.match(value):
+        raise GenerationRunValidationError(
+            f"{field_name} must be UTC ISO-8601 "
+            "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
+        )
 
 
 @dataclass(frozen=True)
@@ -113,6 +126,9 @@ def create_generation_run(
 ) -> GenerationRunRecord:
     _validate_generation_run(task_type, provider, advertised_model)
 
+    if started_at is not None:
+        _validate_timestamp(started_at, "started_at")
+
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
@@ -183,6 +199,9 @@ def update_generation_run(
     verified_upstream_status: str | None = None,
     human_correction_minutes: float | None = None,
 ) -> GenerationRunRecord | None:
+    if completed_at is not None:
+        _validate_timestamp(completed_at, "completed_at")
+
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"

@@ -1,3 +1,4 @@
+import json
 import sqlite3
 import tempfile
 from pathlib import Path
@@ -25,6 +26,11 @@ def _setup_edition(conn, pid="p1", ed_num=1):
     )
 
 
+_VALID_DIR = json.dumps(["more_practical"])
+_VALID_DIR_2 = json.dumps(["shorter", "longer"])
+_VALID_DIR_3 = json.dumps(["continue_direction"])
+
+
 class TestFeedbackCreate:
     def test_create_feedback_stores_record(self):
         conn = get_connection(":memory:")
@@ -36,12 +42,12 @@ class TestFeedbackCreate:
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="more_practical",
+            direction_choices=_VALID_DIR,
         )
 
         assert result.participant_id == "p1"
         assert result.edition_id == ed.id
-        assert result.direction_choices == "more_practical"
+        assert json.loads(result.direction_choices) == ["more_practical"]
         assert result.applied_to_next_edition == 0
         assert result.id
         conn.close()
@@ -57,7 +63,7 @@ class TestFeedbackCreate:
                 conn,
                 participant_id="missing",
                 edition_id=ed.id,
-                direction_choices="shorter",
+                direction_choices=_VALID_DIR,
             )
         conn.close()
 
@@ -71,7 +77,7 @@ class TestFeedbackCreate:
                 conn,
                 participant_id="p1",
                 edition_id="nonexistent",
-                direction_choices="longer",
+                direction_choices=_VALID_DIR,
             )
         conn.close()
 
@@ -87,7 +93,7 @@ class TestFeedbackCreate:
                 conn,
                 participant_id="p2",
                 edition_id=ed.id,
-                direction_choices="shorter",
+                direction_choices=_VALID_DIR,
             )
         conn.close()
 
@@ -106,6 +112,66 @@ class TestFeedbackCreate:
             )
         conn.close()
 
+    def test_create_feedback_rejects_non_json_direction(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices="not-json",
+            )
+        conn.close()
+
+    def test_create_feedback_rejects_scalar_direction(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices='"shorter"',
+            )
+        conn.close()
+
+    def test_create_feedback_rejects_invalid_direction_value(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices=json.dumps(["invalid_direction"]),
+            )
+        conn.close()
+
+    def test_create_feedback_rejects_empty_array(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices="[]",
+            )
+        conn.close()
+
     def test_create_feedback_rejects_existing_transaction(self):
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
@@ -118,7 +184,39 @@ class TestFeedbackCreate:
                 conn,
                 participant_id="p1",
                 edition_id=ed.id,
-                direction_choices="shorter",
+                direction_choices=_VALID_DIR,
+            )
+        conn.close()
+
+    def test_create_feedback_with_valid_timestamp(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        result = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=ed.id,
+            direction_choices=_VALID_DIR,
+            submitted_at="2026-01-15T10:30:00.000Z",
+        )
+        assert result.submitted_at == "2026-01-15T10:30:00.000Z"
+        conn.close()
+
+    def test_create_feedback_rejects_invalid_timestamp(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices=_VALID_DIR,
+                submitted_at="not-a-timestamp",
             )
         conn.close()
 
@@ -134,11 +232,11 @@ class TestFeedbackLookup:
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="more_practical",
+            direction_choices=_VALID_DIR,
         )
         found = fb_repo.get_feedback_by_id(conn, created.id)
         assert found is not None
-        assert found.direction_choices == "more_practical"
+        assert json.loads(found.direction_choices) == ["more_practical"]
         conn.close()
 
     def test_get_feedback_by_id_returns_none(self):
@@ -157,13 +255,13 @@ class TestFeedbackLookup:
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="shorter",
+            direction_choices=_VALID_DIR,
         )
         fb_repo.create_feedback(
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="longer",
+            direction_choices=_VALID_DIR_2,
         )
 
         feedbacks = fb_repo.get_feedback_by_edition(conn, ed.id)
@@ -182,7 +280,7 @@ class TestFeedbackMarkApplied:
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="more_practical",
+            direction_choices=_VALID_DIR,
         )
         updated = fb_repo.mark_feedback_applied(conn, fb.id)
         assert updated is not None
@@ -199,7 +297,7 @@ class TestFeedbackMarkApplied:
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="shorter",
+            direction_choices=_VALID_DIR,
         )
         fb_repo.mark_feedback_applied(conn, fb.id)
         result = fb_repo.mark_feedback_applied(conn, fb.id)
@@ -218,7 +316,7 @@ class TestFeedbackDelete:
             conn,
             participant_id="p1",
             edition_id=ed.id,
-            direction_choices="shorter",
+            direction_choices=_VALID_DIR,
         )
         assert fb_repo.delete_feedback(conn, fb.id) is True
         assert fb_repo.get_feedback_by_id(conn, fb.id) is None
@@ -244,7 +342,7 @@ class TestFeedbackFilePersistence:
                 conn,
                 participant_id="p1",
                 edition_id=ed.id,
-                direction_choices="more_practical",
+                direction_choices=_VALID_DIR,
                 free_text="More details please",
             )
             fb_repo.mark_feedback_applied(conn, created.id)
@@ -253,7 +351,7 @@ class TestFeedbackFilePersistence:
             conn2 = get_connection(db_path)
             found = fb_repo.get_feedback_by_id(conn2, created.id)
             assert found is not None
-            assert found.direction_choices == "more_practical"
+            assert json.loads(found.direction_choices) == ["more_practical"]
             assert found.free_text == "More details please"
             assert found.applied_to_next_edition == 1
             conn2.close()

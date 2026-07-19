@@ -1,9 +1,22 @@
 import json
+import re
 import sqlite3
 import uuid
 from dataclasses import dataclass
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+_UTC_ISO_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
+)
+
+
+def _validate_timestamp(value: str, field_name: str) -> None:
+    if not isinstance(value, str) or not _UTC_ISO_RE.match(value):
+        raise EditionValidationError(
+            f"{field_name} must be UTC ISO-8601 "
+            "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
+        )
 
 
 @dataclass(frozen=True)
@@ -54,6 +67,26 @@ _EDITION_COLS = [
 ]
 _EDITION_SELECT = ", ".join(_EDITION_COLS)
 
+_VALID_GENERATION_STATUSES = frozenset({
+    "input_received",
+    "generation_pending",
+    "generation_failed",
+    "pending_review",
+    "deleted",
+})
+
+_VALID_PUBLICATION_STATES = frozenset({
+    "pending",
+    "published",
+    "rejected",
+})
+
+_PUBLICATION_TRANSITIONS = {
+    "pending": ("published", "rejected"),
+    "published": (),
+    "rejected": (),
+}
+
 
 def _validate_edition(
     participant_id: str,
@@ -93,6 +126,10 @@ def _row_to_record(row: sqlite3.Row) -> EditionRecord:
         reviewer_notes=row["reviewer_notes"],
         publication_state=row["publication_state"],
     )
+
+
+def _is_editable(gen_status: str, pub_state: str) -> bool:
+    return gen_status == "pending_review" and pub_state == "pending"
 
 
 def create_edition(
@@ -141,13 +178,39 @@ def create_edition(
 
         if prior_edition_id is not None:
             prior = conn.execute(
-                "SELECT 1 FROM editions WHERE id = ?",
+                "SELECT participant_id FROM editions WHERE id = ?",
                 (prior_edition_id,),
             ).fetchone()
             if not prior:
                 conn.rollback()
                 raise EditionValidationError(
                     "prior_edition_id references a non-existent edition"
+                )
+            if prior["participant_id"] != participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id must belong to the same participant"
+                )
+
+        if input_id is not None:
+            inp = conn.execute(
+                "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
+                (input_id,),
+            ).fetchone()
+            if not inp:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id references a non-existent input"
+                )
+            if inp["participant_id"] != participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id must belong to the same participant"
+                )
+            if inp["deleted_at"] is not None:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id references a deleted input"
                 )
 
         edition_id = str(uuid.uuid4())
@@ -223,16 +286,84 @@ def get_editions_by_participant(
     return [_row_to_record(r) for r in rows]
 
 
-def update_edition_status(
+def update_edition_publication(
     conn: sqlite3.Connection,
     edition_id: str,
-    new_status: str,
+    new_publication_state: str,
 ) -> EditionRecord | None:
-    valid_transitions = {
-        "pending_review": ("published", "rejected"),
-        "published": (),
-        "rejected": (),
-    }
+    if new_publication_state not in _VALID_PUBLICATION_STATES:
+        raise EditionValidationError(
+            f"publication_state must be one of {_VALID_PUBLICATION_STATES}"
+        )
+
+    if conn.in_transaction:
+        raise RepositoryTransactionError(
+            "repository write requires an idle connection"
+        )
+
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        current = conn.execute(
+            "SELECT publication_state FROM editions WHERE id = ?",
+            (edition_id,),
+        ).fetchone()
+        if current is None:
+            conn.rollback()
+            return None
+
+        allowed = _PUBLICATION_TRANSITIONS.get(
+            current["publication_state"], ()
+        )
+        if new_publication_state not in allowed:
+            conn.rollback()
+            raise EditionStateConflict(
+                f"cannot transition from "
+                f"'{current['publication_state']}' to "
+                f"'{new_publication_state}'"
+            )
+
+        now = _now_utc_iso()
+        if new_publication_state == "published":
+            cursor = conn.execute(
+                "UPDATE editions SET publication_state = 'published', "
+                "published_at = ? WHERE id = ?",
+                (now, edition_id),
+            )
+        elif new_publication_state == "rejected":
+            cursor = conn.execute(
+                "UPDATE editions SET publication_state = 'rejected', "
+                "reviewed_at = ? WHERE id = ?",
+                (now, edition_id),
+            )
+        else:
+            cursor = conn.execute(
+                "UPDATE editions SET publication_state = ? WHERE id = ?",
+                (new_publication_state, edition_id),
+            )
+
+        conn.commit()
+        if cursor.rowcount == 0:
+            return None
+        return get_edition_by_id(conn, edition_id)
+    except (EditionStateConflict, EditionValidationError,
+            RepositoryTransactionError):
+        raise
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
+
+
+def update_edition_generation_status(
+    conn: sqlite3.Connection,
+    edition_id: str,
+    new_generation_status: str,
+) -> EditionRecord | None:
+    if new_generation_status not in _VALID_GENERATION_STATUSES:
+        raise EditionValidationError(
+            f"generation_status must be one of "
+            f"{_VALID_GENERATION_STATUSES}"
+        )
 
     if conn.in_transaction:
         raise RepositoryTransactionError(
@@ -249,33 +380,15 @@ def update_edition_status(
             conn.rollback()
             return None
 
-        allowed = valid_transitions.get(current["generation_status"], ())
-        if new_status not in allowed:
-            conn.rollback()
-            raise EditionStateConflict(
-                f"cannot transition from "
-                f"'{current['generation_status']}' to '{new_status}'"
-            )
-
-        now = _now_utc_iso()
-        field = "reviewed_at" if new_status in ("published", "rejected") else None
-        if field:
-            cursor = conn.execute(
-                f"UPDATE editions SET generation_status = ?, {field} = ? "
-                "WHERE id = ?",
-                (new_status, now, edition_id),
-            )
-        else:
-            cursor = conn.execute(
-                "UPDATE editions SET generation_status = ? WHERE id = ?",
-                (new_status, edition_id),
-            )
-
+        cursor = conn.execute(
+            "UPDATE editions SET generation_status = ? WHERE id = ?",
+            (new_generation_status, edition_id),
+        )
         conn.commit()
         if cursor.rowcount == 0:
             return None
         return get_edition_by_id(conn, edition_id)
-    except (EditionStateConflict, RepositoryTransactionError):
+    except (EditionValidationError, RepositoryTransactionError):
         raise
     except Exception:
         if conn.in_transaction:
@@ -301,12 +414,23 @@ def update_edition_content(
     conn.execute("BEGIN IMMEDIATE")
     try:
         existing = conn.execute(
-            "SELECT generation_status FROM editions WHERE id = ?",
+            "SELECT generation_status, publication_state "
+            "FROM editions WHERE id = ?",
             (edition_id,),
         ).fetchone()
         if existing is None:
             conn.rollback()
             return None
+
+        if not _is_editable(
+            existing["generation_status"],
+            existing["publication_state"],
+        ):
+            conn.rollback()
+            raise EditionStateConflict(
+                "cannot modify content of a published, rejected, "
+                "or non-pending edition"
+            )
 
         now = _now_utc_iso()
         updates = []
@@ -335,7 +459,8 @@ def update_edition_content(
         )
         conn.commit()
         return get_edition_by_id(conn, edition_id)
-    except (EditionValidationError, RepositoryTransactionError):
+    except (EditionValidationError, EditionStateConflict,
+            RepositoryTransactionError):
         raise
     except Exception:
         if conn.in_transaction:
@@ -349,9 +474,22 @@ def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
             "repository write requires an idle connection"
         )
 
-    now = _now_utc_iso()
     conn.execute("BEGIN IMMEDIATE")
     try:
+        current = conn.execute(
+            "SELECT publication_state FROM editions WHERE id = ?",
+            (edition_id,),
+        ).fetchone()
+        if current is None:
+            conn.rollback()
+            return False
+
+        if current["publication_state"] == "published":
+            conn.rollback()
+            raise EditionStateConflict(
+                "cannot delete a published edition"
+            )
+
         cursor = conn.execute(
             "UPDATE editions SET generation_status = 'deleted', "
             "publication_state = 'pending' "
@@ -360,6 +498,8 @@ def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
         )
         conn.commit()
         return cursor.rowcount > 0
+    except (EditionStateConflict, RepositoryTransactionError):
+        raise
     except Exception:
         if conn.in_transaction:
             conn.rollback()
