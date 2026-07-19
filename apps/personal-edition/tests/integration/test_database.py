@@ -397,6 +397,159 @@ class TestApplyMigrations:
         conn.close()
 
 
+class TestSqlComments:
+    def test_trailing_line_comment(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_with_comment.sql",
+            "CREATE TABLE sample(id INTEGER); -- trailing line comment\n",
+        )
+        conn = get_connection(":memory:")
+        apply_migrations(conn, str(tmp_migrations))
+        tables = {
+            row["name"]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        assert "sample" in tables
+        conn.close()
+
+    def test_trailing_block_comment(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_block.sql",
+            "CREATE TABLE sample(id INTEGER); /* trailing block comment */\n",
+        )
+        conn = get_connection(":memory:")
+        apply_migrations(conn, str(tmp_migrations))
+        tables = {
+            row["name"]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        assert "sample" in tables
+        conn.close()
+
+    def test_comment_only_migration(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_comment_only.sql",
+            "-- This migration intentionally has no SQL statement.\n",
+        )
+        conn = get_connection(":memory:")
+        versions = apply_migrations(conn, str(tmp_migrations))
+        assert versions == ["001_comment_only.sql"]
+        count = conn.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations"
+        ).fetchone()
+        assert count["c"] == 1
+        conn.close()
+
+    def test_block_comment_only_migration(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_block_only.sql",
+            "/*\nThis migration is intentionally empty.\n*/\n",
+        )
+        conn = get_connection(":memory:")
+        versions = apply_migrations(conn, str(tmp_migrations))
+        assert versions == ["001_block_only.sql"]
+        count = conn.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations"
+        ).fetchone()
+        assert count["c"] == 1
+        conn.close()
+
+    def test_line_comment_between_statements(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_multi.sql",
+            (
+                "CREATE TABLE t1(id INTEGER);\n"
+                "-- The second table is intentionally separate.\n"
+                "CREATE TABLE t2(id INTEGER);\n"
+            ),
+        )
+        conn = get_connection(":memory:")
+        apply_migrations(conn, str(tmp_migrations))
+        tables = {
+            row["name"]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        assert "t1" in tables
+        assert "t2" in tables
+        conn.close()
+
+    def test_block_comment_between_statements(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_multi_block.sql",
+            (
+                "CREATE TABLE t1(id INTEGER);\n"
+                "/* block in between */\n"
+                "CREATE TABLE t2(id INTEGER);\n"
+            ),
+        )
+        conn = get_connection(":memory:")
+        apply_migrations(conn, str(tmp_migrations))
+        tables = {
+            row["name"]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        assert "t1" in tables
+        assert "t2" in tables
+        conn.close()
+
+    def test_unterminated_block_comment_raises(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_unterminated.sql",
+            "CREATE TABLE sample(id INTEGER);\n/* unterminated comment\n",
+        )
+        conn = get_connection(":memory:")
+        with pytest.raises(MigrationError) as excinfo:
+            apply_migrations(conn, str(tmp_migrations))
+        assert "001_unterminated.sql" in str(excinfo.value)
+        conn.close()
+
+    def test_invalid_utf8_raises(self, tmp_migrations):
+        path = tmp_migrations / "001_bad_encoding.sql"
+        path.write_bytes(b"\xff\xfe\x00")
+        conn = get_connection(":memory:")
+        with pytest.raises(MigrationError) as excinfo:
+            apply_migrations(conn, str(tmp_migrations))
+        assert "001_bad_encoding.sql" in str(excinfo.value)
+        conn.close()
+
+    def test_invalid_utf8_original_is_unicode_error(self, tmp_migrations):
+        path = tmp_migrations / "001_bad_enc.sql"
+        path.write_bytes(b"\xff\xfe\x00")
+        conn = get_connection(":memory:")
+        with pytest.raises(MigrationError) as excinfo:
+            apply_migrations(conn, str(tmp_migrations))
+        assert isinstance(excinfo.value.original_error, UnicodeDecodeError)
+        conn.close()
+
+    def test_comment_only_idempotent(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_only.sql",
+            "-- just a comment\n",
+        )
+        conn = get_connection(":memory:")
+        r1 = apply_migrations(conn, str(tmp_migrations))
+        r2 = apply_migrations(conn, str(tmp_migrations))
+        assert r1 == ["001_only.sql"]
+        assert r2 == []
+        conn.close()
+
+
 class TestSchemaContract:
     def test_access_token_hash_column(self):
         conn = get_connection(":memory:")

@@ -21,6 +21,32 @@ def get_connection(db_path: str) -> sqlite3.Connection:
     return conn
 
 
+def is_sql_trivia(value: str) -> bool:
+    i = 0
+    while i < len(value):
+        ch = value[i]
+        if ch in (" ", "\t", "\n", "\r"):
+            i += 1
+        elif ch == "-" and i + 1 < len(value) and value[i + 1] == "-":
+            i += 2
+            while i < len(value) and value[i] not in ("\n", "\r"):
+                i += 1
+        elif ch == "/" and i + 1 < len(value) and value[i + 1] == "*":
+            i += 2
+            closed = False
+            while i + 1 < len(value):
+                if value[i] == "*" and value[i + 1] == "/":
+                    closed = True
+                    i += 2
+                    break
+                i += 1
+            if not closed:
+                return False
+        else:
+            return False
+    return True
+
+
 def iter_sql_statements(sql: str):
     buffer: list[str] = []
     for ch in sql:
@@ -32,8 +58,8 @@ def iter_sql_statements(sql: str):
                 if stmt:
                     yield stmt
                 buffer.clear()
-    remainder = "".join(buffer).strip()
-    if remainder:
+    remainder = "".join(buffer)
+    if remainder.strip() and not is_sql_trivia(remainder):
         raise ValueError(f"incomplete SQL statement near: {remainder[:80]}")
 
 
@@ -66,7 +92,7 @@ def apply_migrations(
 
         try:
             sql = f.read_text(encoding="utf-8")
-        except OSError as exc:
+        except (OSError, UnicodeError) as exc:
             raise MigrationError(filename, exc) from exc
 
         try:
