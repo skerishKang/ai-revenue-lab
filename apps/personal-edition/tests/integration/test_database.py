@@ -263,7 +263,11 @@ class TestApplyMigrations:
                 "SELECT version FROM schema_migrations ORDER BY version"
             ).fetchall()
         ]
-        assert versions == ["001_valid.sql", "002_broken.sql", "003_pending.sql"]
+        assert versions == [
+            "001_valid.sql",
+            "002_broken.sql",
+            "003_pending.sql",
+        ]
         conn.close()
 
     def test_semicolon_in_value(self, tmp_migrations):
@@ -284,6 +288,114 @@ class TestApplyMigrations:
         assert row["value"] == "alpha;beta"
         conn.close()
 
+    def test_two_statements_same_line(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_two_in_one.sql",
+            "CREATE TABLE first_table(id INTEGER); CREATE TABLE second_table(id INTEGER);",
+        )
+        conn = get_connection(":memory:")
+        apply_migrations(conn, str(tmp_migrations))
+
+        tables = {
+            row["name"]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        assert "first_table" in tables
+        assert "second_table" in tables
+        conn.close()
+
+    def test_trigger_with_semicolons(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_trigger.sql",
+            (
+                "CREATE TABLE source_table(value TEXT);\n"
+                "CREATE TABLE audit_table(value TEXT);\n"
+                "CREATE TRIGGER source_audit\n"
+                "AFTER INSERT ON source_table\n"
+                "BEGIN\n"
+                "    INSERT INTO audit_table(value) VALUES (NEW.value || ';audit');\n"
+                "END;\n"
+            ),
+        )
+        conn = get_connection(":memory:")
+        apply_migrations(conn, str(tmp_migrations))
+        conn.execute("INSERT INTO source_table(value) VALUES ('test')")
+        row = conn.execute(
+            "SELECT value FROM audit_table"
+        ).fetchone()
+        assert row["value"] == "test;audit"
+        conn.close()
+
+    def test_incomplete_sql_raises(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_bad.sql",
+            "CREATE TABLE t1 (id TEXT PRIMARY KEY",
+        )
+        conn = get_connection(":memory:")
+        with pytest.raises(MigrationError) as excinfo:
+            apply_migrations(conn, str(tmp_migrations))
+        assert "001_bad.sql" in str(excinfo.value)
+        assert isinstance(excinfo.value.original_error, ValueError)
+        conn.close()
+
+    def test_transaction_closed_after_failure(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_valid.sql",
+            "CREATE TABLE t1 (id TEXT PRIMARY KEY);",
+        )
+        _write_migration(
+            tmp_migrations,
+            "002_bad.sql",
+            "INVALID SQL;",
+        )
+        conn = get_connection(":memory:")
+        with pytest.raises(MigrationError):
+            apply_migrations(conn, str(tmp_migrations))
+        assert conn.in_transaction is False
+        conn.close()
+
+    def test_conn_usable_after_failure(self, tmp_migrations):
+        _write_migration(
+            tmp_migrations,
+            "001_valid.sql",
+            "CREATE TABLE t1 (id TEXT PRIMARY KEY);",
+        )
+        _write_migration(
+            tmp_migrations,
+            "002_bad.sql",
+            "INVALID SQL;",
+        )
+        conn = get_connection(":memory:")
+        with pytest.raises(MigrationError):
+            apply_migrations(conn, str(tmp_migrations))
+
+        assert "t1" in {
+            row["name"]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        assert conn.in_transaction is False
+        conn.close()
+
+    def test_migration_applied_at_format(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        row = conn.execute(
+            "SELECT applied_at FROM schema_migrations "
+            "WHERE version = '001_initial.sql'"
+        ).fetchone()
+        applied_at = row["applied_at"]
+        assert "T" in applied_at
+        assert applied_at.endswith("Z")
+        conn.close()
+
 
 class TestSchemaContract:
     def test_access_token_hash_column(self):
@@ -291,7 +403,9 @@ class TestSchemaContract:
         apply_migrations(conn, "migrations")
         cols = {
             row["name"]
-            for row in conn.execute("PRAGMA table_info(participants)").fetchall()
+            for row in conn.execute(
+                "PRAGMA table_info(participants)"
+            ).fetchall()
         }
         assert "access_token_hash" in cols
         assert "access_token" not in cols
@@ -312,7 +426,9 @@ class TestSchemaContract:
         apply_migrations(conn, "migrations")
         cols = {
             row["name"]
-            for row in conn.execute("PRAGMA table_info(editions)").fetchall()
+            for row in conn.execute(
+                "PRAGMA table_info(editions)"
+            ).fetchall()
         }
         assert "edition_number" in cols
         conn.close()
@@ -322,7 +438,9 @@ class TestSchemaContract:
         apply_migrations(conn, "migrations")
         cols = {
             row["name"]
-            for row in conn.execute("PRAGMA table_info(feedback)").fetchall()
+            for row in conn.execute(
+                "PRAGMA table_info(feedback)"
+            ).fetchall()
         }
         assert "applied_to_next_edition" in cols
         conn.close()
@@ -345,7 +463,9 @@ class TestSchemaContract:
         apply_migrations(conn, "migrations")
         cols = {
             row["name"]
-            for row in conn.execute("PRAGMA table_info(editions)").fetchall()
+            for row in conn.execute(
+                "PRAGMA table_info(editions)"
+            ).fetchall()
         }
         assert "human_correction_minutes" in cols
         conn.close()
@@ -410,6 +530,118 @@ class TestSchemaContract:
                 "retry_count, latency_seconds) "
                 "VALUES ('r2', 'plan', 'mock', 'm', '2026-01-01', 0, -0.5)"
             )
+        conn.close()
+
+    def test_unique_edition_number_per_participant(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, created_at, updated_at) "
+            "VALUES ('p1', 'test', 'hash', '2026-01-01', '2026-01-01')"
+        )
+        conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, input_id) "
+            "VALUES ('e1', 'p1', 1, NULL)"
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO editions "
+                "(id, participant_id, edition_number, input_id) "
+                "VALUES ('e2', 'p1', 1, NULL)"
+            )
+        conn.close()
+
+    def test_different_participant_same_edition_number_allowed(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, created_at, updated_at) "
+            "VALUES ('p1', 'a', 'h1', '2026-01-01', '2026-01-01')"
+        )
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, created_at, updated_at) "
+            "VALUES ('p2', 'b', 'h2', '2026-01-01', '2026-01-01')"
+        )
+        conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, input_id) "
+            "VALUES ('e1', 'p1', 1, NULL)"
+        )
+        conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, input_id) "
+            "VALUES ('e2', 'p2', 1, NULL)"
+        )
+        conn.close()
+
+    def test_negative_human_correction_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, created_at, updated_at) "
+            "VALUES ('p1', 'test', 'hash', '2026-01-01', '2026-01-01')"
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO editions "
+                "(id, participant_id, edition_number, input_id, "
+                "human_correction_minutes) "
+                "VALUES ('e1', 'p1', 1, NULL, -1.0)"
+            )
+        conn.close()
+
+    def test_applied_to_next_edition_rejects_2(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, created_at, updated_at) "
+            "VALUES ('p1', 'test', 'hash', '2026-01-01', '2026-01-01')"
+        )
+        conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, input_id) "
+            "VALUES ('e1', 'p1', 1, NULL)"
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO feedback "
+                "(id, participant_id, edition_id, direction_choices, "
+                "submitted_at, applied_to_next_edition) "
+                "VALUES ('f1', 'p1', 'e1', '{}', '2026-01-01', 2)"
+            )
+        conn.close()
+
+    def test_applied_to_next_edition_allows_0_and_1(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        conn.execute(
+            "INSERT INTO participants "
+            "(id, display_name, access_token_hash, created_at, updated_at) "
+            "VALUES ('p1', 'test', 'hash', '2026-01-01', '2026-01-01')"
+        )
+        conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, input_id) "
+            "VALUES ('e1', 'p1', 1, NULL)"
+        )
+        conn.execute(
+            "INSERT INTO feedback "
+            "(id, participant_id, edition_id, direction_choices, "
+            "submitted_at, applied_to_next_edition) "
+            "VALUES ('f1', 'p1', 'e1', '{}', '2026-01-01', 0)"
+        )
+        conn.execute(
+            "INSERT INTO feedback "
+            "(id, participant_id, edition_id, direction_choices, "
+            "submitted_at, applied_to_next_edition) "
+            "VALUES ('f2', 'p1', 'e1', '{}', '2026-01-01', 1)"
+        )
         conn.close()
 
 

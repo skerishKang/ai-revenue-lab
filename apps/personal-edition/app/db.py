@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class MigrationError(RuntimeError):
-    def __init__(self, filename: str, original_error: sqlite3.Error):
+    def __init__(self, filename: str, original_error: Exception):
         self.filename = filename
         self.original_error = original_error
         super().__init__(f"migration {filename} failed: {original_error}")
@@ -23,14 +23,15 @@ def get_connection(db_path: str) -> sqlite3.Connection:
 
 def iter_sql_statements(sql: str):
     buffer: list[str] = []
-    for line in sql.splitlines(keepends=True):
-        buffer.append(line)
-        candidate = "".join(buffer)
-        if sqlite3.complete_statement(candidate):
-            stmt = candidate.strip()
-            if stmt:
-                yield stmt
-            buffer.clear()
+    for ch in sql:
+        buffer.append(ch)
+        if ch == ";":
+            candidate = "".join(buffer)
+            if sqlite3.complete_statement(candidate):
+                stmt = candidate.strip()
+                if stmt:
+                    yield stmt
+                buffer.clear()
     remainder = "".join(buffer).strip()
     if remainder:
         raise ValueError(f"incomplete SQL statement near: {remainder[:80]}")
@@ -43,7 +44,9 @@ def apply_migrations(
     conn.execute("""
         CREATE TABLE IF NOT EXISTS schema_migrations (
             version TEXT PRIMARY KEY,
-            applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+            applied_at TEXT NOT NULL DEFAULT (
+                strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+            )
         )
     """)
     conn.commit()
@@ -61,11 +64,19 @@ def apply_migrations(
         if filename in applied:
             continue
 
-        sql = f.read_text()
+        try:
+            sql = f.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise MigrationError(filename, exc) from exc
+
+        try:
+            statements = list(iter_sql_statements(sql))
+        except ValueError as exc:
+            raise MigrationError(filename, exc) from exc
 
         try:
             conn.execute("BEGIN IMMEDIATE")
-            for stmt in iter_sql_statements(sql):
+            for stmt in statements:
                 conn.execute(stmt)
             conn.execute(
                 "INSERT INTO schema_migrations (version) VALUES (?)",

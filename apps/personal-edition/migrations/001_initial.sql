@@ -35,9 +35,10 @@ CREATE TABLE IF NOT EXISTS editions (
     drafted_at TEXT,
     reviewed_at TEXT,
     published_at TEXT,
-    human_correction_minutes REAL,
+    human_correction_minutes REAL CHECK(human_correction_minutes IS NULL OR human_correction_minutes >= 0),
     reviewer_notes TEXT,
-    publication_state TEXT NOT NULL DEFAULT 'pending'
+    publication_state TEXT NOT NULL DEFAULT 'pending',
+    UNIQUE(participant_id, edition_number)
 );
 
 CREATE TABLE IF NOT EXISTS feedback (
@@ -48,7 +49,7 @@ CREATE TABLE IF NOT EXISTS feedback (
     selected_section_id TEXT,
     free_text TEXT,
     submitted_at TEXT NOT NULL,
-    applied_to_next_edition INTEGER NOT NULL DEFAULT 0
+    applied_to_next_edition INTEGER NOT NULL DEFAULT 0 CHECK(applied_to_next_edition IN (0, 1))
 );
 
 CREATE TABLE IF NOT EXISTS generation_runs (
