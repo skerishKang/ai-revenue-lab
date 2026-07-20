@@ -40,4 +40,7 @@ class ProviderErrorCategory(StrEnum):
     INVALID_JSON = "invalid_json"
     SCHEMA_MISMATCH = "schema_mismatch"
     PROVIDER_ERROR = "provider_error"
+    CONNECTION_ERROR = "connection_error"
+    RATE_LIMIT = "rate_limit"
+    REFUSAL = "refusal"
     UNKNOWN = "unknown"

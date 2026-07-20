@@ -24,6 +24,18 @@ from app.db import apply_migrations, get_connection
 from app.domain.enums import FeedbackDirection
 from app.pipeline.service import GenerationService
 
+
+def _build_provider():
+    if settings.ai_provider == "mock" or not settings.ai_base_url:
+        return MockProvider(model=settings.ai_model)
+    from app.ai.external import ExternalProvider
+    return ExternalProvider(
+        base_url=settings.ai_base_url,
+        api_key=settings.ai_api_key,
+        model=settings.ai_model,
+        timeout_seconds=settings.ai_timeout_seconds,
+    )
+
 _TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 _STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
@@ -63,10 +75,8 @@ def create_app(
 
     if provider is not None:
         app.state.provider = provider
-    elif settings.ai_provider == "mock":
-        app.state.provider = MockProvider()
     else:
-        app.state.provider = MockProvider()
+        app.state.provider = _build_provider()
 
     app.state.generation_service = GenerationService(
         provider=app.state.provider,

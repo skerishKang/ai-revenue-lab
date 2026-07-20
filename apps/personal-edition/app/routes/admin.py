@@ -25,6 +25,7 @@ from app.auth import (
     verify_admin_secret,
     verify_csrf_token,
 )
+from app.config import settings
 from app.db import get_connection
 from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
@@ -160,12 +161,26 @@ def admin_dashboard(request: Request):
             "WHERE e.generation_status != 'deleted' "
             "ORDER BY e.drafted_at DESC"
         ).fetchall()
+        recent_runs = conn.execute(
+            "SELECT task_type, provider, advertised_model, cost_class, "
+            "success, validation_status, latency_seconds, error_category, "
+            "started_at "
+            "FROM generation_runs ORDER BY started_at DESC LIMIT 10"
+        ).fetchall()
     finally:
         conn.close()
+
+    provider_name = settings.ai_provider
+    model_name = settings.ai_model
+    provider_configured = bool(settings.ai_base_url) or provider_name == "mock"
 
     context: dict[str, Any] = {
         "participants": participants,
         "editions": editions,
+        "recent_generation_runs": recent_runs,
+        "provider_name": provider_name,
+        "model_name": model_name,
+        "provider_configured": provider_configured,
     }
     resp, _ = _render_with_csrf(request, "admin_dashboard.html", context)
     return resp
