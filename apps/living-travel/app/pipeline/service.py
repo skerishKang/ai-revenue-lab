@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
+import uuid
 
 from app.ai.base import AIProvider
 from app.domain.enums import (
     EditionGenerationStatus,
     InformationClass,
+    PilotEvidenceType,
     SourceConfidence,
 )
 from app.domain.models import (
@@ -21,16 +24,23 @@ from app.domain.models import (
 )
 from app.edition_repository import (
     create_edition,
+    get_edition_by_id,
     get_editions_by_traveler,
     update_edition_content,
     update_edition_generation_status,
 )
 from app.feedback_repository import (
+    create_feedback,
+    get_unapplied_feedback_for_edition,
     get_unapplied_feedback_for_traveler,
     mark_feedback_applied,
 )
 from app.generation_run_repository import create_generation_run
-from app.pipeline.errors import PipelineError
+from app.pilot_evidence_repository import (
+    create_pilot_evidence,
+    get_pilot_evidence_by_id,
+)
+from app.pipeline.errors import PipelineError, MarkupError
 from app.pipeline.markup import reject_all_content_fields
 from app.pipeline.prompts import (
     DRAFT_PROMPT_VERSION,
@@ -41,9 +51,95 @@ from app.pipeline.prompts import (
 from app.pipeline.validators import (
     validate_draft_against_plan,
     validate_edition_content,
+    validate_no_unsupported_claims,
     validate_plan,
 )
 from app.traveler_repository import is_traveler_active
+
+
+# ---------------------------------------------------------------------------
+# Content-signature helpers for material-change enforcement
+# ---------------------------------------------------------------------------
+
+def _edition_signature(content: EditionContent) -> str:
+    """Deterministic signature covering meaningful content fields."""
+    parts: list[str] = []
+    parts.append(f"pub={content.publication_title}")
+    parts.append(f"title={content.edition_title}")
+    parts.append(f"opening={content.editorial_opening}")
+    parts.append(f"dest={content.destination}")
+    parts.append(f"frame={content.trip_frame}")
+    for i, sec in enumerate(content.sections):
+        parts.append(f"sec[{i}]={sec.section_id}|{sec.title}|{sec.narrative[:200]}")
+        for item in sec.items:
+            parts.append(
+                f"item={item.item_id}|{item.information_class}|{item.source_ref}"
+            )
+    for af in content.applied_feedback:
+        parts.append(f"fb={af.feedback_id}|{af.actual_action}|{af.affected_section_ids}")
+    return hashlib.sha256("|".join(parts).encode()).hexdigest()
+
+
+def _is_materially_different(prior: EditionContent, generated: EditionContent) -> bool:
+    """Check if the generated edition differs meaningfully from the prior."""
+    if _edition_signature(prior) == _edition_signature(generated):
+        return False
+    # Check that at least one section title or narrative changed
+    prior_sections = {s.section_id: (s.title, s.narrative) for s in prior.sections}
+    gen_sections = {s.section_id: (s.title, s.narrative) for s in generated.sections}
+    if prior_sections == gen_sections:
+        # Only metadata changed (or section order rearranged with same content) — reject
+        return False
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Source-grounding helpers
+# ---------------------------------------------------------------------------
+
+def _collect_approved_claims(source_items: list[dict]) -> set[str]:
+    """Collect approved claim IDs from persisted source items."""
+    claims: set[str] = set()
+    for src in source_items:
+        for claim in src.get("claims", []):
+            claims.add(claim)
+    return claims
+
+
+def _build_source_states(source_items: list[dict]) -> dict[str, str]:
+    """Build source_id → state mapping from source items."""
+    states: dict[str, str] = {}
+    for src in source_items:
+        sid = src.get("source_id", "")
+        if sid:
+            states[sid] = src.get("state", "single_source")
+    return states
+
+
+# ---------------------------------------------------------------------------
+# Pilot evidence validation
+# ---------------------------------------------------------------------------
+
+_ALLOWED_EVIDENCE_TYPES = {
+    PilotEvidenceType.free_sample,
+    PilotEvidenceType.paid_edition,
+}
+
+_SENSITIVE_PAYMENT_PATTERNS = [
+    "\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}",  # credit card
+    "(?i)(password|passwd|pwd)\\s*[:=]\\s*\\S+",
+    "(?i)(token|secret|bearer)\\s*[:=]\\s*\\S+",
+    "\\b(sk-|ak-|pk-)[A-Za-z0-9]{20,}",  # API keys
+]
+
+
+def _redact_sensitive(text: str) -> str:
+    """Redact sensitive patterns from text."""
+    import re
+    result = text
+    for pat in _SENSITIVE_PAYMENT_PATTERNS:
+        result = re.sub(pat, "[REDACTED]", result)
+    return result
 
 
 class GenerationService:
@@ -64,11 +160,19 @@ class GenerationService:
         input_id: str | None = None,
         traveler_preferences: dict,
         source_items: list[dict],
-        source_ids: set[str],
-        source_states: dict[str, str] | None = None,
     ) -> EditionContent:
         if not is_traveler_active(self.conn, traveler_id):
             raise PipelineError("Traveler is inactive or deleted")
+
+        # Build source states and approved claims from persisted source items
+        source_states = _build_source_states(source_items)
+        valid_claims = _collect_approved_claims(source_items)
+
+        # Batch ID for failure accounting (survives edition rollback)
+        batch_id = str(uuid.uuid4())
+
+        # Record runs outside savepoint so they survive rollback
+        all_runs: list[tuple[ProviderResult, str]] = []
 
         self.conn.execute("SAVEPOINT sp_first")
         try:
@@ -89,6 +193,7 @@ class GenerationService:
                 source_items=source_items,
                 edition_id=edition.id,
             )
+            all_runs.extend(plan_runs)
 
             content, draft_runs = self._generate_draft(
                 plan=plan_content,
@@ -96,12 +201,17 @@ class GenerationService:
                 source_items=source_items,
                 edition_id=edition.id,
             )
+            all_runs.extend(draft_runs)
 
-            # Record ALL generation runs (including retries/failures) for accounting
-            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
+            # Record ALL generation runs for accounting
+            self._record_run_batch(all_runs, edition.id, commit=False)
 
+            # Validate with service-owned source grounding and claims
             errors = validate_edition_content(
-                content, valid_source_ids=source_ids, source_states=source_states,
+                content,
+                valid_source_ids=set(source_states.keys()),
+                valid_claims=valid_claims,
+                source_states=source_states,
             )
             if errors:
                 raise PipelineError("Validation failed: " + "; ".join(errors))
@@ -118,24 +228,58 @@ class GenerationService:
             return content
         except Exception:
             self.conn.execute("ROLLBACK TO SAVEPOINT sp_first")
+            self.conn.execute("RELEASE SAVEPOINT sp_first")
+            # Record failed runs outside the rollback so accounting survives
+            if all_runs:
+                self._record_run_batch(all_runs, "", commit=True)
             raise
 
     def generate_second_edition(
         self,
         *,
         traveler_id: str,
-        prior_edition: EditionContent,
+        prior_edition_id: str,
         traveler_preferences: dict,
         source_items: list[dict],
-        source_ids: set[str],
-        source_states: dict[str, str] | None = None,
     ) -> EditionContent:
+        """Generate second edition with persisted prior-edition binding.
+
+        Accepts a prior_edition_id (not caller-supplied content), loads the
+        persisted record, verifies ownership/status, and derives continuity
+        from the persisted structured_content only.
+        """
         if not is_traveler_active(self.conn, traveler_id):
             raise PipelineError("Traveler is inactive or deleted")
 
-        feedback_records = get_unapplied_feedback_for_traveler(self.conn, traveler_id)
+        # Load and verify persisted prior edition
+        prior_record = get_edition_by_id(self.conn, prior_edition_id)
+        if prior_record is None:
+            raise PipelineError(f"Prior edition not found: {prior_edition_id}")
+        if prior_record.traveler_id != traveler_id:
+            raise PipelineError("Prior edition belongs to a different traveler")
+        if prior_record.generation_status not in ("pending_review", "published"):
+            raise PipelineError(
+                f"Prior edition has invalid status: {prior_record.generation_status}"
+            )
+        if not prior_record.structured_content:
+            raise PipelineError("Prior edition has no structured content")
+
+        # Deserialize prior content from persisted data (not caller-provided)
+        prior_content = EditionContent.model_validate(prior_record.structured_content)
+
+        # Load feedback ONLY for this exact prior edition
+        feedback_records = get_unapplied_feedback_for_edition(
+            self.conn, traveler_id, prior_edition_id
+        )
         if not feedback_records:
-            raise PipelineError("No unapplied feedback for traveler")
+            raise PipelineError("No unapplied feedback for edition")
+
+        # Validate each feedback row
+        for fb in feedback_records:
+            if fb.traveler_id != traveler_id:
+                raise PipelineError(f"Feedback {fb.id} belongs to different traveler")
+            if fb.edition_id != prior_edition_id:
+                raise PipelineError(f"Feedback {fb.id} not bound to prior edition {prior_edition_id}")
 
         applied_feedback_list: list[dict] = []
         for fb in feedback_records:
@@ -147,12 +291,19 @@ class GenerationService:
                 }
             )
 
+        # Build source states and approved claims
+        source_states = _build_source_states(source_items)
+        valid_claims = _collect_approved_claims(source_items)
+
         editions = get_editions_by_traveler(self.conn, traveler_id)
         if not editions:
             raise PipelineError("No prior editions found for traveler")
 
-        prior_edition_record = editions[-1]
-        next_number = prior_edition_record.edition_number + 1
+        next_number = prior_record.edition_number + 1
+
+        # Batch ID for failure accounting
+        batch_id = str(uuid.uuid4())
+        all_runs: list[tuple[ProviderResult, str]] = []
 
         self.conn.execute("SAVEPOINT sp_second")
         try:
@@ -160,7 +311,7 @@ class GenerationService:
                 self.conn,
                 traveler_id=traveler_id,
                 edition_number=next_number,
-                prior_edition_id=prior_edition_record.id,
+                prior_edition_id=prior_record.id,
                 commit=False,
             )
             update_edition_generation_status(
@@ -174,8 +325,9 @@ class GenerationService:
                 edition_id=edition.id,
                 applied_feedback=applied_feedback_list,
             )
+            all_runs.extend(plan_runs)
 
-            prior_summary = self._edition_summary(prior_edition)
+            prior_summary = self._edition_summary(prior_content)
 
             content, draft_runs = self._generate_draft(
                 plan=plan_content,
@@ -185,23 +337,35 @@ class GenerationService:
                 applied_feedback=applied_feedback_list,
                 prior_edition_summary=prior_summary,
             )
+            all_runs.extend(draft_runs)
 
-            # Record ALL generation runs (including retries/failures) for accounting
-            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
+            # Record ALL generation runs for accounting
+            self._record_run_batch(all_runs, edition.id, commit=False)
 
+            # Validate with service-owned source grounding and claims
             errors = validate_edition_content(
-                content, valid_source_ids=source_ids, source_states=source_states,
+                content,
+                valid_source_ids=set(source_states.keys()),
+                valid_claims=valid_claims,
+                source_states=source_states,
             )
             if errors:
                 raise PipelineError("Validation failed: " + "; ".join(errors))
 
             reject_all_content_fields(content)
 
+            # Material-change enforcement: reject identical/superficial output
+            if not _is_materially_different(prior_content, content):
+                raise PipelineError(
+                    "Generated edition is not materially different from prior edition"
+                )
+
             update_edition_content(self.conn, edition.id, content.model_dump(), commit=False)
             update_edition_generation_status(
                 self.conn, edition.id, EditionGenerationStatus.pending_review,
                 commit=False,
             )
+            # Mark only the validated feedback rows as applied
             for fb in feedback_records:
                 mark_feedback_applied(self.conn, fb.id, commit=False)
             self.conn.execute("RELEASE SAVEPOINT sp_second")
@@ -209,7 +373,74 @@ class GenerationService:
             return content
         except Exception:
             self.conn.execute("ROLLBACK TO SAVEPOINT sp_second")
+            self.conn.execute("RELEASE SAVEPOINT sp_second")
+            # Record failed runs outside the rollback so accounting survives
+            if all_runs:
+                self._record_run_batch(all_runs, "", commit=True)
             raise
+
+    # ------------------------------------------------------------------
+    # Pilot evidence validation
+    # ------------------------------------------------------------------
+
+    def create_pilot_evidence_validated(
+        self,
+        *,
+        evidence_type: PilotEvidenceType,
+        traveler_id: str,
+        edition_id: str,
+        offer_description: str,
+        price_krw: int = 0,
+        consent_recorded: bool = False,
+        payment_evidence: str = "",
+    ) -> "PilotEvidenceRecord":
+        """Validated pilot evidence creation with ownership and privacy checks."""
+        from app.traveler_repository import get_traveler_by_id
+
+        # Verify traveler exists and is active
+        traveler = get_traveler_by_id(self.conn, traveler_id)
+        if traveler is None:
+            raise PipelineError("Traveler not found or inactive")
+
+        # Verify edition exists and belongs to traveler
+        edition = get_edition_by_id(self.conn, edition_id)
+        if edition is None:
+            raise PipelineError("Edition not found")
+        if edition.traveler_id != traveler_id:
+            raise PipelineError("Edition belongs to a different traveler")
+
+        # Validate evidence type
+        if evidence_type not in _ALLOWED_EVIDENCE_TYPES:
+            raise PipelineError(f"Invalid evidence type: {evidence_type}")
+
+        # Validate price/status combinations
+        if evidence_type == PilotEvidenceType.free_sample and price_krw != 0:
+            raise PipelineError("Free sample must have price_krw=0")
+        if evidence_type == PilotEvidenceType.paid_edition and price_krw <= 0:
+            raise PipelineError("Paid edition must have positive price_krw")
+
+        # Consent required for paid editions
+        if evidence_type == PilotEvidenceType.paid_edition and not consent_recorded:
+            raise PipelineError("Paid edition requires consent_recorded=true")
+
+        # Bound offer description length
+        if len(offer_description) > 500:
+            raise PipelineError("offer_description exceeds 500 characters")
+
+        # Redact sensitive content from payment_evidence
+        redacted_payment = _redact_sensitive(payment_evidence)
+        redacted_offer = _redact_sensitive(offer_description)
+
+        return create_pilot_evidence(
+            self.conn,
+            evidence_type=evidence_type,
+            traveler_id=traveler_id,
+            edition_id=edition_id,
+            offer_description=redacted_offer,
+            price_krw=price_krw,
+            consent_recorded=consent_recorded,
+            payment_evidence=redacted_payment,
+        )
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -296,8 +527,7 @@ class GenerationService:
         self,
         runs: list[tuple[ProviderResult, str]],
         edition_id: str,
-        *,
-        commit: bool = True,
+        *, commit: bool = True,
     ) -> None:
         """Record all generation runs from a batch (including retries/failures)."""
         for result, prompt_version in runs:

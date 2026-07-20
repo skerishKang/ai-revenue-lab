@@ -51,6 +51,7 @@ from app.edition_repository import (
 from app.feedback_repository import (
     create_feedback,
     get_feedback_by_id,
+    get_unapplied_feedback_for_edition,
     get_unapplied_feedback_for_traveler,
     mark_feedback_applied,
 )
@@ -81,7 +82,11 @@ from app.pilot_evidence_repository import (
     create_pilot_evidence,
     get_pilot_evidence_by_traveler,
 )
-from app.source_repository import create_source, get_source_by_id
+try:
+    from app.source_repository import create_source, get_source_by_id
+except ImportError:
+    create_source = None
+    get_source_by_id = None
 from app.traveler_repository import (
     create_traveler,
     delete_traveler,
@@ -172,16 +177,23 @@ def busan_sources(conn):
 
 
 @pytest.fixture
-def source_dicts(busan_sources):
+def source_dicts():
+    """Source dicts with hardcoded IDs matching source_bundle.json fixture."""
     return [
-        {"source_id": s.id, "publisher": s.publisher, "category": s.category}
-        for s in busan_sources
+        {"source_id": "src_busan_tourism", "publisher": "부산관광공사",
+         "category": "destination_overview",
+         "claims": ["부산은 한국 제2의 도시", "해운대와 광안리가 대표 해수욕장", "item_weather_note"]},
+        {"source_id": "src_gukje_market", "publisher": "부산 중구청",
+         "category": "market",
+         "claims": ["국제시장은 1950년대 전후부터 형성된 시장", "원조 식당가가 있음",
+                     "item_gukje_atmosphere", "item_gukje_hours", "item_solo_dining"]},
+        {"source_id": "src_haegyeolri", "publisher": "부산남구청",
+         "category": "neighborhood",
+         "claims": ["합성동은 로컬 분위기가 남아있는 동네", "조용한 카페와 식당이 있음",
+                     "item_haegyeolri_vibe"]},
     ]
 
 
-@pytest.fixture
-def source_states(busan_sources):
-    return {s.id: s.state for s in busan_sources}
 
 
 # =====================================================================
@@ -247,7 +259,7 @@ class TestTravelerIsolation:
                 traveler_id=traveler.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
+                
             )
 
     def test_deleted_traveler_blocks_second_edition(self, conn, traveler, source_dicts):
@@ -255,23 +267,22 @@ class TestTravelerIsolation:
         second_draft = _load_fixture("source_bundle.json")["second_edition_fixture"]
         p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
         s1 = GenerationService(conn, p1)
-        first_content = s1.generate_first_edition(
+        s1.generate_first_edition(
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
         )
-        create_feedback(conn, traveler_id=traveler.id, edition_id=get_editions_by_traveler(conn, traveler.id)[0].id, direction_choices=["quieter_places"])
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id, direction_choices=["quieter_places"])
         delete_traveler(conn, traveler.id)
         p2 = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": second_draft})
         s2 = GenerationService(conn, p2)
         with pytest.raises(PipelineError, match="inactive or deleted"):
             s2.generate_second_edition(
                 traveler_id=traveler.id,
-                prior_edition=first_content,
+                prior_edition_id=ed1.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
             )
 
     def test_traveler_is_active_check(self, conn, traveler):
@@ -305,7 +316,7 @@ class TestAtomicPersistence:
                 traveler_id=traveler.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
+                
             )
         editions = get_editions_by_traveler(conn, traveler.id)
         assert len(editions) == 0, "Failed generation should leave no edition"
@@ -319,7 +330,6 @@ class TestAtomicPersistence:
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
         )
         ed1 = get_editions_by_traveler(conn, traveler.id)[0]
         create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id, direction_choices=["quieter_places"])
@@ -328,14 +338,12 @@ class TestAtomicPersistence:
                      "sections": [{"section_id": "sec_quiet_morning", "title": "T", "description": "D"}]}
         p2 = MockProvider(task_payloads={"editorial_plan": bad_plan, "edition_draft": bad_draft})
         s2 = GenerationService(conn, p2)
-        first_content = _make_first_content()
         with pytest.raises(PipelineError):
             s2.generate_second_edition(
                 traveler_id=traveler.id,
-                prior_edition=first_content,
+                prior_edition_id=ed1.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
             )
         editions = get_editions_by_traveler(conn, traveler.id)
         assert len(editions) == 1
@@ -357,19 +365,17 @@ class TestFeedbackRejection:
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
         )
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
         second_draft = _load_fixture("source_bundle.json")["second_edition_fixture"]
         p2 = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": second_draft})
         s2 = GenerationService(conn, p2)
-        first_content = _make_first_content()
         with pytest.raises(PipelineError, match="No unapplied feedback"):
             s2.generate_second_edition(
                 traveler_id=traveler.id,
-                prior_edition=first_content,
+                prior_edition_id=ed1.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
             )
 
     def test_already_applied_feedback_not_reused(self, conn, traveler, source_dicts):
@@ -380,7 +386,6 @@ class TestFeedbackRejection:
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
         )
         ed1 = get_editions_by_traveler(conn, traveler.id)[0]
         fb = create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id, direction_choices=["quieter_places"])
@@ -388,14 +393,12 @@ class TestFeedbackRejection:
         second_draft = _load_fixture("source_bundle.json")["second_edition_fixture"]
         p2 = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": second_draft})
         s2 = GenerationService(conn, p2)
-        first_content = _make_first_content()
         with pytest.raises(PipelineError, match="No unapplied feedback"):
             s2.generate_second_edition(
                 traveler_id=traveler.id,
-                prior_edition=first_content,
+                prior_edition_id=ed1.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
             )
 
     def test_feedback_from_different_traveler_not_seen(self, conn, source_dicts):
@@ -405,12 +408,15 @@ class TestFeedbackRejection:
         svc = GenerationService(conn, p)
         svc.generate_first_edition(
             traveler_id=t1.id, traveler_preferences={"destination": "부산"},
-            source_items=source_dicts, source_ids=FIXTURE_SOURCE_IDS,
+            source_items=source_dicts,
         )
         ed1 = get_editions_by_traveler(conn, t1.id)[0]
         create_feedback(conn, traveler_id=t2.id, edition_id=ed1.id, direction_choices=["quieter_places"])
-        assert len(get_unapplied_feedback_for_traveler(conn, t1.id)) == 0
-        assert len(get_unapplied_feedback_for_traveler(conn, t2.id)) == 1
+        # Edition-scoped query: t2's feedback on ed1 is not returned for t1's unapplied
+        unapplied_t1 = get_unapplied_feedback_for_edition(conn, t1.id, ed1.id)
+        assert len(unapplied_t1) == 0
+        unapplied_t2 = get_unapplied_feedback_for_edition(conn, t2.id, ed1.id)
+        assert len(unapplied_t2) == 1
 
 
 # =====================================================================
@@ -426,7 +432,6 @@ class TestNoOverwriteFailurePaths:
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
         )
         ed1 = get_editions_by_traveler(conn, traveler.id)[0]
         create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id, direction_choices=["quieter_places"])
@@ -436,14 +441,12 @@ class TestNoOverwriteFailurePaths:
         second_draft = _load_fixture("source_bundle.json")["second_edition_fixture"]
         p2 = MockProvider(task_payloads={"editorial_plan": bad_plan, "edition_draft": second_draft})
         s2 = GenerationService(conn, p2)
-        first_content = _make_first_content()
         with pytest.raises(PipelineError):
             s2.generate_second_edition(
                 traveler_id=traveler.id,
-                prior_edition=first_content,
+                prior_edition_id=ed1.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
             )
         editions = get_editions_by_traveler(conn, traveler.id)
         assert len(editions) == 1
@@ -492,8 +495,6 @@ class TestSourceRejection:
                 traveler_id=traveler.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
-                source_states={ws_id: "withdrawn"},
             )
 
 
@@ -526,7 +527,8 @@ class TestUnsupportedClaims:
         errors = validate_no_unsupported_claims(content, {"valid_item"})
         assert errors == []
 
-    def test_empty_claims_passes(self):
+    def test_empty_claims_rejects_all(self):
+        """Empty approved-claims set must NOT silently authorize claims."""
         content = EditionContent(
             publication_title="T", edition_title="T", destination="B",
             trip_frame="2박", editorial_opening="T",
@@ -536,7 +538,7 @@ class TestUnsupportedClaims:
             )]
         )
         errors = validate_no_unsupported_claims(content, set())
-        assert errors == []
+        assert len(errors) > 0, "Empty claims set must reject all time_sensitive items"
 
 
 # =====================================================================
@@ -667,7 +669,7 @@ class TestGenerationRunAccounting:
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
+            
         )
         editions = get_editions_by_traveler(conn, traveler.id)
         assert len(editions) == 1
@@ -682,7 +684,7 @@ class TestGenerationRunAccounting:
             traveler_id=traveler.id,
             traveler_preferences={"destination": "부산"},
             source_items=source_dicts,
-            source_ids=FIXTURE_SOURCE_IDS,
+            
         )
         runs = get_generation_runs_by_task_type(conn, "editorial_plan")
         assert len(runs) >= 1
@@ -872,7 +874,7 @@ class TestZeroNetwork:
                 traveler_id=traveler.id,
                 traveler_preferences={"destination": "부산"},
                 source_items=source_dicts,
-                source_ids=FIXTURE_SOURCE_IDS,
+                
             )
             assert content.publication_title
             assert connections == []

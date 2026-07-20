@@ -118,6 +118,17 @@ def get_unapplied_feedback_for_traveler(
     return [_row_to_record(r) for r in rows]
 
 
+def get_unapplied_feedback_for_edition(
+    conn: sqlite3.Connection, traveler_id: str, edition_id: str
+) -> list[FeedbackRecord]:
+    """Load unapplied feedback belonging to a specific traveler AND edition."""
+    rows = conn.execute(
+        f"SELECT {_SELECT} FROM feedback WHERE traveler_id = ? AND edition_id = ? AND applied_to_next_edition = 0",
+        (traveler_id, edition_id),
+    ).fetchall()
+    return [_row_to_record(r) for r in rows]
+
+
 def mark_feedback_applied(conn: sqlite3.Connection, feedback_id: str, *, commit: bool = True) -> bool:
     cur = conn.execute(
         "UPDATE feedback SET applied_to_next_edition = 1 WHERE id = ?",

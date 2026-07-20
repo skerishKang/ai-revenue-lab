@@ -54,14 +54,19 @@ def validate_information_class_metadata(
     errors: list[str] = []
     for section in content.sections:
         for item in section.items:
+            # Both stable_reference and time_sensitive require a source_ref
+            if item.information_class in (
+                InformationClass.time_sensitive,
+                InformationClass.stable_reference,
+            ):
+                if not item.source_ref:
+                    errors.append(
+                        f"{item.information_class} item {item.item_id} missing source_ref"
+                    )
             if item.information_class == InformationClass.time_sensitive:
                 if not item.as_of_date:
                     errors.append(
                         f"time_sensitive item {item.item_id} missing as_of_date"
-                    )
-                if not item.source_ref:
-                    errors.append(
-                        f"time_sensitive item {item.item_id} missing source_ref"
                     )
                 if not item.verify_before_use:
                     errors.append(
@@ -78,10 +83,13 @@ def validate_no_unsupported_claims(
     content: EditionContent,
     valid_claims: set[str],
 ) -> list[str]:
-    """Reject items whose item_id is not in the approved claims set."""
+    """Reject items whose item_id is not in the approved claims set.
+
+    An empty approved-claims set means NO claims are approved, so all
+    stable_reference and time_sensitive items must be rejected.
+    Pass None to skip claims validation entirely.
+    """
     errors: list[str] = []
-    if not valid_claims:
-        return errors
     for section in content.sections:
         for item in section.items:
             if item.information_class in (
