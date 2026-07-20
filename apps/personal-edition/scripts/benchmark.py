@@ -1082,6 +1082,14 @@ def _run_validator_feedback_repair(
     # Phases 6-7: privacy-safe repair request to the SAME provider instance.
     correlation_id = f"bench-{fixture.name}-{run_index}-corr"
     attempt_id = f"bench-{fixture.name}-{run_index}-attempt-1"
+    # Authoritative, privacy-safe reference universe: IDs only, no segment text.
+    allowed_segment_ids = tuple(
+        sorted(seg.segment_id for seg in candidate.segments)
+    )
+    allowed_plan_section_ids = tuple(
+        sorted(s.section_id for s in candidate.plan.sections)
+    )
+
     repair_request = RepairRequest(
         participant_id=participant_id,
         input_id=input_id,
@@ -1091,6 +1099,8 @@ def _run_validator_feedback_repair(
         correlation_id=correlation_id,
         attempt_id=attempt_id,
         prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=allowed_segment_ids,
+        allowed_plan_section_ids=allowed_plan_section_ids,
     )
 
     repair_outcome = service.repair_edition(

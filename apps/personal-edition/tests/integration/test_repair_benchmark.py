@@ -385,3 +385,204 @@ def test_end_to_end_uses_same_provider_instance():
     assert "edition_draft" in task_names
     assert "edition_repair" in task_names
     conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Blocker 1/2/3: shared full validation, persisted accounting, allowed universe
+# ---------------------------------------------------------------------------
+
+import copy  # noqa: E402
+
+from app.pipeline.service import VALIDATION_FAILED, VALIDATION_PASSED  # noqa: E402
+
+
+def _repair_payload_for_first_section(draft_payload, first_segment_id):
+    """Return a deep copy of the draft payload with section 0 fixed to the
+    supplied (valid) segment id. This is what a correct repair should produce
+    after the s999 corruption; callers layer injections on top."""
+    data = copy.deepcopy(draft_payload)
+    data["sections"][0]["source_segment_ids"] = [first_segment_id]
+    return data
+
+
+def _fixture_allowed_ids(fixture):
+    """Authoritative reference universe derived from the fixture's own plan and
+    draft: every segment id referenced by the draft and every plan section id."""
+    seg = set()
+    for s in fixture.draft_payload["sections"]:
+        seg.update(s.get("source_segment_ids", []))
+    sec = {s["section_id"] for s in fixture.plan_payload["sections"]}
+    return tuple(sorted(seg)), tuple(sorted(sec))
+
+
+def _run_repair_with(
+    conn,
+    fixture,
+    *,
+    repair_payload,
+    allowed_segment_ids,
+    allowed_plan_section_ids,
+    participant_tag,
+):
+    provider = _make_provider(fixture, repair_payload=repair_payload)
+    service = GenerationService(provider=provider)
+    pid, inp = _ensure_participant(
+        conn, participant_tag, input_text=fixture.input_text
+    )
+    candidate = service.generate_repair_candidate(
+        conn,
+        request=GenerationRequest(
+            participant_id=pid,
+            input_id=inp,
+            prohibited_inferences=fixture.prohibited_inventions,
+            allow_short_sample=True,
+        ),
+    )
+    assert candidate.succeeded
+    corrupted = _corrupt(candidate.content)
+    repair_request = RepairRequest(
+        participant_id=pid,
+        input_id=inp,
+        corrupted_candidate=corrupted.model_dump(),
+        validator_findings=normalize_validation_findings(Exception("x")),
+        repair_instruction="repair it privacy-safely",
+        correlation_id="corr-1",
+        attempt_id="attempt-1",
+        prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=allowed_segment_ids,
+        allowed_plan_section_ids=allowed_plan_section_ids,
+    )
+    outcome = service.repair_edition(
+        conn,
+        repair_request=repair_request,
+        plan=candidate.plan,
+        segments=candidate.segments,
+    )
+    row = None
+    if outcome.run_id is not None:
+        row = conn.execute(
+            "SELECT * FROM generation_runs WHERE id = ?", (outcome.run_id,)
+        ).fetchone()
+    return outcome, row
+
+
+def test_repair_fixes_invalid_id_but_introduces_script_fails():
+    conn = _setup_benchmark_db(":memory:")
+    fixture = load_bundle("korean_founder")
+    valid_seg = fixture.draft_payload["sections"][0]["source_segment_ids"][0]
+    payload = _repair_payload_for_first_section(fixture.draft_payload, valid_seg)
+    payload["edition_title"] = "<script>alert(1)</script>"
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
+    outcome, row = _run_repair_with(
+        conn,
+        fixture,
+        repair_payload=payload,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
+        participant_tag="bench-script-run",
+    )
+    assert outcome.succeeded is False
+    assert outcome.validation_status == VALIDATION_FAILED
+    assert row is not None
+    assert row["success"] == 0
+    assert row["validation_status"] == VALIDATION_FAILED
+    conn.close()
+
+
+def test_repair_fixes_invalid_id_but_introduces_javascript_fails():
+    conn = _setup_benchmark_db(":memory:")
+    fixture = load_bundle("korean_founder")
+    valid_seg = fixture.draft_payload["sections"][0]["source_segment_ids"][0]
+    payload = _repair_payload_for_first_section(fixture.draft_payload, valid_seg)
+    payload["edition_title"] = "javascript:alert(1)"
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
+    outcome, row = _run_repair_with(
+        conn,
+        fixture,
+        repair_payload=payload,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
+        participant_tag="bench-js-run",
+    )
+    assert outcome.succeeded is False
+    assert outcome.validation_status == VALIDATION_FAILED
+    assert row is not None
+    assert row["success"] == 0
+    assert row["validation_status"] == VALIDATION_FAILED
+    conn.close()
+
+
+def test_repair_fixes_invalid_id_but_introduces_prohibited_invention_fails():
+    conn = _setup_benchmark_db(":memory:")
+    fixture = load_bundle("korean_founder")
+    assert fixture.prohibited_inventions, "fixture must list prohibited inventions"
+    valid_seg = fixture.draft_payload["sections"][0]["source_segment_ids"][0]
+    payload = _repair_payload_for_first_section(fixture.draft_payload, valid_seg)
+    payload["edition_title"] = "invented " + fixture.prohibited_inventions[0]
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
+    outcome, row = _run_repair_with(
+        conn,
+        fixture,
+        repair_payload=payload,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
+        participant_tag="bench-inv-run",
+    )
+    assert outcome.succeeded is False
+    assert outcome.validation_status == VALIDATION_FAILED
+    assert row is not None
+    assert row["success"] == 0
+    assert row["validation_status"] == VALIDATION_FAILED
+    conn.close()
+
+
+def test_repair_valid_repair_with_allowed_ids_succeeds():
+    conn = _setup_benchmark_db(":memory:")
+    fixture = load_bundle("korean_founder")
+    valid_seg = fixture.draft_payload["sections"][0]["source_segment_ids"][0]
+    payload = _repair_payload_for_first_section(fixture.draft_payload, valid_seg)
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
+    outcome, row = _run_repair_with(
+        conn,
+        fixture,
+        repair_payload=payload,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
+        participant_tag="bench-valid-run",
+    )
+    assert outcome.succeeded is True
+    assert outcome.validation_status == VALIDATION_PASSED
+    assert row is not None
+    assert row["success"] == 1
+    assert row["validation_status"] == VALIDATION_PASSED
+    conn.close()
+
+
+def test_repair_rejects_invented_segment_id_outside_allowed_universe():
+    conn = _setup_benchmark_db(":memory:")
+    fixture = load_bundle("korean_founder")
+    # The corrupted first section had a unique source segment (s001); the
+    # authoritative allowed set deliberately omits it, proving the repair cannot
+    # infer it and any reference outside the allowed universe is rejected even
+    # when the id is a real, known segment.
+    first_seg = fixture.draft_payload["sections"][0]["source_segment_ids"][0]
+    other_seg = fixture.draft_payload["sections"][1]["source_segment_ids"][0]
+    payload = _repair_payload_for_first_section(fixture.draft_payload, first_seg)
+    allowed_segment_ids = (other_seg,)
+    allowed_plan_section_ids = tuple(
+        sorted(s["section_id"] for s in fixture.plan_payload["sections"])
+    )
+    outcome, row = _run_repair_with(
+        conn,
+        fixture,
+        repair_payload=payload,
+        allowed_segment_ids=allowed_segment_ids,
+        allowed_plan_section_ids=allowed_plan_section_ids,
+        participant_tag="bench-invented-run",
+    )
+    assert outcome.succeeded is False
+    assert outcome.validation_status == VALIDATION_FAILED
+    assert row is not None
+    assert row["success"] == 0
+    assert row["validation_status"] == VALIDATION_FAILED
+    conn.close()

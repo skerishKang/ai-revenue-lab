@@ -226,8 +226,11 @@ class TestDeletionWorkflow:
         assert result["deleted"] is True
         records = list_records(conn, participant_id="p1")
         assert len(records) == 2
-        assert records[0]["record_type"] == "deletion_request"
-        assert records[1]["record_type"] == "deletion_completion"
+        # Deterministic ordering contract: newest first (created_at DESC,
+        # rowid DESC). The deletion completion is recorded after the request,
+        # so it appears first.
+        assert records[0]["record_type"] == "deletion_completion"
+        assert records[1]["record_type"] == "deletion_request"
         conn.close()
 
 

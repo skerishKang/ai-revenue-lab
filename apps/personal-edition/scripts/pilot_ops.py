@@ -564,6 +564,15 @@ def list_records(
     record_type: str | None = None,
     participant_id: str | None = None,
 ) -> list[dict[str, Any]]:
+    """Return pilot operation records ordered newest-first.
+
+    Deterministic ordering contract (documented for code, tests, docs, and CLI
+    consistency): records are ordered by ``created_at DESC`` with a stable
+    secondary key of ``rowid DESC``. The secondary key guarantees that, even
+    when two records share an identical ``created_at`` (for example a deletion
+    request followed immediately by its completion), the later-inserted record
+    is returned first. Callers must not rely on millisecond timestamp ties.
+    """
     _create_pilot_table(conn)
 
     conditions: list[str] = []
@@ -582,7 +591,8 @@ def list_records(
 
     rows = conn.execute(
         f"SELECT record_id, record_type, participant_id, created_at, payload "
-        f"FROM {_PILOT_OPS_TABLE} {where} ORDER BY created_at DESC",
+        f"FROM {_PILOT_OPS_TABLE} {where} "
+        f"ORDER BY created_at DESC, rowid DESC",
         params,
     ).fetchall()
 

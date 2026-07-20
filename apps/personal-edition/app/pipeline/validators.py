@@ -30,9 +30,23 @@ from app.domain.models import (
     EditorialPlanSection,
     InputSegment,
 )
+from app.pipeline import grounding as grounding_mod
+from app.pipeline import markup as markup_mod
 from app.pipeline.errors import (
     DraftValidationError,
+    GroundingError,
     PlanValidationError,
+    UnsafeMarkupError,
+)
+
+
+# Deterministic validation outcomes may raise any of these; callers that run the
+# shared full validator must catch all of them and treat them as a deterministic
+# validation failure (never a provider failure).
+DETERMINISTIC_VALIDATION_ERRORS = (
+    DraftValidationError,
+    GroundingError,
+    UnsafeMarkupError,
 )
 
 _MIN_SECTIONS = 2
@@ -372,3 +386,56 @@ def normalize_validation_findings(exc: Exception) -> list[dict[str, str]]:
             "message": message,
         }
     ]
+
+
+def validate_draft_full(
+    draft: EditionContent,
+    *,
+    plan: EditorialPlan,
+    segments: list[InputSegment],
+    is_follow_up: bool,
+    feedback_id: str | None = None,
+    prohibited_inferences: Iterable[str] = (),
+) -> None:
+    """Run the complete deterministic production validation stack on a draft.
+
+    This is the single shared validation contract used by production candidate
+    generation (``generate_edition``), candidate repair generation
+    (``generate_repair_candidate``) and repair (``repair_edition``). It must
+    never be replaced by a weaker repair-only path. It covers, in order:
+
+    1. structural / reference / continuity validation
+       (:func:`validate_draft`);
+    2. recursive unsafe-markup rejection over the parsed payload
+       (:func:`markup_mod.check_payload`);
+    3. prohibited-inference / grounding validation over the visible fields
+       (:func:`grounding_mod.check_grounding`).
+
+    Raises :class:`DraftValidationError`, :class:`UnsafeMarkupError` or
+    :class:`GroundingError` on any failure. All three derive from
+    :class:`DraftValidationError` so a single ``except`` clause suffices, but
+    callers should catch the tuple exported as
+    :data:`DETERMINISTIC_VALIDATION_ERRORS`.
+    """
+    if not isinstance(draft, EditionContent):
+        raise DraftValidationError("draft must be an EditionContent instance")
+
+    # 1. Structural / reference / continuity validation.
+    validate_draft(
+        draft,
+        plan=plan,
+        segments=segments,
+        is_follow_up=is_follow_up,
+        feedback_id=feedback_id,
+    )
+
+    # 2. Unsafe-markup rejection over the full parsed payload.
+    markup_mod.check_payload(draft.model_dump())
+
+    # 3. Prohibited-inference / grounding validation over visible fields.
+    visible_fields = collect_visible_fields(draft)
+    prohibited = frozenset(
+        tok for tok in prohibited_inferences if isinstance(tok, str) and tok
+    )
+    policy = grounding_mod.GroundingPolicy(prohibited_tokens=prohibited)
+    grounding_mod.check_grounding(policy=policy, visible_fields=visible_fields)
