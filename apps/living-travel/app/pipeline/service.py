@@ -97,6 +97,9 @@ class GenerationService:
                 edition_id=edition.id,
             )
 
+            # Record ALL generation runs (including retries/failures) for accounting
+            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
+
             errors = validate_edition_content(
                 content, valid_source_ids=source_ids, source_states=source_states,
             )
@@ -110,7 +113,6 @@ class GenerationService:
                 self.conn, edition.id, EditionGenerationStatus.pending_review,
                 commit=False,
             )
-            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
             self.conn.execute("RELEASE SAVEPOINT sp_first")
             self.conn.commit()
             return content
@@ -184,6 +186,9 @@ class GenerationService:
                 prior_edition_summary=prior_summary,
             )
 
+            # Record ALL generation runs (including retries/failures) for accounting
+            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
+
             errors = validate_edition_content(
                 content, valid_source_ids=source_ids, source_states=source_states,
             )
@@ -199,7 +204,6 @@ class GenerationService:
             )
             for fb in feedback_records:
                 mark_feedback_applied(self.conn, fb.id, commit=False)
-            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
             self.conn.execute("RELEASE SAVEPOINT sp_second")
             self.conn.commit()
             return content
@@ -295,7 +299,7 @@ class GenerationService:
         *,
         commit: bool = True,
     ) -> None:
-        """Record all generation runs from a batch (aggregated retries)."""
+        """Record all generation runs from a batch (including retries/failures)."""
         for result, prompt_version in runs:
             create_generation_run(
                 self.conn,
