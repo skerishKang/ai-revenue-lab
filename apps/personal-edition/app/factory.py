@@ -26,15 +26,17 @@ from app.pipeline.service import GenerationService
 
 
 def _build_provider():
-    if settings.ai_provider == "mock" or not settings.ai_base_url:
+    if settings.ai_provider == "mock":
         return MockProvider(model=settings.ai_model)
-    from app.ai.external import ExternalProvider
-    return ExternalProvider(
-        base_url=settings.ai_base_url,
-        api_key=settings.ai_api_key,
-        model=settings.ai_model,
-        timeout_seconds=settings.ai_timeout_seconds,
-    )
+    if settings.ai_provider == "external":
+        from app.ai.external import ExternalProvider
+        return ExternalProvider(
+            base_url=settings.ai_base_url,
+            api_key=settings.ai_api_key,
+            model=settings.ai_model,
+            timeout_seconds=settings.ai_timeout_seconds,
+        )
+    raise ValueError(f"Unknown AI_PROVIDER: {settings.ai_provider}")
 
 _TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 _STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -195,8 +197,13 @@ def _register_routes(app: FastAPI) -> None:
 
     @app.get("/health")
     def health():
+        provider_instance = app.state.provider
+        actual_provider = getattr(provider_instance, "provider", provider_instance.__class__.__name__.lower())
+        actual_model = getattr(provider_instance, "model", settings.ai_model)
         return {
             "status": "ok",
             "ai_provider": settings.ai_provider,
             "ai_model": settings.ai_model,
+            "actual_provider": actual_provider,
+            "actual_model": actual_model,
         }

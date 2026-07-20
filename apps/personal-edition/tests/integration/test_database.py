@@ -97,6 +97,8 @@ class TestApplyMigrations:
             "editions",
             "feedback",
             "generation_runs",
+            "benchmark_runs",
+            "pilot_ops_records",
         }
         assert tables == expected
         conn.close()

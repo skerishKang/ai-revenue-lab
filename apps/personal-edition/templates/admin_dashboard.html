@@ -7,9 +7,10 @@
   <section class="section">
     <h2>Provider 상태</h2>
     <div class="provider-status">
-      <p><strong>Provider:</strong> <code>{{ provider_name }}</code></p>
-      <p><strong>Model:</strong> <code>{{ model_name }}</code></p>
-      <p><strong>설정됨:</strong> {% if provider_configured %}예{% else %}아니오 (mock 기본값){% endif %}</p>
+      <p><strong>설정 Provider:</strong> <code>{{ provider_name }}</code></p>
+      <p><strong>설정 Model:</strong> <code>{{ model_name }}</code></p>
+      <p><strong>실제 Provider:</strong> <code>{{ actual_provider }}</code></p>
+      <p><strong>실제 Model:</strong> <code>{{ actual_model }}</code></p>
     </div>
     {% if recent_generation_runs %}
     <h3>최근 생성 기록</h3>

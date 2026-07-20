@@ -74,8 +74,6 @@ _RETRYABLE_CATEGORIES = frozenset(
         ProviderErrorCategory.TIMEOUT,
         ProviderErrorCategory.INVALID_JSON,
         ProviderErrorCategory.SCHEMA_MISMATCH,
-        ProviderErrorCategory.CONNECTION_ERROR,
-        ProviderErrorCategory.RATE_LIMIT,
     }
 )
 
@@ -89,9 +87,6 @@ _CATEGORY_MESSAGES = {
     ProviderErrorCategory.TIMEOUT: "provider request timed out",
     ProviderErrorCategory.INVALID_JSON: "provider returned invalid JSON",
     ProviderErrorCategory.SCHEMA_MISMATCH: "provider response did not match the expected schema",
-    ProviderErrorCategory.CONNECTION_ERROR: "connection to provider failed",
-    ProviderErrorCategory.RATE_LIMIT: "rate limit exceeded",
-    ProviderErrorCategory.REFUSAL: "provider refused the request",
     ProviderErrorCategory.UNKNOWN: "unexpected provider error",
 }
 

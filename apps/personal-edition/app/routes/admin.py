@@ -25,8 +25,8 @@ from app.auth import (
     verify_admin_secret,
     verify_csrf_token,
 )
-from app.config import settings
 from app.db import get_connection
+from app.config import settings
 from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
 from app.pipeline.markup import UnsafeMarkupError, check_payload
@@ -170,17 +170,18 @@ def admin_dashboard(request: Request):
     finally:
         conn.close()
 
-    provider_name = settings.ai_provider
-    model_name = settings.ai_model
-    provider_configured = bool(settings.ai_base_url) or provider_name == "mock"
+    provider_instance = request.app.state.provider
+    actual_provider = getattr(provider_instance, "provider", provider_instance.__class__.__name__.lower())
+    actual_model = getattr(provider_instance, "model", settings.ai_model)
 
     context: dict[str, Any] = {
         "participants": participants,
         "editions": editions,
         "recent_generation_runs": recent_runs,
-        "provider_name": provider_name,
-        "model_name": model_name,
-        "provider_configured": provider_configured,
+        "provider_name": settings.ai_provider,
+        "model_name": settings.ai_model,
+        "actual_provider": actual_provider,
+        "actual_model": actual_model,
     }
     resp, _ = _render_with_csrf(request, "admin_dashboard.html", context)
     return resp
