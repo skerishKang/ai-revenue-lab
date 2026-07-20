@@ -25,7 +25,7 @@ def initialized_db(db_path):
 
 @pytest.fixture
 def venv_python():
-    return "/tmp/ai-revenue-lab-personal-edition-venv/bin/python"
+    return sys.executable
 
 
 class TestProvisionParticipant:

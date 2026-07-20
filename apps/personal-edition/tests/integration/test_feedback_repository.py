@@ -355,3 +355,53 @@ class TestFeedbackFilePersistence:
             assert found.free_text == "More details please"
             assert found.applied_to_next_edition == 1
             conn2.close()
+
+
+class TestFeedbackTimestampValidation:
+    def test_valid_timestamp_accepted(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        result = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=ed.id,
+            direction_choices=_VALID_DIR,
+            submitted_at="2026-07-20T09:23:46.123Z",
+        )
+        assert result.submitted_at == "2026-07-20T09:23:46.123Z"
+        conn.close()
+
+    def test_calendar_invalid_month_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices=_VALID_DIR,
+                submitted_at="2026-13-20T09:23:46.123Z",
+            )
+        conn.close()
+
+    def test_calendar_invalid_day_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+        ed = _setup_edition(conn)
+
+        with pytest.raises(fb_repo.FeedbackValidationError):
+            fb_repo.create_feedback(
+                conn,
+                participant_id="p1",
+                edition_id=ed.id,
+                direction_choices=_VALID_DIR,
+                submitted_at="2026-02-30T09:23:46.123Z",
+            )
+        conn.close()

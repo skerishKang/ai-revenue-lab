@@ -3,6 +3,7 @@ import re
 import sqlite3
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
 
@@ -17,6 +18,12 @@ def _validate_timestamp(value: str, field_name: str) -> None:
             f"{field_name} must be UTC ISO-8601 "
             "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
         )
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError as exc:
+        raise EditionValidationError(
+            f"{field_name} must be a valid UTC ISO-8601 calendar timestamp"
+        ) from exc
 
 
 @dataclass(frozen=True)
@@ -86,6 +93,16 @@ _PUBLICATION_TRANSITIONS = {
     "published": (),
     "rejected": (),
 }
+
+_GENERATION_TRANSITIONS = {
+    "input_received": frozenset({"generation_pending", "generation_failed"}),
+    "generation_pending": frozenset({"generation_failed", "pending_review"}),
+    "generation_failed": frozenset({"generation_pending"}),
+    "pending_review": frozenset(),
+    "deleted": frozenset(),
+}
+
+_TERMINAL_PUBLICATION_STATES = frozenset({"published", "rejected"})
 
 
 def _validate_edition(
@@ -304,7 +321,8 @@ def update_edition_publication(
     conn.execute("BEGIN IMMEDIATE")
     try:
         current = conn.execute(
-            "SELECT publication_state FROM editions WHERE id = ?",
+            "SELECT publication_state, generation_status, "
+            "structured_content FROM editions WHERE id = ?",
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -322,12 +340,31 @@ def update_edition_publication(
                 f"'{new_publication_state}'"
             )
 
+        if current["generation_status"] != "pending_review":
+            conn.rollback()
+            raise EditionStateConflict(
+                "can only publish or reject an edition "
+                "that is pending review"
+            )
+
         now = _now_utc_iso()
         if new_publication_state == "published":
+            content = current["structured_content"]
+            if content is None:
+                conn.rollback()
+                raise EditionStateConflict(
+                    "cannot publish an edition without "
+                    "structured content"
+                )
+            try:
+                _validate_json_field(content, "structured_content")
+            except EditionValidationError:
+                conn.rollback()
+                raise
             cursor = conn.execute(
                 "UPDATE editions SET publication_state = 'published', "
-                "published_at = ? WHERE id = ?",
-                (now, edition_id),
+                "reviewed_at = ?, published_at = ? WHERE id = ?",
+                (now, now, edition_id),
             )
         elif new_publication_state == "rejected":
             cursor = conn.execute(
@@ -373,12 +410,31 @@ def update_edition_generation_status(
     conn.execute("BEGIN IMMEDIATE")
     try:
         current = conn.execute(
-            "SELECT generation_status FROM editions WHERE id = ?",
+            "SELECT generation_status, publication_state "
+            "FROM editions WHERE id = ?",
             (edition_id,),
         ).fetchone()
         if current is None:
             conn.rollback()
             return None
+
+        if current["publication_state"] in _TERMINAL_PUBLICATION_STATES:
+            conn.rollback()
+            raise EditionStateConflict(
+                "cannot change generation status of an edition "
+                "with a terminal publication state"
+            )
+
+        allowed = _GENERATION_TRANSITIONS.get(
+            current["generation_status"], frozenset()
+        )
+        if new_generation_status not in allowed:
+            conn.rollback()
+            raise EditionStateConflict(
+                f"cannot transition generation status from "
+                f"'{current['generation_status']}' to "
+                f"'{new_generation_status}'"
+            )
 
         cursor = conn.execute(
             "UPDATE editions SET generation_status = ? WHERE id = ?",

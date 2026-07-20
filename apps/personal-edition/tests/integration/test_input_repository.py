@@ -275,3 +275,53 @@ class TestInputForeignKey:
         ).fetchone()
         assert row["participant_id"] == "p1"
         conn.close()
+
+
+class TestInputTimestampValidation:
+    def test_valid_timestamp_accepted(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        result = input_repo.create_input(
+            conn, participant_id="p1", raw_text="text",
+            submitted_at="2026-07-20T09:23:46.123Z",
+        )
+        assert result.submitted_at == "2026-07-20T09:23:46.123Z"
+        conn.close()
+
+    def test_calendar_invalid_month_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        with pytest.raises(input_repo.InputValidationError):
+            input_repo.create_input(
+                conn, participant_id="p1", raw_text="text",
+                submitted_at="2026-13-20T09:23:46.123Z",
+            )
+        conn.close()
+
+    def test_calendar_invalid_day_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        with pytest.raises(input_repo.InputValidationError):
+            input_repo.create_input(
+                conn, participant_id="p1", raw_text="text",
+                submitted_at="2026-02-30T09:23:46.123Z",
+            )
+        conn.close()
+
+    def test_shape_invalid_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        with pytest.raises(input_repo.InputValidationError):
+            input_repo.create_input(
+                conn, participant_id="p1", raw_text="text",
+                submitted_at="not-a-timestamp",
+            )
+        conn.close()

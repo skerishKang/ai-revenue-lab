@@ -3,12 +3,27 @@ import re
 import sqlite3
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
 
 _UTC_ISO_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
 )
+
+
+def _validate_timestamp(value: str, field_name: str) -> None:
+    if not isinstance(value, str) or not _UTC_ISO_RE.match(value):
+        raise FeedbackValidationError(
+            f"{field_name} must be UTC ISO-8601 "
+            "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
+        )
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError as exc:
+        raise FeedbackValidationError(
+            f"{field_name} must be a valid UTC ISO-8601 calendar timestamp"
+        ) from exc
 
 _VALID_FEEDBACK_DIRECTIONS = frozenset({
     "continue_direction",
@@ -21,14 +36,6 @@ _VALID_FEEDBACK_DIRECTIONS = frozenset({
     "longer",
     "change_tone",
 })
-
-
-def _validate_timestamp(value: str, field_name: str) -> None:
-    if not isinstance(value, str) or not _UTC_ISO_RE.match(value):
-        raise FeedbackValidationError(
-            f"{field_name} must be UTC ISO-8601 "
-            "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
-        )
 
 
 @dataclass(frozen=True)

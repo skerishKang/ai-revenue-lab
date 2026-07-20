@@ -18,6 +18,12 @@ def _validate_timestamp(value: str, field_name: str) -> None:
             f"{field_name} must be UTC ISO-8601 "
             "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
         )
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError as exc:
+        raise InputValidationError(
+            f"{field_name} must be a valid UTC ISO-8601 calendar timestamp"
+        ) from exc
 
 
 @dataclass(frozen=True)

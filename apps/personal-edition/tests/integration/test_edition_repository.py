@@ -234,7 +234,8 @@ class TestEditionPublicationTransition:
         _setup_participant(conn)
 
         ed = ed_repo.create_edition(
-            conn, participant_id="p1", edition_number=1
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"title": "Test"}),
         )
         updated = ed_repo.update_edition_publication(
             conn, ed.id, "published"
@@ -242,6 +243,7 @@ class TestEditionPublicationTransition:
         assert updated is not None
         assert updated.publication_state == "published"
         assert updated.published_at is not None
+        assert updated.reviewed_at is not None
         assert updated.generation_status == "pending_review"
         conn.close()
 
@@ -267,7 +269,8 @@ class TestEditionPublicationTransition:
         _setup_participant(conn)
 
         ed = ed_repo.create_edition(
-            conn, participant_id="p1", edition_number=1
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
         )
         ed_repo.update_edition_publication(conn, ed.id, "published")
 
@@ -281,7 +284,8 @@ class TestEditionPublicationTransition:
         _setup_participant(conn)
 
         ed = ed_repo.create_edition(
-            conn, participant_id="p1", edition_number=1
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
         )
         ed_repo.update_edition_publication(conn, ed.id, "published")
 
@@ -337,14 +341,15 @@ class TestEditionContent:
         _setup_participant(conn)
 
         ed = ed_repo.create_edition(
-            conn, participant_id="p1", edition_number=1
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
         )
         ed_repo.update_edition_publication(conn, ed.id, "published")
 
         with pytest.raises(ed_repo.EditionStateConflict):
             ed_repo.update_edition_content(
                 conn, ed.id,
-                structured_content=json.dumps({"x": 1}),
+                structured_content=json.dumps({"x": 2}),
             )
         conn.close()
 
@@ -401,7 +406,8 @@ class TestEditionDelete:
         _setup_participant(conn)
 
         ed = ed_repo.create_edition(
-            conn, participant_id="p1", edition_number=1
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
         )
         ed_repo.update_edition_publication(conn, ed.id, "published")
 
@@ -456,4 +462,338 @@ class TestEditionFilePersistence:
             assert found.structured_content == content
             assert found.rendered_title == "Persistent"
             assert found.published_at is not None
+            assert found.reviewed_at is not None
             conn2.close()
+
+
+def _force_generation_status(conn, edition_id, status):
+    conn.execute(
+        "UPDATE editions SET generation_status = ? WHERE id = ?",
+        (status, edition_id),
+    )
+    conn.commit()
+
+
+class TestEditionPublicationRequirements:
+    """Publication must require a reviewable edition with content."""
+
+    def test_publish_requires_structured_content(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        conn.close()
+
+    def test_reject_works_without_content(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        updated = ed_repo.update_edition_publication(
+            conn, ed.id, "rejected"
+        )
+        assert updated is not None
+        assert updated.publication_state == "rejected"
+        assert updated.reviewed_at is not None
+        conn.close()
+
+    def test_publish_requires_pending_review_generation(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
+        )
+        _force_generation_status(conn, ed.id, "generation_failed")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        conn.close()
+
+    def test_reject_requires_pending_review_generation(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
+        )
+        _force_generation_status(conn, ed.id, "generation_pending")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_publication(conn, ed.id, "rejected")
+        conn.close()
+
+    def test_publish_records_both_timestamps(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"title": "T"}),
+        )
+        updated = ed_repo.update_edition_publication(
+            conn, ed.id, "published"
+        )
+        assert updated is not None
+        assert updated.reviewed_at is not None
+        assert updated.published_at is not None
+        assert updated.reviewed_at == updated.published_at
+        conn.close()
+
+    def test_publish_blocked_for_deleted_generation(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
+        )
+        _force_generation_status(conn, ed.id, "deleted")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        conn.close()
+
+
+class TestEditionGenerationTransitions:
+    """Explicit generation-state transition graph + terminal protection."""
+
+    def test_valid_transition_input_received_to_pending(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        _force_generation_status(conn, ed.id, "input_received")
+        updated = ed_repo.update_edition_generation_status(
+            conn, ed.id, "generation_pending"
+        )
+        assert updated is not None
+        assert updated.generation_status == "generation_pending"
+        conn.close()
+
+    def test_valid_transition_pending_to_review(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        _force_generation_status(conn, ed.id, "generation_pending")
+        updated = ed_repo.update_edition_generation_status(
+            conn, ed.id, "pending_review"
+        )
+        assert updated is not None
+        assert updated.generation_status == "pending_review"
+        conn.close()
+
+    def test_valid_transition_pending_to_failed(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        _force_generation_status(conn, ed.id, "generation_pending")
+        updated = ed_repo.update_edition_generation_status(
+            conn, ed.id, "generation_failed"
+        )
+        assert updated is not None
+        assert updated.generation_status == "generation_failed"
+        conn.close()
+
+    def test_valid_transition_failed_to_pending_retry(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        _force_generation_status(conn, ed.id, "generation_failed")
+        updated = ed_repo.update_edition_generation_status(
+            conn, ed.id, "generation_pending"
+        )
+        assert updated is not None
+        assert updated.generation_status == "generation_pending"
+        conn.close()
+
+    def test_invalid_transition_input_to_review(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        _force_generation_status(conn, ed.id, "input_received")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "pending_review"
+            )
+        conn.close()
+
+    def test_invalid_transition_pending_to_input(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        _force_generation_status(conn, ed.id, "generation_pending")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "input_received"
+            )
+        conn.close()
+
+    def test_invalid_self_transition_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "pending_review"
+            )
+        conn.close()
+
+    def test_pending_review_is_terminal_for_generation(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "generation_pending"
+            )
+        conn.close()
+
+    def test_deleted_cannot_be_revived(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        ed_repo.delete_edition(conn, ed.id)
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "pending_review"
+            )
+        conn.close()
+
+    def test_generation_blocked_when_published(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
+        )
+        ed_repo.update_edition_publication(conn, ed.id, "published")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "generation_failed"
+            )
+        conn.close()
+
+    def test_generation_blocked_when_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1,
+            structured_content=json.dumps({"x": 1}),
+        )
+        ed_repo.update_edition_publication(conn, ed.id, "rejected")
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "generation_failed"
+            )
+        conn.close()
+
+    def test_generation_status_returns_none_for_missing(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        result = ed_repo.update_edition_generation_status(
+            conn, "nonexistent", "generation_pending"
+        )
+        assert result is None
+        conn.close()
+
+    def test_invalid_generation_status_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed = ed_repo.create_edition(
+            conn, participant_id="p1", edition_number=1
+        )
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo.update_edition_generation_status(
+                conn, ed.id, "published"
+            )
+        conn.close()
+
+
+class TestEditionTimestampValidation:
+    """Timestamp validation rejects calendar-invalid values."""
+
+    def test_valid_timestamp_accepted(self):
+        ed_repo._validate_timestamp(
+            "2026-07-20T09:23:46.123Z", "test_field"
+        )
+
+    def test_calendar_invalid_month_rejected(self):
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo._validate_timestamp(
+                "2026-13-20T09:23:46.123Z", "test_field"
+            )
+
+    def test_calendar_invalid_day_rejected(self):
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo._validate_timestamp(
+                "2026-02-30T09:23:46.123Z", "test_field"
+            )
+
+    def test_calendar_invalid_hour_rejected(self):
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo._validate_timestamp(
+                "2026-07-20T25:23:46.123Z", "test_field"
+            )
+
+    def test_calendar_invalid_second_rejected(self):
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo._validate_timestamp(
+                "2026-07-20T09:23:61.123Z", "test_field"
+            )
+
+    def test_shape_invalid_rejected(self):
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo._validate_timestamp("not-a-timestamp", "test_field")
