@@ -129,8 +129,13 @@ class MockProvider:
         response_schema: type[BaseModel],
     ) -> ProviderResult:
         kind = entry.get("kind", "payload")
+        usage_dict = entry.get("usage")
+        usage = None
+        if usage_dict is not None:
+            from app.domain.models import ProviderUsage
+            usage = ProviderUsage(**usage_dict)
         if kind == "error":
-            return self._failure(
+            r = self._failure(
                 start,
                 request_id,
                 entry.get(
@@ -138,17 +143,26 @@ class MockProvider:
                 ),
                 entry.get("message", "scripted provider error"),
             )
+            if usage is not None:
+                return r.model_copy(update={"usage": usage})
+            return r
         if kind == "schema_mismatch":
-            return self._failure(
+            r = self._failure(
                 start,
                 request_id,
                 ProviderErrorCategory.SCHEMA_MISMATCH,
                 entry.get("message", "scripted schema mismatch"),
             )
+            if usage is not None:
+                return r.model_copy(update={"usage": usage})
+            return r
         payload = entry.get("payload")
-        return self._validate_and_return(
+        r = self._validate_and_return(
             payload, start, request_id, response_schema
         )
+        if usage is not None:
+            return r.model_copy(update={"usage": usage})
+        return r
 
     def _validate_and_return(
         self,

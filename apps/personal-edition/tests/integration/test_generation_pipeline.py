@@ -33,8 +33,9 @@ from app.pipeline.service import (
     GenerationRequest,
     GenerationService,
     StageOutcome,
-    MAX_INPUT_CHARS,
-    MIN_INPUT_CHARS,
+    count_words,
+    MAX_INPUT_WORDS,
+    MIN_INPUT_WORDS,
 )
 
 
@@ -59,7 +60,7 @@ def _create_participant(conn, pid="p1", lang="ko"):
 
 def _create_input(conn, pid="p1", raw_text=None, consent_confirmed=1):
     if raw_text is None:
-        raw_text = "A" * 60
+        raw_text = "word " * 600
     return input_repo.create_input(
         conn,
         participant_id=pid,
@@ -118,7 +119,9 @@ def _run_first_edition(conn, bundle, pid="p1"):
     service = GenerationService(provider=provider)
     result = service.generate_edition(
         conn,
-        request=GenerationRequest(participant_id=pid, input_id=inp.id),
+        request=GenerationRequest(
+            participant_id=pid, input_id=inp.id, allow_short_sample=True
+        ),
     )
     return result, inp
 
@@ -240,7 +243,7 @@ class TestFollowUpEdition:
         service = GenerationService(provider=provider)
         first_result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert first_result.succeeded is True
 
@@ -274,6 +277,7 @@ class TestFollowUpEdition:
             is_follow_up=True,
             prior_edition_id=first_result.edition_id,
             feedback_id=fb.id,
+            allow_short_sample=True,
         )
         follow_up_result = service2.generate_edition(conn, request=follow_up_request)
         assert follow_up_result.succeeded is True
@@ -311,7 +315,7 @@ class TestRetry:
         service = GenerationService(provider=provider, max_retries=2)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is True
         assert result.plan_run.success is True
@@ -340,7 +344,7 @@ class TestRetry:
         service = GenerationService(provider=provider, max_retries=2)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is False
         assert result.edition_id is None
@@ -371,6 +375,7 @@ class TestAdversarialInputs:
             participant_id="p1",
             input_id=inp.id,
             prohibited_inferences=tuple(bundle.prohibited_inventions),
+            allow_short_sample=True,
         )
         result = service.generate_edition(conn, request=request)
         assert result.succeeded is False
@@ -396,6 +401,7 @@ class TestAdversarialInputs:
             participant_id="p1",
             input_id=inp.id,
             prohibited_inferences=tuple(bundle.prohibited_inventions),
+            allow_short_sample=True,
         )
         result = service.generate_edition(conn, request=request)
         assert result.succeeded is False
@@ -421,6 +427,7 @@ class TestAdversarialInputs:
             participant_id="p1",
             input_id=inp.id,
             prohibited_inferences=tuple(bundle.prohibited_inventions),
+            allow_short_sample=True,
         )
         result = service.generate_edition(conn, request=request)
         assert result.succeeded is False
@@ -445,7 +452,7 @@ class TestInvalidInputs:
         service = GenerationService(provider=provider)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is False
         assert result.edition_id is None
@@ -495,7 +502,7 @@ class TestInvalidInputs:
         service = GenerationService(provider=provider)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is False
         assert result.edition_id is None
@@ -507,7 +514,7 @@ class TestInvalidInputs:
         inp = input_repo.create_input(
             conn,
             participant_id="p1",
-            raw_text="A" * 60,
+            raw_text="word " * 600,
             consent_confirmed=0,
         )
 
@@ -515,7 +522,7 @@ class TestInvalidInputs:
         service = GenerationService(provider=provider)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is False
         assert result.edition_id is None
@@ -530,8 +537,8 @@ class TestRequestLengthPolicy:
     def test_input_too_short_rejected(self):
         conn = _setup_db()
         _create_participant(conn)
-        short_text = "Short"
-        assert len(short_text) < MIN_INPUT_CHARS
+        short_text = "one two three four five"
+        assert count_words(short_text, "en") < MIN_INPUT_WORDS
         inp = _create_input(conn, raw_text=short_text)
 
         bundle = load_bundle("korean_founder")
@@ -555,8 +562,8 @@ class TestRequestLengthPolicy:
     def test_input_too_short_with_override_allowed(self):
         conn = _setup_db()
         _create_participant(conn)
-        short_text = "Short text for testing"
-        assert len(short_text) < MIN_INPUT_CHARS
+        short_text = "one two three four five"
+        assert count_words(short_text, "en") < MIN_INPUT_WORDS
         inp = _create_input(conn, raw_text=short_text)
 
         bundle = load_bundle("korean_founder")
@@ -582,8 +589,8 @@ class TestRequestLengthPolicy:
     def test_input_too_long_rejected(self):
         conn = _setup_db()
         _create_participant(conn)
-        long_text = "A" * (MAX_INPUT_CHARS + 1)
-        assert len(long_text) > MAX_INPUT_CHARS
+        long_text = "word " * (MAX_INPUT_WORDS + 1)
+        assert count_words(long_text, "en") > MAX_INPUT_WORDS
         inp = _create_input(conn, raw_text=long_text)
 
         bundle = load_bundle("korean_founder")
@@ -596,12 +603,60 @@ class TestRequestLengthPolicy:
         service = GenerationService(provider=provider)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is False
         assert result.edition_id is None
         assert result.plan_run.error_message == "input too long"
         assert result.draft_run.error_message == "input too long"
+        conn.close()
+
+    def test_max_length_not_bypassed_by_short_sample(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        long_text = "word " * (MAX_INPUT_WORDS + 1)
+        inp = _create_input(conn, raw_text=long_text)
+
+        bundle = load_bundle("korean_founder")
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.succeeded is False
+        assert result.plan_run.error_message == "input too long"
+        conn.close()
+
+    def test_korean_word_count(self):
+        conn = _setup_db()
+        _create_participant(conn, lang="ko")
+        korean_text = "안녕하세요 " * 600
+        assert count_words(korean_text, "ko") >= MIN_INPUT_WORDS
+        inp = _create_input(conn, raw_text=korean_text)
+
+        bundle = load_bundle("korean_founder")
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
+        )
+        assert result.plan_run.error_message != "input too short"
         conn.close()
 
 
@@ -626,7 +681,7 @@ class TestNoOverwrite:
 
         result1 = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result1.succeeded is True
         ed1 = ed_repo.get_edition_by_id(conn, result1.edition_id)
@@ -634,7 +689,7 @@ class TestNoOverwrite:
 
         result2 = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result2.succeeded is True
         ed2 = ed_repo.get_edition_by_id(conn, result2.edition_id)
@@ -665,7 +720,7 @@ class TestErrorMessages:
         service = GenerationService(provider=provider, max_retries=2)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is False
         msg = result.plan_run.error_message or ""
@@ -693,7 +748,7 @@ class TestAtomicPersistence:
         service = GenerationService(provider=provider)
         first_result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert first_result.succeeded is True
 
@@ -730,6 +785,7 @@ class TestAtomicPersistence:
                 is_follow_up=True,
                 prior_edition_id=first_result.edition_id,
                 feedback_id=fb.id,
+                allow_short_sample=True,
             ),
         )
         assert follow_up_result.succeeded is True
@@ -762,13 +818,13 @@ class TestAtomicPersistence:
 
         result_p1 = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp1.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp1.id, allow_short_sample=True),
         )
         assert result_p1.succeeded is True
 
         result_p2 = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p2", input_id=inp2.id),
+            request=GenerationRequest(participant_id="p2", input_id=inp2.id, allow_short_sample=True),
         )
         assert result_p2.succeeded is True
 
@@ -807,6 +863,7 @@ class TestAtomicPersistence:
                 is_follow_up=True,
                 prior_edition_id=result_p1.edition_id,
                 feedback_id=fb_p2.id,
+                allow_short_sample=True,
             ),
         )
         assert follow_up_result.succeeded is False
@@ -834,7 +891,7 @@ class TestAtomicPersistence:
         service = GenerationService(provider=provider)
         first_result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert first_result.succeeded is True
 
@@ -869,6 +926,7 @@ class TestAtomicPersistence:
                 is_follow_up=True,
                 prior_edition_id=first_result.edition_id,
                 feedback_id=fb.id,
+                allow_short_sample=True,
             ),
         )
         assert follow_up_result.succeeded is False
@@ -896,7 +954,7 @@ class TestAtomicPersistence:
         service = GenerationService(provider=provider)
         first_result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert first_result.succeeded is True
 
@@ -932,6 +990,7 @@ class TestAtomicPersistence:
                 is_follow_up=True,
                 prior_edition_id=first_result.edition_id,
                 feedback_id=fb.id,
+                allow_short_sample=True,
             ),
         )
         assert first_follow_up.succeeded is True
@@ -971,6 +1030,7 @@ class TestAtomicPersistence:
                 is_follow_up=True,
                 prior_edition_id=first_follow_up.edition_id,
                 feedback_id=fb2.id,
+                allow_short_sample=True,
             ),
         )
         assert second_follow_up.succeeded is False
@@ -1048,7 +1108,7 @@ class TestFileBackedDatabase:
         service = GenerationService(provider=provider)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is True
         edition_id = result.edition_id
@@ -1092,7 +1152,7 @@ class TestFileBackedDatabase:
         service = GenerationService(provider=provider)
         first_result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert first_result.succeeded is True
 
@@ -1128,6 +1188,7 @@ class TestFileBackedDatabase:
                 is_follow_up=True,
                 prior_edition_id=first_result.edition_id,
                 feedback_id=fb.id,
+                allow_short_sample=True,
             ),
         )
         assert follow_up_result.succeeded is True
@@ -1180,7 +1241,7 @@ class TestFileBackedDatabase:
         service = GenerationService(provider=provider)
         result = service.generate_edition(
             conn,
-            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+            request=GenerationRequest(participant_id="p1", input_id=inp.id, allow_short_sample=True),
         )
         assert result.succeeded is True
 
@@ -1203,3 +1264,307 @@ class TestFileBackedDatabase:
         assert result.draft_run.run_id == all_runs[1].id
 
         conn2.close()
+
+
+# ---------------------------------------------------------------------------
+# Regression: 4 blocking issues from strategic review
+# ---------------------------------------------------------------------------
+
+class TestPriorEditionSummaryFromDB:
+    def test_continuity_derived_from_persisted_edition(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider1 = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service1 = GenerationService(provider=provider1)
+        first_result = service1.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert first_result.succeeded is True
+        ed_repo.update_edition_publication(
+            conn, first_result.edition_id, "published"
+        )
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_result.edition_id,
+            direction_choices=json.dumps(list(bundle.feedback_directions)),
+            free_text=bundle.feedback_free_text,
+        )
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+        follow_up_result = service2.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=True,
+                prior_edition_id=first_result.edition_id,
+                feedback_id=fb.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert follow_up_result.succeeded is True
+        assert follow_up_result.edition_id is not None
+
+        plan_runs = [
+            r for r in _get_all_generation_runs(conn)
+            if r.task_type == "editorial_plan"
+        ]
+        assert len(plan_runs) == 2
+
+        first_edition = ed_repo.get_edition_by_id(conn, first_result.edition_id)
+        assert first_edition.structured_content is not None
+        conn.close()
+
+
+class TestRetryTokenAccumulation:
+    def test_tokens_accumulated_across_retries(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            responses=[
+                {
+                    "kind": "error",
+                    "task": "editorial_plan",
+                    "usage": {"input_tokens": 100, "output_tokens": 50},
+                },
+                {
+                    "kind": "payload",
+                    "task": "editorial_plan",
+                    "payload": bundle.plan_payload,
+                    "usage": {"input_tokens": 120, "output_tokens": 60},
+                },
+            ],
+            task_payloads={"edition_draft": bundle.draft_payload},
+        )
+        service = GenerationService(provider=provider, max_retries=2)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.succeeded is True
+        assert result.plan_run.retry_count == 1
+
+        plan_runs = [
+            r for r in _get_all_generation_runs(conn)
+            if r.task_type == "editorial_plan"
+        ]
+        assert len(plan_runs) == 1
+        plan_run = plan_runs[0]
+        assert plan_run.input_tokens == 100 + 120
+        assert plan_run.output_tokens == 50 + 60
+        conn.close()
+
+    def test_tokens_exhaustion_totals(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            responses=[
+                {
+                    "kind": "error",
+                    "task": "editorial_plan",
+                    "usage": {"input_tokens": 80, "output_tokens": 30},
+                },
+                {
+                    "kind": "error",
+                    "task": "editorial_plan",
+                    "usage": {"input_tokens": 80, "output_tokens": 30},
+                },
+                {
+                    "kind": "error",
+                    "task": "editorial_plan",
+                    "usage": {"input_tokens": 80, "output_tokens": 30},
+                },
+            ],
+            task_payloads={"edition_draft": bundle.draft_payload},
+        )
+        service = GenerationService(provider=provider, max_retries=2)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.succeeded is False
+
+        plan_runs = [
+            r for r in _get_all_generation_runs(conn)
+            if r.task_type == "editorial_plan"
+        ]
+        assert len(plan_runs) == 1
+        plan_run = plan_runs[0]
+        assert plan_run.input_tokens == 80 * 3
+        assert plan_run.output_tokens == 30 * 3
+        assert plan_run.success == 0
+        conn.close()
+
+
+class TestPersistenceFailureNormalization:
+    def test_persistence_failure_updates_draft_row(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+
+        original_create = ed_repo.create_edition
+
+        def failing_create(*args, **kwargs):
+            raise RuntimeError("simulated persistence failure")
+
+        ed_repo.create_edition = failing_create
+        try:
+            result = service.generate_edition(
+                conn,
+                request=GenerationRequest(
+                    participant_id="p1",
+                    input_id=inp.id,
+                    allow_short_sample=True,
+                ),
+            )
+        finally:
+            ed_repo.create_edition = original_create
+
+        assert result.succeeded is False
+        assert result.edition_id is None
+
+        draft_runs = [
+            r for r in _get_all_generation_runs(conn)
+            if r.task_type == "edition_draft"
+        ]
+        assert len(draft_runs) == 1
+        draft_run = draft_runs[0]
+        assert draft_run.success == 0
+        assert draft_run.validation_status == "validation_failed"
+        assert draft_run.error_category == "schema_mismatch"
+        assert draft_run.error_message is not None
+
+        plan_runs = [
+            r for r in _get_all_generation_runs(conn)
+            if r.task_type == "editorial_plan"
+        ]
+        assert len(plan_runs) == 1
+        assert plan_runs[0].success == 1
+
+        p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(p1_editions) == 0
+        conn.close()
+
+    def test_persistence_failure_no_feedback_consumed(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        first_result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert first_result.succeeded is True
+        ed_repo.update_edition_publication(
+            conn, first_result.edition_id, "published"
+        )
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_result.edition_id,
+            direction_choices=json.dumps(list(bundle.feedback_directions)),
+            free_text=bundle.feedback_free_text,
+        )
+        assert fb.applied_to_next_edition == 0
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+
+        original_create = ed_repo.create_edition_with_feedback_applied
+
+        def failing_create(*args, **kwargs):
+            raise RuntimeError("simulated persistence failure")
+
+        ed_repo.create_edition_with_feedback_applied = failing_create
+        try:
+            follow_up_result = service2.generate_edition(
+                conn,
+                request=GenerationRequest(
+                    participant_id="p1",
+                    input_id=inp.id,
+                    is_follow_up=True,
+                    prior_edition_id=first_result.edition_id,
+                    feedback_id=fb.id,
+                    allow_short_sample=True,
+                ),
+            )
+        finally:
+            ed_repo.create_edition_with_feedback_applied = original_create
+
+        assert follow_up_result.succeeded is False
+        assert follow_up_result.edition_id is None
+
+        fb_after = fb_repo.get_feedback_by_id(conn, fb.id)
+        assert fb_after.applied_to_next_edition == 0
+
+        p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(p1_editions) == 1
+        conn.close()

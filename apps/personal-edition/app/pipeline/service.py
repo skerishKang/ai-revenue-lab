@@ -26,6 +26,7 @@ leaves the prior edition untouched and feedback unapplied.
 from __future__ import annotations
 
 import json
+import unicodedata
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -62,9 +63,28 @@ from app.pipeline.errors import (
 )
 from app.pipeline.segmentation import segment_text
 
-MIN_INPUT_CHARS = 50
-MAX_INPUT_CHARS = 50000
 DEFAULT_MAX_RETRIES = 2
+
+
+def count_words(text: str, language: str) -> int:
+    """Deterministic language-aware word count.
+
+    For English: whitespace-delimited tokens.
+    For Korean: each non-whitespace, non-punctuation character counts as one
+    word-equivalent (Korean lacks reliable whitespace word boundaries).
+    """
+    if language == "ko":
+        count = 0
+        for ch in text:
+            if ch.isspace() or unicodedata.category(ch).startswith("P"):
+                continue
+            count += 1
+        return count
+    return len(text.split())
+
+
+MIN_INPUT_WORDS = 500
+MAX_INPUT_WORDS = 5000
 
 
 @dataclass(frozen=True)
@@ -76,7 +96,6 @@ class GenerationRequest:
     is_follow_up: bool = False
     prior_edition_id: str | None = None
     feedback_id: str | None = None
-    prior_edition_summary: dict[str, Any] | None = None
     prohibited_inferences: tuple[str, ...] = ()
     allow_short_sample: bool = False
 
@@ -193,9 +212,9 @@ def _provider_call_with_retry(
         last_result = result
         if result.usage:
             if result.usage.input_tokens is not None:
-                input_tokens = result.usage.input_tokens
+                input_tokens = (input_tokens or 0) + result.usage.input_tokens
             if result.usage.output_tokens is not None:
-                output_tokens = result.usage.output_tokens
+                output_tokens = (output_tokens or 0) + result.usage.output_tokens
 
         if result.success and result.payload is not None:
             try:
@@ -366,14 +385,16 @@ class GenerationService:
             )
 
         input_text = input_record.normalized_text or input_record.raw_text
-        if len(input_text) < MIN_INPUT_CHARS and not request.allow_short_sample:
+        language = participant.preferred_language
+        word_count = count_words(input_text, language)
+        if word_count < MIN_INPUT_WORDS and not request.allow_short_sample:
             return GenerationResult(
                 edition_id=None,
                 plan_run=_failed_outcome("input too short"),
                 draft_run=_failed_outcome("input too short"),
                 succeeded=False,
             )
-        if len(input_text) > MAX_INPUT_CHARS:
+        if word_count > MAX_INPUT_WORDS:
             return GenerationResult(
                 edition_id=None,
                 plan_run=_failed_outcome("input too long"),
@@ -381,13 +402,13 @@ class GenerationService:
                 succeeded=False,
             )
 
-        language = participant.preferred_language
         preferences = ParticipantPreferences()
         segments = segment_text(input_text)
         prohibited_inferences = list(request.prohibited_inferences)
 
         feedback_directions: list[str] = []
         feedback_free_text: str | None = None
+        prior_edition_summary: dict[str, Any] | None = None
 
         if request.is_follow_up:
             if request.prior_edition_id is None:
@@ -497,6 +518,14 @@ class GenerationService:
             )
             feedback_free_text = feedback_record.free_text
 
+            if prior_edition.structured_content:
+                try:
+                    prior_edition_summary = json.loads(
+                        prior_edition.structured_content
+                    )
+                except (json.JSONDecodeError, TypeError):
+                    prior_edition_summary = None
+
         plan_system = prompts.build_plan_system_prompt(language)
         plan_payload = prompts.build_plan_user_payload(
             participant_id=request.participant_id,
@@ -507,7 +536,9 @@ class GenerationService:
             feedback_id=request.feedback_id,
             feedback_directions=feedback_directions,
             feedback_free_text=feedback_free_text,
-            prior_edition_summary=request.prior_edition_summary,
+            prior_edition_summary=(
+                prior_edition_summary if request.is_follow_up else None
+            ),
             prohibited_inferences=prohibited_inferences,
         )
 
@@ -662,26 +693,61 @@ class GenerationService:
         structured_content = draft.model_dump_json()
         rendered_title = draft.edition_title
 
-        if request.is_follow_up and request.feedback_id is not None:
-            new_edition = ed_repo.create_edition_with_feedback_applied(
-                conn,
-                participant_id=request.participant_id,
-                edition_number=edition_number,
-                prior_edition_id=request.prior_edition_id,
-                input_id=request.input_id,
-                structured_content=structured_content,
-                rendered_title=rendered_title,
-                feedback_id=request.feedback_id,
-            )
-        else:
-            new_edition = ed_repo.create_edition(
-                conn,
-                participant_id=request.participant_id,
-                edition_number=edition_number,
-                prior_edition_id=request.prior_edition_id,
-                input_id=request.input_id,
-                structured_content=structured_content,
-                rendered_title=rendered_title,
+        try:
+            if request.is_follow_up and request.feedback_id is not None:
+                new_edition = ed_repo.create_edition_with_feedback_applied(
+                    conn,
+                    participant_id=request.participant_id,
+                    edition_number=edition_number,
+                    prior_edition_id=request.prior_edition_id,
+                    input_id=request.input_id,
+                    structured_content=structured_content,
+                    rendered_title=rendered_title,
+                    feedback_id=request.feedback_id,
+                )
+            else:
+                new_edition = ed_repo.create_edition(
+                    conn,
+                    participant_id=request.participant_id,
+                    edition_number=edition_number,
+                    prior_edition_id=request.prior_edition_id,
+                    input_id=request.input_id,
+                    structured_content=structured_content,
+                    rendered_title=rendered_title,
+                )
+        except Exception:
+            if draft_outcome.run_id is not None:
+                gr_repo.update_generation_run(
+                    conn,
+                    draft_outcome.run_id,
+                    success=0,
+                    validation_status=VALIDATION_FAILED,
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                    error_message=safe_error_message(
+                        ProviderErrorCategory.SCHEMA_MISMATCH,
+                        "persistence failed",
+                    ),
+                )
+            return GenerationResult(
+                edition_id=None,
+                plan_run=plan_outcome,
+                draft_run=StageOutcome(
+                    success=False,
+                    validation_status=VALIDATION_FAILED,
+                    retry_count=draft_outcome.retry_count,
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                    error_message=safe_error_message(
+                        ProviderErrorCategory.SCHEMA_MISMATCH,
+                        "persistence failed",
+                    ),
+                    completed_at=draft_outcome.completed_at,
+                    latency_seconds=draft_outcome.latency_seconds,
+                    provider=draft_outcome.provider,
+                    model=draft_outcome.model,
+                    cost_class=draft_outcome.cost_class,
+                    run_id=draft_outcome.run_id,
+                ),
+                succeeded=False,
             )
 
         return GenerationResult(
