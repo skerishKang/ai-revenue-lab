@@ -26,6 +26,7 @@ from app.auth import (
     verify_csrf_token,
 )
 from app.db import get_connection
+from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
 from app.pipeline.markup import UnsafeMarkupError, check_payload
 from app.pipeline.service import GenerationRequest, GenerationService
@@ -62,6 +63,17 @@ def _validate_csrf(request: Request, csrf_field: str) -> bool:
     return verify_csrf_token(csrf_field, cookie_val)
 
 
+def _render_with_csrf(
+    request: Request,
+    template: str,
+    context: dict[str, Any],
+) -> tuple[HTMLResponse, str]:
+    csrf_token, csrf_signed = _inject_csrf(context)
+    resp = _render_template(request, template, context)
+    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    return resp, csrf_signed
+
+
 def _admin_error_response(request, message, edition=None, content=None,
                           participant=None, feedbacks=None, runs=None):
     context: dict[str, Any] = {
@@ -73,67 +85,32 @@ def _admin_error_response(request, message, edition=None, content=None,
         "csrf_token": "",
         "error": message,
     }
-    resp = _render_template(request, "admin_review.html", context)
-    new_token, new_signed = _inject_csrf({})
-    context["csrf_token"] = new_token
-    resp = _render_template(request, "admin_review.html", context)
-    _set_cookie(resp, CSRF_COOKIE, new_signed)
+    resp, _ = _render_with_csrf(request, "admin_review.html", context)
     return resp
 
 
-def _validate_edition_content(structured_content: str) -> tuple[bool, str]:
-    """Validate structured content as EditionContent with markup policy.
-
-    Returns (is_valid, error_message).
-    """
+def _validate_edition_content(structured_content: str) -> tuple[bool, str, EditionContent | None]:
     try:
         parsed = json.loads(structured_content)
     except (json.JSONDecodeError, TypeError):
-        return False, "Invalid JSON in structured content."
-
-    if not isinstance(parsed, dict):
-        return False, "Structured content must be a JSON object."
-
-    required_top = ["content_version", "language", "publication_title",
-                    "edition_title", "deck", "opening", "sections",
-                    "highlighted_insight"]
-    for field in required_top:
-        if field not in parsed:
-            return False, f"Missing required field: {field}"
-
-    sections = parsed.get("sections")
-    if not isinstance(sections, list) or len(sections) < 2:
-        return False, "At least two sections are required."
-
-    for i, section in enumerate(sections):
-        if not isinstance(section, dict):
-            return False, f"Section {i} must be a JSON object."
-        for sfield in ["section_id", "title", "paragraphs", "source_segment_ids"]:
-            if sfield not in section:
-                return False, f"Section {i} missing required field: {sfield}"
-        if not isinstance(section["paragraphs"], list) or not section["paragraphs"]:
-            return False, f"Section {i} must have at least one paragraph."
-
-    section_ids = [s["section_id"] for s in sections]
-    if len(section_ids) != len(set(section_ids)):
-        return False, "Duplicate section IDs found."
+        return False, "Invalid JSON in structured content.", None
 
     try:
-        check_payload(parsed)
-    except UnsafeMarkupError:
-        return False, "Content contains unsafe markup (HTML tags, event handlers, or javascript: URLs)."
+        validated = EditionContent.model_validate(parsed)
+    except Exception as exc:
+        return False, str(exc), None
 
-    return True, ""
+    try:
+        check_payload(validated.model_dump())
+    except UnsafeMarkupError:
+        return False, "Content contains unsafe markup (HTML tags, event handlers, or javascript: URLs).", None
+
+    return True, "", validated
 
 
 @router.get("/access")
 def admin_access_page(request: Request):
-    context: dict[str, Any] = {"error": None, "csrf_token": ""}
-    resp = _render_template(request, "admin_access.html", context)
-    csrf_token, csrf_signed = _inject_csrf({})
-    context["csrf_token"] = csrf_token
-    resp = _render_template(request, "admin_access.html", context)
-    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    resp, _ = _render_with_csrf(request, "admin_access.html", {"error": None})
     return resp
 
 
@@ -144,22 +121,16 @@ def admin_access_submit(
     csrf_token: str = Form(""),
 ):
     if not _validate_csrf(request, csrf_token):
-        context = {"error": "Invalid or expired form token. Please try again.", "csrf_token": ""}
-        resp = _render_template(request, "admin_access.html", context)
-        new_token, new_signed = _inject_csrf({})
-        context["csrf_token"] = new_token
-        resp = _render_template(request, "admin_access.html", context)
-        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        resp, _ = _render_with_csrf(request, "admin_access.html", {
+            "error": "Invalid or expired form token. Please try again.",
+        })
         return resp
 
     secret = secret.strip()
     if not secret or not verify_admin_secret(secret):
-        context = {"error": "Invalid admin secret.", "csrf_token": ""}
-        resp = _render_template(request, "admin_access.html", context)
-        new_token, new_signed = _inject_csrf({})
-        context["csrf_token"] = new_token
-        resp = _render_template(request, "admin_access.html", context)
-        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        resp, _ = _render_with_csrf(request, "admin_access.html", {
+            "error": "Invalid admin secret.",
+        })
         return resp
 
     session_data = create_admin_session()
@@ -195,13 +166,8 @@ def admin_dashboard(request: Request):
     context: dict[str, Any] = {
         "participants": participants,
         "editions": editions,
-        "csrf_token": "",
     }
-    resp = _render_template(request, "admin_dashboard.html", context)
-    csrf_token, csrf_signed = _inject_csrf({})
-    context["csrf_token"] = csrf_token
-    resp = _render_template(request, "admin_dashboard.html", context)
-    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    resp, _ = _render_with_csrf(request, "admin_dashboard.html", context)
     return resp
 
 
@@ -232,13 +198,8 @@ def admin_participant_detail(request: Request, participant_id: str):
         "editions": editions,
         "inputs": inputs,
         "generation_runs": gen_runs,
-        "csrf_token": "",
     }
-    resp = _render_template(request, "admin_participant_detail.html", context)
-    csrf_token, csrf_signed = _inject_csrf({})
-    context["csrf_token"] = csrf_token
-    resp = _render_template(request, "admin_participant_detail.html", context)
-    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    resp, _ = _render_with_csrf(request, "admin_participant_detail.html", context)
     return resp
 
 
@@ -316,13 +277,8 @@ def admin_review_page(request: Request, edition_id: str):
         "participant": participant,
         "feedbacks": feedbacks,
         "generation_runs": runs,
-        "csrf_token": "",
     }
-    resp = _render_template(request, "admin_review.html", context)
-    csrf_token, csrf_signed = _inject_csrf({})
-    context["csrf_token"] = csrf_token
-    resp = _render_template(request, "admin_review.html", context)
-    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    resp, _ = _render_with_csrf(request, "admin_review.html", context)
     return resp
 
 
@@ -346,7 +302,7 @@ def admin_review_edit(
 
     conn = get_connection(request.app.state.db_path)
     try:
-        is_valid, error_msg = _validate_edition_content(structured_content)
+        is_valid, error_msg, validated_model = _validate_edition_content(structured_content)
         if not is_valid:
             edition = ed_repo.get_edition_by_id(conn, edition_id)
             content = None
@@ -368,10 +324,11 @@ def admin_review_edit(
                 ).fetchall(),
             )
 
+        canonical_content = validated_model.model_dump_json()
         ed_repo.update_edition_content(
             conn,
             edition_id,
-            structured_content=structured_content,
+            structured_content=canonical_content,
             rendered_title=rendered_title if rendered_title else None,
             reviewer_notes=reviewer_notes if reviewer_notes else None,
         )
@@ -438,7 +395,9 @@ def admin_reject(
 
 
 @router.post("/logout")
-def admin_logout(request: Request):
+def admin_logout(request: Request, csrf_token: str = Form("")):
+    if not _validate_csrf(request, csrf_token):
+        return RedirectResponse(url="/admin/", status_code=303)
     resp = RedirectResponse(url="/admin/access", status_code=303)
     _delete_cookie(resp, SESSION_COOKIE)
     _delete_cookie(resp, CSRF_COOKIE)

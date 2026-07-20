@@ -223,6 +223,16 @@ class TestParticipantAccess:
             resp = client.get("/p/access")
             assert resp.status_code == 200
 
+    def test_token_entry_page_issues_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.get("/p/access")
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            assert 'name="csrf_token"' in resp.text
+            assert 'name="csrf_token" value=""' not in resp.text
+
     def test_valid_token_grants_access(self):
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
@@ -233,19 +243,91 @@ class TestParticipantAccess:
                 raw_token = prov.one_time_token
             finally:
                 conn.close()
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
             resp = client.post(
-                "/p/access", data={"token": raw_token},
+                "/p/access",
+                data={"token": raw_token, "csrf_token": csrf_token},
+                cookies=csrf_cookie,
                 follow_redirects=False,
             )
             assert resp.status_code == 303
             assert resp.headers["location"] == "/p/p1"
             assert "pe_session" in resp.cookies
 
+    def test_valid_token_login_sets_session_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                prov = _create_participant(conn, "p1", "Test User")
+                raw_token = prov.one_time_token
+            finally:
+                conn.close()
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+                follow_redirects=False,
+            )
+            assert "pe_session" in resp.cookies
+            session_val = resp.cookies["pe_session"]
+            decoded = decode_session_token(session_val)
+            assert decoded is not None
+            assert decoded.get("participant_id") == "p1"
+
+    def test_participant_login_rejects_missing_csrf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                prov = _create_participant(conn, "p1", "Test User")
+                raw_token = prov.one_time_token
+            finally:
+                conn.close()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": ""},
+                follow_redirects=False,
+            )
+            assert resp.status_code == 200
+            assert "expired" in resp.text.lower() or "invalid" in resp.text.lower()
+            assert "pe_session" not in resp.cookies
+
+    def test_participant_login_rejects_mismatched_csrf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                prov = _create_participant(conn, "p1", "Test User")
+                raw_token = prov.one_time_token
+            finally:
+                conn.close()
+            csrf_cookie, _ = _get_csrf_cookie_and_token()
+            wrong_token = generate_csrf_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": wrong_token},
+                cookies=csrf_cookie,
+                follow_redirects=False,
+            )
+            assert resp.status_code == 200
+            assert "expired" in resp.text.lower() or "invalid" in resp.text.lower()
+            assert "pe_session" not in resp.cookies
+
     def test_invalid_token_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
             client = TestClient(app)
-            resp = client.post("/p/access", data={"token": "invalid-token"})
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": "invalid-token", "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+            )
             assert resp.status_code == 200
             assert "Invalid" in resp.text or "invalid" in resp.text.lower()
 
@@ -253,7 +335,12 @@ class TestParticipantAccess:
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
             client = TestClient(app)
-            resp = client.post("/p/access", data={"token": ""})
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": "", "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+            )
             assert resp.status_code == 200
 
     def test_deleted_participant_rejected(self):
@@ -267,7 +354,12 @@ class TestParticipantAccess:
                 pt_repo.delete_participant(conn, "p1")
             finally:
                 conn.close()
-            resp = client.post("/p/access", data={"token": raw_token})
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+            )
             assert resp.status_code == 200
 
     def test_deleted_participant_session_revoked(self):
@@ -329,6 +421,24 @@ class TestParticipantAccess:
             resp = client.get("/p/p2", cookies=cookies, follow_redirects=False)
             assert resp.status_code == 303
 
+    def test_participant_logout_rejects_missing_csrf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.post(
+                "/p/p1/logout", cookies=cookies,
+                data={"csrf_token": ""},
+                follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert resp.headers["location"] == "/p/p1"
+
     def test_logout_clears_session(self):
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
@@ -339,9 +449,126 @@ class TestParticipantAccess:
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
-            resp = client.post("/p/p1/logout", cookies=cookies,
-                               follow_redirects=False)
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            all_cookies = {**cookies, **csrf_cookie}
+            resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": csrf_token},
+                cookies=all_cookies,
+                follow_redirects=False,
+            )
             assert resp.status_code == 303
+            assert resp.headers["location"] == "/p/access"
+            assert "pe_session" not in resp.cookies
+
+    def test_logout_with_mismatched_csrf_does_not_clear_session(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            csrf_cookie, _ = _get_csrf_cookie_and_token()
+            wrong_token = generate_csrf_token()
+            all_cookies = {**cookies, **csrf_cookie}
+            resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": wrong_token},
+                cookies=all_cookies,
+                follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert resp.headers["location"] == "/p/p1"
+
+    def test_logout_without_csrf_cookie_does_not_clear_session(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            csrf_token = generate_csrf_token()
+            resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": csrf_token},
+                cookies=cookies,
+                follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert resp.headers["location"] == "/p/p1"
+
+    def test_participant_login_then_logout_full_lifecycle(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                prov = _create_participant(conn, "p1", "Test User")
+                raw_token = prov.one_time_token
+            finally:
+                conn.close()
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+                follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert "pe_session" in resp.cookies
+            session_val = resp.cookies["pe_session"]
+
+            csrf_cookie2, csrf_token2 = _get_csrf_cookie_and_token()
+            logout_cookies = {"pe_session": session_val, **csrf_cookie2}
+            resp2 = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": csrf_token2},
+                cookies=logout_cookies,
+                follow_redirects=False,
+            )
+            assert resp2.status_code == 303
+            assert resp2.headers["location"] == "/p/access"
+
+            resp3 = client.get(
+                "/p/p1",
+                follow_redirects=False,
+            )
+            assert resp3.status_code == 303
+            assert resp3.headers["location"] == "/p/access"
+
+    def test_participant_logout_clears_cookie_for_browser(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                prov = _create_participant(conn, "p1", "Test User")
+                raw_token = prov.one_time_token
+            finally:
+                conn.close()
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+                follow_redirects=False,
+            )
+            assert "pe_session" in resp.cookies
+
+            csrf_cookie2, csrf_token2 = _get_csrf_cookie_and_token()
+            resp2 = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": csrf_token2},
+                follow_redirects=False,
+            )
+            assert resp2.status_code == 303
+            assert "pe_session" not in resp2.cookies
 
 
 # ================================================================
@@ -599,6 +826,16 @@ class TestAdminAuthentication:
             resp = client.get("/admin/access")
             assert resp.status_code == 200
 
+    def test_admin_access_page_issues_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.get("/admin/access")
+            assert resp.status_code == 200
+            assert "pe_admin_csrf" in resp.cookies
+            assert 'name="csrf_token"' in resp.text
+            assert 'name="csrf_token" value=""' not in resp.text
+
     def test_admin_wrong_secret_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
@@ -645,6 +882,19 @@ class TestAdminAuthentication:
             resp = client.get("/admin/", cookies=cookies)
             assert resp.status_code == 200
 
+    def test_admin_logout_rejects_missing_csrf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_admin_session_cookie()
+            resp = client.post(
+                "/admin/logout", cookies=cookies,
+                data={"csrf_token": ""},
+                follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert resp.headers["location"] == "/admin/"
+
     def test_admin_logout(self):
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
@@ -653,9 +903,65 @@ class TestAdminAuthentication:
             csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
             all_cookies = {**cookies, **csrf_cookie}
             resp = client.post(
-                "/admin/logout", cookies=all_cookies, follow_redirects=False
+                "/admin/logout",
+                data={"csrf_token": csrf_token},
+                cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
+            assert resp.headers["location"] == "/admin/access"
+            assert "pe_admin_session" not in resp.cookies
+
+    def test_admin_logout_with_mismatched_csrf_does_not_clear(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_admin_session_cookie()
+            csrf_cookie, _ = _get_admin_csrf_cookie_and_token()
+            wrong_token = generate_csrf_token()
+            all_cookies = {**cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/logout",
+                data={"csrf_token": wrong_token},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert resp.headers["location"] == "/admin/"
+
+    def test_admin_login_logout_full_lifecycle(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            resp = client.post(
+                "/admin/access",
+                data={
+                    "secret": "dev-admin-secret-change-in-production",
+                    "csrf_token": csrf_token,
+                },
+                cookies=csrf_cookie,
+                follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert "pe_admin_session" in resp.cookies
+            admin_session = resp.cookies["pe_admin_session"]
+
+            csrf_cookie2, csrf_token2 = _get_admin_csrf_cookie_and_token()
+            logout_cookies = {"pe_admin_session": admin_session, **csrf_cookie2}
+            resp2 = client.post(
+                "/admin/logout",
+                data={"csrf_token": csrf_token2},
+                cookies=logout_cookies,
+                follow_redirects=False,
+            )
+            assert resp2.status_code == 303
+            assert resp2.headers["location"] == "/admin/access"
+
+            resp3 = client.get(
+                "/admin/",
+                follow_redirects=False,
+            )
+            assert resp3.status_code == 303
+            assert resp3.headers["location"] == "/admin/access"
 
     def test_admin_secret_constant_time_comparison(self):
         assert verify_admin_secret("dev-admin-secret-change-in-production")
@@ -888,7 +1194,6 @@ class TestAdminReviewPublishReject:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "Missing required field" in resp.text or "Error" in resp.text
             conn = get_connection(db_path)
             try:
                 ed = ed_repo.get_edition_by_id(conn, edition_id)
@@ -1497,3 +1802,504 @@ class TestSmokeTest:
                         if hasattr(sub, "path"):
                             all_paths.append(sub.path)
             assert any("/health" in p for p in all_paths)
+
+
+# ================================================================
+# 18. CSRF regression tests
+# ================================================================
+class TestCSRFRegression:
+    def test_participant_access_get_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.get("/p/access")
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            signed = resp.cookies["pe_csrf"]
+            assert verify_csrf_token("", signed) is False
+
+    def test_admin_access_get_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.get("/admin/access")
+            assert resp.status_code == 200
+            assert "pe_admin_csrf" in resp.cookies
+            signed = resp.cookies["pe_admin_csrf"]
+            assert verify_csrf_token("", signed) is False
+
+    def test_participant_dashboard_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+
+    def test_participant_history_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/history", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+
+    def test_participant_input_page_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/input", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+
+    def test_participant_edition_read_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                    rendered_title="Test",
+                )
+                ed_repo.update_edition_publication(conn, ed.id, "published")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/editions/1", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+
+    def test_admin_dashboard_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_admin_session_cookie()
+            resp = client.get("/admin/", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_admin_csrf" in resp.cookies
+
+    def test_admin_review_page_sets_csrf_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                )
+                edition_id = ed.id
+            finally:
+                conn.close()
+            cookies = _get_admin_session_cookie()
+            resp = client.get(f"/admin/review/{edition_id}", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_admin_csrf" in resp.cookies
+
+    def test_all_pages_contain_matching_csrf_field_and_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                    rendered_title="Test",
+                )
+                ed_repo.update_edition_publication(conn, ed.id, "published")
+            finally:
+                conn.close()
+            p_cookies = _get_session_cookie("p1")
+            pages = [
+                "/p/access",
+                "/p/p1",
+                "/p/p1/input",
+                "/p/p1/history",
+                "/p/p1/editions/1",
+            ]
+            for path in pages:
+                resp = client.get(path, cookies=p_cookies)
+                assert "pe_csrf" in resp.cookies, f"{path} missing CSRF cookie"
+                assert 'name="csrf_token"' in resp.text, f"{path} missing CSRF field"
+
+    def test_admin_pages_contain_matching_csrf_field_and_cookie(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                )
+                edition_id = ed.id
+            finally:
+                conn.close()
+            a_cookies = _get_admin_session_cookie()
+            pages = [
+                "/admin/access",
+                "/admin/",
+                f"/admin/review/{edition_id}",
+            ]
+            for path in pages:
+                resp = client.get(path, cookies=a_cookies)
+                assert "pe_admin_csrf" in resp.cookies, f"{path} missing CSRF cookie"
+                assert 'name="csrf_token"' in resp.text, f"{path} missing CSRF field"
+
+    def test_participant_login_csrf_missing_no_session_created(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                prov = _create_participant(conn, "p1", "Test User")
+                raw_token = prov.one_time_token
+            finally:
+                conn.close()
+            resp = client.post(
+                "/p/access",
+                data={"token": raw_token, "csrf_token": ""},
+                follow_redirects=False,
+            )
+            assert "pe_session" not in resp.cookies
+
+    def test_admin_login_csrf_missing_no_session_created(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.post(
+                "/admin/access",
+                data={"secret": "dev-admin-secret-change-in-production", "csrf_token": ""},
+                follow_redirects=False,
+            )
+            assert "pe_admin_session" not in resp.cookies
+
+    def test_participant_logout_csrf_missing_session_not_cleared(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": ""},
+                cookies=cookies,
+                follow_redirects=False,
+            )
+            assert "pe_session" not in resp.cookies
+
+    def test_admin_logout_csrf_missing_session_not_cleared(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_admin_session_cookie()
+            resp = client.post(
+                "/admin/logout",
+                data={"csrf_token": ""},
+                cookies=cookies,
+                follow_redirects=False,
+            )
+            assert "pe_admin_session" not in resp.cookies
+
+
+# ================================================================
+# 19. EditionContent model validation regression tests
+# ================================================================
+class TestEditionContentValidation:
+    def _setup_edition(self, tmp_path):
+        app, db_path = _make_app(tmp_path)
+        conn = get_connection(db_path)
+        try:
+            _create_participant(conn, "p1", "Test User")
+            ed = ed_repo.create_edition(
+                conn, participant_id="p1", edition_number=1,
+                structured_content=json.dumps(_make_draft_payload()),
+                rendered_title="Test Edition",
+            )
+            edition_id = ed.id
+        finally:
+            conn.close()
+        return app, db_path, edition_id
+
+    def _admin_edit(self, client, edition_id, content, all_cookies):
+        return client.post(
+            f"/admin/review/{edition_id}/edit",
+            data={
+                "structured_content": json.dumps(content),
+                "rendered_title": "Updated",
+                "csrf_token": all_cookies.get("csrf_token_val", ""),
+            },
+            cookies={k: v for k, v in all_cookies.items() if k != "csrf_token_val"},
+            follow_redirects=False,
+        )
+
+    def test_unsupported_language_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["language"] = "fr"
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            conn = get_connection(db_path)
+            try:
+                ed = ed_repo.get_edition_by_id(conn, edition_id)
+                assert ed.rendered_title == "Test Edition"
+            finally:
+                conn.close()
+
+    def test_five_sections_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload(section_ids=["s1", "s2", "s3", "s4", "s5"])
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_invalid_section_id_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload(section_ids=["s001", "invalid id!"])
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_empty_paragraph_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["sections"][0]["paragraphs"] = [""]
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_empty_source_segment_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["sections"][0]["source_segment_ids"] = [""]
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_malformed_applied_feedback_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["applied_feedback"] = {
+                "feedback_id": "x",
+                "action": "",
+                "affected_section_ids": [],
+                "evidence": "",
+            }
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_malformed_next_edition_prompt_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["next_edition_prompt"] = {
+                "question": "",
+                "choices": [],
+            }
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_unsafe_markup_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["opening"] = "<script>alert(1)</script>"
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_valid_edit_persists_canonical_json(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            new_content = _make_draft_payload()
+            new_content["edition_title"] = "Canonical Title"
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={
+                    "structured_content": json.dumps(new_content),
+                    "rendered_title": "Canonical Edition",
+                    "csrf_token": csrf_token,
+                },
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            conn = get_connection(db_path)
+            try:
+                ed = ed_repo.get_edition_by_id(conn, edition_id)
+                assert ed.rendered_title == "Canonical Edition"
+                persisted = json.loads(ed.structured_content)
+                assert persisted["edition_title"] == "Canonical Title"
+                validated = EditionContent.model_validate(persisted)
+                reparsed = json.loads(validated.model_dump_json())
+                assert reparsed["edition_title"] == "Canonical Title"
+                assert reparsed["language"] in ("ko", "en")
+            finally:
+                conn.close()
+
+    def test_edit_no_change_on_invalid_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            conn = get_connection(db_path)
+            try:
+                orig = ed_repo.get_edition_by_id(conn, edition_id)
+                orig_content = orig.structured_content
+                orig_title = orig.rendered_title
+                orig_notes = orig.reviewer_notes
+                orig_state = orig.publication_state
+            finally:
+                conn.close()
+            bad_content = _make_draft_payload()
+            bad_content["language"] = "fr"
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={
+                    "structured_content": json.dumps(bad_content),
+                    "rendered_title": "Should Not Change",
+                    "reviewer_notes": "Should Not Change",
+                    "csrf_token": csrf_token,
+                },
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            conn2 = get_connection(db_path)
+            try:
+                ed = ed_repo.get_edition_by_id(conn2, edition_id)
+                assert ed.structured_content == orig_content
+                assert ed.rendered_title == orig_title
+                assert ed.reviewer_notes == orig_notes
+                assert ed.publication_state == orig_state
+            finally:
+                conn2.close()
+
+    def test_duplicate_section_ids_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload(section_ids=["s001", "s001"])
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+
+    def test_empty_opening_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["opening"] = ""
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200

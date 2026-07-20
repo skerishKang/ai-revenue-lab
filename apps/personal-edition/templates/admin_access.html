@@ -7,6 +7,7 @@
   <div class="alert alert-error" role="alert">{{ error }}</div>
   {% endif %}
   <form method="post" action="/admin/access">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
     <label for="secret">관리자 비밀번호</label>
     <input type="password" id="secret" name="secret" required
            placeholder="비밀번호를 입력하세요">
