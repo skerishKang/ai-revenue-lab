@@ -1,0 +1,113 @@
+"""Repositories package."""
+
+from app.repositories.learner_repository import (
+    create_learner,
+    get_learner_by_id,
+    update_learner_preferences,
+)
+from app.repositories.curriculum_repository import (
+    create_curriculum,
+    get_curriculum_by_id,
+    get_curricula_by_topic,
+)
+from app.repositories.concept_repository import (
+    create_concept,
+    get_concept_by_id,
+    get_concepts_by_curriculum,
+    validate_prerequisites,
+)
+from app.repositories.lesson_repository import (
+    create_lesson,
+    get_lesson_by_id,
+    get_lessons_by_learner,
+    get_lessons_by_concept,
+    update_lesson_status,
+    close_lesson,
+    reopen_lesson,
+)
+from app.repositories.exercise_repository import (
+    create_exercise,
+    get_exercise_by_id,
+    get_exercises_by_lesson,
+    record_exercise_response,
+    get_responses_by_learner,
+    record_comprehension_response,
+)
+from app.repositories.feedback_repository import (
+    create_feedback,
+    get_feedback_by_id,
+    get_feedback_by_lesson,
+    get_feedback_by_lesson_and_generation,
+    get_unapplied_feedback_for_lesson,
+    mark_feedback_applied,
+    is_feedback_applied,
+    is_feedback_for_learner,
+)
+from app.repositories.mastery_repository import (
+    upsert_mastery,
+    get_mastery,
+    get_all_mastery_for_learner,
+)
+from app.repositories.generation_run_repository import (
+    create_generation_run,
+    get_generation_run_by_id,
+    get_generation_runs_by_task_type,
+    count_generation_runs_by_lesson,
+    sum_tokens_by_lesson,
+)
+from app.repositories.pilot_evidence_repository import (
+    create_pilot_evidence,
+    get_pilot_evidence_by_id,
+    get_pilot_evidence_by_learner,
+)
+from app.repositories.idempotency_repository import (
+    check_idempotency_key,
+    store_idempotency_key,
+)
+
+__all__ = [
+    "create_learner",
+    "get_learner_by_id",
+    "update_learner_preferences",
+    "create_curriculum",
+    "get_curriculum_by_id",
+    "get_curricula_by_topic",
+    "create_concept",
+    "get_concept_by_id",
+    "get_concepts_by_curriculum",
+    "validate_prerequisites",
+    "create_lesson",
+    "get_lesson_by_id",
+    "get_lessons_by_learner",
+    "get_lessons_by_concept",
+    "update_lesson_status",
+    "close_lesson",
+    "reopen_lesson",
+    "create_exercise",
+    "get_exercise_by_id",
+    "get_exercises_by_lesson",
+    "record_exercise_response",
+    "get_responses_by_learner",
+    "record_comprehension_response",
+    "create_feedback",
+    "get_feedback_by_id",
+    "get_feedback_by_lesson",
+    "get_feedback_by_lesson_and_generation",
+    "get_unapplied_feedback_for_lesson",
+    "mark_feedback_applied",
+    "is_feedback_applied",
+    "is_feedback_for_learner",
+    "upsert_mastery",
+    "get_mastery",
+    "get_all_mastery_for_learner",
+    "create_generation_run",
+    "get_generation_run_by_id",
+    "get_generation_runs_by_task_type",
+    "count_generation_runs_by_lesson",
+    "sum_tokens_by_lesson",
+    "create_pilot_evidence",
+    "get_pilot_evidence_by_id",
+    "get_pilot_evidence_by_learner",
+    "check_idempotency_key",
+    "store_idempotency_key",
+]
