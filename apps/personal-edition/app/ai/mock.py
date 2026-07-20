@@ -75,6 +75,8 @@ class MockProvider:
             {
                 "task_name": task_name,
                 "request_id": request_id,
+                "system_prompt": system_prompt,
+                "user_payload": user_payload,
             }
         )
 

@@ -339,3 +339,36 @@ def collect_visible_fields(draft: EditionContent) -> dict[str, str]:
         fields[key + ".title"] = section.title
         fields[key + ".paragraphs"] = "\n".join(section.paragraphs)
     return fields
+
+
+def normalize_validation_findings(exc: Exception) -> list[dict[str, str]]:
+    """Reduce a validation exception into privacy-safe, deterministic findings.
+
+    The result is a list of findings (usually one) suitable for transmission to
+    a provider as repair context. No raw participant input or private material
+    is included; only the rule identity and the deterministic message.
+    """
+    message = str(exc)
+    rule = "validator_rejected"
+    lowered = message.lower()
+    if "unknown segment" in lowered:
+        rule = "unknown_segment_reference"
+    elif "provenance" in lowered:
+        rule = "missing_provenance"
+    elif "duplicate section" in lowered:
+        rule = "duplicate_section_id"
+    elif "not in the accepted plan" in lowered:
+        rule = "section_not_in_plan"
+    elif "references no segments" in lowered:
+        rule = "section_references_no_segments"
+    elif "paragraph" in lowered and "limit" in lowered:
+        rule = "paragraph_limit_exceeded"
+    elif "exceeds the maximum length" in lowered:
+        rule = "field_length_exceeded"
+    return [
+        {
+            "rule": rule,
+            "severity": "error",
+            "message": message,
+        }
+    ]

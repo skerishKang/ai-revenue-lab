@@ -57,7 +57,19 @@ from app.pipeline.segmentation import segment_text
 from app.pipeline.service import (
     GenerationRequest,
     GenerationService,
+    RepairRequest,
     _provider_call_with_retry,
+)
+from app.pipeline import validators as validators_mod
+from app.pipeline.validators import normalize_validation_findings
+from app.domain.models import EditionContent
+from app.pipeline.prompts import (
+    DRAFT_PROMPT_VERSION,
+    PLAN_PROMPT_VERSION,
+    REPAIR_PROMPT_VERSION,
+    TASK_EDITORIAL_PLAN,
+    TASK_EDITION_DRAFT,
+    TASK_EDITION_REPAIR,
 )
 
 ALL_TASKS = [
@@ -825,6 +837,63 @@ def _run_adversarial_grounding(
     }
 
 
+_REPAIR_INVALID_SEGMENT_ID = "s999"
+_REPAIR_INSTRUCTION = (
+    "Repair the corrupted candidate so it passes deterministic validation. "
+    "Restore every section's source_segment_ids to valid segment identifiers, "
+    "keep the same plan section ids, and preserve intent and privacy."
+)
+
+
+def _build_repair_provider(settings: Settings, fixture: FixtureBundle):
+    """Build the single provider instance used for both repair phases.
+
+    For MockProvider the candidate (plan + draft) and the scripted repair
+    response are supplied as ordered scripted responses so the same instance
+    serves both the candidate generation and the repair call. For an external
+    provider the same configured provider/model is reused; no live call happens
+    in tests.
+    """
+    if settings.ai_provider == "mock":
+        model = settings.ai_model
+        return MockProvider(
+            model=model,
+            responses=[
+                {
+                    "task": TASK_EDITORIAL_PLAN,
+                    "kind": "payload",
+                    "payload": fixture.plan_payload,
+                },
+                {
+                    "task": TASK_EDITION_DRAFT,
+                    "kind": "payload",
+                    "payload": fixture.draft_payload,
+                },
+                {
+                    "task": TASK_EDITION_REPAIR,
+                    "kind": "payload",
+                    "payload": fixture.draft_payload,
+                },
+            ],
+        )
+    if settings.ai_provider == "external" and settings.ai_base_url:
+        from app.ai.external import ExternalProvider
+        from app.domain.enums import CostClass
+
+        cost_class = CostClass(settings.ai_cost_class)
+        return ExternalProvider(
+            base_url=settings.ai_base_url,
+            api_key=settings.ai_api_key,
+            model=settings.ai_model,
+            timeout_seconds=settings.ai_timeout_seconds,
+            cost_class=cost_class,
+        )
+    raise SystemExit(
+        "provider config fail-closed: AI_PROVIDER must be 'mock' "
+        "or AI_BASE_URL must be set for an external provider"
+    )
+
+
 def _run_validator_feedback_repair(
     *,
     settings: Settings,
@@ -835,144 +904,204 @@ def _run_validator_feedback_repair(
     run_index: int,
     benchmark_name: str,
 ) -> list[dict[str, Any]]:
+    """Validator-feedback repair benchmark.
+
+    Proves the model receives validator feedback and repairs its own invalid
+    candidate (CTO review 5027501906). The harness never asks the provider to
+    misbehave: the invalid candidate is produced by deterministic corruption.
+    """
     results: list[dict[str, Any]] = []
 
-    provider = _build_provider(settings, fixture=fixture)
+    provider = _build_repair_provider(settings, fixture)
     provider_info = _provider_info(provider)
 
-    bad_started_at = _now_iso()
-    task_start = time.monotonic()
-
-    bad_service = GenerationService(provider=provider)
-    bad_request = GenerationRequest(
-        participant_id=participant_id,
-        input_id=input_id,
-        prohibited_inferences=fixture.prohibited_inventions,
-        allow_short_sample=True,
+    # Phases 1-2: one candidate via the configured provider; preserve accounting.
+    service = GenerationService(provider=provider)
+    candidate = service.generate_repair_candidate(
+        db_conn,
+        request=GenerationRequest(
+            participant_id=participant_id,
+            input_id=input_id,
+            prohibited_inferences=fixture.prohibited_inventions,
+            allow_short_sample=True,
+        ),
     )
-    bad_result = bad_service.generate_edition(db_conn, request=bad_request)
 
-    bad_latency = time.monotonic() - task_start
-    bad_success = bad_result.succeeded
+    cand_in, cand_out = _collect_tokens(
+        db_conn, candidate.plan_outcome.run_id, candidate.draft_outcome.run_id
+    )
+    cand_latency = (candidate.plan_outcome.latency_seconds or 0) + (
+        candidate.draft_outcome.latency_seconds or 0
+    )
+    cand_retry = (candidate.plan_outcome.retry_count or 0) + (
+        candidate.draft_outcome.retry_count or 0
+    )
 
-    if bad_success:
-        bad_combined_validation = VALIDATION_PASSED
-        bad_failure_category = None
-        bad_error_category = None
-        bad_error_message = None
-    else:
-        if bad_result.plan_run.validation_status == VALIDATION_FAILED:
-            bad_combined_validation = VALIDATION_FAILED
-        else:
-            bad_combined_validation = (
-                bad_result.plan_run.validation_status or PROVIDER_FAILED
-            )
-        bad_error_category = bad_result.plan_run.error_category
-        bad_error_message = bad_result.plan_run.error_message
-        bad_failure_category = _classify_failure(
-            bad_combined_validation, bad_error_category
+    if not candidate.succeeded or candidate.content is None or candidate.plan is None:
+        _record_benchmark_run(
+            db_conn,
+            benchmark_name=benchmark_name,
+            fixture_name=fixture.name,
+            run_group="validator_feedback_repair",
+            run_index=run_index * 3,
+            provider_info=provider_info,
+            task_type="repair_candidate_generation",
+            prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+            started_at=_now_iso(),
+            completed_at=_now_iso(),
+            latency_seconds=cand_latency,
+            success=False,
+            failure_category="model_quality",
+            error_category=candidate.draft_outcome.error_category
+            or candidate.plan_outcome.error_category,
+            error_message="candidate generation failed",
+            retry_count=cand_retry,
+            input_tokens=cand_in,
+            output_tokens=cand_out,
+            total_tokens=_token_total(cand_in, cand_out),
+            validation_result="failed",
+            synthetic_result_ref=f"bench-{fixture.name}-{run_index}-candidate-fail",
         )
-
-    bad_input_tokens, bad_output_tokens = _collect_tokens(
-        db_conn, bad_result.plan_run.run_id
-    )
-    bad_completed_at = _now_iso()
-
-    bad_validation_result = "passed" if bad_success else "failed"
-    bad_ref = f"bench-{fixture.name}-{run_index}-bad"
+        return [
+            {
+                "fixture": fixture.name,
+                "run_index": run_index,
+                "phase": "repair_candidate_generation",
+                "success": False,
+                "validation_result": "failed",
+            }
+        ]
 
     _record_benchmark_run(
         db_conn,
         benchmark_name=benchmark_name,
         fixture_name=fixture.name,
         run_group="validator_feedback_repair",
-        run_index=run_index * 2,
+        run_index=run_index * 3,
         provider_info=provider_info,
-        task_type="editorial_plan",
-        prompt_version=PLAN_PROMPT_VERSION,
-        started_at=bad_started_at,
-        completed_at=bad_completed_at,
-        latency_seconds=bad_latency,
-        success=bad_success,
-        failure_category=bad_failure_category,
-        error_category=bad_error_category,
-        error_message=bad_error_message,
-        retry_count=bad_result.plan_run.retry_count,
-        input_tokens=bad_input_tokens,
-        output_tokens=bad_output_tokens,
-        total_tokens=_token_total(bad_input_tokens, bad_output_tokens),
-        validation_result=bad_validation_result,
-        synthetic_result_ref=bad_ref,
+        task_type="repair_candidate_generation",
+        prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+        started_at=_now_iso(),
+        completed_at=_now_iso(),
+        latency_seconds=cand_latency,
+        success=True,
+        failure_category=None,
+        error_category=None,
+        error_message=None,
+        retry_count=cand_retry,
+        input_tokens=cand_in,
+        output_tokens=cand_out,
+        total_tokens=_token_total(cand_in, cand_out),
+        validation_result="passed",
+        synthetic_result_ref=f"bench-{fixture.name}-{run_index}-candidate",
     )
-
     results.append(
         {
             "fixture": fixture.name,
             "run_index": run_index,
-            "run_group": "validator_feedback_repair",
-            "phase": "bad_payload",
-            "success": bad_success,
-            "failure_category": bad_failure_category,
-            "latency_seconds": bad_latency,
-            "retry_count": bad_result.plan_run.retry_count,
-            "input_tokens": bad_input_tokens,
-            "output_tokens": bad_output_tokens,
-            "validation_result": bad_validation_result,
-            "synthetic_result_ref": bad_ref,
+            "phase": "repair_candidate_generation",
+            "success": True,
+            "validation_result": "passed",
+            "latency_seconds": cand_latency,
+            "retry_count": cand_retry,
+            "input_tokens": cand_in,
+            "output_tokens": cand_out,
+            "candidate_plan_run_id": candidate.plan_outcome.run_id,
+            "candidate_draft_run_id": candidate.draft_outcome.run_id,
         }
     )
 
-    repair_started_at = _now_iso()
-    repair_start = time.monotonic()
+    # Phase 3: deterministic harness corruption (invalid synthetic segment id).
+    corrupted_dict = candidate.content.model_dump()
+    if corrupted_dict.get("sections"):
+        corrupted_dict["sections"][0]["source_segment_ids"] = [
+            _REPAIR_INVALID_SEGMENT_ID
+        ]
+    corrupted = EditionContent.model_validate(corrupted_dict)
 
-    repair_service = GenerationService(provider=provider)
-    repair_request = GenerationRequest(
+    # Phases 4-5: run the accepted deterministic validator; require failure.
+    bad_validation_failed = False
+    bad_error: Exception | None = None
+    try:
+        validators_mod.validate_draft(
+            corrupted,
+            plan=candidate.plan,
+            segments=candidate.segments,
+            is_follow_up=False,
+            feedback_id=None,
+        )
+    except Exception as exc:  # noqa: BLE001 - any deterministic rejection counts
+        bad_validation_failed = True
+        bad_error = exc
+
+    assert bad_validation_failed, (
+        "validator-feedback repair: the deterministically corrupted candidate "
+        "unexpectedly passed validation; the benchmark cannot demonstrate repair"
+    )
+
+    validator_findings = (
+        normalize_validation_findings(bad_error)
+        if bad_error is not None
+        else []
+    )
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="validator_feedback_repair",
+        run_index=run_index * 3 + 1,
+        provider_info=provider_info,
+        task_type="repair_bad_validation",
+        prompt_version=PLAN_PROMPT_VERSION,
+        started_at=_now_iso(),
+        completed_at=_now_iso(),
+        latency_seconds=0.0,
+        success=False,
+        failure_category="model_quality",
+        error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+        error_message="deterministic validator rejected corrupted candidate",
+        retry_count=0,
+        input_tokens=None,
+        output_tokens=None,
+        total_tokens=None,
+        validation_result="failed",
+        synthetic_result_ref=f"bench-{fixture.name}-{run_index}-bad",
+    )
+    results.append(
+        {
+            "fixture": fixture.name,
+            "run_index": run_index,
+            "phase": "repair_bad_validation",
+            "success": False,
+            "validation_result": "failed",
+            "validator_findings": validator_findings,
+        }
+    )
+
+    # Phases 6-7: privacy-safe repair request to the SAME provider instance.
+    correlation_id = f"bench-{fixture.name}-{run_index}-corr"
+    attempt_id = f"bench-{fixture.name}-{run_index}-attempt-1"
+    repair_request = RepairRequest(
         participant_id=participant_id,
         input_id=input_id,
+        corrupted_candidate=corrupted.model_dump(),
+        validator_findings=validator_findings,
+        repair_instruction=_REPAIR_INSTRUCTION,
+        correlation_id=correlation_id,
+        attempt_id=attempt_id,
         prohibited_inferences=fixture.prohibited_inventions,
-        allow_short_sample=True,
-    )
-    repair_result = repair_service.generate_edition(
-        db_conn, request=repair_request
     )
 
-    repair_latency = time.monotonic() - repair_start
-    repair_success = repair_result.succeeded
-
-    if repair_success:
-        repair_validation = VALIDATION_PASSED
-        repair_failure_category = None
-        repair_error_category = None
-        repair_error_message = None
-    else:
-        if repair_result.draft_run.validation_status == VALIDATION_FAILED:
-            repair_validation = VALIDATION_FAILED
-        else:
-            repair_validation = (
-                repair_result.plan_run.validation_status or PROVIDER_FAILED
-            )
-        repair_error_category = (
-            repair_result.draft_run.error_category
-            or repair_result.plan_run.error_category
-        )
-        repair_error_message = (
-            repair_result.draft_run.error_message
-            or repair_result.plan_run.error_message
-        )
-        repair_failure_category = _classify_failure(
-            repair_validation, repair_error_category
-        )
-
-    repair_total_retry = (
-        repair_result.plan_run.retry_count
-        + repair_result.draft_run.retry_count
+    repair_outcome = service.repair_edition(
+        db_conn,
+        repair_request=repair_request,
+        plan=candidate.plan,
+        segments=candidate.segments,
     )
-    repair_input_tokens, repair_output_tokens = _collect_tokens(
-        db_conn, repair_result.plan_run.run_id, repair_result.draft_run.run_id
-    )
-    repair_completed_at = _now_iso()
 
-    repair_validation_result = "passed" if repair_success else "failed"
+    repair_success = repair_outcome.succeeded
+    repair_in, repair_out = _collect_tokens(db_conn, repair_outcome.run_id)
     repair_ref = f"bench-{fixture.name}-{run_index}-repair"
 
     _record_benchmark_run(
@@ -980,48 +1109,45 @@ def _run_validator_feedback_repair(
         benchmark_name=benchmark_name,
         fixture_name=fixture.name,
         run_group="validator_feedback_repair",
-        run_index=run_index * 2 + 1,
+        run_index=run_index * 3 + 2,
         provider_info=provider_info,
-        task_type="full_pipeline",
-        prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
-        started_at=repair_started_at,
-        completed_at=repair_completed_at,
-        latency_seconds=repair_latency,
+        task_type="repair_provider",
+        prompt_version=f"{DRAFT_PROMPT_VERSION}+{REPAIR_PROMPT_VERSION}",
+        started_at=_now_iso(),
+        completed_at=_now_iso(),
+        latency_seconds=repair_outcome.latency_seconds or 0.0,
         success=repair_success,
-        failure_category=repair_failure_category,
-        error_category=repair_error_category,
-        error_message=repair_error_message,
-        retry_count=repair_total_retry,
-        input_tokens=repair_input_tokens,
-        output_tokens=repair_output_tokens,
-        total_tokens=_token_total(repair_input_tokens, repair_output_tokens),
-        validation_result=repair_validation_result,
+        failure_category=None if repair_success else "model_quality",
+        error_category=repair_outcome.error_category,
+        error_message=repair_outcome.error_message,
+        retry_count=repair_outcome.retry_count,
+        input_tokens=repair_in,
+        output_tokens=repair_out,
+        total_tokens=_token_total(repair_in, repair_out),
+        validation_result="passed" if repair_success else "failed",
         synthetic_result_ref=repair_ref,
     )
-
     results.append(
         {
             "fixture": fixture.name,
             "run_index": run_index,
-            "run_group": "validator_feedback_repair",
-            "phase": "repair",
+            "phase": "repair_provider",
             "success": repair_success,
-            "failure_category": repair_failure_category,
-            "latency_seconds": repair_latency,
-            "retry_count": repair_total_retry,
-            "input_tokens": repair_input_tokens,
-            "output_tokens": repair_output_tokens,
-            "validation_result": repair_validation_result,
-            "synthetic_result_ref": repair_ref,
+            "validation_result": VALIDATION_PASSED
+            if repair_success
+            else VALIDATION_FAILED,
+            "latency_seconds": repair_outcome.latency_seconds,
+            "retry_count": repair_outcome.retry_count,
+            "input_tokens": repair_in,
+            "output_tokens": repair_out,
+            "repair_run_id": repair_outcome.run_id,
+            "correlation_id": correlation_id,
+            "attempt_id": attempt_id,
         }
     )
 
     return results
 
-
-# ---------------------------------------------------------------------------
-# Dispatch
-# ---------------------------------------------------------------------------
 
 
 def _dispatch_task(

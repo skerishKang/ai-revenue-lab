@@ -28,6 +28,9 @@ DRAFT_PROMPT_VERSION = "personal-edition-draft-v1"
 # MockProvider uses to select a fixture response.
 TASK_EDITORIAL_PLAN = "editorial_plan"
 TASK_EDITION_DRAFT = "edition_draft"
+TASK_EDITION_REPAIR = "edition_repair"
+
+REPAIR_PROMPT_VERSION = "personal-edition-repair-v1"
 
 
 def build_plan_system_prompt(language: str) -> str:
@@ -126,5 +129,51 @@ def build_draft_user_payload(
         ],
         "is_follow_up": is_follow_up,
         "feedback_id": feedback_id,
+        "prohibited_inferences": prohibited_inferences,
+    }
+
+
+def build_repair_system_prompt(language: str) -> str:
+    lang_label = "Korean" if language == "ko" else "English"
+    return (
+        "You are a careful edition repairer for a personal publication. "
+        "You are given a previously generated candidate edition that failed "
+        "deterministic validation, the normalized validator findings, and a "
+        "concise repair instruction. Return ONLY valid JSON matching the "
+        "EditionContent schema that fixes every reported finding while "
+        "preserving the original intent. Never invent personal facts, "
+        "relationships, places, dates, amounts, diagnoses, intentions, or "
+        "events. Every section must reference at least one valid supplied "
+        "segment id and at least one plan section id. Do not include any HTML, "
+        "script, event handler, javascript URL, or unsafe markup. Write the "
+        "edition in " + lang_label + "."
+    )
+
+
+def build_repair_user_payload(
+    *,
+    corrupted_candidate: dict[str, Any],
+    validator_findings: list[dict[str, Any]],
+    repair_instruction: str,
+    correlation_id: str,
+    attempt_id: str,
+    prohibited_inferences: list[str],
+    language: str,
+) -> dict[str, Any]:
+    """Build the privacy-safe structured user payload for a repair call.
+
+    Contains only the (synthetic) corrupted candidate, normalized validator
+    findings, a concise repair instruction, and correlation/attempt identifiers.
+    It deliberately excludes raw participant input text and derived segment
+    text: the provider receives no private participant material.
+    """
+    return {
+        "prompt_version": REPAIR_PROMPT_VERSION,
+        "language": language,
+        "correlation_id": correlation_id,
+        "attempt_id": attempt_id,
+        "repair_instruction": repair_instruction,
+        "validator_findings": validator_findings,
+        "corrupted_candidate": corrupted_candidate,
         "prohibited_inferences": prohibited_inferences,
     }

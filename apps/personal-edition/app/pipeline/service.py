@@ -136,6 +136,57 @@ class GenerationResult:
         return VALIDATION_PASSED
 
 
+@dataclass(frozen=True)
+class RepairRequest:
+    """Provider-neutral contract for a validator-feedback repair call.
+
+    The corrupted candidate plus privacy-safe, normalized validator findings
+    and a concise repair instruction are sent to the same configured provider
+    that produced the original candidate. No raw private participant input is
+    included.
+    """
+
+    participant_id: str
+    input_id: str
+    corrupted_candidate: dict[str, Any]
+    validator_findings: list[dict[str, Any]]
+    repair_instruction: str
+    correlation_id: str
+    attempt_id: str
+    prohibited_inferences: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class RepairOutcome:
+    """Result of a single repair provider call plus deterministic validation."""
+
+    succeeded: bool
+    validation_status: str
+    content: EditionContent | None
+    error_category: str | None
+    error_message: str | None
+    retry_count: int
+    input_tokens: int | None
+    output_tokens: int | None
+    latency_seconds: float | None
+    provider: str | None
+    model: str | None
+    cost_class: str | None
+    run_id: str | None
+
+
+@dataclass(frozen=True)
+class RepairCandidate:
+    """A successfully generated (pre-corruption) candidate with its context."""
+
+    succeeded: bool
+    content: EditionContent | None
+    plan: EditorialPlan | None
+    segments: list[InputSegment]
+    plan_outcome: StageOutcome
+    draft_outcome: StageOutcome
+
+
 def _new_request_id() -> str:
     return str(uuid.uuid4())
 
@@ -755,6 +806,343 @@ class GenerationService:
             plan_run=plan_outcome,
             draft_run=draft_outcome,
             succeeded=True,
+        )
+
+    def generate_repair_candidate(
+        self,
+        conn,
+        *,
+        request: GenerationRequest,
+    ) -> RepairCandidate:
+        """Produce one candidate edition for the repair benchmark.
+
+        Runs the standard plan -> draft -> validate pipeline (without persisting
+        an edition) and returns the resulting EditionContent together with the
+        plan and segments required to later validate a corrupted/repair copy.
+        Accounting for the two provider calls is recorded via the repository as
+        usual; the benchmark harness is responsible for persisting benchmark
+        rows.
+        """
+        participant = pt_repo.get_participant_by_id(conn, request.participant_id)
+        if participant is None or participant.status != "active":
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("participant not active"),
+                draft_outcome=_failed_outcome("participant not active"),
+            )
+
+        input_record = input_repo.get_input_by_id(conn, request.input_id)
+        if input_record is None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input not found"),
+                draft_outcome=_failed_outcome("input not found"),
+            )
+        if input_record.participant_id != request.participant_id:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input belongs to another participant"),
+                draft_outcome=_failed_outcome("input belongs to another participant"),
+            )
+        if input_record.deleted_at is not None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input is deleted"),
+                draft_outcome=_failed_outcome("input is deleted"),
+            )
+        if input_record.consent_confirmed != 1:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("consent not confirmed"),
+                draft_outcome=_failed_outcome("consent not confirmed"),
+            )
+
+        input_text = input_record.normalized_text or input_record.raw_text
+        language = participant.preferred_language
+        word_count = count_words(input_text, language)
+        if word_count < MIN_INPUT_WORDS and not request.allow_short_sample:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input too short"),
+                draft_outcome=_failed_outcome("input too short"),
+            )
+        if word_count > MAX_INPUT_WORDS:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input too long"),
+                draft_outcome=_failed_outcome("input too long"),
+            )
+
+        preferences = ParticipantPreferences()
+        segments = segment_text(input_text)
+        prohibited_inferences = list(request.prohibited_inferences)
+
+        plan_system = prompts.build_plan_system_prompt(language)
+        plan_payload = prompts.build_plan_user_payload(
+            participant_id=request.participant_id,
+            segments=segments,
+            preferences=preferences,
+            language=language,
+            is_follow_up=False,
+            feedback_id=None,
+            feedback_directions=[],
+            feedback_free_text=None,
+            prior_edition_summary=None,
+            prohibited_inferences=prohibited_inferences,
+        )
+
+        plan, plan_outcome = _provider_call_with_retry(
+            provider=self._provider,
+            task_name=prompts.TASK_EDITORIAL_PLAN,
+            system_prompt=plan_system,
+            user_payload=plan_payload,
+            response_schema=EditorialPlan,
+            max_retries=self._max_retries,
+            prompt_version=prompts.PLAN_PROMPT_VERSION,
+            conn=conn,
+            participant_id=request.participant_id,
+        )
+
+        if plan is None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=segments,
+                plan_outcome=plan_outcome,
+                draft_outcome=_failed_outcome("plan stage failed"),
+            )
+
+        try:
+            validators.validate_plan(
+                plan,
+                segments=segments,
+                is_follow_up=False,
+                feedback_id=None,
+            )
+        except PlanValidationError as exc:
+            failed_plan = StageOutcome(
+                success=False,
+                validation_status=VALIDATION_FAILED,
+                retry_count=plan_outcome.retry_count,
+                error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                error_message=safe_error_message(
+                    ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                ),
+                completed_at=plan_outcome.completed_at,
+                latency_seconds=plan_outcome.latency_seconds,
+                provider=plan_outcome.provider,
+                model=plan_outcome.model,
+                cost_class=plan_outcome.cost_class,
+                run_id=plan_outcome.run_id,
+            )
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=plan,
+                segments=segments,
+                plan_outcome=failed_plan,
+                draft_outcome=_failed_outcome("plan validation failed"),
+            )
+
+        draft_system = prompts.build_draft_system_prompt(language)
+        draft_payload = prompts.build_draft_user_payload(
+            participant_id=request.participant_id,
+            segments=segments,
+            plan=plan,
+            language=language,
+            is_follow_up=False,
+            feedback_id=None,
+            prohibited_inferences=prohibited_inferences,
+        )
+
+        draft, draft_outcome = _provider_call_with_retry(
+            provider=self._provider,
+            task_name=prompts.TASK_EDITION_DRAFT,
+            system_prompt=draft_system,
+            user_payload=draft_payload,
+            response_schema=EditionContent,
+            max_retries=self._max_retries,
+            prompt_version=prompts.DRAFT_PROMPT_VERSION,
+            conn=conn,
+            participant_id=request.participant_id,
+        )
+
+        if draft is None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=plan,
+                segments=segments,
+                plan_outcome=plan_outcome,
+                draft_outcome=draft_outcome,
+            )
+
+        try:
+            validators.validate_draft(
+                draft,
+                plan=plan,
+                segments=segments,
+                is_follow_up=False,
+                feedback_id=None,
+            )
+        except DraftValidationError as exc:
+            failed_draft = StageOutcome(
+                success=False,
+                validation_status=VALIDATION_FAILED,
+                retry_count=draft_outcome.retry_count,
+                error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                error_message=safe_error_message(
+                    ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                ),
+                completed_at=draft_outcome.completed_at,
+                latency_seconds=draft_outcome.latency_seconds,
+                provider=draft_outcome.provider,
+                model=draft_outcome.model,
+                cost_class=draft_outcome.cost_class,
+                run_id=draft_outcome.run_id,
+            )
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=plan,
+                segments=segments,
+                plan_outcome=plan_outcome,
+                draft_outcome=failed_draft,
+            )
+
+        return RepairCandidate(
+            succeeded=True,
+            content=draft,
+            plan=plan,
+            segments=segments,
+            plan_outcome=plan_outcome,
+            draft_outcome=draft_outcome,
+        )
+
+    def repair_edition(
+        self,
+        conn,
+        *,
+        repair_request: RepairRequest,
+        plan: EditorialPlan,
+        segments: list[InputSegment],
+    ) -> RepairOutcome:
+        """Send a privacy-safe repair request to the same provider instance.
+
+        The provider receives the corrupted candidate, normalized validator
+        findings, a concise repair instruction, and correlation/attempt
+        identifiers. The repaired candidate is validated deterministically
+        against the original plan and segments. No raw private participant
+        input is transmitted.
+        """
+        participant = pt_repo.get_participant_by_id(
+            conn, repair_request.participant_id
+        )
+        language = participant.preferred_language if participant else "ko"
+
+        system_prompt = prompts.build_repair_system_prompt(language)
+        user_payload = prompts.build_repair_user_payload(
+            corrupted_candidate=repair_request.corrupted_candidate,
+            validator_findings=repair_request.validator_findings,
+            repair_instruction=repair_request.repair_instruction,
+            correlation_id=repair_request.correlation_id,
+            attempt_id=repair_request.attempt_id,
+            prohibited_inferences=list(repair_request.prohibited_inferences),
+            language=language,
+        )
+
+        validated, outcome = _provider_call_with_retry(
+            provider=self._provider,
+            task_name=prompts.TASK_EDITION_REPAIR,
+            system_prompt=system_prompt,
+            user_payload=user_payload,
+            response_schema=EditionContent,
+            max_retries=self._max_retries,
+            prompt_version=prompts.REPAIR_PROMPT_VERSION,
+            conn=conn,
+            participant_id=repair_request.participant_id,
+        )
+
+        if validated is None:
+            return RepairOutcome(
+                succeeded=False,
+                validation_status=outcome.validation_status or PROVIDER_FAILED,
+                content=None,
+                error_category=outcome.error_category,
+                error_message=outcome.error_message,
+                retry_count=outcome.retry_count,
+                input_tokens=outcome.input_tokens,
+                output_tokens=outcome.output_tokens,
+                latency_seconds=outcome.latency_seconds,
+                provider=outcome.provider,
+                model=outcome.model,
+                cost_class=outcome.cost_class,
+                run_id=outcome.run_id,
+            )
+
+        try:
+            validators.validate_draft(
+                validated,
+                plan=plan,
+                segments=segments,
+                is_follow_up=False,
+                feedback_id=None,
+            )
+        except DraftValidationError as exc:
+            return RepairOutcome(
+                succeeded=False,
+                validation_status=VALIDATION_FAILED,
+                content=None,
+                error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                error_message=safe_error_message(
+                    ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                ),
+                retry_count=outcome.retry_count,
+                input_tokens=outcome.input_tokens,
+                output_tokens=outcome.output_tokens,
+                latency_seconds=outcome.latency_seconds,
+                provider=outcome.provider,
+                model=outcome.model,
+                cost_class=outcome.cost_class,
+                run_id=outcome.run_id,
+            )
+
+        return RepairOutcome(
+            succeeded=True,
+            validation_status=VALIDATION_PASSED,
+            content=validated,
+            error_category=None,
+            error_message=None,
+            retry_count=outcome.retry_count,
+            input_tokens=outcome.input_tokens,
+            output_tokens=outcome.output_tokens,
+            latency_seconds=outcome.latency_seconds,
+            provider=outcome.provider,
+            model=outcome.model,
+            cost_class=outcome.cost_class,
+            run_id=outcome.run_id,
         )
 
     def _next_edition_number(self, conn, participant_id: str) -> int:
