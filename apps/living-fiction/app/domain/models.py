@@ -237,3 +237,27 @@ class ProviderResult(BaseModel):
     error_category: ProviderErrorCategory | None = None
     error_message: str | None = None
     success: bool = False
+
+
+# ── Pilot Evidence Validation Models ─────────────────────────────────────
+
+
+class PilotEvidenceRequest(BaseModel):
+    """Validated request for creating pilot evidence."""
+
+    evidence_category: str = Field(min_length=1)
+    canon_episode_id: str | None = None
+    branch_episode_id: str | None = None
+    reader_id: str | None = None
+    evidence_data: dict[str, Any] = Field(default_factory=dict)
+    max_text_length: int = Field(default=2000, ge=1, le=10000)
+
+
+# ── Rejoin Request Models ─────────────────────────────────────────────────
+
+
+class RejoinExplanation(BaseModel):
+    """Explanation for a single unresolved consequence during rejoin."""
+
+    consequence: NonEmptyStr
+    explanation: NonEmptyStr

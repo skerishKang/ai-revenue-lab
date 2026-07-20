@@ -50,6 +50,22 @@ class ProviderCallError(PipelineError):
         super().__init__(message)
 
 
+class PrivacyViolationError(PipelineError):
+    """Raised when sensitive data is detected in export-safe records."""
+
+
+class MaterialChangeError(ContentValidationError):
+    """Raised when a branch does not materially apply reader input."""
+
+
+class BranchBindingError(PipelineError):
+    """Raised when persisted branch binding validation fails."""
+
+
+class RejoinValidationError(PipelineError):
+    """Raised when rejoin validation fails."""
+
+
 _RETRYABLE_CATEGORIES = frozenset(
     {
         ProviderErrorCategory.PROVIDER_ERROR,

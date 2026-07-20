@@ -79,7 +79,24 @@ def _setup_world_and_canon(db_conn):
         db_conn, provider, request, world_id=WORLD_STATE.world_id,
     )
     assert result.succeeded
+
+    # Publish the canon episode — branches require a prior published episode
+    ep_repo.publish_episode(db_conn, result.episode_id)
+
     return result.episode_id
+
+
+def _make_branch_provider(choice_id: str):
+    """Create a MockProvider that returns branch content with the given choice_id."""
+    import copy
+    branch_content = copy.deepcopy(BRANCH_EPISODE_CONTENT)
+    branch_content["applied_reader_input"]["reader_choice_id"] = choice_id
+    return MockProvider(
+        task_payloads={
+            "episode_plan": BRANCH_EPISODE_PLAN,
+            "episode_content": branch_content,
+        }
+    )
 
 
 def test_persisted_choice_drives_branch(db_conn):
@@ -198,12 +215,7 @@ def test_already_applied_choice_rejected(db_conn):
         choice_text="신중하게 조사한다",
     )
 
-    provider = MockProvider(
-        task_payloads={
-            "episode_plan": BRANCH_EPISODE_PLAN,
-            "episode_content": BRANCH_EPISODE_CONTENT,
-        }
-    )
+    provider = _make_branch_provider(choice.id)
 
     request = GenerationRequest(
         world=WORLD_STATE,
@@ -285,12 +297,7 @@ def test_duplicate_retry_idempotency(db_conn):
         choice_text="신중하게 조사한다",
     )
 
-    provider = MockProvider(
-        task_payloads={
-            "episode_plan": BRANCH_EPISODE_PLAN,
-            "episode_content": BRANCH_EPISODE_CONTENT,
-        }
-    )
+    provider = _make_branch_provider(choice.id)
 
     request = GenerationRequest(
         world=WORLD_STATE,
@@ -336,12 +343,7 @@ def test_no_overwrite_on_failure(db_conn):
     )
 
     # First: successful generation
-    provider_ok = MockProvider(
-        task_payloads={
-            "episode_plan": BRANCH_EPISODE_PLAN,
-            "episode_content": BRANCH_EPISODE_CONTENT,
-        }
-    )
+    provider_ok = _make_branch_provider(choice.id)
     request = GenerationRequest(
         world=WORLD_STATE,
         episode_type=EpisodeType.PERSONAL_BRANCH,

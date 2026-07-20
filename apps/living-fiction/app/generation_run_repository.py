@@ -85,12 +85,29 @@ def create_generation_run(
             "task_type, provider, advertised_model must be non-empty"
         )
 
+    now = started_at or now_utc_iso()
+
     if conn.in_transaction:
-        raise RepositoryTransactionError(
-            "repository write requires an idle connection"
+        # Within a service-owned transaction — insert without committing
+        conn.execute(
+            "INSERT INTO generation_runs "
+            "(id, task_type, provider, advertised_model, cost_class, "
+            "prompt_version, started_at, retry_count, success, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?)",
+            (run_id, task_type, provider, advertised_model, cost_class,
+             prompt_version, now, now),
+        )
+        return GenerationRunRecord(
+            id=run_id, task_type=task_type, provider=provider,
+            advertised_model=advertised_model, cost_class=cost_class,
+            prompt_version=prompt_version, started_at=now,
+            completed_at=None, latency_seconds=None, success=False,
+            validation_status=None, input_tokens=None,
+            output_tokens=None, retry_count=0, error_category=None,
+            error_message=None, created_at=now,
         )
 
-    now = started_at or now_utc_iso()
+    # Idle connection — manage own transaction
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute(
@@ -131,10 +148,58 @@ def update_generation_run(
     error_category: str | None = None,
     error_message: str | None = None,
 ) -> GenerationRunRecord | None:
+    """Update a generation run.
+
+    Works in both modes:
+    - Idle connection: manages its own transaction (BEGIN/COMMIT).
+    - Within service-owned transaction: updates without committing.
+    """
+    updates: list[str] = []
+    params: list = []
+
+    if completed_at is not None:
+        updates.append("completed_at = ?")
+        params.append(completed_at)
+    if latency_seconds is not None:
+        updates.append("latency_seconds = ?")
+        params.append(latency_seconds)
+    if success is not None:
+        updates.append("success = ?")
+        params.append(1 if success else 0)
+    if validation_status is not None:
+        updates.append("validation_status = ?")
+        params.append(validation_status)
+    if input_tokens is not None:
+        updates.append("input_tokens = ?")
+        params.append(input_tokens)
+    if output_tokens is not None:
+        updates.append("output_tokens = ?")
+        params.append(output_tokens)
+    if retry_count is not None:
+        updates.append("retry_count = ?")
+        params.append(retry_count)
+    if error_category is not None:
+        updates.append("error_category = ?")
+        params.append(error_category)
+    if error_message is not None:
+        updates.append("error_message = ?")
+        params.append(error_message)
+
     if conn.in_transaction:
-        raise RepositoryTransactionError(
-            "repository write requires an idle connection"
-        )
+        # Within a service-owned transaction — update without committing
+        if updates:
+            params.append(run_id)
+            conn.execute(
+                f"UPDATE generation_runs SET {', '.join(updates)} WHERE id = ?",
+                params,
+            )
+        row = conn.execute(
+            f"SELECT {_SELECT} FROM generation_runs WHERE id = ?",
+            (run_id,),
+        ).fetchone()
+        return _row_to_record(row) if row else None
+
+    # Idle connection — manage own transaction
     conn.execute("BEGIN IMMEDIATE")
     try:
         existing = conn.execute(
@@ -144,37 +209,6 @@ def update_generation_run(
         if existing is None:
             conn.rollback()
             return None
-
-        updates: list[str] = []
-        params: list = []
-
-        if completed_at is not None:
-            updates.append("completed_at = ?")
-            params.append(completed_at)
-        if latency_seconds is not None:
-            updates.append("latency_seconds = ?")
-            params.append(latency_seconds)
-        if success is not None:
-            updates.append("success = ?")
-            params.append(1 if success else 0)
-        if validation_status is not None:
-            updates.append("validation_status = ?")
-            params.append(validation_status)
-        if input_tokens is not None:
-            updates.append("input_tokens = ?")
-            params.append(input_tokens)
-        if output_tokens is not None:
-            updates.append("output_tokens = ?")
-            params.append(output_tokens)
-        if retry_count is not None:
-            updates.append("retry_count = ?")
-            params.append(retry_count)
-        if error_category is not None:
-            updates.append("error_category = ?")
-            params.append(error_category)
-        if error_message is not None:
-            updates.append("error_message = ?")
-            params.append(error_message)
 
         if updates:
             params.append(run_id)

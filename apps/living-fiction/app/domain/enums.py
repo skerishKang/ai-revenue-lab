@@ -58,3 +58,26 @@ class ValidationStatus(StrEnum):
     FAILED = "validation_failed"
     PROVIDER_FAILED = "provider_failed"
     NOT_ATTEMPTED = "not_attempted"
+
+
+class AttemptResult(StrEnum):
+    """Result classification for a single provider attempt."""
+    SUCCESS = "success"
+    RETRYABLE_FAILURE = "retryable_failure"
+    NON_RETRYABLE_FAILURE = "non_retryable_failure"
+    EXCEPTION = "exception"
+
+
+class BranchRequestStatus(StrEnum):
+    """Status of a branch generation request (idempotency tracking)."""
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class RejoinRequestStatus(StrEnum):
+    """Status of a rejoin request."""
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    COMPLETED = "completed"

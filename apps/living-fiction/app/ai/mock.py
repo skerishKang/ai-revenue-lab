@@ -3,7 +3,11 @@
 The provider is programmable via ``task_payloads`` (task name → fixture
 payload dict). It never opens a socket or performs any I/O.
 
-It records every request for assertion in tests. Special task names:
+Records actual provider/model/cost_class in every ProviderResult.
+Does NOT hardcode provider="mock" or cost_class="free" — uses configured
+values so tests can verify real accounting.
+
+Special task names:
 - ``error``: always returns PROVIDER_ERROR.
 - ``invalid_payload``: always returns SCHEMA_MISMATCH by validating
   ``{"bad": "data"}`` against the schema.
@@ -37,6 +41,8 @@ class MockProvider:
         *,
         task_payloads: dict[str, dict[str, Any]] | None = None,
         responses: list[dict[str, Any]] | None = None,
+        provider_name: str = "mock",
+        cost_class: CostClass = CostClass.FREE,
     ):
         self._model = model
         self._fixture_payload = fixture_payload
@@ -45,10 +51,20 @@ class MockProvider:
             list(responses) if responses else []
         )
         self._requests: list[dict[str, Any]] = []
+        self._provider_name = provider_name
+        self._cost_class = cost_class
 
     @property
     def model(self) -> str:
         return self._model
+
+    @property
+    def provider_name(self) -> str:
+        return self._provider_name
+
+    @property
+    def cost_class(self) -> CostClass:
+        return self._cost_class
 
     @property
     def requests(self) -> list[dict[str, Any]]:
@@ -169,9 +185,9 @@ class MockProvider:
 
         elapsed = time.monotonic() - start
         return ProviderResult(
-            provider="mock",
+            provider=self._provider_name,
             advertised_model=self._model,
-            cost_class=CostClass.FREE,
+            cost_class=self._cost_class,
             latency_seconds=elapsed,
             retry_count=0,
             payload=dumped,
@@ -188,9 +204,9 @@ class MockProvider:
     ) -> ProviderResult:
         elapsed = time.monotonic() - start
         return ProviderResult(
-            provider="mock",
+            provider=self._provider_name,
             advertised_model=self._model,
-            cost_class=CostClass.FREE,
+            cost_class=self._cost_class,
             latency_seconds=elapsed,
             retry_count=0,
             request_id=request_id,
