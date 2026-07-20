@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}피드백 - Personal Edition{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>피드백 보내기</h1>
+  <p class="subtitle">에디션 #{{ edition.edition_number }}에 대한 피드백을 보내주세요.</p>
+
+  {% if error %}
+  <div class="alert alert-error" role="alert">{{ error }}</div>
+  {% endif %}
+
+  <form method="post"
+        action="/p/{{ participant.id }}/editions/{{ edition.edition_number }}/feedback">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+    <fieldset>
+      <legend>피드백 방향 (하나 이상 선택)</legend>
+      <div class="checkbox-grid">
+        {% for value, label in feedback_directions %}
+        <label class="checkbox-option">
+          <input type="checkbox" name="direction_choices" value="{{ value }}">
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    {% if content and content.sections %}
+    <label for="selected_section_id">특정 섹션 선택 (선택사항)</label>
+    <select id="selected_section_id" name="selected_section_id">
+      <option value="">섹션 선택 안 함</option>
+      {% for section in content.sections %}
+      <option value="{{ section.section_id }}">{{ section.title }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+
+    <label for="free_text">추가 의견 (선택사항)</label>
+    <textarea id="free_text" name="free_text" rows="4"
+              placeholder="추가 의견이 있으시면 작성해주세요..."
+              maxlength="2000"></textarea>
+
+    <button type="submit" class="btn btn-primary">피드백 제출</button>
+  </form>
+</div>
+{% endblock %}

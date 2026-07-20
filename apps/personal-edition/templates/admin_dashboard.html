@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}관리자 대시보드 - Personal Edition{% endblock %}
+{% block content %}
+<div class="admin-dashboard">
+  <h1>관리자 대시보드</h1>
+
+  <section class="section">
+    <h2>참여자</h2>
+    {% if participants %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>이름</th>
+            <th>언어</th>
+            <th>상태</th>
+            <th>작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in participants %}
+          <tr>
+            <td><code>{{ p.id }}</code></td>
+            <td>{{ p.display_name }}</td>
+            <td>{{ p.preferred_language }}</td>
+            <td>{{ p.status }}</td>
+            <td>
+              <a href="/admin/participants/{{ p.id }}" class="btn btn-sm">상세</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">등록된 참여자가 없습니다.</p>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <h2>에디션</h2>
+    {% if editions %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>참여자</th>
+            <th>#</th>
+            <th>제목</th>
+            <th>생성 상태</th>
+            <th>발행 상태</th>
+            <th>작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in editions %}
+          <tr>
+            <td>{{ e.display_name }}</td>
+            <td>{{ e.edition_number }}</td>
+            <td>{{ e.rendered_title or '-' }}</td>
+            <td>{{ e.generation_status }}</td>
+            <td>{{ e.publication_state }}</td>
+            <td>
+              <a href="/admin/review/{{ e.id }}" class="btn btn-sm">검토</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">에디션이 없습니다.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

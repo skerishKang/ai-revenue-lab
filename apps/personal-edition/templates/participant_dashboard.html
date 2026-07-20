@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}대시보드 - Personal Edition{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <h1>안녕하세요, {{ participant.display_name }}님</h1>
+  <div class="stats">
+    <div class="stat-card">
+      <span class="stat-label">발행된 에디션</span>
+      <span class="stat-value">{{ published_editions|length }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">제출한 입력</span>
+      <span class="stat-value">{{ input_count }}</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <h2>새 글 작성</h2>
+    <a href="/p/{{ participant.id }}/input" class="btn btn-primary">새 입력 제출</a>
+  </section>
+
+  {% if published_editions %}
+  <section class="section">
+    <h2>발행된 에디션</h2>
+    <div class="edition-list">
+      {% for edition in published_editions %}
+      <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
+         class="edition-card">
+        <span class="edition-number">#{{ edition.edition_number }}</span>
+        <span class="edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
+        <span class="edition-date">
+          {% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

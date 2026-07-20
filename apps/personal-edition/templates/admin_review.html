@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}에디션 검토 - 관리자{% endblock %}
+{% block content %}
+<div class="admin-review">
+  <h1>에디션 검토</h1>
+  <p>에디션 #{{ edition.edition_number }} | 참여자: {{ participant.display_name if participant else '?' }}</p>
+  <p>상태: {{ edition.generation_status }} / {{ edition.publication_state }}</p>
+
+  {% if error is defined and error %}
+  <div class="alert alert-error" role="alert">{{ error }}</div>
+  {% endif %}
+
+  {% if content %}
+  <section class="section edition-preview">
+    <h2>내용 미리보기</h2>
+    <div class="edition-card-preview">
+      <h3>{{ content.publication_title }}</h3>
+      <h4>{{ content.edition_title }}</h4>
+      <p class="deck">{{ content.deck }}</p>
+      {% if content.sections %}
+      {% for section in content.sections %}
+      <div class="section-block">
+        <h5>{{ section.title }}</h5>
+        {% for para in section.paragraphs %}
+        <p>{{ para }}</p>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    <h2>편집</h2>
+    <form method="post" action="/admin/review/{{ edition.id }}/edit">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <label for="rendered_title">제목</label>
+      <input type="text" id="rendered_title" name="rendered_title"
+             value="{{ edition.rendered_title or '' }}">
+
+      <label for="structured_content">구조화된 콘텐츠 (JSON)</label>
+      <textarea id="structured_content" name="structured_content" rows="15"
+                class="code-editor">{{ edition.structured_content or '' }}</textarea>
+
+      <label for="reviewer_notes">검토 메모</label>
+      <textarea id="reviewer_notes" name="reviewer_notes" rows="3"
+                >{{ edition.reviewer_notes or '' }}</textarea>
+
+      <div class="button-group">
+        <button type="submit" class="btn btn-primary">저장</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="section">
+    <h2>발행 관리</h2>
+    <div class="button-group">
+      {% if edition.generation_status == 'pending_review' and edition.publication_state == 'pending' %}
+      <form method="post" action="/admin/review/{{ edition.id }}/publish" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-success">발행</button>
+      </form>
+      <form method="post" action="/admin/review/{{ edition.id }}/reject" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-danger">거부</button>
+      </form>
+      {% else %}
+      <p>현재 발행/거부할 수 없는 상태입니다.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>생성 메타데이터</h2>
+    {% if generation_runs %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>작업</th>
+            <th>제공자</th>
+            <th>모델</th>
+            <th>상태</th>
+            <th>입력 토큰</th>
+            <th>출력 토큰</th>
+            <th>시도 횟수</th>
+            <th>시간</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for run in generation_runs %}
+          <tr>
+            <td>{{ run.task_type }}</td>
+            <td>{{ run.provider }}</td>
+            <td>{{ run.advertised_model }}</td>
+            <td>{{ run.validation_status or '-' }}</td>
+            <td>{{ run.input_tokens or '-' }}</td>
+            <td>{{ run.output_tokens or '-' }}</td>
+            <td>{{ run.retry_count }}</td>
+            <td>{{ '%.2f'|format(run.latency_seconds) if run.latency_seconds else '-' }}s</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">생성 기록이 없습니다.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}참여자 상세 - 관리자{% endblock %}
+{% block content %}
+<div class="admin-detail">
+  <h1>{{ participant.display_name }}</h1>
+  <p>ID: <code>{{ participant.id }}</code> | 언어: {{ participant.preferred_language }} | 상태: {{ participant.status }}</p>
+
+  <section class="section">
+    <h2>입력 목록</h2>
+    {% if inputs %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>텍스트 (앞 100자)</th>
+            <th>제출 시간</th>
+            <th>동의</th>
+            <th>작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inp in inputs %}
+          <tr>
+            <td>{{ inp.sequence_number }}</td>
+            <td class="text-truncate">{{ inp.raw_text[:100] }}</td>
+            <td>{{ inp.submitted_at[:10] }}</td>
+            <td>{{ '예' if inp.consent_confirmed == 1 else '아니오' }}</td>
+            <td>
+              <form method="post" action="/admin/participants/{{ participant.id }}/generate"
+                    class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="input_id" value="{{ inp.id }}">
+                <button type="submit" class="btn btn-sm btn-primary">생성</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">입력이 없습니다.</p>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <h2>에디션</h2>
+    {% if editions %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>제목</th>
+            <th>생성 상태</th>
+            <th>발행 상태</th>
+            <th>작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in editions %}
+          <tr>
+            <td>{{ e.edition_number }}</td>
+            <td>{{ e.rendered_title or '-' }}</td>
+            <td>{{ e.generation_status }}</td>
+            <td>{{ e.publication_state }}</td>
+            <td>
+              <a href="/admin/review/{{ e.id }}" class="btn btn-sm">검토</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">에디션이 없습니다.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

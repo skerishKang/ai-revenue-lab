@@ -1,0 +1,372 @@
+"""Admin/operator routes: authentication, participant overview, generation,
+review, editing, publish/reject."""
+
+from __future__ import annotations
+
+import json
+from typing import Any
+
+from fastapi import APIRouter, Form, Query, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
+
+from app import participant_repository as pt_repo
+from app import input_repository as input_repo
+from app import edition_repository as ed_repo
+from app import feedback_repository as fb_repo
+from app import generation_run_repository as gr_repo
+from app.auth import (
+    create_admin_session,
+    decode_session_token,
+    generate_csrf_token,
+    is_admin_session,
+    sign_csrf_token,
+    sign_session_token,
+    verify_csrf_token,
+)
+from app.db import get_connection
+from app.factory import _privacy_headers, _render_template
+from app.pipeline.service import GenerationRequest, GenerationService
+
+router = APIRouter(prefix="/admin")
+
+SESSION_COOKIE = "pe_admin_session"
+CSRF_COOKIE = "pe_admin_csrf"
+
+
+def _get_admin(request: Request) -> bool:
+    token = request.cookies.get(SESSION_COOKIE)
+    if not token:
+        return False
+    session_data = decode_session_token(token)
+    if session_data is None:
+        return False
+    return is_admin_session(session_data)
+
+
+def _inject_csrf(context: dict[str, Any]) -> tuple[str, str]:
+    csrf_token = generate_csrf_token()
+    signed = sign_csrf_token(csrf_token)
+    context["csrf_token"] = csrf_token
+    return csrf_token, signed
+
+
+def _validate_csrf(request: Request, csrf_field: str) -> bool:
+    cookie_val = request.cookies.get(CSRF_COOKIE, "")
+    if not cookie_val or not csrf_field:
+        return False
+    return verify_csrf_token(csrf_field, cookie_val)
+
+
+@router.get("/access")
+def admin_access_page(request: Request):
+    return _render_template(request, "admin_access.html", {"error": None})
+
+
+@router.post("/access")
+def admin_access_submit(
+    request: Request,
+    secret: str = Form(""),
+):
+    from app.config import settings
+    secret = secret.strip()
+    if not secret or secret != settings.admin_secret:
+        return _render_template(request, "admin_access.html", {
+            "error": "Invalid admin secret."
+        })
+
+    session_data = create_admin_session()
+    signed_token = sign_session_token(session_data)
+    resp = RedirectResponse(url="/admin/", status_code=303)
+    resp.set_cookie(
+        SESSION_COOKIE,
+        signed_token,
+        httponly=True,
+        samesite="lax",
+        max_age=28800,
+        secure=False,
+    )
+    return resp
+
+
+@router.get("/")
+def admin_dashboard(request: Request):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        participants = conn.execute(
+            "SELECT id, display_name, preferred_language, status, created_at "
+            "FROM participants WHERE status = 'active' ORDER BY created_at"
+        ).fetchall()
+        editions = conn.execute(
+            "SELECT e.id, e.participant_id, e.edition_number, "
+            "e.generation_status, e.publication_state, e.rendered_title, "
+            "e.drafted_at, e.published_at, p.display_name "
+            "FROM editions e "
+            "JOIN participants p ON e.participant_id = p.id "
+            "WHERE e.generation_status != 'deleted' "
+            "ORDER BY e.drafted_at DESC"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    resp = Response()
+    csrf_token, csrf_signed = _inject_csrf({})
+    context: dict[str, Any] = {
+        "participants": participants,
+        "editions": editions,
+        "csrf_token": csrf_token,
+    }
+    html_resp = _render_template(request, "admin_dashboard.html", context)
+    html_resp.set_cookie(
+        CSRF_COOKIE, csrf_signed,
+        httponly=True, samesite="lax", max_age=3600, secure=False,
+    )
+    return html_resp
+
+
+@router.get("/participants/{participant_id}")
+def admin_participant_detail(request: Request, participant_id: str):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        participant = pt_repo.get_participant_by_id(conn, participant_id)
+        if participant is None:
+            return _render_template(request, "admin_not_found.html", {
+                "message": "Participant not found.",
+            })
+
+        editions = ed_repo.get_editions_by_participant(conn, participant_id)
+        inputs = input_repo.get_inputs_by_participant(conn, participant_id)
+
+        gen_runs = conn.execute(
+            "SELECT * FROM generation_runs ORDER BY started_at DESC LIMIT 20"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    resp = Response()
+    csrf_token, csrf_signed = _inject_csrf({})
+    context: dict[str, Any] = {
+        "participant": participant,
+        "editions": editions,
+        "inputs": inputs,
+        "generation_runs": gen_runs,
+        "csrf_token": csrf_token,
+    }
+    html_resp = _render_template(request, "admin_participant_detail.html", context)
+    html_resp.set_cookie(
+        CSRF_COOKIE, csrf_signed,
+        httponly=True, samesite="lax", max_age=3600, secure=False,
+    )
+    return html_resp
+
+
+@router.post("/participants/{participant_id}/generate")
+def admin_generate(
+    request: Request,
+    participant_id: str,
+    input_id: str = Form(""),
+    csrf_token: str = Form(""),
+):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    if not _validate_csrf(request, csrf_token):
+        return RedirectResponse(
+            url=f"/admin/participants/{participant_id}", status_code=303
+        )
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        participant = pt_repo.get_participant_by_id(conn, participant_id)
+        if participant is None:
+            return _render_template(request, "admin_not_found.html", {
+                "message": "Participant not found.",
+            })
+
+        service: GenerationService = request.app.state.generation_service
+        gen_request = GenerationRequest(
+            participant_id=participant_id,
+            input_id=input_id,
+            allow_short_sample=True,
+        )
+        result = service.generate_edition(conn, request=gen_request)
+    finally:
+        conn.close()
+
+    return RedirectResponse(
+        url=f"/admin/participants/{participant_id}", status_code=303
+    )
+
+
+@router.get("/review/{edition_id}")
+def admin_review_page(request: Request, edition_id: str):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        edition = ed_repo.get_edition_by_id(conn, edition_id)
+        if edition is None:
+            return _render_template(request, "admin_not_found.html", {
+                "message": "Edition not found.",
+            })
+
+        content = None
+        if edition.structured_content:
+            content = json.loads(edition.structured_content)
+
+        participant = pt_repo.get_participant_by_id(
+            conn, edition.participant_id
+        )
+
+        feedbacks = fb_repo.get_feedback_by_edition(conn, edition_id)
+
+        runs = conn.execute(
+            "SELECT * FROM generation_runs ORDER BY started_at DESC"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    resp = Response()
+    csrf_token, csrf_signed = _inject_csrf({})
+    context: dict[str, Any] = {
+        "edition": edition,
+        "content": content,
+        "participant": participant,
+        "feedbacks": feedbacks,
+        "generation_runs": runs,
+        "csrf_token": csrf_token,
+    }
+    html_resp = _render_template(request, "admin_review.html", context)
+    html_resp.set_cookie(
+        CSRF_COOKIE, csrf_signed,
+        httponly=True, samesite="lax", max_age=3600, secure=False,
+    )
+    return html_resp
+
+
+@router.post("/review/{edition_id}/edit")
+def admin_review_edit(
+    request: Request,
+    edition_id: str,
+    response: Response,
+    structured_content: str = Form(""),
+    rendered_title: str = Form(""),
+    reviewer_notes: str = Form(""),
+    csrf_token: str = Form(""),
+):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    if not _validate_csrf(request, csrf_token):
+        return RedirectResponse(
+            url=f"/admin/review/{edition_id}", status_code=303
+        )
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        try:
+            json.loads(structured_content)
+        except (json.JSONDecodeError, TypeError):
+            edition = ed_repo.get_edition_by_id(conn, edition_id)
+            content = None
+            if edition and edition.structured_content:
+                content = json.loads(edition.structured_content)
+            return _render_template(request, "admin_review.html", {
+                "edition": edition,
+                "content": content,
+                "participant": (
+                    pt_repo.get_participant_by_id(conn, edition.participant_id)
+                    if edition else None
+                ),
+                "feedbacks": (
+                    fb_repo.get_feedback_by_edition(conn, edition_id)
+                    if edition else []
+                ),
+                "generation_runs": conn.execute(
+                    "SELECT * FROM generation_runs ORDER BY started_at DESC"
+                ).fetchall(),
+                "csrf_token": generate_csrf_token(),
+                "error": "Invalid JSON in structured content.",
+            })
+
+        ed_repo.update_edition_content(
+            conn,
+            edition_id,
+            structured_content=structured_content,
+            rendered_title=rendered_title if rendered_title else None,
+            reviewer_notes=reviewer_notes if reviewer_notes else None,
+        )
+    finally:
+        conn.close()
+
+    return RedirectResponse(
+        url=f"/admin/review/{edition_id}", status_code=303
+    )
+
+
+@router.post("/review/{edition_id}/publish")
+def admin_publish(
+    request: Request,
+    edition_id: str,
+    csrf_token: str = Form(""),
+):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    if not _validate_csrf(request, csrf_token):
+        return RedirectResponse(
+            url=f"/admin/review/{edition_id}", status_code=303
+        )
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        ed_repo.update_edition_publication(
+            conn, edition_id, "published"
+        )
+    finally:
+        conn.close()
+
+    return RedirectResponse(
+        url=f"/admin/review/{edition_id}", status_code=303
+    )
+
+
+@router.post("/review/{edition_id}/reject")
+def admin_reject(
+    request: Request,
+    edition_id: str,
+    csrf_token: str = Form(""),
+):
+    if not _get_admin(request):
+        return RedirectResponse(url="/admin/access", status_code=303)
+
+    if not _validate_csrf(request, csrf_token):
+        return RedirectResponse(
+            url=f"/admin/review/{edition_id}", status_code=303
+        )
+
+    conn = get_connection(request.app.state.db_path)
+    try:
+        ed_repo.update_edition_publication(
+            conn, edition_id, "rejected"
+        )
+    finally:
+        conn.close()
+
+    return RedirectResponse(
+        url=f"/admin/review/{edition_id}", status_code=303
+    )
+
+
+@router.post("/logout")
+def admin_logout(request: Request):
+    resp = RedirectResponse(url="/admin/access", status_code=303)
+    resp.delete_cookie(SESSION_COOKIE)
+    resp.delete_cookie(CSRF_COOKIE)
+    return resp

@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     ai_api_key: str = ""
     ai_timeout_seconds: int = Field(default=120, gt=0)
     prompt_version: str = "personal-edition-v1"
+    secret_key: str = "dev-secret-key-change-in-production"
+    admin_secret: str = "dev-admin-secret-change-in-production"
+    session_max_age_seconds: int = Field(default=3600 * 8, gt=0)
+    cookie_secure: bool = False
+    cookie_samesite: str = "lax"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
