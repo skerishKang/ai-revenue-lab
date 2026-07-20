@@ -32,12 +32,13 @@ router = APIRouter(prefix="/api/v1", tags=["living-learning"])
 
 
 def get_provider_from_state(request: Request) -> AIProvider:
-    if not hasattr(request.app.state, "provider"):
+    provider = getattr(request.app.state, "provider", None)
+    if provider is None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail={"error": "provider_not_configured"},
         )
-    return request.app.state.provider
+    return provider
 
 
 def get_connection_from_state(request: Request):

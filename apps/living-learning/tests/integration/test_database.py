@@ -44,7 +44,7 @@ def test_migrations_are_idempotent(temp_db_path: str) -> None:
         "SELECT COUNT(*) as cnt FROM schema_migrations"
     ).fetchone()
 
-    assert migrations["cnt"] == 3
+    assert migrations["cnt"] == 4
 
     conn.close()
 

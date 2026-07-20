@@ -98,6 +98,41 @@ class MockProvider:
         if not payload or payload == {}:
             payload = default_payload
 
+        # Deep copy to avoid mutating default
+        import copy
+        payload = copy.deepcopy(payload)
+
+        # Apply adaptation rules if direction_choices exist
+        dc = user_payload.get("direction_choices", "")
+        if "slower_pace" in dc and task_name == "adapted_lesson_plan":
+            if payload.get("sections"):
+                payload["sections"].append({"section_id": "s2", "title": "섹션 2", "description": "short"})
+        if "reduce_theory" in dc and task_name == "adapted_lesson_plan":
+            if payload.get("sections"):
+                payload["sections"][0]["description"] = "short"
+        if "simplify_jargon" in dc and task_name == "adapted_lesson_plan":
+            if payload.get("sections"):
+                payload["sections"][0]["description"] = "정의"
+        
+        if "more_examples" in dc and task_name == "adapted_lesson_content":
+            payload.setdefault("code_examples", []).append({"example_id": "ex2", "code": "y = 2", "explanation": "test", "expected_output": "2"})
+        if "code_first" in dc and task_name == "adapted_lesson_content":
+            if payload.get("sections"):
+                payload["sections"][0]["includes_code"] = True
+                payload["sections"][0]["code_snippet"] = "z = 3"
+        if "reduce_theory" in dc and task_name == "adapted_lesson_content":
+            if payload.get("sections"):
+                payload["sections"][0]["content"] = "short"
+        if "slower_pace" in dc and task_name == "adapted_lesson_content":
+            if payload.get("sections"):
+                payload["sections"][0]["content"] = "short"
+                payload["sections"].append({"section_id": "s2", "title": "섹션 2", "content": "short"})
+        if "more_review" in dc and task_name == "adapted_lesson_content":
+            payload.setdefault("review_questions", []).append({"question": "Q3", "correct_answer": "A", "explanation": "E"})
+        if "simplify_jargon" in dc and task_name == "adapted_lesson_content":
+            if payload.get("sections"):
+                payload["sections"][0]["content"] = "정의: 매우 쉽다"
+
         validated = response_schema.model_validate(payload)
         return ProviderResult(
             provider="mock",

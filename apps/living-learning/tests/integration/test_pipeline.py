@@ -157,6 +157,9 @@ def test_feedback_idempotency(
         learner_id=learner_id,
         concept_id=concept_id,
         lesson_number=1,
+        generation_status="input_received",
+        lesson_plan_json='{"title": "P1", "sections": [{"title": "S1"}]}',
+        lesson_content_json='{"title": "C1", "sections": [{"title": "S1"}], "review_questions": [], "code_examples": []}',
     )
 
     feedback1 = pipeline.record_feedback(
@@ -334,6 +337,9 @@ def test_second_lesson_requires_comprehension(
         learner_id=learner_id,
         concept_id=concept_id,
         lesson_number=1,
+        generation_status="input_received",
+        lesson_plan_json='{"title": "P1", "sections": [{"title": "S1"}]}',
+        lesson_content_json='{"title": "C1", "sections": [{"title": "S1"}], "review_questions": [], "code_examples": []}',
     )
 
     feedback_result = pipeline.record_feedback(
