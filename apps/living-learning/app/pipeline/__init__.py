@@ -18,6 +18,7 @@ from app.pipeline.errors import (
     FabricatedFactError,
     PackageInstallError,
     ExpectedAnswerMismatchError,
+    NonRetryableError,
 )
 
 __all__ = [
@@ -38,4 +39,5 @@ __all__ = [
     "FabricatedFactError",
     "PackageInstallError",
     "ExpectedAnswerMismatchError",
+    "NonRetryableError",
 ]

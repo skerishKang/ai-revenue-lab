@@ -85,3 +85,9 @@ class PackageInstallError(LessonPipelineError):
 
 class ExpectedAnswerMismatchError(LessonPipelineError):
     pass
+
+
+class NonRetryableError(LessonPipelineError):
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(f"Non-retryable error: {message}")

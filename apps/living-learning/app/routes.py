@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Callable
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from app.ai import MockProvider
 from app.ai.base import AIProvider
-from app.config import get_settings
-from app.db import get_connection
 from app.pipeline import (
     LessonPipeline,
     PrerequisiteNotMetError,
@@ -21,6 +18,9 @@ from app.pipeline import (
     ContentValidationError,
     AdaptationNotChangedError,
     ComprehensionRequiredError,
+    LearnerInactiveError,
+    UnsafeContentError,
+    NonRetryableError,
 )
 from app.repositories import (
     get_learner_by_id,
@@ -31,16 +31,30 @@ from app.repositories import (
 router = APIRouter(prefix="/api/v1", tags=["living-learning"])
 
 
-def get_provider() -> AIProvider:
-    return MockProvider()
+def get_provider_from_state(request: Request) -> AIProvider:
+    if not hasattr(request.app.state, "provider"):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"error": "provider_not_configured"},
+        )
+    return request.app.state.provider
+
+
+def get_connection_from_state(request: Request):
+    if not hasattr(request.app.state, "get_connection"):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"error": "database_not_configured"},
+        )
+    return request.app.state.get_connection()
 
 
 def get_pipeline(
     request: Request,
-    provider: Annotated[AIProvider, Depends(get_provider)],
+    provider: Annotated[AIProvider, Depends(get_provider_from_state)],
 ) -> LessonPipeline:
     settings = request.app.state.settings
-    conn = get_connection()
+    conn = get_connection_from_state(request)
     return LessonPipeline(conn, provider, settings)
 
 
@@ -128,6 +142,11 @@ def start_lesson(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"error": "adaptation_not_changed", "details": exc.details},
         )
+    except UnsafeContentError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "unsafe_content", "issues": exc.issues},
+        )
 
 
 class RecordComprehensionRequest(BaseModel):
@@ -170,6 +189,11 @@ def record_comprehension(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={"error": "foreign_resource", "resource": "lesson"},
         )
+    except LearnerInactiveError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
+        )
 
 
 class SubmitFeedbackRequest(BaseModel):
@@ -182,6 +206,7 @@ class SubmitFeedbackRequest(BaseModel):
 
 class SubmitFeedbackResponse(BaseModel):
     feedback_id: str
+    is_duplicate: bool = False
 
 
 @router.post("/feedback", response_model=SubmitFeedbackResponse)
@@ -197,7 +222,10 @@ def submit_feedback(
             free_text=request.free_text,
             idempotency_key=request.idempotency_key,
         )
-        return SubmitFeedbackResponse(feedback_id=result["feedback_id"])
+        return SubmitFeedbackResponse(
+            feedback_id=result["feedback_id"],
+            is_duplicate=result.get("is_duplicate", False),
+        )
     except GenerationError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -206,11 +234,16 @@ def submit_feedback(
     except ForeignFeedbackError as exc:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "foreign_resource", "resource": "lesson"},
+            detail={"error": "foreign_feedback"},
+        )
+    except LearnerInactiveError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
         )
 
 
-class GenerateSecondLessonRequest(BaseModel):
+class SecondLessonRequest(BaseModel):
     lesson_id: str = Field(min_length=1)
     learner_id: str = Field(min_length=1)
     comprehension_response_id: str = Field(min_length=1)
@@ -218,16 +251,16 @@ class GenerateSecondLessonRequest(BaseModel):
     idempotency_key: str = ""
 
 
-class GenerateSecondLessonResponse(BaseModel):
+class SecondLessonResponse(BaseModel):
     lesson_id: str
     adaptation_verified: bool
 
 
-@router.post("/lessons/second", response_model=GenerateSecondLessonResponse)
-def generate_second_lesson(
-    request: GenerateSecondLessonRequest,
+@router.post("/lessons/second", response_model=SecondLessonResponse)
+def start_second_lesson(
+    request: SecondLessonRequest,
     pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
-) -> GenerateSecondLessonResponse:
+) -> SecondLessonResponse:
     try:
         result = pipeline.process_feedback_and_generate_second_lesson(
             lesson_id=request.lesson_id,
@@ -236,65 +269,75 @@ def generate_second_lesson(
             feedback_id=request.feedback_id,
             idempotency_key=request.idempotency_key,
         )
-        return GenerateSecondLessonResponse(
+        return SecondLessonResponse(
             lesson_id=result["lesson_id"],
-            adaptation_verified=result["adaptation_verified"],
-        )
-    except ForeignFeedbackError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "foreign_feedback", "feedback_id": exc.feedback_id},
-        )
-    except FeedbackAlreadyAppliedError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={"error": "feedback_already_applied", "feedback_id": exc.feedback_id},
+            adaptation_verified=result.get("adaptation_verified", False),
         )
     except ComprehensionRequiredError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"error": "comprehension_required", "message": exc.message},
+            detail={"error": "comprehension_required"},
+        )
+    except FeedbackAlreadyAppliedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "feedback_already_applied"},
         )
     except GenerationError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"error": str(exc)},
         )
-    except ContentValidationError as exc:
+    except RetryExhaustedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"error": "generation_failed", "task": exc.task_type},
+        )
+    except UnsafeContentError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"error": "content_validation_failed", "issues": exc.issues},
+            detail={"error": "unsafe_content", "issues": exc.issues},
         )
     except AdaptationNotChangedError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"error": "adaptation_not_changed", "details": exc.details},
         )
+    except NonRetryableError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "non_retryable_error", "message": str(exc)},
+        )
 
 
-class CloseLessonRequest(BaseModel):
+class FinalizeLessonRequest(BaseModel):
     lesson_id: str = Field(min_length=1)
     learner_id: str = Field(min_length=1)
 
 
-class CloseLessonResponse(BaseModel):
+class FinalizeLessonResponse(BaseModel):
     lesson_id: str
     status: str
     prompt_tokens: int
     completion_tokens: int
 
 
-@router.post("/lessons/close", response_model=CloseLessonResponse)
-def close_lesson(
-    request: CloseLessonRequest,
+@router.post("/lessons/finalize", response_model=FinalizeLessonResponse)
+def finalize_lesson(
+    request: FinalizeLessonRequest,
     pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
-) -> CloseLessonResponse:
+) -> FinalizeLessonResponse:
     try:
         result = pipeline.finalize_and_close(
             lesson_id=request.lesson_id,
             learner_id=request.learner_id,
         )
-        return CloseLessonResponse(**result)
+        return FinalizeLessonResponse(
+            lesson_id=result["lesson_id"],
+            status=result["status"],
+            prompt_tokens=result.get("prompt_tokens", 0),
+            completion_tokens=result.get("completion_tokens", 0),
+        )
     except GenerationError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -303,12 +346,8 @@ def close_lesson(
     except ForeignFeedbackError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "foreign_resource", "resource": "lesson"},
+            detail={"error": "foreign_lesson"},
         )
-
-
-class LearnerProgressRequest(BaseModel):
-    learner_id: str = Field(min_length=1)
 
 
 class LearnerProgressResponse(BaseModel):
@@ -324,5 +363,16 @@ def get_learner_progress(
     learner_id: str,
     pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
 ) -> LearnerProgressResponse:
-    result = pipeline.get_learner_progress(learner_id=learner_id)
-    return LearnerProgressResponse(**result)
+    try:
+        result = pipeline.get_learner_progress(learner_id=learner_id)
+        return LearnerProgressResponse(**result)
+    except GenerationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": str(exc)},
+        )
+    except LearnerInactiveError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
+        )

@@ -36,6 +36,9 @@ _DEFAULT_LESSON_CONTENT = {
 
 
 class MockProvider:
+    provider_type: str = "mock"
+    model: str = "mock-fixture"
+
     def __init__(
         self,
         task_payloads: dict[str, dict] | None = None,

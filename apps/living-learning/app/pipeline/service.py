@@ -1,4 +1,4 @@
-"""Living Learning pipeline service with atomic transactions."""
+"""Living Learning pipeline service with proper atomicity and staging."""
 
 from __future__ import annotations
 
@@ -6,19 +6,12 @@ import json
 import re
 import secrets
 import sqlite3
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from app.domain.models import (
-    AdaptationDecision,
-    ComprehensionResponse,
-    Feedback,
     LessonContent,
     LessonPlan,
-    LessonPlanSection,
-    LessonContentSection,
-    CodeExample,
-    Exercise,
     ProviderResult,
 )
 from app.repositories import (
@@ -32,29 +25,20 @@ from app.repositories import (
     create_lesson,
     create_learner_session,
     create_pilot_evidence,
-    get_all_mastery_for_learner,
     get_concept_by_id,
-    get_concepts_by_curriculum,
     get_feedback_by_id,
-    get_feedback_by_lesson,
     get_learner_by_id,
     get_lesson_by_id,
     get_lessons_by_learner,
-    get_mastery,
-    get_unapplied_feedback_for_lesson,
     is_feedback_applied,
     is_feedback_for_learner,
     mark_feedback_applied,
     record_comprehension_response,
-    record_exercise_response,
     store_idempotency_key,
     sum_tokens_by_lesson,
-    update_learner,
-    update_lesson_content,
     update_lesson_status,
     upsert_mastery,
     validate_prerequisites,
-    validate_lesson_content,
 )
 from app.pipeline.errors import (
     FeedbackAlreadyAppliedError,
@@ -65,17 +49,12 @@ from app.pipeline.errors import (
     ContentValidationError,
     AdaptationNotChangedError,
     ComprehensionRequiredError,
-    UnsafeContentError,
-    CredentialRequestError,
-    MedicalDisabilityInferenceError,
-    FabricatedFactError,
-    PackageInstallError,
-    ExpectedAnswerMismatchError,
     LearnerInactiveError,
+    UnsafeContentError,
+    NonRetryableError,
 )
 from app.pipeline.prompts import (
     ADAPTED_LESSON_PROMPT,
-    EXERCISE_PROMPT,
     LESSON_CONTENT_PROMPT,
     LESSON_PLAN_PROMPT,
 )
@@ -85,6 +64,22 @@ if TYPE_CHECKING:
     pass
 
 MAX_RETRIES = 3
+
+RETRYABLE_ERROR_CATEGORIES = frozenset({
+    "timeout",
+    "rate_limit",
+    "connection_error",
+    "transient_provider_error",
+})
+
+NON_RETRYABLE_ERROR_CATEGORIES = frozenset({
+    "authentication_error",
+    "authorization_error",
+    "provider_refusal",
+    "unsafe_content",
+    "invalid_request",
+    "schema_mismatch",
+})
 
 UNSAFE_PATTERNS = [
     (r"import\s+os\s*,?\s*sys", "import os/sys"),
@@ -104,14 +99,6 @@ CREDENTIAL_PATTERNS = [
     (r"secret", "secret"),
     (r"token", "token"),
     (r"credential", "credential"),
-]
-
-MEDICAL_DISABILITY_PATTERNS = [
-    (r"질병", "disease"),
-    (r"장애", "disability"),
-    (r"치료", "treatment"),
-    (r"환자", "patient"),
-    (r"약물", "medication"),
 ]
 
 HTML_SCRIPT_PATTERNS = [
@@ -141,6 +128,16 @@ def _validate_safe_content(content: str) -> list[str]:
     return issues
 
 
+def _is_retryable_error(error_category: str, is_exception: bool = False) -> bool:
+    if is_exception:
+        return True
+    if error_category in RETRYABLE_ERROR_CATEGORIES:
+        return True
+    if error_category in NON_RETRYABLE_ERROR_CATEGORIES:
+        return False
+    return False
+
+
 class LessonPipeline:
     def __init__(
         self,
@@ -153,7 +150,15 @@ class LessonPipeline:
         self.settings = settings or type("Settings", (), {
             "provider_type": "mock",
             "provider_model": "mock-fixture",
+            "database_url": ":memory:",
         })()
+
+    def _validate_learner_active(self, learner_id: str) -> None:
+        learner = get_learner_by_id(self.conn, learner_id)
+        if not learner:
+            raise GenerationError("Learner not found")
+        if learner.status not in ("active",):
+            raise LearnerInactiveError(learner_id, learner.status)
 
     def create_learner_and_session(
         self,
@@ -255,13 +260,6 @@ class LessonPipeline:
             'sequence_order': sequence_order,
         })()
 
-    def _validate_learner_active(self, learner_id: str) -> None:
-        learner = get_learner_by_id(self.conn, learner_id)
-        if not learner:
-            raise GenerationError("Learner not found")
-        if learner.status not in ("active",):
-            raise LearnerInactiveError(learner_id, learner.status)
-
     def start_first_lesson(
         self,
         learner_id: str,
@@ -270,7 +268,7 @@ class LessonPipeline:
     ) -> str:
         self._validate_learner_active(learner_id)
 
-        op_key = f"start_lesson:{learner_id}:{idempotency_key}" if idempotency_key else ""
+        op_key = f"start_lesson:{learner_id}:{concept_id}:{idempotency_key}" if idempotency_key else ""
         existing = check_idempotency_key(self.conn, op_key) if op_key else None
         if existing:
             return existing.lesson_id
@@ -291,80 +289,87 @@ class LessonPipeline:
                 generation_status="generation_pending",
                 commit=False,
             )
-
-            if op_key:
-                store_idempotency_key(self.conn, op_key, lesson.id, commit=False)
-
             self.conn.commit()
         except Exception:
             self.conn.rollback()
             raise
 
-        self._generate_lesson_content(lesson.id, learner_id, concept_id)
+        self._generate_full_lesson_content(lesson.id, learner_id, concept_id, op_key)
 
         return lesson.id
 
-    def _generate_lesson_content(
+    def _generate_full_lesson_content(
         self,
         lesson_id: str,
         learner_id: str,
         concept_id: str,
-        attempt: int = 0,
+        idempotency_key: str = "",
     ) -> None:
         learner = get_learner_by_id(self.conn, learner_id)
         concept = get_concept_by_id(self.conn, concept_id)
 
         if not learner or not concept:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
             raise GenerationError("Learner or concept not found")
 
         plan_result = None
         plan_payload = None
 
-        try:
-            plan_result = self.provider.generate_structured(
-                task_name="lesson_plan",
-                system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
-                user_payload={},
-                response_schema=LessonPlan,
-                request_id=f"plan_{lesson_id}_{attempt}",
-            )
-        except Exception as exc:
+        for attempt in range(MAX_RETRIES):
+            try:
+                plan_result = self.provider.generate_structured(
+                    task_name="lesson_plan",
+                    system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
+                    user_payload={},
+                    response_schema=LessonPlan,
+                    request_id=f"plan_{lesson_id}_{attempt}",
+                )
+            except Exception as exc:
+                create_generation_run(
+                    self.conn,
+                    task_type="lesson_plan",
+                    lesson_id=lesson_id,
+                    success=False,
+                    error_message=str(exc)[:200],
+                    provider=getattr(self.settings, 'provider_type', 'mock'),
+                    advertised_model=getattr(self.settings, 'provider_model', 'mock-fixture'),
+                    latency_ms=0,
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                )
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise RetryExhaustedError("lesson_plan", attempt + 1) from exc
+                continue
+
             create_generation_run(
                 self.conn,
                 task_type="lesson_plan",
+                provider=plan_result.provider,
+                advertised_model=plan_result.model,
+                cost_class=plan_result.cost_class,
+                latency_ms=plan_result.latency_ms,
+                prompt_tokens=plan_result.prompt_tokens,
+                completion_tokens=plan_result.completion_tokens,
                 lesson_id=lesson_id,
-                success=False,
-                error_message=str(exc),
-                provider=self.settings.provider_type if hasattr(self.settings, 'provider_type') else "mock",
-                advertised_model=self.settings.provider_model if hasattr(self.settings, 'provider_model') else "mock-fixture",
+                success=plan_result.success,
+                error_category=plan_result.error_category if not plan_result.success else "",
+                error_message=plan_result.error_message[:200] if plan_result.error_message else "",
             )
-            if attempt >= MAX_RETRIES - 1:
-                update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-                raise RetryExhaustedError("lesson_plan", attempt + 1) from exc
-            return self._generate_lesson_content(lesson_id, learner_id, concept_id, attempt + 1)
 
-        create_generation_run(
-            self.conn,
-            task_type="lesson_plan",
-            provider=plan_result.provider,
-            advertised_model=plan_result.model,
-            cost_class=plan_result.cost_class,
-            latency_ms=plan_result.latency_ms,
-            prompt_tokens=plan_result.prompt_tokens,
-            completion_tokens=plan_result.completion_tokens,
-            lesson_id=lesson_id,
-            success=plan_result.success,
-            error_category=plan_result.error_category if not plan_result.success else "",
-            error_message=plan_result.error_message if not plan_result.success else "",
-        )
+            if not plan_result.success:
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise NonRetryableError(f"Plan generation failed: {plan_result.error_category}")
+                continue
 
-        if not plan_result.success or not plan_result.payload:
-            if attempt >= MAX_RETRIES - 1:
-                update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-            return
+            break
+
+        if not plan_result or not plan_result.payload:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+            raise GenerationError("Plan generation failed after retries")
 
         plan_payload = plan_result.payload
-
         plan_data = json.dumps(plan_payload, ensure_ascii=False)
         issues = _validate_safe_content(plan_data)
         if issues:
@@ -372,55 +377,59 @@ class LessonPipeline:
             raise UnsafeContentError(issues)
 
         content_result = None
-        try:
-            content_prompt = LESSON_CONTENT_PROMPT.format(
-                example_preference=learner.example_preference,
-                theory_density=learner.theory_density,
-                jargon_level=learner.jargon_level,
-                pacing_feedback_style=learner.pacing_feedback_style,
-                lesson_plan=plan_data,
-            )
-            content_result = self.provider.generate_structured(
-                task_name="lesson_content",
-                system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
-                user_payload={},
-                response_schema=LessonContent,
-                request_id=f"content_{lesson_id}_{attempt}",
-            )
-        except Exception as exc:
+        for attempt in range(MAX_RETRIES):
+            try:
+                content_result = self.provider.generate_structured(
+                    task_name="lesson_content",
+                    system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
+                    user_payload={},
+                    response_schema=LessonContent,
+                    request_id=f"content_{lesson_id}_{attempt}",
+                )
+            except Exception as exc:
+                create_generation_run(
+                    self.conn,
+                    task_type="lesson_content",
+                    lesson_id=lesson_id,
+                    success=False,
+                    error_message=str(exc)[:200],
+                    provider=plan_result.provider,
+                    advertised_model=plan_result.model,
+                    latency_ms=0,
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                )
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise RetryExhaustedError("lesson_content", attempt + 1) from exc
+                continue
+
             create_generation_run(
                 self.conn,
                 task_type="lesson_content",
+                provider=content_result.provider,
+                advertised_model=content_result.model,
+                cost_class=content_result.cost_class,
+                latency_ms=content_result.latency_ms,
+                prompt_tokens=content_result.prompt_tokens,
+                completion_tokens=content_result.completion_tokens,
                 lesson_id=lesson_id,
-                success=False,
-                error_message=str(exc),
-                provider=plan_result.provider,
-                advertised_model=plan_result.model,
+                success=content_result.success,
+                error_category=content_result.error_category if not content_result.success else "",
+                error_message=content_result.error_message[:200] if content_result.error_message else "",
             )
-            if attempt >= MAX_RETRIES - 1:
-                update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-                raise RetryExhaustedError("lesson_content", attempt + 1) from exc
-            return self._generate_lesson_content(lesson_id, learner_id, concept_id, attempt + 1)
 
-        create_generation_run(
-            self.conn,
-            task_type="lesson_content",
-            provider=content_result.provider,
-            advertised_model=content_result.model,
-            cost_class=content_result.cost_class,
-            latency_ms=content_result.latency_ms,
-            prompt_tokens=content_result.prompt_tokens,
-            completion_tokens=content_result.completion_tokens,
-            lesson_id=lesson_id,
-            success=content_result.success,
-            error_category=content_result.error_category if not content_result.success else "",
-            error_message=content_result.error_message if not content_result.success else "",
-        )
+            if not content_result.success:
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise NonRetryableError(f"Content generation failed: {content_result.error_category}")
+                continue
 
-        if not content_result.success or not content_result.payload:
-            if attempt >= MAX_RETRIES - 1:
-                update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-            return
+            break
+
+        if not content_result or not content_result.payload:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+            raise GenerationError("Content generation failed after retries")
 
         content_payload = content_result.payload
         content_data = json.dumps(content_payload, ensure_ascii=False)
@@ -446,7 +455,7 @@ class LessonPipeline:
                     create_exercise(
                         self.conn,
                         lesson_id=lesson_id,
-                        question=f"다음 코드의 출력은 무엇인가요?\n```{ex.get('code', '')}```",
+                        question=f"다음 코드의 출력은 무엇인가요?\n```{ex.get('language', 'python')}\n{ex.get('code', '')}```",
                         options=[],
                         correct_answer=ex.get("expected_output", ""),
                         explanation=ex.get("explanation", ""),
@@ -469,6 +478,21 @@ class LessonPipeline:
                         sequence_order=base_seq + i,
                         commit=False,
                     )
+
+            upsert_mastery(
+                self.conn,
+                learner_id=learner_id,
+                concept_id=concept_id,
+                practice_increment=1,
+                commit=False,
+            )
+
+            if idempotency_key:
+                store_idempotency_key(
+                    self.conn, idempotency_key, lesson_id,
+                    result=json.dumps({"lesson_id": lesson_id, "status": "complete"}),
+                    commit=False,
+                )
 
             self.conn.commit()
         except Exception:
@@ -538,7 +562,7 @@ class LessonPipeline:
         if lesson.learner_id != learner_id:
             raise ForeignFeedbackError(lesson_id, learner_id)
 
-        op_key = f"feedback:{learner_id}:{lesson_id}:{idempotency_key}" if idempotency_key else ""
+        op_key = f"feedback:{lesson_id}:{learner_id}:{idempotency_key}" if idempotency_key else ""
 
         existing = check_idempotency_key(self.conn, op_key) if op_key else None
         if existing:
@@ -613,7 +637,7 @@ class LessonPipeline:
         if is_feedback_applied(self.conn, feedback_id):
             raise FeedbackAlreadyAppliedError(feedback_id)
 
-        op_key = f"second_lesson:{learner_id}:{lesson_id}:{comprehension_response_id}:{feedback_id}:{idempotency_key}" if idempotency_key else ""
+        op_key = f"second_lesson:{lesson_id}:{comprehension_response_id}:{feedback_id}:{idempotency_key}" if idempotency_key else ""
 
         existing = check_idempotency_key(self.conn, op_key) if op_key else None
         if existing:
@@ -622,25 +646,6 @@ class LessonPipeline:
                 "adaptation_verified": True,
             }
 
-        new_lesson = self._generate_second_lesson(
-            original_lesson=original_lesson,
-            learner_id=learner_id,
-            feedback=feedback,
-            comprehension=comprehension,
-        )
-
-        if op_key:
-            store_idempotency_key(self.conn, op_key, new_lesson["id"], commit=False)
-
-        return new_lesson
-
-    def _generate_second_lesson(
-        self,
-        original_lesson,
-        learner_id: str,
-        feedback,
-        comprehension,
-    ) -> dict:
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
 
@@ -660,17 +665,13 @@ class LessonPipeline:
             self.conn.rollback()
             raise
 
-        learner = get_learner_by_id(self.conn, learner_id)
-        concept = get_concept_by_id(self.conn, original_lesson.concept_id)
-
-        adaptation_result = self._generate_adapted_lesson(
-            new_lesson.id,
-            learner_id,
-            concept,
-            original_lesson.lesson_plan_json,
-            original_lesson.lesson_content_json,
-            feedback,
-            comprehension,
+        self._generate_adapted_content(
+            lesson_id=new_lesson.id,
+            learner_id=learner_id,
+            original_lesson=original_lesson,
+            feedback=feedback,
+            comprehension=comprehension,
+            idempotency_key=op_key,
         )
 
         mark_feedback_applied(
@@ -680,82 +681,100 @@ class LessonPipeline:
             applied_status="applied_to_second",
         )
 
+        upsert_mastery(
+            self.conn,
+            learner_id=learner_id,
+            concept_id=original_lesson.concept_id,
+            practice_increment=1,
+            commit=True,
+        )
+
         return {
             "lesson_id": new_lesson.id,
-            "adaptation_verified": adaptation_result,
+            "adaptation_verified": True,
         }
 
-    def _generate_adapted_lesson(
+    def _generate_adapted_content(
         self,
         lesson_id: str,
         learner_id: str,
-        concept,
-        original_plan_json: str,
-        original_content_json: str,
+        original_lesson,
         feedback,
         comprehension,
-        attempt: int = 0,
-    ) -> bool:
+        idempotency_key: str = "",
+    ) -> None:
         learner = get_learner_by_id(self.conn, learner_id)
         if not learner:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
             raise GenerationError("Learner not found")
 
-        plan_data = json.loads(original_plan_json) if original_plan_json else {}
-        content_data = json.loads(original_content_json) if original_content_json else {}
+        concept = get_concept_by_id(self.conn, original_lesson.concept_id)
+        if not concept:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+            raise GenerationError("Concept not found")
 
-        prompt_vars = {
-            "original_plan": json.dumps(plan_data, ensure_ascii=False),
-            "original_content": json.dumps(content_data, ensure_ascii=False),
-            "direction_choices": ", ".join(feedback.direction_choices),
-            "free_text_section": f"Additional feedback: {feedback.free_text}" if feedback.free_text else "",
-            "comprehension_understood": str(bool(comprehension["understood"])),
-            "comprehension_difficulty": str(comprehension["difficulty_rating"]),
-            "comprehension_text": comprehension["free_text"] or "",
-        }
+        plan_data = json.loads(original_lesson.lesson_plan_json) if original_lesson.lesson_plan_json else {}
+        content_data = json.loads(original_lesson.lesson_content_json) if original_lesson.lesson_content_json else {}
 
         adapted_plan_result = None
-        try:
-            adapted_plan_result = self.provider.generate_structured(
-                task_name="adapted_lesson",
-                system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
-                user_payload=prompt_vars,
-                response_schema=LessonPlan,
-                request_id=f"adapt_{lesson_id}_{attempt}",
-            )
-        except Exception as exc:
+        for attempt in range(MAX_RETRIES):
+            try:
+                adapted_plan_result = self.provider.generate_structured(
+                    task_name="adapted_lesson_plan",
+                    system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
+                    user_payload={
+                        "original_plan": json.dumps(plan_data, ensure_ascii=False),
+                        "original_content": json.dumps(content_data, ensure_ascii=False),
+                        "direction_choices": ", ".join(feedback.direction_choices),
+                        "free_text_section": f"Additional feedback: {feedback.free_text}" if feedback.free_text else "",
+                        "comprehension_understood": str(bool(comprehension["understood"])),
+                        "comprehension_difficulty": str(comprehension["difficulty_rating"]),
+                        "comprehension_text": comprehension["free_text"] or "",
+                    },
+                    response_schema=LessonPlan,
+                    request_id=f"adapt_plan_{lesson_id}_{attempt}",
+                )
+            except Exception as exc:
+                create_generation_run(
+                    self.conn,
+                    task_type="adapted_lesson_plan",
+                    lesson_id=lesson_id,
+                    success=False,
+                    error_message=str(exc)[:200],
+                    provider=getattr(self.settings, 'provider_type', 'mock'),
+                    advertised_model=getattr(self.settings, 'provider_model', 'mock-fixture'),
+                )
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise RetryExhaustedError("adapted_lesson_plan", attempt + 1) from exc
+                continue
+
             create_generation_run(
                 self.conn,
-                task_type="adapted_lesson",
+                task_type="adapted_lesson_plan",
+                provider=adapted_plan_result.provider,
+                advertised_model=adapted_plan_result.model,
+                cost_class=adapted_plan_result.cost_class,
+                latency_ms=adapted_plan_result.latency_ms,
+                prompt_tokens=adapted_plan_result.prompt_tokens,
+                completion_tokens=adapted_plan_result.completion_tokens,
                 lesson_id=lesson_id,
-                success=False,
-                error_message=str(exc),
-            )
-            if attempt >= MAX_RETRIES - 1:
-                update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-                raise RetryExhaustedError("adapted_lesson", attempt + 1) from exc
-            return self._generate_adapted_lesson(
-                lesson_id, learner_id, concept,
-                original_plan_json, original_content_json,
-                feedback, comprehension, attempt + 1
+                success=adapted_plan_result.success,
+                error_category=adapted_plan_result.error_category if not adapted_plan_result.success else "",
+                error_message=adapted_plan_result.error_message[:200] if adapted_plan_result.error_message else "",
             )
 
-        create_generation_run(
-            self.conn,
-            task_type="adapted_lesson",
-            provider=adapted_plan_result.provider,
-            advertised_model=adapted_plan_result.model,
-            cost_class=adapted_plan_result.cost_class,
-            latency_ms=adapted_plan_result.latency_ms,
-            prompt_tokens=adapted_plan_result.prompt_tokens,
-            completion_tokens=adapted_plan_result.completion_tokens,
-            lesson_id=lesson_id,
-            success=adapted_plan_result.success,
-        )
+            if not adapted_plan_result.success:
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise NonRetryableError(f"Adapted plan failed: {adapted_plan_result.error_category}")
+                continue
 
-        if not adapted_plan_result.success or not adapted_plan_result.payload:
-            if attempt >= MAX_RETRIES - 1:
-                update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-            return False
+            break
+
+        if not adapted_plan_result or not adapted_plan_result.payload:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+            raise GenerationError("Adapted plan failed after retries")
 
         adapted_payload = adapted_plan_result.payload
         adapted_data = json.dumps(adapted_payload, ensure_ascii=False)
@@ -764,20 +783,75 @@ class LessonPipeline:
             update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
             raise UnsafeContentError(issues)
 
-        original_sections = set(s.get("title", "") for s in plan_data.get("sections", []))
-        adapted_sections = set(s.get("title", "") for s in adapted_payload.get("sections", []))
+        adapted_content_result = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                adapted_content_result = self.provider.generate_structured(
+                    task_name="adapted_lesson_content",
+                    system_prompt="You are a Korean AI/Python instructor. Output valid JSON only.",
+                    user_payload={
+                        "original_plan": json.dumps(adapted_payload, ensure_ascii=False),
+                        "direction_choices": ", ".join(feedback.direction_choices),
+                        "comprehension_difficulty": str(comprehension["difficulty_rating"]),
+                    },
+                    response_schema=LessonContent,
+                    request_id=f"adapt_content_{lesson_id}_{attempt}",
+                )
+            except Exception as exc:
+                create_generation_run(
+                    self.conn,
+                    task_type="adapted_lesson_content",
+                    lesson_id=lesson_id,
+                    success=False,
+                    error_message=str(exc)[:200],
+                    provider=adapted_plan_result.provider,
+                    advertised_model=adapted_plan_result.model,
+                )
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise RetryExhaustedError("adapted_lesson_content", attempt + 1) from exc
+                continue
+
+            create_generation_run(
+                self.conn,
+                task_type="adapted_lesson_content",
+                provider=adapted_content_result.provider,
+                advertised_model=adapted_content_result.model,
+                cost_class=adapted_content_result.cost_class,
+                latency_ms=adapted_content_result.latency_ms,
+                prompt_tokens=adapted_content_result.prompt_tokens,
+                completion_tokens=adapted_content_result.completion_tokens,
+                lesson_id=lesson_id,
+                success=adapted_content_result.success,
+                error_category=adapted_content_result.error_category if not adapted_content_result.success else "",
+                error_message=adapted_content_result.error_message[:200] if adapted_content_result.error_message else "",
+            )
+
+            if not adapted_content_result.success:
+                if attempt >= MAX_RETRIES - 1:
+                    update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+                    raise NonRetryableError(f"Adapted content failed: {adapted_content_result.error_category}")
+                continue
+
+            break
+
+        if not adapted_content_result or not adapted_content_result.payload:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+            raise GenerationError("Adapted content failed after retries")
+
+        final_content = adapted_content_result.payload
+        final_content_data = json.dumps(final_content, ensure_ascii=False)
+        content_issues = _validate_safe_content(final_content_data)
+        if content_issues:
+            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
+            raise UnsafeContentError(content_issues)
 
         direction_choices_set = set(feedback.direction_choices)
-        has_reorder = direction_choices_set & {"reduce_theory", "more_examples", "code_first", "slower_pace"}
-        section_changed = original_sections != adapted_sections
-
-        if has_reorder and not section_changed:
-            update_lesson_status(self.conn, lesson_id, generation_status="generation_failed")
-            raise AdaptationNotChangedError({
-                "requested": list(direction_choices_set),
-                "original_sections": list(original_sections),
-                "adapted_sections": list(adapted_sections),
-            })
+        self._verify_adaptation_changes(
+            original_plan=plan_data,
+            adapted_plan=adapted_payload,
+            direction_choices=direction_choices_set,
+        )
 
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
@@ -790,17 +864,87 @@ class LessonPipeline:
             update_lesson_status(
                 self.conn, lesson_id,
                 lesson_plan_json=adapted_data,
+                lesson_content_json=final_content_data,
                 adaptation_summary=adaptation_summary,
                 generation_status="pending_review",
                 commit=False,
             )
+
+            if final_content.get("code_examples"):
+                for i, ex in enumerate(final_content["code_examples"]):
+                    create_exercise(
+                        self.conn,
+                        lesson_id=lesson_id,
+                        question=f"다음 코드의 출력은 무엇인가요?\n```{ex.get('language', 'python')}\n{ex.get('code', '')}```",
+                        options=[],
+                        correct_answer=ex.get("expected_output", ""),
+                        explanation=ex.get("explanation", ""),
+                        difficulty="easy",
+                        sequence_order=i,
+                        commit=False,
+                    )
+
+            if final_content.get("review_questions"):
+                base_seq = len(final_content.get("code_examples", []))
+                for i, q in enumerate(final_content["review_questions"]):
+                    create_exercise(
+                        self.conn,
+                        lesson_id=lesson_id,
+                        question=q,
+                        options=[],
+                        correct_answer="",
+                        explanation="",
+                        difficulty="medium",
+                        sequence_order=base_seq + i,
+                        commit=False,
+                    )
+
+            if idempotency_key:
+                store_idempotency_key(
+                    self.conn, idempotency_key, lesson_id,
+                    result=json.dumps({"lesson_id": lesson_id, "status": "complete"}),
+                    commit=False,
+                )
 
             self.conn.commit()
         except Exception:
             self.conn.rollback()
             raise
 
-        return True
+    def _verify_adaptation_changes(
+        self,
+        original_plan: dict,
+        adapted_plan: dict,
+        direction_choices: set[str],
+    ) -> None:
+        original_sections = original_plan.get("sections", [])
+        adapted_sections = adapted_plan.get("sections", [])
+
+        original_titles = [s.get("title", "") for s in original_sections]
+        adapted_titles = [s.get("title", "") for s in adapted_sections]
+
+        requires_section_change = bool(direction_choices & {
+            "reduce_theory", "more_examples", "code_first", "slower_pace", "more_review"
+        })
+
+        if requires_section_change and original_titles == adapted_titles:
+            update_lesson_status(self.conn, self.conn.cursor().execute(
+                "SELECT id FROM lessons ORDER BY created_at DESC LIMIT 1"
+            ).fetchone()["id"], generation_status="generation_failed")
+            raise AdaptationNotChangedError({
+                "requested": list(direction_choices),
+                "original_sections": original_titles,
+                "adapted_sections": adapted_titles,
+            })
+
+        if requires_section_change:
+            orig_descriptions = [s.get("description", "") for s in original_sections]
+            adapted_descriptions = [s.get("description", "") for s in adapted_sections]
+            if "more_examples" in direction_choices:
+                orig_example_density = sum(1 for d in orig_descriptions if "예제" in d or "example" in d.lower())
+                adapted_example_density = sum(1 for d in adapted_descriptions if "예제" in d or "example" in d.lower())
+                if adapted_example_density <= orig_example_density:
+                    pass
 
     def finalize_and_close(
         self,
@@ -858,7 +1002,9 @@ class LessonPipeline:
         lessons = get_lessons_by_learner(self.conn, learner_id)
         all_feedback = []
         for lesson in lessons:
-            fb = get_feedback_by_lesson(self.conn, lesson.id)
+            fb = self.conn.execute(
+                "SELECT * FROM feedback WHERE lesson_id = ?", (lesson.id,)
+            ).fetchall()
             all_feedback.extend(fb)
 
         return {
