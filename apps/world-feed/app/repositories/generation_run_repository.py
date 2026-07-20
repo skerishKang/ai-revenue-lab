@@ -99,6 +99,9 @@ def update_generation_run(
     retry_count: int | None = None,
     error_category: str | None = None,
     error_message: str | None = None,
+    provider: str | None = None,
+    advertised_model: str | None = None,
+    cost_class: str | None = None,
 ) -> GenerationRunRecord | None:
     with transaction_scope(conn):
         existing = conn.execute(
@@ -138,6 +141,15 @@ def update_generation_run(
         if error_message is not None:
             updates.append("error_message = ?")
             params.append(error_message)
+        if provider is not None:
+            updates.append("provider = ?")
+            params.append(provider)
+        if advertised_model is not None:
+            updates.append("advertised_model = ?")
+            params.append(advertised_model)
+        if cost_class is not None:
+            updates.append("cost_class = ?")
+            params.append(cost_class)
         if not updates:
             return get_generation_run_by_id(conn, run_id)
         params.append(run_id)

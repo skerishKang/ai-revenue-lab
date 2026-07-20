@@ -1,6 +1,8 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+SUPPORTED_AI_PROVIDERS = frozenset({"mock"})
+
 
 class Settings(BaseSettings):
     """Environment-backed configuration for the World Feed MVP.

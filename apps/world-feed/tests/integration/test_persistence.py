@@ -4,6 +4,7 @@ from app.domain.enums import Category
 from app.service import WorldFeedService
 from tests.conftest import (
     event_id_map,
+    event_source_ids_map,
     make_brief_provider,
     make_reader,
     make_source,
@@ -34,7 +35,8 @@ def test_brief_persists_across_reopen(db_path):
     svc.ingest_source_card(conn, make_source("s1", "ev-1", Category.PLACE_CULTURE))
     svc.resolve_canonical_events(conn)
     mp = event_id_map(conn)
-    provider = make_brief_provider([mp["ev-1"]], [mp["ev-1"]])
+    sm = event_source_ids_map(conn)
+    provider = make_brief_provider([mp["ev-1"]], [mp["ev-1"]], source_ids_map=sm)
     svc = WorldFeedService(provider=provider, settings=settings)
     svc.create_reader(conn, make_reader("r1"))
     brief = svc.generate_first_brief(conn, "r1")

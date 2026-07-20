@@ -4,8 +4,8 @@ from app.config import settings
 from app.db import apply_migrations, get_connection
 from app.domain.enums import Category, SourceState
 from app.repositories import canonical_event_repository
-from app.service import WorldFeedService, BriefGenerationError
-from tests.conftest import event_id_map, make_brief_provider, make_reader, make_source
+from app.service import BriefGenerationError, WorldFeedService
+from tests.conftest import event_id_map, event_source_ids_map, make_brief_provider, make_reader, make_source
 
 
 def _svc(provider):
@@ -64,34 +64,62 @@ class TestSourceStates:
         )
         svc.resolve_canonical_events(conn)
         mp = event_id_map(conn)
+        sm = event_source_ids_map(conn)
         conf_id = mp["ev-conf"]
         svc.create_reader(conn, make_reader("r1"))
 
-        # Missing uncertainty note -> validation fails, no brief.
-        bad = make_brief_provider([conf_id], [conf_id])
-        bad._task_payloads = {
-            "generate_first_microbrief": {
-                "brief_title": "t", "deck": "d",
-                "items": [{"event_id": conf_id, "headline": "h",
-                           "explanation": "x", "source_ids": ["s1"]}],
-                "uncertainty_notes": [], "feedback_note": None,
-            }
-        }
-        svc_bad = _svc(bad)
+        from app.domain.models import ProviderResult
+        from app.domain.enums import CostClass
+
+        class BadProvider:
+            def __init__(self):
+                self._model = "mock-v1"
+            @property
+            def provider(self):
+                return "mock"
+            @property
+            def model(self):
+                return self._model
+            def generate_structured(self, **kwargs):
+                return ProviderResult(
+                    provider="mock", advertised_model=self._model,
+                    cost_class=CostClass.FREE, latency_seconds=0.0, retry_count=0,
+                    payload={
+                        "brief_title": "t", "deck": "d",
+                        "items": [{"event_id": conf_id, "headline": "h",
+                                   "explanation": "x", "source_ids": sm.get(conf_id, ["s1"])}],
+                        "uncertainty_notes": [], "feedback_note": None,
+                    },
+                    request_id=kwargs.get("request_id"), success=True,
+                )
+
+        svc_bad = _svc(BadProvider())
         with pytest.raises(BriefGenerationError):
             svc_bad.generate_first_brief(conn, "r1")
 
-        # With uncertainty note -> success.
-        good = make_brief_provider([conf_id], [conf_id])
-        good._task_payloads = {
-            "generate_first_microbrief": {
-                "brief_title": "t", "deck": "d",
-                "items": [{"event_id": conf_id, "headline": "h",
-                           "explanation": "x", "source_ids": ["s1"]}],
-                "uncertainty_notes": [conf_id], "feedback_note": None,
-            }
-        }
-        svc_good = _svc(good)
+        class GoodProvider:
+            def __init__(self):
+                self._model = "mock-v1"
+            @property
+            def provider(self):
+                return "mock"
+            @property
+            def model(self):
+                return self._model
+            def generate_structured(self, **kwargs):
+                return ProviderResult(
+                    provider="mock", advertised_model=self._model,
+                    cost_class=CostClass.FREE, latency_seconds=0.0, retry_count=0,
+                    payload={
+                        "brief_title": "t", "deck": "d",
+                        "items": [{"event_id": conf_id, "headline": "h",
+                                   "explanation": "x", "source_ids": sm.get(conf_id, ["s1"])}],
+                        "uncertainty_notes": [conf_id], "feedback_note": None,
+                    },
+                    request_id=kwargs.get("request_id"), success=True,
+                )
+
+        svc_good = _svc(GoodProvider())
         brief = svc_good.generate_first_brief(conn, "r1")
         assert brief.status == "pending_review"
         conn.close()

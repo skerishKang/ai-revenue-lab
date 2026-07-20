@@ -36,11 +36,16 @@ class MockProvider:
         task_payloads: dict[str, dict[str, Any]] | None = None,
         responses: list[dict[str, Any]] | None = None,
     ):
+        self._provider_name = "mock"
         self._model = model
         self._fixture_payload = fixture_payload
         self._task_payloads = dict(task_payloads) if task_payloads else {}
         self._responses: list[dict[str, Any]] = list(responses) if responses else []
         self._requests: list[dict[str, Any]] = []
+
+    @property
+    def provider(self) -> str:
+        return self._provider_name
 
     @property
     def model(self) -> str:

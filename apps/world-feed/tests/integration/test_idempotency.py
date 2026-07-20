@@ -6,6 +6,7 @@ from app.repositories import brief_repository, feedback_repository
 from app.service import WorldFeedService
 from tests.conftest import (
     event_id_map,
+    event_source_ids_map,
     make_brief_provider,
     make_reader,
     make_source,
@@ -21,15 +22,15 @@ def _seed(conn):
     svc.ingest_source_card(conn, make_source("s1", "ev-1", Category.PLACE_CULTURE))
     svc.ingest_source_card(conn, make_source("s2", "ev-2", Category.NEIGHBORHOOD))
     svc.resolve_canonical_events(conn)
-    return event_id_map(conn)
+    return event_id_map(conn), event_source_ids_map(conn)
 
 
 class TestIdempotency:
     def test_duplicate_first_brief_does_not_create_new_number(self, db_path):
         conn = get_connection(db_path)
         apply_migrations(conn, "migrations")
-        mp = _seed(conn)
-        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values())))
+        mp, sm = _seed(conn)
+        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values()), source_ids_map=sm))
         svc.create_reader(conn, make_reader("r1"))
         a = svc.generate_first_brief(conn, "r1")
         b = svc.generate_first_brief(conn, "r1")

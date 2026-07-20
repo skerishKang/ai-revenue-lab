@@ -15,7 +15,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 
 from app.ai.mock import MockProvider
-from app.config import settings
+from app.config import SUPPORTED_AI_PROVIDERS, settings
 from app.db import apply_migrations, get_connection
 from app.domain.models import (
     FeedbackInput,
@@ -30,6 +30,10 @@ from app.service import (
 )
 
 _MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / "migrations"
+
+
+class UnsupportedProviderError(RuntimeError):
+    pass
 
 
 @asynccontextmanager
@@ -49,21 +53,29 @@ def create_app(
     db_path: str | None = None,
     provider=None,
     service: WorldFeedService | None = None,
+    app_settings=None,
 ) -> FastAPI:
+    cfg = app_settings or settings
     app = FastAPI(title="World Feed", docs_url=None, redoc_url=None)
-    resolved_db = db_path or settings.database_path
+    resolved_db = db_path or cfg.database_path
     app.state.db_path = resolved_db
 
     if provider is not None:
         app.state.provider = provider
-    elif settings.ai_provider == "mock":
-        app.state.provider = MockProvider(model=settings.ai_model)
+    elif cfg.ai_provider in SUPPORTED_AI_PROVIDERS:
+        app.state.provider = MockProvider(model=cfg.ai_model)
     else:
-        app.state.provider = MockProvider(model=settings.ai_model)
+        raise UnsupportedProviderError(
+            f"unsupported AI_PROVIDER: {cfg.ai_provider!r}; "
+            f"supported: {sorted(SUPPORTED_AI_PROVIDERS)}"
+        )
 
     app.state.service = service or WorldFeedService(
-        provider=app.state.provider, settings=settings
+        provider=app.state.provider, settings=cfg
     )
+
+    actual_provider = getattr(app.state.provider, "provider", cfg.ai_provider)
+    actual_model = getattr(app.state.provider, "model", cfg.ai_model)
 
     app.router.lifespan_context = _lifespan
 
@@ -71,8 +83,8 @@ def create_app(
     def health():
         return {
             "status": "ok",
-            "ai_provider": settings.ai_provider,
-            "ai_model": settings.ai_model,
+            "ai_provider": actual_provider,
+            "ai_model": actual_model,
         }
 
     @app.post("/sources")
@@ -81,7 +93,7 @@ def create_app(
         try:
             rec = request.app.state.service.ingest_source_card(conn, card)
             return _source_json(rec)
-        except Exception as exc:  # validation / duplicate
+        except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc))
         finally:
             conn.close()

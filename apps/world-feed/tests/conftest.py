@@ -95,16 +95,16 @@ def make_reader(
     )
 
 
-def brief_payload(event_ids, *, title="Brief", feedback_note=None, uncertainty_notes=None):
-    items = [
-        {
+def brief_payload(event_ids, *, title="Brief", feedback_note=None, uncertainty_notes=None, source_ids_map=None):
+    items = []
+    for eid in event_ids:
+        sids = source_ids_map.get(eid, ["src-1"]) if source_ids_map else ["src-1"]
+        items.append({
             "event_id": eid,
             "headline": f"Headline for {eid}",
             "explanation": f"Explanation for {eid}.",
-            "source_ids": ["src-1"],
-        }
-        for eid in event_ids
-    ]
+            "source_ids": sids,
+        })
     return {
         "brief_title": title,
         "deck": "Synthetic deck.",
@@ -114,15 +114,16 @@ def brief_payload(event_ids, *, title="Brief", feedback_note=None, uncertainty_n
     }
 
 
-def make_brief_provider(first_ids, second_ids, *, first_title="First", second_title="Second", feedback_note="applied feedback"):
-    from app.ai.mock import MockProvider
-
+def make_brief_provider(first_ids, second_ids, *, source_ids_map=None, first_title="First", second_title="Second", feedback_note="applied feedback"):
     return MockProvider(
         model=settings.ai_model,
         task_payloads={
-            "generate_first_microbrief": brief_payload(first_ids, title=first_title),
+            "generate_first_microbrief": brief_payload(
+                first_ids, title=first_title, source_ids_map=source_ids_map
+            ),
             "generate_second_microbrief": brief_payload(
-                second_ids, title=second_title, feedback_note=feedback_note
+                second_ids, title=second_title, feedback_note=feedback_note,
+                source_ids_map=source_ids_map,
             ),
         },
     )
@@ -132,3 +133,9 @@ def event_id_map(conn):
     from app.repositories import canonical_event_repository
 
     return {e.canonical_key: e.id for e in canonical_event_repository.list_events(conn)}
+
+
+def event_source_ids_map(conn):
+    from app.repositories import canonical_event_repository
+
+    return {e.id: e.source_ids for e in canonical_event_repository.list_events(conn)}

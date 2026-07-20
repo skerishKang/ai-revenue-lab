@@ -2,11 +2,13 @@ import pytest
 
 from app.config import settings
 from app.db import apply_migrations, get_connection
-from app.domain.enums import Category
+from app.domain.enums import Category, FeedbackAction
+from app.domain.models import FeedbackInput
 from app.repositories import brief_repository, generation_run_repository
 from app.service import BriefGenerationError, WorldFeedService
 from tests.conftest import (
     event_id_map,
+    event_source_ids_map,
     make_brief_provider,
     make_reader,
     make_source,
@@ -26,18 +28,15 @@ def _seed(conn, svc):
 
 class TestTransactions:
     def test_failed_generation_rolls_back_and_keeps_last_valid(self, db_path):
-        from app.domain.enums import FeedbackAction
-        from app.domain.models import FeedbackInput
-
         conn = get_connection(db_path)
         apply_migrations(conn, "migrations")
         _seed(conn, _svc(make_brief_provider([], [])))
         mp = event_id_map(conn)
-        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values())))
+        sm = event_source_ids_map(conn)
+        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values()), source_ids_map=sm))
         svc.create_reader(conn, make_reader("r1"))
         first = svc.generate_first_brief(conn, "r1")
 
-        # Persist feedback, then fail second generation; first is untouched.
         feedback = FeedbackInput(
             feedback_id="fx",
             reader_id="r1",
@@ -51,7 +50,6 @@ class TestTransactions:
             failing.generate_second_brief(
                 conn, "r1", feedback_idempotency_key="idem-rollback"
             )
-        # No second brief; first still present and unchanged.
         assert brief_repository.count_briefs(conn) == 1
         still = brief_repository.get_brief_by_id(conn, first.id)
         assert still.status == "pending_review"
@@ -62,10 +60,9 @@ class TestTransactions:
         apply_migrations(conn, "migrations")
         _seed(conn, _svc(make_brief_provider([], [])))
         mp = event_id_map(conn)
-        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values())))
+        sm = event_source_ids_map(conn)
+        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values()), source_ids_map=sm))
         svc.create_reader(conn, make_reader("r1"))
-
-        real_create = brief_repository.create_brief
 
         def boom(*args, **kwargs):
             raise RuntimeError("simulated DB failure during brief insert")
@@ -74,7 +71,6 @@ class TestTransactions:
         with pytest.raises(RuntimeError):
             svc.generate_first_brief(conn, "r1")
 
-        # No brief row, and the generation run was not finalized as success.
         assert brief_repository.count_briefs(conn) == 0
         runs = generation_run_repository.list_runs_by_task_type(
             conn, "generate_first_microbrief"
@@ -88,7 +84,8 @@ class TestTransactions:
         apply_migrations(conn, "migrations")
         _seed(conn, _svc(make_brief_provider([], [])))
         mp = event_id_map(conn)
-        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values())))
+        sm = event_source_ids_map(conn)
+        svc = _svc(make_brief_provider(list(mp.values()), list(mp.values()), source_ids_map=sm))
         svc.create_reader(conn, make_reader("r1"))
         svc.generate_first_brief(conn, "r1")
         runs = generation_run_repository.list_runs_by_task_type(
