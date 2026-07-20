@@ -3,6 +3,7 @@ import re
 import sqlite3
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
 
@@ -17,6 +18,12 @@ def _validate_timestamp(value: str, field_name: str) -> None:
             f"{field_name} must be UTC ISO-8601 "
             "(YYYY-MM-DDTHH:MM:SS.mmmZ)"
         )
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError as exc:
+        raise GenerationRunValidationError(
+            f"{field_name} must be a valid UTC ISO-8601 calendar timestamp"
+        ) from exc
 
 
 @dataclass(frozen=True)

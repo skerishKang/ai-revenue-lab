@@ -240,3 +240,147 @@ class TestGenerationRunFilePersistence:
             assert found.input_tokens == 50
             assert found.output_tokens == 100
             conn2.close()
+
+
+class TestGenerationRunTimestampValidation:
+    def test_valid_started_at_accepted(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        result = gr_repo.create_generation_run(
+            conn,
+            task_type="editorial_plan",
+            provider="mock",
+            advertised_model="mock-v1",
+            started_at="2026-07-20T09:23:46.123Z",
+        )
+        assert result.started_at == "2026-07-20T09:23:46.123Z"
+        conn.close()
+
+    def test_invalid_started_at_month_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.create_generation_run(
+                conn,
+                task_type="editorial_plan",
+                provider="mock",
+                advertised_model="mock-v1",
+                started_at="2026-13-20T09:23:46.123Z",
+            )
+        conn.close()
+
+    def test_invalid_started_at_day_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.create_generation_run(
+                conn,
+                task_type="editorial_plan",
+                provider="mock",
+                advertised_model="mock-v1",
+                started_at="2026-02-30T09:23:46.123Z",
+            )
+        conn.close()
+
+    def test_invalid_started_at_hour_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.create_generation_run(
+                conn,
+                task_type="editorial_plan",
+                provider="mock",
+                advertised_model="mock-v1",
+                started_at="2026-07-20T25:23:46.123Z",
+            )
+        conn.close()
+
+    def test_invalid_started_at_shape_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.create_generation_run(
+                conn,
+                task_type="editorial_plan",
+                provider="mock",
+                advertised_model="mock-v1",
+                started_at="not-a-timestamp",
+            )
+        conn.close()
+
+    def test_invalid_completed_at_month_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        run = gr_repo.create_generation_run(
+            conn,
+            task_type="editorial_plan",
+            provider="mock",
+            advertised_model="mock-v1",
+        )
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.update_generation_run(
+                conn,
+                run.id,
+                completed_at="2026-13-01T00:00:00.000Z",
+            )
+        conn.close()
+
+    def test_invalid_completed_at_day_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        run = gr_repo.create_generation_run(
+            conn,
+            task_type="editorial_plan",
+            provider="mock",
+            advertised_model="mock-v1",
+        )
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.update_generation_run(
+                conn,
+                run.id,
+                completed_at="2026-02-30T00:00:00.000Z",
+            )
+        conn.close()
+
+    def test_invalid_completed_at_second_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        run = gr_repo.create_generation_run(
+            conn,
+            task_type="editorial_plan",
+            provider="mock",
+            advertised_model="mock-v1",
+        )
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.update_generation_run(
+                conn,
+                run.id,
+                completed_at="2026-07-20T00:00:61.000Z",
+            )
+        conn.close()
+
+    def test_invalid_completed_at_shape_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+
+        run = gr_repo.create_generation_run(
+            conn,
+            task_type="editorial_plan",
+            provider="mock",
+            advertised_model="mock-v1",
+        )
+        with pytest.raises(gr_repo.GenerationRunValidationError):
+            gr_repo.update_generation_run(
+                conn,
+                run.id,
+                completed_at="not-a-timestamp",
+            )
+        conn.close()
