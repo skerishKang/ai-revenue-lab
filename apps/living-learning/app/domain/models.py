@@ -82,11 +82,17 @@ class Lesson(BaseModel):
     updated_at: str = ""
 
 
+class ReviewQuestion(BaseModel):
+    question: NonEmptyStr
+    correct_answer: NonEmptyStr
+    explanation: NonEmptyStr
+
+
 class LessonContent(BaseModel):
     content_version: str = "1.0"
     title: NonEmptyStr
     sections: list[LessonContentSection] = Field(default_factory=list)
-    review_questions: list[str] = Field(default_factory=list)
+    review_questions: list[ReviewQuestion] = Field(default_factory=list)
     code_examples: list[CodeExample] = Field(default_factory=list)
     applied_feedback: list[AppliedFeedbackItem] = Field(default_factory=list)
     adaptation_notes: str = ""
@@ -112,8 +118,8 @@ class CodeExample(BaseModel):
     example_id: NonEmptyStr
     language: str = "python"
     code: NonEmptyStr
-    explanation: str = ""
-    expected_output: str = ""
+    explanation: NonEmptyStr
+    expected_output: NonEmptyStr
 
 
 class AppliedFeedbackItem(BaseModel):
@@ -214,6 +220,8 @@ class GenerationRun(BaseModel):
     error_message: str = ""
     lesson_id: str = ""
     success: bool = True
+    attempt_number: int = 1
+    request_id: str = ""
     created_at: str = ""
 
 

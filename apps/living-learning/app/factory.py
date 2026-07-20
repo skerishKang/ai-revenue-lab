@@ -17,7 +17,6 @@ from app.db import apply_migrations
 from app.routes import router
 
 
-_pipeline_instances = {}
 
 
 def get_connection_factory(database_url: str):
@@ -47,11 +46,6 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    for conn in _pipeline_instances.values():
-        if hasattr(conn, 'close'):
-            conn.close()
-    _pipeline_instances.clear()
-
 
 def create_app(settings=None) -> FastAPI:
     if settings is None:
@@ -67,10 +61,7 @@ def create_app(settings=None) -> FastAPI:
     app.state.settings = settings
     app.state.get_connection = get_connection_factory(settings.database_url)
 
-    try:
-        app.state.provider = create_provider(settings)
-    except ValueError as exc:
-        app.state.provider = None
+    app.state.provider = create_provider(settings)
 
     apply_migrations(settings.database_url)
 
@@ -83,18 +74,20 @@ def create_app(settings=None) -> FastAPI:
         model = "unknown"
         provider_type = "unknown"
 
-        if provider is not None:
-            try:
-                model = getattr(provider, 'model', 'unknown')
-            except Exception:
-                model = "error"
-            try:
-                provider_type = getattr(provider, 'provider_type', settings.provider_type)
-            except Exception:
-                provider_type = settings.provider_type
-        else:
-            provider_type = settings.provider_type
-            model = settings.provider_model
+        if provider is None:
+            return JSONResponse({
+                "status": "error",
+                "message": "Provider not instantiated"
+            }, status_code=503)
+
+        try:
+            model = getattr(provider, 'model', 'unknown')
+        except Exception:
+            model = "error"
+        try:
+            provider_type = getattr(provider, 'provider_type', 'unknown')
+        except Exception:
+            provider_type = "error"
 
         return JSONResponse({
             "status": "ok",

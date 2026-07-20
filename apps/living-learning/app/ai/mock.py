@@ -12,7 +12,7 @@ from app.domain.models import ProviderResult
 _DEFAULT_LESSON_PLAN = {
     "title": "테스트 레슨",
     "sections": [
-        {"section_id": "s1", "title": "섹션 1", "description": "설명", "emphasis": "중요"},
+        {"section_id": "s1", "title": "섹션 1", "description": "설명 코드 예제", "emphasis": "중요"},
     ],
 }
 
@@ -22,7 +22,10 @@ _DEFAULT_LESSON_CONTENT = {
     "sections": [
         {"section_id": "s1", "title": "섹션 1", "content": "내용 설명", "includes_code": True, "code_snippet": "x = 1"},
     ],
-    "review_questions": ["Q1: 무엇입니까?", "Q2: 왜 입니까?"],
+    "review_questions": [
+        {"question": "Q1: 무엇입니까?", "correct_answer": "이것입니다", "explanation": "왜냐하면"},
+        {"question": "Q2: 왜 입니까?", "correct_answer": "저것입니다", "explanation": "그러니까"}
+    ],
     "code_examples": [
         {
             "example_id": "ex1",

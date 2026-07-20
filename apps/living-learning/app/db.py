@@ -70,6 +70,8 @@ def _apply_one(conn: sqlite3.Connection, filename: str, sql_text: str) -> None:
 def apply_migrations(db_path: str | None = None) -> None:
     if db_path is None:
         db_path = get_settings().database_url
+    if db_path != ":memory:":
+        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")

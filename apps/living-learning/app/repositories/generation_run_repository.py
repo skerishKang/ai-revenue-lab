@@ -27,6 +27,8 @@ class GenerationRunRecord:
     error_message: str
     lesson_id: str
     success: bool
+    attempt_number: int
+    request_id: str
     created_at: str
 
 
@@ -45,6 +47,8 @@ def _row_to_record(row: sqlite3.Row) -> GenerationRunRecord:
         error_message=row["error_message"],
         lesson_id=row["lesson_id"],
         success=bool(row["success"]),
+        attempt_number=row["attempt_number"],
+        request_id=row["request_id"],
         created_at=row["created_at"],
     )
 
@@ -52,7 +56,8 @@ def _row_to_record(row: sqlite3.Row) -> GenerationRunRecord:
 _COLS = [
     "id", "task_type", "provider", "advertised_model", "cost_class",
     "prompt_version", "latency_ms", "prompt_tokens", "completion_tokens",
-    "error_category", "error_message", "lesson_id", "success", "created_at",
+    "error_category", "error_message", "lesson_id", "success", 
+    "attempt_number", "request_id", "created_at",
 ]
 _SELECT = ", ".join(_COLS)
 
@@ -72,16 +77,19 @@ def create_generation_run(
     error_message: str = "",
     lesson_id: str = "",
     success: bool = True,
+    attempt_number: int = 1,
+    request_id: str = "",
     commit: bool = True,
 ) -> GenerationRunRecord:
     now = _utcnow()
     run_id = f"gr_{secrets.token_urlsafe(16)}"
     conn.execute(
-        f"INSERT INTO generation_runs ({_SELECT}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        f"INSERT INTO generation_runs ({_SELECT}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (
             run_id, task_type, provider, advertised_model, cost_class,
             prompt_version, latency_ms, prompt_tokens, completion_tokens,
-            error_category, error_message, lesson_id, int(success), now,
+            error_category, error_message, lesson_id, int(success),
+            attempt_number, request_id, now,
         ),
     )
     if commit:
