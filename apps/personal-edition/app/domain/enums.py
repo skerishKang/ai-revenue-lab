@@ -41,3 +41,7 @@ class ProviderErrorCategory(StrEnum):
     SCHEMA_MISMATCH = "schema_mismatch"
     PROVIDER_ERROR = "provider_error"
     UNKNOWN = "unknown"
+    RATE_LIMIT = "rate_limit"
+    AUTH_FAILURE = "auth_failure"
+    REFUSAL = "refusal"
+    CONNECTION_ERROR = "connection_error"

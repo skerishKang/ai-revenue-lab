@@ -26,6 +26,7 @@ from app.auth import (
     verify_csrf_token,
 )
 from app.db import get_connection
+from app.config import settings
 from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
 from app.pipeline.markup import UnsafeMarkupError, check_payload
@@ -160,12 +161,27 @@ def admin_dashboard(request: Request):
             "WHERE e.generation_status != 'deleted' "
             "ORDER BY e.drafted_at DESC"
         ).fetchall()
+        recent_runs = conn.execute(
+            "SELECT task_type, provider, advertised_model, cost_class, "
+            "success, validation_status, latency_seconds, error_category, "
+            "started_at "
+            "FROM generation_runs ORDER BY started_at DESC LIMIT 10"
+        ).fetchall()
     finally:
         conn.close()
+
+    provider_instance = request.app.state.provider
+    actual_provider = getattr(provider_instance, "provider", provider_instance.__class__.__name__.lower())
+    actual_model = getattr(provider_instance, "model", settings.ai_model)
 
     context: dict[str, Any] = {
         "participants": participants,
         "editions": editions,
+        "recent_generation_runs": recent_runs,
+        "provider_name": settings.ai_provider,
+        "model_name": settings.ai_model,
+        "actual_provider": actual_provider,
+        "actual_model": actual_model,
     }
     resp, _ = _render_with_csrf(request, "admin_dashboard.html", context)
     return resp

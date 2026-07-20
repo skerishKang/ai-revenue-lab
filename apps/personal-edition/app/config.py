@@ -6,6 +6,8 @@ _DEFAULT_SECRETS = frozenset({
     "dev-admin-secret-change-in-production",
 })
 
+_VALID_PROVIDERS = frozenset({"mock", "external"})
+
 
 class Settings(BaseSettings):
     app_env: str = "development"
@@ -42,6 +44,33 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "COOKIE_SECURE must be true in production "
                     "(APP_ENV=production)"
+                )
+        return self
+
+    @model_validator(mode="after")
+    def _validate_provider_config(self):
+        if self.ai_provider not in _VALID_PROVIDERS:
+            raise ValueError(
+                f"AI_PROVIDER must be one of {sorted(_VALID_PROVIDERS)}, "
+                f"got '{self.ai_provider}'"
+            )
+        if self.ai_provider == "external":
+            if not self.ai_base_url:
+                raise ValueError(
+                    "AI_BASE_URL is required when AI_PROVIDER=external"
+                )
+            if not self.ai_api_key:
+                raise ValueError(
+                    "AI_API_KEY is required when AI_PROVIDER=external"
+                )
+            if not self.ai_model or self.ai_model == "mock-personal-edition-v1":
+                raise ValueError(
+                    "AI_MODEL must be set to a non-default value when "
+                    "AI_PROVIDER=external"
+                )
+            if self.app_env == "production" and not self.ai_base_url.startswith("https://"):
+                raise ValueError(
+                    "AI_BASE_URL must use HTTPS in production"
                 )
         return self
 

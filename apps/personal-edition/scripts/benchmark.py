@@ -1,0 +1,1373 @@
+#!/usr/bin/env python3
+"""Synthetic runtime benchmark runner for Personal Edition.
+
+Records provider/model identity, task and prompt version, success/failure
+category, latency, retry count, token usage, deterministic validation
+result, and synthetic result reference.  Never stores raw credentials,
+token material, or full generated private output.
+
+Usage:
+    python -m scripts.benchmark run <task> [--fixture NAME] [--repeat N] [--output PATH] [--db PATH] [--correct MINUTES]
+    python -m scripts.benchmark update-correction --run-id ID --minutes N [--db PATH]
+
+Tasks:
+    editorial_plan             Run only the editorial-plan stage
+    first_edition              Full pipeline first edition
+    feedback_second_edition    Follow-up edition with feedback
+    adversarial_grounding      Prohibited-inference grounding test
+    validator_feedback_repair  Validation failure then repair
+
+The runner uses the same provider configured for the application via
+environment variables (AI_PROVIDER, AI_BASE_URL, AI_MODEL, etc.).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sqlite3
+import sys
+import time
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_DIR))
+
+from app.ai.mock import MockProvider
+from app.config import Settings
+from app.db import apply_migrations, get_connection
+from app.domain.enums import ProviderErrorCategory
+from app.pipeline.errors import (
+    PROVIDER_FAILED,
+    VALIDATION_FAILED,
+    VALIDATION_PASSED,
+)
+from app.pipeline.fixtures import (
+    FixtureBundle,
+    inject_feedback_id,
+    list_bundles,
+    load_bundle,
+)
+from app.pipeline.prompts import DRAFT_PROMPT_VERSION, PLAN_PROMPT_VERSION
+from app.pipeline.segmentation import segment_text
+from app.pipeline.service import (
+    GenerationRequest,
+    GenerationService,
+    _provider_call_with_retry,
+)
+
+ALL_TASKS = [
+    "editorial_plan",
+    "first_edition",
+    "feedback_second_edition",
+    "adversarial_grounding",
+    "validator_feedback_repair",
+]
+
+
+# ---------------------------------------------------------------------------
+# Provider
+# ---------------------------------------------------------------------------
+
+
+def _build_provider(settings: Settings, fixture: FixtureBundle | None = None):
+    if settings.ai_provider == "mock":
+        model = settings.ai_model
+        if fixture is not None and fixture.plan_payload and fixture.draft_payload:
+            return MockProvider(
+                model=model,
+                task_payloads={
+                    "editorial_plan": fixture.plan_payload,
+                    "edition_draft": fixture.draft_payload,
+                },
+            )
+        return MockProvider(model=model)
+
+    if settings.ai_base_url:
+        from app.ai.external import ExternalProvider
+
+        return ExternalProvider(
+            base_url=settings.ai_base_url,
+            api_key=settings.ai_api_key,
+            model=settings.ai_model,
+            timeout_seconds=settings.ai_timeout_seconds,
+        )
+
+    raise SystemExit(
+        "provider config fail-closed: AI_PROVIDER must be 'mock' "
+        "or AI_BASE_URL must be set for an external provider"
+    )
+
+
+def _provider_info(provider: Any) -> dict[str, str]:
+    return {
+        "provider": getattr(
+            provider, "provider", provider.__class__.__name__.lower()
+        ),
+        "model": getattr(provider, "model", "unknown"),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Benchmark DB
+# ---------------------------------------------------------------------------
+
+
+def _create_benchmark_table(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS benchmark_runs (
+            id TEXT PRIMARY KEY,
+            benchmark_name TEXT NOT NULL,
+            fixture_name TEXT NOT NULL,
+            run_group TEXT NOT NULL DEFAULT 'default',
+            run_index INTEGER NOT NULL,
+            provider TEXT NOT NULL,
+            advertised_model TEXT NOT NULL,
+            task_type TEXT NOT NULL,
+            prompt_version TEXT,
+            started_at TEXT NOT NULL,
+            completed_at TEXT,
+            latency_seconds REAL,
+            success INTEGER NOT NULL DEFAULT 0,
+            failure_category TEXT,
+            error_category TEXT,
+            error_message TEXT,
+            retry_count INTEGER NOT NULL DEFAULT 0,
+            input_tokens INTEGER,
+            output_tokens INTEGER,
+            total_tokens INTEGER,
+            validation_result TEXT,
+            synthetic_result_ref TEXT,
+            human_correction_minutes REAL,
+            is_provider_failure INTEGER NOT NULL DEFAULT 0,
+            is_model_quality_failure INTEGER NOT NULL DEFAULT 0
+        )
+        """
+    )
+    try:
+        conn.execute("SELECT run_group FROM benchmark_runs LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.execute(
+            "ALTER TABLE benchmark_runs "
+            "ADD COLUMN run_group TEXT NOT NULL DEFAULT 'default'"
+        )
+    conn.commit()
+
+
+def _record_benchmark_run(
+    conn: sqlite3.Connection,
+    *,
+    benchmark_name: str,
+    fixture_name: str,
+    run_group: str,
+    run_index: int,
+    provider_info: dict[str, str],
+    task_type: str,
+    prompt_version: str | None,
+    started_at: str,
+    completed_at: str,
+    latency_seconds: float,
+    success: bool,
+    failure_category: str | None,
+    error_category: str | None,
+    error_message: str | None,
+    retry_count: int,
+    input_tokens: int | None,
+    output_tokens: int | None,
+    total_tokens: int | None,
+    validation_result: str,
+    synthetic_result_ref: str,
+) -> None:
+    run_id = str(uuid.uuid4())
+    is_provider = 1 if failure_category == "provider" else 0
+    is_model = 1 if failure_category == "model_quality" else 0
+    conn.execute(
+        "INSERT INTO benchmark_runs "
+        "(id, benchmark_name, fixture_name, run_group, run_index, provider, "
+        "advertised_model, task_type, prompt_version, started_at, completed_at, "
+        "latency_seconds, success, failure_category, error_category, "
+        "error_message, retry_count, input_tokens, output_tokens, total_tokens, "
+        "validation_result, synthetic_result_ref, human_correction_minutes, "
+        "is_provider_failure, is_model_quality_failure) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        "?, ?, NULL, ?, ?)",
+        (
+            run_id,
+            benchmark_name,
+            fixture_name,
+            run_group,
+            run_index,
+            provider_info["provider"],
+            provider_info["model"],
+            task_type,
+            prompt_version,
+            started_at,
+            completed_at,
+            latency_seconds,
+            1 if success else 0,
+            failure_category,
+            error_category,
+            error_message,
+            retry_count,
+            input_tokens,
+            output_tokens,
+            total_tokens,
+            validation_result,
+            synthetic_result_ref,
+            is_provider,
+            is_model,
+        ),
+    )
+    conn.commit()
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _classify_failure(
+    result_validation_status: str | None,
+    result_error_category: str | None,
+) -> str | None:
+    if result_validation_status == VALIDATION_PASSED:
+        return None
+    if result_error_category in (
+        None,
+        ProviderErrorCategory.SCHEMA_MISMATCH.value,
+        ProviderErrorCategory.INVALID_JSON.value,
+    ):
+        return "model_quality"
+    return "provider"
+
+
+def _setup_benchmark_db(db_path: str) -> sqlite3.Connection:
+    conn = get_connection(db_path)
+    migrations_dir = str(_DIR / "migrations")
+    apply_migrations(conn, migrations_dir)
+    _create_benchmark_table(conn)
+    return conn
+
+
+def _ensure_participant(
+    conn: sqlite3.Connection,
+    participant_id: str,
+    input_text: str | None = None,
+) -> tuple[str, str]:
+    from app import input_repository as input_repo
+    from app import participant_repository as pt_repo
+
+    existing = pt_repo.get_participant_by_id(conn, participant_id)
+    if existing is None:
+        pt_repo.create_participant(
+            conn,
+            participant_id=participant_id,
+            display_name=f"Benchmark {participant_id}",
+            preferred_language="ko",
+        )
+    raw_text = input_text or ("benchmark synthetic input text " * 150)
+    inp = input_repo.create_input(
+        conn,
+        participant_id=participant_id,
+        raw_text=raw_text,
+        consent_confirmed=1,
+    )
+    return participant_id, inp.id
+
+
+def _collect_tokens(
+    db_conn: sqlite3.Connection, *run_ids: str
+) -> tuple[int | None, int | None]:
+    from app import generation_run_repository as gr_repo
+
+    total_input: int | None = None
+    total_output: int | None = None
+    for run_id in run_ids:
+        if run_id:
+            rec = gr_repo.get_generation_run_by_id(db_conn, run_id)
+            if rec:
+                if rec.input_tokens is not None:
+                    total_input = (total_input or 0) + rec.input_tokens
+                if rec.output_tokens is not None:
+                    total_output = (total_output or 0) + rec.output_tokens
+    return total_input, total_output
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def _token_total(
+    input_tokens: int | None, output_tokens: int | None
+) -> int | None:
+    if input_tokens is not None or output_tokens is not None:
+        return (input_tokens or 0) + (output_tokens or 0)
+    return None
+
+
+def _apply_human_correction(
+    conn: sqlite3.Connection, benchmark_name: str, minutes: float
+) -> None:
+    conn.execute(
+        "UPDATE benchmark_runs SET human_correction_minutes = ? "
+        "WHERE benchmark_name = ?",
+        (minutes, benchmark_name),
+    )
+    conn.commit()
+
+
+# ---------------------------------------------------------------------------
+# Task runners
+# ---------------------------------------------------------------------------
+
+
+def _run_editorial_plan(
+    *,
+    provider: Any,
+    fixture: FixtureBundle,
+    db_conn: sqlite3.Connection,
+    participant_id: str,
+    input_id: str,
+    run_index: int,
+    benchmark_name: str,
+) -> dict[str, Any]:
+    from app.domain.models import EditorialPlan, ParticipantPreferences
+    from app.pipeline import validators as val_mod
+    from app.pipeline.prompts import (
+        build_plan_system_prompt,
+        build_plan_user_payload,
+    )
+
+    info = _provider_info(provider)
+    started_at = _now_iso()
+    task_start = time.monotonic()
+
+    language = fixture.language
+    segments = segment_text(fixture.input_text)
+    preferences = ParticipantPreferences()
+
+    plan_system = build_plan_system_prompt(language)
+    plan_payload = build_plan_user_payload(
+        participant_id=participant_id,
+        segments=segments,
+        preferences=preferences,
+        language=language,
+        is_follow_up=False,
+        feedback_id=None,
+        feedback_directions=[],
+        feedback_free_text=None,
+        prior_edition_summary=None,
+        prohibited_inferences=list(fixture.prohibited_inventions),
+    )
+
+    plan, plan_outcome = _provider_call_with_retry(
+        provider=provider,
+        task_name="editorial_plan",
+        system_prompt=plan_system,
+        user_payload=plan_payload,
+        response_schema=EditorialPlan,
+        max_retries=2,
+        prompt_version=PLAN_PROMPT_VERSION,
+        conn=db_conn,
+        participant_id=participant_id,
+    )
+
+    task_latency = time.monotonic() - task_start
+
+    if plan is not None:
+        try:
+            val_mod.validate_plan(
+                plan, segments=segments, is_follow_up=False
+            )
+            plan_valid = True
+            combined_validation = VALIDATION_PASSED
+        except Exception:
+            plan_valid = False
+            combined_validation = VALIDATION_FAILED
+    else:
+        plan_valid = False
+        combined_validation = plan_outcome.validation_status or PROVIDER_FAILED
+
+    combined_success = plan_valid and plan_outcome.success
+    failure_category = _classify_failure(
+        combined_validation, plan_outcome.error_category
+    )
+
+    input_tokens, output_tokens = _collect_tokens(db_conn, plan_outcome.run_id)
+    completed_at = _now_iso()
+
+    validation_result = "passed" if combined_success else "failed"
+    ref_tag = "ok" if combined_success else "fail"
+    synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="editorial_plan",
+        run_index=run_index,
+        provider_info=info,
+        task_type="editorial_plan",
+        prompt_version=PLAN_PROMPT_VERSION,
+        started_at=started_at,
+        completed_at=completed_at,
+        latency_seconds=task_latency,
+        success=combined_success,
+        failure_category=failure_category,
+        error_category=plan_outcome.error_category,
+        error_message=plan_outcome.error_message,
+        retry_count=plan_outcome.retry_count,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=_token_total(input_tokens, output_tokens),
+        validation_result=validation_result,
+        synthetic_result_ref=synthetic_result_ref,
+    )
+
+    return {
+        "fixture": fixture.name,
+        "run_index": run_index,
+        "run_group": "editorial_plan",
+        "success": combined_success,
+        "failure_category": failure_category,
+        "latency_seconds": task_latency,
+        "retry_count": plan_outcome.retry_count,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "validation_result": validation_result,
+        "synthetic_result_ref": synthetic_result_ref,
+    }
+
+
+def _run_first_edition(
+    *,
+    provider: Any,
+    fixture: FixtureBundle,
+    db_conn: sqlite3.Connection,
+    participant_id: str,
+    input_id: str,
+    run_index: int,
+    benchmark_name: str,
+) -> dict[str, Any]:
+    info = _provider_info(provider)
+    started_at = _now_iso()
+    task_start = time.monotonic()
+
+    service = GenerationService(provider=provider)
+    request = GenerationRequest(
+        participant_id=participant_id,
+        input_id=input_id,
+        prohibited_inferences=fixture.prohibited_inventions,
+        allow_short_sample=True,
+    )
+    result = service.generate_edition(db_conn, request=request)
+
+    task_latency = time.monotonic() - task_start
+
+    plan_ok = result.plan_run.success
+    draft_ok = result.draft_run.success
+    combined_success = plan_ok and draft_ok
+
+    if combined_success:
+        combined_validation = VALIDATION_PASSED
+    elif result.draft_run.validation_status == VALIDATION_FAILED:
+        combined_validation = VALIDATION_FAILED
+    else:
+        combined_validation = (
+            result.plan_run.validation_status or PROVIDER_FAILED
+        )
+
+    total_retry = result.plan_run.retry_count + result.draft_run.retry_count
+    input_tokens, output_tokens = _collect_tokens(
+        db_conn, result.plan_run.run_id, result.draft_run.run_id
+    )
+
+    last_error_category: str | None = None
+    last_error_message: str | None = None
+    if not combined_success:
+        if not draft_ok:
+            last_error_category = result.draft_run.error_category
+            last_error_message = result.draft_run.error_message
+        elif not plan_ok:
+            last_error_category = result.plan_run.error_category
+            last_error_message = result.plan_run.error_message
+
+    completed_at = _now_iso()
+
+    if combined_success:
+        failure_category = None
+        validation_result = "passed"
+        ref_tag = "ok"
+    else:
+        failure_category = _classify_failure(
+            combined_validation, last_error_category
+        )
+        validation_result = "failed"
+        ref_tag = "fail"
+
+    synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="first_edition",
+        run_index=run_index,
+        provider_info=info,
+        task_type="full_pipeline",
+        prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+        started_at=started_at,
+        completed_at=completed_at,
+        latency_seconds=task_latency,
+        success=combined_success,
+        failure_category=failure_category,
+        error_category=last_error_category,
+        error_message=last_error_message,
+        retry_count=total_retry,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=_token_total(input_tokens, output_tokens),
+        validation_result=validation_result,
+        synthetic_result_ref=synthetic_result_ref,
+    )
+
+    return {
+        "fixture": fixture.name,
+        "run_index": run_index,
+        "run_group": "first_edition",
+        "success": combined_success,
+        "failure_category": failure_category,
+        "latency_seconds": task_latency,
+        "retry_count": total_retry,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "validation_result": validation_result,
+        "synthetic_result_ref": synthetic_result_ref,
+    }
+
+
+def _run_feedback_second_edition(
+    *,
+    settings: Settings,
+    fixture: FixtureBundle,
+    db_conn: sqlite3.Connection,
+    participant_id: str,
+    input_id: str,
+    run_index: int,
+    benchmark_name: str,
+) -> dict[str, Any]:
+    from app import edition_repository as ed_repo
+    from app import feedback_repository as fb_repo
+
+    first_provider = _build_provider(settings, fixture=fixture)
+    first_info = _provider_info(first_provider)
+    service = GenerationService(provider=first_provider)
+    request = GenerationRequest(
+        participant_id=participant_id,
+        input_id=input_id,
+        prohibited_inferences=fixture.prohibited_inventions,
+        allow_short_sample=True,
+    )
+    first_result = service.generate_edition(db_conn, request=request)
+
+    if not first_result.succeeded or first_result.edition_id is None:
+        started_at = _now_iso()
+        _record_benchmark_run(
+            db_conn,
+            benchmark_name=benchmark_name,
+            fixture_name=fixture.name,
+            run_group="feedback_second_edition",
+            run_index=run_index,
+            provider_info=first_info,
+            task_type="full_pipeline",
+            prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+            started_at=started_at,
+            completed_at=started_at,
+            latency_seconds=0,
+            success=False,
+            failure_category="model_quality",
+            error_category=None,
+            error_message="first edition failed during feedback setup",
+            retry_count=0,
+            input_tokens=None,
+            output_tokens=None,
+            total_tokens=None,
+            validation_result="failed",
+            synthetic_result_ref=f"bench-{fixture.name}-{run_index}-setup-fail",
+        )
+        return {
+            "fixture": fixture.name,
+            "run_index": run_index,
+            "run_group": "feedback_second_edition",
+            "success": False,
+            "failure_category": "model_quality",
+            "latency_seconds": 0,
+            "retry_count": 0,
+            "input_tokens": None,
+            "output_tokens": None,
+            "validation_result": "failed",
+            "synthetic_result_ref": f"bench-{fixture.name}-{run_index}-setup-fail",
+        }
+
+    ed_repo.update_edition_publication(
+        db_conn, first_result.edition_id, "published"
+    )
+
+    direction_choices = json.dumps(list(fixture.feedback_directions))
+    fb_record = fb_repo.create_feedback(
+        db_conn,
+        participant_id=participant_id,
+        edition_id=first_result.edition_id,
+        direction_choices=direction_choices,
+        free_text=fixture.feedback_free_text,
+    )
+    feedback_id = fb_record.id
+
+    follow_up_plan = inject_feedback_id(
+        fixture.follow_up_plan_payload, feedback_id
+    )
+    follow_up_draft = inject_feedback_id(
+        fixture.follow_up_draft_payload, feedback_id
+    )
+
+    follow_up_provider = MockProvider(
+        task_payloads={
+            "editorial_plan": follow_up_plan,
+            "edition_draft": follow_up_draft,
+        },
+    )
+
+    started_at = _now_iso()
+    task_start = time.monotonic()
+
+    follow_up_service = GenerationService(provider=follow_up_provider)
+    follow_up_request = GenerationRequest(
+        participant_id=participant_id,
+        input_id=input_id,
+        is_follow_up=True,
+        prior_edition_id=first_result.edition_id,
+        feedback_id=feedback_id,
+        prohibited_inferences=fixture.prohibited_inventions,
+        allow_short_sample=True,
+    )
+    follow_up_result = follow_up_service.generate_edition(
+        db_conn, request=follow_up_request
+    )
+
+    task_latency = time.monotonic() - task_start
+    combined_success = follow_up_result.succeeded
+
+    if combined_success:
+        combined_validation = VALIDATION_PASSED
+        failure_category = None
+        last_error_category = None
+        last_error_message = None
+    else:
+        if follow_up_result.draft_run.validation_status == VALIDATION_FAILED:
+            combined_validation = VALIDATION_FAILED
+        else:
+            combined_validation = (
+                follow_up_result.plan_run.validation_status or PROVIDER_FAILED
+            )
+        last_error_category = (
+            follow_up_result.draft_run.error_category
+            or follow_up_result.plan_run.error_category
+        )
+        last_error_message = (
+            follow_up_result.draft_run.error_message
+            or follow_up_result.plan_run.error_message
+        )
+        failure_category = _classify_failure(
+            combined_validation, last_error_category
+        )
+
+    total_retry = (
+        follow_up_result.plan_run.retry_count
+        + follow_up_result.draft_run.retry_count
+    )
+    input_tokens, output_tokens = _collect_tokens(
+        db_conn,
+        follow_up_result.plan_run.run_id,
+        follow_up_result.draft_run.run_id,
+    )
+
+    completed_at = _now_iso()
+    validation_result = "passed" if combined_success else "failed"
+    ref_tag = "ok" if combined_success else "fail"
+    synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="feedback_second_edition",
+        run_index=run_index,
+        provider_info=first_info,
+        task_type="full_pipeline",
+        prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+        started_at=started_at,
+        completed_at=completed_at,
+        latency_seconds=task_latency,
+        success=combined_success,
+        failure_category=failure_category,
+        error_category=last_error_category,
+        error_message=last_error_message,
+        retry_count=total_retry,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=_token_total(input_tokens, output_tokens),
+        validation_result=validation_result,
+        synthetic_result_ref=synthetic_result_ref,
+    )
+
+    return {
+        "fixture": fixture.name,
+        "run_index": run_index,
+        "run_group": "feedback_second_edition",
+        "success": combined_success,
+        "failure_category": failure_category,
+        "latency_seconds": task_latency,
+        "retry_count": total_retry,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "validation_result": validation_result,
+        "synthetic_result_ref": synthetic_result_ref,
+    }
+
+
+def _run_adversarial_grounding(
+    *,
+    provider: Any,
+    fixture: FixtureBundle,
+    db_conn: sqlite3.Connection,
+    participant_id: str,
+    input_id: str,
+    run_index: int,
+    benchmark_name: str,
+) -> dict[str, Any]:
+    info = _provider_info(provider)
+    started_at = _now_iso()
+    task_start = time.monotonic()
+
+    service = GenerationService(provider=provider)
+    request = GenerationRequest(
+        participant_id=participant_id,
+        input_id=input_id,
+        prohibited_inferences=fixture.prohibited_inventions,
+        allow_short_sample=True,
+    )
+    result = service.generate_edition(db_conn, request=request)
+
+    task_latency = time.monotonic() - task_start
+    combined_success = result.succeeded
+
+    if combined_success:
+        combined_validation = VALIDATION_PASSED
+    elif result.draft_run.validation_status == VALIDATION_FAILED:
+        combined_validation = VALIDATION_FAILED
+    else:
+        combined_validation = (
+            result.plan_run.validation_status or PROVIDER_FAILED
+        )
+
+    total_retry = result.plan_run.retry_count + result.draft_run.retry_count
+    input_tokens, output_tokens = _collect_tokens(
+        db_conn, result.plan_run.run_id, result.draft_run.run_id
+    )
+
+    last_error_category: str | None = None
+    last_error_message: str | None = None
+    if not combined_success:
+        if not result.draft_run.success:
+            last_error_category = result.draft_run.error_category
+            last_error_message = result.draft_run.error_message
+        elif not result.plan_run.success:
+            last_error_category = result.plan_run.error_category
+            last_error_message = result.plan_run.error_message
+
+    completed_at = _now_iso()
+    failure_category = _classify_failure(
+        combined_validation, last_error_category
+    )
+    validation_result = "passed" if combined_success else "failed"
+    ref_tag = "ok" if combined_success else "adversarial-caught"
+    synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="adversarial_grounding",
+        run_index=run_index,
+        provider_info=info,
+        task_type="full_pipeline",
+        prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+        started_at=started_at,
+        completed_at=completed_at,
+        latency_seconds=task_latency,
+        success=combined_success,
+        failure_category=failure_category,
+        error_category=last_error_category,
+        error_message=last_error_message,
+        retry_count=total_retry,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=_token_total(input_tokens, output_tokens),
+        validation_result=validation_result,
+        synthetic_result_ref=synthetic_result_ref,
+    )
+
+    return {
+        "fixture": fixture.name,
+        "run_index": run_index,
+        "run_group": "adversarial_grounding",
+        "success": combined_success,
+        "failure_category": failure_category,
+        "latency_seconds": task_latency,
+        "retry_count": total_retry,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "validation_result": validation_result,
+        "synthetic_result_ref": synthetic_result_ref,
+    }
+
+
+def _run_validator_feedback_repair(
+    *,
+    settings: Settings,
+    fixture: FixtureBundle,
+    db_conn: sqlite3.Connection,
+    participant_id: str,
+    input_id: str,
+    run_index: int,
+    benchmark_name: str,
+) -> list[dict[str, Any]]:
+    results: list[dict[str, Any]] = []
+
+    bad_plan = json.loads(json.dumps(fixture.plan_payload))
+    for section in bad_plan.get("sections", []):
+        section["source_segment_ids"] = ["s999"]
+
+    bad_provider = MockProvider(
+        task_payloads={
+            "editorial_plan": bad_plan,
+            "edition_draft": fixture.draft_payload,
+        },
+    )
+    bad_info = _provider_info(bad_provider)
+
+    bad_started_at = _now_iso()
+    task_start = time.monotonic()
+
+    bad_service = GenerationService(provider=bad_provider)
+    bad_request = GenerationRequest(
+        participant_id=participant_id,
+        input_id=input_id,
+        prohibited_inferences=fixture.prohibited_inventions,
+        allow_short_sample=True,
+    )
+    bad_result = bad_service.generate_edition(db_conn, request=bad_request)
+
+    bad_latency = time.monotonic() - task_start
+    bad_success = bad_result.succeeded
+
+    if bad_success:
+        bad_combined_validation = VALIDATION_PASSED
+        bad_failure_category = None
+        bad_error_category = None
+        bad_error_message = None
+    else:
+        if bad_result.plan_run.validation_status == VALIDATION_FAILED:
+            bad_combined_validation = VALIDATION_FAILED
+        else:
+            bad_combined_validation = (
+                bad_result.plan_run.validation_status or PROVIDER_FAILED
+            )
+        bad_error_category = bad_result.plan_run.error_category
+        bad_error_message = bad_result.plan_run.error_message
+        bad_failure_category = _classify_failure(
+            bad_combined_validation, bad_error_category
+        )
+
+    bad_input_tokens, bad_output_tokens = _collect_tokens(
+        db_conn, bad_result.plan_run.run_id
+    )
+    bad_completed_at = _now_iso()
+
+    bad_validation_result = "passed" if bad_success else "failed"
+    bad_ref = f"bench-{fixture.name}-{run_index}-bad"
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="validator_feedback_repair",
+        run_index=run_index * 2,
+        provider_info=bad_info,
+        task_type="editorial_plan",
+        prompt_version=PLAN_PROMPT_VERSION,
+        started_at=bad_started_at,
+        completed_at=bad_completed_at,
+        latency_seconds=bad_latency,
+        success=bad_success,
+        failure_category=bad_failure_category,
+        error_category=bad_error_category,
+        error_message=bad_error_message,
+        retry_count=bad_result.plan_run.retry_count,
+        input_tokens=bad_input_tokens,
+        output_tokens=bad_output_tokens,
+        total_tokens=_token_total(bad_input_tokens, bad_output_tokens),
+        validation_result=bad_validation_result,
+        synthetic_result_ref=bad_ref,
+    )
+
+    results.append(
+        {
+            "fixture": fixture.name,
+            "run_index": run_index,
+            "run_group": "validator_feedback_repair",
+            "phase": "bad_payload",
+            "success": bad_success,
+            "failure_category": bad_failure_category,
+            "latency_seconds": bad_latency,
+            "retry_count": bad_result.plan_run.retry_count,
+            "input_tokens": bad_input_tokens,
+            "output_tokens": bad_output_tokens,
+            "validation_result": bad_validation_result,
+            "synthetic_result_ref": bad_ref,
+        }
+    )
+
+    repair_provider = _build_provider(settings, fixture=fixture)
+    repair_info = _provider_info(repair_provider)
+
+    repair_started_at = _now_iso()
+    repair_start = time.monotonic()
+
+    repair_service = GenerationService(provider=repair_provider)
+    repair_request = GenerationRequest(
+        participant_id=participant_id,
+        input_id=input_id,
+        prohibited_inferences=fixture.prohibited_inventions,
+        allow_short_sample=True,
+    )
+    repair_result = repair_service.generate_edition(
+        db_conn, request=repair_request
+    )
+
+    repair_latency = time.monotonic() - repair_start
+    repair_success = repair_result.succeeded
+
+    if repair_success:
+        repair_validation = VALIDATION_PASSED
+        repair_failure_category = None
+        repair_error_category = None
+        repair_error_message = None
+    else:
+        if repair_result.draft_run.validation_status == VALIDATION_FAILED:
+            repair_validation = VALIDATION_FAILED
+        else:
+            repair_validation = (
+                repair_result.plan_run.validation_status or PROVIDER_FAILED
+            )
+        repair_error_category = (
+            repair_result.draft_run.error_category
+            or repair_result.plan_run.error_category
+        )
+        repair_error_message = (
+            repair_result.draft_run.error_message
+            or repair_result.plan_run.error_message
+        )
+        repair_failure_category = _classify_failure(
+            repair_validation, repair_error_category
+        )
+
+    repair_total_retry = (
+        repair_result.plan_run.retry_count
+        + repair_result.draft_run.retry_count
+    )
+    repair_input_tokens, repair_output_tokens = _collect_tokens(
+        db_conn, repair_result.plan_run.run_id, repair_result.draft_run.run_id
+    )
+    repair_completed_at = _now_iso()
+
+    repair_validation_result = "passed" if repair_success else "failed"
+    repair_ref = f"bench-{fixture.name}-{run_index}-repair"
+
+    _record_benchmark_run(
+        db_conn,
+        benchmark_name=benchmark_name,
+        fixture_name=fixture.name,
+        run_group="validator_feedback_repair",
+        run_index=run_index * 2 + 1,
+        provider_info=repair_info,
+        task_type="full_pipeline",
+        prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
+        started_at=repair_started_at,
+        completed_at=repair_completed_at,
+        latency_seconds=repair_latency,
+        success=repair_success,
+        failure_category=repair_failure_category,
+        error_category=repair_error_category,
+        error_message=repair_error_message,
+        retry_count=repair_total_retry,
+        input_tokens=repair_input_tokens,
+        output_tokens=repair_output_tokens,
+        total_tokens=_token_total(repair_input_tokens, repair_output_tokens),
+        validation_result=repair_validation_result,
+        synthetic_result_ref=repair_ref,
+    )
+
+    results.append(
+        {
+            "fixture": fixture.name,
+            "run_index": run_index,
+            "run_group": "validator_feedback_repair",
+            "phase": "repair",
+            "success": repair_success,
+            "failure_category": repair_failure_category,
+            "latency_seconds": repair_latency,
+            "retry_count": repair_total_retry,
+            "input_tokens": repair_input_tokens,
+            "output_tokens": repair_output_tokens,
+            "validation_result": repair_validation_result,
+            "synthetic_result_ref": repair_ref,
+        }
+    )
+
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Dispatch
+# ---------------------------------------------------------------------------
+
+
+def _dispatch_task(
+    *,
+    task: str,
+    settings: Settings,
+    fixture: FixtureBundle,
+    db_conn: sqlite3.Connection,
+    participant_id: str,
+    input_id: str,
+    run_index: int,
+    benchmark_name: str,
+) -> list[dict[str, Any]] | None:
+    if task == "editorial_plan":
+        provider = _build_provider(settings, fixture=fixture)
+        return [
+            _run_editorial_plan(
+                provider=provider,
+                fixture=fixture,
+                db_conn=db_conn,
+                participant_id=participant_id,
+                input_id=input_id,
+                run_index=run_index,
+                benchmark_name=benchmark_name,
+            )
+        ]
+
+    if task == "first_edition":
+        provider = _build_provider(settings, fixture=fixture)
+        return [
+            _run_first_edition(
+                provider=provider,
+                fixture=fixture,
+                db_conn=db_conn,
+                participant_id=participant_id,
+                input_id=input_id,
+                run_index=run_index,
+                benchmark_name=benchmark_name,
+            )
+        ]
+
+    if task == "feedback_second_edition":
+        if not fixture.follow_up_plan_payload or not fixture.follow_up_draft_payload:
+            return None
+        return [
+            _run_feedback_second_edition(
+                settings=settings,
+                fixture=fixture,
+                db_conn=db_conn,
+                participant_id=participant_id,
+                input_id=input_id,
+                run_index=run_index,
+                benchmark_name=benchmark_name,
+            )
+        ]
+
+    if task == "adversarial_grounding":
+        provider = _build_provider(settings, fixture=fixture)
+        return [
+            _run_adversarial_grounding(
+                provider=provider,
+                fixture=fixture,
+                db_conn=db_conn,
+                participant_id=participant_id,
+                input_id=input_id,
+                run_index=run_index,
+                benchmark_name=benchmark_name,
+            )
+        ]
+
+    if task == "validator_feedback_repair":
+        if not fixture.plan_payload or not fixture.draft_payload:
+            return None
+        return _run_validator_feedback_repair(
+            settings=settings,
+            fixture=fixture,
+            db_conn=db_conn,
+            participant_id=participant_id,
+            input_id=input_id,
+            run_index=run_index,
+            benchmark_name=benchmark_name,
+        )
+
+    raise ValueError(f"unknown task: {task}")
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+
+def run_benchmark(
+    *,
+    task: str,
+    fixture_names: list[str] | None = None,
+    repeat: int = 1,
+    output_path: str | None = None,
+    db_path: str | None = None,
+    human_correction_minutes: float | None = None,
+) -> list[dict[str, Any]]:
+    settings = Settings()
+
+    resolved_db = db_path or "var/benchmark.db"
+    conn = _setup_benchmark_db(resolved_db)
+
+    if fixture_names is None:
+        fixture_names = list_bundles()
+
+    results: list[dict[str, Any]] = []
+    benchmark_name = (
+        f"benchmark-{task}-"
+        f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}"
+    )
+
+    info: dict[str, str] | None = None
+    for fname in fixture_names:
+        fixture = load_bundle(fname)
+        for i in range(repeat):
+            participant_id = f"bench-{fname}-repeat-{i}"
+            pid, input_id = _ensure_participant(
+                conn,
+                participant_id=participant_id,
+                input_text=fixture.input_text,
+            )
+
+            print(
+                f"  [{fname}] task={task} run {i + 1}/{repeat} ... ",
+                end="",
+                flush=True,
+            )
+
+            run_results = _dispatch_task(
+                task=task,
+                settings=settings,
+                fixture=fixture,
+                db_conn=conn,
+                participant_id=pid,
+                input_id=input_id,
+                run_index=i,
+                benchmark_name=benchmark_name,
+            )
+
+            if run_results is None:
+                print("SKIP")
+                continue
+
+            if info is None:
+                dummy = _build_provider(settings, fixture=fixture)
+                info = _provider_info(dummy)
+
+            for res in run_results:
+                results.append(res)
+                status = (
+                    "OK"
+                    if res["success"]
+                    else f"FAIL({res.get('failure_category', '?')})"
+                )
+                latency = res.get("latency_seconds", 0)
+                retries = res.get("retry_count", 0)
+                print(f"{status}  latency={latency:.3f}s  retries={retries}")
+
+    if human_correction_minutes is not None:
+        _apply_human_correction(conn, benchmark_name, human_correction_minutes)
+
+    conn.close()
+
+    if output_path and info is not None:
+        report = {
+            "benchmark_name": benchmark_name,
+            "task": task,
+            "provider": info["provider"],
+            "advertised_model": info["model"],
+            "fixture_count": len(fixture_names),
+            "repeat": repeat,
+            "total_runs": len(results),
+            "results": results,
+        }
+        Path(output_path).write_text(
+            json.dumps(report, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        print(f"\nBenchmark report written to {output_path}")
+
+    return results
+
+
+# ---------------------------------------------------------------------------
+# update-correction subcommand
+# ---------------------------------------------------------------------------
+
+
+def update_correction(
+    *,
+    db_path: str,
+    run_id: str,
+    minutes: float,
+) -> None:
+    conn = get_connection(db_path)
+    cursor = conn.execute(
+        "UPDATE benchmark_runs SET human_correction_minutes = ? WHERE id = ?",
+        (minutes, run_id),
+    )
+    conn.commit()
+    if cursor.rowcount == 0:
+        print(f"Error: no benchmark run found with id {run_id}")
+        sys.exit(1)
+    print(f"Updated run {run_id} with human_correction_minutes={minutes}")
+    conn.close()
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Personal Edition runtime benchmark runner"
+    )
+    subparsers = parser.add_subparsers(dest="command")
+
+    run_parser = subparsers.add_parser("run", help="Run a benchmark task")
+    run_parser.add_argument(
+        "task",
+        choices=ALL_TASKS,
+        help="Benchmark task type.",
+    )
+    run_parser.add_argument(
+        "--fixture",
+        action="append",
+        dest="fixtures",
+        help="Fixture name (repeatable). Default: all fixtures.",
+    )
+    run_parser.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        help="Repeat count per fixture (default: 1).",
+    )
+    run_parser.add_argument(
+        "--output",
+        help="Path to write the JSON benchmark report.",
+    )
+    run_parser.add_argument(
+        "--db",
+        default=None,
+        help="Path to SQLite database (default: var/benchmark.db).",
+    )
+    run_parser.add_argument(
+        "--correct",
+        type=float,
+        default=None,
+        metavar="MINUTES",
+        help="Set human_correction_minutes for all runs after completion.",
+    )
+
+    uc_parser = subparsers.add_parser(
+        "update-correction",
+        help="Update human_correction_minutes for a run",
+    )
+    uc_parser.add_argument(
+        "--run-id",
+        required=True,
+        help="Benchmark run ID to update.",
+    )
+    uc_parser.add_argument(
+        "--minutes",
+        type=float,
+        required=True,
+        help="Correction minutes value.",
+    )
+    uc_parser.add_argument(
+        "--db",
+        default=None,
+        help="Path to SQLite database (default: var/benchmark.db).",
+    )
+
+    args = parser.parse_args()
+
+    if args.command == "update-correction":
+        update_correction(
+            db_path=args.db or "var/benchmark.db",
+            run_id=args.run_id,
+            minutes=args.minutes,
+        )
+        return
+
+    if args.command == "run":
+        print("Personal Edition Runtime Benchmark")
+        print("=" * 40)
+        print(f"Task: {args.task}")
+        results = run_benchmark(
+            task=args.task,
+            fixture_names=args.fixtures,
+            repeat=args.repeat,
+            output_path=args.output,
+            db_path=args.db,
+            human_correction_minutes=args.correct,
+        )
+
+        successes = sum(1 for r in results if r["success"])
+        failures = sum(1 for r in results if not r["success"])
+        provider_failures = sum(
+            1 for r in results if r.get("failure_category") == "provider"
+        )
+        model_failures = sum(
+            1 for r in results if r.get("failure_category") == "model_quality"
+        )
+
+        print("\n" + "=" * 40)
+        print(f"Total: {len(results)}  OK: {successes}  FAIL: {failures}")
+        print(
+            f"Provider failures: {provider_failures}  "
+            f"Model-quality failures: {model_failures}"
+        )
+        if failures > 0:
+            sys.exit(1)
+        return
+
+    parser.print_help()
+    sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
