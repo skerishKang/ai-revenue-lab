@@ -127,6 +127,14 @@ def _check_provider_declared_refusal(data: dict[str, Any]) -> str | None:
     return None
 
 
+_VALID_COST_CLASSES = frozenset({
+    CostClass.FREE.value,
+    CostClass.PAID.value,
+    CostClass.LOCAL.value,
+    CostClass.UNKNOWN.value,
+})
+
+
 class ExternalProvider:
     """OpenAI-compatible provider using stdlib urllib.
 
@@ -141,6 +149,7 @@ class ExternalProvider:
         api_key: str,
         model: str,
         timeout_seconds: int = 120,
+        cost_class: CostClass = CostClass.FREE,
     ) -> None:
         if not base_url:
             raise ValueError("base_url must be a non-empty string")
@@ -150,10 +159,16 @@ class ExternalProvider:
             raise ValueError("model must be a non-empty string")
         if timeout_seconds <= 0:
             raise ValueError("timeout_seconds must be > 0")
+        if cost_class.value not in _VALID_COST_CLASSES:
+            raise ValueError(
+                f"cost_class must be one of {sorted(_VALID_COST_CLASSES)}, "
+                f"got '{cost_class.value}'"
+            )
         self._endpoint = _normalize_endpoint(base_url)
         self._api_key = api_key
         self._model = model
         self._timeout = timeout_seconds
+        self._cost_class = cost_class
         self._ssl_ctx = ssl.create_default_context()
 
     @property
@@ -352,7 +367,7 @@ class ExternalProvider:
         return ProviderResult(
             provider="external",
             advertised_model=self._model,
-            cost_class=CostClass.FREE,
+            cost_class=self._cost_class,
             latency_seconds=elapsed,
             retry_count=0,
             usage=usage or ProviderUsage(),
@@ -421,7 +436,7 @@ class ExternalProvider:
         return ProviderResult(
             provider="external",
             advertised_model=self._model,
-            cost_class=CostClass.FREE,
+            cost_class=self._cost_class,
             latency_seconds=elapsed,
             retry_count=0,
             request_id=request_id,

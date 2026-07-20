@@ -34,16 +34,15 @@ CREATE INDEX IF NOT EXISTS idx_benchmark_runs_task ON benchmark_runs(task_type);
 CREATE INDEX IF NOT EXISTS idx_benchmark_runs_benchmark ON benchmark_runs(benchmark_name);
 
 CREATE TABLE IF NOT EXISTS pilot_ops_records (
-    id TEXT PRIMARY KEY,
-    participant_id TEXT NOT NULL,
+    record_id TEXT PRIMARY KEY,
     record_type TEXT NOT NULL CHECK(record_type IN (
-        'invitation', 'sample_edition', 'offer', 'payment_evidence',
-        'correction', 'engagement', 'costs', 'revenue',
-        'deletion_request', 'deletion_completion'
+        'benchmark_run', 'pilot_run', 'pilot_evidence',
+        'payment_evidence', 'correction', 'deletion_request',
+        'deletion_completion'
     )),
-    edition_id TEXT,
-    record_json TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    participant_id TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    payload TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_pilot_ops_records_participant ON pilot_ops_records(participant_id);

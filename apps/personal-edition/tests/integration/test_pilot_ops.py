@@ -17,166 +17,140 @@ import pytest
 _DIR = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.insert(0, os.path.abspath(_DIR))
 
-from app.db import get_connection
+from app.db import apply_migrations, get_connection
 from scripts.pilot_ops import (
+    BenchmarkRunRecord,
+    CorrectionRecord,
+    DeletionRequestRecord,
+    PaymentEvidenceRecord,
+    PilotRecordType,
     _create_pilot_table,
-    export_pilot_evidence,
-    get_participant_records,
-    record_costs,
-    record_correction,
-    record_deletion,
-    record_engagement,
-    record_invitation,
-    record_offer,
-    record_payment_evidence,
-    record_revenue,
-    record_sample_edition,
+    execute_deletion,
+    export_evidence,
+    list_records,
+    pseudonymize_id,
+    record_operation,
+    reject_or_redact_sensitive,
 )
 
 
 def _setup_pilot_db(db_path: str = ":memory:"):
     conn = get_connection(db_path)
+    apply_migrations(conn, "migrations")
     _create_pilot_table(conn)
     return conn
 
 
-class TestRecordInvitation:
-    def test_creates_invitation(self):
+class TestRecordOperation:
+    def test_creates_benchmark_run(self):
         conn = _setup_pilot_db()
-        rid = record_invitation(
-            conn, "p1",
-            contact_method="email",
-            consent_confirmed=True,
-            notes="Test invitation",
+        record = BenchmarkRunRecord(
+            participant_id="p1",
+            benchmark_name="test-benchmark",
+            fixture_name="korean_founder",
+            run_group="first_edition",
+            run_index=0,
+            provider="mock",
+            advertised_model="mock-v1",
+            task_type="full_pipeline",
+            started_at="2025-01-01T00:00:00.000Z",
+            latency_seconds=1.5,
+            success=True,
+            validation_result="passed",
         )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
+        result = record_operation(conn, record)
+        assert result.record_id is not None
+        records = list_records(conn, participant_id="p1")
         assert len(records) == 1
-        assert records[0]["record_type"] == "invitation"
-        assert records[0]["record"]["consent_confirmed"] is True
+        assert records[0]["record_type"] == "benchmark_run"
         conn.close()
 
-
-class TestRecordSampleEdition:
-    def test_creates_sample_edition(self):
-        conn = _setup_pilot_db()
-        rid = record_sample_edition(
-            conn, "p1", "edition-001",
-            edition_number=1,
-            is_free=True,
-        )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert len(records) == 1
-        assert records[0]["record_type"] == "sample_edition"
-        assert records[0]["edition_id"] == "edition-001"
-        conn.close()
-
-
-class TestRecordOffer:
-    def test_creates_offer(self):
-        conn = _setup_pilot_db()
-        rid = record_offer(
-            conn, "p1",
-            editions_count=7,
-            price_krw=4900,
-        )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert records[0]["record"]["editions_count"] == 7
-        assert records[0]["record"]["price_krw"] == 4900
-        conn.close()
-
-
-class TestRecordPaymentEvidence:
     def test_creates_payment_evidence(self):
         conn = _setup_pilot_db()
-        rid = record_payment_evidence(
-            conn, "p1",
-            amount_krw=4900,
+        record = PaymentEvidenceRecord(
+            participant_id="p1",
+            amount=4900.0,
+            currency="KRW",
             payment_method="bank_transfer",
-            evidence_description="Screenshot of transfer confirmation",
+            payment_date="2025-01-01",
+            internal_reference="ref-001",
         )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
+        result = record_operation(conn, record)
+        assert result.record_id is not None
+        records = list_records(conn, participant_id="p1")
+        assert len(records) == 1
         assert records[0]["record_type"] == "payment_evidence"
-        assert records[0]["record"]["amount_krw"] == 4900
-
-    def test_no_payer_identity_stored(self):
-        conn = _setup_pilot_db()
-        record_payment_evidence(
-            conn, "p1",
-            amount_krw=4900,
-            payment_method="bank_transfer",
-            evidence_description="transfer proof",
-        )
-        records = get_participant_records(conn, "p1")
-        record_json = json.dumps(records[0]["record"])
-        assert "card_number" not in record_json
-        assert "account_number" not in record_json
-        assert "ssn" not in record_json
-        assert "resident_registration" not in record_json
         conn.close()
 
-
-class TestRecordCorrection:
     def test_creates_correction(self):
         conn = _setup_pilot_db()
-        rid = record_correction(
-            conn, "p1", "edition-001",
-            correction_minutes=12.5,
+        record = CorrectionRecord(
+            participant_id="p1",
+            benchmark_run_id="run-001",
+            human_correction_minutes=12.5,
         )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert records[0]["record"]["correction_minutes"] == 12.5
+        result = record_operation(conn, record)
+        assert result.record_id is not None
+        records = list_records(conn, participant_id="p1")
+        assert len(records) == 1
+        assert records[0]["record_type"] == "correction"
         conn.close()
 
 
-class TestRecordEngagement:
-    def test_creates_engagement(self):
+class TestListRecords:
+    def test_lists_all_records(self):
         conn = _setup_pilot_db()
-        rid = record_engagement(
-            conn, "p1", "edition-001",
-            feedback_text="Good edition",
-            engagement_signal="positive",
+        r1 = BenchmarkRunRecord(
+            participant_id="p1",
+            benchmark_name="test",
+            fixture_name="korean_founder",
+            run_group="first_edition",
+            run_index=0,
+            provider="mock",
+            advertised_model="mock-v1",
+            task_type="full_pipeline",
+            started_at="2025-01-01T00:00:00.000Z",
         )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert records[0]["record"]["engagement_signal"] == "positive"
-        conn.close()
-
-
-class TestRecordCosts:
-    def test_creates_costs(self):
-        conn = _setup_pilot_db()
-        rid = record_costs(
-            conn, "p1",
-            ai_cost_krw=0.0,
-            infrastructure_cost_krw=500.0,
+        r2 = PaymentEvidenceRecord(
+            participant_id="p1",
+            amount=4900.0,
+            currency="KRW",
+            payment_date="2025-01-01",
+            internal_reference="ref-001",
         )
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert records[0]["record"]["infrastructure_cost_krw"] == 500.0
+        record_operation(conn, r1)
+        record_operation(conn, r2)
+        records = list_records(conn, participant_id="p1")
+        assert len(records) == 2
         conn.close()
 
-
-class TestRecordRevenue:
-    def test_creates_revenue(self):
+    def test_filters_by_type(self):
         conn = _setup_pilot_db()
-        rid = record_revenue(conn, "p1", revenue_krw=4900.0)
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert records[0]["record"]["revenue_krw"] == 4900.0
-        conn.close()
-
-
-class TestRecordDeletion:
-    def test_creates_deletion(self):
-        conn = _setup_pilot_db()
-        rid = record_deletion(conn, "p1", reason="participant requested")
-        assert rid is not None
-        records = get_participant_records(conn, "p1")
-        assert records[0]["record_type"] == "deletion_request"
+        r1 = BenchmarkRunRecord(
+            participant_id="p1",
+            benchmark_name="test",
+            fixture_name="korean_founder",
+            run_group="first_edition",
+            run_index=0,
+            provider="mock",
+            advertised_model="mock-v1",
+            task_type="full_pipeline",
+            started_at="2025-01-01T00:00:00.000Z",
+        )
+        r2 = PaymentEvidenceRecord(
+            participant_id="p1",
+            amount=4900.0,
+            currency="KRW",
+            payment_date="2025-01-01",
+            internal_reference="ref-001",
+        )
+        record_operation(conn, r1)
+        record_operation(conn, r2)
+        records = list_records(
+            conn, record_type=PilotRecordType.BENCHMARK_RUN.value
+        )
+        assert len(records) == 1
+        assert records[0]["record_type"] == "benchmark_run"
         conn.close()
 
 
@@ -186,46 +160,117 @@ class TestFileBackedPersistence:
             db_path = f.name
         try:
             conn = _setup_pilot_db(db_path)
-            record_invitation(conn, "p1", consent_confirmed=True)
-            record_offer(conn, "p1", editions_count=7, price_krw=4900)
+            r1 = BenchmarkRunRecord(
+                participant_id="p1",
+                benchmark_name="test",
+                fixture_name="korean_founder",
+                run_group="first_edition",
+                run_index=0,
+                provider="mock",
+                advertised_model="mock-v1",
+                task_type="full_pipeline",
+                started_at="2025-01-01T00:00:00.000Z",
+            )
+            record_operation(conn, r1)
             conn.close()
 
             conn2 = _setup_pilot_db(db_path)
-            records = get_participant_records(conn2, "p1")
-            assert len(records) == 2
-            assert records[0]["record_type"] == "invitation"
-            assert records[1]["record_type"] == "offer"
+            records = list_records(conn2, participant_id="p1")
+            assert len(records) == 1
+            assert records[0]["record_type"] == "benchmark_run"
             conn2.close()
         finally:
             os.unlink(db_path)
 
 
 class TestExportEvidence:
-    def test_exports_all_records(self):
+    def test_exports_with_pseudonymization(self):
         conn = _setup_pilot_db()
-        record_invitation(conn, "p1", consent_confirmed=True)
-        record_invitation(conn, "p2", consent_confirmed=True)
-        evidence = export_pilot_evidence(conn)
-        assert evidence["total_records"] == 2
-        assert set(evidence["participants"]) == {"p1", "p2"}
-        conn.close()
-
-
-class TestNoCredentialInRecords:
-    def test_no_structured_credential_fields_in_records(self):
-        conn = _setup_pilot_db()
-        record_payment_evidence(
-            conn, "p1",
-            amount_krw=4900,
-            payment_method="manual",
-            evidence_description="transfer proof",
+        r1 = BenchmarkRunRecord(
+            participant_id="real-participant-id",
+            benchmark_name="test",
+            fixture_name="korean_founder",
+            run_group="first_edition",
+            run_index=0,
+            provider="mock",
+            advertised_model="mock-v1",
+            task_type="full_pipeline",
+            started_at="2025-01-01T00:00:00.000Z",
         )
-        records = get_participant_records(conn, "p1")
-        record_data = records[0]["record"]
-        assert "api_key" not in record_data
-        assert "secret" not in record_data
-        assert "password" not in record_data
-        assert "token" not in record_data
-        assert "card_number" not in record_data
-        assert "account_number" not in record_data
+        record_operation(conn, r1)
+        exported = export_evidence(conn, export_safe=True)
+        assert len(exported) == 1
+        assert exported[0]["participant_id"] != "real-participant-id"
+        assert exported[0]["participant_id"].startswith("P-")
         conn.close()
+
+    def test_pseudonymize_id_deterministic(self):
+        id1 = pseudonymize_id("participant-1")
+        id2 = pseudonymize_id("participant-1")
+        assert id1 == id2
+        id3 = pseudonymize_id("participant-2")
+        assert id1 != id3
+
+
+class TestDeletionWorkflow:
+    def test_execute_deletion(self):
+        conn = _setup_pilot_db()
+        from app import participant_repository as pt_repo
+        pt_repo.create_participant(
+            conn,
+            participant_id="p1",
+            display_name="Test User",
+            preferred_language="ko",
+        )
+        result = execute_deletion(conn, "p1", reason="test deletion")
+        assert result["deleted"] is True
+        records = list_records(conn, participant_id="p1")
+        assert len(records) == 2
+        assert records[0]["record_type"] == "deletion_request"
+        assert records[1]["record_type"] == "deletion_completion"
+        conn.close()
+
+
+class TestSensitiveValueDetection:
+    def test_rejects_card_number(self):
+        with pytest.raises(ValueError, match="card_number"):
+            reject_or_redact_sensitive(
+                "card number is 4111-1111-1111-1111",
+                reject=True,
+                field_name="test",
+            )
+
+    def test_redacts_email(self):
+        result = reject_or_redact_sensitive(
+            "email is test@example.com",
+            reject=False,
+            field_name="test",
+        )
+        assert "test@example.com" not in result
+        assert "[REDACTED-EMAIL]" in result
+
+
+class TestPaymentEvidenceRestrictions:
+    def test_rejects_payer_name(self):
+        conn = _setup_pilot_db()
+        with pytest.raises(ValueError, match="payer_name"):
+            PaymentEvidenceRecord(
+                participant_id="p1",
+                amount=4900.0,
+                currency="KRW",
+                payment_date="2025-01-01",
+                internal_reference="ref-001",
+                data={"payer_name": "John Doe"},
+            )
+
+    def test_rejects_card_number_in_data(self):
+        conn = _setup_pilot_db()
+        with pytest.raises(ValueError, match="card_number"):
+            PaymentEvidenceRecord(
+                participant_id="p1",
+                amount=4900.0,
+                currency="KRW",
+                payment_date="2025-01-01",
+                internal_reference="ref-001",
+                data={"card_number": "4111-1111-1111-1111"},
+            )

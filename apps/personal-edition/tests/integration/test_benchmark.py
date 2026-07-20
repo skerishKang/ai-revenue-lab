@@ -82,15 +82,21 @@ class TestBenchmarkDbSetup:
 class TestEnsureParticipant:
     def test_creates_participant(self):
         conn = _setup_benchmark_db(":memory:")
-        pid, inp_id = _ensure_participant(conn)
+        pid, inp_id = _ensure_participant(
+            conn, participant_id="bench-synthetic-participant"
+        )
         assert pid == "bench-synthetic-participant"
         assert inp_id is not None
         conn.close()
 
     def test_idempotent(self):
         conn = _setup_benchmark_db(":memory:")
-        pid1, inp1 = _ensure_participant(conn)
-        pid2, inp2 = _ensure_participant(conn)
+        pid1, inp1 = _ensure_participant(
+            conn, participant_id="bench-synthetic-participant"
+        )
+        pid2, inp2 = _ensure_participant(
+            conn, participant_id="bench-synthetic-participant"
+        )
         assert pid1 == pid2
         assert inp1 != inp2
         conn.close()
@@ -99,6 +105,7 @@ class TestEnsureParticipant:
 class TestBenchmarkRun:
     def test_single_fixture_mock_provider(self):
         results = run_benchmark(
+            task="first_edition",
             fixture_names=["korean_founder"],
             repeat=1,
             db_path=":memory:",
@@ -117,6 +124,7 @@ class TestBenchmarkRun:
         if len(available) < 2:
             pytest.skip("need at least 2 fixtures")
         results = run_benchmark(
+            task="first_edition",
             fixture_names=available[:2],
             repeat=1,
             db_path=":memory:",
@@ -126,6 +134,7 @@ class TestBenchmarkRun:
 
     def test_repeated_runs(self):
         results = run_benchmark(
+            task="first_edition",
             fixture_names=["korean_founder"],
             repeat=3,
             db_path=":memory:",
@@ -140,14 +149,15 @@ class TestBenchmarkRun:
         from app.pipeline.fixtures import load_bundle
         from app.pipeline.service import GenerationRequest, GenerationService
         from scripts.benchmark import (
-            _run_fixture_once,
             _ensure_participant,
             _setup_benchmark_db,
             _provider_info,
         )
 
         conn = _setup_benchmark_db(":memory:")
-        pid, inp_id = _ensure_participant(conn)
+        pid, inp_id = _ensure_participant(
+            conn, participant_id="bench-test-fail"
+        )
         fixture = load_bundle("korean_founder")
 
         failing_provider = MockProvider(
@@ -158,21 +168,17 @@ class TestBenchmarkRun:
             ],
         )
         info = _provider_info(failing_provider)
-        from datetime import datetime, timezone
-        started_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-        result = _run_fixture_once(
-            provider=failing_provider,
-            fixture=fixture,
-            db_conn=conn,
+        service = GenerationService(provider=failing_provider)
+        request = GenerationRequest(
             participant_id=pid,
             input_id=inp_id,
-            run_index=0,
-            benchmark_name="test-fail",
+            prohibited_inferences=fixture.prohibited_inventions,
+            allow_short_sample=True,
         )
+        result = service.generate_edition(conn, request=request)
 
-        assert result["success"] is False
-        assert result["failure_category"] == "provider"
+        assert result.succeeded is False
         conn.close()
 
     def test_benchmark_record_persisted(self):
@@ -180,6 +186,7 @@ class TestBenchmarkRun:
             db_path = f.name
         try:
             results = run_benchmark(
+                task="first_edition",
                 fixture_names=["korean_founder"],
                 repeat=1,
                 db_path=db_path,
@@ -204,6 +211,7 @@ class TestBenchmarkRun:
             output_path = f.name
         try:
             results = run_benchmark(
+                task="first_edition",
                 fixture_names=["korean_founder"],
                 repeat=1,
                 output_path=output_path,
@@ -223,6 +231,7 @@ class TestBenchmarkRun:
             db_path = f.name
         try:
             run_benchmark(
+                task="first_edition",
                 fixture_names=["korean_founder"],
                 repeat=1,
                 db_path=db_path,

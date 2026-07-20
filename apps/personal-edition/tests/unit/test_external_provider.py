@@ -152,7 +152,7 @@ class TestExternalProviderErrors:
         assert result.success is False
         assert result.error_category == ProviderErrorCategory.RATE_LIMIT
 
-    def test_http_401_refusal(self):
+    def test_http_401_auth_failure(self):
         provider = _make_provider()
         exc = urllib.error.HTTPError(
             url="https://api.example.com", code=401, msg="Unauthorized",
@@ -164,9 +164,9 @@ class TestExternalProviderErrors:
                 response_schema=DummySchema, request_id="r2",
             )
         assert result.success is False
-        assert result.error_category == ProviderErrorCategory.REFUSAL
+        assert result.error_category == ProviderErrorCategory.AUTH_FAILURE
 
-    def test_http_403_refusal(self):
+    def test_http_403_auth_failure(self):
         provider = _make_provider()
         exc = urllib.error.HTTPError(
             url="https://api.example.com", code=403, msg="Forbidden",
@@ -178,7 +178,7 @@ class TestExternalProviderErrors:
                 response_schema=DummySchema, request_id="r3",
             )
         assert result.success is False
-        assert result.error_category == ProviderErrorCategory.REFUSAL
+        assert result.error_category == ProviderErrorCategory.AUTH_FAILURE
 
     def test_http_500_server_error(self):
         provider = _make_provider()

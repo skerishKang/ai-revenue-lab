@@ -30,11 +30,14 @@ def _build_provider():
         return MockProvider(model=settings.ai_model)
     if settings.ai_provider == "external":
         from app.ai.external import ExternalProvider
+        from app.domain.enums import CostClass
+        cost_class = CostClass(settings.ai_cost_class)
         return ExternalProvider(
             base_url=settings.ai_base_url,
             api_key=settings.ai_api_key,
             model=settings.ai_model,
             timeout_seconds=settings.ai_timeout_seconds,
+            cost_class=cost_class,
         )
     raise ValueError(f"Unknown AI_PROVIDER: {settings.ai_provider}")
 

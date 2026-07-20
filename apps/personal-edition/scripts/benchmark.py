@@ -87,14 +87,16 @@ def _build_provider(settings: Settings, fixture: FixtureBundle | None = None):
             )
         return MockProvider(model=model)
 
-    if settings.ai_base_url:
+    if settings.ai_provider == "external" and settings.ai_base_url:
         from app.ai.external import ExternalProvider
-
+        from app.domain.enums import CostClass
+        cost_class = CostClass(settings.ai_cost_class)
         return ExternalProvider(
             base_url=settings.ai_base_url,
             api_key=settings.ai_api_key,
             model=settings.ai_model,
             timeout_seconds=settings.ai_timeout_seconds,
+            cost_class=cost_class,
         )
 
     raise SystemExit(
@@ -564,9 +566,9 @@ def _run_feedback_second_edition(
     from app import edition_repository as ed_repo
     from app import feedback_repository as fb_repo
 
-    first_provider = _build_provider(settings, fixture=fixture)
-    first_info = _provider_info(first_provider)
-    service = GenerationService(provider=first_provider)
+    provider = _build_provider(settings, fixture=fixture)
+    first_info = _provider_info(provider)
+    service = GenerationService(provider=provider)
     request = GenerationRequest(
         participant_id=participant_id,
         input_id=input_id,
@@ -628,24 +630,10 @@ def _run_feedback_second_edition(
     )
     feedback_id = fb_record.id
 
-    follow_up_plan = inject_feedback_id(
-        fixture.follow_up_plan_payload, feedback_id
-    )
-    follow_up_draft = inject_feedback_id(
-        fixture.follow_up_draft_payload, feedback_id
-    )
-
-    follow_up_provider = MockProvider(
-        task_payloads={
-            "editorial_plan": follow_up_plan,
-            "edition_draft": follow_up_draft,
-        },
-    )
-
     started_at = _now_iso()
     task_start = time.monotonic()
 
-    follow_up_service = GenerationService(provider=follow_up_provider)
+    follow_up_service = GenerationService(provider=provider)
     follow_up_request = GenerationRequest(
         participant_id=participant_id,
         input_id=input_id,
@@ -849,22 +837,13 @@ def _run_validator_feedback_repair(
 ) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
 
-    bad_plan = json.loads(json.dumps(fixture.plan_payload))
-    for section in bad_plan.get("sections", []):
-        section["source_segment_ids"] = ["s999"]
-
-    bad_provider = MockProvider(
-        task_payloads={
-            "editorial_plan": bad_plan,
-            "edition_draft": fixture.draft_payload,
-        },
-    )
-    bad_info = _provider_info(bad_provider)
+    provider = _build_provider(settings, fixture=fixture)
+    provider_info = _provider_info(provider)
 
     bad_started_at = _now_iso()
     task_start = time.monotonic()
 
-    bad_service = GenerationService(provider=bad_provider)
+    bad_service = GenerationService(provider=provider)
     bad_request = GenerationRequest(
         participant_id=participant_id,
         input_id=input_id,
@@ -908,7 +887,7 @@ def _run_validator_feedback_repair(
         fixture_name=fixture.name,
         run_group="validator_feedback_repair",
         run_index=run_index * 2,
-        provider_info=bad_info,
+        provider_info=provider_info,
         task_type="editorial_plan",
         prompt_version=PLAN_PROMPT_VERSION,
         started_at=bad_started_at,
@@ -943,13 +922,10 @@ def _run_validator_feedback_repair(
         }
     )
 
-    repair_provider = _build_provider(settings, fixture=fixture)
-    repair_info = _provider_info(repair_provider)
-
     repair_started_at = _now_iso()
     repair_start = time.monotonic()
 
-    repair_service = GenerationService(provider=repair_provider)
+    repair_service = GenerationService(provider=provider)
     repair_request = GenerationRequest(
         participant_id=participant_id,
         input_id=input_id,
@@ -1005,7 +981,7 @@ def _run_validator_feedback_repair(
         fixture_name=fixture.name,
         run_group="validator_feedback_repair",
         run_index=run_index * 2 + 1,
-        provider_info=repair_info,
+        provider_info=provider_info,
         task_type="full_pipeline",
         prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
         started_at=repair_started_at,
@@ -1164,7 +1140,7 @@ def run_benchmark(
     for fname in fixture_names:
         fixture = load_bundle(fname)
         for i in range(repeat):
-            participant_id = f"bench-{fname}-repeat-{i}"
+            participant_id = f"bench-{benchmark_name}-{fname}-repeat-{i}"
             pid, input_id = _ensure_participant(
                 conn,
                 participant_id=participant_id,

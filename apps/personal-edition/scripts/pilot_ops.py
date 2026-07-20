@@ -275,8 +275,12 @@ class BenchmarkRunRecord(PilotRecord):
         for field_name in ("error_message", "synthetic_result_ref"):
             val = getattr(self, field_name, None)
             if isinstance(val, str) and val:
-                reject_or_redact_sensitive(
-                    val, reject=False, field_name=field_name
+                object.__setattr__(
+                    self,
+                    field_name,
+                    reject_or_redact_sensitive(
+                        val, reject=False, field_name=field_name
+                    ),
                 )
         return self
 
@@ -314,8 +318,12 @@ class PilotRunRecord(PilotRecord):
                         ),
                     )
                 else:
-                    reject_or_redact_sensitive(
-                        val, reject=False, field_name=field_name
+                    object.__setattr__(
+                        self,
+                        field_name,
+                        reject_or_redact_sensitive(
+                            val, reject=False, field_name=field_name
+                        ),
                     )
         return self
 
@@ -627,7 +635,7 @@ def update_record(
         )
 
     model_cls = _record_model_for_type(
-        PilotRecordType(existing_data["record_type"])
+        PilotRecordType(existing["record_type"])
     )
     updated_record = model_cls.model_validate(updated_data)
 

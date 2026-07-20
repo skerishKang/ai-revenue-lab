@@ -167,21 +167,29 @@ class TestBenchmarkNoCredentialLeak:
 
 class TestPilotOpsNoSensitiveData:
     def test_pilot_record_no_card_number(self):
-        from scripts.pilot_ops import _create_pilot_table, record_payment_evidence
-        from app.db import get_connection
+        from scripts.pilot_ops import (
+            PaymentEvidenceRecord,
+            _create_pilot_table,
+            record_operation,
+        )
+        from app.db import apply_migrations, get_connection
 
         conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
         _create_pilot_table(conn)
-        record_payment_evidence(
-            conn, "p1",
-            amount_krw=4900,
+        record = PaymentEvidenceRecord(
+            participant_id="p1",
+            amount=4900.0,
+            currency="KRW",
             payment_method="manual",
-            evidence_description="Bank transfer receipt",
+            payment_date="2025-01-01",
+            internal_reference="ref-001",
         )
+        record_operation(conn, record)
         import json as json_mod
-        rows = conn.execute("SELECT record_json FROM pilot_records").fetchall()
+        rows = conn.execute("SELECT payload FROM pilot_ops_records").fetchall()
         for row in rows:
-            data = json_mod.loads(row["record_json"])
+            data = json_mod.loads(row["payload"])
             assert "card_number" not in str(data)
             assert "account_number" not in str(data)
         conn.close()
