@@ -82,17 +82,21 @@ def is_retryable(category: ProviderErrorCategory | None) -> bool:
     return category in _RETRYABLE_CATEGORIES
 
 
+_CATEGORY_MESSAGES = {
+    ProviderErrorCategory.PROVIDER_ERROR: "provider returned an error",
+    ProviderErrorCategory.TIMEOUT: "provider request timed out",
+    ProviderErrorCategory.INVALID_JSON: "provider returned invalid JSON",
+    ProviderErrorCategory.SCHEMA_MISMATCH: "provider response did not match the expected schema",
+    ProviderErrorCategory.UNKNOWN: "unexpected provider error",
+}
+
+
 def safe_error_message(category: ProviderErrorCategory | None, raw: str | None) -> str:
     """Return a sanitized, category-oriented error message.
 
-    The raw provider error message may echo fixture or field data. It is
-    truncated and prefixed with its category so that no raw private material is
-    durably recorded.
+    Only a static category message is returned. The raw provider output is
+    never included so that no private material is durably recorded.
     """
-    label = category.value if category is not None else "unknown"
-    if raw:
-        snippet = raw.strip()
-        if len(snippet) > 160:
-            snippet = snippet[:160] + "..."
-        return f"{label}: {snippet}"
-    return f"{label}: provider returned no usable structured payload"
+    if category is not None and category in _CATEGORY_MESSAGES:
+        return f"{category.value}: {_CATEGORY_MESSAGES[category]}"
+    return "unknown: unexpected provider error"

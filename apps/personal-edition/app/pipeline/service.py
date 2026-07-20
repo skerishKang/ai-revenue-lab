@@ -25,8 +25,10 @@ leaves the prior edition untouched and feedback unapplied.
 
 from __future__ import annotations
 
+import json
 import uuid
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 
 from app import edition_repository as ed_repo
@@ -60,6 +62,8 @@ from app.pipeline.errors import (
 )
 from app.pipeline.segmentation import segment_text
 
+MIN_INPUT_CHARS = 50
+MAX_INPUT_CHARS = 50000
 DEFAULT_MAX_RETRIES = 2
 
 
@@ -72,10 +76,9 @@ class GenerationRequest:
     is_follow_up: bool = False
     prior_edition_id: str | None = None
     feedback_id: str | None = None
-    feedback_directions: tuple[str, ...] = ()
-    feedback_free_text: str | None = None
     prior_edition_summary: dict[str, Any] | None = None
     prohibited_inferences: tuple[str, ...] = ()
+    allow_short_sample: bool = False
 
 
 @dataclass(frozen=True)
@@ -90,6 +93,12 @@ class StageOutcome:
     error_message: str | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
+    completed_at: str | None = None
+    latency_seconds: float | None = None
+    provider: str | None = None
+    model: str | None = None
+    cost_class: str | None = None
+    run_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -110,6 +119,14 @@ class GenerationResult:
 
 def _new_request_id() -> str:
     return str(uuid.uuid4())
+
+
+def _now_utc() -> str:
+    return pt_repo._now_utc_iso()
+
+
+def _parse_utc_iso(ts: str) -> datetime:
+    return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 
 def _segment_list(segments: list[InputSegment]) -> list[dict[str, Any]]:
@@ -135,19 +152,25 @@ def _provider_call_with_retry(
     prompt_version: str,
     conn,
     participant_id: str,
-    run_kind: str,
 ) -> tuple[Any | None, StageOutcome]:
-    """Call the provider with bounded retry and record accounting per attempt.
+    """Call the provider with bounded retry and record one accounting row per stage.
 
     Returns (validated_model_or_None, stage_outcome). On exhaustion the outcome
-    is a failure and the model is None.
+    is a failure and the model is None. A single generation_run row is created
+    and updated to cover the entire stage, including deterministic validation
+    failures.
     """
+    started_at = _now_utc()
+
     last_error_category: ProviderErrorCategory | None = None
     last_error_message: str | None = None
-    attempts = 0
+    last_result = None
+    last_validated = None
+    validation_status = PROVIDER_FAILED
+    input_tokens: int | None = None
+    output_tokens: int | None = None
 
     for attempt in range(max_retries + 1):
-        attempts = attempt + 1
         request_id = _new_request_id()
         try:
             result = provider.generate_structured(
@@ -158,160 +181,109 @@ def _provider_call_with_retry(
                 request_id=request_id,
             )
         except Exception as exc:
-            category = ProviderErrorCategory.UNKNOWN
-            last_error_category = category
-            last_error_message = safe_error_message(category, str(exc))
-            run = _record_run(
-                conn,
-                participant_id,
-                task_name,
-                provider,
-                prompt_version,
-                success=False,
-                validation_status=PROVIDER_FAILED,
-                retry_count=attempt,
-                error_category=category,
-                error_message=last_error_message,
+            last_error_category = ProviderErrorCategory.UNKNOWN
+            last_error_message = safe_error_message(
+                last_error_category, str(exc)
             )
-            _ = run
-            if not is_retryable(category) or attempt >= max_retries:
-                return None, StageOutcome(
-                    success=False,
-                    validation_status=PROVIDER_FAILED,
-                    retry_count=attempt,
-                    error_category=category,
-                    error_message=last_error_message,
-                )
+            last_result = None
+            if not is_retryable(last_error_category) or attempt >= max_retries:
+                break
             continue
+
+        last_result = result
+        if result.usage:
+            if result.usage.input_tokens is not None:
+                input_tokens = result.usage.input_tokens
+            if result.usage.output_tokens is not None:
+                output_tokens = result.usage.output_tokens
 
         if result.success and result.payload is not None:
             try:
                 validated = response_schema.model_validate(result.payload)
+                last_validated = validated
+                validation_status = VALIDATION_PASSED
+                last_error_category = None
+                last_error_message = None
+                break
             except Exception as exc:
                 last_error_category = ProviderErrorCategory.SCHEMA_MISMATCH
                 last_error_message = safe_error_message(
                     last_error_category, str(exc)
                 )
-                _record_run(
-                    conn,
-                    participant_id,
-                    task_name,
-                    provider,
-                    prompt_version,
-                    success=False,
-                    validation_status=VALIDATION_FAILED,
-                    retry_count=attempt,
-                    error_category=last_error_category,
-                    error_message=last_error_message,
-                    input_tokens=result.usage.input_tokens,
-                    output_tokens=result.usage.output_tokens,
-                )
+                validation_status = VALIDATION_FAILED
                 if attempt >= max_retries:
-                    return None, StageOutcome(
-                        success=False,
-                        validation_status=VALIDATION_FAILED,
-                        retry_count=attempt,
-                        error_category=last_error_category,
-                        error_message=last_error_message,
-                    )
+                    break
                 continue
-
-            _record_run(
-                conn,
-                participant_id,
-                task_name,
-                provider,
-                prompt_version,
-                success=True,
-                validation_status=VALIDATION_PASSED,
-                retry_count=attempt,
-                input_tokens=result.usage.input_tokens,
-                output_tokens=result.usage.output_tokens,
-            )
-            return validated, StageOutcome(
-                success=True,
-                validation_status=VALIDATION_PASSED,
-                retry_count=attempt,
-                payload=result.payload,
-                input_tokens=result.usage.input_tokens,
-                output_tokens=result.usage.output_tokens,
-            )
 
         last_error_category = result.error_category or ProviderErrorCategory.UNKNOWN
         last_error_message = safe_error_message(
             last_error_category, result.error_message
         )
-        _record_run(
-            conn,
-            participant_id,
-            task_name,
-            provider,
-            prompt_version,
-            success=False,
-            validation_status=PROVIDER_FAILED,
-            retry_count=attempt,
-            error_category=last_error_category,
-            error_message=last_error_message,
-            input_tokens=result.usage.input_tokens if result.usage else None,
-            output_tokens=result.usage.output_tokens if result.usage else None,
-        )
+        validation_status = PROVIDER_FAILED
         if not is_retryable(last_error_category) or attempt >= max_retries:
-            return None, StageOutcome(
-                success=False,
-                validation_status=PROVIDER_FAILED,
-                retry_count=attempt,
-                error_category=last_error_category,
-                error_message=last_error_message,
-            )
+            break
 
-    return None, StageOutcome(
-        success=False,
-        validation_status=PROVIDER_FAILED,
-        retry_count=max_retries,
-        error_category=last_error_category,
-        error_message=last_error_message or "provider retries exhausted",
-    )
+    completed_at = _now_utc()
+    latency = (
+        _parse_utc_iso(completed_at) - _parse_utc_iso(started_at)
+    ).total_seconds()
 
+    success = last_validated is not None and validation_status == VALIDATION_PASSED
+    retry_count = attempt
 
-def _record_run(
-    conn,
-    participant_id: str,
-    task_type: str,
-    provider: AIProvider,
-    prompt_version: str,
-    *,
-    success: bool,
-    validation_status: str,
-    retry_count: int,
-    error_category: ProviderErrorCategory | None = None,
-    error_message: str | None = None,
-    input_tokens: int | None = None,
-    output_tokens: int | None = None,
-):
-    """Create and finalize a generation_run row for one provider attempt."""
+    provider_name = _provider_name(provider)
+    model_name = _provider_model(provider)
+    cost_class_value = CostClass.FREE.value
+    if last_result is not None:
+        cost_class_value = last_result.cost_class.value
+
     run = gr_repo.create_generation_run(
         conn,
-        task_type=task_type,
-        provider=_provider_name(provider),
-        advertised_model=_provider_model(provider),
-        cost_class=CostClass.FREE.value,
+        task_type=task_name,
+        provider=provider_name,
+        advertised_model=model_name,
+        cost_class=cost_class_value,
         prompt_version=prompt_version,
+        started_at=started_at,
     )
+
     gr_repo.update_generation_run(
         conn,
         run.id,
-        completed_at=None,
+        completed_at=completed_at,
+        latency_seconds=latency,
         success=1 if success else 0,
         validation_status=validation_status,
         retry_count=retry_count,
         error_category=(
-            error_category.value if error_category is not None else None
+            last_error_category.value if last_error_category is not None else None
         ),
-        error_message=error_message,
+        error_message=last_error_message,
         input_tokens=input_tokens,
         output_tokens=output_tokens,
     )
-    return run
+
+    return last_validated, StageOutcome(
+        success=success,
+        validation_status=validation_status,
+        retry_count=retry_count,
+        payload=(
+            last_result.payload if last_result is not None and last_result.success
+            else None
+        ),
+        error_category=(
+            last_error_category.value if last_error_category is not None else None
+        ),
+        error_message=last_error_message,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        completed_at=completed_at,
+        latency_seconds=latency,
+        provider=provider_name,
+        model=model_name,
+        cost_class=cost_class_value,
+        run_id=run.id,
+    )
 
 
 def _provider_name(provider: AIProvider) -> str:
@@ -354,8 +326,6 @@ class GenerationService:
         request: GenerationRequest,
     ) -> GenerationResult:
         """Run the full pipeline for one edition (first or follow-up)."""
-        # Stage 1: load and validate the participant + input before any
-        # provider call. Invalid input fails before any provider call.
         participant = pt_repo.get_participant_by_id(conn, request.participant_id)
         if participant is None or participant.status != "active":
             return GenerationResult(
@@ -395,16 +365,138 @@ class GenerationService:
                 succeeded=False,
             )
 
+        input_text = input_record.normalized_text or input_record.raw_text
+        if len(input_text) < MIN_INPUT_CHARS and not request.allow_short_sample:
+            return GenerationResult(
+                edition_id=None,
+                plan_run=_failed_outcome("input too short"),
+                draft_run=_failed_outcome("input too short"),
+                succeeded=False,
+            )
+        if len(input_text) > MAX_INPUT_CHARS:
+            return GenerationResult(
+                edition_id=None,
+                plan_run=_failed_outcome("input too long"),
+                draft_run=_failed_outcome("input too long"),
+                succeeded=False,
+            )
+
         language = participant.preferred_language
         preferences = ParticipantPreferences()
-
-        segments = segment_text(
-            input_record.normalized_text or input_record.raw_text
-        )
-
+        segments = segment_text(input_text)
         prohibited_inferences = list(request.prohibited_inferences)
 
-        # Stage 2: editorial plan (bounded retry).
+        feedback_directions: list[str] = []
+        feedback_free_text: str | None = None
+
+        if request.is_follow_up:
+            if request.prior_edition_id is None:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome(
+                        "prior_edition_id is required for follow-up"
+                    ),
+                    draft_run=_failed_outcome(
+                        "prior_edition_id is required for follow-up"
+                    ),
+                    succeeded=False,
+                )
+
+            prior_edition = ed_repo.get_edition_by_id(
+                conn, request.prior_edition_id
+            )
+            if prior_edition is None:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome("prior edition not found"),
+                    draft_run=_failed_outcome("prior edition not found"),
+                    succeeded=False,
+                )
+            if prior_edition.participant_id != request.participant_id:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome(
+                        "prior edition belongs to another participant"
+                    ),
+                    draft_run=_failed_outcome(
+                        "prior edition belongs to another participant"
+                    ),
+                    succeeded=False,
+                )
+            if (
+                prior_edition.generation_status != "pending_review"
+                or prior_edition.publication_state != "published"
+            ):
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome(
+                        "prior edition is not in the required state"
+                    ),
+                    draft_run=_failed_outcome(
+                        "prior edition is not in the required state"
+                    ),
+                    succeeded=False,
+                )
+
+            if request.feedback_id is None:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome(
+                        "feedback_id is required for follow-up"
+                    ),
+                    draft_run=_failed_outcome(
+                        "feedback_id is required for follow-up"
+                    ),
+                    succeeded=False,
+                )
+
+            feedback_record = fb_repo.get_feedback_by_id(
+                conn, request.feedback_id
+            )
+            if feedback_record is None:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome("feedback not found"),
+                    draft_run=_failed_outcome("feedback not found"),
+                    succeeded=False,
+                )
+            if feedback_record.participant_id != request.participant_id:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome(
+                        "feedback belongs to another participant"
+                    ),
+                    draft_run=_failed_outcome(
+                        "feedback belongs to another participant"
+                    ),
+                    succeeded=False,
+                )
+            if feedback_record.edition_id != request.prior_edition_id:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome(
+                        "feedback does not match prior edition"
+                    ),
+                    draft_run=_failed_outcome(
+                        "feedback does not match prior edition"
+                    ),
+                    succeeded=False,
+                )
+            if feedback_record.applied_to_next_edition != 0:
+                return GenerationResult(
+                    edition_id=None,
+                    plan_run=_failed_outcome("feedback has already been applied"),
+                    draft_run=_failed_outcome(
+                        "feedback has already been applied"
+                    ),
+                    succeeded=False,
+                )
+
+            feedback_directions = json.loads(
+                feedback_record.direction_choices
+            )
+            feedback_free_text = feedback_record.free_text
+
         plan_system = prompts.build_plan_system_prompt(language)
         plan_payload = prompts.build_plan_user_payload(
             participant_id=request.participant_id,
@@ -413,8 +505,8 @@ class GenerationService:
             language=language,
             is_follow_up=request.is_follow_up,
             feedback_id=request.feedback_id,
-            feedback_directions=list(request.feedback_directions),
-            feedback_free_text=request.feedback_free_text,
+            feedback_directions=feedback_directions,
+            feedback_free_text=feedback_free_text,
             prior_edition_summary=request.prior_edition_summary,
             prohibited_inferences=prohibited_inferences,
         )
@@ -429,7 +521,6 @@ class GenerationService:
             prompt_version=prompts.PLAN_PROMPT_VERSION,
             conn=conn,
             participant_id=request.participant_id,
-            run_kind="plan",
         )
 
         if plan is None:
@@ -440,7 +531,6 @@ class GenerationService:
                 succeeded=False,
             )
 
-        # Stage 3: validate the plan.
         try:
             validators.validate_plan(
                 plan,
@@ -449,28 +539,38 @@ class GenerationService:
                 feedback_id=request.feedback_id,
             )
         except PlanValidationError as exc:
-            _record_validation_failure(
-                conn,
-                request.participant_id,
-                prompts.TASK_EDITORIAL_PLAN,
-                prompts.PLAN_PROMPT_VERSION,
-                str(exc),
-                self._provider,
-            )
+            if plan_outcome.run_id is not None:
+                gr_repo.update_generation_run(
+                    conn,
+                    plan_outcome.run_id,
+                    success=0,
+                    validation_status=VALIDATION_FAILED,
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                    error_message=safe_error_message(
+                        ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                    ),
+                )
             return GenerationResult(
                 edition_id=None,
                 plan_run=StageOutcome(
                     success=False,
                     validation_status=VALIDATION_FAILED,
                     retry_count=plan_outcome.retry_count,
-                    error_category="validation_failed",
-                    error_message=str(exc),
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                    error_message=safe_error_message(
+                        ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                    ),
+                    completed_at=plan_outcome.completed_at,
+                    latency_seconds=plan_outcome.latency_seconds,
+                    provider=plan_outcome.provider,
+                    model=plan_outcome.model,
+                    cost_class=plan_outcome.cost_class,
+                    run_id=plan_outcome.run_id,
                 ),
                 draft_run=_failed_outcome("plan validation failed"),
                 succeeded=False,
             )
 
-        # Stage 4: edition draft (bounded retry).
         draft_system = prompts.build_draft_system_prompt(language)
         draft_payload = prompts.build_draft_user_payload(
             participant_id=request.participant_id,
@@ -492,7 +592,6 @@ class GenerationService:
             prompt_version=prompts.DRAFT_PROMPT_VERSION,
             conn=conn,
             participant_id=request.participant_id,
-            run_kind="draft",
         )
 
         if draft is None:
@@ -503,8 +602,6 @@ class GenerationService:
                 succeeded=False,
             )
 
-        # Stage 5: validate the draft (structure, references, continuity,
-        # grounding, markup).
         try:
             validators.validate_draft(
                 draft,
@@ -524,16 +621,22 @@ class GenerationService:
                 policy=policy,
                 visible_fields=visible_fields,
             )
-        except (DraftValidationError, markup_mod.UnsafeMarkupError,
-                grounding_mod.GroundingError) as exc:
-            _record_validation_failure(
-                conn,
-                request.participant_id,
-                prompts.TASK_EDITION_DRAFT,
-                prompts.DRAFT_PROMPT_VERSION,
-                str(exc),
-                self._provider,
-            )
+        except (
+            DraftValidationError,
+            markup_mod.UnsafeMarkupError,
+            grounding_mod.GroundingError,
+        ) as exc:
+            if draft_outcome.run_id is not None:
+                gr_repo.update_generation_run(
+                    conn,
+                    draft_outcome.run_id,
+                    success=0,
+                    validation_status=VALIDATION_FAILED,
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                    error_message=safe_error_message(
+                        ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                    ),
+                )
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -541,31 +644,45 @@ class GenerationService:
                     success=False,
                     validation_status=VALIDATION_FAILED,
                     retry_count=draft_outcome.retry_count,
-                    error_category="validation_failed",
-                    error_message=str(exc),
+                    error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                    error_message=safe_error_message(
+                        ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                    ),
+                    completed_at=draft_outcome.completed_at,
+                    latency_seconds=draft_outcome.latency_seconds,
+                    provider=draft_outcome.provider,
+                    model=draft_outcome.model,
+                    cost_class=draft_outcome.cost_class,
+                    run_id=draft_outcome.run_id,
                 ),
                 succeeded=False,
             )
 
-        # Stage 6: persist a new edition only after complete validation.
         edition_number = self._next_edition_number(conn, request.participant_id)
         structured_content = draft.model_dump_json()
         rendered_title = draft.edition_title
 
-        new_edition = ed_repo.create_edition(
-            conn,
-            participant_id=request.participant_id,
-            edition_number=edition_number,
-            prior_edition_id=request.prior_edition_id,
-            input_id=request.input_id,
-            structured_content=structured_content,
-            rendered_title=rendered_title,
-        )
-
-        # Feedback is marked applied only after the new valid edition is
-        # durably stored.
         if request.is_follow_up and request.feedback_id is not None:
-            fb_repo.mark_feedback_applied(conn, request.feedback_id)
+            new_edition = ed_repo.create_edition_with_feedback_applied(
+                conn,
+                participant_id=request.participant_id,
+                edition_number=edition_number,
+                prior_edition_id=request.prior_edition_id,
+                input_id=request.input_id,
+                structured_content=structured_content,
+                rendered_title=rendered_title,
+                feedback_id=request.feedback_id,
+            )
+        else:
+            new_edition = ed_repo.create_edition(
+                conn,
+                participant_id=request.participant_id,
+                edition_number=edition_number,
+                prior_edition_id=request.prior_edition_id,
+                input_id=request.input_id,
+                structured_content=structured_content,
+                rendered_title=rendered_title,
+            )
 
         return GenerationResult(
             edition_id=new_edition.id,
@@ -588,28 +705,4 @@ def _failed_outcome(message: str) -> StageOutcome:
         retry_count=0,
         error_category="not_attempted",
         error_message=message,
-    )
-
-
-def _record_validation_failure(
-    conn,
-    participant_id: str,
-    task_type: str,
-    prompt_version: str,
-    message: str,
-    provider: AIProvider,
-) -> None:
-    _record_run(
-        conn,
-        participant_id,
-        task_type,
-        provider,
-        prompt_version,
-        success=False,
-        validation_status=VALIDATION_FAILED,
-        retry_count=0,
-        error_category=ProviderErrorCategory.SCHEMA_MISMATCH,
-        error_message=safe_error_message(
-            ProviderErrorCategory.SCHEMA_MISMATCH, message
-        ),
     )

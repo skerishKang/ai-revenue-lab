@@ -5,6 +5,12 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 
+from app.feedback_repository import (
+    FeedbackValidationError,
+    FeedbackRecord,
+    _FEEDBACK_COLS,
+    _FEEDBACK_SELECT,
+)
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
 
 _UTC_ISO_RE = re.compile(
@@ -555,6 +561,179 @@ def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
         conn.commit()
         return cursor.rowcount > 0
     except (EditionStateConflict, RepositoryTransactionError):
+        raise
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
+
+
+def create_edition_with_feedback_applied(
+    conn: sqlite3.Connection,
+    *,
+    participant_id: str,
+    edition_number: int,
+    prior_edition_id: str | None = None,
+    input_id: str | None = None,
+    structured_content: str | None = None,
+    rendered_title: str | None = None,
+    feedback_id: str | None = None,
+) -> EditionRecord:
+    _validate_edition(participant_id, edition_number)
+    _validate_json_field(structured_content, "structured_content")
+
+    if conn.in_transaction:
+        raise RepositoryTransactionError(
+            "repository write requires an idle connection"
+        )
+
+    participant_id = participant_id.strip()
+    now = _now_utc_iso()
+
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        participant = conn.execute(
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            (participant_id,),
+        ).fetchone()
+        if not participant:
+            conn.rollback()
+            raise EditionValidationError(
+                "participant does not exist or is not active"
+            )
+
+        existing = conn.execute(
+            "SELECT 1 FROM editions "
+            "WHERE participant_id = ? AND edition_number = ?",
+            (participant_id, edition_number),
+        ).fetchone()
+        if existing:
+            conn.rollback()
+            raise EditionStateConflict(
+                "edition number already exists for this participant"
+            )
+
+        if prior_edition_id is not None:
+            prior = conn.execute(
+                "SELECT participant_id FROM editions WHERE id = ?",
+                (prior_edition_id,),
+            ).fetchone()
+            if not prior:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id references a non-existent edition"
+                )
+            if prior["participant_id"] != participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id must belong to the same participant"
+                )
+
+        if input_id is not None:
+            inp = conn.execute(
+                "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
+                (input_id,),
+            ).fetchone()
+            if not inp:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id references a non-existent input"
+                )
+            if inp["participant_id"] != participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id must belong to the same participant"
+                )
+            if inp["deleted_at"] is not None:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id references a deleted input"
+                )
+
+        if feedback_id is not None:
+            fb = conn.execute(
+                f"SELECT {_FEEDBACK_SELECT} FROM feedback WHERE id = ?",
+                (feedback_id,),
+            ).fetchone()
+            if not fb:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback_id references a non-existent feedback record"
+                )
+            if fb["participant_id"] != participant_id:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback must belong to the same participant"
+                )
+            if fb["edition_id"] != prior_edition_id:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback must be for the prior edition"
+                )
+            if fb["applied_to_next_edition"] != 0:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback has already been applied"
+                )
+
+        edition_id = str(uuid.uuid4())
+
+        cursor = conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, prior_edition_id, "
+            "input_id, generation_status, structured_content, "
+            "rendered_title, publication_state, drafted_at) "
+            "VALUES (?, ?, ?, ?, ?, 'pending_review', ?, ?, 'pending', ?)",
+            (
+                edition_id,
+                participant_id,
+                edition_number,
+                prior_edition_id,
+                input_id,
+                structured_content,
+                rendered_title,
+                now,
+            ),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            raise RuntimeError("failed to insert edition record")
+
+        if feedback_id is not None:
+            cursor = conn.execute(
+                "UPDATE feedback SET applied_to_next_edition = 1 "
+                "WHERE id = ? AND applied_to_next_edition = 0",
+                (feedback_id,),
+            )
+            if cursor.rowcount != 1:
+                conn.rollback()
+                raise RuntimeError(
+                    "failed to mark feedback as applied"
+                )
+
+        conn.commit()
+        return EditionRecord(
+            id=edition_id,
+            participant_id=participant_id,
+            edition_number=edition_number,
+            prior_edition_id=prior_edition_id,
+            input_id=input_id,
+            generation_status="pending_review",
+            structured_content=structured_content,
+            rendered_title=rendered_title,
+            drafted_at=now,
+            reviewed_at=None,
+            published_at=None,
+            human_correction_minutes=None,
+            reviewer_notes=None,
+            publication_state="pending",
+        )
+    except (
+        EditionValidationError,
+        EditionStateConflict,
+        FeedbackValidationError,
+        RepositoryTransactionError,
+    ):
         raise
     except Exception:
         if conn.in_transaction:

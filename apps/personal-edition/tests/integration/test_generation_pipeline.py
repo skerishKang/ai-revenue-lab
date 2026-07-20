@@ -1,30 +1,40 @@
 """Integration tests for the full Phase 3 generation pipeline.
 
-These tests use a real in-memory SQLite database, apply migrations, create
-participants and inputs, load file-backed fixture bundles, and run the entire
-GenerationService pipeline end-to-end.
+These tests use a real in-memory SQLite database (or file-backed SQLite for
+persistence tests), apply migrations, create participants and inputs, load
+file-backed fixture bundles, and run the entire GenerationService pipeline
+end-to-end.
 """
 
 import json
-import uuid
+import os
+import tempfile
 
 import pytest
 
 from app import (
     edition_repository as ed_repo,
     feedback_repository as fb_repo,
+    generation_run_repository as gr_repo,
     input_repository as input_repo,
     participant_repository as pt_repo,
 )
 from app.ai.mock import MockProvider
 from app.db import apply_migrations, get_connection
 from app.domain.enums import ProviderErrorCategory
-from app.pipeline.errors import VALIDATION_PASSED, VALIDATION_FAILED
+from app.feedback_repository import FeedbackValidationError
+from app.pipeline.errors import (
+    NOT_ATTEMPTED,
+    VALIDATION_FAILED,
+    VALIDATION_PASSED,
+)
 from app.pipeline.fixtures import inject_feedback_id, load_bundle
 from app.pipeline.service import (
     GenerationRequest,
     GenerationService,
     StageOutcome,
+    MAX_INPUT_CHARS,
+    MIN_INPUT_CHARS,
 )
 
 
@@ -47,41 +57,70 @@ def _create_participant(conn, pid="p1", lang="ko"):
     )
 
 
-def _create_input(conn, pid="p1", raw_text="Some input text."):
+def _create_input(conn, pid="p1", raw_text=None, consent_confirmed=1):
+    if raw_text is None:
+        raw_text = "A" * 60
     return input_repo.create_input(
         conn,
         participant_id=pid,
         raw_text=raw_text,
+        consent_confirmed=consent_confirmed,
     )
 
 
-def _assert_successful_first_edition(result, conn, pid):
-    assert result.succeeded is True
-    assert result.edition_id is not None
-    assert result.plan_run.success is True
-    assert result.plan_run.validation_status == VALIDATION_PASSED
-    assert result.draft_run.success is True
-    assert result.draft_run.validation_status == VALIDATION_PASSED
+def _get_all_generation_runs(conn):
+    rows = conn.execute(
+        "SELECT id, task_type, provider, advertised_model, cost_class, "
+        "prompt_version, started_at, completed_at, latency_seconds, "
+        "success, validation_status, input_tokens, output_tokens, "
+        "retry_count, error_category, error_message, "
+        "human_correction_minutes, verified_upstream_status "
+        "FROM generation_runs ORDER BY started_at"
+    ).fetchall()
+    return [
+        gr_repo.GenerationRunRecord(
+            id=r["id"],
+            task_type=r["task_type"],
+            provider=r["provider"],
+            advertised_model=r["advertised_model"],
+            verified_upstream_status=r["verified_upstream_status"],
+            cost_class=r["cost_class"],
+            prompt_version=r["prompt_version"],
+            started_at=r["started_at"],
+            completed_at=r["completed_at"],
+            latency_seconds=r["latency_seconds"],
+            success=r["success"],
+            validation_status=r["validation_status"],
+            input_tokens=r["input_tokens"],
+            output_tokens=r["output_tokens"],
+            retry_count=r["retry_count"],
+            error_category=r["error_category"],
+            error_message=r["error_message"],
+            human_correction_minutes=r["human_correction_minutes"],
+        )
+        for r in rows
+    ]
 
-    edition = ed_repo.get_edition_by_id(conn, result.edition_id)
-    assert edition is not None
-    assert edition.participant_id == pid
-    assert edition.edition_number == 1
-    assert edition.generation_status == "pending_review"
-    assert edition.publication_state == "pending"
-    assert edition.structured_content is not None
-    content = json.loads(edition.structured_content)
-    assert isinstance(content, dict)
-    assert "publication_title" in content
-    assert "sections" in content
 
-    runs = gr_repo_list(conn, "editorial_plan")
-    assert len(runs) >= 1
+def _make_provider(bundle):
+    return MockProvider(
+        task_payloads={
+            "editorial_plan": bundle.plan_payload,
+            "edition_draft": bundle.draft_payload,
+        }
+    )
 
 
-def gr_repo_list(conn, task_type):
-    from app.generation_run_repository import get_generation_runs_by_task_type
-    return get_generation_runs_by_task_type(conn, task_type)
+def _run_first_edition(conn, bundle, pid="p1"):
+    _create_participant(conn, pid=pid, lang=bundle.language)
+    inp = _create_input(conn, pid=pid, raw_text=bundle.input_text)
+    provider = _make_provider(bundle)
+    service = GenerationService(provider=provider)
+    result = service.generate_edition(
+        conn,
+        request=GenerationRequest(participant_id=pid, input_id=inp.id),
+    )
+    return result, inp
 
 
 # ---------------------------------------------------------------------------
@@ -92,87 +131,92 @@ class TestFirstEditionGeneration:
     def test_korean_founder_success(self):
         bundle = load_bundle("korean_founder")
         conn = _setup_db()
-        _create_participant(conn)
-        inp = _create_input(conn, raw_text=bundle.input_text)
+        result, _ = _run_first_edition(conn, bundle)
 
-        provider = MockProvider(
-            task_payloads={
-                "editorial_plan": bundle.plan_payload,
-                "edition_draft": bundle.draft_payload,
-            }
-        )
-        service = GenerationService(provider=provider)
-        request = GenerationRequest(
-            participant_id="p1",
-            input_id=inp.id,
-        )
-        result = service.generate_edition(conn, request=request)
-        _assert_successful_first_edition(result, conn, "p1")
+        assert result.succeeded is True
+        assert result.edition_id is not None
+        assert result.plan_run.success is True
+        assert result.plan_run.validation_status == VALIDATION_PASSED
+        assert result.draft_run.success is True
+        assert result.draft_run.validation_status == VALIDATION_PASSED
+
+        edition = ed_repo.get_edition_by_id(conn, result.edition_id)
+        assert edition is not None
+        assert edition.participant_id == "p1"
+        assert edition.generation_status == "pending_review"
+        assert edition.publication_state == "pending"
+        assert edition.structured_content is not None
+        content = json.loads(edition.structured_content)
+        assert isinstance(content, dict)
+        assert "publication_title" in content
+        assert "sections" in content
         conn.close()
 
     def test_english_travel_success(self):
         bundle = load_bundle("english_travel")
         conn = _setup_db()
-        _create_participant(conn, lang="en")
-        inp = _create_input(conn, raw_text=bundle.input_text)
+        result, _ = _run_first_edition(conn, bundle)
 
-        provider = MockProvider(
-            task_payloads={
-                "editorial_plan": bundle.plan_payload,
-                "edition_draft": bundle.draft_payload,
-            }
-        )
-        service = GenerationService(provider=provider)
-        request = GenerationRequest(
-            participant_id="p1",
-            input_id=inp.id,
-        )
-        result = service.generate_edition(conn, request=request)
-        _assert_successful_first_edition(result, conn, "p1")
+        assert result.succeeded is True
+        assert result.edition_id is not None
+        assert result.plan_run.success is True
+        assert result.plan_run.validation_status == VALIDATION_PASSED
+        assert result.draft_run.success is True
+        assert result.draft_run.validation_status == VALIDATION_PASSED
+
+        edition = ed_repo.get_edition_by_id(conn, result.edition_id)
+        assert edition is not None
+        assert edition.participant_id == "p1"
+        assert edition.generation_status == "pending_review"
+        assert edition.publication_state == "pending"
         conn.close()
 
     def test_edition_has_correct_edition_number(self):
-        conn = _setup_db()
-        _create_participant(conn)
         bundle = load_bundle("korean_founder")
-        inp = _create_input(conn, raw_text=bundle.input_text)
+        conn = _setup_db()
+        result, _ = _run_first_edition(conn, bundle)
 
-        provider = MockProvider(
-            task_payloads={
-                "editorial_plan": bundle.plan_payload,
-                "edition_draft": bundle.draft_payload,
-            }
-        )
-        service = GenerationService(provider=provider)
-        result = service.generate_edition(
-            conn, request=GenerationRequest(participant_id="p1", input_id=inp.id)
-        )
         assert result.succeeded is True
         edition = ed_repo.get_edition_by_id(conn, result.edition_id)
         assert edition.edition_number == 1
         conn.close()
 
     def test_generation_run_accounting(self):
-        conn = _setup_db()
-        _create_participant(conn)
         bundle = load_bundle("korean_founder")
-        inp = _create_input(conn, raw_text=bundle.input_text)
+        conn = _setup_db()
+        result, _ = _run_first_edition(conn, bundle)
 
-        provider = MockProvider(
-            task_payloads={
-                "editorial_plan": bundle.plan_payload,
-                "edition_draft": bundle.draft_payload,
-            }
-        )
-        service = GenerationService(provider=provider)
-        result = service.generate_edition(
-            conn, request=GenerationRequest(participant_id="p1", input_id=inp.id)
-        )
         assert result.succeeded is True
-        runs = gr_repo_list(conn, "editorial_plan")
-        assert len(runs) >= 1
-        successful_runs = [r for r in runs if r.success == 1]
-        assert len(successful_runs) >= 1
+
+        all_runs = _get_all_generation_runs(conn)
+        assert len(all_runs) == 2
+
+        plan_runs = [r for r in all_runs if r.task_type == "editorial_plan"]
+        draft_runs = [r for r in all_runs if r.task_type == "edition_draft"]
+        assert len(plan_runs) == 1
+        assert len(draft_runs) == 1
+
+        plan_run = plan_runs[0]
+        draft_run = draft_runs[0]
+
+        assert plan_run.success == 1
+        assert plan_run.completed_at is not None
+        assert plan_run.latency_seconds is not None
+        assert plan_run.latency_seconds >= 0
+        assert plan_run.provider is not None
+        assert plan_run.advertised_model is not None
+        assert plan_run.cost_class is not None
+
+        assert draft_run.success == 1
+        assert draft_run.completed_at is not None
+        assert draft_run.latency_seconds is not None
+        assert draft_run.latency_seconds >= 0
+        assert draft_run.provider is not None
+        assert draft_run.advertised_model is not None
+        assert draft_run.cost_class is not None
+
+        assert result.plan_run.run_id == plan_run.id
+        assert result.draft_run.run_id == draft_run.id
         conn.close()
 
 
@@ -187,7 +231,6 @@ class TestFollowUpEdition:
         _create_participant(conn)
         inp = _create_input(conn, raw_text=bundle.input_text)
 
-        # First edition
         provider = MockProvider(
             task_payloads={
                 "editorial_plan": bundle.plan_payload,
@@ -201,7 +244,10 @@ class TestFollowUpEdition:
         )
         assert first_result.succeeded is True
 
-        # Create feedback for first edition
+        ed_repo.update_edition_publication(
+            conn, first_result.edition_id, "published"
+        )
+
         fb = fb_repo.create_feedback(
             conn,
             participant_id="p1",
@@ -212,7 +258,6 @@ class TestFollowUpEdition:
             free_text=bundle.feedback_free_text,
         )
 
-        # Follow-up edition with feedback
         fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
         fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
 
@@ -229,20 +274,16 @@ class TestFollowUpEdition:
             is_follow_up=True,
             prior_edition_id=first_result.edition_id,
             feedback_id=fb.id,
-            feedback_directions=bundle.feedback_directions,
-            feedback_free_text=bundle.feedback_free_text,
         )
         follow_up_result = service2.generate_edition(conn, request=follow_up_request)
         assert follow_up_result.succeeded is True
         assert follow_up_result.edition_id is not None
 
-        # Assert edition_number = 2
         fu_edition = ed_repo.get_edition_by_id(conn, follow_up_result.edition_id)
         assert fu_edition.edition_number == 2
         assert fu_edition.prior_edition_id == first_result.edition_id
         assert fu_edition.generation_status == "pending_review"
 
-        # Assert feedback was marked applied
         feedback_record = fb_repo.get_feedback_by_id(conn, fb.id)
         assert feedback_record.applied_to_next_edition == 1
         conn.close()
@@ -276,8 +317,10 @@ class TestRetry:
         assert result.plan_run.success is True
         assert result.plan_run.retry_count == 1
 
-        runs = gr_repo_list(conn, "editorial_plan")
-        assert len(runs) >= 1
+        all_runs = _get_all_generation_runs(conn)
+        plan_runs = [r for r in all_runs if r.task_type == "editorial_plan"]
+        assert len(plan_runs) == 1
+        assert plan_runs[0].retry_count == 1
         conn.close()
 
     def test_retry_exhaustion_fails(self):
@@ -464,7 +507,7 @@ class TestInvalidInputs:
         inp = input_repo.create_input(
             conn,
             participant_id="p1",
-            raw_text="Some text",
+            raw_text="A" * 60,
             consent_confirmed=0,
         )
 
@@ -476,6 +519,89 @@ class TestInvalidInputs:
         )
         assert result.succeeded is False
         assert result.edition_id is None
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Request length policy
+# ---------------------------------------------------------------------------
+
+class TestRequestLengthPolicy:
+    def test_input_too_short_rejected(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        short_text = "Short"
+        assert len(short_text) < MIN_INPUT_CHARS
+        inp = _create_input(conn, raw_text=short_text)
+
+        bundle = load_bundle("korean_founder")
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert result.succeeded is False
+        assert result.edition_id is None
+        assert result.plan_run.error_message == "input too short"
+        assert result.draft_run.error_message == "input too short"
+        conn.close()
+
+    def test_input_too_short_with_override_allowed(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        short_text = "Short text for testing"
+        assert len(short_text) < MIN_INPUT_CHARS
+        inp = _create_input(conn, raw_text=short_text)
+
+        bundle = load_bundle("korean_founder")
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.plan_run.error_message != "input too short"
+        assert result.draft_run.error_message != "input too short"
+        conn.close()
+
+    def test_input_too_long_rejected(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        long_text = "A" * (MAX_INPUT_CHARS + 1)
+        assert len(long_text) > MAX_INPUT_CHARS
+        inp = _create_input(conn, raw_text=long_text)
+
+        bundle = load_bundle("korean_founder")
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert result.succeeded is False
+        assert result.edition_id is None
+        assert result.plan_run.error_message == "input too long"
+        assert result.draft_run.error_message == "input too long"
         conn.close()
 
 
@@ -498,7 +624,6 @@ class TestNoOverwrite:
         )
         service = GenerationService(provider=provider)
 
-        # Run twice — each call should create a distinct edition
         result1 = service.generate_edition(
             conn,
             request=GenerationRequest(participant_id="p1", input_id=inp.id),
@@ -546,3 +671,535 @@ class TestErrorMessages:
         msg = result.plan_run.error_message or ""
         assert bundle.input_text[:20] not in msg
         conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Atomic persistence
+# ---------------------------------------------------------------------------
+
+class TestAtomicPersistence:
+    def test_feedback_applied_atomically(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        first_result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert first_result.succeeded is True
+
+        ed_repo.update_edition_publication(
+            conn, first_result.edition_id, "published"
+        )
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_result.edition_id,
+            direction_choices=json.dumps(
+                list(bundle.feedback_directions)
+            ),
+            free_text=bundle.feedback_free_text,
+        )
+        assert fb.applied_to_next_edition == 0
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+        follow_up_result = service2.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=True,
+                prior_edition_id=first_result.edition_id,
+                feedback_id=fb.id,
+            ),
+        )
+        assert follow_up_result.succeeded is True
+
+        edition = ed_repo.get_edition_by_id(conn, follow_up_result.edition_id)
+        assert edition is not None
+        assert edition.edition_number == 2
+
+        feedback_after = fb_repo.get_feedback_by_id(conn, fb.id)
+        assert feedback_after.applied_to_next_edition == 1
+        conn.close()
+
+    def test_foreign_feedback_rejected(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+
+        _create_participant(conn, pid="p1", lang=bundle.language)
+        inp1 = _create_input(conn, pid="p1", raw_text=bundle.input_text)
+
+        _create_participant(conn, pid="p2", lang=bundle.language)
+        inp2 = _create_input(conn, pid="p2", raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+
+        result_p1 = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp1.id),
+        )
+        assert result_p1.succeeded is True
+
+        result_p2 = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p2", input_id=inp2.id),
+        )
+        assert result_p2.succeeded is True
+
+        ed_repo.update_edition_publication(
+            conn, result_p1.edition_id, "published"
+        )
+        ed_repo.update_edition_publication(
+            conn, result_p2.edition_id, "published"
+        )
+
+        fb_p2 = fb_repo.create_feedback(
+            conn,
+            participant_id="p2",
+            edition_id=result_p2.edition_id,
+            direction_choices=json.dumps(
+                list(bundle.feedback_directions)
+            ),
+            free_text=bundle.feedback_free_text,
+        )
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb_p2.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb_p2.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+        follow_up_result = service2.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp1.id,
+                is_follow_up=True,
+                prior_edition_id=result_p1.edition_id,
+                feedback_id=fb_p2.id,
+            ),
+        )
+        assert follow_up_result.succeeded is False
+        assert follow_up_result.edition_id is None
+
+        fb_p2_after = fb_repo.get_feedback_by_id(conn, fb_p2.id)
+        assert fb_p2_after.applied_to_next_edition == 0
+
+        p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(p1_editions) == 1
+        conn.close()
+
+    def test_pending_prior_edition_rejected(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        first_result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert first_result.succeeded is True
+
+        first_edition = ed_repo.get_edition_by_id(conn, first_result.edition_id)
+        assert first_edition.publication_state == "pending"
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_result.edition_id,
+            direction_choices=json.dumps(
+                list(bundle.feedback_directions)
+            ),
+            free_text=bundle.feedback_free_text,
+        )
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+        follow_up_result = service2.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=True,
+                prior_edition_id=first_result.edition_id,
+                feedback_id=fb.id,
+            ),
+        )
+        assert follow_up_result.succeeded is False
+        assert follow_up_result.edition_id is None
+
+        fb_after = fb_repo.get_feedback_by_id(conn, fb.id)
+        assert fb_after.applied_to_next_edition == 0
+
+        p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(p1_editions) == 1
+        conn.close()
+
+    def test_already_applied_feedback_rejected(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        first_result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert first_result.succeeded is True
+
+        ed_repo.update_edition_publication(
+            conn, first_result.edition_id, "published"
+        )
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_result.edition_id,
+            direction_choices=json.dumps(
+                list(bundle.feedback_directions)
+            ),
+            free_text=bundle.feedback_free_text,
+        )
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+        first_follow_up = service2.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=True,
+                prior_edition_id=first_result.edition_id,
+                feedback_id=fb.id,
+            ),
+        )
+        assert first_follow_up.succeeded is True
+
+        fb_after = fb_repo.get_feedback_by_id(conn, fb.id)
+        assert fb_after.applied_to_next_edition == 1
+
+        ed_repo.update_edition_publication(
+            conn, first_follow_up.edition_id, "published"
+        )
+
+        fb2 = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_follow_up.edition_id,
+            direction_choices=json.dumps(
+                list(bundle.feedback_directions)
+            ),
+            free_text=bundle.feedback_free_text,
+        )
+        fb_repo.mark_feedback_applied(conn, fb2.id)
+        fb2_after = fb_repo.get_feedback_by_id(conn, fb2.id)
+        assert fb2_after.applied_to_next_edition == 1
+
+        provider3 = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service3 = GenerationService(provider=provider3)
+        second_follow_up = service3.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=True,
+                prior_edition_id=first_follow_up.edition_id,
+                feedback_id=fb2.id,
+            ),
+        )
+        assert second_follow_up.succeeded is False
+        assert second_follow_up.edition_id is None
+        assert "already been applied" in (
+            second_follow_up.plan_run.error_message or ""
+        )
+        conn.close()
+
+    def test_feedback_mark_failure_no_edition(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        ed1 = ed_repo.create_edition(
+            conn,
+            participant_id="p1",
+            edition_number=1,
+            input_id=inp.id,
+            structured_content=json.dumps({"test": True}),
+            rendered_title="Test Edition",
+        )
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=ed1.id,
+            direction_choices=json.dumps(list(bundle.feedback_directions)),
+            free_text=bundle.feedback_free_text,
+        )
+        assert fb.applied_to_next_edition == 0
+
+        fb_repo.mark_feedback_applied(conn, fb.id)
+        fb_after = fb_repo.get_feedback_by_id(conn, fb.id)
+        assert fb_after.applied_to_next_edition == 1
+
+        with pytest.raises(FeedbackValidationError):
+            ed_repo.create_edition_with_feedback_applied(
+                conn,
+                participant_id="p1",
+                edition_number=2,
+                prior_edition_id=ed1.id,
+                input_id=inp.id,
+                structured_content=json.dumps({"test": True}),
+                rendered_title="Test Edition 2",
+                feedback_id=fb.id,
+            )
+
+        p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(p1_editions) == 1
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# File-backed database persistence
+# ---------------------------------------------------------------------------
+
+class TestFileBackedDatabase:
+    def test_file_backed_first_edition_close_reopen(self, tmp_path):
+        db_path = str(tmp_path / "test.db")
+        conn = get_connection(db_path)
+        apply_migrations(conn, "migrations")
+
+        bundle = load_bundle("korean_founder")
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert result.succeeded is True
+        edition_id = result.edition_id
+
+        conn.close()
+
+        conn2 = get_connection(db_path)
+        edition = ed_repo.get_edition_by_id(conn2, edition_id)
+        assert edition is not None
+        assert edition.participant_id == "p1"
+        assert edition.edition_number == 1
+        assert edition.generation_status == "pending_review"
+        assert edition.publication_state == "pending"
+        assert edition.structured_content is not None
+        assert edition.rendered_title is not None
+
+        all_runs = _get_all_generation_runs(conn2)
+        assert len(all_runs) == 2
+        plan_runs = [r for r in all_runs if r.task_type == "editorial_plan"]
+        draft_runs = [r for r in all_runs if r.task_type == "edition_draft"]
+        assert len(plan_runs) == 1
+        assert len(draft_runs) == 1
+
+        conn2.close()
+
+    def test_file_backed_two_edition_loop_close_reopen(self, tmp_path):
+        db_path = str(tmp_path / "test.db")
+        conn = get_connection(db_path)
+        apply_migrations(conn, "migrations")
+
+        bundle = load_bundle("korean_founder")
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        first_result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert first_result.succeeded is True
+
+        ed_repo.update_edition_publication(
+            conn, first_result.edition_id, "published"
+        )
+
+        fb = fb_repo.create_feedback(
+            conn,
+            participant_id="p1",
+            edition_id=first_result.edition_id,
+            direction_choices=json.dumps(
+                list(bundle.feedback_directions)
+            ),
+            free_text=bundle.feedback_free_text,
+        )
+
+        fu_plan = inject_feedback_id(bundle.follow_up_plan_payload, fb.id)
+        fu_draft = inject_feedback_id(bundle.follow_up_draft_payload, fb.id)
+
+        provider2 = MockProvider(
+            task_payloads={
+                "editorial_plan": fu_plan,
+                "edition_draft": fu_draft,
+            }
+        )
+        service2 = GenerationService(provider=provider2)
+        follow_up_result = service2.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=True,
+                prior_edition_id=first_result.edition_id,
+                feedback_id=fb.id,
+            ),
+        )
+        assert follow_up_result.succeeded is True
+
+        first_edition_id = first_result.edition_id
+        follow_up_edition_id = follow_up_result.edition_id
+
+        conn.close()
+
+        conn2 = get_connection(db_path)
+
+        ed1 = ed_repo.get_edition_by_id(conn2, first_edition_id)
+        assert ed1 is not None
+        assert ed1.edition_number == 1
+        assert ed1.publication_state == "published"
+
+        ed2 = ed_repo.get_edition_by_id(conn2, follow_up_edition_id)
+        assert ed2 is not None
+        assert ed2.edition_number == 2
+        assert ed2.prior_edition_id == first_edition_id
+        assert ed2.generation_status == "pending_review"
+
+        fb_after = fb_repo.get_feedback_by_id(conn2, fb.id)
+        assert fb_after.applied_to_next_edition == 1
+
+        all_runs = _get_all_generation_runs(conn2)
+        assert len(all_runs) == 4
+        plan_runs = [r for r in all_runs if r.task_type == "editorial_plan"]
+        draft_runs = [r for r in all_runs if r.task_type == "edition_draft"]
+        assert len(plan_runs) == 2
+        assert len(draft_runs) == 2
+
+        conn2.close()
+
+    def test_file_backed_accounting_fields(self, tmp_path):
+        db_path = str(tmp_path / "test.db")
+        conn = get_connection(db_path)
+        apply_migrations(conn, "migrations")
+
+        bundle = load_bundle("korean_founder")
+        _create_participant(conn)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        provider = MockProvider(
+            task_payloads={
+                "editorial_plan": bundle.plan_payload,
+                "edition_draft": bundle.draft_payload,
+            }
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(participant_id="p1", input_id=inp.id),
+        )
+        assert result.succeeded is True
+
+        conn.close()
+
+        conn2 = get_connection(db_path)
+        all_runs = _get_all_generation_runs(conn2)
+        assert len(all_runs) == 2
+
+        for run in all_runs:
+            assert run.completed_at is not None
+            assert run.latency_seconds is not None
+            assert run.latency_seconds >= 0
+            assert run.provider is not None and run.provider != ""
+            assert run.advertised_model is not None and run.advertised_model != ""
+            assert run.cost_class is not None and run.cost_class != ""
+            assert run.id is not None
+
+        assert result.plan_run.run_id == all_runs[0].id
+        assert result.draft_run.run_id == all_runs[1].id
+
+        conn2.close()
