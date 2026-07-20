@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}글쓰기 - Personal Edition{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>새 입력 제출</h1>
+  <p class="hint">최소 500단어 이상의 텍스트를 제출해주세요.</p>
+
+  {% if error %}
+  <div class="alert alert-error" role="alert">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+  <div class="alert alert-success" role="alert">{{ success }}</div>
+  {% endif %}
+
+  <form method="post" action="/p/{{ participant.id }}/input">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label for="raw_text">입력 텍스트</label>
+    <textarea id="raw_text" name="raw_text" rows="12"
+              placeholder="여기에 텍스트를 입력하세요..."
+              required>{{ raw_text }}</textarea>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="consent" name="consent_confirmed" value="1">
+      <label for="consent" class="checkbox-label">
+        제출한 텍스트는 개인화된 편지 생성에 사용될 수 있음에 동의합니다.
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">제출</button>
+  </form>
+</div>
+{% endblock %}

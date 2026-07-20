@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}기록 - Personal Edition{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>에디션 기록</h1>
+
+  {% if editions %}
+  <div class="edition-list">
+    {% for edition in editions %}
+    <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
+       class="edition-card">
+      <span class="edition-number">#{{ edition.edition_number }}</span>
+      <span class="edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
+      <span class="edition-date">
+        {% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-state">아직 발행된 에디션이 없습니다.</p>
+  {% endif %}
+</div>
+{% endblock %}

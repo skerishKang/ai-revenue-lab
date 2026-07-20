@@ -30,7 +30,7 @@ user material
 
 All product code, tests, configuration examples, scripts, migrations, and product-local fixtures belong in this directory.
 
-The current implementation entry issue is GitHub Issue #20. No real credentials or private pilot material may be committed.
+No real credentials or private pilot material may be committed.
 
 ## Local setup
 
@@ -56,21 +56,53 @@ pytest -q
 
 Copy `.env.example` to `.env` and adjust as needed. Defaults use the `mock` provider, which requires no external dependencies.
 
+### Production requirements
+
+When `APP_ENV=production`, the following settings are **mandatory** and must differ from their development defaults:
+
+| Variable | Description |
+|---|---|
+| `SECRET_KEY` | Strong unique key (≥32 chars) for signing session and CSRF tokens |
+| `ADMIN_SECRET` | Strong unique admin secret (≥16 chars) for admin login |
+| `COOKIE_SECURE` | Must be `true` to send cookies only over HTTPS |
+| `SESSION_MAX_AGE_SECONDS` | Session lifetime in seconds (default 28800 = 8 hours) |
+| `COOKIE_SAMESITE` | Cookie SameSite attribute (default `lax`) |
+
+The application **refuses to start** in production if `SECRET_KEY`, `ADMIN_SECRET`, or `COOKIE_SECURE` are not properly configured.
+
+## Phase 4 browser workflow
+
+The application provides a server-rendered web interface for both participants and administrators.
+
+### Participant access
+
+1. A participant receives a one-time access token after provisioning
+2. Navigate to `/p/access` and enter the token
+3. The participant dashboard shows published editions and input history
+4. Participants can submit new input at `/p/p1/input`
+5. Participants can read published editions and submit feedback
+
+### Admin access
+
+1. Navigate to `/admin/access` and enter the admin secret
+2. The admin dashboard shows all participants and editions
+3. Admins can trigger generation for a participant's input
+4. Admins can review, edit, publish, or reject editions
+5. Admin can edit structured content JSON (validated against EditionContent schema)
+
+### Security features
+
+- **Session cookies**: Signed with purpose-separated salts; httponly, SameSite=Lax
+- **CSRF protection**: Dual-cookie pattern on all state-changing POST requests
+- **Privacy headers**: All `/p` and `/admin` responses include no-store, no-cache, noindex headers
+- **Input size**: 500–5000 words; short-sample override requires explicit admin approval
+- **Markup rejection**: Recursive check prevents script tags, event handlers, and javascript: URLs in edition content
+- **Error handling**: Internal exceptions never exposed to users; generic category messages shown instead
+
 ## Database initialization
 
-The database is automatically initialized when you first run any script or
-application that uses `app.db.get_connection()`. Migrations are applied
-idempotently from the `migrations/` directory.
-
-To initialize manually:
-
-```python
-from app.db import get_connection, apply_migrations
-
-conn = get_connection("var/personal-edition.db")
-apply_migrations(conn, "migrations")
-conn.close()
-```
+The database is automatically initialized when you first run the application.
+Migrations are applied idempotently from the `migrations/` directory.
 
 ## Provisioning a participant
 
@@ -90,35 +122,6 @@ python -m scripts.provision_participant alice "Alice" --language ko
 The command prints a one-time token. **Store it securely** — it will not be
 shown again. The database stores only the SHA-256 hash of this token.
 
-## Retaining the one-time token
-
-After provisioning, the token must be:
-
-1. Copied and stored in a password manager or secure vault
-2. Never committed to version control
-3. Never shared over unencrypted channels
-4. Used as a Bearer token in API requests (Phase 3)
-
-The token is a 256-bit URL-safe string generated via `secrets.token_urlsafe(32)`.
-
-## Inspecting records
-
-View all records for a participant:
-
-```bash
-python -m scripts.inspect_records <participant_id> [--json] [--database <path>]
-```
-
-Example:
-
-```bash
-python -m scripts.inspect_records alice
-python -m scripts.inspect_records alice --json
-```
-
-Text output shows participant info, inputs, editions, and feedback.
-JSON output provides a structured dump suitable for piping to `jq`.
-
 ## Deleting a participant
 
 Soft-delete a participant and revoke their token access:
@@ -127,15 +130,9 @@ Soft-delete a participant and revoke their token access:
 python -m scripts.delete_participant <participant_id> [--database <path>]
 ```
 
-Example:
-
-```bash
-python -m scripts.delete_participant alice
-```
-
 After deletion:
 - The participant's status is set to `deleted`
-- Token lookup returns `None` (access revoked)
+- Any existing browser session is immediately invalidated (session checks active status)
 - The `deleted_at` timestamp is recorded
 - Dependent records (inputs, editions, feedback) remain in the database
 

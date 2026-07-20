@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}접속 - Personal Edition{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Personal Edition</h1>
+  <p class="subtitle">개인화된 편지를 읽으려면 토큰을 입력하세요.</p>
+  {% if error %}
+  <div class="alert alert-error" role="alert">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="/p/access">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
+    <label for="token">접속 토큰</label>
+    <input type="text" id="token" name="token" required
+           placeholder="토큰을 입력하세요" autocomplete="off" autofocus>
+    <button type="submit" class="btn btn-primary">접속</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="{{ content.language if content and content.language else 'ko' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Personal Edition{% endblock %}</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="site-header">
+  <nav>
+    {% if participant is defined and participant %}
+    <a href="/p/{{ participant.id }}" class="nav-brand">Personal Edition</a>
+    <div class="nav-links">
+      <a href="/p/{{ participant.id }}">홈</a>
+      <a href="/p/{{ participant.id }}/input">글쓰기</a>
+      <a href="/p/{{ participant.id }}/history">기록</a>
+      <form method="post" action="/p/{{ participant.id }}/logout" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
+        <button type="submit" class="btn-link">로그아웃</button>
+      </form>
+    </div>
+    {% elif request.url.path.startswith('/admin') %}
+    <a href="/admin/" class="nav-brand">관리자</a>
+    <div class="nav-links">
+      <form method="post" action="/admin/logout" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
+        <button type="submit" class="btn-link">로그아웃</button>
+      </form>
+    </div>
+    {% else %}
+    <a href="/p/access" class="nav-brand">Personal Edition</a>
+    {% endif %}
+  </nav>
+</header>
+<main class="container">
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <p>&copy; Personal Edition</p>
+</footer>
+</body>
+</html>
