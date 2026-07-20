@@ -60,6 +60,7 @@ def create_edition(
     edition_number: int,
     prior_edition_id: str | None = None,
     input_id: str | None = None,
+    commit: bool = True,
 ) -> EditionRecord:
     now = _utcnow()
     edition_id = f"ed_{secrets.token_urlsafe(16)}"
@@ -71,7 +72,8 @@ def create_edition(
             PublicationState.pending, now, now,
         ),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return get_edition_by_id(conn, edition_id)  # type: ignore[return-value]
 
 
@@ -91,36 +93,39 @@ def get_editions_by_traveler(conn: sqlite3.Connection, traveler_id: str) -> list
 
 
 def update_edition_generation_status(
-    conn: sqlite3.Connection, edition_id: str, status: str
+    conn: sqlite3.Connection, edition_id: str, status: str, *, commit: bool = True,
 ) -> bool:
     now = _utcnow()
     cur = conn.execute(
         "UPDATE editions SET generation_status = ?, updated_at = ? WHERE id = ?",
         (status, now, edition_id),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return cur.rowcount > 0
 
 
 def update_edition_content(
-    conn: sqlite3.Connection, edition_id: str, content: dict
+    conn: sqlite3.Connection, edition_id: str, content: dict, *, commit: bool = True,
 ) -> bool:
     now = _utcnow()
     cur = conn.execute(
         "UPDATE editions SET structured_content = ?, updated_at = ? WHERE id = ?",
         (json.dumps(content), now, edition_id),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return cur.rowcount > 0
 
 
 def update_edition_publication(
-    conn: sqlite3.Connection, edition_id: str, state: str
+    conn: sqlite3.Connection, edition_id: str, state: str, *, commit: bool = True,
 ) -> bool:
     now = _utcnow()
     cur = conn.execute(
         "UPDATE editions SET publication_state = ?, updated_at = ? WHERE id = ?",
         (state, now, edition_id),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return cur.rowcount > 0

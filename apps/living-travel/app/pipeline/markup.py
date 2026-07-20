@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.domain.models import EditionContent
 
 _UNSAFE_PATTERNS = [
     re.compile(r"<script\b", re.IGNORECASE),
@@ -46,4 +50,48 @@ def reject_if_unsafe(text: str) -> None:
     if violations:
         raise MarkupError(
             "Unsafe markup detected: " + "; ".join(violations)
+        )
+
+
+def check_all_content_fields(content: "EditionContent") -> list[str]:
+    """Check all text fields in edition content for unsafe markup."""
+    all_violations: list[str] = []
+
+    # Top-level fields
+    for field_name in ("publication_title", "edition_title", "editorial_opening", "next_edition_prompt", "provenance_note"):
+        val = getattr(content, field_name, "")
+        if val:
+            violations = check_unsafe_markup(val)
+            if violations:
+                all_violations.append(f"{field_name}: {'; '.join(violations)}")
+
+    # Section fields
+    for section in content.sections:
+        violations = check_unsafe_markup(section.title)
+        if violations:
+            all_violations.append(f"section[{section.section_id}].title: {'; '.join(violations)}")
+        violations = check_unsafe_markup(section.narrative)
+        if violations:
+            all_violations.append(f"section[{section.section_id}].narrative: {'; '.join(violations)}")
+
+    # Applied feedback fields
+    for af in content.applied_feedback:
+        for field_name in ("requested_change", "actual_action", "evidence", "unfulfilled_reason"):
+            val = getattr(af, field_name, "")
+            if val:
+                violations = check_unsafe_markup(val)
+                if violations:
+                    all_violations.append(f"applied_feedback[{af.feedback_id}].{field_name}: {'; '.join(violations)}")
+
+    return all_violations
+
+
+def reject_all_content_fields(content: "EditionContent") -> None:
+    """Raise MarkupError if any content field contains unsafe markup."""
+    from app.pipeline.errors import MarkupError
+
+    violations = check_all_content_fields(content)
+    if violations:
+        raise MarkupError(
+            "Unsafe markup in content fields: " + "; ".join(violations)
         )

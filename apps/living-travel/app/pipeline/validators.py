@@ -31,6 +31,23 @@ def validate_source_references(
     return errors
 
 
+def validate_source_states(
+    content: EditionContent,
+    source_states: dict[str, str],
+) -> list[str]:
+    """Reject references to withdrawn or unknown sources."""
+    errors: list[str] = []
+    for section in content.sections:
+        for item in section.items:
+            if item.source_ref:
+                state = source_states.get(item.source_ref)
+                if state is None:
+                    errors.append(f"Unknown source: {item.source_ref} in {item.item_id}")
+                elif state == "withdrawn":
+                    errors.append(f"Withdrawn source: {item.source_ref} in {item.item_id}")
+    return errors
+
+
 def validate_information_class_metadata(
     content: EditionContent,
 ) -> list[str]:
@@ -50,6 +67,10 @@ def validate_information_class_metadata(
                     errors.append(
                         f"time_sensitive item {item.item_id} missing verify_before_use=true"
                     )
+                if item.confidence in (SourceConfidence.withdrawn, SourceConfidence.uncertain):
+                    errors.append(
+                        f"time_sensitive item {item.item_id} has confidence={item.confidence}"
+                    )
     return errors
 
 
@@ -57,17 +78,20 @@ def validate_no_unsupported_claims(
     content: EditionContent,
     valid_claims: set[str],
 ) -> list[str]:
+    """Reject items whose item_id is not in the approved claims set."""
     errors: list[str] = []
+    if not valid_claims:
+        return errors
     for section in content.sections:
         for item in section.items:
             if item.information_class in (
                 InformationClass.time_sensitive,
                 InformationClass.stable_reference,
             ):
-                if valid_claims and not any(
-                    claim in valid_claims for claim in [item.item_id]
-                ):
-                    pass
+                if item.item_id not in valid_claims:
+                    errors.append(
+                        f"Unsupported claim: {item.item_id} not in approved claims"
+                    )
     return errors
 
 
@@ -107,12 +131,15 @@ def validate_edition_content(
     content: EditionContent,
     valid_source_ids: set[str] | None = None,
     valid_claims: set[str] | None = None,
+    source_states: dict[str, str] | None = None,
 ) -> list[str]:
     errors: list[str] = []
     errors.extend(validate_section_ids_unique(content))
     errors.extend(validate_item_ids_unique(content))
     if valid_source_ids is not None:
         errors.extend(validate_source_references(content, valid_source_ids))
+    if source_states is not None:
+        errors.extend(validate_source_states(content, source_states))
     errors.extend(validate_information_class_metadata(content))
     if valid_claims is not None:
         errors.extend(validate_no_unsupported_claims(content, valid_claims))

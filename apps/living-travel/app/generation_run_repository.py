@@ -72,6 +72,7 @@ def create_generation_run(
     error_message: str = "",
     edition_id: str = "",
     success: bool = True,
+    commit: bool = True,
 ) -> GenerationRunRecord:
     now = _utcnow()
     run_id = f"gr_{secrets.token_urlsafe(16)}"
@@ -83,7 +84,8 @@ def create_generation_run(
             error_category, error_message, edition_id, int(success), now,
         ),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return get_generation_run_by_id(conn, run_id)  # type: ignore[return-value]
 
 

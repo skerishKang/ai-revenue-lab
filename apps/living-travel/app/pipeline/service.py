@@ -21,6 +21,7 @@ from app.domain.models import (
 )
 from app.edition_repository import (
     create_edition,
+    get_editions_by_traveler,
     update_edition_content,
     update_edition_generation_status,
 )
@@ -30,7 +31,7 @@ from app.feedback_repository import (
 )
 from app.generation_run_repository import create_generation_run
 from app.pipeline.errors import PipelineError
-from app.pipeline.markup import reject_if_unsafe
+from app.pipeline.markup import reject_all_content_fields
 from app.pipeline.prompts import (
     DRAFT_PROMPT_VERSION,
     PLAN_PROMPT_VERSION,
@@ -42,6 +43,7 @@ from app.pipeline.validators import (
     validate_edition_content,
     validate_plan,
 )
+from app.traveler_repository import is_traveler_active
 
 
 class GenerationService:
@@ -51,6 +53,10 @@ class GenerationService:
         self.conn = conn
         self.provider = provider
 
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
     def generate_first_edition(
         self,
         *,
@@ -59,46 +65,58 @@ class GenerationService:
         traveler_preferences: dict,
         source_items: list[dict],
         source_ids: set[str],
+        source_states: dict[str, str] | None = None,
     ) -> EditionContent:
-        edition = create_edition(
-            self.conn,
-            traveler_id=traveler_id,
-            edition_number=1,
-            input_id=input_id,
-        )
-        update_edition_generation_status(
-            self.conn, edition.id, EditionGenerationStatus.generation_pending
-        )
+        if not is_traveler_active(self.conn, traveler_id):
+            raise PipelineError("Traveler is inactive or deleted")
 
-        plan_content = self._generate_plan(
-            traveler_preferences=traveler_preferences,
-            source_items=source_items,
-            edition_id=edition.id,
-        )
-
-        content = self._generate_draft(
-            plan=plan_content,
-            traveler_preferences=traveler_preferences,
-            source_items=source_items,
-            edition_id=edition.id,
-        )
-
-        errors = validate_edition_content(content, valid_source_ids=source_ids)
-        if errors:
-            update_edition_generation_status(
-                self.conn, edition.id, EditionGenerationStatus.generation_failed
+        self.conn.execute("SAVEPOINT sp_first")
+        try:
+            edition = create_edition(
+                self.conn,
+                traveler_id=traveler_id,
+                edition_number=1,
+                input_id=input_id,
+                commit=False,
             )
-            raise PipelineError("Validation failed: " + "; ".join(errors))
+            update_edition_generation_status(
+                self.conn, edition.id, EditionGenerationStatus.generation_pending,
+                commit=False,
+            )
 
-        for section in content.sections:
-            reject_if_unsafe(section.narrative)
+            plan_content, plan_runs = self._generate_plan(
+                traveler_preferences=traveler_preferences,
+                source_items=source_items,
+                edition_id=edition.id,
+            )
 
-        update_edition_content(self.conn, edition.id, content.model_dump())
-        update_edition_generation_status(
-            self.conn, edition.id, EditionGenerationStatus.pending_review
-        )
+            content, draft_runs = self._generate_draft(
+                plan=plan_content,
+                traveler_preferences=traveler_preferences,
+                source_items=source_items,
+                edition_id=edition.id,
+            )
 
-        return content
+            errors = validate_edition_content(
+                content, valid_source_ids=source_ids, source_states=source_states,
+            )
+            if errors:
+                raise PipelineError("Validation failed: " + "; ".join(errors))
+
+            reject_all_content_fields(content)
+
+            update_edition_content(self.conn, edition.id, content.model_dump(), commit=False)
+            update_edition_generation_status(
+                self.conn, edition.id, EditionGenerationStatus.pending_review,
+                commit=False,
+            )
+            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
+            self.conn.execute("RELEASE SAVEPOINT sp_first")
+            self.conn.commit()
+            return content
+        except Exception:
+            self.conn.execute("ROLLBACK TO SAVEPOINT sp_first")
+            raise
 
     def generate_second_edition(
         self,
@@ -108,8 +126,15 @@ class GenerationService:
         traveler_preferences: dict,
         source_items: list[dict],
         source_ids: set[str],
+        source_states: dict[str, str] | None = None,
     ) -> EditionContent:
+        if not is_traveler_active(self.conn, traveler_id):
+            raise PipelineError("Traveler is inactive or deleted")
+
         feedback_records = get_unapplied_feedback_for_traveler(self.conn, traveler_id)
+        if not feedback_records:
+            raise PipelineError("No unapplied feedback for traveler")
+
         applied_feedback_list: list[dict] = []
         for fb in feedback_records:
             applied_feedback_list.append(
@@ -120,61 +145,71 @@ class GenerationService:
                 }
             )
 
-        editions = [
-            e
-            for e in __import__(
-                "app.edition_repository", fromlist=["get_editions_by_traveler"]
-            ).get_editions_by_traveler(self.conn, traveler_id)
-        ]
-        next_number = max(e.edition_number for e in editions) + 1 if editions else 2
+        editions = get_editions_by_traveler(self.conn, traveler_id)
+        if not editions:
+            raise PipelineError("No prior editions found for traveler")
 
-        edition = create_edition(
-            self.conn,
-            traveler_id=traveler_id,
-            edition_number=next_number,
-            prior_edition_id=editions[-1].id if editions else None,
-        )
-        update_edition_generation_status(
-            self.conn, edition.id, EditionGenerationStatus.generation_pending
-        )
+        prior_edition_record = editions[-1]
+        next_number = prior_edition_record.edition_number + 1
 
-        plan_content = self._generate_plan(
-            traveler_preferences=traveler_preferences,
-            source_items=source_items,
-            edition_id=edition.id,
-            applied_feedback=applied_feedback_list,
-        )
-
-        prior_summary = self._edition_summary(prior_edition)
-
-        content = self._generate_draft(
-            plan=plan_content,
-            traveler_preferences=traveler_preferences,
-            source_items=source_items,
-            edition_id=edition.id,
-            applied_feedback=applied_feedback_list,
-            prior_edition_summary=prior_summary,
-        )
-
-        errors = validate_edition_content(content, valid_source_ids=source_ids)
-        if errors:
-            update_edition_generation_status(
-                self.conn, edition.id, EditionGenerationStatus.generation_failed
+        self.conn.execute("SAVEPOINT sp_second")
+        try:
+            edition = create_edition(
+                self.conn,
+                traveler_id=traveler_id,
+                edition_number=next_number,
+                prior_edition_id=prior_edition_record.id,
+                commit=False,
             )
-            raise PipelineError("Validation failed: " + "; ".join(errors))
+            update_edition_generation_status(
+                self.conn, edition.id, EditionGenerationStatus.generation_pending,
+                commit=False,
+            )
 
-        for section in content.sections:
-            reject_if_unsafe(section.narrative)
+            plan_content, plan_runs = self._generate_plan(
+                traveler_preferences=traveler_preferences,
+                source_items=source_items,
+                edition_id=edition.id,
+                applied_feedback=applied_feedback_list,
+            )
 
-        update_edition_content(self.conn, edition.id, content.model_dump())
-        update_edition_generation_status(
-            self.conn, edition.id, EditionGenerationStatus.pending_review
-        )
+            prior_summary = self._edition_summary(prior_edition)
 
-        for fb in feedback_records:
-            mark_feedback_applied(self.conn, fb.id)
+            content, draft_runs = self._generate_draft(
+                plan=plan_content,
+                traveler_preferences=traveler_preferences,
+                source_items=source_items,
+                edition_id=edition.id,
+                applied_feedback=applied_feedback_list,
+                prior_edition_summary=prior_summary,
+            )
 
-        return content
+            errors = validate_edition_content(
+                content, valid_source_ids=source_ids, source_states=source_states,
+            )
+            if errors:
+                raise PipelineError("Validation failed: " + "; ".join(errors))
+
+            reject_all_content_fields(content)
+
+            update_edition_content(self.conn, edition.id, content.model_dump(), commit=False)
+            update_edition_generation_status(
+                self.conn, edition.id, EditionGenerationStatus.pending_review,
+                commit=False,
+            )
+            for fb in feedback_records:
+                mark_feedback_applied(self.conn, fb.id, commit=False)
+            self._record_run_batch(plan_runs + draft_runs, edition.id, commit=False)
+            self.conn.execute("RELEASE SAVEPOINT sp_second")
+            self.conn.commit()
+            return content
+        except Exception:
+            self.conn.execute("ROLLBACK TO SAVEPOINT sp_second")
+            raise
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
 
     def _generate_plan(
         self,
@@ -183,12 +218,13 @@ class GenerationService:
         source_items: list[dict],
         edition_id: str,
         applied_feedback: list[dict] | None = None,
-    ) -> EditorialPlan:
+    ) -> tuple[EditorialPlan, list[tuple[ProviderResult, str]]]:
         system, user = build_plan_prompt(
             traveler_preferences=traveler_preferences,
             source_summaries=source_items,
         )
 
+        runs: list[tuple[ProviderResult, str]] = []
         for attempt in range(self.MAX_RETRIES):
             request_id = f"{edition_id}_plan_{attempt}"
             result = self.provider.generate_structured(
@@ -198,14 +234,12 @@ class GenerationService:
                 response_schema=EditorialPlan,
                 request_id=request_id,
             )
-            self._record_run(
-                result, "editorial_plan", PLAN_PROMPT_VERSION, edition_id
-            )
+            runs.append((result, PLAN_PROMPT_VERSION))
             if result.success:
                 plan = EditorialPlan.model_validate(result.payload)
                 plan_errors = validate_plan(plan)
                 if not plan_errors:
-                    return plan
+                    return plan, runs
             if attempt == self.MAX_RETRIES - 1:
                 raise PipelineError(
                     f"Plan generation failed after {self.MAX_RETRIES} attempts"
@@ -222,7 +256,7 @@ class GenerationService:
         edition_id: str,
         applied_feedback: list[dict] | None = None,
         prior_edition_summary: str = "",
-    ) -> EditionContent:
+    ) -> tuple[EditionContent, list[tuple[ProviderResult, str]]]:
         system, user = build_draft_prompt(
             plan=plan.model_dump(),
             traveler_preferences=traveler_preferences,
@@ -231,6 +265,7 @@ class GenerationService:
             prior_edition_summary=prior_edition_summary,
         )
 
+        runs: list[tuple[ProviderResult, str]] = []
         for attempt in range(self.MAX_RETRIES):
             request_id = f"{edition_id}_draft_{attempt}"
             result = self.provider.generate_structured(
@@ -240,14 +275,12 @@ class GenerationService:
                 response_schema=EditionContent,
                 request_id=request_id,
             )
-            self._record_run(
-                result, "edition_draft", DRAFT_PROMPT_VERSION, edition_id
-            )
+            runs.append((result, DRAFT_PROMPT_VERSION))
             if result.success:
                 content = EditionContent.model_validate(result.payload)
                 draft_errors = validate_draft_against_plan(content, plan)
                 if not draft_errors:
-                    return content
+                    return content, runs
             if attempt == self.MAX_RETRIES - 1:
                 raise PipelineError(
                     f"Draft generation failed after {self.MAX_RETRIES} attempts"
@@ -255,28 +288,31 @@ class GenerationService:
 
         raise PipelineError("Draft generation exhausted retries")
 
-    def _record_run(
+    def _record_run_batch(
         self,
-        result: ProviderResult,
-        task_type: str,
-        prompt_version: str,
+        runs: list[tuple[ProviderResult, str]],
         edition_id: str,
+        *,
+        commit: bool = True,
     ) -> None:
-        create_generation_run(
-            self.conn,
-            task_type=task_type,
-            provider=result.provider,
-            advertised_model=result.model,
-            cost_class=result.cost_class,
-            prompt_version=prompt_version,
-            latency_ms=result.latency_ms,
-            prompt_tokens=result.prompt_tokens,
-            completion_tokens=result.completion_tokens,
-            error_category=result.error_category or "",
-            error_message=result.error_message,
-            edition_id=edition_id,
-            success=result.success,
-        )
+        """Record all generation runs from a batch (aggregated retries)."""
+        for result, prompt_version in runs:
+            create_generation_run(
+                self.conn,
+                task_type="editorial_plan" if prompt_version == PLAN_PROMPT_VERSION else "edition_draft",
+                provider=result.provider,
+                advertised_model=result.model,
+                cost_class=result.cost_class,
+                prompt_version=prompt_version,
+                latency_ms=result.latency_ms,
+                prompt_tokens=result.prompt_tokens,
+                completion_tokens=result.completion_tokens,
+                error_category=result.error_category or "",
+                error_message=result.error_message,
+                edition_id=edition_id,
+                success=result.success,
+                commit=commit,
+            )
 
     def _edition_summary(self, content: EditionContent) -> str:
         parts = [content.edition_title, content.editorial_opening]
