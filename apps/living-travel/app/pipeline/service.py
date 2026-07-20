@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
-import uuid
 
 from app.ai.base import AIProvider
 from app.domain.enums import (
@@ -25,14 +24,11 @@ from app.domain.models import (
 from app.edition_repository import (
     create_edition,
     get_edition_by_id,
-    get_editions_by_traveler,
     update_edition_content,
     update_edition_generation_status,
 )
 from app.feedback_repository import (
-    create_feedback,
     get_unapplied_feedback_for_edition,
-    get_unapplied_feedback_for_traveler,
     mark_feedback_applied,
 )
 from app.generation_run_repository import create_generation_run
@@ -169,7 +165,6 @@ class GenerationService:
         valid_claims = _collect_approved_claims(source_items)
 
         # Batch ID for failure accounting (survives edition rollback)
-        batch_id = str(uuid.uuid4())
 
         # Record runs outside savepoint so they survive rollback
         all_runs: list[tuple[ProviderResult, str]] = []
@@ -295,14 +290,8 @@ class GenerationService:
         source_states = _build_source_states(source_items)
         valid_claims = _collect_approved_claims(source_items)
 
-        editions = get_editions_by_traveler(self.conn, traveler_id)
-        if not editions:
-            raise PipelineError("No prior editions found for traveler")
-
         next_number = prior_record.edition_number + 1
 
-        # Batch ID for failure accounting
-        batch_id = str(uuid.uuid4())
         all_runs: list[tuple[ProviderResult, str]] = []
 
         self.conn.execute("SAVEPOINT sp_second")
