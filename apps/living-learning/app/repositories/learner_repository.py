@@ -144,3 +144,29 @@ def update_learner_preferences(
         if commit:
             conn.commit()
     return get_learner_by_id(conn, learner_id)
+
+
+def update_learner(
+    conn: sqlite3.Connection,
+    learner_id: str,
+    *,
+    status: str | None = None,
+    commit: bool = True,
+) -> LearnerRecord | None:
+    updates = []
+    params = []
+    if status is not None:
+        updates.append("status = ?")
+        params.append(status)
+
+    if updates:
+        updates.append("updated_at = ?")
+        params.append(_utcnow())
+        params.append(learner_id)
+        conn.execute(
+            f"UPDATE learners SET {', '.join(updates)} WHERE id = ?",
+            params,
+        )
+        if commit:
+            conn.commit()
+    return get_learner_by_id(conn, learner_id)

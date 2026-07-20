@@ -8,6 +8,16 @@ from app.pipeline.errors import (
     ForeignFeedbackError,
     GenerationError,
     RetryExhaustedError,
+    ContentValidationError,
+    AdaptationNotChangedError,
+    ComprehensionRequiredError,
+    LearnerInactiveError,
+    UnsafeContentError,
+    CredentialRequestError,
+    MedicalDisabilityInferenceError,
+    FabricatedFactError,
+    PackageInstallError,
+    ExpectedAnswerMismatchError,
 )
 
 __all__ = [
@@ -18,4 +28,14 @@ __all__ = [
     "ForeignFeedbackError",
     "GenerationError",
     "RetryExhaustedError",
+    "ContentValidationError",
+    "AdaptationNotChangedError",
+    "ComprehensionRequiredError",
+    "LearnerInactiveError",
+    "UnsafeContentError",
+    "CredentialRequestError",
+    "MedicalDisabilityInferenceError",
+    "FabricatedFactError",
+    "PackageInstallError",
+    "ExpectedAnswerMismatchError",
 ]

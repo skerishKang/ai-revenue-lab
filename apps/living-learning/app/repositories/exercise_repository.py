@@ -193,3 +193,37 @@ def record_comprehension_response(
         "SELECT * FROM comprehension_responses WHERE id = ?", (record_id,)
     ).fetchone()
     return _comp_row_to_record(row)  # type: ignore[return-value]
+
+
+def validate_lesson_content(
+    conn: sqlite3.Connection,
+    lesson_id: str,
+) -> list[str]:
+    from app.domain.models import LessonContent, LessonPlan
+
+    lesson_row = conn.execute(
+        "SELECT lesson_plan_json, lesson_content_json FROM lessons WHERE id = ?", (lesson_id,)
+    ).fetchone()
+
+    if not lesson_row:
+        return ["lesson_not_found"]
+
+    issues = []
+    plan_json = lesson_row["lesson_plan_json"]
+    content_json = lesson_row["lesson_content_json"]
+
+    if plan_json and plan_json != "{}":
+        try:
+            plan_data = json.loads(plan_json)
+            LessonPlan.model_validate(plan_data)
+        except Exception as e:
+            issues.append(f"invalid_lesson_plan: {e}")
+
+    if content_json and content_json != "{}":
+        try:
+            content_data = json.loads(content_json)
+            LessonContent.model_validate(content_data)
+        except Exception as e:
+            issues.append(f"invalid_lesson_content: {e}")
+
+    return issues

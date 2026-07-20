@@ -171,3 +171,76 @@ def reopen_lesson(conn: sqlite3.Connection, lesson_id: str, commit: bool = True)
         commit=commit,
     )
     return new_lesson
+
+
+@dataclass(frozen=True)
+class LearnerSessionRecord:
+    session_id: str
+    learner_id: str
+    curriculum_id: str
+    current_lesson_sequence: int
+    last_activity_at: str
+    created_at: str
+
+
+def _session_row_to_record(row: sqlite3.Row) -> LearnerSessionRecord:
+    return LearnerSessionRecord(
+        session_id=row["session_id"],
+        learner_id=row["learner_id"],
+        curriculum_id=row["curriculum_id"],
+        current_lesson_sequence=row["current_lesson_sequence"],
+        last_activity_at=row["last_activity_at"],
+        created_at=row["created_at"],
+    )
+
+
+def create_learner_session(
+    conn: sqlite3.Connection,
+    *,
+    learner_id: str,
+    curriculum_id: str,
+    commit: bool = True,
+) -> LearnerSessionRecord:
+    session_id = f"sess_{secrets.token_urlsafe(16)}"
+    now = _utcnow()
+    conn.execute(
+        """INSERT INTO learner_sessions (session_id, learner_id, curriculum_id, current_lesson_sequence, last_activity_at, created_at)
+        VALUES (?, ?, ?, 0, ?, ?)""",
+        (session_id, learner_id, curriculum_id, now, now),
+    )
+    if commit:
+        conn.commit()
+    row = conn.execute(
+        "SELECT * FROM learner_sessions WHERE session_id = ?", (session_id,)
+    ).fetchone()
+    return _session_row_to_record(row)  # type: ignore[return-value]
+
+
+def update_lesson_content(
+    conn: sqlite3.Connection,
+    lesson_id: str,
+    *,
+    lesson_plan_json: str | None = None,
+    lesson_content_json: str | None = None,
+    commit: bool = True,
+) -> LessonRecord | None:
+    updates = []
+    params = []
+    if lesson_plan_json is not None:
+        updates.append("lesson_plan_json = ?")
+        params.append(lesson_plan_json)
+    if lesson_content_json is not None:
+        updates.append("lesson_content_json = ?")
+        params.append(lesson_content_json)
+
+    if updates:
+        updates.append("updated_at = ?")
+        params.append(_utcnow())
+        params.append(lesson_id)
+        conn.execute(
+            f"UPDATE lessons SET {', '.join(updates)} WHERE id = ?",
+            params,
+        )
+        if commit:
+            conn.commit()
+    return get_lesson_by_id(conn, lesson_id)

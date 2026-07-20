@@ -42,8 +42,12 @@ def store_idempotency_key(
     result: str = "",
     commit: bool = True,
 ) -> IdempotencyRecord:
+    existing = check_idempotency_key(conn, key_value)
+    if existing:
+        return existing
+
     conn.execute(
-        "INSERT OR REPLACE INTO idempotency_keys (key_value, lesson_id, result, created_at) VALUES (?, ?, ?, ?)",
+        "INSERT INTO idempotency_keys (key_value, lesson_id, result, created_at) VALUES (?, ?, ?, ?)",
         (key_value, lesson_id, result, _utcnow()),
     )
     if commit:

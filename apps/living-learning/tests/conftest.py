@@ -4,13 +4,22 @@ from __future__ import annotations
 
 import os
 import tempfile
-from typing import Generator
+from typing import Generator, Any
 
 import pytest
 import sqlite3
 
 from app.db import apply_migrations
 from app.config import Settings, reset_settings
+from app.ai import MockProvider
+
+
+class MockSettings:
+    app_name: str = "living-learning"
+    database_url: str = ":memory:"
+    environment: str = "testing"
+    provider_model: str = "mock/mock-fixture"
+    provider_type: str = "mock"
 
 
 @pytest.fixture
@@ -38,6 +47,11 @@ def conn(test_settings: Settings) -> Generator[sqlite3.Connection, None, None]:
         yield conn
     finally:
         conn.close()
+
+
+@pytest.fixture
+def mock_settings() -> Any:
+    return MockSettings()
 
 
 FIRST_LESSON_PLAN_FIXTURE = {

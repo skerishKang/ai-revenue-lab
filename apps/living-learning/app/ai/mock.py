@@ -16,6 +16,24 @@ _DEFAULT_LESSON_PLAN = {
     ],
 }
 
+_DEFAULT_LESSON_CONTENT = {
+    "content_version": "1.0",
+    "title": "테스트 컨텐츠",
+    "sections": [
+        {"section_id": "s1", "title": "섹션 1", "content": "내용 설명", "includes_code": True, "code_snippet": "x = 1"},
+    ],
+    "review_questions": ["Q1: 무엇입니까?", "Q2: 왜 입니까?"],
+    "code_examples": [
+        {
+            "example_id": "ex1",
+            "language": "python",
+            "code": "x = 10\nprint(x)",
+            "explanation": "변수에 값 할당",
+            "expected_output": "10",
+        }
+    ],
+}
+
 
 class MockProvider:
     def __init__(
@@ -29,6 +47,11 @@ class MockProvider:
         self.fixture_payload = fixture_payload or _DEFAULT_LESSON_PLAN
         self._call_index = 0
         self.requests: list[dict[str, Any]] = []
+
+    def _get_default_payload(self, task_name: str) -> dict:
+        if task_name == "lesson_content":
+            return _DEFAULT_LESSON_CONTENT
+        return _DEFAULT_LESSON_PLAN
 
     def generate_structured(
         self,
@@ -64,6 +87,10 @@ class MockProvider:
             payload = self.task_payloads[task_name]
         else:
             payload = self.fixture_payload
+
+        default_payload = self._get_default_payload(task_name)
+        if not payload or payload == {}:
+            payload = default_payload
 
         validated = response_schema.model_validate(payload)
         return ProviderResult(

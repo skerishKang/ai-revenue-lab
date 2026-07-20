@@ -3,6 +3,7 @@
 from app.repositories.learner_repository import (
     create_learner,
     get_learner_by_id,
+    update_learner,
     update_learner_preferences,
 )
 from app.repositories.curriculum_repository import (
@@ -18,10 +19,12 @@ from app.repositories.concept_repository import (
 )
 from app.repositories.lesson_repository import (
     create_lesson,
+    create_learner_session,
     get_lesson_by_id,
     get_lessons_by_learner,
     get_lessons_by_concept,
     update_lesson_status,
+    update_lesson_content,
     close_lesson,
     reopen_lesson,
 )
@@ -32,6 +35,7 @@ from app.repositories.exercise_repository import (
     record_exercise_response,
     get_responses_by_learner,
     record_comprehension_response,
+    validate_lesson_content,
 )
 from app.repositories.feedback_repository import (
     create_feedback,
@@ -68,6 +72,7 @@ from app.repositories.idempotency_repository import (
 __all__ = [
     "create_learner",
     "get_learner_by_id",
+    "update_learner",
     "update_learner_preferences",
     "create_curriculum",
     "get_curriculum_by_id",
@@ -77,10 +82,12 @@ __all__ = [
     "get_concepts_by_curriculum",
     "validate_prerequisites",
     "create_lesson",
+    "create_learner_session",
     "get_lesson_by_id",
     "get_lessons_by_learner",
     "get_lessons_by_concept",
     "update_lesson_status",
+    "update_lesson_content",
     "close_lesson",
     "reopen_lesson",
     "create_exercise",
@@ -89,6 +96,7 @@ __all__ = [
     "record_exercise_response",
     "get_responses_by_learner",
     "record_comprehension_response",
+    "validate_lesson_content",
     "create_feedback",
     "get_feedback_by_id",
     "get_feedback_by_lesson",
