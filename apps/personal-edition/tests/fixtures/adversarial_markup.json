@@ -1,0 +1,83 @@
+{
+  "name": "adversarial_markup",
+  "language": "en",
+  "input_text": "I started running in the mornings a few months ago. At first I could barely finish a kilometer. My legs would ache and my breathing was ragged. But I kept showing up. Each week got a little easier. Now I run three kilometers most mornings and it has become the best part of my day. The quiet streets, the dawn light, the rhythm of my footsteps. Running taught me that consistency matters more than intensity. I learned to appreciate small progress instead of demanding instant results.",
+  "prohibited_inventions": ["husband", "wife", "spouse"],
+  "allowed_facts": [
+    "the person started running a few months ago",
+    "running became the best part of the day",
+    "consistency matters more than intensity"
+  ],
+  "plan_payload": {
+    "plan_version": "personal-edition-plan-v1",
+    "language": "en",
+    "central_theme": "Consistency over intensity",
+    "reader_value": "How small daily progress in running reshaped a mindset",
+    "opening_intent": "Show the progression from struggling to run a kilometer to enjoying daily morning runs",
+    "sections": [
+      {
+        "section_id": "section-1",
+        "working_title": "The first kilometer",
+        "purpose": "Describe the difficult beginning of running",
+        "source_segment_ids": ["s001"],
+        "allowed_interpretations": ["early struggle is normal"],
+        "prohibited_inferences": ["specific distances or times"]
+      },
+      {
+        "section_id": "section-2",
+        "working_title": "What running taught",
+        "purpose": "Reveal the lesson about consistency",
+        "source_segment_ids": ["s002"],
+        "allowed_interpretations": ["small progress compounds"],
+        "prohibited_inferences": ["a running partner or coach"]
+      }
+    ],
+    "continuity": {},
+    "uncertain_or_excluded_material": [],
+    "highlighted_insight": "Consistency matters more than intensity",
+    "next_edition_prompt": "Would you like to explore another area where consistency changed your approach?"
+  },
+  "draft_payload": {
+    "content_version": "personal-edition-v1",
+    "language": "en",
+    "publication_title": "The Readers Letter",
+    "edition_title": "The First Kilometer",
+    "deck": "How morning running taught the value of small consistent progress",
+    "opening": "At first I could barely finish a kilometer. My legs ached and my breathing was ragged. But I kept showing up.",
+    "sections": [
+      {
+        "section_id": "section-1",
+        "title": "The first kilometer",
+        "paragraphs": [
+          "I started running in the mornings a few months ago. At first I could barely finish a kilometer. <script>alert('hi')</script> My legs would ache and my breathing was ragged.",
+          "But I kept showing up. Each week got a little easier."
+        ],
+        "source_segment_ids": ["s001"],
+        "contains_interpretation": false
+      },
+      {
+        "section_id": "section-2",
+        "title": "What running taught",
+        "paragraphs": [
+          "Now I run three kilometers most mornings and it has become the best part of my day.",
+          "Running taught me that consistency matters more than intensity."
+        ],
+        "source_segment_ids": ["s002"],
+        "contains_interpretation": true
+      }
+    ],
+    "highlighted_insight": "Consistency matters more than intensity",
+    "continuity_note": null,
+    "applied_feedback": null,
+    "next_edition_prompt": {
+      "question": "Would you like to explore another area where consistency changed your approach?",
+      "choices": ["Yes", "No"]
+    },
+    "provenance_note": "This edition was created from material supplied by the reader."
+  },
+  "notes": {
+    "family": "adversarial",
+    "defect": "unsafe_markup",
+    "prohibited_token": "script tag in paragraph"
+  }
+}

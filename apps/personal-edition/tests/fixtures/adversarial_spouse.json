@@ -1,0 +1,83 @@
+{
+  "name": "adversarial_spouse",
+  "language": "en",
+  "input_text": "I started cooking for myself last year. It began as a way to save money. Then I realized I actually enjoyed the process of chopping vegetables and experimenting with spices. Cooking became a form of meditation after work. I would put on music and lose track of time. Some dishes turned out great and others were disasters but I learned from each attempt. Now I cook almost every evening. It has changed how I think about food and about my own patience. I never thought I would find so much satisfaction in something so ordinary.",
+  "prohibited_inventions": ["husband", "wife", "spouse", "partner"],
+  "allowed_facts": [
+    "the person started cooking to save money",
+    "cooking became a form of meditation",
+    "the person cooks almost every evening"
+  ],
+  "plan_payload": {
+    "plan_version": "personal-edition-plan-v1",
+    "language": "en",
+    "central_theme": "Finding meditation in ordinary cooking",
+    "reader_value": "How a routine task became a source of satisfaction",
+    "opening_intent": "Show how cooking transformed from a money-saving chore into a meditative practice",
+    "sections": [
+      {
+        "section_id": "section-1",
+        "working_title": "How it began",
+        "purpose": "Describe the practical origin of cooking as a money-saving choice",
+        "source_segment_ids": ["s001"],
+        "allowed_interpretations": ["practical motivation evolved into enjoyment"],
+        "prohibited_inferences": ["specific recipes or prices"]
+      },
+      {
+        "section_id": "section-2",
+        "working_title": "Cooking as meditation",
+        "purpose": "Reveal how cooking became a meditative evening ritual",
+        "source_segment_ids": ["s002"],
+        "allowed_interpretations": ["routine can become meaningful"],
+        "prohibited_inferences": ["a specific companion or family member"]
+      }
+    ],
+    "continuity": {},
+    "uncertain_or_excluded_material": [],
+    "highlighted_insight": "Satisfaction can be found in the most ordinary tasks",
+    "next_edition_prompt": "Would you like to reflect on another ordinary task that became meaningful?"
+  },
+  "draft_payload": {
+    "content_version": "personal-edition-v1",
+    "language": "en",
+    "publication_title": "The Readers Letter",
+    "edition_title": "Meditation in the Kitchen",
+    "deck": "How a money-saving chore became a source of deep satisfaction",
+    "opening": "It started as a way to save money. But somewhere between chopping vegetables and experimenting with spices, cooking became something else entirely.",
+    "sections": [
+      {
+        "section_id": "section-1",
+        "title": "How it began",
+        "paragraphs": [
+          "I started cooking for myself last year to save money. At first it was just a chore, another thing to get through after a long day. But I realized I actually enjoyed the process.",
+          "My husband encouraged me to keep going even when dishes turned out badly. He said the disasters were part of the learning."
+        ],
+        "source_segment_ids": ["s001"],
+        "contains_interpretation": false
+      },
+      {
+        "section_id": "section-2",
+        "title": "Cooking as meditation",
+        "paragraphs": [
+          "Cooking became a form of meditation after work. I would put on music and lose track of time. Some dishes turned out great and others were disasters.",
+          "Now I cook almost every evening. It has changed how I think about food and about my own patience."
+        ],
+        "source_segment_ids": ["s002"],
+        "contains_interpretation": true
+      }
+    ],
+    "highlighted_insight": "Satisfaction can be found in the most ordinary tasks",
+    "continuity_note": null,
+    "applied_feedback": null,
+    "next_edition_prompt": {
+      "question": "Would you like to reflect on another ordinary task that became meaningful?",
+      "choices": ["Yes", "No, something different"]
+    },
+    "provenance_note": "This edition was created from material supplied by the reader."
+  },
+  "notes": {
+    "family": "adversarial",
+    "defect": "invented_spouse",
+    "prohibited_token": "husband"
+  }
+}
