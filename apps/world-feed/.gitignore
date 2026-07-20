@@ -1,0 +1,7 @@
+# Local runtime / test artifacts
+var/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.db

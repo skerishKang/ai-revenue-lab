@@ -1,21 +1,64 @@
-# World Feed
+# World Feed — Phase 1 MVP
 
-Status: **Active research track; implementation deferred**
+Status: **Active implementation (Issue #36)**
 
-World Feed uses abundant free AI to detect, translate, structure, update, and personalize global-local information that large international media rarely surface.
+World Feed turns abundant free AI inference into a different personalized
+"world edition" for each reader, starting from **synthetic source cards only**.
+No live crawling, no web calls, and no claim of current real-world facts.
 
-Initial low-risk domains include places, local events, culture, tourism, official entertainment releases, music, film, and selected official sports information.
+## Product loop
 
-## Core distinction
+```
+synthetic source cards
+  -> normalize / validate provenance & state
+  -> deterministic personalized ranking
+  -> first Korean microbrief
+  -> persisted explicit feedback
+  -> materially changed second microbrief
+  -> pending_review
+  -> privacy-safe pilot evidence
+```
 
-The product does not merely recommend the same articles to different users. Shared source facts are edited into different personal world editions according to each user's interests, context, preferred depth, and feedback.
+Initial hypothesis (synthetic, no payment integration): one sample free,
+seven adapted microbriefs for KRW 3,900. No claim of actual users, demand,
+payment, or revenue.
 
-## Current work
+## What this workspace contains
 
-- define a small country and source sample rather than global coverage;
-- define source and update-state records;
-- define single-source, multi-source, conflicting, and superseded states;
-- define one personal-edition output using synthetic user profiles;
-- define traffic, affiliate, alert, or paid-edition evidence.
+- `app/` — FastAPI + SQLite implementation, fully independent of sibling apps.
+- `migrations/` — versioned SQLite schema (`001_initial.sql`).
+- `tests/` — unit + integration tests using temporary file-backed SQLite and
+  zero network.
+- `PRODUCT_CONTRACT.md` — the local product contract.
 
-No crawler or broad source infrastructure is authorized before a thin source-to-personal-edition benchmark is approved.
+## Design rules enforced by code
+
+- **Source states**: `single_source`, `multi_source`, `conflicting`,
+  `superseded`, `withdrawn`. Withdrawn/superseded are never selected;
+  conflicting carries an explicit uncertainty penalty.
+- **No duplicate canonical slots**: `canonical_events.canonical_key` is
+  UNIQUE, so multiple source cards for one event occupy a single slot.
+- **Feedback exactly once**: `feedback.idempotency_key` is UNIQUE; the second
+  brief is generated at most once per feedback and the feedback is marked
+  applied exactly once.
+- **Atomic multi-step writes**: service operations run inside explicit
+  transactions; a failure rolls back and never overwrites the last valid brief.
+- **Bounded retries + exact accounting**: generation runs record
+  provider/model, task, prompt version, latency, retry count, token usage,
+  validation status, and a privacy-safe error category. Retried usage and
+  latency are aggregated correctly.
+- **No automatic publication**: every generated brief is `pending_review`.
+- **Privacy-safe evidence**: pilot evidence stores only anonymous tokens and
+  evidence type; no personal identifiers.
+
+## Run locally
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest -q
+```
+
+The default provider is the network-free `MockProvider` (model
+`mock-world-feed-v1`); `/health` reports the active provider and model.
