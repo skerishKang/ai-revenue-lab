@@ -80,7 +80,7 @@
             "information_class": "time_sensitive",
             "as_of_date": "2026-07-20",
             "source_ref": "src_busan_tourism",
-            "confidence": "uncertain",
+            "confidence": "approximate",
             "verify_before_use": true
           }
         ]

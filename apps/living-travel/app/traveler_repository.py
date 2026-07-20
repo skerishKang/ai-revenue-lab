@@ -111,11 +111,21 @@ def get_all_travelers(conn: sqlite3.Connection) -> list[TravelerRecord]:
     return [_row_to_record(r) for r in rows]
 
 
-def delete_traveler(conn: sqlite3.Connection, traveler_id: str) -> bool:
+def is_traveler_active(conn: sqlite3.Connection, traveler_id: str) -> bool:
+    """Check if a traveler exists and is active (not deleted)."""
+    row = conn.execute(
+        "SELECT 1 FROM travelers WHERE id = ? AND status = ?",
+        (traveler_id, TravelerStatus.active),
+    ).fetchone()
+    return row is not None
+
+
+def delete_traveler(conn: sqlite3.Connection, traveler_id: str, *, commit: bool = True) -> bool:
     now = _utcnow()
     cur = conn.execute(
         "UPDATE travelers SET status = ?, updated_at = ? WHERE id = ? AND status = ?",
         (TravelerStatus.deleted, now, traveler_id, TravelerStatus.active),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return cur.rowcount > 0

@@ -52,6 +52,7 @@ def create_input(
     destination: str,
     trip_duration_nights: int = 2,
     consent_confirmed: bool = True,
+    commit: bool = True,
 ) -> InputRecord:
     now = _utcnow()
     input_id = f"in_{secrets.token_urlsafe(16)}"
@@ -66,7 +67,8 @@ def create_input(
         f"INSERT INTO travel_inputs ({_SELECT}) VALUES (?,?,?,?,?,?,?,?)",
         (input_id, traveler_id, seq, raw_text, destination, trip_duration_nights, int(consent_confirmed), now),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return get_input_by_id(conn, input_id)  # type: ignore[return-value]
 
 

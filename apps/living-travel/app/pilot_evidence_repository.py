@@ -57,6 +57,7 @@ def create_pilot_evidence(
     price_krw: int = 0,
     consent_recorded: bool = False,
     payment_evidence: str = "",
+    commit: bool = True,
 ) -> PilotEvidenceRecord:
     now = _utcnow()
     evidence_id = f"pe_{secrets.token_urlsafe(16)}"
@@ -68,7 +69,8 @@ def create_pilot_evidence(
             payment_evidence, now,
         ),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return get_pilot_evidence_by_id(conn, evidence_id)  # type: ignore[return-value]
 
 

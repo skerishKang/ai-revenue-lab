@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import secrets
 import sqlite3
 from dataclasses import dataclass
@@ -11,6 +12,27 @@ from datetime import datetime, timezone
 
 def _utcnow() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+# ── Privacy: sensitive-pattern redaction ────────────────────────────
+
+_SENSITIVE_PATTERNS: list[tuple[str, str]] = [
+    (r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", "[CARD_REDACTED]"),
+    (r"\b\d{3}[\s-]?\d{3,4}[\s-]?\d{4}\b", "[PHONE_REDACTED]"),
+    (r"\b\d{6}[\s-]?\d{7}\b", "[ID_REDACTED]"),
+    (r"\b(sk-|ak-|pk-)[A-Za-z0-9]{20,}\b", "[API_KEY_REDACTED]"),
+    (r"(?i)\b(password|passwd|pwd)\s*[:=]\s*\S+", "[PASSWORD_REDACTED]"),
+    (r"(?i)\b(token|secret|bearer)\s*[:=]\s*\S+", "[TOKEN_REDACTED]"),
+    (r"(?i)\b(계좌|카드|주민|비밀번호)\s*[:=]\s*\S+", "[SENSITIVE_REDACTED]"),
+]
+
+
+def _sanitize_free_text(text: str) -> str:
+    """Remove sensitive patterns (credit cards, phones, API keys, passwords) from free text."""
+    result = text
+    for pattern, replacement in _SENSITIVE_PATTERNS:
+        result = re.sub(pattern, replacement, result)
+    return result
 
 
 @dataclass(frozen=True)
@@ -53,18 +75,21 @@ def create_feedback(
     direction_choices: list[str] | None = None,
     selected_section_id: str = "",
     free_text: str = "",
+    commit: bool = True,
 ) -> FeedbackRecord:
     now = _utcnow()
     feedback_id = f"fb_{secrets.token_urlsafe(16)}"
     direction_choices = direction_choices or []
+    sanitized_text = _sanitize_free_text(free_text)
     conn.execute(
         f"INSERT INTO feedback ({_SELECT}) VALUES (?,?,?,?,?,?,?,?)",
         (
             feedback_id, traveler_id, edition_id,
-            json.dumps(direction_choices), selected_section_id, free_text, 0, now,
+            json.dumps(direction_choices), selected_section_id, sanitized_text, 0, now,
         ),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return get_feedback_by_id(conn, feedback_id)  # type: ignore[return-value]
 
 
@@ -93,10 +118,11 @@ def get_unapplied_feedback_for_traveler(
     return [_row_to_record(r) for r in rows]
 
 
-def mark_feedback_applied(conn: sqlite3.Connection, feedback_id: str) -> bool:
+def mark_feedback_applied(conn: sqlite3.Connection, feedback_id: str, *, commit: bool = True) -> bool:
     cur = conn.execute(
         "UPDATE feedback SET applied_to_next_edition = 1 WHERE id = ?",
         (feedback_id,),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return cur.rowcount > 0
