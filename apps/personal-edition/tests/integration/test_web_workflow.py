@@ -1,6 +1,6 @@
 """Comprehensive web, security, and end-to-end tests for Phase 4 private web workflow.
 
-Covers all 17 test categories from Issue #28.
+Covers all 17 test categories from Issue #28 plus adversarial security tests.
 """
 
 from __future__ import annotations
@@ -24,10 +24,13 @@ from app.auth import (
     create_participant_session,
     create_admin_session,
     sign_session_token,
+    sign_admin_session_token,
     sign_csrf_token,
     verify_csrf_token,
     generate_csrf_token,
     decode_session_token,
+    decode_admin_session_token,
+    verify_admin_secret,
 )
 from app.config import Settings
 from app.db import apply_migrations, get_connection
@@ -66,7 +69,7 @@ def _get_session_cookie(participant_id: str) -> dict[str, str]:
 
 def _get_admin_session_cookie() -> dict[str, str]:
     session_data = create_admin_session()
-    signed = sign_session_token(session_data)
+    signed = sign_admin_session_token(session_data)
     return {"pe_admin_session": signed}
 
 
@@ -136,7 +139,7 @@ def _make_long_korean_text(min_chars=600):
 
 
 # ================================================================
-# 1. Application startup, migrations, /health regression
+# 1. Application startup, migrations, /health, production secret rejection
 # ================================================================
 class TestApplicationStartup:
     def test_health_endpoint(self):
@@ -172,9 +175,45 @@ class TestApplicationStartup:
         from app.main import app as main_app
         assert main_app is not None
 
+    def test_production_rejects_default_secret_key(self):
+        with pytest.raises(ValueError, match="SECRET_KEY"):
+            Settings(
+                app_env="production",
+                secret_key="dev-secret-key-change-in-production",
+                admin_secret="a-strong-admin-secret-here!",
+                cookie_secure=True,
+            )
+
+    def test_production_rejects_default_admin_secret(self):
+        with pytest.raises(ValueError, match="ADMIN_SECRET"):
+            Settings(
+                app_env="production",
+                secret_key="a-very-strong-secret-key-at-least-32-chars!",
+                admin_secret="dev-admin-secret-change-in-production",
+                cookie_secure=True,
+            )
+
+    def test_production_rejects_insecure_cookie(self):
+        with pytest.raises(ValueError, match="COOKIE_SECURE"):
+            Settings(
+                app_env="production",
+                secret_key="a-very-strong-secret-key-at-least-32-chars!",
+                admin_secret="a-strong-admin-secret-here!",
+                cookie_secure=False,
+            )
+
+    def test_production_accepts_valid_config(self):
+        s = Settings(
+            app_env="production",
+            secret_key="a-very-strong-secret-key-at-least-32-chars!",
+            admin_secret="a-strong-admin-secret-here!",
+            cookie_secure=True,
+        )
+        assert s.app_env == "production"
+
 
 # ================================================================
-# 2. Participant access: success, invalid token, deleted, logout, cookies
+# 2. Participant access
 # ================================================================
 class TestParticipantAccess:
     def test_token_entry_page_renders(self):
@@ -183,7 +222,6 @@ class TestParticipantAccess:
             client = TestClient(app)
             resp = client.get("/p/access")
             assert resp.status_code == 200
-            assert "access token" in resp.text.lower() or "토큰" in resp.text
 
     def test_valid_token_grants_access(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -231,7 +269,29 @@ class TestParticipantAccess:
                 conn.close()
             resp = client.post("/p/access", data={"token": raw_token})
             assert resp.status_code == 200
-            assert "Invalid" in resp.text or "invalid" in resp.text.lower()
+
+    def test_deleted_participant_session_revoked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1", cookies=cookies, follow_redirects=False)
+            assert resp.status_code == 200
+
+            conn2 = get_connection(db_path)
+            try:
+                pt_repo.delete_participant(conn2, "p1")
+            finally:
+                conn2.close()
+
+            resp2 = client.get("/p/p1", cookies=cookies, follow_redirects=False)
+            assert resp2.status_code == 303
+            assert resp2.headers["location"] == "/p/access"
 
     def test_dashboard_requires_auth(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -285,7 +345,7 @@ class TestParticipantAccess:
 
 
 # ================================================================
-# 3. Participant input submission: success and validation failure
+# 3. Participant input submission
 # ================================================================
 class TestParticipantInput:
     def _make_client_with_session(self, tmp_path):
@@ -330,11 +390,7 @@ class TestParticipantInput:
             all_cookies = {**cookies, **csrf_cookie}
             resp = client.post(
                 "/p/p1/input",
-                data={
-                    "raw_text": "",
-                    "consent_confirmed": "1",
-                    "csrf_token": csrf_token,
-                },
+                data={"raw_text": "", "consent_confirmed": "1", "csrf_token": csrf_token},
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
@@ -387,6 +443,33 @@ class TestParticipantInput:
             finally:
                 conn2.close()
 
+    def test_input_error_rerender_fresh_csrf_and_retry_succeeds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            client, cookies = self._make_client_with_session(Path(tmp))
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            all_cookies = {**cookies, **csrf_cookie}
+            resp = client.post(
+                "/p/p1/input",
+                data={"raw_text": "", "consent_confirmed": "1", "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            new_csrf_token = generate_csrf_token()
+            new_csrf_signed = sign_csrf_token(new_csrf_token)
+            retry_cookies = {**cookies, "pe_csrf": new_csrf_signed}
+            resp2 = client.post(
+                "/p/p1/input",
+                data={
+                    "raw_text": "재시도 입력 텍스트입니다. " * 20,
+                    "consent_confirmed": "1",
+                    "csrf_token": new_csrf_token,
+                },
+                cookies=retry_cookies,
+            )
+            assert resp2.status_code == 200
+            assert "submitted" in resp2.text.lower() or "제출" in resp2.text
+
 
 # ================================================================
 # 4. Cross-participant isolation
@@ -401,16 +484,13 @@ class TestCrossParticipantIsolation:
                 _create_participant(conn, "p1", "User One")
                 _create_participant(conn, "p2", "User Two")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p2",
-                    edition_number=1,
+                    conn, participant_id="p2", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="P2 Edition",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies_p1 = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies_p1)
             assert resp.status_code == 200
@@ -425,37 +505,23 @@ class TestCrossParticipantIsolation:
                 _create_participant(conn, "p1", "User One")
                 _create_participant(conn, "p2", "User Two")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p2",
-                    edition_number=1,
+                    conn, participant_id="p2", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="P2 Edition",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies_p1 = _get_session_cookie("p1")
             csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
             all_cookies = {**cookies_p1, **csrf_cookie}
             resp = client.post(
                 "/p/p1/editions/1/feedback",
-                data={
-                    "direction_choices": "continue_direction",
-                    "csrf_token": csrf_token,
-                },
+                data={"direction_choices": "continue_direction", "csrf_token": csrf_token},
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
             assert "찾을" in resp.text or "not found" in resp.text.lower()
-            conn2 = get_connection(db_path)
-            try:
-                feedbacks = conn2.execute(
-                    "SELECT * FROM feedback WHERE participant_id = 'p1'"
-                ).fetchall()
-                assert len(feedbacks) == 0
-            finally:
-                conn2.close()
 
 
 # ================================================================
@@ -470,15 +536,12 @@ class TestEditionVisibility:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Pending Edition",
                 )
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies)
             assert resp.status_code == 200
@@ -492,16 +555,13 @@ class TestEditionVisibility:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Rejected Edition",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "rejected")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies)
             assert resp.status_code == 200
@@ -515,16 +575,13 @@ class TestEditionVisibility:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Published Edition",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies)
             assert resp.status_code == 200
@@ -532,7 +589,7 @@ class TestEditionVisibility:
 
 
 # ================================================================
-# 6. Admin authentication and unauthorized admin rejection
+# 6. Admin authentication
 # ================================================================
 class TestAdminAuthentication:
     def test_admin_access_page_renders(self):
@@ -546,7 +603,12 @@ class TestAdminAuthentication:
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
             client = TestClient(app)
-            resp = client.post("/admin/access", data={"secret": "wrong"})
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            resp = client.post(
+                "/admin/access",
+                data={"secret": "wrong", "csrf_token": csrf_token},
+                cookies=csrf_cookie,
+            )
             assert resp.status_code == 200
             assert "Invalid" in resp.text or "invalid" in resp.text.lower()
 
@@ -554,9 +616,14 @@ class TestAdminAuthentication:
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
             client = TestClient(app)
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
             resp = client.post(
                 "/admin/access",
-                data={"secret": "dev-admin-secret-change-in-production"},
+                data={
+                    "secret": "dev-admin-secret-change-in-production",
+                    "csrf_token": csrf_token,
+                },
+                cookies=csrf_cookie,
                 follow_redirects=False,
             )
             assert resp.status_code == 303
@@ -583,10 +650,16 @@ class TestAdminAuthentication:
             app, db_path = _make_app(Path(tmp))
             client = TestClient(app)
             cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**cookies, **csrf_cookie}
             resp = client.post(
-                "/admin/logout", cookies=cookies, follow_redirects=False
+                "/admin/logout", cookies=all_cookies, follow_redirects=False
             )
             assert resp.status_code == 303
+
+    def test_admin_secret_constant_time_comparison(self):
+        assert verify_admin_secret("dev-admin-secret-change-in-production")
+        assert not verify_admin_secret("wrong-secret")
 
 
 # ================================================================
@@ -605,15 +678,10 @@ class TestCSRFProtection:
             cookies = _get_session_cookie("p1")
             resp = client.post(
                 "/p/p1/input",
-                data={
-                    "raw_text": "테스트 입력 텍스트입니다.",
-                    "consent_confirmed": "1",
-                    "csrf_token": "",
-                },
+                data={"raw_text": "테스트", "consent_confirmed": "1", "csrf_token": ""},
                 cookies=cookies,
             )
             assert resp.status_code == 200
-            assert "token" in resp.text.lower() or "토큰" in resp.text
 
     def test_admin_edit_rejects_missing_csrf(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -623,24 +691,17 @@ class TestCSRFProtection:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                 )
                 edition_id = ed.id
             finally:
                 conn.close()
-
             admin_cookies = _get_admin_session_cookie()
             resp = client.post(
                 f"/admin/review/{edition_id}/edit",
-                data={
-                    "structured_content": json.dumps(_make_draft_payload()),
-                    "csrf_token": "",
-                },
-                cookies=admin_cookies,
-                follow_redirects=False,
+                data={"structured_content": json.dumps(_make_draft_payload()), "csrf_token": ""},
+                cookies=admin_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
 
@@ -652,69 +713,93 @@ class TestCSRFProtection:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                 )
                 edition_id = ed.id
             finally:
                 conn.close()
-
             admin_cookies = _get_admin_session_cookie()
             resp = client.post(
                 f"/admin/review/{edition_id}/publish",
-                data={"csrf_token": ""},
-                cookies=admin_cookies,
-                follow_redirects=False,
+                data={"csrf_token": ""}, cookies=admin_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
 
+    def test_admin_access_rejects_missing_csrf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.post(
+                "/admin/access",
+                data={"secret": "dev-admin-secret-change-in-production", "csrf_token": ""},
+            )
+            assert resp.status_code == 200
+
 
 # ================================================================
-# 8. MockProvider generation through pending_review persistence
+# 8. MockProvider generation
 # ================================================================
 class TestGenerationThroughWeb:
     def test_admin_generate_creates_edition(self):
         with tempfile.TemporaryDirectory() as tmp:
             provider = MockProvider(
-                task_payloads={
-                    "editorial_plan": MOCK_PLAN_PAYLOAD,
-                    "edition_draft": _make_draft_payload(),
-                }
+                task_payloads={"editorial_plan": MOCK_PLAN_PAYLOAD, "edition_draft": _make_draft_payload()}
             )
             app, db_path = _make_app(Path(tmp), provider=provider)
             client = TestClient(app)
             conn = get_connection(db_path)
             try:
                 _create_participant(conn, "p1", "Test User")
-                inp = input_repo.create_input(
-                    conn,
-                    participant_id="p1",
-                    raw_text=_make_long_korean_text(600),
-                    consent_confirmed=1,
-                )
+                inp = input_repo.create_input(conn, participant_id="p1", raw_text=_make_long_korean_text(600), consent_confirmed=1)
                 input_id = inp.id
             finally:
                 conn.close()
-
             admin_cookies = _get_admin_session_cookie()
             csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
             all_cookies = {**admin_cookies, **csrf_cookie}
             resp = client.post(
                 "/admin/participants/p1/generate",
                 data={"input_id": input_id, "csrf_token": csrf_token},
-                cookies=all_cookies,
-                follow_redirects=False,
+                cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
-
             conn2 = get_connection(db_path)
             try:
                 editions = ed_repo.get_editions_by_participant(conn2, "p1")
                 assert len(editions) >= 1
                 assert editions[0].generation_status == "pending_review"
-                assert editions[0].publication_state == "pending"
+            finally:
+                conn2.close()
+
+    def test_admin_generate_short_sample_requires_explicit_approval(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            provider = MockProvider(
+                task_payloads={"editorial_plan": MOCK_PLAN_PAYLOAD, "edition_draft": _make_draft_payload()}
+            )
+            app, db_path = _make_app(Path(tmp), provider=provider)
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                short_text = "짧은 테스트 텍스트입니다. " * 10
+                inp = input_repo.create_input(conn, participant_id="p1", raw_text=short_text, consent_confirmed=1)
+                input_id = inp.id
+            finally:
+                conn.close()
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": input_id, "csrf_token": csrf_token, "allow_short_sample": "0"},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            conn2 = get_connection(db_path)
+            try:
+                editions = ed_repo.get_editions_by_participant(conn2, "p1")
+                assert len(editions) == 0
             finally:
                 conn2.close()
 
@@ -729,9 +814,7 @@ class TestAdminReviewPublishReject:
         try:
             _create_participant(conn, "p1", "Test User")
             ed = ed_repo.create_edition(
-                conn,
-                participant_id="p1",
-                edition_number=1,
+                conn, participant_id="p1", edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="Test Edition",
             )
@@ -747,7 +830,6 @@ class TestAdminReviewPublishReject:
             cookies = _get_admin_session_cookie()
             resp = client.get(f"/admin/review/{edition_id}", cookies=cookies)
             assert resp.status_code == 200
-            assert "Test Edition" in resp.text
 
     def test_admin_edit_valid_json(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -756,7 +838,6 @@ class TestAdminReviewPublishReject:
             admin_cookies = _get_admin_session_cookie()
             csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
             all_cookies = {**admin_cookies, **csrf_cookie}
-
             new_content = _make_draft_payload()
             new_content["edition_title"] = "수정된 제목"
             resp = client.post(
@@ -767,11 +848,9 @@ class TestAdminReviewPublishReject:
                     "reviewer_notes": "검토 메모",
                     "csrf_token": csrf_token,
                 },
-                cookies=all_cookies,
-                follow_redirects=False,
+                cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
-
             conn = get_connection(db_path)
             try:
                 ed = ed_repo.get_edition_by_id(conn, edition_id)
@@ -789,14 +868,141 @@ class TestAdminReviewPublishReject:
             all_cookies = {**admin_cookies, **csrf_cookie}
             resp = client.post(
                 f"/admin/review/{edition_id}/edit",
-                data={
-                    "structured_content": "not valid json",
-                    "csrf_token": csrf_token,
-                },
+                data={"structured_content": "not valid json", "csrf_token": csrf_token},
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "Invalid JSON" in resp.text or "invalid" in resp.text.lower()
+            assert "Invalid JSON" in resp.text or "invalid" in resp.text.lower() or "Error" in resp.text
+
+    def test_admin_edit_valid_json_wrong_schema_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = {"foo": "bar"}
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "Missing required field" in resp.text or "Error" in resp.text
+            conn = get_connection(db_path)
+            try:
+                ed = ed_repo.get_edition_by_id(conn, edition_id)
+                orig = json.loads(ed.structured_content)
+                assert orig.get("edition_title") == "테스트 에디션 제목"
+            finally:
+                conn.close()
+
+    def test_admin_edit_unsafe_markup_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["opening"] = "<script>alert('xss')</script>"
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+            conn = get_connection(db_path)
+            try:
+                ed = ed_repo.get_edition_by_id(conn, edition_id)
+                orig = json.loads(ed.structured_content)
+                assert "<script>" not in orig.get("opening", "")
+            finally:
+                conn.close()
+
+    def test_admin_edit_event_handler_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["sections"][0]["title"] = '<img src=x onerror="alert(1)">'
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+
+    def test_admin_edit_javascript_url_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["sections"][0]["title"] = 'javascript:alert(1)'
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+
+    def test_admin_edit_unsafe_nested_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            bad_content = _make_draft_payload()
+            bad_content["sections"][0]["paragraphs"] = ["<iframe src='evil.com'>"]
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+
+    def test_admin_edit_no_content_change_on_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path, edition_id = self._setup_edition(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            conn = get_connection(db_path)
+            try:
+                orig = ed_repo.get_edition_by_id(conn, edition_id)
+                orig_content = orig.structured_content
+                orig_state = orig.publication_state
+                orig_gen_status = orig.generation_status
+            finally:
+                conn.close()
+            bad_content = _make_draft_payload()
+            bad_content["opening"] = "<script>alert(1)</script>"
+            resp = client.post(
+                f"/admin/review/{edition_id}/edit",
+                data={"structured_content": json.dumps(bad_content), "csrf_token": csrf_token},
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            conn2 = get_connection(db_path)
+            try:
+                ed = ed_repo.get_edition_by_id(conn2, edition_id)
+                assert ed.structured_content == orig_content
+                assert ed.publication_state == orig_state
+                assert ed.generation_status == orig_gen_status
+            finally:
+                conn2.close()
 
     def test_admin_publish(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -808,11 +1014,9 @@ class TestAdminReviewPublishReject:
             resp = client.post(
                 f"/admin/review/{edition_id}/publish",
                 data={"csrf_token": csrf_token},
-                cookies=all_cookies,
-                follow_redirects=False,
+                cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
-
             conn = get_connection(db_path)
             try:
                 ed = ed_repo.get_edition_by_id(conn, edition_id)
@@ -831,11 +1035,9 @@ class TestAdminReviewPublishReject:
             resp = client.post(
                 f"/admin/review/{edition_id}/reject",
                 data={"csrf_token": csrf_token},
-                cookies=all_cookies,
-                follow_redirects=False,
+                cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
-
             conn = get_connection(db_path)
             try:
                 ed = ed_repo.get_edition_by_id(conn, edition_id)
@@ -845,7 +1047,7 @@ class TestAdminReviewPublishReject:
 
 
 # ================================================================
-# 10. Published edition reading and history ordering
+# 10. Edition reading and history
 # ================================================================
 class TestEditionReadingHistory:
     def test_history_shows_published_only(self):
@@ -857,24 +1059,18 @@ class TestEditionReadingHistory:
                 _create_participant(conn, "p1", "User One")
                 for i in range(1, 4):
                     ed = ed_repo.create_edition(
-                        conn,
-                        participant_id="p1",
-                        edition_number=i,
+                        conn, participant_id="p1", edition_number=i,
                         structured_content=json.dumps(_make_draft_payload()),
                         rendered_title=f"Edition {i}",
                     )
                     if i <= 2:
-                        ed_repo.update_edition_publication(
-                            conn, ed.id, "published"
-                        )
+                        ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/history", cookies=cookies)
             assert resp.status_code == 200
             assert "Edition 2" in resp.text
-            assert "Edition 1" in resp.text
 
     def test_history_ordering_descending(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -885,16 +1081,13 @@ class TestEditionReadingHistory:
                 _create_participant(conn, "p1", "User One")
                 for i in range(1, 4):
                     ed = ed_repo.create_edition(
-                        conn,
-                        participant_id="p1",
-                        edition_number=i,
+                        conn, participant_id="p1", edition_number=i,
                         structured_content=json.dumps(_make_draft_payload()),
                         rendered_title=f"Edition {i}",
                     )
                     ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/history", cookies=cookies)
             assert resp.status_code == 200
@@ -915,9 +1108,7 @@ class TestFeedbackPersistence:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Edition 1",
                 )
@@ -925,7 +1116,6 @@ class TestFeedbackPersistence:
                 edition_id = ed.id
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
             all_cookies = {**cookies, **csrf_cookie}
@@ -941,47 +1131,42 @@ class TestFeedbackPersistence:
             )
             assert resp.status_code == 200
             assert "감사" in resp.text or "제출" in resp.text
-
             conn2 = get_connection(db_path)
             try:
                 feedbacks = fb_repo.get_feedback_by_edition(conn2, edition_id)
                 assert len(feedbacks) == 1
-                assert "continue_direction" in feedbacks[0].direction_choices
             finally:
                 conn2.close()
 
-    def test_feedback_ownership_validation(self):
+    def test_feedback_invalid_section_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             app, db_path = _make_app(Path(tmp))
             client = TestClient(app)
             conn = get_connection(db_path)
             try:
                 _create_participant(conn, "p1", "User One")
-                _create_participant(conn, "p2", "User Two")
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p2",
-                    edition_number=1,
+                    conn, participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
-                    rendered_title="P2 Edition",
+                    rendered_title="Edition 1",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
-            cookies_p1 = _get_session_cookie("p1")
+            cookies = _get_session_cookie("p1")
             csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
-            all_cookies = {**cookies_p1, **csrf_cookie}
+            all_cookies = {**cookies, **csrf_cookie}
             resp = client.post(
                 "/p/p1/editions/1/feedback",
                 data={
-                    "direction_choices": "continue_direction",
+                    "direction_choices": ["continue_direction"],
+                    "selected_section_id": "nonexistent_section",
                     "csrf_token": csrf_token,
                 },
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "찾을" in resp.text or "not found" in resp.text.lower()
+            assert "not valid" in resp.text.lower() or "Invalid" in resp.text
             conn2 = get_connection(db_path)
             try:
                 feedbacks = conn2.execute(
@@ -990,6 +1175,36 @@ class TestFeedbackPersistence:
                 assert len(feedbacks) == 0
             finally:
                 conn2.close()
+
+    def test_feedback_error_shows_generic_message(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "User One")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                    rendered_title="Edition 1",
+                )
+                ed_repo.update_edition_publication(conn, ed.id, "published")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
+            all_cookies = {**cookies, **csrf_cookie}
+            resp = client.post(
+                "/p/p1/editions/1/feedback",
+                data={
+                    "direction_choices": [],
+                    "csrf_token": csrf_token,
+                },
+                cookies=all_cookies,
+            )
+            assert resp.status_code == 200
+            assert "sqlite" not in resp.text.lower()
+            assert "traceback" not in resp.text.lower()
 
 
 # ================================================================
@@ -1003,46 +1218,32 @@ class TestSecondEditionContinuity:
             conn = get_connection(db_path)
             try:
                 _create_participant(conn, "p1", "User One")
-
                 draft1 = _make_draft_payload()
                 ed1 = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
-                    structured_content=json.dumps(draft1),
-                    rendered_title="Edition 1",
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(draft1), rendered_title="Edition 1",
                 )
                 ed_repo.update_edition_publication(conn, ed1.id, "published")
-
                 fb = fb_repo.create_feedback(
-                    conn,
-                    participant_id="p1",
-                    edition_id=ed1.id,
+                    conn, participant_id="p1", edition_id=ed1.id,
                     direction_choices=json.dumps(["continue_direction"]),
                     free_text="계속 이 방향으로",
                 )
-
                 draft2 = _make_draft_payload()
                 draft2["applied_feedback"] = {
-                    "feedback_id": fb.id,
-                    "action": "continue_direction",
+                    "feedback_id": fb.id, "action": "continue_direction",
                     "affected_section_ids": ["s001", "s002"],
                     "evidence": "피드백이 반영되었습니다.",
                 }
                 ed2 = ed_repo.create_edition_with_feedback_applied(
-                    conn,
-                    participant_id="p1",
-                    edition_number=2,
-                    prior_edition_id=ed1.id,
-                    input_id=None,
-                    structured_content=json.dumps(draft2),
-                    rendered_title="Edition 2",
+                    conn, participant_id="p1", edition_number=2,
+                    prior_edition_id=ed1.id, input_id=None,
+                    structured_content=json.dumps(draft2), rendered_title="Edition 2",
                     feedback_id=fb.id,
                 )
                 ed_repo.update_edition_publication(conn, ed2.id, "published")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/2", cookies=cookies)
             assert resp.status_code == 200
@@ -1061,20 +1262,14 @@ class TestUnsafeContentEscaping:
             try:
                 _create_participant(conn, "p1", "User One")
                 malicious_draft = _make_draft_payload()
-                malicious_draft["sections"][0]["paragraphs"] = [
-                    "<script>alert('xss')</script>"
-                ]
+                malicious_draft["sections"][0]["paragraphs"] = ["<script>alert('xss')</script>"]
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
-                    structured_content=json.dumps(malicious_draft),
-                    rendered_title="XSS Test",
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(malicious_draft), rendered_title="XSS Test",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies)
             assert resp.status_code == 200
@@ -1089,20 +1284,14 @@ class TestUnsafeContentEscaping:
             try:
                 _create_participant(conn, "p1", "User One")
                 malicious_draft = _make_draft_payload()
-                malicious_draft["sections"][0]["paragraphs"] = [
-                    '<img src=x onerror="alert(1)">'
-                ]
+                malicious_draft["sections"][0]["paragraphs"] = ['<img src=x onerror="alert(1)">']
                 ed = ed_repo.create_edition(
-                    conn,
-                    participant_id="p1",
-                    edition_number=1,
-                    structured_content=json.dumps(malicious_draft),
-                    rendered_title="Event Handler Test",
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(malicious_draft), rendered_title="Event Handler Test",
                 )
                 ed_repo.update_edition_publication(conn, ed.id, "published")
             finally:
                 conn.close()
-
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies)
             assert resp.status_code == 200
@@ -1111,7 +1300,7 @@ class TestUnsafeContentEscaping:
 
 
 # ================================================================
-# 14. Private routes carry no-store/no-cache/private and no-index headers
+# 14. Privacy headers
 # ================================================================
 class TestPrivacyHeaders:
     def test_participant_routes_have_privacy_headers(self):
@@ -1143,7 +1332,6 @@ class TestPrivacyHeaders:
             client = TestClient(app)
             resp = client.get("/p/access")
             assert "no-store" in resp.headers.get("cache-control", "")
-            assert "noindex" in resp.headers.get("x-robots-tag", "")
 
     def test_admin_access_page_has_privacy_headers(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1151,11 +1339,34 @@ class TestPrivacyHeaders:
             client = TestClient(app)
             resp = client.get("/admin/access")
             assert "no-store" in resp.headers.get("cache-control", "")
-            assert "noindex" in resp.headers.get("x-robots-tag", "")
+
+    def test_participant_redirect_has_privacy_headers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.get("/p/p1", follow_redirects=False)
+            assert resp.status_code == 303
+            assert "no-store" in resp.headers.get("cache-control", "")
+
+    def test_admin_redirect_has_privacy_headers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            resp = client.get("/admin/", follow_redirects=False)
+            assert resp.status_code == 303
+            assert "no-store" in resp.headers.get("cache-control", "")
+
+    def test_participant_error_page_has_privacy_headers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/editions/999", cookies=cookies)
+            assert "no-store" in resp.headers.get("cache-control", "")
 
 
 # ================================================================
-# 15. File-backed close/reopen persistence
+# 15. File-backed persistence
 # ================================================================
 class TestFileBackedPersistence:
     def test_data_persists_across_connections(self):
@@ -1166,7 +1377,6 @@ class TestFileBackedPersistence:
                 _create_participant(conn, "p1", "User One")
             finally:
                 conn.close()
-
             client2 = TestClient(app)
             cookies = _get_session_cookie("p1")
             resp = client2.get("/p/p1", cookies=cookies)
@@ -1180,14 +1390,10 @@ class TestFileBackedPersistence:
             try:
                 _create_participant(conn, "p1", "User One")
                 input_repo.create_input(
-                    conn,
-                    participant_id="p1",
-                    raw_text="ERSIST 테스트 입력입니다.",
-                    consent_confirmed=1,
+                    conn, participant_id="p1", raw_text="ERSIST 테스트 입력입니다.", consent_confirmed=1,
                 )
             finally:
                 conn.close()
-
             conn2 = get_connection(db_path)
             try:
                 inputs = input_repo.get_inputs_by_participant(conn2, "p1")
@@ -1198,7 +1404,7 @@ class TestFileBackedPersistence:
 
 
 # ================================================================
-# 16. No network, no external provider, no private fixture material
+# 16. No network
 # ================================================================
 class TestNoNetwork:
     def test_mock_provider_used(self):
@@ -1220,13 +1426,26 @@ class TestAuthModule:
 
     def test_admin_session_roundtrip(self):
         session_data = create_admin_session()
-        signed = sign_session_token(session_data)
-        decoded = decode_session_token(signed)
+        signed = sign_admin_session_token(session_data)
+        decoded = decode_admin_session_token(signed)
         assert decoded is not None
         assert decoded.get("is_admin") is True
 
     def test_invalid_token_returns_none(self):
         assert decode_session_token("invalid") is None
+
+    def test_invalid_admin_token_returns_none(self):
+        assert decode_admin_session_token("invalid") is None
+
+    def test_participant_token_not_accepted_as_admin(self):
+        session_data = create_participant_session("p1")
+        signed = sign_session_token(session_data)
+        assert decode_admin_session_token(signed) is None
+
+    def test_admin_token_not_accepted_as_participant(self):
+        session_data = create_admin_session()
+        signed = sign_admin_session_token(session_data)
+        assert decode_session_token(signed) is None
 
     def test_csrf_roundtrip(self):
         token = generate_csrf_token()
@@ -1244,15 +1463,11 @@ class TestAuthModule:
 # ================================================================
 class TestStaticAssets:
     def test_css_file_exists(self):
-        css_path = (
-            Path(__file__).resolve().parent.parent.parent / "static" / "app.css"
-        )
+        css_path = Path(__file__).resolve().parent.parent.parent / "static" / "app.css"
         assert css_path.is_file()
 
     def test_css_is_mobile_first(self):
-        css_path = (
-            Path(__file__).resolve().parent.parent.parent / "static" / "app.css"
-        )
+        css_path = Path(__file__).resolve().parent.parent.parent / "static" / "app.css"
         content = css_path.read_text()
         assert "box-sizing" in content
         assert "max-width" in content

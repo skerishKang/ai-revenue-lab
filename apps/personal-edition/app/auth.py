@@ -2,6 +2,11 @@
 
 Uses itsdangerous for signed cookies to avoid server-side session storage.
 Raw tokens are never stored in sessions — only participant_id or admin role.
+
+Purpose-separated salts prevent cross-context token reuse:
+- participant sessions use salt "participant-session"
+- admin sessions use salt "admin-session"
+- CSRF tokens use salt "csrf-token"
 """
 
 from __future__ import annotations
@@ -15,11 +20,22 @@ from app.config import settings
 
 _PARTICIPANT_SESSION_KEY = "participant_id"
 _ADMIN_SESSION_KEY = "is_admin"
-_CSRF_SECRET_KEY = "csrf"
+
+_SESSION_SALT = "participant-session"
+_ADMIN_SESSION_SALT = "admin-session"
+_CSRF_SALT = "csrf-token"
 
 
-def _get_serializer() -> URLSafeTimedSerializer:
-    return URLSafeTimedSerializer(settings.secret_key)
+def _get_session_serializer() -> URLSafeTimedSerializer:
+    return URLSafeTimedSerializer(settings.secret_key, salt=_SESSION_SALT)
+
+
+def _get_admin_session_serializer() -> URLSafeTimedSerializer:
+    return URLSafeTimedSerializer(settings.secret_key, salt=_ADMIN_SESSION_SALT)
+
+
+def _get_csrf_serializer() -> URLSafeTimedSerializer:
+    return URLSafeTimedSerializer(settings.secret_key, salt=_CSRF_SALT)
 
 
 def create_participant_session(participant_id: str) -> dict[str, Any]:
@@ -31,9 +47,24 @@ def create_admin_session() -> dict[str, Any]:
 
 
 def decode_session_token(token: str) -> dict[str, Any] | None:
-    """Decode a signed session token. Returns None on invalid/expired."""
+    """Decode a signed participant session token. Returns None on invalid/expired."""
     try:
-        serializer = _get_serializer()
+        serializer = _get_session_serializer()
+        data = serializer.loads(
+            token,
+            max_age=settings.session_max_age_seconds,
+        )
+        if not isinstance(data, dict):
+            return None
+        return data
+    except (BadSignature, SignatureExpired, ValueError):
+        return None
+
+
+def decode_admin_session_token(token: str) -> dict[str, Any] | None:
+    """Decode a signed admin session token. Returns None on invalid/expired."""
+    try:
+        serializer = _get_admin_session_serializer()
         data = serializer.loads(
             token,
             max_age=settings.session_max_age_seconds,
@@ -46,8 +77,14 @@ def decode_session_token(token: str) -> dict[str, Any] | None:
 
 
 def sign_session_token(data: dict[str, Any]) -> str:
-    """Sign session data into a URL-safe token."""
-    serializer = _get_serializer()
+    """Sign participant session data into a URL-safe token."""
+    serializer = _get_session_serializer()
+    return serializer.dumps(data)
+
+
+def sign_admin_session_token(data: dict[str, Any]) -> str:
+    """Sign admin session data into a URL-safe token."""
+    serializer = _get_admin_session_serializer()
     return serializer.dumps(data)
 
 
@@ -68,22 +105,27 @@ def is_admin_session(session_data: dict[str, Any]) -> bool:
     return session_data.get(_ADMIN_SESSION_KEY) is True
 
 
+def verify_admin_secret(candidate: str) -> bool:
+    """Constant-time comparison of admin secret."""
+    return secrets.compare_digest(candidate, settings.admin_secret)
+
+
 def generate_csrf_token() -> str:
     return secrets.token_urlsafe(32)
 
 
 def sign_csrf_token(csrf_token: str) -> str:
-    serializer = _get_serializer()
+    serializer = _get_csrf_serializer()
     return serializer.dumps(csrf_token)
 
 
 def verify_csrf_token(csrf_token: str, signed_token: str) -> bool:
     """Verify a CSRF token against its signed counterpart."""
     try:
-        serializer = _get_serializer()
+        serializer = _get_csrf_serializer()
         expected = serializer.loads(
             signed_token,
-            max_age=3600,
+            max_age=settings.session_max_age_seconds,
         )
         if not isinstance(expected, str):
             return False

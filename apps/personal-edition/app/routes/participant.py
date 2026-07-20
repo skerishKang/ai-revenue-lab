@@ -4,6 +4,7 @@ edition reading, feedback, and logout."""
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 from fastapi import APIRouter, Cookie, Form, Query, Request, Response
@@ -24,7 +25,9 @@ from app.auth import (
 )
 from app.db import get_connection
 from app.domain.enums import FeedbackDirection
-from app.factory import _privacy_headers, _render_template
+from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/p")
 
@@ -46,7 +49,12 @@ def _get_participant(request: Request, session_token: str | None = None):
         return None
     db_conn = get_connection(request.app.state.db_path)
     try:
-        return pt_repo.get_participant_by_id(db_conn, pid)
+        participant = pt_repo.get_participant_by_id(db_conn, pid)
+        if participant is None:
+            return None
+        if participant.status != "active" or participant.deleted_at is not None:
+            return None
+        return participant
     finally:
         db_conn.close()
 
@@ -65,6 +73,29 @@ def _validate_csrf(request: Request, csrf_field: str) -> bool:
     return verify_csrf_token(csrf_field, cookie_val)
 
 
+def _with_csrf_cookie(resp, csrf_signed: str):
+    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    return resp
+
+
+def _inject_csrf_and_set_cookie(
+    request: Request, context: dict[str, Any], response: Response
+) -> str:
+    csrf_token, csrf_signed = _inject_csrf(context)
+    _set_cookie(response, CSRF_COOKIE, csrf_signed)
+    return csrf_token
+
+
+def _edition_section_ids(edition) -> list[str]:
+    if not edition or not edition.structured_content:
+        return []
+    try:
+        content = json.loads(edition.structured_content)
+        return [s["section_id"] for s in content.get("sections", [])]
+    except (json.JSONDecodeError, TypeError, KeyError):
+        return []
+
+
 @router.get("/access")
 def token_entry_page(request: Request):
     return _render_template(request, "token_entry.html", {"error": None})
@@ -78,9 +109,10 @@ def token_entry_submit(
 ):
     token = token.strip()
     if not token:
-        return _render_template(request, "token_entry.html", {
+        resp = _render_template(request, "token_entry.html", {
             "error": "Please enter your access token."
         })
+        return resp
 
     conn = get_connection(request.app.state.db_path)
     try:
@@ -89,21 +121,15 @@ def token_entry_submit(
         conn.close()
 
     if participant is None:
-        return _render_template(request, "token_entry.html", {
+        resp = _render_template(request, "token_entry.html", {
             "error": "Invalid or inactive access token."
         })
+        return resp
 
     session_data = create_participant_session(participant.id)
     signed_token = sign_session_token(session_data)
     resp = RedirectResponse(url=f"/p/{participant.id}", status_code=303)
-    resp.set_cookie(
-        SESSION_COOKIE,
-        signed_token,
-        httponly=True,
-        samesite="lax",
-        max_age=28800,
-        secure=False,
-    )
+    _set_cookie(resp, SESSION_COOKIE, signed_token)
     return resp
 
 
@@ -139,20 +165,18 @@ def input_form_page(request: Request, participant_id: str):
     if participant is None or participant.id != participant_id:
         return RedirectResponse(url="/p/access", status_code=303)
 
-    csrf_token, csrf_signed = _inject_csrf({})
     context: dict[str, Any] = {
         "participant": participant,
         "error": None,
         "success": None,
-        "csrf_token": csrf_token,
+        "csrf_token": "",
         "raw_text": "",
     }
-    html_resp = _render_template(request, "input_form.html", context)
-    html_resp.set_cookie(
-        CSRF_COOKIE, csrf_signed,
-        httponly=True, samesite="lax", max_age=3600, secure=False,
-    )
-    return html_resp
+    csrf_token, csrf_signed = _inject_csrf({})
+    context["csrf_token"] = csrf_token
+    resp = _render_template(request, "input_form.html", context)
+    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    return resp
 
 
 @router.post("/{participant_id}/input")
@@ -173,10 +197,14 @@ def input_form_submit(
             "participant": participant,
             "error": "Invalid or expired form token. Please try again.",
             "success": None,
-            "csrf_token": csrf_token,
+            "csrf_token": "",
             "raw_text": raw_text,
         }
-        return _render_template(request, "input_form.html", context)
+        new_token, new_signed = _inject_csrf({})
+        context["csrf_token"] = new_token
+        resp = _render_template(request, "input_form.html", context)
+        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        return resp
 
     raw_text = raw_text.strip()
     consent = 1 if consent_confirmed == "1" else 0
@@ -186,20 +214,28 @@ def input_form_submit(
             "participant": participant,
             "error": "Please provide your input text.",
             "success": None,
-            "csrf_token": generate_csrf_token(),
+            "csrf_token": "",
             "raw_text": raw_text,
         }
-        return _render_template(request, "input_form.html", context)
+        new_token, new_signed = _inject_csrf({})
+        context["csrf_token"] = new_token
+        resp = _render_template(request, "input_form.html", context)
+        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        return resp
 
     if consent != 1:
         context = {
             "participant": participant,
             "error": "You must confirm consent before submitting.",
             "success": None,
-            "csrf_token": generate_csrf_token(),
+            "csrf_token": "",
             "raw_text": raw_text,
         }
-        return _render_template(request, "input_form.html", context)
+        new_token, new_signed = _inject_csrf({})
+        context["csrf_token"] = new_token
+        resp = _render_template(request, "input_form.html", context)
+        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        return resp
 
     conn = get_connection(request.app.state.db_path)
     try:
@@ -209,18 +245,35 @@ def input_form_submit(
             raw_text=raw_text,
             consent_confirmed=consent,
         )
+    except Exception:
+        logger.exception("input submission failed")
+        context = {
+            "participant": participant,
+            "error": "An error occurred while saving your input. Please try again.",
+            "success": None,
+            "csrf_token": "",
+            "raw_text": raw_text,
+        }
+        new_token, new_signed = _inject_csrf({})
+        context["csrf_token"] = new_token
+        resp = _render_template(request, "input_form.html", context)
+        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        return resp
     finally:
         conn.close()
 
-    new_csrf = generate_csrf_token()
     context = {
         "participant": participant,
         "error": None,
         "success": "Your input has been submitted successfully.",
-        "csrf_token": new_csrf,
+        "csrf_token": "",
         "raw_text": "",
     }
-    return _render_template(request, "input_form.html", context)
+    new_token, new_signed = _inject_csrf({})
+    context["csrf_token"] = new_token
+    resp = _render_template(request, "input_form.html", context)
+    _set_cookie(resp, CSRF_COOKIE, new_signed)
+    return resp
 
 
 @router.get("/{participant_id}/history")
@@ -354,20 +407,18 @@ def feedback_form_page(request: Request, participant_id: str, edition_number: in
             "edition_number": edition_number,
         })
 
-    csrf_token, csrf_signed = _inject_csrf({})
     context: dict[str, Any] = {
         "participant": participant,
         "edition": target,
         "content": content,
         "error": None,
-        "csrf_token": csrf_token,
+        "csrf_token": "",
     }
-    html_resp = _render_template(request, "feedback_form.html", context)
-    html_resp.set_cookie(
-        CSRF_COOKIE, csrf_signed,
-        httponly=True, samesite="lax", max_age=3600, secure=False,
-    )
-    return html_resp
+    csrf_token, csrf_signed = _inject_csrf({})
+    context["csrf_token"] = csrf_token
+    resp = _render_template(request, "feedback_form.html", context)
+    _set_cookie(resp, CSRF_COOKIE, csrf_signed)
+    return resp
 
 
 @router.post("/{participant_id}/editions/{edition_number}/feedback")
@@ -386,13 +437,18 @@ def feedback_form_submit(
         return RedirectResponse(url="/p/access", status_code=303)
 
     if not _validate_csrf(request, csrf_token):
-        return _render_template(request, "feedback_form.html", {
+        context: dict[str, Any] = {
             "participant": participant,
             "edition": None,
             "content": {},
             "error": "Invalid or expired form token. Please try again.",
-            "csrf_token": csrf_token,
-        })
+            "csrf_token": "",
+        }
+        new_token, new_signed = _inject_csrf({})
+        context["csrf_token"] = new_token
+        resp = _render_template(request, "feedback_form.html", context)
+        _set_cookie(resp, CSRF_COOKIE, new_signed)
+        return resp
 
     conn = get_connection(request.app.state.db_path)
     try:
@@ -419,6 +475,23 @@ def feedback_form_submit(
                 "edition_number": edition_number,
             })
 
+        if selected_section_id:
+            valid_ids = _edition_section_ids(target)
+            if valid_ids and selected_section_id not in valid_ids:
+                content = json.loads(target.structured_content) if target.structured_content else {}
+                context = {
+                    "participant": participant,
+                    "edition": target,
+                    "content": content,
+                    "error": "Selected section is not valid for this edition.",
+                    "csrf_token": "",
+                }
+                new_token, new_signed = _inject_csrf({})
+                context["csrf_token"] = new_token
+                resp = _render_template(request, "feedback_form.html", context)
+                _set_cookie(resp, CSRF_COOKIE, new_signed)
+                return resp
+
         try:
             directions_json = json.dumps(direction_choices) if direction_choices else "[]"
             fb_repo.create_feedback(
@@ -429,16 +502,21 @@ def feedback_form_submit(
                 selected_section_id=selected_section_id or None,
                 free_text=free_text.strip() or None,
             )
-        except Exception as exc:
+        except Exception:
+            logger.exception("feedback submission failed")
             content = json.loads(target.structured_content) if target.structured_content else {}
-            new_csrf = generate_csrf_token()
-            return _render_template(request, "feedback_form.html", {
+            context = {
                 "participant": participant,
                 "edition": target,
                 "content": content,
-                "error": f"Feedback submission failed: {str(exc)}",
-                "csrf_token": new_csrf,
-            })
+                "error": "Feedback submission failed. Please try again.",
+                "csrf_token": "",
+            }
+            new_token, new_signed = _inject_csrf({})
+            context["csrf_token"] = new_token
+            resp = _render_template(request, "feedback_form.html", context)
+            _set_cookie(resp, CSRF_COOKIE, new_signed)
+            return resp
     finally:
         conn.close()
 
@@ -451,6 +529,6 @@ def feedback_form_submit(
 @router.post("/{participant_id}/logout")
 def participant_logout(request: Request, participant_id: str):
     resp = RedirectResponse(url="/p/access", status_code=303)
-    resp.delete_cookie(SESSION_COOKIE)
-    resp.delete_cookie(CSRF_COOKIE)
+    _delete_cookie(resp, SESSION_COOKIE)
+    _delete_cookie(resp, CSRF_COOKIE)
     return resp

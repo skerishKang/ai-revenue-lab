@@ -11,10 +11,11 @@ import os
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, Response
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app import security
 from app.ai.mock import MockProvider
@@ -77,6 +78,8 @@ def create_app(
     if _STATIC_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
+    app.add_middleware(_PrivacyHeadersMiddleware)
+
     _register_routes(app)
 
     @app.on_event("startup")
@@ -93,6 +96,16 @@ def create_app(
             conn.close()
 
     return app
+
+
+class _PrivacyHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        path = request.url.path
+        if path.startswith("/p") or path.startswith("/admin"):
+            for key, value in _privacy_headers().items():
+                response.headers[key] = value
+        return response
 
 
 def _get_db(request: Request):
@@ -134,6 +147,34 @@ def _privacy_headers() -> dict[str, str]:
         "Surrogate-Control": "no-store",
         "X-Robots-Tag": "noindex, nofollow",
     }
+
+
+def _set_cookie(
+    response: Response,
+    name: str,
+    value: str,
+) -> None:
+    """Set a cookie using validated application settings."""
+    response.set_cookie(
+        name,
+        value,
+        httponly=True,
+        samesite=settings.cookie_samesite,
+        secure=settings.cookie_secure,
+        max_age=settings.session_max_age_seconds,
+        path="/",
+    )
+
+
+def _delete_cookie(response: Response, name: str) -> None:
+    """Delete a cookie with matching path and security attributes."""
+    response.delete_cookie(
+        name,
+        httponly=True,
+        samesite=settings.cookie_samesite,
+        secure=settings.cookie_secure,
+        path="/",
+    )
 
 
 def _register_routes(app: FastAPI) -> None:
