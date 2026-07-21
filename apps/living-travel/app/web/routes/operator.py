@@ -57,6 +57,17 @@ from app.web.templates import render_template
 
 logger = logging.getLogger(__name__)
 
+ALLOWED_FAILURE_CATEGORIES = {
+    "provider_error",
+    "timeout",
+    "invalid_json",
+    "schema_mismatch",
+    "validation_error",
+    "no_matching_feedback",
+    "unsupported_fixture",
+    "unknown",
+}
+
 router = APIRouter(prefix="/operator", tags=["operator"])
 
 
@@ -293,6 +304,13 @@ async def traveler_detail(
                     break
 
         failure_category = request.query_params.get("failure", "")
+        if failure_category:
+            raw_failure = failure_category
+            failure_category = (
+                raw_failure
+                if raw_failure in ALLOWED_FAILURE_CATEGORIES
+                else ""
+            )
         if failure_category:
             last_failure_category = failure_category
 
