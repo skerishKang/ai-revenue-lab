@@ -555,3 +555,261 @@ class TestResponseFormatMode:
             )
         assert "super-secret-key" not in (result.error_message or "")
         assert "super-secret-key" not in str(result)
+
+
+# ---------------------------------------------------------------------------
+# Issue #42 supplement: silent fallback removal and schema capability errors
+# ---------------------------------------------------------------------------
+
+class TestSilentFallbackRemoval:
+    def test_json_schema_missing_schema_fails_closed(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        with pytest.raises(ValueError, match="json_schema mode requires"):
+            provider._build_request_body(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=None,
+            )
+
+    def test_json_schema_missing_schema_no_network_call(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        mock_open = MagicMock()
+        with patch("urllib.request.urlopen", mock_open):
+            with pytest.raises(ValueError, match="json_schema mode requires"):
+                provider._build_request_body(
+                    task_name="t", system_prompt="", user_payload={},
+                    response_schema=None,
+                )
+        mock_open.assert_not_called()
+
+    def test_json_schema_missing_schema_not_json_object(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        with pytest.raises(ValueError):
+            provider._build_request_body(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=None,
+            )
+
+    def test_json_schema_missing_schema_no_credential_in_error(self):
+        provider = _make_provider(
+            api_key="super-secret-key",
+            response_format_mode="json_schema",
+        )
+        with pytest.raises(ValueError) as exc_info:
+            provider._build_request_body(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=None,
+            )
+        assert "super-secret-key" not in str(exc_info.value)
+
+
+class TestSchemaCapabilityErrors:
+    def _make_400_error(self, body: bytes) -> urllib.error.HTTPError:
+        return urllib.error.HTTPError(
+            url="https://api.example.com", code=400, msg="Bad Request",
+            hdrs=None, fp=MagicMock(read=MagicMock(return_value=body)),
+        )
+
+    def test_response_format_unsupported_code(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        body = json.dumps({
+            "error": {
+                "code": "unsupported_response_format",
+                "message": "response_format is not supported",
+                "type": "invalid_request_error",
+            }
+        }).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-rfu",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+
+    def test_schema_rejected_by_param(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        body = json.dumps({
+            "error": {
+                "code": "invalid_request",
+                "message": "invalid parameter",
+                "type": "invalid_request_error",
+                "param": "response_format.json_schema",
+            }
+        }).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-sr",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.SCHEMA_REJECTED
+
+    def test_schema_rejected_by_code(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        body = json.dumps({
+            "error": {
+                "code": "schema_validation_failed",
+                "message": "schema error",
+            }
+        }).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-sr2",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.SCHEMA_REJECTED
+
+    def test_generic_400_not_schema_rejected(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        body = json.dumps({
+            "error": {
+                "code": "invalid_request",
+                "message": "missing required field 'messages'",
+            }
+        }).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-gen400",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.PROVIDER_ERROR
+
+    def test_422_not_misclassified_as_schema_rejected(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        body = json.dumps({
+            "error": {
+                "code": "invalid_request",
+                "message": "field required",
+                "param": "messages",
+            }
+        }).encode()
+        exc = urllib.error.HTTPError(
+            url="https://api.example.com", code=422, msg="Unprocessable",
+            hdrs=None, fp=MagicMock(read=MagicMock(return_value=body)),
+        )
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-422",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.PROVIDER_ERROR
+
+    def test_raw_body_not_in_error_message(self):
+        provider = _make_provider(api_key="secret-key-xyz")
+        body = json.dumps({
+            "error": {
+                "code": "invalid_request",
+                "message": "bad request with secret-key-xyz in body",
+            }
+        }).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-raw-body",
+            )
+        assert "secret-key-xyz" not in (result.error_message or "")
+        assert "bad request with" not in (result.error_message or "")
+
+    def test_free_text_message_not_in_error(self):
+        provider = _make_provider()
+        body = json.dumps({
+            "error": {
+                "code": "invalid_request",
+                "message": "The model gpt-4 does not exist or you do not have access",
+            }
+        }).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-free-text",
+            )
+        assert "gpt-4" not in (result.error_message or "")
+        assert "does not exist" not in (result.error_message or "")
+
+    def test_429_still_rate_limit(self):
+        provider = _make_provider()
+        exc = urllib.error.HTTPError(
+            url="https://api.example.com", code=429, msg="Too Many",
+            hdrs=None, fp=MagicMock(read=MagicMock(return_value=b"")),
+        )
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-429",
+            )
+        assert result.error_category == ProviderErrorCategory.RATE_LIMIT
+
+    def test_401_still_auth_failure(self):
+        provider = _make_provider()
+        exc = urllib.error.HTTPError(
+            url="https://api.example.com", code=401, msg="Unauthorized",
+            hdrs=None, fp=MagicMock(read=MagicMock(return_value=b"")),
+        )
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-401",
+            )
+        assert result.error_category == ProviderErrorCategory.AUTH_FAILURE
+
+    def test_403_still_auth_failure(self):
+        provider = _make_provider()
+        exc = urllib.error.HTTPError(
+            url="https://api.example.com", code=403, msg="Forbidden",
+            hdrs=None, fp=MagicMock(read=MagicMock(return_value=b"")),
+        )
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-403",
+            )
+        assert result.error_category == ProviderErrorCategory.AUTH_FAILURE
+
+    def test_schema_conforming_response_still_succeeds(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        mock_resp = MagicMock()
+        mock_resp.read.return_value = json.dumps({
+            "choices": [{"message": {"content": json.dumps({"name": "test", "value": 42})}}],
+            "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15},
+        }).encode()
+        with patch("urllib.request.urlopen", return_value=mock_resp):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-ok",
+            )
+        assert result.success is True
+        assert result.payload == {"name": "test", "value": 42}
+
+    def test_schema_mismatch_still_detected(self):
+        provider = _make_provider(response_format_mode="json_schema")
+        mock_resp = MagicMock()
+        mock_resp.read.return_value = json.dumps({
+            "choices": [{"message": {"content": json.dumps({"wrong": "field"})}}],
+        }).encode()
+        with patch("urllib.request.urlopen", return_value=mock_resp):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-sm2",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.SCHEMA_MISMATCH
+
+    def test_unparseable_error_body_returns_provider_error(self):
+        provider = _make_provider()
+        exc = self._make_400_error(b"not json at all")
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-unp",
+            )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.PROVIDER_ERROR
