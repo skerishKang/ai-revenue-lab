@@ -46,6 +46,7 @@ from app import episode_repository as ep_repo
 from app import generation_attempt_repository as attempt_repo
 from app import generation_run_repository as gr_repo
 from app import reader_repository as reader_repo
+from app import world_repository as world_repo
 from app.ai.base import AIProvider
 from app.domain.enums import (
     AttemptResult,
@@ -623,25 +624,83 @@ def generate_personal_branch(
     persisted_snapshot = binding["snapshot"]
 
     # Load the world state from the persisted canon snapshot
-    # (do not trust caller-supplied WorldState for binding verification)
-    # For prompt building we use the request world (which matches the persisted world)
+    # (do NOT trust caller-supplied WorldState — reconstruct from DB)
+    persisted_world = world_repo.load_world_state(conn, resolved_world_id)
+    if persisted_world is None:
+        return GenerationResult(
+            episode_id=None, plan_run_id="", content_run_id="",
+            succeeded=False, error="world not found in persisted state",
+        )
+
+    # Use the persisted world for ALL validation and prompt building
+    authoritative_world = persisted_world
 
     # ── Idempotency check ─────────────────────────────────────────────
     from app.branch_generation_request_repository import (
         get_by_idempotency_key,
+        get_by_resource_binding,
         create_request,
         mark_completed,
         mark_failed,
+        REQUEST_TIMEOUT_SECONDS,
     )
 
-    idempotency_key = request.idempotency_key or f"{request.reader_id}:{request.reader_choice_id}:{resolved_prior}:{resolved_checkpoint}"
+    operation_type = "personal_branch"
+    idempotency_key = (
+        request.idempotency_key
+        or f"{request.reader_id}:{request.reader_choice_id}:{resolved_prior}:{resolved_checkpoint}:{operation_type}"
+    )
     existing = get_by_idempotency_key(conn, idempotency_key)
-    if existing is not None and existing.status == "completed":
-        return GenerationResult(
-            episode_id=existing.branch_episode_id,
-            plan_run_id="", content_run_id="",
-            succeeded=False, error="duplicate request — already completed",
+
+    if existing is not None:
+        # Resource binding check — same key must reference same resources
+        resource_mismatch = (
+            existing.reader_id != (request.reader_id or "")
+            or existing.reader_choice_id != (request.reader_choice_id or "")
+            or existing.prior_episode_id != resolved_prior
+            or existing.canon_checkpoint_id != resolved_checkpoint
+            or existing.world_id != resolved_world_id
         )
+        if resource_mismatch:
+            # Same key used with DIFFERENT resource combination — conflict
+            return GenerationResult(
+                episode_id=None, plan_run_id="", content_run_id="",
+                succeeded=False,
+                error="idempotency key conflict: key already bound to different resources",
+            )
+
+        # State machine
+        if existing.status == "completed":
+            # Replay success result
+            return GenerationResult(
+                episode_id=existing.branch_episode_id,
+                plan_run_id="", content_run_id="",
+                succeeded=True,
+                error=None,
+            )
+        elif existing.status == "failed":
+            # Retry policy: allow retry
+            pass  # Continue below — will create new attempt
+        elif existing.status == "pending":
+            # Check if stale (timed out)
+            import datetime
+            from app.utils import parse_iso_datetime
+            try:
+                created = parse_iso_datetime(existing.created_at)
+                now = datetime.datetime.now(datetime.timezone.utc)
+                age = (now - created).total_seconds()
+                if age > REQUEST_TIMEOUT_SECONDS:
+                    # Stale pending — recovery allowed
+                    pass  # Continue
+                else:
+                    # Active pending — reject duplicate
+                    return GenerationResult(
+                        episode_id=None, plan_run_id="", content_run_id="",
+                        succeeded=False,
+                        error="request already in progress (pending)",
+                    )
+            except (ValueError, TypeError):
+                pass  # Can't parse time — treat as recoverable
 
     # Create idempotency request record
     gen_request_id = new_id()
@@ -681,7 +740,7 @@ def generate_personal_branch(
     )
 
     plan_payload = prompts.build_plan_user_payload(
-        world_state=request.world,
+        world_state=authoritative_world,
         episode_type=EpisodeType.PERSONAL_BRANCH.value,
         episode_number=ep_num,
         canon_checkpoint_id=resolved_checkpoint,
@@ -713,7 +772,7 @@ def generate_personal_branch(
 
     # 2. Validate plan
     try:
-        validate_plan(plan_model, world=request.world, is_first_canon=False)
+        validate_plan(plan_model, world=authoritative_world, is_first_canon=False)
     except PlanValidationError as exc:
         gr_repo.update_generation_run(
             conn, plan_run_id,
@@ -734,7 +793,7 @@ def generate_personal_branch(
     # 3. Content — use PERSISTED reader choice values
     content_payload = prompts.build_content_user_payload(
         plan=plan_model.model_dump(),
-        world_state=request.world,
+        world_state=authoritative_world,
         reader_choice=reader_choice_dict,
         prior_episode_summary=prior_episode_summary,
     )
@@ -768,7 +827,7 @@ def generate_personal_branch(
     try:
         validate_content(
             content_model,
-            world=request.world,
+            world=authoritative_world,
             plan=plan_model,
             is_first_canon=False,
             expected_reader_choice_id=request.reader_choice_id,
@@ -877,7 +936,7 @@ def generate_personal_branch(
     try:
         validate_production_continuity(
             content_model,
-            world=request.world,
+            world=authoritative_world,
             conn=conn,
             prior_episode_id=resolved_prior,
             canon_snapshot_character_states=canon_character_states,
@@ -989,7 +1048,7 @@ def generate_personal_branch(
         # The content run succeeded if we got here — no misleading success
         # on branch transaction failure
 
-    except sqlite3.IntegrityError as exc:
+    except sqlite3.IntegrityError:
         conn.rollback()
         # Mark generation run as failed — branch transaction failure
         gr_repo.update_generation_run(
@@ -997,15 +1056,15 @@ def generate_personal_branch(
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=f"transaction integrity error: {exc}",
+            error_message="transaction integrity error: duplicate or constraint violation",
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, f"transaction integrity error: {exc}")
+            mark_failed(conn, gen_request_id, "transaction integrity error")
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
-            succeeded=False, error=f"transaction integrity error: {exc}",
+            succeeded=False, error="transaction integrity error",
         )
     except PipelineError as exc:
         conn.rollback()
@@ -1024,7 +1083,7 @@ def generate_personal_branch(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
             succeeded=False, error=str(exc),
         )
-    except Exception as exc:
+    except Exception:
         if conn.in_transaction:
             conn.rollback()
         gr_repo.update_generation_run(
@@ -1032,15 +1091,15 @@ def generate_personal_branch(
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=f"unexpected error: {exc}",
+            error_message="unexpected error in branch transaction",
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, f"unexpected error: {exc}")
+            mark_failed(conn, gen_request_id, "unexpected error in branch transaction")
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
-            succeeded=False, error=f"unexpected error: {exc}",
+            succeeded=False, error="unexpected error in branch transaction",
         )
 
     return GenerationResult(

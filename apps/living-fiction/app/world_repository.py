@@ -2,15 +2,23 @@
 
 Stores the canonical world state. World records are independent from
 sibling apps. The world is the source of truth for all validation.
-"""
 
+Includes functions to reconstruct a WorldState from persisted DB records.
+"""
 from __future__ import annotations
 
 import json
 import sqlite3
 from dataclasses import dataclass
+from typing import Any
 
-from app.domain.models import WorldState
+from app.domain.models import (
+    CharacterRef,
+    ClueRef,
+    LocationRef,
+    WorldRule,
+    WorldState,
+)
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -253,3 +261,143 @@ def get_clue(conn: sqlite3.Connection, clue_id: str):
         "SELECT * FROM clues WHERE id = ?",
         (clue_id,),
     ).fetchone()
+
+
+# ── WorldState reconstruction from persisted DB records ──────────────────
+
+
+def load_world_state(
+    conn: sqlite3.Connection,
+    world_id: str,
+) -> WorldState | None:
+    """Reconstruct a WorldState from persisted DB records.
+
+    Loads world, characters, locations, and clues from DB.
+    Returns None if the world is not found.
+    This is the authoritative source — caller-supplied WorldState is
+    NOT trusted in production paths.
+    """
+    world_row = conn.execute(
+        "SELECT * FROM worlds WHERE id = ? ORDER BY version DESC LIMIT 1",
+        (world_id,),
+    ).fetchone()
+    if world_row is None:
+        return None
+
+    # Characters
+    char_rows = conn.execute(
+        "SELECT * FROM characters WHERE world_id = ?",
+        (world_id,),
+    ).fetchall()
+    characters: list[CharacterRef] = []
+    for cr in char_rows:
+        knowledge: list[str] = []
+        rels: list[str] = []
+        possessions: list[str] = []
+        injuries: list[str] = []
+        if cr["knowledge_state"]:
+            try:
+                val = json.loads(cr["knowledge_state"])
+                if isinstance(val, list):
+                    knowledge = val
+            except (json.JSONDecodeError, TypeError):
+                pass
+        if cr["relationships"]:
+            try:
+                val = json.loads(cr["relationships"])
+                if isinstance(val, list):
+                    rels = val
+            except (json.JSONDecodeError, TypeError):
+                pass
+        characters.append(CharacterRef(
+            character_id=cr["id"],
+            canonical_name=cr["canonical_name"],
+            role=cr["role"],
+            location_id=cr["location_id"],
+            status=cr["status"] or "active",
+            knowledge=knowledge,
+            relationships=rels,
+            possessions=possessions,
+            injuries=injuries,
+        ))
+
+    # Locations
+    loc_rows = conn.execute(
+        "SELECT * FROM locations WHERE world_id = ?",
+        (world_id,),
+    ).fetchall()
+    locations: list[LocationRef] = []
+    for lr in loc_rows:
+        connected: list[str] = []
+        if lr["connected_locations"]:
+            try:
+                val = json.loads(lr["connected_locations"])
+                if isinstance(val, list):
+                    connected = val
+            except (json.JSONDecodeError, TypeError):
+                pass
+        locations.append(LocationRef(
+            location_id=lr["id"],
+            name=lr["name"],
+            current_state=lr["current_state"] or "",
+            connected_locations=connected,
+        ))
+
+    # Clues
+    clue_rows = conn.execute(
+        "SELECT * FROM clues WHERE world_id = ?",
+        (world_id,),
+    ).fetchall()
+    clues: list[ClueRef] = []
+    for clr in clue_rows:
+        clues.append(ClueRef(
+            clue_id=clr["id"],
+            description=clr["description"],
+            resolved=bool(clr["resolved"]),
+        ))
+
+    # World rules
+    world_rules: list[WorldRule] = []
+    if world_row["world_rules"]:
+        try:
+            val = json.loads(world_row["world_rules"])
+            if isinstance(val, list):
+                for rule_dict in val:
+                    if isinstance(rule_dict, dict):
+                        world_rules.append(WorldRule(**rule_dict))
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    # Canonical timeline
+    timeline: list[str] = []
+    if world_row["canonical_timeline"]:
+        try:
+            val = json.loads(world_row["canonical_timeline"])
+            if isinstance(val, list):
+                timeline = val
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    # Unresolved questions
+    questions: list[str] = []
+    if world_row["unresolved_global_questions"]:
+        try:
+            val = json.loads(world_row["unresolved_global_questions"])
+            if isinstance(val, list):
+                questions = val
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    return WorldState(
+        world_id=world_row["id"],
+        version=world_row["version"],
+        premise=world_row["premise"],
+        genre=world_row["genre"] or "urban_mystery",
+        world_rules=world_rules,
+        characters=characters,
+        locations=locations,
+        clues=clues,
+        canonical_timeline=timeline,
+        unresolved_global_questions=questions,
+        current_canon_episode=0,
+    )

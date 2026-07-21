@@ -11,6 +11,7 @@ Tests:
 - no private comments or reader identifiers after deletion.
 """
 
+import hashlib
 import json
 import os
 
@@ -26,6 +27,11 @@ from app.db import apply_migrations, get_connection
 from app.reader_deletion_service import delete_reader_with_revocation
 from app.deletion_audit_repository import get_deletion_audit_by_reader
 from tests.fixtures.synthetic_world import WORLD_STATE
+
+
+def _reader_digest(reader_id: str) -> str:
+    salt = "lf-deletion-audit-20260721"
+    return hashlib.sha256((salt + reader_id).encode("utf-8")).hexdigest()[:32]
 
 
 def test_fresh_db_has_migration_002(temp_db_path):
@@ -183,10 +189,10 @@ def test_reader_deletion_revocation(db_conn):
 
     result = delete_reader_with_revocation(db_conn, reader.id)
     assert result.success
-    assert result.choices_revoked >= 0  # unapplied choices revoked
-    assert result.branches_anonymized >= 1
-    assert result.episodes_anonymized >= 1
-    assert result.pilot_evidence_anonymized >= 1
+    assert result.choices_revoked == 1  # 1 unapplied choice revoked
+    assert result.branches_anonymized == 1
+    assert result.episodes_anonymized == 1
+    assert result.pilot_evidence_anonymized == 1
 
     # Reader is marked deleted
     deleted_reader = reader_repo.get_reader(db_conn, reader.id)
@@ -197,18 +203,18 @@ def test_reader_deletion_revocation(db_conn):
     branch_ep = ep_repo.get_episode_by_id(db_conn, "ep-branch-del")
     assert branch_ep.reader_id is None
 
-    # Branch has anonymized reader_id
+    # Branch has anonymized reader_id (real FK reference, not '[deleted]')
     branch = branch_repo.get_branch(db_conn, "branch-del")
-    assert branch.reader_id == "[deleted-reader]" or branch.reader_id == "[deleted]"
+    assert branch.reader_id == "anon-deleted-principal"
 
     # Pilot evidence has no reader_id
     pe = pe_repo.get_pilot_evidence(db_conn, "pe-del")
     assert pe.reader_id is None  # anonymized
 
     # Audit record exists
-    audit = get_deletion_audit_by_reader(db_conn, reader.id)
+    audit = get_deletion_audit_by_reader(db_conn, _reader_digest(reader.id))
     assert audit is not None
-    assert audit.reader_id == reader.id
+    assert audit.reader_id == _reader_digest(reader.id)
 
 
 def test_reader_deletion_idempotent(db_conn):
@@ -276,7 +282,7 @@ def test_reader_deletion_survives_close_reopen(temp_db_path):
     assert reader_after.display_name == "[deleted-reader]"
 
     # Audit record survives
-    audit = get_deletion_audit_by_reader(conn2, reader.id)
+    audit = get_deletion_audit_by_reader(conn2, _reader_digest(reader.id))
     assert audit is not None
 
     conn2.close()

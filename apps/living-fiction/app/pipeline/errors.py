@@ -3,6 +3,10 @@
 Error messages are short, category-oriented strings suitable for durable
 generation-run records. They never carry raw reader input, token material,
 or full generated content.
+
+Updated retry matrix:
+- Retryable: TIMEOUT, PROVIDER_ERROR (connection_reset, rate_limit, transient)
+- Non-retryable: INVALID_JSON, SCHEMA_MISMATCH, UNKNOWN
 """
 
 from __future__ import annotations
@@ -66,12 +70,13 @@ class RejoinValidationError(PipelineError):
     """Raised when rejoin validation fails."""
 
 
+# Updated retry matrix:
+# Retryable: timeout and explicit transient provider errors only.
+# Non-retryable: schema/validation errors, programming errors, auth, unknown.
 _RETRYABLE_CATEGORIES = frozenset(
     {
         ProviderErrorCategory.PROVIDER_ERROR,
         ProviderErrorCategory.TIMEOUT,
-        ProviderErrorCategory.INVALID_JSON,
-        ProviderErrorCategory.SCHEMA_MISMATCH,
     }
 )
 
@@ -90,7 +95,11 @@ _CATEGORY_MESSAGES = {
 
 
 def safe_error_message(category: ProviderErrorCategory | None, raw: str | None) -> str:
-    """Return a sanitized, category-oriented error message."""
+    """Return a sanitized, category-oriented error message.
+
+    NEVER embeds raw exception string, generated content, or private data.
+    Always returns a static, bounded, privacy-safe string.
+    """
     if category is not None and category in _CATEGORY_MESSAGES:
         return f"{category.value}: {_CATEGORY_MESSAGES[category]}"
     return "unknown: unexpected provider error"

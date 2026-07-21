@@ -1,9 +1,17 @@
-"""Branch generation request repository — idempotency tracking.
+"""Branch generation request repository - idempotency tracking.
 
 Ensures duplicate/retry requests do not create duplicate episodes or
 apply the same reader input twice. Uses an idempotency key to deduplicate.
-"""
 
+Idempotency state machine:
+- PENDING: request in progress (with timeout for stale recovery)
+- COMPLETED: success - replay original result for same key
+- FAILED: retry allowed via retry policy
+
+Key binding: reader_id + reader_choice_id + prior_episode_id +
+             canon_checkpoint_id + world_id + operation_type.
+             Same key with different resources = conflict.
+"""
 from __future__ import annotations
 
 import sqlite3
@@ -11,6 +19,9 @@ from dataclasses import dataclass
 
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
+
+# Idempotency request timeout: 30 minutes
+REQUEST_TIMEOUT_SECONDS = 1800
 
 
 @dataclass(frozen=True)
@@ -62,6 +73,28 @@ def get_by_idempotency_key(
         f"SELECT {_SELECT} FROM branch_generation_requests "
         "WHERE idempotency_key = ?",
         (idempotency_key,),
+    ).fetchone()
+    return _row_to_record(row) if row else None
+
+
+def get_by_resource_binding(
+    conn: sqlite3.Connection,
+    *,
+    reader_id: str,
+    reader_choice_id: str,
+    prior_episode_id: str,
+    canon_checkpoint_id: str,
+    world_id: str,
+    operation_type: str = "personal_branch",
+) -> BranchGenerationRequestRecord | None:
+    """Find an existing request with the exact same resource binding."""
+    row = conn.execute(
+        f"SELECT {_SELECT} FROM branch_generation_requests "
+        "WHERE reader_id = ? AND reader_choice_id = ? "
+        "AND prior_episode_id = ? AND canon_checkpoint_id = ? "
+        "AND world_id = ? LIMIT 1",
+        (reader_id, reader_choice_id, prior_episode_id,
+         canon_checkpoint_id, world_id),
     ).fetchone()
     return _row_to_record(row) if row else None
 

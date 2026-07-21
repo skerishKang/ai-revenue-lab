@@ -261,6 +261,9 @@ BRANCH_EPISODE_CONTENT = {
     # NOTE: The reader_choice_id above is a FIXED fixture ID.
     # Tests that need a different choice_id should override this payload.
     "unresolved_threads": [
+        "사라진 한 시간 동안 무슨 일이 일어나는가",
+        "13호실에는 무엇이 있는가",
+        "장부의 경고를 누가, 왜 썼는가",
         "13호실은 왜 21년 전에 폐쇄되었는가",
         "보안 영상 공백 속 음성 프레임의 정체는 무엇인가",
         "한국장은 13호실에 무엇을 하려 하는가",

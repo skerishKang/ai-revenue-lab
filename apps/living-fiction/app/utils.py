@@ -13,3 +13,10 @@ def now_utc_iso() -> str:
 
 def new_id() -> str:
     return str(uuid.uuid4())
+
+
+def parse_iso_datetime(iso_str: str) -> datetime:
+    """Parse ISO-8601 datetime string to timezone-aware datetime."""
+    if iso_str.endswith("Z"):
+        iso_str = iso_str[:-1] + "+00:00"
+    return datetime.fromisoformat(iso_str)
