@@ -1,0 +1,40 @@
+name: Living Travel CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/living-travel/**'
+      - '.github/workflows/living-travel.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/living-travel/**'
+      - '.github/workflows/living-travel.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/living-travel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Run tests
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Static checks
+        run: |
+          git diff --check
