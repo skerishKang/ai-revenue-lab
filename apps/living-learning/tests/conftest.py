@@ -40,7 +40,7 @@ def test_settings(temp_db_path: str) -> Settings:
 @pytest.fixture
 def conn(test_settings: Settings) -> Generator[sqlite3.Connection, None, None]:
     apply_migrations(test_settings.database_url)
-    conn = sqlite3.connect(test_settings.database_url)
+    conn = sqlite3.connect(test_settings.database_url, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     try:

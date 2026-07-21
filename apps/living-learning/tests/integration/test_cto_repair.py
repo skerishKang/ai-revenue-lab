@@ -297,7 +297,7 @@ def test_app_isolation(tmp_path):
     
     # Verify isolation
     res2 = client2.get(f"/api/v1/learners/{learner1_id}/progress")
-    assert res2.status_code == 400
+    assert res2.status_code == 422
     
     # App2 setup
     res2_create = client2.post("/api/v1/learners", json={"display_name": "L2", "topic": "Java"})

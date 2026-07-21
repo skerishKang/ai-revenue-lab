@@ -121,7 +121,7 @@ def start_lesson(
         return StartLessonResponse(lesson_id=lesson_id)
     except PrerequisiteNotMetError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "prerequisite_not_met", "missing": exc.missing},
         )
     except RetryExhaustedError as exc:
@@ -131,7 +131,7 @@ def start_lesson(
         )
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except NonRetryableError as exc:
@@ -146,17 +146,17 @@ def start_lesson(
         )
     except ContentValidationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "content_validation_failed", "issues": exc.issues},
         )
     except AdaptationNotChangedError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "adaptation_not_changed", "details": exc.details},
         )
     except UnsafeContentError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "unsafe_content", "issues": exc.issues},
         )
 
@@ -193,7 +193,7 @@ def record_comprehension(
         )
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except ForeignFeedbackError as exc:
@@ -203,7 +203,7 @@ def record_comprehension(
         )
     except LearnerInactiveError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
         )
 
@@ -240,7 +240,7 @@ def submit_feedback(
         )
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except ForeignFeedbackError as exc:
@@ -250,7 +250,7 @@ def submit_feedback(
         )
     except LearnerInactiveError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
         )
 
@@ -287,17 +287,17 @@ def start_second_lesson(
         )
     except ComprehensionRequiredError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "comprehension_required"},
         )
     except FeedbackAlreadyAppliedError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "feedback_already_applied"},
         )
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except RetryExhaustedError as exc:
@@ -307,17 +307,17 @@ def start_second_lesson(
         )
     except UnsafeContentError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "unsafe_content", "issues": exc.issues},
         )
     except AdaptationNotChangedError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "adaptation_not_changed", "details": exc.details},
         )
     except NonRetryableError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "non_retryable_error", "message": str(exc)},
         )
 
@@ -352,7 +352,7 @@ def finalize_lesson(
         )
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except ForeignFeedbackError:
@@ -380,12 +380,12 @@ def get_learner_progress(
         return LearnerProgressResponse(**result)
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except LearnerInactiveError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
         )
 
@@ -415,7 +415,7 @@ def answer_exercise(
         return AnswerExerciseResponse(**result)
     except GenerationError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except ConflictingAnswerError:

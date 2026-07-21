@@ -15,7 +15,7 @@ from app.domain.models import (
     ProviderResult,
 )
 from app.repositories import (
-    check_idempotency_key,
+    claim_idempotency_request,
     close_lesson,
     create_curriculum,
     create_exercise,
@@ -36,7 +36,7 @@ from app.repositories import (
     mark_feedback_applied,
     record_comprehension_response,
     record_exercise_response,
-    store_idempotency_key,
+    complete_idempotency_request,
     sum_tokens_by_lesson,
     update_lesson_status,
     upsert_mastery,
@@ -318,16 +318,19 @@ class LessonPipeline:
             if not res.success:
                 if res.error_category in RETRYABLE_ERROR_CATEGORIES:
                     if attempt >= MAX_RETRIES - 1:
-                        self._mark_lesson_failed(lesson_id)
+                        if lesson_id:
+                            update_lesson_status(self.conn, lesson_id, "generation_failed", commit=False)
                         raise RetryExhaustedError(task_name, attempt + 1)
                     continue
                 else:
-                    self._mark_lesson_failed(lesson_id)
+                    if lesson_id:
+                        update_lesson_status(self.conn, lesson_id, "generation_failed", commit=False)
                     raise NonRetryableError(f"{task_name} failed: {res.error_category}")
             
             return res
         
-        self._mark_lesson_failed(lesson_id)
+        if lesson_id:
+            update_lesson_status(self.conn, lesson_id, "generation_failed", commit=False)
         raise GenerationError(f"Task {task_name} exhausted retries unexpectedly")
 
     def create_learner_and_session(self, topic: str, **preferences) -> dict:
@@ -380,11 +383,17 @@ class LessonPipeline:
         self._validate_learner_active(learner_id)
         
         # Check idempotency but with resource binding validation
-        # (Already bound by the key inclusion of learner/concept, but we can double check existing resources if needed)
         op_key = f"start_lesson:{learner_id}:{concept_id}:{idempotency_key}" if idempotency_key else ""
-        existing = check_idempotency_key(self.conn, op_key) if op_key else None
-        if existing:
-            return existing.lesson_id
+        if op_key:
+            existing = claim_idempotency_request(self.conn, op_key)
+            if existing is None:
+                raise GenerationError("Concurrent request in progress")
+            if existing.status == "completed":
+                try:
+                    res = json.loads(existing.result)
+                    return res.get("lesson_id", existing.lesson_id)
+                except Exception:
+                    return existing.lesson_id
 
         valid, missing = validate_prerequisites(self.conn, concept_id, learner_id)
         if not valid:
@@ -503,11 +512,17 @@ class LessonPipeline:
                 for i, q in enumerate(content_payload["review_questions"]):
                     create_exercise(self.conn, lesson_id=lesson_id, question=q.get("question", "") if isinstance(q, dict) else q, options=[], correct_answer=q.get("correct_answer", "") if isinstance(q, dict) else "", explanation=q.get("explanation", "") if isinstance(q, dict) else "", difficulty="medium", sequence_order=base_seq + i, commit=False)
             if idempotency_key:
-                store_idempotency_key(self.conn, idempotency_key, lesson_id, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
+                complete_idempotency_request(self.conn, idempotency_key, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
             self.conn.commit()
             return lesson_id
         except Exception:
             self.conn.rollback()
+            if idempotency_key:
+                try:
+                    from app.repositories.idempotency_repository import fail_idempotency_request
+                    fail_idempotency_request(self.conn, idempotency_key, commit=True)
+                except Exception:
+                    pass
             raise
 
     def record_comprehension(self, lesson_id: str, learner_id: str, understood: bool, difficulty_rating: int = 3, free_text: str = "") -> dict:
@@ -542,7 +557,7 @@ class LessonPipeline:
         if lesson.learner_id != learner_id:
             raise ForeignFeedbackError(lesson_id, learner_id)
         op_key = f"feedback:{lesson_id}:{learner_id}:{idempotency_key}" if idempotency_key else ""
-        existing = check_idempotency_key(self.conn, op_key) if op_key else None
+        existing = claim_idempotency_request(self.conn, op_key) if op_key else None
         if existing:
             result = json.loads(existing.result) if existing.result else {}
             return {"feedback_id": result.get("feedback_id", ""), "is_duplicate": True}
@@ -551,7 +566,7 @@ class LessonPipeline:
         try:
             feedback = create_feedback(self.conn, lesson_id=lesson_id, learner_id=learner_id, lesson_generation=lesson.lesson_number, direction_choices=direction_choices, free_text=free_text, commit=False)
             if op_key:
-                store_idempotency_key(self.conn, op_key, lesson_id, result=json.dumps({"feedback_id": feedback.id}), commit=False)
+                complete_idempotency_request(self.conn, op_key, result=json.dumps({"feedback_id": feedback.id}), commit=False)
             self.conn.commit()
             return {"feedback_id": feedback.id, "is_duplicate": False}
         except Exception:
@@ -562,9 +577,16 @@ class LessonPipeline:
         self._validate_learner_active(learner_id)
         
         op_key = f"second_lesson:{lesson_id}:{comprehension_response_id}:{feedback_id}:{idempotency_key}" if idempotency_key else ""
-        existing = check_idempotency_key(self.conn, op_key) if op_key else None
-        if existing:
-            return {"lesson_id": existing.lesson_id, "adaptation_verified": True}
+        if op_key:
+            existing = claim_idempotency_request(self.conn, op_key)
+            if existing is None:
+                raise GenerationError("Concurrent request in progress")
+            if existing.status == "completed":
+                try:
+                    res = json.loads(existing.result)
+                    return {"lesson_id": res.get("lesson_id", existing.resource_id), "adaptation_verified": True}
+                except Exception:
+                    return {"lesson_id": existing.resource_id, "adaptation_verified": True}
 
         original_lesson = get_lesson_by_id(self.conn, lesson_id)
         if not original_lesson:
@@ -810,12 +832,18 @@ class LessonPipeline:
                     create_exercise(self.conn, lesson_id=lesson_id, question=q.get("question", "") if isinstance(q, dict) else q, options=[], correct_answer=q.get("correct_answer", "") if isinstance(q, dict) else "", explanation=q.get("explanation", "") if isinstance(q, dict) else "", difficulty="medium", sequence_order=base_seq + i, commit=False)
 
             if idempotency_key:
-                store_idempotency_key(self.conn, idempotency_key, lesson_id, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
+                complete_idempotency_request(self.conn, op_key, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
 
             self.conn.commit()
             return lesson_id
         except Exception:
             self.conn.rollback()
+            if idempotency_key:
+                try:
+                    from app.repositories.idempotency_repository import fail_idempotency_request
+                    fail_idempotency_request(self.conn, op_key, commit=True)
+                except Exception:
+                    pass
             raise
 
 
@@ -850,10 +878,16 @@ class LessonPipeline:
             raise ForeignFeedbackError(exercise_id, learner_id)
             
         op_key = f"exercise_answer:{exercise_id}:{learner_id}:{idempotency_key}" if idempotency_key else ""
-        existing = check_idempotency_key(self.conn, op_key) if op_key else None
-        if existing:
-            result = json.loads(existing.result) if existing.result else {}
-            return {"response_id": result.get("response_id"), "is_correct": result.get("is_correct"), "is_duplicate": True}
+        if op_key:
+            existing = claim_idempotency_request(self.conn, op_key)
+            if existing is None:
+                raise GenerationError("Concurrent request in progress")
+            if existing.status == "completed":
+                try:
+                    res = json.loads(existing.result)
+                    return {"response_id": res.get("response_id"), "is_correct": res.get("is_correct"), "is_duplicate": True}
+                except Exception:
+                    return {"response_id": existing.resource_id, "is_correct": False, "is_duplicate": True}
             
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
@@ -884,7 +918,7 @@ class LessonPipeline:
             upsert_mastery(self.conn, learner_id=learner_id, concept_id=lesson.concept_id, practice_increment=1, correct_increment=correct_increment, commit=False)
             
             if op_key:
-                store_idempotency_key(self.conn, op_key, exercise_id, result=json.dumps({"response_id": resp.id, "is_correct": is_correct}), commit=False)
+                complete_idempotency_request(self.conn, op_key, result=json.dumps({"response_id": resp.id, "is_correct": is_correct}), commit=False)
                 
             self.conn.commit()
             return {"response_id": resp.id, "is_correct": is_correct, "is_duplicate": False}

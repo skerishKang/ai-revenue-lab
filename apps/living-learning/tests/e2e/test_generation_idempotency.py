@@ -34,13 +34,20 @@ async def test_generation_idempotency(app_instance, sync_db, mock_settings):
         
         key = "idem-1"
         req1 = async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
-        resp1 = await req1
         req2 = async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
-        resp2 = await req2
+        results = await asyncio.gather(req1, req2)
         
-        assert resp1.status_code == 200
-        assert resp2.status_code == 200
-        assert resp1.json()["lesson_id"] == resp2.json()["lesson_id"]
+        # One should succeed, one should fail with 422 concurrent request in progress
+        status_codes = {r.status_code for r in results}
+        assert 200 in status_codes
+        assert 422 in status_codes
+        
+        successful_resp = next(r for r in results if r.status_code == 200)
+        
+        # Then an idempotency retry after completion should succeed and return same lesson_id
+        req3 = await async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
+        assert req3.status_code == 200
+        assert req3.json()["lesson_id"] == successful_resp.json()["lesson_id"]
         
         cur = sync_db.cursor()
         cur.execute("SELECT count(*) FROM lessons WHERE learner_id = ?", (learner_id,))

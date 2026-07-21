@@ -65,8 +65,8 @@ from app.repositories.pilot_evidence_repository import (
     get_pilot_evidence_by_learner,
 )
 from app.repositories.idempotency_repository import (
-    check_idempotency_key,
-    store_idempotency_key,
+    claim_idempotency_request,
+    complete_idempotency_request,
 )
 
 __all__ = [
@@ -116,6 +116,6 @@ __all__ = [
     "create_pilot_evidence",
     "get_pilot_evidence_by_id",
     "get_pilot_evidence_by_learner",
-    "check_idempotency_key",
-    "store_idempotency_key",
+    "claim_idempotency_request",
+    "complete_idempotency_request",
 ]
