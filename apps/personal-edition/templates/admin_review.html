@@ -1,113 +1,329 @@
 {% extends "base.html" %}
-{% block title %}에디션 검토 - 관리자{% endblock %}
+{% block title %}에디션 검토 — Personal Edition 관리자{% endblock %}
 {% block content %}
 <div class="admin-review">
-  <h1>에디션 검토</h1>
-  <p>에디션 #{{ edition.edition_number }} | 참여자: {{ participant.display_name if participant else '?' }}</p>
-  <p>상태: {{ edition.generation_status }} / {{ edition.publication_state }}</p>
+  <!-- Top Navigation & Header -->
+  <header class="review-header animate-fade-in">
+    <div class="review-header-left">
+      <a href="/admin/participants/{{ participant.id if participant else '' }}" class="back-link">
+        ← {{ participant.display_name if participant else '참여자' }} 상세로 돌아가기
+      </a>
+      <h1>에디션 #{{ edition.edition_number }} 검토</h1>
+      <p class="review-meta">
+        참여자: <strong>{{ participant.display_name if participant else '?' }}</strong> |
+        생성 시각: {{ edition.drafted_at[:16] if edition.drafted_at else '-' }} |
+        피드백 반영: {% if edition.applied_feedback %}<span class="badge badge-success">반영 완료</span>{% else %}<span class="badge badge-neutral">미반영/신규</span>{% endif %}
+      </p>
+    </div>
+    <div class="review-header-right">
+      <div class="status-pill-group">
+        <span class="status-badge status-pending-review">
+          생성: {{ edition.generation_status }}
+        </span>
+        <span class="status-badge {% if edition.publication_state == 'published' %}status-published{% elif edition.publication_state == 'rejected' %}status-rejected{% else %}status-waiting{% endif %}">
+          발행: {{ edition.publication_state }}
+        </span>
+      </div>
+    </div>
+  </header>
 
   {% if error is defined and error %}
-  <div class="alert alert-error" role="alert">{{ error }}</div>
+  <div class="alert alert-error" role="alert">
+    <strong>⚠️ Validation Error:</strong> {{ error }}
+  </div>
   {% endif %}
 
+  <!-- 1. Reader Preview Section (First & Primary!) -->
   {% if content %}
-  <section class="section edition-preview">
-    <h2>내용 미리보기</h2>
-    <div class="edition-card-preview">
-      <h3>{{ content.publication_title }}</h3>
-      <h4>{{ content.edition_title }}</h4>
-      <p class="deck">{{ content.deck }}</p>
-      {% if content.sections %}
-      {% for section in content.sections %}
-      <div class="section-block">
-        <h5>{{ section.title }}</h5>
-        {% for para in section.paragraphs %}
-        <p>{{ para }}</p>
+  <section class="section edition-reader-preview-section">
+    <div class="preview-banner">
+      <span class="preview-badge">📖 독자 화면 미리보기</span>
+      <span class="preview-hint">독자가 실제 읽을 형태와 동일하게 표시됩니다.</span>
+    </div>
+
+    <div class="reader-preview-card">
+      <div class="edition-article">
+        <div class="edition-issue">Personal Edition #{{ edition.edition_number }}</div>
+
+        <div class="edition-header">
+          <h1>{{ content.publication_title }}</h1>
+          {% if content.deck %}
+          <div class="edition-deck">{{ content.deck }}</div>
+          {% endif %}
+          <time>{{ edition.drafted_at[:10] if edition.drafted_at else '' }}</time>
+        </div>
+
+        {% if content.opening %}
+        <div class="edition-opening">
+          <p>{{ content.opening }}</p>
+        </div>
+        {% endif %}
+
+        {% if content.sections %}
+        {% for sec in content.sections %}
+        <div class="edition-section">
+          <h3>{{ sec.title }}</h3>
+          {% for para in sec.paragraphs %}
+          <p>{{ para }}</p>
+          {% endfor %}
+        </div>
         {% endfor %}
+        {% endif %}
+
+        {% if content.highlighted_insight %}
+        <div class="edition-insight">
+          <strong>핵심 인사이트:</strong>
+          <p>{{ content.highlighted_insight }}</p>
+        </div>
+        {% endif %}
+
+        {% if content.continuity_note %}
+        <div class="edition-continuity">
+          <strong>이어지는 기록 노트:</strong> {{ content.continuity_note }}
+        </div>
+        {% endif %}
+
+        {% if content.applied_feedback %}
+        <div class="edition-feedback-applied">
+          <strong>반영된 피드백 메모:</strong> {{ content.applied_feedback.evidence }}
+        </div>
+        {% endif %}
+
+        {% if content.next_edition_prompt %}
+        <div class="edition-prompt">
+          <strong>다음 호를 위한 안내:</strong> {{ content.next_edition_prompt.question }}
+        </div>
+        {% endif %}
+
+        <footer class="edition-footer">
+          <p class="provenance">{{ content.provenance_note or 'This edition was created from material supplied by the reader.' }}</p>
+        </footer>
       </div>
-      {% endfor %}
-      {% endif %}
     </div>
   </section>
   {% endif %}
 
-  <section class="section">
-    <h2>편집</h2>
-    <form method="post" action="/admin/review/{{ edition.id }}/edit">
+  <!-- 2. Publish / Reject Control Panel -->
+  <section class="section publish-control-section">
+    <h2>발행 및 거부 관리</h2>
+
+    <div class="publish-control-grid">
+      <!-- Publish Box -->
+      <div class="publish-action-box publish-box">
+        <h3>🚀 에디션 발행</h3>
+        <p>검토가 완료된 에디션을 즉시 독자의 서재에 발행합니다. 독자가 즉시 전문을 읽고 피드백을 전달할 수 있게 됩니다.</p>
+        {% if edition.generation_status == 'pending_review' and edition.publication_state == 'pending' %}
+        <form method="post" action="/admin/review/{{ edition.id }}/publish">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit" class="btn btn-success btn-lg">
+            이 에디션 발행하기
+          </button>
+        </form>
+        {% elif edition.publication_state == 'published' %}
+        <div class="badge badge-success">이미 발행된 에디션입니다.</div>
+        {% else %}
+        <p class="muted-text">현재 상태에서는 발행할 수 없습니다.</p>
+        {% endif %}
+      </div>
+
+      <!-- Reject Box -->
+      <div class="publish-action-box reject-box">
+        <h3>🚫 에디션 반려</h3>
+        <p>에디션을 반려 처리합니다. 독자에게 노출되지 않으며, 편집자가 원문과 프롬프트를 보완하여 새로 초안을 생성할 수 있습니다.</p>
+        {% if edition.generation_status == 'pending_review' and edition.publication_state == 'pending' %}
+        <form method="post" action="/admin/review/{{ edition.id }}/reject">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit" class="btn btn-danger btn-lg">
+            이 에디션 반려하기
+          </button>
+        </form>
+        {% elif edition.publication_state == 'rejected' %}
+        <div class="badge badge-danger">이미 반려된 에디션입니다.</div>
+        {% else %}
+        <p class="muted-text">현재 상태에서는 반려할 수 없습니다.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Safe Field-by-Field Edit Form -->
+  <section class="section safe-edit-section">
+    <div class="edit-section-header">
+      <h2>구조화 필드 교정</h2>
+      <p class="edit-guidance-text">필드 단위로 내용을 편집하세요. 저장 시 스키마 및 보안 검증이 자동 수행됩니다.</p>
+    </div>
+
+    <form method="post" action="/admin/review/{{ edition.id }}/edit" class="structured-edit-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
-      <label for="rendered_title">제목</label>
-      <input type="text" id="rendered_title" name="rendered_title"
-             value="{{ edition.rendered_title or '' }}">
+      <div class="form-group">
+        <label for="field_publication_title">발행물 제목 (publication_title)</label>
+        <input type="text" id="field_publication_title" name="field_publication_title"
+               value="{{ content.publication_title if content else edition.rendered_title or '' }}" required>
+        <span class="field-help">독자 화면 최상단에 헤드라인으로 표시됩니다.</span>
+      </div>
 
-      <label for="structured_content">구조화된 콘텐츠 (JSON)</label>
-      <textarea id="structured_content" name="structured_content" rows="15"
-                class="code-editor">{{ edition.structured_content or '' }}</textarea>
+      <div class="form-group">
+        <label for="field_deck">부제목 / 서문 요약 (deck)</label>
+        <textarea id="field_deck" name="field_deck" rows="2" required>{{ content.deck if content else '' }}</textarea>
+        <span class="field-help">제목 아래의 서문 요약 문구입니다.</span>
+      </div>
 
-      <label for="reviewer_notes">검토 메모</label>
-      <textarea id="reviewer_notes" name="reviewer_notes" rows="3"
-                >{{ edition.reviewer_notes or '' }}</textarea>
+      <div class="form-group">
+        <label for="field_opening">여는 글 (opening)</label>
+        <textarea id="field_opening" name="field_opening" rows="4" required>{{ content.opening if content else '' }}</textarea>
+        <span class="field-help">본문 시작 전 도입 단락입니다.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="field_highlighted_insight">핵심 인사이트 (highlighted_insight)</label>
+        <textarea id="field_highlighted_insight" name="field_highlighted_insight" rows="3" required>{{ content.highlighted_insight if content else '' }}</textarea>
+        <span class="field-help">독자의 이야기를 관통하는 성찰 요약입니다.</span>
+      </div>
+
+      <!-- Sections Edit -->
+      <fieldset class="sections-fieldset">
+        <legend>본문 섹션 (2~4개)</legend>
+
+        {% set sec_list = content.sections if content and content.sections else [] %}
+        {% for idx in range(4) %}
+        {% set cur_sec = sec_list[idx] if idx < sec_list|length else None %}
+        <div class="section-edit-card">
+          <h4>섹션 #{{ idx + 1 }}</h4>
+          <div class="form-group">
+            <label for="section_{{ idx }}_title">섹션 제목</label>
+            <input type="text" id="section_{{ idx }}_title" name="section_{{ idx }}_title"
+                   value="{{ cur_sec.title if cur_sec else '' }}"
+                   {% if idx < 2 %}required{% endif %}>
+          </div>
+          <div class="form-group">
+            <label for="section_{{ idx }}_paragraphs">섹션 단락들 (줄바꿈으로 단락 구분)</label>
+            <textarea id="section_{{ idx }}_paragraphs" name="section_{{ idx }}_paragraphs" rows="4"
+                      {% if idx < 2 %}required{% endif %}>{% if cur_sec %}{% for p in cur_sec.paragraphs %}{{ p }}
+{% endfor %}{% endif %}</textarea>
+          </div>
+        </div>
+        {% endfor %}
+      </fieldset>
+
+      <div class="form-group">
+        <label for="field_continuity_note">이어지는 노트 (continuity_note)</label>
+        <textarea id="field_continuity_note" name="field_continuity_note" rows="2">{{ content.continuity_note if content and content.continuity_note else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="field_provenance_note">기초 안내문 (provenance_note)</label>
+        <input type="text" id="field_provenance_note" name="field_provenance_note"
+               value="{{ content.provenance_note if content and content.provenance_note else 'This edition was created from material supplied by the reader.' }}">
+      </div>
+
+      {% set prompt_obj = content.next_edition_prompt if content and content.next_edition_prompt else None %}
+      <div class="form-group">
+        <label for="field_next_edition_question">다음 호 질문 (next_edition_prompt.question)</label>
+        <input type="text" id="field_next_edition_question" name="field_next_edition_question"
+               value="{{ prompt_obj.question if prompt_obj else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label for="field_next_edition_choices">다음 호 선택지 (쉼표 구분)</label>
+        <input type="text" id="field_next_edition_choices" name="field_next_edition_choices"
+               value="{{ prompt_obj.choices|join(', ') if prompt_obj and prompt_obj.choices else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label for="reviewer_notes">검토자 메모 (내부 기록용)</label>
+        <textarea id="reviewer_notes" name="reviewer_notes" rows="3">{{ edition.reviewer_notes or '' }}</textarea>
+      </div>
 
       <div class="button-group">
-        <button type="submit" class="btn btn-primary">저장</button>
+        <button type="submit" class="btn btn-primary btn-lg">💾 구조화 교정 내용 저장</button>
       </div>
     </form>
   </section>
 
-  <section class="section">
-    <h2>발행 관리</h2>
-    <div class="button-group">
-      {% if edition.generation_status == 'pending_review' and edition.publication_state == 'pending' %}
-      <form method="post" action="/admin/review/{{ edition.id }}/publish" class="inline-form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="btn btn-success">발행</button>
-      </form>
-      <form method="post" action="/admin/review/{{ edition.id }}/reject" class="inline-form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="btn btn-danger">거부</button>
-      </form>
-      {% else %}
-      <p>현재 발행/거부할 수 없는 상태입니다.</p>
-      {% endif %}
+  <!-- 4. Feedback & Next Edition Info -->
+  {% if feedbacks %}
+  <section class="section review-feedback-section">
+    <h2>참여자 피드백 확인</h2>
+    <div class="feedbacks-list">
+      {% for fb in feedbacks %}
+      <div class="feedback-card">
+        <div class="feedback-card-header">
+          <strong>제출 시각: {{ fb.submitted_at[:16] if fb.submitted_at else '' }}</strong>
+        </div>
+        <div class="feedback-card-body">
+          <div>
+            <strong>선택 방향:</strong>
+            {% for dir in fb.direction %}
+            <span class="direction-chip">{{ feedback_map[dir] if dir in feedback_map else dir }}</span>
+            {% endfor %}
+          </div>
+          {% if fb.selected_section_id %}
+          <div><strong>선택 섹션:</strong> <code>{{ fb.selected_section_id }}</code></div>
+          {% endif %}
+          {% if fb.free_text %}
+          <div><strong>자유 의견:</strong> "{{ fb.free_text }}"</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </section>
+  {% endif %}
 
-  <section class="section">
-    <h2>생성 메타데이터</h2>
-    {% if generation_runs %}
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>작업</th>
-            <th>제공자</th>
-            <th>모델</th>
-            <th>상태</th>
-            <th>입력 토큰</th>
-            <th>출력 토큰</th>
-            <th>시도 횟수</th>
-            <th>시간</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for run in generation_runs %}
-          <tr>
-            <td>{{ run.task_type }}</td>
-            <td>{{ run.provider }}</td>
-            <td>{{ run.advertised_model }}</td>
-            <td>{{ run.validation_status or '-' }}</td>
-            <td>{{ run.input_tokens or '-' }}</td>
-            <td>{{ run.output_tokens or '-' }}</td>
-            <td>{{ run.retry_count }}</td>
-            <td>{{ '%.2f'|format(run.latency_seconds) if run.latency_seconds else '-' }}s</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <p class="empty-state">생성 기록이 없습니다.</p>
-    {% endif %}
+  <!-- 5. Advanced Collapsible Technical Details -->
+  <section class="section tech-info-section">
+    <details class="tech-info-details">
+      <summary class="tech-info-summary">
+        <span>⚙️ 고급 기술 정보 (Raw JSON 및 파이프라인 수행 기록)</span>
+        <span class="summary-hint">클릭하여 펼치기</span>
+      </summary>
+      <div class="tech-info-content">
+        <form method="post" action="/admin/review/{{ edition.id }}/edit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <label for="structured_content">Raw Structured JSON Editor</label>
+          <textarea id="structured_content" name="structured_content" rows="15"
+                    class="code-editor">{{ edition.structured_content or '' }}</textarea>
+
+          <label for="rendered_title">Rendered Title</label>
+          <input type="text" id="rendered_title" name="rendered_title" value="{{ edition.rendered_title or '' }}">
+
+          <button type="submit" class="btn btn-secondary mt-2">JSON 직접 저장</button>
+        </form>
+
+        {% if generation_runs %}
+        <h3 class="mt-4">생성 메타데이터</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">작업</th>
+                <th scope="col">제공자</th>
+                <th scope="col">모델</th>
+                <th scope="col">상태</th>
+                <th scope="col">토큰(In/Out)</th>
+                <th scope="col">시도</th>
+                <th scope="col">지연</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for run in generation_runs %}
+              <tr>
+                <td>{{ run.task_type }}</td>
+                <td>{{ run.provider }}</td>
+                <td>{{ run.advertised_model }}</td>
+                <td>{{ run.validation_status or '-' }}</td>
+                <td>{{ run.input_tokens or 0 }} / {{ run.output_tokens or 0 }}</td>
+                <td>{{ run.retry_count }}</td>
+                <td>{{ '%.2f'|format(run.latency_seconds) if run.latency_seconds else '-' }}s</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+    </details>
   </section>
 </div>
 {% endblock %}

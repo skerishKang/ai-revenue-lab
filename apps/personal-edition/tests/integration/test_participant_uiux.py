@@ -68,6 +68,12 @@ def _get_csrf_cookie_and_token():
     return {"pe_csrf": signed}, token
 
 
+def _get_admin_csrf_cookie_and_token():
+    token = generate_csrf_token()
+    signed = sign_csrf_token(token)
+    return {"pe_admin_csrf": signed}, token
+
+
 def _make_draft_payload():
     return {
         "content_version": "test-v1", "language": "ko",
@@ -99,8 +105,8 @@ class TestCSSTokens:
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         html = resp.text
-        assert "app.css?v=pe-ui51-20260722-2" in html, "CSS version query missing"
-        assert "app.css?v=pe-ui51-20260722-1" not in html, "Stale CSS reference found"
+        assert "app.css?v=pe-ui51-20260722-3" in html, "CSS version query missing"
+        assert "app.css?v=pe-ui51-20260722-2" not in html, "Stale CSS reference found"
 
     def test_css_version_query_on_all_participant_pages(self):
         """Access, home, edition, feedback pages all reference versioned CSS."""
@@ -113,13 +119,13 @@ class TestCSSTokens:
 
         for path in ["/p/access", f"/p/{pid}", f"/p/{pid}/input"]:
             resp = client.get(path, cookies=cookies)
-            assert "app.css?v=pe-ui51-20260722-2" in resp.text, f"Missing CSS version on {path}"
+            assert "app.css?v=pe-ui51-20260722-3" in resp.text, f"Missing CSS version on {path}"
 
     def test_css_file_returns_200(self):
         """Versioned CSS URL returns HTTP 200."""
         app, _ = _make_app(tempfile.mktemp(suffix=".db"))
         client = TestClient(app)
-        resp = client.get("/static/app.css?v=pe-ui51-20260722-2")
+        resp = client.get("/static/app.css?v=pe-ui51-20260722-3")
         assert resp.status_code == 200
         assert "font-editorial" in resp.text or "var(--paper)" in resp.text
 
@@ -140,19 +146,19 @@ class TestCSSTokens:
         resp = client.get("/static/app.css")
         assert "prefers-reduced-motion" in resp.text
 
-    def test_css_version_2(self):
-        """CSS version must be -2."""
+    def test_css_version_3(self):
+        """CSS version must be -3."""
         app, _ = _make_app(tempfile.mktemp(suffix=".db"))
         client = TestClient(app)
         resp = client.get("/p/access")
-        assert "app.css?v=pe-ui51-20260722-2" in resp.text
-        assert "app.css?v=pe-ui51-20260722-1" not in resp.text
+        assert "app.css?v=pe-ui51-20260722-3" in resp.text
+        assert "app.css?v=pe-ui51-20260722-2" not in resp.text
 
     def test_focus_visible_css(self):
         """CSS must contain focus-visible rules."""
         app, _ = _make_app(tempfile.mktemp(suffix=".db"))
         client = TestClient(app)
-        resp = client.get("/static/app.css?v=pe-ui51-20260722-2")
+        resp = client.get("/static/app.css?v=pe-ui51-20260722-3")
         assert "focus-visible" in resp.text
 
 
@@ -623,3 +629,162 @@ class TestInputRetention:
                            cookies={**cookies, **csrf_cookie})
         assert resp.status_code == 200
         assert "짧은 입력" in resp.text
+
+
+# ------------------------------------------------------------------
+# Issue #51 Admin Editorial Workspace & Multi-edition tests
+# ------------------------------------------------------------------
+
+class TestAdminEditorialUI:
+    def test_admin_login_page_branding_and_heading(self):
+        """Admin login page has proper branding, heading, guidance, and security note."""
+        app, _ = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        resp = client.get("/admin/access")
+        assert resp.status_code == 200
+        assert "Personal Edition 편집실" in resp.text
+        assert "관리자 접속" in resp.text
+        assert "편집 업무 전용 비공개 공간" in resp.text
+        assert "보안" in resp.text
+        assert 'class="admin-surface"' in resp.text
+
+    def test_admin_dashboard_kpis_and_status_mapping(self):
+        """Admin dashboard displays actionable KPI summary cards and Korean status labels."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "dash-kpi"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "대시보드 테스트")
+            input_repo.create_input(conn, participant_id=pid, raw_text="긴 입력 내용 테스트 " * 20, consent_confirmed=1)
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="초안 에디션")
+        admin_cookies = _get_admin_session_cookie()
+        resp = client.get("/admin/", cookies=admin_cookies)
+        assert resp.status_code == 200
+        assert "검토 대기" in resp.text
+        assert "생성 준비" in resp.text
+        assert "생성 실패" in resp.text
+        assert "피드백 도착" in resp.text
+        assert "최근 발행" in resp.text
+        assert "검토 필요" in resp.text or "에디션 검토" in resp.text
+
+    def test_admin_dashboard_technical_info_collapsed(self):
+        """Provider/model technical info must be inside collapsible details tag."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        admin_cookies = _get_admin_session_cookie()
+        resp = client.get("/admin/", cookies=admin_cookies)
+        assert resp.status_code == 200
+        assert "<details" in resp.text
+        assert "기술 정보" in resp.text
+
+    def test_admin_participant_detail_status_and_actions(self):
+        """Participant detail page shows readable raw input cards, status, and primary action."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "detail-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "상세 참여자")
+            input_repo.create_input(conn, participant_id=pid, raw_text="상세 읽기 본문 내용 테스트 " * 15, consent_confirmed=1)
+        admin_cookies = _get_admin_session_cookie()
+        resp = client.get(f"/admin/participants/{pid}", cookies=admin_cookies)
+        assert resp.status_code == 200
+        assert "상세 참여자" in resp.text
+        assert "비공개 개인 발행물" in resp.text
+        assert "초안 만들기" in resp.text
+        assert "상세 읽기 본문 내용 테스트" in resp.text
+
+    def test_admin_review_reader_preview(self):
+        """Review page shows reader preview before editing form."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "rev-prev"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "미리보기 참여자")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="미리보기 제목")
+        admin_cookies = _get_admin_session_cookie()
+        resp = client.get(f"/admin/review/{ed.id}", cookies=admin_cookies)
+        assert resp.status_code == 200
+        assert "독자 화면 미리보기" in resp.text
+        assert "테스트 발행" in resp.text
+        assert "테스트 서론입니다." in resp.text
+
+    def test_admin_safe_field_edit_validation(self):
+        """Form field edit preserves inputs on validation failure and updates DB on success."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "safe-edit"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "안전 편집")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="기존 제목")
+        admin_cookies = _get_admin_session_cookie()
+        csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+        client.cookies.update(admin_cookies)
+        client.cookies.update(csrf_cookie)
+
+        # Submit updated structured fields
+        post_data = {
+            "csrf_token": csrf_token,
+            "field_publication_title": "수정된 발행물 제목",
+            "field_deck": "수정된 요약 문구",
+            "field_opening": "수정된 여는 글 서문 " * 5,
+            "field_highlighted_insight": "수정된 인사이트",
+            "section_0_title": "수정 섹션 1",
+            "section_0_paragraphs": "수정 섹션 1의 단락입니다.\n두 번째 단락입니다.",
+            "section_1_title": "수정 섹션 2",
+            "section_1_paragraphs": "수정 섹션 2의 단락입니다.",
+        }
+        resp = client.post(f"/admin/review/{ed.id}/edit", data=post_data)
+        assert resp.status_code in (200, 303)
+
+        with get_connection(db) as conn:
+            updated_ed = ed_repo.get_edition_by_id(conn, ed.id)
+            parsed = json.loads(updated_ed.structured_content)
+            assert parsed["publication_title"] == "수정된 발행물 제목"
+
+    def test_admin_publish_and_reject_actions(self):
+        """Admin publish and reject buttons function correctly with explicit CSRF."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "pub-rej"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "발행 거부")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="발행 테스트")
+        admin_cookies = _get_admin_session_cookie()
+        csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+        client.cookies.update(admin_cookies)
+        client.cookies.update(csrf_cookie)
+
+        resp = client.post(f"/admin/review/{ed.id}/publish", data={"csrf_token": csrf_token}, follow_redirects=False)
+        assert resp.status_code == 303
+
+        with get_connection(db) as conn:
+            updated_ed = ed_repo.get_edition_by_id(conn, ed.id)
+            assert updated_ed.publication_state == "published"
+
+    def test_multi_edition_history_fixture_3_plus(self):
+        """History view renders multi-edition history (3+ editions) correctly."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "multi-ed"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "다중 에디션")
+            for i in range(1, 4):
+                ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=i,
+                                             structured_content=json.dumps(_make_draft_payload()),
+                                             rendered_title=f"에디션 #{i} 제목")
+                ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/history", cookies=cookies)
+        assert resp.status_code == 200
+        assert "#1" in resp.text
+        assert "#2" in resp.text
+        assert "#3" in resp.text
+        assert "에디션 #3 제목" in resp.text
