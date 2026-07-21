@@ -8,3 +8,4 @@ htmlcov/
 *.sqlite
 *.sqlite3
 var/
+dist-preview/
