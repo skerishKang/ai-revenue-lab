@@ -120,6 +120,18 @@ def is_traveler_active(conn: sqlite3.Connection, traveler_id: str) -> bool:
     return row is not None
 
 
+def activate_traveler(conn: sqlite3.Connection, traveler_id: str, *, commit: bool = True) -> bool:
+    """Re-activate a previously deactivated traveler."""
+    now = _utcnow()
+    cur = conn.execute(
+        "UPDATE travelers SET status = ?, updated_at = ? WHERE id = ?",
+        (TravelerStatus.active, now, traveler_id),
+    )
+    if commit:
+        conn.commit()
+    return cur.rowcount > 0
+
+
 def delete_traveler(conn: sqlite3.Connection, traveler_id: str, *, commit: bool = True) -> bool:
     now = _utcnow()
     cur = conn.execute(

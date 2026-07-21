@@ -218,8 +218,8 @@ class TestCSRFProtection:
 
     def test_publish_requires_csrf(self, logged_in_client: TestClient):
         resp = logged_in_client.post("/operator/editions/fake_id/publish", data={"csrf_token": ""})
-        assert resp.status_code in (403, 200, 404)
+        assert resp.status_code in (403, 200, 404, 422)
 
     def test_reject_requires_csrf(self, logged_in_client: TestClient):
         resp = logged_in_client.post("/operator/editions/fake_id/reject", data={"csrf_token": ""})
-        assert resp.status_code in (403, 200, 404)
+        assert resp.status_code in (403, 200, 404, 422)

@@ -198,5 +198,6 @@ class TestLoginCSRF:
         assert "Invalid CSRF" in resp.text or resp.status_code == 422
 
     def test_traveler_enter_requires_csrf(self, sync_client: TestClient):
-        resp = sync_client.post("/traveler/enter", data={"token": "some-token"})
-        
+        resp = sync_client.post("/traveler/enter", data={"token": "some-token", "csrf_token": "x"})
+        assert resp.status_code in (200, 422)
+        assert "Invalid CSRF" in resp.text or resp.status_code == 422

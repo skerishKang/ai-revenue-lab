@@ -228,10 +228,11 @@ class TestOwnershipIsolation:
         conn = get_connection()
         alice = conn.execute("SELECT id FROM travelers WHERE display_name = 'Alice'").fetchone()
         alice_id = alice["id"]
-        # Create pending edition for Alice
         edition = create_edition(conn, traveler_id=alice_id, edition_number=1)
         update_edition_content(conn, edition.id, {"title": "Pending", "sections": []})
         update_edition_generation_status(conn, edition.id, "pending_review")
         conn.close()
 
-        # Alice should not see pending edition in da
+        resp = alice_client.get("/traveler/")
+        assert resp.status_code == 200
+        assert f"/traveler/editions/{edition.id}" not in resp.text
