@@ -138,6 +138,13 @@ _CATEGORY_MESSAGES = {
     ProviderErrorCategory.TIMEOUT: "provider request timed out",
     ProviderErrorCategory.INVALID_JSON: "provider returned invalid JSON",
     ProviderErrorCategory.SCHEMA_MISMATCH: "provider response did not match the expected schema",
+    ProviderErrorCategory.IDEMPOTENCY_WAIT_TIMEOUT: "idempotency wait timed out",
+    ProviderErrorCategory.PLAN_VALIDATION_FAILED: "plan validation failed",
+    ProviderErrorCategory.CONTENT_VALIDATION_FAILED: "content validation failed",
+    ProviderErrorCategory.MATERIAL_CHANGE_VALIDATION_FAILED: "material change validation failed",
+    ProviderErrorCategory.CONTINUITY_VALIDATION_FAILED: "continuity validation failed",
+    ProviderErrorCategory.BRANCH_BINDING_FAILED: "branch binding failed",
+    ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED: "branch persistence failed",
     ProviderErrorCategory.UNKNOWN: "unexpected provider error",
 }
 

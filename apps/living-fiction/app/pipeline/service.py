@@ -77,7 +77,9 @@ from app.pipeline.validators import validate_content, validate_plan
 from app.utils import new_id, now_utc_iso
 
 DEFAULT_MAX_RETRIES = 2
-_episode_number_lock = __import__('threading').Lock()
+# Default bounded wait for pending idempotency claim (seconds)
+DEFAULT_IDEMPOTENCY_WAIT_TIMEOUT = 30.0
+DEFAULT_IDEMPOTENCY_POLL_INTERVAL = 0.2
 
 
 @dataclass(frozen=True)
@@ -386,20 +388,21 @@ def generate_canon_episode(
     try:
         validate_plan(plan_model, world=request.world, is_first_canon=request.is_first_canon)
     except PlanValidationError as exc:
-        # Deterministic validation failure — set success=False
+        _safe_err = safe_error_message(ProviderErrorCategory.PLAN_VALIDATION_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, plan_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.PLAN_VALIDATION_FAILED.value,
+            error_message=_safe_err,
         )
         return GenerationResult(
             episode_id=None,
             plan_run_id=plan_run_id,
             content_run_id="",
             succeeded=False,
-            error=str(exc),
+            error=_safe_err,
         )
 
     # 3. Content
@@ -439,19 +442,18 @@ def generate_canon_episode(
             is_first_canon=request.is_first_canon,
         )
     except ContentValidationError as exc:
+        _safe_err = safe_error_message(ProviderErrorCategory.CONTENT_VALIDATION_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, content_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.CONTENT_VALIDATION_FAILED.value,
+            error_message=_safe_err,
         )
         return GenerationResult(
-            episode_id=None,
-            plan_run_id=plan_run_id,
-            content_run_id=content_run_id,
-            succeeded=False,
-            error=str(exc),
+            episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
+            succeeded=False, error=_safe_err,
         )
 
     # 5. Persist episode (pending_review)
@@ -588,6 +590,64 @@ def _verify_persisted_branch_binding(
     }
 
 
+def _wait_for_pending_completion(
+    conn: sqlite3.Connection,
+    *,
+    pending_request_id: str,
+    idempotency_key: str,
+    wait_timeout: float = DEFAULT_IDEMPOTENCY_WAIT_TIMEOUT,
+    poll_interval: float = DEFAULT_IDEMPOTENCY_POLL_INTERVAL,
+) -> GenerationResult:
+    """Service-owned bounded replay wait for a pending idempotency claim.
+
+    Polls the DB for the pending request status without making any
+    provider calls. Returns the replayed result when completed, or a
+    normalized failure on timeout/failure.
+    """
+    import time as _wait_time
+    from app.branch_generation_request_repository import (
+        get_by_idempotency_key,
+    )
+
+    start = _wait_time.perf_counter()
+    while True:
+        elapsed = _wait_time.perf_counter() - start
+        if elapsed >= wait_timeout:
+            # Timeout — return normalized privacy-safe failure
+            return GenerationResult(
+                episode_id=None, plan_run_id="", content_run_id="",
+                succeeded=False,
+                error="idempotency_wait_timeout",
+            )
+
+        # Re-check the request status from DB
+        record = get_by_idempotency_key(conn, idempotency_key)
+        if record is None:
+            return GenerationResult(
+                episode_id=None, plan_run_id="", content_run_id="",
+                succeeded=False, error="request disappeared",
+            )
+
+        if record.status == "completed":
+            # Replay the completed result
+            return GenerationResult(
+                episode_id=record.branch_episode_id,
+                plan_run_id="", content_run_id="",
+                succeeded=True, error=None,
+            )
+
+        if record.status == "failed":
+            # The original request failed — allow caller to retry
+            return GenerationResult(
+                episode_id=None, plan_run_id="", content_run_id="",
+                succeeded=False,
+                error="prior request failed, retry allowed",
+            )
+
+        # Still pending — sleep and re-check
+        _wait_time.sleep(min(poll_interval, wait_timeout - elapsed))
+
+
 def generate_personal_branch(
     conn: sqlite3.Connection,
     provider: AIProvider,
@@ -597,6 +657,8 @@ def generate_personal_branch(
     world_id: str = "",
     canon_checkpoint_id: str = "",
     prior_episode_id: str = "",
+    idempotency_wait_timeout: float = DEFAULT_IDEMPOTENCY_WAIT_TIMEOUT,
+    idempotency_poll_interval: float = DEFAULT_IDEMPOTENCY_POLL_INTERVAL,
 ) -> GenerationResult:
     """Generate a personal branch that visibly applies the stored reader choice.
 
@@ -653,9 +715,13 @@ def generate_personal_branch(
 
         if claim.is_rejected:
             conn.commit()
-            return GenerationResult(
-                episode_id=None, plan_run_id="", content_run_id="",
-                succeeded=False, error="request already in progress (pending)",
+            # Service-owned bounded replay wait — caller does NOT retry
+            return _wait_for_pending_completion(
+                conn,
+                pending_request_id=claim.request_id,
+                idempotency_key=idempotency_key,
+                wait_timeout=idempotency_wait_timeout,
+                poll_interval=idempotency_poll_interval,
             )
 
         # Claim succeeded — we have a pending row
@@ -679,11 +745,11 @@ def generate_personal_branch(
             world_id=resolved_world_id,
         )
     except BranchBindingError as exc:
-        # Fail the generation request on binding error
+        _safe_err = safe_error_message(ProviderErrorCategory.BRANCH_BINDING_FAILED, str(exc))
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
         try:
-            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, _safe_err)
             conn.commit()
         except Exception:
             if conn.in_transaction:
@@ -741,16 +807,15 @@ def generate_personal_branch(
         "unresolved_threads": json.loads(persisted_prior_episode.unresolved_threads_json) if persisted_prior_episode.unresolved_threads_json else [],
     }
 
-    # 1. Plan — allocate episode number under lock to prevent concurrent races.
-    # The lock serializes allocation so two threads never get the same number.
-    with _episode_number_lock:
-        if conn.in_transaction:
-            conn.rollback()
-        conn.execute("BEGIN IMMEDIATE")
-        ep_num = ep_repo.get_next_episode_number(
-            conn, resolved_world_id, EpisodeType.PERSONAL_BRANCH.value
-        )
-        conn.commit()
+    # Allocate episode number atomically within BEGIN IMMEDIATE.
+    # This prevents two concurrent callers from getting the same number.
+    if conn.in_transaction:
+        conn.rollback()
+    conn.execute("BEGIN IMMEDIATE")
+    ep_num = ep_repo.get_next_episode_number(
+        conn, resolved_world_id, EpisodeType.PERSONAL_BRANCH.value
+    )
+    conn.commit()
 
     plan_payload = prompts.build_plan_user_payload(
         world_state=authoritative_world,
@@ -787,20 +852,22 @@ def generate_personal_branch(
     try:
         validate_plan(plan_model, world=authoritative_world, is_first_canon=False)
     except PlanValidationError as exc:
+        _safe_err = safe_error_message(ProviderErrorCategory.PLAN_VALIDATION_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, plan_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.PLAN_VALIDATION_FAILED.value,
+            error_message=_safe_err,
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, _safe_err)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id="",
-            succeeded=False, error=str(exc),
+            succeeded=False, error=_safe_err,
         )
 
     # 3. Content — use PERSISTED reader choice values
@@ -846,20 +913,22 @@ def generate_personal_branch(
             expected_reader_choice_id=request.reader_choice_id,
         )
     except ContentValidationError as exc:
+        _safe_err = safe_error_message(ProviderErrorCategory.CONTENT_VALIDATION_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, content_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.CONTENT_VALIDATION_FAILED.value,
+            error_message=_safe_err,
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, _safe_err)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
-            succeeded=False, error=str(exc),
+            succeeded=False, error=_safe_err,
         )
 
     # Verify applied_reader_input independently matches persisted values
@@ -870,6 +939,7 @@ def generate_personal_branch(
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
+            error_category=ProviderErrorCategory.CONTENT_VALIDATION_FAILED.value,
             error_message=error_msg,
         )
         if not conn.in_transaction:
@@ -889,6 +959,7 @@ def generate_personal_branch(
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
+            error_category=ProviderErrorCategory.CONTENT_VALIDATION_FAILED.value,
             error_message=error_msg,
         )
         if not conn.in_transaction:
@@ -921,20 +992,22 @@ def generate_personal_branch(
             applied_reader_input=content_model.applied_reader_input.model_dump(),
         )
     except Exception as exc:
+        _safe_err = safe_error_message(ProviderErrorCategory.MATERIAL_CHANGE_VALIDATION_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, content_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.MATERIAL_CHANGE_VALIDATION_FAILED.value,
+            error_message=_safe_err,
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, _safe_err)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
-            succeeded=False, error=str(exc),
+            succeeded=False, error=_safe_err,
         )
 
     # ── BLOCKER 3: Production continuity validation ──────────────────
@@ -950,20 +1023,22 @@ def generate_personal_branch(
             is_branch=True,
         )
     except ContentValidationError as exc:
+        _safe_err = safe_error_message(ProviderErrorCategory.CONTINUITY_VALIDATION_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, content_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.CONTINUITY_VALIDATION_FAILED.value,
+            error_message=_safe_err,
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, _safe_err)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
-            succeeded=False, error=str(exc),
+            succeeded=False, error=_safe_err,
         )
 
     # 5. Transactional persistence: episode + choice application
@@ -972,6 +1047,8 @@ def generate_personal_branch(
         conn.execute("BEGIN IMMEDIATE")
 
         # Create episode (without committing)
+        # Use ep_num (DB-allocated) rather than content_model.episode_number
+        # to ensure consistency with the atomic allocation above.
         conn.execute(
             "INSERT INTO episodes (id, world_id, episode_type, episode_number, "
             "title, synopsis, canon_snapshot_id, canon_checkpoint_id, "
@@ -986,7 +1063,7 @@ def generate_personal_branch(
                 episode_id,
                 resolved_world_id,
                 EpisodeType.PERSONAL_BRANCH.value,
-                content_model.episode_number,
+                ep_num,
                 content_model.title,
                 content_model.synopsis,
                 None,
@@ -1057,17 +1134,17 @@ def generate_personal_branch(
 
     except sqlite3.IntegrityError:
         conn.rollback()
-        # Mark generation run as failed — branch transaction failure
         gr_repo.update_generation_run(
             conn, content_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
+            error_category=ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED.value,
             error_message="transaction integrity error: duplicate or constraint violation",
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, "transaction integrity error")
+            fail_branch_generation_request(conn, actual_request_id, safe_error_message(ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED, None))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -1075,20 +1152,22 @@ def generate_personal_branch(
         )
     except PipelineError as exc:
         conn.rollback()
+        _safe_err = safe_error_message(ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED, str(exc))
         gr_repo.update_generation_run(
             conn, content_run_id,
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message=str(exc),
+            error_category=ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED.value,
+            error_message=_safe_err,
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, _safe_err)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
-            succeeded=False, error=str(exc),
+            succeeded=False, error=_safe_err,
         )
     except Exception:
         if conn.in_transaction:
@@ -1098,11 +1177,12 @@ def generate_personal_branch(
             completed_at=_now_utc(),
             success=False,
             validation_status=ValidationStatus.FAILED.value,
-            error_message="unexpected error in branch transaction",
+            error_category=ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED.value,
+            error_message=safe_error_message(ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED, None),
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            fail_branch_generation_request(conn, actual_request_id, "unexpected error in branch transaction")
+            fail_branch_generation_request(conn, actual_request_id, safe_error_message(ProviderErrorCategory.BRANCH_PERSISTENCE_FAILED, None))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,

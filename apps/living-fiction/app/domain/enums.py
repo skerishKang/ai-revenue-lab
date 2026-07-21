@@ -27,6 +27,13 @@ class ProviderErrorCategory(StrEnum):
     INVALID_JSON = "invalid_json"
     SCHEMA_MISMATCH = "schema_mismatch"
     PROVIDER_ERROR = "provider_error"
+    IDEMPOTENCY_WAIT_TIMEOUT = "idempotency_wait_timeout"
+    PLAN_VALIDATION_FAILED = "plan_validation_failed"
+    CONTENT_VALIDATION_FAILED = "content_validation_failed"
+    MATERIAL_CHANGE_VALIDATION_FAILED = "material_change_validation_failed"
+    CONTINUITY_VALIDATION_FAILED = "continuity_validation_failed"
+    BRANCH_BINDING_FAILED = "branch_binding_failed"
+    BRANCH_PERSISTENCE_FAILED = "branch_persistence_failed"
     UNKNOWN = "unknown"
 
 
