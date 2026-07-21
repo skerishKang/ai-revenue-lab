@@ -21,6 +21,7 @@ from app.pipeline import (
     LearnerInactiveError,
     UnsafeContentError,
     NonRetryableError,
+    ConflictingAnswerError,
 )
 from app.repositories import (
     get_learner_by_id,
@@ -131,6 +132,16 @@ def start_lesson(
     except GenerationError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": str(exc)},
+        )
+    except NonRetryableError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"error": str(exc)},
+        )
+    except UnsafeContentError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"error": str(exc)},
         )
     except ContentValidationError as exc:
@@ -406,6 +417,11 @@ def answer_exercise(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"error": str(exc)},
+        )
+    except ConflictingAnswerError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"error": "conflicting_answer"},
         )
     except ForeignFeedbackError:
         raise HTTPException(

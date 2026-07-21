@@ -56,6 +56,7 @@ from app.pipeline.errors import (
     NonRetryableError,
 )
 from app.pipeline.prompts import (
+    ADAPTED_LESSON_CONTENT_PROMPT,
     ADAPTED_LESSON_PROMPT,
     LESSON_CONTENT_PROMPT,
     LESSON_PLAN_PROMPT,
@@ -204,25 +205,6 @@ class LessonPipeline:
         if learner.status not in ("active",):
             raise LearnerInactiveError(learner_id, learner.status)
 
-    def _mark_lesson_failed(self, lesson_id: str) -> None:
-        try:
-            self.conn.rollback()
-        except Exception:
-            pass
-        
-        cursor = self.conn.cursor()
-        cursor.execute("BEGIN IMMEDIATE")
-        try:
-            cursor.execute(
-                "UPDATE lessons SET generation_status = 'generation_failed', updated_at = datetime('now') WHERE id = ?",
-                (lesson_id,)
-            )
-            if cursor.rowcount != 1:
-                raise GenerationError("Failed to update exact lesson to generation_failed")
-            self.conn.commit()
-        except Exception as e:
-            self.conn.rollback()
-            raise GenerationError(f"Consistency error during failure persistence: {e}") from e
 
     def _execute_provider_task(
         self,
@@ -233,6 +215,7 @@ class LessonPipeline:
         response_schema: type,
         request_id_prefix: str,
         prompt_version: str = "",
+        validator = None,
     ) -> ProviderResult:
         for attempt in range(MAX_RETRIES):
             req_id = f"{request_id_prefix}_{attempt}"
@@ -246,6 +229,14 @@ class LessonPipeline:
                     response_schema=response_schema,
                     request_id=req_id,
                 )
+                
+                if res.success and validator:
+                    issues = validator(res.payload)
+                    if issues:
+                        res.success = False
+                        res.error_category = issues[0]
+                        res.error_message = f"Validation failed: {issues}"
+
                 if not res.success:
                     # Raise an exception that carries the error_category
                     exc = RuntimeError(res.error_category or "unknown_exception")
@@ -301,7 +292,9 @@ class LessonPipeline:
                     # Mark failure will be handled by caller now, we don't insert partial lessons
                     if is_transient:
                         raise RetryExhaustedError(task_name, attempt + 1) from exc
-                    raise NonRetryableError(f"{task_name} failed with non-retryable error") from exc
+                    if error_category == "unsafe_content_policy_violation" or error_category.startswith(("unsafe_", "markup_", "credential_", "fabricated_")):
+                        raise UnsafeContentError(error_category) from exc
+                    raise NonRetryableError(error_category) from exc
                 continue
 
             create_generation_run(
@@ -408,22 +401,7 @@ class LessonPipeline:
             
         candidate_id = f"lesson_{secrets.token_urlsafe(16)}"
         
-        cursor = self.conn.cursor()
-        cursor.execute("BEGIN IMMEDIATE")
-        try:
-            create_lesson(
-                self.conn, learner_id=learner.id, concept_id=concept.id, lesson_number=1, generation_status="generation_pending", commit=False, id=candidate_id
-            )
-            self.conn.commit()
-        except Exception:
-            self.conn.rollback()
-            raise
-        
-        try:
-            return self._generate_full_lesson_content(candidate_id, learner, concept, op_key)
-        except Exception:
-            self._mark_lesson_failed(candidate_id)
-            raise
+        return self._generate_full_lesson_content(candidate_id, learner, concept, op_key)
 
     def _generate_full_lesson_content(self, lesson_id: str, learner, concept, idempotency_key: str = "") -> str:
         # 1. Prepare Plan Payload
@@ -437,6 +415,12 @@ class LessonPipeline:
         }
         plan_system_prompt = LESSON_PLAN_PROMPT.format(**plan_user_payload)
         
+        def plan_validator(payload):
+            plan_data = json.dumps(payload, ensure_ascii=False)
+            if issues := _validate_safe_content(plan_data):
+                return issues
+            return []
+            
         plan_result = self._execute_provider_task(
             task_name="lesson_plan", 
             lesson_id=lesson_id, 
@@ -444,12 +428,11 @@ class LessonPipeline:
             user_payload=plan_user_payload, 
             response_schema=LessonPlan, 
             request_id_prefix=f"plan_{lesson_id}",
-            prompt_version="ll-plan-v1"
+            prompt_version="ll-plan-v1",
+            validator=plan_validator
         )
         plan_payload = plan_result.payload
         plan_data = json.dumps(plan_payload, ensure_ascii=False)
-        if issues := _validate_safe_content(plan_data):
-            raise UnsafeContentError(issues)
 
         # 2. Prepare Content Payload
         content_user_payload = {
@@ -461,6 +444,36 @@ class LessonPipeline:
         }
         content_system_prompt = LESSON_CONTENT_PROMPT.format(**content_user_payload)
         
+        def _check_grounding(ans, payload):
+            if not ans: return True
+            for s in payload.get("sections", []):
+                if ans in str(s.get("content", "")): return True
+            for ex in payload.get("code_examples", []):
+                if ans in str(ex.get("expected_output", "")): return True
+            for q in payload.get("review_questions", []):
+                if ans in str(q.get("explanation", "")): return True
+            return False
+
+        def content_validator(payload):
+            content_data = json.dumps(payload, ensure_ascii=False)
+            issues = _validate_safe_content(content_data)
+            plan_section_ids = {s.get("section_id") for s in plan_payload.get("sections", [])}
+            content_section_ids = {s.get("section_id") for s in payload.get("sections", [])}
+            if plan_section_ids != content_section_ids:
+                issues.append("section_alignment_failure")
+            if payload.get("code_examples"):
+                for ex in payload["code_examples"]:
+                    code = ex.get("code", "")
+                    expected = ex.get("expected_output", "")
+                    if code and not _validate_code_output(code, expected):
+                        issues.append("inconsistent_code_output")
+            if payload.get("review_questions"):
+                for q in payload["review_questions"]:
+                    ans = q.get("correct_answer", "") if isinstance(q, dict) else ""
+                    if ans and not _check_grounding(ans, payload):
+                        issues.append("unsupported_review_answer")
+            return issues
+            
         content_result = self._execute_provider_task(
             task_name="lesson_content", 
             lesson_id=lesson_id, 
@@ -468,40 +481,18 @@ class LessonPipeline:
             user_payload=content_user_payload, 
             response_schema=LessonContent, 
             request_id_prefix=f"content_{lesson_id}",
-            prompt_version="ll-content-v1"
+            prompt_version="ll-content-v1",
+            validator=content_validator
         )
         content_payload = content_result.payload
         content_data = json.dumps(content_payload, ensure_ascii=False)
-        content_issues = _validate_safe_content(content_data)
-        
-        # Verify plan section alignment
-        plan_section_ids = {s.get("section_id") for s in plan_payload.get("sections", [])}
-        content_section_ids = {s.get("section_id") for s in content_payload.get("sections", [])}
-        if plan_section_ids != content_section_ids:
-            content_issues.append("section_alignment_failure")
-
-        # Verify code output and review answers
-        if content_payload.get("code_examples"):
-            for ex in content_payload["code_examples"]:
-                code = ex.get("code", "")
-                expected = ex.get("expected_output", "")
-                if code and not _validate_code_output(code, expected):
-                    content_issues.append("inconsistent_code_output")
-        if content_payload.get("review_questions"):
-            for q in content_payload["review_questions"]:
-                ans = q.get("correct_answer", "") if isinstance(q, dict) else ""
-                if ans and ans not in content_data:
-                    content_issues.append("unsupported_review_answer")
-                    
-        if content_issues:
-            raise UnsafeContentError(content_issues)
 
         # 3. Persistence in a single IMMEDIATE transaction
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
         try:
-            update_lesson_status(
-                self.conn, lesson_id, lesson_plan_json=plan_data, lesson_content_json=content_data, generation_status="pending_review", commit=False
+            create_lesson(
+                self.conn, learner_id=learner.id, concept_id=concept.id, lesson_number=1, generation_status="pending_review", lesson_plan_json=plan_data, lesson_content_json=content_data, commit=False, id=lesson_id
             )
             
             if content_payload.get("code_examples"):
@@ -511,7 +502,6 @@ class LessonPipeline:
                 base_seq = len(content_payload.get("code_examples", []))
                 for i, q in enumerate(content_payload["review_questions"]):
                     create_exercise(self.conn, lesson_id=lesson_id, question=q.get("question", "") if isinstance(q, dict) else q, options=[], correct_answer=q.get("correct_answer", "") if isinstance(q, dict) else "", explanation=q.get("explanation", "") if isinstance(q, dict) else "", difficulty="medium", sequence_order=base_seq + i, commit=False)
-            upsert_mastery(self.conn, learner_id=learner.id, concept_id=concept.id, practice_increment=1, commit=False)
             if idempotency_key:
                 store_idempotency_key(self.conn, idempotency_key, lesson_id, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
             self.conn.commit()
@@ -606,29 +596,7 @@ class LessonPipeline:
 
         candidate_id = f"lesson_{secrets.token_urlsafe(16)}"
         
-        cursor = self.conn.cursor()
-        cursor.execute("BEGIN IMMEDIATE")
-        try:
-            create_lesson(
-                self.conn, 
-                learner_id=learner_id, 
-                concept_id=original_lesson.concept_id, 
-                lesson_number=original_lesson.lesson_number + 1, 
-                prior_lesson_id=original_lesson.id, 
-                generation_status="generation_pending", 
-                commit=False,
-                id=candidate_id
-            )
-            self.conn.commit()
-        except Exception:
-            self.conn.rollback()
-            raise
-        
-        try:
-            lesson_id = self._generate_adapted_content(lesson_id=candidate_id, learner_id=learner_id, original_lesson=original_lesson, feedback=feedback, comprehension=comprehension, idempotency_key=op_key)
-        except Exception:
-            self._mark_lesson_failed(candidate_id)
-            raise
+        lesson_id = self._generate_adapted_content(lesson_id=candidate_id, learner_id=learner_id, original_lesson=original_lesson, feedback=feedback, comprehension=comprehension, idempotency_key=op_key)
         return {"lesson_id": lesson_id, "adaptation_verified": True}
 
     def _generate_adapted_content(self, lesson_id: str, learner_id: str, original_lesson, feedback, comprehension, idempotency_key: str = "") -> str:
@@ -652,6 +620,12 @@ class LessonPipeline:
         
         plan_system_prompt = ADAPTED_LESSON_PROMPT.format(**payload_kwargs)
 
+        def plan_validator(payload):
+            plan_data = json.dumps(payload, ensure_ascii=False)
+            if issues := _validate_safe_content(plan_data):
+                return issues
+            return []
+            
         adapted_plan_result = self._execute_provider_task(
             task_name="adapted_lesson_plan", 
             lesson_id=lesson_id, 
@@ -659,24 +633,128 @@ class LessonPipeline:
             user_payload=payload_kwargs, 
             response_schema=LessonPlan, 
             request_id_prefix=f"adapt_plan_{lesson_id}",
-            prompt_version="ll-adapt-plan-v1"
+            prompt_version="ll-adapt-plan-v1",
+            validator=plan_validator
         )
         adapted_payload = adapted_plan_result.payload
         adapted_data = json.dumps(adapted_payload, ensure_ascii=False)
-        if issues := _validate_safe_content(adapted_data):
-            raise UnsafeContentError(issues)
 
         payload_kwargs["original_plan"] = adapted_data
         
-        # We use the generic LESSON_CONTENT_PROMPT for adapted content too, but with the new plan and feedback
         content_user_payload = {
             "example_preference": getattr(learner, 'example_preference', 'balanced'),
             "theory_density": getattr(learner, 'theory_density', 'standard'),
             "jargon_level": getattr(learner, 'jargon_level', 'standard'),
             "pacing_feedback_style": "adapted",
             "lesson_plan": adapted_data,
+            "original_plan": json.dumps(plan_data, ensure_ascii=False),
+            "original_content": json.dumps(content_data, ensure_ascii=False),
+            "direction_choices": ", ".join(feedback.direction_choices),
+            "free_text_section": f"Additional feedback: {feedback.free_text}" if feedback.free_text else "",
+            "comprehension_understood": str(bool(comprehension["understood"])),
+            "comprehension_difficulty": str(comprehension["difficulty_rating"]),
+            "comprehension_text": comprehension["free_text"] or ""
         }
-        content_system_prompt = LESSON_CONTENT_PROMPT.format(**content_user_payload)
+        content_system_prompt = ADAPTED_LESSON_CONTENT_PROMPT.format(**content_user_payload)
+
+        def _check_grounding(ans, payload):
+            if not ans: return True
+            for s in payload.get("sections", []):
+                if ans in str(s.get("content", "")): return True
+            for ex in payload.get("code_examples", []):
+                if ans in str(ex.get("expected_output", "")): return True
+            for q in payload.get("review_questions", []):
+                if ans in str(q.get("explanation", "")): return True
+            return False
+
+        def content_validator(payload):
+            final_content_data = json.dumps(payload, ensure_ascii=False)
+            issues = _validate_safe_content(final_content_data)
+            plan_section_ids = {s.get("section_id") for s in adapted_payload.get("sections", [])}
+            content_section_ids = {s.get("section_id") for s in payload.get("sections", [])}
+            if plan_section_ids != content_section_ids:
+                issues.append("section_alignment_failure")
+                
+            if payload.get("code_examples"):
+                for ex in payload["code_examples"]:
+                    code = ex.get("code", "")
+                    expected = ex.get("expected_output", "")
+                    if code and not _validate_code_output(code, expected):
+                        issues.append("inconsistent_code_output")
+            if payload.get("review_questions"):
+                for q in payload["review_questions"]:
+                    ans = q.get("correct_answer", "") if isinstance(q, dict) else ""
+                    if ans and not _check_grounding(ans, payload):
+                        issues.append("unsupported_review_answer")
+            
+            # verification logic
+            error_reasons = []
+            direction_choices = set(feedback.direction_choices)
+            
+            def extract_core(plan: dict, content: dict) -> dict:
+                return {
+                    "plan_sections": [s.get("section_id") for s in plan.get("sections", [])],
+                    "content_sections": [
+                        {k: v for k, v in s.items() if k not in ("title",)}
+                        for s in content.get("sections", [])
+                    ],
+                    "review_questions": content.get("review_questions", []),
+                    "code_examples": content.get("code_examples", []),
+                }
+
+            orig_core = extract_core(plan_data, content_data)
+            adapt_core = extract_core(adapted_payload, payload)
+
+            if orig_core == adapt_core:
+                error_reasons.append("metadata-only changes")
+
+            if "reduce_theory" in direction_choices:
+                orig_theory = sum(len(str(s)) for s in content_data.get("sections", []))
+                adapt_theory = sum(len(str(s)) for s in payload.get("sections", []))
+                orig_prac = len(content_data.get("code_examples", [])) + len(content_data.get("review_questions", []))
+                adapt_prac = len(payload.get("code_examples", [])) + len(payload.get("review_questions", []))
+                if not (adapt_theory < orig_theory or adapt_prac > orig_prac):
+                    error_reasons.append("reduce_theory requested but theory didn't decrease and practical ratio didn't increase")
+
+            if "more_examples" in direction_choices:
+                orig_ex = len(content_data.get("code_examples", []))
+                adapt_ex = len(payload.get("code_examples", []))
+                if adapt_ex <= orig_ex:
+                    error_reasons.append("more_examples requested but code_examples did not increase")
+
+            if "code_first" in direction_choices:
+                first_sect = payload.get("sections", [{}])[0] if payload.get("sections") else {}
+                has_code = first_sect.get("includes_code") and first_sect.get("code_snippet")
+                if not has_code:
+                    code_examples = payload.get("code_examples") or []
+                    first_ex = code_examples[0] if code_examples else {}
+                    if not first_ex.get("code"):
+                        error_reasons.append("code_first requested but first section does not include code snippet and first exercise is not code-based")
+
+            if "slower_pace" in direction_choices:
+                orig_avg = sum(len(str(s)) for s in content_data.get("sections", [])) / max(1, len(content_data.get("sections", [])))
+                adapt_avg = sum(len(str(s)) for s in payload.get("sections", [])) / max(1, len(payload.get("sections", [])))
+                if adapt_avg >= orig_avg and len(payload.get("sections", [])) <= len(content_data.get("sections", [])):
+                    error_reasons.append("slower_pace requested but granularity did not increase and section length did not decrease")
+
+            if "more_review" in direction_choices:
+                orig_rev = len(content_data.get("review_questions", []))
+                adapt_rev = len(payload.get("review_questions", []))
+                if adapt_rev <= orig_rev:
+                    error_reasons.append("more_review requested but review_questions did not increase")
+
+            if "simplify_jargon" in direction_choices:
+                orig_str = str(content_data).lower()
+                adapt_str = str(payload).lower()
+                jargon_markers = ["복잡한", "용어", "개념", "이론"]
+                orig_jargon = sum(orig_str.count(j) for j in jargon_markers)
+                adapt_jargon = sum(adapt_str.count(j) for j in jargon_markers)
+                if adapt_jargon >= orig_jargon and "정의" not in adapt_str:
+                    error_reasons.append("simplify_jargon requested but jargon markers did not decrease and definitions not found")
+
+            if error_reasons:
+                issues.append("adaptation_not_changed")
+            return issues
 
         adapted_content_result = self._execute_provider_task(
             task_name="adapted_lesson_content", 
@@ -685,41 +763,11 @@ class LessonPipeline:
             user_payload=content_user_payload, 
             response_schema=LessonContent, 
             request_id_prefix=f"adapt_content_{lesson_id}",
-            prompt_version="ll-adapt-content-v1"
+            prompt_version="ll-adapt-content-v2",
+            validator=content_validator
         )
         final_content = adapted_content_result.payload
         final_content_data = json.dumps(final_content, ensure_ascii=False)
-        content_issues = _validate_safe_content(final_content_data)
-        
-        # Verify plan section alignment
-        plan_section_ids = {s.get("section_id") for s in adapted_payload.get("sections", [])}
-        content_section_ids = {s.get("section_id") for s in final_content.get("sections", [])}
-        if plan_section_ids != content_section_ids:
-            content_issues.append("section_alignment_failure")
-
-        # Verify code output and review answers
-        if final_content.get("code_examples"):
-            for ex in final_content["code_examples"]:
-                code = ex.get("code", "")
-                expected = ex.get("expected_output", "")
-                if code and not _validate_code_output(code, expected):
-                    content_issues.append("inconsistent_code_output")
-        if final_content.get("review_questions"):
-            for q in final_content["review_questions"]:
-                ans = q.get("correct_answer", "") if isinstance(q, dict) else ""
-                if ans and ans not in final_content_data:
-                    content_issues.append("unsupported_review_answer")
-                    
-        if content_issues:
-            raise UnsafeContentError(content_issues)
-
-        self._verify_adaptation_changes(
-            original_plan=plan_data,
-            original_content=content_data,
-            adapted_plan=adapted_payload,
-            adapted_content=final_content,
-            direction_choices=set(feedback.direction_choices),
-        )
 
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
@@ -732,14 +780,18 @@ class LessonPipeline:
             if comprehension["free_text"]:
                 adaptation_summary += f"; comprehension: {comprehension['free_text']}"
                 
-            update_lesson_status(
+            create_lesson(
                 self.conn, 
-                lesson_id, 
+                learner_id=learner_id, 
+                concept_id=original_lesson.concept_id, 
+                lesson_number=original_lesson.lesson_number + 1, 
+                prior_lesson_id=original_lesson.id, 
+                generation_status="pending_review", 
                 lesson_plan_json=adapted_data, 
                 lesson_content_json=final_content_data, 
                 adaptation_summary=adaptation_summary,
-                generation_status="pending_review", 
-                commit=False
+                commit=False,
+                id=lesson_id
             )
 
             cursor.execute(
@@ -760,82 +812,13 @@ class LessonPipeline:
             if idempotency_key:
                 store_idempotency_key(self.conn, idempotency_key, lesson_id, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
 
-            upsert_mastery(self.conn, learner_id=learner_id, concept_id=original_lesson.concept_id, practice_increment=1, commit=False)
             self.conn.commit()
             return lesson_id
         except Exception:
             self.conn.rollback()
             raise
 
-    def _verify_adaptation_changes(self, original_plan: dict, original_content: dict, adapted_plan: dict, adapted_content: dict, direction_choices: set[str]) -> None:
-        if not direction_choices:
-            return
 
-        def extract_core(plan: dict, content: dict) -> dict:
-            return {
-                "plan_sections": [s.get("section_id") for s in plan.get("sections", [])],
-                "content_sections": [
-                    {k: v for k, v in s.items() if k not in ("title",)}
-                    for s in content.get("sections", [])
-                ],
-                "review_questions": content.get("review_questions", []),
-                "code_examples": content.get("code_examples", []),
-            }
-
-        orig_core = extract_core(original_plan, original_content)
-        adapt_core = extract_core(adapted_plan, adapted_content)
-
-        if orig_core == adapt_core:
-            raise AdaptationNotChangedError({"requested": list(direction_choices), "reasons": ["metadata-only changes"]})
-
-        error_reasons = []
-
-        if "reduce_theory" in direction_choices:
-            orig_theory = sum(len(str(s)) for s in original_content.get("sections", []))
-            adapt_theory = sum(len(str(s)) for s in adapted_content.get("sections", []))
-            orig_prac = len(original_content.get("code_examples", [])) + len(original_content.get("review_questions", []))
-            adapt_prac = len(adapted_content.get("code_examples", [])) + len(adapted_content.get("review_questions", []))
-            if not (adapt_theory < orig_theory or adapt_prac > orig_prac):
-                error_reasons.append("reduce_theory requested but theory didn't decrease and practical ratio didn't increase")
-
-        if "more_examples" in direction_choices:
-            orig_ex = len(original_content.get("code_examples", []))
-            adapt_ex = len(adapted_content.get("code_examples", []))
-            if adapt_ex <= orig_ex:
-                error_reasons.append("more_examples requested but code_examples did not increase")
-
-        if "code_first" in direction_choices:
-            first_sect = adapted_content.get("sections", [{}])[0] if adapted_content.get("sections") else {}
-            has_code = first_sect.get("includes_code") and first_sect.get("code_snippet")
-            if not has_code:
-                code_examples = adapted_content.get("code_examples") or []
-                first_ex = code_examples[0] if code_examples else {}
-                if not first_ex.get("code"):
-                    error_reasons.append("code_first requested but first section does not include code snippet and first exercise is not code-based")
-
-        if "slower_pace" in direction_choices:
-            orig_avg = sum(len(str(s)) for s in original_content.get("sections", [])) / max(1, len(original_content.get("sections", [])))
-            adapt_avg = sum(len(str(s)) for s in adapted_content.get("sections", [])) / max(1, len(adapted_content.get("sections", [])))
-            if adapt_avg >= orig_avg and len(adapted_content.get("sections", [])) <= len(original_content.get("sections", [])):
-                error_reasons.append("slower_pace requested but granularity did not increase and section length did not decrease")
-
-        if "more_review" in direction_choices:
-            orig_rev = len(original_content.get("review_questions", []))
-            adapt_rev = len(adapted_content.get("review_questions", []))
-            if adapt_rev <= orig_rev:
-                error_reasons.append("more_review requested but review_questions did not increase")
-
-        if "simplify_jargon" in direction_choices:
-            orig_str = str(original_content).lower()
-            adapt_str = str(adapted_content).lower()
-            jargon_markers = ["복잡한", "용어", "개념", "이론"]
-            orig_jargon = sum(orig_str.count(j) for j in jargon_markers)
-            adapt_jargon = sum(adapt_str.count(j) for j in jargon_markers)
-            if adapt_jargon >= orig_jargon and "정의" not in adapt_str:
-                error_reasons.append("simplify_jargon requested but jargon markers did not decrease and definitions not found")
-
-        if error_reasons:
-            raise AdaptationNotChangedError({"requested": list(direction_choices), "reasons": error_reasons})
 
     def finalize_and_close(self, lesson_id: str, learner_id: str) -> dict:
         lesson = get_lesson_by_id(self.conn, lesson_id)
@@ -872,11 +855,21 @@ class LessonPipeline:
             result = json.loads(existing.result) if existing.result else {}
             return {"response_id": result.get("response_id"), "is_correct": result.get("is_correct"), "is_duplicate": True}
             
-        is_correct = (answer.strip() == exercise.correct_answer.strip())
-        
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
         try:
+            existing_resp = cursor.execute("SELECT id, selected_answer, is_correct FROM exercise_responses WHERE exercise_id = ? AND learner_id = ?", (exercise_id, learner_id)).fetchone()
+            if existing_resp:
+                if existing_resp["selected_answer"] == answer:
+                    self.conn.rollback()
+                    return {"response_id": existing_resp["id"], "is_correct": bool(existing_resp["is_correct"]), "is_duplicate": True}
+                else:
+                    self.conn.rollback()
+                    from app.pipeline.errors import ConflictingAnswerError
+                    raise ConflictingAnswerError(exercise_id)
+
+            is_correct = (answer.strip() == exercise.correct_answer.strip())
+            
             resp = record_exercise_response(
                 self.conn, 
                 exercise_id=exercise_id, 

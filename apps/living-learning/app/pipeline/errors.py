@@ -66,6 +66,11 @@ class UnsafeContentError(LessonPipelineError):
         self.issues = issues
         super().__init__(f"Unsafe content detected: {issues}")
 
+class ConflictingAnswerError(LessonPipelineError):
+    def __init__(self, exercise_id: str) -> None:
+        self.exercise_id = exercise_id
+        super().__init__(f"Conflicting answer for exercise {exercise_id}")
+
 
 class CredentialRequestError(LessonPipelineError):
     pass

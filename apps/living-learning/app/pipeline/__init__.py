@@ -19,6 +19,7 @@ from app.pipeline.errors import (
     PackageInstallError,
     ExpectedAnswerMismatchError,
     NonRetryableError,
+    ConflictingAnswerError,
 )
 
 __all__ = [
@@ -40,4 +41,5 @@ __all__ = [
     "PackageInstallError",
     "ExpectedAnswerMismatchError",
     "NonRetryableError",
+    "ConflictingAnswerError",
 ]

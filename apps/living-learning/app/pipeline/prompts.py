@@ -93,3 +93,21 @@ Output JSON:
     "correct_answer": "string",
     "explanation": "string"
 }}"""
+ADAPTED_LESSON_CONTENT_PROMPT = """
+You are generating the final lesson content for a second lesson, adapted from the original lesson based on learner feedback.
+Original Plan: {original_plan}
+Original Content: {original_content}
+Feedback Directions: {direction_choices}
+Feedback Text: {free_text_section}
+Comprehension Understood: {comprehension_understood}
+Comprehension Difficulty: {comprehension_difficulty}
+Comprehension Text: {comprehension_text}
+Adapted Plan: {lesson_plan}
+
+Preferences:
+- Example preference: {example_preference}
+- Theory density: {theory_density}
+- Jargon level: {jargon_level}
+
+Output must align exactly with the adapted plan sections.
+"""

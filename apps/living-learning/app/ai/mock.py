@@ -23,8 +23,8 @@ _DEFAULT_LESSON_CONTENT = {
         {"section_id": "s1", "title": "섹션 1", "content": "내용 설명", "includes_code": True, "code_snippet": "x = 1"},
     ],
     "review_questions": [
-        {"question": "Q1: 무엇입니까?", "correct_answer": "이것입니다", "explanation": "왜냐하면"},
-        {"question": "Q2: 왜 입니까?", "correct_answer": "저것입니다", "explanation": "그러니까"}
+        {"question": "Q1: 무엇입니까?", "correct_answer": "설명", "explanation": "왜냐하면"},
+        {"question": "Q2: 왜 입니까?", "correct_answer": "10", "explanation": "그러니까"}
     ],
     "code_examples": [
         {
@@ -127,7 +127,7 @@ class MockProvider:
                 payload["sections"][0]["content"] = "short"
                 payload["sections"].append({"section_id": "s2", "title": "섹션 2", "content": "short"})
         if "more_review" in dc and task_name == "adapted_lesson_content":
-            payload.setdefault("review_questions", []).append({"question": "Q3", "correct_answer": "A", "explanation": "E"})
+            payload.setdefault("review_questions", []).append({"question": "Q3", "correct_answer": "10", "explanation": "E"})
         if "simplify_jargon" in dc and task_name == "adapted_lesson_content":
             if payload.get("sections"):
                 payload["sections"][0]["content"] = "정의: 매우 쉽다"
