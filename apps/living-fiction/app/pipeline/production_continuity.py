@@ -313,17 +313,14 @@ def validate_production_continuity(
     # ── Relationship check ─────────────────────────────────────────────
     _check_character_relationships(content, known_chars, world, delta)
 
-    # ── Knowledge check with structured per-item sources ────────────────
-    # Each knowledge item from delta must be bound to a specific source:
-    # - Direct observation in this scene's prose
-    # - Transfer from a specific character present in the scene
-    # - Discovery via a clue in this scene
-    # - Previously acquired knowledge (from prior episode)
-    # Character_knowledge_sources maps char_id -> list of source descriptions
+    # ── Knowledge check with per-item structured evidence binding ──────
+    # Each knowledge item MUST be bound 1:1 to its own source.
+    # sources[ki] is the specific source for knowledge_list[ki].
+    # A single source cannot cover multiple knowledge items.
     for char_id, knowledge_list in delta.character_knowledge_added.items():
         if char_id not in known_chars:
             continue
-        all_sources = delta.character_knowledge_sources.get(char_id, [])
+        item_sources = delta.character_knowledge_sources.get(char_id, [])
 
         for ki, knowledge in enumerate(knowledge_list):
             if not knowledge or not knowledge.strip():
@@ -333,11 +330,15 @@ def validate_production_continuity(
             k_short_words = {w for w in k_words if len(w) >= 3}
             knowledge_found = False
 
-            # 1. Check branch prose for direct observation
+            # 1. Check branch prose for direct observation.
+            # Require strong overlap (>=3 or >50%) to prevent common-word
+            # false positives.  Prose alone should not be the primary basis
+            # for knowledge acceptance — structured evidence is preferred.
             for beat in content.prose:
                 for para in beat.paragraphs:
                     overlap_count = sum(1 for w in k_short_words if w in para)
-                    if k_short_words and overlap_count >= min(2, len(k_short_words)):
+                    required = max(3, len(k_short_words) // 2 + 1)
+                    if k_short_words and overlap_count >= required:
                         knowledge_found = True
                         break
                 if knowledge_found:
@@ -351,14 +352,14 @@ def validate_production_continuity(
                 if k_short_words and len(k_short_words & e_short) >= min(2, len(k_short_words)):
                     knowledge_found = True
 
-            # 3. Check structured knowledge sources — each source must be
-            #    bound to a known character, scene, or clue
-            if not knowledge_found and all_sources:
-                known_scene_ids = {sc.scene_id for sc in content.scenes}
-                for src in all_sources:
-                    if not src or not src.strip():
-                        continue
-                    # Source must reference a known character by ID
+            # 3. Check THIS knowledge item's OWN per-item source (1:1 binding).
+            #    sources[ki] must reference a known character/scene/clue
+            #    that participates in this content.
+            if not knowledge_found and ki < len(item_sources):
+                src = item_sources[ki]
+                if src and src.strip():
+                    known_scene_ids = {sc.scene_id for sc in content.scenes}
+                    # Source must reference a known character ID
                     for cid in known_chars:
                         if cid in src:
                             scene_char_ids = set()
@@ -367,22 +368,18 @@ def validate_production_continuity(
                             if cid in scene_char_ids:
                                 knowledge_found = True
                                 break
-                    if knowledge_found:
-                        break
                     # Or source must reference a known scene ID
-                    for sid in known_scene_ids:
-                        if sid in src:
-                            knowledge_found = True
-                            break
-                    if knowledge_found:
-                        break
-                    # Or source must reference a known clue
-                    for clid in known_clues:
-                        if clid in src:
-                            knowledge_found = True
-                            break
-                    if knowledge_found:
-                        break
+                    if not knowledge_found:
+                        for sid in known_scene_ids:
+                            if sid in src:
+                                knowledge_found = True
+                                break
+                    # Or source must reference a known clue ID
+                    if not knowledge_found:
+                        for clid in known_clues:
+                            if clid in src:
+                                knowledge_found = True
+                                break
 
             # 4. Check if knowledge was already in prior episode state
             if not knowledge_found:
@@ -405,13 +402,12 @@ def validate_production_continuity(
                             knowledge_found = True
                             break
 
-            # STRICT: knowledge must bind to prose observation, applied evidence,
-            # structured source, or prior state. Reject if none matched.
+            # STRICT: reject if no binding found. No lenient fallback.
             if not knowledge_found:
                 raise ContinuityError(
                     f"unexplained knowledge acquisition: character '{char_id}' "
                     f"gains knowledge '{knowledge}' — no binding found in scene "
-                    f"prose, evidence, structured sources, or prior state"
+                    f"prose, evidence, per-item structured source, or prior state"
                 )
 
     # ── Character movement / location check ────────────────────────────

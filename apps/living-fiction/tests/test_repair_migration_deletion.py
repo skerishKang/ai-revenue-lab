@@ -315,14 +315,23 @@ def test_reader_deletion_no_private_comments(db_conn):
 
     delete_reader_with_revocation(db_conn, reader.id)
 
-    # Check that the choice comment is anonymized
-    updated_choice = choice_repo.get_reader_choice(db_conn, choice.id)
-    if updated_choice.applied_to_branch_id is not None:
-        # Applied choices have comment anonymized
-        assert updated_choice.comment in (None, "[anonymized]")
-    else:
-        # Unapplied choices have comment removed
-        assert updated_choice.comment is None
+    # After anonymization, original choice is deleted and replaced with anonymous ones
+    # Verify no private text exists in any remaining choice rows
+    all_choices = db_conn.execute(
+        "SELECT id, reader_id, comment, choice_text FROM reader_choices"
+    ).fetchall()
+    for c in all_choices:
+        assert "private reader comment" not in (c["comment"] or "")
+        assert "private reader comment" not in (c["choice_text"] or "")
+
+    # No raw private comment in applied_reader_input of episodes
+    episodes = db_conn.execute(
+        "SELECT applied_reader_input_json FROM episodes WHERE applied_reader_input_json IS NOT NULL"
+    ).fetchall()
+    for ep in episodes:
+        inp = json.loads(ep["applied_reader_input_json"])
+        assert "private reader comment" not in (inp.get("comment") or "")
+        assert "private reader comment" not in (inp.get("choice_text") or "")
 
 
 def test_reader_deletion_preserves_canon(db_conn):

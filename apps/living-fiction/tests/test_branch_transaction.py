@@ -203,7 +203,7 @@ def test_foreign_choice_rejected(db_conn):
 
 
 def test_already_applied_choice_rejected(db_conn):
-    """Already-applied choice cannot be applied again."""
+    """Already-applied choice triggers idempotency replay on retry."""
     canon_ep_id = _setup_world_and_canon(db_conn)
 
     reader = reader_repo.create_reader(db_conn, display_name="독자")
@@ -234,15 +234,20 @@ def test_already_applied_choice_rejected(db_conn):
     )
     assert result1.succeeded
 
-    # Second application fails — choice already applied
+    # Second application with same idempotency key replays (returns same episode_id)
     result2 = generate_personal_branch(
         db_conn, provider, request,
         world_id=WORLD_STATE.world_id,
         canon_checkpoint_id="checkpoint-canon-1",
         prior_episode_id=canon_ep_id,
     )
-    assert not result2.succeeded
-    assert "already applied" in (result2.error or "").lower()
+    assert result2.succeeded
+    assert result2.episode_id == result1.episode_id
+
+    # Only one branch episode exists
+    branches = branch_repo.get_branches_by_reader(db_conn, reader.id)
+    assert len(branches) == 1
+    assert branches[0].branch_episode_id == result1.episode_id
 
 
 def test_transaction_rollback_on_failure(db_conn):
@@ -285,7 +290,7 @@ def test_transaction_rollback_on_failure(db_conn):
 
 
 def test_duplicate_retry_idempotency(db_conn):
-    """Duplicate/retry requests do not create duplicate episodes or apply input twice."""
+    """Duplicate/retry requests replay instead of creating duplicates."""
     canon_ep_id = _setup_world_and_canon(db_conn)
 
     reader = reader_repo.create_reader(db_conn, display_name="중복 독자")
@@ -315,14 +320,15 @@ def test_duplicate_retry_idempotency(db_conn):
     )
     assert result1.succeeded
 
-    # Retry with same choice — should fail
+    # Retry with same idempotency key — replays and returns same episode_id
     result2 = generate_personal_branch(
         db_conn, provider, request,
         world_id=WORLD_STATE.world_id,
         canon_checkpoint_id="checkpoint-canon-1",
         prior_episode_id=canon_ep_id,
     )
-    assert not result2.succeeded
+    assert result2.succeeded
+    assert result2.episode_id == result1.episode_id
 
     # Only one branch episode exists
     branches = branch_repo.get_branches_by_reader(db_conn, reader.id)

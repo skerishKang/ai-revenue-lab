@@ -77,6 +77,7 @@ from app.pipeline.validators import validate_content, validate_plan
 from app.utils import new_id, now_utc_iso
 
 DEFAULT_MAX_RETRIES = 2
+_episode_number_lock = __import__('threading').Lock()
 
 
 @dataclass(frozen=True)
@@ -142,11 +143,10 @@ def _provider_call_with_retry(
     actual_provider = getattr(provider, "provider_name", None) or "mock"
     actual_model = getattr(provider, "model", "unknown")
 
-    # Determine cost class from provider — do NOT hardcode
+    # Determine cost class from provider — use canonical value, not repr()
     if hasattr(provider, "cost_class"):
-        actual_cost = str(provider.cost_class)
+        actual_cost = provider.cost_class.value if hasattr(provider.cost_class, 'value') else str(provider.cost_class)
     else:
-        # For MockProvider, check the actual result later
         actual_cost = "unknown"
 
     gr_repo.create_generation_run(
@@ -195,6 +195,8 @@ def _provider_call_with_retry(
                 exc_latency = time.perf_counter() - _start_perf_counter
             except NameError:
                 pass
+            # Aggregate exception attempt latency into total
+            total_latency += exc_latency
 
             attempt_repo.create_generation_attempt(
                 conn,
@@ -211,10 +213,10 @@ def _provider_call_with_retry(
                 success=False,
                 retryable=exc_retryable,
                 error_category=exc_category.value,
-                error_message=safe_error_message(exc_category, str(exc)),
+                error_message=safe_error_message(exc_category, None),
             )
             last_error_category = exc_category
-            last_error_message = safe_error_message(exc_category, str(exc))
+            last_error_message = safe_error_message(exc_category, None)
             if exc_retryable and attempt_num <= max_retries:
                 retry_count += 1
                 continue
@@ -607,48 +609,9 @@ def generate_personal_branch(
     """
     resolved_world_id = world_id or request.world.world_id
     resolved_checkpoint = canon_checkpoint_id or request.canon_checkpoint_id or ""
-    resolved_prior = prior_episode_id or request.prior_episode_id or ""
-
-    # ── BLOCKER 1: Persisted branch binding verification ──────────────
-    try:
-        binding = _verify_persisted_branch_binding(
-            conn,
-            reader_id=request.reader_id or "",
-            reader_choice_id=request.reader_choice_id or "",
-            prior_episode_id=resolved_prior,
-            canon_checkpoint_id=resolved_checkpoint,
-            world_id=resolved_world_id,
-        )
-    except BranchBindingError as exc:
-        return GenerationResult(
-            episode_id=None, plan_run_id="", content_run_id="",
-            succeeded=False, error=str(exc),
-        )
-
-    # Load persisted values — do NOT trust caller-supplied values
-    persisted_choice = binding["choice"]
-    persisted_choice_text = persisted_choice.choice_text
-    persisted_comment = persisted_choice.comment
-    persisted_prior_episode = binding["prior_episode"]
-    persisted_snapshot = binding["snapshot"]
-
-    # Load the world state from the persisted canon snapshot
-    # (do NOT trust caller-supplied WorldState — reconstruct from DB)
-    # Uses snapshot ID to apply accepted canon snapshot character/location/clue states
-    persisted_world = world_repo.load_world_state(
-        conn, resolved_world_id,
-        canon_snapshot_id=persisted_snapshot.id,
-    )
-    if persisted_world is None:
-        return GenerationResult(
-            episode_id=None, plan_run_id="", content_run_id="",
-            succeeded=False, error="world not found in persisted state",
-        )
-
-    # Use the persisted world for ALL validation and prompt building
-    authoritative_world = persisted_world
-
-    # ── Idempotency check using atomic CAS ─────────────────────────────
+    resolved_prior = prior_episode_id or request.prior_episode_id or ""    # ── Idempotency CAS claim FIRST (before binding verification) ───
+    # This ensures replay cases return early without hitting
+    # "choice already applied" checks that would fail for retries.
     from app.branch_generation_request_repository import (
         claim_branch_generation_request,
         complete_branch_generation_request,
@@ -692,8 +655,7 @@ def generate_personal_branch(
             conn.commit()
             return GenerationResult(
                 episode_id=None, plan_run_id="", content_run_id="",
-                succeeded=False,
-                error="request already in progress (pending)",
+                succeeded=False, error="request already in progress (pending)",
             )
 
         # Claim succeeded — we have a pending row
@@ -705,6 +667,63 @@ def generate_personal_branch(
             episode_id=None, plan_run_id="", content_run_id="",
             succeeded=False, error=str(exc),
         )
+
+    # ── BLOCKER 1: Persisted branch binding verification ──────────────
+    try:
+        binding = _verify_persisted_branch_binding(
+            conn,
+            reader_id=request.reader_id or "",
+            reader_choice_id=request.reader_choice_id or "",
+            prior_episode_id=resolved_prior,
+            canon_checkpoint_id=resolved_checkpoint,
+            world_id=resolved_world_id,
+        )
+    except BranchBindingError as exc:
+        # Fail the generation request on binding error
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+        try:
+            fail_branch_generation_request(conn, actual_request_id, str(exc))
+            conn.commit()
+        except Exception:
+            if conn.in_transaction:
+                conn.rollback()
+        return GenerationResult(
+            episode_id=None, plan_run_id="", content_run_id="",
+            succeeded=False, error=str(exc),
+        )
+
+    # Load persisted values — do NOT trust caller-supplied values
+    persisted_choice = binding["choice"]
+    persisted_choice_text = persisted_choice.choice_text
+    persisted_comment = persisted_choice.comment
+    persisted_prior_episode = binding["prior_episode"]
+    persisted_snapshot = binding["snapshot"]
+
+    # Load the world state from the persisted canon snapshot
+    # (do NOT trust caller-supplied WorldState — reconstruct from DB)
+    # Uses snapshot ID to apply accepted canon snapshot character/location/clue states
+    persisted_world = world_repo.load_world_state(
+        conn, resolved_world_id,
+        canon_snapshot_id=persisted_snapshot.id,
+    )
+    if persisted_world is None:
+        # Fail the generation request on world not found
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+        try:
+            fail_branch_generation_request(conn, actual_request_id, "world not found in persisted state")
+            conn.commit()
+        except Exception:
+            if conn.in_transaction:
+                conn.rollback()
+        return GenerationResult(
+            episode_id=None, plan_run_id="", content_run_id="",
+            succeeded=False, error="world not found in persisted state",
+        )
+
+    # Use the persisted world for ALL validation and prompt building
+    authoritative_world = persisted_world
 
     # Build reader choice dict from PERSISTED values (not caller-supplied)
     reader_choice_dict = {
@@ -722,10 +741,16 @@ def generate_personal_branch(
         "unresolved_threads": json.loads(persisted_prior_episode.unresolved_threads_json) if persisted_prior_episode.unresolved_threads_json else [],
     }
 
-    # 1. Plan
-    ep_num = ep_repo.get_next_episode_number(
-        conn, resolved_world_id, EpisodeType.PERSONAL_BRANCH.value
-    )
+    # 1. Plan — allocate episode number under lock to prevent concurrent races.
+    # The lock serializes allocation so two threads never get the same number.
+    with _episode_number_lock:
+        if conn.in_transaction:
+            conn.rollback()
+        conn.execute("BEGIN IMMEDIATE")
+        ep_num = ep_repo.get_next_episode_number(
+            conn, resolved_world_id, EpisodeType.PERSONAL_BRANCH.value
+        )
+        conn.commit()
 
     plan_payload = prompts.build_plan_user_payload(
         world_state=authoritative_world,

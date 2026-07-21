@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+import uuid
 from dataclasses import dataclass
 
 from app.deletion_audit_repository import create_deletion_audit
@@ -47,7 +48,6 @@ def _privacy_safe_reader_digest(reader_id: str) -> str:
             hashlib.sha256,
         ).hexdigest()[:32]
     # For tests only: random irreversible event ID — no reader linkage possible
-    import uuid
     return hashlib.sha256(uuid.uuid4().hex.encode()).hexdigest()[:32]
 
 
@@ -74,7 +74,6 @@ def _get_or_create_anonymized_principal(
     random ID that has no calculable relationship to the original reader_id.
     This prevents linking anonymized evidence back to the original reader.
     """
-    import uuid
     anon_id = f"anon-{uuid.uuid4().hex[:16]}"
     conn.execute(
         "INSERT OR IGNORE INTO readers "
@@ -123,12 +122,6 @@ def delete_reader_with_revocation(
     now = now_utc_iso()
     anonymized_name = "[deleted-reader]"
 
-    # Require HMAC key for production — fail closed if missing
-    import os
-    hmac_key = os.environ.get("LF_DELETION_HMAC_KEY", "")
-    # (Tests can proceed without the key, but production must have it)
-    # We check at the point of audit record creation
-
     # Ensure a clean connection
     if conn.in_transaction:
         conn.rollback()
@@ -170,7 +163,6 @@ def delete_reader_with_revocation(
         )
 
         # 2. Revoke unapplied choices and anonymize ALL choice personal linkage
-        # Anonymize choice_text and comment on ALL choices (not just revoke unapplied)
         revoked_choices = conn.execute(
             "UPDATE reader_choices SET comment = NULL, choice_text = '[anonymized]' "
             "WHERE reader_id = ? AND applied_to_branch_id IS NULL",
@@ -193,15 +185,64 @@ def delete_reader_with_revocation(
             (anon_principal_id, reader_id),
         )
 
-        # Anonymize reader_id on all choices (after choice_text is already anonymized
-        # to avoid UNIQUE constraint conflicts on (reader_id, canon_episode_id, choice_text))
+        # Step 2b: Create anonymous choice for EACH original choice.
+        # Each gets a unique ID and text to satisfy UNIQUE(reader_id,
+        # canon_episode_id, choice_text). Anonymous choices belong to
+        # the anonymized principal, NOT the original reader.
+        all_choices = conn.execute(
+            "SELECT id, canon_episode_id, submitted_at, applied_to_branch_id, "
+            "applied_at FROM reader_choices WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchall()
+
+        choice_mapping: dict[str, str] = {}  # original_id -> anon_id
+        for orig_choice in all_choices:
+            anon_cid = f"anon-choice-{uuid.uuid4().hex[:12]}"
+            anon_ctext = f"[anonymized-{uuid.uuid4().hex[:8]}]"
+            choice_mapping[orig_choice["id"]] = anon_cid
+
+            conn.execute(
+                "INSERT INTO reader_choices "
+                "(id, reader_id, canon_episode_id, choice_text, comment, "
+                "submitted_at, applied_to_branch_id, applied_at, "
+                "anonymized_principal_id, is_anonymized) "
+                "VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 1)",
+                (
+                    anon_cid,
+                    anon_principal_id,
+                    orig_choice["canon_episode_id"],
+                    anon_ctext,
+                    orig_choice["submitted_at"],
+                    orig_choice["applied_to_branch_id"],
+                    orig_choice["applied_at"],
+                    anon_principal_id,
+                ),
+            )
+
+        # Repoint branches.reader_choice_id per original -> anonymous
+        for orig_id, anon_id in choice_mapping.items():
+            conn.execute(
+                "UPDATE branches SET reader_choice_id = ? "
+                "WHERE reader_choice_id = ?",
+                (anon_id, orig_id),
+            )
+
+        # Repoint branch_generation_requests.reader_choice_id per original
+        for orig_id, anon_id in choice_mapping.items():
+            conn.execute(
+                "UPDATE branch_generation_requests SET reader_choice_id = ? "
+                "WHERE reader_choice_id = ?",
+                (anon_id, orig_id),
+            )
+
+        # Now delete original choice rows (anonymous choices have
+        # anon_principal_id as reader_id, so they survive this delete)
         conn.execute(
-            "UPDATE reader_choices SET reader_id = ? WHERE reader_id = ?",
-            (anon_principal_id, reader_id),
+            "DELETE FROM reader_choices WHERE reader_id = ?",
+            (reader_id,),
         )
 
         # 3. Anonymize applied reader input JSON on branch episodes
-        # Remove ALL personal linkage: comment, choice_text, reader_choice_id, private_text
         ep_rows = conn.execute(
             "SELECT id, applied_reader_input_json FROM episodes "
             "WHERE reader_id = ? AND applied_reader_input_json IS NOT NULL",
@@ -227,8 +268,6 @@ def delete_reader_with_revocation(
                 )
 
         # 4. Anonymize generation requests — reader_id
-        # Cannot change reader_choice_id (NOT NULL FK). The choice row still
-        # exists (anonymized), so the FK reference is valid.
         conn.execute(
             "UPDATE branch_generation_requests SET reader_id = ? "
             "WHERE reader_id = ?",
@@ -242,7 +281,6 @@ def delete_reader_with_revocation(
         ).rowcount
 
         # 5. Anonymize branches — set reader_id to the real anonymized principal
-        # Uses valid FK reference, not fake '[deleted]' ID
         branches_anonymized = conn.execute(
             "UPDATE branches SET reader_id = ? WHERE reader_id = ?",
             (anon_principal_id, reader_id),
@@ -266,7 +304,6 @@ def delete_reader_with_revocation(
         # 7. Remove / anonymize pilot evidence — only affect FROZEN IDs
         pilot_evidence_anonymized = 0
         for pe_id in deleted_pe_ids:
-            # Update only this specific evidence, not any other reader's
             conn.execute(
                 "UPDATE pilot_evidence SET reader_id = NULL WHERE id = ?",
                 (pe_id,),
@@ -284,7 +321,6 @@ def delete_reader_with_revocation(
             try:
                 data = json.loads(pe_row["evidence_data_json"])
                 if isinstance(data, dict):
-                    # Recursively redact sensitive fields
                     data = _redact_private_fields(data)
                     conn.execute(
                         "UPDATE pilot_evidence SET evidence_data_json = ? WHERE id = ?",
