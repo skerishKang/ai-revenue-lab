@@ -152,11 +152,23 @@ _SCHEMA_ERROR_PARAMS = frozenset({
     "response_format",
     "response_format.type",
     "response_format.json_schema",
+    "response_format[json_schema]",
 })
 
-_SCHEMA_ERROR_TYPES = frozenset({
-    "invalid_request_error",
-})
+_MAX_ERROR_BODY_BYTES = 64 * 1024
+
+
+def _canonicalize_code(raw: str) -> str:
+    s = str(raw).lower().strip()
+    s = s.replace(" ", "_").replace("-", "_")
+    return s
+
+
+def _canonicalize_param(raw: str) -> str:
+    s = str(raw).lower().strip()
+    s = s.replace(" ", "_").replace("-", "_")
+    s = s.replace("[", ".").replace("]", "")
+    return s
 
 
 class ExternalProvider:
@@ -467,10 +479,13 @@ class ExternalProvider:
 
         Only allowlisted ``code``, ``type``, and ``param`` fields are checked.
         The raw body, free-text messages, API keys, and endpoint secrets are
-        never returned or logged.
+        never returned or logged.  The body is limited to
+        ``_MAX_ERROR_BODY_BYTES`` to prevent resource exhaustion.
         """
         try:
-            raw = exc.read()
+            raw = exc.read(_MAX_ERROR_BODY_BYTES + 1)
+            if len(raw) > _MAX_ERROR_BODY_BYTES:
+                return None
             body = json.loads(raw.decode("utf-8"))
         except Exception:
             return None
@@ -482,20 +497,15 @@ class ExternalProvider:
         if not isinstance(error_obj, dict):
             return None
 
-        err_code = str(error_obj.get("code", "")).lower()
-        err_type = str(error_obj.get("type", "")).lower()
-        err_param = str(error_obj.get("param", "")).lower()
+        err_code = _canonicalize_code(error_obj.get("code", ""))
+        err_param = _canonicalize_param(error_obj.get("param", ""))
 
         if err_code in _SCHEMA_ERROR_CODES:
             return ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
         if err_code in _SCHEMA_REJECTED_CODES:
             return ProviderErrorCategory.SCHEMA_REJECTED
-        if "response_format" in err_param or "json_schema" in err_param:
+        if err_param in _SCHEMA_ERROR_PARAMS:
             return ProviderErrorCategory.SCHEMA_REJECTED
-        if "schema" in err_code:
-            return ProviderErrorCategory.SCHEMA_REJECTED
-        if "unsupported" in err_type and "response_format" in err_type:
-            return ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
 
         return None
 
