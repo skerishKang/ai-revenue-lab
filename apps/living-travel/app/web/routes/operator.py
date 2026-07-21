@@ -28,7 +28,7 @@ from app.generation_run_repository import count_generation_runs_by_edition
 from app.pilot_evidence_repository import get_pilot_evidence_by_traveler
 from app.pipeline.service import GenerationService
 from app.pipeline.errors import PipelineError
-from app.ai.mock import MockProvider
+from app.ai.providers import create_mock_provider, create_second_mock_provider
 from app.security import (
     create_operator_session,
     create_traveler_token,
@@ -415,9 +415,9 @@ async def generate_first_edition(
             return HTMLResponse(render_template("404.html", {}), status_code=404)
 
         preferences = _build_traveler_preferences(traveler)
-        source_items = _build_source_items(conn, traveler.destination)
 
-        provider = MockProvider()
+        provider = create_mock_provider(conn, traveler.destination)
+        source_items = _build_source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
         try:
             service.generate_first_edition(
@@ -427,18 +427,11 @@ async def generate_first_edition(
             )
         except PipelineError as exc:
             failure_category = "pipeline_error"
-            editions = get_editions_by_traveler(conn, traveler_id)
-            for ed in editions:
-                if ed.generation_status == "generation_pending":
-                    update_edition_generation_status(conn, ed.id, "generation_failed")
-            pass
+            import logging; logging.getLogger(__name__).warning("PipelineError in generate-first: %s", exc)
         except Exception:
             failure_category = "unexpected_error"
-            editions = get_editions_by_traveler(conn, traveler_id)
-            for ed in editions:
-                if ed.generation_status == "generation_pending":
-                    update_edition_generation_status(conn, ed.id, "generation_failed")
-            pass
+            import logging; logging.getLogger(__name__).exception("Unexpected error in generate-first")
+            raise
     finally:
         conn.close()
     return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)
@@ -470,9 +463,9 @@ async def generate_second_edition(
             return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)
 
         preferences = _build_traveler_preferences(traveler)
-        source_items = _build_source_items(conn, traveler.destination)
 
-        provider = MockProvider()
+        provider = create_second_mock_provider(conn, traveler.destination)
+        source_items = _build_source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
         try:
             service.generate_second_edition(
@@ -483,18 +476,9 @@ async def generate_second_edition(
             )
         except PipelineError as exc:
             failure_category = "pipeline_error"
-            new_editions = get_editions_by_traveler(conn, traveler_id)
-            for ed in new_editions:
-                if ed.generation_status == "generation_pending":
-                    update_edition_generation_status(conn, ed.id, "generation_failed")
-            pass
         except Exception:
             failure_category = "unexpected_error"
-            new_editions = get_editions_by_traveler(conn, traveler_id)
-            for ed in new_editions:
-                if ed.generation_status == "generation_pending":
-                    update_edition_generation_status(conn, ed.id, "generation_failed")
-            pass
+            raise
     finally:
         conn.close()
     return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)

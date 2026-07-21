@@ -65,6 +65,7 @@ async def traveler_enter_submit(
         conn.close()
     resp = RedirectResponse(url="/traveler/", status_code=303)
     resp.set_cookie("lt_traveler_session", raw_token, httponly=True, samesite="strict", max_age=86400)
+    resp.set_cookie("lt_csrf", csrf, httponly=True, samesite="strict", max_age=3600)
     return resp
 
 
