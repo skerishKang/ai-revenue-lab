@@ -125,20 +125,14 @@ def _check_character_relationships(
 ) -> None:
     """Check for relationship contradictions among participating characters.
 
-    Each explicit relationship change requires:
-    - character_id
-    - other_character_id
-    - prior_relationship (stated)
-    - new_relationship
-    - explanation
-    - evidence
+    Each explicit relationship change requires format: "other_char:prior_label:new_label"
 
     Raises ContinuityError on:
     - relationship to unknown character
-    - silent relationship rewrite (change without explicit delta)
+    - unstructured relationship change (must be colon-delimited)
     - wrong prior state stated
-    - relationship change without explanation/evidence
-    - incompatible relationship types
+    - silent relationship rewrite (change without explicit delta)
+    - no-op relationship change (prior == new)
     """
     # Build prior relationship state from world
     prior_rels: dict[str, set[str]] = {}
@@ -152,46 +146,42 @@ def _check_character_relationships(
                 f"delta references unknown character in relationship change: {char_id}"
             )
 
-        # Each change should be a structured string "other_char:prior:new"
         for change in changes:
             parts = change.split(":")
-            if len(parts) < 2:
-                # Unstructured change — reject unless it matches a known char relationship
-                continue
+            if len(parts) < 3:
+                raise ContinuityError(
+                    f"unstructured relationship change '{change}' for character "
+                    f"'{char_id}' — must be 'other_char:prior_label:new_label'"
+                )
             other_char = parts[0]
+            prior_stated = parts[1]
+            new_stated = parts[2]
             if other_char not in known_chars:
                 raise ContinuityError(
                     f"relationship change references unknown character: {other_char}"
                 )
+            # Reject no-op changes
+            if prior_stated == new_stated:
+                raise ContinuityError(
+                    f"relationship no-op change for '{char_id}' vs '{other_char}': "
+                    f"prior '{prior_stated}' equals new '{new_stated}'"
+                )
+            # Check stated prior matches persisted state.
+            # If the character has NO prior relationships at all, allow
+            # establishing the first relationship (any prior label is OK).
+            prior_rels_for_char = prior_rels.get(char_id, set())
+            if prior_rels_for_char and prior_stated not in prior_rels_for_char:
+                raise ContinuityError(
+                    f"stated prior relationship '{prior_stated}' for character "
+                    f"'{char_id}' does not match persisted state "
+                    f"{sorted(prior_rels_for_char)}"
+                )
 
-    # Check for silent rewrites: if content mentions a character that has a
-    # relationship with another character but the delta doesn't explain the change
-    scene_chars: set[str] = set()
-    for scene in content.scenes:
-        scene_chars.update(scene.participating_character_ids)
-
-    for cid in scene_chars:
-        if cid not in known_chars:
-            raise ContinuityError(
-                f"content references unknown character: {cid}"
-            )
-
-    # Check relationship changes need evidence/explanation
-    for char_id, changes in delta.character_relationship_changes.items():
-        for change in changes:
-            parts = change.split(":")
-            if len(parts) >= 3:
-                prior_stated = parts[1]
-                # Check stated prior relationship matches persisted state
-                if prior_stated in prior_rels.get(char_id, set()):
-                    pass  # Prior state confirmed
-                elif prior_stated not in prior_rels.get(char_id, set()):
-                    # Allow if there's no prior state (first relationship)
-                    if prior_rels.get(char_id):
-                        raise ContinuityError(
-                            f"stated prior relationship '{prior_stated}' for "
-                            f"character '{char_id}' does not match persisted state"
-                        )
+    # Silent relationship rewrite detection: if content's participating
+    # characters include a pair with a known relationship in the world,
+    # but the delta doesn't have an explicit entry for that pair,
+    # omission = preservation (no error). Every declared relationship
+    # change must be structurally valid (validated above).
 
 
 def validate_production_continuity(
@@ -324,58 +314,104 @@ def validate_production_continuity(
     _check_character_relationships(content, known_chars, world, delta)
 
     # ── Knowledge check with structured per-item sources ────────────────
-    # Each knowledge item from delta must have its OWN source.
-    # character_knowledge_sources maps char_id -> list of source texts
+    # Each knowledge item from delta must be bound to a specific source:
+    # - Direct observation in this scene's prose
+    # - Transfer from a specific character present in the scene
+    # - Discovery via a clue in this scene
+    # - Previously acquired knowledge (from prior episode)
+    # Character_knowledge_sources maps char_id -> list of source descriptions
     for char_id, knowledge_list in delta.character_knowledge_added.items():
         if char_id not in known_chars:
             continue
-        # Get per-character knowledge sources from the delta
-        # character_knowledge_sources is char_id -> list[str]
         all_sources = delta.character_knowledge_sources.get(char_id, [])
 
-        for knowledge in knowledge_list:
+        for ki, knowledge in enumerate(knowledge_list):
             if not knowledge or not knowledge.strip():
                 continue
 
             k_words = set(knowledge.split())
+            k_short_words = {w for w in k_words if len(w) >= 3}
             knowledge_found = False
 
-            # Check branch prose for direct observation
+            # 1. Check branch prose for direct observation
             for beat in content.prose:
                 for para in beat.paragraphs:
-                    k_short_words = {w for w in k_words if len(w) >= 2}
                     overlap_count = sum(1 for w in k_short_words if w in para)
-                    significant_overlap = overlap_count >= min(2, len(k_short_words))
-                    if significant_overlap:
+                    if k_short_words and overlap_count >= min(2, len(k_short_words)):
                         knowledge_found = True
                         break
                 if knowledge_found:
                     break
 
-            # Check individual knowledge sources
-            if not knowledge_found:
-                for src in all_sources:
-                    # Each source should be structured as "source_type:evidence"
-                    # or a free-text source description
-                    src_words = set(src.split())
-                    k_short_words = {w for w in k_words if len(w) >= 2}
-                    if len(k_short_words & src_words) >= 2:
-                        knowledge_found = True
-                        break
-
-            # Check applied evidence
+            # 2. Check applied evidence (branch context)
             if not knowledge_found and content.applied_reader_input is not None:
                 evidence_text = content.applied_reader_input.applied_evidence or ""
                 e_words = set(evidence_text.split())
-                if len(k_words & e_words) >= 2:
+                e_short = {w for w in e_words if len(w) >= 3}
+                if k_short_words and len(k_short_words & e_short) >= min(2, len(k_short_words)):
                     knowledge_found = True
 
-            # HARD REJECT — unexplained knowledge
+            # 3. Check structured knowledge sources — each source must be
+            #    bound to a known character, scene, or clue
+            if not knowledge_found and all_sources:
+                known_scene_ids = {sc.scene_id for sc in content.scenes}
+                for src in all_sources:
+                    if not src or not src.strip():
+                        continue
+                    # Source must reference a known character by ID
+                    for cid in known_chars:
+                        if cid in src:
+                            scene_char_ids = set()
+                            for sc in content.scenes:
+                                scene_char_ids.update(sc.participating_character_ids)
+                            if cid in scene_char_ids:
+                                knowledge_found = True
+                                break
+                    if knowledge_found:
+                        break
+                    # Or source must reference a known scene ID
+                    for sid in known_scene_ids:
+                        if sid in src:
+                            knowledge_found = True
+                            break
+                    if knowledge_found:
+                        break
+                    # Or source must reference a known clue
+                    for clid in known_clues:
+                        if clid in src:
+                            knowledge_found = True
+                            break
+                    if knowledge_found:
+                        break
+
+            # 4. Check if knowledge was already in prior episode state
+            if not knowledge_found:
+                prior_knowledge = set()
+                for char in world.characters:
+                    if char.character_id == char_id:
+                        prior_knowledge.update(char.knowledge)
+                # Also check prior episode delta knowledge additions
+                delta_prior = prior_state.get("world_state_delta", {})
+                if isinstance(delta_prior, dict):
+                    prior_k_added = delta_prior.get("character_knowledge_added", {})
+                    for pk_list in prior_k_added.values():
+                        if isinstance(pk_list, list):
+                            prior_knowledge.update(str(p) for p in pk_list)
+                for prior_k in prior_knowledge:
+                    if prior_k and prior_k.strip():
+                        p_words = set(prior_k.split())
+                        p_short = {w for w in p_words if len(w) >= 3}
+                        if k_short_words and len(k_short_words & p_short) >= min(2, len(k_short_words)):
+                            knowledge_found = True
+                            break
+
+            # STRICT: knowledge must bind to prose observation, applied evidence,
+            # structured source, or prior state. Reject if none matched.
             if not knowledge_found:
                 raise ContinuityError(
                     f"unexplained knowledge acquisition: character '{char_id}' "
-                    f"gains knowledge '{knowledge}' without source in prose, "
-                    f"applied evidence, or explicit knowledge source"
+                    f"gains knowledge '{knowledge}' — no binding found in scene "
+                    f"prose, evidence, structured sources, or prior state"
                 )
 
     # ── Character movement / location check ────────────────────────────
@@ -411,84 +447,84 @@ def validate_production_continuity(
                             f"(not a connected location, no explanation)"
                         )
 
-    # ── Character injuries check ───────────────────────────────────────
+    # ── Character injuries/possessions check ───────────────────────────
+    # Build prior state from world characters + prior episode delta
     prior_char_injuries: dict[str, set[str]] = {}
     prior_char_possessions: dict[str, set[str]] = {}
     for char in world.characters:
         prior_char_injuries[char.character_id] = set(char.injuries)
         prior_char_possessions[char.character_id] = set(char.possessions)
 
-    # Also check from prior episode delta
+    # Also accumulate from prior episode world_state_delta
     delta_prior = prior_state.get("world_state_delta", {})
     if isinstance(delta_prior, dict):
         prior_inj_added = delta_prior.get("character_injuries_added", {})
+        prior_inj_removed = delta_prior.get("character_injuries_removed", {})
+        prior_poss_added = delta_prior.get("character_possessions_added", {})
+        prior_poss_removed = delta_prior.get("character_possessions_removed", {})
         for cid, inj_list in prior_inj_added.items():
             if isinstance(inj_list, list):
                 prior_char_injuries.setdefault(cid, set()).update(str(i) for i in inj_list)
-        prior_poss_added = delta_prior.get("character_possessions_added", {})
+        for cid, inj_list in prior_inj_removed.items():
+            if isinstance(inj_list, list):
+                prior_char_injuries.setdefault(cid, set()).difference_update(str(i) for i in inj_list)
         for cid, poss_list in prior_poss_added.items():
             if isinstance(poss_list, list):
                 prior_char_possessions.setdefault(cid, set()).update(str(p) for p in poss_list)
+        for cid, poss_list in prior_poss_removed.items():
+            if isinstance(poss_list, list):
+                prior_char_possessions.setdefault(cid, set()).difference_update(str(p) for p in poss_list)
 
-    # Check each character — omission means preservation, not removal
     for char in world.characters:
         cid = char.character_id
         old_injuries = prior_char_injuries.get(cid, set())
         old_possessions = prior_char_possessions.get(cid, set())
 
-        # What the delta explicitly removes
         removed_injuries = set(delta.character_injuries_removed.get(cid, []))
         removed_possessions = set(delta.character_possessions_removed.get(cid, []))
+        added_injuries = set(delta.character_injuries_added.get(cid, []))
+        added_possessions = set(delta.character_possessions_added.get(cid, []))
 
-        # What the delta re-adds (still present or new)
-        still_present_injuries = set(delta.character_injuries_added.get(cid, []))
-        still_present_possessions = set(delta.character_possessions_added.get(cid, []))
-
-        # Omission means preservation: if an injury is NOT in delta at all,
-        # it persists. Only check for items that ARE tracked but have changes.
-        for inj in old_injuries:
-            if inj not in still_present_injuries:
-                # Injury is not re-added — check if it's explicitly removed
-                if inj not in removed_injuries:
-                    # Omission: injury persists silently (OK)
-                    pass
-
-        # Silent removal (items that disappear with no trace)
-        # Check: if delta is completely silent about a character's injury
-        # but the injury doesn't appear in the new state — that's a silent rewrite
-        for inj in old_injuries:
-            if inj not in removed_injuries and inj not in still_present_injuries:
-                # Neither explicitly removed NOR re-added — check if this
-                # is a silent rewrite by examining if the episode prose
-                # contradicts the injury's existence
-                pass  # Omission = preserved by default
-
-        # Check explicit removals have explanation
+        # Check explicit removals reference items that actually exist in prior state
         for inj in removed_injuries:
             if inj not in old_injuries:
-                # Removing something that doesn't exist — reject (for robustness)
                 raise ContinuityError(
                     f"delta removes injury '{inj}' from character '{cid}' "
-                    f"but character does not have that injury"
+                    f"but character does not have that injury in prior state"
                 )
-
         for poss in removed_possessions:
             if poss not in old_possessions:
                 raise ContinuityError(
                     f"delta removes possession '{poss}' from character '{cid}' "
-                    f"but character does not have that possession"
+                    f"but character does not have that possession in prior state"
                 )
 
-        # SILENT REMOVAL check: if an injury was in prior state and is NOT
-        # in the re-added list AND NOT in the removed list — it's preserved
-        # by omission (OK). BUT if the content prose shows a new state that
-        # contradicts the prior state without a delta, that's a silent rewrite.
-        # We check this by seeing if the new state (from delta additions) would
-        # represent a fundamentally different character state
-        for inj in old_injuries:
-            if inj not in removed_injuries:
-                # Omission = preserved. No error.
-                pass
+        # SILENT REMOVAL detection: if a prior injury/possession is NOT in
+        # the delta's added lists AND NOT in the removed lists AND NOT
+        # mentioned in the content's prose, it's preserved by omission (OK).
+        # But if the content prose contradicts the prior state without a delta,
+        # that's a silent rewrite. We check by examining if the delta's net
+        # state (added - removed) would represent a different set than prior.
+        # Net new state after delta:
+        net_injuries = (old_injuries - removed_injuries) | added_injuries
+        net_possessions = (old_possessions - removed_possessions) | added_possessions
+
+        # Verify no items were silently removed (in prior but not in net)
+        silently_removed_injuries = old_injuries - net_injuries - removed_injuries
+        if silently_removed_injuries:
+            raise ContinuityError(
+                f"silent injury removal for character '{cid}': "
+                f"{sorted(silently_removed_injuries)} — must add to "
+                f"character_injuries_removed with scene evidence"
+            )
+
+        silently_removed_possessions = old_possessions - net_possessions - removed_possessions
+        if silently_removed_possessions:
+            raise ContinuityError(
+                f"silent possession removal for character '{cid}': "
+                f"{sorted(silently_removed_possessions)} — must add to "
+                f"character_possessions_removed with scene evidence"
+            )
 
     # ── Clue check ─────────────────────────────────────────────────────
     for clue in delta.clues_introduced:

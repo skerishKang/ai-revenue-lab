@@ -147,6 +147,9 @@ def update_generation_run(
     retry_count: int | None = None,
     error_category: str | None = None,
     error_message: str | None = None,
+    provider: str | None = None,
+    advertised_model: str | None = None,
+    cost_class: str | None = None,
 ) -> GenerationRunRecord | None:
     """Update a generation run.
 
@@ -160,6 +163,15 @@ def update_generation_run(
     if completed_at is not None:
         updates.append("completed_at = ?")
         params.append(completed_at)
+    if provider is not None:
+        updates.append("provider = ?")
+        params.append(provider)
+    if advertised_model is not None:
+        updates.append("advertised_model = ?")
+        params.append(advertised_model)
+    if cost_class is not None:
+        updates.append("cost_class = ?")
+        params.append(cost_class)
     if latency_seconds is not None:
         updates.append("latency_seconds = ?")
         params.append(latency_seconds)

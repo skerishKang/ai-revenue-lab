@@ -104,6 +104,12 @@ CANON_EPISODE_1_CONTENT = {
                 "내일 날짜와 자신의 필체 경고가 적힌 장부를 발견했다",
             ],
         },
+        "character_knowledge_sources": {
+            "char-mina-seo": [
+                "scene-archive-midnight: 기록 보관소에서 노크 소리 관찰",
+                "scene-ledger-finding: 장부 발견",
+            ],
+        },
         "character_location_changed": {},
         "character_injuries_added": {},
         "character_possessions_added": {
@@ -229,6 +235,15 @@ BRANCH_EPISODE_CONTENT = {
             ],
             "char-director-han": [
                 "지하 마스터 열쇠를 요청했으나 거절당했다",
+            ],
+        },
+        "character_knowledge_sources": {
+            "char-mina-seo": [
+                "scene-inventory-check: 도면에서 13호실 과거 존재 확인",
+                "scene-ledger-hidden: 보안 영상 공백과 음성 프레임 발견",
+            ],
+            "char-director-han": [
+                "scene-key-request: 복도에서 마스터 열쇠 요청",
             ],
         },
         "character_location_changed": {},

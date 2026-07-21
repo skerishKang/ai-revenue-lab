@@ -126,6 +126,13 @@ def apply_migrations(
             )
             conn.commit()
             applied_versions.append(filename)
+        except MigrationError:
+            # MigrationError raised above (e.g. FK violations) — rollback
+            # and re-raise. Must catch before sqlite3.Error to ensure
+            # the transaction is properly rolled back.
+            if conn.in_transaction:
+                conn.rollback()
+            raise
         except sqlite3.Error as exc:
             conn.rollback()
             raise MigrationError(filename, exc) from exc

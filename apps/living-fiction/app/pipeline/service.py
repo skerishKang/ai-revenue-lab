@@ -276,22 +276,18 @@ def _provider_call_with_retry(
         # Update run with actual provider values from the successful result
         if conn.in_transaction:
             conn.rollback()
-        gr_repo.update_generation_run(
-            conn, run_id,
-            completed_at=completed_at,
-            latency_seconds=total_latency,
-            success=True,
-            validation_status=ValidationStatus.PASSED.value,
-            input_tokens=total_input_tokens,
-            output_tokens=total_output_tokens,
-            retry_count=retry_count,
-        )
-        # Update provider/model/cost to actual values from successful result
         conn.execute("BEGIN IMMEDIATE")
         conn.execute(
-            "UPDATE generation_runs SET provider = ?, advertised_model = ?, "
-            "cost_class = ? WHERE id = ?",
-            (final_provider, final_model, final_cost, run_id),
+            "UPDATE generation_runs SET "
+            "completed_at = ?, latency_seconds = ?, success = 1, "
+            "validation_status = ?, input_tokens = ?, output_tokens = ?, "
+            "retry_count = ?, provider = ?, advertised_model = ?, cost_class = ? "
+            "WHERE id = ?",
+            (
+                completed_at, total_latency, ValidationStatus.PASSED.value,
+                total_input_tokens, total_output_tokens, retry_count,
+                final_provider, final_model, final_cost, run_id,
+            ),
         )
         conn.commit()
         # Deserialize the payload
@@ -321,24 +317,20 @@ def _provider_call_with_retry(
     else:
         if conn.in_transaction:
             conn.rollback()
-        gr_repo.update_generation_run(
-            conn, run_id,
-            completed_at=completed_at,
-            latency_seconds=total_latency,
-            success=False,
-            validation_status=ValidationStatus.PROVIDER_FAILED.value,
-            input_tokens=total_input_tokens,
-            output_tokens=total_output_tokens,
-            retry_count=retry_count,
-            error_category=last_error_category.value if last_error_category else None,
-            error_message=last_error_message,
-        )
-        # Update provider/model/cost to actual values
         conn.execute("BEGIN IMMEDIATE")
         conn.execute(
-            "UPDATE generation_runs SET provider = ?, advertised_model = ?, "
-            "cost_class = ? WHERE id = ?",
-            (final_provider, final_model, final_cost, run_id),
+            "UPDATE generation_runs SET "
+            "completed_at = ?, latency_seconds = ?, success = 0, "
+            "validation_status = ?, input_tokens = ?, output_tokens = ?, "
+            "retry_count = ?, error_category = ?, error_message = ?, "
+            "provider = ?, advertised_model = ?, cost_class = ? "
+            "WHERE id = ?",
+            (
+                completed_at, total_latency, ValidationStatus.PROVIDER_FAILED.value,
+                total_input_tokens, total_output_tokens, retry_count,
+                last_error_category.value if last_error_category else None,
+                last_error_message, final_provider, final_model, final_cost, run_id,
+            ),
         )
         conn.commit()
         return (None, run_id,

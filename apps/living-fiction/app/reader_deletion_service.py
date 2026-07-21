@@ -169,22 +169,39 @@ def delete_reader_with_revocation(
             (anonymized_name, now, reader_id),
         )
 
-        # 2. Revoke unapplied choices (remove personal linkage)
+        # 2. Revoke unapplied choices and anonymize ALL choice personal linkage
+        # Anonymize choice_text and comment on ALL choices (not just revoke unapplied)
         revoked_choices = conn.execute(
-            "UPDATE reader_choices SET comment = NULL "
+            "UPDATE reader_choices SET comment = NULL, choice_text = '[anonymized]' "
             "WHERE reader_id = ? AND applied_to_branch_id IS NULL",
             (reader_id,),
         ).rowcount
 
-        # Anonymize comments on applied choices
+        # Anonymize comments and choice_text on applied choices
         conn.execute(
-            "UPDATE reader_choices SET comment = '[anonymized]' "
+            "UPDATE reader_choices SET comment = '[anonymized]', "
+            "choice_text = '[anonymized]', "
+            "anonymized_principal_id = ?, is_anonymized = 1 "
             "WHERE reader_id = ? AND applied_to_branch_id IS NOT NULL AND comment IS NOT NULL",
-            (reader_id,),
+            (anon_principal_id, reader_id),
+        )
+
+        # Also anonymize unapplied choices' principal
+        conn.execute(
+            "UPDATE reader_choices SET anonymized_principal_id = ?, is_anonymized = 1 "
+            "WHERE reader_id = ?",
+            (anon_principal_id, reader_id),
+        )
+
+        # Anonymize reader_id on all choices (after choice_text is already anonymized
+        # to avoid UNIQUE constraint conflicts on (reader_id, canon_episode_id, choice_text))
+        conn.execute(
+            "UPDATE reader_choices SET reader_id = ? WHERE reader_id = ?",
+            (anon_principal_id, reader_id),
         )
 
         # 3. Anonymize applied reader input JSON on branch episodes
-        # Remove private comment from applied_reader_input_json
+        # Remove ALL personal linkage: comment, choice_text, reader_choice_id, private_text
         ep_rows = conn.execute(
             "SELECT id, applied_reader_input_json FROM episodes "
             "WHERE reader_id = ? AND applied_reader_input_json IS NOT NULL",
@@ -196,8 +213,11 @@ def delete_reader_with_revocation(
                 if isinstance(ari, dict):
                     ari["comment"] = "[anonymized]"
                     ari["private_text"] = "[anonymized]"
+                    ari["choice_text"] = "[anonymized]"
+                    ari["reader_choice_id"] = "[anonymized]"
                     conn.execute(
-                        "UPDATE episodes SET applied_reader_input_json = ? WHERE id = ?",
+                        "UPDATE episodes SET applied_reader_input_json = ?, "
+                        "is_reader_input_anonymized = 1 WHERE id = ?",
                         (json.dumps(ari, ensure_ascii=False), ep_row["id"]),
                     )
             except (json.JSONDecodeError, TypeError):
@@ -206,15 +226,12 @@ def delete_reader_with_revocation(
                     f"{ep_row['id']} during deletion — transaction rolled back"
                 )
 
-        # 4. Anonymize generation requests (reader_id only - reader_choice_id is NOT NULL)
-        gen_req_rows = conn.execute(
-            "SELECT id, reader_choice_id FROM branch_generation_requests "
-            "WHERE reader_id = ?",
-            (reader_id,),
-        ).fetchall()
-        # Anonymize reader_id on generation requests
+        # 4. Anonymize generation requests — reader_id
+        # Cannot change reader_choice_id (NOT NULL FK). The choice row still
+        # exists (anonymized), so the FK reference is valid.
         conn.execute(
-            "UPDATE branch_generation_requests SET reader_id = ? WHERE reader_id = ?",
+            "UPDATE branch_generation_requests SET reader_id = ? "
+            "WHERE reader_id = ?",
             (anon_principal_id, reader_id),
         )
 
