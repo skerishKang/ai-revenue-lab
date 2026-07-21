@@ -193,10 +193,16 @@ def test_branch_foreign_world_checkpoint(db_conn):
     canon_ep_id = _setup_world_and_published_canon(db_conn)
 
     # Create a second world + snapshot + checkpoint
-    from app.domain.models import WorldState
+    from app.domain.models import WorldState, CharacterRef
+    char_copy = CharacterRef(
+        character_id=WORLD_STATE.characters[0].character_id,
+        canonical_name=WORLD_STATE.characters[0].canonical_name,
+        role=WORLD_STATE.characters[0].role,
+        location_id=WORLD_STATE.characters[0].location_id,
+    )
     world2 = WorldState(
         world_id="world-other", version="v1", premise="other world",
-        characters=[WORLD_STATE.characters[0]], locations=[WORLD_STATE.locations[0]],
+        characters=[char_copy], locations=[WORLD_STATE.locations[0]],
     )
     world_repo.create_world(db_conn, world2)
     canon_repo.create_canon_snapshot(

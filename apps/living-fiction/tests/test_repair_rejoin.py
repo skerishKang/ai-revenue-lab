@@ -104,10 +104,16 @@ def test_foreign_world_checkpoint_rejected(db_conn):
     branch, reader = _setup_rejoin_test(db_conn)
 
     # Create a checkpoint in a different world
-    from app.domain.models import WorldState
+    from app.domain.models import WorldState, CharacterRef
+    char_copy = CharacterRef(
+        character_id=WORLD_STATE.characters[0].character_id,
+        canonical_name=WORLD_STATE.characters[0].canonical_name,
+        role=WORLD_STATE.characters[0].role,
+        location_id=WORLD_STATE.characters[0].location_id,
+    )
     world2 = WorldState(
         world_id="world-foreign", version="v1", premise="foreign",
-        characters=[WORLD_STATE.characters[0]], locations=[WORLD_STATE.locations[0]],
+        characters=[char_copy], locations=[WORLD_STATE.locations[0]],
     )
     world_repo.create_world(db_conn, world2)
     canon_repo.create_canon_snapshot(

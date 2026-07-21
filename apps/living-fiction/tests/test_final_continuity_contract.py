@@ -228,7 +228,7 @@ def test_relationship_change_without_evidence_rejected(db_conn):
             participating_character_ids=["char-1", "char-2"],
         )],
     )
-    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
+    with pytest.raises(ContinuityError, match="changes without evidence"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -299,7 +299,7 @@ def test_injury_removal_without_evidence_rejected(db_conn):
         # No evidence
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
+    with pytest.raises(ContinuityError, match="removals without evidence"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -342,7 +342,7 @@ def test_possession_removal_without_evidence_rejected(db_conn):
         # No evidence
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
+    with pytest.raises(ContinuityError, match="removals without evidence"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -724,7 +724,7 @@ def test_injury_removal_without_explanation_rejected(db_conn):
         character_injuries_removed={"char-1": ["Nonexistent Injury"]},
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="does not have that injury"):
+    with pytest.raises(ContinuityError, match="removals without evidence"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -737,7 +737,7 @@ def test_possession_removal_without_explanation_rejected(db_conn):
         character_possessions_removed={"char-1": ["Nonexistent Possession"]},
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="does not have that possession"):
+    with pytest.raises(ContinuityError, match="removals without evidence"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )

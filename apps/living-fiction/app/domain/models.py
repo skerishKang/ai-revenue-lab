@@ -102,6 +102,22 @@ class WorldState(BaseModel):
             raise ValueError("duplicate clue_id")
         return self
 
+    @model_validator(mode="after")
+    def check_relationship_referential_integrity(self):
+        char_ids = {c.character_id for c in self.characters}
+        for char in self.characters:
+            for ref in char.relationships:
+                if ref.other_character_id not in char_ids:
+                    raise ValueError(
+                        f"relationship target '{ref.other_character_id}' "
+                        f"does not exist in world characters"
+                    )
+                if ref.other_character_id == char.character_id:
+                    raise ValueError(
+                        f"self relationship edge for character '{char.character_id}'"
+                    )
+        return self
+
 
 # ── Episode Plan ─────────────────────────────────────────────────────────
 
@@ -173,7 +189,7 @@ class PossessionRemovalEvidence(BaseModel):
     possession: NonEmptyStr
     action: Literal["lost", "transferred", "destroyed", "consumed"]
     excerpt: NonEmptyStr
-    recipient_character_id: str | None = None
+    recipient_character_id: PatternStr | None = None
 
 
 class ContinuityDelta(BaseModel):

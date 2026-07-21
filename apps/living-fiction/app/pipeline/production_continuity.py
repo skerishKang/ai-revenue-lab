@@ -250,7 +250,7 @@ def _validate_injury_evidence(
             f"injury evidence count {len(evidence_list)} does not match "
             f"removal count {len(removed_items)} for character '{char_id}'"
         )
-    used_keys: set[tuple[str, str, str]] = set()
+    used_keys: set[tuple[str, str]] = set()
     for idx, injury in enumerate(removed_items):
         ev = evidence_list[idx]
         if ev.character_id != char_id:
@@ -278,10 +278,11 @@ def _validate_injury_evidence(
                 f"injury evidence excerpt '{ev.excerpt}' not found in "
                 f"scene '{ev.scene_id}' prose"
             )
-        key = (ev.scene_id, ev.injury, ev.excerpt)
+        key = (ev.scene_id, ev.excerpt)
         if key in used_keys:
             raise ContinuityError(
-                f"injury evidence reuses same binding for '{injury}'"
+                f"injury evidence reuses scene '{ev.scene_id}' excerpt "
+                f"for multiple removals"
             )
         used_keys.add(key)
 
@@ -302,7 +303,7 @@ def _validate_possession_evidence(
             f"possession evidence count {len(evidence_list)} does not match "
             f"removal count {len(removed_items)} for character '{char_id}'"
         )
-    used_keys: set[tuple[str, str, str]] = set()
+    used_keys: set[tuple[str, str]] = set()
     for idx, possession in enumerate(removed_items):
         ev = evidence_list[idx]
         if ev.character_id != char_id:
@@ -364,10 +365,11 @@ def _validate_possession_evidence(
                     f"possession {ev.action} evidence for '{possession}' should not "
                     f"have a recipient"
                 )
-        key = (ev.scene_id, ev.possession, ev.excerpt)
+        key = (ev.scene_id, ev.excerpt)
         if key in used_keys:
             raise ContinuityError(
-                f"possession evidence reuses same binding for '{possession}'"
+                f"possession evidence reuses scene '{ev.scene_id}' excerpt "
+                f"for multiple removals"
             )
         used_keys.add(key)
 
@@ -407,7 +409,7 @@ def _check_character_relationships(
 
         for change in changes:
             parts = change.split(":")
-            if len(parts) < 3:
+            if len(parts) != 3:
                 raise ContinuityError(
                     f"unstructured relationship change '{change}' for character "
                     f"'{char_id}' — must be 'other_char:prior_label:new_label'"
@@ -415,6 +417,11 @@ def _check_character_relationships(
             other_char = parts[0]
             prior_stated = parts[1]
             new_stated = parts[2]
+            if not prior_stated or not new_stated:
+                raise ContinuityError(
+                    f"empty prior or new label in relationship change '{change}' "
+                    f"for character '{char_id}'"
+                )
             if other_char not in known_chars:
                 raise ContinuityError(
                     f"relationship change references unknown character: {other_char}"
@@ -579,6 +586,49 @@ def validate_production_continuity(
 
     # ── Relationship check ─────────────────────────────────────────────
     _check_character_relationships(content, known_chars, world, delta)
+
+    # ── Evidence key-set equality enforcement ──────────────────────────
+    # Evidence keys must exactly match mutation keys (no orphan evidence,
+    # no missing evidence).
+    rel_change_keys = set(delta.character_relationship_changes.keys())
+    rel_evidence_keys = set(delta.character_relationship_evidence.keys())
+    if rel_evidence_keys != rel_change_keys:
+        extra = rel_evidence_keys - rel_change_keys
+        missing = rel_change_keys - rel_evidence_keys
+        if extra:
+            raise ContinuityError(
+                "relationship evidence for characters without changes"
+            )
+        if missing:
+            raise ContinuityError(
+                "relationship changes without evidence"
+            )
+    inj_removed_keys = set(delta.character_injuries_removed.keys())
+    inj_evidence_keys = set(delta.character_injury_removal_evidence.keys())
+    if inj_evidence_keys != inj_removed_keys:
+        extra = inj_evidence_keys - inj_removed_keys
+        missing = inj_removed_keys - inj_evidence_keys
+        if extra:
+            raise ContinuityError(
+                "injury removal evidence for characters without removals"
+            )
+        if missing:
+            raise ContinuityError(
+                "injury removals without evidence"
+            )
+    poss_removed_keys = set(delta.character_possessions_removed.keys())
+    poss_evidence_keys = set(delta.character_possession_removal_evidence.keys())
+    if poss_evidence_keys != poss_removed_keys:
+        extra = poss_evidence_keys - poss_removed_keys
+        missing = poss_removed_keys - poss_evidence_keys
+        if extra:
+            raise ContinuityError(
+                "possession removal evidence for characters without removals"
+            )
+        if missing:
+            raise ContinuityError(
+                "possession removals without evidence"
+            )
 
     # ── Scene participant lookup ──────────────────────────────────────
     known_scene_ids = {sc.scene_id for sc in content.scenes}

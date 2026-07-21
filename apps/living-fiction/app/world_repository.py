@@ -302,7 +302,7 @@ def load_world_state(
     characters: list[CharacterRef] = []
     for cr in char_rows:
         knowledge: list[str] = []
-        rels: list[str] = []
+        rels: list[RelationshipRef] = []
         possessions: list[str] = []
         injuries: list[str] = []
         if cr["knowledge_state"]:
@@ -315,24 +315,41 @@ def load_world_state(
         if cr["relationships"]:
             try:
                 val = json.loads(cr["relationships"])
-                if isinstance(val, list):
-                    # Handle both legacy string format and new structured format
-                    for item in val:
-                        if isinstance(item, str):
-                            # Legacy: assume format "other_char_id:label" or just "label"
-                            if ":" in item:
-                                parts = item.split(":", 1)
-                                rels.append(RelationshipRef(
-                                    other_character_id=parts[0],
-                                    label=parts[1],
-                                ))
-                            else:
-                                # Cannot determine pair from bare label — skip legacy
-                                pass
-                        elif isinstance(item, dict):
-                            rels.append(RelationshipRef(**item))
             except (json.JSONDecodeError, TypeError):
-                pass
+                raise WorldValidationError(
+                    "malformed relationship JSON for character"
+                )
+            if not isinstance(val, list):
+                raise WorldValidationError(
+                    "relationship data is not a list"
+                )
+            for item in val:
+                if isinstance(item, str):
+                    if ":" in item:
+                        parts = item.split(":", 1)
+                        if not parts[0] or not parts[1]:
+                            raise WorldValidationError(
+                                "malformed legacy relationship entry"
+                            )
+                        rels.append(RelationshipRef(
+                            other_character_id=parts[0],
+                            label=parts[1],
+                        ))
+                    elif item.strip():
+                        raise WorldValidationError(
+                            "bare legacy relationship entry cannot be resolved"
+                        )
+                elif isinstance(item, dict):
+                    try:
+                        rels.append(RelationshipRef(**item))
+                    except Exception:
+                        raise WorldValidationError(
+                            "invalid relationship entry"
+                        )
+                else:
+                    raise WorldValidationError(
+                        "invalid relationship entry type"
+                    )
         characters.append(CharacterRef(
             character_id=cr["id"],
             canonical_name=cr["canonical_name"],
@@ -456,18 +473,38 @@ def load_world_state(
                     norm_rels: list[RelationshipRef] = []
                     if isinstance(raw_rels, list):
                         for item in raw_rels:
-                            if isinstance(item, str) and ":" in item:
-                                parts = item.split(":", 1)
-                                norm_rels.append(RelationshipRef(
-                                    other_character_id=parts[0],
-                                    label=parts[1],
-                                ))
+                            if isinstance(item, str):
+                                if ":" in item:
+                                    parts = item.split(":", 1)
+                                    if not parts[0] or not parts[1]:
+                                        raise WorldValidationError(
+                                            "malformed legacy relationship in snapshot"
+                                        )
+                                    norm_rels.append(RelationshipRef(
+                                        other_character_id=parts[0],
+                                        label=parts[1],
+                                    ))
+                                elif item.strip():
+                                    raise WorldValidationError(
+                                        "bare legacy relationship in snapshot"
+                                    )
                             elif isinstance(item, dict):
-                                norm_rels.append(RelationshipRef(**item))
+                                try:
+                                    norm_rels.append(RelationshipRef(**item))
+                                except Exception:
+                                    raise WorldValidationError(
+                                        "invalid relationship in snapshot"
+                                    )
                             elif isinstance(item, RelationshipRef):
                                 norm_rels.append(item)
-                    else:
-                        norm_rels = char.relationships
+                            else:
+                                raise WorldValidationError(
+                                    "invalid relationship type in snapshot"
+                                )
+                    elif raw_rels is not None:
+                        raise WorldValidationError(
+                            "relationship data in snapshot is not a list"
+                        )
                     characters[i] = CharacterRef(
                         character_id=char.character_id,
                         canonical_name=char.canonical_name,

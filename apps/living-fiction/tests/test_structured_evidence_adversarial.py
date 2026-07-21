@@ -864,7 +864,7 @@ def test_inj_extra_evidence_rejected(db_conn):
 
 
 def test_inj_reused_evidence_rejected(db_conn):
-    """28. same (scene, injury, excerpt) binding reused → reject."""
+    """28. same (scene, excerpt) reused for two injuries → reject."""
     db_conn.execute(
         "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
         (json.dumps({"character_injuries_added": {"char-1": ["injury_a", "injury_b"]}}),),
@@ -883,17 +883,15 @@ def test_inj_reused_evidence_rejected(db_conn):
             InjuryRemovalEvidence(
                 scene_id="scene-1", character_id="char-1",
                 injury="injury_b",
-                action="healed", excerpt=shared_excerpt,
+                action="recovered", excerpt=shared_excerpt,
             ),
         ]},
     )
     content = _make_content(world_state_delta=delta)
-    # Different injuries with same excerpt in same scene is actually valid
-    # since each evidence is for a different injury item.
-    # The reuse check only catches identical (scene, injury, excerpt) tuples.
-    validate_production_continuity(
-        content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
-    )
+    with pytest.raises(ContinuityError, match="reuses scene"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
 
 
 def test_inj_exact_evidence_pass(db_conn):
