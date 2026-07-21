@@ -99,8 +99,8 @@ class TestCSSTokens:
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         html = resp.text
-        assert "app.css?v=pe-ui51-20260722-1" in html, "CSS version query missing"
-        assert "app.css?'" not in html.replace("app.css?v=pe-ui51-20260722-1", ""), "Stale CSS reference found"
+        assert "app.css?v=pe-ui51-20260722-2" in html, "CSS version query missing"
+        assert "app.css?v=pe-ui51-20260722-1" not in html, "Stale CSS reference found"
 
     def test_css_version_query_on_all_participant_pages(self):
         """Access, home, edition, feedback pages all reference versioned CSS."""
@@ -113,13 +113,13 @@ class TestCSSTokens:
 
         for path in ["/p/access", f"/p/{pid}", f"/p/{pid}/input"]:
             resp = client.get(path, cookies=cookies)
-            assert "app.css?v=pe-ui51-20260722-1" in resp.text, f"Missing CSS version on {path}"
+            assert "app.css?v=pe-ui51-20260722-2" in resp.text, f"Missing CSS version on {path}"
 
     def test_css_file_returns_200(self):
         """Versioned CSS URL returns HTTP 200."""
         app, _ = _make_app(tempfile.mktemp(suffix=".db"))
         client = TestClient(app)
-        resp = client.get("/static/app.css?v=pe-ui51-20260722-1")
+        resp = client.get("/static/app.css?v=pe-ui51-20260722-2")
         assert resp.status_code == 200
         assert "font-editorial" in resp.text or "var(--paper)" in resp.text
 
@@ -139,6 +139,21 @@ class TestCSSTokens:
         client = TestClient(app)
         resp = client.get("/static/app.css")
         assert "prefers-reduced-motion" in resp.text
+
+    def test_css_version_2(self):
+        """CSS version must be -2."""
+        app, _ = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        resp = client.get("/p/access")
+        assert "app.css?v=pe-ui51-20260722-2" in resp.text
+        assert "app.css?v=pe-ui51-20260722-1" not in resp.text
+
+    def test_focus_visible_css(self):
+        """CSS must contain focus-visible rules."""
+        app, _ = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        resp = client.get("/static/app.css?v=pe-ui51-20260722-2")
+        assert "focus-visible" in resp.text
 
 
 # ------------------------------------------------------------------
@@ -191,6 +206,35 @@ class TestImageAttributes:
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         self._check_image(resp.text, "/static/images/editorial-process-layers.webp", "waiting state")
+
+    def test_access_image_exact_dimensions(self):
+        app, _ = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        resp = client.get("/p/access")
+        assert 'width="1122"' in resp.text
+        assert 'height="1402"' in resp.text
+
+    def test_dashboard_hero_exact_dimensions(self):
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "dim-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "크기 테스트")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        assert 'width="1536"' in resp.text
+        assert 'height="1024"' in resp.text
+
+    def test_history_hero_exact_dimensions(self):
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "hist-dim"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "기록 크기 테스트")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/history", cookies=cookies)
+        assert 'width="1536"' in resp.text
+        assert 'height="1024"' in resp.text
 
 
 # ------------------------------------------------------------------
@@ -431,6 +475,133 @@ class TestHTMLEscaping:
         html = resp.text
         assert "<script>" not in html
         assert "&lt;script&gt;" in html or "script" not in html.replace("</script>", "")
+
+    def test_generated_html_escaped(self):
+        """Malicious img tags in generated content are escaped."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "esc-img"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "이미지 이스케이프 테스트")
+            ed = ed_repo.create_edition(
+                conn, participant_id=pid, edition_number=1,
+                structured_content=json.dumps(_make_draft_payload()),
+                rendered_title='<img src=x onerror=alert(1)>')
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/history", cookies=cookies)
+        assert '<img src=x' not in resp.text
+        assert '&lt;img' in resp.text
+
+
+# ------------------------------------------------------------------
+# Feedback Korean labels tests
+# ------------------------------------------------------------------
+
+class TestFeedbackLabels:
+    def test_feedback_korean_labels(self):
+        """Feedback form shows Korean labels, not English enum names."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "fb-labels"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "피드백 라벨 테스트")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="테스트 에디션")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
+        for label in ["이 분위기와 방향을 계속 유지해주세요",
+                      "조금 더 구체적이고 실용적으로 써주세요",
+                      "생각과 감정을 조금 더 깊게 다뤄주세요"]:
+            assert label in resp.text, f"Korean label missing: {label}"
+
+    def test_feedback_no_english_enum_labels(self):
+        """No English enum names exposed in feedback form."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "fb-no-en"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "피드백 영어 테스트")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="테스트 에디션")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
+        assert "Continue Direction" not in resp.text
+        assert "More Practical" not in resp.text
+
+    def test_feedback_enum_values_preserved(self):
+        """Feedback checkbox values use enum values."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "fb-vals"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "피드백 값 테스트")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="테스트 에디션")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
+        assert 'value="continue_direction"' in resp.text
+        assert 'value="more_practical"' in resp.text
+
+
+# ------------------------------------------------------------------
+# Body class and surface tests
+# ------------------------------------------------------------------
+
+class TestBodyClass:
+    def test_participant_body_class(self):
+        """Participant pages have participant-surface body class."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "body-class"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "바디 클래스 테스트")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        assert 'class="participant-surface"' in resp.text
+        assert 'class="admin-surface"' not in resp.text
+
+
+# ------------------------------------------------------------------
+# Cover thumbnail tests
+# ------------------------------------------------------------------
+
+class TestCoverThumbnails:
+    def test_home_published_cover(self):
+        """Dashboard published edition shows cover image."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "cover-home"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "커버 홈 테스트")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="커버 테스트")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        assert "edition-cover-shift.webp" in resp.text or "edition-cover-archive.webp" in resp.text
+
+    def test_history_cover_thumbnails(self):
+        """History page shows cover thumbnails."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "cover-hist"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "커버 기록 테스트")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="커버 기록")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}/history", cookies=cookies)
+        assert "history-thumb" in resp.text
 
 
 # ------------------------------------------------------------------

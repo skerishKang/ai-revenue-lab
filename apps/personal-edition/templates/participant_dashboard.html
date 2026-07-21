@@ -5,7 +5,7 @@
   <div class="dashboard-hero animate-fade-in">
     <img src="/static/images/private-library-hero.webp"
          alt="개인 라이브러리"
-         width="680" height="340">
+         width="1536" height="1024">
   </div>
 
   <h1 class="dashboard-greeting">{{ participant.display_name }}님, 안녕하세요</h1>
@@ -15,12 +15,24 @@
   <div class="state-published">
     <a href="/p/{{ participant.id }}/editions/{{ published_editions[0].edition_number }}"
        class="latest-edition">
-      <span class="edition-label">최신 에디션</span>
-      <h2 class="edition-title-display">{{ published_editions[0].rendered_title or '제목 없음' }}</h2>
-      <span class="edition-date-display">
-        {% if published_editions[0].published_at %}{{ published_editions[0].published_at[:10] }}{% endif %}
-        · 제{{ published_editions[0].edition_number }}호
-      </span>
+      <div class="latest-edition-cover">
+        {% if published_editions[0].edition_number == 1 %}
+        <img src="/static/images/edition-cover-shift.webp" alt="에디션 커버"
+             width="1122" height="1402" loading="eager">
+        {% else %}
+        <img src="/static/images/edition-cover-archive.webp" alt="에디션 커버"
+             width="1122" height="1402" loading="eager">
+        {% endif %}
+      </div>
+      <div class="latest-edition-text">
+        <span class="edition-label">최신 에디션</span>
+        <h2 class="edition-title-display">{{ published_editions[0].rendered_title or '제목 없음' }}</h2>
+        <span class="edition-date-display">
+          {% if published_editions[0].published_at %}{{ published_editions[0].published_at[:10] }}{% endif %}
+          · 제{{ published_editions[0].edition_number }}호
+        </span>
+        <span class="btn btn-primary latest-edition-cta">최신 에디션 읽기</span>
+      </div>
     </a>
 
     {% if published_editions|length > 1 %}
@@ -50,7 +62,7 @@
   <div class="state-waiting animate-slide-up">
     <img src="/static/images/editorial-process-layers.webp"
          alt="편집 과정"
-         width="640" height="360">
+         width="1122" height="1402">
     <h2>기록을 맡아두었습니다</h2>
     <div class="stage-indicators">
       <span class="stage-indicator"><span class="stage-dot active"></span> 입력 완료</span>

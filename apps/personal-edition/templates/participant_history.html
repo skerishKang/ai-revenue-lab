@@ -5,7 +5,7 @@
   <div class="history-hero animate-fade-in">
     <img src="/static/images/edition-library-history.webp"
          alt="에디션 기록"
-         width="680" height="340">
+         width="1536" height="1024">
   </div>
 
   <h1 class="history-title">에디션 기록</h1>
@@ -15,6 +15,13 @@
     {% for edition in editions %}
     <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
        class="history-item">
+      <div class="history-thumb">
+        {% if edition.edition_number == 1 %}
+        <img src="/static/images/edition-cover-shift.webp" alt="" width="1122" height="1402" loading="lazy">
+        {% else %}
+        <img src="/static/images/edition-cover-archive.webp" alt="" width="1122" height="1402" loading="lazy">
+        {% endif %}
+      </div>
       <span class="history-num">#{{ edition.edition_number }}</span>
       <div class="history-info">
         <span class="history-item-title">{{ edition.rendered_title or '제목 없음' }}</span>

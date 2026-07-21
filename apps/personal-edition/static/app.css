@@ -286,7 +286,16 @@ legend {
   border-radius: 50%;
 }
 .access-image {
-  display: none;
+  display: block;
+  width: 100%;
+  max-height: 38vh;
+  overflow: hidden;
+}
+.access-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .access-form-group { margin-bottom: 1rem; }
 .access-form-group label {
@@ -310,10 +319,13 @@ legend {
   }
   .access-image {
     display: block;
+    max-height: none;
+    overflow: visible;
   }
   .access-image img {
     width: 100%;
     height: auto;
+    object-fit: contain;
   }
 }
 
@@ -935,6 +947,66 @@ legend {
 /* --- Responsive --- */
 @media (min-width: 768px) {
   .checkbox-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Focus Visible --- */
+:where(a, button, input, textarea, select, [role="checkbox"]):focus-visible {
+  outline: 3px solid rgba(32, 60, 50, 0.5);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- Admin Surface Isolation --- */
+.admin-surface .container {
+  max-width: 960px;
+}
+@media (min-width: 1200px) {
+  .admin-surface .container {
+    max-width: 1100px;
+  }
+}
+
+/* --- Latest Edition Cover (Dashboard) --- */
+.latest-edition {
+  display: grid !important;
+  grid-template-columns: 80px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+.latest-edition-cover {
+  width: 80px;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.latest-edition-cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.latest-edition-text {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+.latest-edition-cta {
+  margin-top: .5rem;
+  align-self: flex-start;
+}
+
+/* --- History Thumbnail --- */
+.history-thumb {
+  width: 48px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.history-thumb img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* --- Print --- */
