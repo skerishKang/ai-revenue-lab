@@ -196,9 +196,10 @@ def admin_participant_detail(request: Request, participant_id: str):
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
         if participant is None:
-            return _render_template(request, "admin_not_found.html", {
+            resp, _ = _render_with_csrf(request, "admin_not_found.html", {
                 "message": "Participant not found.",
             })
+            return resp
 
         editions = ed_repo.get_editions_by_participant(conn, participant_id)
         inputs = input_repo.get_inputs_by_participant(conn, participant_id)
@@ -239,9 +240,10 @@ def admin_generate(
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
         if participant is None:
-            return _render_template(request, "admin_not_found.html", {
+            resp, _ = _render_with_csrf(request, "admin_not_found.html", {
                 "message": "Participant not found.",
             })
+            return resp
 
         service: GenerationService = request.app.state.generation_service
         gen_request = GenerationRequest(
@@ -267,9 +269,10 @@ def admin_review_page(request: Request, edition_id: str):
     try:
         edition = ed_repo.get_edition_by_id(conn, edition_id)
         if edition is None:
-            return _render_template(request, "admin_not_found.html", {
+            resp, _ = _render_with_csrf(request, "admin_not_found.html", {
                 "message": "Edition not found.",
             })
+            return resp
 
         content = None
         if edition.structured_content:

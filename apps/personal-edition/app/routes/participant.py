@@ -315,10 +315,11 @@ def edition_read_page(request: Request, participant_id: str, edition_number: int
                 break
 
         if target is None:
-            return _render_template(request, "not_found.html", {
+            resp, _ = _render_with_csrf(request, "not_found.html", {
                 "participant": participant,
                 "message": "Edition not found or not yet published.",
             })
+            return resp
 
         content = json.loads(target.structured_content)
 
@@ -386,10 +387,11 @@ def feedback_form_page(request: Request, participant_id: str, edition_number: in
                 break
 
         if target is None:
-            return _render_template(request, "not_found.html", {
+            resp, _ = _render_with_csrf(request, "not_found.html", {
                 "participant": participant,
                 "message": "Edition not found or not yet published.",
             })
+            return resp
 
         content = json.loads(target.structured_content) if target.structured_content else {}
         existing = fb_repo.get_feedback_by_edition(conn, target.id)
@@ -398,10 +400,11 @@ def feedback_form_page(request: Request, participant_id: str, edition_number: in
         conn.close()
 
     if already_submitted:
-        return _render_template(request, "feedback_thanks.html", {
+        resp, _ = _render_with_csrf(request, "feedback_thanks.html", {
             "participant": participant,
             "edition_number": edition_number,
         })
+        return resp
 
     context: dict[str, Any] = {
         "participant": participant,
@@ -453,17 +456,19 @@ def feedback_form_submit(
                 break
 
         if target is None:
-            return _render_template(request, "not_found.html", {
+            resp, _ = _render_with_csrf(request, "not_found.html", {
                 "participant": participant,
                 "message": "Edition not found or not yet published.",
             })
+            return resp
 
         existing = fb_repo.get_feedback_by_edition(conn, target.id)
         if len(existing) > 0:
-            return _render_template(request, "feedback_thanks.html", {
+            resp, _ = _render_with_csrf(request, "feedback_thanks.html", {
                 "participant": participant,
                 "edition_number": edition_number,
             })
+            return resp
 
         if selected_section_id:
             valid_ids = _edition_section_ids(target)
@@ -504,10 +509,11 @@ def feedback_form_submit(
     finally:
         conn.close()
 
-    return _render_template(request, "feedback_thanks.html", {
+    resp, _ = _render_with_csrf(request, "feedback_thanks.html", {
         "participant": participant,
         "edition_number": edition_number,
     })
+    return resp
 
 
 @router.post("/{participant_id}/logout")
