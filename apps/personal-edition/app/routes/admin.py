@@ -118,7 +118,8 @@ def _validate_edition_content(structured_content: str) -> tuple[bool, str, Editi
     try:
         validated = EditionContent.model_validate(parsed)
     except Exception as exc:
-        return False, f"스키마 검증 오류: {exc}", None
+        logger.debug("Schema validation failed: %s", exc)
+        return False, "입력한 편집 내용의 필수 항목과 형식을 확인해 주세요.", None
 
     try:
         check_payload(validated.model_dump())
@@ -485,6 +486,9 @@ def admin_generate(
             allow_short_sample=(allow_short_sample == "1"),
         )
         result = service.generate_edition(conn, request=gen_request)
+        if not result.succeeded:
+            logger.warning("Generation succeeded=False for participant %s", participant_id)
+            error_code = "generation_failed"
     except Exception as exc:
         logger.error("Generation failed for participant %s: %s", participant_id, exc)
         error_code = "generation_failed"

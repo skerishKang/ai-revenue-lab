@@ -39,8 +39,8 @@ from app.pipeline.fixtures import load_bundle
 import json, tempfile, time
 
 
-def _make_app(db_path):
-    app = create_app(db_path=db_path)
+def _make_app(db_path, provider=None):
+    app = create_app(db_path=db_path, provider=provider)
     migrations_dir = os.path.join(_DIR, "migrations")
     apply_migrations(get_connection(db_path), migrations_dir)
     return app, db_path
@@ -971,3 +971,175 @@ class TestOperatorUIFixedContractAndNavigation:
         assert "성찰·깊이감 강화" in resp.text
         assert "continue_direction" not in resp.text
         assert "more_reflective" not in resp.text
+
+
+# =====================================================================
+# Issue #51: generation failure and schema validation safety
+# =====================================================================
+
+class FailingProvider:
+    """Provider that returns failed generation results without exceptions."""
+
+    def __init__(self):
+        self.provider = "failing_test"
+        self.model = "failing_test_model"
+        self.call_count = 0
+
+    def generate_structured(self, **kwargs):
+        self.call_count += 1
+        from app.domain.models import ProviderResult
+        from app.domain.enums import CostClass, ProviderErrorCategory
+        return ProviderResult(
+            provider="failing_test",
+            advertised_model="failing_test_model",
+            cost_class=CostClass.FREE,
+            success=False,
+            error_category=ProviderErrorCategory.PROVIDER_ERROR,
+            error_message="internal provider error",
+            latency_seconds=0.1,
+            retry_count=0,
+            request_id=kwargs.get("request_id", ""),
+        )
+
+
+class TestGenerationFailureHandling:
+    """Test that generation failures (succeeded=False) are handled safely."""
+
+    def test_returned_failure_shows_safe_korean_message(self):
+        """succeeded=False triggers safe Korean failure message, not raw error."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"), provider=FailingProvider())
+        client = TestClient(app)
+        pid = "fail-ret-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "실패테스트")
+            inp = input_repo.create_input(conn, participant_id=pid,
+                                          raw_text="테스트 입력입니다. " * 50, consent_confirmed=1)
+            input_id = inp.id
+
+        admin_cookies = _get_admin_session_cookie()
+        csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+        all_cookies = {**admin_cookies, **csrf_cookie}
+
+        resp = client.post(
+            f"/admin/participants/{pid}/generate",
+            data={"input_id": input_id, "csrf_token": csrf_token},
+            cookies=all_cookies, follow_redirects=False,
+        )
+        assert resp.status_code == 303
+        redirect_url = resp.headers["location"]
+        assert "error=generation_failed" in redirect_url
+
+        resp2 = client.get(redirect_url, cookies=all_cookies, follow_redirects=True)
+        assert resp2.status_code == 200
+        assert "초안을 생성하지 못했습니다" in resp2.text
+        assert "기존 기록과 에디션은 변경되지 않았습니다" in resp2.text
+        assert "internal provider error" not in resp2.text
+        assert "Traceback" not in resp2.text
+
+        conn2 = get_connection(db)
+        try:
+            editions = ed_repo.get_editions_by_participant(conn2, pid)
+            assert len(editions) == 0
+        finally:
+            conn2.close()
+
+    def test_schema_validation_safe_error(self):
+        """Schema validation errors show safe Korean message, not Pydantic exception."""
+        from app.routes.admin import _validate_edition_content
+        is_valid, error_msg, model = _validate_edition_content('{"invalid": true}')
+        assert is_valid is False
+        assert "validation_error" not in error_msg.lower()
+        assert "ValidationError" not in error_msg
+        assert "type=" not in error_msg
+        assert "input_value" not in error_msg
+        assert model is None
+        assert "필수 항목" in error_msg or "형식" in error_msg
+
+    def test_schema_malformed_json_safe_error(self):
+        """Malformed JSON shows safe error, not traceback."""
+        from app.routes.admin import _validate_edition_content
+        is_valid, error_msg, model = _validate_edition_content("not json at all")
+        assert is_valid is False
+        assert "JSON" in error_msg
+        assert "Traceback" not in error_msg
+        assert model is None
+
+    def test_schema_validation_invalid_content_safe_error(self):
+        """Valid JSON but wrong schema shows safe message."""
+        from app.routes.admin import _validate_edition_content
+        bad_content = json.dumps({
+            "content_version": "v1",
+            "language": "ko",
+            "edition_title": "제목",
+            "publication_title": "발행",
+            "deck": "요약",
+            "opening": "서론",
+            "provenance_note": "출처",
+            "highlighted_insight": "인사이트",
+            "sections": [],  # Missing required fields
+        })
+        is_valid, error_msg, model = _validate_edition_content(bad_content)
+        assert is_valid is False
+        assert "ValidationError" not in error_msg
+        assert "type=" not in error_msg
+        assert "input_value" not in error_msg
+
+    def test_generation_failure_preserves_input(self):
+        """Generation failure doesn't destroy existing input."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"), provider=FailingProvider())
+        client = TestClient(app)
+        pid = "fail-preserve"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "입력유지")
+            inp = input_repo.create_input(conn, participant_id=pid,
+                                          raw_text="유지되어야 할 입력입니다. " * 30,
+                                          consent_confirmed=1)
+            input_id = inp.id
+
+        admin_cookies = _get_admin_session_cookie()
+        csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+        all_cookies = {**admin_cookies, **csrf_cookie}
+
+        client.post(
+            f"/admin/participants/{pid}/generate",
+            data={"input_id": input_id, "csrf_token": csrf_token},
+            cookies=all_cookies, follow_redirects=False,
+        )
+
+        conn2 = get_connection(db)
+        try:
+            inputs = input_repo.get_inputs_by_participant(conn2, pid)
+            assert len(inputs) == 1
+            assert "유지되어야 할 입력" in inputs[0].raw_text
+        finally:
+            conn2.close()
+
+    def test_generation_failure_redirects_with_error(self):
+        """Failed generation redirects to detail page with error code."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"), provider=FailingProvider())
+        client = TestClient(app)
+        pid = "fail-redirect"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "리다이렉트")
+            inp = input_repo.create_input(conn, participant_id=pid,
+                                          raw_text="리다이렉트 테스트 입력. " * 30,
+                                          consent_confirmed=1)
+            input_id = inp.id
+
+        admin_cookies = _get_admin_session_cookie()
+        csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+        all_cookies = {**admin_cookies, **csrf_cookie}
+
+        resp = client.post(
+            f"/admin/participants/{pid}/generate",
+            data={"input_id": input_id, "csrf_token": csrf_token},
+            cookies=all_cookies, follow_redirects=False,
+        )
+        assert resp.status_code == 303
+        location = resp.headers["location"]
+        assert f"/admin/participants/{pid}" in location
+        assert "error=generation_failed" in location
+
+        resp2 = client.get(location, cookies=all_cookies)
+        assert resp2.status_code == 200
+        assert "초안을 생성하지 못했습니다" in resp2.text
