@@ -163,3 +163,186 @@ and no-index headers for private participant data:
 - `restrictive_cache_response()` — full no-store, no-cache, private, noindex
 - `no_index_response()` — noindex without full cache restrictions
 - `private_json_response()` — JSON with all restrictive headers
+
+## Phase 5A — Safe provider activation
+
+The application defaults to `MockProvider`, which requires no external dependencies or credentials.
+
+### External provider configuration
+
+Set the following environment variables (or in `.env`):
+
+| Variable | Required | Description |
+|---|---|---|
+| `AI_PROVIDER` | yes | Set to `external` |
+| `AI_BASE_URL` | yes | Chat completions endpoint |
+| `AI_API_KEY` | yes | Bearer token for the endpoint |
+| `AI_MODEL` | yes | Advertised model name |
+| `AI_TIMEOUT_SECONDS` | optional | Per-request timeout (default: 120) |
+| `AI_COST_CLASS` | optional | `free`, `paid`, `local`, or `unknown` (default: `free`) |
+
+Fail-closed behavior:
+
+- Unknown `AI_PROVIDER` values are rejected at startup.
+- Missing `AI_BASE_URL`, `AI_API_KEY`, or `AI_MODEL` when `AI_PROVIDER=external` fails closed.
+- In production (`APP_ENV=production`), `AI_BASE_URL` must use HTTPS.
+- Credentials are never printed, logged, or stored in database rows.
+
+## Phase 5A — Benchmark tasks
+
+The benchmark runner executes five distinct production-path tasks:
+
+```bash
+python3 -m scripts.benchmark run <task> [options]
+```
+
+| Task | Description |
+|---|---|
+| `editorial_plan` | Editorial-plan-only stage |
+| `first_edition` | Full pipeline: plan + draft + validate + persist |
+| `feedback_second_edition` | Follow-up edition with persisted feedback |
+| `adversarial_grounding` | Full pipeline with prohibited-inference grounding test |
+| `validator_feedback_repair` | Candidate corruption + deterministic validation + same-provider repair |
+
+### Options
+
+| Option | Description |
+|---|---|
+| `--fixture NAME` | Fixture to use (repeatable; default: all fixtures) |
+| `--repeat N` | Repeat count per fixture (default: 1) |
+| `--output PATH` | Path to write JSON benchmark report |
+| `--db PATH` | SQLite database path (default: `var/benchmark.db`) |
+| `--correct MINUTES` | Set `human_correction_minutes` for all runs after completion |
+
+### Example
+
+```bash
+python3 -m scripts.benchmark run first_edition --fixture korean_founder --repeat 3 --db var/benchmark.db
+```
+
+## Phase 5A — Repeated benchmark runs
+
+Each repetition uses isolated synthetic participant and input identities derived from the benchmark name, fixture name, and run index. No repetition inherits editions, feedback, or idempotency records from another.
+
+Durable evidence is stored in a file-backed SQLite database (default: `var/benchmark.db`). The `--db` flag specifies an alternative path.
+
+No real participant data is used in any benchmark run.
+
+## Phase 5A — Human correction time
+
+### During benchmark execution
+
+```bash
+python3 -m scripts.benchmark run first_edition --correct 5.0
+```
+
+This sets `human_correction_minutes` to `5.0` for all runs completed in that benchmark session.
+
+### After benchmark execution
+
+```bash
+python3 -m scripts.benchmark update-correction --run-id <RUN_ID> --minutes 12.5
+```
+
+Or via pilot ops:
+
+```bash
+python3 -m scripts.pilot_ops update-correction --run-id <RECORD_ID> --minutes 12.5
+```
+
+Validation: minutes must be ≥ 0.0. The value is persisted in the `benchmark_runs` and `pilot_ops_records` tables.
+
+## Phase 5A — Benchmark and pilot evidence
+
+### Database location
+
+Default: `var/benchmark.db` (benchmark) and `var/personal-edition.db` (pilot ops).
+
+### Listing records
+
+```bash
+python3 -m scripts.pilot_ops list-records [--type TYPE] [--participant-id ID] [--db PATH]
+```
+
+### Exporting evidence
+
+```bash
+python3 -m scripts.pilot_ops export-evidence [--participant-id ID] [--export-safe] [--output PATH] [--db PATH]
+```
+
+The `--export-safe` flag:
+
+- Pseudonymizes participant identifiers (SHA-256 truncated hash).
+- Redacts private text fields (`notes`, `feedback_text`, `evidence_description`, etc.).
+
+No credentials, API keys, or full generated private output appear in exported evidence.
+
+## Phase 5A — Manual pilot workflow
+
+### Invitation and consent
+
+1. Provision a participant: `python3 -m scripts.provision_participant <id> "<name>"`
+2. The participant receives a one-time token.
+3. Participant enters the token at `/p/access`.
+4. Participant submits input at `/p/p1/input` with consent confirmed.
+
+### Free sample and paid editions
+
+- One sample edition may be free.
+- Seven subsequent editions for KRW 4,900 is a hypothesis, not proof of payment or revenue.
+- No payment gateway, email automation, or public signup is implemented.
+
+### Review before publication
+
+Every edition passes through `pending_review` state. An administrator must explicitly publish or reject each edition. Automatic publication is prohibited.
+
+## Phase 5A — Payment evidence restrictions
+
+Payment evidence records must never contain:
+
+- Payer identity (name, email, phone, ID)
+- Account or card data (card numbers, account numbers)
+- Transaction or payment reference numbers
+- Credentials (API keys, tokens, passwords)
+- Screenshots or receipt images
+- Private artifact paths
+
+The `PaymentEvidenceRecord` model enforces these restrictions at construction time.
+
+## Phase 5A — Deletion and revocation
+
+### Operator deletion command
+
+```bash
+python3 -m scripts.pilot_ops delete --participant-id <ID> [--reason REASON] [--notes NOTES] [--db PATH]
+```
+
+Or the legacy command:
+
+```bash
+python3 -m scripts.delete_participant <participant_id> [--database PATH]
+```
+
+### Lifecycle
+
+1. A `deletion_request` record is created.
+2. The participant is soft-deleted (status set to `deleted`, `deleted_at` timestamp recorded).
+3. A `deletion_completion` record is created with the result.
+4. Existing browser sessions are immediately invalidated (session checks active status).
+5. Token access is revoked.
+
+### Idempotent execution
+
+Repeated deletion of the same participant is idempotent. The second execution returns `not_found` and records a completion record with `deletion_result: "not_found"`.
+
+### Export-safe identity handling
+
+The `export-evidence --export-safe` command pseudonymizes participant identifiers and redacts private text.
+
+## Known limitations
+
+- No live provider call was performed in automated tests. All tests use `MockProvider` or monkeypatched adapters.
+- No real participant, payment, or revenue exists. All data is synthetic.
+- No payment gateway, email automation, public signup, or automatic publication is implemented.
+- The KRW 4,900 for seven editions is a pricing hypothesis, not proven revenue.
+- External provider configuration requires manual environment setup.
