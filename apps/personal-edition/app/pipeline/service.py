@@ -150,6 +150,10 @@ class RepairRequest:
     participant input, or profile fields) may appear in the repaired draft.
     They are supplied in deterministic sorted order and must be non-empty. The
     repaired draft is rejected if it references any id outside these sets.
+
+    Both sets are required and fail closed at construction: a repair request
+    without an authoritative reference universe is rejected rather than silently
+    skipping reference-universe enforcement.
     """
 
     participant_id: str
@@ -162,6 +166,18 @@ class RepairRequest:
     prohibited_inferences: tuple[str, ...] = ()
     allowed_segment_ids: tuple[str, ...] = ()
     allowed_plan_section_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.allowed_segment_ids:
+            raise ValueError(
+                "RepairRequest.allowed_segment_ids must be a non-empty "
+                "authoritative reference universe"
+            )
+        if not self.allowed_plan_section_ids:
+            raise ValueError(
+                "RepairRequest.allowed_plan_section_ids must be a non-empty "
+                "authoritative reference universe"
+            )
 
 
 @dataclass(frozen=True)
@@ -1198,24 +1214,28 @@ def _assert_allowed_reference_universe(
     The repair request supplies the authoritative, privacy-safe reference
     universe (segment ids and plan section ids only). A repaired draft must
     reference only those ids; an id outside the set is an invented or leaked
-    reference and must be rejected deterministically.
+    reference and must be rejected deterministically. Both sets are required to
+    be non-empty (enforced at ``RepairRequest`` construction); enforcement is
+    never skipped, so a missing reference universe fails closed.
     """
+    if not allowed_segment_ids or not allowed_plan_section_ids:
+        raise DraftValidationError(
+            "repair request did not supply a non-empty allowed reference universe"
+        )
     allowed_segments = frozenset(allowed_segment_ids)
     allowed_sections = frozenset(allowed_plan_section_ids)
-    if allowed_segments:
-        for section in draft.sections:
-            for ref in section.source_segment_ids:
-                if ref not in allowed_segments:
-                    raise DraftValidationError(
-                        "repaired draft references segment id '"
-                        + str(ref)
-                        + "' which is outside the allowed reference universe"
-                    )
-    if allowed_sections:
-        for section in draft.sections:
-            if section.section_id not in allowed_sections:
+    for section in draft.sections:
+        for ref in section.source_segment_ids:
+            if ref not in allowed_segments:
                 raise DraftValidationError(
-                    "repaired draft section '"
-                    + str(section.section_id)
-                    + "' is outside the allowed reference universe"
+                    "repaired draft references segment id '"
+                    + str(ref)
+                    + "' which is outside the allowed reference universe"
                 )
+    for section in draft.sections:
+        if section.section_id not in allowed_sections:
+            raise DraftValidationError(
+                "repaired draft section '"
+                + str(section.section_id)
+                + "' is outside the allowed reference universe"
+            )

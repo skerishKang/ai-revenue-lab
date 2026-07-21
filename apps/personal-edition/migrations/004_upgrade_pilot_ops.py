@@ -76,14 +76,19 @@ _RECORD_TYPE_CHECK = (
 )
 
 # Indexes are created with the FINAL table name so that after the temporary
-# table is renamed they remain attached under the expected names.
+# table is renamed they remain attached under the expected names. They are
+# attached to the final table *after* the rename (see _create_canonical_indexes)
+# rather than on the temporary table, because ``CREATE INDEX IF NOT EXISTS``
+# would otherwise be a no-op when a same-named index already exists on the
+# legacy table, and the subsequent ``DROP TABLE`` of the legacy table would
+# remove the legacy indexes, leaving the renamed table with none.
+_INDEX_PARTICIPANT_NAME = f"idx_{_TABLE}_participant_id"
+_INDEX_TYPE_NAME = f"idx_{_TABLE}_record_type"
 _INDEX_PARTICIPANT = (
-    f"CREATE INDEX IF NOT EXISTS idx_{_TABLE}_participant_id "
-    f"ON {{table}}(participant_id)"
+    f"CREATE INDEX {{name}} ON {{table}}(participant_id)"
 )
 _INDEX_TYPE = (
-    f"CREATE INDEX IF NOT EXISTS idx_{_TABLE}_record_type "
-    f"ON {{table}}(record_type)"
+    f"CREATE INDEX {{name}} ON {{table}}(record_type)"
 )
 
 _TEMP_TABLE = _TABLE + "_canonical_tmp"
@@ -179,8 +184,25 @@ def _create_canonical_table(conn: sqlite3.Connection, table: str) -> None:
         )
         """
     )
-    conn.execute(_INDEX_PARTICIPANT.format(table=table))
-    conn.execute(_INDEX_TYPE.format(table=table))
+
+
+def _create_canonical_indexes(conn: sqlite3.Connection, table: str) -> None:
+    """Attach the two required indexes to ``table`` under their final names.
+
+    Existing same-named indexes (for example a legacy ``idx_..._participant_id``
+    left on the table by an earlier runtime ``_create_pilot_table`` call) are
+    dropped first so the index always targets the current table's column. This
+    is invoked after the temp table has been renamed to the final table, so a
+    rebuild that replaces a legacy table cannot leave the final table unindexed.
+    """
+    conn.execute(f"DROP INDEX IF EXISTS {_INDEX_PARTICIPANT_NAME}")
+    conn.execute(f"DROP INDEX IF EXISTS {_INDEX_TYPE_NAME}")
+    conn.execute(
+        _INDEX_PARTICIPANT.format(name=_INDEX_PARTICIPANT_NAME, table=table)
+    )
+    conn.execute(
+        _INDEX_TYPE.format(name=_INDEX_TYPE_NAME, table=table)
+    )
 
 
 def _copy_canonical(conn: sqlite3.Connection, source: str) -> None:
@@ -213,6 +235,7 @@ def _materialize_canonical_from_original(conn: sqlite3.Connection) -> None:
     )
     conn.execute(f"DROP TABLE {_TABLE}")
     conn.execute(f"ALTER TABLE {_TEMP_TABLE} RENAME TO {_TABLE}")
+    _create_canonical_indexes(conn, _TABLE)
 
 
 def _rebuild_canonical_preserving(conn: sqlite3.Connection) -> None:
@@ -221,12 +244,14 @@ def _rebuild_canonical_preserving(conn: sqlite3.Connection) -> None:
     _copy_canonical(conn, _TABLE)
     conn.execute(f"DROP TABLE {_TABLE}")
     conn.execute(f"ALTER TABLE {_TEMP_TABLE} RENAME TO {_TABLE}")
+    _create_canonical_indexes(conn, _TABLE)
 
 
 def migrate(conn: sqlite3.Connection) -> None:
     """Idempotently normalize the pilot_ops_records table to canonical form."""
     if not _table_exists(conn):
         _create_canonical_table(conn, _TABLE)
+        _create_canonical_indexes(conn, _TABLE)
         return
 
     if _is_canonical(conn):

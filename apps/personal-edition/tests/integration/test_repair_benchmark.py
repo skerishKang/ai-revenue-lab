@@ -123,6 +123,7 @@ def test_repaired_phase_succeeds():
     findings = normalize_validation_findings(
         Exception("draft section s0 references unknown segment id")
     )
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
     repair_request = RepairRequest(
         participant_id=pid,
         input_id=inp,
@@ -132,6 +133,8 @@ def test_repaired_phase_succeeds():
         correlation_id="corr-1",
         attempt_id="attempt-1",
         prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
     )
     outcome = service.repair_edition(
         conn, repair_request=repair_request, plan=candidate.plan, segments=candidate.segments
@@ -158,6 +161,7 @@ def test_same_provider_instance_used():
     )
     assert candidate.succeeded
     corrupted = _corrupt(candidate.content)
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
     repair_request = RepairRequest(
         participant_id=pid,
         input_id=inp,
@@ -167,6 +171,8 @@ def test_same_provider_instance_used():
         correlation_id="corr-1",
         attempt_id="attempt-1",
         prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
     )
     service.repair_edition(
         conn, repair_request=repair_request, plan=candidate.plan, segments=candidate.segments
@@ -201,6 +207,7 @@ def test_repair_request_contains_required_fields():
         Exception("draft section s0 references unknown segment id")
     )
     corr_id, attempt_id = "corr-xyz", "attempt-xyz"
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
     repair_request = RepairRequest(
         participant_id=pid,
         input_id=inp,
@@ -210,6 +217,8 @@ def test_repair_request_contains_required_fields():
         correlation_id=corr_id,
         attempt_id=attempt_id,
         prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
     )
     service.repair_edition(
         conn, repair_request=repair_request, plan=candidate.plan, segments=candidate.segments
@@ -258,6 +267,7 @@ def test_candidate_and_repair_have_separate_accounting():
     )
     assert candidate.succeeded
     corrupted = _corrupt(candidate.content)
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
     repair_request = RepairRequest(
         participant_id=pid,
         input_id=inp,
@@ -267,6 +277,8 @@ def test_candidate_and_repair_have_separate_accounting():
         correlation_id="corr-1",
         attempt_id="attempt-1",
         prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
     )
     outcome = service.repair_edition(
         conn, repair_request=repair_request, plan=candidate.plan, segments=candidate.segments
@@ -298,6 +310,7 @@ def test_mock_scripted_candidate_then_repaired_response():
         ),
     )
     assert candidate.succeeded
+    seg_ids, sec_ids = _fixture_allowed_ids(fixture)
     repair_request = RepairRequest(
         participant_id=pid,
         input_id=inp,
@@ -307,6 +320,8 @@ def test_mock_scripted_candidate_then_repaired_response():
         correlation_id="corr-1",
         attempt_id="attempt-1",
         prohibited_inferences=fixture.prohibited_inventions,
+        allowed_segment_ids=seg_ids,
+        allowed_plan_section_ids=sec_ids,
     )
     outcome = service.repair_edition(
         conn, repair_request=repair_request, plan=candidate.plan, segments=candidate.segments
@@ -586,3 +601,65 @@ def test_repair_rejects_invented_segment_id_outside_allowed_universe():
     assert row["success"] == 0
     assert row["validation_status"] == VALIDATION_FAILED
     conn.close()
+
+
+# ---------------------------------------------------------------------------
+# CTO review 5028100149 residual gap 1: the allowed reference universe must be
+# required and fail closed; an empty set must never skip enforcement.
+# ---------------------------------------------------------------------------
+
+
+def test_repair_request_rejects_empty_allowed_segment_ids():
+    """Constructing a RepairRequest without an allowed segment universe fails
+    closed rather than silently skipping reference-universe enforcement."""
+    fixture = load_bundle("korean_founder")
+    _, sec_ids = _fixture_allowed_ids(fixture)
+    with pytest.raises(ValueError):
+        RepairRequest(
+            participant_id="p",
+            input_id="i",
+            corrupted_candidate={},
+            validator_findings=[],
+            repair_instruction="repair it",
+            correlation_id="c",
+            attempt_id="a",
+            prohibited_inferences=fixture.prohibited_inventions,
+            allowed_segment_ids=(),
+            allowed_plan_section_ids=sec_ids,
+        )
+
+
+def test_repair_request_rejects_empty_allowed_plan_section_ids():
+    """Constructing a RepairRequest without an allowed plan-section universe
+    fails closed rather than silently skipping reference-universe enforcement."""
+    fixture = load_bundle("korean_founder")
+    seg_ids, _ = _fixture_allowed_ids(fixture)
+    with pytest.raises(ValueError):
+        RepairRequest(
+            participant_id="p",
+            input_id="i",
+            corrupted_candidate={},
+            validator_findings=[],
+            repair_instruction="repair it",
+            correlation_id="c",
+            attempt_id="a",
+            prohibited_inferences=fixture.prohibited_inventions,
+            allowed_segment_ids=seg_ids,
+            allowed_plan_section_ids=(),
+        )
+
+
+def test_repair_request_rejects_both_universes_empty():
+    """The default-empty RepairRequest (the previous bypass) now fails closed."""
+    fixture = load_bundle("korean_founder")
+    with pytest.raises(ValueError):
+        RepairRequest(
+            participant_id="p",
+            input_id="i",
+            corrupted_candidate={},
+            validator_findings=[],
+            repair_instruction="repair it",
+            correlation_id="c",
+            attempt_id="a",
+            prohibited_inferences=fixture.prohibited_inventions,
+        )
