@@ -1,19 +1,38 @@
 {% extends "base.html" %}
-{% block title %}기록 - Personal Edition{% endblock %}
+{% block title %}기록 — Personal Edition{% endblock %}
 {% block content %}
-<div class="card">
-  <h1>에디션 기록</h1>
+<div class="history-page">
+  <div class="history-hero animate-fade-in">
+    <img src="/static/images/edition-library-history.webp"
+         alt="에디션 기록"
+         width="1536" height="1024">
+  </div>
+
+  <h1 class="history-title">에디션 기록</h1>
 
   {% if editions %}
-  <div class="edition-list">
+  <div class="history-list">
     {% for edition in editions %}
     <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
-       class="edition-card">
-      <span class="edition-number">#{{ edition.edition_number }}</span>
-      <span class="edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
-      <span class="edition-date">
+       class="history-item">
+      <div class="history-thumb">
+        {% if edition.edition_number == 1 %}
+        <img src="/static/images/edition-cover-shift.webp" alt="" width="1122" height="1402" loading="lazy">
+        {% else %}
+        <img src="/static/images/edition-cover-archive.webp" alt="" width="1122" height="1402" loading="lazy">
+        {% endif %}
+      </div>
+      <span class="history-num">#{{ edition.edition_number }}</span>
+      <div class="history-info">
+        <span class="history-item-title">{{ edition.rendered_title or '제목 없음' }}</span>
+        {% if edition.deck %}
+        <span class="history-item-deck">{{ edition.deck }}</span>
+        {% endif %}
+      </div>
+      <span class="history-item-date">
         {% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}
       </span>
+      <span class="history-read-link">읽기</span>
     </a>
     {% endfor %}
   </div>

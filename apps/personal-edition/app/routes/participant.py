@@ -413,6 +413,21 @@ def feedback_form_page(request: Request, participant_id: str, edition_number: in
         "error": None,
         "csrf_token": "",
     }
+    FEEDBACK_LABELS = {
+        "continue_direction": "이 분위기와 방향을 계속 유지해주세요",
+        "more_practical": "조금 더 구체적이고 실용적으로 써주세요",
+        "more_reflective": "생각과 감정을 조금 더 깊게 다뤄주세요",
+        "deeper_on_section": "선택한 부분을 더 깊게 다뤄주세요",
+        "reduce_topic": "이 주제의 비중을 조금 줄여주세요",
+        "exclude_topic": "다음 호에서는 이 주제를 제외해주세요",
+        "shorter": "조금 더 간결하게 써주세요",
+        "longer": "내용을 조금 더 충분히 담아주세요",
+        "change_tone": "다음 호에서는 분위기나 말투를 바꿔주세요",
+    }
+    context["feedback_directions"] = [
+        (d.value, FEEDBACK_LABELS.get(d.value, d.value))
+        for d in FeedbackDirection
+    ]
     resp, _ = _render_with_csrf(request, "feedback_form.html", context)
     return resp
 

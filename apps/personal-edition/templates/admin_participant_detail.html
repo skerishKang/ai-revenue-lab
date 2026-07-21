@@ -1,72 +1,161 @@
 {% extends "base.html" %}
-{% block title %}참여자 상세 - 관리자{% endblock %}
+{% block title %}{{ participant.display_name }} — 편집실 상세{% endblock %}
 {% block content %}
 <div class="admin-detail">
-  <h1>{{ participant.display_name }}</h1>
-  <p>ID: <code>{{ participant.id }}</code> | 언어: {{ participant.preferred_language }} | 상태: {{ participant.status }}</p>
+  <!-- Top Header Overview Card -->
+  <header class="detail-header-card animate-fade-in">
+    <div class="detail-header-main">
+      <div class="detail-title-group">
+        <h1>{{ participant.display_name }}</h1>
+        <div class="detail-meta">
+          <span class="meta-item">ID: <code>{{ participant.id }}</code></span>
+          <span class="meta-item">선호 언어: <strong>{{ participant.preferred_language|upper }}</strong></span>
+          <span class="privacy-badge">🔒 비공개 개인 발행물</span>
+        </div>
+      </div>
+      <div class="detail-status-group">
+        <span class="status-badge {{ status_info.status_class }}">
+          {{ status_info.status_label }}
+        </span>
+        {% if status_info.recommended_action_url %}
+        <a href="{{ status_info.recommended_action_url }}" class="btn btn-primary primary-action-btn">
+          {{ status_info.recommended_action }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
 
-  <section class="section">
-    <h2>입력 목록</h2>
+  {% if generation_error %}
+  <div class="alert alert-danger generation-error-alert animate-fade-in" role="alert" style="margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: #fff5f5; border: 1px solid #feb2b2; color: #c53030;">
+    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 700;">⚠️ {{ generation_error.title }}</h3>
+    <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;">{{ generation_error.detail }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Generation Action Card -->
+  <section class="section generation-action-card">
+    <div class="generation-card-inner">
+      <h2>초안 생성 작업</h2>
+      <p class="generation-description">
+        참여자가 작성한 이야기를 기반으로 개인 발행물 초안을 생성합니다. 기존 에디션 및 전달된 피드백이 자동 참고됩니다.
+      </p>
+      <div class="generation-notice">
+        <span>💡 <strong>안내:</strong> 생성된 초안은 즉시 발행되지 않으며, [검토 대기] 상태로 안전하게 저장됩니다. 편집자가 검토 후 직접 발행해야 독자가 볼 수 있습니다.</span>
+      </div>
+
+      {% set target_inp = latest_input if latest_input else (inputs[-1] if inputs else None) %}
+      {% if target_inp %}
+      <form method="post" action="/admin/participants/{{ participant.id }}/generate" class="generate-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="input_id" value="{{ target_inp.id }}">
+
+        <div class="generate-input-target">
+          <span class="target-label">대상 기록:</span>
+          <strong>기록 #{{ target_inp.sequence_number }}</strong>
+          <span class="target-date">({{ target_inp.submitted_at[:16] }})</span>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-option">
+            <input type="checkbox" name="allow_short_sample" value="1">
+            <span>짧은 샘플 입력 허용 (테스트용)</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">
+          📝 이 기록으로 초안 만들기
+        </button>
+      </form>
+      {% else %}
+      <p class="empty-state">생성 대상이 되는 수신 기록이 없습니다.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- 1. Submitted Records (Readable Cards) -->
+  <section class="section submitted-records-section">
+    <h2>제출된 기록 (원문)</h2>
     {% if inputs %}
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>텍스트 (앞 100자)</th>
-            <th>제출 시간</th>
-            <th>동의</th>
-            <th>작업</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for inp in inputs %}
-          <tr>
-            <td>{{ inp.sequence_number }}</td>
-            <td class="text-truncate">{{ inp.raw_text[:100] }}</td>
-            <td>{{ inp.submitted_at[:10] }}</td>
-            <td>{{ '예' if inp.consent_confirmed == 1 else '아니오' }}</td>
-            <td>
-              <form method="post" action="/admin/participants/{{ participant.id }}/generate"
-                    class="inline-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <input type="hidden" name="input_id" value="{{ inp.id }}">
-                <button type="submit" class="btn btn-sm btn-primary">생성</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="records-list">
+      {% for inp in inputs %}
+      <article class="record-card">
+        <div class="record-card-header">
+          <span class="record-num">기록 #{{ inp.sequence_number }}</span>
+          <span class="record-time">{{ inp.submitted_at[:16] }}</span>
+          <span class="consent-tag">동의 완료</span>
+        </div>
+        <div class="record-card-body">
+          <details class="record-text-details" {% if loop.first %}open{% endif %}>
+            <summary class="record-text-summary">
+              <span>기록 본문 보기 (총 {{ inp.raw_text|length }}자)</span>
+            </summary>
+            <div class="record-readable-text">
+              {{ inp.raw_text }}
+            </div>
+          </details>
+        </div>
+      </article>
+      {% endfor %}
     </div>
     {% else %}
-    <p class="empty-state">입력이 없습니다.</p>
+    <p class="empty-state">제출된 기록이 없습니다.</p>
     {% endif %}
   </section>
 
-  <section class="section">
-    <h2>에디션</h2>
+  <!-- 2. Publication & Edition History -->
+  <section class="section edition-history-section">
+    <h2>에디션 이력</h2>
     {% if editions %}
     <div class="table-wrap">
       <table class="data-table">
         <thead>
           <tr>
-            <th>#</th>
-            <th>제목</th>
-            <th>생성 상태</th>
-            <th>발행 상태</th>
-            <th>작업</th>
+            <th scope="col">호수</th>
+            <th scope="col">제목</th>
+            <th scope="col">생성 상태</th>
+            <th scope="col">발행 상태</th>
+            <th scope="col">생성/발행 시각</th>
+            <th scope="col">작업</th>
           </tr>
         </thead>
         <tbody>
           {% for e in editions %}
           <tr>
-            <td>{{ e.edition_number }}</td>
-            <td>{{ e.rendered_title or '-' }}</td>
-            <td>{{ e.generation_status }}</td>
-            <td>{{ e.publication_state }}</td>
+            <td><strong>#{{ e.edition_number }}</strong></td>
+            <td>{{ e.rendered_title or '제목 미정' }}</td>
             <td>
-              <a href="/admin/review/{{ e.id }}" class="btn btn-sm">검토</a>
+              {% if e.generation_status == 'pending_review' %}
+              <span class="badge badge-warning">검토 필요</span>
+              {% elif e.generation_status in ['generation_failed', 'failed'] %}
+              <span class="badge badge-danger">생성 실패</span>
+              {% elif e.generation_status == 'generation_pending' %}
+              <span class="badge badge-info">생성 진행</span>
+              {% elif e.generation_status == 'input_received' %}
+              <span class="badge badge-info">기록 접수</span>
+              {% elif e.publication_state == 'published' or e.generation_status == 'published' %}
+              <span class="badge badge-success">검토 완료</span>
+              {% else %}
+              <span class="badge badge-secondary">생성 완료</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if e.publication_state == 'published' %}
+              <span class="badge badge-success">발행 완료</span>
+              {% elif e.publication_state == 'rejected' %}
+              <span class="badge badge-danger">반려됨</span>
+              {% else %}
+              <span class="badge badge-warning">발행 대기</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="sub-text">작성: {{ e.drafted_at[:16] if e.drafted_at else '-' }}</div>
+              {% if e.published_at %}<div class="sub-text">발행: {{ e.published_at[:16] }}</div>{% endif %}
+            </td>
+            <td>
+              <a href="/admin/review/{{ e.id }}" class="btn btn-sm btn-secondary">
+                검토 및 편집
+              </a>
             </td>
           </tr>
           {% endfor %}
@@ -74,7 +163,50 @@
       </table>
     </div>
     {% else %}
-    <p class="empty-state">에디션이 없습니다.</p>
+    <p class="empty-state">생성된 에디션이 없습니다.</p>
+    {% endif %}
+  </section>
+
+  <!-- 3. Recent Feedbacks -->
+  <section class="section feedback-history-section">
+    <h2>참여자 피드백 이력</h2>
+    {% if feedbacks_with_editions %}
+    <div class="feedbacks-list">
+      {% for item in feedbacks_with_editions %}
+      {% set ed = item.edition if item.edition is defined else item[0] %}
+      {% set fb = item.record if item.record is defined else item[1] %}
+      {% set dirs = item.direction if item.direction is defined else (item[2] if item|length > 2 else (fb.direction if fb.direction is defined else [])) %}
+      <article class="feedback-card">
+        <div class="feedback-card-header">
+          <span class="edition-tag">에디션 #{{ ed.edition_number }}</span>
+          <span class="feedback-time">{{ fb.submitted_at[:16] if fb.submitted_at else '' }}</span>
+        </div>
+        <div class="feedback-card-body">
+          <div class="feedback-directions">
+            <strong>선택 방향:</strong>
+            {% for dir in dirs %}
+            <span class="direction-chip">
+              {{ feedback_map[dir] if dir in feedback_map else dir }}
+            </span>
+            {% endfor %}
+          </div>
+          {% if fb.selected_section_id %}
+          <div class="feedback-section-id">
+            <strong>대상 섹션:</strong> <code>{{ fb.selected_section_id }}</code>
+          </div>
+          {% endif %}
+          {% if fb.free_text %}
+          <div class="feedback-free-text">
+            <strong>자유 의견:</strong>
+            <p>"{{ fb.free_text }}"</p>
+          </div>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">도착한 피드백이 없습니다.</p>
     {% endif %}
   </section>
 </div>

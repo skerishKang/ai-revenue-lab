@@ -1,23 +1,37 @@
 {% extends "base.html" %}
-{% block title %}{{ content.publication_title if content else '에디션' }} - Personal Edition{% endblock %}
+{% block title %}{{ content.publication_title if content else '에디션' }} — Personal Edition{% endblock %}
 {% block content %}
 <article class="edition-article">
+  <div class="edition-cover animate-fade-in">
+    {% if edition.edition_number == 1 %}
+    <img src="/static/images/edition-cover-shift.webp"
+         alt="에디션 커버"
+         width="1122" height="1402">
+    {% else %}
+    <img src="/static/images/edition-cover-archive.webp"
+         alt="에디션 커버"
+         width="1122" height="1402">
+    {% endif %}
+  </div>
+
   <header class="edition-header">
-    <span class="edition-badge">#{{ edition.edition_number }}</span>
+    <span class="edition-issue">제{{ edition.edition_number }}호</span>
     <h1>{{ content.publication_title if content else '' }}</h1>
-    <h2 class="edition-subtitle">{{ content.edition_title if content else '' }}</h2>
+    <p class="edition-deck">{{ content.deck if content else '' }}</p>
     {% if edition.published_at %}
-    <time class="edition-date">{{ edition.published_at[:10] }}</time>
+    <time>{{ edition.published_at[:10] }}</time>
     {% endif %}
   </header>
-
-  <div class="edition-deck">
-    {{ content.deck if content else '' }}
-  </div>
 
   <div class="edition-opening">
     {{ content.opening if content else '' }}
   </div>
+
+  {% if content and content.highlighted_insight %}
+  <aside class="edition-insight">
+    {{ content.highlighted_insight }}
+  </aside>
+  {% endif %}
 
   {% if content and content.sections %}
   {% for section in content.sections %}
@@ -30,15 +44,9 @@
   {% endfor %}
   {% endif %}
 
-  {% if content and content.highlighted_insight %}
-  <aside class="edition-insight">
-    <strong>핵심 인사이트:</strong> {{ content.highlighted_insight }}
-  </aside>
-  {% endif %}
-
   {% if content and content.continuity_note %}
   <aside class="edition-continuity">
-    <strong>연속성:</strong> {{ content.continuity_note }}
+    {{ content.continuity_note }}
   </aside>
   {% endif %}
 
@@ -69,6 +77,8 @@
     {% else %}
     <p class="feedback-submitted">이미 피드백을 제출했습니다.</p>
     {% endif %}
+
+    <a href="/p/{{ participant.id }}/history" class="btn btn-secondary">기록 보기</a>
 
     {% if next_edition_number %}
     <a href="/p/{{ participant.id }}/editions/{{ next_edition_number }}"
