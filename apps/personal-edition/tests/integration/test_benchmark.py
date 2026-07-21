@@ -1548,30 +1548,28 @@ class TestCentralizedGroundingClassification:
 class TestCLIAccounting:
     def test_successful_repair_exits_zero(self):
         import subprocess
+        import sys as _sys
+        pkg_dir = _DIR
         result = subprocess.run(
-            [
-                "/tmp/pe-final-verify/bin/python", "-m", "scripts.benchmark", "run",
-                "validator_feedback_repair", "--fixture", "korean_founder",
-            ],
-            capture_output=True,
-            text=True,
-            cwd="/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-benchmark-classification-49/apps/personal-edition",
-            env={**os.environ, "AI_PROVIDER": "mock"},
+            [_sys.executable, "-m", "scripts.benchmark", "run",
+             "validator_feedback_repair", "--fixture", "korean_founder",
+             "--db", ":memory:"],
+            capture_output=True, text=True,
+            cwd=pkg_dir,
+            env={**os.environ, "AI_PROVIDER": "mock", "PYTHONPATH": pkg_dir},
         )
         assert result.returncode == 0
 
     def test_failed_benchmark_exits_nonzero(self):
         import subprocess
-        from app.ai.mock import MockProvider
-
+        import sys as _sys
+        pkg_dir = _DIR
         result = subprocess.run(
-            [
-                "/tmp/pe-final-verify/bin/python", "-m", "scripts.benchmark", "run",
-                "first_edition", "--fixture", "korean_founder",
-            ],
-            capture_output=True,
-            text=True,
-            cwd="/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-benchmark-classification-49/apps/personal-edition",
-            env={**os.environ, "AI_PROVIDER": "mock"},
+            [_sys.executable, "-m", "scripts.benchmark", "run",
+             "first_edition", "--fixture", "korean_founder",
+             "--db", ":memory:"],
+            capture_output=True, text=True,
+            cwd=pkg_dir,
+            env={**os.environ, "AI_PROVIDER": "mock", "PYTHONPATH": pkg_dir},
         )
         assert result.returncode == 0
