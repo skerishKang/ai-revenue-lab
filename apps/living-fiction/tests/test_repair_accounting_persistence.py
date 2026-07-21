@@ -202,7 +202,7 @@ def test_pilot_evidence_rejects_card_number(db_conn):
     with pytest.raises((PrivacyViolationError, PilotEvidenceValidationError)):
         create_validated_pilot_evidence(
             db_conn,
-            evidence_category="episode_delivery",
+            evidence_category="canon_delivery",
             evidence_data=ADVERSARIAL_CARD_NUMBER,
         )
 
@@ -286,7 +286,7 @@ def test_pilot_evidence_unsupported_category_rejected(db_conn):
 
 def test_pilot_evidence_invalid_reference_rejected(db_conn):
     _setup_world(db_conn)
-    with pytest.raises(PilotEvidenceValidationError, match="not found"):
+    with pytest.raises(PilotEvidenceValidationError, match="unsupported evidence category"):
         create_validated_pilot_evidence(
             db_conn,
             evidence_category="episode_delivery",

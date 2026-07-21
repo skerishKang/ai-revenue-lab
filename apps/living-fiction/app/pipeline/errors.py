@@ -95,6 +95,12 @@ def is_exception_retryable(exc: BaseException) -> bool:
 
     Only timeout and connection-reset exceptions are retryable.
     Programming errors, auth errors, and unknown exceptions are NOT retried.
+
+    Maps to proper categories:
+    - TimeoutError -> timeout
+    - ConnectionResetError -> provider_error (was connection reset)
+    - ConnectionError -> provider_error
+    - All others (programming, auth, schema) -> NOT retryable
     """
     exc_type = type(exc).__name__
     if exc_type in _RETRYABLE_EXCEPTION_TYPES:
@@ -103,6 +109,24 @@ def is_exception_retryable(exc: BaseException) -> bool:
     if isinstance(exc, ConnectionError):
         return type(exc).__name__ == "ConnectionResetError"
     return False
+
+
+def categorize_exception(exc: BaseException) -> ProviderErrorCategory:
+    """Categorize an exception into a ProviderErrorCategory.
+
+    - TimeoutError -> TIMEOUT
+    - ConnectionResetError -> PROVIDER_ERROR
+    - ConnectionError -> PROVIDER_ERROR
+    - All others -> UNKNOWN
+    """
+    exc_type = type(exc).__name__
+    if exc_type == "TimeoutError":
+        return ProviderErrorCategory.TIMEOUT
+    if exc_type == "ConnectionResetError":
+        return ProviderErrorCategory.PROVIDER_ERROR
+    if isinstance(exc, ConnectionError):
+        return ProviderErrorCategory.PROVIDER_ERROR
+    return ProviderErrorCategory.UNKNOWN
 
 
 def is_retryable(category: ProviderErrorCategory | None) -> bool:

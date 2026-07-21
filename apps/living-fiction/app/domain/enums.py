@@ -45,8 +45,9 @@ class ContentClassification(StrEnum):
 class EvidenceCategory(StrEnum):
     INVITATION = "invitation"
     CONSENT = "consent"
-    EPISODE_DELIVERY = "episode_delivery"
+    CANON_DELIVERY = "canon_delivery"
     EXPLICIT_CHOICE = "explicit_choice"
+    BRANCH_DELIVERY = "branch_delivery"
     ENGAGEMENT = "engagement"
     CORRECTION_TIME = "correction_time"
     AI_INFRA_COST = "ai_infra_cost"

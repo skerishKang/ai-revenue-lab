@@ -34,12 +34,18 @@ def _reader_digest(reader_id: str) -> str:
     """Use the same HMAC approach as the deletion service."""
     import os
     import hmac
+    # Must match the key used by the service - set env var for test
     hmac_key = os.environ.get("LF_DELETION_HMAC_KEY", "test-default-key")
     return hmac.new(
         hmac_key.encode("utf-8"),
         reader_id.encode("utf-8"),
         hashlib.sha256,
     ).hexdigest()[:32]
+
+
+# Ensure HMAC key is set for testing
+import os
+os.environ.setdefault("LF_DELETION_HMAC_KEY", "test-default-key")
 
 
 def test_fresh_db_has_all_migrations(temp_db_path):

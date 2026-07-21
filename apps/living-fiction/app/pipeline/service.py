@@ -186,8 +186,9 @@ def _provider_call_with_retry(
             )
         except Exception as exc:
             # Measure actual latency for exception attempt
-            from app.pipeline.errors import is_exception_retryable
+            from app.pipeline.errors import is_exception_retryable, categorize_exception
             exc_retryable = is_exception_retryable(exc)
+            exc_category = categorize_exception(exc)
             exc_latency = 0.0
             try:
                 import time
@@ -209,11 +210,11 @@ def _provider_call_with_retry(
                 latency_seconds=exc_latency,
                 success=False,
                 retryable=exc_retryable,
-                error_category=ProviderErrorCategory.UNKNOWN.value,
-                error_message=safe_error_message(ProviderErrorCategory.UNKNOWN, str(exc)),
+                error_category=exc_category.value,
+                error_message=safe_error_message(exc_category, str(exc)),
             )
-            last_error_category = ProviderErrorCategory.UNKNOWN
-            last_error_message = safe_error_message(last_error_category, str(exc))
+            last_error_category = exc_category
+            last_error_message = safe_error_message(exc_category, str(exc))
             if exc_retryable and attempt_num <= max_retries:
                 retry_count += 1
                 continue
@@ -257,6 +258,8 @@ def _provider_call_with_retry(
             last_error_message = safe_error_message(
                 result.error_category, result.error_message
             )
+            # Preserve identity from failed ProviderResult
+            last_result = result
             if is_retryable(result.error_category) and attempt_num <= max_retries:
                 retry_count += 1
                 continue
@@ -639,7 +642,11 @@ def generate_personal_branch(
 
     # Load the world state from the persisted canon snapshot
     # (do NOT trust caller-supplied WorldState — reconstruct from DB)
-    persisted_world = world_repo.load_world_state(conn, resolved_world_id)
+    # Uses snapshot ID to apply accepted canon snapshot character/location/clue states
+    persisted_world = world_repo.load_world_state(
+        conn, resolved_world_id,
+        canon_snapshot_id=persisted_snapshot.id,
+    )
     if persisted_world is None:
         return GenerationResult(
             episode_id=None, plan_run_id="", content_run_id="",
@@ -649,15 +656,12 @@ def generate_personal_branch(
     # Use the persisted world for ALL validation and prompt building
     authoritative_world = persisted_world
 
-    # ── Idempotency check ─────────────────────────────────────────────
+    # ── Idempotency check using atomic CAS ─────────────────────────────
     from app.branch_generation_request_repository import (
-        get_by_idempotency_key,
-        get_by_resource_binding,
-        create_request,
-        mark_completed,
-        mark_failed,
-        transition_failed_to_pending,
-        transition_stale_pending_to_pending,
+        claim_branch_generation_request,
+        complete_branch_generation_request,
+        fail_branch_generation_request,
+        CASClaimError,
         REQUEST_TIMEOUT_SECONDS,
     )
 
@@ -666,86 +670,49 @@ def generate_personal_branch(
         request.idempotency_key
         or f"{request.reader_id}:{request.reader_choice_id}:{resolved_prior}:{resolved_checkpoint}:{operation_type}"
     )
-    existing = get_by_idempotency_key(conn, idempotency_key)
 
-    gen_request_id = None  # Will be set by state transition or new creation
-
-    if existing is not None:
-        # Resource binding check — same key must reference same resources
-        resource_mismatch = (
-            existing.reader_id != (request.reader_id or "")
-            or existing.reader_choice_id != (request.reader_choice_id or "")
-            or existing.prior_episode_id != resolved_prior
-            or existing.canon_checkpoint_id != resolved_checkpoint
-            or existing.world_id != resolved_world_id
+    gen_request_id = new_id()
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        claim = claim_branch_generation_request(
+            conn,
+            request_id=gen_request_id,
+            idempotency_key=idempotency_key,
+            reader_id=request.reader_id or "",
+            reader_choice_id=request.reader_choice_id,
+            prior_episode_id=resolved_prior,
+            canon_checkpoint_id=resolved_checkpoint,
+            world_id=resolved_world_id,
+            operation_type=operation_type,
         )
-        if resource_mismatch:
-            # Same key used with DIFFERENT resource combination — conflict
-            return GenerationResult(
-                episode_id=None, plan_run_id="", content_run_id="",
-                succeeded=False,
-                error="idempotency key conflict: key already bound to different resources",
-            )
 
-        # State machine
-        if existing.status == "completed":
-            # Replay success result
+        if claim.is_replay:
+            conn.commit()
+            # No provider call — replay original result
             return GenerationResult(
-                episode_id=existing.branch_episode_id,
+                episode_id=claim.request_record.branch_episode_id if claim.request_record else None,
                 plan_run_id="", content_run_id="",
                 succeeded=True,
                 error=None,
             )
-        elif existing.status == "failed":
-            # Retry policy: transition failed -> pending (reuses same row)
-            # Uses atomic state transition with attempt_number increment
-            conn.execute("BEGIN IMMEDIATE")
-            transition_failed_to_pending(conn, existing.id)
-            conn.commit()
-            gen_request_id = existing.id  # Reuse the same request ID
-        elif existing.status == "pending":
-            # Check if stale (timed out)
-            import datetime
-            from app.utils import parse_iso_datetime
-            try:
-                created = parse_iso_datetime(existing.created_at)
-                now = datetime.datetime.now(datetime.timezone.utc)
-                age = (now - created).total_seconds()
-                if age > REQUEST_TIMEOUT_SECONDS:
-                    # Stale pending — recovery allowed via atomic transition
-                    conn.execute("BEGIN IMMEDIATE")
-                    transition_stale_pending_to_pending(conn, existing.id)
-                    conn.commit()
-                    gen_request_id = existing.id  # Reuse the same request ID
-                else:
-                    # Active pending — reject duplicate
-                    return GenerationResult(
-                        episode_id=None, plan_run_id="", content_run_id="",
-                        succeeded=False,
-                        error="request already in progress (pending)",
-                    )
-            except (ValueError, TypeError):
-                pass  # Can't parse time — treat as recoverable
 
-    # Create idempotency request record (only for NEW requests)
-    if gen_request_id is None:
-        gen_request_id = new_id()
-    if not conn.in_transaction:
-        conn.execute("BEGIN IMMEDIATE")
-        # Check if this was already created by a state transition above
-        existing_check = get_by_idempotency_key(conn, idempotency_key)
-        if existing_check is None:
-            create_request(
-                conn,
-                request_id=gen_request_id,
-                idempotency_key=idempotency_key,
-                reader_id=request.reader_id or "",
-                reader_choice_id=request.reader_choice_id or "",
-                prior_episode_id=resolved_prior,
-                canon_checkpoint_id=resolved_checkpoint,
-                world_id=resolved_world_id,
+        if claim.is_rejected:
+            conn.commit()
+            return GenerationResult(
+                episode_id=None, plan_run_id="", content_run_id="",
+                succeeded=False,
+                error="request already in progress (pending)",
             )
+
+        # Claim succeeded — we have a pending row
+        actual_request_id = claim.request_id
         conn.commit()
+    except CASClaimError as exc:
+        conn.rollback()
+        return GenerationResult(
+            episode_id=None, plan_run_id="", content_run_id="",
+            succeeded=False, error=str(exc),
+        )
 
     # Build reader choice dict from PERSISTED values (not caller-supplied)
     reader_choice_dict = {
@@ -792,7 +759,7 @@ def generate_personal_branch(
     if plan_model is None:
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, plan_err or "plan generation failed")
+            fail_branch_generation_request(conn, actual_request_id, plan_err or "plan generation failed")
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id="",
@@ -812,7 +779,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, str(exc))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id="",
@@ -841,7 +808,7 @@ def generate_personal_branch(
     if content_model is None:
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, content_err or "content generation failed")
+            fail_branch_generation_request(conn, actual_request_id, content_err or "content generation failed")
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -871,7 +838,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, str(exc))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -890,7 +857,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, error_msg)
+            fail_branch_generation_request(conn, actual_request_id, error_msg)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -909,7 +876,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, error_msg)
+            fail_branch_generation_request(conn, actual_request_id, error_msg)
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -946,7 +913,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, str(exc))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -955,12 +922,7 @@ def generate_personal_branch(
 
     # ── BLOCKER 3: Production continuity validation ──────────────────
     # Invoke ONE production continuity validator from the service boundary
-    canon_character_states = {}
-    try:
-        if persisted_snapshot.character_states_json:
-            canon_character_states = json.loads(persisted_snapshot.character_states_json)
-    except (json.JSONDecodeError, TypeError):
-        pass
+    # The authoritative world already has canon snapshot applied via load_world_state()
 
     try:
         validate_production_continuity(
@@ -968,7 +930,6 @@ def generate_personal_branch(
             world=authoritative_world,
             conn=conn,
             prior_episode_id=resolved_prior,
-            canon_snapshot_character_states=canon_character_states,
             is_branch=True,
         )
     except ContentValidationError as exc:
@@ -981,7 +942,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, str(exc))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -1069,7 +1030,7 @@ def generate_personal_branch(
         )
 
         # Mark idempotency request as completed
-        mark_completed(conn, gen_request_id, episode_id)
+        complete_branch_generation_request(conn, actual_request_id, episode_id)
 
         conn.commit()
 
@@ -1089,7 +1050,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, "transaction integrity error")
+            fail_branch_generation_request(conn, actual_request_id, "transaction integrity error")
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -1106,7 +1067,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, str(exc))
+            fail_branch_generation_request(conn, actual_request_id, str(exc))
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,
@@ -1124,7 +1085,7 @@ def generate_personal_branch(
         )
         if not conn.in_transaction:
             conn.execute("BEGIN IMMEDIATE")
-            mark_failed(conn, gen_request_id, "unexpected error in branch transaction")
+            fail_branch_generation_request(conn, actual_request_id, "unexpected error in branch transaction")
             conn.commit()
         return GenerationResult(
             episode_id=None, plan_run_id=plan_run_id, content_run_id=content_run_id,

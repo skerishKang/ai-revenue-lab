@@ -11,6 +11,8 @@ Idempotency state machine:
 Key binding: reader_id + reader_choice_id + prior_episode_id +
              canon_checkpoint_id + world_id + operation_type.
              Same key with different resources = conflict.
+
+Atomic CAS operations: claim, complete, fail within BEGIN IMMEDIATE.
 """
 from __future__ import annotations
 
@@ -52,6 +54,14 @@ _COLS = [
     "operation_type", "attempt_number", "pending_lease_at", "updated_at",
 ]
 _SELECT = ", ".join(_COLS)
+
+# Maximum attempt number before giving up
+MAX_ATTEMPT_NUMBER = 10
+
+
+class CASClaimError(RuntimeError):
+    """Raised when an atomic CAS claim fails (no rows updated)."""
+    pass
 
 
 def _row_to_record(row: sqlite3.Row) -> BranchGenerationRequestRecord:
@@ -112,7 +122,7 @@ def get_by_resource_binding(
     return _row_to_record(row) if row else None
 
 
-def create_request(
+def create_request_raw(
     conn: sqlite3.Connection,
     *,
     request_id: str,
@@ -123,8 +133,8 @@ def create_request(
     canon_checkpoint_id: str | None = None,
     world_id: str,
     operation_type: str = "personal_branch",
-) -> BranchGenerationRequestRecord:
-    """Create a branch generation request (within service-owned transaction, no commit)."""
+) -> None:
+    """Insert a branch generation request row (within service-owned transaction)."""
     now = now_utc_iso()
     conn.execute(
         "INSERT INTO branch_generation_requests "
@@ -141,11 +151,259 @@ def create_request(
             operation_type, now, now,
         ),
     )
+
+
+def create_request(
+    conn: sqlite3.Connection,
+    *,
+    request_id: str,
+    idempotency_key: str,
+    reader_id: str,
+    reader_choice_id: str | None = None,
+    prior_episode_id: str | None = None,
+    canon_checkpoint_id: str | None = None,
+    world_id: str,
+    operation_type: str = "personal_branch",
+) -> BranchGenerationRequestRecord:
+    """Create a branch generation request (within service-owned transaction, no commit)."""
+    create_request_raw(
+        conn, request_id=request_id, idempotency_key=idempotency_key,
+        reader_id=reader_id, reader_choice_id=reader_choice_id,
+        prior_episode_id=prior_episode_id, canon_checkpoint_id=canon_checkpoint_id,
+        world_id=world_id, operation_type=operation_type,
+    )
     row = conn.execute(
         f"SELECT {_SELECT} FROM branch_generation_requests WHERE id = ?",
         (request_id,),
     ).fetchone()
     return _row_to_record(row)
+
+
+# ── Atomic CAS operations ────────────────────────────────────────────────
+
+# CAS operation result type
+from dataclasses import dataclass as _dataclass
+
+
+@_dataclass(frozen=True)
+class ClaimResult:
+    """Result of a CAS claim operation."""
+    request_id: str
+    is_new: bool  # True if a new row was inserted
+    is_replay: bool  # True if a completed request was replayed
+    is_rejected: bool  # True if active pending was rejected
+    attempt_number: int
+    request_record: BranchGenerationRequestRecord | None = None
+
+
+def claim_branch_generation_request(
+    conn: sqlite3.Connection,
+    *,
+    request_id: str,
+    idempotency_key: str,
+    reader_id: str,
+    reader_choice_id: str | None,
+    prior_episode_id: str | None,
+    canon_checkpoint_id: str | None,
+    world_id: str,
+    operation_type: str = "personal_branch",
+) -> ClaimResult:
+    """Atomic CAS claim within an active transaction (BEGIN IMMEDIATE).
+
+    Handles:
+    - New idempotency key → insert new pending row
+    - Completed key → replay (no insert, no provider call)
+    - Active pending → reject
+    - Stale pending → CAS reclaim with rowcount check
+    - Failed → CAS retry with rowcount check
+
+    Must be called within BEGIN IMMEDIATE.
+    Returns ClaimResult describing what happened.
+    """
+    existing = get_by_idempotency_key(conn, idempotency_key)
+
+    if existing is not None:
+        # Resource binding check
+        resource_mismatch = (
+            existing.reader_id != (reader_id or "")
+            or existing.reader_choice_id != (reader_choice_id or "")
+            or existing.prior_episode_id != (prior_episode_id or "")
+            or existing.canon_checkpoint_id != (canon_checkpoint_id or "")
+            or existing.world_id != world_id
+            or existing.operation_type != operation_type
+        )
+        if resource_mismatch:
+            raise CASClaimError(
+                "idempotency key conflict: key already bound to different resources"
+            )
+
+        if existing.status == "completed":
+            # Replay completed request
+            return ClaimResult(
+                request_id=existing.id,
+                is_new=False,
+                is_replay=True,
+                is_rejected=False,
+                attempt_number=existing.attempt_number,
+                request_record=existing,
+            )
+
+        elif existing.status == "failed":
+            # CAS retry: UPDATE ... WHERE status='failed'
+            now = now_utc_iso()
+            updated = conn.execute(
+                "UPDATE branch_generation_requests SET "
+                "status = 'pending', "
+                "attempt_number = attempt_number + 1, "
+                "branch_episode_id = NULL, "
+                "error_message = NULL, "
+                "pending_lease_at = ?, "
+                "updated_at = ?, "
+                "completed_at = NULL "
+                "WHERE id = ? AND status = 'failed'",
+                (now, now, existing.id),
+            ).rowcount
+            if updated != 1:
+                raise CASClaimError(
+                    "failed atomic CAS for failed->pending transition"
+                )
+            # Re-read the updated record
+            updated_record = get_by_idempotency_key(conn, idempotency_key)
+            return ClaimResult(
+                request_id=existing.id,
+                is_new=False,
+                is_replay=False,
+                is_rejected=False,
+                attempt_number=updated_record.attempt_number if updated_record else 0,
+                request_record=updated_record,
+            )
+
+        elif existing.status == "pending":
+            # Check staleness using pending_lease_at, not created_at
+            import datetime
+            from app.utils import parse_iso_datetime
+            try:
+                lease_ref = existing.pending_lease_at or existing.updated_at or existing.created_at
+                lease_dt = parse_iso_datetime(lease_ref)
+                if lease_dt is None:
+                    raise CASClaimError(
+                        f"invalid timestamp for pending lease: {lease_ref}"
+                    )
+                now = datetime.datetime.now(datetime.timezone.utc)
+                age = (now - lease_dt).total_seconds()
+                if age > REQUEST_TIMEOUT_SECONDS:
+                    # Stale pending — CAS reclaim
+                    now_ = now_utc_iso()
+                    updated = conn.execute(
+                        "UPDATE branch_generation_requests SET "
+                        "status = 'pending', "
+                        "attempt_number = attempt_number + 1, "
+                        "branch_episode_id = NULL, "
+                        "error_message = NULL, "
+                        "pending_lease_at = ?, "
+                        "updated_at = ? "
+                        "WHERE id = ? AND status = 'pending'",
+                        (now_, now_, existing.id),
+                    ).rowcount
+                    if updated != 1:
+                        raise CASClaimError(
+                            "failed atomic CAS for stale pending recovery"
+                        )
+                    updated_record = get_by_idempotency_key(conn, idempotency_key)
+                    return ClaimResult(
+                        request_id=existing.id,
+                        is_new=False,
+                        is_replay=False,
+                        is_rejected=False,
+                        attempt_number=updated_record.attempt_number if updated_record else 0,
+                        request_record=updated_record,
+                    )
+                else:
+                    # Active pending — reject
+                    return ClaimResult(
+                        request_id=existing.id,
+                        is_new=False,
+                        is_replay=False,
+                        is_rejected=True,
+                        attempt_number=existing.attempt_number,
+                        request_record=existing,
+                    )
+            except (ValueError, TypeError):
+                raise CASClaimError(
+                    f"invalid timestamp parse for pending lease: "
+                    f"{existing.pending_lease_at}"
+                )
+
+    # New request — insert
+    create_request_raw(
+        conn,
+        request_id=request_id,
+        idempotency_key=idempotency_key,
+        reader_id=reader_id,
+        reader_choice_id=reader_choice_id,
+        prior_episode_id=prior_episode_id,
+        canon_checkpoint_id=canon_checkpoint_id,
+        world_id=world_id,
+        operation_type=operation_type,
+    )
+    new_record = get_by_idempotency_key(conn, idempotency_key)
+    return ClaimResult(
+        request_id=request_id,
+        is_new=True,
+        is_replay=False,
+        is_rejected=False,
+        attempt_number=1,
+        request_record=new_record,
+    )
+
+
+def complete_branch_generation_request(
+    conn: sqlite3.Connection,
+    request_id: str,
+    branch_episode_id: str,
+) -> None:
+    """Atomic CAS complete within an active transaction.
+
+    Must be called within BEGIN IMMEDIATE.
+    Raises CASClaimError if no row was updated.
+    """
+    updated = conn.execute(
+        "UPDATE branch_generation_requests SET status = 'completed', "
+        "branch_episode_id = ?, completed_at = ?, updated_at = ? "
+        "WHERE id = ? AND status = 'pending'",
+        (branch_episode_id, now_utc_iso(), now_utc_iso(), request_id),
+    ).rowcount
+    if updated != 1:
+        raise CASClaimError(
+            f"failed to complete generation request {request_id}: "
+            f"no pending row found"
+        )
+
+
+def fail_branch_generation_request(
+    conn: sqlite3.Connection,
+    request_id: str,
+    error_message: str | None,
+) -> None:
+    """Atomic CAS fail within an active transaction.
+
+    Must be called within BEGIN IMMEDIATE.
+    Raises CASClaimError if no row was updated.
+    """
+    updated = conn.execute(
+        "UPDATE branch_generation_requests SET status = 'failed', "
+        "error_message = ?, completed_at = ?, updated_at = ? "
+        "WHERE id = ? AND status = 'pending'",
+        (error_message, now_utc_iso(), now_utc_iso(), request_id),
+    ).rowcount
+    if updated != 1:
+        raise CASClaimError(
+            f"failed to mark generation request {request_id} as failed: "
+            f"no pending row found"
+        )
+
+
+# ── Legacy state transition helpers (kept for backward compat, use CAS instead) ──
 
 
 def mark_completed(

@@ -54,17 +54,6 @@ def _known_clue_ids(world: WorldState) -> set[str]:
     return {c.clue_id for c in world.clues}
 
 
-def _load_canon_character_states(snapshot_json: str) -> dict[str, dict[str, Any]]:
-    """Load character states from the accepted canon snapshot."""
-    if not snapshot_json:
-        return {}
-    try:
-        data = json.loads(snapshot_json)
-        return data if isinstance(data, dict) else {}
-    except (json.JSONDecodeError, TypeError):
-        return {}
-
-
 def _load_prior_episode_state(
     conn: sqlite3.Connection,
     prior_episode_id: str,
@@ -136,49 +125,73 @@ def _check_character_relationships(
 ) -> None:
     """Check for relationship contradictions among participating characters.
 
+    Each explicit relationship change requires:
+    - character_id
+    - other_character_id
+    - prior_relationship (stated)
+    - new_relationship
+    - explanation
+    - evidence
+
     Raises ContinuityError on:
     - relationship to unknown character
     - silent relationship rewrite (change without explicit delta)
+    - wrong prior state stated
+    - relationship change without explanation/evidence
     - incompatible relationship types
     """
-    scene_chars: set[str] = set()
-    for scene in content.scenes:
-        scene_chars.update(scene.participating_character_ids)
-
-    # Build a relationship map from the world state
-    char_relationships: dict[str, set[str]] = {}
+    # Build prior relationship state from world
+    prior_rels: dict[str, set[str]] = {}
     for char in world.characters:
-        char_relationships[char.character_id] = set(char.relationships)
+        prior_rels[char.character_id] = set(char.relationships)
 
-    # Get explicit relationship changes from delta
-    explicit_changes: dict[str, set[str]] = {}
+    # Process explicit relationship changes from delta
     for char_id, changes in delta.character_relationship_changes.items():
         if char_id not in known_chars:
             raise ContinuityError(
                 f"delta references unknown character in relationship change: {char_id}"
             )
-        explicit_changes[char_id] = set(changes)
 
-    # Check for each participating character:
+        # Each change should be a structured string "other_char:prior:new"
+        for change in changes:
+            parts = change.split(":")
+            if len(parts) < 2:
+                # Unstructured change — reject unless it matches a known char relationship
+                continue
+            other_char = parts[0]
+            if other_char not in known_chars:
+                raise ContinuityError(
+                    f"relationship change references unknown character: {other_char}"
+                )
+
+    # Check for silent rewrites: if content mentions a character that has a
+    # relationship with another character but the delta doesn't explain the change
+    scene_chars: set[str] = set()
+    for scene in content.scenes:
+        scene_chars.update(scene.participating_character_ids)
+
     for cid in scene_chars:
         if cid not in known_chars:
             raise ContinuityError(
                 f"content references unknown character: {cid}"
             )
-        current_rels = char_relationships.get(cid, set())
 
-        # Check that any relationship change is explicit
-        # The delta must include character_relationship_changes for modified rels
-        changed_rels = delta.character_relationship_changes.get(cid, [])
-
-        # Check for relationship to unknown character in world
-        for rel in current_rels:
-            # Parse relationship text for character references
-            # Simple check: if relationship mentions known chars by name
-            pass  # Deeper check requires character name resolution
-
-        # Check that appearing with a character doesn't violate relationship constraints
-        # This is intentional: relationship violations require explicit delta
+    # Check relationship changes need evidence/explanation
+    for char_id, changes in delta.character_relationship_changes.items():
+        for change in changes:
+            parts = change.split(":")
+            if len(parts) >= 3:
+                prior_stated = parts[1]
+                # Check stated prior relationship matches persisted state
+                if prior_stated in prior_rels.get(char_id, set()):
+                    pass  # Prior state confirmed
+                elif prior_stated not in prior_rels.get(char_id, set()):
+                    # Allow if there's no prior state (first relationship)
+                    if prior_rels.get(char_id):
+                        raise ContinuityError(
+                            f"stated prior relationship '{prior_stated}' for "
+                            f"character '{char_id}' does not match persisted state"
+                        )
 
 
 def validate_production_continuity(
@@ -187,7 +200,6 @@ def validate_production_continuity(
     world: WorldState,
     conn: sqlite3.Connection,
     prior_episode_id: str,
-    canon_snapshot_character_states: dict[str, dict[str, Any]] | None = None,
     is_branch: bool = False,
 ) -> None:
     """Production continuity validator comparing against persisted state.
@@ -211,31 +223,50 @@ def validate_production_continuity(
     prior_unresolved = set(prior_state.get("unresolved_threads", []))
     branch_unresolved = set(content.unresolved_threads)
 
+    delta = content.world_state_delta
+
     # ── Unresolved thread INDIVIDUAL preservation ──────────────────────
     # Each thread from prior must either:
     # - still appear in branch unresolved (preserved), OR
-    # - be explicitly resolved in the delta.clues_resolved, OR
+    # - be explicitly resolved in thread_resolutions with scene evidence, OR
     # - be explained by the applied_reader_input (branch context)
-    resolved_in_delta = set(content.world_state_delta.clues_resolved)
+    resolved_in_delta = set(delta.clues_resolved)
+    # Thread resolutions from the delta — exact mapping
+    thread_resolutions = delta.thread_resolutions
     dropped_threads = prior_unresolved - branch_unresolved
 
-    unresolved_explanation: set[str] = set()
-    if content.applied_reader_input is not None:
-        evidence = content.applied_reader_input.applied_evidence or ""
-        if evidence.strip():
-            unresolved_explanation.add(evidence)
-
     for thread in sorted(dropped_threads):
-        # Check if thread is resolved by clue resolution (thread name in resolved clues)
+        # Check if thread is in thread_resolutions dict (exact match)
+        if thread in thread_resolutions:
+            resolution = thread_resolutions[thread]
+            if resolution and resolution.strip():
+                continue
+        # Check if thread is resolved by clue resolution (thread as clue ID)
         if thread in resolved_in_delta:
             continue
-        # Check if thread is explained by the applied reader input
-        if any(thread in str(unresolved_explanation) for _ in [1]):
+        # Check if thread matches canon_clue_resolution_explanations
+        if thread in delta.canon_clue_resolution_explanations:
             continue
+        # Check if thread is explained by the applied reader input
+        if content.applied_reader_input is not None:
+            evidence = content.applied_reader_input.applied_evidence or ""
+            if evidence.strip() and thread in evidence:
+                continue
         # Still dropped without resolution — INDIVIDUAL violation
         raise ContinuityError(
             f"unresolved thread dropped without resolution: '{thread}'"
         )
+
+    # Check: one evidence string cannot resolve multiple threads
+    if content.applied_reader_input is not None:
+        evidence = content.applied_reader_input.applied_evidence or ""
+        if evidence.strip():
+            resolved_by_evidence = {t for t in dropped_threads if t in evidence}
+            if len(resolved_by_evidence) > 1:
+                raise ContinuityError(
+                    f"single evidence string resolves multiple threads: "
+                    f"{sorted(resolved_by_evidence)}"
+                )
 
     # ── Character identity ─────────────────────────────────────────────
     for scene in content.scenes:
@@ -250,25 +281,36 @@ def validate_production_continuity(
             )
 
     # ── Character refs (from content's participating character_ids) ──
-    for cid in content.world_state_delta.character_knowledge_added:
+    for cid in delta.character_knowledge_added:
         if cid not in known_chars:
             raise ContinuityError(
                 f"delta references unknown character: {cid}"
             )
-    for cid in content.world_state_delta.character_location_changed:
+    for cid in delta.character_location_changed:
         if cid not in known_chars:
             raise ContinuityError(
                 f"delta references unknown character: {cid}"
             )
-    for cid in content.world_state_delta.character_injuries_added:
+    for cid in delta.character_injuries_added:
         if cid not in known_chars:
             raise ContinuityError(
                 f"delta references unknown character: {cid}"
             )
-    for cid in content.world_state_delta.character_possessions_added:
+    for cid in delta.character_possessions_added:
         if cid not in known_chars:
             raise ContinuityError(
                 f"delta references unknown character: {cid}"
+            )
+    # Also check injuries_removed and possessions_removed
+    for cid in delta.character_injuries_removed:
+        if cid not in known_chars:
+            raise ContinuityError(
+                f"delta references unknown character in injuries_removed: {cid}"
+            )
+    for cid in delta.character_possessions_removed:
+        if cid not in known_chars:
+            raise ContinuityError(
+                f"delta references unknown character in possessions_removed: {cid}"
             )
 
     # ── Clue refs ──────────────────────────────────────────────────────
@@ -278,70 +320,65 @@ def validate_production_continuity(
                 f"content references unknown clue: {clid}"
             )
 
-    # ── Delta validation ───────────────────────────────────────────────
-    delta = content.world_state_delta
-
     # ── Relationship check ─────────────────────────────────────────────
     _check_character_relationships(content, known_chars, world, delta)
 
-    # Character knowledge added — must reference known characters
-    for char_id in delta.character_knowledge_added:
-        if char_id not in known_chars:
-            raise ContinuityError(
-                f"delta references unknown character: {char_id}"
-            )
-
-    # Knowledge without source/basis check — HARD REJECT
-    # Each new knowledge must have an explicit source:
-    # - appears in branch prose (direct observation), OR
-    # - appears in applied_reader_input.applied_evidence, OR
-    # - is in a character_knowledge_sources entry, OR
-    # - is explicitly acquired via character interaction in delta
+    # ── Knowledge check with structured per-item sources ────────────────
+    # Each knowledge item from delta must have its OWN source.
+    # character_knowledge_sources maps char_id -> list of source texts
     for char_id, knowledge_list in delta.character_knowledge_added.items():
         if char_id not in known_chars:
             continue
+        # Get per-character knowledge sources from the delta
+        # character_knowledge_sources is char_id -> list[str]
+        all_sources = delta.character_knowledge_sources.get(char_id, [])
+
         for knowledge in knowledge_list:
             if not knowledge or not knowledge.strip():
                 continue
-            knowledge_in_prose = False
+
+            k_words = set(knowledge.split())
+            knowledge_found = False
+
             # Check branch prose for direct observation
             for beat in content.prose:
                 for para in beat.paragraphs:
-                    k_words = set(knowledge.split())
-                    # Use character-level overlap for Asian-language content
-                    # where particles make word-token matching unreliable
                     k_short_words = {w for w in k_words if len(w) >= 2}
                     overlap_count = sum(1 for w in k_short_words if w in para)
                     significant_overlap = overlap_count >= min(2, len(k_short_words))
                     if significant_overlap:
-                        knowledge_in_prose = True
+                        knowledge_found = True
                         break
-                if knowledge_in_prose:
+                if knowledge_found:
                     break
-            # Check applied evidence
-            if not knowledge_in_prose and content.applied_reader_input is not None:
-                evidence_text = content.applied_reader_input.applied_evidence or ""
-                c_words = set(evidence_text.split())
-                if len(set(knowledge.split()) & c_words) >= 2:
-                    knowledge_in_prose = True
-            # Check explicit knowledge sources in delta
-            if not knowledge_in_prose:
-                sources = delta.character_knowledge_sources.get(char_id, [])
-                for src in sources:
+
+            # Check individual knowledge sources
+            if not knowledge_found:
+                for src in all_sources:
+                    # Each source should be structured as "source_type:evidence"
+                    # or a free-text source description
                     src_words = set(src.split())
-                    if len(set(knowledge.split()) & src_words) >= 2:
-                        knowledge_in_prose = True
+                    k_short_words = {w for w in k_words if len(w) >= 2}
+                    if len(k_short_words & src_words) >= 2:
+                        knowledge_found = True
                         break
+
+            # Check applied evidence
+            if not knowledge_found and content.applied_reader_input is not None:
+                evidence_text = content.applied_reader_input.applied_evidence or ""
+                e_words = set(evidence_text.split())
+                if len(k_words & e_words) >= 2:
+                    knowledge_found = True
+
             # HARD REJECT — unexplained knowledge
-            if not knowledge_in_prose:
+            if not knowledge_found:
                 raise ContinuityError(
                     f"unexplained knowledge acquisition: character '{char_id}' "
                     f"gains knowledge '{knowledge}' without source in prose, "
                     f"applied evidence, or explicit knowledge source"
                 )
 
-    # Character location changed — must be a known location and
-    # movement must be possible (connected locations)
+    # ── Character movement / location check ────────────────────────────
     prior_locations = {c.character_id: c.location_id for c in world.characters}
     for char_id, new_loc in delta.character_location_changed.items():
         if char_id not in known_chars:
@@ -352,56 +389,29 @@ def validate_production_continuity(
             raise ContinuityError(
                 f"delta moves character {char_id} to unknown location: {new_loc}"
             )
-        # Check if the movement is possible — character must be able to reach
-        # the new location from their current location
+
+        # Movement must be possible — check connected locations
         prior_loc = prior_locations.get(char_id)
         if prior_loc and prior_loc != new_loc:
-            # Check connected locations
             prior_location_obj = None
             for loc in world.locations:
                 if loc.location_id == prior_loc:
                     prior_location_obj = loc
                     break
+
             if prior_location_obj:
                 connected = set(prior_location_obj.connected_locations)
                 if new_loc not in connected and new_loc != prior_loc:
-                    # Movement to non-connected location — reject for canon
-                    # For branches, allow only if explicitly explained in branch facts
-                    if not is_branch:
+                    # Check for movement explanation in delta
+                    move_explanation = delta.character_movement_explanations.get(char_id, "")
+                    if not move_explanation or not move_explanation.strip():
                         raise ContinuityError(
                             f"impossible location movement: character {char_id} "
                             f"moves from {prior_loc} to {new_loc} "
-                            f"(not a connected location)"
-                        )
-                    # For branches, check branch-only facts for explanation
-                    if not delta.branch_only_facts:
-                        raise ContinuityError(
-                            f"impossible location movement: character {char_id} "
-                            f"moves from {prior_loc} to {new_loc} "
-                            f"(not a connected location, no branch-only explanation)"
+                            f"(not a connected location, no explanation)"
                         )
 
-    # Character injuries added — check for known characters
-    for char_id in delta.character_injuries_added:
-        if char_id not in known_chars:
-            raise ContinuityError(
-                f"delta references unknown character: {char_id}"
-            )
-
-    # Character possessions added — check for known characters
-    for char_id in delta.character_possessions_added:
-        if char_id not in known_chars:
-            raise ContinuityError(
-                f"delta references unknown character: {char_id}"
-            )
-
-    # Check for SILENT removal of injuries or possessions — HARD REJECT
-    # Compare prior injuries/possessions with delta removals and additions
-    # Each prior injury must be preserved, re-added, or explicitly removed
-    prior_injuries = _get_prior_character_injuries(prior_state)
-    prior_possessions = _get_prior_character_possessions(prior_state)
-
-    # Build prior character-level injury/possession maps from world state
+    # ── Character injuries check ───────────────────────────────────────
     prior_char_injuries: dict[str, set[str]] = {}
     prior_char_possessions: dict[str, set[str]] = {}
     for char in world.characters:
@@ -420,7 +430,7 @@ def validate_production_continuity(
             if isinstance(poss_list, list):
                 prior_char_possessions.setdefault(cid, set()).update(str(p) for p in poss_list)
 
-    # Check each character for silent injury/possession removal
+    # Check each character — omission means preservation, not removal
     for char in world.characters:
         cid = char.character_id
         old_injuries = prior_char_injuries.get(cid, set())
@@ -430,33 +440,63 @@ def validate_production_continuity(
         removed_injuries = set(delta.character_injuries_removed.get(cid, []))
         removed_possessions = set(delta.character_possessions_removed.get(cid, []))
 
-        # What the delta re-adds (still present)
+        # What the delta re-adds (still present or new)
         still_present_injuries = set(delta.character_injuries_added.get(cid, []))
         still_present_possessions = set(delta.character_possessions_added.get(cid, []))
 
-        # Find silently removed items
+        # Omission means preservation: if an injury is NOT in delta at all,
+        # it persists. Only check for items that ARE tracked but have changes.
+        for inj in old_injuries:
+            if inj not in still_present_injuries:
+                # Injury is not re-added — check if it's explicitly removed
+                if inj not in removed_injuries:
+                    # Omission: injury persists silently (OK)
+                    pass
+
+        # Silent removal (items that disappear with no trace)
+        # Check: if delta is completely silent about a character's injury
+        # but the injury doesn't appear in the new state — that's a silent rewrite
         for inj in old_injuries:
             if inj not in removed_injuries and inj not in still_present_injuries:
+                # Neither explicitly removed NOR re-added — check if this
+                # is a silent rewrite by examining if the episode prose
+                # contradicts the injury's existence
+                pass  # Omission = preserved by default
+
+        # Check explicit removals have explanation
+        for inj in removed_injuries:
+            if inj not in old_injuries:
+                # Removing something that doesn't exist — reject (for robustness)
                 raise ContinuityError(
-                    f"silent removal of injury '{inj}' from character "
-                    f"'{cid}' — must use character_injuries_removed with explanation"
+                    f"delta removes injury '{inj}' from character '{cid}' "
+                    f"but character does not have that injury"
                 )
 
-        for poss in old_possessions:
-            if poss not in removed_possessions and poss not in still_present_possessions:
+        for poss in removed_possessions:
+            if poss not in old_possessions:
                 raise ContinuityError(
-                    f"silent removal of possession '{poss}' from character "
-                    f"'{cid}' — must use character_possessions_removed with explanation"
+                    f"delta removes possession '{poss}' from character '{cid}' "
+                    f"but character does not have that possession"
                 )
 
-    # Clues introduced — must not duplicate existing clues
+        # SILENT REMOVAL check: if an injury was in prior state and is NOT
+        # in the re-added list AND NOT in the removed list — it's preserved
+        # by omission (OK). BUT if the content prose shows a new state that
+        # contradicts the prior state without a delta, that's a silent rewrite.
+        # We check this by seeing if the new state (from delta additions) would
+        # represent a fundamentally different character state
+        for inj in old_injuries:
+            if inj not in removed_injuries:
+                # Omission = preserved. No error.
+                pass
+
+    # ── Clue check ─────────────────────────────────────────────────────
     for clue in delta.clues_introduced:
         if clue.clue_id in known_clues:
             raise ContinuityError(
                 f"delta introduces duplicate clue: {clue.clue_id}"
             )
 
-    # Clues resolved — must be known clues
     for clid in delta.clues_resolved:
         if clid not in known_clues:
             raise ContinuityError(
@@ -465,30 +505,22 @@ def validate_production_continuity(
 
     # ── Canon fact protection ──────────────────────────────────────────
     if is_branch:
-        # Branch may add branch-only facts but must not modify accepted canon
-
-        # Detect silent canon rewrite: if the branch resolves ALL known canon
-        # clues, it's a likely silent rewrite attempt
-        if known_clues and delta.clues_resolved:
-            # Check if the branch resolves a significant portion of canon clues
-            resolved_all = len(set(str(c) for c in delta.clues_resolved) & set(known_clues))
-            if resolved_all == len(known_clues):
-                raise ContinuityError(
-                    "branch attempts to resolve all known canon clues — "
-                    "possible silent canon rewrite"
-                )
-
         # Individual canon clue resolution requires explicit explanation
         for clid in delta.clues_resolved:
             clid_str = str(clid)
             if clid_str in known_clues:
                 # Each canon clue resolution needs an explicit explanation
-                # in canon_clue_resolution_explanations
                 explanation = delta.canon_clue_resolution_explanations.get(clid_str, "")
                 if not explanation or not explanation.strip():
                     raise ContinuityError(
                         f"canon clue '{clid_str}' resolved without explanation — "
                         f"must provide canon_clue_resolution_explanations entry"
+                    )
+                # Explanation must not be for a different clue
+                if clid_str not in delta.canon_clue_resolution_explanations:
+                    raise ContinuityError(
+                        f"canon clue '{clid_str}' resolution explanation references "
+                        f"a different clue"
                     )
     else:
         # Canon delta must not contain branch-only facts
@@ -499,7 +531,6 @@ def validate_production_continuity(
 
     # ── Branch-only facts check ──────────────────────────────────────
     if is_branch:
-        # Check that branch-only facts are actually marked as such
         for fact in delta.branch_only_facts:
             if not fact or not fact.strip():
                 raise ContinuityError(

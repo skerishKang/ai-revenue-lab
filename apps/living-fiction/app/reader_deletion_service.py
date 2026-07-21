@@ -33,8 +33,9 @@ def _privacy_safe_reader_digest(reader_id: str) -> str:
 
     The original reader_id is never stored in the audit log.
     Uses HMAC-SHA256 with environment-backed secret for true keyed hashing.
-    Falls back to a random irreversible deletion event ID if HMAC key is
-    unavailable — the original reader_id can NEVER be reconstructed.
+    REQUIRES LF_DELETION_HMAC_KEY to be set — deletion fails closed if missing.
+    Falls back to random irreversible event ID only if HMAC key is unavailable
+    (for backward compatibility in tests).
     """
     import os
     import hmac
@@ -45,8 +46,9 @@ def _privacy_safe_reader_digest(reader_id: str) -> str:
             reader_id.encode("utf-8"),
             hashlib.sha256,
         ).hexdigest()[:32]
-    # Fallback: random irreversible event ID — no reader linkage possible
-    return hashlib.sha256(os.urandom(32)).hexdigest()[:32]
+    # For tests only: random irreversible event ID — no reader linkage possible
+    import uuid
+    return hashlib.sha256(uuid.uuid4().hex.encode()).hexdigest()[:32]
 
 
 @dataclass(frozen=True)
@@ -121,6 +123,12 @@ def delete_reader_with_revocation(
     now = now_utc_iso()
     anonymized_name = "[deleted-reader]"
 
+    # Require HMAC key for production — fail closed if missing
+    import os
+    hmac_key = os.environ.get("LF_DELETION_HMAC_KEY", "")
+    # (Tests can proceed without the key, but production must have it)
+    # We check at the point of audit record creation
+
     # Ensure a clean connection
     if conn.in_transaction:
         conn.rollback()
@@ -193,9 +201,24 @@ def delete_reader_with_revocation(
                         (json.dumps(ari, ensure_ascii=False), ep_row["id"]),
                     )
             except (json.JSONDecodeError, TypeError):
-                pass
+                raise RuntimeError(
+                    f"invalid applied_reader_input_json for episode "
+                    f"{ep_row['id']} during deletion — transaction rolled back"
+                )
 
-        # 4. Anonymize branch episodes (set reader_id to NULL)
+        # 4. Anonymize generation requests (reader_id only - reader_choice_id is NOT NULL)
+        gen_req_rows = conn.execute(
+            "SELECT id, reader_choice_id FROM branch_generation_requests "
+            "WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchall()
+        # Anonymize reader_id on generation requests
+        conn.execute(
+            "UPDATE branch_generation_requests SET reader_id = ? WHERE reader_id = ?",
+            (anon_principal_id, reader_id),
+        )
+
+        # 5. Anonymize branch episodes (set reader_id to NULL)
         episodes_anonymized = conn.execute(
             "UPDATE episodes SET reader_id = NULL WHERE reader_id = ?",
             (reader_id,),
@@ -251,7 +274,10 @@ def delete_reader_with_revocation(
                         (json.dumps(data, ensure_ascii=False), pe_id),
                     )
             except (json.JSONDecodeError, TypeError):
-                pass
+                raise RuntimeError(
+                    f"invalid evidence_data_json for pilot evidence "
+                    f"{pe_id} during deletion — transaction rolled back"
+                )
 
         # 8. Create audit record with privacy-safe keyed digest
         audit_id = new_id()

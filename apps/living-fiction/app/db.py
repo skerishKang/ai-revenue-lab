@@ -111,6 +111,15 @@ def apply_migrations(
             conn.execute("BEGIN IMMEDIATE")
             for stmt in statements:
                 conn.execute(stmt)
+            # Run FK check after each migration's statements
+            violations = conn.execute("PRAGMA foreign_key_check").fetchall()
+            if violations:
+                raise MigrationError(
+                    filename,
+                    RuntimeError(
+                        f"foreign key violations after migration: {violations}"
+                    ),
+                )
             conn.execute(
                 "INSERT INTO schema_migrations (version) VALUES (?)",
                 (filename,),

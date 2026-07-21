@@ -55,8 +55,9 @@ _REVENUE_CATEGORIES = {EvidenceCategory.REVENUE_HYPOTHESIS.value}
 
 # Fields that require consent verification
 _CONSENT_REQUIRING_CATEGORIES = {
+    EvidenceCategory.CONSENT.value,
     EvidenceCategory.EXPLICIT_CHOICE.value,
-    EvidenceCategory.EPISODE_DELIVERY.value,
+    EvidenceCategory.BRANCH_DELIVERY.value,
 }
 
 # Payment claim keywords that must NOT appear
@@ -66,12 +67,12 @@ _PAYMENT_CLAIM_KEYWORDS = frozenset({
 })
 
 # Canon delivery evidence should reference only canon episodes
-_CANON_REFERENCE_CATEGORIES = {EvidenceCategory.EPISODE_DELIVERY.value}
+_CANON_REFERENCE_CATEGORIES = {EvidenceCategory.CANON_DELIVERY.value}
 
 # Branch/choice evidence must reference personal branch + matching reader
 _BRANCH_REFERENCE_CATEGORIES = {
     EvidenceCategory.EXPLICIT_CHOICE.value,
-    EvidenceCategory.EPISODE_DELIVERY.value,
+    EvidenceCategory.BRANCH_DELIVERY.value,
 }
 
 # Revenue hypotheses must not claim actual payment
@@ -166,6 +167,20 @@ def _validate_references(
         if reader_id is None:
             raise PilotEvidenceValidationError(
                 "consent evidence requires a reader_id"
+            )
+
+    elif evidence_category == EvidenceCategory.CANON_DELIVERY.value:
+        # canon_delivery: canon episode required
+        if canon_episode_id is None:
+            raise PilotEvidenceValidationError(
+                "canon delivery evidence requires a canon episode reference"
+            )
+
+    elif evidence_category in _BRANCH_REFERENCE_CATEGORIES:
+        # branch_delivery or explicit_choice: branch episode required
+        if branch_episode_id is None:
+            raise PilotEvidenceValidationError(
+                f"'{evidence_category}' evidence requires a branch episode reference"
             )
 
     if canon_episode_id is not None:
@@ -362,16 +377,15 @@ def _validate_consent(
     if category not in _CONSENT_REQUIRING_CATEGORIES:
         return
 
-    # Recursively check for consent field at any nesting level
-    consent = _find_field_value(data, "consent_obtained")
+    # Consent must be at TOP level of evidence_data, not deeply nested
+    consent = data.get("consent_obtained")
     if consent is None:
-        consent = _find_field_value(data, "has_consent")
+        consent = data.get("has_consent")
     if consent is None:
-        # Check nested keys more thoroughly
-        consent = _deep_find_consent(data)
+        consent = data.get("consent")
     if consent is None:
         raise PilotEvidenceValidationError(
-            f"category '{category}' requires consent_obtained field"
+            f"category '{category}' requires top-level consent_obtained field"
         )
     # Reject truthy string "false" as consent — must be boolean True or equivalent
     if isinstance(consent, str):
