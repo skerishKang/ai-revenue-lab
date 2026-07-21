@@ -109,6 +109,7 @@ def _build_provider(settings: Settings, fixture: FixtureBundle | None = None):
             model=settings.ai_model,
             timeout_seconds=settings.ai_timeout_seconds,
             cost_class=cost_class,
+            response_format_mode=settings.ai_response_format_mode,
         )
 
     raise SystemExit(
@@ -887,6 +888,7 @@ def _build_repair_provider(settings: Settings, fixture: FixtureBundle):
             model=settings.ai_model,
             timeout_seconds=settings.ai_timeout_seconds,
             cost_class=cost_class,
+            response_format_mode=settings.ai_response_format_mode,
         )
     raise SystemExit(
         "provider config fail-closed: AI_PROVIDER must be 'mock' "

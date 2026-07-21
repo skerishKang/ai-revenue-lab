@@ -8,6 +8,7 @@ _DEFAULT_SECRETS = frozenset({
 
 _VALID_PROVIDERS = frozenset({"mock", "external"})
 _VALID_COST_CLASSES = frozenset({"free", "paid", "local", "unknown"})
+_VALID_RESPONSE_FORMAT_MODES = frozenset({"json_schema", "json_object"})
 
 
 class Settings(BaseSettings):
@@ -20,6 +21,7 @@ class Settings(BaseSettings):
     ai_api_key: str = ""
     ai_timeout_seconds: int = Field(default=120, gt=0)
     ai_cost_class: str = "free"
+    ai_response_format_mode: str = "json_schema"
     prompt_version: str = "personal-edition-v1"
     secret_key: str = "dev-secret-key-change-in-production"
     admin_secret: str = "dev-admin-secret-change-in-production"
@@ -60,6 +62,12 @@ class Settings(BaseSettings):
             raise ValueError(
                 f"AI_COST_CLASS must be one of {sorted(_VALID_COST_CLASSES)}, "
                 f"got '{self.ai_cost_class}'"
+            )
+        if self.ai_response_format_mode not in _VALID_RESPONSE_FORMAT_MODES:
+            raise ValueError(
+                f"AI_RESPONSE_FORMAT_MODE must be one of "
+                f"{sorted(_VALID_RESPONSE_FORMAT_MODES)}, "
+                f"got '{self.ai_response_format_mode}'"
             )
         if self.ai_provider == "external":
             if not self.ai_base_url:

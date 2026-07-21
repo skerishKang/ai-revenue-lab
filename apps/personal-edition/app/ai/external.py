@@ -150,6 +150,7 @@ class ExternalProvider:
         model: str,
         timeout_seconds: int = 120,
         cost_class: CostClass = CostClass.FREE,
+        response_format_mode: str = "json_schema",
     ) -> None:
         if not base_url:
             raise ValueError("base_url must be a non-empty string")
@@ -164,11 +165,17 @@ class ExternalProvider:
                 f"cost_class must be one of {sorted(_VALID_COST_CLASSES)}, "
                 f"got '{cost_class.value}'"
             )
+        if response_format_mode not in ("json_schema", "json_object"):
+            raise ValueError(
+                f"response_format_mode must be 'json_schema' or 'json_object', "
+                f"got '{response_format_mode}'"
+            )
         self._endpoint = _normalize_endpoint(base_url)
         self._api_key = api_key
         self._model = model
         self._timeout = timeout_seconds
         self._cost_class = cost_class
+        self._response_format_mode = response_format_mode
         self._ssl_ctx = ssl.create_default_context()
 
     @property
@@ -227,6 +234,7 @@ class ExternalProvider:
             task_name=task_name,
             system_prompt=system_prompt,
             user_payload=user_payload,
+            response_schema=response_schema,
         )
         raw_bytes = json.dumps(body, ensure_ascii=False).encode("utf-8")
         req = urllib.request.Request(
@@ -277,7 +285,22 @@ class ExternalProvider:
         task_name: str,
         system_prompt: str,
         user_payload: dict,
+        response_schema: type[BaseModel] | None = None,
     ) -> dict[str, Any]:
+        if self._response_format_mode == "json_schema" and response_schema is not None:
+            schema = response_schema.model_json_schema()
+            schema_name = response_schema.__name__
+            response_format: dict[str, Any] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": schema_name,
+                    "strict": True,
+                    "schema": schema,
+                },
+            }
+        else:
+            response_format = {"type": "json_object"}
+
         return {
             "model": self._model,
             "messages": [
@@ -287,7 +310,7 @@ class ExternalProvider:
                     "content": json.dumps(user_payload, ensure_ascii=False),
                 },
             ],
-            "response_format": {"type": "json_object"},
+            "response_format": response_format,
         }
 
     def _parse_response(
