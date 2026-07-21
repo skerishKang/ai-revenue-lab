@@ -1,14 +1,15 @@
 # Living Travel Product Contract
 
-- Status: Design approved for research; implementation deferred
+- Status: **Approved for Phase 1 implementation**
 - Date: 2026-07-20
-- Related issue: #13
+- Related issue: #32
+- Base SHA: 2afaa049614337c8d61a9ec7b34dd02c89f4ee78
 
 ## 1. Product definition
 
-Living Travel is a recurring personal travel publication. It does not return a one-time itinerary or generic chatbot answer. A reader receives a polished edition, reacts to it, and receives a materially adapted next edition at a deliberate time.
+Living Travel is a recurring personal travel publication. A reader receives a polished edition, reacts to it, and receives a materially adapted next edition at a deliberate time.
 
-```text
+```
 travel interest and constraints
 → curated source packet
 → personal travel edition
@@ -21,25 +22,21 @@ The product tests whether AI can make one-to-one travel publishing economically 
 
 ## 2. First experiment
 
-The first experiment is a **seven-morning destination season** for one real destination.
+The first experiment is a **Busan 2-night domestic solo trip**.
 
-Initial candidate destination: Da Nang, Vietnam.
+### Target reader
 
-The destination may be replaced before implementation when source accessibility or pilot-user demand favors another place. The product contract does not depend on Da Nang-specific facts.
+A Korean solo traveler planning a two-night domestic trip who:
 
-### Target first reader
-
-An adult independent traveler who:
-
-- is considering or preparing for one destination;
+- is considering or preparing for a short destination trip;
 - dislikes generic top-ten lists;
 - can articulate changing interests after reading;
 - values neighborhood atmosphere, food, culture, or quiet exploration;
-- is willing to read one compact edition each morning.
+- is willing to read one compact edition.
 
 ### Initial travel stage
 
-Pre-trip inspiration and preference discovery.
+Pre-trip or early-trip inspiration and planning.
 
 The first pilot does not provide emergency navigation, immigration advice, safety guarantees, live transport status, or time-critical booking instructions.
 
@@ -48,34 +45,31 @@ The first pilot does not provide emergency navigation, immigration advice, safet
 The first edition accepts:
 
 - destination;
-- approximate travel month or season;
-- trip duration range;
-- solo, couple, family, or group context;
+- trip duration;
+- solo context;
 - budget tendency;
 - mobility or pace preference;
 - initial interests;
 - explicit exclusions;
-- preferred edition tone and length;
-- optional user-supplied memories or reasons for interest.
+- preferred edition tone and length.
 
 After each edition, the reader may provide:
 
 - continue in this direction;
 - make it more practical;
-- make it more atmospheric;
-- show more food, culture, nature, neighborhoods, or events;
-- reduce famous attractions;
-- reduce crowds, cost, walking, nightlife, or complexity;
-- go deeper on one section;
+- more local food;
+- quieter places;
+- slower pace;
+- less walking;
+- lower budget;
+- more practical detail;
 - free-form instruction.
-
-The system must not infer medical conditions, disabilities, financial capacity, family relationships, or risk tolerance beyond what the reader explicitly supplies.
 
 ## 4. Source packet
 
 Every edition is grounded in an approved source packet rather than unrestricted model memory.
 
-A source record contains:
+### Source record
 
 - source identifier;
 - source URL or retained reference;
@@ -90,38 +84,40 @@ A source record contains:
 - single-source, multi-source, conflicting, superseded, or withdrawn state;
 - confidence and review notes.
 
-Initial source priorities:
-
-1. local or national tourism authorities;
-2. local government and cultural institutions;
-3. official attraction, market, venue, event, and transport sources;
-4. verified official business pages for operating information;
-5. reputable secondary sources used only when primary confirmation is unavailable and the limitation is shown.
-
-User-generated ratings and anonymous recommendations are not treated as verified factual sources. They may later be analyzed as subjective signals with explicit labeling.
-
 ## 5. Output contract
 
-Each edition is a polished mobile-readable publication containing:
+Each edition is a polished publication containing:
 
-1. edition title;
-2. destination, date, and edition number;
-3. a short opening that connects to the reader's stated interest;
-4. two to four editorial sections;
-5. source-backed place, activity, food, event, or cultural material;
-6. a practical note only when its validity date is clear;
-7. a continuity note describing how prior feedback changed this edition;
-8. source and freshness indicators;
-9. one question or choice for the next edition.
+1. publication and edition title;
+2. destination and trip frame;
+3. editorial opening;
+4. two night/day route sections;
+5. food or neighborhood recommendations;
+6. quieter or lower-effort alternatives;
+7. practical notes;
+8. source/provenance references;
+9. information class and freshness/verification metadata for each operational item;
+10. applied feedback on later editions;
+11. next-edition feedback prompt.
 
-Target length:
+## 6. Current-information policy
 
-- approximately 700 to 1,300 Korean words; or
-- equivalent English length.
+Every generated travel item must be classified as one of:
 
-The output must not be a list of links, a raw itinerary table, a copied article, or a chat transcript.
+1. **inspiration** — subjective or thematic material that does not claim current operations;
+2. **stable_reference** — a broadly stable place or geography statement with provenance;
+3. **time_sensitive** — opening hours, price, booking, transit, weather, event, closure, or other changing operational advice.
 
-## 6. Adaptation rule
+For **time_sensitive** items:
+
+- `as_of_date` required;
+- source/provenance reference required;
+- confidence or verification state required;
+- `verify_before_use=true` unless an approved current source is present.
+
+Synthetic fixtures must not pretend to be current.
+
+## 7. Adaptation rule
 
 A next edition is materially adapted only when at least one of the following changes:
 
@@ -131,7 +127,6 @@ A next edition is materially adapted only when at least one of the following cha
 - route or sequence;
 - depth of one subject;
 - crowd, budget, pace, or companionship constraints;
-- time-of-day focus;
 - excluded category;
 - editorial tone or length.
 
@@ -143,175 +138,58 @@ The edition stores an `applied_feedback` record with:
 - requested change;
 - actual editorial action;
 - affected sections;
-- evidence that the change is visible;
-- unfulfilled request and reason when applicable.
+- evidence that the change is visible.
 
-## 7. Three-edition design demonstration
+## 8. Revenue hypothesis
 
-The following is a structural prototype. Place names and operational details are placeholders until grounded source records are supplied.
-
-### Edition 1 — Broad destination discovery
-
-Theme: a balanced introduction to the destination beyond a generic checklist.
-
-Sections:
-
-- morning atmosphere and one representative local area;
-- one cultural or natural experience;
-- one food context;
-- a choice between deeper neighborhood life, food, nature, or evening culture.
-
-Reader reaction:
-
-> Famous attractions are less interesting. I want neighborhood restaurants and ordinary morning life.
-
-### Edition 2 — Neighborhood food and morning life
-
-Material changes:
-
-- famous attractions removed;
-- geographic focus narrowed to residential or market areas;
-- food is explained through morning routines rather than restaurant rankings;
-- practical notes focus on opening periods and solo ordering where sourced.
-
-Reader reaction:
-
-> I travel alone. I prefer quiet places and do not want crowded markets or complicated ordering.
-
-### Edition 3 — Quiet solo-friendly morning route
-
-Material changes:
-
-- crowded or high-friction locations excluded;
-- route favors short transitions and calmer periods;
-- each stop includes a solo-entry or ordering note only when sourced;
-- one alternative is supplied for weather or crowd changes;
-- the continuity note explicitly states which prior suggestions were removed.
-
-The three editions must remain recognizably part of one continuing publication while offering substantively different content.
-
-## 8. Freshness and verification policy
-
-Travel information decays at different speeds.
-
-### Slow-changing
-
-- geography;
-- cultural context;
-- historical background;
-- general neighborhood character.
-
-These records may have longer review intervals.
-
-### Medium-changing
-
-- regular operating hours;
-- ticket structure;
-- recurring programs;
-- transport routes;
-- seasonal access.
-
-These require dated sources and rechecking before a pilot edition.
-
-### Fast-changing
-
-- temporary events;
-- closures;
-- weather-dependent activities;
-- live transport disruption;
-- current prices;
-- reservation availability.
-
-The first pilot either excludes these or displays a prominent last-confirmed timestamp and directs the reader to the official source.
-
-The service must say what was confirmed, when it was confirmed, and what remains uncertain. It must not claim that a future activity will certainly occur.
-
-## 9. Delivery model
-
-- reader input and feedback may be submitted at any time;
-- the next edition is normally delivered the following morning;
-- generation may occur within minutes, but deliberate delivery creates continuity and expectation;
-- manual generation and delivery are acceptable during the pilot;
-- urgent in-trip requests are outside the first experiment.
-
-## 10. Revenue hypothesis
-
-> A traveler will pay for a destination publication that becomes visibly more relevant each morning, even though generic AI itinerary tools are available for free.
+> A traveler will pay for a destination publication that becomes visibly more relevant, even though generic AI itinerary tools are available for free.
 
 Initial offer:
 
-- one sample edition free;
-- seven-morning destination season: KRW 5,900;
-- manual payment acceptable;
-- optional official booking or commerce links may be measured, but affiliate revenue is not required for first validation.
+- one free sample edition;
+- three adapted editions: KRW 4,900;
+- payment integration is out of scope; only the contract and privacy-safe evidence structure are required.
 
-The user is paying for recurrence, editorial packaging, memory, adaptation, and source freshness—not access to an AI model.
+The user is paying for recurrence, editorial packaging, memory, adaptation, and source freshness — not access to an AI model.
 
-## 11. Success metrics
+## 9. Success metrics
 
 Critical:
 
 - at least one external user pays;
-- at least two users complete three or more editions;
+- at least two users complete three editions;
 - each continuing user gives feedback at least twice;
-- an independent reviewer can identify the requested adaptation without seeing the feedback text;
-- at least 80% of editions require no substantial human rewrite;
-- at least 90% of generation calls use free inference.
+- an independent reviewer can identify the requested adaptation without seeing the feedback text.
 
-Supporting:
-
-- five sample users from ten or more qualified invitations;
-- two paid conversions;
-- average human correction below seven minutes per edition;
-- at least one official-link or booking-intent action;
-- at least one request to continue or switch to another destination.
-
-## 12. Failure conditions
+## 10. Failure conditions
 
 - readers prefer one immediate itinerary over recurring editions;
 - adaptations are perceived as superficial;
 - source collection and correction time make one-to-one production uneconomic;
 - operational facts become stale too quickly;
-- no payment follows 20 qualified invitations and sample exposure;
-- the service repeatedly recommends places that violate explicit constraints;
 - users do not return after the first edition.
 
-Failure must be classified as demand, packaging, freshness, source, personalization, pricing, or distribution failure.
-
-## 13. Safety and privacy boundaries
+## 11. Safety and privacy boundaries
 
 The first experiment excludes:
 
 - medical or accessibility guarantees;
 - legal, visa, immigration, or customs advice;
 - emergency and personal-safety guarantees;
-- travel to active conflict or severe-disaster areas;
-- personalized risk judgments based on sensitive identity inference;
-- unverified private residences or intrusive local-life recommendations;
-- hidden sponsorship;
-- collection of precise live location unless a later product decision explicitly authorizes it.
+- collection of precise live location.
 
 The reader may delete supplied preferences, feedback, and editions.
 
-## 14. Relationship to Personal Edition
+## 12. Relationship to Personal Edition
 
-Living Travel may reuse these concepts:
+Living Travel is a conceptual sibling of Personal Edition. It must not share implementation code merely because the concepts are similar. Shared extraction is considered only after both products have working tested implementations.
 
-- edition sequence;
-- structured feedback;
-- continuity note;
-- applied-feedback evidence;
-- deliberate delivery;
-- experiment accounting.
+Structural patterns may be studied, but all code is independently designed and maintained within `apps/living-travel/`.
 
-It must not share implementation code merely because the concepts are similar. Shared extraction is considered only after both products have working tested implementations.
+## 13. Non-goals (Phase 1)
 
-## 15. Implementation gate
-
-Implementation remains deferred until:
-
-- Personal Edition proves or disproves that readers value feedback-responsive recurring editions;
-- a destination source packet is assembled;
-- freshness and source-display requirements are accepted;
-- the three-edition prototype is reviewed;
-- the pilot user and economic signal are confirmed.
+- booking, maps, navigation, weather, payment, affiliate integration;
+- email, OAuth, or public sharing;
+- UI beyond health/smoke boundary;
+- live web research or provider call;
+- shared package extraction.
