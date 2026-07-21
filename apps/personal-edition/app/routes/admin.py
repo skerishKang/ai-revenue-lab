@@ -117,8 +117,8 @@ def _validate_edition_content(structured_content: str) -> tuple[bool, str, Editi
 
     try:
         validated = EditionContent.model_validate(parsed)
-    except Exception as exc:
-        logger.debug("Schema validation failed: %s", exc)
+    except Exception:
+        logger.debug("Edition content schema validation rejected")
         return False, "입력한 편집 내용의 필수 항목과 형식을 확인해 주세요.", None
 
     try:

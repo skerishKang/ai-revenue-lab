@@ -1143,3 +1143,35 @@ class TestGenerationFailureHandling:
         resp2 = client.get(location, cookies=all_cookies)
         assert resp2.status_code == 200
         assert "초안을 생성하지 못했습니다" in resp2.text
+
+
+class TestValidationPrivacy:
+    """Ensure private editorial content is never logged during schema validation."""
+
+    def test_private_content_not_logged_on_schema_error(self, caplog):
+        """Sentinel payload in schema validation must not appear in log output."""
+        from app.routes.admin import _validate_edition_content
+        sentinel = "PRIVATE_EDITORIAL_SENTINEL_DO_NOT_LOG"
+        payload = {
+            "content_version": "v1",
+            "language": "ko",
+            "edition_title": sentinel,
+            "publication_title": "발행",
+            "deck": "요약",
+            "opening": "서론",
+            "provenance_note": "출처",
+            "highlighted_insight": "인사이트",
+            "sections": [{"section_id": "s001", "title": "T1",
+                          "source_segment_ids": ["s001"],
+                          "paragraphs": [sentinel]}],
+        }
+        import json as _json
+        is_valid, error_msg, model = _validate_edition_content(_json.dumps(payload))
+        assert is_valid is False
+        assert model is None
+        assert "필수 항목" in error_msg or "형식" in error_msg
+
+        log_text = caplog.text
+        assert sentinel not in log_text, f"Private content leaked into logs: {sentinel}"
+        assert "input_value" not in log_text, "input_value leaked into logs"
+        assert "ValidationError" not in log_text, "ValidationError leaked into logs"
