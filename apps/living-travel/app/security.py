@@ -200,9 +200,10 @@ def validate_traveler_token(conn: sqlite3.Connection, raw_token: str) -> str | N
     return row["traveler_id"]
 
 
-def deactivate_traveler_tokens(conn: sqlite3.Connection, traveler_id: str) -> None:
+def deactivate_traveler_tokens(conn: sqlite3.Connection, traveler_id: str, *, commit: bool = True) -> None:
     conn.execute("UPDATE traveler_tokens SET is_active = 0, rotated_at = ? WHERE traveler_id = ?", (_utcnow(), traveler_id))
-    conn.commit()
+    if commit:
+        conn.commit()
 
 
 # --- Traveler Session Management ---

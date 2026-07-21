@@ -23,9 +23,11 @@ from app.edition_repository import (
     update_edition_generation_status,
     update_edition_publication,
 )
+from app.feedback_repository import get_unapplied_feedback_for_traveler
 from app.generation_run_repository import count_generation_runs_by_edition
 from app.pilot_evidence_repository import get_pilot_evidence_by_traveler
 from app.pipeline.service import GenerationService
+from app.pipeline.errors import PipelineError
 from app.ai.mock import MockProvider
 from app.security import (
     create_operator_session,
@@ -97,6 +99,22 @@ def _get_rate_limit_key(request: Request) -> str:
     return "__fallback__"
 
 
+def _set_csrf_cookie(resp, csrf: str):
+    """Set CSRF cookie on a response."""
+    resp.set_cookie("lt_csrf", csrf, httponly=True, samesite="strict", max_age=3600)
+    return resp
+
+
+def _login_page_response(error: str) -> HTMLResponse:
+    """Build login page with new CSRF token and cookie."""
+    csrf = generate_csrf_token()
+    resp = HTMLResponse(
+        render_template("operator_login.html", {"csrf_token": csrf, "error": error})
+    )
+    _set_csrf_cookie(resp, csrf)
+    return resp
+
+
 # --- Auth ---
 
 @router.get("/login")
@@ -125,20 +143,14 @@ async def operator_login_submit(
     rate_key = _get_rate_limit_key(request)
 
     if rate_limiter.is_locked(rate_key):
-        return HTMLResponse(
-            render_template("operator_login.html", {"csrf_token": generate_csrf_token(), "error": "Too many failed attempts. Please try again later."})
-        )
+        return _login_page_response("Too many failed attempts. Please try again later.")
 
     if not lt_csrf or not csrf_token or not constant_time_compare(csrf_token, lt_csrf):
-        return HTMLResponse(
-            render_template("operator_login.html", {"csrf_token": generate_csrf_token(), "error": "Invalid CSRF token"})
-        )
+        return _login_page_response("Invalid CSRF token")
 
     if not settings.operator_secret or not constant_time_compare(secret, settings.operator_secret):
         rate_limiter.record_failure(rate_key)
-        return HTMLResponse(
-            render_template("operator_login.html", {"csrf_token": generate_csrf_token(), "error": "Invalid secret"})
-        )
+        return _login_page_response("Invalid secret")
 
     rate_limiter.record_success(rate_key)
 
@@ -230,7 +242,7 @@ async def traveler_detail(
     request: Request,
     operator: OperatorContext = __import__("fastapi").Depends(get_operator),
 ):
-    """View traveler details, editions, tokens."""
+    """View traveler details, editions, tokens with conditional action UI."""
     conn = get_connection()
     try:
         traveler = get_traveler_by_id(conn, traveler_id)
@@ -248,12 +260,34 @@ async def traveler_detail(
                 "run_count": run_count,
             })
 
+        is_active = traveler.status == "active"
+
+        has_pending_review = any(
+            ed.generation_status == "pending_review" for ed in editions
+        )
+        has_generation_failed = any(
+            ed.generation_status == "generation_failed" for ed in editions
+        )
+        published_editions = [ed for ed in editions if ed.publication_state == "published"]
+        has_published = len(published_editions) > 0
+
+        unapplied_fb = get_unapplied_feedback_for_traveler(conn, traveler_id)
+        has_unapplied_feedback = len(unapplied_fb) > 0
+
         return HTMLResponse(
             render_template("operator_traveler_detail.html", {
                 "traveler": traveler,
                 "editions": edition_data,
                 "pilot_evidence": pilot_evidence,
                 "csrf_token": operator.csrf_token,
+                "is_active": is_active,
+                "is_inactive": not is_active,
+                "has_pending_review": has_pending_review,
+                "has_generation_failed": has_generation_failed,
+                "has_published": has_published,
+                "has_unapplied_feedback": has_unapplied_feedback,
+                "has_no_editions": len(editions) == 0,
+                "generation_failure": "generation_failed" if has_generation_failed else "",
             })
         )
     finally:
@@ -261,7 +295,7 @@ async def traveler_detail(
 
 
 @router.post("/travelers/{traveler_id}/deactivate")
-async def deactivate_traveler(
+async def deactivate_traveler_route(
     traveler_id: str,
     request: Request,
     csrf_token: str = Form(...),
@@ -273,9 +307,9 @@ async def deactivate_traveler(
     try:
         if not is_traveler_active(conn, traveler_id):
             return HTMLResponse(render_template("404.html", {}), status_code=404)
-        delete_traveler(conn, traveler_id)
-        deactivate_traveler_tokens(conn, traveler_id)
-        rows = conn.execute(
+        delete_traveler(conn, traveler_id, commit=False)
+        deactivate_traveler_tokens(conn, traveler_id, commit=False)
+        conn.execute(
             "DELETE FROM traveler_sessions WHERE traveler_id = ?", (traveler_id,)
         )
         conn.commit()
@@ -316,8 +350,9 @@ async def create_invitation(
     try:
         if not is_traveler_active(conn, traveler_id):
             return HTMLResponse(render_template("404.html", {}), status_code=404)
-        deactivate_traveler_tokens(conn, traveler_id)
+        deactivate_traveler_tokens(conn, traveler_id, commit=False)
         token_id, raw_token = create_traveler_token(conn, traveler_id)
+        conn.commit()
     finally:
         conn.close()
 
@@ -343,12 +378,12 @@ async def rotate_invitation(
     try:
         if not is_traveler_active(conn, traveler_id):
             return HTMLResponse(render_template("404.html", {}), status_code=404)
-        deactivate_traveler_tokens(conn, traveler_id)
-        rows = conn.execute(
+        deactivate_traveler_tokens(conn, traveler_id, commit=False)
+        conn.execute(
             "DELETE FROM traveler_sessions WHERE traveler_id = ?", (traveler_id,)
         )
-        conn.commit()
         token_id, raw_token = create_traveler_token(conn, traveler_id)
+        conn.commit()
     finally:
         conn.close()
 
@@ -373,6 +408,7 @@ async def generate_first_edition(
     """Generate the first edition for a traveler using the pipeline service."""
     verify_csrf(request, csrf_token, operator)
     conn = get_connection()
+    failure_category = ""
     try:
         traveler = get_traveler_by_id(conn, traveler_id)
         if not traveler or traveler.status != "active":
@@ -389,7 +425,19 @@ async def generate_first_edition(
                 traveler_preferences=preferences,
                 source_items=source_items,
             )
+        except PipelineError as exc:
+            failure_category = "pipeline_error"
+            editions = get_editions_by_traveler(conn, traveler_id)
+            for ed in editions:
+                if ed.generation_status == "generation_pending":
+                    update_edition_generation_status(conn, ed.id, "generation_failed")
+            pass
         except Exception:
+            failure_category = "unexpected_error"
+            editions = get_editions_by_traveler(conn, traveler_id)
+            for ed in editions:
+                if ed.generation_status == "generation_pending":
+                    update_edition_generation_status(conn, ed.id, "generation_failed")
             pass
     finally:
         conn.close()
@@ -403,9 +451,10 @@ async def generate_second_edition(
     csrf_token: str = Form(...),
     operator: OperatorContext = __import__("fastapi").Depends(get_operator),
 ):
-    """Generate second edition using the latest published/pending_review edition as prior."""
+    """Generate second edition using the latest published edition as prior."""
     verify_csrf(request, csrf_token, operator)
     conn = get_connection()
+    failure_category = ""
     try:
         traveler = get_traveler_by_id(conn, traveler_id)
         if not traveler or traveler.status != "active":
@@ -414,7 +463,7 @@ async def generate_second_edition(
         editions = get_editions_by_traveler(conn, traveler_id)
         prior = None
         for ed in reversed(editions):
-            if ed.generation_status in ("pending_review", "published"):
+            if ed.publication_state == "published" and ed.structured_content and ed.structured_content != {}:
                 prior = ed
                 break
         if prior is None:
@@ -432,7 +481,19 @@ async def generate_second_edition(
                 traveler_preferences=preferences,
                 source_items=source_items,
             )
+        except PipelineError as exc:
+            failure_category = "pipeline_error"
+            new_editions = get_editions_by_traveler(conn, traveler_id)
+            for ed in new_editions:
+                if ed.generation_status == "generation_pending":
+                    update_edition_generation_status(conn, ed.id, "generation_failed")
+            pass
         except Exception:
+            failure_category = "unexpected_error"
+            new_editions = get_editions_by_traveler(conn, traveler_id)
+            for ed in new_editions:
+                if ed.generation_status == "generation_pending":
+                    update_edition_generation_status(conn, ed.id, "generation_failed")
             pass
     finally:
         conn.close()
@@ -448,7 +509,8 @@ async def publish_edition(
     csrf_token: str = Form(...),
     operator: OperatorContext = __import__("fastapi").Depends(get_operator),
 ):
-    """Explicitly publish a pending_review edition. Requires CSRF."""
+    """Explicitly publish a pending_review edition. Requires CSRF.
+    Only publication_state changes; generation_status stays pending_review."""
     verify_csrf(request, csrf_token, operator)
     conn = get_connection()
     try:
@@ -457,7 +519,6 @@ async def publish_edition(
             return HTMLResponse(render_template("404.html", {}), status_code=404)
         if edition.generation_status != "pending_review":
             return RedirectResponse(url=f"/operator/travelers/{edition.traveler_id}", status_code=303)
-        update_edition_generation_status(conn, edition_id, "published")
         update_edition_publication(conn, edition_id, "published")
         traveler_id = edition.traveler_id
     finally:
@@ -472,7 +533,8 @@ async def reject_edition(
     csrf_token: str = Form(...),
     operator: OperatorContext = __import__("fastapi").Depends(get_operator),
 ):
-    """Explicitly reject a pending_review edition. Requires CSRF."""
+    """Explicitly reject a pending_review edition. Requires CSRF.
+    Only publication_state changes; generation_status stays pending_review."""
     verify_csrf(request, csrf_token, operator)
     conn = get_connection()
     try:
@@ -481,7 +543,6 @@ async def reject_edition(
             return HTMLResponse(render_template("404.html", {}), status_code=404)
         if edition.generation_status != "pending_review":
             return RedirectResponse(url=f"/operator/travelers/{edition.traveler_id}", status_code=303)
-        update_edition_generation_status(conn, edition_id, "rejected")
         update_edition_publication(conn, edition_id, "rejected")
         traveler_id = edition.traveler_id
     finally:

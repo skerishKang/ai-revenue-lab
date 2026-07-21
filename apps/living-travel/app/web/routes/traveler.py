@@ -26,6 +26,18 @@ from app.web.templates import render_template
 router = APIRouter(prefix="/traveler", tags=["traveler"])
 
 
+def _set_csrf_cookie(resp, csrf: str):
+    resp.set_cookie("lt_csrf", csrf, httponly=True, samesite="strict", max_age=3600)
+    return resp
+
+
+def _enter_page_response(error: str) -> HTMLResponse:
+    csrf = generate_csrf_token()
+    resp = HTMLResponse(render_template("traveler_enter.html", {"csrf_token": csrf, "error": error}))
+    _set_csrf_cookie(resp, csrf)
+    return resp
+
+
 @router.get("/enter")
 async def traveler_enter_page(request: Request):
     csrf = generate_csrf_token()
@@ -42,12 +54,12 @@ async def traveler_enter_submit(
     lt_csrf: Optional[str] = Cookie(None),
 ):
     if not lt_csrf or not csrf_token or not constant_time_compare(csrf_token, lt_csrf):
-        return HTMLResponse(render_template("traveler_enter.html", {"csrf_token": generate_csrf_token(), "error": "Invalid CSRF token"}))
+        return _enter_page_response("Invalid CSRF token")
     conn = get_connection()
     try:
         traveler_id = validate_traveler_token(conn, token.strip())
         if not traveler_id:
-            return HTMLResponse(render_template("traveler_enter.html", {"csrf_token": generate_csrf_token(), "error": "Invalid or deactivated token"}))
+            return _enter_page_response("Invalid or deactivated token")
         session_id, raw_token, csrf = create_traveler_session(conn, traveler_id)
     finally:
         conn.close()
@@ -134,7 +146,8 @@ async def edition_history(
         return HTMLResponse(render_template("traveler_edition.html", {
             "traveler_id": traveler_ctx.traveler_id,
             "editions": published,
-            "mode": "history",
+            "is_history": True,
+            "is_single": False,
             "csrf_token": traveler_ctx.csrf_token,
         }))
     finally:
@@ -155,10 +168,13 @@ async def edition_view(
         if edition.publication_state != "published":
             return HTMLResponse(render_template("404.html", {}), status_code=404)
         feedback_list = get_feedback_by_edition(conn, edition_id)
+        sc = edition.structured_content or {}
         return HTMLResponse(render_template("traveler_edition.html", {
             "edition": edition,
             "feedback": feedback_list,
-            "mode": "single",
+            "is_history": False,
+            "is_single": True,
+            "sc": sc,
             "csrf_token": traveler_ctx.csrf_token,
         }))
     finally:
@@ -169,7 +185,7 @@ async def edition_view(
 async def submit_feedback(
     edition_id: str,
     request: Request,
-    choices: str = Form(""),
+    choices: list[str] = Form(default=[]),
     free_text: str = Form(""),
     csrf_token: str = Form(...),
     traveler_ctx: TravelerContext = __import__("fastapi").Depends(get_traveler),
@@ -186,12 +202,12 @@ async def submit_feedback(
         already_submitted = any(f.traveler_id == traveler_ctx.traveler_id for f in existing)
         if already_submitted:
             return RedirectResponse(url=f"/traveler/editions/{edition_id}", status_code=303)
-        choice_list = [c.strip() for c in choices.split(",") if c.strip()] if choices else []
+        choice_list = [c.strip() for c in choices if c.strip()] if choices else []
         create_feedback(
             conn,
             traveler_id=traveler_ctx.traveler_id,
             edition_id=edition_id,
-            choices=choice_list,
+            direction_choices=choice_list,
             free_text=free_text[:500] if free_text else "",
         )
     finally:

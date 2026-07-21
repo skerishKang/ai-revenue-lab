@@ -23,31 +23,91 @@ def _escape(value) -> str:
 
 
 def _render_loop(template_body: str, context: dict) -> str:
-    pattern = r"\{%\s*for\s+(\w+)\s+in\s+(\w+)\s*%\}(.*?)\{%\s*endfor\s*%\}"
-    def replace_loop(m):
-        var_name = m.group(1)
-        collection_name = m.group(2)
-        body = m.group(3)
-        collection = context.get(collection_name, [])
-        result = []
-        for item in collection:
-            inner_ctx = {**context, var_name: item}
-            rendered = _render_vars(body, inner_ctx)
-            result.append(rendered)
-        return "".join(result)
-    return re.sub(pattern, replace_loop, template_body, flags=re.DOTALL)
+    result = template_body
+    while "{% for " in result and "{% endfor %}" in result:
+        pattern = r"\{%\s*for\s+(\w+)\s+in\s+([\w.]+)\s*%\}"
+        match = re.search(pattern, result)
+        if not match:
+            break
+        var_name = match.group(1)
+        collection_path = match.group(2)
+        collection = _resolve_path(context, collection_path)
+        if collection is None:
+            collection = []
+        start = match.start()
+        body_start = match.end()
+        depth = 1
+        pos = body_start
+        while depth > 0 and pos < len(result):
+            next_for = re.search(r"\{%\s*for\s+\w+\s+in\s+[\w.]+\s*%\}", result[pos:])
+            next_endfor = re.search(r"\{%\s*endfor\s*%\}", result[pos:])
+            if next_endfor is None:
+                break
+            if next_for and next_for.start() < next_endfor.start():
+                depth += 1
+                pos = pos + next_for.end()
+            else:
+                depth -= 1
+                if depth == 0:
+                    end = pos + next_endfor.end()
+                    body = result[body_start:pos + next_endfor.start()]
+                    rendered_items = []
+                    for item in collection:
+                        inner_ctx = {**context, var_name: item}
+                        rendered_items.append(_render_vars(body, inner_ctx))
+                    replacement = "".join(rendered_items)
+                    result = result[:start] + replacement + result[end:]
+                    break
+                pos = pos + next_endfor.end()
+    return result
 
 
 def _render_conditionals(template_body: str, context: dict) -> str:
-    pattern = r"\{%\s*if\s+(\w+)\s*%\}(.*?)\{%\s*endif\s*%\}"
-    def replace_cond(m):
-        var_name = m.group(1)
-        body = m.group(2)
-        value = context.get(var_name)
-        if value:
-            return _render_vars(body, context)
-        return ""
-    return re.sub(pattern, replace_cond, template_body, flags=re.DOTALL)
+    result = template_body
+    while "{% if " in result and "{% endif %}" in result:
+        pattern = r"\{%\s*if\s+(\w+)\s*%\}"
+        match = re.search(pattern, result)
+        if not match:
+            break
+        var_name = match.group(1)
+        start = match.start()
+        body_start = match.end()
+        depth = 1
+        pos = body_start
+        else_pos = None
+        while depth > 0 and pos < len(result):
+            next_if = re.search(r"\{%\s*if\s+\w+\s*%\}", result[pos:])
+            next_else = re.search(r"\{%\s*else\s*%\}", result[pos:])
+            next_endif = re.search(r"\{%\s*endif\s*%\}", result[pos:])
+            if next_endif is None:
+                break
+            if next_if and next_if.start() < next_endif.start() and (next_else is None or next_if.start() < next_else.start()):
+                depth += 1
+                pos = pos + next_if.end()
+            elif next_else and next_else.start() < next_endif.start() and depth == 1 and else_pos is None:
+                else_pos = pos + next_else.start()
+                pos = pos + next_else.end()
+            else:
+                depth -= 1
+                if depth == 0:
+                    end = pos + next_endif.end()
+                    if else_pos is not None:
+                        true_body = result[body_start:else_pos]
+                        false_body = result[else_pos + len("{% else %}"):pos + next_endif.start()]
+                    else:
+                        true_body = result[body_start:pos + next_endif.start()]
+                        false_body = None
+                    value = context.get(var_name)
+                    if value:
+                        replacement = _render_vars(true_body, context)
+                    elif false_body is not None:
+                        replacement = _render_vars(false_body, context)
+                    else:
+                        replacement = ""
+                    result = result[:start] + replacement + result[end:]
+                    break
+                pos = pos + next_endif.end()
+    return result
 
 
 

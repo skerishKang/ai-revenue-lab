@@ -51,7 +51,7 @@ EMPTY_PLAN = {
 
 
 def _load_fixture(name: str) -> dict:
-    return json.loads((FIXTURES_DIR / name).read_text())
+    return json.loads((FIXTURES_DIR / name).read_text(encoding="utf-8"))
 
 
 @pytest.fixture
