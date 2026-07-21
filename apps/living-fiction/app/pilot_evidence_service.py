@@ -118,7 +118,32 @@ def _validate_references(
     branch_episode_id: str | None,
     evidence_category: str,
 ) -> None:
-    """Verify referenced entities exist and ownership is correct."""
+    """Verify referenced entities exist and ownership is correct.
+
+    Category-specific reference contracts:
+    - INVITATION: reader optional, episode references forbidden
+    - CONSENT: reader required, consent fields required
+    - EPISODE_DELIVERY (canon): canon episode required, branch episode forbidden
+    - EXPLICIT_CHOICE: reader + personal branch or exact choice reference required
+    - EPISODE_DELIVERY (branch): reader + personal branch required, canon ref forbidden
+    - REVENUE_HYPOTHESIS: no payment claim, no payer identity, hypothesis marker required
+    - AI_INFRA_COST: no reader/payment identity
+
+    Rejects:
+    - required reference missing
+    - canon and branch reference provided simultaneously
+    - category-inappropriate episode type
+    - foreign reader ownership
+    """
+    from app.domain.enums import EvidenceCategory
+
+    # Conflicting canon + branch references
+    if canon_episode_id is not None and branch_episode_id is not None:
+        raise PilotEvidenceValidationError(
+            f"category '{evidence_category}' cannot reference both canon and branch "
+            f"episodes simultaneously: {canon_episode_id}, {branch_episode_id}"
+        )
+
     if reader_id is not None:
         row = conn.execute(
             "SELECT id FROM readers WHERE id = ?", (reader_id,)
@@ -126,6 +151,21 @@ def _validate_references(
         if row is None:
             raise PilotEvidenceValidationError(
                 f"reader not found: {reader_id}"
+            )
+
+    # Category-specific reference requirements
+    if evidence_category == EvidenceCategory.INVITATION.value:
+        # invitation: reader optional, NO episode references
+        if canon_episode_id is not None or branch_episode_id is not None:
+            raise PilotEvidenceValidationError(
+                f"invitation evidence must not reference any episode"
+            )
+
+    elif evidence_category == EvidenceCategory.CONSENT.value:
+        # consent: reader required
+        if reader_id is None:
+            raise PilotEvidenceValidationError(
+                "consent evidence requires a reader_id"
             )
 
     if canon_episode_id is not None:
@@ -144,6 +184,12 @@ def _validate_references(
                     f"canon delivery evidence must reference a canon episode, "
                     f"got {row['episode_type']}"
                 )
+        # Branch delivery must NOT reference canon
+        if evidence_category in _BRANCH_REFERENCE_CATEGORIES:
+            raise PilotEvidenceValidationError(
+                f"branch-related category '{evidence_category}' cannot "
+                f"reference a canon episode: {canon_episode_id}"
+            )
 
     if branch_episode_id is not None:
         row = conn.execute(
@@ -257,6 +303,7 @@ def _validate_revenue_hypothesis(
 
     # Recursive KRW amount check — 4900 must be labeled as hypothesis
     # Also check for high amounts that exceed hypothesis bound
+    # Arbitrary `type` field alone does NOT satisfy the hypothesis marker requirement
     def _check_krw_amount(value: int | float, path: str) -> None:
         if value > _MAX_REVENUE_KRW:
             raise PilotEvidenceValidationError(
@@ -265,25 +312,27 @@ def _validate_revenue_hypothesis(
             )
         if value == 4900:
             # Must have a field indicating it's a hypothesis somewhere in the data
-            # We scan the entire data structure for this
             is_hypothesis = _find_field_value(data, "is_hypothesis")
             evidence_type = _find_field_value(data, "type")
-            if not is_hypothesis and not evidence_type:
-                raise PilotEvidenceValidationError(
-                    "KRW 4,900 must be accompanied by is_hypothesis=true "
-                    f"or type='hypothesis' at '{path}'"
-                )
-            if evidence_type and isinstance(evidence_type, str):
-                if "hypothesis" not in evidence_type.lower() and "offer" not in evidence_type.lower():
+            # Arbitrary `type` field does NOT satisfy by itself — must explicitly
+            # contain "hypothesis" or "offer" AND be accompanied by is_hypothesis
+            has_hypothesis_marker = (
+                is_hypothesis is not None and bool(is_hypothesis)
+            )
+            if not has_hypothesis_marker:
+                if evidence_type is not None and isinstance(evidence_type, str):
+                    if "hypothesis" in evidence_type.lower() or "offer" in evidence_type.lower():
+                        has_hypothesis_marker = True
+                    else:
+                        raise PilotEvidenceValidationError(
+                            f"KRW 4,900 at '{path}' must be labeled as hypothesis/offer, "
+                            f"not type='{evidence_type}'"
+                        )
+                else:
                     raise PilotEvidenceValidationError(
-                        "KRW 4,900 must be labeled as a hypothesis/offer, "
-                        f"not a payment at '{path}'"
+                        "KRW 4,900 must be accompanied by is_hypothesis=true "
+                        f"or type='hypothesis'/'offer' at '{path}'"
                     )
-            elif is_hypothesis is not None and not bool(is_hypothesis):
-                raise PilotEvidenceValidationError(
-                    "KRW 4,900 must be accompanied by is_hypothesis=true "
-                    f"at '{path}'"
-                )
 
     _recursive_scan_numeric(data, "root", _check_krw_amount)
 
@@ -324,6 +373,13 @@ def _validate_consent(
         raise PilotEvidenceValidationError(
             f"category '{category}' requires consent_obtained field"
         )
+    # Reject truthy string "false" as consent — must be boolean True or equivalent
+    if isinstance(consent, str):
+        if consent.lower() == "false" or consent == "0":
+            raise PilotEvidenceValidationError(
+                f"category '{category}': string value '{consent}' is not valid consent"
+            )
+        consent = consent.lower() in ("true", "yes", "1")
     if not consent:
         raise PilotEvidenceValidationError(
             f"category '{category}' requires explicit consent"

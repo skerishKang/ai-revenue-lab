@@ -70,15 +70,39 @@ class RejoinValidationError(PipelineError):
     """Raised when rejoin validation fails."""
 
 
-# Updated retry matrix:
-# Retryable: timeout and explicit transient provider errors only.
-# Non-retryable: schema/validation errors, programming errors, auth, unknown.
+# Updated retry matrix (Section 7 contract):
+# Retryable: TIMEOUT, transient PROVIDER_ERROR only.
+# Non-retryable: SCHEMA_MISMATCH, INVALID_JSON, UNKNOWN, auth, programming errors.
 _RETRYABLE_CATEGORIES = frozenset(
     {
         ProviderErrorCategory.PROVIDER_ERROR,
         ProviderErrorCategory.TIMEOUT,
     }
 )
+
+# Exception retry matrix: which exception types are retryable
+# Unknown/programming exceptions are NEVER retried
+_RETRYABLE_EXCEPTION_TYPES = frozenset({
+    "TimeoutError",
+    "ConnectionResetError",
+    "ConnectionError",
+    "ConnectionAbortedError",
+})
+
+
+def is_exception_retryable(exc: BaseException) -> bool:
+    """Determine if an exception should be retried.
+
+    Only timeout and connection-reset exceptions are retryable.
+    Programming errors, auth errors, and unknown exceptions are NOT retried.
+    """
+    exc_type = type(exc).__name__
+    if exc_type in _RETRYABLE_EXCEPTION_TYPES:
+        return True
+    # ConnectionError subclasses (ConnectionRefusedError, etc.) are NOT retryable
+    if isinstance(exc, ConnectionError):
+        return type(exc).__name__ == "ConnectionResetError"
+    return False
 
 
 def is_retryable(category: ProviderErrorCategory | None) -> bool:

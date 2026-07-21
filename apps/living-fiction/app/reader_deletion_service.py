@@ -32,10 +32,21 @@ def _privacy_safe_reader_digest(reader_id: str) -> str:
     """Produce a privacy-safe keyed digest of a reader_id.
 
     The original reader_id is never stored in the audit log.
-    Uses SHA-256 with a static salt prefix for deterministic lookup.
+    Uses HMAC-SHA256 with environment-backed secret for true keyed hashing.
+    Falls back to a random irreversible deletion event ID if HMAC key is
+    unavailable — the original reader_id can NEVER be reconstructed.
     """
-    salt = "lf-deletion-audit-20260721"
-    return hashlib.sha256((salt + reader_id).encode("utf-8")).hexdigest()[:32]
+    import os
+    import hmac
+    hmac_key = os.environ.get("LF_DELETION_HMAC_KEY", "")
+    if hmac_key:
+        return hmac.new(
+            hmac_key.encode("utf-8"),
+            reader_id.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()[:32]
+    # Fallback: random irreversible event ID — no reader linkage possible
+    return hashlib.sha256(os.urandom(32)).hexdigest()[:32]
 
 
 @dataclass(frozen=True)
@@ -53,18 +64,23 @@ class DeletionResult:
 def _get_or_create_anonymized_principal(
     conn: sqlite3.Connection,
     now: str,
+    reader_id: str,
 ) -> str:
-    """Get or create the global anonymized reader principal record.
+    """Get or create a reader-specific anonymized principal record.
 
-    Uses INSERT OR IGNORE for idempotent creation inside a transaction.
+    Each deleted reader gets their OWN anonymized principal with a
+    random ID that has no calculable relationship to the original reader_id.
+    This prevents linking anonymized evidence back to the original reader.
     """
+    import uuid
+    anon_id = f"anon-{uuid.uuid4().hex[:16]}"
     conn.execute(
         "INSERT OR IGNORE INTO readers "
         "(id, display_name, status, created_at, deleted_at) "
         "VALUES (?, ?, 'deleted', ?, ?)",
-        ("anon-deleted-principal", "[deleted-reader]", now, now),
+        (anon_id, "[deleted-reader]", now, now),
     )
-    return "anon-deleted-principal"
+    return anon_id
 
 
 def delete_reader_with_revocation(
@@ -112,13 +128,31 @@ def delete_reader_with_revocation(
     conn.execute("BEGIN IMMEDIATE")
     try:
         # STEP 0: Ensure anonymized principal exists
-        anon_principal_id = _get_or_create_anonymized_principal(conn, now)
-        # STEP 0: Freeze branch IDs BEFORE any update
+        anon_principal_id = _get_or_create_anonymized_principal(conn, now, reader_id)
+        # STEP 0: Freeze ALL IDs BEFORE any update
         branch_rows = conn.execute(
             "SELECT id FROM branches WHERE reader_id = ?",
             (reader_id,),
         ).fetchall()
         deleted_branch_ids = [r["id"] for r in branch_rows]
+        # Freeze choice IDs
+        choice_rows = conn.execute(
+            "SELECT id FROM reader_choices WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchall()
+        deleted_choice_ids = [r["id"] for r in choice_rows]
+        # Freeze episode IDs
+        ep_rows = conn.execute(
+            "SELECT id FROM episodes WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchall()
+        deleted_episode_ids = [r["id"] for r in ep_rows]
+        # Freeze pilot evidence IDs
+        pe_rows = conn.execute(
+            "SELECT id FROM pilot_evidence WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchall()
+        deleted_pe_ids = [r["id"] for r in pe_rows]
 
         # 1. Mark reader deleted + anonymize display name
         conn.execute(
@@ -189,18 +223,24 @@ def delete_reader_with_revocation(
             ).rowcount
             rejoin_requests_removed += rr2
 
-        # 7. Remove / anonymize pilot evidence
-        pilot_evidence_anonymized = conn.execute(
-            "UPDATE pilot_evidence SET reader_id = NULL WHERE reader_id = ?",
-            (reader_id,),
-        ).rowcount
+        # 7. Remove / anonymize pilot evidence — only affect FROZEN IDs
+        pilot_evidence_anonymized = 0
+        for pe_id in deleted_pe_ids:
+            # Update only this specific evidence, not any other reader's
+            conn.execute(
+                "UPDATE pilot_evidence SET reader_id = NULL WHERE id = ?",
+                (pe_id,),
+            )
+            pilot_evidence_anonymized += 1
 
-        # Also anonymize evidence_data_json for pilot evidence — remove private text
-        pe_rows = conn.execute(
-            "SELECT id, evidence_data_json FROM pilot_evidence WHERE reader_id IS NULL "
-            "AND evidence_data_json IS NOT NULL",
-        ).fetchall()
-        for pe_row in pe_rows:
+        # Anonymize evidence_data_json for the frozen pilot evidence only
+        for pe_id in deleted_pe_ids:
+            pe_row = conn.execute(
+                "SELECT evidence_data_json FROM pilot_evidence WHERE id = ?",
+                (pe_id,),
+            ).fetchone()
+            if pe_row is None or not pe_row["evidence_data_json"]:
+                continue
             try:
                 data = json.loads(pe_row["evidence_data_json"])
                 if isinstance(data, dict):
@@ -208,7 +248,7 @@ def delete_reader_with_revocation(
                     data = _redact_private_fields(data)
                     conn.execute(
                         "UPDATE pilot_evidence SET evidence_data_json = ? WHERE id = ?",
-                        (json.dumps(data, ensure_ascii=False), pe_row["id"]),
+                        (json.dumps(data, ensure_ascii=False), pe_id),
                     )
             except (json.JSONDecodeError, TypeError):
                 pass

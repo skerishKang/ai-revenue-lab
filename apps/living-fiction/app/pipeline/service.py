@@ -168,9 +168,13 @@ def _provider_call_with_retry(
     total_output_tokens: int | None = None
     retry_count = 0
 
+    import time as _time_module
+    _start_perf_counter = _time_module.perf_counter()
+
     for attempt_num in range(1, max_retries + 2):
         request_id = _new_request_id()
         attempt_start = _now_utc()
+        _start_perf_counter = _time_module.perf_counter()
 
         try:
             result = provider.generate_structured(
@@ -181,7 +185,16 @@ def _provider_call_with_retry(
                 request_id=request_id,
             )
         except Exception as exc:
-            # Exception attempt — record it
+            # Measure actual latency for exception attempt
+            from app.pipeline.errors import is_exception_retryable
+            exc_retryable = is_exception_retryable(exc)
+            exc_latency = 0.0
+            try:
+                import time
+                exc_latency = time.perf_counter() - _start_perf_counter
+            except NameError:
+                pass
+
             attempt_repo.create_generation_attempt(
                 conn,
                 attempt_id=new_id(),
@@ -193,14 +206,15 @@ def _provider_call_with_retry(
                 request_id=request_id,
                 task_type=task_name,
                 prompt_version=prompt_version,
+                latency_seconds=exc_latency,
                 success=False,
-                retryable=True,
+                retryable=exc_retryable,
                 error_category=ProviderErrorCategory.UNKNOWN.value,
                 error_message=safe_error_message(ProviderErrorCategory.UNKNOWN, str(exc)),
             )
             last_error_category = ProviderErrorCategory.UNKNOWN
             last_error_message = safe_error_message(last_error_category, str(exc))
-            if attempt_num <= max_retries:
+            if exc_retryable and attempt_num <= max_retries:
                 retry_count += 1
                 continue
             break
@@ -642,6 +656,8 @@ def generate_personal_branch(
         create_request,
         mark_completed,
         mark_failed,
+        transition_failed_to_pending,
+        transition_stale_pending_to_pending,
         REQUEST_TIMEOUT_SECONDS,
     )
 
@@ -651,6 +667,8 @@ def generate_personal_branch(
         or f"{request.reader_id}:{request.reader_choice_id}:{resolved_prior}:{resolved_checkpoint}:{operation_type}"
     )
     existing = get_by_idempotency_key(conn, idempotency_key)
+
+    gen_request_id = None  # Will be set by state transition or new creation
 
     if existing is not None:
         # Resource binding check — same key must reference same resources
@@ -679,8 +697,12 @@ def generate_personal_branch(
                 error=None,
             )
         elif existing.status == "failed":
-            # Retry policy: allow retry
-            pass  # Continue below — will create new attempt
+            # Retry policy: transition failed -> pending (reuses same row)
+            # Uses atomic state transition with attempt_number increment
+            conn.execute("BEGIN IMMEDIATE")
+            transition_failed_to_pending(conn, existing.id)
+            conn.commit()
+            gen_request_id = existing.id  # Reuse the same request ID
         elif existing.status == "pending":
             # Check if stale (timed out)
             import datetime
@@ -690,8 +712,11 @@ def generate_personal_branch(
                 now = datetime.datetime.now(datetime.timezone.utc)
                 age = (now - created).total_seconds()
                 if age > REQUEST_TIMEOUT_SECONDS:
-                    # Stale pending — recovery allowed
-                    pass  # Continue
+                    # Stale pending — recovery allowed via atomic transition
+                    conn.execute("BEGIN IMMEDIATE")
+                    transition_stale_pending_to_pending(conn, existing.id)
+                    conn.commit()
+                    gen_request_id = existing.id  # Reuse the same request ID
                 else:
                     # Active pending — reject duplicate
                     return GenerationResult(
@@ -702,20 +727,24 @@ def generate_personal_branch(
             except (ValueError, TypeError):
                 pass  # Can't parse time — treat as recoverable
 
-    # Create idempotency request record
-    gen_request_id = new_id()
+    # Create idempotency request record (only for NEW requests)
+    if gen_request_id is None:
+        gen_request_id = new_id()
     if not conn.in_transaction:
         conn.execute("BEGIN IMMEDIATE")
-        create_request(
-            conn,
-            request_id=gen_request_id,
-            idempotency_key=idempotency_key,
-            reader_id=request.reader_id or "",
-            reader_choice_id=request.reader_choice_id or "",
-            prior_episode_id=resolved_prior,
-            canon_checkpoint_id=resolved_checkpoint,
-            world_id=resolved_world_id,
-        )
+        # Check if this was already created by a state transition above
+        existing_check = get_by_idempotency_key(conn, idempotency_key)
+        if existing_check is None:
+            create_request(
+                conn,
+                request_id=gen_request_id,
+                idempotency_key=idempotency_key,
+                reader_id=request.reader_id or "",
+                reader_choice_id=request.reader_choice_id or "",
+                prior_episode_id=resolved_prior,
+                canon_checkpoint_id=resolved_checkpoint,
+                world_id=resolved_world_id,
+            )
         conn.commit()
 
     # Build reader choice dict from PERSISTED values (not caller-supplied)

@@ -26,16 +26,24 @@ from app import world_repository as world_repo
 from app.db import apply_migrations, get_connection
 from app.reader_deletion_service import delete_reader_with_revocation
 from app.deletion_audit_repository import get_deletion_audit_by_reader
+from app.utils import now_utc_iso
 from tests.fixtures.synthetic_world import WORLD_STATE
 
 
 def _reader_digest(reader_id: str) -> str:
-    salt = "lf-deletion-audit-20260721"
-    return hashlib.sha256((salt + reader_id).encode("utf-8")).hexdigest()[:32]
+    """Use the same HMAC approach as the deletion service."""
+    import os
+    import hmac
+    hmac_key = os.environ.get("LF_DELETION_HMAC_KEY", "test-default-key")
+    return hmac.new(
+        hmac_key.encode("utf-8"),
+        reader_id.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()[:32]
 
 
-def test_fresh_db_has_migration_002(temp_db_path):
-    """Fresh DB gets both migrations."""
+def test_fresh_db_has_all_migrations(temp_db_path):
+    """Fresh DB gets all migrations (001, 002, 003)."""
     conn = get_connection(temp_db_path)
     migrations_dir = str(
         os.path.join(os.path.dirname(__file__), "..", "migrations")
@@ -43,6 +51,7 @@ def test_fresh_db_has_migration_002(temp_db_path):
     applied = apply_migrations(conn, migrations_dir)
     assert "001_initial.sql" in applied
     assert "002_repair_additive.sql" in applied
+    assert "003_idempotency_continuity_privacy.sql" in applied
 
     # Check new tables exist
     tables = conn.execute(
@@ -53,6 +62,26 @@ def test_fresh_db_has_migration_002(temp_db_path):
     assert "branch_generation_requests" in table_names
     assert "rejoin_requests_v2" in table_names
     assert "reader_deletion_audit" in table_names
+
+    # Check 003 columns exist on branch_generation_requests
+    cols = {c[1] for c in conn.execute("PRAGMA table_info(branch_generation_requests)").fetchall()}
+    assert "operation_type" in cols
+    assert "attempt_number" in cols
+    assert "pending_lease_at" in cols
+    assert "updated_at" in cols
+
+    conn.close()
+
+
+def test_fresh_db_has_migration_002(temp_db_path):
+    """Fresh DB gets both migrations (backward compat)."""
+    conn = get_connection(temp_db_path)
+    migrations_dir = str(
+        os.path.join(os.path.dirname(__file__), "..", "migrations")
+    )
+    applied = apply_migrations(conn, migrations_dir)
+    assert "001_initial.sql" in applied
+    assert "002_repair_additive.sql" in applied
 
     conn.close()
 
@@ -98,13 +127,13 @@ def test_migration_idempotent(temp_db_path):
 
 
 def test_data_preserved_after_upgrade(temp_db_path):
-    """Data from 001 is preserved after 002 upgrade."""
+    """Data from 001 is preserved after full 001->002->003 upgrade stack."""
     conn = get_connection(temp_db_path)
     migrations_dir = str(
         os.path.join(os.path.dirname(__file__), "..", "migrations")
     )
 
-    # Apply 001 only
+    # Apply all migrations
     apply_migrations(conn, migrations_dir)
 
     # Create some data
@@ -112,7 +141,7 @@ def test_data_preserved_after_upgrade(temp_db_path):
     reader = reader_repo.create_reader(conn, display_name="preserved 독자")
     assert reader.status == "active"
 
-    # Apply 002
+    # Reapply (idempotent)
     apply_migrations(conn, migrations_dir)
 
     # Verify data is preserved
@@ -120,6 +149,50 @@ def test_data_preserved_after_upgrade(temp_db_path):
     assert reader_after is not None
     assert reader_after.display_name == "preserved 독자"
     assert reader_after.status == "active"
+
+    # Verify 003 columns work
+    from app.branch_generation_request_repository import create_request
+    # Create FK target records
+    conn.execute(
+        "INSERT OR IGNORE INTO episodes (id, world_id, episode_type, episode_number, title, "
+        "synopsis, scene_list_json, character_ids_json, location_ids_json, prose_json, "
+        "review_state, created_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published', ?)",
+        ("ep-placeholder", WORLD_STATE.world_id, "canon", 0, "x", "x",
+         "[]", "[]", "[]", "[]", now_utc_iso()),
+    )
+    conn.execute(
+        "INSERT OR IGNORE INTO reader_choices (id, reader_id, canon_episode_id, choice_text, submitted_at) "
+        "VALUES (?, ?, ?, ?, ?)",
+        ("rc-placeholder", reader.id, "ep-placeholder", "test", now_utc_iso()),
+    )
+    conn.execute(
+        "INSERT OR IGNORE INTO canon_snapshots (id, world_id, version, episode_number, "
+        "world_state_json, character_states_json, location_states_json, "
+        "clue_states_json, unresolved_threads_json, accepted, created_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)",
+        ("snap-placeholder", WORLD_STATE.world_id, "v1", 0,
+         "{}", "{}", "{}", "{}", "[]", now_utc_iso()),
+    )
+    conn.execute(
+        "INSERT OR IGNORE INTO canon_checkpoints (id, canon_snapshot_id, episode_number, label, "
+        "is_compatible_for_rejoin, created_at) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        ("cp-placeholder", "snap-placeholder", 0, "test", 1, now_utc_iso()),
+    )
+    create_request(
+        conn, request_id="req-preserve-test", idempotency_key="preserve-key",
+        reader_id=reader.id, reader_choice_id="rc-placeholder",
+        prior_episode_id="ep-placeholder",
+        canon_checkpoint_id="cp-placeholder", world_id=WORLD_STATE.world_id,
+    )
+    row = conn.execute(
+        "SELECT operation_type, attempt_number FROM branch_generation_requests WHERE id = ?",
+        ("req-preserve-test",),
+    ).fetchone()
+    assert row is not None
+    assert row["operation_type"] == "personal_branch"
+    assert row["attempt_number"] == 1
 
     conn.close()
 
@@ -205,7 +278,8 @@ def test_reader_deletion_revocation(db_conn):
 
     # Branch has anonymized reader_id (real FK reference, not '[deleted]')
     branch = branch_repo.get_branch(db_conn, "branch-del")
-    assert branch.reader_id == "anon-deleted-principal"
+    assert branch.reader_id.startswith("anon-")
+    assert branch.reader_id != "anon-deleted-principal"
 
     # Pilot evidence has no reader_id
     pe = pe_repo.get_pilot_evidence(db_conn, "pe-del")

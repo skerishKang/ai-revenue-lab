@@ -234,7 +234,7 @@ BRANCH_EPISODE_CONTENT = {
         "character_location_changed": {},
         "character_injuries_added": {},
         "character_possessions_added": {
-            "char-mina-seo": ["숨겨진 장부"],
+            "char-mina-seo": ["숨겨진 장부", "미발견 장부", "기록 보관 열쇠"],
         },
         "clues_introduced": [],
         "clues_resolved": [],

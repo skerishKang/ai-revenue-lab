@@ -269,13 +269,22 @@ def get_clue(conn: sqlite3.Connection, clue_id: str):
 def load_world_state(
     conn: sqlite3.Connection,
     world_id: str,
+    *,
+    canon_snapshot_id: str | None = None,
 ) -> WorldState | None:
     """Reconstruct a WorldState from persisted DB records.
 
     Loads world, characters, locations, and clues from DB.
+    When canon_snapshot_id is provided, also applies the accepted
+    canon snapshot character_states_json, location_states_json,
+    clue_states_json, and unresolved_threads_json on top.
+
     Returns None if the world is not found.
     This is the authoritative source — caller-supplied WorldState is
     NOT trusted in production paths.
+
+    Raises WorldValidationError on bad JSON or unknown references
+    (fail closed, not silent ignore).
     """
     world_row = conn.execute(
         "SELECT * FROM worlds WHERE id = ? ORDER BY version DESC LIMIT 1",
@@ -377,6 +386,104 @@ def load_world_state(
                 timeline = val
         except (json.JSONDecodeError, TypeError):
             pass
+
+    # ── Apply canon snapshot overrides (if provided) ────────────────
+    if canon_snapshot_id is not None:
+        snap_row = conn.execute(
+            "SELECT character_states_json, location_states_json, "
+            "clue_states_json, unresolved_threads_json "
+            "FROM canon_snapshots WHERE id = ? AND accepted = 1",
+            (canon_snapshot_id,),
+        ).fetchone()
+        if snap_row is not None:
+            # Apply character states from snapshot
+            if snap_row["character_states_json"]:
+                try:
+                    char_states = json.loads(snap_row["character_states_json"])
+                    if isinstance(char_states, dict):
+                        for i, char in enumerate(characters):
+                            cid = char.character_id
+                            if cid in char_states:
+                                cs = char_states[cid]
+                                if isinstance(cs, dict):
+                                    # Apply location from snapshot
+                                    if "location_id" in cs:
+                                        loc_id = cs["location_id"]
+                                        # Validate location exists
+                                        loc_exists = any(l.location_id == loc_id for l in locations)
+                                        if not loc_exists:
+                                            raise WorldValidationError(
+                                                f"canon snapshot references unknown location {loc_id} "
+                                                f"for character {cid}"
+                                            )
+                                        characters[i] = CharacterRef(
+                                            character_id=char.character_id,
+                                            canonical_name=char.canonical_name,
+                                            role=char.role,
+                                            location_id=loc_id,
+                                            status=cs.get("status", char.status),
+                                            knowledge=cs.get("knowledge", char.knowledge),
+                                            relationships=cs.get("relationships", char.relationships),
+                                            possessions=cs.get("possessions", char.possessions),
+                                            injuries=cs.get("injuries", char.injuries),
+                                        )
+                                    else:
+                                        characters[i] = CharacterRef(
+                                            character_id=char.character_id,
+                                            canonical_name=char.canonical_name,
+                                            role=char.role,
+                                            location_id=char.location_id,
+                                            status=cs.get("status", char.status),
+                                            knowledge=cs.get("knowledge", char.knowledge),
+                                            relationships=cs.get("relationships", char.relationships),
+                                            possessions=cs.get("possessions", char.possessions),
+                                            injuries=cs.get("injuries", char.injuries),
+                                        )
+                except json.JSONDecodeError:
+                    raise WorldValidationError(
+                        f"invalid JSON in canon snapshot {canon_snapshot_id} character_states_json"
+                    )
+
+            # Apply location states from snapshot
+            if snap_row["location_states_json"]:
+                try:
+                    loc_states = json.loads(snap_row["location_states_json"])
+                    if isinstance(loc_states, dict):
+                        for i, loc in enumerate(locations):
+                            lid = loc.location_id
+                            if lid in loc_states:
+                                ls = loc_states[lid]
+                                if isinstance(ls, dict):
+                                    locations[i] = LocationRef(
+                                        location_id=loc.location_id,
+                                        name=loc.name,
+                                        current_state=ls.get("current_state", loc.current_state),
+                                        connected_locations=ls.get("connected_locations", loc.connected_locations),
+                                    )
+                except json.JSONDecodeError:
+                    raise WorldValidationError(
+                        f"invalid JSON in canon snapshot {canon_snapshot_id} location_states_json"
+                    )
+
+            # Apply clue states from snapshot
+            if snap_row["clue_states_json"]:
+                try:
+                    clue_states = json.loads(snap_row["clue_states_json"])
+                    if isinstance(clue_states, dict):
+                        for i, clue in enumerate(clues):
+                            clid = clue.clue_id
+                            if clid in clue_states:
+                                cls = clue_states[clid]
+                                if isinstance(cls, dict):
+                                    clues[i] = ClueRef(
+                                        clue_id=clue.clue_id,
+                                        description=cls.get("description", clue.description),
+                                        resolved=bool(cls.get("resolved", clue.resolved)),
+                                    )
+                except json.JSONDecodeError:
+                    raise WorldValidationError(
+                        f"invalid JSON in canon snapshot {canon_snapshot_id} clue_states_json"
+                    )
 
     # Unresolved questions
     questions: list[str] = []

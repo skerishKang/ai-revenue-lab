@@ -47,17 +47,23 @@ from tests.fixtures.adversarial_payloads import (
 
 def _setup_world_and_published_canon(db_conn):
     """Helper: create world, characters, locations, clues, canon snapshot,
-    checkpoint, and first published canon episode."""
+    checkpoint, and first published canon episode.
+    """
     world_repo.create_world(db_conn, WORLD_STATE)
     for char in WORLD_STATE.characters:
         world_repo.create_character(
             db_conn, WORLD_STATE.world_id,
             char.character_id, char.canonical_name, char.role,
             traits=json.dumps(char.knowledge),
+            knowledge_state=json.dumps(char.knowledge),
+            relationships=json.dumps(char.relationships),
             location_id=char.location_id,
         )
     for loc in WORLD_STATE.locations:
-        world_repo.create_location(db_conn, WORLD_STATE.world_id, loc.location_id, loc.name)
+        world_repo.create_location(
+            db_conn, WORLD_STATE.world_id, loc.location_id, loc.name,
+            connected_locations=json.dumps(loc.connected_locations),
+        )
     for clue in WORLD_STATE.clues:
         world_repo.create_clue(db_conn, WORLD_STATE.world_id, clue.clue_id, clue.description)
 

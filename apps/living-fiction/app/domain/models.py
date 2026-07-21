@@ -129,15 +129,47 @@ class ProseBeat(BaseModel):
 
 
 class ContinuityDelta(BaseModel):
-    """Explicit, validated world-state changes applied by an episode."""
+    """Explicit, validated world-state changes applied by an episode.
+
+    Every removal or alteration requires an explicit structural entry
+    with a source/explanation. Silent disappearance is forbidden.
+    """
 
     character_knowledge_added: dict[str, list[str]] = Field(default_factory=dict)
+    character_knowledge_sources: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Source/scene for each knowledge addition per character",
+    )
     character_location_changed: dict[str, str] = Field(default_factory=dict)
+    character_movement_explanations: dict[str, str] = Field(
+        default_factory=dict,
+        description="Why a character moved: character_id -> explanation",
+    )
     character_injuries_added: dict[str, list[str]] = Field(default_factory=dict)
+    character_injuries_removed: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Injuries explicitly healed or removed, per character",
+    )
     character_possessions_added: dict[str, list[str]] = Field(default_factory=dict)
+    character_possessions_removed: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Possessions explicitly lost, given away, or destroyed",
+    )
+    character_relationship_changes: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Relationship state changes per character",
+    )
     clues_introduced: list[ClueRef] = Field(default_factory=list)
     clues_resolved: list[PatternStr] = Field(default_factory=list)
+    canon_clue_resolution_explanations: dict[str, str] = Field(
+        default_factory=dict,
+        description="clue_id -> explanation for each canon clue resolved",
+    )
     unresolved_threads: list[NonEmptyStr] = Field(default_factory=list)
+    thread_resolutions: dict[str, str] = Field(
+        default_factory=dict,
+        description="thread_text -> resolution for threads that are explicitly resolved",
+    )
     branch_only_facts: list[str] = Field(default_factory=list)
 
 

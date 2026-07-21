@@ -38,6 +38,10 @@ class BranchGenerationRequestRecord:
     error_message: str | None
     created_at: str
     completed_at: str | None
+    operation_type: str = "personal_branch"
+    attempt_number: int = 1
+    pending_lease_at: str | None = None
+    updated_at: str | None = None
 
 
 _COLS = [
@@ -45,6 +49,7 @@ _COLS = [
     "prior_episode_id", "canon_checkpoint_id", "world_id",
     "branch_episode_id", "status", "error_message",
     "created_at", "completed_at",
+    "operation_type", "attempt_number", "pending_lease_at", "updated_at",
 ]
 _SELECT = ", ".join(_COLS)
 
@@ -63,6 +68,10 @@ def _row_to_record(row: sqlite3.Row) -> BranchGenerationRequestRecord:
         error_message=row["error_message"],
         created_at=row["created_at"],
         completed_at=row["completed_at"],
+        operation_type=row["operation_type"] if "operation_type" in set(row.keys()) else "personal_branch",
+        attempt_number=row["attempt_number"] if "attempt_number" in set(row.keys()) else 1,
+        pending_lease_at=row["pending_lease_at"] if "pending_lease_at" in set(row.keys()) else None,
+        updated_at=row["updated_at"] if "updated_at" in set(row.keys()) else None,
     )
 
 
@@ -87,14 +96,18 @@ def get_by_resource_binding(
     world_id: str,
     operation_type: str = "personal_branch",
 ) -> BranchGenerationRequestRecord | None:
-    """Find an existing request with the exact same resource binding."""
+    """Find an existing request with the exact same resource binding.
+
+    operation_type is a REQUIRED part of the binding — different operation
+    types produce different resource binding results even with the same IDs.
+    """
     row = conn.execute(
         f"SELECT {_SELECT} FROM branch_generation_requests "
         "WHERE reader_id = ? AND reader_choice_id = ? "
         "AND prior_episode_id = ? AND canon_checkpoint_id = ? "
-        "AND world_id = ? LIMIT 1",
+        "AND world_id = ? AND operation_type = ? LIMIT 1",
         (reader_id, reader_choice_id, prior_episode_id,
-         canon_checkpoint_id, world_id),
+         canon_checkpoint_id, world_id, operation_type),
     ).fetchone()
     return _row_to_record(row) if row else None
 
@@ -105,19 +118,27 @@ def create_request(
     request_id: str,
     idempotency_key: str,
     reader_id: str,
-    reader_choice_id: str,
-    prior_episode_id: str,
-    canon_checkpoint_id: str,
+    reader_choice_id: str | None = None,
+    prior_episode_id: str | None = None,
+    canon_checkpoint_id: str | None = None,
     world_id: str,
+    operation_type: str = "personal_branch",
 ) -> BranchGenerationRequestRecord:
     """Create a branch generation request (within service-owned transaction, no commit)."""
     now = now_utc_iso()
     conn.execute(
-        f"INSERT INTO branch_generation_requests ({_SELECT}) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, NULL, 'pending', NULL, ?, NULL)",
+        "INSERT INTO branch_generation_requests "
+        "(id, idempotency_key, reader_id, reader_choice_id, "
+        "prior_episode_id, canon_checkpoint_id, world_id, "
+        "branch_episode_id, status, error_message, "
+        "created_at, completed_at, "
+        "operation_type, attempt_number, pending_lease_at, updated_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, NULL, 'pending', NULL, ?, NULL, "
+        "?, 1, ?, ?)",
         (
             request_id, idempotency_key, reader_id, reader_choice_id,
             prior_episode_id, canon_checkpoint_id, world_id, now,
+            operation_type, now, now,
         ),
     )
     row = conn.execute(
@@ -148,6 +169,52 @@ def mark_failed(
     """Mark a request as failed (within service-owned transaction, no commit)."""
     conn.execute(
         "UPDATE branch_generation_requests SET status = 'failed', "
-        "error_message = ?, completed_at = ? WHERE id = ?",
-        (error_message, now_utc_iso(), request_id),
+        "error_message = ?, completed_at = ?, updated_at = ? WHERE id = ?",
+        (error_message, now_utc_iso(), now_utc_iso(), request_id),
+    )
+
+
+def transition_failed_to_pending(
+    conn: sqlite3.Connection,
+    request_id: str,
+) -> None:
+    """Transition a failed request back to pending for retry.
+
+    Reuses the same row — does NOT insert a new row.
+    Increments attempt_number, clears error_message and branch_episode_id.
+    Updates pending_lease_at and updated_at timestamps.
+    """
+    conn.execute(
+        "UPDATE branch_generation_requests SET "
+        "status = 'pending', "
+        "attempt_number = attempt_number + 1, "
+        "branch_episode_id = NULL, "
+        "error_message = NULL, "
+        "pending_lease_at = ?, "
+        "updated_at = ?, "
+        "completed_at = NULL "
+        "WHERE id = ?",
+        (now_utc_iso(), now_utc_iso(), request_id),
+    )
+
+
+def transition_stale_pending_to_pending(
+    conn: sqlite3.Connection,
+    request_id: str,
+) -> None:
+    """Transition a stale pending request back to pending for recovery.
+
+    Reuses the same row — does NOT insert a new row.
+    Increments attempt_number, updates lease and timestamp.
+    """
+    conn.execute(
+        "UPDATE branch_generation_requests SET "
+        "status = 'pending', "
+        "attempt_number = attempt_number + 1, "
+        "branch_episode_id = NULL, "
+        "error_message = NULL, "
+        "pending_lease_at = ?, "
+        "updated_at = ? "
+        "WHERE id = ?",
+        (now_utc_iso(), now_utc_iso(), request_id),
     )
