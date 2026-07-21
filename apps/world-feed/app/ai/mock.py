@@ -161,7 +161,7 @@ class MockProvider:
             )
         elapsed = time.monotonic() - start
         return ProviderResult(
-            provider="mock",
+            provider=self._provider_name,
             advertised_model=self._model,
             cost_class=CostClass.FREE,
             latency_seconds=elapsed,
@@ -180,7 +180,7 @@ class MockProvider:
     ) -> ProviderResult:
         elapsed = time.monotonic() - start
         return ProviderResult(
-            provider="mock",
+            provider=self._provider_name,
             advertised_model=self._model,
             cost_class=CostClass.FREE,
             latency_seconds=elapsed,

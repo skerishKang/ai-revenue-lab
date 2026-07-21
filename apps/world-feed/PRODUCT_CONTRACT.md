@@ -62,7 +62,25 @@ feedback or overwrite the last valid brief.
 ## 7. Privacy
 
 No personal identifiers are stored. Reader profiles contain only interests and
-coverage preferences. Pilot evidence uses anonymous tokens.
+coverage preferences. Pilot evidence uses anonymous tokens. Evidence detail is
+length-bounded and redacts email, phone, account/card numbers, credentials,
+tokens, API keys, payment references, and private artifact paths. Evidence must
+not claim actual payment or revenue; the Phase-1 economic hypothesis is exactly
+one free sample plus seven adapted microbriefs for KRW 3,900.
+
+## 7.1 Reader deletion / revocation
+
+`DELETE /readers/{reader_id}` (and `WorldFeedService.delete_reader`) runs as one
+transaction that:
+
+- removes personal brief rows for that reader;
+- removes feedback rows (including private detail text);
+- anonymizes pilot-evidence `reader_id` to a non-reversible `revoked:` token and
+  clears detail;
+- deletes the reader profile row;
+- leaves shared canonical events and source records untouched.
+
+Repeated deletion after close/reopen is idempotent (`already_absent`).
 
 ## 8. Acceptance
 
