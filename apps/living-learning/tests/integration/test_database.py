@@ -44,7 +44,7 @@ def test_migrations_are_idempotent(temp_db_path: str) -> None:
         "SELECT COUNT(*) as cnt FROM schema_migrations"
     ).fetchone()
 
-    assert migrations["cnt"] == 4
+    assert migrations["cnt"] == 5
 
     conn.close()
 
@@ -52,10 +52,10 @@ def test_migrations_are_idempotent(temp_db_path: str) -> None:
 def test_foreign_keys_enabled_after_migration(temp_db_path: str) -> None:
     apply_migrations(temp_db_path)
 
-    conn = sqlite3.connect(temp_db_path)
+    conn = get_connection(temp_db_path)
     result = conn.execute("PRAGMA foreign_keys").fetchone()
     conn.close()
-    assert result[0] in (0, 1)
+    assert result[0] == 1
 
 
 def test_get_connection_returns_row_factory(temp_db_path: str) -> None:

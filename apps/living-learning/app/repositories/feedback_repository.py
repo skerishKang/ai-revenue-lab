@@ -89,7 +89,7 @@ def create_feedback(
         f"INSERT INTO feedback ({_SELECT}) VALUES (?,?,?,?,?,?,?,?,?)",
         (
             feedback_id, lesson_id, learner_id, lesson_generation,
-            json.dumps(direction_choices), sanitized_text, "not_applied", "", now,
+            json.dumps(direction_choices), sanitized_text, "not_applied", None, now,
         ),
     )
     if commit:

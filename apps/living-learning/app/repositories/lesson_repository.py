@@ -68,10 +68,11 @@ def create_lesson(
 ) -> LessonRecord:
     now = _utcnow()
     lesson_id = f"lesson_{secrets.token_urlsafe(16)}"
+    prior = None if prior_lesson_id == "" else prior_lesson_id
     conn.execute(
         f"INSERT INTO lessons ({_SELECT}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
         (
-            lesson_id, learner_id, concept_id, lesson_number, prior_lesson_id,
+            lesson_id, learner_id, concept_id, lesson_number, prior,
             generation_status, "pending", lesson_plan_json, lesson_content_json,
             adaptation_summary, now, now,
         ),

@@ -106,3 +106,40 @@ def test_mock_provider_tracks_requests() -> None:
     assert len(provider.requests) == 1
     assert provider.requests[0]["task_name"] == "task1"
     assert provider.requests[0]["system_prompt"] == "prompt1"
+
+def test_mock_provider_default_payload_validation() -> None:
+    from app.domain.models import LessonContent, LessonPlan
+    provider = MockProvider()
+    
+    # Should get LessonContent for lesson_content
+    result = provider.generate_structured(
+        task_name="lesson_content",
+        system_prompt="",
+        user_payload={},
+        response_schema=LessonContent,
+        request_id="req_1"
+    )
+    payload = result.payload
+    assert payload["title"] == "테스트 컨텐츠"
+    assert payload["sections"][0]["content"] != ""
+    
+    code_ex = payload["code_examples"][0]
+    assert code_ex["code"] != ""
+    assert code_ex["explanation"] != ""
+    assert code_ex["expected_output"] != ""
+    
+    req = payload["review_questions"][0]
+    assert req["question"] != ""
+    assert req["correct_answer"] != ""
+    assert req["explanation"] != ""
+    
+    # Should get LessonContent for adapted_lesson_content
+    result2 = provider.generate_structured(
+        task_name="adapted_lesson_content",
+        system_prompt="",
+        user_payload={"direction_choices": "more_examples"},
+        response_schema=LessonContent,
+        request_id="req_2"
+    )
+    assert result2.payload["title"] == "테스트 컨텐츠"
+    assert len(result2.payload["code_examples"]) > 1

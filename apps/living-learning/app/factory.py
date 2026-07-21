@@ -30,8 +30,9 @@ def get_connection_factory(database_url: str):
 
 def create_provider(settings) -> AIProvider:
     provider_type = getattr(settings, 'provider_type', 'mock')
+    provider_model = getattr(settings, 'provider_model', 'mock-fixture')
     if provider_type == 'mock':
-        return MockProvider()
+        return MockProvider(model=provider_model)
     raise ValueError(f"Unsupported provider type: {provider_type}")
 
 

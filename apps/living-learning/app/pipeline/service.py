@@ -82,32 +82,34 @@ NON_RETRYABLE_ERROR_CATEGORIES = frozenset({
 })
 
 UNSAFE_PATTERNS = [
-    (r"import\s+os\s*,?\s*sys", "import os/sys"),
-    (r"subprocess", "subprocess"),
+    (r"import\s+(?:os|sys|subprocess|requests|urllib|socket|pathlib|shutil)", "unsafe_module_import"),
     (r"eval\s*\(", "eval"),
     (r"exec\s*\(", "exec"),
     (r"os\.system", "os.system"),
-    (r"requests\.", "requests"),
     (r"pip\s+install", "pip install"),
     (r"!.*curl", "curl"),
     (r"shell=True", "shell=True"),
+    (r"open\s*\(", "file_system_access"),
 ]
 
 CREDENTIAL_PATTERNS = [
-    (r"api[_-]?key", "api_key"),
-    (r"password", "password"),
-    (r"secret", "secret"),
-    (r"token", "token"),
-    (r"credential", "credential"),
+    (r"input\s*\(\s*['\"].*(?:api[_-]?key|password|secret|token|credential).*['\"]\s*\)", "credential_collection"),
+    (r"os\.environ(?:\[|\.get\()\s*['\"](?:API_KEY|PASSWORD|SECRET|TOKEN)['\"]", "credential_harvesting"),
 ]
 
 HTML_SCRIPT_PATTERNS = [
-    (r"<script", "script tag"),
-    (r"<iframe", "iframe tag"),
+    (r"<\s*script", "script tag"),
+    (r"<\s*iframe", "iframe tag"),
     (r"on\w+\s*=", "event handler"),
     (r"javascript:", "javascript protocol"),
+    (r"<\s*div[^>]*>", "div tag"),
+    (r"<\s*b\s*>", "b tag"),
+    (r"<\s*a\s+href[^>]*>", "a tag"),
 ]
 
+FABRICATED_FACTS_PATTERNS = [
+    (r"(학습자님은|당신은|여러분은).*(앓고|장애|진단|우울|불안|ADHD|자폐|난독증|살이|직업|이력|근무|경력)", "fabricated_medical_or_personal_fact"),
+]
 
 def _validate_safe_content(content: str) -> list[str]:
     issues = []
@@ -125,8 +127,48 @@ def _validate_safe_content(content: str) -> list[str]:
         if re.search(pattern, content, re.IGNORECASE):
             issues.append(f"markup_injection: {name}")
 
+    for pattern, name in FABRICATED_FACTS_PATTERNS:
+        if re.search(pattern, content, re.IGNORECASE):
+            issues.append(f"fabricated_facts: {name}")
+
     return issues
 
+
+def _validate_code_output(code: str, expected: str) -> bool:
+    import ast
+    try:
+        tree = ast.parse(code)
+    except Exception:
+        return False
+
+    allowed_nodes = (ast.Module, ast.Assign, ast.Name, ast.Store, ast.Load, ast.Constant, ast.Expr, ast.Call, ast.If, ast.Compare, ast.BinOp, ast.Add, ast.Sub, ast.Mult, ast.Div)
+    for node in ast.walk(tree):
+        if not isinstance(node, allowed_nodes):
+            return False
+
+    # Naive evaluation for simple assignments and prints
+    env = {}
+    output = []
+    for stmt in tree.body:
+        if isinstance(stmt, ast.Assign):
+            if len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+                val = stmt.value
+                if isinstance(val, ast.Constant):
+                    env[stmt.targets[0].id] = val.value
+        elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            call = stmt.value
+            if isinstance(call.func, ast.Name) and call.func.id == "print":
+                for arg in call.args:
+                    if isinstance(arg, ast.Name) and arg.id in env:
+                        output.append(str(env[arg.id]))
+                    elif isinstance(arg, ast.Constant):
+                        output.append(str(arg.value))
+    
+    simulated_output = " ".join(output)
+    if simulated_output.strip() != expected.strip() and expected.strip():
+        # strict check: if expected output is provided, it must match
+        return False
+    return True
 
 def _is_retryable_error(error_category: str, is_exception: bool = False) -> bool:
     if is_exception:
@@ -199,19 +241,28 @@ class LessonPipeline:
                     response_schema=response_schema,
                     request_id=req_id,
                 )
+                if not res.success:
+                    # Raise an exception that carries the error_category
+                    exc = RuntimeError(res.error_category or "unknown_exception")
+                    exc.error_category = res.error_category or "unknown_exception"
+                    raise exc
             except Exception as exc:
                 provider_type = getattr(self.provider, 'provider_type', getattr(self.settings, 'provider_type', 'mock'))
                 advertised_model = getattr(self.provider, 'model', getattr(self.settings, 'provider_model', 'mock-fixture'))
                 
-                is_transient = isinstance(exc, (TimeoutError, ConnectionError))
-                error_category = "transient_provider_error" if is_transient else "unknown_exception"
+                if hasattr(exc, "error_category"):
+                    error_category = exc.error_category
+                    is_transient = _is_retryable_error(error_category)
+                else:
+                    is_transient = isinstance(exc, (TimeoutError, ConnectionError))
+                    error_category = "transient_provider_error" if is_transient else "unknown_exception"
 
                 create_generation_run(
                     self.conn,
                     task_type=task_name,
                     lesson_id=lesson_id,
                     success=False,
-                    error_message=str(exc)[:200],
+                    error_message=error_category,
                     provider=provider_type,
                     advertised_model=advertised_model,
                     error_category=error_category,
@@ -223,7 +274,7 @@ class LessonPipeline:
                     self._mark_lesson_failed(lesson_id)
                     if is_transient:
                         raise RetryExhaustedError(task_name, attempt + 1) from exc
-                    raise NonRetryableError(f"{task_name} failed with unknown exception: {exc}") from exc
+                    raise NonRetryableError(f"{task_name} failed with non-retryable error") from exc
                 continue
 
             create_generation_run(
@@ -294,11 +345,17 @@ class LessonPipeline:
             raise
 
     def _create_concept_with_stable_id(self, cursor: sqlite3.Cursor, curriculum_id: str, name: str, description: str, prerequisites: list[str], sequence_order: int) -> Any:
-        existing = cursor.execute("SELECT * FROM concepts WHERE curriculum_id = ? AND name = ?", (curriculum_id, name)).fetchone()
+        import hashlib
+        # curriculum_id + name_slug
+        name_slug = name.strip().lower()
+        key = f"{curriculum_id}:{name_slug}".encode("utf-8")
+        concept_id = f"concept_{hashlib.md5(key).hexdigest()}"
+        
+        existing = cursor.execute("SELECT * FROM concepts WHERE id = ?", (concept_id,)).fetchone()
         if existing:
-            cursor.execute("UPDATE concepts SET prerequisites = ?, sequence_order = ? WHERE curriculum_id = ? AND name = ?", (json.dumps(prerequisites), sequence_order, curriculum_id, name))
-            return type('ConceptRecord', (), {'id': existing['id'], 'curriculum_id': curriculum_id, 'name': name, 'description': description, 'prerequisites': prerequisites, 'sequence_order': sequence_order})()
-        concept_id = f"concept_{secrets.token_urlsafe(16)}"
+            cursor.execute("UPDATE concepts SET prerequisites = ?, sequence_order = ? WHERE id = ?", (json.dumps(prerequisites), sequence_order, concept_id))
+            return type('ConceptRecord', (), {'id': concept_id, 'curriculum_id': curriculum_id, 'name': name, 'description': description, 'prerequisites': prerequisites, 'sequence_order': sequence_order})()
+        
         cursor.execute("INSERT INTO concepts (id, curriculum_id, name, description, prerequisites, sequence_order, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))", (concept_id, curriculum_id, name, description, json.dumps(prerequisites), sequence_order))
         return type('ConceptRecord', (), {'id': concept_id, 'curriculum_id': curriculum_id, 'name': name, 'description': description, 'prerequisites': prerequisites, 'sequence_order': sequence_order})()
 
@@ -345,7 +402,22 @@ class LessonPipeline:
         )
         content_payload = content_result.payload
         content_data = json.dumps(content_payload, ensure_ascii=False)
-        if content_issues := _validate_safe_content(content_data):
+        content_issues = _validate_safe_content(content_data)
+        
+        # Verify code output and review answers
+        if content_payload.get("code_examples"):
+            for ex in content_payload["code_examples"]:
+                code = ex.get("code", "")
+                expected = ex.get("expected_output", "")
+                if code and not _validate_code_output(code, expected):
+                    content_issues.append("inconsistent_code_output")
+        if content_payload.get("review_questions"):
+            for q in content_payload["review_questions"]:
+                ans = q.get("correct_answer", "") if isinstance(q, dict) else ""
+                if ans and ans not in content_data:
+                    content_issues.append("unsupported_review_answer")
+                    
+        if content_issues:
             self._mark_lesson_failed(lesson_id)
             raise UnsafeContentError(content_issues)
 
@@ -495,7 +567,22 @@ class LessonPipeline:
         )
         final_content = adapted_content_result.payload
         final_content_data = json.dumps(final_content, ensure_ascii=False)
-        if content_issues := _validate_safe_content(final_content_data):
+        content_issues = _validate_safe_content(final_content_data)
+        
+        # Verify code output and review answers
+        if final_content.get("code_examples"):
+            for ex in final_content["code_examples"]:
+                code = ex.get("code", "")
+                expected = ex.get("expected_output", "")
+                if code and not _validate_code_output(code, expected):
+                    content_issues.append("inconsistent_code_output")
+        if final_content.get("review_questions"):
+            for q in final_content["review_questions"]:
+                ans = q.get("correct_answer", "") if isinstance(q, dict) else ""
+                if ans and ans not in final_content_data:
+                    content_issues.append("unsupported_review_answer")
+                    
+        if content_issues:
             self._mark_lesson_failed(lesson_id)
             raise UnsafeContentError(content_issues)
 
@@ -550,13 +637,21 @@ class LessonPipeline:
         if not direction_choices:
             return
 
-        if original_plan == adapted_plan and original_content == adapted_content:
-            raise AdaptationNotChangedError({"requested": list(direction_choices), "reasons": ["identical plan and content"]})
+        def extract_core(plan: dict, content: dict) -> dict:
+            return {
+                "plan_sections": [s.get("section_id") for s in plan.get("sections", [])],
+                "content_sections": [
+                    {k: v for k, v in s.items() if k not in ("title",)}
+                    for s in content.get("sections", [])
+                ],
+                "review_questions": content.get("review_questions", []),
+                "code_examples": content.get("code_examples", []),
+            }
 
-        original_titles = [s.get("title", "") for s in original_plan.get("sections", [])]
-        adapted_titles = [s.get("title", "") for s in adapted_plan.get("sections", [])]
+        orig_core = extract_core(original_plan, original_content)
+        adapt_core = extract_core(adapted_plan, adapted_content)
 
-        if original_titles != adapted_titles and original_plan == adapted_plan:
+        if orig_core == adapt_core:
             raise AdaptationNotChangedError({"requested": list(direction_choices), "reasons": ["metadata-only changes"]})
 
         error_reasons = []

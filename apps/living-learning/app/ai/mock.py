@@ -40,22 +40,23 @@ _DEFAULT_LESSON_CONTENT = {
 
 class MockProvider:
     provider_type: str = "mock"
-    model: str = "mock-fixture"
 
     def __init__(
         self,
         task_payloads: dict[str, dict] | None = None,
         responses: list[dict] | None = None,
         fixture_payload: dict | None = None,
+        model: str = "mock-fixture",
     ) -> None:
+        self.model = model
         self.task_payloads = task_payloads or {}
         self.responses = list(responses) if responses else []
-        self.fixture_payload = fixture_payload or _DEFAULT_LESSON_PLAN
+        self.fixture_payload = fixture_payload
         self._call_index = 0
         self.requests: list[dict[str, Any]] = []
 
     def _get_default_payload(self, task_name: str) -> dict:
-        if task_name == "lesson_content":
+        if task_name in ("lesson_content", "adapted_lesson_content"):
             return _DEFAULT_LESSON_CONTENT
         return _DEFAULT_LESSON_PLAN
 
@@ -91,12 +92,10 @@ class MockProvider:
             self._call_index += 1
         elif task_name in self.task_payloads:
             payload = self.task_payloads[task_name]
-        else:
+        elif self.fixture_payload is not None:
             payload = self.fixture_payload
-
-        default_payload = self._get_default_payload(task_name)
-        if not payload or payload == {}:
-            payload = default_payload
+        else:
+            payload = self._get_default_payload(task_name)
 
         # Deep copy to avoid mutating default
         import copy
@@ -115,7 +114,7 @@ class MockProvider:
                 payload["sections"][0]["description"] = "정의"
         
         if "more_examples" in dc and task_name == "adapted_lesson_content":
-            payload.setdefault("code_examples", []).append({"example_id": "ex2", "code": "y = 2", "explanation": "test", "expected_output": "2"})
+            payload.setdefault("code_examples", []).append({"example_id": "ex2", "code": "y = 2\nprint(y)", "explanation": "test", "expected_output": "2"})
         if "code_first" in dc and task_name == "adapted_lesson_content":
             if payload.get("sections"):
                 payload["sections"][0]["includes_code"] = True
@@ -136,7 +135,7 @@ class MockProvider:
         validated = response_schema.model_validate(payload)
         return ProviderResult(
             provider="mock",
-            model="mock-fixture",
+            model=self.model,
             payload=validated.model_dump(),
             success=True,
         )
