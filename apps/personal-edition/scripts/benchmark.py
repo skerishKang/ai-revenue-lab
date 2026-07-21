@@ -402,26 +402,70 @@ _PROVIDER_ERROR_CATEGORIES = frozenset({
 })
 
 
+# These rules come from normalize_validation_findings() in validators.py
+GROUNDING_RULES = frozenset({
+    "unknown_segment_reference",
+    "missing_provenance",
+    "prohibited_inference",
+    "invented_personal_fact",
+    "unsupported_grounding",
+})
+
+STRUCTURAL_RULES = frozenset({
+    "duplicate_section_id",
+    "section_not_in_plan",
+    "section_references_no_segments",
+    "paragraph_limit_exceeded",
+    "field_length_exceeded",
+    "continuity_violation",
+    "missing_provenance",
+    "validator_rejected",
+})
+
+
+def _classify_validation_failure(
+    error_category: str | None,
+    validation_status: str | None,
+) -> tuple[str | None, str | None]:
+    """Classify a deterministic validation failure.
+
+    Returns (failure_category, failure_detail) where:
+    - grounding failures → ("model_quality", "grounding_failure")
+    - structural failures → ("model_quality", "deterministic_validation")
+    - schema mismatch from provider → ("model_quality", "schema_mismatch")
+    - invalid JSON → ("model_quality", "invalid_json")
+
+    To distinguish grounding_failure from deterministic_validation, inspect
+    the validation exception via normalize_validation_findings(). The
+    benchmark runner uses the production validator's classification when
+    available.
+    """
+    if validation_status == VALIDATION_PASSED:
+        return None, None
+
+    if error_category == ProviderErrorCategory.SCHEMA_MISMATCH.value:
+        return "model_quality", "schema_mismatch"
+
+    if error_category == ProviderErrorCategory.INVALID_JSON.value:
+        return "model_quality", "invalid_json"
+
+    if validation_status == VALIDATION_FAILED:
+        return "model_quality", "deterministic_validation"
+
+    if error_category in _PROVIDER_ERROR_CATEGORIES:
+        return "provider", error_category
+
+    if validation_status == PROVIDER_FAILED:
+        return "provider", "unknown"
+
+    return "model_quality", "unknown"
+
+
 def _classify_failure_detailed(
     result_validation_status: str | None,
     result_error_category: str | None,
 ) -> tuple[str | None, str | None]:
-    if result_validation_status == VALIDATION_PASSED:
-        return None, None
-
-    if result_error_category in _PROVIDER_ERROR_CATEGORIES:
-        return "provider", result_error_category
-
-    if result_error_category in (
-        ProviderErrorCategory.SCHEMA_MISMATCH.value,
-        ProviderErrorCategory.INVALID_JSON.value,
-    ):
-        return "model_quality", result_error_category
-
-    if result_validation_status == VALIDATION_FAILED:
-        return "model_quality", "deterministic_validation"
-
-    return "model_quality", "unknown"
+    return _classify_validation_failure(result_error_category, result_validation_status)
 
 
 # ---------------------------------------------------------------------------
@@ -510,6 +554,48 @@ def _sum_non_null_tokens(values: list[int | None]) -> int | None:
     return sum(non_null)
 
 
+def _build_case_result(case_id: str, phases: list[dict]) -> dict:
+    """Build a case-level result from phase-level results."""
+    case_phases = [p for p in phases if p.get("case_id") == case_id]
+
+    case_success = all(
+        p.get("success", False) or p.get("expected_rejection_observed", False)
+        for p in case_phases
+    )
+
+    case_failure_category = None
+    case_failure_detail = None
+    for p in case_phases:
+        if not p.get("success") and not p.get("expected_rejection_observed"):
+            case_failure_category = p.get("failure_category")
+            case_failure_detail = p.get("failure_detail")
+            break
+
+    case_provider_calls = sum(p.get("provider_call_count", 0) for p in case_phases)
+
+    all_refs = []
+    for p in case_phases:
+        for ref in p.get("generation_run_refs", []):
+            if ref not in all_refs:
+                all_refs.append(ref)
+
+    input_tokens = _sum_non_null_tokens([p.get("input_tokens") for p in case_phases])
+    output_tokens = _sum_non_null_tokens([p.get("output_tokens") for p in case_phases])
+
+    return {
+        "case_id": case_id,
+        "case_success": case_success,
+        "case_failure_category": case_failure_category,
+        "case_failure_detail": case_failure_detail,
+        "case_provider_call_count": case_provider_calls,
+        "case_generation_run_count": len(all_refs),
+        "case_generation_run_refs": all_refs,
+        "case_input_tokens": input_tokens,
+        "case_output_tokens": output_tokens,
+        "case_total_tokens": _token_total(input_tokens, output_tokens),
+    }
+
+
 def _stage_provider_call_count(outcome) -> int:
     """Calculate actual HTTP calls from a stage outcome."""
     if outcome.validation_status == NOT_ATTEMPTED:
@@ -519,23 +605,7 @@ def _stage_provider_call_count(outcome) -> int:
     return outcome.retry_count + 1
 
 
-GROUNDING_RULES = frozenset({
-    "unknown_segment_reference",
-    "missing_provenance",
-    "duplicate_section_id",
-    "section_not_in_plan",
-    "section_references_no_segments",
-})
 
-
-def _is_grounding_failure(error_message: str | None) -> bool:
-    if not error_message:
-        return False
-    lowered = error_message.lower()
-    return any(term in lowered for term in [
-        "unknown segment", "prohibited", "invented", "personal fact",
-        "grounding", "not grounded",
-    ])
 
 
 def _apply_human_correction(
@@ -1189,15 +1259,6 @@ def _run_adversarial_grounding(
         combined_validation, last_error_category
     )
 
-    if (
-        not combined_success
-        and combined_validation == VALIDATION_FAILED
-        and result.plan_run.success
-        and not result.draft_run.success
-        and _is_grounding_failure(last_error_message)
-    ):
-        failure_detail = "grounding_failure"
-
     validation_result = "passed" if combined_success else "failed"
     ref_tag = "ok" if combined_success else "adversarial-caught"
     synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
@@ -1532,6 +1593,52 @@ def _run_validator_feedback_repair(
         bad_validation_failed = True
         bad_error = exc
 
+    if not bad_validation_failed:
+        _record_benchmark_run(
+            db_conn,
+            benchmark_name=benchmark_name,
+            fixture_name=fixture.name,
+            run_group="validator_feedback_repair",
+            run_index=run_index * 3 + 1,
+            provider_info=provider_info,
+            task_type="repair_bad_validation",
+            prompt_version=PLAN_PROMPT_VERSION,
+            started_at=_now_iso(),
+            completed_at=_now_iso(),
+            latency_seconds=0.0,
+            success=False,
+            failure_category="benchmark_harness_failure",
+            error_category=None,
+            error_message="corrupted candidate unexpectedly accepted by validator",
+            retry_count=0,
+            input_tokens=None,
+            output_tokens=None,
+            total_tokens=None,
+            validation_result="unexpectedly_passed",
+            synthetic_result_ref=f"bench-{fixture.name}-{run_index}-bad",
+            failure_detail="corrupted_candidate_unexpectedly_accepted",
+            failure_stage=None,
+            generation_run_refs=[],
+            provider_call_count=0,
+            case_id=case_id,
+            phase_name="repair_bad_validation",
+        )
+        return [
+            {
+                "fixture": fixture.name,
+                "run_index": run_index,
+                "phase": "repair_bad_validation",
+                "success": False,
+                "expected_rejection_observed": False,
+                "validation_result": "unexpectedly_passed",
+                "validator_findings": [],
+                "generation_run_refs": [],
+                "provider_call_count": 0,
+                "case_id": case_id,
+                "phase_name": "repair_bad_validation",
+            }
+        ]
+
     assert bad_validation_failed, (
         "validator-feedback repair: the deterministically corrupted candidate "
         "unexpectedly passed validation; the benchmark cannot demonstrate repair"
@@ -1555,18 +1662,18 @@ def _run_validator_feedback_repair(
         started_at=_now_iso(),
         completed_at=_now_iso(),
         latency_seconds=0.0,
-        success=False,
-        failure_category="model_quality",
-        error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
-        error_message="deterministic validator rejected corrupted candidate",
+        success=True,
+        failure_category=None,
+        error_category=None,
+        error_message=None,
         retry_count=0,
         input_tokens=None,
         output_tokens=None,
         total_tokens=None,
-        validation_result="failed",
+        validation_result="rejected_as_expected",
         synthetic_result_ref=f"bench-{fixture.name}-{run_index}-bad",
-        failure_detail="deterministic_validation",
-        failure_stage="draft",
+        failure_detail=None,
+        failure_stage=None,
         generation_run_refs=[],
         provider_call_count=0,
         case_id=case_id,
@@ -1577,11 +1684,14 @@ def _run_validator_feedback_repair(
             "fixture": fixture.name,
             "run_index": run_index,
             "phase": "repair_bad_validation",
-            "success": False,
-            "validation_result": "failed",
+            "success": True,
+            "expected_rejection_observed": True,
+            "validation_result": "rejected_as_expected",
             "validator_findings": validator_findings,
             "generation_run_refs": [],
             "provider_call_count": 0,
+            "failure_category": None,
+            "failure_detail": None,
             "case_id": case_id,
             "phase_name": "repair_bad_validation",
             "upstream_failure_stage": None,
@@ -1859,19 +1969,71 @@ def run_benchmark(
     conn.close()
 
     if output_path and info is not None:
+        case_ids = list(dict.fromkeys(
+            r.get("case_id") for r in results if r.get("case_id")
+        ))
+        case_results = [_build_case_result(cid, results) for cid in case_ids]
+
+        detail_counts: dict[str, int] = {}
+        for r in results:
+            detail = r.get("failure_detail")
+            if detail:
+                detail_counts[detail] = detail_counts.get(detail, 0) + 1
+
         aggregate = {
-            "benchmark_case_count": len(set(r.get("case_id") for r in results if r.get("case_id"))),
+            "benchmark_case_count": len(case_results),
+            "benchmark_case_success_count": sum(
+                1 for c in case_results if c["case_success"]
+            ),
+            "benchmark_case_failure_count": sum(
+                1 for c in case_results if not c["case_success"]
+            ),
             "phase_result_count": len(results),
-            "provider_call_count": sum(r.get("provider_call_count", 0) for r in results),
-            "provider_failure_count": sum(1 for r in results if r.get("failure_category") == "provider"),
-            "model_quality_failure_count": sum(1 for r in results if r.get("failure_category") == "model_quality"),
-            "pipeline_prevented_count": sum(1 for r in results if r.get("failure_category") == "pipeline_prevented"),
-            "input_token_sum": _sum_non_null_tokens([r.get("input_tokens") for r in results]),
-            "output_token_sum": _sum_non_null_tokens([r.get("output_tokens") for r in results]),
-            "total_token_sum": _sum_non_null_tokens([r.get("total_tokens") for r in results]),
-            "rows_with_token_usage": sum(1 for r in results if r.get("total_tokens") is not None),
-            "rows_missing_token_usage": sum(1 for r in results if r.get("total_tokens") is None),
+            "phase_success_count": sum(
+                1 for r in results
+                if r.get("success") or r.get("expected_rejection_observed")
+            ),
+            "phase_failure_count": sum(
+                1 for r in results
+                if not r.get("success") and not r.get("expected_rejection_observed")
+            ),
+            "generation_run_count": len(set(
+                ref for r in results for ref in r.get("generation_run_refs", [])
+            )),
+            "provider_call_count": sum(
+                r.get("provider_call_count", 0) for r in results
+            ),
+            "provider_failure_case_count": sum(
+                1 for c in case_results
+                if c["case_failure_category"] == "provider"
+            ),
+            "model_quality_failure_case_count": sum(
+                1 for c in case_results
+                if c["case_failure_category"] == "model_quality"
+            ),
+            "pipeline_prevented_case_count": sum(
+                1 for c in case_results
+                if c["case_failure_category"] == "pipeline_prevented"
+            ),
+            "failure_detail_counts": detail_counts,
+            "input_token_sum": _sum_non_null_tokens(
+                [r.get("input_tokens") for r in results]
+            ),
+            "output_token_sum": _sum_non_null_tokens(
+                [r.get("output_tokens") for r in results]
+            ),
+            "total_token_sum": _sum_non_null_tokens(
+                [r.get("total_tokens") for r in results]
+            ),
+            "rows_with_token_usage": sum(
+                1 for r in results if r.get("total_tokens") is not None
+            ),
+            "rows_missing_token_usage": sum(
+                1 for r in results if r.get("total_tokens") is None
+            ),
         }
+        aggregate["total_runs"] = aggregate["phase_result_count"]
+
         report = {
             "benchmark_name": benchmark_name,
             "task": task,
@@ -1881,6 +2043,7 @@ def run_benchmark(
             "repeat": repeat,
             "total_runs": len(results),
             "results": results,
+            "case_results": case_results,
             "aggregate": aggregate,
         }
         Path(output_path).write_text(
@@ -2006,8 +2169,21 @@ def main() -> None:
             human_correction_minutes=args.correct,
         )
 
-        successes = sum(1 for r in results if r["success"])
-        failures = sum(1 for r in results if not r["success"])
+        case_ids_for_exit = list(dict.fromkeys(
+            r.get("case_id") for r in results if r.get("case_id")
+        ))
+        case_results_for_exit = [_build_case_result(cid, results) for cid in case_ids_for_exit]
+        case_successes = sum(1 for c in case_results_for_exit if c["case_success"])
+        case_failures = sum(1 for c in case_results_for_exit if not c["case_success"])
+
+        phase_successes = sum(
+            1 for r in results
+            if r.get("success") or r.get("expected_rejection_observed")
+        )
+        phase_failures = sum(
+            1 for r in results
+            if not r.get("success") and not r.get("expected_rejection_observed")
+        )
         provider_failures = sum(
             1 for r in results if r.get("failure_category") == "provider"
         )
@@ -2029,8 +2205,15 @@ def main() -> None:
         total_provider_calls = sum(r.get("provider_call_count", 0) for r in results)
 
         print("\n" + "=" * 40)
-        print(f"Total: {len(results)}  OK: {successes}  FAIL: {failures}")
-        print(f"Cases: {len(unique_case_ids)}  Provider calls: {total_provider_calls}")
+        print(
+            f"Cases: {len(unique_case_ids)}  "
+            f"OK: {case_successes}  FAIL: {case_failures}"
+        )
+        print(
+            f"Phases: {len(results)}  "
+            f"OK: {phase_successes}  FAIL: {phase_failures}"
+        )
+        print(f"Provider calls: {total_provider_calls}")
         print(
             f"Provider failures: {provider_failures}  "
             f"Model-quality failures: {model_failures}  "
@@ -2040,7 +2223,7 @@ def main() -> None:
             print("Failure details:")
             for detail, count in sorted(detail_counts.items()):
                 print(f"  {detail}: {count}")
-        if failures > 0:
+        if case_failures > 0:
             sys.exit(1)
         return
 

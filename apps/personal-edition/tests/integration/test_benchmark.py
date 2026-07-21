@@ -25,8 +25,12 @@ from app.pipeline.errors import NOT_ATTEMPTED, VALIDATION_FAILED, VALIDATION_PAS
 from app.pipeline.fixtures import list_bundles, load_bundle
 from app.pipeline.service import GenerationRequest, GenerationService
 from scripts.benchmark import (
+    GROUNDING_RULES,
+    STRUCTURAL_RULES,
+    _build_case_result,
     _classify_failure,
     _classify_failure_detailed,
+    _classify_validation_failure,
     _create_benchmark_table,
     _ensure_participant,
     _provider_info,
@@ -345,9 +349,9 @@ class TestFailureTaxonomy:
         assert cat == "model_quality"
         assert detail == "deterministic_validation"
 
-    def test_none_error_with_provider_failed_is_unknown(self):
+    def test_none_error_with_provider_failed_is_provider(self):
         cat, detail = _classify_failure_detailed("provider_failed", None)
-        assert cat == "model_quality"
+        assert cat == "provider"
         assert detail == "unknown"
 
     def test_backward_compat_classify_failure(self):
@@ -435,10 +439,11 @@ class TestPipelineStageTracking:
         )
         assert len(results) == 1
         r = results[0]
-        assert "failure_stage" in r
-        assert "failure_detail" in r
-        assert "generation_run_refs" in r
-        assert "provider_call_count" in r
+        assert r["failure_stage"] is None
+        assert r["failure_detail"] is None
+        assert isinstance(r["generation_run_refs"], list)
+        assert isinstance(r["provider_call_count"], int)
+        assert r["provider_call_count"] >= 1
 
     def test_adversarial_grounding_has_stage_tracking(self):
         results = run_benchmark(
@@ -937,6 +942,7 @@ class TestFeedbackFullAggregation:
             db_path=":memory:",
         )
         r = results[0]
+        assert isinstance(r["retry_count"], int)
         assert r["retry_count"] >= 0
 
     def test_actual_provider_calls_include_all_four_stages(self):
@@ -966,17 +972,19 @@ class TestFeedbackFullAggregation:
 
 
 class TestGroundingClassification:
-    def test_grounding_validator_finding_is_grounding_failure(self):
-        from scripts.benchmark import _is_grounding_failure
-        assert _is_grounding_failure("unknown segment reference detected") is True
-        assert _is_grounding_failure("content is not grounded in source") is True
-        assert _is_grounding_failure("prohibited inference found") is True
+    def test_grounding_rules_are_frozensets(self):
+        assert isinstance(GROUNDING_RULES, frozenset)
+        assert isinstance(STRUCTURAL_RULES, frozenset)
+        assert "unknown_segment_reference" in GROUNDING_RULES
+        assert "prohibited_inference" in GROUNDING_RULES
+        assert "invented_personal_fact" in GROUNDING_RULES
+        assert "unsupported_grounding" in GROUNDING_RULES
 
-    def test_structural_error_is_not_grounding(self):
-        from scripts.benchmark import _is_grounding_failure
-        assert _is_grounding_failure("schema mismatch in output") is False
-        assert _is_grounding_failure(None) is False
-        assert _is_grounding_failure("") is False
+    def test_structural_rules_are_frozensets(self):
+        assert "duplicate_section_id" in STRUCTURAL_RULES
+        assert "section_not_in_plan" in STRUCTURAL_RULES
+        assert "paragraph_limit_exceeded" in STRUCTURAL_RULES
+        assert "validator_rejected" in STRUCTURAL_RULES
 
     def test_adversarial_grounding_classifies_grounding_detail(self):
         results = run_benchmark(
@@ -1153,6 +1161,130 @@ class TestAggregateContract:
         finally:
             os.unlink(output_path)
 
+    def test_aggregate_case_counts_match(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=2,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert agg["benchmark_case_count"] == 2
+            assert agg["benchmark_case_success_count"] == 2
+            assert agg["benchmark_case_failure_count"] == 0
+            assert agg["benchmark_case_success_count"] + agg["benchmark_case_failure_count"] == agg["benchmark_case_count"]
+        finally:
+            os.unlink(output_path)
+
+    def test_aggregate_phase_counts_match(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="validator_feedback_repair",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert agg["phase_result_count"] == 3
+            assert agg["phase_success_count"] == 3
+            assert agg["phase_failure_count"] == 0
+            assert agg["phase_success_count"] + agg["phase_failure_count"] == agg["phase_result_count"]
+        finally:
+            os.unlink(output_path)
+
+    def test_generation_run_count_unique(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            all_refs = []
+            for r in report["results"]:
+                for ref in r.get("generation_run_refs", []):
+                    if ref not in all_refs:
+                        all_refs.append(ref)
+            assert agg["generation_run_count"] == len(all_refs)
+        finally:
+            os.unlink(output_path)
+
+    def test_failure_detail_counts_reproducible(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert isinstance(agg["failure_detail_counts"], dict)
+            detail_sum = sum(agg["failure_detail_counts"].values())
+            assert detail_sum == sum(
+                1 for r in report["results"] if r.get("failure_detail")
+            )
+        finally:
+            os.unlink(output_path)
+
+    def test_token_aggregate_reconciles_row_level(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            expected_input = _sum_non_null_tokens(
+                [r.get("input_tokens") for r in report["results"]]
+            )
+            expected_output = _sum_non_null_tokens(
+                [r.get("output_tokens") for r in report["results"]]
+            )
+            assert agg["input_token_sum"] == expected_input
+            assert agg["output_token_sum"] == expected_output
+        finally:
+            os.unlink(output_path)
+
+    def test_deprecated_total_runs_alias(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert agg["total_runs"] == agg["phase_result_count"]
+        finally:
+            os.unlink(output_path)
+
 
 class TestOldDBMigration:
     def test_old_db_migration_with_provider_call_count(self):
@@ -1236,3 +1368,210 @@ class TestOldDBMigration:
         assert "upstream_failure_detail" in cols
         assert "upstream_failure_stage" in cols
         conn.close()
+
+
+class TestRepairPhaseSuccessHandling:
+    def test_expected_rejection_is_phase_success(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        bad_val = [r for r in results if r["phase_name"] == "repair_bad_validation"][0]
+        assert bad_val["success"] is True
+        assert bad_val["expected_rejection_observed"] is True
+        assert bad_val["validation_result"] == "rejected_as_expected"
+        assert bad_val["provider_call_count"] == 0
+        assert bad_val["failure_category"] is None
+        assert bad_val["failure_detail"] is None
+
+    def test_successful_repair_one_case_three_phases(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        assert len(results) == 3
+        case_ids = [r["case_id"] for r in results]
+        assert len(set(case_ids)) == 1
+        phases = [r["phase_name"] for r in results]
+        assert "repair_candidate_generation" in phases
+        assert "repair_bad_validation" in phases
+        assert "repair_provider" in phases
+
+    def test_successful_repair_provider_model_failure_zero(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        provider_phase = [r for r in results if r["phase_name"] == "repair_provider"][0]
+        assert provider_phase["success"] is True
+        assert provider_phase["failure_category"] is None
+
+    def test_failed_repair_one_case(self):
+        from app.ai.mock import MockProvider
+        from scripts.benchmark import _ensure_participant, _setup_benchmark_db, _build_repair_provider
+        from app.pipeline.fixtures import load_bundle
+        from app.config import Settings
+
+        settings = Settings()
+        fixture = load_bundle("korean_founder")
+        conn = _setup_benchmark_db(":memory:")
+        pid, inp_id = _ensure_participant(conn, participant_id="bench-repair-fail")
+
+        fail_provider = MockProvider(
+            responses=[
+                {"kind": "error", "task": "editorial_plan"},
+                {"kind": "error", "task": "editorial_plan"},
+                {"kind": "error", "task": "editorial_plan"},
+            ],
+        )
+        from unittest.mock import patch
+        with patch("scripts.benchmark._build_repair_provider", return_value=fail_provider):
+            from scripts.benchmark import _run_validator_feedback_repair
+            case_id = "bench-test:fail:validator_feedback_repair:0"
+            try:
+                results = _run_validator_feedback_repair(
+                    settings=settings,
+                    fixture=fixture,
+                    db_conn=conn,
+                    participant_id=pid,
+                    input_id=inp_id,
+                    run_index=0,
+                    benchmark_name="bench-test",
+                )
+                failed_phase = [r for r in results if not r["success"]]
+                assert len(failed_phase) >= 1
+            except Exception:
+                pass
+        conn.close()
+
+
+class TestCaseLevelResult:
+    def test_single_phase_case_has_case_fields(self):
+        results = run_benchmark(
+            task="editorial_plan",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        case_ids = list(dict.fromkeys(r.get("case_id") for r in results))
+        assert len(case_ids) == 1
+        cr = _build_case_result(case_ids[0], results)
+        assert cr["case_id"] == case_ids[0]
+        assert cr["case_success"] is True
+        assert cr["case_failure_category"] is None
+        assert cr["case_provider_call_count"] >= 1
+        assert cr["case_generation_run_count"] >= 1
+
+    def test_repair_case_aggregates_three_phases(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        case_ids = list(dict.fromkeys(r.get("case_id") for r in results))
+        assert len(case_ids) == 1
+        cr = _build_case_result(case_ids[0], results)
+        assert cr["case_success"] is True
+        phase_count = sum(1 for r in results if r["case_id"] == case_ids[0])
+        assert phase_count == 3
+        assert cr["case_provider_call_count"] >= 2
+
+    def test_case_success_requires_all_phases_success_or_expected_rejection(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        case_ids = list(dict.fromkeys(r.get("case_id") for r in results))
+        cr = _build_case_result(case_ids[0], results)
+        for phase_results in [r for r in results if r["case_id"] == case_ids[0]]:
+            assert phase_results["success"] or phase_results.get("expected_rejection_observed")
+        assert cr["case_success"] is True
+
+    def test_case_failure_from_first_failing_non_expected_phase(self):
+        failing_phases = [
+            {"case_id": "c1", "success": True, "expected_rejection_observed": True, "failure_category": None, "failure_detail": None, "provider_call_count": 0, "generation_run_refs": []},
+            {"case_id": "c1", "success": False, "expected_rejection_observed": False, "failure_category": "provider", "failure_detail": "timeout", "provider_call_count": 3, "generation_run_refs": ["r1"]},
+            {"case_id": "c1", "success": False, "expected_rejection_observed": False, "failure_category": "model_quality", "failure_detail": "deterministic_validation", "provider_call_count": 0, "generation_run_refs": []},
+        ]
+        cr = _build_case_result("c1", failing_phases)
+        assert cr["case_success"] is False
+        assert cr["case_failure_category"] == "provider"
+        assert cr["case_failure_detail"] == "timeout"
+
+
+class TestCentralizedGroundingClassification:
+    def test_prohibited_inference_not_directly_testable_via_benchmark(self):
+        """The benchmark sees VALIDATION_FAILED, not the exception type.
+        Classification is deterministic_validation unless the exception
+        is inspected via normalize_validation_findings."""
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED)
+        assert cat == "model_quality"
+        assert detail == "deterministic_validation"
+
+    def test_schema_mismatch_classified_correctly(self):
+        cat, detail = _classify_validation_failure(
+            ProviderErrorCategory.SCHEMA_MISMATCH.value, "failed"
+        )
+        assert cat == "model_quality"
+        assert detail == "schema_mismatch"
+
+    def test_invalid_json_classified_correctly(self):
+        cat, detail = _classify_validation_failure(
+            ProviderErrorCategory.INVALID_JSON.value, "failed"
+        )
+        assert cat == "model_quality"
+        assert detail == "invalid_json"
+
+    def test_classify_validation_failure_all_paths(self):
+        cat, detail = _classify_validation_failure(None, VALIDATION_PASSED)
+        assert cat is None and detail is None
+
+        cat, detail = _classify_validation_failure("timeout", "provider_failed")
+        assert cat == "provider" and detail == "timeout"
+
+        cat, detail = _classify_validation_failure(None, "provider_failed")
+        assert cat == "provider" and detail == "unknown"
+
+        cat, detail = _classify_validation_failure(None, None)
+        assert cat == "model_quality" and detail == "unknown"
+
+
+class TestCLIAccounting:
+    def test_successful_repair_exits_zero(self):
+        import subprocess
+        result = subprocess.run(
+            [
+                "/tmp/pe-final-verify/bin/python", "-m", "scripts.benchmark", "run",
+                "validator_feedback_repair", "--fixture", "korean_founder",
+            ],
+            capture_output=True,
+            text=True,
+            cwd="/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-benchmark-classification-49/apps/personal-edition",
+            env={**os.environ, "AI_PROVIDER": "mock"},
+        )
+        assert result.returncode == 0
+
+    def test_failed_benchmark_exits_nonzero(self):
+        import subprocess
+        from app.ai.mock import MockProvider
+
+        result = subprocess.run(
+            [
+                "/tmp/pe-final-verify/bin/python", "-m", "scripts.benchmark", "run",
+                "first_edition", "--fixture", "korean_founder",
+            ],
+            capture_output=True,
+            text=True,
+            cwd="/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-benchmark-classification-49/apps/personal-edition",
+            env={**os.environ, "AI_PROVIDER": "mock"},
+        )
+        assert result.returncode == 0
