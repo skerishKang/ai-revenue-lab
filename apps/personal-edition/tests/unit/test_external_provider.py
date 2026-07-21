@@ -1065,3 +1065,57 @@ class TestNonRetryableCategories:
 
     def test_max_error_body_bytes_value(self):
         assert _MAX_ERROR_BODY_BYTES == 64 * 1024
+
+
+class TestCompositeClassification:
+    def _make_400_error(self, body: bytes) -> urllib.error.HTTPError:
+        return urllib.error.HTTPError(
+            url="https://api.example.com", code=400, msg="Bad Request",
+            hdrs=None, fp=MagicMock(read=MagicMock(return_value=body)),
+        )
+
+    def _classify(self, code: str, param: str = "") -> ProviderErrorCategory | None:
+        provider = _make_provider()
+        error_obj = {"code": code}
+        if param:
+            error_obj["param"] = param
+        body = json.dumps({"error": error_obj}).encode()
+        exc = self._make_400_error(body)
+        with patch("urllib.request.urlopen", side_effect=exc):
+            result = provider.generate_structured(
+                task_name="t", system_prompt="", user_payload={},
+                response_schema=DummySchema, request_id="r-composite",
+            )
+        return result.error_category
+
+    def test_unknown_parameter_temperature_is_provider_error(self):
+        assert self._classify("unknown_parameter", "temperature") == ProviderErrorCategory.PROVIDER_ERROR
+
+    def test_unknown_parameter_messages_is_provider_error(self):
+        assert self._classify("unknown_parameter", "messages") == ProviderErrorCategory.PROVIDER_ERROR
+
+    def test_parameter_not_supported_model_is_provider_error(self):
+        assert self._classify("parameter_not_supported", "model") == ProviderErrorCategory.PROVIDER_ERROR
+
+    def test_parameter_not_supported_response_format_is_unsupported(self):
+        assert self._classify("parameter_not_supported", "response_format") == ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+
+    def test_unknown_parameter_response_format_type_is_unsupported(self):
+        assert self._classify("unknown_parameter", "response_format.type") == ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+
+    def test_unknown_parameter_response_format_bracket_is_unsupported(self):
+        assert self._classify("unknown_parameter", "response_format[json_schema]") == ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+
+    def test_unconditional_unsupported_no_param(self):
+        for code in ("invalid_response_format", "unsupported_response_format", "response_format_not_supported"):
+            assert self._classify(code) == ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+
+    def test_schema_rejected_exact_codes(self):
+        for code in ("invalid_schema", "schema_validation_failed", "json_schema_failed"):
+            assert self._classify(code) == ProviderErrorCategory.SCHEMA_REJECTED
+
+    def test_unknown_code_with_response_format_param_is_schema_rejected(self):
+        assert self._classify("custom_error", "response_format") == ProviderErrorCategory.SCHEMA_REJECTED
+
+    def test_unknown_code_with_unrelated_param_is_provider_error(self):
+        assert self._classify("custom_error", "temperature") == ProviderErrorCategory.PROVIDER_ERROR

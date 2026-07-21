@@ -869,11 +869,107 @@ class TestAtomicPersistence:
         assert follow_up_result.succeeded is False
         assert follow_up_result.edition_id is None
 
-        fb_p2_after = fb_repo.get_feedback_by_id(conn, fb_p2.id)
-        assert fb_p2_after.applied_to_next_edition == 0
+        fb_after = fb_repo.get_feedback_by_id(conn, fb_p2.id)
+        assert fb_after.applied_to_next_edition == 0
 
         p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
         assert len(p1_editions) == 1
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Issue #42: provider capability error accounting through the real pipeline
+# ---------------------------------------------------------------------------
+
+class TestProviderCapabilityErrorAccounting:
+    def _setup(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn)
+        return conn, inp
+
+    def _make_capability_provider(self, error_category):
+        from app.domain.models import ProviderResult
+        from app.domain.enums import CostClass
+
+        class CapProvider:
+            provider = "external"
+            model = "test-model"
+            call_count = 0
+
+            def generate_structured(self, **kwargs):
+                self.call_count += 1
+                return ProviderResult(
+                    provider="external",
+                    advertised_model="test-model",
+                    cost_class=CostClass.FREE,
+                    latency_seconds=0.1,
+                    retry_count=0,
+                    request_id=kwargs.get("request_id", "r"),
+                    error_category=error_category,
+                    error_message=str(error_category.value),
+                    success=False,
+                )
+
+        return CapProvider()
+
+    def _verify_accounting(self, conn, provider, expected_category):
+        from app.pipeline.errors import is_retryable
+        assert is_retryable(expected_category) is False
+        assert provider.call_count == 1
+
+        rows = conn.execute(
+            "SELECT success, retry_count, validation_status, "
+            "error_category, error_message FROM generation_runs "
+            "ORDER BY started_at DESC LIMIT 1"
+        ).fetchone()
+        assert rows is not None
+        assert rows["success"] == 0
+        assert rows["retry_count"] == 0
+        assert rows["validation_status"] == "provider_failed"
+        assert rows["error_category"] == expected_category.value
+        assert rows["error_message"] is not None
+        assert len(rows["error_message"]) > 0
+        raw_keywords = ("api_key", "bearer", "https://", "raw_body")
+        for kw in raw_keywords:
+            assert kw not in (rows["error_message"] or "").lower()
+
+    def test_response_format_unsupported_accounting(self):
+        conn, inp = self._setup()
+        provider = self._make_capability_provider(
+            ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=False,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.succeeded is False
+        self._verify_accounting(conn, provider, ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED)
+        conn.close()
+
+    def test_schema_rejected_accounting(self):
+        conn, inp = self._setup()
+        provider = self._make_capability_provider(
+            ProviderErrorCategory.SCHEMA_REJECTED
+        )
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=False,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.succeeded is False
+        self._verify_accounting(conn, provider, ProviderErrorCategory.SCHEMA_REJECTED)
         conn.close()
 
     def test_pending_prior_edition_rejected(self):

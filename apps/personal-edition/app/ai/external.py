@@ -134,10 +134,13 @@ _VALID_COST_CLASSES = frozenset({
     CostClass.UNKNOWN.value,
 })
 
-_SCHEMA_ERROR_CODES = frozenset({
+_RESPONSE_FORMAT_UNSUPPORTED_CODES = frozenset({
     "invalid_response_format",
     "unsupported_response_format",
     "response_format_not_supported",
+})
+
+_PARAMETER_RELATED_CODES = frozenset({
     "parameter_not_supported",
     "unknown_parameter",
 })
@@ -500,8 +503,12 @@ class ExternalProvider:
         err_code = _canonicalize_code(error_obj.get("code", ""))
         err_param = _canonicalize_param(error_obj.get("param", ""))
 
-        if err_code in _SCHEMA_ERROR_CODES:
+        if err_code in _RESPONSE_FORMAT_UNSUPPORTED_CODES:
             return ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+        if err_code in _PARAMETER_RELATED_CODES:
+            if err_param in _SCHEMA_ERROR_PARAMS:
+                return ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+            return None
         if err_code in _SCHEMA_REJECTED_CODES:
             return ProviderErrorCategory.SCHEMA_REJECTED
         if err_param in _SCHEMA_ERROR_PARAMS:
