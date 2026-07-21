@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Travel - Traveler Detail</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar"><span class="brand">Living Travel</span><div class="nav-links"><a href="/operator/">Dashboard</a><form method="post" action="/operator/logout" class="inline"><button type="submit" class="btn-link">Logout</button></form></div></nav>
+    <main class="container">
+        <div class="section-header"><h1>{{traveler.display_name}}</h1><span class="badge badge-active">{{traveler.status}}</span></div>
+        <div class="card">
+            <h2>Traveler Info</h2>
+            <dl class="info-grid">
+                <dt>Destination</dt><dd>{{traveler.destination}}</dd>
+                <dt>Duration</dt><dd>{{traveler.trip_duration_nights}} nights</dd>
+                <dt>Trip Context</dt><dd>{{traveler.trip_context}}</dd>
+                <dt>Budget</dt><dd>{{traveler.budget_tendency}}</dd>
+                <dt>Pace</dt><dd>{{traveler.pace_preference}}</dd>
+            </dl>
+        </div>
+        <div class="card">
+            <h2>Actions</h2>
+            <div class="action-grid">
+                <form method="post" action="/operator/travelers/{{traveler.id}}/invite" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-primary">Generate Invitation Token</button></form>
+                <form method="post" action="/operator/travelers/{{traveler.id}}/generate-first" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-success">Generate First Edition</button></form>
+                <form method="post" action="/operator/travelers/{{traveler.id}}/deactivate" class="inline" onsubmit="return confirm('Deactivate this traveler?')"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-danger">Deactivate Traveler</button></form>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Editions</h2>
+            {% if editions %}
+            <table><thead><tr><th>#</th><th>Generation Status</th><th>Publication State</th><th>Runs</th><th>Actions</th></tr></thead><tbody>
+            {% for ed in editions %}
+            <tr><td>{{ed.edition.edition_number}}</td><td><span class="badge">{{ed.edition.generation_status}}</span></td><td><span class="badge">{{ed.edition.publication_state}}</span></td><td>{{ed.run_count}}</td><td>{% if ed.edition.generation_status == 'pending_review' %}<form method="post" action="/operator/editions/{{ed.edition.id}}/publish" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-sm btn-success">Publish</button></form><form method="post" action="/operator/editions/{{ed.edition.id}}/reject" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-sm btn-danger">Reject</button></form>{% endif %}</td></tr>
+            {% endfor %}
+            </tbody></table>
+            {% else %}
+            <p class="empty-state">No editions yet.</p>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>

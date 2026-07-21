@@ -129,3 +129,37 @@ def delete_traveler(conn: sqlite3.Connection, traveler_id: str, *, commit: bool 
     if commit:
         conn.commit()
     return cur.rowcount > 0
+
+
+def update_traveler_preferences(
+    conn: sqlite3.Connection,
+    traveler_id: str,
+    *,
+    destination: str | None = None,
+    trip_duration_nights: int | None = None,
+    interests: list[str] | None = None,
+    commit: bool = True,
+) -> bool:
+    """Update traveler preferences."""
+    now = _utcnow()
+    updates: list[str] = []
+    params: list = []
+    if destination is not None:
+        updates.append("destination = ?")
+        params.append(destination)
+    if trip_duration_nights is not None:
+        updates.append("trip_duration_nights = ?")
+        params.append(trip_duration_nights)
+    if interests is not None:
+        updates.append("interests = ?")
+        params.append(json.dumps(interests))
+    updates.append("updated_at = ?")
+    params.append(now)
+    params.append(traveler_id)
+    cur = conn.execute(
+        f"UPDATE travelers SET {', '.join(updates)} WHERE id = ?",
+        params,
+    )
+    if commit:
+        conn.commit()
+    return cur.rowcount > 0
