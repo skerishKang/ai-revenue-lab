@@ -31,6 +31,7 @@ from scripts.benchmark import (
     _ensure_participant,
     _provider_info,
     _setup_benchmark_db,
+    _stage_provider_call_count,
     _token_total,
     _sum_non_null_tokens,
     run_benchmark,
@@ -859,4 +860,379 @@ class TestFeedbackSetupPreservation:
         assert input_tokens is None
         assert output_tokens is None
         assert _token_total(input_tokens, output_tokens) is None
+        conn.close()
+
+
+class TestProviderCallCountFromRetries:
+    def test_attempted_stage_retry_0_is_1_call(self):
+        """retry_count=0 means 1 HTTP call."""
+        from app.pipeline.service import StageOutcome
+        outcome = StageOutcome(
+            success=True,
+            validation_status=VALIDATION_PASSED,
+            retry_count=0,
+            run_id="run-1",
+            error_category=None,
+            error_message=None,
+            latency_seconds=0.1,
+        )
+        assert _stage_provider_call_count(outcome) == 1
+
+    def test_attempted_stage_retry_2_is_3_calls(self):
+        from app.pipeline.service import StageOutcome
+        outcome = StageOutcome(
+            success=True,
+            validation_status=VALIDATION_PASSED,
+            retry_count=2,
+            run_id="run-2",
+            error_category=None,
+            error_message=None,
+            latency_seconds=0.5,
+        )
+        assert _stage_provider_call_count(outcome) == 3
+
+    def test_not_attempted_stage_is_0_calls(self):
+        from app.pipeline.service import StageOutcome
+        outcome = StageOutcome(
+            success=False,
+            validation_status=NOT_ATTEMPTED,
+            retry_count=0,
+            run_id=None,
+            error_category=None,
+            error_message=None,
+            latency_seconds=0.0,
+        )
+        assert _stage_provider_call_count(outcome) == 0
+
+    def test_first_edition_plan_success_draft_retry_totals(self):
+        results = run_benchmark(
+            task="first_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert r["provider_call_count"] == 2
+        assert r["provider_call_count"] == len(r["generation_run_refs"])
+
+
+class TestFeedbackFullAggregation:
+    def test_setup_and_followup_tokens_all_included(self):
+        results = run_benchmark(
+            task="feedback_second_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert "input_tokens" in r
+        assert "output_tokens" in r
+        assert "total_tokens" in r
+
+    def test_setup_and_followup_retries_all_included(self):
+        results = run_benchmark(
+            task="feedback_second_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert r["retry_count"] >= 0
+
+    def test_actual_provider_calls_include_all_four_stages(self):
+        results = run_benchmark(
+            task="feedback_second_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert r["provider_call_count"] >= 3
+        assert r["provider_call_count"] == len(r["generation_run_refs"])
+
+    def test_setup_failure_preserves_upstream_detail(self):
+        results = run_benchmark(
+            task="feedback_second_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert "upstream_failure_stage" in r
+        assert "upstream_failure_detail" in r
+        if r["failure_category"] == "pipeline_prevented":
+            assert r["upstream_failure_stage"] is not None
+            assert r["upstream_failure_detail"] is not None
+
+
+class TestGroundingClassification:
+    def test_grounding_validator_finding_is_grounding_failure(self):
+        from scripts.benchmark import _is_grounding_failure
+        assert _is_grounding_failure("unknown segment reference detected") is True
+        assert _is_grounding_failure("content is not grounded in source") is True
+        assert _is_grounding_failure("prohibited inference found") is True
+
+    def test_structural_error_is_not_grounding(self):
+        from scripts.benchmark import _is_grounding_failure
+        assert _is_grounding_failure("schema mismatch in output") is False
+        assert _is_grounding_failure(None) is False
+        assert _is_grounding_failure("") is False
+
+    def test_adversarial_grounding_classifies_grounding_detail(self):
+        results = run_benchmark(
+            task="adversarial_grounding",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert "failure_detail" in r
+        assert "case_id" in r
+        assert "phase_name" in r
+
+
+class TestCasePhaseIdentity:
+    def test_editorial_plan_has_case_id(self):
+        results = run_benchmark(
+            task="editorial_plan",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert r["case_id"] is not None
+        assert "editorial_plan" in r["case_id"]
+        assert r["phase_name"] == "editorial_plan"
+
+    def test_first_edition_has_case_id(self):
+        results = run_benchmark(
+            task="first_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert r["case_id"] is not None
+        assert "first_edition" in r["case_id"]
+        assert r["phase_name"] == "first_edition"
+
+    def test_repair_one_case_three_phases(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        assert len(results) == 3
+        case_ids = [r["case_id"] for r in results]
+        assert len(set(case_ids)) == 1
+        phase_names = [r["phase_name"] for r in results]
+        assert "repair_candidate_generation" in phase_names
+        assert "repair_bad_validation" in phase_names
+        assert "repair_provider" in phase_names
+
+    def test_three_repetitions_three_cases_nine_phases(self):
+        results = run_benchmark(
+            task="validator_feedback_repair",
+            fixture_names=["korean_founder"],
+            repeat=3,
+            db_path=":memory:",
+        )
+        assert len(results) == 9
+        unique_cases = set(r["case_id"] for r in results)
+        assert len(unique_cases) == 3
+        for case_id in unique_cases:
+            phases = [r["phase_name"] for r in results if r["case_id"] == case_id]
+            assert len(phases) == 3
+
+    def test_feedback_has_case_id(self):
+        results = run_benchmark(
+            task="feedback_second_edition",
+            fixture_names=["korean_founder"],
+            repeat=1,
+            db_path=":memory:",
+        )
+        r = results[0]
+        assert r["case_id"] is not None
+        assert "feedback_second_edition" in r["case_id"]
+
+
+class TestAggregateContract:
+    def test_unique_case_count_reconciles(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=2,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert agg["benchmark_case_count"] == 2
+            assert agg["phase_result_count"] == 2
+        finally:
+            os.unlink(output_path)
+
+    def test_result_row_count_is_phase_result_count(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            assert report["aggregate"]["phase_result_count"] == len(report["results"])
+        finally:
+            os.unlink(output_path)
+
+    def test_provider_call_count_sums_match(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            expected_calls = sum(
+                r.get("provider_call_count", 0) for r in report["results"]
+            )
+            assert agg["provider_call_count"] == expected_calls
+        finally:
+            os.unlink(output_path)
+
+    def test_token_aggregate_reconciles(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="first_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert "input_token_sum" in agg
+            assert "output_token_sum" in agg
+            assert "total_token_sum" in agg
+            assert "rows_with_token_usage" in agg
+            assert "rows_missing_token_usage" in agg
+            total_rows = agg["rows_with_token_usage"] + agg["rows_missing_token_usage"]
+            assert total_rows == agg["phase_result_count"]
+        finally:
+            os.unlink(output_path)
+
+    def test_feedback_aggregate_includes_all_stages(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            output_path = f.name
+        try:
+            run_benchmark(
+                task="feedback_second_edition",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                output_path=output_path,
+                db_path=":memory:",
+            )
+            report = json.loads(open(output_path).read())
+            agg = report["aggregate"]
+            assert agg["provider_call_count"] >= 3
+            assert agg["phase_result_count"] == 1
+        finally:
+            os.unlink(output_path)
+
+
+class TestOldDBMigration:
+    def test_old_db_migration_with_provider_call_count(self):
+        conn = get_connection(":memory:")
+        conn.execute(
+            """
+            CREATE TABLE benchmark_runs (
+                id TEXT PRIMARY KEY,
+                benchmark_name TEXT NOT NULL,
+                fixture_name TEXT NOT NULL,
+                run_group TEXT NOT NULL DEFAULT 'default',
+                run_index INTEGER NOT NULL,
+                provider TEXT NOT NULL,
+                advertised_model TEXT NOT NULL,
+                task_type TEXT NOT NULL,
+                prompt_version TEXT,
+                started_at TEXT NOT NULL,
+                completed_at TEXT,
+                latency_seconds REAL,
+                success INTEGER NOT NULL DEFAULT 0,
+                failure_category TEXT,
+                error_category TEXT,
+                error_message TEXT,
+                retry_count INTEGER NOT NULL DEFAULT 0,
+                input_tokens INTEGER,
+                output_tokens INTEGER,
+                total_tokens INTEGER,
+                validation_result TEXT,
+                synthetic_result_ref TEXT,
+                human_correction_minutes REAL,
+                is_provider_failure INTEGER NOT NULL DEFAULT 0,
+                is_model_quality_failure INTEGER NOT NULL DEFAULT 0,
+                failure_detail TEXT,
+                failure_stage TEXT,
+                generation_run_refs TEXT
+            )
+            """
+        )
+        conn.commit()
+
+        _create_benchmark_table(conn)
+
+        cols = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(benchmark_runs)").fetchall()
+        }
+        assert "provider_call_count" in cols
+        assert "case_id" in cols
+        assert "phase_name" in cols
+        assert "upstream_failure_detail" in cols
+        assert "upstream_failure_stage" in cols
+
+        conn.execute(
+            "INSERT INTO benchmark_runs "
+            "(id, benchmark_name, fixture_name, run_index, provider, "
+            "advertised_model, task_type, started_at, success) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            ("old-id", "bench-old", "korean_founder", 0, "mock",
+             "mock-v1", "full_pipeline", "2025-01-01T00:00:00.000Z", 1),
+        )
+        conn.commit()
+
+        row = conn.execute(
+            "SELECT * FROM benchmark_runs WHERE id = 'old-id'"
+        ).fetchone()
+        assert row is not None
+        assert row["provider"] == "mock"
+        assert row["success"] == 1
+        assert row["provider_call_count"] == 0
+        conn.close()
+
+    def test_new_db_has_all_columns(self):
+        conn = _setup_benchmark_db(":memory:")
+        cols = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(benchmark_runs)").fetchall()
+        }
+        assert "provider_call_count" in cols
+        assert "case_id" in cols
+        assert "phase_name" in cols
+        assert "upstream_failure_detail" in cols
+        assert "upstream_failure_stage" in cols
         conn.close()

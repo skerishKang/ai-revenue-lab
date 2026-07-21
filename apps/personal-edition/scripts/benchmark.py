@@ -178,6 +178,11 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
         ("failure_detail", "TEXT"),
         ("failure_stage", "TEXT"),
         ("generation_run_refs", "TEXT"),
+        ("provider_call_count", "INTEGER NOT NULL DEFAULT 0"),
+        ("case_id", "TEXT"),
+        ("phase_name", "TEXT"),
+        ("upstream_failure_detail", "TEXT"),
+        ("upstream_failure_stage", "TEXT"),
     ]:
         if col not in existing_cols:
             conn.execute(f"ALTER TABLE benchmark_runs ADD COLUMN {col} {typedef}")
@@ -233,7 +238,12 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
                 is_model_quality_failure INTEGER NOT NULL DEFAULT 0,
                 failure_detail TEXT,
                 failure_stage TEXT,
-                generation_run_refs TEXT
+                generation_run_refs TEXT,
+                provider_call_count INTEGER NOT NULL DEFAULT 0,
+                case_id TEXT,
+                phase_name TEXT,
+                upstream_failure_detail TEXT,
+                upstream_failure_stage TEXT
             )
             """
         )
@@ -250,7 +260,9 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
             "validation_result", "synthetic_result_ref",
             "human_correction_minutes", "is_provider_failure",
             "is_model_quality_failure", "failure_detail", "failure_stage",
-            "generation_run_refs",
+            "generation_run_refs", "provider_call_count",
+            "case_id", "phase_name",
+            "upstream_failure_detail", "upstream_failure_stage",
         ]
         cols_to_copy = [c for c in new_cols_list if c in old_cols]
         placeholders = ", ".join(["?"] * len(cols_to_copy))
@@ -294,6 +306,11 @@ def _record_benchmark_run(
     failure_detail: str | None = None,
     failure_stage: str | None = None,
     generation_run_refs: list[str] | None = None,
+    provider_call_count: int = 0,
+    case_id: str | None = None,
+    phase_name: str | None = None,
+    upstream_failure_detail: str | None = None,
+    upstream_failure_stage: str | None = None,
 ) -> None:
     run_id = str(uuid.uuid4())
     is_provider = 1 if failure_category == "provider" else 0
@@ -307,9 +324,11 @@ def _record_benchmark_run(
         "error_message, retry_count, input_tokens, output_tokens, total_tokens, "
         "validation_result, synthetic_result_ref, human_correction_minutes, "
         "is_provider_failure, is_model_quality_failure, "
-        "failure_detail, failure_stage, generation_run_refs) "
+        "failure_detail, failure_stage, generation_run_refs, "
+        "provider_call_count, case_id, phase_name, "
+        "upstream_failure_detail, upstream_failure_stage) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        "?, ?, NULL, ?, ?, ?, ?, ?)",
+        "?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
             run_id,
             benchmark_name,
@@ -338,6 +357,11 @@ def _record_benchmark_run(
             failure_detail,
             failure_stage,
             refs_json,
+            provider_call_count,
+            case_id,
+            phase_name,
+            upstream_failure_detail,
+            upstream_failure_stage,
         ),
     )
     conn.commit()
@@ -486,6 +510,34 @@ def _sum_non_null_tokens(values: list[int | None]) -> int | None:
     return sum(non_null)
 
 
+def _stage_provider_call_count(outcome) -> int:
+    """Calculate actual HTTP calls from a stage outcome."""
+    if outcome.validation_status == NOT_ATTEMPTED:
+        return 0
+    if outcome.run_id is None:
+        return 0
+    return outcome.retry_count + 1
+
+
+GROUNDING_RULES = frozenset({
+    "unknown_segment_reference",
+    "missing_provenance",
+    "duplicate_section_id",
+    "section_not_in_plan",
+    "section_references_no_segments",
+})
+
+
+def _is_grounding_failure(error_message: str | None) -> bool:
+    if not error_message:
+        return False
+    lowered = error_message.lower()
+    return any(term in lowered for term in [
+        "unknown segment", "prohibited", "invented", "personal fact",
+        "grounding", "not grounded",
+    ])
+
+
 def _apply_human_correction(
     conn: sqlite3.Connection, benchmark_name: str, minutes: float
 ) -> None:
@@ -583,6 +635,8 @@ def _run_editorial_plan(
 
     gen_refs = [r for r in [plan_outcome.run_id] if r]
 
+    case_id = f"{benchmark_name}:{fixture.name}:editorial_plan:{run_index}"
+
     _record_benchmark_run(
         db_conn,
         benchmark_name=benchmark_name,
@@ -608,6 +662,9 @@ def _run_editorial_plan(
         failure_detail=failure_detail,
         failure_stage="plan" if not combined_success else None,
         generation_run_refs=gen_refs,
+        provider_call_count=_stage_provider_call_count(plan_outcome),
+        case_id=case_id,
+        phase_name="editorial_plan",
     )
 
     return {
@@ -623,10 +680,12 @@ def _run_editorial_plan(
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "total_tokens": _token_total(input_tokens, output_tokens),
-        "provider_call_count": len(gen_refs),
+        "provider_call_count": _stage_provider_call_count(plan_outcome),
         "generation_run_refs": gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "editorial_plan",
     }
 
 
@@ -706,6 +765,8 @@ def _run_first_edition(
 
     gen_refs = [r for r in [result.plan_run.run_id, result.draft_run.run_id] if r]
 
+    case_id = f"{benchmark_name}:{fixture.name}:first_edition:{run_index}"
+
     _record_benchmark_run(
         db_conn,
         benchmark_name=benchmark_name,
@@ -731,6 +792,12 @@ def _run_first_edition(
         failure_detail=failure_detail,
         failure_stage=failure_stage,
         generation_run_refs=gen_refs,
+        provider_call_count=(
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
+        case_id=case_id,
+        phase_name="first_edition",
     )
 
     return {
@@ -748,10 +815,17 @@ def _run_first_edition(
         "total_tokens": _token_total(input_tokens, output_tokens),
         "plan_attempted": plan_attempted,
         "draft_attempted": draft_attempted,
-        "provider_call_count": len(gen_refs),
+        "provider_call_count": (
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
         "generation_run_refs": gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "first_edition",
+        "upstream_failure_stage": failure_stage,
+        "upstream_failure_detail": failure_detail,
     }
 
 
@@ -813,6 +887,23 @@ def _run_feedback_second_edition(
             ] if r
         ]
 
+        upstream_failure_stage = None
+        upstream_failure_detail = None
+        if not first_result.plan_run.success and first_result.plan_run.validation_status != NOT_ATTEMPTED:
+            upstream_failure_stage = "plan"
+            _, upstream_failure_detail = _classify_failure_detailed(
+                first_result.plan_run.validation_status,
+                first_result.plan_run.error_category,
+            )
+        elif not first_result.draft_run.success and first_result.draft_run.validation_status != NOT_ATTEMPTED:
+            upstream_failure_stage = "draft"
+            _, upstream_failure_detail = _classify_failure_detailed(
+                first_result.draft_run.validation_status,
+                first_result.draft_run.error_category,
+            )
+
+        case_id = f"{benchmark_name}:{fixture.name}:feedback_second_edition:{run_index}"
+
         _record_benchmark_run(
             db_conn,
             benchmark_name=benchmark_name,
@@ -838,6 +929,14 @@ def _run_feedback_second_edition(
             failure_detail="first_edition_setup_failed",
             failure_stage="plan" if not first_result.plan_run.success else "draft",
             generation_run_refs=gen_refs,
+            provider_call_count=(
+                _stage_provider_call_count(first_result.plan_run)
+                + _stage_provider_call_count(first_result.draft_run)
+            ),
+            case_id=case_id,
+            phase_name="feedback_second_edition",
+            upstream_failure_detail=upstream_failure_detail,
+            upstream_failure_stage=upstream_failure_stage,
         )
         return {
             "fixture": fixture.name,
@@ -854,10 +953,17 @@ def _run_feedback_second_edition(
             "total_tokens": _token_total(first_input_tokens, first_output_tokens),
             "plan_attempted": first_result.plan_run.validation_status != NOT_ATTEMPTED,
             "draft_attempted": first_result.draft_run.validation_status != NOT_ATTEMPTED,
-            "provider_call_count": len(gen_refs),
+            "provider_call_count": (
+                _stage_provider_call_count(first_result.plan_run)
+                + _stage_provider_call_count(first_result.draft_run)
+            ),
             "generation_run_refs": gen_refs,
             "validation_result": "failed",
             "synthetic_result_ref": f"bench-{fixture.name}-{run_index}-setup-fail",
+            "case_id": case_id,
+            "phase_name": "feedback_second_edition",
+            "upstream_failure_detail": upstream_failure_detail,
+            "upstream_failure_stage": upstream_failure_stage,
         }
 
     ed_repo.update_edition_publication(
@@ -924,14 +1030,19 @@ def _run_feedback_second_edition(
             failure_stage = None
 
     total_retry = (
-        follow_up_result.plan_run.retry_count
+        first_result.plan_run.retry_count
+        + first_result.draft_run.retry_count
+        + follow_up_result.plan_run.retry_count
         + follow_up_result.draft_run.retry_count
     )
-    input_tokens, output_tokens = _collect_tokens(
-        db_conn,
+
+    all_gen_run_ids = (
+        first_result.plan_run.run_id,
+        first_result.draft_run.run_id,
         follow_up_result.plan_run.run_id,
         follow_up_result.draft_run.run_id,
     )
+    input_tokens, output_tokens = _collect_tokens(db_conn, *all_gen_run_ids)
 
     completed_at = _now_iso()
     validation_result = "passed" if combined_success else "failed"
@@ -951,6 +1062,15 @@ def _run_feedback_second_edition(
         ] if r
     ]
     all_gen_refs = first_gen_refs + follow_gen_refs
+
+    total_provider_calls = (
+        _stage_provider_call_count(first_result.plan_run)
+        + _stage_provider_call_count(first_result.draft_run)
+        + _stage_provider_call_count(follow_up_result.plan_run)
+        + _stage_provider_call_count(follow_up_result.draft_run)
+    )
+
+    case_id = f"{benchmark_name}:{fixture.name}:feedback_second_edition:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -977,6 +1097,9 @@ def _run_feedback_second_edition(
         failure_detail=failure_detail,
         failure_stage=failure_stage,
         generation_run_refs=all_gen_refs,
+        provider_call_count=total_provider_calls,
+        case_id=case_id,
+        phase_name="feedback_second_edition",
     )
 
     return {
@@ -994,10 +1117,14 @@ def _run_feedback_second_edition(
         "total_tokens": _token_total(input_tokens, output_tokens),
         "plan_attempted": follow_up_result.plan_run.validation_status != NOT_ATTEMPTED,
         "draft_attempted": follow_up_result.draft_run.validation_status != NOT_ATTEMPTED,
-        "provider_call_count": len(all_gen_refs),
+        "provider_call_count": total_provider_calls,
         "generation_run_refs": all_gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "feedback_second_edition",
+        "upstream_failure_stage": None,
+        "upstream_failure_detail": None,
     }
 
 
@@ -1061,11 +1188,23 @@ def _run_adversarial_grounding(
     failure_category, failure_detail = _classify_failure_detailed(
         combined_validation, last_error_category
     )
+
+    if (
+        not combined_success
+        and combined_validation == VALIDATION_FAILED
+        and result.plan_run.success
+        and not result.draft_run.success
+        and _is_grounding_failure(last_error_message)
+    ):
+        failure_detail = "grounding_failure"
+
     validation_result = "passed" if combined_success else "failed"
     ref_tag = "ok" if combined_success else "adversarial-caught"
     synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
 
     gen_refs = [r for r in [result.plan_run.run_id, result.draft_run.run_id] if r]
+
+    case_id = f"{benchmark_name}:{fixture.name}:adversarial_grounding:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -1092,6 +1231,12 @@ def _run_adversarial_grounding(
         failure_detail=failure_detail,
         failure_stage=failure_stage,
         generation_run_refs=gen_refs,
+        provider_call_count=(
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
+        case_id=case_id,
+        phase_name="adversarial_grounding",
     )
 
     return {
@@ -1109,10 +1254,17 @@ def _run_adversarial_grounding(
         "total_tokens": _token_total(input_tokens, output_tokens),
         "plan_attempted": plan_attempted,
         "draft_attempted": draft_attempted,
-        "provider_call_count": len(gen_refs),
+        "provider_call_count": (
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
         "generation_run_refs": gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "adversarial_grounding",
+        "upstream_failure_stage": failure_stage,
+        "upstream_failure_detail": failure_detail,
     }
 
 
@@ -1235,6 +1387,7 @@ def _run_validator_feedback_repair(
                 candidate.draft_outcome.run_id,
             ] if r
         ]
+        case_id = f"{benchmark_name}:{fixture.name}:validator_feedback_repair:{run_index}"
         _record_benchmark_run(
             db_conn,
             benchmark_name=benchmark_name,
@@ -1260,6 +1413,12 @@ def _run_validator_feedback_repair(
             failure_detail=cand_failure_detail,
             failure_stage="plan" if not candidate.plan_outcome.success else "draft",
             generation_run_refs=cand_gen_refs,
+            provider_call_count=(
+                _stage_provider_call_count(candidate.plan_outcome)
+                + _stage_provider_call_count(candidate.draft_outcome)
+            ),
+            case_id=case_id,
+            phase_name="repair_candidate_generation",
         )
         return [
             {
@@ -1271,8 +1430,15 @@ def _run_validator_feedback_repair(
                 "failure_category": cand_failure_category,
                 "failure_detail": cand_failure_detail,
                 "generation_run_refs": cand_gen_refs,
-                "provider_call_count": len(cand_gen_refs),
+                "provider_call_count": (
+                    _stage_provider_call_count(candidate.plan_outcome)
+                    + _stage_provider_call_count(candidate.draft_outcome)
+                ),
                 "repair_attempted": False,
+                "case_id": case_id,
+                "phase_name": "repair_candidate_generation",
+                "upstream_failure_stage": "plan" if not candidate.plan_outcome.success else "draft",
+                "upstream_failure_detail": cand_failure_detail,
             }
         ]
 
@@ -1282,6 +1448,8 @@ def _run_validator_feedback_repair(
             candidate.draft_outcome.run_id,
         ] if r
     ]
+
+    case_id = f"{benchmark_name}:{fixture.name}:validator_feedback_repair:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -1308,6 +1476,12 @@ def _run_validator_feedback_repair(
         failure_detail=None,
         failure_stage=None,
         generation_run_refs=cand_gen_refs,
+        provider_call_count=(
+            _stage_provider_call_count(candidate.plan_outcome)
+            + _stage_provider_call_count(candidate.draft_outcome)
+        ),
+        case_id=case_id,
+        phase_name="repair_candidate_generation",
     )
     results.append(
         {
@@ -1324,7 +1498,14 @@ def _run_validator_feedback_repair(
             "candidate_plan_run_id": candidate.plan_outcome.run_id,
             "candidate_draft_run_id": candidate.draft_outcome.run_id,
             "generation_run_refs": cand_gen_refs,
-            "provider_call_count": len(cand_gen_refs),
+            "provider_call_count": (
+                _stage_provider_call_count(candidate.plan_outcome)
+                + _stage_provider_call_count(candidate.draft_outcome)
+            ),
+            "case_id": case_id,
+            "phase_name": "repair_candidate_generation",
+            "upstream_failure_stage": None,
+            "upstream_failure_detail": None,
         }
     )
 
@@ -1387,6 +1568,9 @@ def _run_validator_feedback_repair(
         failure_detail="deterministic_validation",
         failure_stage="draft",
         generation_run_refs=[],
+        provider_call_count=0,
+        case_id=case_id,
+        phase_name="repair_bad_validation",
     )
     results.append(
         {
@@ -1398,6 +1582,10 @@ def _run_validator_feedback_repair(
             "validator_findings": validator_findings,
             "generation_run_refs": [],
             "provider_call_count": 0,
+            "case_id": case_id,
+            "phase_name": "repair_bad_validation",
+            "upstream_failure_stage": None,
+            "upstream_failure_detail": None,
         }
     )
 
@@ -1468,6 +1656,9 @@ def _run_validator_feedback_repair(
         failure_detail=repair_detail,
         failure_stage="repair" if not repair_success else None,
         generation_run_refs=repair_gen_refs,
+        provider_call_count=_stage_provider_call_count(repair_outcome),
+        case_id=case_id,
+        phase_name="repair_provider",
     )
     results.append(
         {
@@ -1487,11 +1678,15 @@ def _run_validator_feedback_repair(
             "correlation_id": correlation_id,
             "attempt_id": attempt_id,
             "generation_run_refs": repair_gen_refs,
-            "provider_call_count": len(repair_gen_refs),
+            "provider_call_count": _stage_provider_call_count(repair_outcome),
             "repair_attempted": True,
             "failure_category": repair_category,
             "failure_detail": repair_detail,
             "failure_stage": "repair" if not repair_success else None,
+            "case_id": case_id,
+            "phase_name": "repair_provider",
+            "upstream_failure_stage": None,
+            "upstream_failure_detail": None,
         }
     )
 
@@ -1664,6 +1859,19 @@ def run_benchmark(
     conn.close()
 
     if output_path and info is not None:
+        aggregate = {
+            "benchmark_case_count": len(set(r.get("case_id") for r in results if r.get("case_id"))),
+            "phase_result_count": len(results),
+            "provider_call_count": sum(r.get("provider_call_count", 0) for r in results),
+            "provider_failure_count": sum(1 for r in results if r.get("failure_category") == "provider"),
+            "model_quality_failure_count": sum(1 for r in results if r.get("failure_category") == "model_quality"),
+            "pipeline_prevented_count": sum(1 for r in results if r.get("failure_category") == "pipeline_prevented"),
+            "input_token_sum": _sum_non_null_tokens([r.get("input_tokens") for r in results]),
+            "output_token_sum": _sum_non_null_tokens([r.get("output_tokens") for r in results]),
+            "total_token_sum": _sum_non_null_tokens([r.get("total_tokens") for r in results]),
+            "rows_with_token_usage": sum(1 for r in results if r.get("total_tokens") is not None),
+            "rows_missing_token_usage": sum(1 for r in results if r.get("total_tokens") is None),
+        }
         report = {
             "benchmark_name": benchmark_name,
             "task": task,
@@ -1673,6 +1881,7 @@ def run_benchmark(
             "repeat": repeat,
             "total_runs": len(results),
             "results": results,
+            "aggregate": aggregate,
         }
         Path(output_path).write_text(
             json.dumps(report, indent=2, ensure_ascii=False),
@@ -1816,8 +2025,12 @@ def main() -> None:
             if d is not None:
                 detail_counts[d] = detail_counts.get(d, 0) + 1
 
+        unique_case_ids = set(r.get("case_id") for r in results if r.get("case_id"))
+        total_provider_calls = sum(r.get("provider_call_count", 0) for r in results)
+
         print("\n" + "=" * 40)
         print(f"Total: {len(results)}  OK: {successes}  FAIL: {failures}")
+        print(f"Cases: {len(unique_case_ids)}  Provider calls: {total_provider_calls}")
         print(
             f"Provider failures: {provider_failures}  "
             f"Model-quality failures: {model_failures}  "
