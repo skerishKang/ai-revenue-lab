@@ -442,21 +442,6 @@ STRUCTURAL_RULES = frozenset({
 })
 
 
-def _enhanced_grounding_rule(finding: dict[str, str]) -> str:
-    rule = finding.get("rule", "")
-    if rule in GROUNDING_RULES:
-        return rule
-    if rule == "validator_rejected":
-        msg = finding.get("message", "").lower()
-        if "prohibited" in msg:
-            return "prohibited_inference"
-        if "invented" in msg:
-            return "invented_personal_fact"
-        if "unsupported" in msg:
-            return "unsupported_grounding"
-    return rule
-
-
 def _extract_validation_findings(exc: Exception | None) -> list[dict[str, str]]:
     if exc is None:
         return []
@@ -464,10 +449,9 @@ def _extract_validation_findings(exc: Exception | None) -> list[dict[str, str]]:
 
 
 def _findings_from_outcome(outcome) -> list[dict[str, str]]:
-    if outcome.validation_status != VALIDATION_FAILED or not outcome.error_message:
+    if outcome.validation_status != VALIDATION_FAILED:
         return []
-    exc = Exception(outcome.error_message)
-    return normalize_validation_findings(exc)
+    return list(getattr(outcome, 'validation_findings', ()))
 
 
 def _classify_validation_failure(
@@ -478,18 +462,22 @@ def _classify_validation_failure(
     if validation_status == VALIDATION_PASSED:
         return None, None
 
-    if error_category == ProviderErrorCategory.SCHEMA_MISMATCH.value:
-        return "model_quality", "schema_mismatch"
-
-    if error_category == ProviderErrorCategory.INVALID_JSON.value:
-        return "model_quality", "invalid_json"
+    if validation_status == VALIDATION_FAILED and validation_findings:
+        for finding in validation_findings:
+            rule = finding.get("rule", "")
+            if rule in GROUNDING_RULES:
+                return "model_quality", "grounding_failure"
+        for finding in validation_findings:
+            rule = finding.get("rule", "")
+            if rule in STRUCTURAL_RULES:
+                return "model_quality", "deterministic_validation"
+        return "model_quality", "deterministic_validation"
 
     if validation_status == VALIDATION_FAILED:
-        if validation_findings:
-            for finding in validation_findings:
-                rule = _enhanced_grounding_rule(finding)
-                if rule in GROUNDING_RULES:
-                    return "model_quality", "grounding_failure"
+        if error_category == ProviderErrorCategory.SCHEMA_MISMATCH.value:
+            return "model_quality", "schema_mismatch"
+        if error_category == ProviderErrorCategory.INVALID_JSON.value:
+            return "model_quality", "invalid_json"
         return "model_quality", "deterministic_validation"
 
     if error_category in _PROVIDER_ERROR_CATEGORIES:

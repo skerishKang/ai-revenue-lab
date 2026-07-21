@@ -68,7 +68,7 @@ class TestClassifyFailure:
         assert _classify_failure("failed", "rate_limit") == "provider"
 
     def test_none_error_is_model_quality(self):
-        assert _classify_failure("failed", None) == "model_quality"
+        assert _classify_failure(VALIDATION_FAILED, None) == "model_quality"
 
     def test_response_format_unsupported_is_provider(self):
         assert _classify_failure("provider_failed", "response_format_unsupported") == "provider"
@@ -335,14 +335,14 @@ class TestFailureTaxonomy:
 
     def test_schema_mismatch_is_model_quality(self):
         cat, detail = _classify_failure_detailed(
-            "failed", ProviderErrorCategory.SCHEMA_MISMATCH.value
+            VALIDATION_FAILED, ProviderErrorCategory.SCHEMA_MISMATCH.value
         )
         assert cat == "model_quality"
         assert detail == "schema_mismatch"
 
     def test_invalid_json_is_model_quality(self):
         cat, detail = _classify_failure_detailed(
-            "failed", ProviderErrorCategory.INVALID_JSON.value
+            VALIDATION_FAILED, ProviderErrorCategory.INVALID_JSON.value
         )
         assert cat == "model_quality"
         assert detail == "invalid_json"
@@ -360,8 +360,8 @@ class TestFailureTaxonomy:
     def test_backward_compat_classify_failure(self):
         assert _classify_failure(VALIDATION_PASSED, None) is None
         assert _classify_failure("failed", "timeout") == "provider"
-        assert _classify_failure("failed", "schema_mismatch") == "model_quality"
-        assert _classify_failure("failed", None) == "model_quality"
+        assert _classify_failure(VALIDATION_FAILED, "schema_mismatch") == "model_quality"
+        assert _classify_failure(VALIDATION_FAILED, None) == "model_quality"
 
     def test_all_provider_categories_map_to_provider(self):
         provider_cats = [
@@ -377,7 +377,7 @@ class TestFailureTaxonomy:
     def test_all_model_quality_categories_map_to_model_quality(self):
         mq_cats = ["schema_mismatch", "invalid_json"]
         for cat_val in mq_cats:
-            cat, detail = _classify_failure_detailed("failed", cat_val)
+            cat, detail = _classify_failure_detailed(VALIDATION_FAILED, cat_val)
             assert cat == "model_quality", f"expected model_quality for {cat_val}"
             assert detail == cat_val
 
@@ -1516,14 +1516,14 @@ class TestCentralizedGroundingClassification:
 
     def test_schema_mismatch_classified_correctly(self):
         cat, detail = _classify_validation_failure(
-            ProviderErrorCategory.SCHEMA_MISMATCH.value, "failed"
+            ProviderErrorCategory.SCHEMA_MISMATCH.value, VALIDATION_FAILED
         )
         assert cat == "model_quality"
         assert detail == "schema_mismatch"
 
     def test_invalid_json_classified_correctly(self):
         cat, detail = _classify_validation_failure(
-            ProviderErrorCategory.INVALID_JSON.value, "failed"
+            ProviderErrorCategory.INVALID_JSON.value, VALIDATION_FAILED
         )
         assert cat == "model_quality"
         assert detail == "invalid_json"
@@ -1729,3 +1729,206 @@ class TestDBDurability:
             conn2.close()
         finally:
             os.unlink(db_path)
+
+
+class TestValidationFindingsPreservation:
+    def test_stage_outcome_has_validation_findings_field(self):
+        from app.pipeline.service import StageOutcome
+        o = StageOutcome(
+            success=False, validation_status=VALIDATION_FAILED,
+            retry_count=0, validation_findings=(
+                {"rule": "prohibited_inference", "severity": "error", "message": "test"},
+            ),
+        )
+        assert len(o.validation_findings) == 1
+        assert o.validation_findings[0]["rule"] == "prohibited_inference"
+
+    def test_repair_outcome_has_validation_findings_field(self):
+        from app.pipeline.service import RepairOutcome
+        o = RepairOutcome(
+            succeeded=False, validation_status=VALIDATION_FAILED,
+            content=None, error_category=None, error_message=None,
+            retry_count=0, input_tokens=None, output_tokens=None,
+            latency_seconds=None, provider=None, model=None,
+            cost_class=None, run_id=None,
+            validation_findings=(
+                {"rule": "unsafe_markup", "severity": "error", "message": "test"},
+            ),
+        )
+        assert len(o.validation_findings) == 1
+        assert o.validation_findings[0]["rule"] == "unsafe_markup"
+
+    def test_findings_from_outcome_reads_stored_findings(self):
+        from app.pipeline.service import StageOutcome
+        o = StageOutcome(
+            success=False, validation_status=VALIDATION_FAILED,
+            retry_count=0,
+            validation_findings=(
+                {"rule": "prohibited_inference", "severity": "error", "message": "test"},
+            ),
+        )
+        findings = _findings_from_outcome(o)
+        assert len(findings) == 1
+        assert findings[0]["rule"] == "prohibited_inference"
+
+    def test_findings_from_outcome_empty_when_passed(self):
+        from app.pipeline.service import StageOutcome
+        o = StageOutcome(
+            success=True, validation_status=VALIDATION_PASSED,
+            retry_count=0,
+        )
+        assert _findings_from_outcome(o) == []
+
+    def test_findings_from_outcome_empty_when_no_findings(self):
+        from app.pipeline.service import StageOutcome
+        o = StageOutcome(
+            success=False, validation_status=VALIDATION_FAILED,
+            retry_count=0,
+        )
+        assert _findings_from_outcome(o) == []
+
+    def test_grounding_error_normalizes_to_prohibited_inference(self):
+        from app.pipeline.errors import GroundingError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = GroundingError("prohibited invention detected in field 'edition_title': matched a prohibited token")
+        findings = normalize_validation_findings(exc)
+        assert findings[0]["rule"] == "prohibited_inference"
+
+    def test_grounding_error_unknown_segment_normalizes(self):
+        from app.pipeline.errors import GroundingError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = GroundingError("unknown segment reference")
+        findings = normalize_validation_findings(exc)
+        assert findings[0]["rule"] == "unknown_segment_reference"
+
+    def test_grounding_error_provenance_normalizes(self):
+        from app.pipeline.errors import GroundingError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = GroundingError("missing provenance information")
+        findings = normalize_validation_findings(exc)
+        assert findings[0]["rule"] == "missing_provenance"
+
+    def test_grounding_error_other_normalizes_to_unsupported(self):
+        from app.pipeline.errors import GroundingError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = GroundingError("some other grounding issue")
+        findings = normalize_validation_findings(exc)
+        assert findings[0]["rule"] == "unsupported_grounding"
+
+    def test_unsafe_markup_error_normalizes(self):
+        from app.pipeline.errors import UnsafeMarkupError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = UnsafeMarkupError("found raw <script> tag")
+        findings = normalize_validation_findings(exc)
+        assert findings[0]["rule"] == "unsafe_markup"
+
+    def test_grounding_classification_via_pipeline(self):
+        from app.pipeline.errors import GroundingError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = GroundingError("prohibited invention detected")
+        findings = normalize_validation_findings(exc)
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED, findings)
+        assert cat == "model_quality"
+        assert detail == "grounding_failure"
+
+    def test_structural_classification_via_pipeline(self):
+        from app.pipeline.errors import DraftValidationError
+        from app.pipeline.validators import normalize_validation_findings
+        exc = DraftValidationError("duplicate section_id in draft: sec1")
+        findings = normalize_validation_findings(exc)
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED, findings)
+        assert cat == "model_quality"
+        assert detail == "deterministic_validation"
+
+    def test_first_edition_grounding_prohibited_inference(self):
+        from app.ai.mock import MockProvider
+        from app.domain.models import EditorialPlan, EditionContent
+        from app.pipeline.service import GenerationService, GenerationRequest
+        from scripts.benchmark import (
+            _ensure_participant,
+            _setup_benchmark_db,
+        )
+
+        conn = _setup_benchmark_db(":memory:")
+        pid, inp_id = _ensure_participant(conn, participant_id="bench-grounding-test")
+
+        plan_payload = {
+            "plan_version": "test-v1",
+            "language": "ko",
+            "central_theme": "test",
+            "reader_value": "test",
+            "opening_intent": "test",
+            "highlighted_insight": "test",
+            "sections": [
+                {
+                    "section_id": "s001",
+                    "working_title": "T1",
+                    "purpose": "P1",
+                    "source_segment_ids": ["s001"],
+                },
+                {
+                    "section_id": "s002",
+                    "working_title": "T2",
+                    "purpose": "P2",
+                    "source_segment_ids": ["s001"],
+                },
+            ],
+        }
+        draft_payload = {
+            "content_version": "test-v1",
+            "language": "ko",
+            "edition_title": "Kimchi is a traditional Korean food",
+            "publication_title": "Pub",
+            "deck": "Deck text for validation",
+            "opening": "Opening text that is long enough for validation purposes and checks.",
+            "provenance_note": "test",
+            "highlighted_insight": "test",
+            "sections": [
+                {
+                    "section_id": "s001",
+                    "title": "T1",
+                    "source_segment_ids": ["s001"],
+                    "paragraphs": ["This is a paragraph with enough text for the validator."],
+                },
+                {
+                    "section_id": "s002",
+                    "title": "T2",
+                    "source_segment_ids": ["s001"],
+                    "paragraphs": ["Another paragraph with sufficient text content here."],
+                },
+            ],
+        }
+
+        provider = MockProvider(
+            model="mock-test",
+            task_payloads={
+                "editorial_plan": plan_payload,
+                "edition_draft": draft_payload,
+            },
+        )
+
+        service = GenerationService(provider=provider)
+        request = GenerationRequest(
+            participant_id=pid,
+            input_id=inp_id,
+            prohibited_inferences=("Kimchi",),
+            allow_short_sample=True,
+        )
+        result = service.generate_edition(conn, request=request)
+
+        assert result.plan_run.validation_status == "passed"
+        assert result.draft_run.validation_status == "validation_failed"
+        assert len(result.draft_run.validation_findings) > 0
+
+        rules = [f["rule"] for f in result.draft_run.validation_findings]
+        assert "prohibited_inference" in rules
+
+        cat, detail = _classify_validation_failure(
+            result.draft_run.error_category,
+            result.draft_run.validation_status,
+            list(result.draft_run.validation_findings),
+        )
+        assert cat == "model_quality"
+        assert detail == "grounding_failure"
+
+        conn.close()
