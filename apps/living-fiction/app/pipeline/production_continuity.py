@@ -117,6 +117,71 @@ def _get_prior_character_possessions(prior_state: dict[str, Any]) -> set[str]:
     return all_possessions
 
 
+def _evidence_binds_to_content(
+    evidence: str,
+    known_scene_ids: set[str],
+    scene_char_ids: set[str],
+    content: EpisodeContent,
+) -> bool:
+    """Check if an evidence string references a scene, character, or prose."""
+    if not evidence or not evidence.strip():
+        return False
+    ev = evidence.strip()
+    # Reference to a known scene ID
+    for sid in known_scene_ids:
+        if sid in ev:
+            return True
+    # Reference to a participating character
+    for cid in scene_char_ids:
+        if cid in ev:
+            return True
+    # Appears in prose (word overlap >= 2 meaningful words)
+    ev_words = {w for w in ev.split() if len(w) >= 3}
+    if not ev_words:
+        return False
+    for beat in content.prose:
+        for para in beat.paragraphs:
+            para_words = set(para.split())
+            if len(ev_words & para_words) >= min(2, len(ev_words)):
+                return True
+    return False
+
+
+def _check_evidence_list_for_removal(
+    item_type: str,
+    char_id: str,
+    removed_items: list[str],
+    evidence_list: list[str],
+    known_scene_ids: set[str],
+    scene_char_ids: set[str],
+    content: EpisodeContent,
+) -> None:
+    """Validate that each removal item has corresponding evidence.
+
+    ``removed_items`` must be the original list order from the delta
+    (not a set) so that evidence mapping is preserved.
+    """
+    items = removed_items
+    for idx, item in enumerate(items):
+        if idx >= len(evidence_list):
+            raise ContinuityError(
+                f"{item_type} removal '{item}' for character '{char_id}' missing "
+                f"evidence — evidence list has {len(evidence_list)} entries for "
+                f"{len(items)} removals"
+            )
+        evidence = evidence_list[idx]
+        if not evidence or not evidence.strip():
+            raise ContinuityError(
+                f"{item_type} removal '{item}' for character '{char_id}' has "
+                f"empty evidence — each removal requires scene evidence"
+            )
+        if not _evidence_binds_to_content(evidence, known_scene_ids, scene_char_ids, content):
+            raise ContinuityError(
+                f"{item_type} removal evidence '{evidence}' for character '{char_id}' "
+                f"does not reference any scene, participating character, or prose"
+            )
+
+
 def _check_character_relationships(
     content: EpisodeContent,
     known_chars: set[str],
@@ -313,6 +378,37 @@ def validate_production_continuity(
     # ── Relationship check ─────────────────────────────────────────────
     _check_character_relationships(content, known_chars, world, delta)
 
+    # ── Relationship evidence binding ──────────────────────────────────
+    # Each relationship change MUST have corresponding evidence.
+    # Evidence must reference a scene, character, or prose content.
+    known_scene_ids = {sc.scene_id for sc in content.scenes}
+    scene_char_ids: set[str] = set()
+    for sc in content.scenes:
+        scene_char_ids.update(sc.participating_character_ids)
+
+    for char_id, changes in delta.character_relationship_changes.items():
+        if char_id not in known_chars:
+            continue
+        evidence_list = delta.character_relationship_evidence.get(char_id, [])
+        for ci, change in enumerate(changes):
+            if ci >= len(evidence_list):
+                raise ContinuityError(
+                    f"relationship change '{change}' for character '{char_id}' "
+                    f"missing evidence — evidence list has {len(evidence_list)} "
+                    f"entries for {len(changes)} changes"
+                )
+            evidence = evidence_list[ci]
+            if not evidence or not evidence.strip():
+                raise ContinuityError(
+                    f"relationship change '{change}' for character '{char_id}' "
+                    f"has empty evidence — each change requires scene evidence"
+                )
+            if not _evidence_binds_to_content(evidence, known_scene_ids, scene_char_ids, content):
+                raise ContinuityError(
+                    f"relationship change evidence '{evidence}' for '{char_id}' "
+                    f"does not reference any scene, participating character, or prose"
+                )
+
     # ── Knowledge check with per-item structured evidence binding ──────
     # Each knowledge item MUST be bound 1:1 to its own source.
     # sources[ki] is the specific source for knowledge_list[ki].
@@ -494,6 +590,23 @@ def validate_production_continuity(
                     f"delta removes possession '{poss}' from character '{cid}' "
                     f"but character does not have that possession in prior state"
                 )
+
+        # ── Injury removal evidence binding ────────────────────────────
+        # Pass the original list (not the set) to preserve evidence mapping order.
+        _check_evidence_list_for_removal(
+            "injury", cid,
+            delta.character_injuries_removed.get(cid, []),
+            delta.character_injury_removal_evidence.get(cid, []),
+            known_scene_ids, scene_char_ids, content,
+        )
+
+        # ── Possession removal evidence binding ────────────────────────
+        _check_evidence_list_for_removal(
+            "possession", cid,
+            delta.character_possessions_removed.get(cid, []),
+            delta.character_possession_removal_evidence.get(cid, []),
+            known_scene_ids, scene_char_ids, content,
+        )
 
         # SILENT REMOVAL detection: if a prior injury/possession is NOT in
         # the delta's added lists AND NOT in the removed lists AND NOT

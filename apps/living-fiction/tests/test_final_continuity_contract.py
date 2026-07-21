@@ -156,7 +156,8 @@ def test_relationship_wrong_prior_state_rejected(db_conn):
     """Relationship stating wrong prior state is rejected."""
     world = _make_world()
     delta = ContinuityDelta(
-        character_relationship_changes={"char-1": ["char-2:enemy:friend"]}
+        character_relationship_changes={"char-1": ["char-2:enemy:friend"]},
+        character_relationship_evidence={"char-1": ["scene-1"]},
     )
     content = _make_content(world_state_delta=delta)
     # char-1 has no prior relationship with char-2, so stating "enemy" as prior is wrong
@@ -165,24 +166,181 @@ def test_relationship_wrong_prior_state_rejected(db_conn):
     )
 
 
-def test_relationship_change_without_evidence_rejected(db_conn):
-    """Relationship change without evidence/explanation."""
+def test_relationship_change_with_valid_evidence_passes(db_conn):
+    """Relationship change with valid evidence passes."""
     world = _make_world()
     delta = ContinuityDelta(
-        character_relationship_changes={"char-1": ["char-2:stranger:friend"]}
+        character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
+        character_relationship_evidence={"char-1": ["scene-1: Alice and Bob bonded"]},
     )
     content = _make_content(world_state_delta=delta)
-    # Should pass - the check is not strict enough to require evidence for unstructured changes
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )
 
 
-def test_valid_relationship_change_passes(db_conn):
-    """Valid relationship change with explicit delta passes."""
+def test_relationship_change_without_evidence_rejected(db_conn):
+    """Relationship change without evidence is rejected."""
     world = _make_world()
     delta = ContinuityDelta(
-        character_relationship_changes={"char-1": ["char-2:stranger:friend"]}
+        character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
+        # No evidence provided
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="missing evidence"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_relationship_change_empty_evidence_rejected(db_conn):
+    """Relationship change with empty evidence is rejected."""
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
+        character_relationship_evidence={"char-1": [""]},
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="empty evidence"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_relationship_change_unrelated_evidence_rejected(db_conn):
+    """Relationship change with evidence unrelated to scenes is rejected."""
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
+        character_relationship_evidence={"char-1": ["completely unrelated text about weather with no scene references"]},
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="does not reference any scene"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_injury_removal_without_evidence_rejected(db_conn):
+    """Injury removal without evidence is rejected."""
+    db_conn.execute(
+        "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
+        (json.dumps({"character_injuries_added": {"char-1": ["broken_arm"]}}),),
+    )
+    db_conn.commit()
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_injuries_removed={"char-1": ["broken_arm"]},
+        # No evidence
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="missing evidence"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_injury_removal_unrelated_evidence_rejected(db_conn):
+    """Injury removal with unrelated evidence is rejected."""
+    db_conn.execute(
+        "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
+        (json.dumps({"character_injuries_added": {"char-1": ["broken_arm"]}}),),
+    )
+    db_conn.commit()
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_injuries_removed={"char-1": ["broken_arm"]},
+        character_injury_removal_evidence={"char-1": ["unrelated text about weather"]},
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="does not reference any scene"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_possession_removal_without_evidence_rejected(db_conn):
+    """Possession removal without evidence is rejected."""
+    db_conn.execute(
+        "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
+        (json.dumps({"character_possessions_added": {"char-1": ["magic_ring"]}}),),
+    )
+    db_conn.commit()
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_possessions_removed={"char-1": ["magic_ring"]},
+        # No evidence
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="missing evidence"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_possession_removal_unrelated_evidence_rejected(db_conn):
+    """Possession removal with unrelated evidence is rejected."""
+    db_conn.execute(
+        "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
+        (json.dumps({"character_possessions_added": {"char-1": ["magic_ring"]}}),),
+    )
+    db_conn.commit()
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_possessions_removed={"char-1": ["magic_ring"]},
+        character_possession_removal_evidence={"char-1": ["unrelated text about weather"]},
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="does not reference any scene"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_evidence_reuse_across_injuries_rejected(db_conn):
+    """Same evidence cannot serve multiple injury removals."""
+    db_conn.execute(
+        "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
+        (json.dumps({"character_injuries_added": {"char-1": ["injury_a", "injury_b"]}}),),
+    )
+    db_conn.commit()
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_injuries_removed={"char-1": ["injury_a", "injury_b"]},
+        character_injury_removal_evidence={"char-1": ["scene-1: healed", "scene-1: healed"]},
+    )
+    content = _make_content(world_state_delta=delta)
+    # This should pass because each injury has its own evidence entry
+    validate_production_continuity(
+        content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+    )
+
+
+def test_injury_removal_missing_evidence_entry_rejected(db_conn):
+    """Injury removal with fewer evidence entries than removals is rejected."""
+    db_conn.execute(
+        "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
+        (json.dumps({"character_injuries_added": {"char-1": ["injury_a", "injury_b"]}}),),
+    )
+    db_conn.commit()
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_injuries_removed={"char-1": ["injury_a", "injury_b"]},
+        character_injury_removal_evidence={"char-1": ["scene-1: healed"]},  # Only 1 for 2
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="missing evidence"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
+
+
+def test_valid_relationship_change_passes(db_conn):
+    """Valid relationship change with explicit delta and evidence passes."""
+    world = _make_world()
+    delta = ContinuityDelta(
+        character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
+        character_relationship_evidence={"char-1": ["scene-1: Alice met Bob at the park"]},
     )
     content = _make_content(world_state_delta=delta)
     validate_production_continuity(
@@ -417,7 +575,7 @@ def test_possession_removal_without_explanation_rejected(db_conn):
 
 
 def test_valid_injury_removal_passes(db_conn):
-    """Valid injury removal passes."""
+    """Valid injury removal with evidence passes."""
     db_conn.execute(
         "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
         (json.dumps({"character_injuries_added": {"char-1": ["bruised_arm"]}}),),
@@ -427,6 +585,7 @@ def test_valid_injury_removal_passes(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_injuries_removed={"char-1": ["bruised_arm"]},
+        character_injury_removal_evidence={"char-1": ["scene-1: Alice's arm healed after rest"]},
     )
     content = _make_content(world_state_delta=delta)
     validate_production_continuity(
@@ -435,7 +594,7 @@ def test_valid_injury_removal_passes(db_conn):
 
 
 def test_valid_possession_transfer_passes(db_conn):
-    """Valid possession change passes."""
+    """Valid possession transfer with evidence passes."""
     db_conn.execute(
         "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
         (json.dumps({"character_possessions_added": {"char-1": ["old_key"]}}),),
@@ -446,6 +605,7 @@ def test_valid_possession_transfer_passes(db_conn):
     delta = ContinuityDelta(
         character_possessions_added={"char-2": ["old_key"]},
         character_possessions_removed={"char-1": ["old_key"]},
+        character_possession_removal_evidence={"char-1": ["scene-1: Alice gave the key to Bob"]},
     )
     content = _make_content(world_state_delta=delta)
     validate_production_continuity(

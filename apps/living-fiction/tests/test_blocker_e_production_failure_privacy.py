@@ -234,7 +234,7 @@ def test_semantic_failure_persists_static_category_not_validator_detail(db_path)
             "FROM generation_runs"
         ).fetchone()
         assert run["success"] == 0
-        assert run["validation_status"] == "failed"
+        assert run["validation_status"] == "validation_failed"
         assert run["error_category"] == "plan_validation_failed"
         assert run["error_message"] == "plan_validation_failed: plan validation failed"
 

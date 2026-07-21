@@ -239,6 +239,9 @@ def test_relationship_change_requires_exact_pair(db_conn):
         character_relationship_changes={"char-1": [
             "char-2:stranger:friend"
         ]},
+        character_relationship_evidence={"char-1": [
+            "scene-1: Alice and Bob became friends at the park"
+        ]},
     )
     content = _make_content(world_state_delta=delta)
     validate_production_continuity(

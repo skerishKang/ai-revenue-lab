@@ -150,14 +150,26 @@ class ContinuityDelta(BaseModel):
         default_factory=dict,
         description="Injuries explicitly healed or removed, per character",
     )
+    character_injury_removal_evidence: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Evidence for each injury removal: char_id -> list of evidence strings",
+    )
     character_possessions_added: dict[str, list[str]] = Field(default_factory=dict)
     character_possessions_removed: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Possessions explicitly lost, given away, or destroyed",
     )
+    character_possession_removal_evidence: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Evidence for each possession removal: char_id -> list of evidence strings",
+    )
     character_relationship_changes: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Relationship state changes per character",
+    )
+    character_relationship_evidence: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Evidence for each relationship change: char_id -> list of evidence strings",
     )
     clues_introduced: list[ClueRef] = Field(default_factory=list)
     clues_resolved: list[PatternStr] = Field(default_factory=list)
