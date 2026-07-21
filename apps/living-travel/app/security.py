@@ -165,7 +165,7 @@ def rotate_operator_session(conn: sqlite3.Connection, session_id: str) -> tuple[
 
 # --- Traveler Token Management ---
 
-def create_traveler_token(conn: sqlite3.Connection, traveler_id: str) -> tuple[str, str]:
+def create_traveler_token(conn: sqlite3.Connection, traveler_id: str, *, commit: bool = True) -> tuple[str, str]:
     raw_token = generate_high_entropy_token(32)
     token_hash = hash_token(raw_token)
     token_id = f"tt_{secrets.token_urlsafe(16)}"
@@ -174,7 +174,8 @@ def create_traveler_token(conn: sqlite3.Connection, traveler_id: str) -> tuple[s
         "INSERT INTO traveler_tokens (id, traveler_id, token_hash, is_active, created_at) VALUES (?, ?, ?, 1, ?)",
         (token_id, traveler_id, token_hash, now),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return token_id, raw_token
 
 

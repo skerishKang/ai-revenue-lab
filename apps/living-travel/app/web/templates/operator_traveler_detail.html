@@ -46,7 +46,12 @@
         {% endif %}
         {% if has_generation_failed %}
         <div class="card">
-            <div class="alert alert-error">Generation failed. Please try again. (Privacy-safe: no internal details exposed.)</div>
+            <div class="alert alert-error">Generation failed ({{generation_failure}}). Please try again. (Privacy-safe: no internal details exposed.)</div>
+        </div>
+        {% endif %}
+        {% if failure_category %}
+        <div class="card">
+            <div class="alert alert-error">Generation failed ({{failure_category}}). Please try again. (Privacy-safe: no internal details exposed.)</div>
         </div>
         {% endif %}
         <div class="card">

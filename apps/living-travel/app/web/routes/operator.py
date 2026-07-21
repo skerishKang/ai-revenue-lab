@@ -7,6 +7,7 @@ Operator auth uses a shared secret (LT_OPERATOR_SECRET).
 from __future__ import annotations
 
 import json
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, Cookie, Form, Request
@@ -23,7 +24,10 @@ from app.edition_repository import (
     update_edition_generation_status,
     update_edition_publication,
 )
-from app.feedback_repository import get_unapplied_feedback_for_traveler
+from app.feedback_repository import (
+    get_unapplied_feedback_for_traveler,
+    get_unapplied_feedback_for_edition,
+)
 from app.generation_run_repository import count_generation_runs_by_edition
 from app.pilot_evidence_repository import get_pilot_evidence_by_traveler
 from app.pipeline.service import GenerationService
@@ -50,6 +54,8 @@ from app.traveler_repository import (
     is_traveler_active,
 )
 from app.web.templates import render_template
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/operator", tags=["operator"])
 
@@ -274,6 +280,22 @@ async def traveler_detail(
         unapplied_fb = get_unapplied_feedback_for_traveler(conn, traveler_id)
         has_unapplied_feedback = len(unapplied_fb) > 0
 
+        last_failure_category = ""
+        if has_generation_failed:
+            for ed in reversed(editions):
+                if ed.generation_status == "generation_failed":
+                    runs = conn.execute(
+                        "SELECT error_category FROM generation_runs WHERE edition_id = ? AND error_category != '' ORDER BY created_at DESC LIMIT 1",
+                        (ed.id,),
+                    ).fetchone()
+                    if runs:
+                        last_failure_category = runs["error_category"]
+                    break
+
+        failure_category = request.query_params.get("failure", "")
+        if failure_category:
+            last_failure_category = failure_category
+
         return HTMLResponse(
             render_template("operator_traveler_detail.html", {
                 "traveler": traveler,
@@ -287,7 +309,8 @@ async def traveler_detail(
                 "has_published": has_published,
                 "has_unapplied_feedback": has_unapplied_feedback,
                 "has_no_editions": len(editions) == 0,
-                "generation_failure": "generation_failed" if has_generation_failed else "",
+                "generation_failure": last_failure_category,
+                "failure_category": last_failure_category,
             })
         )
     finally:
@@ -351,7 +374,7 @@ async def create_invitation(
         if not is_traveler_active(conn, traveler_id):
             return HTMLResponse(render_template("404.html", {}), status_code=404)
         deactivate_traveler_tokens(conn, traveler_id, commit=False)
-        token_id, raw_token = create_traveler_token(conn, traveler_id)
+        token_id, raw_token = create_traveler_token(conn, traveler_id, commit=False)
         conn.commit()
     finally:
         conn.close()
@@ -382,7 +405,7 @@ async def rotate_invitation(
         conn.execute(
             "DELETE FROM traveler_sessions WHERE traveler_id = ?", (traveler_id,)
         )
-        token_id, raw_token = create_traveler_token(conn, traveler_id)
+        token_id, raw_token = create_traveler_token(conn, traveler_id, commit=False)
         conn.commit()
     finally:
         conn.close()
@@ -416,7 +439,7 @@ async def generate_first_edition(
 
         preferences = _build_traveler_preferences(traveler)
 
-        provider = create_mock_provider(conn, traveler.destination)
+        provider = create_mock_provider(conn, preferences)
         source_items = _build_source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
         try:
@@ -426,15 +449,18 @@ async def generate_first_edition(
                 source_items=source_items,
             )
         except PipelineError as exc:
-            failure_category = "pipeline_error"
-            import logging; logging.getLogger(__name__).warning("PipelineError in generate-first: %s", exc)
+            failure_category = _extract_failure_category(exc)
+            logger.warning("PipelineError in generate-first: %s", exc)
         except Exception:
             failure_category = "unexpected_error"
-            import logging; logging.getLogger(__name__).exception("Unexpected error in generate-first")
+            logger.exception("Unexpected error in generate-first")
             raise
     finally:
         conn.close()
-    return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)
+    redirect_url = f"/operator/travelers/{traveler_id}"
+    if failure_category:
+        redirect_url += f"?failure={failure_category}"
+    return RedirectResponse(url=redirect_url, status_code=303)
 
 
 @router.post("/travelers/{traveler_id}/generate-second")
@@ -463,8 +489,13 @@ async def generate_second_edition(
             return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)
 
         preferences = _build_traveler_preferences(traveler)
+        feedback_records = get_unapplied_feedback_for_edition(
+            conn, traveler_id, prior.id
+        )
 
-        provider = create_second_mock_provider(conn, traveler.destination)
+        provider = create_second_mock_provider(
+            conn, preferences, feedback_records, prior.structured_content
+        )
         source_items = _build_source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
         try:
@@ -475,13 +506,34 @@ async def generate_second_edition(
                 source_items=source_items,
             )
         except PipelineError as exc:
-            failure_category = "pipeline_error"
+            failure_category = _extract_failure_category(exc)
+            logger.warning("PipelineError in generate-second: %s", exc)
         except Exception:
             failure_category = "unexpected_error"
+            logger.exception("Unexpected error in generate-second")
             raise
     finally:
         conn.close()
-    return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)
+    redirect_url = f"/operator/travelers/{traveler_id}"
+    if failure_category:
+        redirect_url += f"?failure={failure_category}"
+    return RedirectResponse(url=redirect_url, status_code=303)
+
+
+def _extract_failure_category(exc: PipelineError) -> str:
+    """Extract an allow-listed failure category from a PipelineError."""
+    msg = str(exc).lower()
+    if "validation failed" in msg:
+        return "validation_error"
+    if "no unapplied feedback" in msg:
+        return "no_matching_feedback"
+    if "not materially different" in msg:
+        return "validation_error"
+    if "prior edition" in msg and "not found" in msg:
+        return "validation_error"
+    if "inactive" in msg or "deleted" in msg:
+        return "validation_error"
+    return "unknown"
 
 
 # --- Edition Publication ---
