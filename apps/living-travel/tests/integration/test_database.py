@@ -46,7 +46,7 @@ class TestMigrations:
             "SELECT COUNT(*) FROM schema_migrations"
         ).fetchone()[0]
         conn.close()
-        assert count == 3  # 001_initial.sql + 002_audit_constraints.sql + 003_auth.sql
+        assert count == 4  # 001_initial.sql + 002_audit_constraints.sql + 003_auth.sql + 004_deactivation.sql
 
     def test_schema_migrations_records_version(self, temp_db):
         conn = sqlite3.connect(temp_db)

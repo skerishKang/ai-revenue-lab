@@ -221,12 +221,15 @@ def _apply_preferences_to_draft(draft: dict, prefs: dict) -> dict:
     return draft
 
 
-def _apply_preferences_to_second_draft(draft: dict, prefs: dict) -> dict:
-    """Apply traveler preferences to second edition draft FIRST, before feedback."""
+def _apply_preferences_to_second_draft(draft: dict, prefs: dict, prior_content: dict | None = None) -> dict:
+    """Apply traveler preferences to second edition draft FIRST, before feedback.
+    Maintains continuity from prior_content when available."""
     draft = copy.deepcopy(draft)
     dest = prefs.get("destination", "")
     nights = prefs.get("trip_duration_nights", 2)
     pace = prefs.get("pace_preference", "comfortable")
+    budget = prefs.get("budget_tendency", "moderate")
+    interests = prefs.get("interests", [])
     trip_context = prefs.get("trip_context", "solo")
     tone = prefs.get("tone_preference", "calm")
     length = prefs.get("length_preference", "medium")
@@ -237,14 +240,17 @@ def _apply_preferences_to_second_draft(draft: dict, prefs: dict) -> dict:
 
     context_map = {"solo": "혼행", "couple": "커플 여행", "family": "가족 여행", "group": "단체 여행"}
     ctx_label = context_map.get(trip_context, trip_context)
-    draft["publication_title"] = f"{dest} {nights}박: 피드백 반영 {ctx_label}"
+    prior_title = prior_content.get("publication_title", "") if prior_content else ""
+    draft["publication_title"] = f"{dest} {nights}박: 연속 {ctx_label}" + (f" ← {prior_title[:30]}" if prior_title else "")
     draft["edition_title"] = f"두 번째 에디션 — {dest} 맞춤 코스"
 
     pace_desc = "천천히" if pace in ("relaxed", "comfortable") else "활기차게"
+    budget_desc = "합리적인" if budget in ("budget", "moderate") else "여유로운"
+    interest_desc = ", ".join(interests[:3]) if interests else "로컬 분위기"
     exclus = f" ({', '.join(exclusions[:2])}는 제외)" if exclusions else ""
 
-    opening = f"피드백을 반영하여 {dest}{exclus} 코스를 재구성했습니다. "
-    opening += f"{ctx_label}에 적합한 {pace_desc} 일정으로 준비했습니다."
+    opening = f"이전 '{prior_title[:40]}'의 피드백을 반영하여 {dest}{exclus} 코스를 재구성했습니다. "
+    opening += f"{ctx_label}에 적합한 {pace_desc} {budget_desc} 일정으로 준비했습니다. {interest_desc}에 중점을 두었습니다."
 
     if tone == "calm":
         opening += " 여유롭게 즐겨보세요."
@@ -265,8 +271,12 @@ def _apply_preferences_to_second_draft(draft: dict, prefs: dict) -> dict:
         sec["narrative"] = (
             f"피드백을 반영하여 {dest}에서 "
             f"{sec.get('title', '').split('—')[-1].strip()}를 "
-            f"{pace_desc} 재구성했습니다."
+            f"{pace_desc} {budget_desc} 가격으로 재구성했습니다."
         )
+
+    if prior_content:
+        for sec in draft.get("sections", []):
+            sec["narrative"] += f" (이전: {prior_content.get('publication_title', '이전 에디션')[:30]} 기준)"
 
     return draft
 
@@ -373,14 +383,6 @@ def create_mock_provider(
     conn: sqlite3.Connection,
     traveler_preferences: dict,
 ) -> MockProvider:
-    lang = traveler_preferences.get("preferred_language", "ko")
-    if lang not in _SUPPORTED_LANGUAGES:
-        return MockProvider(task_payloads={
-            "editorial_plan": {"central_theme": traveler_preferences.get("destination", "Unknown"),
-                               "sections": []},
-            "edition_draft": _build_unsupported_draft(traveler_preferences),
-        })
-
     dest = traveler_preferences.get("destination", "")
     source_bundle = _build_source_bundle_for_destination(dest)
     source_map = {}
@@ -407,14 +409,6 @@ def create_second_mock_provider(
     feedback_records: list,
     prior_content: dict | None = None,
 ) -> MockProvider:
-    lang = traveler_preferences.get("preferred_language", "ko")
-    if lang not in _SUPPORTED_LANGUAGES:
-        return MockProvider(task_payloads={
-            "editorial_plan": {"central_theme": traveler_preferences.get("destination", "Unknown"),
-                               "sections": []},
-            "edition_draft": _build_unsupported_draft(traveler_preferences),
-        })
-
     dest = traveler_preferences.get("destination", "")
     source_bundle = _build_source_bundle_for_destination(dest)
     source_map = {}
@@ -424,9 +418,8 @@ def create_second_mock_provider(
 
     plan = _apply_preferences_to_plan(_load_fixture("synthetic_second_plan.json"), traveler_preferences)
 
-    # Apply preferences FIRST, then feedback
     draft = _apply_preferences_to_second_draft(
-        _load_fixture("synthetic_second_draft.json"), traveler_preferences
+        _load_fixture("synthetic_second_draft.json"), traveler_preferences, prior_content
     )
     draft = _apply_feedback_to_second_draft(draft, feedback_records, prior_content)
 
@@ -446,8 +439,8 @@ def _build_unsupported_draft(prefs: dict) -> dict:
         "publication_title": f"[Unsupported Language] {dest}",
         "edition_title": f"Unsupported — {dest}",
         "destination": dest,
-        "trip_frame": "",
-        "editorial_opening": f"This destination ({dest}) is not yet supported.",
+        "trip_frame": "N/A",
+        "editorial_opening": f"This language is not yet supported for {dest}.",
         "sections": [],
         "applied_feedback": [],
         "content_version": "1.0",

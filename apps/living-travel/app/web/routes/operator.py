@@ -50,7 +50,9 @@ from app.traveler_repository import (
     create_traveler,
     delete_traveler,
     get_all_travelers,
+    get_all_travelers_admin,
     get_traveler_by_id,
+    get_traveler_by_id_admin,
     is_traveler_active,
 )
 from app.web.templates import render_template
@@ -205,10 +207,10 @@ async def operator_logout(
 
 @router.get("/")
 async def operator_dashboard(request: Request, operator: OperatorContext = __import__("fastapi").Depends(get_operator)):
-    """Operator dashboard showing all travelers."""
+    """Operator dashboard showing all travelers including inactive."""
     conn = get_connection()
     try:
-        travelers = get_all_travelers(conn)
+        travelers = get_all_travelers_admin(conn)
         traveler_data = []
         for t in travelers:
             editions = get_editions_by_traveler(conn, t.id)
@@ -262,7 +264,7 @@ async def traveler_detail(
     """View traveler details, editions, tokens with conditional action UI."""
     conn = get_connection()
     try:
-        traveler = get_traveler_by_id(conn, traveler_id)
+        traveler = get_traveler_by_id_admin(conn, traveler_id)
         if not traveler:
             return HTMLResponse(render_template("404.html", {}), status_code=404)
 
@@ -290,6 +292,12 @@ async def traveler_detail(
 
         unapplied_fb = get_unapplied_feedback_for_traveler(conn, traveler_id)
         has_unapplied_feedback = len(unapplied_fb) > 0
+
+        deactivation_req = conn.execute(
+            "SELECT id, status, created_at FROM deactivation_requests WHERE traveler_id = ? AND status = 'pending' LIMIT 1",
+            (traveler_id,),
+        ).fetchone()
+        has_deactivation_request = deactivation_req is not None
 
         last_failure_category = ""
         if has_generation_failed:
@@ -329,6 +337,7 @@ async def traveler_detail(
                 "has_no_editions": len(editions) == 0,
                 "generation_failure": last_failure_category,
                 "failure_category": last_failure_category,
+                "has_deactivation_request": has_deactivation_request,
             })
         )
     finally:
@@ -457,6 +466,11 @@ async def generate_first_edition(
 
         preferences = _build_traveler_preferences(traveler)
 
+        lang = preferences.get("preferred_language", "ko")
+        if lang != "ko":
+            redirect_url = f"/operator/travelers/{traveler_id}?failure=unsupported_fixture"
+            return RedirectResponse(url=redirect_url, status_code=303)
+
         provider = create_mock_provider(conn, preferences)
         source_items = _build_source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
@@ -510,6 +524,11 @@ async def generate_second_edition(
         feedback_records = get_unapplied_feedback_for_edition(
             conn, traveler_id, prior.id
         )
+
+        lang = preferences.get("preferred_language", "ko")
+        if lang != "ko":
+            redirect_url = f"/operator/travelers/{traveler_id}?failure=unsupported_fixture"
+            return RedirectResponse(url=redirect_url, status_code=303)
 
         provider = create_second_mock_provider(
             conn, preferences, feedback_records, prior.structured_content
@@ -602,3 +621,40 @@ async def reject_edition(
     finally:
         conn.close()
     return RedirectResponse(url=f"/operator/travelers/{traveler_id}", status_code=303)
+
+
+# --- Edition Preview ---
+
+@router.get("/editions/{edition_id}")
+async def edition_preview(
+    edition_id: str,
+    request: Request,
+    operator: OperatorContext = __import__("fastapi").Depends(get_operator),
+):
+    """Authenticated preview of an edition for operator review."""
+    conn = get_connection()
+    try:
+        edition = get_edition_by_id(conn, edition_id)
+        if not edition:
+            return HTMLResponse(render_template("404.html", {}), status_code=404)
+
+        sc = edition.structured_content or {}
+
+        section_texts = []
+        for sec in sc.get("sections", []):
+            section_texts.append({
+                "title": sec.get("title", ""),
+                "narrative": sec.get("narrative", ""),
+            })
+
+        return HTMLResponse(
+            render_template("operator_edition_preview.html", {
+                "edition": edition,
+                "sc": sc,
+                "section_texts": section_texts,
+                "csrf_token": operator.csrf_token,
+            }),
+            headers={"Cache-Control": "no-store"},
+        )
+    finally:
+        conn.close()

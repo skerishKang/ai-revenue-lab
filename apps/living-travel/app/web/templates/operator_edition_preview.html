@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Travel - Edition Preview</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar"><span class="brand">Living Travel</span><div class="nav-links"><a href="/operator/">Dashboard</a><form method="post" action="/operator/logout" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn-link">Logout</button></form></div></nav>
+    <main class="container">
+        <div class="notice"><strong>Pending Review</strong> &mdash; This edition has not been published yet. Only you can see this preview.</div>
+        <div class="section-header"><h1>{{sc.publication_title}}</h1></div>
+        <div class="card">
+            <h2>Overview</h2>
+            <dl class="info-grid">
+                <dt>Edition</dt><dd>{{sc.edition_title}}</dd>
+                <dt>Destination</dt><dd>{{sc.destination}}</dd>
+                <dt>Trip Frame</dt><dd>{{sc.trip_frame}}</dd>
+                <dt>Generation Status</dt><dd>{{edition.generation_status}}</dd>
+                <dt>Publication State</dt><dd>{{edition.publication_state}}</dd>
+            </dl>
+        </div>
+        <div class="card">
+            <h2>Editorial Opening</h2>
+            <div class="edition-body">{{sc.editorial_opening}}</div>
+        </div>
+        {% for st in section_texts %}
+        <div class="card">
+            <h2>{{st.title}}</h2>
+            <div class="edition-body">{{st.narrative}}</div>
+        </div>
+        {% endfor %}
+        <div class="card">
+            <h2>Provenance</h2>
+            <dl class="info-grid">
+                <dt>Content Version</dt><dd>{{sc.content_version}}</dd>
+                <dt>Provenance Note</dt><dd>{{sc.provenance_note}}</dd>
+            </dl>
+        </div>
+        <div class="card">
+            <h2>Applied Feedback</h2>
+            {% if sc.applied_feedback %}
+            <table><thead><tr><th>Feedback ID</th><th>Requested</th><th>Action</th></tr></thead><tbody>
+            {% for af in sc.applied_feedback %}
+            <tr><td>{{af.feedback_id}}</td><td>{{af.requested_change}}</td><td>{{af.actual_action}}</td></tr>
+            {% endfor %}
+            </tbody></table>
+            {% else %}
+            <p>No feedback applied.</p>
+            {% endif %}
+        </div>
+        <div class="card">
+            <h2>Decision</h2>
+            <div class="action-grid">
+                <form method="post" action="/operator/editions/{{edition.id}}/publish" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-success">Publish Edition</button></form>
+                <form method="post" action="/operator/editions/{{edition.id}}/reject" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-danger">Reject Edition</button></form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

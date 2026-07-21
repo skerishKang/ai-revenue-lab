@@ -114,9 +114,16 @@ async def traveler_dashboard(
 @router.post("/preferences")
 async def update_preferences(
     request: Request,
-    destination: str = Form(None),
-    trip_duration_nights: int = Form(None),
+    destination: str = Form(""),
+    trip_duration_nights: int = Form(2),
     interests: str = Form(""),
+    trip_context: str = Form("solo"),
+    budget_tendency: str = Form("moderate"),
+    pace_preference: str = Form("comfortable"),
+    exclusions: str = Form(""),
+    tone_preference: str = Form("calm"),
+    length_preference: str = Form("medium"),
+    preferred_language: str = Form("ko"),
     csrf_token: str = Form(...),
     traveler_ctx: TravelerContext = __import__("fastapi").Depends(get_traveler),
 ):
@@ -124,15 +131,61 @@ async def update_preferences(
     conn = get_connection()
     try:
         interest_list = [i.strip() for i in interests.split(",") if i.strip()] if interests else None
+        exclusion_list = [e.strip() for e in exclusions.split(",") if e.strip()] if exclusions else None
+        valid_contexts = {"solo", "couple", "family", "group"}
+        valid_budgets = {"budget", "moderate", "premium"}
+        valid_paces = {"relaxed", "comfortable", "energetic"}
+        valid_tones = {"calm", "energetic", "luxury"}
+        valid_lengths = {"short", "medium", "long"}
+        valid_langs = {"ko", "en", "ja", "zh"}
+
         update_traveler_preferences(
             conn, traveler_ctx.traveler_id,
             destination=destination if destination else None,
-            trip_duration_nights=trip_duration_nights,
+            trip_duration_nights=trip_duration_nights if trip_duration_nights > 0 else None,
             interests=interest_list,
+            trip_context=trip_context if trip_context in valid_contexts else None,
+            budget_tendency=budget_tendency if budget_tendency in valid_budgets else None,
+            pace_preference=pace_preference if pace_preference in valid_paces else None,
+            exclusions=exclusion_list,
+            tone_preference=tone_preference if tone_preference in valid_tones else None,
+            length_preference=length_preference if length_preference in valid_lengths else None,
+            preferred_language=preferred_language if preferred_language in valid_langs else None,
         )
     finally:
         conn.close()
     return RedirectResponse(url="/traveler/", status_code=303)
+
+
+@router.post("/deactivation-request")
+async def deactivation_request(
+    request: Request,
+    csrf_token: str = Form(...),
+    traveler_ctx: TravelerContext = __import__("fastapi").Depends(get_traveler),
+):
+    """Traveler requests account deactivation."""
+    verify_csrf(request, csrf_token, traveler_ctx)
+    conn = get_connection()
+    try:
+        existing = conn.execute(
+            "SELECT id FROM deactivation_requests WHERE traveler_id = ? AND status = 'pending'",
+            (traveler_ctx.traveler_id,),
+        ).fetchone()
+        if existing:
+            return RedirectResponse(url="/traveler/", status_code=303)
+
+        from datetime import datetime, timezone
+        from app.security import generate_high_entropy_token
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        req_id = "dr_" + generate_high_entropy_token(8)
+        conn.execute(
+            "INSERT INTO deactivation_requests (id, traveler_id, status, created_at) VALUES (?, ?, 'pending', ?)",
+            (req_id, traveler_ctx.traveler_id, now),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return HTMLResponse("<html><body><p>Deactivation request submitted. An operator will review it.</p><a href='/traveler/'>Return to dashboard</a></body></html>")
 
 
 @router.get("/editions")

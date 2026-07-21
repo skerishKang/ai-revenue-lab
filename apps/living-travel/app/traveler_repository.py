@@ -103,11 +103,25 @@ def get_traveler_by_id(conn: sqlite3.Connection, traveler_id: str) -> TravelerRe
     return _row_to_record(row) if row else None
 
 
+def get_traveler_by_id_admin(conn: sqlite3.Connection, traveler_id: str) -> TravelerRecord | None:
+    """Get any traveler including inactive."""
+    row = conn.execute(
+        f"SELECT {_SELECT} FROM travelers WHERE id = ?", (traveler_id,)
+    ).fetchone()
+    return _row_to_record(row) if row else None
+
+
 def get_all_travelers(conn: sqlite3.Connection) -> list[TravelerRecord]:
     rows = conn.execute(
         f"SELECT {_SELECT} FROM travelers WHERE status = ?",
         (TravelerStatus.active,),
     ).fetchall()
+    return [_row_to_record(r) for r in rows]
+
+
+def get_all_travelers_admin(conn: sqlite3.Connection) -> list[TravelerRecord]:
+    """Get all travelers including inactive."""
+    rows = conn.execute(f"SELECT {_SELECT} FROM travelers ORDER BY created_at DESC").fetchall()
     return [_row_to_record(r) for r in rows]
 
 
@@ -150,6 +164,13 @@ def update_traveler_preferences(
     destination: str | None = None,
     trip_duration_nights: int | None = None,
     interests: list[str] | None = None,
+    trip_context: str | None = None,
+    budget_tendency: str | None = None,
+    pace_preference: str | None = None,
+    exclusions: list[str] | None = None,
+    tone_preference: str | None = None,
+    length_preference: str | None = None,
+    preferred_language: str | None = None,
     commit: bool = True,
 ) -> bool:
     """Update traveler preferences."""
@@ -165,6 +186,27 @@ def update_traveler_preferences(
     if interests is not None:
         updates.append("interests = ?")
         params.append(json.dumps(interests))
+    if trip_context is not None:
+        updates.append("trip_context = ?")
+        params.append(trip_context)
+    if budget_tendency is not None:
+        updates.append("budget_tendency = ?")
+        params.append(budget_tendency)
+    if pace_preference is not None:
+        updates.append("pace_preference = ?")
+        params.append(pace_preference)
+    if exclusions is not None:
+        updates.append("exclusions = ?")
+        params.append(json.dumps(exclusions))
+    if tone_preference is not None:
+        updates.append("tone_preference = ?")
+        params.append(tone_preference)
+    if length_preference is not None:
+        updates.append("length_preference = ?")
+        params.append(length_preference)
+    if preferred_language is not None:
+        updates.append("preferred_language = ?")
+        params.append(preferred_language)
     updates.append("updated_at = ?")
     params.append(now)
     params.append(traveler_id)

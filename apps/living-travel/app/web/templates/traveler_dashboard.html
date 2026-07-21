@@ -21,8 +21,38 @@
                 <input type="number" id="trip_duration_nights" name="trip_duration_nights" value="{{traveler.trip_duration_nights}}" min="1" max="30">
                 <label for="interests">Interests (comma-separated)</label>
                 <input type="text" id="interests" name="interests" value="{{traveler.interests}}" placeholder="e.g. food, culture, nature">
+                <label for="trip_context">Trip Context</label>
+                <select id="trip_context" name="trip_context">
+                    <option value="solo">Solo</option><option value="couple">Couple</option><option value="family">Family</option><option value="group">Group</option>
+                </select>
+                <label for="budget_tendency">Budget</label>
+                <select id="budget_tendency" name="budget_tendency">
+                    <option value="budget">Budget</option><option value="moderate">Moderate</option><option value="premium">Premium</option>
+                </select>
+                <label for="pace_preference">Pace</label>
+                <select id="pace_preference" name="pace_preference">
+                    <option value="relaxed">Relaxed</option><option value="comfortable">Comfortable</option><option value="energetic">Energetic</option>
+                </select>
+                <label for="exclusions">Exclusions (comma-separated)</label>
+                <input type="text" id="exclusions" name="exclusions" value="{{traveler.exclusions}}" placeholder="e.g. beach, nightlife">
+                <label for="tone_preference">Tone</label>
+                <select id="tone_preference" name="tone_preference">
+                    <option value="calm">Calm</option><option value="energetic">Energetic</option><option value="luxury">Luxury</option>
+                </select>
+                <label for="length_preference">Length</label>
+                <select id="length_preference" name="length_preference">
+                    <option value="short">Short</option><option value="medium">Medium</option><option value="long">Long</option>
+                </select>
+                <label for="preferred_language">Language</label>
+                <select id="preferred_language" name="preferred_language">
+                    <option value="ko">Korean</option><option value="en">English</option><option value="ja">Japanese</option><option value="zh">Chinese</option>
+                </select>
                 <button type="submit" class="btn btn-primary">Update Preferences</button>
             </form>
+        </div>
+        <div class="card">
+            <h2>Account</h2>
+            <form method="post" action="/traveler/deactivation-request" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-danger" onclick="return confirm('Request deactivation? An operator will review it.')">Request Deactivation</button></form>
         </div>
         <div class="card">
             <h2>Latest Published Edition</h2>

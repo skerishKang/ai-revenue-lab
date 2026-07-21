@@ -54,12 +54,17 @@
             <div class="alert alert-error">Generation failed ({{failure_category}}). Please try again. (Privacy-safe: no internal details exposed.)</div>
         </div>
         {% endif %}
+        {% if has_deactivation_request %}
+        <div class="card">
+            <div class="alert alert-warning">Traveler has requested account deactivation.</div>
+        </div>
+        {% endif %}
         <div class="card">
             <h2>Editions</h2>
             {% if editions %}
             <table><thead><tr><th>#</th><th>Generation Status</th><th>Publication State</th><th>Runs</th><th>Actions</th></tr></thead><tbody>
             {% for ed in editions %}
-            <tr><td>{{ed.edition.edition_number}}</td><td><span class="badge">{{ed.edition.generation_status}}</span></td><td><span class="badge">{{ed.edition.publication_state}}</span></td><td>{{ed.run_count}}</td><td>{% if ed.edition.generation_status == 'pending_review' %}<form method="post" action="/operator/editions/{{ed.edition.id}}/publish" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-sm btn-success">Publish</button></form><form method="post" action="/operator/editions/{{ed.edition.id}}/reject" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-sm btn-danger">Reject</button></form>{% endif %}</td></tr>
+            <tr><td>{{ed.edition.edition_number}}</td><td><span class="badge">{{ed.edition.generation_status}}</span></td><td><span class="badge">{{ed.edition.publication_state}}</span></td><td>{{ed.run_count}}</td><td>{% if ed.edition.generation_status == 'pending_review' %}<a href="/operator/editions/{{ed.edition.id}}" class="btn btn-sm">Preview</a><form method="post" action="/operator/editions/{{ed.edition.id}}/publish" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-sm btn-success">Publish</button></form><form method="post" action="/operator/editions/{{ed.edition.id}}/reject" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn btn-sm btn-danger">Reject</button></form>{% endif %}</td></tr>
             {% endfor %}
             </tbody></table>
             {% else %}
