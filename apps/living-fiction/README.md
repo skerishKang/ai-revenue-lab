@@ -35,5 +35,6 @@ pytest -q
 uvicorn app.main:app --reload
 ```
 
-See `PRODUCT_CONTRACT.md` for the full product/narrative/canon/branch
-contract and `NARRATIVE_CONTRACT.md` for the design-track narrative contract.
+See `PRODUCT_CONTRACT.md` for the commercial, privacy, evidence, and operating
+contract. See `NARRATIVE_CONTRACT.md` for canon, checkpoint, branch, continuity,
+and rejoin semantics.
