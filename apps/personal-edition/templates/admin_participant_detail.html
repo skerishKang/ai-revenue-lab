@@ -26,6 +26,13 @@
     </div>
   </header>
 
+  {% if generation_error %}
+  <div class="alert alert-danger generation-error-alert animate-fade-in" role="alert" style="margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: #fff5f5; border: 1px solid #feb2b2; color: #c53030;">
+    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 700;">⚠️ {{ generation_error.title }}</h3>
+    <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;">{{ generation_error.detail }}</p>
+  </div>
+  {% endif %}
+
   <!-- Generation Action Card -->
   <section class="section generation-action-card">
     <div class="generation-card-inner">
@@ -37,16 +44,16 @@
         <span>💡 <strong>안내:</strong> 생성된 초안은 즉시 발행되지 않으며, [검토 대기] 상태로 안전하게 저장됩니다. 편집자가 검토 후 직접 발행해야 독자가 볼 수 있습니다.</span>
       </div>
 
-      {% if inputs %}
-      {% set latest_inp = inputs[0] %}
+      {% set target_inp = latest_input if latest_input else (inputs[-1] if inputs else None) %}
+      {% if target_inp %}
       <form method="post" action="/admin/participants/{{ participant.id }}/generate" class="generate-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <input type="hidden" name="input_id" value="{{ latest_inp.id }}">
+        <input type="hidden" name="input_id" value="{{ target_inp.id }}">
 
         <div class="generate-input-target">
           <span class="target-label">대상 기록:</span>
-          <strong>기록 #{{ latest_inp.sequence_number }}</strong>
-          <span class="target-date">({{ latest_inp.submitted_at[:16] }})</span>
+          <strong>기록 #{{ target_inp.sequence_number }}</strong>
+          <span class="target-date">({{ target_inp.submitted_at[:16] }})</span>
         </div>
 
         <div class="form-group checkbox-group">
@@ -117,14 +124,28 @@
           <tr>
             <td><strong>#{{ e.edition_number }}</strong></td>
             <td>{{ e.rendered_title or '제목 미정' }}</td>
-            <td><code>{{ e.generation_status }}</code></td>
+            <td>
+              {% if e.generation_status == 'pending_review' %}
+              <span class="badge badge-warning">검토 필요</span>
+              {% elif e.generation_status in ['generation_failed', 'failed'] %}
+              <span class="badge badge-danger">생성 실패</span>
+              {% elif e.generation_status == 'generation_pending' %}
+              <span class="badge badge-info">생성 진행</span>
+              {% elif e.generation_status == 'input_received' %}
+              <span class="badge badge-info">기록 접수</span>
+              {% elif e.publication_state == 'published' or e.generation_status == 'published' %}
+              <span class="badge badge-success">검토 완료</span>
+              {% else %}
+              <span class="badge badge-secondary">생성 완료</span>
+              {% endif %}
+            </td>
             <td>
               {% if e.publication_state == 'published' %}
-              <span class="badge badge-success">발행됨</span>
+              <span class="badge badge-success">발행 완료</span>
               {% elif e.publication_state == 'rejected' %}
               <span class="badge badge-danger">반려됨</span>
               {% else %}
-              <span class="badge badge-warning">대기중</span>
+              <span class="badge badge-warning">발행 대기</span>
               {% endif %}
             </td>
             <td>
@@ -151,7 +172,10 @@
     <h2>참여자 피드백 이력</h2>
     {% if feedbacks_with_editions %}
     <div class="feedbacks-list">
-      {% for ed, fb in feedbacks_with_editions %}
+      {% for item in feedbacks_with_editions %}
+      {% set ed = item.edition if item.edition is defined else item[0] %}
+      {% set fb = item.record if item.record is defined else item[1] %}
+      {% set dirs = item.direction if item.direction is defined else (item[2] if item|length > 2 else (fb.direction if fb.direction is defined else [])) %}
       <article class="feedback-card">
         <div class="feedback-card-header">
           <span class="edition-tag">에디션 #{{ ed.edition_number }}</span>
@@ -160,7 +184,7 @@
         <div class="feedback-card-body">
           <div class="feedback-directions">
             <strong>선택 방향:</strong>
-            {% for dir in fb.direction %}
+            {% for dir in dirs %}
             <span class="direction-chip">
               {{ feedback_map[dir] if dir in feedback_map else dir }}
             </span>

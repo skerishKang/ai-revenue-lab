@@ -18,10 +18,30 @@
     <div class="review-header-right">
       <div class="status-pill-group">
         <span class="status-badge status-pending-review">
-          생성: {{ edition.generation_status }}
+          생성 상태:
+          {% if edition.publication_state == 'published' or edition.generation_status == 'published' %}
+            검토 완료
+          {% elif edition.generation_status == 'pending_review' %}
+            검토 필요
+          {% elif edition.generation_status in ['generation_failed', 'failed'] %}
+            생성 실패
+          {% elif edition.generation_status == 'generation_pending' %}
+            생성 진행
+          {% elif edition.generation_status == 'input_received' %}
+            기록 접수
+          {% else %}
+            생성 완료
+          {% endif %}
         </span>
         <span class="status-badge {% if edition.publication_state == 'published' %}status-published{% elif edition.publication_state == 'rejected' %}status-rejected{% else %}status-waiting{% endif %}">
-          발행: {{ edition.publication_state }}
+          발행 상태:
+          {% if edition.publication_state == 'published' %}
+            발행 완료
+          {% elif edition.publication_state == 'rejected' %}
+            반려됨
+          {% else %}
+            발행 대기
+          {% endif %}
         </span>
       </div>
     </div>
@@ -29,7 +49,7 @@
 
   {% if error is defined and error %}
   <div class="alert alert-error" role="alert">
-    <strong>⚠️ Validation Error:</strong> {{ error }}
+    <strong>⚠️ 입력 내용을 저장할 수 없습니다:</strong> {{ error }}
   </div>
   {% endif %}
 
@@ -96,7 +116,7 @@
         {% endif %}
 
         <footer class="edition-footer">
-          <p class="provenance">{{ content.provenance_note or 'This edition was created from material supplied by the reader.' }}</p>
+          <p class="provenance">{{ content.provenance_note or '이 에디션은 독자가 제공한 기록을 바탕으로 편집되었습니다.' }}</p>
         </footer>
       </div>
     </div>
@@ -214,7 +234,7 @@
       <div class="form-group">
         <label for="field_provenance_note">기초 안내문 (provenance_note)</label>
         <input type="text" id="field_provenance_note" name="field_provenance_note"
-               value="{{ content.provenance_note if content and content.provenance_note else 'This edition was created from material supplied by the reader.' }}">
+               value="{{ content.provenance_note if content and content.provenance_note else '이 에디션은 독자가 제공한 기록을 바탕으로 편집되었습니다.' }}">
       </div>
 
       {% set prompt_obj = content.next_edition_prompt if content and content.next_edition_prompt else None %}

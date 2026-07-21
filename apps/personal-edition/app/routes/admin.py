@@ -128,10 +128,15 @@ def _validate_edition_content(structured_content: str) -> tuple[bool, str, Editi
     return True, "", validated
 
 
-def _compute_editorial_status(participant_id: str, inputs: list, editions: list, feedbacks: list) -> dict[str, Any]:
-    latest_input = inputs[0] if inputs else None
-    latest_edition = editions[0] if editions else None
-    latest_feedback = feedbacks[0] if feedbacks else None
+def _compute_editorial_status(
+    participant_id: str,
+    inputs: list[Any],
+    editions: list[Any],
+    feedbacks: list[Any] | None = None,
+) -> dict[str, Any]:
+    latest_input = inputs[-1] if inputs else None
+    latest_edition = editions[-1] if editions else None
+    latest_feedback = feedbacks[-1] if feedbacks else None
 
     if not latest_input:
         return {
@@ -161,36 +166,12 @@ def _compute_editorial_status(participant_id: str, inputs: list, editions: list,
     pub_state = latest_edition.publication_state if hasattr(latest_edition, "publication_state") else latest_edition["publication_state"]
     ed_id = latest_edition.id if hasattr(latest_edition, "id") else latest_edition["id"]
 
-    if gen_status == "failed":
+    if gen_status in ("generation_failed", "failed"):
         return {
             "status_code": "generation_failed",
             "status_label": "생성 실패",
             "status_class": "status-failed",
             "recommended_action": "오류 확인 및 재시도",
-            "recommended_action_url": f"/admin/participants/{participant_id}",
-            "latest_input": latest_input,
-            "latest_edition": latest_edition,
-            "has_feedback": False,
-        }
-
-    if gen_status == "pending_review":
-        return {
-            "status_code": "pending_review",
-            "status_label": "검토 필요",
-            "status_class": "status-pending-review",
-            "recommended_action": "에디션 검토 및 편집",
-            "recommended_action_url": f"/admin/review/{ed_id}",
-            "latest_input": latest_input,
-            "latest_edition": latest_edition,
-            "has_feedback": False,
-        }
-
-    if pub_state == "rejected":
-        return {
-            "status_code": "rejected",
-            "status_label": "반려됨",
-            "status_class": "status-rejected",
-            "recommended_action": "사유 확인 및 재초안 준비",
             "recommended_action_url": f"/admin/participants/{participant_id}",
             "latest_input": latest_input,
             "latest_edition": latest_edition,
@@ -236,6 +217,30 @@ def _compute_editorial_status(participant_id: str, inputs: list, editions: list,
             "has_feedback": False,
         }
 
+    if gen_status == "pending_review":
+        return {
+            "status_code": "pending_review",
+            "status_label": "검토 필요",
+            "status_class": "status-pending-review",
+            "recommended_action": "에디션 검토 및 편집",
+            "recommended_action_url": f"/admin/review/{ed_id}",
+            "latest_input": latest_input,
+            "latest_edition": latest_edition,
+            "has_feedback": False,
+        }
+
+    if pub_state == "rejected":
+        return {
+            "status_code": "rejected",
+            "status_label": "반려됨",
+            "status_class": "status-rejected",
+            "recommended_action": "사유 확인 및 재초안 준비",
+            "recommended_action_url": f"/admin/participants/{participant_id}",
+            "latest_input": latest_input,
+            "latest_edition": latest_edition,
+            "has_feedback": False,
+        }
+
     return {
         "status_code": "unknown",
         "status_label": "기록 대기",
@@ -269,7 +274,7 @@ def admin_access_submit(
     secret = secret.strip()
     if not secret or not verify_admin_secret(secret):
         resp, _ = _render_with_csrf(request, "admin_access.html", {
-            "error": "Invalid admin secret. (올바르지 않은 관리자 비밀번호입니다.)",
+            "error": "올바르지 않은 관리자 비밀번호입니다.",
         })
         return resp
 
@@ -305,9 +310,12 @@ def admin_dashboard(request: Request):
             p_id = p["id"]
             inputs = input_repo.get_inputs_by_participant(conn, p_id)
             editions = ed_repo.get_editions_by_participant(conn, p_id)
-            feedbacks = []
-            if editions:
-                feedbacks = fb_repo.get_feedback_by_edition(conn, editions[0].id)
+            latest_input = inputs[-1] if inputs else None
+            latest_edition = editions[-1] if editions else None
+            feedbacks = (
+                fb_repo.get_feedback_by_edition(conn, latest_edition.id)
+                if latest_edition else []
+            )
 
             status_info = _compute_editorial_status(p_id, inputs, editions, feedbacks)
 
@@ -327,8 +335,8 @@ def admin_dashboard(request: Request):
             queue_items.append({
                 "participant": p,
                 "status_info": status_info,
-                "latest_input": inputs[0] if inputs else None,
-                "latest_edition": editions[0] if editions else None,
+                "latest_input": latest_input,
+                "latest_edition": latest_edition,
                 "has_feedback": bool(feedbacks),
             })
 
@@ -371,7 +379,7 @@ def admin_dashboard(request: Request):
 
 
 @router.get("/participants/{participant_id}")
-def admin_participant_detail(request: Request, participant_id: str):
+def admin_participant_detail(request: Request, participant_id: str, error: str = Query("")):
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
@@ -387,17 +395,32 @@ def admin_participant_detail(request: Request, participant_id: str):
         editions = ed_repo.get_editions_by_participant(conn, participant_id)
         inputs = input_repo.get_inputs_by_participant(conn, participant_id)
 
+        latest_input = inputs[-1] if inputs else None
+        latest_edition = editions[-1] if editions else None
+        latest_feedbacks = (
+            fb_repo.get_feedback_by_edition(conn, latest_edition.id)
+            if latest_edition else []
+        )
+
         all_feedbacks = []
         for ed in editions:
             fbs = fb_repo.get_feedback_by_edition(conn, ed.id)
             for f in fbs:
-                all_feedbacks.append((ed, f))
+                try:
+                    dirs = json.loads(f.direction_choices) if isinstance(f.direction_choices, str) else f.direction_choices
+                except Exception:
+                    dirs = []
+                all_feedbacks.append({
+                    "edition": ed,
+                    "record": f,
+                    "direction": dirs,
+                })
 
         status_info = _compute_editorial_status(
             participant_id,
             inputs,
             editions,
-            [f for _, f in all_feedbacks]
+            latest_feedbacks
         )
 
         gen_runs = conn.execute(
@@ -406,13 +429,23 @@ def admin_participant_detail(request: Request, participant_id: str):
     finally:
         conn.close()
 
+    generation_error = None
+    if error == "generation_failed":
+        generation_error = {
+            "title": "초안을 생성하지 못했습니다.",
+            "detail": "기존 기록과 에디션은 변경되지 않았습니다. 기술 정보를 확인한 뒤 다시 시도할 수 있습니다.",
+        }
+
     context: dict[str, Any] = {
         "participant": participant,
         "editions": editions,
         "inputs": inputs,
+        "latest_input": latest_input,
+        "latest_edition": latest_edition,
         "feedbacks_with_editions": all_feedbacks,
         "status_info": status_info,
         "generation_runs": gen_runs,
+        "generation_error": generation_error,
         "feedback_map": MAP_FEEDBACK_DIRECTION_KO,
     }
     resp, _ = _render_with_csrf(request, "admin_participant_detail.html", context)
@@ -432,10 +465,11 @@ def admin_generate(
 
     if not _validate_csrf(request, csrf_token):
         return RedirectResponse(
-            url=f"/admin/participants/{participant_id}", status_code=303
+            url=f"/admin/participants/{participant_id}?error=csrf", status_code=303
         )
 
     conn = get_connection(request.app.state.db_path)
+    error_code = None
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
         if participant is None:
@@ -453,8 +487,14 @@ def admin_generate(
         result = service.generate_edition(conn, request=gen_request)
     except Exception as exc:
         logger.error("Generation failed for participant %s: %s", participant_id, exc)
+        error_code = "generation_failed"
     finally:
         conn.close()
+
+    if error_code:
+        return RedirectResponse(
+            url=f"/admin/participants/{participant_id}?error={error_code}", status_code=303
+        )
 
     return RedirectResponse(
         url=f"/admin/participants/{participant_id}", status_code=303
@@ -487,6 +527,19 @@ def admin_review_page(request: Request, edition_id: str):
         )
 
         feedbacks = fb_repo.get_feedback_by_edition(conn, edition_id)
+        parsed_feedbacks = []
+        for f in feedbacks:
+            try:
+                dirs = json.loads(f.direction_choices) if isinstance(f.direction_choices, str) else f.direction_choices
+            except Exception:
+                dirs = []
+            parsed_feedbacks.append({
+                "record": f,
+                "direction": dirs,
+                "submitted_at": f.submitted_at,
+                "selected_section_id": f.selected_section_id,
+                "free_text": f.free_text,
+            })
 
         runs = conn.execute(
             "SELECT * FROM generation_runs ORDER BY started_at DESC"
@@ -498,7 +551,7 @@ def admin_review_page(request: Request, edition_id: str):
         "edition": edition,
         "content": content,
         "participant": participant,
-        "feedbacks": feedbacks,
+        "feedbacks": parsed_feedbacks,
         "generation_runs": runs,
         "feedback_map": MAP_FEEDBACK_DIRECTION_KO,
     }

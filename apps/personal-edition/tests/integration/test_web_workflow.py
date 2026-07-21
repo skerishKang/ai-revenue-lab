@@ -847,7 +847,7 @@ class TestAdminAuthentication:
                 cookies=csrf_cookie,
             )
             assert resp.status_code == 200
-            assert "Invalid" in resp.text or "invalid" in resp.text.lower()
+            assert "Invalid" in resp.text or "invalid" in resp.text.lower() or "올바르지" in resp.text
 
     def test_admin_valid_secret_grants_access(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1178,7 +1178,7 @@ class TestAdminReviewPublishReject:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "Invalid JSON" in resp.text or "invalid" in resp.text.lower() or "Error" in resp.text
+            assert "Invalid JSON" in resp.text or "invalid" in resp.text.lower() or "Error" in resp.text or "올바르지" in resp.text or "저장할 수 없습니다" in resp.text
 
     def test_admin_edit_valid_json_wrong_schema_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1217,7 +1217,7 @@ class TestAdminReviewPublishReject:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text or "마크업" in resp.text or "저장할 수 없습니다" in resp.text
             conn = get_connection(db_path)
             try:
                 ed = ed_repo.get_edition_by_id(conn, edition_id)
@@ -1241,7 +1241,7 @@ class TestAdminReviewPublishReject:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text or "마크업" in resp.text or "저장할 수 없습니다" in resp.text
 
     def test_admin_edit_javascript_url_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1258,7 +1258,7 @@ class TestAdminReviewPublishReject:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text or "마크업" in resp.text or "저장할 수 없습니다" in resp.text
 
     def test_admin_edit_unsafe_nested_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1275,7 +1275,7 @@ class TestAdminReviewPublishReject:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
-            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text
+            assert "unsafe" in resp.text.lower() or "markup" in resp.text.lower() or "Error" in resp.text or "마크업" in resp.text or "저장할 수 없습니다" in resp.text
 
     def test_admin_edit_no_content_change_on_error(self):
         with tempfile.TemporaryDirectory() as tmp:

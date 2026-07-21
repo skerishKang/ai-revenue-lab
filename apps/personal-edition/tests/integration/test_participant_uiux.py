@@ -788,3 +788,186 @@ class TestAdminEditorialUI:
         assert "#2" in resp.text
         assert "#3" in resp.text
         assert "에디션 #3 제목" in resp.text
+
+
+class TestOperatorUIFixedContractAndNavigation:
+    """Verifies all CTO review requirements for operator navigation, latest selection, status mappings, and safe errors."""
+
+    def test_admin_navigation_branching_on_all_admin_routes(self):
+        """Admin routes use admin navigation with Personal Edition 편집실, /admin/logout, and no participant menu."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "nav-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "네비게이션 테스트")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="네비 에디션")
+
+        admin_cookies = _get_admin_session_cookie()
+        client.cookies.update(admin_cookies)
+
+        admin_paths = [
+            "/admin/",
+            f"/admin/participants/{pid}",
+            f"/admin/review/{ed.id}",
+        ]
+        for path in admin_paths:
+            resp = client.get(path)
+            assert resp.status_code == 200, f"Failed on {path}"
+            assert "Personal Edition 편집실" in resp.text
+            assert 'action="/admin/logout"' in resp.text
+            assert f'action="/p/{pid}/logout"' not in resp.text
+            assert f'href="/p/{pid}/input"' not in resp.text
+            assert f'href="/p/{pid}/history"' not in resp.text
+
+    def test_multi_input_latest_sequence_targeted_for_generation(self):
+        """Out of 3 inputs (sequences 1, 2, 3), sequence 3 (latest) is targeted in admin participant detail."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "multi-inp-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "입력3개")
+            inp1 = input_repo.create_input(conn, participant_id=pid, raw_text="첫 번째 수신 기록 텍스트 " * 5)
+            inp2 = input_repo.create_input(conn, participant_id=pid, raw_text="두 번째 수신 기록 텍스트 " * 5)
+            inp3 = input_repo.create_input(conn, participant_id=pid, raw_text="세 번째 최신 수신 기록 텍스트 " * 5)
+
+        admin_cookies = _get_admin_session_cookie()
+        client.cookies.update(admin_cookies)
+
+        resp = client.get(f"/admin/participants/{pid}")
+        assert resp.status_code == 200
+        assert f'value="{inp3.id}"' in resp.text
+        assert "기록 #3" in resp.text
+
+    def test_multi_edition_latest_edition_selection_and_status(self):
+        """Out of 3 editions (1, 2, 3), edition 3 is selected as latest edition."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "multi-ed-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "에디션3개")
+            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            ed1 = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
+            ed2 = ed_repo.create_edition(conn, participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
+            ed3 = ed_repo.create_edition(conn, participant_id=pid, edition_number=3, structured_content=json.dumps(_make_draft_payload()), rendered_title="3호")
+            fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["continue_direction"]))
+
+        admin_cookies = _get_admin_session_cookie()
+        client.cookies.update(admin_cookies)
+
+        resp = client.get("/admin/")
+        assert resp.status_code == 200
+        assert "#3" in resp.text
+
+    def test_latest_edition_feedback_only_triggers_feedback_received_status(self):
+        """Feedback on past edition does NOT trigger feedback_received status for current state."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "past-fb-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "과거피드백")
+            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            ed1 = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
+            ed_repo.update_edition_publication(conn, ed1.id, "published")
+            fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["more_practical"]))
+            ed2 = ed_repo.create_edition(conn, participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
+            ed_repo.update_edition_publication(conn, ed2.id, "published")
+
+        admin_cookies = _get_admin_session_cookie()
+        client.cookies.update(admin_cookies)
+
+        resp = client.get("/admin/")
+        assert resp.status_code == 200
+        assert "발행 완료" in resp.text
+
+    def test_generation_failed_status_mapping_and_count(self):
+        """Actual generation_failed status displays as 생성 실패 and counts in dashboard KPI."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "gen-fail-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "실패참여자")
+            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content="{}", rendered_title="실패호")
+            conn.execute("UPDATE editions SET generation_status = 'generation_failed' WHERE id = ?", (ed.id,))
+
+        admin_cookies = _get_admin_session_cookie()
+        client.cookies.update(admin_cookies)
+
+        resp = client.get("/admin/")
+        assert resp.status_code == 200
+        assert "생성 실패" in resp.text
+
+    def test_generation_exception_safe_error_and_no_mutation(self):
+        """When generation raises exception, safe Korean message is displayed and no DB mutation occurs."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "err-safe-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "오류참여자")
+            inp = input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+
+        admin_cookies = _get_admin_session_cookie()
+        csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+        client.cookies.update(admin_cookies)
+        client.cookies.update(csrf_cookie)
+
+        class FailingService:
+            def generate_edition(self, conn, request):
+                raise RuntimeError("Provider API Key Invalid Secrets!")
+
+        app.state.generation_service = FailingService()
+
+        resp = client.post(
+            f"/admin/participants/{pid}/generate",
+            data={"csrf_token": csrf_token, "input_id": inp.id},
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+        assert "초안을 생성하지 못했습니다." in resp.text
+        assert "기존 기록과 에디션은 변경되지 않았습니다." in resp.text
+        assert "Provider API Key Invalid Secrets" not in resp.text
+
+        with get_connection(db) as conn:
+            editions = ed_repo.get_editions_by_participant(conn, pid)
+            assert len(editions) == 0
+
+    def test_admin_secret_error_korean_only(self):
+        """Wrong admin secret error displays Korean message without English Invalid admin secret."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+
+        get_resp = client.get("/admin/access")
+        csrf_token = get_resp.text.split('name="csrf_token" value="')[1].split('"')[0]
+
+        resp = client.post("/admin/access", data={"secret": "wrongsecret", "csrf_token": csrf_token})
+        assert resp.status_code == 200
+        assert "올바르지 않은 관리자 비밀번호입니다." in resp.text
+        assert "Invalid admin secret." not in resp.text
+
+    def test_feedback_direction_korean_labels_synthetic_fixture(self):
+        """Feedback inspection displays Korean labels (방향 유지, 성찰·깊이감 강화) for synthetic 2+ direction choices."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "fb-label-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "피드백표시")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
+            fb_repo.create_feedback(
+                conn,
+                participant_id=pid,
+                edition_id=ed.id,
+                direction_choices=json.dumps(["continue_direction", "more_reflective"]),
+                free_text="방향 전환 희망합니다",
+            )
+
+        admin_cookies = _get_admin_session_cookie()
+        client.cookies.update(admin_cookies)
+
+        resp = client.get(f"/admin/participants/{pid}")
+        assert resp.status_code == 200
+        assert "방향 유지" in resp.text
+        assert "성찰·깊이감 강화" in resp.text
+        assert "continue_direction" not in resp.text
+        assert "more_reflective" not in resp.text
