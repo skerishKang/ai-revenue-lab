@@ -134,6 +134,45 @@ _VALID_COST_CLASSES = frozenset({
     CostClass.UNKNOWN.value,
 })
 
+_RESPONSE_FORMAT_UNSUPPORTED_CODES = frozenset({
+    "invalid_response_format",
+    "unsupported_response_format",
+    "response_format_not_supported",
+})
+
+_PARAMETER_RELATED_CODES = frozenset({
+    "parameter_not_supported",
+    "unknown_parameter",
+})
+
+_SCHEMA_REJECTED_CODES = frozenset({
+    "invalid_schema",
+    "schema_validation_failed",
+    "json_schema_failed",
+})
+
+_SCHEMA_ERROR_PARAMS = frozenset({
+    "response_format",
+    "response_format.type",
+    "response_format.json_schema",
+    "response_format[json_schema]",
+})
+
+_MAX_ERROR_BODY_BYTES = 64 * 1024
+
+
+def _canonicalize_code(raw: str) -> str:
+    s = str(raw).lower().strip()
+    s = s.replace(" ", "_").replace("-", "_")
+    return s
+
+
+def _canonicalize_param(raw: str) -> str:
+    s = str(raw).lower().strip()
+    s = s.replace(" ", "_").replace("-", "_")
+    s = s.replace("[", ".").replace("]", "")
+    return s
+
 
 class ExternalProvider:
     """OpenAI-compatible provider using stdlib urllib.
@@ -150,6 +189,7 @@ class ExternalProvider:
         model: str,
         timeout_seconds: int = 120,
         cost_class: CostClass = CostClass.FREE,
+        response_format_mode: str = "json_schema",
     ) -> None:
         if not base_url:
             raise ValueError("base_url must be a non-empty string")
@@ -164,11 +204,17 @@ class ExternalProvider:
                 f"cost_class must be one of {sorted(_VALID_COST_CLASSES)}, "
                 f"got '{cost_class.value}'"
             )
+        if response_format_mode not in ("json_schema", "json_object"):
+            raise ValueError(
+                f"response_format_mode must be 'json_schema' or 'json_object', "
+                f"got '{response_format_mode}'"
+            )
         self._endpoint = _normalize_endpoint(base_url)
         self._api_key = api_key
         self._model = model
         self._timeout = timeout_seconds
         self._cost_class = cost_class
+        self._response_format_mode = response_format_mode
         self._ssl_ctx = ssl.create_default_context()
 
     @property
@@ -227,6 +273,7 @@ class ExternalProvider:
             task_name=task_name,
             system_prompt=system_prompt,
             user_payload=user_payload,
+            response_schema=response_schema,
         )
         raw_bytes = json.dumps(body, ensure_ascii=False).encode("utf-8")
         req = urllib.request.Request(
@@ -277,7 +324,28 @@ class ExternalProvider:
         task_name: str,
         system_prompt: str,
         user_payload: dict,
+        response_schema: type[BaseModel] | None = None,
     ) -> dict[str, Any]:
+        if self._response_format_mode == "json_schema":
+            if response_schema is None:
+                raise ValueError(
+                    "json_schema mode requires a non-None response_schema; "
+                    "pass a Pydantic BaseModel subclass or switch to "
+                    "json_object mode"
+                )
+            schema = response_schema.model_json_schema()
+            schema_name = response_schema.__name__
+            response_format: dict[str, Any] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": schema_name,
+                    "strict": True,
+                    "schema": schema,
+                },
+            }
+        else:
+            response_format = {"type": "json_object"}
+
         return {
             "model": self._model,
             "messages": [
@@ -287,7 +355,7 @@ class ExternalProvider:
                     "content": json.dumps(user_payload, ensure_ascii=False),
                 },
             ],
-            "response_format": {"type": "json_object"},
+            "response_format": response_format,
         }
 
     def _parse_response(
@@ -398,10 +466,55 @@ class ExternalProvider:
                 start, request_id, ProviderErrorCategory.PROVIDER_ERROR,
                 "provider server error",
             )
+        if code in (400, 422):
+            category = self._classify_schema_error(exc)
+            if category is not None:
+                return self._failure(start, request_id, category, str(category.value))
         return self._failure(
             start, request_id, ProviderErrorCategory.PROVIDER_ERROR,
             "provider returned HTTP error",
         )
+
+    def _classify_schema_error(
+        self, exc: urllib.error.HTTPError
+    ) -> ProviderErrorCategory | None:
+        """Inspect a 4xx error body safely for schema-related rejection signals.
+
+        Only allowlisted ``code``, ``type``, and ``param`` fields are checked.
+        The raw body, free-text messages, API keys, and endpoint secrets are
+        never returned or logged.  The body is limited to
+        ``_MAX_ERROR_BODY_BYTES`` to prevent resource exhaustion.
+        """
+        try:
+            raw = exc.read(_MAX_ERROR_BODY_BYTES + 1)
+            if len(raw) > _MAX_ERROR_BODY_BYTES:
+                return None
+            body = json.loads(raw.decode("utf-8"))
+        except Exception:
+            return None
+
+        if not isinstance(body, dict):
+            return None
+
+        error_obj = body.get("error")
+        if not isinstance(error_obj, dict):
+            return None
+
+        err_code = _canonicalize_code(error_obj.get("code", ""))
+        err_param = _canonicalize_param(error_obj.get("param", ""))
+
+        if err_code in _RESPONSE_FORMAT_UNSUPPORTED_CODES:
+            return ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+        if err_code in _PARAMETER_RELATED_CODES:
+            if err_param in _SCHEMA_ERROR_PARAMS:
+                return ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+            return None
+        if err_code in _SCHEMA_REJECTED_CODES:
+            return ProviderErrorCategory.SCHEMA_REJECTED
+        if err_param in _SCHEMA_ERROR_PARAMS:
+            return ProviderErrorCategory.SCHEMA_REJECTED
+
+        return None
 
     def _handle_url_error(
         self,

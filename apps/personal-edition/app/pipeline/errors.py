@@ -93,6 +93,8 @@ _CATEGORY_MESSAGES = {
     ProviderErrorCategory.RATE_LIMIT: "rate limit exceeded",
     ProviderErrorCategory.AUTH_FAILURE: "authentication or authorization failed",
     ProviderErrorCategory.REFUSAL: "provider refused the request due to content policy",
+    ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED: "provider does not support the requested response format",
+    ProviderErrorCategory.SCHEMA_REJECTED: "provider rejected the request schema",
     ProviderErrorCategory.UNKNOWN: "unexpected provider error",
 }
 

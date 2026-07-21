@@ -56,6 +56,12 @@ class TestClassifyFailure:
     def test_none_error_is_model_quality(self):
         assert _classify_failure("failed", None) == "model_quality"
 
+    def test_response_format_unsupported_is_provider(self):
+        assert _classify_failure("provider_failed", "response_format_unsupported") == "provider"
+
+    def test_schema_rejected_is_provider(self):
+        assert _classify_failure("provider_failed", "schema_rejected") == "provider"
+
 
 class TestBenchmarkDbSetup:
     def test_creates_benchmark_table(self):

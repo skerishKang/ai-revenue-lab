@@ -38,6 +38,7 @@ def _build_provider():
             model=settings.ai_model,
             timeout_seconds=settings.ai_timeout_seconds,
             cost_class=cost_class,
+            response_format_mode=settings.ai_response_format_mode,
         )
     raise ValueError(f"Unknown AI_PROVIDER: {settings.ai_provider}")
 

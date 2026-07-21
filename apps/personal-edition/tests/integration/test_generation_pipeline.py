@@ -869,12 +869,135 @@ class TestAtomicPersistence:
         assert follow_up_result.succeeded is False
         assert follow_up_result.edition_id is None
 
-        fb_p2_after = fb_repo.get_feedback_by_id(conn, fb_p2.id)
-        assert fb_p2_after.applied_to_next_edition == 0
+        fb_after = fb_repo.get_feedback_by_id(conn, fb_p2.id)
+        assert fb_after.applied_to_next_edition == 0
 
         p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
         assert len(p1_editions) == 1
         conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Issue #42: provider capability error accounting through the real pipeline
+# ---------------------------------------------------------------------------
+
+class TestProviderCapabilityErrorAccounting:
+    """Durable accounting for RESPONSE_FORMAT_UNSUPPORTED and SCHEMA_REJECTED.
+
+    Each category gets its own isolated file-backed SQLite DB to prove:
+    - exactly 1 provider call
+    - exactly 1 generation_run row
+    - retry_count == 0
+    - privacy-safe static error message
+    - data survives close/reopen
+    """
+
+    def _make_capability_provider(self, error_category):
+        from app.domain.models import ProviderResult
+        from app.domain.enums import CostClass
+
+        class CapProvider:
+            provider = "external"
+            model = "test-model"
+            call_count = 0
+
+            def generate_structured(self, **kwargs):
+                self.call_count += 1
+                return ProviderResult(
+                    provider="external",
+                    advertised_model="test-model",
+                    cost_class=CostClass.FREE,
+                    latency_seconds=0.1,
+                    retry_count=0,
+                    request_id=kwargs.get("request_id", "r"),
+                    error_category=error_category,
+                    error_message=str(error_category.value),
+                    success=False,
+                )
+
+        return CapProvider()
+
+    def _run_and_verify(self, tmp_path, expected_category):
+        from app.pipeline.errors import is_retryable, safe_error_message
+
+        db_path = str(tmp_path / "capability_test.db")
+        conn = get_connection(db_path)
+        apply_migrations(conn, "migrations")
+
+        _create_participant(conn)
+        inp = _create_input(conn)
+
+        provider = self._make_capability_provider(expected_category)
+        assert is_retryable(expected_category) is False
+
+        service = GenerationService(provider=provider)
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                is_follow_up=False,
+                allow_short_sample=True,
+            ),
+        )
+        assert result.succeeded is False
+
+        expected_message = safe_error_message(expected_category, "ignored raw text")
+
+        # --- Verify on first connection ---
+        assert provider.call_count == 1
+
+        count_row = conn.execute(
+            "SELECT COUNT(*) AS count FROM generation_runs"
+        ).fetchone()
+        assert count_row["count"] == 1
+
+        row = conn.execute(
+            "SELECT success, retry_count, validation_status, "
+            "error_category, error_message FROM generation_runs LIMIT 1"
+        ).fetchone()
+        assert row["success"] == 0
+        assert row["retry_count"] == 0
+        assert row["validation_status"] == "provider_failed"
+        assert row["error_category"] == expected_category.value
+        assert row["error_message"] == expected_message
+
+        forbidden = ("api_key", "bearer", "authorization", "https://", "http://", "raw_body", "ignored raw text")
+        for kw in forbidden:
+            assert kw not in (row["error_message"] or "")
+
+        conn.close()
+
+        # --- Reopen same file DB and re-verify ---
+        reopened = get_connection(db_path)
+
+        count_row2 = reopened.execute(
+            "SELECT COUNT(*) AS count FROM generation_runs"
+        ).fetchone()
+        assert count_row2["count"] == 1
+
+        row2 = reopened.execute(
+            "SELECT success, retry_count, validation_status, "
+            "error_category, error_message FROM generation_runs LIMIT 1"
+        ).fetchone()
+        assert row2["success"] == 0
+        assert row2["retry_count"] == 0
+        assert row2["validation_status"] == "provider_failed"
+        assert row2["error_category"] == expected_category.value
+        assert row2["error_message"] == expected_message
+
+        reopened.close()
+        os.unlink(db_path)
+
+    def test_response_format_unsupported_durable_accounting(self, tmp_path):
+        self._run_and_verify(
+            tmp_path, ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED
+        )
+
+    def test_schema_rejected_durable_accounting(self, tmp_path):
+        self._run_and_verify(
+            tmp_path, ProviderErrorCategory.SCHEMA_REJECTED
+        )
 
     def test_pending_prior_edition_rejected(self):
         bundle = load_bundle("korean_founder")

@@ -45,3 +45,5 @@ class ProviderErrorCategory(StrEnum):
     AUTH_FAILURE = "auth_failure"
     REFUSAL = "refusal"
     CONNECTION_ERROR = "connection_error"
+    RESPONSE_FORMAT_UNSUPPORTED = "response_format_unsupported"
+    SCHEMA_REJECTED = "schema_rejected"
