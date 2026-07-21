@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.abspath(_DIR))
 from app.db import get_connection
 from app.domain.enums import ProviderErrorCategory
 from app.pipeline.errors import NOT_ATTEMPTED, VALIDATION_FAILED, VALIDATION_PASSED
+from app.pipeline.errors import GroundingError, DraftValidationError
 from app.pipeline.fixtures import list_bundles, load_bundle
 from app.pipeline.service import GenerationRequest, GenerationService
 from scripts.benchmark import (
@@ -33,6 +34,8 @@ from scripts.benchmark import (
     _classify_validation_failure,
     _create_benchmark_table,
     _ensure_participant,
+    _extract_validation_findings,
+    _findings_from_outcome,
     _provider_info,
     _setup_benchmark_db,
     _stage_provider_call_count,
@@ -425,8 +428,8 @@ class TestPipelineStageTracking:
             db_path=":memory:",
         )
         r = results[0]
-        assert "plan_attempted" in r
-        assert "draft_attempted" in r
+        assert r["plan_attempted"] is True
+        assert r["draft_attempted"] is True
         assert isinstance(r["plan_attempted"], bool)
         assert isinstance(r["draft_attempted"], bool)
 
@@ -443,7 +446,7 @@ class TestPipelineStageTracking:
         assert r["failure_detail"] is None
         assert isinstance(r["generation_run_refs"], list)
         assert isinstance(r["provider_call_count"], int)
-        assert r["provider_call_count"] >= 1
+        assert r["provider_call_count"] == 1
 
     def test_adversarial_grounding_has_stage_tracking(self):
         results = run_benchmark(
@@ -453,10 +456,10 @@ class TestPipelineStageTracking:
             db_path=":memory:",
         )
         r = results[0]
-        assert "plan_attempted" in r
-        assert "draft_attempted" in r
-        assert "failure_stage" in r
-        assert "failure_detail" in r
+        assert isinstance(r["plan_attempted"], bool)
+        assert isinstance(r["draft_attempted"], bool)
+        assert isinstance(r["failure_stage"], str) or r["failure_stage"] is None
+        assert isinstance(r["failure_detail"], str) or r["failure_detail"] is None
 
     def test_db_has_failure_detail_column(self):
         conn = _setup_benchmark_db(":memory:")
@@ -552,9 +555,9 @@ class TestTokenAccounting:
             db_path=":memory:",
         )
         r = results[0]
-        assert "input_tokens" in r
-        assert "output_tokens" in r
-        assert "total_tokens" in r
+        assert r["input_tokens"] is None or isinstance(r["input_tokens"], int)
+        assert r["output_tokens"] is None or isinstance(r["output_tokens"], int)
+        assert r["total_tokens"] is None or isinstance(r["total_tokens"], int)
         if r["success"]:
             assert r["total_tokens"] is None or isinstance(r["total_tokens"], int)
 
@@ -568,8 +571,6 @@ class TestProviderCallAccounting:
             db_path=":memory:",
         )
         r = results[0]
-        assert "provider_call_count" in r
-        assert "generation_run_refs" in r
         assert isinstance(r["provider_call_count"], int)
         assert isinstance(r["generation_run_refs"], list)
         assert r["provider_call_count"] == len(r["generation_run_refs"])
@@ -582,8 +583,8 @@ class TestProviderCallAccounting:
             db_path=":memory:",
         )
         r = results[0]
-        assert "generation_run_refs" in r
-        assert "provider_call_count" in r
+        assert isinstance(r["generation_run_refs"], list)
+        assert isinstance(r["provider_call_count"], int)
         assert r["provider_call_count"] == len(r["generation_run_refs"])
 
     def test_generation_run_refs_are_strings(self):
@@ -823,7 +824,7 @@ class TestFeedbackSetupPreservation:
         assert row["failure_detail"] == "first_edition_setup_failed"
         assert row["failure_stage"] == "plan"
         assert row["latency_seconds"] > 0
-        assert row["retry_count"] >= 0
+        assert row["retry_count"] == 2
         conn.close()
 
     def test_setup_failure_preserves_tokens(self):
@@ -943,7 +944,7 @@ class TestFeedbackFullAggregation:
         )
         r = results[0]
         assert isinstance(r["retry_count"], int)
-        assert r["retry_count"] >= 0
+        assert r["retry_count"] == 0
 
     def test_actual_provider_calls_include_all_four_stages(self):
         results = run_benchmark(
@@ -953,7 +954,7 @@ class TestFeedbackFullAggregation:
             db_path=":memory:",
         )
         r = results[0]
-        assert r["provider_call_count"] >= 3
+        assert r["provider_call_count"] == 3
         assert r["provider_call_count"] == len(r["generation_run_refs"])
 
     def test_setup_failure_preserves_upstream_detail(self):
@@ -964,8 +965,8 @@ class TestFeedbackFullAggregation:
             db_path=":memory:",
         )
         r = results[0]
-        assert "upstream_failure_stage" in r
-        assert "upstream_failure_detail" in r
+        assert isinstance(r["upstream_failure_stage"], str) or r["upstream_failure_stage"] is None
+        assert isinstance(r["upstream_failure_detail"], str) or r["upstream_failure_detail"] is None
         if r["failure_category"] == "pipeline_prevented":
             assert r["upstream_failure_stage"] is not None
             assert r["upstream_failure_detail"] is not None
@@ -994,9 +995,9 @@ class TestGroundingClassification:
             db_path=":memory:",
         )
         r = results[0]
-        assert "failure_detail" in r
-        assert "case_id" in r
-        assert "phase_name" in r
+        assert isinstance(r["failure_detail"], str) or r["failure_detail"] is None
+        assert isinstance(r["case_id"], str)
+        assert isinstance(r["phase_name"], str)
 
 
 class TestCasePhaseIdentity:
@@ -1156,7 +1157,7 @@ class TestAggregateContract:
             )
             report = json.loads(open(output_path).read())
             agg = report["aggregate"]
-            assert agg["provider_call_count"] >= 3
+            assert agg["provider_call_count"] == 3
             assert agg["phase_result_count"] == 1
         finally:
             os.unlink(output_path)
@@ -1433,21 +1434,17 @@ class TestRepairPhaseSuccessHandling:
         from unittest.mock import patch
         with patch("scripts.benchmark._build_repair_provider", return_value=fail_provider):
             from scripts.benchmark import _run_validator_feedback_repair
-            case_id = "bench-test:fail:validator_feedback_repair:0"
-            try:
-                results = _run_validator_feedback_repair(
-                    settings=settings,
-                    fixture=fixture,
-                    db_conn=conn,
-                    participant_id=pid,
-                    input_id=inp_id,
-                    run_index=0,
-                    benchmark_name="bench-test",
-                )
-                failed_phase = [r for r in results if not r["success"]]
-                assert len(failed_phase) >= 1
-            except Exception:
-                pass
+            results = _run_validator_feedback_repair(
+                settings=settings,
+                fixture=fixture,
+                db_conn=conn,
+                participant_id=pid,
+                input_id=inp_id,
+                run_index=0,
+                benchmark_name="bench-test",
+            )
+            failed_phase = [r for r in results if not r["success"]]
+            assert len(failed_phase) == 1
         conn.close()
 
 
@@ -1465,8 +1462,8 @@ class TestCaseLevelResult:
         assert cr["case_id"] == case_ids[0]
         assert cr["case_success"] is True
         assert cr["case_failure_category"] is None
-        assert cr["case_provider_call_count"] >= 1
-        assert cr["case_generation_run_count"] >= 1
+        assert cr["case_provider_call_count"] == 1
+        assert cr["case_generation_run_count"] == 1
 
     def test_repair_case_aggregates_three_phases(self):
         results = run_benchmark(
@@ -1481,7 +1478,7 @@ class TestCaseLevelResult:
         assert cr["case_success"] is True
         phase_count = sum(1 for r in results if r["case_id"] == case_ids[0])
         assert phase_count == 3
-        assert cr["case_provider_call_count"] >= 2
+        assert cr["case_provider_call_count"] == 3
 
     def test_case_success_requires_all_phases_success_or_expected_rejection(self):
         results = run_benchmark(
@@ -1573,3 +1570,162 @@ class TestCLIAccounting:
             env={**os.environ, "AI_PROVIDER": "mock", "PYTHONPATH": pkg_dir},
         )
         assert result.returncode == 0
+
+    def test_forced_provider_failure_exits_nonzero(self):
+        import subprocess
+        import sys as _sys
+        pkg_dir = _DIR
+        result = subprocess.run(
+            [_sys.executable, "-m", "scripts.benchmark", "run",
+             "first_edition", "--fixture", "korean_founder",
+             "--db", ":memory:"],
+            capture_output=True, text=True,
+            cwd=pkg_dir,
+            env={**os.environ, "AI_PROVIDER": "mock", "PYTHONPATH": pkg_dir,
+                 "BENCHMARK_FORCE_FAILURE": "provider"},
+        )
+        assert result.returncode != 0
+
+    def test_forced_model_quality_failure_exits_nonzero(self):
+        import subprocess
+        import sys as _sys
+        pkg_dir = _DIR
+        result = subprocess.run(
+            [_sys.executable, "-m", "scripts.benchmark", "run",
+             "editorial_plan", "--fixture", "korean_founder",
+             "--db", ":memory:"],
+            capture_output=True, text=True,
+            cwd=pkg_dir,
+            env={**os.environ, "AI_PROVIDER": "mock", "PYTHONPATH": pkg_dir,
+                 "BENCHMARK_FORCE_FAILURE": "model_quality"},
+        )
+        assert result.returncode != 0
+
+
+class TestGroundingExactClassification:
+    def test_unknown_segment_is_grounding(self):
+        from app.domain.models import EditorialPlan, EditionContent, InputSegment
+        from app.pipeline import validators as val_mod
+        from app.pipeline.errors import DraftValidationError
+        segments = [
+            InputSegment(segment_id="s001", text="hello", start_offset=0, end_offset=5),
+            InputSegment(segment_id="s002", text="world", start_offset=6, end_offset=11),
+        ]
+        plan = EditorialPlan(
+            plan_version="1",
+            language="ko",
+            central_theme="test theme",
+            reader_value="test value",
+            opening_intent="test intent",
+            sections=[
+                {"section_id": "sec1", "working_title": "T1", "purpose": "I1", "source_segment_ids": ["s001"]},
+                {"section_id": "sec2", "working_title": "T2", "purpose": "I2", "source_segment_ids": ["s002"]},
+            ],
+            highlighted_insight="insight",
+        )
+        draft = EditionContent(
+            content_version="test-v1",
+            language="ko",
+            edition_title="Test",
+            publication_title="Pub",
+            deck="Deck",
+            opening="Opening text that is long enough for validation.",
+            provenance_note="test",
+            highlighted_insight="insight",
+            sections=[
+                {"section_id": "sec1", "title": "T1", "source_segment_ids": ["s001"], "paragraphs": ["p1"]},
+                {"section_id": "sec2", "title": "T2", "source_segment_ids": ["s999"], "paragraphs": ["p2"]},
+            ],
+        )
+        with pytest.raises(DraftValidationError):
+            val_mod.validate_draft(draft, plan=plan, segments=segments, is_follow_up=False)
+        exc = DraftValidationError("draft section sec2 references unknown segment id")
+        findings = _extract_validation_findings(exc)
+        assert findings[0]["rule"] == "unknown_segment_reference"
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED, findings)
+        assert cat == "model_quality"
+        assert detail == "grounding_failure"
+
+    def test_prohibited_inference_is_grounding(self):
+        from app.pipeline.errors import GroundingError
+        exc = GroundingError("prohibited invention detected in field 'edition_title': matched a prohibited token")
+        findings = _extract_validation_findings(exc)
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED, findings)
+        assert cat == "model_quality"
+        assert detail == "grounding_failure"
+
+    def test_duplicate_section_is_structural(self):
+        from app.pipeline.errors import DraftValidationError
+        exc = DraftValidationError("duplicate section_id in draft: sec1")
+        findings = _extract_validation_findings(exc)
+        assert findings[0]["rule"] == "duplicate_section_id"
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED, findings)
+        assert cat == "model_quality"
+        assert detail == "deterministic_validation"
+
+    def test_section_not_in_plan_is_structural(self):
+        from app.pipeline.errors import DraftValidationError
+        exc = DraftValidationError("draft section secX is not in the accepted plan")
+        findings = _extract_validation_findings(exc)
+        assert findings[0]["rule"] == "section_not_in_plan"
+        cat, detail = _classify_validation_failure(None, VALIDATION_FAILED, findings)
+        assert cat == "model_quality"
+        assert detail == "deterministic_validation"
+
+
+class TestDBDurability:
+    def test_benchmark_db_close_reopen_preserves_all_fields(self):
+        import sqlite3
+        from app.db import get_connection
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+            db_path = f.name
+        try:
+            run_benchmark(
+                task="editorial_plan",
+                fixture_names=["korean_founder"],
+                repeat=1,
+                db_path=db_path,
+            )
+            conn = get_connection(db_path)
+            cols = {row[1] for row in conn.execute("PRAGMA table_info(benchmark_runs)").fetchall()}
+            expected_cols = {
+                "id", "benchmark_name", "fixture_name", "run_group", "run_index",
+                "provider", "advertised_model", "task_type", "prompt_version",
+                "started_at", "completed_at", "latency_seconds", "success",
+                "failure_category", "error_category", "error_message",
+                "retry_count", "input_tokens", "output_tokens", "total_tokens",
+                "validation_result", "synthetic_result_ref",
+                "human_correction_minutes", "is_provider_failure",
+                "is_model_quality_failure", "failure_detail", "failure_stage",
+                "generation_run_refs", "provider_call_count", "case_id",
+                "phase_name", "upstream_failure_detail", "upstream_failure_stage",
+            }
+            assert expected_cols == cols
+            row = conn.execute("SELECT * FROM benchmark_runs LIMIT 1").fetchone()
+            assert row is not None
+            assert row["case_id"] is not None
+            assert row["phase_name"] == "editorial_plan"
+            assert row["provider_call_count"] == 1
+            assert row["generation_run_refs"] is not None
+            refs = json.loads(row["generation_run_refs"])
+            assert isinstance(refs, list)
+            assert len(refs) == 1
+            assert row["failure_category"] is None or isinstance(row["failure_category"], str)
+            assert row["failure_detail"] is None or isinstance(row["failure_detail"], str)
+            assert row["upstream_failure_detail"] is None or isinstance(row["upstream_failure_detail"], str)
+            assert row["upstream_failure_stage"] is None or isinstance(row["upstream_failure_stage"], str)
+            conn.close()
+            conn2 = get_connection(db_path)
+            row2 = conn2.execute("SELECT * FROM benchmark_runs LIMIT 1").fetchone()
+            assert row2 is not None
+            assert row2["case_id"] == row["case_id"]
+            assert row2["phase_name"] == row["phase_name"]
+            assert row2["provider_call_count"] == row["provider_call_count"]
+            assert row2["generation_run_refs"] == row["generation_run_refs"]
+            assert row2["failure_category"] == row["failure_category"]
+            assert row2["failure_detail"] == row["failure_detail"]
+            assert row2["upstream_failure_detail"] == row["upstream_failure_detail"]
+            assert row2["upstream_failure_stage"] == row["upstream_failure_stage"]
+            conn2.close()
+        finally:
+            os.unlink(db_path)

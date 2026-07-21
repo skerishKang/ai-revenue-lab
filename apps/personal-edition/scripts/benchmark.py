@@ -43,6 +43,7 @@ from app.db import apply_migrations, get_connection
 from app.domain.enums import ProviderErrorCategory
 from app.pipeline.errors import (
     NOT_ATTEMPTED,
+    PlanValidationError,
     PROVIDER_FAILED,
     VALIDATION_FAILED,
     VALIDATION_PASSED,
@@ -88,6 +89,25 @@ ALL_TASKS = [
 
 
 def _build_provider(settings: Settings, fixture: FixtureBundle | None = None):
+    force_failure = os.environ.get("BENCHMARK_FORCE_FAILURE")
+    if force_failure and settings.ai_provider == "mock":
+        if force_failure == "provider":
+            return MockProvider(
+                model="mock-test",
+                responses=[
+                    {"kind": "error", "task": "editorial_plan"},
+                    {"kind": "error", "task": "editorial_plan"},
+                    {"kind": "error", "task": "editorial_plan"},
+                ],
+            )
+        if force_failure == "model_quality":
+            return MockProvider(
+                model="mock-test",
+                responses=[
+                    {"kind": "payload", "task": "editorial_plan", "payload": {"invalid": True}},
+                ],
+            )
+
     if settings.ai_provider == "mock":
         model = settings.ai_model
         if fixture is not None and fixture.plan_payload and fixture.draft_payload:
@@ -203,7 +223,7 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
             ddl = row[0].upper()
             if "CHECK" in ddl and "FAILURE_CATEGORY" in ddl:
                 has_old_constraint = True
-    except Exception:
+    except sqlite3.Error:
         pass
 
     if has_old_constraint:
@@ -418,28 +438,43 @@ STRUCTURAL_RULES = frozenset({
     "paragraph_limit_exceeded",
     "field_length_exceeded",
     "continuity_violation",
-    "missing_provenance",
     "validator_rejected",
 })
+
+
+def _enhanced_grounding_rule(finding: dict[str, str]) -> str:
+    rule = finding.get("rule", "")
+    if rule in GROUNDING_RULES:
+        return rule
+    if rule == "validator_rejected":
+        msg = finding.get("message", "").lower()
+        if "prohibited" in msg:
+            return "prohibited_inference"
+        if "invented" in msg:
+            return "invented_personal_fact"
+        if "unsupported" in msg:
+            return "unsupported_grounding"
+    return rule
+
+
+def _extract_validation_findings(exc: Exception | None) -> list[dict[str, str]]:
+    if exc is None:
+        return []
+    return normalize_validation_findings(exc)
+
+
+def _findings_from_outcome(outcome) -> list[dict[str, str]]:
+    if outcome.validation_status != VALIDATION_FAILED or not outcome.error_message:
+        return []
+    exc = Exception(outcome.error_message)
+    return normalize_validation_findings(exc)
 
 
 def _classify_validation_failure(
     error_category: str | None,
     validation_status: str | None,
+    validation_findings: list[dict[str, str]] | None = None,
 ) -> tuple[str | None, str | None]:
-    """Classify a deterministic validation failure.
-
-    Returns (failure_category, failure_detail) where:
-    - grounding failures → ("model_quality", "grounding_failure")
-    - structural failures → ("model_quality", "deterministic_validation")
-    - schema mismatch from provider → ("model_quality", "schema_mismatch")
-    - invalid JSON → ("model_quality", "invalid_json")
-
-    To distinguish grounding_failure from deterministic_validation, inspect
-    the validation exception via normalize_validation_findings(). The
-    benchmark runner uses the production validator's classification when
-    available.
-    """
     if validation_status == VALIDATION_PASSED:
         return None, None
 
@@ -450,6 +485,11 @@ def _classify_validation_failure(
         return "model_quality", "invalid_json"
 
     if validation_status == VALIDATION_FAILED:
+        if validation_findings:
+            for finding in validation_findings:
+                rule = _enhanced_grounding_rule(finding)
+                if rule in GROUNDING_RULES:
+                    return "model_quality", "grounding_failure"
         return "model_quality", "deterministic_validation"
 
     if error_category in _PROVIDER_ERROR_CATEGORIES:
@@ -464,8 +504,11 @@ def _classify_validation_failure(
 def _classify_failure_detailed(
     result_validation_status: str | None,
     result_error_category: str | None,
+    validation_findings: list[dict[str, str]] | None = None,
 ) -> tuple[str | None, str | None]:
-    return _classify_validation_failure(result_error_category, result_validation_status)
+    return _classify_validation_failure(
+        result_error_category, result_validation_status, validation_findings
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -476,9 +519,10 @@ def _classify_failure_detailed(
 def _classify_failure(
     result_validation_status: str | None,
     result_error_category: str | None,
+    validation_findings: list[dict[str, str]] | None = None,
 ) -> str | None:
     category, _detail = _classify_failure_detailed(
-        result_validation_status, result_error_category
+        result_validation_status, result_error_category, validation_findings
     )
     return category
 
@@ -684,7 +728,7 @@ def _run_editorial_plan(
             )
             plan_valid = True
             combined_validation = VALIDATION_PASSED
-        except Exception:
+        except PlanValidationError:
             plan_valid = False
             combined_validation = VALIDATION_FAILED
     else:
@@ -692,8 +736,9 @@ def _run_editorial_plan(
         combined_validation = plan_outcome.validation_status or PROVIDER_FAILED
 
     combined_success = plan_valid and plan_outcome.success
+    plan_findings = _findings_from_outcome(plan_outcome) if not plan_valid else []
     failure_category, failure_detail = _classify_failure_detailed(
-        combined_validation, plan_outcome.error_category
+        combined_validation, plan_outcome.error_category, plan_findings
     )
 
     input_tokens, output_tokens = _collect_tokens(db_conn, plan_outcome.run_id)
@@ -825,8 +870,14 @@ def _run_first_edition(
         validation_result = "passed"
         ref_tag = "ok"
     else:
+        if failure_stage == "draft":
+            draft_findings = _findings_from_outcome(result.draft_run)
+        elif failure_stage == "plan":
+            draft_findings = _findings_from_outcome(result.plan_run)
+        else:
+            draft_findings = []
         failure_category, failure_detail = _classify_failure_detailed(
-            combined_validation, last_error_category
+            combined_validation, last_error_category, draft_findings
         )
         validation_result = "failed"
         ref_tag = "fail"
@@ -961,15 +1012,19 @@ def _run_feedback_second_edition(
         upstream_failure_detail = None
         if not first_result.plan_run.success and first_result.plan_run.validation_status != NOT_ATTEMPTED:
             upstream_failure_stage = "plan"
+            upstream_findings = _findings_from_outcome(first_result.plan_run)
             _, upstream_failure_detail = _classify_failure_detailed(
                 first_result.plan_run.validation_status,
                 first_result.plan_run.error_category,
+                upstream_findings,
             )
         elif not first_result.draft_run.success and first_result.draft_run.validation_status != NOT_ATTEMPTED:
             upstream_failure_stage = "draft"
+            upstream_findings = _findings_from_outcome(first_result.draft_run)
             _, upstream_failure_detail = _classify_failure_detailed(
                 first_result.draft_run.validation_status,
                 first_result.draft_run.error_category,
+                upstream_findings,
             )
 
         case_id = f"{benchmark_name}:{fixture.name}:feedback_second_edition:{run_index}"
@@ -1089,8 +1144,13 @@ def _run_feedback_second_edition(
             follow_up_result.draft_run.error_message
             or follow_up_result.plan_run.error_message
         )
+        follow_findings = _findings_from_outcome(
+            follow_up_result.draft_run
+            if follow_up_result.draft_run.validation_status == VALIDATION_FAILED
+            else follow_up_result.plan_run
+        )
         failure_category, failure_detail = _classify_failure_detailed(
-            combined_validation, last_error_category
+            combined_validation, last_error_category, follow_findings
         )
         if not follow_up_result.plan_run.success:
             failure_stage = "plan"
@@ -1255,8 +1315,14 @@ def _run_adversarial_grounding(
             last_error_message = result.draft_run.error_message
 
     completed_at = _now_iso()
+    if failure_stage == "draft":
+        adv_findings = _findings_from_outcome(result.draft_run)
+    elif failure_stage == "plan":
+        adv_findings = _findings_from_outcome(result.plan_run)
+    else:
+        adv_findings = []
     failure_category, failure_detail = _classify_failure_detailed(
-        combined_validation, last_error_category
+        combined_validation, last_error_category, adv_findings
     )
 
     validation_result = "passed" if combined_success else "failed"
@@ -1440,7 +1506,12 @@ def _run_validator_feedback_repair(
             or candidate.plan_outcome.validation_status
         )
         cand_failure_category, cand_failure_detail = _classify_failure_detailed(
-            cand_error_validation, cand_error_category
+            cand_error_validation, cand_error_category,
+            _findings_from_outcome(candidate.draft_outcome)
+            if candidate.draft_outcome.validation_status == VALIDATION_FAILED
+            else _findings_from_outcome(candidate.plan_outcome)
+            if candidate.plan_outcome.validation_status == VALIDATION_FAILED
+            else [],
         )
         cand_gen_refs = [
             r for r in [
@@ -1631,11 +1702,15 @@ def _run_validator_feedback_repair(
                 "success": False,
                 "expected_rejection_observed": False,
                 "validation_result": "unexpectedly_passed",
+                "failure_category": "benchmark_harness_failure",
+                "failure_detail": "corrupted_candidate_unexpectedly_accepted",
                 "validator_findings": [],
                 "generation_run_refs": [],
                 "provider_call_count": 0,
                 "case_id": case_id,
                 "phase_name": "repair_bad_validation",
+                "upstream_failure_stage": None,
+                "upstream_failure_detail": None,
             }
         ]
 
@@ -1739,6 +1814,7 @@ def _run_validator_feedback_repair(
     repair_category, repair_detail = _classify_failure_detailed(
         repair_outcome.validation_status,
         repair_outcome.error_category,
+        _findings_from_outcome(repair_outcome),
     ) if not repair_success else (None, None)
 
     _record_benchmark_run(
@@ -1980,6 +2056,19 @@ def run_benchmark(
             if detail:
                 detail_counts[detail] = detail_counts.get(detail, 0) + 1
 
+        case_failure_detail_counts: dict[str, int] = {}
+        phase_failure_detail_counts: dict[str, int] = {}
+        for c in case_results:
+            if c["case_failure_detail"]:
+                case_failure_detail_counts[c["case_failure_detail"]] = (
+                    case_failure_detail_counts.get(c["case_failure_detail"], 0) + 1
+                )
+        for r in results:
+            if r.get("failure_detail") and not r.get("expected_rejection_observed"):
+                phase_failure_detail_counts[r["failure_detail"]] = (
+                    phase_failure_detail_counts.get(r["failure_detail"], 0) + 1
+                )
+
         aggregate = {
             "benchmark_case_count": len(case_results),
             "benchmark_case_success_count": sum(
@@ -2016,6 +2105,8 @@ def run_benchmark(
                 if c["case_failure_category"] == "pipeline_prevented"
             ),
             "failure_detail_counts": detail_counts,
+            "case_failure_detail_counts": case_failure_detail_counts,
+            "phase_failure_detail_counts": phase_failure_detail_counts,
             "input_token_sum": _sum_non_null_tokens(
                 [r.get("input_tokens") for r in results]
             ),
