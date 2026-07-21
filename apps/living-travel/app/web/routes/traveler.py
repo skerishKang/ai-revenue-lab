@@ -2,28 +2,41 @@
 
 from __future__ import annotations
 
-import json
 from typing import Optional
 
 from fastapi import APIRouter, Cookie, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.auth import TravelerContext, get_traveler, verify_csrf
-from app.security import constant_time_compare
 from app.db import get_connection
 from app.edition_repository import get_edition_by_id, get_editions_by_traveler
 from app.feedback_repository import create_feedback, get_feedback_by_edition
+from app.pipeline.markup import check_unsafe_markup
+from app.security import constant_time_compare
 from app.security import (
     create_traveler_session,
+    generate_csrf_token,
     invalidate_traveler_session,
     validate_traveler_token,
-    validate_traveler_session,
-    generate_csrf_token,
 )
 from app.traveler_repository import get_traveler_by_id, update_traveler_preferences
 from app.web.templates import render_template
 
 router = APIRouter(prefix="/traveler", tags=["traveler"])
+
+_VALID_CONTEXTS = {"solo", "couple", "family", "group"}
+_VALID_BUDGETS = {"budget", "moderate", "premium"}
+_VALID_PACES = {"relaxed", "comfortable", "energetic"}
+_VALID_TONES = {"calm", "energetic", "luxury"}
+_VALID_LENGTHS = {"short", "medium", "long"}
+_VALID_LANGUAGES = {"ko", "en", "ja", "zh"}
+
+_MAX_DESTINATION_LENGTH = 120
+_MAX_LIST_ITEMS = 12
+_MAX_LIST_ITEM_LENGTH = 80
+_MIN_NIGHTS = 1
+_MAX_NIGHTS = 30
+_PREFERENCE_ERROR = "Invalid preference submission. Review every field and try again."
 
 
 def _set_csrf_cookie(resp, csrf: str):
@@ -36,6 +49,119 @@ def _enter_page_response(error: str) -> HTMLResponse:
     resp = HTMLResponse(render_template("traveler_enter.html", {"csrf_token": csrf, "error": error}))
     _set_csrf_cookie(resp, csrf)
     return resp
+
+
+def _split_bounded_list(raw: str) -> list[str] | None:
+    values = [value.strip() for value in raw.split(",") if value.strip()]
+    if len(values) > _MAX_LIST_ITEMS:
+        return None
+    if any(len(value) > _MAX_LIST_ITEM_LENGTH for value in values):
+        return None
+    return values
+
+
+def _has_unsafe_text(values: list[str]) -> bool:
+    return any(check_unsafe_markup(value) for value in values)
+
+
+def _validate_preferences(
+    *,
+    destination: str,
+    trip_duration_nights: int,
+    interests: str,
+    trip_context: str,
+    budget_tendency: str,
+    pace_preference: str,
+    exclusions: str,
+    tone_preference: str,
+    length_preference: str,
+    preferred_language: str,
+) -> dict | None:
+    clean_destination = destination.strip()
+    interest_list = _split_bounded_list(interests)
+    exclusion_list = _split_bounded_list(exclusions)
+
+    if not clean_destination or len(clean_destination) > _MAX_DESTINATION_LENGTH:
+        return None
+    if not _MIN_NIGHTS <= trip_duration_nights <= _MAX_NIGHTS:
+        return None
+    if interest_list is None or exclusion_list is None:
+        return None
+    if trip_context not in _VALID_CONTEXTS:
+        return None
+    if budget_tendency not in _VALID_BUDGETS:
+        return None
+    if pace_preference not in _VALID_PACES:
+        return None
+    if tone_preference not in _VALID_TONES:
+        return None
+    if length_preference not in _VALID_LENGTHS:
+        return None
+    if preferred_language not in _VALID_LANGUAGES:
+        return None
+
+    free_text_values = [clean_destination, *interest_list, *exclusion_list]
+    if _has_unsafe_text(free_text_values):
+        return None
+
+    return {
+        "destination": clean_destination,
+        "trip_duration_nights": trip_duration_nights,
+        "interests": interest_list,
+        "trip_context": trip_context,
+        "budget_tendency": budget_tendency,
+        "pace_preference": pace_preference,
+        "exclusions": exclusion_list,
+        "tone_preference": tone_preference,
+        "length_preference": length_preference,
+        "preferred_language": preferred_language,
+    }
+
+
+def _dashboard_response(
+    traveler_ctx: TravelerContext,
+    *,
+    error: str = "",
+    status_code: int = 200,
+) -> HTMLResponse:
+    conn = get_connection()
+    try:
+        traveler = get_traveler_by_id(conn, traveler_ctx.traveler_id)
+        if not traveler or traveler.status != "active":
+            return HTMLResponse(
+                render_template("404.html", {}),
+                status_code=404,
+                headers={"Cache-Control": "no-store"},
+            )
+
+        editions = get_editions_by_traveler(conn, traveler_ctx.traveler_id)
+        published = [edition for edition in editions if edition.publication_state == "published"]
+        latest = published[-1] if published else None
+        pending_deactivation = conn.execute(
+            "SELECT id FROM deactivation_requests "
+            "WHERE traveler_id = ? AND status = 'pending' LIMIT 1",
+            (traveler_ctx.traveler_id,),
+        ).fetchone()
+
+        return HTMLResponse(
+            render_template(
+                "traveler_dashboard.html",
+                {
+                    "traveler": traveler,
+                    "latest_edition": latest,
+                    "published_count": len(published),
+                    "csrf_token": traveler_ctx.csrf_token,
+                    "error": error,
+                    "interest_text": ", ".join(traveler.interests or []),
+                    "exclusion_text": ", ".join(traveler.exclusions or []),
+                    "has_deactivation_request": pending_deactivation is not None,
+                },
+            ),
+            status_code=status_code,
+            headers={"Cache-Control": "no-store"},
+        )
+    finally:
+        conn.close()
 
 
 @router.get("/enter")
@@ -60,7 +186,7 @@ async def traveler_enter_submit(
         traveler_id = validate_traveler_token(conn, token.strip())
         if not traveler_id:
             return _enter_page_response("Invalid or deactivated token")
-        session_id, raw_token, csrf = create_traveler_session(conn, traveler_id)
+        _session_id, raw_token, csrf = create_traveler_session(conn, traveler_id)
     finally:
         conn.close()
     resp = RedirectResponse(url="/traveler/", status_code=303)
@@ -93,22 +219,7 @@ async def traveler_dashboard(
     request: Request,
     traveler_ctx: TravelerContext = __import__("fastapi").Depends(get_traveler),
 ):
-    conn = get_connection()
-    try:
-        traveler = get_traveler_by_id(conn, traveler_ctx.traveler_id)
-        if not traveler or traveler.status != "active":
-            return HTMLResponse(render_template("404.html", {}), status_code=404)
-        editions = get_editions_by_traveler(conn, traveler_ctx.traveler_id)
-        published = [e for e in editions if e.publication_state == "published"]
-        latest = published[-1] if published else None
-        return HTMLResponse(render_template("traveler_dashboard.html", {
-            "traveler": traveler,
-            "latest_edition": latest,
-            "published_count": len(published),
-            "csrf_token": traveler_ctx.csrf_token,
-        }))
-    finally:
-        conn.close()
+    return _dashboard_response(traveler_ctx)
 
 
 @router.post("/preferences")
@@ -128,29 +239,32 @@ async def update_preferences(
     traveler_ctx: TravelerContext = __import__("fastapi").Depends(get_traveler),
 ):
     verify_csrf(request, csrf_token, traveler_ctx)
+
+    validated = _validate_preferences(
+        destination=destination,
+        trip_duration_nights=trip_duration_nights,
+        interests=interests,
+        trip_context=trip_context,
+        budget_tendency=budget_tendency,
+        pace_preference=pace_preference,
+        exclusions=exclusions,
+        tone_preference=tone_preference,
+        length_preference=length_preference,
+        preferred_language=preferred_language,
+    )
+    if validated is None:
+        return _dashboard_response(
+            traveler_ctx,
+            error=_PREFERENCE_ERROR,
+            status_code=422,
+        )
+
     conn = get_connection()
     try:
-        interest_list = [i.strip() for i in interests.split(",") if i.strip()] if interests else None
-        exclusion_list = [e.strip() for e in exclusions.split(",") if e.strip()] if exclusions else None
-        valid_contexts = {"solo", "couple", "family", "group"}
-        valid_budgets = {"budget", "moderate", "premium"}
-        valid_paces = {"relaxed", "comfortable", "energetic"}
-        valid_tones = {"calm", "energetic", "luxury"}
-        valid_lengths = {"short", "medium", "long"}
-        valid_langs = {"ko", "en", "ja", "zh"}
-
         update_traveler_preferences(
-            conn, traveler_ctx.traveler_id,
-            destination=destination if destination else None,
-            trip_duration_nights=trip_duration_nights if trip_duration_nights > 0 else None,
-            interests=interest_list,
-            trip_context=trip_context if trip_context in valid_contexts else None,
-            budget_tendency=budget_tendency if budget_tendency in valid_budgets else None,
-            pace_preference=pace_preference if pace_preference in valid_paces else None,
-            exclusions=exclusion_list,
-            tone_preference=tone_preference if tone_preference in valid_tones else None,
-            length_preference=length_preference if length_preference in valid_lengths else None,
-            preferred_language=preferred_language if preferred_language in valid_langs else None,
+            conn,
+            traveler_ctx.traveler_id,
+            **validated,
         )
     finally:
         conn.close()
@@ -163,29 +277,28 @@ async def deactivation_request(
     csrf_token: str = Form(...),
     traveler_ctx: TravelerContext = __import__("fastapi").Depends(get_traveler),
 ):
-    """Traveler requests account deactivation."""
+    """Create at most one durable pending deactivation request per traveler."""
     verify_csrf(request, csrf_token, traveler_ctx)
+
+    from datetime import datetime, timezone
+    from app.security import generate_high_entropy_token
+
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    request_id = "dr_" + generate_high_entropy_token(8)
+
     conn = get_connection()
     try:
-        existing = conn.execute(
-            "SELECT id FROM deactivation_requests WHERE traveler_id = ? AND status = 'pending'",
-            (traveler_ctx.traveler_id,),
-        ).fetchone()
-        if existing:
-            return RedirectResponse(url="/traveler/", status_code=303)
-
-        from datetime import datetime, timezone
-        from app.security import generate_high_entropy_token
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        req_id = "dr_" + generate_high_entropy_token(8)
-        conn.execute(
-            "INSERT INTO deactivation_requests (id, traveler_id, status, created_at) VALUES (?, ?, 'pending', ?)",
-            (req_id, traveler_ctx.traveler_id, now),
-        )
-        conn.commit()
+        with conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO deactivation_requests "
+                "(id, traveler_id, status, created_at, updated_at) "
+                "VALUES (?, ?, 'pending', ?, ?)",
+                (request_id, traveler_ctx.traveler_id, now, now),
+            )
     finally:
         conn.close()
-    return HTMLResponse("<html><body><p>Deactivation request submitted. An operator will review it.</p><a href='/traveler/'>Return to dashboard</a></body></html>")
+
+    return RedirectResponse(url="/traveler/", status_code=303)
 
 
 @router.get("/editions")
