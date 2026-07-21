@@ -1,8 +1,9 @@
-"""Blocker A â€” Real public service concurrency tests.
+"""Blocker A â€” production service concurrency contracts.
 
-Verifies that concurrent calls to generate_personal_branch() with the same
-idempotency key using separate SQLite connections produce exactly one result
-with no duplicate resources, no orphan records, and consistent replay.
+These tests intentionally make exactly one service call per concurrent caller.
+They reject client-owned polling/retry workarounds and require the service plus
+SQLite persistence layer to provide idempotent replay and distinct durable
+episode-number reservations.
 """
 from __future__ import annotations
 
@@ -11,24 +12,18 @@ import sqlite3
 import tempfile
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from app.db import apply_migrations, get_connection
-from app.domain.enums import EpisodeType, CostClass
+from app.db import apply_migrations
+from app.domain.enums import CostClass, EpisodeType
 from app.domain.models import (
     CharacterRef,
-    EpisodeContent,
-    EpisodePlan,
     LocationRef,
     ProviderResult,
     ProviderUsage,
-    ScenePlan,
-    ProseBeat,
     WorldState,
-    ContinuityDelta,
-    AppliedReaderInput,
 )
 
 
@@ -40,145 +35,223 @@ def _make_conn(path: str) -> sqlite3.Connection:
     return conn
 
 
-def _seed_world(conn: sqlite3.Connection):
-    now = "2025-07-21T00:00:00Z"
-    conn.execute("INSERT INTO readers (id, display_name, status, created_at) VALUES (?, ?, 'active', ?)",
-                 ("reader-1", "Reader", now))
-    conn.execute("INSERT INTO worlds (id, version, premise, genre, world_rules, canonical_timeline, unresolved_global_questions, created_at) VALUES (?, ?, ?, ?, '[]', '[]', '[]', ?)",
-                 ("world-1", "1.0", "Test", "urban_mystery", now))
-    conn.execute("INSERT INTO characters (id, world_id, canonical_name, role, traits, age_category, status, location_id, created_at) VALUES (?, ?, ?, ?, '[]', 'adult', 'active', ?, ?)",
-                 ("char-1", "world-1", "Char", "protagonist", "loc-1", now))
-    conn.execute("INSERT INTO locations (id, world_id, name, connected_locations, created_at) VALUES (?, ?, ?, '[]', ?)",
-                 ("loc-1", "world-1", "Loc", now))
-    conn.execute("INSERT INTO canon_snapshots (id, world_id, version, episode_number, accepted, world_state_json, character_states_json, location_states_json, clue_states_json, unresolved_threads_json, created_at) VALUES (?, ?, '1.0', 1, 1, '{}', '{}', '{}', '{}', '[]', ?)",
-                 ("snap-1", "world-1", now))
-    conn.execute("INSERT INTO episodes (id, world_id, episode_type, episode_number, title, synopsis, scene_list_json, character_ids_json, location_ids_json, prose_json, clue_refs_json, world_state_deltas_json, unresolved_threads_json, review_state, created_at) VALUES (?, ?, 'canon', 1, 'Test', 'Test', '[]', '[]', '[]', '[]', '[]', '{}', '[]', 'published', ?)",
-                 ("ep-1", "world-1", now))
-    conn.execute("INSERT INTO canon_checkpoints (id, canon_snapshot_id, episode_number, label, created_at) VALUES (?, ?, 1, 'test', ?)",
-                 ("snap-1", "snap-1", now))
-    conn.execute("INSERT INTO reader_choices (id, reader_id, canon_episode_id, choice_text, submitted_at) VALUES (?, ?, ?, ?, ?)",
-                 ("choice-1", "reader-1", "ep-1", "Test choice", now))
+def _seed_world(conn: sqlite3.Connection) -> None:
+    now = "2026-07-21T00:00:00Z"
+    conn.execute(
+        "INSERT INTO readers (id, display_name, status, created_at) "
+        "VALUES ('reader-1', 'Reader', 'active', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO worlds "
+        "(id, version, premise, genre, world_rules, canonical_timeline, "
+        "unresolved_global_questions, created_at) "
+        "VALUES ('world-1', '1.0', 'Synthetic test world', 'urban_mystery', "
+        "'[]', '[]', '[]', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO locations "
+        "(id, world_id, name, connected_locations, created_at) "
+        "VALUES ('loc-1', 'world-1', 'Station', '[]', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO characters "
+        "(id, world_id, canonical_name, role, traits, age_category, status, "
+        "location_id, created_at) "
+        "VALUES ('char-1', 'world-1', 'Mira', 'protagonist', '[]', 'adult', "
+        "'active', 'loc-1', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO canon_snapshots "
+        "(id, world_id, version, episode_number, accepted, world_state_json, "
+        "character_states_json, location_states_json, clue_states_json, "
+        "unresolved_threads_json, created_at) "
+        "VALUES ('snap-1', 'world-1', '1.0', 1, 1, '{}', '{}', '{}', '{}', "
+        "'[]', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO episodes "
+        "(id, world_id, episode_type, episode_number, title, synopsis, "
+        "scene_list_json, character_ids_json, location_ids_json, prose_json, "
+        "clue_refs_json, world_state_deltas_json, unresolved_threads_json, "
+        "next_choice_options_json, content_classification, review_state, created_at) "
+        "VALUES ('ep-1', 'world-1', 'canon', 1, 'Opening', 'Opening', '[]', "
+        "'[]', '[]', '[]', '[]', '{}', '[]', '[]', 'adult', 'published', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO canon_checkpoints "
+        "(id, canon_snapshot_id, episode_number, label, created_at) "
+        "VALUES ('checkpoint-1', 'snap-1', 1, 'opening', ?)",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO reader_choices "
+        "(id, reader_id, canon_episode_id, choice_text, submitted_at) "
+        "VALUES ('choice-1', 'reader-1', 'ep-1', 'Inspect the station carefully', ?)",
+        (now,),
+    )
     conn.commit()
 
 
-def _make_plan_payload(episode_number=1):
-    return {
-        "plan_version": "v1", "world_id": "world-1", "world_version": "1.0",
-        "episode_type": "personal_branch", "episode_number": episode_number,
-        "title": "Branch", "synopsis": "Test branch",
-        "scenes": [{"scene_id": "s1", "title": "S", "purpose": "T",
-                     "participating_character_ids": ["char-1"], "location_id": "loc-1"}],
-        "participating_character_ids": ["char-1"], "location_ids": ["loc-1"],
-        "clue_refs": [], "next_choice_options": ["A"], "content_classification": "adult",
-    }
+def _world() -> WorldState:
+    return WorldState(
+        world_id="world-1",
+        version="1.0",
+        premise="Caller value is not authoritative",
+        characters=[
+            CharacterRef(
+                character_id="char-1",
+                canonical_name="Mira",
+                role="protagonist",
+                location_id="loc-1",
+            )
+        ],
+        locations=[LocationRef(location_id="loc-1", name="Station")],
+    )
 
 
-def _make_content_payload():
+def _plan_payload(episode_number: int) -> dict:
     return {
-        "content_version": "v1", "world_id": "world-1",
-        "episode_type": "personal_branch", "episode_number": 1,
-        "title": "Branch", "synopsis": "Test branch",
-        "scenes": [{"scene_id": "s1", "title": "S", "purpose": "T",
-                     "participating_character_ids": ["char-1"], "location_id": "loc-1"}],
-        "prose": [{"scene_id": "s1", "paragraphs": ["The branch diverged."]}],
+        "plan_version": "v1",
+        "world_id": "world-1",
+        "world_version": "1.0",
+        "episode_type": "personal_branch",
+        "episode_number": episode_number,
+        "title": f"Branch {episode_number}",
+        "synopsis": "The reader-directed investigation continues.",
+        "scenes": [
+            {
+                "scene_id": f"scene-{episode_number}",
+                "title": "Inspection",
+                "purpose": "Apply the stored reader choice",
+                "participating_character_ids": ["char-1"],
+                "location_id": "loc-1",
+            }
+        ],
+        "participating_character_ids": ["char-1"],
+        "location_ids": ["loc-1"],
         "clue_refs": [],
-        "world_state_delta": {
-            "character_knowledge_added": {}, "character_knowledge_sources": {},
-            "character_location_changed": {}, "character_movement_explanations": {},
-            "character_injuries_added": {}, "character_injuries_removed": {},
-            "character_possessions_added": {}, "character_possessions_removed": {},
-            "character_relationship_changes": {}, "clues_introduced": [],
-            "clues_resolved": [], "canon_clue_resolution_explanations": {},
-            "unresolved_threads": [], "thread_resolutions": {},
-            "branch_only_facts": ["test branch fact"],
-        },
-        "applied_reader_input": {
-            "reader_choice_id": "choice-1",
-            "choice_text": "Test choice",
-            "comment": None,
-            "applied_evidence": "The choice shaped the branch.",
-        },
-        "unresolved_threads": [],
-        "next_choice_options": ["A"],
+        "next_choice_options": ["Continue cautiously"],
         "content_classification": "adult",
     }
 
 
-class _CountingProvider:
-    """Provider with thread-safe call counter.
+def _content_payload(episode_number: int, choice_id: str, choice_text: str) -> dict:
+    scene_id = f"scene-{episode_number}"
+    return {
+        "content_version": "v1",
+        "world_id": "world-1",
+        "episode_type": "personal_branch",
+        "episode_number": episode_number,
+        "title": f"Branch {episode_number}",
+        "synopsis": "The reader-directed investigation continues.",
+        "scenes": [
+            {
+                "scene_id": scene_id,
+                "title": "Inspection",
+                "purpose": "Apply the stored reader choice",
+                "participating_character_ids": ["char-1"],
+                "location_id": "loc-1",
+            }
+        ],
+        "prose": [
+            {
+                "scene_id": scene_id,
+                "paragraphs": [
+                    f"Mira follows the instruction to {choice_text.lower()} and changes her route."
+                ],
+            }
+        ],
+        "clue_refs": [],
+        "world_state_delta": {
+            "character_knowledge_added": {},
+            "character_knowledge_sources": {},
+            "character_location_changed": {},
+            "character_movement_explanations": {},
+            "character_injuries_added": {},
+            "character_injuries_removed": {},
+            "character_possessions_added": {},
+            "character_possessions_removed": {},
+            "character_relationship_changes": {},
+            "clues_introduced": [],
+            "clues_resolved": [],
+            "canon_clue_resolution_explanations": {},
+            "unresolved_threads": [],
+            "thread_resolutions": {},
+            "branch_only_facts": [f"reader-directed-route-{episode_number}"],
+        },
+        "applied_reader_input": {
+            "reader_choice_id": choice_id,
+            "choice_text": choice_text,
+            "comment": None,
+            "applied_evidence": f"The scene explicitly follows: {choice_text}",
+        },
+        "unresolved_threads": [],
+        "next_choice_options": ["Continue cautiously"],
+        "content_classification": "adult",
+    }
 
-    Dynamically reflects the reader_choice_id from the user_payload
-    so that content matches the actual choice being applied.
-    """
 
-    def __init__(self):
-        self._plan_calls = 0
-        self._content_calls = 0
+class _BlockingCountingProvider:
+    """Thread-safe provider whose latency keeps the first claim pending."""
+
+    def __init__(self, delay: float = 0.12):
+        self._delay = delay
         self._lock = threading.Lock()
-        self._provider_name = "counting-test"
-        self._model = "counting-model"
-        self._cost_class = CostClass.FREE
+        self.plan_calls = 0
+        self.content_calls = 0
 
     @property
-    def provider_name(self):
-        return self._provider_name
+    def provider_name(self) -> str:
+        return "concurrency-contract"
 
     @property
-    def model(self):
-        return self._model
+    def model(self) -> str:
+        return "concurrency-model"
 
     @property
-    def cost_class(self):
-        return self._cost_class
+    def cost_class(self) -> CostClass:
+        return CostClass.FREE
 
-    @property
-    def total_plan_calls(self):
-        with self._lock:
-            return self._plan_calls
-
-    @property
-    def total_content_calls(self):
-        with self._lock:
-            return self._content_calls
-
-    def generate_structured(self, *, task_name, system_prompt, user_payload,
-                            response_schema, request_id):
+    def generate_structured(
+        self, *, task_name, system_prompt, user_payload, response_schema, request_id
+    ) -> ProviderResult:
+        del system_prompt
         with self._lock:
             if task_name == "episode_plan":
-                self._plan_calls += 1
+                self.plan_calls += 1
             elif task_name == "episode_content":
-                self._content_calls += 1
-
-        time.sleep(0.01)
+                self.content_calls += 1
+            else:
+                raise AssertionError(f"unexpected task: {task_name}")
+        time.sleep(self._delay)
 
         if task_name == "episode_plan":
-            ep_num = user_payload.get("episode_number", 1)
-            payload = _make_plan_payload(episode_number=ep_num)
-        elif task_name == "episode_content":
-            # Extract choice info and episode number from user_payload
-            rc = user_payload.get("reader_choice") or {}
-            choice_id = rc.get("reader_choice_id", "choice-1")
-            choice_text = rc.get("choice_text", "Test choice")
-            ep_num = user_payload.get("plan", {}).get("episode_number", 1)
-            payload = _make_content_payload()
-            payload["episode_number"] = ep_num
-            if payload.get("applied_reader_input"):
-                payload["applied_reader_input"]["reader_choice_id"] = choice_id
-                payload["applied_reader_input"]["choice_text"] = choice_text
+            payload = _plan_payload(int(user_payload["episode_number"]))
         else:
-            raise ValueError(f"unexpected task: {task_name}")
+            choice = user_payload["reader_choice"]
+            payload = _content_payload(
+                int(user_payload["plan"]["episode_number"]),
+                str(choice["reader_choice_id"]),
+                str(choice["choice_text"]),
+            )
 
         validated = response_schema.model_validate(payload)
         return ProviderResult(
-            provider=self._provider_name,
-            advertised_model=self._model,
-            cost_class=self._cost_class,
-            latency_seconds=0.01,
+            provider=self.provider_name,
+            advertised_model=self.model,
+            cost_class=self.cost_class,
+            latency_seconds=self._delay,
             retry_count=0,
             payload=validated.model_dump(),
             request_id=request_id,
             success=True,
-            usage=ProviderUsage(input_tokens=50, output_tokens=30, total_tokens=80),
+            usage=ProviderUsage(input_tokens=20, output_tokens=30, total_tokens=50),
         )
 
 
@@ -198,204 +271,138 @@ def db_path():
         pass
 
 
-def test_concurrent_same_key_one_provider_call_set(db_path):
-    """Two threads with same idempotency key: provider called exactly once, second gets replay."""
+def _call_once(
+    db_path: str,
+    provider: _BlockingCountingProvider,
+    *,
+    barrier: threading.Barrier,
+    key: str,
+    choice_id: str,
+):
     from app.pipeline.service import GenerationRequest, generate_personal_branch
 
-    provider = _CountingProvider()
-    world = WorldState(world_id="world-1", version="1.0", premise="Test",
-                       characters=[CharacterRef(character_id="char-1", canonical_name="C",
-                                                role="protagonist", location_id="loc-1")],
-                       locations=[LocationRef(location_id="loc-1", name="L")])
+    conn = _make_conn(db_path)
+    try:
+        request = GenerationRequest(
+            world=_world(),
+            episode_type=EpisodeType.PERSONAL_BRANCH,
+            reader_id="reader-1",
+            reader_choice_id=choice_id,
+            idempotency_key=key,
+        )
+        barrier.wait(timeout=5)
+        return generate_personal_branch(
+            conn,
+            provider,
+            request,
+            max_retries=0,
+            world_id="world-1",
+            canon_checkpoint_id="checkpoint-1",
+            prior_episode_id="ep-1",
+            idempotency_wait_timeout=5.0,
+            idempotency_poll_interval=0.01,
+        )
+    finally:
+        if conn.in_transaction:
+            conn.rollback()
+        conn.close()
 
-    idempotency_key = "concurrent-key-1"
-    episode_ids = set()
-    lock = threading.Lock()
 
-    def run_generation(thread_id):
-        conn = _make_conn(db_path)
-        try:
-            for attempt in range(60):
-                req = GenerationRequest(
-                    world=world, episode_type=EpisodeType.PERSONAL_BRANCH,
-                    reader_id="reader-1", reader_choice_id="choice-1",
-                    reader_choice_text="Test choice", idempotency_key=idempotency_key,
-                )
-                result = generate_personal_branch(
-                    conn, provider, req, max_retries=0,
-                    world_id="world-1", canon_checkpoint_id="snap-1", prior_episode_id="ep-1",
-                )
-                if result.succeeded:
-                    with lock:
-                        episode_ids.add(result.episode_id)
-                    return {"thread": thread_id, "succeeded": True,
-                            "episode_id": result.episode_id, "replay": attempt > 0}
-                if "already in progress" not in (result.error or ""):
-                    return {"thread": thread_id, "succeeded": False,
-                            "episode_id": None, "error": result.error}
-                time.sleep(0.5)
-            return {"thread": thread_id, "succeeded": False, "error": "timeout polling"}
-        finally:
-            if conn.in_transaction:
-                conn.rollback()
-            conn.close()
+def test_concurrent_same_key_waits_inside_service_and_replays(db_path):
+    """Two callers each invoke the service once and receive the same result."""
+    provider = _BlockingCountingProvider()
+    barrier = threading.Barrier(2)
 
     with ThreadPoolExecutor(max_workers=2) as executor:
-        f1 = executor.submit(run_generation, 0)
-        f2 = executor.submit(run_generation, 1)
-        r1 = f1.result(timeout=60)
-        r2 = f2.result(timeout=60)
+        first = executor.submit(
+            _call_once,
+            db_path,
+            provider,
+            barrier=barrier,
+            key="same-key",
+            choice_id="choice-1",
+        )
+        second = executor.submit(
+            _call_once,
+            db_path,
+            provider,
+            barrier=barrier,
+            key="same-key",
+            choice_id="choice-1",
+        )
+        results = [first.result(timeout=15), second.result(timeout=15)]
 
-    assert r1["succeeded"], f"Thread 0 failed: {r1.get('error')}"
-    assert r2["succeeded"], f"Thread 1 failed: {r2.get('error')}"
-    assert len(episode_ids) == 1, f"Expected 1 unique episode, got {len(episode_ids)}: {episode_ids}"
-
-    assert provider.total_plan_calls == 1, f"Expected 1 plan call, got {provider.total_plan_calls}"
-    assert provider.total_content_calls == 1, f"Expected 1 content call, got {provider.total_content_calls}"
-
-    conn = _make_conn(db_path)
-    ep_count = conn.execute(
-        "SELECT COUNT(*) as c FROM episodes WHERE episode_type = 'personal_branch'"
-    ).fetchone()["c"]
-    branch_count = conn.execute("SELECT COUNT(*) as c FROM branches").fetchone()["c"]
-    choice_applied = conn.execute(
-        "SELECT COUNT(*) as c FROM reader_choices WHERE applied_to_branch_id IS NOT NULL"
-    ).fetchone()["c"]
-    gen_req_completed = conn.execute(
-        "SELECT COUNT(*) as c FROM branch_generation_requests WHERE status = 'completed'"
-    ).fetchone()["c"]
-    run_count = conn.execute("SELECT COUNT(*) as c FROM generation_runs").fetchone()["c"]
-    attempt_count = conn.execute("SELECT COUNT(*) as c FROM generation_attempts").fetchone()["c"]
-    conn.close()
-
-    assert ep_count == 1, f"Expected 1 branch episode, got {ep_count}"
-    assert branch_count == 1, f"Expected 1 branch, got {branch_count}"
-    assert choice_applied == 1, f"Expected 1 choice applied, got {choice_applied}"
-    assert gen_req_completed == 1, f"Expected 1 completed request, got {gen_req_completed}"
-    assert run_count == 2, f"Expected 2 generation runs (plan+content), got {run_count}"
-    assert attempt_count == 2, f"Expected 2 attempts (plan+content), got {attempt_count}"
-
-
-def test_concurrent_same_key_no_orphan_records(db_path):
-    """Concurrent same-key requests leave no orphan records."""
-    from app.pipeline.service import GenerationRequest, generate_personal_branch
-
-    provider = _CountingProvider()
-    world = WorldState(world_id="world-1", version="1.0", premise="Test",
-                       characters=[CharacterRef(character_id="char-1", canonical_name="C",
-                                                role="protagonist", location_id="loc-1")],
-                       locations=[LocationRef(location_id="loc-1", name="L")])
-    idempotency_key = "orphan-test-key"
-
-    def run_generation(thread_id):
-        conn = _make_conn(db_path)
-        try:
-            for attempt in range(60):
-                req = GenerationRequest(
-                    world=world, episode_type=EpisodeType.PERSONAL_BRANCH,
-                    reader_id="reader-1", reader_choice_id="choice-1",
-                    reader_choice_text="Test choice", idempotency_key=idempotency_key,
-                )
-                result = generate_personal_branch(
-                    conn, provider, req, max_retries=0,
-                    world_id="world-1", canon_checkpoint_id="snap-1", prior_episode_id="ep-1",
-                )
-                if result.succeeded:
-                    return {"thread": thread_id, "succeeded": True, "episode_id": result.episode_id}
-                if "already in progress" not in (result.error or ""):
-                    return {"thread": thread_id, "succeeded": False, "error": result.error}
-                time.sleep(0.5)
-            return {"thread": thread_id, "succeeded": False, "error": "timeout"}
-        finally:
-            if conn.in_transaction:
-                conn.rollback()
-            conn.close()
-
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        futures = [executor.submit(run_generation, i) for i in range(2)]
-        results = [f.result(timeout=60) for f in as_completed(futures)]
-
-    assert all(r["succeeded"] for r in results), f"Some failed: {results}"
-    assert results[0]["episode_id"] == results[1]["episode_id"]
+    assert all(result.succeeded for result in results), [r.error for r in results]
+    assert results[0].episode_id == results[1].episode_id
+    assert provider.plan_calls == 1
+    assert provider.content_calls == 1
 
     conn = _make_conn(db_path)
-    pending = conn.execute(
-        "SELECT COUNT(*) as c FROM branch_generation_requests WHERE status = 'pending'"
-    ).fetchone()["c"]
-    failed = conn.execute(
-        "SELECT COUNT(*) as c FROM branch_generation_requests WHERE status = 'failed'"
-    ).fetchone()["c"]
-    conn.close()
-    assert pending == 0, f"Orphan pending requests: {pending}"
-    assert failed == 0, f"Orphan failed requests: {failed}"
+    try:
+        counts = conn.execute(
+            "SELECT "
+            "(SELECT COUNT(*) FROM episodes WHERE episode_type='personal_branch') AS episodes, "
+            "(SELECT COUNT(*) FROM branches) AS branches, "
+            "(SELECT COUNT(*) FROM branch_generation_requests WHERE status='completed') AS completed, "
+            "(SELECT COUNT(*) FROM branch_generation_requests WHERE status='pending') AS pending"
+        ).fetchone()
+        assert dict(counts) == {
+            "episodes": 1,
+            "branches": 1,
+            "completed": 1,
+            "pending": 0,
+        }
+    finally:
+        conn.close()
 
 
-def test_concurrent_different_keys_proceed_independently(db_path):
-    """Different idempotency keys with different choices proceed without interference.
-
-    Both threads use separate choices. At least one must succeed; both may
-    succeed depending on timing. No orphan records should exist regardless.
-    """
-    from app.pipeline.service import GenerationRequest, generate_personal_branch
-
-    # Each thread needs its own choice (a choice can only be applied once)
+def test_concurrent_different_keys_both_succeed_with_distinct_reserved_numbers(db_path):
+    """Independent requests must both succeed; one-success-only is unacceptable."""
     conn = _make_conn(db_path)
-    now = "2025-07-21T00:00:00Z"
-    conn.execute(
-        "INSERT INTO reader_choices (id, reader_id, canon_episode_id, choice_text, submitted_at) "
-        "VALUES (?, ?, ?, ?, ?)",
-        ("choice-a", "reader-1", "ep-1", "Choice A", now),
-    )
-    conn.execute(
-        "INSERT INTO reader_choices (id, reader_id, canon_episode_id, choice_text, submitted_at) "
-        "VALUES (?, ?, ?, ?, ?)",
-        ("choice-b", "reader-1", "ep-1", "Choice B", now),
+    now = "2026-07-21T00:00:00Z"
+    conn.executemany(
+        "INSERT INTO reader_choices "
+        "(id, reader_id, canon_episode_id, choice_text, submitted_at) "
+        "VALUES (?, 'reader-1', 'ep-1', ?, ?)",
+        [
+            ("choice-a", "Inspect the east platform", now),
+            ("choice-b", "Inspect the west platform", now),
+        ],
     )
     conn.commit()
     conn.close()
 
-    provider = _CountingProvider()
-    world = WorldState(world_id="world-1", version="1.0", premise="Test",
-                       characters=[CharacterRef(character_id="char-1", canonical_name="C",
-                                                role="protagonist", location_id="loc-1")],
-                       locations=[LocationRef(location_id="loc-1", name="L")])
-
-    def run_generation(key, choice_id, choice_text):
-        conn = _make_conn(db_path)
-        try:
-            req = GenerationRequest(
-                world=world, episode_type=EpisodeType.PERSONAL_BRANCH,
-                reader_id="reader-1", reader_choice_id=choice_id,
-                reader_choice_text=choice_text, idempotency_key=key,
-            )
-            result = generate_personal_branch(
-                conn, provider, req, max_retries=0,
-                world_id="world-1", canon_checkpoint_id="snap-1", prior_episode_id="ep-1",
-            )
-            return {"key": key, "succeeded": result.succeeded, "episode_id": result.episode_id}
-        finally:
-            if conn.in_transaction:
-                conn.rollback()
-            conn.close()
-
+    provider = _BlockingCountingProvider()
+    barrier = threading.Barrier(2)
     with ThreadPoolExecutor(max_workers=2) as executor:
-        f1 = executor.submit(run_generation, "key-A", "choice-a", "Choice A")
-        f2 = executor.submit(run_generation, "key-B", "choice-b", "Choice B")
-        r1 = f1.result(timeout=30)
-        r2 = f2.result(timeout=30)
+        first = executor.submit(
+            _call_once,
+            db_path,
+            provider,
+            barrier=barrier,
+            key="key-a",
+            choice_id="choice-a",
+        )
+        second = executor.submit(
+            _call_once,
+            db_path,
+            provider,
+            barrier=barrier,
+            key="key-b",
+           ÚÚXÙWÚYH˜ÚÚXÙKXˆ‹ˆ
+Bˆ™\Ý[ÈHÙš\œÝœ™\Ý[
+[Y[Ý]LMJKÙXÛÛ™œ™\Ý[
+[Y[Ý]LMJWB‚ˆ\ÜÙ\[
+™\Ý[œÝXØÙYYY›Üˆ™\Ý[[ˆ™\Ý[ÊKÜ‹™\œ›Üˆ›Üˆˆ[ˆ™\Ý[×Bˆ\ÜÙ\™\Ý[ÖÌK™\\ÛÙWÚYOH™\Ý[ÖÌWK™\\ÛÙWÚYˆ\ÜÙ\›ÝšY\‹œ[—ØØ[ÈOH‚ˆ\ÜÙ\›ÝšY\‹˜ÛÛ[ØØ[ÈOH‚‚ˆÛÛ›ˆHÛXZÙWØÛÛ›Š—Ü]
+BˆžN‚ˆ›ÝÜÈHÛÛ›‹™^XÝ]Jˆ”ÑSPÕY\\ÛÙWÛ[X™\ˆ”“ÓH\\ÛÙ\È‚ˆ•ÒT‘H\\ÛÙWÝ\OIÜ\œÛÛ˜[Øœ˜[˜Ú	ÈÔ‘Tˆ–H\\ÛÙWÛ[X™\ˆ‚ˆ
+K™™]Ú[
 
-    # At least one must succeed; both may succeed depending on timing
-    assert r1["succeeded"] or r2["succeeded"], \
-        f"Both failed: A={r1.get('error')}, B={r2.get('error')}"
+Bˆ\ÜÙ\Ü›ÝÖÈ™\\ÛÙWÛ[X™\ˆ—H›Üˆ›ÝÈ[ˆ›ÝÜ×HOHÌK—Bˆ\ÜÙ\[ŠÜ›ÝÖÈšY—H›Üˆ›ÝÈ[ˆ›ÝÜßJHOH‚‚ˆÝ]\ÈHÛÛ›‹™^XÝ]Jˆ”ÑSPÕÝ]\ËÓÕS•
 
-    # No orphan PENDING requests (failed is a legitimate outcome)
-    conn = _make_conn(db_path)
-    pending = conn.execute(
-        "SELECT COUNT(*) as c FROM branch_generation_requests WHERE status = 'pending'"
-    ).fetchone()["c"]
-    completed = conn.execute(
-        "SELECT COUNT(*) as c FROM branch_generation_requests WHERE status = 'completed'"
-    ).fetchone()["c"]
-    conn.close()
-    assert pending == 0, f"Orphan pending requests: {pending}"
-    assert completed >= 1, f"Expected at least 1 completed, got {completed}"
+ŠHTÈÛÝ[”“ÓHœ˜[˜ÚÙÙ[™\˜][Û—Ü™\]Y\ÝÈ‚ˆ‘Ô“ÕT–HÝ]\ÈÔ‘Tˆ–HÝ]\È‚ˆ
+K™™]Ú[
+
+Bˆ\ÜÙ\Ê›ÝÖÈœÝ]\È—K›ÝÖÈ˜ÛÝ[—JH›Üˆ›ÝÈ[ˆÝ]\×HOHÊ˜ÛÛ\]Y‹ŠWB‚ˆÙ\]Y[˜ÙHHÛÛ›‹™^XÝ]Jˆ”ÑSPÕ™^Ù\\ÛÙWÛ[X™\ˆ”“ÓH\\ÛÙWÛ[X™\—ÜÙ\]Y[˜Ù\È‚ˆ•ÒT‘HÛÜ›ÚYIÝÛÜ›LIÈS‘\\ÛÙWÝ\OIÜ\œÛÛ˜[Øœ˜[˜Ú	È‚ˆ
+K™™]ÚÛ™J
+Bˆ\ÜÙ\Ù\]Y[˜ÙVÈ›™^Ù\\ÛÙWÛ[X™\ˆ—HOHÂˆš[˜[N‚ˆÛÛ›‹˜ÛÜÙJ
+B

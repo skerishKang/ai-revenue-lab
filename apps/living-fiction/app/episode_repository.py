@@ -205,12 +205,52 @@ def get_latest_published_episode(conn: sqlite3.Connection, world_id: str) -> Epi
 def get_next_episode_number(
     conn: sqlite3.Connection, world_id: str, episode_type: str
 ) -> int:
-    row = conn.execute(
-        "SELECT MAX(episode_number) AS mx FROM episodes "
+    """Atomically reserve and return the next episode number.
+
+    The caller must own an active write transaction (normally
+    ``BEGIN IMMEDIATE``). The durable sequence row is advanced before the
+    transaction commits, so concurrent requests with different idempotency
+    keys cannot observe and reuse the same number while provider work is in
+    flight. Gaps after failed generation are allowed; number reuse is not.
+    """
+    if not conn.in_transaction:
+        raise RepositoryTransactionError(
+            "episode number allocation requires an active transaction"
+        )
+    if episode_type not in {"canon", "personal_branch"}:
+        raise EpisodeValidationError(f"unsupported episode type: {episode_type}")
+
+    episode_row = conn.execute(
+        "SELECT COALESCE(MAX(episode_number), 0) + 1 AS floor_number "
+        "FROM episodes WHERE world_id = ? AND episode_type = ?",
+        (world_id, episode_type),
+    ).fetchone()
+    floor_number = int(episode_row["floor_number"])
+
+    sequence_row = conn.execute(
+        "SELECT next_episode_number FROM episode_number_sequences "
         "WHERE world_id = ? AND episode_type = ?",
         (world_id, episode_type),
     ).fetchone()
-    return (row["mx"] or 0) + 1
+
+    if sequence_row is None:
+        allocated = floor_number
+        conn.execute(
+            "INSERT INTO episode_number_sequences "
+            "(world_id, episode_type, next_episode_number) VALUES (?, ?, ?)",
+            (world_id, episode_type, allocated + 1),
+        )
+        return allocated
+
+    allocated = max(int(sequence_row["next_episode_number"]), floor_number)
+    updated = conn.execute(
+        "UPDATE episode_number_sequences SET next_episode_number = ? "
+        "WHERE world_id = ? AND episode_type = ?",
+        (allocated + 1, world_id, episode_type),
+    ).rowcount
+    if updated != 1:
+        raise EpisodeValidationError("failed to reserve next episode number")
+    return allocated
 
 
 def publish_episode(conn: sqlite3.Connection, episode_id: str) -> bool:
