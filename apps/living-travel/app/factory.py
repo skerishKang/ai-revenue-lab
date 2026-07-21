@@ -38,7 +38,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             response = await call_next(request)
             # Add no-store for authenticated/private pages
             if request.url.path.startswith(("/operator/", "/traveler/")):
-                response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+                response.headers["Cache-Control"] = "no-store"
                 response.headers["Pragma"] = "no-cache"
             return response
 
