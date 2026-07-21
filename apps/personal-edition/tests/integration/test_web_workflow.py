@@ -2303,3 +2303,226 @@ class TestEditionContentValidation:
                 cookies=all_cookies,
             )
             assert resp.status_code == 200
+
+
+# ================================================================
+# Issue #30: terminal page CSRF regression tests
+# ================================================================
+class TestTerminalPageCSRF:
+    """Prove logout works directly from every distinct terminal-page class.
+
+    Each test authenticates, hits a terminal page, verifies a fresh CSRF
+    token + cookie pair is present, submits logout from that page, and
+    confirms the session is destroyed.
+    """
+
+    def test_participant_edition_not_found_logout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/editions/999", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            html = resp.text
+            assert 'name="csrf_token"' in html
+            token_value = html.split('name="csrf_token" value="')[1].split('"')[0]
+            assert token_value
+            resp_csrf = resp.cookies["pe_csrf"]
+            assert verify_csrf_token(token_value, resp_csrf)
+
+            logout_resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": token_value},
+                cookies={**cookies, "pe_csrf": resp_csrf},
+                follow_redirects=False,
+            )
+            assert logout_resp.status_code in (302, 303)
+            assert logout_resp.headers.get("location") == "/p/access"
+            assert "pe_session" not in logout_resp.cookies
+            assert "pe_csrf" not in logout_resp.cookies
+
+    def test_participant_feedback_target_not_found_logout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/editions/999/feedback", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            html = resp.text
+            assert 'name="csrf_token"' in html
+            token_value = html.split('name="csrf_token" value="')[1].split('"')[0]
+            assert token_value
+            resp_csrf = resp.cookies["pe_csrf"]
+            assert verify_csrf_token(token_value, resp_csrf)
+
+            logout_resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": token_value},
+                cookies={**cookies, "pe_csrf": resp_csrf},
+                follow_redirects=False,
+            )
+            assert logout_resp.status_code in (302, 303)
+            assert logout_resp.headers.get("location") == "/p/access"
+            assert "pe_session" not in logout_resp.cookies
+            assert "pe_csrf" not in logout_resp.cookies
+
+    def test_participant_feedback_already_submitted_logout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                    rendered_title="Test",
+                )
+                ed_repo.update_edition_publication(conn, ed.id, "published")
+                fb_repo.create_feedback(
+                    conn, participant_id="p1", edition_id=ed.id,
+                    direction_choices='["more_practical"]',
+                )
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+            resp = client.get("/p/p1/editions/1/feedback", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            html = resp.text
+            assert 'name="csrf_token"' in html
+            token_value = html.split('name="csrf_token" value="')[1].split('"')[0]
+            assert token_value
+            resp_csrf = resp.cookies["pe_csrf"]
+            assert verify_csrf_token(token_value, resp_csrf)
+
+            logout_resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": token_value},
+                cookies={**cookies, "pe_csrf": resp_csrf},
+                follow_redirects=False,
+            )
+            assert logout_resp.status_code in (302, 303)
+            assert logout_resp.headers.get("location") == "/p/access"
+            assert "pe_session" not in logout_resp.cookies
+            assert "pe_csrf" not in logout_resp.cookies
+
+    def test_participant_feedback_success_logout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            conn = get_connection(db_path)
+            try:
+                _create_participant(conn, "p1", "Test User")
+                ed = ed_repo.create_edition(
+                    conn, participant_id="p1", edition_number=1,
+                    structured_content=json.dumps(_make_draft_payload()),
+                    rendered_title="Test",
+                )
+                ed_repo.update_edition_publication(conn, ed.id, "published")
+            finally:
+                conn.close()
+            cookies = _get_session_cookie("p1")
+
+            form_resp = client.get("/p/p1/editions/1/feedback", cookies=cookies)
+            assert form_resp.status_code == 200
+            form_html = form_resp.text
+            form_token = form_html.split('name="csrf_token" value="')[1].split('"')[0]
+            form_csrf = form_resp.cookies["pe_csrf"]
+
+            submit_resp = client.post(
+                "/p/p1/editions/1/feedback",
+                data={
+                    "direction_choices": ["more_practical"],
+                    "selected_section_id": "s001",
+                    "csrf_token": form_token,
+                },
+                cookies={**cookies, "pe_csrf": form_csrf},
+                follow_redirects=False,
+            )
+            assert submit_resp.status_code == 200
+
+            resp = client.get("/p/p1/editions/1/feedback", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_csrf" in resp.cookies
+            html = resp.text
+            assert 'name="csrf_token"' in html
+            token_value = html.split('name="csrf_token" value="')[1].split('"')[0]
+            assert token_value
+            resp_csrf = resp.cookies["pe_csrf"]
+            assert verify_csrf_token(token_value, resp_csrf)
+
+            logout_resp = client.post(
+                "/p/p1/logout",
+                data={"csrf_token": token_value},
+                cookies={**cookies, "pe_csrf": resp_csrf},
+                follow_redirects=False,
+            )
+            assert logout_resp.status_code in (302, 303)
+            assert logout_resp.headers.get("location") == "/p/access"
+            assert "pe_session" not in logout_resp.cookies
+            assert "pe_csrf" not in logout_resp.cookies
+
+    def test_admin_participant_not_found_logout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_admin_session_cookie()
+            resp = client.get("/admin/participants/nonexistent", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_admin_csrf" in resp.cookies
+            html = resp.text
+            assert 'name="csrf_token"' in html
+            token_value = html.split('name="csrf_token" value="')[1].split('"')[0]
+            assert token_value
+            resp_csrf = resp.cookies["pe_admin_csrf"]
+            assert verify_csrf_token(token_value, resp_csrf)
+
+            logout_resp = client.post(
+                "/admin/logout",
+                data={"csrf_token": token_value},
+                cookies={**cookies, "pe_admin_csrf": resp_csrf},
+                follow_redirects=False,
+            )
+            assert logout_resp.status_code in (302, 303)
+            assert logout_resp.headers.get("location") == "/admin/access"
+            assert "pe_admin_session" not in logout_resp.cookies
+            assert "pe_admin_csrf" not in logout_resp.cookies
+
+    def test_admin_edition_review_not_found_logout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, db_path = _make_app(Path(tmp))
+            client = TestClient(app)
+            cookies = _get_admin_session_cookie()
+            resp = client.get("/admin/review/nonexistent", cookies=cookies)
+            assert resp.status_code == 200
+            assert "pe_admin_csrf" in resp.cookies
+            html = resp.text
+            assert 'name="csrf_token"' in html
+            token_value = html.split('name="csrf_token" value="')[1].split('"')[0]
+            assert token_value
+            resp_csrf = resp.cookies["pe_admin_csrf"]
+            assert verify_csrf_token(token_value, resp_csrf)
+
+            logout_resp = client.post(
+                "/admin/logout",
+                data={"csrf_token": token_value},
+                cookies={**cookies, "pe_admin_csrf": resp_csrf},
+                follow_redirects=False,
+            )
+            assert logout_resp.status_code in (302, 303)
+            assert logout_resp.headers.get("location") == "/admin/access"
+            assert "pe_admin_session" not in logout_resp.cookies
+            assert "pe_admin_csrf" not in logout_resp.cookies
