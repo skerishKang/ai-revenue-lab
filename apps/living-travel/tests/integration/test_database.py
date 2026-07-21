@@ -1,12 +1,10 @@
 """Integration tests for Living Travel database and migrations."""
 
 import sqlite3
-import tempfile
-from pathlib import Path
 
 import pytest
 
-from app.db import apply_migrations, get_connection, MigrationError, _iter_sql_statements
+from app.db import apply_migrations, get_connection, _iter_sql_statements
 
 
 @pytest.fixture
@@ -35,6 +33,7 @@ class TestMigrations:
             "feedback",
             "generation_runs",
             "pilot_evidence",
+            "deactivation_requests",
         }
         assert expected.issubset(tables)
 
@@ -46,7 +45,7 @@ class TestMigrations:
             "SELECT COUNT(*) FROM schema_migrations"
         ).fetchone()[0]
         conn.close()
-        assert count == 4  # 001_initial.sql + 002_audit_constraints.sql + 003_auth.sql + 004_deactivation.sql
+        assert count == 5
 
     def test_schema_migrations_records_version(self, temp_db):
         conn = sqlite3.connect(temp_db)
@@ -56,6 +55,17 @@ class TestMigrations:
         conn.close()
         assert row[0] == "001_initial.sql"
         assert row[1] == "001_initial.sql"
+
+    def test_pending_deactivation_request_unique_index(self, temp_db):
+        conn = sqlite3.connect(temp_db)
+        indexes = {
+            row[1]
+            for row in conn.execute(
+                "PRAGMA index_list('deactivation_requests')"
+            ).fetchall()
+        }
+        conn.close()
+        assert "ux_deactivation_requests_one_pending" in indexes
 
 
 class TestConnection:
@@ -74,16 +84,16 @@ class TestConnection:
 class TestIterSqlStatements:
     def test_simple_statements(self):
         sql = "CREATE TABLE a (id INTEGER); CREATE TABLE b (id INTEGER);"
-        stmts = list(_iter_sql_statements(sql))
-        assert len(stmts) == 2
+        statements = list(_iter_sql_statements(sql))
+        assert len(statements) == 2
 
     def test_comments_ignored(self):
         sql = "-- comment\nCREATE TABLE a (id INTEGER);"
-        stmts = list(_iter_sql_statements(sql))
-        assert len(stmts) == 1
-        assert "CREATE TABLE" in stmts[0]
+        statements = list(_iter_sql_statements(sql))
+        assert len(statements) == 1
+        assert "CREATE TABLE" in statements[0]
 
     def test_block_comments(self):
         sql = "/* block */ CREATE TABLE a (id INTEGER);"
-        stmts = list(_iter_sql_statements(sql))
-        assert len(stmts) == 1
+        statements = list(_iter_sql_statements(sql))
+        assert len(statements) == 1
