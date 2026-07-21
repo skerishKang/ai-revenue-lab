@@ -183,18 +183,20 @@ class GenerationService:
                 commit=False,
             )
 
-            plan_content, plan_runs = self._generate_plan(
+            plan_content = self._generate_plan(
                 traveler_preferences=traveler_preferences,
                 source_items=source_items,
                 edition_id=edition.id,
+                run_sink=all_runs,
             )
             all_runs.extend(plan_runs)
 
-            content, draft_runs = self._generate_draft(
+            content = self._generate_draft(
                 plan=plan_content,
                 traveler_preferences=traveler_preferences,
                 source_items=source_items,
                 edition_id=edition.id,
+                run_sink=all_runs,
             )
             all_runs.extend(draft_runs)
 
@@ -292,6 +294,9 @@ class GenerationService:
 
         next_number = prior_record.edition_number + 1
 
+
+        next_number = prior_record.edition_number + 1
+
         all_runs: list[tuple[ProviderResult, str]] = []
 
         self.conn.execute("SAVEPOINT sp_second")
@@ -308,23 +313,25 @@ class GenerationService:
                 commit=False,
             )
 
-            plan_content, plan_runs = self._generate_plan(
+            plan_content = self._generate_plan(
                 traveler_preferences=traveler_preferences,
                 source_items=source_items,
                 edition_id=edition.id,
                 applied_feedback=applied_feedback_list,
+                run_sink=all_runs,
             )
             all_runs.extend(plan_runs)
 
             prior_summary = self._edition_summary(prior_content)
 
-            content, draft_runs = self._generate_draft(
+            content = self._generate_draft(
                 plan=plan_content,
                 traveler_preferences=traveler_preferences,
                 source_items=source_items,
                 edition_id=edition.id,
                 applied_feedback=applied_feedback_list,
                 prior_edition_summary=prior_summary,
+                run_sink=all_runs,
             )
             all_runs.extend(draft_runs)
 
@@ -442,13 +449,13 @@ class GenerationService:
         source_items: list[dict],
         edition_id: str,
         applied_feedback: list[dict] | None = None,
-    ) -> tuple[EditorialPlan, list[tuple[ProviderResult, str]]]:
+        run_sink: list[tuple[ProviderResult, str]] | None = None,
+    ) -> EditorialPlan:
         system, user = build_plan_prompt(
             traveler_preferences=traveler_preferences,
             source_summaries=source_items,
         )
 
-        runs: list[tuple[ProviderResult, str]] = []
         for attempt in range(self.MAX_RETRIES):
             request_id = f"{edition_id}_plan_{attempt}"
             result = self.provider.generate_structured(
@@ -458,12 +465,14 @@ class GenerationService:
                 response_schema=EditorialPlan,
                 request_id=request_id,
             )
-            runs.append((result, PLAN_PROMPT_VERSION))
+            entry = (result, PLAN_PROMPT_VERSION)
+            if run_sink is not None:
+                run_sink.append(entry)
             if result.success:
                 plan = EditorialPlan.model_validate(result.payload)
                 plan_errors = validate_plan(plan)
                 if not plan_errors:
-                    return plan, runs
+                    return plan
             if attempt == self.MAX_RETRIES - 1:
                 raise PipelineError(
                     f"Plan generation failed after {self.MAX_RETRIES} attempts"
@@ -480,7 +489,8 @@ class GenerationService:
         edition_id: str,
         applied_feedback: list[dict] | None = None,
         prior_edition_summary: str = "",
-    ) -> tuple[EditionContent, list[tuple[ProviderResult, str]]]:
+        run_sink: list[tuple[ProviderResult, str]] | None = None,
+    ) -> EditionContent:
         system, user = build_draft_prompt(
             plan=plan.model_dump(),
             traveler_preferences=traveler_preferences,
@@ -489,7 +499,6 @@ class GenerationService:
             prior_edition_summary=prior_edition_summary,
         )
 
-        runs: list[tuple[ProviderResult, str]] = []
         for attempt in range(self.MAX_RETRIES):
             request_id = f"{edition_id}_draft_{attempt}"
             result = self.provider.generate_structured(
@@ -499,12 +508,14 @@ class GenerationService:
                 response_schema=EditionContent,
                 request_id=request_id,
             )
-            runs.append((result, DRAFT_PROMPT_VERSION))
+            entry = (result, DRAFT_PROMPT_VERSION)
+            if run_sink is not None:
+                run_sink.append(entry)
             if result.success:
                 content = EditionContent.model_validate(result.payload)
                 draft_errors = validate_draft_against_plan(content, plan)
                 if not draft_errors:
-                    return content, runs
+                    return content
             if attempt == self.MAX_RETRIES - 1:
                 raise PipelineError(
                     f"Draft generation failed after {self.MAX_RETRIES} attempts"

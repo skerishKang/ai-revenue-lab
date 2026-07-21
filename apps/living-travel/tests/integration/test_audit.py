@@ -34,6 +34,7 @@ from app.db import apply_migrations, get_connection
 from app.domain.enums import (
     EditionGenerationStatus,
     InformationClass,
+    PilotEvidenceType,
     SourceConfidence,
 )
 from app.domain.models import (
@@ -47,6 +48,7 @@ from app.edition_repository import (
     create_edition,
     get_edition_by_id,
     get_editions_by_traveler,
+    update_edition_generation_status,
 )
 from app.feedback_repository import (
     create_feedback,
@@ -897,3 +899,577 @@ class TestHealthSmoke:
             resp = await client.get("/health")
         assert resp.status_code == 200
         assert resp.json() == {"status": "ok"}
+
+
+# =====================================================================
+# 16. CTO Review Defect #1 — Historical feedback from older edition
+# =====================================================================
+
+class TestHistoricalFeedbackRejection:
+    """Feedback must be scoped to the exact prior edition, not any unapplied feedback."""
+
+    def test_feedback_on_older_edition_not_consumed_by_newer_prior(self, conn, traveler, source_dicts):
+        """Feedback on ed1 should not be consumed when generating from ed2 as prior."""
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        second_draft = _load_fixture("source_bundle.json")["second_edition_fixture"]
+
+        # Generate ed1
+        p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=traveler.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
+
+        # Feedback on ed1
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id,
+                        direction_choices=["quieter_places"])
+
+        # Generate ed2 from ed1
+        p2 = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": second_draft})
+        s2 = GenerationService(conn, p2)
+        s2.generate_second_edition(
+            traveler_id=traveler.id,
+            prior_edition_id=ed1.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed2 = get_editions_by_traveler(conn, traveler.id)[1]
+
+        # Feedback on ed2
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed2.id,
+                        direction_choices=["slower_pace"])
+
+        # Attempt third edition using ed1 as prior — should fail because
+        # the unapplied feedback is on ed2, not ed1
+        p3 = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": second_draft})
+        s3 = GenerationService(conn, p3)
+        with pytest.raises(PipelineError, match="No unapplied feedback"):
+            s3.generate_second_edition(
+                traveler_id=traveler.id,
+                prior_edition_id=ed1.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+        # Verify ed1's feedback was already applied by ed2
+        ed1_fb = get_unapplied_feedback_for_edition(conn, traveler.id, ed1.id)
+        assert len(ed1_fb) == 0, "ed1 feedback should have been applied by ed2"
+
+        # Verify ed2's feedback is still unapplied
+        ed2_fb = get_unapplied_feedback_for_edition(conn, traveler.id, ed2.id)
+        assert len(ed2_fb) == 1, "ed2 feedback should still be unapplied"
+
+
+# =====================================================================
+# 17. CTO Review Defect #2 — Forged/stale prior edition binding
+# =====================================================================
+
+class TestForgedPriorEditionRejection:
+    """prior_edition_id must be verified against traveler ownership in the DB."""
+
+    def test_prior_edition_from_different_traveler_rejected(self, conn, source_dicts):
+        """Using another traveler's edition as prior should fail ownership check."""
+        t1 = create_traveler(conn, display_name="Owner", destination="부산")
+        t2 = create_traveler(conn, display_name="Attacker", destination="부산")
+
+        # Both travelers generate first editions
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=t1.id, traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1_t1 = get_editions_by_traveler(conn, t1.id)[0]
+
+        s2 = GenerationService(conn, p1)
+        s2.generate_first_edition(
+            traveler_id=t2.id, traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1_t2 = get_editions_by_traveler(conn, t2.id)[0]
+
+        # t2 creates feedback on t2's edition
+        create_feedback(conn, traveler_id=t2.id, edition_id=ed1_t2.id,
+                        direction_choices=["quieter_places"])
+
+        # t1 tries to use t2's edition as prior — must be rejected
+        p_bad = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": first_draft})
+        s_bad = GenerationService(conn, p_bad)
+        with pytest.raises(PipelineError, match="different traveler"):
+            s_bad.generate_second_edition(
+                traveler_id=t1.id,
+                prior_edition_id=ed1_t2.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+    def test_nonexistent_prior_edition_rejected(self, conn, traveler, source_dicts):
+        """A fabricated edition ID that doesn't exist must be rejected."""
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=traveler.id, traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id,
+                        direction_choices=["quieter_places"])
+
+        # Try a fabricated edition ID
+        p2 = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": first_draft})
+        s2 = GenerationService(conn, p2)
+        with pytest.raises(PipelineError, match="not found"):
+            s2.generate_second_edition(
+                traveler_id=traveler.id,
+                prior_edition_id="ed_forged_nonexistent",
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+    def test_prior_edition_without_content_rejected(self, conn, traveler, source_dicts):
+        """Prior edition with no structured_content must be rejected."""
+        # Create an edition and advance its status to pending_review
+        # but do NOT write any structured_content — simulates a corrupt/stale record
+        ed_empty = create_edition(conn, traveler_id=traveler.id, edition_number=1)
+        update_edition_generation_status(
+            conn, ed_empty.id, EditionGenerationStatus.pending_review, commit=True,
+        )
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed_empty.id,
+                        direction_choices=["quieter_places"])
+
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        p = MockProvider(task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": first_draft})
+        s = GenerationService(conn, p)
+        with pytest.raises(PipelineError, match="no structured content"):
+            s.generate_second_edition(
+                traveler_id=traveler.id,
+                prior_edition_id=ed_empty.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+
+# =====================================================================
+# 18. CTO Review Defect #3 — Material-change enforcement
+# =====================================================================
+
+class TestMaterialChangeEnforcement:
+    """Second edition must differ meaningfully from the prior."""
+
+    def test_identical_second_edition_rejected(self, conn, traveler, source_dicts):
+        """If the provider returns the same content, the pipeline must reject it."""
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+
+        # Generate ed1
+        p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=traveler.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id,
+                        direction_choices=["quieter_places"])
+
+        # Second edition: provider returns the EXACT SAME draft
+        # Use responses list to control both plan and draft calls
+        p2 = MockProvider(responses=[
+            FIRST_PLAN,       # plan call for second edition
+            first_draft,       # draft call — identical to ed1!
+        ])
+        s2 = GenerationService(conn, p2)
+        with pytest.raises(PipelineError, match="not materially different"):
+            s2.generate_second_edition(
+                traveler_id=traveler.id,
+                prior_edition_id=ed1.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+        # Verify ed1 is unchanged and no ed2 was created
+        editions = get_editions_by_traveler(conn, traveler.id)
+        assert len(editions) == 1
+
+    def test_metadata_only_change_rejected(self, conn, traveler, source_dicts):
+        """Changing only applied_feedback metadata without section content is insufficient."""
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+
+        p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=traveler.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
+        create_feedback(conn, traveler_id=traveler.id, edition_id=ed1.id,
+                        direction_choices=["quieter_places"])
+
+        # Create a version that differs ONLY in applied_feedback, not in sections
+        same_sections_draft = json.loads(json.dumps(first_draft))
+        same_sections_draft["applied_feedback"] = [{
+            "feedback_id": "fb_test",
+            "requested_change": "quieter",
+            "actual_action": "applied",
+            "affected_section_ids": [],
+            "evidence": "test",
+        }]
+
+        p2 = MockProvider(responses=[FIRST_PLAN, same_sections_draft])
+        s2 = GenerationService(conn, p2)
+        with pytest.raises(PipelineError, match="not materially different"):
+            s2.generate_second_edition(
+                traveler_id=traveler.id,
+                prior_edition_id=ed1.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+
+# =====================================================================
+# 19. CTO Review Defect #4 — Empty source_states (omitted sources)
+# =====================================================================
+
+class TestOmittedSourceStates:
+    """Validation must fail when source_items is empty and draft has source_refs."""
+
+    def test_empty_source_items_rejects_sourced_content(self, conn, traveler):
+        """Passing empty source_items must cause validation to reject any sourced items."""
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        # The fixture has items with source_ref — all should be rejected
+        provider = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="Validation failed"):
+            service.generate_first_edition(
+                traveler_id=traveler.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=[],  # Empty!
+            )
+        editions = get_editions_by_traveler(conn, traveler.id)
+        assert len(editions) == 0, "Should leave no edition after rollback"
+
+
+# =====================================================================
+# 20. CTO Review Defect #4 — stable_reference missing source_ref
+# =====================================================================
+
+class TestStableReferenceSourceRef:
+    """stable_reference items must require a source_ref."""
+
+    def test_stable_reference_without_source_ref_rejected(self):
+        content = EditionContent(
+            publication_title="T", edition_title="T", destination="B",
+            trip_frame="2박", editorial_opening="T",
+            sections=[EditionSection(
+                section_id="s1", title="T", narrative="N",
+                items=[InformationItem(
+                    item_id="i_no_ref",
+                    information_class=InformationClass.stable_reference,
+                    # No source_ref!
+                )]
+            )]
+        )
+        errors = validate_information_class_metadata(content)
+        assert len(errors) == 1
+        assert "stable_reference" in errors[0]
+        assert "missing source_ref" in errors[0]
+
+    def test_stable_reference_with_source_ref_passes(self):
+        content = EditionContent(
+            publication_title="T", edition_title="T", destination="B",
+            trip_frame="2박", editorial_opening="T",
+            sections=[EditionSection(
+                section_id="s1", title="T", narrative="N",
+                items=[InformationItem(
+                    item_id="i_with_ref",
+                    information_class=InformationClass.stable_reference,
+                    source_ref="src_valid",
+                )]
+            )]
+        )
+        errors = validate_information_class_metadata(content)
+        assert errors == []
+
+
+# =====================================================================
+# 21. CTO Review Defect #6 — Exhausted retry accounting
+# =====================================================================
+
+class TestExhaustedRetryAccounting:
+    """Generation runs must be recorded even when all retries are exhausted."""
+
+    def test_plan_retry_exhaustion_records_runs(self, conn, traveler, source_dicts):
+        """When plan validation fails 3 times, runs are still recorded outside savepoint."""
+        bad_plan = {
+            "plan_version": "1.0", "language": "ko",
+            "central_theme": "X",  # Passes Pydantic but ...
+            "sections": [],          # ... fails validate_plan (< 1 section)
+        }
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        provider = MockProvider(
+            task_payloads={"editorial_plan": bad_plan, "edition_draft": first_draft}
+        )
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="exhausted retries|failed after"):
+            service.generate_first_edition(
+                traveler_id=traveler.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+        # Edition rolled back
+        editions = get_editions_by_traveler(conn, traveler.id)
+        assert len(editions) == 0
+
+        # But generation runs survived the rollback (recorded outside savepoint)
+        runs = get_generation_runs_by_task_type(conn, "editorial_plan")
+        assert len(runs) == 3, f"Expected 3 retry runs, got {len(runs)}"
+        for r in runs:
+            assert r.edition_id == "", "Failed runs should have empty edition_id"
+            assert r.task_type == "editorial_plan"
+
+
+# =====================================================================
+# 22. CTO Review Defect #7 — Connection reuse after failure
+# =====================================================================
+
+class TestConnectionReuseAfterFailure:
+    """Connection must remain usable after a pipeline failure."""
+
+    def test_connection_usable_after_second_edition_failure(self, conn, source_dicts):
+        """After a failed second edition, the connection should serve new operations."""
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        t1 = create_traveler(conn, display_name="T1", destination="부산")
+
+        # Generate ed1 for t1 — succeeds
+        p1 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=t1.id, traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1 = get_editions_by_traveler(conn, t1.id)[0]
+        create_feedback(conn, traveler_id=t1.id, edition_id=ed1.id,
+                        direction_choices=["quieter_places"])
+
+        # Second edition fails (bad plan)
+        bad_plan = {"plan_version": "1.0", "language": "ko", "central_theme": "X",
+                     "sections": [{"section_id": "x", "title": "T", "description": "D"}]}
+        bad_draft = _load_fixture("adversarial_payloads.json")["adversarial_unknown_source"]
+        p2 = MockProvider(task_payloads={"editorial_plan": bad_plan, "edition_draft": bad_draft})
+        s2 = GenerationService(conn, p2)
+        with pytest.raises(PipelineError):
+            s2.generate_second_edition(
+                traveler_id=t1.id, prior_edition_id=ed1.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+
+        # Connection still usable — generate for a new traveler
+        t2 = create_traveler(conn, display_name="T2", destination="부산")
+        p3 = MockProvider(task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft})
+        s3 = GenerationService(conn, p3)
+        content = s3.generate_first_edition(
+            traveler_id=t2.id, traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        assert content.publication_title
+        assert len(get_editions_by_traveler(conn, t2.id)) == 1
+
+    def test_failed_runs_survive_rollback(self, conn, traveler, source_dicts):
+        """Generation run records must exist after a failed generation."""
+        bad_plan = {"plan_version": "1.0", "language": "ko", "central_theme": "X",
+                     "sections": [{"section_id": "x", "title": "T", "description": "D"}]}
+        bad_draft = _load_fixture("adversarial_payloads.json")["adversarial_unknown_source"]
+        provider = MockProvider(task_payloads={"editorial_plan": bad_plan, "edition_draft": bad_draft})
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError):
+            service.generate_first_edition(
+                traveler_id=traveler.id,
+                traveler_preferences={"destination": "부산"},
+                source_items=source_dicts,
+            )
+        # No edition, but generation runs recorded
+        editions = get_editions_by_traveler(conn, traveler.id)
+        assert len(editions) == 0
+        all_runs = []
+        for task_type in ("editorial_plan", "edition_draft"):
+            all_runs.extend(get_generation_runs_by_task_type(conn, task_type))
+        assert len(all_runs) > 0, "Failed generation runs must survive rollback"
+
+
+# =====================================================================
+# 23. CTO Review Defect #8 — Pilot evidence integrity via service
+# =====================================================================
+
+class TestPilotEvidenceIntegrity:
+    """create_pilot_evidence_validated must enforce ownership, type, and privacy."""
+
+    def test_nonexistent_traveler_rejected(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="Traveler not found"):
+            service.create_pilot_evidence_validated(
+                evidence_type=PilotEvidenceType.free_sample,
+                traveler_id="traveler_nonexistent",
+                edition_id=ed.id,
+                offer_description="test",
+            )
+
+    def test_foreign_edition_rejected(self, conn):
+        t1 = create_traveler(conn, display_name="Owner", destination="부산")
+        t2 = create_traveler(conn, display_name="Attacker", destination="부산")
+        ed2 = create_edition(conn, traveler_id=t2.id, edition_number=1)
+
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="different traveler"):
+            service.create_pilot_evidence_validated(
+                evidence_type=PilotEvidenceType.free_sample,
+                traveler_id=t1.id,
+                edition_id=ed2.id,
+                offer_description="test",
+            )
+
+    def test_invalid_evidence_type_rejected(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="Invalid evidence type"):
+            service.create_pilot_evidence_validated(
+                evidence_type="not_a_real_type",
+                traveler_id=t.id,
+                edition_id=ed.id,
+                offer_description="test",
+            )
+
+    def test_free_sample_must_have_zero_price(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="Free sample must have price_krw=0"):
+            service.create_pilot_evidence_validated(
+                evidence_type=PilotEvidenceType.free_sample,
+                traveler_id=t.id,
+                edition_id=ed.id,
+                offer_description="test",
+                price_krw=5000,
+            )
+
+    def test_paid_edition_must_have_positive_price(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="Paid edition must have positive price_krw"):
+            service.create_pilot_evidence_validated(
+                evidence_type=PilotEvidenceType.paid_edition,
+                traveler_id=t.id,
+                edition_id=ed.id,
+                offer_description="test",
+                price_krw=0,
+            )
+
+    def test_paid_edition_requires_consent(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="consent_recorded"):
+            service.create_pilot_evidence_validated(
+                evidence_type=PilotEvidenceType.paid_edition,
+                traveler_id=t.id,
+                edition_id=ed.id,
+                offer_description="test",
+                price_krw=5000,
+                consent_recorded=False,
+            )
+
+    def test_offer_description_length_bound(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        with pytest.raises(PipelineError, match="500 characters"):
+            service.create_pilot_evidence_validated(
+                evidence_type=PilotEvidenceType.free_sample,
+                traveler_id=t.id,
+                edition_id=ed.id,
+                offer_description="A" * 501,
+            )
+
+    def test_credit_card_in_payment_evidence_redacted(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        result = service.create_pilot_evidence_validated(
+            evidence_type=PilotEvidenceType.paid_edition,
+            traveler_id=t.id,
+            edition_id=ed.id,
+            offer_description="정상 설명",
+            price_krw=5000,
+            consent_recorded=True,
+            payment_evidence="카드 1234-5678-9012-3456 입니다",
+        )
+        assert "1234" not in result.payment_evidence
+        assert "REDACTED" in result.payment_evidence
+
+    def test_api_key_in_offer_description_redacted(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        result = service.create_pilot_evidence_validated(
+            evidence_type=PilotEvidenceType.free_sample,
+            traveler_id=t.id,
+            edition_id=ed.id,
+            offer_description="API key sk-abcdefghijklmnopqrstuvwxyz123456입니다",
+            price_krw=0,
+        )
+        assert "sk-abc" not in result.offer_description
+        assert "REDACTED" in result.offer_description
+
+    def test_valid_free_sample_creates_record(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        result = service.create_pilot_evidence_validated(
+            evidence_type=PilotEvidenceType.free_sample,
+            traveler_id=t.id,
+            edition_id=ed.id,
+            offer_description="무료 샘플 에디션",
+            price_krw=0,
+        )
+        assert result.evidence_type == "free_sample"
+        assert result.price_krw == 0
+        assert result.offer_description == "무료 샘플 에디션"
+
+    def test_valid_paid_edition_creates_record(self, conn):
+        t = create_traveler(conn, display_name="PT", destination="부산")
+        ed = create_edition(conn, traveler_id=t.id, edition_number=1)
+        provider = MockProvider()
+        service = GenerationService(conn, provider)
+        result = service.create_pilot_evidence_validated(
+            evidence_type=PilotEvidenceType.paid_edition,
+            traveler_id=t.id,
+            edition_id=ed.id,
+            offer_description="3회 유료 에디션",
+            price_krw=4900,
+            consent_recorded=True,
+            payment_evidence="결제 대기",
+        )
+        assert result.evidence_type == "paid_edition"
+        assert result.price_krw == 4900
+        assert result.consent_recorded is True
