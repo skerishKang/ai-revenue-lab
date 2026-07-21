@@ -23,6 +23,10 @@ from app.domain.models import (
     LocationRef,
     ClueRef,
     AppliedReaderInput,
+    RelationshipRef,
+    RelationshipEvidence,
+    InjuryRemovalEvidence,
+    PossessionRemovalEvidence,
 )
 from app.pipeline.errors import ContinuityError
 from app.pipeline.production_continuity import validate_production_continuity
@@ -157,23 +161,51 @@ def test_relationship_wrong_prior_state_rejected(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": ["char-2:enemy:friend"]},
-        character_relationship_evidence={"char-1": ["scene-1"]},
+        character_relationship_evidence={"char-1": [
+            RelationshipEvidence(
+                scene_id="scene-1", character_id="char-1", other_character_id="char-2",
+                prior_label="enemy", new_label="friend",
+                excerpt="Alice walked in the park.",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+    )
     # char-1 has no prior relationship with char-2, so stating "enemy" as prior is wrong
-    validate_production_continuity(
-        content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
-    )
+    with pytest.raises(ContinuityError, match="must be 'none'"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
 
 
 def test_relationship_change_with_valid_evidence_passes(db_conn):
     """Relationship change with valid evidence passes."""
     world = _make_world()
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
-        character_relationship_evidence={"char-1": ["scene-1: Alice and Bob bonded"]},
+        character_relationship_evidence={"char-1": [
+            RelationshipEvidence(
+                scene_id="scene-1", character_id="char-1", other_character_id="char-2",
+                prior_label="stranger", new_label="friend",
+                excerpt="Alice walked in the park.",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+    )
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )
@@ -182,40 +214,73 @@ def test_relationship_change_with_valid_evidence_passes(db_conn):
 def test_relationship_change_without_evidence_rejected(db_conn):
     """Relationship change without evidence is rejected."""
     world = _make_world()
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
         # No evidence provided
     )
-    content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="missing evidence"):
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+    )
+    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
 
 
 def test_relationship_change_empty_evidence_rejected(db_conn):
-    """Relationship change with empty evidence is rejected."""
+    """Relationship change with empty evidence list is rejected."""
     world = _make_world()
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
-        character_relationship_evidence={"char-1": [""]},
+        character_relationship_evidence={"char-1": []},
     )
-    content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="empty evidence"):
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+    )
+    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
 
 
 def test_relationship_change_unrelated_evidence_rejected(db_conn):
-    """Relationship change with evidence unrelated to scenes is rejected."""
+    """Relationship change with evidence that doesn't bind to scene is rejected."""
     world = _make_world()
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
-        character_relationship_evidence={"char-1": ["completely unrelated text about weather with no scene references"]},
+        character_relationship_evidence={"char-1": [
+            RelationshipEvidence(
+                scene_id="scene-1", character_id="char-1", other_character_id="char-2",
+                prior_label="stranger", new_label="friend",
+                excerpt="The weather was cloudy and cold",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="does not reference any scene"):
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+    )
+    with pytest.raises(ContinuityError, match="not found in"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -234,7 +299,7 @@ def test_injury_removal_without_evidence_rejected(db_conn):
         # No evidence
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="missing evidence"):
+    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -250,10 +315,15 @@ def test_injury_removal_unrelated_evidence_rejected(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_injuries_removed={"char-1": ["broken_arm"]},
-        character_injury_removal_evidence={"char-1": ["unrelated text about weather"]},
+        character_injury_removal_evidence={"char-1": [
+            InjuryRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", injury="broken_arm",
+                action="healed", excerpt="The weather was cloudy and cold",
+            ),
+        ]},
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="does not reference any scene"):
+    with pytest.raises(ContinuityError, match="not found in"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -272,7 +342,7 @@ def test_possession_removal_without_evidence_rejected(db_conn):
         # No evidence
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="missing evidence"):
+    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -288,10 +358,15 @@ def test_possession_removal_unrelated_evidence_rejected(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_possessions_removed={"char-1": ["magic_ring"]},
-        character_possession_removal_evidence={"char-1": ["unrelated text about weather"]},
+        character_possession_removal_evidence={"char-1": [
+            PossessionRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", possession="magic_ring",
+                action="lost", excerpt="The weather was cloudy and cold",
+            ),
+        ]},
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="does not reference any scene"):
+    with pytest.raises(ContinuityError, match="not found in"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -307,9 +382,24 @@ def test_each_injury_gets_own_evidence_entry(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_injuries_removed={"char-1": ["injury_a", "injury_b"]},
-        character_injury_removal_evidence={"char-1": ["scene-1: Alice healed injury_a", "scene-1: Alice healed injury_b"]},
+        character_injury_removal_evidence={"char-1": [
+            InjuryRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", injury="injury_a",
+                action="healed", excerpt="Alice healed from injury_a",
+            ),
+            InjuryRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", injury="injury_b",
+                action="recovered", excerpt="Alice recovered from injury_b",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        prose=[ProseBeat(scene_id="scene-1", paragraphs=[
+            "Alice healed from injury_a in the park.",
+            "Alice recovered from injury_b later that day.",
+        ])],
+    )
     # Each injury has its own evidence entry — passes
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
@@ -319,17 +409,31 @@ def test_each_injury_gets_own_evidence_entry(db_conn):
 def test_multiple_relationship_changes_with_evidence_passes(db_conn):
     """Relationship change with parallel evidence list passes."""
     world = _make_world()
-    # CharacterRef.relationships stores just the label (e.g., "stranger")
-    world.characters[0].relationships = ["stranger"]
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": [
             "char-2:stranger:friend",
         ]},
         character_relationship_evidence={"char-1": [
-            "scene-1: Alice and Bob bonded at the park",
+            RelationshipEvidence(
+                scene_id="scene-1", character_id="char-1", other_character_id="char-2",
+                prior_label="stranger", new_label="friend",
+                excerpt="Alice and Bob bonded at the park",
+            ),
         ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+        prose=[ProseBeat(scene_id="scene-1", paragraphs=[
+            "Alice and Bob bonded at the park today.",
+        ])],
+    )
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )
@@ -338,15 +442,23 @@ def test_multiple_relationship_changes_with_evidence_passes(db_conn):
 def test_multiple_relationship_changes_missing_evidence_rejected(db_conn):
     """Relationship change with fewer evidence entries than changes rejected."""
     world = _make_world()
-    world.characters[0].relationships = ["stranger"]
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": [
             "char-2:stranger:friend",
         ]},
         character_relationship_evidence={"char-1": []},
     )
-    content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="missing evidence"):
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+    )
+    with pytest.raises(ContinuityError, match="evidence count 0 does not match"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -362,10 +474,15 @@ def test_injury_removal_missing_evidence_entry_rejected(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_injuries_removed={"char-1": ["injury_a", "injury_b"]},
-        character_injury_removal_evidence={"char-1": ["scene-1: healed"]},  # Only 1 for 2
+        character_injury_removal_evidence={"char-1": [
+            InjuryRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", injury="injury_a",
+                action="healed", excerpt="Alice healed from injury_a",
+            ),
+        ]},  # Only 1 for 2
     )
     content = _make_content(world_state_delta=delta)
-    with pytest.raises(ContinuityError, match="missing evidence"):
+    with pytest.raises(ContinuityError, match="evidence count 1 does not match"):
         validate_production_continuity(
             content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
         )
@@ -374,11 +491,27 @@ def test_injury_removal_missing_evidence_entry_rejected(db_conn):
 def test_valid_relationship_change_passes(db_conn):
     """Valid relationship change with explicit delta and evidence passes."""
     world = _make_world()
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": ["char-2:stranger:friend"]},
-        character_relationship_evidence={"char-1": ["scene-1: Alice met Bob at the park"]},
+        character_relationship_evidence={"char-1": [
+            RelationshipEvidence(
+                scene_id="scene-1", character_id="char-1", other_character_id="char-2",
+                prior_label="stranger", new_label="friend",
+                excerpt="Alice met Bob at the park",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+        prose=[ProseBeat(scene_id="scene-1", paragraphs=["Alice met Bob at the park."])],
+    )
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )
@@ -621,9 +754,19 @@ def test_valid_injury_removal_passes(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_injuries_removed={"char-1": ["bruised_arm"]},
-        character_injury_removal_evidence={"char-1": ["scene-1: Alice's arm healed after rest"]},
+        character_injury_removal_evidence={"char-1": [
+            InjuryRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", injury="bruised_arm",
+                action="healed", excerpt="Alice's arm healed after rest",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        prose=[ProseBeat(scene_id="scene-1", paragraphs=[
+            "Alice's arm healed after rest in the park.",
+        ])],
+    )
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )
@@ -641,9 +784,24 @@ def test_valid_possession_transfer_passes(db_conn):
     delta = ContinuityDelta(
         character_possessions_added={"char-2": ["old_key"]},
         character_possessions_removed={"char-1": ["old_key"]},
-        character_possession_removal_evidence={"char-1": ["scene-1: Alice gave the key to Bob"]},
+        character_possession_removal_evidence={"char-1": [
+            PossessionRemovalEvidence(
+                scene_id="scene-1", character_id="char-1", possession="old_key",
+                action="transferred", excerpt="Alice gave the key to Bob",
+                recipient_character_id="char-2",
+            ),
+        ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(
+            scene_id="scene-1", title="Test Scene", purpose="Testing",
+            participating_character_ids=["char-1", "char-2"],
+        )],
+        prose=[ProseBeat(scene_id="scene-1", paragraphs=[
+            "Alice gave the key to Bob at the park.",
+        ])],
+    )
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )

@@ -12,6 +12,7 @@ from app.domain.models import (
     CharacterRef,
     ClueRef,
     LocationRef,
+    RelationshipRef,
     WorldRule,
     WorldState,
 )
@@ -59,7 +60,10 @@ WORLD_STATE = WorldState(
                 "봉인된 기록 보관소에서 누군가의 노크 소리를 들었다",
                 "내일 날짜가 적힌 장부를 발견했다",
             ],
-            relationships=["한국장 관련 인물", "준과 동료"],
+            relationships=[
+                RelationshipRef(other_character_id="char-director-han", label="관련 인물"),
+                RelationshipRef(other_character_id="char-jun-park", label="동료"),
+            ],
             possessions=["기록 보관 열쇠", "미발견 장부"],
             injuries=[],
         ),
@@ -74,7 +78,9 @@ WORLD_STATE = WorldState(
                 "13호실을 두려워한다",
                 "장부의 제본을 인식한다",
             ],
-            relationships=["서민아의 상사"],
+            relationships=[
+                RelationshipRef(other_character_id="char-mina-seo", label="상사"),
+            ],
             possessions=["지하 마스터 열쇠"],
             injuries=[],
         ),
@@ -88,7 +94,9 @@ WORLD_STATE = WorldState(
                 "보안 영상의 한 시간 공백을 알고 있다",
                 "서민아의 동료이다",
             ],
-            relationships=["서민아와 신뢰 관계"],
+            relationships=[
+                RelationshipRef(other_character_id="char-mina-seo", label="신뢰 관계"),
+            ],
             possessions=[],
             injuries=[],
         ),

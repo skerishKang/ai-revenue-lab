@@ -16,6 +16,7 @@ from app.domain.models import (
     CharacterRef,
     ClueRef,
     LocationRef,
+    RelationshipRef,
     WorldRule,
     WorldState,
 )
@@ -315,7 +316,21 @@ def load_world_state(
             try:
                 val = json.loads(cr["relationships"])
                 if isinstance(val, list):
-                    rels = val
+                    # Handle both legacy string format and new structured format
+                    for item in val:
+                        if isinstance(item, str):
+                            # Legacy: assume format "other_char_id:label" or just "label"
+                            if ":" in item:
+                                parts = item.split(":", 1)
+                                rels.append(RelationshipRef(
+                                    other_character_id=parts[0],
+                                    label=parts[1],
+                                ))
+                            else:
+                                # Cannot determine pair from bare label — skip legacy
+                                pass
+                        elif isinstance(item, dict):
+                            rels.append(RelationshipRef(**item))
             except (json.JSONDecodeError, TypeError):
                 pass
         characters.append(CharacterRef(
@@ -436,6 +451,23 @@ def load_world_state(
                                 f"canon snapshot references unknown location {loc_id} "
                                 f"for character {cid}"
                             )
+                    # Handle both legacy string and structured relationship formats
+                    raw_rels = cs.get("relationships", char.relationships)
+                    norm_rels: list[RelationshipRef] = []
+                    if isinstance(raw_rels, list):
+                        for item in raw_rels:
+                            if isinstance(item, str) and ":" in item:
+                                parts = item.split(":", 1)
+                                norm_rels.append(RelationshipRef(
+                                    other_character_id=parts[0],
+                                    label=parts[1],
+                                ))
+                            elif isinstance(item, dict):
+                                norm_rels.append(RelationshipRef(**item))
+                            elif isinstance(item, RelationshipRef):
+                                norm_rels.append(item)
+                    else:
+                        norm_rels = char.relationships
                     characters[i] = CharacterRef(
                         character_id=char.character_id,
                         canonical_name=char.canonical_name,
@@ -443,7 +475,7 @@ def load_world_state(
                         location_id=cs.get("location_id", char.location_id),
                         status=cs.get("status", char.status),
                         knowledge=cs.get("knowledge", char.knowledge),
-                        relationships=cs.get("relationships", char.relationships),
+                        relationships=norm_rels,
                         possessions=cs.get("possessions", char.possessions),
                         injuries=cs.get("injuries", char.injuries),
                     )

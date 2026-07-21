@@ -56,7 +56,7 @@ def _setup_world_and_published_canon(db_conn):
             char.character_id, char.canonical_name, char.role,
             traits=json.dumps(char.knowledge),
             knowledge_state=json.dumps(char.knowledge),
-            relationships=json.dumps(char.relationships),
+            relationships=json.dumps([r.model_dump() for r in char.relationships]),
             location_id=char.location_id,
         )
     for loc in WORLD_STATE.locations:

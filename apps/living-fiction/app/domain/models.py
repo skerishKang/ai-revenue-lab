@@ -8,7 +8,7 @@ MockProvider to ensure deterministic, schema-validated generation.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator, model_validator
 
@@ -32,6 +32,12 @@ class WorldRule(BaseModel):
     description: NonEmptyStr
 
 
+class RelationshipRef(BaseModel):
+    """Structured relationship edge: who + what label."""
+    other_character_id: PatternStr
+    label: NonEmptyStr
+
+
 class CharacterRef(BaseModel):
     character_id: PatternStr
     canonical_name: NonEmptyStr
@@ -39,9 +45,22 @@ class CharacterRef(BaseModel):
     location_id: str | None = None
     status: str = "active"
     knowledge: list[str] = Field(default_factory=list)
-    relationships: list[str] = Field(default_factory=list)
+    relationships: list[RelationshipRef] = Field(default_factory=list)
     possessions: list[str] = Field(default_factory=list)
     injuries: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def check_unique_relationship_edges(self):
+        seen: list[str] = []
+        for ref in self.relationships:
+            key = ref.other_character_id
+            if key in seen:
+                raise ValueError(
+                    f"duplicate relationship edge to '{key}' "
+                    f"for character '{self.character_id}'"
+                )
+            seen.append(key)
+        return self
 
 
 class LocationRef(BaseModel):
@@ -128,6 +147,35 @@ class ProseBeat(BaseModel):
     paragraphs: list[NonEmptyStr] = Field(min_length=1)
 
 
+class RelationshipEvidence(BaseModel):
+    """Structured evidence for a relationship change."""
+    scene_id: PatternStr
+    character_id: PatternStr
+    other_character_id: PatternStr
+    prior_label: NonEmptyStr
+    new_label: NonEmptyStr
+    excerpt: NonEmptyStr
+
+
+class InjuryRemovalEvidence(BaseModel):
+    """Structured evidence for an injury removal."""
+    scene_id: PatternStr
+    character_id: PatternStr
+    injury: NonEmptyStr
+    action: Literal["treated", "healed", "recovered"]
+    excerpt: NonEmptyStr
+
+
+class PossessionRemovalEvidence(BaseModel):
+    """Structured evidence for a possession removal."""
+    scene_id: PatternStr
+    character_id: PatternStr
+    possession: NonEmptyStr
+    action: Literal["lost", "transferred", "destroyed", "consumed"]
+    excerpt: NonEmptyStr
+    recipient_character_id: str | None = None
+
+
 class ContinuityDelta(BaseModel):
     """Explicit, validated world-state changes applied by an episode.
 
@@ -150,26 +198,26 @@ class ContinuityDelta(BaseModel):
         default_factory=dict,
         description="Injuries explicitly healed or removed, per character",
     )
-    character_injury_removal_evidence: dict[str, list[str]] = Field(
+    character_injury_removal_evidence: dict[str, list[InjuryRemovalEvidence]] = Field(
         default_factory=dict,
-        description="Evidence for each injury removal: char_id -> list of evidence strings",
+        description="Structured evidence for each injury removal",
     )
     character_possessions_added: dict[str, list[str]] = Field(default_factory=dict)
     character_possessions_removed: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Possessions explicitly lost, given away, or destroyed",
     )
-    character_possession_removal_evidence: dict[str, list[str]] = Field(
+    character_possession_removal_evidence: dict[str, list[PossessionRemovalEvidence]] = Field(
         default_factory=dict,
-        description="Evidence for each possession removal: char_id -> list of evidence strings",
+        description="Structured evidence for each possession removal",
     )
     character_relationship_changes: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Relationship state changes per character",
     )
-    character_relationship_evidence: dict[str, list[str]] = Field(
+    character_relationship_evidence: dict[str, list[RelationshipEvidence]] = Field(
         default_factory=dict,
-        description="Evidence for each relationship change: char_id -> list of evidence strings",
+        description="Structured evidence for each relationship change",
     )
     clues_introduced: list[ClueRef] = Field(default_factory=list)
     clues_resolved: list[PatternStr] = Field(default_factory=list)

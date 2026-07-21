@@ -33,6 +33,9 @@ from typing import Any
 from app.domain.models import (
     ContinuityDelta,
     EpisodeContent,
+    RelationshipEvidence,
+    InjuryRemovalEvidence,
+    PossessionRemovalEvidence,
     WorldState,
     CharacterRef,
 )
@@ -117,69 +120,256 @@ def _get_prior_character_possessions(prior_state: dict[str, Any]) -> set[str]:
     return all_possessions
 
 
-def _evidence_binds_to_content(
-    evidence: str,
-    known_scene_ids: set[str],
-    scene_char_ids: set[str],
+def _excerpt_in_prose(
+    excerpt: str,
     content: EpisodeContent,
+    scene_id: str | None = None,
 ) -> bool:
-    """Check if an evidence string references a scene, character, or prose."""
-    if not evidence or not evidence.strip():
+    """Check if an excerpt appears as substring in the prose of a specific scene
+    (or any scene if scene_id is None)."""
+    if not excerpt or not excerpt.strip():
         return False
-    ev = evidence.strip()
-    # Reference to a known scene ID
-    for sid in known_scene_ids:
-        if sid in ev:
-            return True
-    # Reference to a participating character
-    for cid in scene_char_ids:
-        if cid in ev:
-            return True
-    # Appears in prose (word overlap >= 2 meaningful words)
-    ev_words = {w for w in ev.split() if len(w) >= 3}
-    if not ev_words:
-        return False
+    ex = excerpt.strip()
     for beat in content.prose:
+        if scene_id and beat.scene_id != scene_id:
+            continue
         for para in beat.paragraphs:
-            para_words = set(para.split())
-            if len(ev_words & para_words) >= min(2, len(ev_words)):
+            if ex in para:
                 return True
     return False
 
 
-def _check_evidence_list_for_removal(
-    item_type: str,
+def _validate_relationship_evidence(
     char_id: str,
-    removed_items: list[str],
-    evidence_list: list[str],
+    changes: list[str],
+    evidence_list: list[RelationshipEvidence],
+    known_chars: set[str],
     known_scene_ids: set[str],
-    scene_char_ids: set[str],
+    scene_participants: dict[str, set[str]],
     content: EpisodeContent,
 ) -> None:
-    """Validate that each removal item has corresponding evidence.
+    """Validate structured relationship evidence with exact 1:1 binding."""
+    if len(evidence_list) != len(changes):
+        raise ContinuityError(
+            f"relationship evidence count {len(evidence_list)} does not match "
+            f"change count {len(changes)} for character '{char_id}'"
+        )
+    used_scenes: set[tuple[str, str]] = set()
+    for ci, change in enumerate(changes):
+        parts = change.split(":")
+        if len(parts) < 3:
+            continue  # Already validated in _check_character_relationships
+        other_char = parts[0]
+        prior_stated = parts[1]
+        new_stated = parts[2]
+        ev = evidence_list[ci]
 
-    ``removed_items`` must be the original list order from the delta
-    (not a set) so that evidence mapping is preserved.
-    """
-    items = removed_items
-    for idx, item in enumerate(items):
-        if idx >= len(evidence_list):
+        # Exact pair match
+        if ev.character_id != char_id:
             raise ContinuityError(
-                f"{item_type} removal '{item}' for character '{char_id}' missing "
-                f"evidence — evidence list has {len(evidence_list)} entries for "
-                f"{len(items)} removals"
+                f"relationship evidence character_id '{ev.character_id}' does not "
+                f"match change target '{char_id}'"
             )
-        evidence = evidence_list[idx]
-        if not evidence or not evidence.strip():
+        if ev.other_character_id != other_char:
             raise ContinuityError(
-                f"{item_type} removal '{item}' for character '{char_id}' has "
-                f"empty evidence — each removal requires scene evidence"
+                f"relationship evidence other_character_id '{ev.other_character_id}' "
+                f"does not match change other character '{other_char}'"
             )
-        if not _evidence_binds_to_content(evidence, known_scene_ids, scene_char_ids, content):
+        if ev.prior_label != prior_stated:
             raise ContinuityError(
-                f"{item_type} removal evidence '{evidence}' for character '{char_id}' "
-                f"does not reference any scene, participating character, or prose"
+                f"relationship evidence prior_label '{ev.prior_label}' does not "
+                f"match change prior label '{prior_stated}'"
             )
+        if ev.new_label != new_stated:
+            raise ContinuityError(
+                f"relationship evidence new_label '{ev.new_label}' does not "
+                f"match change new label '{new_stated}'"
+            )
+
+        # Scene must exist
+        if ev.scene_id not in known_scene_ids:
+            raise ContinuityError(
+                f"relationship evidence scene_id '{ev.scene_id}' does not exist"
+            )
+        # Namespace collision: character_id fields must not be scene IDs
+        if ev.character_id in known_scene_ids:
+            raise ContinuityError(
+                f"relationship evidence character_id '{ev.character_id}' is actually a "
+                f"scene ID — must reference a character"
+            )
+        if ev.other_character_id in known_scene_ids:
+            raise ContinuityError(
+                f"relationship evidence other_character_id '{ev.other_character_id}' is "
+                f"actually a scene ID — must reference a character"
+            )
+        # Namespace collision: scene_id must not be a character ID
+        if ev.scene_id in known_chars:
+            raise ContinuityError(
+                f"relationship evidence scene_id '{ev.scene_id}' is actually a "
+                f"character ID — must reference a scene"
+            )
+        # Both characters must participate in the scene
+        scene_parts = scene_participants.get(ev.scene_id, set())
+        if char_id not in scene_parts:
+            raise ContinuityError(
+                f"relationship evidence: character '{char_id}' does not participate "
+                f"in scene '{ev.scene_id}'"
+            )
+        if other_char not in scene_parts:
+            raise ContinuityError(
+                f"relationship evidence: other character '{other_char}' does not "
+                f"participate in scene '{ev.scene_id}'"
+            )
+        # Excerpt must appear in scene prose
+        if not _excerpt_in_prose(ev.excerpt, content, ev.scene_id):
+            raise ContinuityError(
+                f"relationship evidence excerpt '{ev.excerpt}' not found in "
+                f"scene '{ev.scene_id}' prose"
+            )
+        # No reuse of same scene excerpt for different changes
+        scene_key = (ev.scene_id, ev.excerpt)
+        if scene_key in used_scenes:
+            raise ContinuityError(
+                f"relationship evidence reuses scene '{ev.scene_id}' excerpt "
+                f"for multiple changes"
+            )
+        used_scenes.add(scene_key)
+
+
+def _validate_injury_evidence(
+    char_id: str,
+    removed_items: list[str],
+    evidence_list: list[InjuryRemovalEvidence],
+    known_scene_ids: set[str],
+    scene_participants: dict[str, set[str]],
+    content: EpisodeContent,
+) -> None:
+    """Validate structured injury removal evidence with exact 1:1 binding."""
+    if len(evidence_list) != len(removed_items):
+        raise ContinuityError(
+            f"injury evidence count {len(evidence_list)} does not match "
+            f"removal count {len(removed_items)} for character '{char_id}'"
+        )
+    used_keys: set[tuple[str, str, str]] = set()
+    for idx, injury in enumerate(removed_items):
+        ev = evidence_list[idx]
+        if ev.character_id != char_id:
+            raise ContinuityError(
+                f"injury evidence character_id '{ev.character_id}' does not match "
+                f"removal target '{char_id}'"
+            )
+        if ev.injury != injury:
+            raise ContinuityError(
+                f"injury evidence injury '{ev.injury}' does not match "
+                f"removed injury '{injury}'"
+            )
+        if ev.scene_id not in known_scene_ids:
+            raise ContinuityError(
+                f"injury evidence scene_id '{ev.scene_id}' does not exist"
+            )
+        scene_parts = scene_participants.get(ev.scene_id, set())
+        if char_id not in scene_parts:
+            raise ContinuityError(
+                f"injury evidence: character '{char_id}' does not participate "
+                f"in scene '{ev.scene_id}'"
+            )
+        if not _excerpt_in_prose(ev.excerpt, content, ev.scene_id):
+            raise ContinuityError(
+                f"injury evidence excerpt '{ev.excerpt}' not found in "
+                f"scene '{ev.scene_id}' prose"
+            )
+        key = (ev.scene_id, ev.injury, ev.excerpt)
+        if key in used_keys:
+            raise ContinuityError(
+                f"injury evidence reuses same binding for '{injury}'"
+            )
+        used_keys.add(key)
+
+
+def _validate_possession_evidence(
+    char_id: str,
+    removed_items: list[str],
+    evidence_list: list[PossessionRemovalEvidence],
+    added_possessions: dict[str, list[str]],
+    known_chars: set[str],
+    known_scene_ids: set[str],
+    scene_participants: dict[str, set[str]],
+    content: EpisodeContent,
+) -> None:
+    """Validate structured possession removal evidence with exact 1:1 binding."""
+    if len(evidence_list) != len(removed_items):
+        raise ContinuityError(
+            f"possession evidence count {len(evidence_list)} does not match "
+            f"removal count {len(removed_items)} for character '{char_id}'"
+        )
+    used_keys: set[tuple[str, str, str]] = set()
+    for idx, possession in enumerate(removed_items):
+        ev = evidence_list[idx]
+        if ev.character_id != char_id:
+            raise ContinuityError(
+                f"possession evidence character_id '{ev.character_id}' does not match "
+                f"removal target '{char_id}'"
+            )
+        if ev.possession != possession:
+            raise ContinuityError(
+                f"possession evidence possession '{ev.possession}' does not match "
+                f"removed possession '{possession}'"
+            )
+        if ev.scene_id not in known_scene_ids:
+            raise ContinuityError(
+                f"possession evidence scene_id '{ev.scene_id}' does not exist"
+            )
+        scene_parts = scene_participants.get(ev.scene_id, set())
+        if char_id not in scene_parts:
+            raise ContinuityError(
+                f"possession evidence: character '{char_id}' does not participate "
+                f"in scene '{ev.scene_id}'"
+            )
+        if not _excerpt_in_prose(ev.excerpt, content, ev.scene_id):
+            raise ContinuityError(
+                f"possession evidence excerpt '{ev.excerpt}' not found in "
+                f"scene '{ev.scene_id}' prose"
+            )
+        # Transfer-specific checks
+        if ev.action == "transferred":
+            if not ev.recipient_character_id:
+                raise ContinuityError(
+                    f"possession transfer evidence for '{possession}' has no recipient"
+                )
+            if ev.recipient_character_id == char_id:
+                raise ContinuityError(
+                    f"possession transfer recipient is the same as source character "
+                    f"'{char_id}'"
+                )
+            if ev.recipient_character_id not in known_chars:
+                raise ContinuityError(
+                    f"possession transfer recipient '{ev.recipient_character_id}' "
+                    f"does not exist"
+                )
+            if ev.recipient_character_id not in scene_parts:
+                raise ContinuityError(
+                    f"possession transfer recipient '{ev.recipient_character_id}' "
+                    f"does not participate in scene '{ev.scene_id}'"
+                )
+            # Recipient must have the possession added
+            recipient_added = added_possessions.get(ev.recipient_character_id, [])
+            if possession not in recipient_added:
+                raise ContinuityError(
+                    f"possession transfer recipient '{ev.recipient_character_id}' "
+                    f"does not have '{possession}' in character_possessions_added"
+                )
+        else:
+            if ev.recipient_character_id:
+                raise ContinuityError(
+                    f"possession {ev.action} evidence for '{possession}' should not "
+                    f"have a recipient"
+                )
+        key = (ev.scene_id, ev.possession, ev.excerpt)
+        if key in used_keys:
+            raise ContinuityError(
+                f"possession evidence reuses same binding for '{possession}'"
+            )
+        used_keys.add(key)
 
 
 def _check_character_relationships(
@@ -196,13 +386,17 @@ def _check_character_relationships(
     - relationship to unknown character
     - unstructured relationship change (must be colon-delimited)
     - wrong prior state stated
-    - silent relationship rewrite (change without explicit delta)
     - no-op relationship change (prior == new)
+    - pair not found in persisted state with wrong prior label
+    - pair not found with non-"none" prior label
     """
-    # Build prior relationship state from world
-    prior_rels: dict[str, set[str]] = {}
+    # Build prior relationship state from structured RelationshipRef
+    prior_rels: dict[str, dict[str, str]] = {}  # char_id -> {other_char_id: label}
     for char in world.characters:
-        prior_rels[char.character_id] = set(char.relationships)
+        char_rels: dict[str, str] = {}
+        for ref in char.relationships:
+            char_rels[ref.other_character_id] = ref.label
+        prior_rels[char.character_id] = char_rels
 
     # Process explicit relationship changes from delta
     for char_id, changes in delta.character_relationship_changes.items():
@@ -231,16 +425,24 @@ def _check_character_relationships(
                     f"relationship no-op change for '{char_id}' vs '{other_char}': "
                     f"prior '{prior_stated}' equals new '{new_stated}'"
                 )
-            # Check stated prior matches persisted state.
-            # If the character has NO prior relationships at all, allow
-            # establishing the first relationship (any prior label is OK).
-            prior_rels_for_char = prior_rels.get(char_id, set())
-            if prior_rels_for_char and prior_stated not in prior_rels_for_char:
-                raise ContinuityError(
-                    f"stated prior relationship '{prior_stated}' for character "
-                    f"'{char_id}' does not match persisted state "
-                    f"{sorted(prior_rels_for_char)}"
-                )
+            # Check stated prior matches persisted structured state
+            prior_label = prior_rels.get(char_id, {}).get(other_char)
+            if prior_label is not None:
+                # Pair exists — prior must match exactly
+                if prior_stated != prior_label:
+                    raise ContinuityError(
+                        f"stated prior relationship '{prior_stated}' for character "
+                        f"'{char_id}' vs '{other_char}' does not match persisted "
+                        f"label '{prior_label}'"
+                    )
+            else:
+                # Pair does not exist — only "none" is allowed as prior label
+                if prior_stated != "none":
+                    raise ContinuityError(
+                        f"no persisted relationship between '{char_id}' and "
+                        f"'{other_char}' but prior_label is '{prior_stated}' — "
+                        f"must be 'none' when pair does not exist"
+                    )
 
     # Silent relationship rewrite detection: if content's participating
     # characters include a pair with a known relationship in the world,
@@ -378,36 +580,21 @@ def validate_production_continuity(
     # ── Relationship check ─────────────────────────────────────────────
     _check_character_relationships(content, known_chars, world, delta)
 
-    # ── Relationship evidence binding ──────────────────────────────────
-    # Each relationship change MUST have corresponding evidence.
-    # Evidence must reference a scene, character, or prose content.
+    # ── Scene participant lookup ──────────────────────────────────────
     known_scene_ids = {sc.scene_id for sc in content.scenes}
-    scene_char_ids: set[str] = set()
+    scene_participants: dict[str, set[str]] = {}
     for sc in content.scenes:
-        scene_char_ids.update(sc.participating_character_ids)
+        scene_participants[sc.scene_id] = set(sc.participating_character_ids)
 
+    # ── Relationship evidence binding (structured) ─────────────────────
     for char_id, changes in delta.character_relationship_changes.items():
         if char_id not in known_chars:
             continue
         evidence_list = delta.character_relationship_evidence.get(char_id, [])
-        for ci, change in enumerate(changes):
-            if ci >= len(evidence_list):
-                raise ContinuityError(
-                    f"relationship change '{change}' for character '{char_id}' "
-                    f"missing evidence — evidence list has {len(evidence_list)} "
-                    f"entries for {len(changes)} changes"
-                )
-            evidence = evidence_list[ci]
-            if not evidence or not evidence.strip():
-                raise ContinuityError(
-                    f"relationship change '{change}' for character '{char_id}' "
-                    f"has empty evidence — each change requires scene evidence"
-                )
-            if not _evidence_binds_to_content(evidence, known_scene_ids, scene_char_ids, content):
-                raise ContinuityError(
-                    f"relationship change evidence '{evidence}' for '{char_id}' "
-                    f"does not reference any scene, participating character, or prose"
-                )
+        _validate_relationship_evidence(
+            char_id, changes, evidence_list,
+            known_chars, known_scene_ids, scene_participants, content,
+        )
 
     # ── Knowledge check with per-item structured evidence binding ──────
     # Each knowledge item MUST be bound 1:1 to its own source.
@@ -591,21 +778,21 @@ def validate_production_continuity(
                     f"but character does not have that possession in prior state"
                 )
 
-        # ── Injury removal evidence binding ────────────────────────────
-        # Pass the original list (not the set) to preserve evidence mapping order.
-        _check_evidence_list_for_removal(
-            "injury", cid,
+        # ── Injury removal evidence binding (structured) ──────────────
+        _validate_injury_evidence(
+            cid,
             delta.character_injuries_removed.get(cid, []),
             delta.character_injury_removal_evidence.get(cid, []),
-            known_scene_ids, scene_char_ids, content,
+            known_scene_ids, scene_participants, content,
         )
 
-        # ── Possession removal evidence binding ────────────────────────
-        _check_evidence_list_for_removal(
-            "possession", cid,
+        # ── Possession removal evidence binding (structured) ──────────
+        _validate_possession_evidence(
+            cid,
             delta.character_possessions_removed.get(cid, []),
             delta.character_possession_removal_evidence.get(cid, []),
-            known_scene_ids, scene_char_ids, content,
+            delta.character_possessions_added,
+            known_chars, known_scene_ids, scene_participants, content,
         )
 
         # SILENT REMOVAL detection: if a prior injury/possession is NOT in

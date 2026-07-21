@@ -22,6 +22,8 @@ from app.domain.models import (
     LocationRef,
     ClueRef,
     AppliedReaderInput,
+    RelationshipRef,
+    RelationshipEvidence,
 )
 from app.pipeline.errors import ContinuityError
 from app.pipeline.production_continuity import validate_production_continuity
@@ -235,15 +237,29 @@ def test_scene_id_in_source_validates_knowledge(db_conn):
 def test_relationship_change_requires_exact_pair(db_conn):
     """Relationship change must reference the exact character pair."""
     world = _make_world()
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="stranger"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": [
             "char-2:stranger:friend"
         ]},
         character_relationship_evidence={"char-1": [
-            "scene-1: Alice and Bob became friends at the park"
+            RelationshipEvidence(
+                scene_id="scene-1", character_id="char-1", other_character_id="char-2",
+                prior_label="stranger", new_label="friend",
+                excerpt="Alice and Bob became friends at the park",
+            ),
         ]},
     )
-    content = _make_content(world_state_delta=delta)
+    content = _make_content(
+        world_state_delta=delta,
+        scenes=[ScenePlan(scene_id="scene-1", title="S", purpose="T",
+                          participating_character_ids=["char-1", "char-2"])],
+        prose=[ProseBeat(scene_id="scene-1", paragraphs=[
+            "Alice and Bob became friends at the park today.",
+        ])],
+    )
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True)
 
@@ -251,7 +267,9 @@ def test_relationship_change_requires_exact_pair(db_conn):
 def test_relationship_noop_rejected(db_conn):
     """No-op relationship change (prior == new) is rejected."""
     world = _make_world()
-    world.characters[0].relationships = ["char-2:friend"]
+    world.characters[0].relationships = [
+        RelationshipRef(other_character_id="char-2", label="friend"),
+    ]
     delta = ContinuityDelta(
         character_relationship_changes={"char-1": [
             "char-2:friend:friend"
