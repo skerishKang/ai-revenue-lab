@@ -1473,3 +1473,118 @@ class TestPilotEvidenceIntegrity:
         assert result.evidence_type == "paid_edition"
         assert result.price_krw == 4900
         assert result.consent_recorded is True
+
+
+# =====================================================================
+# 24. run_sink success-path accounting — first edition
+# =====================================================================
+
+class TestRunSinkFirstEditionSuccess:
+    """Verify that a successful first edition records exactly 2 generation runs
+    (plan + draft) with no duplicate attempt records."""
+
+    def test_run_sink_first_edition_success_path(self, conn, traveler, source_dicts):
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        provider = MockProvider(
+            task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft}
+        )
+        service = GenerationService(conn, provider)
+
+        content = service.generate_first_edition(
+            traveler_id=traveler.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+
+        # Verify content returned
+        assert content.publication_title
+        assert len(content.sections) == 3
+
+        # Verify exactly 1 edition in pending_review
+        editions = get_editions_by_traveler(conn, traveler.id)
+        assert len(editions) == 1
+        assert editions[0].generation_status == EditionGenerationStatus.pending_review
+
+        # Verify exactly 2 generation runs (plan + draft), no duplicates
+        runs = get_generation_runs_by_task_type(conn, "editorial_plan")
+        draft_runs = get_generation_runs_by_task_type(conn, "edition_draft")
+        assert len(runs) == 1, f"Expected exactly 1 plan run, got {len(runs)}"
+        assert len(draft_runs) == 1, f"Expected exactly 1 draft run, got {len(draft_runs)}"
+        assert runs[0].success is True
+        assert draft_runs[0].success is True
+        assert runs[0].edition_id == editions[0].id
+        assert draft_runs[0].edition_id == editions[0].id
+
+
+# =====================================================================
+# 25. run_sink success-path accounting — second edition
+# =====================================================================
+
+class TestRunSinkSecondEditionSuccess:
+    """Verify that a successful second edition records exactly 2 generation runs
+    (plan + draft) with feedback marked as applied."""
+
+    def test_run_sink_second_edition_success_path(self, conn, traveler, source_dicts):
+        first_draft = _load_fixture("source_bundle.json")["first_edition_fixture"]
+        second_draft = _load_fixture("source_bundle.json")["second_edition_fixture"]
+
+        # Generate first edition
+        p1 = MockProvider(
+            task_payloads={"editorial_plan": FIRST_PLAN, "edition_draft": first_draft}
+        )
+        s1 = GenerationService(conn, p1)
+        s1.generate_first_edition(
+            traveler_id=traveler.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+        ed1 = get_editions_by_traveler(conn, traveler.id)[0]
+
+        # Create feedback on ed1
+        fb = create_feedback(
+            conn,
+            traveler_id=traveler.id,
+            edition_id=ed1.id,
+            direction_choices=["quieter_places", "slower_pace"],
+            free_text="더 조용한 코스로",
+        )
+
+        # Generate second edition
+        p2 = MockProvider(
+            task_payloads={"editorial_plan": SECOND_PLAN, "edition_draft": second_draft}
+        )
+        s2 = GenerationService(conn, p2)
+        content2 = s2.generate_second_edition(
+            traveler_id=traveler.id,
+            prior_edition_id=ed1.id,
+            traveler_preferences={"destination": "부산"},
+            source_items=source_dicts,
+        )
+
+        # Verify content returned
+        assert content2.publication_title
+
+        # Verify 2 editions total, new one pending_review
+        editions = get_editions_by_traveler(conn, traveler.id)
+        assert len(editions) == 2
+        ed2 = [e for e in editions if e.edition_number == 2][0]
+        assert ed2.generation_status == EditionGenerationStatus.pending_review
+
+        # Verify feedback marked as applied
+        unapplied = get_unapplied_feedback_for_traveler(conn, traveler.id)
+        assert len(unapplied) == 0, "Feedback should be marked applied"
+
+        # Verify exactly 2 generation runs for ed2 (plan + draft), no duplicates
+        plan_runs_2 = get_generation_runs_by_task_type(conn, "editorial_plan")
+        draft_runs_2 = get_generation_runs_by_task_type(conn, "edition_draft")
+        # ed1 used 1 plan + 1 draft, ed2 uses 1 plan + 1 draft = 2 each total
+        assert len(plan_runs_2) == 2, f"Expected 2 plan runs total, got {len(plan_runs_2)}"
+        assert len(draft_runs_2) == 2, f"Expected 2 draft runs total, got {len(draft_runs_2)}"
+
+        # Verify ed2's runs have correct edition_id
+        ed2_plan_runs = [r for r in plan_runs_2 if r.edition_id == ed2.id]
+        ed2_draft_runs = [r for r in draft_runs_2 if r.edition_id == ed2.id]
+        assert len(ed2_plan_runs) == 1, f"Expected 1 plan run for ed2, got {len(ed2_plan_runs)}"
+        assert len(ed2_draft_runs) == 1, f"Expected 1 draft run for ed2, got {len(ed2_draft_runs)}"
+        assert ed2_plan_runs[0].success is True
+        assert ed2_draft_runs[0].success is True

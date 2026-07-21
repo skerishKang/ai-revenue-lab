@@ -189,7 +189,6 @@ class GenerationService:
                 edition_id=edition.id,
                 run_sink=all_runs,
             )
-            all_runs.extend(plan_runs)
 
             content = self._generate_draft(
                 plan=plan_content,
@@ -198,7 +197,6 @@ class GenerationService:
                 edition_id=edition.id,
                 run_sink=all_runs,
             )
-            all_runs.extend(draft_runs)
 
             # Record ALL generation runs for accounting
             self._record_run_batch(all_runs, edition.id, commit=False)
@@ -294,9 +292,6 @@ class GenerationService:
 
         next_number = prior_record.edition_number + 1
 
-
-        next_number = prior_record.edition_number + 1
-
         all_runs: list[tuple[ProviderResult, str]] = []
 
         self.conn.execute("SAVEPOINT sp_second")
@@ -320,7 +315,6 @@ class GenerationService:
                 applied_feedback=applied_feedback_list,
                 run_sink=all_runs,
             )
-            all_runs.extend(plan_runs)
 
             prior_summary = self._edition_summary(prior_content)
 
@@ -333,7 +327,6 @@ class GenerationService:
                 prior_edition_summary=prior_summary,
                 run_sink=all_runs,
             )
-            all_runs.extend(draft_runs)
 
             # Record ALL generation runs for accounting
             self._record_run_batch(all_runs, edition.id, commit=False)
