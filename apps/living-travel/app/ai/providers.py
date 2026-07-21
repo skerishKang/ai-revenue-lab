@@ -26,42 +26,36 @@ _SYNTHETIC_VERIFICATION = (
 
 _SUPPORTED_LANGUAGES = {"ko"}
 
-_DIRECTION_TO_SECTION: dict[str, tuple[str, str, str, list[str]]] = {
+_DIRECTION_TO_SECTION: dict[str, tuple[str, str, str]] = {
     "quieter_places": (
         "sec_quiet",
         "조용한 장소",
         "한적하고 조용한 명소 위주로 구성했습니다.",
-        ["sec_quiet"],
     ),
     "slower_pace": (
         "sec_slow_pace",
         "여유로운 일정",
         "이동 시간을 줄이고 여유 있게 즐길 수 있는 일정으로 조정했습니다.",
-        ["sec_slow_pace"],
     ),
     "more_local_food": (
         "sec_local_food",
         "로컬 음식",
         "지역 맛집과 로컬 푸드를 중심으로 음식 정보를 강화했습니다.",
-        ["sec_local_food"],
     ),
     "less_walking": (
         "sec_low_effort",
         "적은 이동 코스",
         "도보 거리를 최소화하고 이동이 적은 코스로 재구성했습니다.",
-        ["sec_low_effort"],
     ),
     "lower_budget": (
         "sec_budget",
         "비용 효율 코스",
         "합리적인 가격대의 선택지를 중심으로 예산 부담을 줄였습니다.",
-        ["sec_budget"],
     ),
     "more_practical": (
         "sec_practical",
         "실용 정보",
         "운영시간·교통·예약 등 실용적인 정보를 추가했습니다.",
-        ["sec_practical"],
     ),
 }
 
@@ -95,7 +89,9 @@ def _ensure_source(
     ).fetchone()
     if existing:
         return
+
     from datetime import datetime, timezone
+
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     conn.execute(
         "INSERT INTO sources "
@@ -125,49 +121,82 @@ def _ensure_source(
 
 
 def _build_source_bundle_for_destination(destination: str) -> list[dict]:
-    dhash = _destination_hash(destination)
+    destination_hash = _destination_hash(destination)
     return [
         {
-            "source_id": f"syn_src_{dhash}_overview",
+            "source_id": f"syn_src_{destination_hash}_overview",
             "category": "destination_overview",
             "claims": [f"{destination} 여행 overview", "item_weather_note"],
             "confidence": "confirmed",
         },
         {
-            "source_id": f"syn_src_{dhash}_market",
+            "source_id": f"syn_src_{destination_hash}_market",
             "category": "market",
-            "claims": [f"{destination} 전통시장", "item_gukje_atmosphere", "item_gukje_hours", "item_solo_dining"],
+            "claims": [
+                f"{destination} 전통시장",
+                "item_gukje_atmosphere",
+                "item_gukje_hours",
+                "item_solo_dining",
+            ],
             "confidence": "confirmed",
         },
         {
-            "source_id": f"syn_src_{dhash}_neighborhood",
+            "source_id": f"syn_src_{destination_hash}_neighborhood",
             "category": "neighborhood",
-            "claims": [f"{destination} 로컬 동네", "item_haegyeolri_vibe", "item_quiet_haegyeolri"],
+            "claims": [
+                f"{destination} 로컬 동네",
+                "item_haegyeolri_vibe",
+                "item_quiet_haegyeolri",
+            ],
             "confidence": "approximate",
         },
     ]
 
 
+def _build_plan_from_draft(draft: dict, prefs: dict) -> dict:
+    destination = prefs.get("destination", "")
+    return {
+        "plan_version": "1.0",
+        "language": prefs.get("preferred_language", "ko"),
+        "central_theme": f"{destination} 맞춤 여행",
+        "sections": [
+            {
+                "section_id": section.get("section_id", ""),
+                "title": section.get("title", ""),
+                "description": (
+                    section.get("narrative", "")
+                    or section.get("title", "")
+                    or "맞춤 여행 섹션"
+                )[:240],
+            }
+            for section in draft.get("sections", [])
+        ],
+    }
+
+
 def _apply_preferences_to_plan(plan: dict, prefs: dict) -> dict:
     plan = copy.deepcopy(plan)
-    dest = prefs.get("destination", "")
-    lang = prefs.get("preferred_language", "ko")
-    plan["central_theme"] = f"{dest} 여행"
+    destination = prefs.get("destination", "")
+    language = prefs.get("preferred_language", "ko")
+    plan["central_theme"] = f"{destination} 여행"
+    plan["language"] = language
+
     length = prefs.get("length_preference", "medium")
-    length_factor = {"short": 1, "medium": 2, "long": 3}
-    max_sections = length_factor.get(length, 2)
+    max_sections = {"short": 1, "medium": 2, "long": 3}.get(length, 2)
     if len(plan.get("sections", [])) > max_sections:
         plan["sections"] = plan["sections"][:max_sections]
-    for sec in plan.get("sections", []):
-        sec["title"] = f"{dest} — {sec.get('title', '')}"
-    if lang not in _SUPPORTED_LANGUAGES:
+
+    for section in plan.get("sections", []):
+        section["title"] = f"{destination} — {section.get('title', '')}"
+
+    if language not in _SUPPORTED_LANGUAGES:
         plan["sections"] = []
     return plan
 
 
 def _apply_preferences_to_draft(draft: dict, prefs: dict) -> dict:
     draft = copy.deepcopy(draft)
-    dest = prefs.get("destination", "")
+    destination = prefs.get("destination", "")
     nights = prefs.get("trip_duration_nights", 2)
     pace = prefs.get("pace_preference", "comfortable")
     budget = prefs.get("budget_tendency", "moderate")
@@ -175,25 +204,33 @@ def _apply_preferences_to_draft(draft: dict, prefs: dict) -> dict:
     trip_context = prefs.get("trip_context", "solo")
     tone = prefs.get("tone_preference", "calm")
     length = prefs.get("length_preference", "medium")
-    lang = prefs.get("preferred_language", "ko")
     exclusions = prefs.get("exclusions", [])
 
-    draft["destination"] = dest
+    draft["destination"] = destination
     draft["trip_frame"] = f"{nights}박 {nights + 1}일"
 
-    context_map = {"solo": "혼행", "couple": "커플 여행", "family": "가족 여행", "group": "단체 여행"}
-    ctx_label = context_map.get(trip_context, trip_context)
-    draft["publication_title"] = f"{dest} {nights}박: 맞춤 {ctx_label}"
-    draft["edition_title"] = f"첫 번째 에디션 — {dest}의 {ctx_label}"
+    context_map = {
+        "solo": "혼행",
+        "couple": "커플 여행",
+        "family": "가족 여행",
+        "group": "단체 여행",
+    }
+    context_label = context_map.get(trip_context, trip_context)
+    draft["publication_title"] = f"{destination} {nights}박: 맞춤 {context_label}"
+    draft["edition_title"] = f"첫 번째 에디션 — {destination}의 {context_label}"
 
-    pace_desc = "천천히" if pace in ("relaxed", "comfortable") else "활기차게"
-    budget_desc = "합리적인" if budget in ("budget", "moderate") else "여유로운"
-    interest_desc = ", ".join(interests[:3]) if interests else "로컬 분위기"
-    exclus = f" ({', '.join(exclusions[:2])}는 제외)" if exclusions else ""
+    pace_description = "천천히" if pace in ("relaxed", "comfortable") else "활기차게"
+    budget_description = "합리적인" if budget in ("budget", "moderate") else "여유로운"
+    interest_description = ", ".join(interests[:3]) if interests else "로컬 분위기"
+    exclusion_description = (
+        f" ({', '.join(exclusions[:2])}는 제외)" if exclusions else ""
+    )
 
-    opening = f"{dest}는 {interest_desc}으로 유명합니다{exclus}. "
-    opening += f"이번 에디션은 {ctx_label}에 적합한 {pace_desc} 걷는 {budget_desc} 코스로 준비했습니다."
-
+    opening = f"{destination}는 {interest_description}으로 유명합니다{exclusion_description}. "
+    opening += (
+        f"이번 에디션은 {context_label}에 적합한 {pace_description} 걷는 "
+        f"{budget_description} 코스로 준비했습니다."
+    )
     if tone == "calm":
         opening += " 여유롭게 즐겨보세요."
     elif tone == "energetic":
@@ -203,29 +240,34 @@ def _apply_preferences_to_draft(draft: dict, prefs: dict) -> dict:
 
     draft["editorial_opening"] = opening
 
-    length_factor = {"short": 1, "medium": 2, "long": 3}
-    max_sections = length_factor.get(length, 2)
+    max_sections = {"short": 1, "medium": 2, "long": 3}.get(length, 2)
     if len(draft.get("sections", [])) > max_sections:
         draft["sections"] = draft["sections"][:max_sections]
 
     draft["provenance_note"] = (
         "모든 정보는 합성된 데모 데이터입니다. 실제 검증된 출처가 아닙니다."
     )
-    for sec in draft.get("sections", []):
-        sec["title"] = f"{dest} — {sec.get('title', '')}"
-        sec["narrative"] = (
-            f"{dest}에서 {pace_desc} 걸으며 즐길 수 있는 "
-            f"{sec.get('title', '').split('—')[-1].strip()} 관련 내용입니다."
+    for section in draft.get("sections", []):
+        section["title"] = f"{destination} — {section.get('title', '')}"
+        section["narrative"] = (
+            f"{destination}에서 {pace_description} 걸으며 즐길 수 있는 "
+            f"{section.get('title', '').split('—')[-1].strip()} 관련 내용입니다."
         )
 
     return draft
 
 
-def _apply_preferences_to_second_draft(draft: dict, prefs: dict, prior_content: dict | None = None) -> dict:
-    """Apply traveler preferences to second edition draft FIRST, before feedback.
-    Maintains continuity from prior_content when available."""
-    draft = copy.deepcopy(draft)
-    dest = prefs.get("destination", "")
+def _apply_preferences_to_second_draft(
+    prior_content: dict,
+    prefs: dict,
+) -> dict:
+    """Use the persisted prior structured content as the second-edition base."""
+    if not prior_content:
+        raise ValueError("Persisted prior content is required for a second edition")
+
+    draft = copy.deepcopy(prior_content)
+    previous_destination = draft.get("destination", "")
+    destination = prefs.get("destination", "")
     nights = prefs.get("trip_duration_nights", 2)
     pace = prefs.get("pace_preference", "comfortable")
     budget = prefs.get("budget_tendency", "moderate")
@@ -234,49 +276,62 @@ def _apply_preferences_to_second_draft(draft: dict, prefs: dict, prior_content: 
     tone = prefs.get("tone_preference", "calm")
     length = prefs.get("length_preference", "medium")
     exclusions = prefs.get("exclusions", [])
+    language = prefs.get("preferred_language", "ko")
 
-    draft["destination"] = dest
+    if language not in _SUPPORTED_LANGUAGES:
+        raise ValueError("Unsupported fixture language")
+
+    context_map = {
+        "solo": "혼행",
+        "couple": "커플 여행",
+        "family": "가족 여행",
+        "group": "단체 여행",
+    }
+    context_label = context_map.get(trip_context, trip_context)
+    pace_description = "천천히" if pace in ("relaxed", "comfortable") else "활기차게"
+    budget_description = "합리적인" if budget in ("budget", "moderate") else "여유로운"
+    interest_description = ", ".join(interests[:3]) if interests else "로컬 분위기"
+    exclusion_description = (
+        f" ({', '.join(exclusions[:2])}는 제외)" if exclusions else ""
+    )
+    tone_description = {
+        "calm": "차분한",
+        "energetic": "활기찬",
+        "luxury": "프리미엄",
+    }.get(tone, "차분한")
+
+    prior_title = draft.get("publication_title", "이전 에디션")
+    prior_opening = draft.get("editorial_opening", "")
+
+    draft["destination"] = destination
     draft["trip_frame"] = f"{nights}박 {nights + 1}일"
+    draft["publication_title"] = f"{destination} {nights}박: 연속 {context_label}"
+    draft["edition_title"] = f"두 번째 에디션 — {destination} 맞춤 코스"
+    draft["editorial_opening"] = (
+        f"'{prior_title}'의 흐름을 이어 {destination}{exclusion_description}에서 "
+        f"{interest_description}에 집중한 {pace_description} {budget_description} "
+        f"{tone_description} {context_label} 일정을 구성했습니다. "
+        f"출력 언어는 한국어이며 분량 선호는 {length}입니다. "
+        f"{prior_opening}"
+    ).strip()
+    draft["applied_feedback"] = []
+    draft["next_edition_prompt"] = (
+        "이전 에디션의 연속성을 유지하면서 다음에 바꿀 부분을 알려주세요."
+    )
+    draft["provenance_note"] = (
+        f"{draft.get('provenance_note', '').strip()} "
+        "이 에디션은 persisted prior structured content를 기반으로 한 "
+        "network-free synthetic adaptation입니다."
+    ).strip()
 
-    context_map = {"solo": "혼행", "couple": "커플 여행", "family": "가족 여행", "group": "단체 여행"}
-    ctx_label = context_map.get(trip_context, trip_context)
-    prior_title = prior_content.get("publication_title", "") if prior_content else ""
-    draft["publication_title"] = f"{dest} {nights}박: 연속 {ctx_label}" + (f" ← {prior_title[:30]}" if prior_title else "")
-    draft["edition_title"] = f"두 번째 에디션 — {dest} 맞춤 코스"
-
-    pace_desc = "천천히" if pace in ("relaxed", "comfortable") else "활기차게"
-    budget_desc = "합리적인" if budget in ("budget", "moderate") else "여유로운"
-    interest_desc = ", ".join(interests[:3]) if interests else "로컬 분위기"
-    exclus = f" ({', '.join(exclusions[:2])}는 제외)" if exclusions else ""
-
-    opening = f"이전 '{prior_title[:40]}'의 피드백을 반영하여 {dest}{exclus} 코스를 재구성했습니다. "
-    opening += f"{ctx_label}에 적합한 {pace_desc} {budget_desc} 일정으로 준비했습니다. {interest_desc}에 중점을 두었습니다."
-
-    if tone == "calm":
-        opening += " 여유롭게 즐겨보세요."
-    elif tone == "energetic":
-        opening += " 활기차게 즐겨보세요!"
-    elif tone == "luxury":
-        opening += " 프리미엄 경험을 만끽하세요."
-
-    draft["editorial_opening"] = opening
-
-    length_factor = {"short": 1, "medium": 2, "long": 3}
-    max_sections = length_factor.get(length, 2)
-    if len(draft.get("sections", [])) > max_sections:
-        draft["sections"] = draft["sections"][:max_sections]
-
-    for sec in draft.get("sections", []):
-        sec["title"] = f"{dest} — {sec.get('title', '')}"
-        sec["narrative"] = (
-            f"피드백을 반영하여 {dest}에서 "
-            f"{sec.get('title', '').split('—')[-1].strip()}를 "
-            f"{pace_desc} {budget_desc} 가격으로 재구성했습니다."
-        )
-
-    if prior_content:
-        for sec in draft.get("sections", []):
-            sec["narrative"] += f" (이전: {prior_content.get('publication_title', '이전 에디션')[:30]} 기준)"
+    if previous_destination and previous_destination != destination:
+        for section in draft.get("sections", []):
+            section["title"] = section.get("title", "").replace(
+                previous_destination, destination
+            )
+            section["narrative"] = section.get("narrative", "").replace(
+                previous_destination, destination
+            )
 
     return draft
 
@@ -286,68 +341,67 @@ def _apply_feedback_to_second_draft(
     feedback_records: list,
     prior_content: dict | None = None,
 ) -> dict:
-    """Apply exact feedback to the already-personalized second draft."""
+    """Modify only exact feedback sections while preserving unrelated prior content."""
     draft = copy.deepcopy(draft)
-    dest = draft.get("destination", "")
+    destination = draft.get("destination", "")
 
     direction_changes: set[str] = set()
-    for fb in feedback_records:
-        for d in fb.direction_choices:
-            direction_changes.add(d)
+    section_by_id = {
+        section["section_id"]: section
+        for section in draft.get("sections", [])
+    }
+    applied: list[dict] = []
 
-    all_section_ids = {s["section_id"] for s in draft.get("sections", [])}
+    for feedback in feedback_records:
+        affected_ids: list[str] = []
+        unfulfilled: list[str] = []
 
-    applied = []
-    added_sections: list[dict] = []
-    modified_section_ids: set[str] = set()
-
-    for fb in feedback_records:
-        fb_affected_ids: list[str] = []
-        fb_unfulfilled: list[str] = []
-
-        for d in fb.direction_choices:
-            if d not in _DIRECTION_TO_SECTION:
-                fb_unfulfilled.append(f"{d}: 알 수 없는 방향")
+        for direction in feedback.direction_choices:
+            direction_changes.add(direction)
+            mapping = _DIRECTION_TO_SECTION.get(direction)
+            if mapping is None:
+                unfulfilled.append(f"{direction}: 알 수 없는 방향")
                 continue
-            sec_id, sec_title, sec_note, expected_ids = _DIRECTION_TO_SECTION[d]
 
-            if sec_id in all_section_ids:
-                fb_affected_ids.append(sec_id)
-                modified_section_ids.add(sec_id)
-                for existing_sec in draft.get("sections", []):
-                    if existing_sec["section_id"] == sec_id:
-                        existing_sec["narrative"] = f"{dest} — {sec_note}"
-                        existing_sec["title"] = f"{dest} — {sec_title}"
-            else:
-                new_sec = {
-                    "section_id": sec_id,
-                    "title": f"{dest} — {sec_title}",
-                    "narrative": f"{dest} — {sec_note}",
+            section_id, section_title, section_note = mapping
+            section = section_by_id.get(section_id)
+            if section is None:
+                section = {
+                    "section_id": section_id,
+                    "title": f"{destination} — {section_title}",
+                    "narrative": f"{destination} — {section_note}",
                     "items": [],
                 }
-                added_sections.append(new_sec)
-                fb_affected_ids.append(sec_id)
-                modified_section_ids.add(sec_id)
+                draft.setdefault("sections", []).append(section)
+                section_by_id[section_id] = section
+            else:
+                section["title"] = f"{destination} — {section_title}"
+                section["narrative"] = f"{destination} — {section_note}"
 
-        actual_action = "; ".join(_DIRECTION_TO_ACTION.get(d, d) for d in fb.direction_choices)
-        if fb_unfulfilled:
-            actual_action += " (일부 미반영: " + "; ".join(fb_unfulfilled) + ")"
+            if section_id not in affected_ids:
+                affected_ids.append(section_id)
 
-        applied.append({
-            "feedback_id": fb.id,
-            "requested_change": ", ".join(fb.direction_choices),
-            "actual_action": actual_action,
-            "affected_section_ids": fb_affected_ids,
-            "evidence": fb.free_text[:200] if fb.free_text else "",
-            "unfulfilled_reason": "; ".join(fb_unfulfilled),
-        })
+        actual_action = "; ".join(
+            _DIRECTION_TO_ACTION.get(direction, direction)
+            for direction in feedback.direction_choices
+        )
+        if unfulfilled:
+            actual_action += " (일부 미반영: " + "; ".join(unfulfilled) + ")"
 
-    if added_sections:
-        draft["sections"] = draft.get("sections", []) + added_sections
+        applied.append(
+            {
+                "feedback_id": feedback.id,
+                "requested_change": ", ".join(feedback.direction_choices),
+                "actual_action": actual_action,
+                "affected_section_ids": affected_ids,
+                "evidence": feedback.free_text[:200] if feedback.free_text else "",
+                "unfulfilled_reason": "; ".join(unfulfilled),
+            }
+        )
 
     draft["applied_feedback"] = applied
 
-    opening_parts = [f"{dest}에서"]
+    opening_parts = [f"{destination}에서"]
     if "quieter_places" in direction_changes or "less_walking" in direction_changes:
         opening_parts.append("더 조용하고 이동량을 줄인 코스로")
     if "more_local_food" in direction_changes:
@@ -360,47 +414,67 @@ def _apply_feedback_to_second_draft(
         opening_parts.append("실용 정보를 강화하여")
     opening_parts.append("재구성했습니다.")
 
-    existing_opening = draft.get("editorial_opening", "").split(". ")
-    base = existing_opening[0] if len(existing_opening) > 1 else f"피드백을 반영하여 {dest} 코스를"
-    draft["editorial_opening"] = base + ". " + " ".join(opening_parts)
-
+    draft["editorial_opening"] = (
+        draft.get("editorial_opening", "").rstrip()
+        + " "
+        + " ".join(opening_parts)
+    ).strip()
     return draft
 
 
-def _remap_source_refs(draft: dict, source_map: dict[str, str]) -> dict:
+def _source_category_for_item(item_id: str) -> str:
+    lowered = item_id.lower()
+    if any(token in lowered for token in ("gukje", "market", "food", "dining")):
+        return "market"
+    if any(
+        token in lowered
+        for token in ("haegyeolri", "neighborhood", "cafe", "quiet")
+    ):
+        return "neighborhood"
+    return "destination_overview"
+
+
+def _remap_source_refs(
+    draft: dict,
+    category_to_source: dict[str, str],
+) -> dict:
     draft = copy.deepcopy(draft)
-    for sec in draft.get("sections", []):
-        for item in sec.get("items", []):
-            old_ref = item.get("source_ref", "")
-            if old_ref in source_map:
-                item["source_ref"] = source_map[old_ref]
+    for section in draft.get("sections", []):
+        for item in section.get("items", []):
+            category = _source_category_for_item(item.get("item_id", ""))
+            source_id = category_to_source.get(category, "")
+            if source_id:
+                item["source_ref"] = source_id
     return draft
 
-
-# --- Public API ---
 
 def create_mock_provider(
     conn: sqlite3.Connection,
     traveler_preferences: dict,
 ) -> MockProvider:
-    dest = traveler_preferences.get("destination", "")
-    source_bundle = _build_source_bundle_for_destination(dest)
-    source_map = {}
-    for src in source_bundle:
-        _ensure_source(conn, src["source_id"], dest, src)
-        source_map[src["category"]] = src["source_id"]
+    destination = traveler_preferences.get("destination", "")
+    source_bundle = _build_source_bundle_for_destination(destination)
+    source_map: dict[str, str] = {}
+    for source in source_bundle:
+        _ensure_source(conn, source["source_id"], destination, source)
+        source_map[source["category"]] = source["source_id"]
 
-    plan = _apply_preferences_to_plan(_load_fixture("synthetic_plan.json"), traveler_preferences)
-    draft = _apply_preferences_to_draft(_load_fixture("synthetic_draft.json"), traveler_preferences)
+    plan = _apply_preferences_to_plan(
+        _load_fixture("synthetic_plan.json"),
+        traveler_preferences,
+    )
+    draft = _apply_preferences_to_draft(
+        _load_fixture("synthetic_draft.json"),
+        traveler_preferences,
+    )
+    draft = _remap_source_refs(draft, source_map)
 
-    legacy_to_new = {
-        "src_busan_tourism": source_map.get("destination_overview", ""),
-        "src_gukje_market": source_map.get("market", ""),
-        "src_haegyeolri": source_map.get("neighborhood", ""),
-    }
-    draft = _remap_source_refs(draft, legacy_to_new)
-
-    return MockProvider(task_payloads={"editorial_plan": plan, "edition_draft": draft})
+    return MockProvider(
+        task_payloads={
+            "editorial_plan": plan,
+            "edition_draft": draft,
+        }
+    )
 
 
 def create_second_mock_provider(
@@ -409,38 +483,46 @@ def create_second_mock_provider(
     feedback_records: list,
     prior_content: dict | None = None,
 ) -> MockProvider:
-    dest = traveler_preferences.get("destination", "")
-    source_bundle = _build_source_bundle_for_destination(dest)
-    source_map = {}
-    for src in source_bundle:
-        _ensure_source(conn, src["source_id"], dest, src)
-        source_map[src["category"]] = src["source_id"]
+    if not prior_content:
+        raise ValueError("Persisted prior content is required for a second edition")
 
-    plan = _apply_preferences_to_plan(_load_fixture("synthetic_second_plan.json"), traveler_preferences)
+    destination = traveler_preferences.get("destination", "")
+    source_bundle = _build_source_bundle_for_destination(destination)
+    source_map: dict[str, str] = {}
+    for source in source_bundle:
+        _ensure_source(conn, source["source_id"], destination, source)
+        source_map[source["category"]] = source["source_id"]
 
     draft = _apply_preferences_to_second_draft(
-        _load_fixture("synthetic_second_draft.json"), traveler_preferences, prior_content
+        prior_content,
+        traveler_preferences,
     )
-    draft = _apply_feedback_to_second_draft(draft, feedback_records, prior_content)
+    draft = _apply_feedback_to_second_draft(
+        draft,
+        feedback_records,
+        prior_content,
+    )
+    draft = _remap_source_refs(draft, source_map)
+    plan = _build_plan_from_draft(draft, traveler_preferences)
 
-    legacy_to_new = {
-        "src_busan_tourism": source_map.get("destination_overview", ""),
-        "src_gukje_market": source_map.get("market", ""),
-        "src_haegyeolri": source_map.get("neighborhood", ""),
-    }
-    draft = _remap_source_refs(draft, legacy_to_new)
-
-    return MockProvider(task_payloads={"editorial_plan": plan, "edition_draft": draft})
+    return MockProvider(
+        task_payloads={
+            "editorial_plan": plan,
+            "edition_draft": draft,
+        }
+    )
 
 
 def _build_unsupported_draft(prefs: dict) -> dict:
-    dest = prefs.get("destination", "Unknown")
+    destination = prefs.get("destination", "Unknown")
     return {
-        "publication_title": f"[Unsupported Language] {dest}",
-        "edition_title": f"Unsupported — {dest}",
-        "destination": dest,
+        "publication_title": f"[Unsupported Language] {destination}",
+        "edition_title": f"Unsupported — {destination}",
+        "destination": destination,
         "trip_frame": "N/A",
-        "editorial_opening": f"This language is not yet supported for {dest}.",
+        "editorial_opening": (
+            f"This language is not yet supported for {destination}."
+        ),
         "sections": [],
         "applied_feedback": [],
         "content_version": "1.0",
