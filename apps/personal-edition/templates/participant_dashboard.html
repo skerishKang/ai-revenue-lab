@@ -1,40 +1,77 @@
 {% extends "base.html" %}
-{% block title %}대시보드 - Personal Edition{% endblock %}
+{% block title %}홈 — Personal Edition{% endblock %}
 {% block content %}
 <div class="dashboard">
-  <h1>안녕하세요, {{ participant.display_name }}님</h1>
-  <div class="stats">
-    <div class="stat-card">
-      <span class="stat-label">발행된 에디션</span>
-      <span class="stat-value">{{ published_editions|length }}</span>
+  <div class="dashboard-hero animate-fade-in">
+    <img src="/static/images/private-library-hero.webp"
+         alt="개인 라이브러리"
+         width="680" height="340">
+  </div>
+
+  <h1 class="dashboard-greeting">{{ participant.display_name }}님, 안녕하세요</h1>
+  <p class="dashboard-sub">오직 당신만을 위한 개인 에디션</p>
+
+  {% if published_editions %}
+  <div class="state-published">
+    <a href="/p/{{ participant.id }}/editions/{{ published_editions[0].edition_number }}"
+       class="latest-edition">
+      <span class="edition-label">최신 에디션</span>
+      <h2 class="edition-title-display">{{ published_editions[0].rendered_title or '제목 없음' }}</h2>
+      <span class="edition-date-display">
+        {% if published_editions[0].published_at %}{{ published_editions[0].published_at[:10] }}{% endif %}
+        · 제{{ published_editions[0].edition_number }}호
+      </span>
+    </a>
+
+    {% if published_editions|length > 1 %}
+    <section class="past-editions">
+      <h2>지난 에디션</h2>
+      <div class="past-edition-list">
+        {% for edition in published_editions[1:] %}
+        <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
+           class="past-edition-item">
+          <span class="past-edition-num">#{{ edition.edition_number }}</span>
+          <span class="past-edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
+          <span class="past-edition-date">
+            {% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="section">
+      <a href="/p/{{ participant.id }}/input" class="btn btn-primary">새 글 쓰기</a>
+    </section>
+  </div>
+
+  {% elif input_count > 0 %}
+  <div class="state-waiting animate-slide-up">
+    <img src="/static/images/editorial-process-layers.webp"
+         alt="편집 과정"
+         width="640" height="360">
+    <h2>기록을 맡아두었습니다</h2>
+    <div class="stage-indicators">
+      <span class="stage-indicator"><span class="stage-dot active"></span> 입력 완료</span>
+      <span class="stage-indicator"><span class="stage-dot"></span> 편집 중</span>
+      <span class="stage-indicator"><span class="stage-dot"></span> 발행</span>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">제출한 입력</span>
-      <span class="stat-value">{{ input_count }}</span>
-    </div>
+    <p>기록을 맡아두었습니다. 검토를 거쳐 에디션이 준비되면 이곳에서 읽을 수 있습니다.</p>
   </div>
 
   <section class="section">
-    <h2>새 글 작성</h2>
-    <a href="/p/{{ participant.id }}/input" class="btn btn-primary">새 입력 제출</a>
+    <a href="/p/{{ participant.id }}/input" class="btn btn-secondary">추가 기록하기</a>
   </section>
 
-  {% if published_editions %}
-  <section class="section">
-    <h2>발행된 에디션</h2>
-    <div class="edition-list">
-      {% for edition in published_editions %}
-      <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
-         class="edition-card">
-        <span class="edition-number">#{{ edition.edition_number }}</span>
-        <span class="edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
-        <span class="edition-date">
-          {% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}
-        </span>
-      </a>
-      {% endfor %}
-    </div>
-  </section>
+  {% else %}
+  <div class="state-empty animate-slide-up">
+    <h2>당신의 이야기를 기록하세요</h2>
+    <p>남겨주신 이야기와 생각을 정리해 오직 당신만 읽을 수 있는 글로 전합니다. 지금 바로 첫 기록을 시작해보세요.</p>
+    <a href="/p/{{ participant.id }}/input" class="btn btn-primary">첫 기록 시작하기</a>
+  </div>
   {% endif %}
+
+  <p class="privacy-note">이 에디션은 비공개입니다. 다른 사람에게 공개되지 않으며, 검토를 거쳐 안전하게 관리됩니다.</p>
 </div>
 {% endblock %}

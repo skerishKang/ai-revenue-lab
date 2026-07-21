@@ -1,18 +1,37 @@
 {% extends "base.html" %}
-{% block title %}접속 - Personal Edition{% endblock %}
+{% block title %}접속 — Personal Edition{% endblock %}
 {% block content %}
-<div class="card auth-card">
-  <h1>Personal Edition</h1>
-  <p class="subtitle">개인화된 편지를 읽으려면 토큰을 입력하세요.</p>
-  {% if error %}
-  <div class="alert alert-error" role="alert">{{ error }}</div>
-  {% endif %}
-  <form method="post" action="/p/access">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
-    <label for="token">접속 토큰</label>
-    <input type="text" id="token" name="token" required
-           placeholder="토큰을 입력하세요" autocomplete="off" autofocus>
-    <button type="submit" class="btn btn-primary">접속</button>
-  </form>
+<div class="access-page">
+  <div class="access-content animate-slide-up">
+    <h1 class="access-brand">Personal Edition</h1>
+    <p class="access-subtitle">당신의 기록이 한 편의 에디션이 됩니다.</p>
+    <p class="access-description">남겨주신 이야기와 생각을 정리해 오직 당신만 읽을 수 있는 글로 전합니다.</p>
+
+    <ul class="access-privacy">
+      <li>비공개 초대 전용</li>
+      <li>자동으로 공개되지 않음</li>
+      <li>검토 후 발행</li>
+    </ul>
+
+    {% if error %}
+    <div class="alert alert-error" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/p/access">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
+      <div class="access-form-group">
+        <label for="token">접속 토큰</label>
+        <input type="text" id="token" name="token" required
+               placeholder="토큰을 입력하세요" autocomplete="off" autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary">개인 편집실 열기</button>
+    </form>
+  </div>
+
+  <div class="access-image animate-fade-in">
+    <img src="/static/images/access-invitation.webp"
+         alt="비공개 초대 이미지"
+         width="600" height="400">
+  </div>
 </div>
 {% endblock %}

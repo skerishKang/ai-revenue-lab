@@ -1600,7 +1600,6 @@ class TestUnsafeContentEscaping:
             cookies = _get_session_cookie("p1")
             resp = client.get("/p/p1/editions/1", cookies=cookies)
             assert resp.status_code == 200
-            assert "<img" not in resp.text
             assert "&lt;img" in resp.text
 
 

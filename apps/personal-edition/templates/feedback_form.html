@@ -1,9 +1,15 @@
 {% extends "base.html" %}
-{% block title %}피드백 - Personal Edition{% endblock %}
+{% block title %}피드백 — Personal Edition{% endblock %}
 {% block content %}
-<div class="card">
-  <h1>피드백 보내기</h1>
-  <p class="subtitle">에디션 #{{ edition.edition_number }}에 대한 피드백을 보내주세요.</p>
+<div class="feedback-page">
+  <div class="feedback-header">
+    <h1>다음 에디션을 위한 편집 메모</h1>
+    <p>이번 에디션에서 좋았던 점과 다음 호에서 바꾸고 싶은 방향을 알려주세요.</p>
+  </div>
+
+  <p style="font-family: var(--font-interface); font-size: .8125rem; color: var(--muted); margin-bottom: 1.5rem;">
+    에디션 #{{ edition.edition_number }}
+  </p>
 
   {% if error %}
   <div class="alert alert-error" role="alert">{{ error }}</div>
@@ -40,7 +46,7 @@
               placeholder="추가 의견이 있으시면 작성해주세요..."
               maxlength="2000"></textarea>
 
-    <button type="submit" class="btn btn-primary">피드백 제출</button>
+    <button type="submit" class="btn btn-primary">편집 메모 전달하기</button>
   </form>
 </div>
 {% endblock %}
