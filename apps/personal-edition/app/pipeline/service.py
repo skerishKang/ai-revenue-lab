@@ -136,6 +136,81 @@ class GenerationResult:
         return VALIDATION_PASSED
 
 
+@dataclass(frozen=True)
+class RepairRequest:
+    """Provider-neutral contract for a validator-feedback repair call.
+
+    The corrupted candidate plus privacy-safe, normalized validator findings
+    and a concise repair instruction are sent to the same configured provider
+    that produced the original candidate. No raw private participant input is
+    included.
+
+    ``allowed_segment_ids`` and ``allowed_plan_section_ids`` form the
+    privacy-safe reference universe: only these IDs (never segment text,
+    participant input, or profile fields) may appear in the repaired draft.
+    They are supplied in deterministic sorted order and must be non-empty. The
+    repaired draft is rejected if it references any id outside these sets.
+
+    Both sets are required and fail closed at construction: a repair request
+    without an authoritative reference universe is rejected rather than silently
+    skipping reference-universe enforcement.
+    """
+
+    participant_id: str
+    input_id: str
+    corrupted_candidate: dict[str, Any]
+    validator_findings: list[dict[str, Any]]
+    repair_instruction: str
+    correlation_id: str
+    attempt_id: str
+    prohibited_inferences: tuple[str, ...] = ()
+    allowed_segment_ids: tuple[str, ...] = ()
+    allowed_plan_section_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.allowed_segment_ids:
+            raise ValueError(
+                "RepairRequest.allowed_segment_ids must be a non-empty "
+                "authoritative reference universe"
+            )
+        if not self.allowed_plan_section_ids:
+            raise ValueError(
+                "RepairRequest.allowed_plan_section_ids must be a non-empty "
+                "authoritative reference universe"
+            )
+
+
+@dataclass(frozen=True)
+class RepairOutcome:
+    """Result of a single repair provider call plus deterministic validation."""
+
+    succeeded: bool
+    validation_status: str
+    content: EditionContent | None
+    error_category: str | None
+    error_message: str | None
+    retry_count: int
+    input_tokens: int | None
+    output_tokens: int | None
+    latency_seconds: float | None
+    provider: str | None
+    model: str | None
+    cost_class: str | None
+    run_id: str | None
+
+
+@dataclass(frozen=True)
+class RepairCandidate:
+    """A successfully generated (pre-corruption) candidate with its context."""
+
+    succeeded: bool
+    content: EditionContent | None
+    plan: EditorialPlan | None
+    segments: list[InputSegment]
+    plan_outcome: StageOutcome
+    draft_outcome: StageOutcome
+
+
 def _new_request_id() -> str:
     return str(uuid.uuid4())
 
@@ -634,29 +709,15 @@ class GenerationService:
             )
 
         try:
-            validators.validate_draft(
+            validators.validate_draft_full(
                 draft,
                 plan=plan,
                 segments=segments,
                 is_follow_up=request.is_follow_up,
                 feedback_id=request.feedback_id,
+                prohibited_inferences=prohibited_inferences,
             )
-            visible_fields = validators.collect_visible_fields(draft)
-            markup_mod.check_payload(draft.model_dump())
-            policy = grounding_mod.GroundingPolicy(
-                prohibited_tokens=frozenset(prohibited_inferences)
-                if prohibited_inferences
-                else frozenset()
-            )
-            grounding_mod.check_grounding(
-                policy=policy,
-                visible_fields=visible_fields,
-            )
-        except (
-            DraftValidationError,
-            markup_mod.UnsafeMarkupError,
-            grounding_mod.GroundingError,
-        ) as exc:
+        except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
                     conn,
@@ -757,6 +818,325 @@ class GenerationService:
             succeeded=True,
         )
 
+    def generate_repair_candidate(
+        self,
+        conn,
+        *,
+        request: GenerationRequest,
+    ) -> RepairCandidate:
+        """Produce one candidate edition for the repair benchmark.
+
+        Runs the standard plan -> draft -> validate pipeline (without persisting
+        an edition) and returns the resulting EditionContent together with the
+        plan and segments required to later validate a corrupted/repair copy.
+        Accounting for the two provider calls is recorded via the repository as
+        usual; the benchmark harness is responsible for persisting benchmark
+        rows.
+        """
+        participant = pt_repo.get_participant_by_id(conn, request.participant_id)
+        if participant is None or participant.status != "active":
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("participant not active"),
+                draft_outcome=_failed_outcome("participant not active"),
+            )
+
+        input_record = input_repo.get_input_by_id(conn, request.input_id)
+        if input_record is None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input not found"),
+                draft_outcome=_failed_outcome("input not found"),
+            )
+        if input_record.participant_id != request.participant_id:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input belongs to another participant"),
+                draft_outcome=_failed_outcome("input belongs to another participant"),
+            )
+        if input_record.deleted_at is not None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input is deleted"),
+                draft_outcome=_failed_outcome("input is deleted"),
+            )
+        if input_record.consent_confirmed != 1:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("consent not confirmed"),
+                draft_outcome=_failed_outcome("consent not confirmed"),
+            )
+
+        input_text = input_record.normalized_text or input_record.raw_text
+        language = participant.preferred_language
+        word_count = count_words(input_text, language)
+        if word_count < MIN_INPUT_WORDS and not request.allow_short_sample:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input too short"),
+                draft_outcome=_failed_outcome("input too short"),
+            )
+        if word_count > MAX_INPUT_WORDS:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=[],
+                plan_outcome=_failed_outcome("input too long"),
+                draft_outcome=_failed_outcome("input too long"),
+            )
+
+        preferences = ParticipantPreferences()
+        segments = segment_text(input_text)
+        prohibited_inferences = list(request.prohibited_inferences)
+
+        plan_system = prompts.build_plan_system_prompt(language)
+        plan_payload = prompts.build_plan_user_payload(
+            participant_id=request.participant_id,
+            segments=segments,
+            preferences=preferences,
+            language=language,
+            is_follow_up=False,
+            feedback_id=None,
+            feedback_directions=[],
+            feedback_free_text=None,
+            prior_edition_summary=None,
+            prohibited_inferences=prohibited_inferences,
+        )
+
+        plan, plan_outcome = _provider_call_with_retry(
+            provider=self._provider,
+            task_name=prompts.TASK_EDITORIAL_PLAN,
+            system_prompt=plan_system,
+            user_payload=plan_payload,
+            response_schema=EditorialPlan,
+            max_retries=self._max_retries,
+            prompt_version=prompts.PLAN_PROMPT_VERSION,
+            conn=conn,
+            participant_id=request.participant_id,
+        )
+
+        if plan is None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=None,
+                segments=segments,
+                plan_outcome=plan_outcome,
+                draft_outcome=_failed_outcome("plan stage failed"),
+            )
+
+        try:
+            validators.validate_plan(
+                plan,
+                segments=segments,
+                is_follow_up=False,
+                feedback_id=None,
+            )
+        except PlanValidationError as exc:
+            _mark_run_validation_failed(conn, plan_outcome.run_id, exc)
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=plan,
+                segments=segments,
+                plan_outcome=_deterministic_failure_stage(plan_outcome, exc),
+                draft_outcome=_failed_outcome("plan validation failed"),
+            )
+
+        draft_system = prompts.build_draft_system_prompt(language)
+        draft_payload = prompts.build_draft_user_payload(
+            participant_id=request.participant_id,
+            segments=segments,
+            plan=plan,
+            language=language,
+            is_follow_up=False,
+            feedback_id=None,
+            prohibited_inferences=prohibited_inferences,
+        )
+
+        draft, draft_outcome = _provider_call_with_retry(
+            provider=self._provider,
+            task_name=prompts.TASK_EDITION_DRAFT,
+            system_prompt=draft_system,
+            user_payload=draft_payload,
+            response_schema=EditionContent,
+            max_retries=self._max_retries,
+            prompt_version=prompts.DRAFT_PROMPT_VERSION,
+            conn=conn,
+            participant_id=request.participant_id,
+        )
+
+        if draft is None:
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=plan,
+                segments=segments,
+                plan_outcome=plan_outcome,
+                draft_outcome=draft_outcome,
+            )
+
+        try:
+            validators.validate_draft_full(
+                draft,
+                plan=plan,
+                segments=segments,
+                is_follow_up=False,
+                feedback_id=None,
+                prohibited_inferences=prohibited_inferences,
+            )
+        except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
+            _mark_run_validation_failed(conn, draft_outcome.run_id, exc)
+            return RepairCandidate(
+                succeeded=False,
+                content=None,
+                plan=plan,
+                segments=segments,
+                plan_outcome=plan_outcome,
+                draft_outcome=_deterministic_failure_stage(draft_outcome, exc),
+            )
+
+        return RepairCandidate(
+            succeeded=True,
+            content=draft,
+            plan=plan,
+            segments=segments,
+            plan_outcome=plan_outcome,
+            draft_outcome=draft_outcome,
+        )
+
+    def repair_edition(
+        self,
+        conn,
+        *,
+        repair_request: RepairRequest,
+        plan: EditorialPlan,
+        segments: list[InputSegment],
+    ) -> RepairOutcome:
+        """Send a privacy-safe repair request to the same provider instance.
+
+        The provider receives the corrupted candidate, normalized validator
+        findings, a concise repair instruction, and correlation/attempt
+        identifiers. The repaired candidate is validated deterministically
+        against the original plan and segments. No raw private participant
+        input is transmitted.
+        """
+        participant = pt_repo.get_participant_by_id(
+            conn, repair_request.participant_id
+        )
+        language = participant.preferred_language if participant else "ko"
+
+        system_prompt = prompts.build_repair_system_prompt(language)
+        user_payload = prompts.build_repair_user_payload(
+            corrupted_candidate=repair_request.corrupted_candidate,
+            validator_findings=repair_request.validator_findings,
+            repair_instruction=repair_request.repair_instruction,
+            correlation_id=repair_request.correlation_id,
+            attempt_id=repair_request.attempt_id,
+            prohibited_inferences=list(repair_request.prohibited_inferences),
+            allowed_segment_ids=repair_request.allowed_segment_ids,
+            allowed_plan_section_ids=repair_request.allowed_plan_section_ids,
+            language=language,
+        )
+
+        validated, outcome = _provider_call_with_retry(
+            provider=self._provider,
+            task_name=prompts.TASK_EDITION_REPAIR,
+            system_prompt=system_prompt,
+            user_payload=user_payload,
+            response_schema=EditionContent,
+            max_retries=self._max_retries,
+            prompt_version=prompts.REPAIR_PROMPT_VERSION,
+            conn=conn,
+            participant_id=repair_request.participant_id,
+        )
+
+        if validated is None:
+            return RepairOutcome(
+                succeeded=False,
+                validation_status=outcome.validation_status or PROVIDER_FAILED,
+                content=None,
+                error_category=outcome.error_category,
+                error_message=outcome.error_message,
+                retry_count=outcome.retry_count,
+                input_tokens=outcome.input_tokens,
+                output_tokens=outcome.output_tokens,
+                latency_seconds=outcome.latency_seconds,
+                provider=outcome.provider,
+                model=outcome.model,
+                cost_class=outcome.cost_class,
+                run_id=outcome.run_id,
+            )
+
+        try:
+            validators.validate_draft_full(
+                validated,
+                plan=plan,
+                segments=segments,
+                is_follow_up=False,
+                feedback_id=None,
+                prohibited_inferences=list(repair_request.prohibited_inferences),
+            )
+            _assert_allowed_reference_universe(
+                validated,
+                repair_request.allowed_segment_ids,
+                repair_request.allowed_plan_section_ids,
+            )
+        except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
+            _mark_run_validation_failed(conn, outcome.run_id, exc)
+            return RepairOutcome(
+                succeeded=False,
+                validation_status=VALIDATION_FAILED,
+                content=None,
+                error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+                error_message=safe_error_message(
+                    ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+                ),
+                retry_count=outcome.retry_count,
+                input_tokens=outcome.input_tokens,
+                output_tokens=outcome.output_tokens,
+                latency_seconds=outcome.latency_seconds,
+                provider=outcome.provider,
+                model=outcome.model,
+                cost_class=outcome.cost_class,
+                run_id=outcome.run_id,
+            )
+
+        return RepairOutcome(
+            succeeded=True,
+            validation_status=VALIDATION_PASSED,
+            content=validated,
+            error_category=None,
+            error_message=None,
+            retry_count=outcome.retry_count,
+            input_tokens=outcome.input_tokens,
+            output_tokens=outcome.output_tokens,
+            latency_seconds=outcome.latency_seconds,
+            provider=outcome.provider,
+            model=outcome.model,
+            cost_class=outcome.cost_class,
+            run_id=outcome.run_id,
+        )
+
     def _next_edition_number(self, conn, participant_id: str) -> int:
         existing = ed_repo.get_editions_by_participant(conn, participant_id)
         if not existing:
@@ -772,3 +1152,90 @@ def _failed_outcome(message: str) -> StageOutcome:
         error_category="not_attempted",
         error_message=message,
     )
+
+
+def _deterministic_failure_stage(
+    base_outcome: StageOutcome, exc: Exception
+) -> StageOutcome:
+    """Build a failed StageOutcome mirroring a deterministic validation error.
+
+    The returned outcome carries ``validation_status=VALIDATION_FAILED`` and a
+    privacy-safe error category/message so it can never be mistaken for a
+    provider failure. It preserves the underlying provider accounting.
+    """
+    return StageOutcome(
+        success=False,
+        validation_status=VALIDATION_FAILED,
+        retry_count=base_outcome.retry_count,
+        error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+        error_message=safe_error_message(
+            ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+        ),
+        completed_at=base_outcome.completed_at,
+        latency_seconds=base_outcome.latency_seconds,
+        provider=base_outcome.provider,
+        model=base_outcome.model,
+        cost_class=base_outcome.cost_class,
+        run_id=base_outcome.run_id,
+    )
+
+
+def _mark_run_validation_failed(
+    conn, run_id: str | None, exc: Exception
+) -> None:
+    """Persist a deterministic validation failure on the exact run row.
+
+    Called whenever deterministic validation fails after a provider call that
+    already succeeded at the schema level: candidate plan validation, candidate
+    draft validation, markup failure, grounding failure, and repair validation
+    failure. The returned outcome and this row must never disagree.
+    """
+    if run_id is None:
+        return
+    gr_repo.update_generation_run(
+        conn,
+        run_id,
+        success=0,
+        validation_status=VALIDATION_FAILED,
+        error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
+        error_message=safe_error_message(
+            ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
+        ),
+    )
+
+
+def _assert_allowed_reference_universe(
+    draft: EditionContent,
+    allowed_segment_ids: tuple[str, ...],
+    allowed_plan_section_ids: tuple[str, ...],
+) -> None:
+    """Reject a repaired draft that references ids outside the allowed sets.
+
+    The repair request supplies the authoritative, privacy-safe reference
+    universe (segment ids and plan section ids only). A repaired draft must
+    reference only those ids; an id outside the set is an invented or leaked
+    reference and must be rejected deterministically. Both sets are required to
+    be non-empty (enforced at ``RepairRequest`` construction); enforcement is
+    never skipped, so a missing reference universe fails closed.
+    """
+    if not allowed_segment_ids or not allowed_plan_section_ids:
+        raise DraftValidationError(
+            "repair request did not supply a non-empty allowed reference universe"
+        )
+    allowed_segments = frozenset(allowed_segment_ids)
+    allowed_sections = frozenset(allowed_plan_section_ids)
+    for section in draft.sections:
+        for ref in section.source_segment_ids:
+            if ref not in allowed_segments:
+                raise DraftValidationError(
+                    "repaired draft references segment id '"
+                    + str(ref)
+                    + "' which is outside the allowed reference universe"
+                )
+    for section in draft.sections:
+        if section.section_id not in allowed_sections:
+            raise DraftValidationError(
+                "repaired draft section '"
+                + str(section.section_id)
+                + "' is outside the allowed reference universe"
+            )

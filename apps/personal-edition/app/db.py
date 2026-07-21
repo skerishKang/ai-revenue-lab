@@ -1,6 +1,35 @@
+import importlib.util
 import os
+import re
 import sqlite3
 from pathlib import Path
+
+# A Python migration is any file named like `NNN_description.py` in the
+# migrations directory. It must define ``migrate(conn) -> None``. This lets a
+# migration branch on the existing SQLite column layout (which plain SQL cannot
+# do safely) while still being tracked by the same schema_migrations table.
+_PY_MIGRATION_RE = re.compile(r"^\d+_.*\.py$")
+
+
+def _is_migration_py(name: str) -> bool:
+    return name.endswith(".py") and _PY_MIGRATION_RE.match(name) is not None
+
+
+def _run_python_migration(path: Path, conn: sqlite3.Connection) -> None:
+    module_name = "kilo_migration_" + path.stem
+    spec = importlib.util.spec_from_file_location(module_name, str(path))
+    if spec is None or spec.loader is None:
+        raise MigrationError(
+            path.name, RuntimeError("cannot load migration module")
+        )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "migrate"):
+        raise MigrationError(
+            path.name,
+            RuntimeError("migration module must define migrate(conn)"),
+        )
+    module.migrate(conn)
 
 
 class MigrationError(RuntimeError):
@@ -82,7 +111,11 @@ def apply_migrations(
         applied.add(row["version"])
 
     migrations_path = Path(migrations_dir)
-    files = sorted(migrations_path.glob("*.sql"))
+    sql_files = sorted(migrations_path.glob("*.sql"))
+    py_files = sorted(
+        p for p in migrations_path.glob("*.py") if _is_migration_py(p.name)
+    )
+    files = sorted(sql_files + py_files, key=lambda p: p.name)
     applied_versions: list[str] = []
 
     for f in files:
@@ -90,28 +123,42 @@ def apply_migrations(
         if filename in applied:
             continue
 
-        try:
-            sql = f.read_text(encoding="utf-8")
-        except (OSError, UnicodeError) as exc:
-            raise MigrationError(filename, exc) from exc
+        if filename.endswith(".sql"):
+            try:
+                sql = f.read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as exc:
+                raise MigrationError(filename, exc) from exc
 
-        try:
-            statements = list(iter_sql_statements(sql))
-        except ValueError as exc:
-            raise MigrationError(filename, exc) from exc
+            try:
+                statements = list(iter_sql_statements(sql))
+            except ValueError as exc:
+                raise MigrationError(filename, exc) from exc
 
-        try:
-            conn.execute("BEGIN IMMEDIATE")
-            for stmt in statements:
-                conn.execute(stmt)
-            conn.execute(
-                "INSERT INTO schema_migrations (version) VALUES (?)",
-                (filename,),
-            )
-            conn.commit()
-            applied_versions.append(filename)
-        except sqlite3.Error as exc:
-            conn.rollback()
-            raise MigrationError(filename, exc) from exc
+            try:
+                conn.execute("BEGIN IMMEDIATE")
+                for stmt in statements:
+                    conn.execute(stmt)
+                conn.execute(
+                    "INSERT INTO schema_migrations (version) VALUES (?)",
+                    (filename,),
+                )
+                conn.commit()
+                applied_versions.append(filename)
+            except sqlite3.Error as exc:
+                conn.rollback()
+                raise MigrationError(filename, exc) from exc
+        else:
+            try:
+                conn.execute("BEGIN IMMEDIATE")
+                _run_python_migration(f, conn)
+                conn.execute(
+                    "INSERT INTO schema_migrations (version) VALUES (?)",
+                    (filename,),
+                )
+                conn.commit()
+                applied_versions.append(filename)
+            except Exception as exc:
+                conn.rollback()
+                raise MigrationError(filename, exc) from exc
 
     return applied_versions

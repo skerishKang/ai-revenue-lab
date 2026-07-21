@@ -28,6 +28,9 @@ DRAFT_PROMPT_VERSION = "personal-edition-draft-v1"
 # MockProvider uses to select a fixture response.
 TASK_EDITORIAL_PLAN = "editorial_plan"
 TASK_EDITION_DRAFT = "edition_draft"
+TASK_EDITION_REPAIR = "edition_repair"
+
+REPAIR_PROMPT_VERSION = "personal-edition-repair-v1"
 
 
 def build_plan_system_prompt(language: str) -> str:
@@ -127,4 +130,59 @@ def build_draft_user_payload(
         "is_follow_up": is_follow_up,
         "feedback_id": feedback_id,
         "prohibited_inferences": prohibited_inferences,
+    }
+
+
+def build_repair_system_prompt(language: str) -> str:
+    lang_label = "Korean" if language == "ko" else "English"
+    return (
+        "You are a careful edition repairer for a personal publication. "
+        "You are given a previously generated candidate edition that failed "
+        "deterministic validation, the normalized validator findings, a "
+        "concise repair instruction, and the authoritative allowed reference "
+        "universe (allowed_segment_ids and allowed_plan_section_ids). Return "
+        "ONLY valid JSON matching the EditionContent schema that fixes every "
+        "reported finding while preserving the original intent. Never invent "
+        "personal facts, relationships, places, dates, amounts, diagnoses, "
+        "intentions, or events. Every section must reference only a segment id "
+        "from allowed_segment_ids and only a plan section id from "
+        "allowed_plan_section_ids. You must not reference any id outside those "
+        "two sets. Do not include any HTML, script, event handler, javascript "
+        "URL, or unsafe markup. Write the edition in " + lang_label + "."
+    )
+
+
+def build_repair_user_payload(
+    *,
+    corrupted_candidate: dict[str, Any],
+    validator_findings: list[dict[str, Any]],
+    repair_instruction: str,
+    correlation_id: str,
+    attempt_id: str,
+    prohibited_inferences: list[str],
+    language: str,
+    allowed_segment_ids: tuple[str, ...] | list[str] = (),
+    allowed_plan_section_ids: tuple[str, ...] | list[str] = (),
+) -> dict[str, Any]:
+    """Build the privacy-safe structured user payload for a repair call.
+
+    Contains only the (synthetic) corrupted candidate, normalized validator
+    findings, a concise repair instruction, the authoritative allowed reference
+    universe, and correlation/attempt identifiers. The allowed reference sets
+    carry IDs only (segment ids and plan section ids); no raw segment text,
+    participant input, or profile fields are ever included. They are emitted in
+    deterministic sorted order. The provider receives no private participant
+    material.
+    """
+    return {
+        "prompt_version": REPAIR_PROMPT_VERSION,
+        "language": language,
+        "correlation_id": correlation_id,
+        "attempt_id": attempt_id,
+        "repair_instruction": repair_instruction,
+        "validator_findings": validator_findings,
+        "corrupted_candidate": corrupted_candidate,
+        "prohibited_inferences": prohibited_inferences,
+        "allowed_segment_ids": sorted(set(allowed_segment_ids)),
+        "allowed_plan_section_ids": sorted(set(allowed_plan_section_ids)),
     }
