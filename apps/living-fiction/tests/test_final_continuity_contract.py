@@ -297,8 +297,8 @@ def test_possession_removal_unrelated_evidence_rejected(db_conn):
         )
 
 
-def test_evidence_reuse_across_injuries_rejected(db_conn):
-    """Same evidence cannot serve multiple injury removals."""
+def test_each_injury_gets_own_evidence_entry(db_conn):
+    """Each injury removal has its own evidence entry in the parallel list."""
     db_conn.execute(
         "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'prior-1'",
         (json.dumps({"character_injuries_added": {"char-1": ["injury_a", "injury_b"]}}),),
@@ -307,13 +307,49 @@ def test_evidence_reuse_across_injuries_rejected(db_conn):
     world = _make_world()
     delta = ContinuityDelta(
         character_injuries_removed={"char-1": ["injury_a", "injury_b"]},
-        character_injury_removal_evidence={"char-1": ["scene-1: healed", "scene-1: healed"]},
+        character_injury_removal_evidence={"char-1": ["scene-1: Alice healed injury_a", "scene-1: Alice healed injury_b"]},
     )
     content = _make_content(world_state_delta=delta)
-    # This should pass because each injury has its own evidence entry
+    # Each injury has its own evidence entry — passes
     validate_production_continuity(
         content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
     )
+
+
+def test_multiple_relationship_changes_with_evidence_passes(db_conn):
+    """Relationship change with parallel evidence list passes."""
+    world = _make_world()
+    # CharacterRef.relationships stores just the label (e.g., "stranger")
+    world.characters[0].relationships = ["stranger"]
+    delta = ContinuityDelta(
+        character_relationship_changes={"char-1": [
+            "char-2:stranger:friend",
+        ]},
+        character_relationship_evidence={"char-1": [
+            "scene-1: Alice and Bob bonded at the park",
+        ]},
+    )
+    content = _make_content(world_state_delta=delta)
+    validate_production_continuity(
+        content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+    )
+
+
+def test_multiple_relationship_changes_missing_evidence_rejected(db_conn):
+    """Relationship change with fewer evidence entries than changes rejected."""
+    world = _make_world()
+    world.characters[0].relationships = ["stranger"]
+    delta = ContinuityDelta(
+        character_relationship_changes={"char-1": [
+            "char-2:stranger:friend",
+        ]},
+        character_relationship_evidence={"char-1": []},
+    )
+    content = _make_content(world_state_delta=delta)
+    with pytest.raises(ContinuityError, match="missing evidence"):
+        validate_production_continuity(
+            content, world=world, conn=db_conn, prior_episode_id="prior-1", is_branch=True,
+        )
 
 
 def test_injury_removal_missing_evidence_entry_rejected(db_conn):

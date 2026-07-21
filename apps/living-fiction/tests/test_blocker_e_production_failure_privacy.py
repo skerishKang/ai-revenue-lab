@@ -222,6 +222,191 @@ def test_exception_latency_and_raw_text_are_verified_through_service(db_path):
         conn.close()
 
 
+class _ContinuityViolationProvider:
+    """Provider that generates valid plan+content but with a continuity violation.
+
+    The content removes an injury without evidence, triggering
+    continuity validation failure through generate_personal_branch().
+    """
+
+    def __init__(self):
+        self.calls = 0
+
+    @property
+    def provider_name(self) -> str:
+        return "continuity-violation-provider"
+
+    @property
+    def model(self) -> str:
+        return "continuity-violation-model"
+
+    @property
+    def cost_class(self) -> CostClass:
+        return CostClass.FREE
+
+    def generate_structured(
+        self, *, task_name, system_prompt, user_payload, response_schema, request_id
+    ):
+        del system_prompt
+        self.calls += 1
+
+        if task_name == "episode_plan":
+            payload = {
+                "plan_version": "v1",
+                "world_id": "world-e",
+                "world_version": "1.0",
+                "episode_type": "personal_branch",
+                "episode_number": int(user_payload["episode_number"]),
+                "title": "Branch with silent injury removal",
+                "synopsis": "Valid plan but content will violate continuity",
+                "scenes": [{
+                    "scene_id": "scene-e",
+                    "title": "Hospital Visit",
+                    "purpose": "Mira visits the hospital",
+                    "participating_character_ids": ["char-e"],
+                    "location_id": "loc-e",
+                }],
+                "participating_character_ids": ["char-e"],
+                "location_ids": ["loc-e"],
+                "clue_refs": [],
+                "next_choice_options": ["Continue"],
+                "content_classification": "adult",
+            }
+        else:
+            # Content task — produce content that silently removes an injury
+            # without evidence (continuity violation)
+            payload = {
+                "content_version": "v1",
+                "world_id": "world-e",
+                "episode_type": "personal_branch",
+                "episode_number": int(user_payload.get("episode_number", 1)),
+                "title": "Branch with silent injury removal",
+                "synopsis": "Content removes injury without evidence",
+                "scenes": [{
+                    "scene_id": "scene-e",
+                    "title": "Hospital Visit",
+                    "purpose": "Mira visits the hospital",
+                    "participating_character_ids": ["char-e"],
+                    "location_id": "loc-e",
+                }],
+                "prose": [{
+                    "scene_id": "scene-e",
+                    "paragraphs": ["Mira felt much better after visiting the hospital."],
+                }],
+                "clue_refs": [],
+                "world_state_delta": {
+                    "character_knowledge_added": {},
+                    "character_knowledge_sources": {},
+                    "character_location_changed": {},
+                    "character_movement_explanations": {},
+                    "character_injuries_added": {},
+                    "character_injuries_removed": {"char-e": ["broken_arm"]},
+                    "character_injury_removal_evidence": {},
+                    "character_possessions_added": {},
+                    "character_possessions_removed": {},
+                    "character_possession_removal_evidence": {},
+                    "character_relationship_changes": {},
+                    "character_relationship_evidence": {},
+                    "clues_introduced": [],
+                    "clues_resolved": [],
+                    "canon_clue_resolution_explanations": {},
+                    "unresolved_threads": [],
+                    "thread_resolutions": {},
+                    "branch_only_facts": [],
+                },
+                "applied_reader_input": {
+                    "reader_choice_id": "choice-e",
+                    "choice_text": "Inspect carefully",
+                    "applied_evidence": "Mira went to the hospital and felt better.",
+                },
+                "unresolved_threads": [],
+                "next_choice_options": ["Continue"],
+                "content_classification": "adult",
+                "review_state": "pending_review",
+            }
+
+        validated = response_schema.model_validate(payload)
+        return ProviderResult(
+            provider=self.provider_name,
+            advertised_model=self.model,
+            cost_class=self.cost_class,
+            latency_seconds=0.01,
+            retry_count=0,
+            payload=validated.model_dump(),
+            request_id=request_id,
+            success=True,
+            usage=ProviderUsage(input_tokens=10, output_tokens=20, total_tokens=30),
+        )
+
+
+def test_continuity_violation_fails_through_service(db_path):
+    """Continuity failure (silent injury removal) returns succeeded=False
+    through generate_personal_branch() with proper error category.
+
+    Verifies:
+    - GenerationResult.succeeded is False
+    - Error category is continuity_validation_failed
+    - Idempotency request transitions to 'failed'
+    - No episode or branch created
+    - Durable error does not contain private text
+    """
+    # First, seed the prior episode with an injury in its world_state_delta
+    import json as _json
+    seed_conn = _conn(db_path)
+    try:
+        prior_delta = {"character_injuries_added": {"char-e": ["broken_arm"]}}
+        seed_conn.execute(
+            "UPDATE episodes SET world_state_deltas_json = ? WHERE id = 'ep-e'",
+            (_json.dumps(prior_delta),),
+        )
+        seed_conn.commit()
+    finally:
+        seed_conn.close()
+
+    conn = _conn(db_path)
+    provider = _ContinuityViolationProvider()
+    try:
+        result = _generate(conn, provider, "continuity-key", 0)
+
+        # 1. GenerationResult returns succeeded=False
+        assert not result.succeeded
+        assert result.episode_id is None
+
+        # 2. Error category is continuity_validation_failed
+        # Query the LAST generation run (content run), not the first (plan run)
+        run = conn.execute(
+            "SELECT success, validation_status, error_category, error_message "
+            "FROM generation_runs ORDER BY started_at DESC LIMIT 1"
+        ).fetchone()
+        assert run["success"] == 0
+        assert run["validation_status"] == "validation_failed"
+        assert run["error_category"] == "continuity_validation_failed"
+
+        # 3. Idempotency request transitions to 'failed'
+        request = conn.execute(
+            "SELECT status, error_message FROM branch_generation_requests"
+        ).fetchone()
+        assert request["status"] == "failed"
+
+        # 4. No episode or branch created
+        episodes = conn.execute(
+            "SELECT COUNT(*) as cnt FROM episodes WHERE episode_type = 'personal_branch'"
+        ).fetchone()
+        assert episodes["cnt"] == 0
+        branches = conn.execute(
+            "SELECT COUNT(*) as cnt FROM branches"
+        ).fetchone()
+        assert branches["cnt"] == 0
+
+        # 5. Durable error does not contain private text
+        messages = _messages(conn)
+        assert messages
+        assert all(SECRET not in message for message in messages)
+
+    finally:
+        conn.close()
+
+
 def test_semantic_failure_persists_static_category_not_validator_detail(db_path):
     conn = _conn(db_path)
     try:
