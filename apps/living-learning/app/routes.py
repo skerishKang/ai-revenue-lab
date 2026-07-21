@@ -377,3 +377,38 @@ def get_learner_progress(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
         )
+
+class AnswerExerciseRequest(BaseModel):
+    exercise_id: str = Field(min_length=1)
+    learner_id: str = Field(min_length=1)
+    answer: str = Field(min_length=1)
+    idempotency_key: str = ""
+
+class AnswerExerciseResponse(BaseModel):
+    response_id: str
+    is_correct: bool
+    is_duplicate: bool
+
+@router.post("/exercises/answer", response_model=AnswerExerciseResponse)
+def answer_exercise(
+    request: AnswerExerciseRequest,
+    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+) -> AnswerExerciseResponse:
+    try:
+        result = pipeline.answer_exercise(
+            exercise_id=request.exercise_id,
+            learner_id=request.learner_id,
+            answer=request.answer,
+            idempotency_key=request.idempotency_key,
+        )
+        return AnswerExerciseResponse(**result)
+    except GenerationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": str(exc)},
+        )
+    except ForeignFeedbackError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": "foreign_lesson"},
+        )

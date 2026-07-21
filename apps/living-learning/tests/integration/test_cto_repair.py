@@ -40,7 +40,7 @@ def pipeline(test_app, temp_db_url):
     yield pl
     conn.close()
 
-def test_duplicate_second_request_returns_original_lesson(pipeline):
+def test_duplicate_second_request_returns_original_lesson(pipeline, monkeypatch):
     # Setup learner
     learner_data = pipeline.create_learner_and_session(topic="Python")
     learner_id = learner_data["learner_id"]
@@ -56,6 +56,9 @@ def test_duplicate_second_request_returns_original_lesson(pipeline):
     
     # Feedback
     fb = pipeline.record_feedback(lesson1_id, learner_id, ["more_examples"])
+    
+    # Mock adaptation check so mock provider identical returns don't fail
+    monkeypatch.setattr(pipeline, "_verify_adaptation_changes", lambda *args, **kwargs: None)
     
     # First second lesson call
     res1 = pipeline.process_feedback_and_generate_second_lesson(

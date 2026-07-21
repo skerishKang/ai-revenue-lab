@@ -26,6 +26,7 @@ from app.repositories import (
     create_learner_session,
     create_pilot_evidence,
     get_concept_by_id,
+    get_exercise_by_id,
     get_feedback_by_id,
     get_learner_by_id,
     get_lesson_by_id,
@@ -34,6 +35,7 @@ from app.repositories import (
     is_feedback_for_learner,
     mark_feedback_applied,
     record_comprehension_response,
+    record_exercise_response,
     store_idempotency_key,
     sum_tokens_by_lesson,
     update_lesson_status,
@@ -230,9 +232,12 @@ class LessonPipeline:
         user_payload: dict,
         response_schema: type,
         request_id_prefix: str,
+        prompt_version: str = "",
     ) -> ProviderResult:
         for attempt in range(MAX_RETRIES):
             req_id = f"{request_id_prefix}_{attempt}"
+            import time
+            start_time = time.perf_counter()
             try:
                 res = self.provider.generate_structured(
                     task_name=task_name,
@@ -245,11 +250,28 @@ class LessonPipeline:
                     # Raise an exception that carries the error_category
                     exc = RuntimeError(res.error_category or "unknown_exception")
                     exc.error_category = res.error_category or "unknown_exception"
+                    # Preserve usage
+                    exc.res = res
                     raise exc
             except Exception as exc:
+                latency_ms = (time.perf_counter() - start_time) * 1000.0
+                
                 provider_type = getattr(self.provider, 'provider_type', getattr(self.settings, 'provider_type', 'mock'))
                 advertised_model = getattr(self.provider, 'model', getattr(self.settings, 'provider_model', 'mock-fixture'))
                 
+                cost_class = "free"
+                prompt_tokens = 0
+                completion_tokens = 0
+
+                if hasattr(exc, "res"):
+                    res = exc.res
+                    latency_ms = res.latency_ms
+                    provider_type = res.provider
+                    advertised_model = res.model
+                    cost_class = res.cost_class
+                    prompt_tokens = res.prompt_tokens
+                    completion_tokens = res.completion_tokens
+
                 if hasattr(exc, "error_category"):
                     error_category = exc.error_category
                     is_transient = _is_retryable_error(error_category)
@@ -265,13 +287,18 @@ class LessonPipeline:
                     error_message=error_category,
                     provider=provider_type,
                     advertised_model=advertised_model,
+                    cost_class=cost_class,
+                    prompt_version=prompt_version,
+                    latency_ms=latency_ms,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
                     error_category=error_category,
                     attempt_number=attempt + 1,
                     request_id=req_id,
                 )
                 
                 if not is_transient or attempt >= MAX_RETRIES - 1:
-                    self._mark_lesson_failed(lesson_id)
+                    # Mark failure will be handled by caller now, we don't insert partial lessons
                     if is_transient:
                         raise RetryExhaustedError(task_name, attempt + 1) from exc
                     raise NonRetryableError(f"{task_name} failed with non-retryable error") from exc
@@ -283,6 +310,7 @@ class LessonPipeline:
                 provider=res.provider,
                 advertised_model=res.model,
                 cost_class=res.cost_class,
+                prompt_version=prompt_version,
                 latency_ms=res.latency_ms,
                 prompt_tokens=res.prompt_tokens,
                 completion_tokens=res.completion_tokens,
@@ -314,15 +342,11 @@ class LessonPipeline:
         cursor.execute("BEGIN IMMEDIATE")
         try:
             learner = create_learner(self.conn, topic=topic, **preferences, commit=False)
+            curriculum = create_curriculum(self.conn, topic=topic, commit=False)
             session_id = f"sess_{secrets.token_urlsafe(16)}"
             cursor.execute(
                 "INSERT INTO learner_sessions (session_id, learner_id, curriculum_id, current_lesson_sequence, last_activity_at, created_at) VALUES (?, ?, ?, 0, datetime('now'), datetime('now'))",
-                (session_id, learner.id, ""),
-            )
-            curriculum = create_curriculum(self.conn, topic=topic, commit=False)
-            cursor.execute(
-                "UPDATE learner_sessions SET curriculum_id = ? WHERE session_id = ?",
-                (curriculum.id, session_id),
+                (session_id, learner.id, curriculum.id),
             )
             concept_map = [
                 ("variables", "변수", [], 0),
@@ -361,49 +385,101 @@ class LessonPipeline:
 
     def start_first_lesson(self, learner_id: str, concept_id: str, idempotency_key: str = "") -> str:
         self._validate_learner_active(learner_id)
+        
+        # Check idempotency but with resource binding validation
+        # (Already bound by the key inclusion of learner/concept, but we can double check existing resources if needed)
         op_key = f"start_lesson:{learner_id}:{concept_id}:{idempotency_key}" if idempotency_key else ""
         existing = check_idempotency_key(self.conn, op_key) if op_key else None
         if existing:
             return existing.lesson_id
+
         valid, missing = validate_prerequisites(self.conn, concept_id, learner_id)
         if not valid:
             raise PrerequisiteNotMetError(concept_id, missing)
         
+        learner = get_learner_by_id(self.conn, learner_id)
+        concept = get_concept_by_id(self.conn, concept_id)
+        if not learner or not concept:
+            raise GenerationError("Learner or concept not found")
+            
+        session = self.conn.execute("SELECT curriculum_id FROM learner_sessions WHERE learner_id = ? ORDER BY created_at DESC LIMIT 1", (learner_id,)).fetchone()
+        if not session or session[0] != concept.curriculum_id:
+            raise GenerationError(f"Concept {concept_id} does not belong to the learner's session curriculum.")
+            
+        candidate_id = f"lesson_{secrets.token_urlsafe(16)}"
+        
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
         try:
-            lesson = create_lesson(
-                self.conn, learner_id=learner_id, concept_id=concept_id, lesson_number=1, generation_status="generation_pending", commit=False
+            create_lesson(
+                self.conn, learner_id=learner.id, concept_id=concept.id, lesson_number=1, generation_status="generation_pending", commit=False, id=candidate_id
             )
             self.conn.commit()
         except Exception:
             self.conn.rollback()
             raise
-        self._generate_full_lesson_content(lesson.id, learner_id, concept_id, op_key)
-        return lesson.id
+        
+        try:
+            return self._generate_full_lesson_content(candidate_id, learner, concept, op_key)
+        except Exception:
+            self._mark_lesson_failed(candidate_id)
+            raise
 
-    def _generate_full_lesson_content(self, lesson_id: str, learner_id: str, concept_id: str, idempotency_key: str = "") -> None:
-        learner = get_learner_by_id(self.conn, learner_id)
-        concept = get_concept_by_id(self.conn, concept_id)
-        if not learner or not concept:
-            self._mark_lesson_failed(lesson_id)
-            raise GenerationError("Learner or concept not found")
-
+    def _generate_full_lesson_content(self, lesson_id: str, learner, concept, idempotency_key: str = "") -> str:
+        # 1. Prepare Plan Payload
+        plan_user_payload = {
+            "topic": learner.topic,
+            "concept_name": concept.name,
+            "example_preference": getattr(learner, 'example_preference', 'balanced'),
+            "theory_density": getattr(learner, 'theory_density', 'standard'),
+            "jargon_level": getattr(learner, 'jargon_level', 'standard'),
+            "review_question_count": getattr(learner, 'review_question_count', 2),
+        }
+        plan_system_prompt = LESSON_PLAN_PROMPT.format(**plan_user_payload)
+        
         plan_result = self._execute_provider_task(
-            "lesson_plan", lesson_id, "You are a Korean AI/Python instructor. Output valid JSON only.", {}, LessonPlan, f"plan_{lesson_id}"
+            task_name="lesson_plan", 
+            lesson_id=lesson_id, 
+            system_prompt=plan_system_prompt, 
+            user_payload=plan_user_payload, 
+            response_schema=LessonPlan, 
+            request_id_prefix=f"plan_{lesson_id}",
+            prompt_version="ll-plan-v1"
         )
-        plan_data = json.dumps(plan_result.payload, ensure_ascii=False)
+        plan_payload = plan_result.payload
+        plan_data = json.dumps(plan_payload, ensure_ascii=False)
         if issues := _validate_safe_content(plan_data):
-            self._mark_lesson_failed(lesson_id)
             raise UnsafeContentError(issues)
 
+        # 2. Prepare Content Payload
+        content_user_payload = {
+            "example_preference": plan_user_payload["example_preference"],
+            "theory_density": plan_user_payload["theory_density"],
+            "jargon_level": plan_user_payload["jargon_level"],
+            "pacing_feedback_style": "standard",
+            "lesson_plan": plan_data,
+        }
+        content_system_prompt = LESSON_CONTENT_PROMPT.format(**content_user_payload)
+        
         content_result = self._execute_provider_task(
-            "lesson_content", lesson_id, "You are a Korean AI/Python instructor. Output valid JSON only.", {}, LessonContent, f"content_{lesson_id}"
+            task_name="lesson_content", 
+            lesson_id=lesson_id, 
+            system_prompt=content_system_prompt, 
+            user_payload=content_user_payload, 
+            response_schema=LessonContent, 
+            request_id_prefix=f"content_{lesson_id}",
+            prompt_version="ll-content-v1"
         )
         content_payload = content_result.payload
         content_data = json.dumps(content_payload, ensure_ascii=False)
         content_issues = _validate_safe_content(content_data)
         
+        # Verify plan section alignment
+        plan_section_ids = {s.get("section_id") for s in plan_payload.get("sections", [])}
+        content_section_ids = {s.get("section_id") for s in content_payload.get("sections", [])}
+        if plan_section_ids != content_section_ids:
+            content_issues.append("section_alignment_failure")
+
         # Verify code output and review answers
         if content_payload.get("code_examples"):
             for ex in content_payload["code_examples"]:
@@ -418,15 +494,16 @@ class LessonPipeline:
                     content_issues.append("unsupported_review_answer")
                     
         if content_issues:
-            self._mark_lesson_failed(lesson_id)
             raise UnsafeContentError(content_issues)
 
+        # 3. Persistence in a single IMMEDIATE transaction
         cursor = self.conn.cursor()
         cursor.execute("BEGIN IMMEDIATE")
         try:
             update_lesson_status(
                 self.conn, lesson_id, lesson_plan_json=plan_data, lesson_content_json=content_data, generation_status="pending_review", commit=False
             )
+            
             if content_payload.get("code_examples"):
                 for i, ex in enumerate(content_payload["code_examples"]):
                     create_exercise(self.conn, lesson_id=lesson_id, question=f"다음 코드의 출력은 무엇인가요?\n```{ex.get('language', 'python')}\n{ex.get('code', '')}```", options=[], correct_answer=ex.get("expected_output", ""), explanation=ex.get("explanation", ""), difficulty="easy", sequence_order=i, commit=False)
@@ -434,13 +511,13 @@ class LessonPipeline:
                 base_seq = len(content_payload.get("code_examples", []))
                 for i, q in enumerate(content_payload["review_questions"]):
                     create_exercise(self.conn, lesson_id=lesson_id, question=q.get("question", "") if isinstance(q, dict) else q, options=[], correct_answer=q.get("correct_answer", "") if isinstance(q, dict) else "", explanation=q.get("explanation", "") if isinstance(q, dict) else "", difficulty="medium", sequence_order=base_seq + i, commit=False)
-            upsert_mastery(self.conn, learner_id=learner_id, concept_id=concept_id, practice_increment=1, commit=False)
+            upsert_mastery(self.conn, learner_id=learner.id, concept_id=concept.id, practice_increment=1, commit=False)
             if idempotency_key:
                 store_idempotency_key(self.conn, idempotency_key, lesson_id, result=json.dumps({"lesson_id": lesson_id, "status": "complete"}), commit=False)
             self.conn.commit()
+            return lesson_id
         except Exception:
             self.conn.rollback()
-            self._mark_lesson_failed(lesson_id)
             raise
 
     def record_comprehension(self, lesson_id: str, learner_id: str, understood: bool, difficulty_rating: int = 3, free_text: str = "") -> dict:
@@ -463,6 +540,12 @@ class LessonPipeline:
 
     def record_feedback(self, lesson_id: str, learner_id: str, direction_choices: list[str], free_text: str = "", idempotency_key: str = "") -> dict:
         self._validate_learner_active(learner_id)
+        
+        valid_directions = {"reduce_theory", "more_examples", "code_first", "slower_pace", "more_review", "simplify_jargon"}
+        for d in direction_choices:
+            if d not in valid_directions:
+                raise GenerationError(f"Unknown feedback direction: {d}")
+                
         lesson = get_lesson_by_id(self.conn, lesson_id)
         if not lesson:
             raise GenerationError("Lesson not found")
@@ -521,21 +604,37 @@ class LessonPipeline:
         if is_feedback_applied(self.conn, feedback_id):
             raise FeedbackAlreadyAppliedError(feedback_id)
 
-        new_lesson = create_lesson(
-            self.conn, learner_id=learner_id, concept_id=original_lesson.concept_id, lesson_number=original_lesson.lesson_number + 1, prior_lesson_id=original_lesson.id, generation_status="generation_pending", commit=True
-        )
-
+        candidate_id = f"lesson_{secrets.token_urlsafe(16)}"
+        
+        cursor = self.conn.cursor()
+        cursor.execute("BEGIN IMMEDIATE")
         try:
-            self._generate_adapted_content(lesson_id=new_lesson.id, learner_id=learner_id, original_lesson=original_lesson, feedback=feedback, comprehension=comprehension, idempotency_key=op_key)
+            create_lesson(
+                self.conn, 
+                learner_id=learner_id, 
+                concept_id=original_lesson.concept_id, 
+                lesson_number=original_lesson.lesson_number + 1, 
+                prior_lesson_id=original_lesson.id, 
+                generation_status="generation_pending", 
+                commit=False,
+                id=candidate_id
+            )
+            self.conn.commit()
         except Exception:
+            self.conn.rollback()
             raise
-        return {"lesson_id": new_lesson.id, "adaptation_verified": True}
+        
+        try:
+            lesson_id = self._generate_adapted_content(lesson_id=candidate_id, learner_id=learner_id, original_lesson=original_lesson, feedback=feedback, comprehension=comprehension, idempotency_key=op_key)
+        except Exception:
+            self._mark_lesson_failed(candidate_id)
+            raise
+        return {"lesson_id": lesson_id, "adaptation_verified": True}
 
-    def _generate_adapted_content(self, lesson_id: str, learner_id: str, original_lesson, feedback, comprehension, idempotency_key: str = "") -> None:
+    def _generate_adapted_content(self, lesson_id: str, learner_id: str, original_lesson, feedback, comprehension, idempotency_key: str = "") -> str:
         learner = get_learner_by_id(self.conn, learner_id)
         concept = get_concept_by_id(self.conn, original_lesson.concept_id)
         if not learner or not concept:
-            self._mark_lesson_failed(lesson_id)
             raise GenerationError("Learner or concept not found")
 
         plan_data = json.loads(original_lesson.lesson_plan_json)
@@ -550,25 +649,54 @@ class LessonPipeline:
             "comprehension_difficulty": str(comprehension["difficulty_rating"]),
             "comprehension_text": comprehension["free_text"] or ""
         }
+        
+        plan_system_prompt = ADAPTED_LESSON_PROMPT.format(**payload_kwargs)
 
         adapted_plan_result = self._execute_provider_task(
-            "adapted_lesson_plan", lesson_id, "You are a Korean AI/Python instructor. Output valid JSON only.", payload_kwargs, LessonPlan, f"adapt_plan_{lesson_id}"
+            task_name="adapted_lesson_plan", 
+            lesson_id=lesson_id, 
+            system_prompt=plan_system_prompt, 
+            user_payload=payload_kwargs, 
+            response_schema=LessonPlan, 
+            request_id_prefix=f"adapt_plan_{lesson_id}",
+            prompt_version="ll-adapt-plan-v1"
         )
         adapted_payload = adapted_plan_result.payload
         adapted_data = json.dumps(adapted_payload, ensure_ascii=False)
         if issues := _validate_safe_content(adapted_data):
-            self._mark_lesson_failed(lesson_id)
             raise UnsafeContentError(issues)
 
         payload_kwargs["original_plan"] = adapted_data
+        
+        # We use the generic LESSON_CONTENT_PROMPT for adapted content too, but with the new plan and feedback
+        content_user_payload = {
+            "example_preference": getattr(learner, 'example_preference', 'balanced'),
+            "theory_density": getattr(learner, 'theory_density', 'standard'),
+            "jargon_level": getattr(learner, 'jargon_level', 'standard'),
+            "pacing_feedback_style": "adapted",
+            "lesson_plan": adapted_data,
+        }
+        content_system_prompt = LESSON_CONTENT_PROMPT.format(**content_user_payload)
 
         adapted_content_result = self._execute_provider_task(
-            "adapted_lesson_content", lesson_id, "You are a Korean AI/Python instructor. Output valid JSON only.", payload_kwargs, LessonContent, f"adapt_content_{lesson_id}"
+            task_name="adapted_lesson_content", 
+            lesson_id=lesson_id, 
+            system_prompt=content_system_prompt, 
+            user_payload=content_user_payload, 
+            response_schema=LessonContent, 
+            request_id_prefix=f"adapt_content_{lesson_id}",
+            prompt_version="ll-adapt-content-v1"
         )
         final_content = adapted_content_result.payload
         final_content_data = json.dumps(final_content, ensure_ascii=False)
         content_issues = _validate_safe_content(final_content_data)
         
+        # Verify plan section alignment
+        plan_section_ids = {s.get("section_id") for s in adapted_payload.get("sections", [])}
+        content_section_ids = {s.get("section_id") for s in final_content.get("sections", [])}
+        if plan_section_ids != content_section_ids:
+            content_issues.append("section_alignment_failure")
+
         # Verify code output and review answers
         if final_content.get("code_examples"):
             for ex in final_content["code_examples"]:
@@ -583,7 +711,6 @@ class LessonPipeline:
                     content_issues.append("unsupported_review_answer")
                     
         if content_issues:
-            self._mark_lesson_failed(lesson_id)
             raise UnsafeContentError(content_issues)
 
         self._verify_adaptation_changes(
@@ -601,19 +728,26 @@ class LessonPipeline:
             if not fb_row or fb_row[0] != "not_applied":
                 raise FeedbackAlreadyAppliedError(feedback.id)
 
+            adaptation_summary = f"Adapted based on: {', '.join(feedback.direction_choices)}"
+            if comprehension["free_text"]:
+                adaptation_summary += f"; comprehension: {comprehension['free_text']}"
+                
+            update_lesson_status(
+                self.conn, 
+                lesson_id, 
+                lesson_plan_json=adapted_data, 
+                lesson_content_json=final_content_data, 
+                adaptation_summary=adaptation_summary,
+                generation_status="pending_review", 
+                commit=False
+            )
+
             cursor.execute(
                 "UPDATE feedback SET applied_status = ?, applied_to_lesson_id = ? WHERE id = ? AND lesson_id = ? AND learner_id = ? AND applied_status = 'not_applied'",
                 ("applied_to_second", lesson_id, feedback.id, original_lesson.id, learner_id)
             )
             if cursor.rowcount != 1:
                 raise GenerationError("Failed to atomically claim feedback")
-
-            adaptation_summary = f"Adapted based on: {', '.join(feedback.direction_choices)}"
-            if comprehension["free_text"]:
-                adaptation_summary += f"; comprehension: {comprehension['free_text']}"
-            update_lesson_status(
-                self.conn, lesson_id, lesson_plan_json=adapted_data, lesson_content_json=final_content_data, adaptation_summary=adaptation_summary, generation_status="pending_review", commit=False
-            )
 
             if final_content.get("code_examples"):
                 for i, ex in enumerate(final_content["code_examples"]):
@@ -628,9 +762,9 @@ class LessonPipeline:
 
             upsert_mastery(self.conn, learner_id=learner_id, concept_id=original_lesson.concept_id, practice_increment=1, commit=False)
             self.conn.commit()
+            return lesson_id
         except Exception:
             self.conn.rollback()
-            self._mark_lesson_failed(lesson_id)
             raise
 
     def _verify_adaptation_changes(self, original_plan: dict, original_content: dict, adapted_plan: dict, adapted_content: dict, direction_choices: set[str]) -> None:
@@ -718,6 +852,49 @@ class LessonPipeline:
             create_pilot_evidence(self.conn, learner_id=learner_id, lesson_id=lesson_id, evidence_type="pilot_complete", offer_description=f"Completed lesson {lesson_id}", commit=False)
             self.conn.commit()
             return {"lesson_id": lesson_id, "status": "closed", "prompt_tokens": prompt_tokens, "completion_tokens": completion_tokens}
+        except Exception:
+            self.conn.rollback()
+            raise
+
+    def answer_exercise(self, exercise_id: str, learner_id: str, answer: str, idempotency_key: str = "") -> dict:
+        self._validate_learner_active(learner_id)
+        exercise = get_exercise_by_id(self.conn, exercise_id)
+        if not exercise:
+            raise GenerationError("Exercise not found")
+        
+        lesson = get_lesson_by_id(self.conn, exercise.lesson_id)
+        if not lesson or lesson.learner_id != learner_id:
+            raise ForeignFeedbackError(exercise_id, learner_id)
+            
+        op_key = f"exercise_answer:{exercise_id}:{learner_id}:{idempotency_key}" if idempotency_key else ""
+        existing = check_idempotency_key(self.conn, op_key) if op_key else None
+        if existing:
+            result = json.loads(existing.result) if existing.result else {}
+            return {"response_id": result.get("response_id"), "is_correct": result.get("is_correct"), "is_duplicate": True}
+            
+        is_correct = (answer.strip() == exercise.correct_answer.strip())
+        
+        cursor = self.conn.cursor()
+        cursor.execute("BEGIN IMMEDIATE")
+        try:
+            resp = record_exercise_response(
+                self.conn, 
+                exercise_id=exercise_id, 
+                learner_id=learner_id, 
+                selected_answer=answer, 
+                is_correct=is_correct, 
+                commit=False
+            )
+            
+            # update mastery
+            correct_increment = 1 if is_correct else 0
+            upsert_mastery(self.conn, learner_id=learner_id, concept_id=lesson.concept_id, practice_increment=1, correct_increment=correct_increment, commit=False)
+            
+            if op_key:
+                store_idempotency_key(self.conn, op_key, exercise_id, result=json.dumps({"response_id": resp.id, "is_correct": is_correct}), commit=False)
+                
+            self.conn.commit()
+            return {"response_id": resp.id, "is_correct": is_correct, "is_duplicate": False}
         except Exception:
             self.conn.rollback()
             raise
