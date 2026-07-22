@@ -35,6 +35,7 @@ from psycopg.rows import DictRow, dict_row
 
 __all__ = [
     "get_pg_connection",
+    "get_pg_runtime_connection",
     "pg_connection",
     "redact_database_url",
     "PG_MIGRATIONS_DIR",
@@ -73,6 +74,19 @@ def get_pg_connection(url: str) -> Connection[DictRow]:
         via :func:`redact_database_url`.
     """
     conn = connect(url, row_factory=dict_row, autocommit=False)
+    return conn
+
+
+def get_pg_runtime_connection(url: str) -> Connection[DictRow]:
+    """Open a PostgreSQL connection for the runtime adapter.
+
+    Unlike :func:`get_pg_connection` (migration-oriented, ``autocommit=False``),
+    this connection uses ``autocommit=True`` so that plain SELECTs do not
+    implicitly start a transaction.  The runtime adapter
+    (:class:`~app.db_runtime.PostgresRuntimeConnection`) issues explicit
+    ``BEGIN`` via ``begin_write()`` when a write transaction is needed.
+    """
+    conn = connect(url, row_factory=dict_row, autocommit=True)
     return conn
 
 

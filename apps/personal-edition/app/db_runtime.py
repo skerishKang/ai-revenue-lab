@@ -252,6 +252,11 @@ def _normalize_params(params: Sequence[Any] | None) -> tuple[Any, ...]:
             "named/dict parameters are not supported by the qmark "
             "runtime boundary"
         )
+    if isinstance(params, (str, bytes, bytearray)):
+        raise PlaceholderError(
+            "params must be a positional sequence (tuple/list), "
+            "not a scalar or byte container"
+        )
     return tuple(params)
 
 
@@ -458,7 +463,10 @@ class PostgresRuntimeConnection:
 
     def open(self) -> "PostgresRuntimeConnection":
         if self._conn is None:
-            self._conn = self._factory()
+            try:
+                self._conn = self._factory()
+            except psycopg.Error as exc:
+                raise DatabaseError(safe_category="connection") from exc
         return self
 
     def _require_open(self) -> Any:
@@ -510,7 +518,10 @@ class PostgresRuntimeConnection:
             self._conn = None
 
     def _tx_state(self) -> _TxState:
-        raw = self._conn.transaction_status
+        try:
+            raw = self._conn.info.transaction_status
+        except Exception:
+            return _TxState.UNKNOWN
         if raw == _PgTxStatus.IDLE:
             return _TxState.IDLE
         if raw in (_PgTxStatus.INTRANS, _PgTxStatus.ACTIVE):
@@ -542,9 +553,12 @@ class PostgresRuntimeConnection:
 def open_postgres_runtime(url: str) -> PostgresRuntimeConnection:
     """Explicitly open a PostgreSQL runtime connection for ``url``.
 
-    Reuses :func:`app.db_postgres.get_pg_connection`.  This is the only
-    place a real connection is opened; it is not invoked by the application
-    factory in this commit (startup remains fail-closed).
+    Reuses :func:`app.db_postgres.get_pg_runtime_connection` (autocommit=True,
+    dict_row).  This is the only place a real connection is opened; it is not
+    invoked by the application factory in this commit (startup remains
+    fail-closed).
     """
-    adapter = PostgresRuntimeConnection(lambda: _pg_db.get_pg_connection(url))
+    adapter = PostgresRuntimeConnection(
+        lambda: _pg_db.get_pg_runtime_connection(url)
+    )
     return adapter.open()

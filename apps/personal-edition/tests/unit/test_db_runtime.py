@@ -62,10 +62,18 @@ class FakeCursor:
 
 
 class FakePgConnection:
-    """Mimics the subset of psycopg.Connection[DictRow] the adapter uses."""
+    """Mimics the subset of psycopg.Connection[DictRow] the adapter uses.
+
+    Transaction status is exposed via ``info.transaction_status`` matching
+    the real psycopg 3 API (``conn.info.transaction_status``).
+    """
+
+    class _Info:
+        def __init__(self, status):
+            self.transaction_status = status
 
     def __init__(self, status=TransactionStatus.IDLE):
-        self.transaction_status = status
+        self.info = self._Info(status)
         self.executed = []
         self.commits = 0
         self.rollbacks = 0
@@ -84,16 +92,16 @@ class FakePgConnection:
         if self._raise is not None:
             raise self._raise
         if sql.strip().upper() == "BEGIN":
-            self.transaction_status = TransactionStatus.INTRANS
+            self.info.transaction_status = TransactionStatus.INTRANS
         return FakeCursor(self._rows)
 
     def commit(self):
         self.commits += 1
-        self.transaction_status = TransactionStatus.IDLE
+        self.info.transaction_status = TransactionStatus.IDLE
 
     def rollback(self):
         self.rollbacks += 1
-        self.transaction_status = TransactionStatus.IDLE
+        self.info.transaction_status = TransactionStatus.IDLE
 
     def close(self):
         self.closed = True
@@ -674,3 +682,241 @@ class TestStaticContract:
                 del sys.modules[mod]
         importlib.import_module("app.db_runtime")
         assert socket_guard["n"] == 0
+
+
+# ---------------------------------------------------------------------------
+# CTO blocker 1: real psycopg transaction status API (conn.info.transaction_status)
+# ---------------------------------------------------------------------------
+
+
+class TestTransactionStatusAPI:
+    def test_fake_uses_info_transaction_status(self):
+        fake = FakePgConnection(status=TransactionStatus.INTRANS)
+        assert fake.info.transaction_status == TransactionStatus.INTRANS
+        assert not hasattr(fake, "transaction_status")
+
+    def test_direct_attribute_fake_causes_unknown_fail_closed(self):
+        class WrongFake:
+            """Has transaction_status directly but no .info — must fail closed."""
+
+            transaction_status = TransactionStatus.IDLE
+            executed = []
+
+            def execute(self, sql, params=None):
+                self.executed.append((sql, params))
+                return FakeCursor([])
+
+            def commit(self):
+                pass
+
+            def rollback(self):
+                pass
+
+            def close(self):
+                pass
+
+        adapter = PostgresRuntimeConnection(lambda: WrongFake())
+        adapter.open()
+        with pytest.raises(RuntimeTransactionError) as ei:
+            adapter.begin_write()
+        assert ei.value.state == "unknown"
+
+    def test_info_missing_causes_unknown(self):
+        class NoInfoFake:
+            executed = []
+
+            def execute(self, sql, params=None):
+                return FakeCursor([])
+
+            def commit(self):
+                pass
+
+            def rollback(self):
+                pass
+
+            def close(self):
+                pass
+
+        adapter = PostgresRuntimeConnection(lambda: NoInfoFake())
+        adapter.open()
+        with pytest.raises(RuntimeTransactionError) as ei:
+            adapter.begin_write()
+        assert ei.value.state == "unknown"
+
+    def test_unexpected_status_value_causes_unknown(self):
+        class WeirdInfo:
+            transaction_status = "SOMETHING_UNEXPECTED"
+
+        class WeirdFake:
+            info = WeirdInfo()
+            executed = []
+
+            def execute(self, sql, params=None):
+                return FakeCursor([])
+
+            def commit(self):
+                pass
+
+            def rollback(self):
+                pass
+
+            def close(self):
+                pass
+
+        adapter = PostgresRuntimeConnection(lambda: WeirdFake())
+        adapter.open()
+        with pytest.raises(RuntimeTransactionError) as ei:
+            adapter.begin_write()
+        assert ei.value.state == "unknown"
+
+
+# ---------------------------------------------------------------------------
+# CTO blocker 2: runtime/migration connection separation
+# ---------------------------------------------------------------------------
+
+
+class TestConnectionSeparation:
+    def test_runtime_select_stays_idle(self):
+        adapter, fake = _opened_adapter(status=TransactionStatus.IDLE)
+        adapter.execute("SELECT id FROM participants WHERE id = ?", ("x",))
+        assert adapter.in_transaction is False
+
+    def test_begin_write_then_intrans(self):
+        adapter, fake = _opened_adapter(status=TransactionStatus.IDLE)
+        adapter.begin_write()
+        assert fake.info.transaction_status == TransactionStatus.INTRANS
+        assert adapter.in_transaction is True
+
+    def test_commit_after_begin_returns_idle(self):
+        adapter, fake = _opened_adapter(status=TransactionStatus.IDLE)
+        adapter.begin_write()
+        adapter.commit()
+        assert fake.info.transaction_status == TransactionStatus.IDLE
+        assert adapter.in_transaction is False
+
+    def test_rollback_after_begin_returns_idle(self):
+        adapter, fake = _opened_adapter(status=TransactionStatus.IDLE)
+        adapter.begin_write()
+        adapter.rollback()
+        assert fake.info.transaction_status == TransactionStatus.IDLE
+        assert adapter.in_transaction is False
+
+    def test_migration_connection_autocommit_false(self):
+        from app.db_postgres import get_pg_connection
+        import inspect
+
+        src = inspect.getsource(get_pg_connection)
+        assert "autocommit=False" in src
+
+    def test_runtime_connection_autocommit_true(self):
+        from app.db_postgres import get_pg_runtime_connection
+        import inspect
+
+        src = inspect.getsource(get_pg_runtime_connection)
+        assert "autocommit=True" in src
+
+
+# ---------------------------------------------------------------------------
+# CTO blocker 3: connection failure normalization
+# ---------------------------------------------------------------------------
+
+
+class TestConnectionFailure:
+    SECRET_URL = "postgresql://alice:s3cr3t@db.internal.example.com:5432/prod"
+
+    def test_factory_psycopg_error_normalized(self):
+        def failing_factory():
+            raise psycopg.OperationalError(
+                f"connection to {self.SECRET_URL} failed: refused"
+            )
+
+        adapter = PostgresRuntimeConnection(failing_factory)
+        with pytest.raises(DatabaseError) as ei:
+            adapter.open()
+        assert ei.value.safe_category == "connection"
+        assert ei.value.__cause__ is not None
+
+    def test_failure_no_secret_in_str_repr(self):
+        def failing_factory():
+            raise psycopg.OperationalError(
+                f"could not connect to alice:s3cr3t@db.internal.example.com"
+            )
+
+        adapter = PostgresRuntimeConnection(failing_factory)
+        with pytest.raises(DatabaseError) as ei:
+            adapter.open()
+        for s in (str(ei.value), repr(ei.value)):
+            assert "s3cr3t" not in s
+            assert "alice" not in s
+            assert "db.internal.example.com" not in s
+            assert "://" not in s
+
+    def test_conn_is_none_after_failure(self):
+        def failing_factory():
+            raise psycopg.OperationalError("refused")
+
+        adapter = PostgresRuntimeConnection(failing_factory)
+        with pytest.raises(DatabaseError):
+            adapter.open()
+        assert adapter._conn is None
+
+    def test_retry_after_failure(self):
+        calls = {"n": 0}
+
+        def flaky_factory():
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise psycopg.OperationalError("first attempt fails")
+            return FakePgConnection()
+
+        adapter = PostgresRuntimeConnection(flaky_factory)
+        with pytest.raises(DatabaseError):
+            adapter.open()
+        adapter.open()
+        assert calls["n"] == 2
+        assert adapter._conn is not None
+
+
+# ---------------------------------------------------------------------------
+# CTO blocker 4: params validation
+# ---------------------------------------------------------------------------
+
+
+class TestParamsValidation:
+    def test_str_params_rejected(self):
+        adapter, fake = _opened_adapter()
+        with pytest.raises(PlaceholderError, match="positional sequence"):
+            adapter.execute("SELECT * FROM t WHERE a = ?", "hello")
+
+    def test_bytes_params_rejected(self):
+        adapter, fake = _opened_adapter()
+        with pytest.raises(PlaceholderError, match="positional sequence"):
+            adapter.execute("SELECT * FROM t WHERE a = ?", b"hello")
+
+    def test_bytearray_params_rejected(self):
+        adapter, fake = _opened_adapter()
+        with pytest.raises(PlaceholderError, match="positional sequence"):
+            adapter.execute("SELECT * FROM t WHERE a = ?", bytearray(b"hi"))
+
+    def test_dict_params_rejected(self):
+        adapter, fake = _opened_adapter()
+        with pytest.raises(PlaceholderError):
+            adapter.execute("SELECT * FROM t WHERE a = ?", {"a": 1})
+
+    def test_error_message_has_no_value(self):
+        adapter, fake = _opened_adapter()
+        with pytest.raises(PlaceholderError) as ei:
+            adapter.execute("SELECT * FROM t WHERE a = ?", "SECRET_PARAM")
+        assert "SECRET_PARAM" not in str(ei.value)
+
+    def test_tuple_params_accepted(self):
+        adapter, fake = _opened_adapter()
+        adapter.execute("SELECT * FROM t WHERE a = ?", ("ok",))
+        sql, params = fake.executed[-1]
+        assert params == ("ok",)
+
+    def test_list_params_accepted(self):
+        adapter, fake = _opened_adapter()
+        adapter.execute("SELECT * FROM t WHERE a = ?", ["ok"])
+        sql, params = fake.executed[-1]
+        assert params == ("ok",)
