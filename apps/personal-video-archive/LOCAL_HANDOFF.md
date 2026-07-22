@@ -1,17 +1,17 @@
 # Personal Video Archive — Local Worker Handoff
 
-Business: **13**  
-Registration issue: **#60**  
+Business: **13**
+Implementation issue: **#62**
 Workspace: `apps/personal-video-archive/**`
 
-This document is intentionally executable as a local setup checklist after the registration PR is merged.
+This document is intentionally executable as a local setup checklist.
 
 ## 1. Preconditions
 
 Before implementation, verify directly:
 
 - the latest `origin/main` SHA;
-- Issue #60 state and its accepted registration documents;
+- Issue #62 state and its accepted implementation criteria;
 - there is no existing open implementation PR for this workspace;
 - the worktree path does not already exist;
 - the proposed branch does not already exist locally or remotely;
@@ -27,7 +27,8 @@ Use a dedicated worktree. Do not reuse another product worktree.
 ```powershell
 $Repo = "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab"
 $Worktree = "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-personal-video-archive"
-$Branch = "feat/personal-video-archive-phase1"
+$Branch = "feat/personal-video-archive-phase1-mvp-62"
+$Venv = "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-personal-video-archive-venv"
 ```
 
 If the primary repository is stored elsewhere, change only `$Repo` and `$Worktree`.
@@ -47,8 +48,6 @@ git worktree list
 Do not clean, reset, stash, delete, or modify an unrelated dirty checkout.
 
 ## 4. Create the isolated worktree
-
-Create the implementation branch only after a dedicated implementation issue provides an exact branch name and scope.
 
 ```powershell
 git worktree add -b $Branch $Worktree origin/main
@@ -99,22 +98,22 @@ apps/living-fiction/**
 
 Repository-root or shared-code changes require explicit issue acceptance criteria and CTO approval.
 
-## 7. First worker assignment shape
+## 7. Phase 1 implementation
 
-The first implementation issue should ask the worker to create only a thin, deterministic vertical slice:
+The Phase 1 implementation includes:
 
-1. application scaffold inside the workspace;
+1. application scaffold inside the workspace (`app/`, `migrations/`, `tests/`, `templates/`, `static/`);
 2. topic, query-rule, video, and private-record domain types;
 3. persistence with migrations isolated to this workspace;
-4. `VideoDiscoveryProvider` interface;
-5. deterministic fake provider with synthetic video fixtures;
+4. `VideoDiscoveryProvider` interface and `FakeVideoDiscoveryProvider`;
+5. `LanguageModelProvider` interface and `FakeLanguageModelProvider`;
 6. latest-first topic feed;
 7. outbound canonical YouTube link;
 8. opened, saved, completed, revisit, and irrelevant states;
 9. reflection, plan, rating, tags, and timestamp notes;
-10. unit and integration tests with no network calls.
-
-Do not add a real YouTube API key, Google OAuth, advertising, iframe playback, transcripts, comments, or social functions to the first slice.
+10. unit and integration tests with no network calls;
+11. LLM proposal validation, preview, and user-controlled acceptance/rejection;
+12. provenance separation (YouTube / application / user).
 
 ## 8. Credential rule
 
@@ -128,29 +127,31 @@ YOUTUBE_API_KEY
 
 The final name must be confirmed by the implementation issue. `.env` files, API keys, tokens, user data, and real provider responses must remain untracked.
 
-## 9. Model worker prompt seed
+Phase 1 uses only deterministic fake providers and synthetic fixtures. No real API key is required or accepted.
 
-Use this as the base for a future implementation prompt, then replace placeholders with the actual issue, branch, base SHA, and acceptance criteria.
+## 9. Setup and run commands
 
-```text
-Continue ai-revenue-lab Business 13 Personal Video Archive.
+```powershell
+# Create virtual environment
+python -m venv $Venv
+& "$Venv/Scripts/Activate.ps1"
 
-Repository: skerishKang/ai-revenue-lab
-Default branch: main
-Issue: #<IMPLEMENTATION_ISSUE>
-Target branch: <TARGET_BRANCH>
-Local worktree: <LOCAL_WORKTREE>
-Allowed scope: apps/personal-video-archive/** only
+# Install dependencies
+cd $Worktree\apps\personal-video-archive
+pip install -e ".[dev]"
 
-You are the implementation worker, not the CTO. Do not trust prior completion reports. Before changing code, verify the local branch, remote branch, exact origin/main SHA, merge base, worktree cleanliness, and issue requirements.
+# Run the application
+python -m app.main
+# Then open http://127.0.0.1:8000
 
-Read:
-- apps/personal-video-archive/README.md
-- apps/personal-video-archive/PRODUCT_CONTRACT.md
-- apps/personal-video-archive/LOCAL_HANDOFF.md
-- docs/decisions/ADR-0002-product-workspaces.md
+# Run tests
+pytest tests/ -v
 
-Implement only the acceptance criteria in the issue. Use a provider interface and deterministic fake provider. Automated tests must make no network calls. Never add credentials or real user data. Do not modify sibling product workspaces. Run the exact tests required by the issue, report commands and results truthfully, commit without rewriting history, and push the target branch.
+# Run only unit tests
+pytest tests/unit/ -v
+
+# Run only integration tests
+pytest tests/integration/ -v
 ```
 
 ## 10. Completion report requirements

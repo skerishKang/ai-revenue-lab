@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Review Search Rules — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Review Search Rules</h1>
+    <p class="subtitle">Topic: {{ topic.name }}</p>
+</div>
+
+<div class="provenance-banner badge-ai">
+    <strong>AI Suggestion</strong> — These rules were generated from your intent.
+    Edit any field before accepting. Nothing is saved until you approve.
+</div>
+
+<form method="post" action="/topics/{{ topic.id }}/accept-rule" class="form">
+    <div class="form-group">
+        <label for="primary_query">Primary Search Term</label>
+        <input type="text" id="primary_query" name="primary_query"
+               value="{{ proposal.primary_query }}" required maxlength="200">
+    </div>
+
+    <div class="form-group">
+        <label for="related_queries">Related Queries (comma-separated)</label>
+        <input type="text" id="related_queries" name="related_queries"
+               value="{{ proposal.related_queries | join(', ') }}" maxlength="500">
+        <p class="help-text">Additional search terms that capture the topic.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="required_terms">Required Terms (comma-separated)</label>
+        <input type="text" id="required_terms" name="required_terms"
+               value="{{ proposal.required_terms | join(', ') }}" maxlength="500">
+        <p class="help-text">Videos must contain at least one of these terms.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="excluded_terms">Excluded Terms (comma-separated)</label>
+        <input type="text" id="excluded_terms" name="excluded_terms"
+               value="{{ proposal.excluded_terms | join(', ') }}" maxlength="500">
+        <p class="help-text">Videos containing these terms will be filtered out.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="preferred_languages">Preferred Languages (comma-separated)</label>
+        <input type="text" id="preferred_languages" name="preferred_languages"
+               value="{{ proposal.preferred_languages | join(', ') }}" maxlength="200">
+    </div>
+
+    <div class="form-group">
+        <label for="included_channels">Included Channels (comma-separated)</label>
+        <input type="text" id="included_channels" name="included_channels"
+               value="{{ proposal.included_channels | join(', ') }}" maxlength="1000">
+    </div>
+
+    <div class="form-group">
+        <label for="excluded_channels">Excluded Channels (comma-separated)</label>
+        <input type="text" id="excluded_channels" name="excluded_channels"
+               value="{{ proposal.excluded_channels | join(', ') }}" maxlength="1000">
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="duration_preference">Duration</label>
+            <select id="duration_preference" name="duration_preference">
+                <option value="any" {% if proposal.duration_preference.value == 'any' %}selected{% endif %}>Any</option>
+                <option value="short" {% if proposal.duration_preference.value == 'short' %}selected{% endif %}>Short</option>
+                <option value="medium" {% if proposal.duration_preference.value == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="long" {% if proposal.duration_preference.value == 'long' %}selected{% endif %}>Long</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="shorts_preference">Shorts</label>
+            <select id="shorts_preference" name="shorts_preference">
+                <option value="include" {% if proposal.shorts_preference.value == 'include' %}selected{% endif %}>Include</option>
+                <option value="exclude" {% if proposal.shorts_preference.value == 'exclude' %}selected{% endif %}>Exclude</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="default_sort">Default Sort</label>
+            <select id="default_sort" name="default_sort">
+                <option value="newest" {% if proposal.default_sort.value == 'newest' %}selected{% endif %}>Newest First</option>
+                <option value="relevance" {% if proposal.default_sort.value == 'relevance' %}selected{% endif %}>Relevance</option>
+                <option value="view_count" {% if proposal.default_sort.value == 'view_count' %}selected{% endif %}>View Count</option>
+            </select>
+        </div>
+    </div>
+
+    {% if proposal.rationale %}
+    <div class="info-box">
+        <strong>Rationale:</strong> {{ proposal.rationale }}
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Accept and Create Topic Feed</button>
+        <a href="/topics" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

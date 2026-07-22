@@ -2,9 +2,9 @@
 
 Business number: **13**
 
-Status: **Incubation — product contract registered; implementation not started**
+Status: **Phase 1 MVP — implemented**
 
-Tracking issue: **#60**
+Tracking issue: **#62**
 
 ## What is this
 
@@ -14,56 +14,138 @@ A user defines the subjects they want to follow, receives newly published matchi
 
 It is not a replacement video platform, a social network, or a generic recommendation feed.
 
-## Product thesis
+## Phase 1 implementation
 
-YouTube organizes discovery primarily around platform recommendations, channels, and a mixed subscription stream. Many users instead want stable, user-controlled topic feeds and a durable record of the meaning they took from each video.
+Phase 1 provides a complete deterministic vertical slice using synthetic fixtures and fake providers. No real YouTube API or LLM calls are made.
 
-The product therefore combines:
+### Implemented workflows
 
-1. **topic subscription** — follow a subject rather than only a channel;
-2. **controlled discovery** — include, related, and exclude terms with latest-first defaults;
-3. **private reflection** — preserve viewing state, ratings, notes, plans, tags, and timestamp references;
-4. **guided setup** — later guide personal-instance users through Google Cloud and API-key setup with a rule-driven navigator and AI explanation layer.
+1. Create a topic from natural-language intent
+2. Fake LLM proposes search-rule draft
+3. User inspects and edits rules before acceptance
+4. Fake discovery provider collects synthetic videos
+5. Deduplication by canonical video ID
+6. Latest-first feed display
+7. Filter by viewing state (unseen/opened/saved/completed/revisit/irrelevant)
+8. Open canonical YouTube URL in new tab (records `opened`, not `completed`)
+9. Manually change viewing state
+10. Create and edit private viewing records
+11. Request LLM-structured proposal from rough notes
+12. Preview proposal, accept or reject
+13. Search and filter private records
 
-## Phase 1 experience
+### LLM-assisted capability map
 
-- Create a topic such as `ChatGPT updates` or `local LLM`.
-- Review generated search rules and adjust them when needed.
-- See matching videos with newly published videos first.
-- Open the canonical YouTube page in a new tab.
-- Mark the video as opened, saved, completed, irrelevant, or worth revisiting.
-- Record a reflection, plan, question, rating, tags, and useful timestamps.
-- Return later to either the topic feed or the user's own viewing archive.
+| Capability | Fake provider | Real provider (deferred) |
+|---|---|---|
+| Intent → search rules | `FakeLanguageModelProvider.propose_query_rules` | Real LLM with prompt |
+| Video classification | `FakeLanguageModelProvider.classify_videos` | Real LLM with metadata |
+| Rule change suggestions | `FakeLanguageModelProvider.suggest_rule_changes` | Real LLM with feedback |
+| Note structuring | `FakeLanguageModelProvider.structure_record` | Real LLM with schema |
+| Title/summary suggestion | `FakeLanguageModelProvider.suggest_title_summary` | Real LLM |
 
-## API boundary
+### Deterministic fallback (no LLM required)
 
-YouTube Data API v3 is needed primarily for:
+Every LLM-assisted workflow has a manual fallback:
 
-- keyword and topic search;
-- publication-date ordering and supported search filters;
-- video identifiers, titles, descriptions, channel information, thumbnails, and publication dates;
-- supplementary public metadata such as duration and statistics through video-detail requests.
+- Search rules can be entered directly via the rule review form
+- Video classification is optional (feed works without it)
+- Note structuring can be skipped (free-form note is always preserved)
+- Rule changes can be made directly in the rule edit form
 
-The product's private notes, plans, ratings, tags, and viewing states are first-party application data and do not require the YouTube API.
+### Provider interfaces
 
-All provider access must sit behind an adapter. Automated tests must use deterministic fixtures or a fake provider and must not make network calls.
+```text
+VideoDiscoveryProvider
+├── search_videos(rules, cursor) -> SearchPage
+├── get_video_details(video_ids) -> list[DiscoveredVideo]
+└── health_check() -> ProviderHealthCheck
 
-## Playback decision
+LanguageModelProvider
+├── propose_query_rules(intent) -> QueryRuleProposal
+├── classify_videos(videos, rules) -> list[VideoClassification]
+├── suggest_rule_changes(feedback, rules) -> RuleChangeProposal
+├── structure_record(rough_notes) -> RecordStructureProposal
+└── suggest_title_summary(rough_notes) -> (title, summary)
+```
 
-Phase 1 opens the original YouTube URL. This keeps the product light and leaves playback, captions, account state, and creator controls on YouTube.
+Fake implementations: `FakeVideoDiscoveryProvider`, `FakeLanguageModelProvider`
 
-Official iframe playback may be evaluated later for a single video-detail screen. It is not required for the initial product hypothesis.
+### Data sent to providers (Phase 1)
 
-## Explicit non-goals
+**Nothing is sent to any external provider in Phase 1.**
 
-- importing historical YouTube watch history;
-- YouTube comments or community features;
-- public profiles or social feeds;
-- downloading, extracting, caching, or rehosting video media;
-- transcript scraping;
-- synchronizing subscriptions or YouTube playlists in Phase 1;
-- AI-generated video summaries in Phase 1;
-- advertising before product usefulness and policy compliance are validated.
+- `FakeVideoDiscoveryProvider` generates synthetic videos locally — no network calls
+- `FakeLanguageModelProvider` parses text with rule-based heuristics — no network calls
+- No API keys, secrets, or user data are transmitted
+
+### Provenance separation
+
+Three distinct provenance types are stored and displayed:
+
+1. **YouTube-sourced metadata** — `DiscoveredVideo.provenance = "youtube"`
+2. **Application-derived annotations** — `TopicVideo.provenance = "application"`
+3. **User-authored private records** — `PrivateViewingRecord.provenance = "user"`
+
+The UI displays badges for each provenance type.
+
+## Installation
+
+```bash
+cd apps/personal-video-archive
+python3 -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+pip install -e ".[dev]"
+```
+
+## Running locally
+
+```bash
+# Start the development server
+python -m app.main
+
+# Or with uvicorn directly
+uvicorn app.main:app --reload
+```
+
+Then open `http://127.0.0.1:8000` in your browser.
+
+## Testing
+
+```bash
+# Run all tests (no network access required)
+pytest tests/ -v
+
+# Run only unit tests
+pytest tests/unit/ -v
+
+# Run only integration tests
+pytest tests/integration/ -v
+```
+
+All 96 tests pass without network access.
+
+## Synthetic fixtures vs real data
+
+- All video data is **synthetic** — generated deterministically by `FakeVideoDiscoveryProvider`
+- All LLM output is **synthetic** — generated by rule-based heuristics in `FakeLanguageModelProvider`
+- No real YouTube data, user data, or API responses are stored or transmitted
+- Fixtures are deterministic: the same input always produces the same output
+
+## Deferred (not implemented in Phase 1)
+
+- Real YouTube Data API integration
+- Real LLM provider integration (OpenAI, Anthropic, etc.)
+- Google OAuth for private YouTube account data
+- iframe video playback
+- Historical watch-history import
+- YouTube comments or community features
+- Transcript scraping
+- Video download or rehosting
+- Advertising
+- Google Cloud API key setup navigator
+- Payments or subscriptions
+- Native mobile applications
 
 ## Workspace boundary
 
@@ -74,7 +156,3 @@ apps/personal-video-archive/**
 ```
 
 Do not modify another product workspace to implement this product. Shared code may be extracted only after an approved cross-product architecture decision.
-
-## Next step
-
-Use `LOCAL_HANDOFF.md` to create a local worktree and assign a model to the first isolated implementation issue. Implementation must not begin until the Phase 1 architecture and acceptance criteria are decomposed into a separate GitHub issue.

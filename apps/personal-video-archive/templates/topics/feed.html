@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ topic.name }} — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ topic.name }}</h1>
+    <p class="subtitle">{{ topic.intent }}</p>
+</div>
+
+{% if rules %}
+<div class="rules-summary badge-app">
+    <strong>Application Rule</strong> —
+    Primary: "{{ rules.primary_query }}" |
+    Sort: {{ rules.default_sort.value }} |
+    Shorts: {{ rules.shorts_preference.value }}
+</div>
+{% endif %}
+
+<div class="feed-actions">
+    <form method="post" action="/topics/{{ topic.id }}/sync" style="display:inline">
+        <button type="submit" class="btn btn-primary">Refresh Feed</button>
+    </form>
+    <a href="/records?{% if topic %}topic_id={{ topic.id }}{% endif %}" class="btn btn-secondary">My Records</a>
+</div>
+
+{% if feed %}
+<div class="feed-header">
+    <span class="badge badge-info">Newest First</span>
+    <span class="small">Showing {{ feed | length }} videos</span>
+</div>
+
+<div class="video-feed">
+    {% for tv, video in feed %}
+    <article class="video-card">
+        <div class="video-thumbnail">
+            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}"
+                 onerror="this.style.display='none'">
+        </div>
+        <div class="video-content">
+            <div class="video-meta-source">
+                <span class="badge badge-info badge-sm">YouTube info</span>
+            </div>
+            <h3 class="video-title">
+                <a href="{{ video.canonical_url }}" target="_blank"
+                   onclick="fetch('/videos/{{ video.id }}/open', {method:'POST'})">
+                    {{ video.title }}
+                </a>
+            </h3>
+            <p class="video-channel">{{ video.channel_title }}</p>
+            <p class="video-published small">
+                Published {{ video.published_at[:10] }}
+                {% if video.duration_seconds %}
+                · {{ (video.duration_seconds / 60) | round(1) }} min
+                {% endif %}
+                {% if video.view_count %}
+                · {{ video.view_count | int | format_thousands }} views
+                {% endif %}
+            </p>
+
+            {% if tv.match_score is not none %}
+            <div class="match-badge badge-app badge-sm">
+                Application analysis: match score {{ (tv.match_score * 100) | round }}%
+            </div>
+            {% endif %}
+
+            <div class="video-actions">
+                <form method="post" action="/topic-videos/{{ tv.id }}/state" style="display:inline">
+                    <select name="state" onchange="this.form.submit()">
+                        <option value="unseen" {% if false %}selected{% endif %}>unseen</option>
+                        <option value="opened">opened</option>
+                        <option value="saved">saved</option>
+                        <option value="in_progress">in progress</option>
+                        <option value="completed">completed</option>
+                        <option value="revisit">revisit</option>
+                        <option value="irrelevant">irrelevant</option>
+                    </select>
+                </form>
+                <a href="/videos/{{ video.id }}" class="btn btn-small btn-secondary">Record</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No videos yet</h3>
+    <p>Click "Refresh Feed" to discover videos for this topic.</p>
+</div>
+{% endif %}
+{% endblock %}
+{% macro format_thousands(value) %}{{ '%.0f' | format(value) }}{% endmacro %}
