@@ -21,6 +21,7 @@ from app import security
 from app.ai.mock import MockProvider
 from app.config import settings
 from app.db import apply_migrations, get_connection
+from app.db_runtime import sqlite_runtime_connection
 from app.domain.enums import FeedbackDirection
 from app.pipeline.service import GenerationService
 
@@ -83,6 +84,7 @@ def create_app(
         resolved_db = settings.database_path
 
     app.state.db_path = resolved_db
+    app.state.open_runtime_connection = lambda: sqlite_runtime_connection(resolved_db)
 
     if provider is not None:
         app.state.provider = provider
@@ -130,7 +132,7 @@ class _PrivacyHeadersMiddleware(BaseHTTPMiddleware):
 
 
 def _get_db(request: Request):
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         yield conn
     finally:
