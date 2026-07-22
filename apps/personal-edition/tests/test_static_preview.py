@@ -24,11 +24,13 @@ REQUIRED_PAGES = [
     "admin/review/modal-preview-edition/index.html",
     "preview/participant/access/index.html",
     "preview/participant/empty/index.html",
+    "preview/participant/input-received/index.html",
     "preview/participant/editing/index.html",
     "preview/participant/published/index.html",
     "preview/participant/feedback/index.html",
-    "preview/participant/edition/index.html",
-    "preview/participant/edition/feedback/index.html",
+    "preview/participant/editions/modal-preview-edition/index.html",
+    "preview/participant/editions/modal-preview-edition/feedback/index.html",
+    "preview/participant/editions/modal-preview-edition/feedback/thanks/index.html",
     "preview/participant/input/index.html",
     "preview/participant/history/index.html",
     "preview/participant/not-found/index.html",
@@ -219,9 +221,10 @@ class TestLinkIntegrity:
                 resolved = self._resolve_link(link)
                 if resolved is None:
                     continue
-                assert resolved.exists(), (
+                assert resolved.exists() and resolved.is_file(), (
                     f"Broken link in {html_file.relative_to(OUTPUT_DIR)}: "
-                    f"{link} -> {resolved.relative_to(OUTPUT_DIR)}"
+                    f"{link} -> {resolved.relative_to(OUTPUT_DIR)} "
+                    f"(exists={resolved.exists()}, is_file={resolved.is_file() if resolved.exists() else 'N/A'})"
                 )
 
 

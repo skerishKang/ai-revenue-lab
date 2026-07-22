@@ -17,22 +17,22 @@
 
   <nav class="progress-steps" aria-label="제작 진행 단계">
     <ol class="progress-track">
-      <li class="progress-step{% if workflow_stage in ('record','input_received','drafting','reviewing','published','feedback') %} completed{% endif %}">
+      <li class="progress-step{% if workflow_stage not in ('record',) %} completed{% endif %}{% if workflow_stage == 'record' %} current{% endif %}"{% if workflow_stage == 'record' %} aria-current="step"{% endif %}>
         <span class="progress-dot"></span>
         <span class="progress-label">기록</span>
       </li>
-      <li class="progress-connector{% if workflow_stage in ('drafting','reviewing','published','feedback') %} completed{% endif %}"></li>
-      <li class="progress-step{% if workflow_stage in ('drafting','reviewing','published','feedback') %} completed{% endif %}{% if workflow_stage == 'input_received' %} current{% endif %}">
+      <li class="progress-connector{% if workflow_stage in ('input_received','reviewing','published','feedback') %} completed{% endif %}"></li>
+      <li class="progress-step{% if workflow_stage in ('reviewing','published','feedback') %} completed{% endif %}{% if workflow_stage == 'input_received' %} current{% endif %}"{% if workflow_stage == 'input_received' %} aria-current="step"{% endif %}>
         <span class="progress-dot"></span>
         <span class="progress-label">초안 구성</span>
       </li>
-      <li class="progress-connector{% if workflow_stage in ('published','feedback') %} completed{% endif %}"></li>
-      <li class="progress-step{% if workflow_stage in ('published','feedback') %} completed{% endif %}{% if workflow_stage == 'reviewing' %} current{% endif %}">
+      <li class="progress-connector{% if workflow_stage in ('reviewing','published','feedback') %} completed{% endif %}"></li>
+      <li class="progress-step{% if workflow_stage in ('published','feedback') %} completed{% endif %}{% if workflow_stage == 'reviewing' %} current{% endif %}"{% if workflow_stage == 'reviewing' %} aria-current="step"{% endif %}>
         <span class="progress-dot"></span>
         <span class="progress-label">편집 검토</span>
       </li>
       <li class="progress-connector{% if workflow_stage == 'feedback' %} completed{% endif %}"></li>
-      <li class="progress-step{% if workflow_stage == 'feedback' %} completed{% endif %}">
+      <li class="progress-step{% if workflow_stage == 'feedback' %} completed{% endif %}{% if workflow_stage == 'published' %} current{% endif %}"{% if workflow_stage == 'published' %} aria-current="step"{% endif %}>
         <span class="progress-dot"></span>
         <span class="progress-label">발행</span>
       </li>
@@ -126,6 +126,9 @@
     <p>피드백이 반영되어 다음 에디션이 준비되고 있습니다. 새 기록이 있으시면 언제든 남기실 수 있습니다.</p>
     <div class="state-actions">
       <a href="{{ _base }}/input" class="btn btn-primary">새 기록 남기기</a>
+      {% if published_editions %}
+      <a href="{{ _base }}/editions/{{ published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>
+      {% endif %}
     </div>
   </div>
 

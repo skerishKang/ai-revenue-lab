@@ -677,7 +677,7 @@ class TestGuidedWorkflow:
         assert "피드백 보내기" in html
 
     def test_feedback_state(self):
-        """Feedback complete state shows feedback status."""
+        """Feedback complete state shows feedback status and secondary CTA."""
         app, db = _make_app(tempfile.mktemp(suffix=".db"))
         client = TestClient(app)
         pid = "fb-state"
@@ -694,6 +694,7 @@ class TestGuidedWorkflow:
         html = resp.text
         assert "피드백 완료" in html
         assert "새 기록 남기기" in html
+        assert "최신 에디션 다시 읽기" in html
 
     def test_workspace_title(self):
         """Dashboard uses '작업실' title instead of '홈'."""
@@ -706,6 +707,132 @@ class TestGuidedWorkflow:
         resp = client.get(f"/p/{pid}", cookies=cookies)
         assert "작업실" in resp.text
         assert "개인 출판 작업실" in resp.text
+
+    def _get_progress_step_attrs(self, html):
+        import re as _re
+        return _re.findall(
+            r'<li\s+class="progress-step([^"]*)"([^>]*)>', html
+        )
+
+    def test_progress_record_stage(self):
+        """record: 기록=current, others empty."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "prog-rec"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "기록단계")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        attrs = self._get_progress_step_attrs(html)
+        assert len(attrs) == 4
+        assert "current" in attrs[0][0]
+        assert "completed" not in attrs[0][0]
+        assert "completed" not in attrs[1][0]
+        assert "completed" not in attrs[2][0]
+        assert "completed" not in attrs[3][0]
+        assert 'aria-current="step"' in attrs[0][1]
+
+    def test_progress_input_received_stage(self):
+        """input_received: 기록=completed, 초안 구성=current."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "prog-inp"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "접수단계")
+            input_repo.create_input(
+                conn, participant_id=pid, raw_text="테스트 " * 50,
+                consent_confirmed=1,
+            )
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        attrs = self._get_progress_step_attrs(html)
+        assert len(attrs) == 4
+        assert "completed" in attrs[0][0]
+        assert "current" in attrs[1][0]
+        assert "completed" not in attrs[2][0]
+        assert "completed" not in attrs[3][0]
+        assert 'aria-current="step"' in attrs[1][1]
+
+    def test_progress_reviewing_stage(self):
+        """reviewing: 기록·초안=completed, 편집 검토=current."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "prog-rev"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "검토단계")
+            input_repo.create_input(
+                conn, participant_id=pid, raw_text="기록 " * 50,
+                consent_confirmed=1,
+            )
+            ed_repo.create_edition(
+                conn, participant_id=pid, edition_number=1,
+                structured_content=json.dumps(_make_draft_payload()),
+                rendered_title="초안",
+            )
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        attrs = self._get_progress_step_attrs(html)
+        assert len(attrs) == 4
+        assert "completed" in attrs[0][0]
+        assert "completed" in attrs[1][0]
+        assert "current" in attrs[2][0]
+        assert "completed" not in attrs[3][0]
+        assert 'aria-current="step"' in attrs[2][1]
+
+    def test_progress_published_stage(self):
+        """published: 기록·초안·검토=completed, 발행=current."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "prog-pub"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "발행단계")
+            ed = ed_repo.create_edition(
+                conn, participant_id=pid, edition_number=1,
+                structured_content=json.dumps(_make_draft_payload()),
+                rendered_title="발행",
+            )
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        attrs = self._get_progress_step_attrs(html)
+        assert len(attrs) == 4
+        assert "completed" in attrs[0][0]
+        assert "completed" in attrs[1][0]
+        assert "completed" in attrs[2][0]
+        assert "current" in attrs[3][0]
+        assert 'aria-current="step"' in attrs[3][1]
+
+    def test_progress_feedback_stage(self):
+        """feedback: all steps completed."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "prog-fb"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "피드백단계")
+            ed = ed_repo.create_edition(
+                conn, participant_id=pid, edition_number=1,
+                structured_content=json.dumps(_make_draft_payload()),
+                rendered_title="피드백",
+            )
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+            fb_repo.create_feedback(
+                conn, participant_id=pid, edition_id=ed.id,
+                direction_choices=json.dumps(["continue_direction"]),
+            )
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        attrs = self._get_progress_step_attrs(html)
+        assert len(attrs) == 4
+        assert "completed" in attrs[0][0]
+        assert "completed" in attrs[1][0]
+        assert "completed" in attrs[2][0]
+        assert "completed" in attrs[3][0]
+        assert 'aria-current="step"' not in html
 
 
 # ------------------------------------------------------------------

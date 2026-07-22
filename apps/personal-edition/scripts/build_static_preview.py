@@ -91,10 +91,10 @@ def _render(
     context: dict,
     request_path: str,
 ) -> str:
+    context.setdefault("_link_prefix", "/preview/participant")
     context["request"] = _MockRequest(request_path)
     context["csrf_token"] = "preview-csrf-token"
     context["is_preview"] = True
-    context["_link_prefix"] = "/preview/participant"
     template = env.get_template(template_name)
     return template.render(context)
 
@@ -148,6 +148,24 @@ def _write_robots_txt() -> None:
     (_OUTPUT_DIR / "robots.txt").write_text(
         "User-agent: *\nDisallow: /\n", encoding="utf-8"
     )
+
+
+_REDIRECT_HTML = (
+    '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">'
+    '<meta name="robots" content="noindex,nofollow">'
+    '<meta http-equiv="refresh" content="0;url=/"></head>'
+    '<body><div class="preview-banner">UI Preview \u00b7 Synthetic data \u00b7 No persistence</div>'
+    '<p><a href="/">미리보기 목록으로 돌아가기</a></p></body></html>'
+)
+
+
+def _write_redirects() -> None:
+    participant_dir = _OUTPUT_DIR / "preview" / "participant"
+    participant_dir.mkdir(parents=True, exist_ok=True)
+    (participant_dir / "index.html").write_text(_REDIRECT_HTML, encoding="utf-8")
+    editions_dir = _OUTPUT_DIR / "preview" / "participant" / "editions"
+    editions_dir.mkdir(parents=True, exist_ok=True)
+    (editions_dir / "index.html").write_text(_REDIRECT_HTML, encoding="utf-8")
 
 
 def main() -> None:
@@ -254,6 +272,20 @@ def main() -> None:
         {
             "participant": participant,
             "published_editions": [],
+            "pending_editions": [],
+            "input_count": len(inputs),
+            "has_feedback_on_latest": False,
+            "workflow_stage": "input_received",
+        },
+        "/preview/participant/input-received",
+        "preview/participant/input-received/index.html",
+    )
+
+    _write_page(
+        env, "participant_dashboard.html",
+        {
+            "participant": participant,
+            "published_editions": [],
             "pending_editions": [make_pending_edition()],
             "input_count": len(inputs),
             "has_feedback_on_latest": False,
@@ -313,8 +345,8 @@ def main() -> None:
             "has_given_feedback": False,
             "next_edition_number": None,
         },
-        "/preview/participant/edition",
-        "preview/participant/edition/index.html",
+        f"/preview/participant/editions/{edition_published.edition_number}",
+        f"preview/participant/editions/{edition_published.edition_number}/index.html",
     )
 
     _write_page(
@@ -325,30 +357,18 @@ def main() -> None:
             "content": content,
             "error": None,
         },
-        "/preview/participant/edition/feedback",
-        "preview/participant/edition/feedback/index.html",
-    )
-
-    _write_page(
-        env, "feedback_form.html",
-        {
-            "participant": participant,
-            "edition": edition_published,
-            "content": content,
-            "error": None,
-        },
-        "/preview/participant/editions/modal-preview-edition/feedback",
-        "preview/participant/editions/modal-preview-edition/feedback/index.html",
+        f"/preview/participant/editions/{edition_published.edition_number}/feedback",
+        f"preview/participant/editions/{edition_published.edition_number}/feedback/index.html",
     )
 
     _write_page(
         env, "feedback_thanks.html",
         {
             "participant": participant,
-            "edition_number": "modal-preview-edition",
+            "edition_number": edition_published.edition_number,
         },
-        "/preview/participant/edition/feedback/thanks",
-        "preview/participant/edition/feedback/thanks/index.html",
+        f"/preview/participant/editions/{edition_published.edition_number}/feedback/thanks",
+        f"preview/participant/editions/{edition_published.edition_number}/feedback/thanks/index.html",
     )
 
     _write_page(
@@ -374,6 +394,7 @@ def main() -> None:
     _copy_static()
     _write_headers()
     _write_robots_txt()
+    _write_redirects()
 
     print(f"Static preview built at {_OUTPUT_DIR}")
 
