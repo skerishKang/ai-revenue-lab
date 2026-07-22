@@ -1,17 +1,18 @@
 [build-system]
-requires = ["setuptools>=68.0"]
+requires = ["setuptools>=75", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "living-travel"
-version = "0.1.0"
-description = "Living Travel — recurring personal travel publication"
+version = "0.2.0"
+description = "Living Travel — personalized travel publication service"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115,<1",
     "uvicorn>=0.32,<1",
     "pydantic>=2.10,<3",
     "pydantic-settings>=2.6,<3",
+    "python-multipart>=0.0.18",
 ]
 
 [project.optional-dependencies]
@@ -23,7 +24,4 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["app*"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
+exclude = ["migrations*", "tests*", "pages-preview*"]

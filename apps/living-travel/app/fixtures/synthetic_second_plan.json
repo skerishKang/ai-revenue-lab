@@ -1,0 +1,10 @@
+{
+  "plan_version": "1.0",
+  "language": "ko",
+  "central_theme": "부산 조용한 로컬",
+  "sections": [
+    {"section_id": "sec_quiet_morning", "title": "조용한 아침", "description": "아침 산책"},
+    {"section_id": "sec_local_food", "title": "로컬 밥상", "description": "음식"},
+    {"section_id": "sec_low_effort", "title": "적은 이동", "description": "코스"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "plan_version": "1.0",
+  "language": "ko",
+  "central_theme": "부산 동네 산책",
+  "sections": [
+    {"section_id": "sec_morning_gukje", "title": "국제시장 근처", "description": "아침 산책"},
+    {"section_id": "sec_haegyeolri", "title": "합성동", "description": "로컬 카페"},
+    {"section_id": "sec_practical", "title": "실용 정보", "description": "날씨와 이동"}
+  ]
+}
