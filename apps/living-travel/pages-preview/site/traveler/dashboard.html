@@ -4,109 +4,129 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel - My Dashboard</title>
+  <title>Living Travel — 내 여행</title>
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
   <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
-  <nav class="navbar">
-    <span class="brand">Living Travel</span>
+
+  <nav class="navbar traveler-nav">
+    <a href="dashboard.html" class="brand">Living Travel</a>
     <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="history.html">Edition History</a>
-      <a href="../index.html">Preview Home</a>
+      <a href="dashboard.html" class="active">내 여행</a>
+      <a href="history.html">지난 기록</a>
+      <a href="../index.html">홈</a>
     </div>
   </nav>
+
   <main class="container">
     <div class="notice">
       <strong>Synthetic Preview</strong><br>
       이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
     </div>
 
-    <div class="section-header">
-      <h1>Welcome, 여행자 시범</h1>
+    <!-- Greeting -->
+    <div class="dashboard-header">
+      <div class="dashboard-greeting">
+        <h1>여행자 시범 님</h1>
+        <span class="meta">부산 · 2박 3일 · 혼행</span>
+      </div>
+      <span class="badge badge-active">active</span>
     </div>
 
-    <div class="card">
-      <h2>Your Preferences</h2>
+    <!-- Current Edition -->
+    <div class="dashboard-current">
+      <div class="dashboard-section-title">
+        <h2>최신 에디션</h2>
+      </div>
+
+      <div class="dashboard-current-card">
+        <div class="dashboard-current-cover">
+          <div class="dashboard-current-cover-info">
+            <span class="badge badge-published">발행됨</span>
+            <h2>부산 2박: 조용한 아침과 로컬 밥상</h2>
+            <span class="meta">Edition #2 · 2026. 7. 22.</span>
+          </div>
+        </div>
+        <div class="dashboard-current-body">
+          <div class="dashboard-current-details">
+            <div class="dashboard-current-detail">
+              <strong>목적지</strong>
+              부산
+            </div>
+            <div class="dashboard-current-detail">
+              <strong>여행 기간</strong>
+              2박 3일
+            </div>
+            <div class="dashboard-current-detail">
+              <strong>발행일</strong>
+              2026. 7. 22.
+            </div>
+            <div class="dashboard-current-detail">
+              <strong>상태</strong>
+              <span class="badge badge-published">published</span>
+            </div>
+          </div>
+          <a href="edition.html" class="btn btn-accent">에디션 읽기</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="preferences-section">
+      <h3>여행 취향</h3>
+
+      <div class="preferences-grid">
+        <div class="preference-item">
+          <label>목적지</label>
+          <span class="value">부산</span>
+        </div>
+        <div class="preference-item">
+          <label>기간</label>
+          <span class="value">2박</span>
+        </div>
+        <div class="preference-item">
+          <label>취향</label>
+          <span class="value">골목 탐방 · 로컬 식당 · 조용한 아침 · 해안 산책</span>
+        </div>
+        <div class="preference-item">
+          <label>여행 스타일</label>
+          <span class="value">혼자 · 합리적 · 여유로운</span>
+        </div>
+        <div class="preference-item">
+          <label>제외</label>
+          <span class="value">유명 명소 · 야간 활동 · 번잡한 곳</span>
+        </div>
+        <div class="preference-item">
+          <label>언어</label>
+          <span class="value">한국어</span>
+        </div>
+      </div>
+
       <form method="post" action="#" onsubmit="return false;">
         <input type="hidden" name="csrf_token" value="preview-csrf-token">
-        <label for="destination">Destination</label>
-        <input type="text" id="destination" name="destination" value="부산" maxlength="120" required>
-        <label for="trip_duration_nights">Duration (nights)</label>
-        <input type="number" id="trip_duration_nights" name="trip_duration_nights" value="2" min="1" max="30" required>
-        <label for="interests">Interests (comma-separated, up to 12)</label>
-        <input type="text" id="interests" name="interests" value="neighborhood exploration, local food, quiet mornings, coastal walks" maxlength="971" placeholder="e.g. food, culture, nature">
-        <label for="trip_context">Trip Context</label>
-        <select id="trip_context" name="trip_context">
-          <option value="solo" selected>Solo</option>
-          <option value="couple">Couple</option>
-          <option value="family">Family</option>
-          <option value="group">Group</option>
-        </select>
-        <label for="budget_tendency">Budget</label>
-        <select id="budget_tendency" name="budget_tendency">
-          <option value="budget" selected>Budget</option>
-          <option value="moderate">Moderate</option>
-          <option value="premium">Premium</option>
-        </select>
-        <label for="pace_preference">Pace</label>
-        <select id="pace_preference" name="pace_preference">
-          <option value="comfortable" selected>Comfortable</option>
-          <option value="relaxed">Relaxed</option>
-          <option value="energetic">Energetic</option>
-        </select>
-        <label for="exclusions">Exclusions (comma-separated, up to 12)</label>
-        <input type="text" id="exclusions" name="exclusions" value="famous attractions, nightlife, crowded places" maxlength="971" placeholder="e.g. beach, nightlife">
-        <label for="tone_preference">Tone</label>
-        <select id="tone_preference" name="tone_preference">
-          <option value="calm" selected>Calm</option>
-          <option value="energetic">Energetic</option>
-          <option value="luxury">Luxury</option>
-        </select>
-        <label for="length_preference">Length</label>
-        <select id="length_preference" name="length_preference">
-          <option value="medium" selected>Medium</option>
-          <option value="short">Short</option>
-          <option value="long">Long</option>
-        </select>
-        <label for="preferred_language">Language</label>
-        <select id="preferred_language" name="preferred_language">
-          <option value="ko" selected>Korean</option>
-          <option value="en">English</option>
-          <option value="ja">Japanese</option>
-          <option value="zh">Chinese</option>
-        </select>
-        <button type="submit" class="btn btn-primary btn-disabled" disabled>Update Preferences</button>
-        <div class="disabled-notice">※ 정적 프리뷰: 설정 변경은 저장되지 않습니다.</div>
+        <button type="submit" class="btn btn-disabled" disabled>취향 수정하기</button>
+        <span class="disabled-notice">정적 프리뷰: 저장되지 않습니다</span>
       </form>
     </div>
 
-    <div class="card">
-      <h2>Account</h2>
-      <p>
-        <span class="badge badge-active">active</span>
-        <span class="meta">Deactivation requested: No</span>
+    <!-- Account -->
+    <div class="preferences-section" style="border-color: var(--border-faded);">
+      <h3 style="color: var(--ink-faded);">계정</h3>
+      <p class="small">
+        <span class="badge badge-active">활성</span>
+        <span style="margin-left: 0.5rem;">탈퇴 요청: 없음</span>
       </p>
       <form method="post" action="#" onsubmit="return false;">
         <input type="hidden" name="csrf_token" value="preview-csrf-token">
-        <button type="submit" class="btn btn-danger btn-disabled" disabled>Request Deactivation</button>
-        <div class="disabled-notice">※ 정적 프리뷰: 탈퇴 요청은 처리되지 않습니다.</div>
+        <button type="submit" class="btn btn-outline btn-sm btn-disabled" disabled>탈퇴 요청</button>
+        <span class="disabled-notice">정적 프리뷰: 처리되지 않습니다</span>
       </form>
     </div>
-
-    <div class="card">
-      <h2>Latest Published Edition</h2>
-      <div class="edition-preview">
-        <h3>Edition #2</h3>
-        <p class="meta">Published: 2026-07-22</p>
-        <p class="meta">부산 2박: 조용한 아침과 로컬 밥상</p>
-        <a href="edition.html" class="btn btn-primary">Read Edition</a>
-      </div>
-    </div>
   </main>
+
   <footer class="site-footer">
-    <p>&copy; Living Travel — Synthetic Preview Only</p>
+    <p>Living Travel — Synthetic Preview Only</p>
   </footer>
 </body>
 </html>
