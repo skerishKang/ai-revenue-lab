@@ -753,6 +753,8 @@ class TestPgMigrationIntegration:
                     pg_conn_clean.rollback()
                 except Exception:
                     pass
+
+    def test_schema_parity_table_list(self, pg_conn_clean):
         """schema parity table 목록."""
         apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
         pg_conn_clean.commit()
