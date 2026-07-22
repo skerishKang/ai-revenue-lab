@@ -87,4 +87,13 @@ def create_app(
             "provider_type": type(prov).__name__,
         }
 
+    # Phase 2A web routes (reader UI + editorial review)
+    try:
+        from app.web import register_web_routes
+        register_web_routes(app)
+    except (ImportError, RuntimeError):
+        # Web secrets not configured or tests.fixtures not importable —
+        # skip web routes (e.g. in DB-level tests that only need /health).
+        pass
+
     return app

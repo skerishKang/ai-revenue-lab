@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}검토 대기 중{% endblock %}
+{% block content %}
+<div class="episode-header">
+  <div class="stamp">PENDING REVIEW</div>
+  <h1 class="episode-title">개인 분기 생성 중</h1>
+  <p class="episode-synopsis">
+    선택하신 내용으로 개인 분기를 생성하고 편집 검토를 기다리고 있습니다.
+  </p>
+</div>
+
+<div class="paper">
+  <ul class="timeline">
+    <li class="timeline-item">
+      <span class="timeline-bullet done"></span>
+      <div class="timeline-content">
+        <div class="timeline-label">1. 선택 접수</div>
+        <div class="timeline-text">선택과 의견이 저장되었습니다.</div>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <span class="timeline-bullet done"></span>
+      <div class="timeline-content">
+        <div class="timeline-label">2. 개인 분기 생성</div>
+        <div class="timeline-text">AI가 개인 분기를 생성했습니다.</div>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <span class="timeline-bullet active"></span>
+      <div class="timeline-content">
+        <div class="timeline-label">3. 편집 검토 대기</div>
+        <div class="timeline-text">운영자가 검토를 진행 중입니다.</div>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <span class="timeline-bullet pending"></span>
+      <div class="timeline-content">
+        <div class="timeline-label">4. 승인 또는 수정 필요</div>
+        <div class="timeline-text">검토 완료 후 분기를 열람할 수 있습니다.</div>
+      </div>
+    </li>
+  </ul>
+
+  <p style="color: var(--text-secondary); font-size: 0.85rem;">
+    개인 분기 본문은 검토가 완료될 때까지 공개되지 않습니다.
+  </p>
+</div>
+
+<div style="text-align: center;">
+  <a href="/read" class="btn btn-secondary">Canon으로 돌아가기</a>
+</div>
+{% endblock %}

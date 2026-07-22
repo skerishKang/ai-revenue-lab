@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ episode_title }}{% endblock %}
+{% block content %}
+<div class="episode-header">
+  <div class="stamp">{{ episode_type_label }}</div>
+  <div class="episode-number">{{ episode_number_label }}</div>
+  <h1 class="episode-title">{{ episode_title }}</h1>
+  <p class="episode-synopsis">{{ episode_synopsis }}</p>
+</div>
+
+<div class="paper">
+  {% for beat in prose %}
+  <div class="prose-block">
+    <p class="scene-divider">▸ {{ beat.scene_title }}</p>
+    {% for paragraph in beat.paragraphs %}
+    <p>{{ paragraph }}</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="paper">
+  <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+    <span class="stamp">CANON</span>
+    개인 분기는 canon에서 선택에 따라 갈라나는 이야기입니다.
+    아래에서 다음 행동을 선택하세요.
+  </p>
+
+  {% if error %}
+  <div class="error-box">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="/read" id="choice-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="form-group">
+      <label for="comment">독자 의견 (선택)</label>
+      <textarea id="comment" name="comment"
+                placeholder="선택에 대한 의견을 남겨보세요 (선택사항)"
+                maxlength="2000"></textarea>
+    </div>
+
+    <div class="choice-grid">
+      {% for option in choice_options %}
+      <label class="choice-card">
+        <input type="radio" name="choice" value="{{ loop.index0 }}" required>
+        <span class="choice-label">
+          <span class="choice-indicator"></span>
+          <span>{{ option }}</span>
+        </span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn">제출하기</button>
+  </form>
+</div>
+{% endblock %}

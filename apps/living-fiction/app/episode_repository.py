@@ -273,3 +273,36 @@ def publish_episode(conn: sqlite3.Connection, episode_id: str) -> bool:
         if conn.in_transaction:
             conn.rollback()
         raise
+
+
+def reject_episode(conn: sqlite3.Connection, episode_id: str) -> bool:
+    """Explicit human rejection — never automatic."""
+    if conn.in_transaction:
+        raise RepositoryTransactionError(
+            "repository write requires an idle connection"
+        )
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        cursor = conn.execute(
+            "UPDATE episodes SET review_state = 'rejected' "
+            "WHERE id = ? AND review_state = 'pending_review'",
+            (episode_id,),
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
+
+
+def get_pending_branch_episodes(
+    conn: sqlite3.Connection,
+) -> list[EpisodeRecord]:
+    """Get all personal branch episodes with pending_review state."""
+    rows = conn.execute(
+        f"SELECT {_EPISODE_SELECT} FROM episodes "
+        "WHERE episode_type = 'personal_branch' AND review_state = 'pending_review' "
+        "ORDER BY created_at"
+    ).fetchall()
+    return [_row_to_record(r) for r in rows]

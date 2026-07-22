@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}검토 대기열{% endblock %}
+{% block content %}
+<div class="episode-header">
+  <div class="stamp">EDITORIAL QUEUE</div>
+  <h1 class="episode-title">검토 대기열</h1>
+  <p class="episode-synopsis">
+    {{ pending_count }}개의 개인 분기가 검토를 기다리고 있습니다.
+  </p>
+</div>
+
+<div class="paper">
+  {% if branches %}
+  {% for branch in branches %}
+  <div class="queue-item">
+    <div class="queue-item-header">
+      <div>
+        <div class="queue-item-id">{{ branch.branch_id_prefix }}</div>
+        <div class="meta-row">
+          <span><span class="meta-label">독자</span> {{ branch.reader_ref }}</span>
+          <span><span class="meta-label">회차</span> {{ branch.canon_episode }}</span>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <a href="/admin/review/{{ branch.branch_id }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">검토하기</a>
+      </div>
+    </div>
+    <div class="queue-item-summary">{{ branch.choice_text }}</div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p style="color: var(--text-secondary);">검토 대기 중인 분기가 없습니다.</p>
+  {% endif %}
+</div>
+
+<div style="text-align: center; margin-top: 1.5rem;">
+  <a href="/admin/review" class="btn btn-secondary">새로 고치기</a>
+</div>
+{% endblock %}
