@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel - Operator Login</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body class="login-page">
+  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+  <div class="card">
+    <h1>Operator Login</h1>
+    <p class="subtitle">Enter the operator secret to access the dashboard.</p>
+    <div class="notice">
+      <strong>Synthetic Preview</strong><br>
+      이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
+    </div>
+    <form method="post" action="#" onsubmit="return false;">
+      <input type="hidden" name="csrf_token" value="preview-csrf-token">
+      <label for="secret">Operator Secret</label>
+      <input type="password" id="secret" name="secret" required autocomplete="off" value="preview-operator-secret">
+      <div class="disabled-notice">※ 정적 프리뷰: 실제 인증 없이 <a href="dashboard.html">대시보드</a>로 이동합니다.</div>
+    </form>
+    <div class="action-grid">
+      <a href="dashboard.html" class="btn btn-primary">Login</a>
+      <a href="../index.html" class="btn btn-secondary">Back to Preview Home</a>
+    </div>
+  </div>
+</body>
+</html>
