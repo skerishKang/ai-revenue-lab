@@ -26,7 +26,7 @@ Phase 1 provides a complete deterministic vertical slice using synthetic fixture
 4. Fake discovery provider collects synthetic videos
 5. Deduplication by canonical video ID
 6. Latest-first feed display
-7. Filter by viewing state (unseen/opened/saved/completed/revisit/irrelevant)
+7. Filter by viewing state (all/unseen/opened/saved/in_progress/completed/revisit/irrelevant)
 8. Open canonical YouTube URL in new tab (records `opened`, not `completed`)
 9. Manually change viewing state
 10. Create and edit private viewing records
@@ -123,7 +123,7 @@ pytest tests/unit/ -v
 pytest tests/integration/ -v
 ```
 
-All 96 tests pass without network access.
+All 149 tests pass without network access.
 
 ## Synthetic fixtures vs real data
 

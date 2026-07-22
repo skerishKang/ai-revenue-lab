@@ -113,18 +113,22 @@ def update_record(
             "free_form_note": free_form_note,
             "tags": validated_tags,
         }
-        if rating:
+        if rating.strip():
             try:
                 r = int(rating)
-                if r < 0 or r > 5:
-                    raise ValueError
-                updates["rating"] = r
             except ValueError:
                 return _render_template(
                     request, "error.html",
-                    {"message": "Rating must be an integer 0-5", "code": 400},
+                    {"message": "Rating must be blank or an integer 1-5", "code": 400},
                     status_code=400,
                 )
+            if r < 1 or r > 5:
+                return _render_template(
+                    request, "error.html",
+                    {"message": "Rating must be blank or an integer 1-5", "code": 400},
+                    status_code=400,
+                )
+            updates["rating"] = r
         if opened_date:
             updates["opened_date"] = opened_date
         if completed_date:

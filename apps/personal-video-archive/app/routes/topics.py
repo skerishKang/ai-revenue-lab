@@ -156,6 +156,7 @@ def topic_feed(
     request: Request,
     topic_id: str,
     state: str = "all",
+    sync_failed: str = "",
 ):
     conn = get_connection(request.app.state.db_path)
     try:
@@ -198,6 +199,7 @@ def topic_feed(
                 "feed": feed,
                 "current_state_filter": state,
                 "feed_states": FEED_STATES,
+                "sync_failed": bool(sync_failed),
             },
         )
     finally:
@@ -222,10 +224,13 @@ def sync_topic(request: Request, topic_id: str):
             url=f"/topics/{topic_id}", status_code=303
         )
     except Exception:
-        # Provider unavailable or sync failure: SyncRun already marked
-        # failed by sync_topic's except block. Redirect to feed (NOT 500).
+        # Provider unavailable or sync failure: the SyncRun is already marked
+        # failed by sync_topic's except block and existing feed data is
+        # preserved. Redirect to the feed with a user-facing flag so the UI
+        # can show a clear provider-unavailable message. No internal
+        # exception text, path, or secret is exposed.
         return RedirectResponse(
-            url=f"/topics/{topic_id}", status_code=303
+            url=f"/topics/{topic_id}?sync_failed=1", status_code=303
         )
     finally:
         conn.close()

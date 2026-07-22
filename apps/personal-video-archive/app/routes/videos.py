@@ -135,8 +135,20 @@ def update_state(
     request: Request,
     tv_id: str,
     state: str = Form(...),
+    return_state: str = Form("all"),
 ):
     """Update the viewing state of a topic-video pair."""
+    from app.domain.enums import ViewingState
+
+    # Validate the state against the ViewingState enum before touching the DB.
+    # An invalid value is a handled 400 and leaves the database unchanged.
+    if state not in {s.value for s in ViewingState}:
+        return _render_template(
+            request, "error.html",
+            {"message": f"Invalid viewing state: {state}", "code": 400},
+            status_code=400,
+        )
+
     conn = get_connection(request.app.state.db_path)
     try:
         repos = _build_services(conn)
@@ -156,13 +168,13 @@ def update_state(
 
         record_repo.update(record.id, viewing_state=state)
 
-        # Redirect back to the topic feed
+        # Redirect back to the topic feed, preserving the active filter.
         topic_id = conn.execute(
             "SELECT topic_id FROM topic_videos WHERE id = ?", (tv_id,)
         ).fetchone()["topic_id"]
 
         return RedirectResponse(
-            url=f"/topics/{topic_id}", status_code=303
+            url=f"/topics/{topic_id}?state={return_state}", status_code=303
         )
     finally:
         conn.close()

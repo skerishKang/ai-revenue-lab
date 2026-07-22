@@ -219,7 +219,9 @@ class QueryRuleRepository:
         ).fetchall()
         return [self._row_to_rule(r) for r in rows]
 
-    def update(self, rule_id: str, **fields) -> QueryRule | None:
+    def update(
+        self, rule_id: str, *, commit: bool = True, **fields
+    ) -> QueryRule | None:
         allowed = {
             "primary_query", "related_queries", "required_terms",
             "excluded_terms", "preferred_languages", "included_channels",
@@ -247,7 +249,8 @@ class QueryRuleRepository:
         self._conn.execute(
             f"UPDATE query_rules SET {set_clause} WHERE id = ?", params
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         return self.get(rule_id)
 
     @staticmethod
@@ -710,7 +713,9 @@ class ViewingRecordRepository:
             return None
         return self._row_to_record(row)
 
-    def update(self, record_id: str, **fields) -> PrivateViewingRecord | None:
+    def update(
+        self, record_id: str, *, commit: bool = True, **fields
+    ) -> PrivateViewingRecord | None:
         allowed = {
             "viewing_state", "rating", "reflection", "learned_point",
             "agreement", "disagreement", "uncertainty", "follow_up_plan",
@@ -719,6 +724,21 @@ class ViewingRecordRepository:
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:
             return self.get(record_id)
+
+        # Defend invalid viewing_state at the repository boundary so a bad
+        # value can never reach the database, even if a caller skips route
+        # validation.
+        if "viewing_state" in updates:
+            new_state = updates["viewing_state"]
+            state_value = (
+                new_state.value
+                if isinstance(new_state, ViewingState)
+                else new_state
+            )
+            if state_value not in {s.value for s in ViewingState}:
+                raise ValueError(f"Invalid viewing state: {state_value!r}")
+            updates["viewing_state"] = state_value
+
         now = _now()
         updates["updated_at"] = now
 
@@ -726,12 +746,9 @@ class ViewingRecordRepository:
         if "tags" in updates and isinstance(updates["tags"], list):
             updates["tags"] = _json_dumps(updates["tags"])
 
-        # Validate state transition
+        # Set dates based on state
         if "viewing_state" in updates:
             new_state = updates["viewing_state"]
-            if isinstance(new_state, str):
-                updates["viewing_state"] = new_state
-            # Set dates based on state
             if new_state == "opened" and "opened_date" not in updates:
                 updates["opened_date"] = _now_date()
             if new_state == "completed" and "completed_date" not in updates:
@@ -742,11 +759,13 @@ class ViewingRecordRepository:
         self._conn.execute(
             f"UPDATE viewing_records SET {set_clause} WHERE id = ?", params
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         return self.get(record_id)
 
     def add_timestamp_ref(
-        self, record_id: str, seconds: int, label: str = ""
+        self, record_id: str, seconds: int, label: str = "",
+        *, commit: bool = True,
     ) -> TimestampReference:
         ts_id = _new_id()
         now = _now()
@@ -756,7 +775,8 @@ class ViewingRecordRepository:
                 VALUES (?, ?, ?, ?, ?)""",
             (ts_id, record_id, seconds, label, now),
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         return TimestampReference(
             id=ts_id,
             record_id=record_id,
@@ -782,12 +802,13 @@ class ViewingRecordRepository:
         ]
 
 
-    def delete_timestamp_ref(self, ts_id: str) -> None:
+    def delete_timestamp_ref(self, ts_id: str, *, commit: bool = True) -> None:
         """Delete a timestamp reference by ID."""
         self._conn.execute(
             "DELETE FROM timestamp_references WHERE id = ?", (ts_id,)
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
 
     def search(
         self,
@@ -1119,14 +1140,16 @@ class ProposalRepository:
         return [self._row_to_proposal(r) for r in rows]
 
     def update_status(
-        self, proposal_id: str, status: ProposalStatus
+        self, proposal_id: str, status: ProposalStatus,
+        *, commit: bool = True,
     ) -> ProposalRecord | None:
         now = _now()
         self._conn.execute(
             "UPDATE proposals SET status = ?, decided_at = ? WHERE id = ?",
             (status.value, now, proposal_id),
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         return self.get(proposal_id)
 
     @staticmethod

@@ -49,7 +49,7 @@ Default ordering is newest publication first. Supported alternatives may include
 
 Phase 1 opens the canonical YouTube URL in a new browser tab. The application records that the link was opened but does not infer that the video was completed.
 
-**Phase 1 implementation:** Clicking a video title opens `https://www.youtube.com/watch?v=<id>` in a new tab. The `/videos/{id}/open` route records `opened` state. `opened` does not imply `completed`.
+**Phase 1 implementation:** Clicking a video title opens `https://www.youtube.com/watch?v=<id>` in a new tab. The topic-video-scoped `POST /topic-videos/{tv_id}/open` route records `opened` state for that topic only. `opened` does not imply `completed`.
 
 ### Job D — preserve a private viewing record
 

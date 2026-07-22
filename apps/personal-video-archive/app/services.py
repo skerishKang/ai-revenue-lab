@@ -389,7 +389,11 @@ class RecordService:
         if record is None:
             raise ValueError(f"Record not found: {proposal.record_id}")
 
-        # Use the shared connection for transaction
+        # Apply the whole proposal as ONE transaction. Repository methods are
+        # called with commit=False so their internal commits cannot make the
+        # outer rollback ineffective; a single commit happens only after every
+        # step succeeds, and any failure rolls back record, timestamps, and
+        # proposal status together.
         conn = self._records._conn
 
         try:
@@ -411,24 +415,26 @@ class RecordService:
             if data.get("rating") is not None:
                 updates["rating"] = data["rating"]
 
-            self._records.update(record.id, **updates)
+            self._records.update(record.id, commit=False, **updates)
 
             # Replace timestamps: delete old, add new
             for ts_id in existing_ts_ids:
-                self._records.delete_timestamp_ref(ts_id)
+                self._records.delete_timestamp_ref(ts_id, commit=False)
 
             for ts_data in data.get("timestamp_references", []):
                 self._records.add_timestamp_ref(
                     record.id,
                     ts_data["timestamp_seconds"],
                     ts_data.get("label", ""),
+                    commit=False,
                 )
 
             # Mark proposal as accepted
             self._proposals.update_status(
-                proposal_id, ProposalStatus.ACCEPTED
+                proposal_id, ProposalStatus.ACCEPTED, commit=False
             )
 
+            conn.commit()
             return self._records.get(record.id)
 
         except Exception:
@@ -576,13 +582,20 @@ class ProposalService:
         if data.get("duration_preference"):
             updates["duration_preference"] = data["duration_preference"]
 
-        result = self._rules.update(rules.id, **updates)
-
-        self._proposals.update_status(
-            proposal_id, ProposalStatus.ACCEPTED
-        )
-
-        return result
+        # Apply rule update and proposal acceptance as ONE transaction so a
+        # failure after the rule write cannot leave the proposal pending while
+        # the rule is already changed (or vice versa).
+        conn = self._rules._conn
+        try:
+            result = self._rules.update(rules.id, commit=False, **updates)
+            self._proposals.update_status(
+                proposal_id, ProposalStatus.ACCEPTED, commit=False
+            )
+            conn.commit()
+            return result
+        except Exception:
+            conn.rollback()
+            raise
 
     def reject_rule_change(self, proposal_id: str) -> ProposalRecord:
         """Reject a rule-change proposal."""

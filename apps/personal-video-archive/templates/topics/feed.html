@@ -6,6 +6,13 @@
     <p class="subtitle">{{ topic.intent }}</p>
 </div>
 
+{% if sync_failed %}
+<div class="provider-error-banner badge-user" role="alert">
+    <strong>새로고침 실패</strong> — 영상 제공 서비스에 연결할 수 없어 새 영상을
+    가져오지 못했습니다. 기존 목록은 그대로 유지됩니다. 잠시 후 다시 시도해 주세요.
+</div>
+{% endif %}
+
 {% if rules %}
 <div class="rules-summary badge-app">
     <strong>Application Rule</strong> —
@@ -22,6 +29,16 @@
     <a href="/records?{% if topic %}topic_id={{ topic.id }}{% endif %}" class="btn btn-secondary">My Records</a>
 </div>
 
+<nav class="feed-state-filter" aria-label="Filter by viewing state">
+    {% for fs in feed_states %}
+    <a href="/topics/{{ topic.id }}?state={{ fs }}"
+       class="filter-pill {% if fs == current_state_filter %}filter-pill-selected{% endif %}"
+       {% if fs == current_state_filter %}aria-current="page"{% endif %}>
+        {{ fs }}
+    </a>
+    {% endfor %}
+</nav>
+
 {% if feed %}
 <div class="feed-header">
     <span class="badge badge-info">Newest First</span>
@@ -30,7 +47,7 @@
 
 <div class="video-feed">
     {% for tv, video, record in feed %}
-    <article class="video-card">
+    <article class="video-card" data-video-title="{{ video.title }}">
         <div class="video-thumbnail">
             <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}"
                  onerror="this.style.display='none'">
@@ -56,14 +73,25 @@
                 {% endif %}
             </p>
 
-            {% if tv.match_score is not none %}
-            <div class="match-badge badge-app badge-sm">
-                Application analysis: match score {{ (tv.match_score * 100) | round }}%
+            {% if tv.match_score is not none or tv.match_reasons %}
+            <div class="match-analysis badge-app badge-sm">
+                <strong>Application analysis</strong>
+                {% if tv.match_score is not none %}
+                · match score {{ (tv.match_score * 100) | round }}%
+                {% endif %}
+                {% if tv.match_reasons %}
+                <ul class="match-reasons">
+                    {% for reason in tv.match_reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             </div>
             {% endif %}
 
             <div class="video-actions">
                 <form method="post" action="/topic-videos/{{ tv.id }}/state" style="display:inline">
+                    <input type="hidden" name="return_state" value="{{ current_state_filter }}">
                     <select name="state" onchange="this.form.submit()">
                         <option value="unseen" {% if record and record.viewing_state == "unseen" %}selected{% elif not record %}selected{% endif %}>unseen</option>
                         <option value="opened" {% if record and record.viewing_state == "opened" %}selected{% endif %}>opened</option>
@@ -89,4 +117,3 @@
 </div>
 {% endif %}
 {% endblock %}
-{% macro format_thousands(value) %}{{ '%.0f' | format(value) }}{% endmacro %}
