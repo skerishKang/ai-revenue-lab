@@ -1,0 +1,66 @@
+{
+  "content_version": "1.0",
+  "publication_title": "부산 2박: 동네와 로컬 음식의 아침",
+  "edition_title": "첫 번째 에디션 — 부산의 조용한 동네 산책",
+  "destination": "부산",
+  "trip_frame": "2박 3일 국내 혼행",
+  "editorial_opening": "부산은 바다와 시장으로 유명하지만, 진짜 맛은 조용한 동네 아침에 있습니다. 오늘 에디션은 유명 관광지를 피해 로컬 분위기가 살아있는 곳을 소개합니다.",
+  "sections": [
+    {
+      "section_id": "sec_morning_gukje",
+      "title": "국제시장 근처 아침 산책",
+      "narrative": "국제시장 근처에는 원조 식당가와 오래된 골목이 있습니다. 아침 일찍 가면 한적하게 시장 분위기를 즐길 수 있습니다.",
+      "items": [
+        {
+          "item_id": "item_gukje_atmosphere",
+          "information_class": "stable_reference",
+          "as_of_date": "2025-06-01",
+          "source_ref": "src_gukje_market",
+          "confidence": "confirmed",
+          "verify_before_use": false
+        },
+        {
+          "item_id": "item_gukje_hours",
+          "information_class": "time_sensitive",
+          "as_of_date": "2026-07-15",
+          "source_ref": "src_gukje_market",
+          "confidence": "approximate",
+          "verify_before_use": true
+        }
+      ]
+    },
+    {
+      "section_id": "sec_haegyeolri",
+      "title": "합성동 로컬 카페 거리",
+      "narrative": "합성동은 부산 남구에 위치한 동네로, 로컬 분위기가 아직 남아있습니다.",
+      "items": [
+        {
+          "item_id": "item_haegyeolri_vibe",
+          "information_class": "inspiration",
+          "as_of_date": "",
+          "source_ref": "src_haegyeolri",
+          "confidence": "approximate",
+          "verify_before_use": false
+        }
+      ]
+    },
+    {
+      "section_id": "sec_practical",
+      "title": "실용 정보",
+      "narrative": "부산 7월은 평균 기온 25-30도로 따뜻합니다. 코스를 짤 때 무리하지 않도록 천천히 걷는 걸 추천합니다.",
+      "items": [
+        {
+          "item_id": "item_weather_note",
+          "information_class": "time_sensitive",
+          "as_of_date": "2026-07-20",
+          "source_ref": "src_busan_tourism",
+          "confidence": "approximate",
+          "verify_before_use": true
+        }
+      ]
+    }
+  ],
+  "applied_feedback": [],
+  "next_edition_prompt": "이 에디션에서 어떤 부분을 더 자세히 보거나 조용한 곳을 더 찾고 싶으신가요?",
+  "provenance_note": "모든 정보는 공공 기반 자료를 바탕으로 하며, 영업시간 등 시간 민감 정보는 확인이 필요합니다."
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Travel - Invitation Token</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar"><span class="brand">Living Travel</span><div class="nav-links"><a href="/operator/">Dashboard</a><a href="/operator/travelers/{{traveler_id}}">Back to Traveler</a></div></nav>
+    <main class="container">
+        <div class="card card-highlight">
+            <h1>Invitation Token</h1>
+            <div class="alert alert-warning"><strong>Save this token now.</strong> It will not be shown again.</div>
+            <div class="token-display"><code class="token-value">{{raw_token}}</code></div>
+            <p class="token-note">Share this token with the traveler. They will use it to access their dashboard at <code>/traveler/enter</code>.</p>
+            {% if message %}<div class="alert alert-info">{{message}}</div>{% endif %}
+            <div class="action-grid"><a href="/operator/travelers/{{traveler_id}}" class="btn btn-primary">Back to Traveler</a></div>
+        </div>
+    </main>
+</body>
+</html>
