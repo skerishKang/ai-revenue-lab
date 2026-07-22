@@ -56,12 +56,7 @@
             <div class="video-meta-source">
                 <span class="badge badge-info badge-sm">YouTube info</span>
             </div>
-            <h3 class="video-title">
-                <a href="{{ video.canonical_url }}" target="_blank"
-                   onclick="fetch('/topic-videos/{{ tv.id }}/open', {method:'POST'})">
-                    {{ video.title }}
-                </a>
-            </h3>
+            <h3 class="video-title">{{ video.title }}</h3>
             <p class="video-channel">{{ video.channel_title }}</p>
             <p class="video-published small">
                 Published {{ video.published_at[:10] }}
@@ -90,7 +85,10 @@
             {% endif %}
 
             <div class="video-actions">
-                <form method="post" action="/topic-videos/{{ tv.id }}/state" style="display:inline">
+                <form method="post" action="/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
+                    <button type="submit" class="btn btn-small btn-primary">Open on YouTube</button>
+                </form>
+                <form method="post" action="/topic-videos/{{ tv.id }}/state" class="inline-form">
                     <input type="hidden" name="return_state" value="{{ current_state_filter }}">
                     <select name="state" onchange="this.form.submit()">
                         <option value="unseen" {% if record and record.viewing_state == "unseen" %}selected{% elif not record %}selected{% endif %}>unseen</option>
@@ -102,7 +100,7 @@
                         <option value="irrelevant" {% if record and record.viewing_state == "irrelevant" %}selected{% endif %}>irrelevant</option>
                     </select>
                 </form>
-                <form method="post" action="/topic-videos/{{ tv.id }}/records" style="display:inline;">
+                <form method="post" action="/topic-videos/{{ tv.id }}/records" class="inline-form">
                     <button type="submit" class="btn btn-small btn-secondary">기록 만들기</button>
                 </form>
             </div>

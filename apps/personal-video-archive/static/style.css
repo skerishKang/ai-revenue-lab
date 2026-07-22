@@ -360,6 +360,10 @@ body {
     border: 1px solid var(--border);
 }
 
+.inline-form {
+    display: inline;
+}
+
 .match-badge {
     margin-top: 4px;
     align-self: flex-start;

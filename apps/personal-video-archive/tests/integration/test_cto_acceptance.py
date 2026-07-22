@@ -327,6 +327,183 @@ class TestTopicVideoOpen:
         assert response.status_code == 404
 
 
+class TestOutboundOpenContract:
+    """Final CTO blocker: single-tab-safe outbound YouTube opening.
+
+    The open action must be a plain POST form with target="_blank" and no
+    JavaScript window.open/fetch, and it must never downgrade an explicit
+    user viewing state (completed/irrelevant/...) to `opened`.
+    """
+
+    def _open_form_tag(self, html, tv_id):
+        """Return the <form ...> opening tag for a topic-video open action."""
+        match = re.search(
+            r'<form[^>]*action="/topic-videos/' + tv_id + r'/open"[^>]*>',
+            html,
+        )
+        return match.group(0) if match else None
+
+    def test_feed_open_uses_post_form_with_blank_target(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+
+        html = client.get(f"/topics/{topic_id}").text
+        tv_id = _first_tv_id(client, topic_id)
+
+        form_tag = self._open_form_tag(html, tv_id)
+        assert form_tag is not None, "feed must expose a POST open form"
+        assert 'method="post"' in form_tag
+        assert 'target="_blank"' in form_tag
+        assert f'action="/topic-videos/{tv_id}/open"' in form_tag
+
+    def test_feed_has_no_open_javascript(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+
+        html = client.get(f"/topics/{topic_id}").text
+        assert "fetch(" not in html
+        assert "window.open(" not in html
+
+    def test_feed_title_is_not_new_tab_anchor(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+
+        html = client.get(f"/topics/{topic_id}").text
+        # No anchor may open the canonical YouTube URL in a new tab; opening
+        # happens only through the POST form above.
+        for anchor in re.findall(r"<a\b[^>]*>", html):
+            assert not (
+                'target="_blank"' in anchor and "youtube.com" in anchor
+            ), f"anchor directly opens YouTube in a new tab: {anchor}"
+
+    def test_detail_open_form_per_topic_video(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+
+        conn, repos = _repos(client)
+        try:
+            feed = repos["topic_video"].list_for_topic(topic_id)
+            assert feed
+            video_id = feed[0][1].id
+            tv_ids = [tv.id for tv, _ in feed if tv.video_id == video_id]
+        finally:
+            conn.close()
+
+        html = client.get(f"/videos/{video_id}").text
+        assert tv_ids, "expected at least one topic-video for the video"
+        for tv_id in tv_ids:
+            form_tag = self._open_form_tag(html, tv_id)
+            assert form_tag is not None, (
+                f"detail page must have an open form for {tv_id}"
+            )
+            assert 'method="post"' in form_tag
+            assert 'target="_blank"' in form_tag
+
+    def test_detail_has_no_dead_routes_or_js(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+
+        conn, repos = _repos(client)
+        try:
+            feed = repos["topic_video"].list_for_topic(topic_id)
+            video_id = feed[0][1].id
+        finally:
+            conn.close()
+
+        html = client.get(f"/videos/{video_id}").text
+        assert "window.open(" not in html
+        assert f"/videos/{video_id}/open" not in html
+        assert "/records/new" not in html
+
+    def test_open_redirects_to_canonical_url(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+
+        tv_id = _first_tv_id(client, topic_id)
+        conn, repos = _repos(client)
+        try:
+            tv = repos["topic_video"].get(tv_id)
+            canonical = repos["video"].get(tv.video_id).canonical_url
+        finally:
+            conn.close()
+
+        resp = client.post(
+            f"/topic-videos/{tv_id}/open", follow_redirects=False
+        )
+        assert resp.status_code == 303
+        assert resp.headers["location"] == canonical
+
+    def test_open_unseen_becomes_opened(self, client):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+        tv_id = _first_tv_id(client, topic_id)
+
+        client.post(f"/topic-videos/{tv_id}/open", follow_redirects=False)
+
+        conn, repos = _repos(client)
+        try:
+            rec = repos["record"].get_by_topic_video(tv_id)
+            assert rec.viewing_state.value == "opened"
+        finally:
+            conn.close()
+
+    @pytest.mark.parametrize(
+        "preserved_state",
+        ["completed", "irrelevant", "saved", "in_progress", "revisit"],
+    )
+    def test_open_preserves_explicit_user_state(self, client, preserved_state):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+        tv_id = _first_tv_id(client, topic_id)
+
+        resp = client.post(
+            f"/topic-videos/{tv_id}/state",
+            data={"state": preserved_state},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+        # Opening must not downgrade an explicit user state.
+        client.post(f"/topic-videos/{tv_id}/open", follow_redirects=False)
+
+        conn, repos = _repos(client)
+        try:
+            rec = repos["record"].get_by_topic_video(tv_id)
+            assert rec.viewing_state.value == preserved_state
+        finally:
+            conn.close()
+
+    def test_open_does_not_touch_other_topic_video(self, client):
+        topic_id_1 = _create_topic_and_accept_rule(client, name="Topic A")
+        topic_id_2 = _create_topic_and_accept_rule(client, name="Topic B")
+        _sync_topic(client, topic_id_1)
+        _sync_topic(client, topic_id_2)
+
+        conn, repos = _repos(client)
+        try:
+            tv1 = repos["topic_video"].list_for_topic(topic_id_1)[0][0]
+            tv2 = repos["topic_video"].get_by_topic_video(
+                topic_id_2, tv1.video_id
+            )
+            assert tv2 is not None, "same video should exist in topic 2"
+            rec2 = repos["record"].create(tv2.id)
+            repos["record"].update(rec2.id, viewing_state="completed")
+        finally:
+            conn.close()
+
+        client.post(f"/topic-videos/{tv1.id}/open", follow_redirects=False)
+
+        conn, repos = _repos(client)
+        try:
+            rec1 = repos["record"].get_by_topic_video(tv1.id)
+            assert rec1.viewing_state.value == "opened"
+            # The other topic-video keeps its explicit completed state.
+            rec2 = repos["record"].get_by_topic_video(tv2.id)
+            assert rec2.viewing_state.value == "completed"
+        finally:
+            conn.close()
+
+
 class TestStateValidation:
     """Fix 6: topic-video state validation at route and repository."""
 

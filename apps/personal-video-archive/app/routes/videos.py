@@ -6,6 +6,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.db import get_connection
+from app.domain.enums import ViewingState
 from app.factory import _build_services, _render_template
 from app.services import RecordService
 
@@ -83,11 +84,16 @@ def open_topic_video(request: Request, tv_id: str):
         if record is None:
             record = record_repo.create(tv_id)
 
-        # Set state to opened (not completed)
-        record_repo.update(
-            record.id,
-            viewing_state="opened",
-        )
+        # The outbound-link action only records `opened`. It must never
+        # downgrade an explicit user state: saved / in_progress / completed /
+        # revisit / irrelevant are user-controlled (product contract), so a
+        # simple link click promotes only an `unseen` record to `opened` and
+        # leaves every other state untouched. `opened` stays `opened`.
+        if record.viewing_state == ViewingState.UNSEEN:
+            record_repo.update(
+                record.id,
+                viewing_state=ViewingState.OPENED.value,
+            )
 
         # Redirect to the canonical YouTube URL (new tab via frontend)
         video = repos["video"].get(tv.video_id)
@@ -138,8 +144,6 @@ def update_state(
     return_state: str = Form("all"),
 ):
     """Update the viewing state of a topic-video pair."""
-    from app.domain.enums import ViewingState
-
     # Validate the state against the ViewingState enum before touching the DB.
     # An invalid value is a handled 400 and leaves the database unchanged.
     if state not in {s.value for s in ViewingState}:

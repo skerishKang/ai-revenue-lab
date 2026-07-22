@@ -27,7 +27,7 @@ Phase 1 provides a complete deterministic vertical slice using synthetic fixture
 5. Deduplication by canonical video ID
 6. Latest-first feed display
 7. Filter by viewing state (all/unseen/opened/saved/in_progress/completed/revisit/irrelevant)
-8. Open canonical YouTube URL in new tab (records `opened`, not `completed`)
+8. Open canonical YouTube URL in a new tab via a single-tab-safe form (records `opened` for unseen videos; explicit user states are preserved, and `opened` never implies `completed`)
 9. Manually change viewing state
 10. Create and edit private viewing records
 11. Request LLM-structured proposal from rough notes
