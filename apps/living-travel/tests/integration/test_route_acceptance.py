@@ -7,6 +7,7 @@ Service-level tests are in test_regression_full.py.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sqlite3
@@ -132,6 +133,34 @@ def _reject_via_route(client: TestClient, edition_id: str, csrf: str):
     resp = client.post(f"/operator/editions/{edition_id}/reject",
                        data={"csrf_token": csrf}, cookies={"lt_csrf": csrf})
     return resp
+
+
+def _traveler_set_language(
+    client: TestClient,
+    raw_token: str,
+    language: str,
+    *,
+    interests: str = "로컬 음식",
+):
+    _traveler_enter(client, raw_token)
+    csrf = client.cookies.get("lt_csrf")
+    return client.post(
+        "/traveler/preferences",
+        data={
+            "destination": "부산",
+            "trip_duration_nights": 3,
+            "trip_context": "solo",
+            "budget_tendency": "moderate",
+            "pace_preference": "comfortable",
+            "interests": interests,
+            "exclusions": "야간 유흥",
+            "tone_preference": "calm",
+            "length_preference": "medium",
+            "preferred_language": language,
+            "csrf_token": csrf or "",
+        },
+        cookies={"lt_csrf": csrf or ""},
+    )
 
 
 # ===================================================================
@@ -751,3 +780,165 @@ class TestRouteRegression:
         _traveler_enter(c, raw_a)
         resp = c.get(f"/traveler/editions/{ed_b.id}")
         assert resp.status_code == 404
+
+
+# ===================================================================
+# Section E: Unsupported fixture language browser flow
+# ===================================================================
+
+PREFERENCE_MARKER = "PRIVATE_PREFERENCE_MARKER_DO_NOT_LEAK"
+FEEDBACK_MARKER = "PRIVATE_FEEDBACK_MARKER_DO_NOT_LEAK"
+
+
+class TestUnsupportedFixtureFlow:
+    def test_first_generation_non_ko_redirects_unsupported_fixture_without_edition(self, app, caplog):
+        caplog.set_level(logging.WARNING)
+        c = TestClient(app, follow_redirects=False)
+        _operator_login(c)
+        csrf = _op_csrf(c)
+
+        tid = _create_traveler_via_route(c, "UnsupFirst", "부산", csrf)
+        raw = _issue_token_via_route(c, tid, csrf)
+
+        pref_resp = _traveler_set_language(c, raw, "en", interests=PREFERENCE_MARKER)
+        assert pref_resp.status_code == 303
+
+        conn = get_connection()
+        assert get_traveler_by_id(conn, tid).preferred_language == "en"
+        conn.close()
+
+        _operator_login(c)
+        csrf = _op_csrf(c)
+        caplog.clear()
+        resp = c.post(f"/operator/travelers/{tid}/generate-first",
+                      data={"csrf_token": csrf}, cookies={"lt_csrf": csrf})
+
+        assert resp.status_code == 303
+        assert resp.headers["location"] == f"/operator/travelers/{tid}?failure=unsupported_fixture"
+
+        conn = get_connection()
+        editions = get_editions_by_traveler(conn, tid)
+        assert len(editions) == 0
+        edition_count = conn.execute(
+            "SELECT COUNT(*) AS c FROM editions WHERE traveler_id = ?", (tid,)
+        ).fetchone()["c"]
+        assert edition_count == 0
+        pending_or_published = conn.execute(
+            "SELECT COUNT(*) AS c FROM editions WHERE traveler_id = ? "
+            "AND publication_state IN ('pending', 'rejected', 'published')",
+            (tid,),
+        ).fetchone()["c"]
+        assert pending_or_published == 0
+        successful_runs = conn.execute(
+            "SELECT COUNT(*) AS c FROM generation_runs WHERE success = 1"
+        ).fetchone()["c"]
+        assert successful_runs == 0
+        conn.close()
+
+        body = resp.text if hasattr(resp, "text") else ""
+        assert "Traceback" not in body
+        assert PREFERENCE_MARKER not in body
+        assert PREFERENCE_MARKER not in resp.headers["location"]
+        assert PREFERENCE_MARKER not in caplog.text
+
+        detail = c.get(resp.headers["location"])
+        assert detail.status_code == 200
+        assert "unsupported_fixture" in detail.text
+        assert PREFERENCE_MARKER not in detail.text
+
+    def test_second_generation_non_ko_preserves_published_edition_and_feedback(self, app, caplog):
+        caplog.set_level(logging.WARNING)
+        c = TestClient(app, follow_redirects=False)
+        _operator_login(c)
+        csrf = _op_csrf(c)
+
+        tid = _create_traveler_via_route(c, "UnsupSecond", "부산", csrf)
+        raw = _issue_token_via_route(c, tid, csrf)
+
+        resp1 = _generate_first_via_route(c, tid, csrf)
+        assert resp1.status_code in (200, 303)
+
+        conn = get_connection()
+        editions = get_editions_by_traveler(conn, tid)
+        assert len(editions) == 1
+        ed1 = editions[0]
+        assert ed1.generation_status == "pending_review"
+        ed1_content = ed1.structured_content
+        conn.close()
+
+        resp_pub = _publish_via_route(c, ed1.id, csrf)
+        assert resp_pub.status_code in (200, 303)
+        conn = get_connection()
+        assert get_edition_by_id(conn, ed1.id).publication_state == "published"
+        conn.close()
+
+        _traveler_enter(c, raw)
+        tcsrf = c.cookies.get("lt_csrf")
+        resp_fb = c.post(
+            f"/traveler/editions/{ed1.id}/feedback",
+            data={
+                "choices": ["quieter_places"],
+                "free_text": FEEDBACK_MARKER,
+                "csrf_token": tcsrf or "",
+            },
+            cookies={"lt_csrf": tcsrf or ""},
+        )
+        assert resp_fb.status_code in (200, 303)
+
+        conn = get_connection()
+        fb_list = get_feedback_by_edition(conn, ed1.id)
+        assert len(fb_list) == 1
+        assert fb_list[0].applied_to_next_edition is False
+        conn.close()
+
+        pref_resp = _traveler_set_language(c, raw, "ja")
+        assert pref_resp.status_code == 303
+        conn = get_connection()
+        assert get_traveler_by_id(conn, tid).preferred_language == "ja"
+        conn.close()
+
+        _operator_login(c)
+        csrf = _op_csrf(c)
+        caplog.clear()
+        resp2 = c.post(f"/operator/travelers/{tid}/generate-second",
+                       data={"csrf_token": csrf}, cookies={"lt_csrf": csrf})
+
+        assert resp2.status_code == 303
+        assert resp2.headers["location"] == f"/operator/travelers/{tid}?failure=unsupported_fixture"
+
+        conn = get_connection()
+        editions2 = get_editions_by_traveler(conn, tid)
+        assert len(editions2) == 1
+        ed1_after = get_edition_by_id(conn, ed1.id)
+        assert ed1_after.publication_state == "published"
+        assert ed1_after.structured_content == ed1_content
+        assert all(ed.generation_status != "generation_pending" for ed in editions2)
+        fb_after = get_feedback_by_edition(conn, ed1.id)
+        assert len(fb_after) == 1
+        assert fb_after[0].applied_to_next_edition is False
+        conn.close()
+
+        body2 = resp2.text if hasattr(resp2, "text") else ""
+        assert "Traceback" not in body2
+        assert FEEDBACK_MARKER not in body2
+        assert FEEDBACK_MARKER not in resp2.headers["location"]
+        assert FEEDBACK_MARKER not in caplog.text
+
+        detail = c.get(resp2.headers["location"])
+        assert detail.status_code == 200
+        assert "unsupported_fixture" in detail.text
+        assert FEEDBACK_MARKER not in detail.text
+
+    def test_failure_param_allow_list_blocks_arbitrary_strings(self, app):
+        c = TestClient(app, follow_redirects=False)
+        _operator_login(c)
+        csrf = _op_csrf(c)
+        tid = _create_traveler_via_route(c, "AllowList", "부산", csrf)
+
+        allowed = c.get(f"/operator/travelers/{tid}?failure=unsupported_fixture")
+        assert allowed.status_code == 200
+        assert "unsupported_fixture" in allowed.text
+
+        blocked = c.get(f"/operator/travelers/{tid}?failure=private-secret-text")
+        assert blocked.status_code == 200
+        assert "private-secret-text" not in blocked.text
