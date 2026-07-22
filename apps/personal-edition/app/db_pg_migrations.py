@@ -40,7 +40,7 @@ from app.config import redact_database_url
 
 # A PostgreSQL migration is any file named like ``pg_NNN_description.sql``
 # in the migrations directory.
-_PG_MIGRATION_RE = re.compile(r"^pg_\d+.*\.sql$")
+_PG_MIGRATION_RE = re.compile(r"^pg_(\d+)_.*\.sql$")
 
 
 class PgMigrationError(RuntimeError):
@@ -188,28 +188,108 @@ def _get_applied(conn: Connection[DictRow]) -> dict[str, str]:
 
 
 def _discover_migrations(migrations_dir: str) -> list[Path]:
-    """Discover and deterministically order PostgreSQL migration files."""
+    """Discover and deterministically order PostgreSQL migration files by numeric version."""
     migrations_path = Path(migrations_dir)
-    files = sorted(
-        p for p in migrations_path.glob("*.sql") if _is_pg_migration(p.name)
-    )
-    return files
+    parsed = []
+    
+    # Pre-filter all pg_*.sql files to ensure no malformed ones slip by
+    for p in migrations_path.glob("pg_*.sql"):
+        match = _PG_MIGRATION_RE.match(p.name)
+        if not match:
+            raise PgMigrationError(p.name, f"malformed migration filename: {p.name}")
+        num = int(match.group(1))
+        parsed.append((num, p))
+        
+    seen = set()
+    for num, p in parsed:
+        if num in seen:
+            raise PgMigrationError(p.name, f"duplicate numeric version {num} detected in {p.name}")
+        seen.add(num)
+        
+    parsed.sort(key=lambda x: x[0])
+    return [p for _, p in parsed]
 
 
-def _detect_partial(
+def _check_schema_drift(
     conn: Connection[DictRow],
     version: str,
-    applied: dict[str, str],
+    content: str,
+    is_applied: bool,
 ) -> None:
-    """Detect partial migration: version recorded but checksum mismatch.
-
-    Raises PgMigrationError if an already-applied migration's content
-    has changed since it was applied.
+    """Run migration in a temporary schema to detect partial applies or drift.
+    
+    If not applied, no objects from the migration should exist in public.
+    If applied, all objects from the migration must exactly match in public.
     """
-    if version in applied:
-        # The migration was already applied.  Verify the checksum matches.
-        # This is checked by the caller before calling this function.
-        pass
+    conn.execute("SAVEPOINT migration_drift_check")
+    try:
+        temp_schema = f"drift_check_{version.replace('.', '_')}"
+        conn.execute(f'CREATE SCHEMA "{temp_schema}"')
+        conn.execute(f'SET LOCAL search_path TO "{temp_schema}"')
+        
+        for stmt in _split_statements(content):
+            conn.execute(stmt)
+            
+        expected_tables = get_pg_schema_tables(conn, temp_schema)
+        if "schema_migrations" in expected_tables:
+            expected_tables.remove("schema_migrations")
+            
+        public_tables = get_pg_schema_tables(conn, "public")
+        
+        if not is_applied:
+            overlap = expected_tables.intersection(public_tables)
+            if overlap:
+                raise PgMigrationError(version, f"partial schema detected: unrecorded migration but tables exist: {overlap}")
+        else:
+            missing_tables = expected_tables - public_tables
+            if missing_tables:
+                raise PgMigrationError(version, f"schema drift detected: missing tables: {missing_tables}")
+                
+            for table in expected_tables:
+                exp_cols = get_pg_schema_columns(conn, table, temp_schema)
+                pub_cols = get_pg_schema_columns(conn, table, "public")
+                if exp_cols != pub_cols:
+                    raise PgMigrationError(version, f"schema drift detected in table {table} columns")
+                    
+                exp_pks = get_pg_primary_keys(conn, table, temp_schema)
+                pub_pks = get_pg_primary_keys(conn, table, "public")
+                if exp_pks != pub_pks:
+                    raise PgMigrationError(version, f"schema drift detected in table {table} primary keys")
+                    
+                exp_fks = get_pg_foreign_keys(conn, table, temp_schema)
+                pub_fks = get_pg_foreign_keys(conn, table, "public")
+                # ignore schema names in FKs by extracting just the constraint structure if possible
+                # But since get_pg_foreign_keys doesn't include the schema of the foreign table in its output, direct compare is fine
+                if exp_fks != pub_fks:
+                    raise PgMigrationError(version, f"schema drift detected in table {table} foreign keys")
+                    
+                exp_uniques = get_pg_unique_constraints(conn, table, temp_schema)
+                pub_uniques = get_pg_unique_constraints(conn, table, "public")
+                if exp_uniques != pub_uniques:
+                    raise PgMigrationError(version, f"schema drift detected in table {table} unique constraints")
+                    
+                exp_checks = get_pg_check_constraints(conn, table, temp_schema)
+                pub_checks = get_pg_check_constraints(conn, table, "public")
+                if exp_checks != pub_checks:
+                    raise PgMigrationError(version, f"schema drift detected in table {table} check constraints")
+                    
+        exp_indexes = get_pg_schema_indexes(conn, temp_schema)
+        pub_indexes = get_pg_schema_indexes(conn, "public")
+        exp_idx = {(idx, tbl) for idx, tbl in exp_indexes if tbl in expected_tables}
+        pub_idx = {(idx, tbl) for idx, tbl in pub_indexes if tbl in expected_tables}
+        
+        if not is_applied:
+            overlap_idx = exp_idx.intersection(pub_idx)
+            if overlap_idx:
+                raise PgMigrationError(version, f"partial schema detected: unrecorded migration but indexes exist: {overlap_idx}")
+        else:
+            missing_idx = exp_idx - pub_idx
+            if missing_idx:
+                raise PgMigrationError(version, f"schema drift detected: missing indexes: {missing_idx}")
+
+    finally:
+        conn.execute("ROLLBACK TO SAVEPOINT migration_drift_check")
+        conn.execute("SET LOCAL search_path TO public")
 
 
 def apply_pg_migrations(
@@ -247,16 +327,8 @@ def apply_pg_migrations(
     applied = _get_applied(conn)
     migrations = _discover_migrations(migrations_dir)
 
-    # Check for duplicate versions
-    seen: set[str] = set()
-    for m in migrations:
-        if m.name in seen:
-            raise PgMigrationError(
-                m.name,
-                f"duplicate migration version detected: {m.name}",
-            )
-        seen.add(m.name)
-
+    # Check for duplicate versions is now handled in _discover_migrations
+    
     applied_versions: list[str] = []
 
     for m in migrations:
@@ -264,7 +336,6 @@ def apply_pg_migrations(
         content, checksum = _read_migration(m)
 
         if version in applied:
-            # Already applied — verify checksum integrity.
             if applied[version] != checksum:
                 raise PgMigrationError(
                     version,
@@ -272,8 +343,12 @@ def apply_pg_migrations(
                     "(checksum mismatch). Refusing to proceed. "
                     "See documentation for safe migration update procedure.",
                 )
-            # Checksum matches — skip.
+            # Integrity drift check
+            _check_schema_drift(conn, version, content, is_applied=True)
             continue
+            
+        # Unrecorded: partial detection
+        _check_schema_drift(conn, version, content, is_applied=False)
 
         # Read content fresh for execution
         statements = _split_statements(content)
@@ -299,33 +374,35 @@ def apply_pg_migrations(
     return applied_versions
 
 
-def get_pg_schema_tables(conn: Connection[DictRow]) -> set[str]:
+def get_pg_schema_tables(conn: Connection[DictRow], schema: str | None = None) -> set[str]:
     """Return the set of user table names in the current schema."""
     rows = conn.execute(
         """
         SELECT tablename
         FROM pg_catalog.pg_tables
-        WHERE schemaname = 'public'
-        """
+        WHERE schemaname = COALESCE(%s, current_schema())
+        """,
+        (schema,)
     ).fetchall()
     return {row["tablename"] for row in rows}
 
 
-def get_pg_schema_indexes(conn: Connection[DictRow]) -> list[tuple[str, str]]:
+def get_pg_schema_indexes(conn: Connection[DictRow], schema: str | None = None) -> list[tuple[str, str]]:
     """Return (index_name, table_name) pairs for all indexes."""
     rows = conn.execute(
         """
         SELECT indexname, tablename
         FROM pg_indexes
-        WHERE schemaname = 'public'
+        WHERE schemaname = COALESCE(%s, current_schema())
         ORDER BY tablename, indexname
-        """
+        """,
+        (schema,)
     ).fetchall()
     return [(row["indexname"], row["tablename"]) for row in rows]
 
 
 def get_pg_schema_columns(
-    conn: Connection[DictRow], table_name: str
+    conn: Connection[DictRow], table_name: str, schema: str | None = None
 ) -> list[dict[str, Any]]:
     """Return column metadata for a table."""
     rows = conn.execute(
@@ -337,11 +414,11 @@ def get_pg_schema_columns(
             column_default,
             ordinal_position
         FROM information_schema.columns
-        WHERE table_schema = 'public'
+        WHERE table_schema = COALESCE(%s, current_schema())
         AND table_name = %s
         ORDER BY ordinal_position
         """,
-        (table_name,),
+        (schema, table_name),
     ).fetchall()
     return [
         {
@@ -354,7 +431,7 @@ def get_pg_schema_columns(
     ]
 
 
-def get_pg_primary_keys(conn: Connection[DictRow], table_name: str) -> list[str]:
+def get_pg_primary_keys(conn: Connection[DictRow], table_name: str, schema: str | None = None) -> list[str]:
     """Return primary key column names for a table."""
     rows = conn.execute(
         """
@@ -364,16 +441,16 @@ def get_pg_primary_keys(conn: Connection[DictRow], table_name: str) -> list[str]
         JOIN pg_class c ON c.oid = i.indrelid
         JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE i.indisprimary
-        AND n.nspname = 'public'
+        AND n.nspname = COALESCE(%s, current_schema())
         AND c.relname = %s
         ORDER BY a.attnum
         """,
-        (table_name,),
+        (schema, table_name),
     ).fetchall()
     return [row["attname"] for row in rows]
 
 
-def get_pg_foreign_keys(conn: Connection[DictRow], table_name: str) -> list[dict]:
+def get_pg_foreign_keys(conn: Connection[DictRow], table_name: str, schema: str | None = None) -> list[dict]:
     """Return foreign key metadata for a table."""
     rows = conn.execute(
         """
@@ -394,12 +471,12 @@ def get_pg_foreign_keys(conn: Connection[DictRow], table_name: str) -> list[dict
         JOIN information_schema.constraint_column_usage ccu
             ON rc.unique_constraint_name = ccu.constraint_name
             AND rc.unique_constraint_schema = ccu.table_schema
-        WHERE tc.table_schema = 'public'
+        WHERE tc.table_schema = COALESCE(%s, current_schema())
         AND tc.table_name = %s
         AND tc.constraint_type = 'FOREIGN KEY'
         ORDER BY tc.constraint_name, kcu.ordinal_position
         """,
-        (table_name,),
+        (schema, table_name),
     ).fetchall()
     return [
         {
@@ -415,7 +492,7 @@ def get_pg_foreign_keys(conn: Connection[DictRow], table_name: str) -> list[dict
 
 
 def get_pg_unique_constraints(
-    conn: Connection[DictRow], table_name: str
+    conn: Connection[DictRow], table_name: str, schema: str | None = None
 ) -> list[dict]:
     """Return unique constraint metadata for a table."""
     rows = conn.execute(
@@ -428,12 +505,12 @@ def get_pg_unique_constraints(
         JOIN information_schema.key_column_usage kcu
             ON tc.constraint_name = kcu.constraint_name
             AND tc.table_schema = kcu.table_schema
-        WHERE tc.table_schema = 'public'
+        WHERE tc.table_schema = COALESCE(%s, current_schema())
         AND tc.table_name = %s
         AND tc.constraint_type = 'UNIQUE'
         ORDER BY tc.constraint_name, kcu.ordinal_position
         """,
-        (table_name,),
+        (schema, table_name),
     ).fetchall()
     # Group by constraint name
     result: dict[str, dict] = {}
@@ -446,7 +523,7 @@ def get_pg_unique_constraints(
 
 
 def get_pg_check_constraints(
-    conn: Connection[DictRow], table_name: str
+    conn: Connection[DictRow], table_name: str, schema: str | None = None
 ) -> list[str]:
     """Return CHECK constraint definitions for a table."""
     rows = conn.execute(
@@ -455,11 +532,11 @@ def get_pg_check_constraints(
         FROM pg_constraint c
         JOIN pg_class cl ON cl.oid = c.conrelid
         JOIN pg_namespace n ON n.oid = cl.relnamespace
-        WHERE n.nspname = 'public'
+        WHERE n.nspname = COALESCE(%s, current_schema())
         AND cl.relname = %s
         AND c.contype = 'c'
         ORDER BY conname
         """,
-        (table_name,),
+        (schema, table_name),
     ).fetchall()
     return [f"{row['conname']}: {row['definition']}" for row in rows]

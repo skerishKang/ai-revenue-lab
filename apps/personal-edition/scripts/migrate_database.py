@@ -151,23 +151,27 @@ def main() -> int:
             print("Dry run — no changes made.")
             return 0
 
-        conn = get_pg_connection(url)
         try:
-            applied = apply_pg_migrations(
-                conn,
-                migrations_dir,
-                redact_url=safe_url,
-            )
-            if applied:
-                print(f"Applied: {applied}")
-            else:
-                print("No new migrations to apply.")
-            return 0
+            conn = get_pg_connection(url)
+            try:
+                applied = apply_pg_migrations(
+                    conn,
+                    migrations_dir,
+                    redact_url=safe_url,
+                )
+                if applied:
+                    print(f"Applied: {applied}")
+                else:
+                    print("No new migrations to apply.")
+                return 0
+            finally:
+                conn.close()
         except PgMigrationError as exc:
             print(f"Migration error: {exc}", file=sys.stderr)
             return 1
-        finally:
-            conn.close()
+        except Exception:
+            print(f"Database error: connection or migration failed (redacted URL: {safe_url})", file=sys.stderr)
+            return 1
 
     else:
         # SQLite backend (default)

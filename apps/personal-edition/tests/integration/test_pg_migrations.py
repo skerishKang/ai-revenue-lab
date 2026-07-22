@@ -239,13 +239,7 @@ class TestSchemaParityInventory:
                 f"Table '{table}' not found in PG migrations"
             )
 
-    def test_pg_migration_creates_schema_migrations(self):
-        """The PG migration must create schema_migrations table."""
-        migrations = _discover_migrations(MIGRATIONS_DIR)
-        all_sql = "\n".join(
-            m.read_text(encoding="utf-8") for m in migrations
-        )
-        assert "CREATE TABLE IF NOT EXISTS schema_migrations" in all_sql
+
 
     def test_pg_migration_creates_all_indexes(self):
         """The PG migration must create all indexes from SQLite schema."""
@@ -342,7 +336,13 @@ class TestMigrationChecksumIntegrity:
 # ================================================================
 
 TEST_POSTGRES_URL = os.environ.get("TEST_POSTGRES_URL", "")
+PE_DATABASE_URL = os.environ.get("PE_DATABASE_URL", "")
 
+if TEST_POSTGRES_URL and PE_DATABASE_URL and TEST_POSTGRES_URL == PE_DATABASE_URL:
+    raise RuntimeError(
+        "TEST_POSTGRES_URL must not be the same as PE_DATABASE_URL to prevent "
+        "destructive operations on the production/development database."
+    )
 
 pytestmark_integration = pytest.mark.skipif(
     not TEST_POSTGRES_URL,
@@ -367,17 +367,17 @@ def pg_conn():
 
 @pytest.fixture
 def pg_conn_clean(pg_conn):
-    """Clean connection — drops all tables before and after test."""
-    # Drop all tables in the public schema
-    tables = get_pg_schema_tables(pg_conn)
-    for table in tables:
-        pg_conn.execute(f'DROP TABLE IF EXISTS "{table}" CASCADE')
+    """Clean connection — uses a unique temporary schema for complete isolation."""
+    import uuid
+    schema_name = f"test_schema_{uuid.uuid4().hex}"
+    pg_conn.execute(f'CREATE SCHEMA "{schema_name}"')
+    pg_conn.execute(f'SET search_path TO "{schema_name}"')
     pg_conn.commit()
+    
     yield pg_conn
+    
     # Clean up after test
-    tables = get_pg_schema_tables(pg_conn)
-    for table in tables:
-        pg_conn.execute(f'DROP TABLE IF EXISTS "{table}" CASCADE')
+    pg_conn.execute(f'DROP SCHEMA "{schema_name}" CASCADE')
     pg_conn.commit()
 
 

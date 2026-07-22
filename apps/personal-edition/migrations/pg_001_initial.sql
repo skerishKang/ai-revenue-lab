@@ -13,9 +13,9 @@
 --
 --   AUTOINCREMENT        →  (not used; IDs are application-generated UUIDs)
 --
---   BOOLEAN (stored as INTEGER 0/1)  →  BOOLEAN
+--   BOOLEAN (stored as INTEGER 0/1)  →  INTEGER 0/1
 --     (SQLite has no native BOOLEAN; CHECK(... IN (0,1)) is used.
---      PostgreSQL uses native BOOLEAN with the same constraint semantics.)
+--      PostgreSQL retains this exactly for strict application code parity.)
 --
 --   TEXT timestamps      →  TEXT
 --     (Application generates ISO-8601 strings; stored as TEXT for
@@ -42,14 +42,7 @@
 -- transaction (managed by apply_pg_migrations).  If any statement fails,
 -- the entire transaction is rolled back.
 
--- ============================================================
--- schema_migrations: migration metadata (NOT a domain table)
--- ============================================================
-CREATE TABLE IF NOT EXISTS schema_migrations (
-    version TEXT PRIMARY KEY,
-    checksum TEXT NOT NULL,
-    applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
+
 
 -- ============================================================
 -- participants
