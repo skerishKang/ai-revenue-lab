@@ -4,120 +4,193 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel - Edition</title>
+  <title>Living Travel — Edition #2</title>
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
   <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
-  <nav class="navbar">
-    <span class="brand">Living Travel</span>
+
+  <nav class="navbar traveler-nav">
+    <a href="dashboard.html" class="brand">Living Travel</a>
     <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="history.html">Edition History</a>
-      <a href="../index.html">Preview Home</a>
+      <a href="dashboard.html">내 여행</a>
+      <a href="history.html">지난 기록</a>
+      <a href="../index.html">홈</a>
     </div>
   </nav>
-  <main class="container">
+
+  <main class="container-narrow">
     <div class="notice">
       <strong>Synthetic Preview</strong><br>
       이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
     </div>
 
-    <div class="section-header">
-      <h1>부산 2박: 조용한 아침과 로컬 밥상</h1>
-    </div>
-
-    <div class="card">
-      <div class="edition-meta">
-        <span class="badge badge-published">Published</span>
-        <span class="meta">Edition #2</span>
-        <span class="meta">Destination: 부산</span>
-        <span class="meta">Frame: 2박 3일 국내 혼행</span>
+    <!-- Edition Header -->
+    <header class="edition-header">
+      <div class="edition-meta-row">
+        <span>
+          <span class="badge badge-published">Published</span>
+        </span>
+        <span>Edition #2</span>
+        <span>부산 · 2026. 7. 20. – 7. 22.</span>
       </div>
+      <h1>부산 2박: 조용한 아침과 로컬 밥상</h1>
+    </header>
+
+    <!-- Editorial Opening -->
+    <div class="edition-section">
+      <p class="edition-opening">
+        이전 에디션에서 더 조용하고 느린 코스를 요청하셨습니다.
+        이번에는 걸음 수를 줄이고 로컬 음식에 더 집중했습니다.
+        합성동과 국제시장 근처를 중심으로, 혼자서도 부담없이
+        즐길 수 있는 로컬 식당과 조용한 아침 산책 코스를 소개합니다.
+      </p>
     </div>
 
-    <div class="card">
-      <h2>Editorial Opening</h2>
-      <div class="edition-body">이전 에디션에서 더 조용하고 느린 코스를 요청하셨습니다. 이번에는 걸음 수를 줄이고 로컬 음식에 더 집중했습니다. 합성동과 국제시장 근처를 중심으로, 혼자서도 부담없이 즐길 수 있는 로컬 식당과 조용한 아침 산책 코스를 소개합니다.</div>
-    </div>
-
-    <div class="card">
-      <h2>Section: 조용한 아침 산책 코스</h2>
-      <div class="edition-body">합성동 골목은 아침 시간대에 인적이 드물어 혼자 산책하기 좋습니다. 특히 7~8시 사이에는 시장도 한적하고, 로컬 카페가 하나씩 문을 엽니다.</div>
+    <!-- Section 1 -->
+    <article class="edition-section">
+      <div class="edition-section-number">Section 01</div>
+      <h2>조용한 아침 산책 코스</h2>
+      <div class="scene-placeholder scene-placeholder-busan scene-placeholder-path">
+        <span>부산 · 합성동 아침 풍경</span>
+      </div>
+      <div class="scene-caption">합성동 골목, 아침 7시</div>
+      <div class="edition-section-body">
+        합성동 골목은 아침 시간대에 인적이 드물어 혼자 산책하기 좋습니다.
+        특히 7~8시 사이에는 시장도 한적하고, 로컬 카페가 하나씩 문을 엽니다.
+        조용한 아침을 즐기기에 더할 나위 없는 장소입니다.
+      </div>
       <div class="info-item">
         <strong>item_quiet_haegyeolri</strong>
-        <span class="badge">inspiration</span>
-        <span>Source: src_haegyeolri</span>
-        <span>As of: -</span>
-        <span>Confidence: approximate</span>
+        <span class="badge badge-info">inspiration</span>
+        <span>출처: src_haegyeolri</span>
+        <span>신뢰도: 근사</span>
       </div>
-    </div>
+    </article>
 
-    <div class="card">
-      <h2>Section: 로컬 밥상 — 혼자 먹기 좋은 식당</h2>
-      <div class="edition-body">합성동과 국제시장 근처에는 혼자서도 부담없이 식사할 수 있는 로컬 식당이 있습니다. 특히 합성동 메인거리의 식당들은 가격도 합리적이고, 단체 손님 없이 조용히 식사할 수 있습니다.</div>
+    <!-- Section 2 -->
+    <article class="edition-section">
+      <div class="edition-section-number">Section 02</div>
+      <h2>로컬 밥상 — 혼자 먹기 좋은 식당</h2>
+      <div class="scene-placeholder scene-placeholder-food">
+        <span>합성동 · 로컬 식당</span>
+      </div>
+      <div class="scene-caption">혼밥하기 좋은 합성동의 작은 식당</div>
+      <div class="edition-section-body">
+        합성동과 국제시장 근처에는 혼자서도 부담없이 식사할 수 있는
+        로컬 식당이 있습니다. 특히 합성동 메인거리의 식당들은 가격도
+        합리적이고, 단체 손님 없이 조용히 식사할 수 있습니다.
+      </div>
       <div class="info-item">
         <strong>item_solo_dining</strong>
-        <span class="badge">stable_reference</span>
-        <span>Source: src_gukje_market</span>
-        <span>As of: 2025-06-01</span>
-        <span>Confidence: confirmed</span>
+        <span class="badge badge-info">stable_reference</span>
+        <span>출처: src_gukje_market</span>
+        <span>기준일: 2025-06-01</span>
+        <span>신뢰도: 확정</span>
       </div>
-    </div>
+    </article>
 
-    <div class="card">
-      <h2>Section: 적은 이동으로 즐기는 코스</h2>
-      <div class="edition-body">이번 코스는 걸음 수를 최소화했습니다. 하루는 합성동 내에서, 다른 날은 국제시장 근처에서 끝내어 이동 시간을 줄였습니다. 부산 7월 평균 기온 25~30도이니, 시원한 음료를 챙기세요.</div>
+    <!-- Section 3 -->
+    <article class="edition-section">
+      <div class="edition-section-number">Section 03</div>
+      <h2>적은 이동으로 즐기는 코스</h2>
+      <div class="scene-placeholder scene-placeholder-coastal scene-placeholder-path">
+        <span>부산 · 해안 산책로</span>
+      </div>
+      <div class="scene-caption">걸음 수를 최소화한 해안 코스</div>
+      <div class="edition-section-body">
+        이번 코스는 걸음 수를 최소화했습니다. 하루는 합성동 내에서,
+        다른 날은 국제시장 근처에서 끝내어 이동 시간을 줄였습니다.
+        부산 7월 평균 기온 25~30도이니, 시원한 음료를 챙기세요.
+      </div>
       <div class="info-item">
         <strong>item_weather_note</strong>
-        <span class="badge">time_sensitive</span>
-        <span>Source: src_busan_tourism</span>
-        <span>As of: 2026-07-20</span>
-        <span>Confidence: approximate</span>
-        <span class="badge badge-warning">Verify before use</span>
+        <span class="badge badge-warning">time_sensitive</span>
+        <span>출처: src_busan_tourism</span>
+        <span>기준일: 2026-07-20</span>
+        <span>신뢰도: 근사</span>
+        <span class="badge badge-warning">사용 전 확인 필요</span>
       </div>
-    </div>
+    </article>
 
-    <div class="card">
-      <h2>Provenance</h2>
-      <dl class="info-grid">
-        <dt>Content Version</dt><dd>1.0</dd>
-        <dt>Provenance Note</dt><dd>이전 에디션 피드백을 반영하여 코스를 변경했습니다. 모든 정보는 공공 기반 자료를 바탕으로 하며, 영업시간 등 시간 민감 정보는 확인이 필요합니다.</dd>
+    <!-- Metadata Panel -->
+    <div class="edition-metadata-panel">
+      <h3>에디션 메타정보</h3>
+      <dl class="metadata-grid">
+        <dt>콘텐츠 버전</dt>
+        <dd>1.0</dd>
+        <dt>편집 근거</dt>
+        <dd>이전 에디션 피드백(조용한 곳, 느린 페이스, 적은 이동)을 반영하여 코스를 변경했습니다. 모든 정보는 공공 기반 자료를 바탕으로 하며, 영업시간 등 시간 민감 정보는 확인이 필요합니다.</dd>
       </dl>
     </div>
 
-    <div class="card">
-      <h2>Applied Feedback</h2>
-      <div class="feedback-item">
+    <!-- Applied Feedback -->
+    <div class="edition-section">
+      <div class="edition-section-number">Feedback</div>
+      <h2>적용된 피드백</h2>
+      <div class="feedback-summary">
         <strong>fb_001</strong>: quieter_places, slower_pace, less_walking
-        <span>Affected sections: sec_quiet_morning, sec_local_food, sec_low_effort</span>
-        <span>Action: Shifted focus from 국제시장 to 합성동, reduced walking distance, added quiet morning routes</span>
-        <span>Evidence: 합성동 아침 산책 코스로 변경, 이동 거리 최소화</span>
+        <br>
+        영향을 받은 섹션: sec_quiet_morning, sec_local_food, sec_low_effort
+        <br>
+        변경: 국제시장 중심에서 합성동 중심으로 전환, 도보 거리 단축, 조용한 아침 루트 추가
       </div>
     </div>
 
-    <div class="card">
-      <h2>Submit Feedback</h2>
+    <!-- Feedback Form -->
+    <div class="feedback-section">
+      <h3>이번 에디션은 어떠셨나요?</h3>
       <form method="post" action="#" onsubmit="return false;">
         <input type="hidden" name="csrf_token" value="preview-csrf-token">
+
         <fieldset>
-          <legend>What would you like more of?</legend>
-          <label><input type="checkbox" name="choices" value="quieter_places"> Quieter places</label>
-          <label><input type="checkbox" name="choices" value="slower_pace"> Slower pace</label>
-          <label><input type="checkbox" name="choices" value="more_local_food"> More local food</label>
-          <label><input type="checkbox" name="choices" value="less_walking"> Less walking</label>
-          <label><input type="checkbox" name="choices" value="lower_budget"> Lower budget</label>
-          <label><input type="checkbox" name="choices" value="more_practical"> More practical detail</label>
+          <legend>더 원하시는 것이 있다면 골라주세요</legend>
+          <div class="checkbox-group">
+            <label for="choice_quieter">
+              <input type="checkbox" id="choice_quieter" name="choices" value="quieter_places">
+              더 조용한 곳
+            </label>
+            <label for="choice_slower">
+              <input type="checkbox" id="choice_slower" name="choices" value="slower_pace">
+              더 느린 페이스
+            </label>
+            <label for="choice_food">
+              <input type="checkbox" id="choice_food" name="choices" value="more_local_food">
+              더 많은 로컬 음식
+            </label>
+            <label for="choice_walking">
+              <input type="checkbox" id="choice_walking" name="choices" value="less_walking">
+              더 적은 이동
+            </label>
+            <label for="choice_budget">
+              <input type="checkbox" id="choice_budget" name="choices" value="lower_budget">
+              더 낮은 예산
+            </label>
+            <label for="choice_detail">
+              <input type="checkbox" id="choice_detail" name="choices" value="more_practical">
+              더 실용적인 정보
+            </label>
+          </div>
         </fieldset>
-        <label for="free_text">Additional comments (optional, max 500 chars)</label>
-        <textarea id="free_text" name="free_text" maxlength="500" rows="3" placeholder="Any specific requests or observations..." disabled></textarea>
-        <button type="submit" class="btn btn-primary btn-disabled" disabled>Submit Feedback</button>
-        <div class="disabled-notice">※ 정적 프리뷰: 피드백은 저장되지 않습니다.</div>
+
+        <label for="free_text">추가 의견 (선택, 최대 500자)</label>
+        <textarea id="free_text" name="free_text" maxlength="500" rows="3"
+                  placeholder="자유롭게 의견을 남겨주세요..." disabled></textarea>
+
+        <div class="action-grid">
+          <button type="submit" class="btn btn-disabled" disabled>의견 보내기</button>
+          <span class="disabled-notice">정적 프리뷰: 저장되지 않습니다</span>
+        </div>
       </form>
     </div>
+
+    <div class="action-grid" style="margin-top: 2rem;">
+      <a href="dashboard.html" class="btn btn-outline">내 여행으로 돌아가기</a>
+    </div>
   </main>
+
   <footer class="site-footer">
-    <p>&copy; Living Travel — Synthetic Preview Only</p>
+    <p>Living Travel — Synthetic Preview Only</p>
   </footer>
 </body>
 </html>

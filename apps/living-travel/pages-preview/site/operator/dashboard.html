@@ -4,79 +4,141 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel - Operator Dashboard</title>
+  <title>Living Travel — Editorial Desk</title>
   <link rel="stylesheet" href="../assets/style.css">
 </head>
-<body>
+<body class="operator-layout">
   <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
-  <nav class="navbar">
-    <span class="brand">Living Travel</span>
+
+  <nav class="operator-nav">
+    <span class="brand">Living Travel · Editorial Desk</span>
     <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
+      <a href="dashboard.html" style="color: var(--ink);">Dashboard</a>
       <a href="../index.html">Preview Home</a>
     </div>
   </nav>
-  <main class="container">
+
+  <main class="operator-main">
     <div class="notice">
       <strong>Synthetic Preview</strong><br>
       이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
     </div>
 
-    <div class="section-header">
-      <h1>Operator Dashboard</h1>
+    <!-- Desk Header -->
+    <div class="operator-desk-header">
+      <div>
+        <h1>Editorial Desk</h1>
+        <span class="operator-desk-summary">3 travelers · 1 pending review · 2 published</span>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>Create New Traveler</h2>
-      <form method="post" action="#" onsubmit="return false;" class="form-inline">
-        <input type="hidden" name="csrf_token" value="preview-csrf-token">
-        <input type="text" name="display_name" placeholder="Display Name" required>
-        <input type="text" name="destination" placeholder="Destination" required>
-        <input type="number" name="trip_duration_nights" value="2" min="1" max="30">
-        <button type="submit" class="btn btn-primary btn-disabled" disabled>Create</button>
-      </form>
-      <div class="disabled-notice">※ 정적 프리뷰: 여행자 생성은 처리되지 않습니다.</div>
-    </div>
+    <!-- Review Queue -->
+    <section class="operator-section">
+      <div class="operator-section-header">
+        <h2>Review Queue</h2>
+        <span class="badge badge-review">1 pending</span>
+      </div>
+      <div class="operator-queue-item">
+        <div class="operator-queue-info">
+          <span class="operator-queue-edition">Edition #2</span>
+          <span class="operator-queue-traveler">여행자 시범 · 부산</span>
+          <span class="operator-queue-meta">Generated 2026-07-22 · 3 sections</span>
+        </div>
+        <div class="operator-queue-actions">
+          <span class="badge badge-review">pending_review</span>
+          <a href="edition-preview.html" class="btn btn-sm btn-primary">Review</a>
+        </div>
+      </div>
+    </section>
 
-    <div class="card">
-      <h2>Travelers</h2>
-      <div class="table-scroll">
-            <table>
-        <thead>
-          <tr><th>Name</th><th>Destination</th><th>Duration</th><th>Editions</th><th>Status</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>여행자 시범</td>
-            <td>부산</td>
-            <td>2 nights</td>
-            <td>2</td>
-            <td><span class="badge badge-active">active</span></td>
-            <td><a href="traveler-detail.html" class="btn btn-sm">View</a></td>
-          </tr>
-          <tr>
-            <td>여행자 실험</td>
-            <td>서울</td>
-            <td>3 nights</td>
-            <td>1</td>
-            <td><span class="badge badge-active">active</span></td>
-            <td><a href="traveler-detail.html" class="btn btn-sm">View</a></td>
-          </tr>
-          <tr>
-            <td>여행자 중단</td>
-            <td>제주</td>
-            <td>4 nights</td>
-            <td>0</td>
-            <td><span class="badge badge-rejected">deleted</span></td>
-            <td><a href="traveler-detail.html" class="btn btn-sm">View</a></td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Traveler Index -->
+    <section class="operator-section">
+      <div class="operator-section-header">
+        <h2>Traveler Index</h2>
+        <a href="#" class="btn btn-sm btn-outline btn-disabled" style="pointer-events: none;">+ New Traveler</a>
+      </div>
+      <div class="operator-traveler-list">
+        <div class="operator-traveler-row">
+          <div>
+            <strong class="operator-traveler-name">여행자 시범</strong>
+            <span class="operator-traveler-meta">부산 · 2박 · solo</span>
           </div>
-    </div>
+          <div>
+            <span class="badge badge-published">2 editions</span>
+            <span class="badge badge-active" style="margin-left: 0.3rem;">active</span>
+          </div>
+          <a href="traveler-detail.html" class="btn btn-sm btn-outline">View</a>
+        </div>
+        <div class="operator-traveler-row">
+          <div>
+            <strong class="operator-traveler-name">여행자 실험</strong>
+            <span class="operator-traveler-meta">서울 · 3박 · couple</span>
+          </div>
+          <div>
+            <span class="badge badge-published">1 edition</span>
+            <span class="badge badge-active" style="margin-left: 0.3rem;">active</span>
+          </div>
+          <a href="traveler-detail.html" class="btn btn-sm btn-outline">View</a>
+        </div>
+        <div class="operator-traveler-row">
+          <div>
+            <strong class="operator-traveler-name">여행자 중단</strong>
+            <span class="operator-traveler-meta">제주 · 4박 · family</span>
+          </div>
+          <div>
+            <span class="badge badge-rejected">deleted</span>
+          </div>
+          <a href="traveler-detail.html" class="btn btn-sm btn-outline">View</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Create Traveler -->
+    <section class="operator-section">
+      <div class="operator-section-header">
+        <h2>New Traveler</h2>
+      </div>
+      <form method="post" action="#" onsubmit="return false;" class="operator-create-form">
+        <input type="hidden" name="csrf_token" value="preview-csrf-token">
+        <div class="operator-create-fields">
+          <div>
+            <label for="op_display_name">Display Name</label>
+            <input type="text" id="op_display_name" name="display_name" placeholder="Traveler name" required>
+          </div>
+          <div>
+            <label for="op_destination">Destination</label>
+            <input type="text" id="op_destination" name="destination" placeholder="e.g. Busan" required>
+          </div>
+          <div>
+            <label for="op_duration">Nights</label>
+            <input type="number" id="op_duration" name="trip_duration_nights" value="2" min="1" max="30">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-disabled" disabled>Create Traveler</button>
+        <span class="disabled-notice">정적 프리뷰: 저장되지 않습니다</span>
+      </form>
+    </section>
+
+    <!-- Recent Publishing -->
+    <section class="operator-section">
+      <div class="operator-section-header">
+        <h2>Recent Publishing</h2>
+      </div>
+      <div class="operator-activity-item">
+        <span class="badge badge-published">published</span>
+        <span><strong>Edition #2</strong> · 여행자 시범</span>
+        <span class="operator-activity-date">2026-07-22</span>
+      </div>
+      <div class="operator-activity-item">
+        <span class="badge badge-published">published</span>
+        <span><strong>Edition #1</strong> · 여행자 시범</span>
+        <span class="operator-activity-date">2026-07-20</span>
+      </div>
+    </section>
   </main>
+
   <footer class="site-footer">
-    <p>&copy; Living Travel — Synthetic Preview Only</p>
+    <p>Living Travel — Synthetic Preview Only</p>
   </footer>
 </body>
 </html>
