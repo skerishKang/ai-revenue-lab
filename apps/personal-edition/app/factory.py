@@ -76,7 +76,12 @@ def create_app(
     """
     app = FastAPI(title="Personal Edition", docs_url=None, redoc_url=None)
 
-    resolved_db = db_path or settings.database_path
+    resolved_db = db_path
+    if not resolved_db:
+        if settings.db_backend == "postgresql":
+            raise NotImplementedError("PostgreSQL runtime backend is not yet implemented")
+        resolved_db = settings.database_path
+
     app.state.db_path = resolved_db
 
     if provider is not None:

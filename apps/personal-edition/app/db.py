@@ -111,7 +111,9 @@ def apply_migrations(
         applied.add(row["version"])
 
     migrations_path = Path(migrations_dir)
-    sql_files = sorted(migrations_path.glob("*.sql"))
+    sql_files = sorted(
+        p for p in migrations_path.glob("*.sql") if not p.name.startswith("pg_")
+    )
     py_files = sorted(
         p for p in migrations_path.glob("*.py") if _is_migration_py(p.name)
     )

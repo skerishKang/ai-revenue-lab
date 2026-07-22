@@ -208,6 +208,7 @@ class TestApplicationStartup:
             secret_key="a-very-strong-secret-key-at-least-32-chars!",
             admin_secret="a-strong-admin-secret-here!",
             cookie_secure=True,
+            database_path="/tmp/test-production.db",
         )
         assert s.app_env == "production"
 
