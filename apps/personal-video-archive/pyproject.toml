@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-video-archive"
+version = "0.1.0"
+description = "Personal Video Archive — topic-first video discovery and reflection"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.32,<1",
+    "pydantic>=2.10,<3",
+    "pydantic-settings>=2.6,<3",
+    "jinja2>=3.1,<4",
+    "python-multipart>=0.0.18,<1",
+    "itsdangerous>=2.2,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9",
+    "httpx>=0.28,<1",
+]
+
+[project.scripts]
+pva-run = "app.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"

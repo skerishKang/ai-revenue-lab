@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Travel - Enter</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-page">
+    <div class="card">
+        <h1>Living Travel</h1>
+        <p class="subtitle">Enter your private access token to view your travel editions.</p>
+        {% if error %}
+        <div class="alert alert-error">{{error}}</div>
+        {% endif %}
+        <form method="post" action="/traveler/enter">
+            <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+            <label for="token">Access Token</label>
+            <input type="text" id="token" name="token" required autocomplete="off" placeholder="Paste your access token here">
+            <button type="submit" class="btn btn-primary">Enter</button>
+        </form>
+        <div class="notice"><p>This is a synthetic demonstration of a personalized travel publication service. No real travel bookings or payments are involved.</p></div>
+    </div>
+</body>
+</html>

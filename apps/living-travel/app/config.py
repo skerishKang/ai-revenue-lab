@@ -7,8 +7,22 @@ class Settings(BaseSettings):
     app_name: str = "living-travel"
     database_url: str = "file::memory:"
     environment: str = "development"
+    operator_secret: str = "changeme"
 
     model_config = {"env_prefix": "LT_", "env_file": ".env", "extra": "ignore"}
+
+    def model_post_init(self, __context) -> None:
+        """Validate operator_secret is not a placeholder."""
+        _PLACEHOLDERS = {"changeme", "change-me", "secret", "password", ""}
+        if self.environment != "testing":
+            if not self.operator_secret or self.operator_secret.lower() in _PLACEHOLDERS:
+                raise ValueError(
+                    "LT_OPERATOR_SECRET must be set to a secure value. "                     "The default placeholder is not allowed in non-testing environments."
+                )
+            if len(self.operator_secret) < 16:
+                raise ValueError(
+                    "LT_OPERATOR_SECRET must be at least 16 characters."
+                )
 
 
 _settings: Settings | None = None

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Travel - Edition</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar"><span class="brand">Living Travel</span><div class="nav-links"><a href="/traveler/">Dashboard</a><a href="/traveler/editions">Edition History</a><form method="post" action="/traveler/logout" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn-link">Logout</button></form></div></nav>
+    <main class="container">
+        {% if is_history %}
+        <div class="section-header"><h1>Edition History</h1></div>
+        <div class="card">
+            {% if editions %}
+            <table><thead><tr><th>Edition</th><th>State</th><th>Updated</th><th>Actions</th></tr></thead><tbody>
+            {% for ed in editions %}
+            <tr><td>#{{ed.edition_number}}</td><td><span class="badge">{{ed.publication_state}}</span></td><td>{{ed.updated_at}}</td><td><a href="/traveler/editions/{{ed.id}}" class="btn btn-sm">Read</a></td></tr>
+            {% endfor %}
+            </tbody></table>
+            {% else %}
+            <p class="empty-state">No published editions yet.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% if is_single %}
+        <div class="notice"><strong>Synthetic Demonstration:</strong> This edition was generated using a MockProvider. No live travel data was used.</div>
+        <div class="section-header"><h1>{{sc.publication_title}}</h1></div>
+        <div class="card">
+            <div class="edition-meta"><span class="badge badge-published">Published</span><span class="meta">Edition {{sc.edition_title}}</span><span class="meta">Destination: {{sc.destination}}</span><span class="meta">Frame: {{sc.trip_frame}}</span></div>
+        </div>
+        <div class="card">
+            <h2>Editorial Opening</h2>
+            <div class="edition-body">{{sc.editorial_opening}}</div>
+        </div>
+        <div class="card">
+            <h2>Provenance</h2>
+            <dl class="info-grid">
+                <dt>Content Version</dt><dd>{{sc.content_version}}</dd>
+                <dt>Provenance Note</dt><dd>{{sc.provenance_note}}</dd>
+            </dl>
+        </div>
+        {% for sec in sc.sections %}
+        <div class="card">
+            <h2>{{sec.title}}</h2>
+            <div class="edition-body">{{sec.narrative}}</div>
+            {% for item in sec.items %}
+            <div class="info-item">
+                <strong>{{item.item_id}}</strong>
+                <span class="badge">{{item.information_class}}</span>
+                <span>Source: {{item.source_ref}}</span>
+                <span>As of: {{item.as_of_date}}</span>
+                <span>Confidence: {{item.confidence}}</span>
+                {% if item.verify_before_use %}
+                <span class="badge badge-warning">Verify before use</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="card">
+            <h2>Applied Feedback</h2>
+            {% if sc.applied_feedback %}
+            {% for af in sc.applied_feedback %}
+            <div class="feedback-item">
+                <strong>{{af.feedback_id}}</strong>: {{af.actual_action}} ({{af.requested_change}})
+                <span>Affected sections: {{af.affected_section_ids}}</span>
+                {% if af.evidence %}<span>Evidence: {{af.evidence}}</span>{% endif %}
+                {% if af.unfulfilled_reason %}<span>Unfulfilled: {{af.unfulfilled_reason}}</span>{% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>No feedback applied yet.</p>
+            {% endif %}
+        </div>
+        <div class="card">
+            <h2>Submit Feedback</h2>
+            <form method="post" action="/traveler/editions/{{edition.id}}/feedback" class="form-vertical">
+                <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+                <fieldset>
+                    <legend>What would you like more of?</legend>
+                    <label><input type="checkbox" name="choices" value="quieter_places"> Quieter places</label>
+                    <label><input type="checkbox" name="choices" value="slower_pace"> Slower pace</label>
+                    <label><input type="checkbox" name="choices" value="more_local_food"> More local food</label>
+                    <label><input type="checkbox" name="choices" value="less_walking"> Less walking</label>
+                    <label><input type="checkbox" name="choices" value="lower_budget"> Lower budget</label>
+                    <label><input type="checkbox" name="choices" value="more_practical"> More practical detail</label>
+                </fieldset>
+                <label for="free_text">Additional comments (optional, max 500 chars)</label>
+                <textarea id="free_text" name="free_text" maxlength="500" rows="3" placeholder="Any specific requests or observations..."></textarea>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

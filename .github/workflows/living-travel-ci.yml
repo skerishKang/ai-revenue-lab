@@ -1,0 +1,99 @@
+name: Living Travel CI
+
+on:
+  pull_request:
+    paths:
+      - "apps/living-travel/**"
+      - ".github/workflows/living-travel-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/living-travel/**"
+      - ".github/workflows/living-travel-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: living-travel-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/living-travel
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/living-travel/pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run functional test suite
+        run: python -m pytest tests -q
+
+      - name: Run static preview test suite
+        run: python -m pytest pages-preview/tests -q
+
+      - name: Startup health smoke
+        env:
+          LT_ENVIRONMENT: testing
+          LT_OPERATOR_SECRET: testing-secret-value
+        run: |
+          python - <<'PY'
+          from fastapi.testclient import TestClient
+          from app.main import app
+
+          client = TestClient(app)
+          response = client.get("/health")
+
+          assert response.status_code == 200
+          assert response.json() == {"status": "ok"}
+
+          print(response.status_code, response.json())
+          PY
+
+      - name: Check whitespace in changed range
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+            git fetch origin "${{ github.event.pull_request.base.ref }}" --no-tags
+            echo "Pull request whitespace check: ${BASE}..${HEAD}"
+            git diff --check "${BASE}" "${HEAD}"
+          else
+            BEFORE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+            ZERO="0000000000000000000000000000000000000000"
+            if [ -z "${BEFORE}" ] || [ "${BEFORE}" = "${ZERO}" ]; then
+              if git rev-parse --verify origin/main >/dev/null 2>&1; then
+                BEFORE="$(git rev-parse origin/main)"
+                echo "No previous SHA; comparing against origin/main"
+              else
+                BEFORE="$(git hash-object -t tree /dev/null)"
+                echo "No previous SHA and no origin/main; comparing against empty tree"
+              fi
+            fi
+            echo "Push whitespace check: ${BEFORE}..${HEAD}"
+            git diff --check "${BEFORE}" "${HEAD}"
+          fi

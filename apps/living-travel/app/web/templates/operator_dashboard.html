@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Travel - Operator Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar"><span class="brand">Living Travel</span><div class="nav-links"><a href="/operator/">Dashboard</a><form method="post" action="/operator/logout" class="inline"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="btn-link">Logout</button></form></div></nav>
+    <main class="container">
+        <div class="section-header"><h1>Operator Dashboard</h1></div>
+        <div class="card">
+            <h2>Create New Traveler</h2>
+            <form method="post" action="/operator/travelers/create" class="form-inline">
+                <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+                <input type="text" name="display_name" placeholder="Display Name" required>
+                <input type="text" name="destination" placeholder="Destination" required>
+                <input type="number" name="trip_duration_nights" value="2" min="1" max="30">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+        <div class="card">
+            <h2>Travelers</h2>
+            {% if travelers %}
+            <table><thead><tr><th>Name</th><th>Destination</th><th>Duration</th><th>Editions</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+            {% for item in travelers %}
+            <tr><td>{{item.traveler.display_name}}</td><td>{{item.traveler.destination}}</td><td>{{item.traveler.trip_duration_nights}} nights</td><td>{{item.edition_count}}</td><td><span class="badge badge-active">{{item.traveler.status}}</span></td><td><a href="/operator/travelers/{{item.traveler.id}}" class="btn btn-sm">View</a></td></tr>
+            {% endfor %}
+            </tbody></table>
+            {% else %}
+            <p class="empty-state">No travelers yet. Create one above.</p>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>

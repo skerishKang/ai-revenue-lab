@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ video.title }} — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ video.title }}</h1>
+</div>
+
+<div class="video-detail">
+    <div class="video-thumbnail-large">
+        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}"
+             onerror="this.style.display='none'">
+    </div>
+
+    <div class="video-meta-source">
+        <span class="badge badge-info">YouTube information</span>
+    </div>
+
+    <p class="video-channel">{{ video.channel_title }}</p>
+    <p class="video-published">
+        Published {{ video.published_at[:10] }}
+        {% if video.duration_seconds %}
+        · {{ (video.duration_seconds / 60) | round(1) }} min
+        {% endif %}
+        {% if video.view_count %}
+        · {{ video.view_count | int }} views
+        {% endif %}
+    </p>
+
+    <p class="video-description">{{ video.description }}</p>
+
+    {% if topic_videos %}
+    <div class="topic-links">
+        <h3>Topics</h3>
+        {% for tv in topic_videos %}
+        <a href="/topics/{{ tv.topic_id }}" class="badge badge-app">
+            Topic: {{ tv.topic_id }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if records %}
+    <div class="records-section">
+        <h3>Viewing Records</h3>
+        {% for tv, record in records %}
+        <div class="record-summary badge-user">
+            <form method="post" action="/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
+                <button type="submit" class="btn btn-small btn-primary">
+                    Open on YouTube
+                </button>
+            </form>
+            {% if record %}
+            <strong>My private record</strong> —
+            State: {{ record.viewing_state }}
+            {% if record.rating %}· Rating: {{ record.rating }}/5{% endif %}
+            {% if record.tags %}· Tags: {{ record.tags | join(', ') }}{% endif %}
+            <a href="/records/{{ record.id }}" class="btn btn-small btn-secondary">Edit</a>
+            {% else %}
+            <form method="post" action="/topic-videos/{{ tv.id }}/records" class="inline-form">
+                <button type="submit" class="btn btn-small btn-secondary">
+                    Create Record for this topic
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

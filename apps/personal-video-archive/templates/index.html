@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-intro">
+    <h1>Personal Video Archive</h1>
+    <p class="subtitle">
+        Topic-first video discovery and private reflection.
+        Define subjects you want to follow, discover new videos in clean topic feeds,
+        and keep private records of what you learned and planned.
+    </p>
+    <p class="small">
+        <span class="badge badge-info">YouTube info</span>
+        <span class="badge badge-app">Application analysis</span>
+        <span class="badge badge-user">My private record</span>
+        <span class="badge badge-ai">AI suggestion</span>
+    </p>
+</div>
+
+{% if topics %}
+<div class="topic-list">
+    {% for topic in topics %}
+    <a href="/topics/{{ topic.id }}" class="topic-card">
+        <div class="topic-card-content">
+            <h3>{{ topic.name }}</h3>
+            <p class="topic-intent">{{ topic.intent }}</p>
+            <p class="small topic-meta">
+                Created {{ topic.created_at[:10] }}
+                {% if topic.is_archived %}<span class="badge badge-sm badge-muted">Archived</span>{% endif %}
+            </p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No topics yet</h3>
+    <p>Create your first topic to start discovering videos by subject.</p>
+    <a href="/topics/new" class="btn btn-primary">Create Topic</a>
+</div>
+{% endif %}
+
+<div class="actions">
+    <a href="/topics/new" class="btn btn-primary">Create Topic</a>
+</div>
+{% endblock %}

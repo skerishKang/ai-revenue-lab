@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Personal Video Archive{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a href="/" class="logo">Personal Video Archive</a>
+            <nav class="nav">
+                <a href="/topics">Topics</a>
+                <a href="/records">My Records</a>
+                <a href="/health" class="nav-health">Health</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            <p class="small">Phase 1 MVP — synthetic fixtures only. No real YouTube API or LLM calls.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="error-state">
+    <h1>Error {{ code }}</h1>
+    <p>{{ message }}</p>
+    <a href="/" class="btn btn-primary">Go Home</a>
+</div>
+{% endblock %}
