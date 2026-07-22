@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel - My Dashboard</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+  <nav class="navbar">
+    <span class="brand">Living Travel</span>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="history.html">Edition History</a>
+      <a href="../index.html">Preview Home</a>
+    </div>
+  </nav>
+  <main class="container">
+    <div class="notice">
+      <strong>Synthetic Preview</strong><br>
+      이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
+    </div>
+
+    <div class="section-header">
+      <h1>Welcome, 여행자 시범</h1>
+    </div>
+
+    <div class="card">
+      <h2>Your Preferences</h2>
+      <form method="post" action="#" onsubmit="return false;">
+        <input type="hidden" name="csrf_token" value="preview-csrf-token">
+        <label for="destination">Destination</label>
+        <input type="text" id="destination" name="destination" value="부산" maxlength="120" required>
+        <label for="trip_duration_nights">Duration (nights)</label>
+        <input type="number" id="trip_duration_nights" name="trip_duration_nights" value="2" min="1" max="30" required>
+        <label for="interests">Interests (comma-separated, up to 12)</label>
+        <input type="text" id="interests" name="interests" value="neighborhood exploration, local food, quiet mornings, coastal walks" maxlength="971" placeholder="e.g. food, culture, nature">
+        <label for="trip_context">Trip Context</label>
+        <select id="trip_context" name="trip_context">
+          <option value="solo" selected>Solo</option>
+          <option value="couple">Couple</option>
+          <option value="family">Family</option>
+          <option value="group">Group</option>
+        </select>
+        <label for="budget_tendency">Budget</label>
+        <select id="budget_tendency" name="budget_tendency">
+          <option value="budget" selected>Budget</option>
+          <option value="moderate">Moderate</option>
+          <option value="premium">Premium</option>
+        </select>
+        <label for="pace_preference">Pace</label>
+        <select id="pace_preference" name="pace_preference">
+          <option value="comfortable" selected>Comfortable</option>
+          <option value="relaxed">Relaxed</option>
+          <option value="energetic">Energetic</option>
+        </select>
+        <label for="exclusions">Exclusions (comma-separated, up to 12)</label>
+        <input type="text" id="exclusions" name="exclusions" value="famous attractions, nightlife, crowded places" maxlength="971" placeholder="e.g. beach, nightlife">
+        <label for="tone_preference">Tone</label>
+        <select id="tone_preference" name="tone_preference">
+          <option value="calm" selected>Calm</option>
+          <option value="energetic">Energetic</option>
+          <option value="luxury">Luxury</option>
+        </select>
+        <label for="length_preference">Length</label>
+        <select id="length_preference" name="length_preference">
+          <option value="medium" selected>Medium</option>
+          <option value="short">Short</option>
+          <option value="long">Long</option>
+        </select>
+        <label for="preferred_language">Language</label>
+        <select id="preferred_language" name="preferred_language">
+          <option value="ko" selected>Korean</option>
+          <option value="en">English</option>
+          <option value="ja">Japanese</option>
+          <option value="zh">Chinese</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-disabled" disabled>Update Preferences</button>
+        <div class="disabled-notice">※ 정적 프리뷰: 설정 변경은 저장되지 않습니다.</div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Account</h2>
+      <p>
+        <span class="badge badge-active">active</span>
+        <span class="meta">Deactivation requested: No</span>
+      </p>
+      <form method="post" action="#" onsubmit="return false;">
+        <input type="hidden" name="csrf_token" value="preview-csrf-token">
+        <button type="submit" class="btn btn-danger btn-disabled" disabled>Request Deactivation</button>
+        <div class="disabled-notice">※ 정적 프리뷰: 탈퇴 요청은 처리되지 않습니다.</div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Latest Published Edition</h2>
+      <div class="edition-preview">
+        <h3>Edition #2</h3>
+        <p class="meta">Published: 2026-07-22</p>
+        <p class="meta">부산 2박: 조용한 아침과 로컬 밥상</p>
+        <a href="edition.html" class="btn btn-primary">Read Edition</a>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>&copy; Living Travel — Synthetic Preview Only</p>
+  </footer>
+</body>
+</html>
