@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}글쓰기 — Personal Edition{% endblock %}
+{% block content %}
+{% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
+<div class="input-page">
+  <div class="input-guidance">
+    <h1>기록을 남겨주세요</h1>
+    <p>지금 떠오르는 생각, 최근 느낀 점, 하고 싶은 이야기를 편하게 적어주세요. 당신의 이야기는 정리되어 오직 당신만 읽을 수 있는 에디션이 됩니다.</p>
+
+    <ul class="example-prompts">
+      <li>요즘 가장 신경 쓰는 일이 있나요?</li>
+      <li>최근 대화 중 기억에 남는 것이 있나요?</li>
+      <li>지금 이 순간 가장 하고 싶은 말은 무엇인가요?</li>
+    </ul>
+  </div>
+
+  {% if error %}
+  <div class="alert alert-error" role="alert">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+  <div class="alert alert-success" role="alert">{{ success }}</div>
+  {% endif %}
+
+  <form method="post" action="{{ _base }}/input">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+    <label for="raw_text">기록할 이야기</label>
+    <p class="char-guidance">최소 500자 이상 권장</p>
+    <textarea id="raw_text" name="raw_text" rows="14"
+              placeholder="여기에 텍스트를 입력하세요..."
+              required>{{ raw_text }}</textarea>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="consent" name="consent_confirmed" value="1">
+      <label for="consent" class="checkbox-label">
+        제출한 텍스트는 개인화된 편지 생성에 사용될 수 있음에 동의합니다.
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">편집을 위해 기록 맡기기</button>
+  </form>
+
+  <div class="input-visual">
+    <img src="/static/images/editorial-process-layers.webp"
+         alt="편집 과정 안내"
+         width="1122" height="1402">
+  </div>
+</div>
+{% endblock %}

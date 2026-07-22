@@ -1,0 +1,139 @@
+{
+  "adversarial_time_sensitive_no_date": {
+    "content_version": "1.0",
+    "publication_title": "테스트",
+    "edition_title": "테스트 에디션",
+    "destination": "부산",
+    "trip_frame": "2박 3일",
+    "editorial_opening": "테스트",
+    "sections": [
+      {
+        "section_id": "sec_adv1",
+        "title": "테스트 섹션",
+        "narrative": "테스트 내러티브",
+        "items": [
+          {
+            "item_id": "adv_no_date",
+            "information_class": "time_sensitive",
+            "as_of_date": "",
+            "source_ref": "src_busan_tourism",
+            "confidence": "approximate",
+            "verify_before_use": false
+          }
+        ]
+      }
+    ],
+    "applied_feedback": [],
+    "next_edition_prompt": "",
+    "provenance_note": ""
+  },
+  "adversarial_markup": {
+    "content_version": "1.0",
+    "publication_title": "테스트",
+    "edition_title": "테스트 에디션",
+    "destination": "부산",
+    "trip_frame": "2박 3일",
+    "editorial_opening": "<script>alert('xss')</script>",
+    "sections": [
+      {
+        "section_id": "sec_adv2",
+        "title": "테스트",
+        "narrative": "정상 내러티브",
+        "items": [
+          {
+            "item_id": "adv_normal",
+            "information_class": "inspiration",
+            "as_of_date": "",
+            "source_ref": "",
+            "confidence": "approximate",
+            "verify_before_use": false
+          }
+        ]
+      }
+    ],
+    "applied_feedback": [],
+    "next_edition_prompt": "",
+    "provenance_note": ""
+  },
+  "adversarial_unknown_source": {
+    "content_version": "1.0",
+    "publication_title": "테스트",
+    "edition_title": "테스트 에디션",
+    "destination": "부산",
+    "trip_frame": "2박 3일",
+    "editorial_opening": "테스트",
+    "sections": [
+      {
+        "section_id": "sec_adv3",
+        "title": "테스트",
+        "narrative": "테스트 내러티브",
+        "items": [
+          {
+            "item_id": "adv_bad_ref",
+            "information_class": "stable_reference",
+            "as_of_date": "2026-01-01",
+            "source_ref": "src_nonexistent_source",
+            "confidence": "confirmed",
+            "verify_before_use": false
+          }
+        ]
+      }
+    ],
+    "applied_feedback": [],
+    "next_edition_prompt": "",
+    "provenance_note": ""
+  },
+  "adversarial_invented_facts": {
+    "content_version": "1.0",
+    "publication_title": "테스트",
+    "edition_title": "테스트 에디션",
+    "destination": "부산",
+    "trip_frame": "2박 3일",
+    "editorial_opening": "테스트",
+    "sections": [
+      {
+        "section_id": "sec_adv4",
+        "title": "테스트",
+        "narrative": "국제시장은 매일 오전 6시에 열립니다. 입장료는 5000원입니다.",
+        "items": [
+          {
+            "item_id": "adv_invented",
+            "information_class": "time_sensitive",
+            "as_of_date": "2026-07-20",
+            "source_ref": "src_gukje_market",
+            "confidence": "confirmed",
+            "verify_before_use": true
+          }
+        ]
+      }
+    ],
+    "applied_feedback": [],
+    "next_edition_prompt": "",
+    "provenance_note": ""
+  },
+  "adversarial_duplicate_ids": {
+    "content_version": "1.0",
+    "publication_title": "테스트",
+    "edition_title": "테스트 에디션",
+    "destination": "부산",
+    "trip_frame": "2박 3일",
+    "editorial_opening": "테스트",
+    "sections": [
+      {
+        "section_id": "sec_dup",
+        "title": "첫 번째",
+        "narrative": "첫 번째 섹션",
+        "items": []
+      },
+      {
+        "section_id": "sec_dup",
+        "title": "두 번째",
+        "narrative": "두 번째 섹션",
+        "items": []
+      }
+    ],
+    "applied_feedback": [],
+    "next_edition_prompt": "",
+    "provenance_note": ""
+  }
+}

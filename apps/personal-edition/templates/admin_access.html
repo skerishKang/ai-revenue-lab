@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}관리자 접속 — Personal Edition 편집실{% endblock %}
+{% block content %}
+<div class="admin-access-wrapper">
+  <div class="card auth-card admin-auth-card animate-slide-up">
+    <div class="admin-brand-badge">Personal Edition 편집실</div>
+    <h1>관리자 접속</h1>
+    <p class="admin-access-guidance">
+      이곳은 개인 발행물 검토 및 에디션 작성을 위한 편집 업무 전용 비공개 공간입니다.
+    </p>
+
+    {% if error %}
+    <div class="alert alert-error" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/admin/access">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
+      <div class="form-group">
+        <label for="secret">관리자 비밀번호</label>
+        <input type="password" id="secret" name="secret" required
+               placeholder="비밀번호를 입력하세요" autocomplete="current-password" autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">편집실 접속하기</button>
+    </form>
+
+    <div class="admin-security-note">
+      <span class="security-icon">🔒</span>
+      <span><strong>보안 안내:</strong> 본 시스템은 인가된 편집자 전용 비공개 공간으로, 모든 접속 및 수정 시도가 기록됩니다.</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
