@@ -202,6 +202,26 @@ def get_latest_published_episode(conn: sqlite3.Connection, world_id: str) -> Epi
     return _row_to_record(row) if row else None
 
 
+def get_latest_published_canon_episode(
+    conn: sqlite3.Connection, world_id: str
+) -> EpisodeRecord | None:
+    """Latest *published canon* episode for a world.
+
+    Reader-facing canon screens and choice submission must anchor on canon
+    only — never on a published personal branch. Filtering on
+    ``episode_type = 'canon'`` guarantees a reader's own published branch can
+    never be mistaken for the shared canon checkpoint.
+    """
+    row = conn.execute(
+        f"SELECT {_EPISODE_SELECT} FROM episodes "
+        "WHERE world_id = ? AND episode_type = 'canon' "
+        "AND review_state = 'published' "
+        "ORDER BY episode_number DESC LIMIT 1",
+        (world_id,),
+    ).fetchone()
+    return _row_to_record(row) if row else None
+
+
 def get_next_episode_number(
     conn: sqlite3.Connection, world_id: str, episode_type: str
 ) -> int:
@@ -294,6 +314,45 @@ def reject_episode(conn: sqlite3.Connection, episode_id: str) -> bool:
         if conn.in_transaction:
             conn.rollback()
         raise
+
+
+def publish_episode_in_tx(conn: sqlite3.Connection, episode_id: str) -> bool:
+    """Set ``review_state='published'`` inside a caller-owned transaction.
+
+    Unlike :func:`publish_episode`, this does NOT begin or commit a
+    transaction — the calling service owns it so the state change and its
+    audit row commit or roll back atomically. The ``pending_review`` guard
+    makes a duplicate/stale decision a no-op (returns ``False``) instead of
+    corrupting state.
+    """
+    if not conn.in_transaction:
+        raise RepositoryTransactionError(
+            "publish_episode_in_tx requires an active transaction"
+        )
+    cursor = conn.execute(
+        "UPDATE episodes SET review_state = 'published' "
+        "WHERE id = ? AND review_state = 'pending_review'",
+        (episode_id,),
+    )
+    return cursor.rowcount > 0
+
+
+def reject_episode_in_tx(conn: sqlite3.Connection, episode_id: str) -> bool:
+    """Set ``review_state='rejected'`` inside a caller-owned transaction.
+
+    Transaction-aware counterpart of :func:`reject_episode`; see
+    :func:`publish_episode_in_tx` for the contract.
+    """
+    if not conn.in_transaction:
+        raise RepositoryTransactionError(
+            "reject_episode_in_tx requires an active transaction"
+        )
+    cursor = conn.execute(
+        "UPDATE episodes SET review_state = 'rejected' "
+        "WHERE id = ? AND review_state = 'pending_review'",
+        (episode_id,),
+    )
+    return cursor.rowcount > 0
 
 
 def get_pending_branch_episodes(

@@ -17,10 +17,8 @@ from __future__ import annotations
 
 import copy
 import json
-import os
 import secrets
 import sqlite3
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -31,11 +29,6 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-# Ensure tests.fixtures is importable when running from source tree.
-_APP_DIR = Path(__file__).resolve().parent.parent
-if str(_APP_DIR) not in sys.path:
-    sys.path.insert(0, str(_APP_DIR))
-
 from app import auth
 from app import branch_repository as branch_repo
 from app import canon_repository as canon_repo
@@ -43,23 +36,25 @@ from app import choice_repository as choice_repo
 from app import episode_repository as ep_repo
 from app import generation_run_repository as gr_repo
 from app import reader_repository as reader_repo
+from app import review_service
 from app import world_repository as world_repo
 from app.ai.mock import MockProvider
 from app.config import settings
 from app.db import get_connection
 from app.domain.enums import EpisodeType, ReviewState
 from app.pipeline.service import GenerationRequest, generate_personal_branch
-from tests.fixtures.mock_payloads import (
+from app.preview_data import (
     BRANCH_EPISODE_CONTENT,
     BRANCH_EPISODE_PLAN,
+    WORLD_STATE,
 )
-from tests.fixtures.synthetic_world import WORLD_STATE
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
 READER_COOKIE = auth.READER_COOKIE_NAME
 ADMIN_COOKIE = auth.ADMIN_COOKIE_NAME
-PREAUTH_CSRF_COOKIE = "lf_preauth_csrf"
+READER_PREAUTH_COOKIE = auth.READER_PREAUTH_COOKIE_NAME
+ADMIN_PREAUTH_COOKIE = auth.ADMIN_PREAUTH_COOKIE_NAME
 WORLD_ID = WORLD_STATE.world_id
 
 
@@ -67,21 +62,31 @@ WORLD_ID = WORLD_STATE.world_id
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Add security headers to every response."""
+    """Scope security headers by response kind.
+
+    HTML documents receive the full defensive set (``no-store``, framing
+    protection, CSP). Non-HTML responses (the JSON health probe and static
+    assets) receive only the minimal ``nosniff`` hint so immutable static
+    files are not forced to ``no-store``.
+    """
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
-        response.headers["Cache-Control"] = "no-store"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self'; "
-            "script-src 'self'; "
-            "frame-ancestors 'none'; "
-            "base-uri 'self'"
-        )
+        content_type = response.headers.get("content-type", "")
+        if content_type.startswith("text/html"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["X-Frame-Options"] = "DENY"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "style-src 'self' 'unsafe-inline'; "
+                "img-src 'self'; "
+                "script-src 'self'; "
+                "frame-ancestors 'none'; "
+                "base-uri 'self'"
+            )
+        else:
+            response.headers["X-Content-Type-Options"] = "nosniff"
         return response
 
 
@@ -104,15 +109,29 @@ def _get_reader_session(
     request: Request,
     conn: sqlite3.Connection = Depends(get_db),
 ) -> dict[str, Any] | None:
-    """Return reader session info or None."""
+    """Return reader session info or None.
+
+    Cross-checks the reader is still active on every request: if the reader
+    has been deactivated or deleted, the session is destroyed and ``None`` is
+    returned so the caller redirects to ``/access`` instead of erroring.
+    """
     token = request.cookies.get(READER_COOKIE)
     if not token:
         return None
-    result = auth.get_reader_session(conn, token, settings.session_hmac_key)
-    if result is None:
+    reader_id = auth.get_reader_session(conn, token, settings.session_hmac_key)
+    if reader_id is None:
         return None
-    reader_id, csrf_digest = result
-    return {"reader_id": reader_id, "csrf_digest": csrf_digest}
+    if not reader_repo.is_reader_active(conn, reader_id):
+        # Reader no longer active — invalidate this session and force re-login.
+        auth.delete_reader_session(conn, token, settings.session_hmac_key)
+        return None
+    return {
+        "reader_id": reader_id,
+        "raw_token": token,
+        "csrf_token": auth.compute_session_csrf(
+            token, settings.session_hmac_key, auth.CSRF_READER_SESSION
+        ),
+    }
 
 
 def _get_admin_session(
@@ -123,26 +142,37 @@ def _get_admin_session(
     token = request.cookies.get(ADMIN_COOKIE)
     if not token:
         return None
-    csrf_digest = auth.get_admin_session(conn, token, settings.session_hmac_key)
-    if csrf_digest is None:
+    if not auth.get_admin_session(conn, token, settings.session_hmac_key):
         return None
-    return {"csrf_digest": csrf_digest}
+    return {
+        "raw_token": token,
+        "csrf_token": auth.compute_session_csrf(
+            token, settings.session_hmac_key, auth.CSRF_ADMIN_SESSION
+        ),
+    }
 
 
 # ── CSRF verification ──────────────────────────────────────────────────────
 
 
-async def _verify_csrf(
-    request: Request,
-    session_info: dict[str, Any],
-) -> None:
-    """Verify CSRF token on POST requests. Raises 403 on mismatch."""
-    form = await request.form()
-    provided = form.get("csrf_token", "")
-    if not provided:
-        raise HTTPException(status_code=403, detail="CSRF token missing")
-    if not auth.verify_csrf_token(
-        session_info["csrf_digest"], provided, settings.session_hmac_key
+def _verify_reader_csrf(session: dict[str, Any], provided: str | None) -> None:
+    """Verify a reader form's purpose-bound CSRF token. Raises 403 on mismatch."""
+    if not auth.verify_session_csrf(
+        session["raw_token"],
+        settings.session_hmac_key,
+        auth.CSRF_READER_SESSION,
+        provided,
+    ):
+        raise HTTPException(status_code=403, detail="CSRF verification failed")
+
+
+def _verify_admin_csrf(session: dict[str, Any], provided: str | None) -> None:
+    """Verify an admin form's purpose-bound CSRF token. Raises 403 on mismatch."""
+    if not auth.verify_session_csrf(
+        session["raw_token"],
+        settings.session_hmac_key,
+        auth.CSRF_ADMIN_SESSION,
+        provided,
     ):
         raise HTTPException(status_code=403, detail="CSRF verification failed")
 
@@ -230,19 +260,11 @@ def _episode_number_label(episode_type: str, episode_number: int) -> str:
 
 
 def _ensure_secrets() -> None:
-    """Fail closed if security secrets are not configured."""
-    if not settings.admin_secret:
-        raise RuntimeError(
-            "LF_ADMIN_SECRET environment variable is required for web routes"
-        )
-    if not settings.credential_hmac_key:
-        raise RuntimeError(
-            "LF_CREDENTIAL_HMAC_KEY environment variable is required for web routes"
-        )
-    if not settings.session_hmac_key:
-        raise RuntimeError(
-            "LF_SESSION_HMAC_KEY environment variable is required for web routes"
-        )
+    """Fail closed if security secrets are not configured (or weak in prod)."""
+    try:
+        settings.validate_web_secrets()
+    except ValueError as exc:
+        raise RuntimeError(str(exc)) from exc
 
 
 # ── Route registration ─────────────────────────────────────────────────────
@@ -276,14 +298,15 @@ def register_web_routes(app: FastAPI) -> None:
         session = _get_reader_session(request, conn)
         if session is not None:
             return RedirectResponse(url="/read", status_code=status.HTTP_303_SEE_OTHER)
-        csrf_token = secrets.token_urlsafe(32)
+        csrf_token = auth.issue_preauth_csrf(
+            settings.session_hmac_key, auth.CSRF_READER_PREAUTH
+        )
         response = templates.TemplateResponse(
             request, "access.html",
             {"csrf_token": csrf_token, "error": None},
         )
-        response.set_cookie(
-            PREAUTH_CSRF_COOKIE, csrf_token,
-            path="/", httponly=False, samesite="lax",
+        auth.set_preauth_cookie(
+            response, READER_PREAUTH_COOKIE, csrf_token, is_prod
         )
         return response
 
@@ -294,47 +317,55 @@ def register_web_routes(app: FastAPI) -> None:
         invite_code: str = Form(...),
         csrf_token: str = Form(...),
     ):
-        # Verify CSRF via cookie (pre-auth reader form)
-        expected = request.cookies.get(PREAUTH_CSRF_COOKIE)
-        if not expected or not auth._constant_time_compare(
-            expected, csrf_token
-        ):
-            raise HTTPException(status_code=403, detail="CSRF verification failed")
+        def _access_error() -> HTMLResponse:
+            """Render the access form with a single privacy-safe error.
 
-        # Verify invite code
-        result = auth.verify_invite_code(
-            conn, invite_code, settings.credential_hmac_key
-        )
-        if result is None:
-            # Privacy-safe failure — do not reveal whether code exists
-            csrf = secrets.token_urlsafe(32)
-            return templates.TemplateResponse(
+            Every failure path (bad CSRF, unknown/expired/revoked/unbound
+            invite, inactive reader) surfaces the same message so no condition
+            is revealed to an attacker.
+            """
+            csrf = auth.issue_preauth_csrf(
+                settings.session_hmac_key, auth.CSRF_READER_PREAUTH
+            )
+            resp = templates.TemplateResponse(
                 request, "access.html",
                 {
                     "csrf_token": csrf,
                     "error": "초대 코드가 올바르지 않거나 이미 사용되었습니다.",
                 },
             )
+            auth.set_preauth_cookie(resp, READER_PREAUTH_COOKIE, csrf, is_prod)
+            return resp
 
-        cred_id, existing_reader_id = result
+        # Verify pre-auth CSRF (signed double-submit cookie)
+        cookie_value = request.cookies.get(READER_PREAUTH_COOKIE)
+        if not auth.verify_preauth_csrf(
+            settings.session_hmac_key,
+            auth.CSRF_READER_PREAUTH,
+            cookie_value,
+            csrf_token,
+        ):
+            raise HTTPException(status_code=403, detail="CSRF verification failed")
 
-        if existing_reader_id:
-            reader = reader_repo.get_reader(conn, existing_reader_id)
-            if reader is None:
-                raise HTTPException(status_code=500, detail="Reader state error")
-        else:
-            reader = reader_repo.create_reader(
-                conn, display_name="독서자"
-            )
-            auth.mark_invite_used(conn, cred_id, reader.id)
+        # Verify invite code → bound reader (login never creates a reader)
+        bound_reader_id = auth.verify_invite_code(
+            conn, invite_code, settings.credential_hmac_key
+        )
+        if bound_reader_id is None:
+            return _access_error()
+
+        reader = reader_repo.get_reader(conn, bound_reader_id)
+        if reader is None or not reader_repo.is_reader_active(conn, bound_reader_id):
+            return _access_error()
 
         # Create session
-        token, csrf = auth.create_reader_session(
+        token = auth.create_reader_session(
             conn, reader.id, settings.session_hmac_key
         )
 
         response = RedirectResponse(url="/read", status_code=status.HTTP_303_SEE_OTHER)
         auth.set_reader_cookie(response, token, is_prod)
+        auth.clear_preauth_cookie(response, READER_PREAUTH_COOKIE)
         return response
 
     # ── Reader: canon read ───────────────────────────────────────────────
@@ -349,7 +380,7 @@ def register_web_routes(app: FastAPI) -> None:
             return RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
 
         # Get latest published canon episode
-        episode = ep_repo.get_latest_published_episode(conn, WORLD_ID)
+        episode = ep_repo.get_latest_published_canon_episode(conn, WORLD_ID)
         if episode is None:
             raise HTTPException(status_code=404, detail="Canon episode not found")
 
@@ -359,7 +390,7 @@ def register_web_routes(app: FastAPI) -> None:
         return templates.TemplateResponse(
             request, "canon_read.html",
             {
-                "csrf_token": session["csrf_digest"],
+                "csrf_token": session["csrf_token"],
                 "episode_type_label": "CANON",
                 "episode_number_label": _episode_number_label(
                     episode.episode_type, episode.episode_number
@@ -394,7 +425,7 @@ def register_web_routes(app: FastAPI) -> None:
         return templates.TemplateResponse(
             request, "canon_read.html",
             {
-                "csrf_token": session["csrf_digest"],
+                "csrf_token": session["csrf_token"],
                 "episode_type_label": "CANON",
                 "episode_number_label": _episode_number_label(
                     episode.episode_type, episode.episode_number
@@ -422,15 +453,12 @@ def register_web_routes(app: FastAPI) -> None:
             return RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
 
         # Verify CSRF
-        if not csrf_token or not auth.verify_csrf_token(
-            session["csrf_digest"], csrf_token, settings.session_hmac_key
-        ):
-            raise HTTPException(status_code=403, detail="CSRF verification failed")
+        _verify_reader_csrf(session, csrf_token)
 
         reader_id = session["reader_id"]
 
         # Get latest published canon episode
-        episode = ep_repo.get_latest_published_episode(conn, WORLD_ID)
+        episode = ep_repo.get_latest_published_canon_episode(conn, WORLD_ID)
         if episode is None:
             raise HTTPException(status_code=404, detail="Canon episode not found")
 
@@ -446,7 +474,7 @@ def register_web_routes(app: FastAPI) -> None:
             return templates.TemplateResponse(
                 request, "canon_read.html",
                 {
-                    "csrf_token": session["csrf_digest"],
+                    "csrf_token": session["csrf_token"],
                     "episode_type_label": "CANON",
                     "episode_number_label": _episode_number_label(
                         episode.episode_type, episode.episode_number
@@ -597,17 +625,30 @@ def register_web_routes(app: FastAPI) -> None:
 
     # ── Reader: logout ───────────────────────────────────────────────────
 
-    @app.get("/logout", response_class=HTMLResponse)
-    async def reader_logout(
+    @app.post("/logout")
+    async def reader_logout_post(
         request: Request,
         conn: sqlite3.Connection = Depends(get_db),
+        csrf_token: str = Form(""),
     ):
-        token = request.cookies.get(READER_COOKIE)
-        if token:
-            auth.delete_reader_session(conn, token, settings.session_hmac_key)
+        session = _get_reader_session(request, conn)
+        if session is not None:
+            _verify_reader_csrf(session, csrf_token)
+            auth.delete_reader_session(
+                conn, session["raw_token"], settings.session_hmac_key
+            )
         response = RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
         auth.clear_reader_cookie(response)
         return response
+
+    @app.get("/logout")
+    async def reader_logout_get(
+        request: Request,
+        conn: sqlite3.Connection = Depends(get_db),
+    ):
+        # Non-mutating: GET never destroys a session (prevents CSRF via
+        # links/images). Real logout happens on POST /logout.
+        return RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
 
     # ── Admin: access ────────────────────────────────────────────────────
 
@@ -621,14 +662,15 @@ def register_web_routes(app: FastAPI) -> None:
             return RedirectResponse(
                 url="/admin/review", status_code=status.HTTP_303_SEE_OTHER
             )
-        csrf_token = secrets.token_urlsafe(32)
+        csrf_token = auth.issue_preauth_csrf(
+            settings.session_hmac_key, auth.CSRF_ADMIN_PREAUTH
+        )
         response = templates.TemplateResponse(
             request, "admin_access.html",
             {"csrf_token": csrf_token, "error": None},
         )
-        response.set_cookie(
-            PREAUTH_CSRF_COOKIE, csrf_token,
-            path="/", httponly=False, samesite="lax",
+        auth.set_preauth_cookie(
+            response, ADMIN_PREAUTH_COOKIE, csrf_token, is_prod
         )
         return response
 
@@ -639,10 +681,27 @@ def register_web_routes(app: FastAPI) -> None:
         admin_secret: str = Form(...),
         csrf_token: str = Form(...),
     ):
-        # Verify CSRF via cookie (pre-auth admin form)
-        expected = request.cookies.get(PREAUTH_CSRF_COOKIE)
-        if not expected or not auth._constant_time_compare(
-            expected, csrf_token
+        def _admin_access_error() -> HTMLResponse:
+            csrf = auth.issue_preauth_csrf(
+                settings.session_hmac_key, auth.CSRF_ADMIN_PREAUTH
+            )
+            resp = templates.TemplateResponse(
+                request, "admin_access.html",
+                {
+                    "csrf_token": csrf,
+                    "error": "운영자 비밀키가 올바르지 않습니다.",
+                },
+            )
+            auth.set_preauth_cookie(resp, ADMIN_PREAUTH_COOKIE, csrf, is_prod)
+            return resp
+
+        # Verify pre-auth CSRF (signed double-submit cookie)
+        cookie_value = request.cookies.get(ADMIN_PREAUTH_COOKIE)
+        if not auth.verify_preauth_csrf(
+            settings.session_hmac_key,
+            auth.CSRF_ADMIN_PREAUTH,
+            cookie_value,
+            csrf_token,
         ):
             raise HTTPException(status_code=403, detail="CSRF verification failed")
 
@@ -650,22 +709,16 @@ def register_web_routes(app: FastAPI) -> None:
         if not auth._constant_time_compare(
             settings.admin_secret, admin_secret
         ):
-            csrf = secrets.token_urlsafe(32)
-            return templates.TemplateResponse(
-                request, "admin_access.html",
-                {
-                    "csrf_token": csrf,
-                    "error": "운영자 비밀키가 올바르지 않습니다.",
-                },
-            )
+            return _admin_access_error()
 
         # Create admin session
-        token, csrf = auth.create_admin_session(conn, settings.session_hmac_key)
+        token = auth.create_admin_session(conn, settings.session_hmac_key)
 
         response = RedirectResponse(
             url="/admin/review", status_code=status.HTTP_303_SEE_OTHER
         )
         auth.set_admin_cookie(response, token, is_prod)
+        auth.clear_preauth_cookie(response, ADMIN_PREAUTH_COOKIE)
         return response
 
     # ── Admin: review queue ──────────────────────────────────────────────
@@ -737,7 +790,7 @@ def register_web_routes(app: FastAPI) -> None:
         return templates.TemplateResponse(
             request, "review_detail.html",
             {
-                "csrf_token": session["csrf_digest"],
+                "csrf_token": session["csrf_token"],
                 "branch_id": branch.id,
                 "branch_id_prefix": f"branch-{branch.id[:8]}",
                 "reader_ref": _privacy_safe_reader_ref(branch.reader_id),
@@ -773,10 +826,7 @@ def register_web_routes(app: FastAPI) -> None:
             )
 
         # Verify CSRF
-        if not csrf_token or not auth.verify_csrf_token(
-            session["csrf_digest"], csrf_token, settings.session_hmac_key
-        ):
-            raise HTTPException(status_code=403, detail="CSRF verification failed")
+        _verify_admin_csrf(session, csrf_token)
 
         branch = branch_repo.get_branch(conn, branch_id)
         if branch is None:
@@ -786,15 +836,15 @@ def register_web_routes(app: FastAPI) -> None:
         if episode is None:
             raise HTTPException(status_code=404, detail="Branch episode not found")
 
-        # Only pending_review can be approved — prevents duplicate decisions
-        if episode.review_state != "pending_review":
-            raise HTTPException(
-                status_code=409,
-                detail="Branch already decided",
+        # Atomic publish + immutable audit trail. The service guards the
+        # pending_review transition, so a stale/duplicate decision fails
+        # cleanly instead of double-applying.
+        try:
+            review_service.approve_branch(
+                conn, branch_id=branch.id, episode_id=episode.id
             )
-
-        # Publish via service layer (explicit human publication)
-        ep_repo.publish_episode(conn, episode.id)
+        except review_service.ReviewDecisionError:
+            raise HTTPException(status_code=409, detail="Branch already decided")
 
         return RedirectResponse(
             url="/admin/review", status_code=status.HTTP_303_SEE_OTHER
@@ -817,10 +867,7 @@ def register_web_routes(app: FastAPI) -> None:
             )
 
         # Verify CSRF
-        if not csrf_token or not auth.verify_csrf_token(
-            session["csrf_digest"], csrf_token, settings.session_hmac_key
-        ):
-            raise HTTPException(status_code=403, detail="CSRF verification failed")
+        _verify_admin_csrf(session, csrf_token)
 
         if not rejection_reason or not rejection_reason.strip():
             raise HTTPException(
@@ -836,15 +883,18 @@ def register_web_routes(app: FastAPI) -> None:
         if episode is None:
             raise HTTPException(status_code=404, detail="Branch episode not found")
 
-        # Only pending_review can be rejected — prevents duplicate decisions
-        if episode.review_state != "pending_review":
-            raise HTTPException(
-                status_code=409,
-                detail="Branch already decided",
+        # Atomic reject + immutable audit trail. The service guards the
+        # pending_review transition, so a stale/duplicate decision fails
+        # cleanly instead of double-applying.
+        try:
+            review_service.reject_branch(
+                conn,
+                branch_id=branch.id,
+                episode_id=episode.id,
+                rejection_reason=rejection_reason,
             )
-
-        # Reject via service layer
-        ep_repo.reject_episode(conn, episode.id)
+        except review_service.ReviewDecisionError:
+            raise HTTPException(status_code=409, detail="Branch already decided")
 
         return RedirectResponse(
             url="/admin/review", status_code=status.HTTP_303_SEE_OTHER
@@ -852,16 +902,31 @@ def register_web_routes(app: FastAPI) -> None:
 
     # ── Admin: logout ────────────────────────────────────────────────────
 
-    @app.get("/admin/logout", response_class=HTMLResponse)
-    async def admin_logout(
+    @app.post("/admin/logout")
+    async def admin_logout_post(
         request: Request,
         conn: sqlite3.Connection = Depends(get_db),
+        csrf_token: str = Form(""),
     ):
-        token = request.cookies.get(ADMIN_COOKIE)
-        if token:
-            auth.delete_admin_session(conn, token, settings.session_hmac_key)
+        session = _get_admin_session(request, conn)
+        if session is not None:
+            _verify_admin_csrf(session, csrf_token)
+            auth.delete_admin_session(
+                conn, session["raw_token"], settings.session_hmac_key
+            )
         response = RedirectResponse(
             url="/admin/access", status_code=status.HTTP_303_SEE_OTHER
         )
         auth.clear_admin_cookie(response)
         return response
+
+    @app.get("/admin/logout")
+    async def admin_logout_get(
+        request: Request,
+        conn: sqlite3.Connection = Depends(get_db),
+    ):
+        # Non-mutating: GET never destroys a session (prevents CSRF via
+        # links/images). Real logout happens on POST /admin/logout.
+        return RedirectResponse(
+            url="/admin/access", status_code=status.HTTP_303_SEE_OTHER
+        )

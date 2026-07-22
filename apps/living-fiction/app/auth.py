@@ -2,20 +2,28 @@
 
 Security properties:
 - Invite codes are CSPRNG-generated and stored only as keyed HMAC digests.
+- Invites are pre-bound to a reader; login reuses that reader and never
+  creates one. Invites carry optional expiry and explicit revocation, and
+  every invalid condition (unknown, expired, revoked, unbound, or bound to a
+  missing/inactive reader) collapses to one privacy-safe failure.
 - Session tokens are CSPRNG-generated and stored only as keyed HMAC digests.
-- Reader and admin sessions use separate cookie names and tables.
+- Reader and admin sessions use separate cookie names and tables, an absolute
+  expiry, and explicit revocation.
 - Raw tokens exist only in cookies, never in the database.
 - All cookies are HttpOnly, SameSite=Lax, and Secure in production.
-- CSRF tokens are stored as digests alongside sessions.
+- CSRF tokens are purpose-bound keyed HMACs:
+    * pre-auth forms use a signed nonce tied to a purpose-specific
+      double-submit cookie;
+    * authenticated forms derive the token from the raw session token and a
+      purpose, so a reader token can never satisfy an admin form (or vice
+      versa) and a token is meaningless without the matching session cookie.
 """
 
 from __future__ import annotations
 
 import hmac
-import os
 import secrets
 import sqlite3
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from app.utils import now_utc_iso
@@ -25,9 +33,20 @@ from app.utils import now_utc_iso
 
 READER_COOKIE_NAME = "lf_reader_session"
 ADMIN_COOKIE_NAME = "lf_admin_session"
+READER_PREAUTH_COOKIE_NAME = "lf_reader_preauth"
+ADMIN_PREAUTH_COOKIE_NAME = "lf_admin_preauth"
 SESSION_TTL_HOURS = 24
 INVITE_CODE_BYTES = 32  # 43-char urlsafe string
 SESSION_TOKEN_BYTES = 32
+
+# CSRF purposes — each derives an independent keyed MAC so a token minted for
+# one surface cannot be replayed on another.
+CSRF_READER_PREAUTH = "reader-preauth"
+CSRF_ADMIN_PREAUTH = "admin-preauth"
+CSRF_READER_SESSION = "reader-session"
+CSRF_ADMIN_SESSION = "admin-session"
+
+_CSRF_KEY_PREFIX = "lf-csrf-v1:"
 
 
 # ── HMAC helpers ───────────────────────────────────────────────────────────
@@ -43,6 +62,65 @@ def _hmac_digest(key: str, value: str) -> str:
 def _constant_time_compare(a: str, b: str) -> bool:
     """Constant-time string comparison."""
     return hmac.compare_digest(a.encode("utf-8"), b.encode("utf-8"))
+
+
+def _derive_csrf_key(hmac_key: str, purpose: str) -> str:
+    """Derive an independent keyed-MAC key for a CSRF *purpose*."""
+    return _hmac_digest(hmac_key, _CSRF_KEY_PREFIX + purpose)
+
+
+# ── CSRF: pre-auth (signed nonce + double-submit cookie) ───────────────────
+
+
+def issue_preauth_csrf(hmac_key: str, purpose: str) -> str:
+    """Return a signed pre-auth CSRF token of the form ``nonce.signature``."""
+    nonce = secrets.token_urlsafe(32)
+    sig = _hmac_digest(_derive_csrf_key(hmac_key, purpose), nonce)
+    return f"{nonce}.{sig}"
+
+
+def verify_preauth_csrf(
+    hmac_key: str,
+    purpose: str,
+    cookie_value: str | None,
+    form_value: str | None,
+) -> bool:
+    """Verify a pre-auth CSRF token.
+
+    The submitted form value must be a valid signed nonce for *purpose* and
+    must equal the double-submit cookie, binding the submission to the browser
+    that received the form.
+    """
+    if not cookie_value or not form_value:
+        return False
+    if not _constant_time_compare(cookie_value, form_value):
+        return False
+    nonce, _, sig = form_value.partition(".")
+    if not nonce or not sig:
+        return False
+    expected = _hmac_digest(_derive_csrf_key(hmac_key, purpose), nonce)
+    return _constant_time_compare(expected, sig)
+
+
+# ── CSRF: authenticated (derived from raw session token + purpose) ─────────
+
+
+def compute_session_csrf(raw_token: str, hmac_key: str, purpose: str) -> str:
+    """Derive the CSRF token rendered into an authenticated form."""
+    return _hmac_digest(_derive_csrf_key(hmac_key, purpose), raw_token)
+
+
+def verify_session_csrf(
+    raw_token: str,
+    hmac_key: str,
+    purpose: str,
+    provided: str | None,
+) -> bool:
+    """Verify an authenticated form's CSRF token against the session token."""
+    if not raw_token or not provided:
+        return False
+    expected = compute_session_csrf(raw_token, hmac_key, purpose)
+    return _constant_time_compare(expected, provided)
 
 
 # ── Invite code management ─────────────────────────────────────────────────
@@ -62,19 +140,29 @@ def create_invite_credential(
     conn: sqlite3.Connection,
     code: str,
     hmac_key: str,
+    *,
+    bound_reader_id: str | None = None,
+    expires_at: str | None = None,
+    credential_id: str | None = None,
 ) -> str:
-    """Store an invite credential digest. Returns the credential ID."""
+    """Store an invite credential digest, optionally bound to a reader.
+
+    ``bound_reader_id`` is the reader a login will assume — login never creates
+    a reader. ``expires_at`` (ISO-8601 UTC) optionally limits validity. Returns
+    the credential ID.
+    """
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
-    cred_id = secrets.token_urlsafe(16)
+    cred_id = credential_id or secrets.token_urlsafe(16)
     digest = hash_invite_code(code, hmac_key)
     now = now_utc_iso()
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute(
-            "INSERT INTO invite_credentials (id, code_digest, created_at) "
-            "VALUES (?, ?, ?)",
-            (cred_id, digest, now),
+            "INSERT INTO invite_credentials "
+            "(id, code_digest, created_at, bound_reader_id, expires_at) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (cred_id, digest, now, bound_reader_id, expires_at),
         )
         conn.commit()
         return cred_id
@@ -88,45 +176,45 @@ def verify_invite_code(
     conn: sqlite3.Connection,
     code: str,
     hmac_key: str,
-) -> tuple[str, str | None] | None:
-    """Verify an invite code.
+) -> str | None:
+    """Verify an invite code and return the bound reader ID if usable.
 
-    Returns (credential_id, reader_id_or_None) if valid.
-    - reader_id is None if the invite has not been consumed.
-    - reader_id is set if the invite was already used by a reader.
-    Returns None if the code does not match any credential.
-
-    Uses constant-time comparison to prevent timing attacks.
+    Returns the bound ``reader_id`` only when the invite exists, is not
+    revoked, is not expired, and is bound to a reader. Returns ``None`` for
+    every other case so callers produce a single privacy-safe error without
+    revealing which condition failed.
     """
     digest = hash_invite_code(code, hmac_key)
     row = conn.execute(
-        "SELECT id, used_by_reader_id FROM invite_credentials "
-        "WHERE code_digest = ?",
+        "SELECT bound_reader_id, expires_at, revoked_at "
+        "FROM invite_credentials WHERE code_digest = ?",
         (digest,),
     ).fetchone()
     if row is None:
         return None
-    return row["id"], row["used_by_reader_id"]
+    if row["revoked_at"] is not None:
+        return None
+    if row["expires_at"] is not None and row["expires_at"] < now_utc_iso():
+        return None
+    if row["bound_reader_id"] is None:
+        return None
+    return row["bound_reader_id"]
 
 
-def mark_invite_used(
-    conn: sqlite3.Connection,
-    cred_id: str,
-    reader_id: str,
-) -> None:
-    """Mark an invite credential as consumed by a reader."""
+def revoke_invite(conn: sqlite3.Connection, credential_id: str) -> bool:
+    """Revoke an invite so it can no longer be used to log in."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     now = now_utc_iso()
     conn.execute("BEGIN IMMEDIATE")
     try:
-        conn.execute(
-            "UPDATE invite_credentials "
-            "SET used_by_reader_id = ?, used_at = ? "
-            "WHERE id = ? AND used_by_reader_id IS NULL",
-            (reader_id, now, cred_id),
+        cursor = conn.execute(
+            "UPDATE invite_credentials SET revoked_at = ? "
+            "WHERE id = ? AND revoked_at IS NULL",
+            (now, credential_id),
         )
         conn.commit()
+        return cursor.rowcount > 0
     except Exception:
         if conn.in_transaction:
             conn.rollback()
@@ -144,10 +232,6 @@ def _generate_token() -> str:
     return secrets.token_urlsafe(SESSION_TOKEN_BYTES)
 
 
-def _generate_csrf_token() -> str:
-    return secrets.token_urlsafe(32)
-
-
 def _expiry(now: datetime, ttl_hours: int = SESSION_TTL_HOURS) -> str:
     return (now + timedelta(hours=ttl_hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -156,14 +240,15 @@ def create_reader_session(
     conn: sqlite3.Connection,
     reader_id: str,
     hmac_key: str,
-) -> tuple[str, str]:
-    """Create a reader session. Returns (raw_token, csrf_token)."""
+) -> str:
+    """Create a reader session. Returns the raw token (cookie value)."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     token = _generate_token()
-    csrf = _generate_csrf_token()
     token_digest = _hash_token(token, hmac_key)
-    csrf_digest = _hmac_digest(hmac_key, csrf)
+    # Stored digest kept for schema compatibility; form CSRF is derived
+    # statelessly from the raw token (see compute_session_csrf).
+    csrf_digest = _hmac_digest(hmac_key, token)
     now = datetime.now(timezone.utc)
     expires = _expiry(now)
     session_id = secrets.token_urlsafe(16)
@@ -176,7 +261,7 @@ def create_reader_session(
             (session_id, reader_id, token_digest, csrf_digest, now_utc_iso(), expires),
         )
         conn.commit()
-        return token, csrf
+        return token
     except Exception:
         if conn.in_transaction:
             conn.rollback()
@@ -186,14 +271,13 @@ def create_reader_session(
 def create_admin_session(
     conn: sqlite3.Connection,
     hmac_key: str,
-) -> tuple[str, str]:
-    """Create an admin session. Returns (raw_token, csrf_token)."""
+) -> str:
+    """Create an admin session. Returns the raw token (cookie value)."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     token = _generate_token()
-    csrf = _generate_csrf_token()
     token_digest = _hash_token(token, hmac_key)
-    csrf_digest = _hmac_digest(hmac_key, csrf)
+    csrf_digest = _hmac_digest(hmac_key, token)
     now = datetime.now(timezone.utc)
     expires = _expiry(now)
     session_id = secrets.token_urlsafe(16)
@@ -206,7 +290,7 @@ def create_admin_session(
             (session_id, token_digest, csrf_digest, now_utc_iso(), expires),
         )
         conn.commit()
-        return token, csrf
+        return token
     except Exception:
         if conn.in_transaction:
             conn.rollback()
@@ -217,63 +301,48 @@ def get_reader_session(
     conn: sqlite3.Connection,
     token: str,
     hmac_key: str,
-) -> tuple[str, str] | None:
-    """Look up a reader session by raw token.
+) -> str | None:
+    """Return the reader ID if the session is valid.
 
-    Returns (reader_id, csrf_token) if valid and not expired, else None.
+    A session is valid only when it exists, is not revoked, and is not past
+    its absolute expiry. Returns ``None`` otherwise.
     """
     token_digest = _hash_token(token, hmac_key)
     now = now_utc_iso()
     row = conn.execute(
-        "SELECT reader_id, csrf_token_digest, expires_at "
+        "SELECT reader_id, expires_at, revoked_at "
         "FROM reader_sessions WHERE token_digest = ?",
         (token_digest,),
     ).fetchone()
     if row is None:
         return None
+    if row["revoked_at"] is not None:
+        return None
     if row["expires_at"] < now:
-        return None  # expired
-    # Reconstruct CSRF token is not possible from digest; return digest
-    # and let the caller compare via verify_csrf_token.
-    return row["reader_id"], row["csrf_token_digest"]
+        return None
+    return row["reader_id"]
 
 
 def get_admin_session(
     conn: sqlite3.Connection,
     token: str,
     hmac_key: str,
-) -> str | None:
-    """Look up an admin session by raw token.
-
-    Returns csrf_token_digest if valid and not expired, else None.
-    """
+) -> bool:
+    """Return True if the admin session is valid (exists, not revoked, not expired)."""
     token_digest = _hash_token(token, hmac_key)
     now = now_utc_iso()
     row = conn.execute(
-        "SELECT csrf_token_digest, expires_at "
+        "SELECT expires_at, revoked_at "
         "FROM admin_sessions WHERE token_digest = ?",
         (token_digest,),
     ).fetchone()
     if row is None:
-        return None
+        return False
+    if row["revoked_at"] is not None:
+        return False
     if row["expires_at"] < now:
-        return None  # expired
-    return row["csrf_token_digest"]
-
-
-def verify_csrf_token(
-    csrf_digest: str,
-    provided_csrf: str,
-    hmac_key: str,
-) -> bool:
-    """Verify a CSRF token against the stored digest.
-
-    The CSRF token rendered in forms is the stored digest itself (not the
-    raw CSPRNG token). This is safe because the digest is an HMAC of a
-    CSPRNG value and is never stored in a cookie — it is only visible in
-    the HTML form, which cross-site attackers cannot read.
-    """
-    return _constant_time_compare(csrf_digest, provided_csrf)
+        return False
+    return True
 
 
 def delete_reader_session(
@@ -281,7 +350,7 @@ def delete_reader_session(
     token: str,
     hmac_key: str,
 ) -> None:
-    """Delete a reader session by raw token."""
+    """Delete a reader session by raw token (logout)."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     token_digest = _hash_token(token, hmac_key)
@@ -303,7 +372,7 @@ def delete_admin_session(
     token: str,
     hmac_key: str,
 ) -> None:
-    """Delete an admin session by raw token."""
+    """Delete an admin session by raw token (logout)."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     token_digest = _hash_token(token, hmac_key)
@@ -320,14 +389,54 @@ def delete_admin_session(
         raise
 
 
+def revoke_reader_session(
+    conn: sqlite3.Connection,
+    token: str,
+    hmac_key: str,
+) -> None:
+    """Soft-revoke a reader session by raw token."""
+    if conn.in_transaction:
+        raise RuntimeError("repository write requires an idle connection")
+    token_digest = _hash_token(token, hmac_key)
+    now = now_utc_iso()
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        conn.execute(
+            "UPDATE reader_sessions SET revoked_at = ? "
+            "WHERE token_digest = ? AND revoked_at IS NULL",
+            (now, token_digest),
+        )
+        conn.commit()
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
+
+
+def revoke_all_reader_sessions(
+    conn: sqlite3.Connection,
+    reader_id: str,
+) -> int:
+    """Soft-revoke every session for a reader (e.g. on deactivation/deletion)."""
+    if conn.in_transaction:
+        raise RuntimeError("repository write requires an idle connection")
+    now = now_utc_iso()
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        cursor = conn.execute(
+            "UPDATE reader_sessions SET revoked_at = ? "
+            "WHERE reader_id = ? AND revoked_at IS NULL",
+            (now, reader_id),
+        )
+        conn.commit()
+        return cursor.rowcount
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
+
+
 # ── Cookie helpers ─────────────────────────────────────────────────────────
-
-
-def _cookie_value(token: str, is_production: bool) -> str:
-    parts = [f"token={token}", "Path=/", "HttpOnly", "SameSite=Lax"]
-    if is_production:
-        parts.append("Secure")
-    return "; ".join(parts)
 
 
 def set_reader_cookie(response, token: str, is_production: bool) -> None:
@@ -352,9 +461,27 @@ def set_admin_cookie(response, token: str, is_production: bool) -> None:
     )
 
 
+def set_preauth_cookie(
+    response, name: str, value: str, is_production: bool
+) -> None:
+    """Set a pre-auth double-submit CSRF cookie (HttpOnly; not JS-readable)."""
+    response.set_cookie(
+        name,
+        value,
+        path="/",
+        httponly=True,
+        samesite="lax",
+        secure=is_production,
+    )
+
+
 def clear_reader_cookie(response) -> None:
     response.delete_cookie(READER_COOKIE_NAME, path="/")
 
 
 def clear_admin_cookie(response) -> None:
     response.delete_cookie(ADMIN_COOKIE_NAME, path="/")
+
+
+def clear_preauth_cookie(response, name: str) -> None:
+    response.delete_cookie(name, path="/")

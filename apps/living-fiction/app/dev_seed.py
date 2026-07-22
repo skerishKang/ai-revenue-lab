@@ -19,14 +19,8 @@ from __future__ import annotations
 
 import copy
 import json
-import os
 import sys
 from pathlib import Path
-
-# Ensure tests.fixtures is importable
-_APP_DIR = Path(__file__).resolve().parent.parent
-if str(_APP_DIR) not in sys.path:
-    sys.path.insert(0, str(_APP_DIR))
 
 from app import auth
 from app import canon_repository as canon_repo
@@ -38,11 +32,11 @@ from app.config import settings
 from app.db import apply_migrations, get_connection
 from app.pipeline.service import GenerationRequest, generate_canon_episode
 from app.domain.enums import EpisodeType
-from tests.fixtures.mock_payloads import (
-    CANON_EPISODE_1_PLAN,
+from app.preview_data import (
     CANON_EPISODE_1_CONTENT,
+    CANON_EPISODE_1_PLAN,
+    WORLD_STATE,
 )
-from tests.fixtures.synthetic_world import WORLD_STATE
 
 
 def _seed_world(conn) -> None:
@@ -123,17 +117,30 @@ def _seed_canon(conn) -> None:
 
 
 def _seed_invite(conn) -> str:
-    """Create an invite credential if none exists. Returns the invite code."""
-    # Check if any unused invite exists
-    rows = conn.execute(
-        "SELECT id FROM invite_credentials WHERE used_by_reader_id IS NULL LIMIT 1"
-    ).fetchall()
-    if rows:
+    """Create a reader-bound invite credential if none exists.
+
+    Login assumes the reader an invite is bound to (it never creates one), so
+    the dev seed provisions a reader and binds the invite to it. Returns the
+    invite code.
+    """
+    # Check if a usable (bound, non-revoked) invite already exists
+    row = conn.execute(
+        "SELECT id FROM invite_credentials "
+        "WHERE bound_reader_id IS NOT NULL AND revoked_at IS NULL LIMIT 1"
+    ).fetchone()
+    if row is not None:
         print("[dev_seed] Invite credential already exists — skipping.")
         return "(existing — check terminal output from first run)"
 
+    reader = reader_repo.create_reader(conn, display_name="독서자")
     code = auth.generate_invite_code()
-    auth.create_invite_credential(conn, code, settings.credential_hmac_key)
+    auth.create_invite_credential(
+        conn,
+        code,
+        settings.credential_hmac_key,
+        bound_reader_id=reader.id,
+        expires_at="9999-12-31T23:59:59Z",
+    )
     return code
 
 

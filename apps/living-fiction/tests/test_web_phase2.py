@@ -84,6 +84,16 @@ def _login_admin(client: TestClient) -> TestClient:
     return client
 
 
+def _logout_reader(client: TestClient) -> None:
+    """Log out the current reader via the CSRF-protected POST /logout."""
+    resp = client.get("/read")
+    csrf = _extract_csrf(resp.text)
+    resp = client.post(
+        "/logout", data={"csrf_token": csrf}, follow_redirects=False
+    )
+    assert resp.status_code == 303
+
+
 # ── Fixtures ───────────────────────────────────────────────────────────────
 
 
@@ -458,7 +468,7 @@ def test_approve_then_owner_reads_branch(app_client, db_conn):
     )
 
     # Log back in as reader and read the branch
-    client.get("/logout")
+    _logout_reader(client)
     _login_reader(client, code)
     resp = client.get(f"/read/branch/{branch_id}")
     assert resp.status_code == 200
@@ -491,11 +501,16 @@ def test_foreign_reader_branch_blocked(app_client, db_conn):
         follow_redirects=False,
     )
 
-    # Create a second reader
-    client.get("/logout")
+    # Create a second reader (login assumes a bound reader; it never creates one)
+    _logout_reader(client)
+    reader = reader_repo.create_reader(db_conn, display_name="다른 독자")
     raw_code = auth.generate_invite_code()
     auth.create_invite_credential(
-        db_conn, raw_code, settings.credential_hmac_key
+        db_conn,
+        raw_code,
+        settings.credential_hmac_key,
+        bound_reader_id=reader.id,
+        expires_at="9999-12-31T23:59:59Z",
     )
     _login_reader(client, raw_code)
 
