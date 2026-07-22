@@ -123,7 +123,52 @@ pytest tests/unit/ -v
 pytest tests/integration/ -v
 ```
 
-All 149 tests pass without network access.
+All 198 tests pass without network access.
+
+## Static UI preview (Cloudflare Pages)
+
+A static, synthetic preview of the accepted Phase 1 UI can be built for hosted
+review. It renders the **existing Jinja templates** with synthetic fixture data
+— no database, FastAPI server, YouTube API, LLM, API key, or network access is
+required, and nothing is persisted.
+
+### Build locally
+
+```bash
+cd apps/personal-video-archive
+python -m scripts.build_static_preview
+```
+
+Output is written to `dist-preview/` (gitignored). Open
+`dist-preview/index.html` to browse the preview landing page, which links to
+every preview state (topic list, new topic, query-rule review, populated /
+filtered / empty / failed feeds, video detail, private records, pending and
+accepted AI proposals, record search, and a validation error).
+
+Every page shows a **"UI Preview · Synthetic data · No persistence"** banner,
+carries `noindex, nofollow`, and has all forms and JavaScript made inert.
+
+### Preview tests
+
+```bash
+pytest tests/test_static_preview.py -v
+```
+
+### Cloudflare Pages configuration
+
+Dedicated project: **ai-revenue-personal-video-archive**
+
+| Setting | Value |
+|---|---|
+| Repository | `skerishKang/ai-revenue-lab` |
+| Production branch | `main` |
+| Root directory | `apps/personal-video-archive` |
+| Build command | `python -m scripts.build_static_preview` |
+| Build output directory | `dist-preview` |
+
+The generated `_headers` enforces a restrictive Content-Security-Policy
+(`script-src 'none'; form-action 'none'; connect-src 'none'`) plus
+`X-Robots-Tag: noindex, nofollow`, and `robots.txt` disallows all crawling.
 
 ## Synthetic fixtures vs real data
 
