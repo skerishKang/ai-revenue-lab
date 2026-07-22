@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel - Operator Dashboard</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+  <nav class="navbar">
+    <span class="brand">Living Travel</span>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="../index.html">Preview Home</a>
+    </div>
+  </nav>
+  <main class="container">
+    <div class="notice">
+      <strong>Synthetic Preview</strong><br>
+      이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
+    </div>
+
+    <div class="section-header">
+      <h1>Operator Dashboard</h1>
+    </div>
+
+    <div class="card">
+      <h2>Create New Traveler</h2>
+      <form method="post" action="#" onsubmit="return false;" class="form-inline">
+        <input type="hidden" name="csrf_token" value="preview-csrf-token">
+        <input type="text" name="display_name" placeholder="Display Name" required>
+        <input type="text" name="destination" placeholder="Destination" required>
+        <input type="number" name="trip_duration_nights" value="2" min="1" max="30">
+        <button type="submit" class="btn btn-primary btn-disabled" disabled>Create</button>
+      </form>
+      <div class="disabled-notice">※ 정적 프리뷰: 여행자 생성은 처리되지 않습니다.</div>
+    </div>
+
+    <div class="card">
+      <h2>Travelers</h2>
+      <div class="table-scroll">
+            <table>
+        <thead>
+          <tr><th>Name</th><th>Destination</th><th>Duration</th><th>Editions</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>여행자 시범</td>
+            <td>부산</td>
+            <td>2 nights</td>
+            <td>2</td>
+            <td><span class="badge badge-active">active</span></td>
+            <td><a href="traveler-detail.html" class="btn btn-sm">View</a></td>
+          </tr>
+          <tr>
+            <td>여행자 실험</td>
+            <td>서울</td>
+            <td>3 nights</td>
+            <td>1</td>
+            <td><span class="badge badge-active">active</span></td>
+            <td><a href="traveler-detail.html" class="btn btn-sm">View</a></td>
+          </tr>
+          <tr>
+            <td>여행자 중단</td>
+            <td>제주</td>
+            <td>4 nights</td>
+            <td>0</td>
+            <td><span class="badge badge-rejected">deleted</span></td>
+            <td><a href="traveler-detail.html" class="btn btn-sm">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+          </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>&copy; Living Travel — Synthetic Preview Only</p>
+  </footer>
+</body>
+</html>
