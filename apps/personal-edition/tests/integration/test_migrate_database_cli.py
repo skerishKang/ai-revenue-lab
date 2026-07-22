@@ -142,9 +142,11 @@ class TestMigrationCliPostgresql:
         )
         assert result.returncode == 0
         assert "postgresql" in result.stdout.lower()
-        # URL must be redacted
+        # Password must be redacted.
         assert "pass" not in result.stdout
-        assert "[REDACTED]" in result.stdout
+        # The entire userinfo (username included) is now stripped.
+        assert "user" not in result.stdout.split("host")[0]
+        assert "host" in result.stdout
 
     def test_pg_no_production_default(self):
         """production 자동 실행 금지 — CLI never defaults to production."""
@@ -190,7 +192,9 @@ class TestMigrationCliSecretRedaction:
         assert result.returncode == 0
         assert "secret" not in result.stdout
         assert "secret" not in result.stderr
-        assert "[REDACTED]" in result.stdout
+        # The username itself must also be redacted now.
+        assert "user" not in result.stdout.replace("user=", "")
+        assert "db.example.com" in result.stdout
 
     def test_query_params_not_in_output(self):
         env = dict(os.environ)
@@ -211,3 +215,87 @@ class TestMigrationCliSecretRedaction:
         assert result.returncode == 0
         assert "sslmode" not in result.stdout
         assert "channel_binding" not in result.stdout
+
+
+class TestRedactDatabaseUrl:
+    """Unit tests for the redact_database_url helper itself.
+
+    These run without any PostgreSQL connection and verify that the full
+    userinfo (username + password), query string and fragment are stripped.
+    """
+
+    def test_strips_password(self):
+        url = "postgresql://user:hunter2@host:5432/db"
+        redacted = redact_database_url(url)
+        assert "hunter2" not in redacted
+        assert "host" in redacted
+
+    def test_strips_username(self):
+        url = "postgresql://alice:secret@host:5432/db"
+        redacted = redact_database_url(url)
+        assert "alice" not in redacted
+        assert "secret" not in redacted
+        assert "host" in redacted
+        assert "@host" not in redacted
+
+    def test_strips_query_and_fragment(self):
+        url = "postgresql://user:pass@host:5432/db?sslmode=require&token=abc#frag"
+        redacted = redact_database_url(url)
+        assert "sslmode" not in redacted
+        assert "token" not in redacted
+        assert "abc" not in redacted
+        assert "frag" not in redacted
+        assert "pass" not in redacted
+
+    def test_malformed_postgres_url(self):
+        # No host — must not echo back the raw (possibly userinfo-bearing) URL.
+        url = "postgresql://user:pass@"
+        redacted = redact_database_url(url)
+        assert "pass" not in redacted
+        assert "user" not in redacted
+        assert "[REDACTED]" in redacted
+
+    def test_non_postgres_url_unchanged_except_query(self):
+        url = "sqlite:///path/to/db.sqlite?cache=shared"
+        redacted = redact_database_url(url)
+        assert "path/to/db.sqlite" in redacted
+        assert "cache=shared" not in redacted
+
+    def test_empty_and_non_string(self):
+        assert redact_database_url("") == ""
+        assert redact_database_url(None) is None  # type: ignore[arg-type]
+
+    def test_postgres_scheme_alias(self):
+        url = "postgres://user:pass@host/db"
+        redacted = redact_database_url(url)
+        assert "pass" not in redacted
+        assert "user" not in redacted
+        assert "host" in redacted
+
+
+class TestMigrationCliDriverError:
+    """Driver/connection failures must produce safe, category-only output."""
+
+    def test_connection_failure_no_traceback(self):
+        env = dict(os.environ)
+        env.pop("PE_DATABASE_URL", None)
+        env.pop("DB_BACKEND", None)
+        result = subprocess.run(
+            [
+                sys.executable, "-m", "scripts.migrate_database",
+                "--backend", "postgresql",
+                "--url", "postgresql://nobody:secret@127.0.0.1:1/db",
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(BASE_DIR),
+            env=env,
+        )
+        # Non-zero exit due to connection failure.
+        assert result.returncode == 1
+        # The password must never appear in any output stream.
+        assert "secret" not in result.stdout
+        assert "secret" not in result.stderr
+        # The username must never appear in any output stream.
+        assert "nobody" not in result.stdout
+        assert "nobody" not in result.stderr

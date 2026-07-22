@@ -30,6 +30,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -42,13 +43,35 @@ from app.config import redact_database_url
 # in the migrations directory.
 _PG_MIGRATION_RE = re.compile(r"^pg_(\d+)_.*\.sql$")
 
+# Safe, fixed error categories for user-facing messages — never include
+# raw exception text which may contain DSN/userinfo/SQL internals.
+_MIGRATION_ERROR_CATEGORIES = {
+    "apply_failed": "migration statement execution failed",
+    "checksum_mismatch": "migration content has changed since it was applied",
+    "partial_schema": "partial schema detected: objects exist without a recorded migration",
+    "schema_drift": "schema drift detected: recorded migration does not match current schema",
+    "discovery": "migration discovery failed",
+}
+
+
+def _safe_message(category: str) -> str:
+    """Return a fixed safe error category string for user-facing output."""
+    return _MIGRATION_ERROR_CATEGORIES.get(category, "migration error")
+
 
 class PgMigrationError(RuntimeError):
-    """Raised when a PostgreSQL migration fails or is inconsistent."""
+    """Raised when a PostgreSQL migration fails or is inconsistent.
 
-    def __init__(self, version: str, message: str):
+    The public message uses a fixed safe category; the original exception
+    (if any) is chained via ``__cause__`` for internal debugging only.
+    """
+
+    category: str = "migration error"
+
+    def __init__(self, version: str, message: str, *, category: str = "migration error"):
         self.version = version
         self.message = message
+        self.category = category
         super().__init__(f"pg migration {version}: {message}")
 
 
@@ -210,6 +233,21 @@ def _discover_migrations(migrations_dir: str) -> list[Path]:
     return [p for _, p in parsed]
 
 
+def _get_current_search_path(conn: Connection[DictRow]) -> str:
+    """Return the current effective search_path as a comma-joined string."""
+    row = conn.execute("SHOW search_path").fetchone()
+    val = row[0] if row else ""
+    return str(val) if val else ""
+
+
+def _get_current_schema(conn: Connection[DictRow]) -> str:
+    """Return the first (current) schema name from the search_path."""
+    sp = _get_current_search_path(conn)
+    # search_path may contain "$user", "public", etc. Take the first token.
+    first = sp.split(",")[0].strip().strip('"') if sp else "public"
+    return first or "public"
+
+
 def _check_schema_drift(
     conn: Connection[DictRow],
     version: str,
@@ -217,79 +255,125 @@ def _check_schema_drift(
     is_applied: bool,
 ) -> None:
     """Run migration in a temporary schema to detect partial applies or drift.
-    
-    If not applied, no objects from the migration should exist in public.
-    If applied, all objects from the migration must exactly match in public.
+
+    The drift comparison target is the **migration target schema** — the
+    schema that was current before this function was called — never a
+    hardcoded ``public``.  The original ``search_path`` is captured on entry
+    and restored exactly on exit.  The temporary drift schema uses a random
+    suffix to avoid collisions across concurrent runs.
     """
+    # Capture the real target schema and search_path BEFORE any drift work.
+    original_search_path = _get_current_search_path(conn)
+    target_schema = _get_current_schema(conn)
+
+    # Unique temp schema name to avoid concurrent-run collisions.
+    temp_schema = f"drift_check_{uuid.uuid4().hex}"
+
     conn.execute("SAVEPOINT migration_drift_check")
     try:
-        temp_schema = f"drift_check_{version.replace('.', '_')}"
         conn.execute(f'CREATE SCHEMA "{temp_schema}"')
         conn.execute(f'SET LOCAL search_path TO "{temp_schema}"')
-        
+
         for stmt in _split_statements(content):
             conn.execute(stmt)
-            
+
         expected_tables = get_pg_schema_tables(conn, temp_schema)
         if "schema_migrations" in expected_tables:
             expected_tables.remove("schema_migrations")
-            
-        public_tables = get_pg_schema_tables(conn, "public")
-        
+
+        target_tables = get_pg_schema_tables(conn, target_schema)
+
         if not is_applied:
-            overlap = expected_tables.intersection(public_tables)
+            overlap = expected_tables.intersection(target_tables)
             if overlap:
-                raise PgMigrationError(version, f"partial schema detected: unrecorded migration but tables exist: {overlap}")
+                raise PgMigrationError(
+                    version,
+                    f"partial schema detected: unrecorded migration but tables exist: {overlap}",
+                    category="partial_schema",
+                )
         else:
-            missing_tables = expected_tables - public_tables
+            missing_tables = expected_tables - target_tables
             if missing_tables:
-                raise PgMigrationError(version, f"schema drift detected: missing tables: {missing_tables}")
-                
+                raise PgMigrationError(
+                    version,
+                    f"schema drift detected: missing tables: {missing_tables}",
+                    category="schema_drift",
+                )
+
             for table in expected_tables:
                 exp_cols = get_pg_schema_columns(conn, table, temp_schema)
-                pub_cols = get_pg_schema_columns(conn, table, "public")
+                pub_cols = get_pg_schema_columns(conn, table, target_schema)
                 if exp_cols != pub_cols:
-                    raise PgMigrationError(version, f"schema drift detected in table {table} columns")
-                    
+                    raise PgMigrationError(
+                        version,
+                        f"schema drift detected in table {table} columns",
+                        category="schema_drift",
+                    )
+
                 exp_pks = get_pg_primary_keys(conn, table, temp_schema)
-                pub_pks = get_pg_primary_keys(conn, table, "public")
+                pub_pks = get_pg_primary_keys(conn, table, target_schema)
                 if exp_pks != pub_pks:
-                    raise PgMigrationError(version, f"schema drift detected in table {table} primary keys")
-                    
+                    raise PgMigrationError(
+                        version,
+                        f"schema drift detected in table {table} primary keys",
+                        category="schema_drift",
+                    )
+
                 exp_fks = get_pg_foreign_keys(conn, table, temp_schema)
-                pub_fks = get_pg_foreign_keys(conn, table, "public")
-                # ignore schema names in FKs by extracting just the constraint structure if possible
-                # But since get_pg_foreign_keys doesn't include the schema of the foreign table in its output, direct compare is fine
+                pub_fks = get_pg_foreign_keys(conn, table, target_schema)
                 if exp_fks != pub_fks:
-                    raise PgMigrationError(version, f"schema drift detected in table {table} foreign keys")
-                    
+                    raise PgMigrationError(
+                        version,
+                        f"schema drift detected in table {table} foreign keys",
+                        category="schema_drift",
+                    )
+
                 exp_uniques = get_pg_unique_constraints(conn, table, temp_schema)
-                pub_uniques = get_pg_unique_constraints(conn, table, "public")
+                pub_uniques = get_pg_unique_constraints(conn, table, target_schema)
                 if exp_uniques != pub_uniques:
-                    raise PgMigrationError(version, f"schema drift detected in table {table} unique constraints")
-                    
+                    raise PgMigrationError(
+                        version,
+                        f"schema drift detected in table {table} unique constraints",
+                        category="schema_drift",
+                    )
+
                 exp_checks = get_pg_check_constraints(conn, table, temp_schema)
-                pub_checks = get_pg_check_constraints(conn, table, "public")
+                pub_checks = get_pg_check_constraints(conn, table, target_schema)
                 if exp_checks != pub_checks:
-                    raise PgMigrationError(version, f"schema drift detected in table {table} check constraints")
-                    
+                    raise PgMigrationError(
+                        version,
+                        f"schema drift detected in table {table} check constraints",
+                        category="schema_drift",
+                    )
+
         exp_indexes = get_pg_schema_indexes(conn, temp_schema)
-        pub_indexes = get_pg_schema_indexes(conn, "public")
+        pub_indexes = get_pg_schema_indexes(conn, target_schema)
         exp_idx = {(idx, tbl) for idx, tbl in exp_indexes if tbl in expected_tables}
         pub_idx = {(idx, tbl) for idx, tbl in pub_indexes if tbl in expected_tables}
-        
+
         if not is_applied:
             overlap_idx = exp_idx.intersection(pub_idx)
             if overlap_idx:
-                raise PgMigrationError(version, f"partial schema detected: unrecorded migration but indexes exist: {overlap_idx}")
+                raise PgMigrationError(
+                    version,
+                    f"partial schema detected: unrecorded migration but indexes exist: {overlap_idx}",
+                    category="partial_schema",
+                )
         else:
             missing_idx = exp_idx - pub_idx
             if missing_idx:
-                raise PgMigrationError(version, f"schema drift detected: missing indexes: {missing_idx}")
+                raise PgMigrationError(
+                    version,
+                    f"schema drift detected: missing indexes: {missing_idx}",
+                    category="schema_drift",
+                )
 
     finally:
+        # Always rollback the drift savepoint (which drops the temp schema)
+        # and restore the EXACT original search_path — never hardcode public.
         conn.execute("ROLLBACK TO SAVEPOINT migration_drift_check")
-        conn.execute("SET LOCAL search_path TO public")
+        # SET LOCAL is scoped to the transaction block; restore explicitly.
+        conn.execute(f'SET LOCAL search_path TO {original_search_path or "public"}')
 
 
 def apply_pg_migrations(
@@ -339,14 +423,13 @@ def apply_pg_migrations(
             if applied[version] != checksum:
                 raise PgMigrationError(
                     version,
-                    "migration content has changed since it was applied "
-                    "(checksum mismatch). Refusing to proceed. "
-                    "See documentation for safe migration update procedure.",
+                    _safe_message("checksum_mismatch"),
+                    category="checksum_mismatch",
                 )
             # Integrity drift check
             _check_schema_drift(conn, version, content, is_applied=True)
             continue
-            
+
         # Unrecorded: partial detection
         _check_schema_drift(conn, version, content, is_applied=False)
 
@@ -365,10 +448,10 @@ def apply_pg_migrations(
             applied_versions.append(version)
         except Exception as exc:
             conn.rollback()
-            safe_url = redact_url or "(url not provided)"
             raise PgMigrationError(
                 version,
-                f"migration failed (url={safe_url}): {exc}",
+                _safe_message("apply_failed"),
+                category="apply_failed",
             ) from exc
 
     return applied_versions

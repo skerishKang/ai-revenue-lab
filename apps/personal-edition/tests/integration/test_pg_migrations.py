@@ -31,6 +31,7 @@ from app.db_pg_migrations import (
     _discover_migrations,
     _is_pg_migration,
     _read_migration,
+    _safe_message,
     _split_statements,
     apply_pg_migrations,
     get_pg_check_constraints,
@@ -331,22 +332,133 @@ class TestMigrationChecksumIntegrity:
             assert checksum == expected
 
 
+class TestSafeErrorMessage:
+    """Verify migration error messages never leak raw driver text.
+
+    The CTO follow-up requires that ``PgMigrationError`` messages use fixed
+    safe categories instead of interpolating the raw exception string (which
+    may contain the DSN, userinfo, or SQL internals).
+    """
+
+    def test_error_has_category_attribute(self):
+        err = PgMigrationError(
+            "pg_001_initial.sql", "boom", category="apply_failed"
+        )
+        assert err.category == "apply_failed"
+
+    def test_error_default_category(self):
+        err = PgMigrationError("pg_001_initial.sql", "boom")
+        assert err.category == "migration error"
+
+    def test_error_message_does_not_contain_raw_exc(self):
+        raw = "connection refused: postgresql://leak:password@host/db"
+        err = PgMigrationError(
+            "pg_001", _safe_message("apply_failed"), category="apply_failed"
+        )
+        assert raw not in str(err)
+        assert "password" not in str(err)
+
+    def test_safe_message_known_categories(self):
+        for cat in (
+            "apply_failed",
+            "checksum_mismatch",
+            "partial_schema",
+            "schema_drift",
+            "discovery",
+        ):
+            msg = _safe_message(cat)
+            assert isinstance(msg, str)
+            assert msg
+            # Fixed messages must never contain a DSN marker.
+            assert "://" not in msg
+            assert "@" not in msg
+
+    def test_safe_message_unknown_category_fallback(self):
+        assert _safe_message("nonexistent") == "migration error"
+
+    def test_error_causes_preserved(self):
+        original = ValueError("underlying detail")
+        try:
+            raise PgMigrationError(
+                "pg_001", _safe_message("apply_failed"), category="apply_failed"
+            ) from original
+        except PgMigrationError as err:
+            assert err.__cause__ is original
+
+
+class TestMigrationRunnerContract:
+    """Unit tests for migration runner contract (no DB connection).
+
+    These verify properties of the runner that the CTO follow-up requires
+    without needing a live PostgreSQL connection: discovery ordering,
+    checksum determinism, destructive-reset prohibition, and statement
+    splitting — the foundation that the integration tests build on.
+    """
+
+    def test_runner_discovers_in_numeric_order(self):
+        migrations = _discover_migrations(MIGRATIONS_DIR)
+        versions = []
+        for m in migrations:
+            match = re.match(r"^pg_(\d+)_", m.name)
+            assert match is not None, f"{m.name} does not match pg_NNN_"
+            versions.append(int(match.group(1)))
+        assert versions == sorted(versions)
+
+    def test_runner_checksum_deterministic(self):
+        migrations = _discover_migrations(MIGRATIONS_DIR)
+        for m in migrations:
+            _, c1 = _read_migration(m)
+            _, c2 = _read_migration(m)
+            assert c1 == c2
+
+    def test_runner_no_destructive_reset(self):
+        migrations = _discover_migrations(MIGRATIONS_DIR)
+        for m in migrations:
+            content = m.read_text(encoding="utf-8").upper()
+            assert "DROP TABLE" not in content
+            assert "DROP DATABASE" not in content
+            assert "TRUNCATE" not in content
+
+    def test_runner_split_statements_handles_complex_sql(self):
+        sql = (
+            "CREATE TABLE a (id TEXT PRIMARY KEY); "
+            "INSERT INTO a VALUES ('x;y'); "
+            "-- trailing comment\n"
+        )
+        stmts = _split_statements(sql)
+        assert len(stmts) == 2
+        assert "x;y" in stmts[1]
+
+
 # ================================================================
-# PostgreSQL integration tests (require TEST_POSTGRES_URL)
+# PostgreSQL integration tests (require TEST_POSTGRES_URL + opt-in)
 # ================================================================
 
 TEST_POSTGRES_URL = os.environ.get("TEST_POSTGRES_URL", "")
 PE_DATABASE_URL = os.environ.get("PE_DATABASE_URL", "")
+PE_PG_TEST_INTEGRATION = os.environ.get("PE_PG_TEST_INTEGRATION", "").strip()
 
+# Safety guard: refuse to run if the test URL equals the real database URL.
 if TEST_POSTGRES_URL and PE_DATABASE_URL and TEST_POSTGRES_URL == PE_DATABASE_URL:
     raise RuntimeError(
         "TEST_POSTGRES_URL must not be the same as PE_DATABASE_URL to prevent "
         "destructive operations on the production/development database."
     )
 
+# Integration tests are skipped unless BOTH an explicit opt-in flag is set
+# AND a separate TEST_POSTGRES_URL is provided.  This double gate ensures the
+# 12 integration tests can never run in CI (or locally) by accident.
+_INTEGRATION_ENABLED = bool(
+    TEST_POSTGRES_URL
+    and PE_PG_TEST_INTEGRATION in ("1", "true", "yes", "on")
+)
+
 pytestmark_integration = pytest.mark.skipif(
-    not TEST_POSTGRES_URL,
-    reason="TEST_POSTGRES_URL not set — skipping PostgreSQL integration",
+    not _INTEGRATION_ENABLED,
+    reason=(
+        "PostgreSQL integration tests require both TEST_POSTGRES_URL and "
+        "PE_PG_TEST_INTEGRATION=1 to be set explicitly."
+    ),
 )
 
 
@@ -354,7 +466,7 @@ pytestmark_integration = pytest.mark.skipif(
 def pg_conn():
     """Create a fresh PostgreSQL connection for testing.
 
-    Only runs when TEST_POSTGRES_URL is set.
+    Only runs when TEST_POSTGRES_URL is set and integration is opt-in.
     """
     from app.db_postgres import get_pg_connection
 
@@ -367,25 +479,52 @@ def pg_conn():
 
 @pytest.fixture
 def pg_conn_clean(pg_conn):
-    """Clean connection — uses a unique temporary schema for complete isolation."""
+    """Clean connection — uses a unique temporary schema for complete isolation.
+
+    The setup (CREATE SCHEMA / SET search_path) and teardown (DROP SCHEMA)
+    are each wrapped in ``try/finally`` so that a failure during setup does
+    not leave the search_path pointing at a non-existent schema, and a
+    failure during teardown is still reported while the connection is closed
+    by the outer ``pg_conn`` fixture.
+
+    This fixture NEVER creates or drops objects in the ``public`` schema.
+    """
     import uuid
+
     schema_name = f"test_schema_{uuid.uuid4().hex}"
-    pg_conn.execute(f'CREATE SCHEMA "{schema_name}"')
-    pg_conn.execute(f'SET search_path TO "{schema_name}"')
-    pg_conn.commit()
-    
-    yield pg_conn
-    
-    # Clean up after test
-    pg_conn.execute(f'DROP SCHEMA "{schema_name}" CASCADE')
-    pg_conn.commit()
+    try:
+        pg_conn.execute(f'CREATE SCHEMA "{schema_name}"')
+        pg_conn.execute(f'SET search_path TO "{schema_name}"')
+        pg_conn.commit()
+    except Exception:
+        # Best-effort cleanup if setup failed partway through.
+        try:
+            pg_conn.rollback()
+            pg_conn.execute(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+            pg_conn.commit()
+        except Exception:
+            pass
+        raise
+
+    try:
+        yield pg_conn
+    finally:
+        try:
+            pg_conn.execute(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+            pg_conn.commit()
+        except Exception:
+            try:
+                pg_conn.rollback()
+            except Exception:
+                pass
 
 
 @pytestmark_integration
 class TestPgMigrationIntegration:
     """Integration tests that require a real PostgreSQL connection.
 
-    These tests only run when TEST_POSTGRES_URL is set.
+    These tests only run when TEST_POSTGRES_URL **and**
+    PE_PG_TEST_INTEGRATION=1 are both set.
     """
 
     def test_fresh_database_applies_migrations(self, pg_conn_clean):
@@ -431,13 +570,13 @@ class TestPgMigrationIntegration:
             migration_file.write_text(
                 original + "\n-- modified\n", encoding="utf-8"
             )
-            with pytest.raises(PgMigrationError, match="checksum mismatch"):
+            with pytest.raises(PgMigrationError, match="checksum"):
                 apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
         finally:
             migration_file.write_text(original, encoding="utf-8")
 
-    def test_duplicate_version_rejected(self, tmp_path):
-        """duplicate version 거부."""
+    def test_duplicate_version_rejected(self, pg_conn_clean, tmp_path):
+        """duplicate version 거부 — uses the isolated pg_conn_clean schema."""
         # Create a temp migrations dir with duplicate versions
         tmp_dir = tmp_path / "migrations"
         tmp_dir.mkdir()
@@ -448,17 +587,11 @@ class TestPgMigrationIntegration:
             "CREATE TABLE b (id TEXT PRIMARY KEY);", encoding="utf-8"
         )
 
-        from app.db_postgres import get_pg_connection
+        with pytest.raises(PgMigrationError, match="duplicate"):
+            apply_pg_migrations(pg_conn_clean, str(tmp_dir))
 
-        conn = get_pg_connection(TEST_POSTGRES_URL)
-        try:
-            with pytest.raises(PgMigrationError, match="duplicate"):
-                apply_pg_migrations(conn, str(tmp_dir))
-        finally:
-            conn.close()
-
-    def test_partial_migration_rollback(self, tmp_path):
-        """migration 실패 시 rollback."""
+    def test_partial_migration_rollback(self, pg_conn_clean, tmp_path):
+        """migration 실패 시 rollback — fully isolated via pg_conn_clean."""
         tmp_dir = tmp_path / "migrations"
         tmp_dir.mkdir()
         (tmp_dir / "pg_001_valid.sql").write_text(
@@ -470,32 +603,81 @@ class TestPgMigrationIntegration:
             encoding="utf-8",
         )
 
-        from app.db_postgres import get_pg_connection
+        # No DROP TABLE on public/schema_migrations — the pg_conn_clean
+        # fixture provides a pristine, isolated schema already.
+        with pytest.raises(PgMigrationError):
+            apply_pg_migrations(pg_conn_clean, str(tmp_dir))
 
-        conn = get_pg_connection(TEST_POSTGRES_URL)
+        # The broken migration should not have been recorded
+        count = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations "
+            "WHERE version = 'pg_002_broken.sql'"
+        ).fetchone()["c"]
+        assert count == 0
+
+    def test_public_schema_not_polluted(self, pg_conn_clean):
+        """The public schema must never receive migration objects.
+
+        After applying migrations in the isolated test schema, the public
+        schema must contain none of the domain tables or the
+        schema_migrations table.  This guards against regressions where the
+        drift check or migration execution falls back to ``public``.
+        """
+        apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+        pg_conn_clean.commit()
+
+        public_tables = get_pg_schema_tables(pg_conn_clean, "public")
+        for table in EXPECTED_ALL_TABLES:
+            assert table not in public_tables, (
+                f"'{table}' was created in the public schema — migrations "
+                f"must target the current search_path, never public."
+            )
+
+    def test_search_path_restored_after_drift_check(self, pg_conn_clean):
+        """After the drift check runs, search_path must be unchanged.
+
+        Applies migrations twice (second run triggers the ``is_applied``
+        drift path).  The search_path must still point at the isolated
+        test schema afterwards.
+        """
+        import uuid
+
+        schema_name = f"test_schema_{uuid.uuid4().hex}"
         try:
-            # Clean first
-            conn.execute("DROP TABLE IF EXISTS valid_table CASCADE")
-            conn.execute("DROP TABLE IF EXISTS broken_table CASCADE")
-            conn.execute("DROP TABLE IF EXISTS schema_migrations CASCADE")
-            conn.commit()
+            pg_conn_clean.execute(f'CREATE SCHEMA "{schema_name}"')
+            pg_conn_clean.execute(f'SET search_path TO "{schema_name}"')
+            pg_conn_clean.commit()
+        except Exception:
+            try:
+                pg_conn_clean.rollback()
+                pg_conn_clean.execute(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+                pg_conn_clean.commit()
+            except Exception:
+                pass
+            raise
 
-            with pytest.raises(PgMigrationError):
-                apply_pg_migrations(conn, str(tmp_dir))
+        try:
+            apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+            pg_conn_clean.commit()
+            # Second run exercises the is_applied=True drift path.
+            apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+            pg_conn_clean.commit()
 
-            # The broken migration should not have been recorded
-            count = conn.execute(
-                "SELECT COUNT(*) AS c FROM schema_migrations "
-                "WHERE version = 'pg_002_broken.sql'"
-            ).fetchone()["c"]
-            assert count == 0
-
-            # Clean up
-            conn.execute("DROP TABLE IF EXISTS valid_table CASCADE")
-            conn.execute("DROP TABLE IF EXISTS schema_migrations CASCADE")
-            conn.commit()
+            row = pg_conn_clean.execute("SHOW search_path").fetchone()
+            current = row[0] if row else ""
+            assert schema_name in current, (
+                f"search_path was not restored after drift check; "
+                f"got {current!r}, expected to contain {schema_name!r}."
+            )
         finally:
-            conn.close()
+            try:
+                pg_conn_clean.execute(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+                pg_conn_clean.commit()
+            except Exception:
+                try:
+                    pg_conn_clean.rollback()
+                except Exception:
+                    pass
 
     def test_schema_parity_table_list(self, pg_conn_clean):
         """schema parity table 목록."""

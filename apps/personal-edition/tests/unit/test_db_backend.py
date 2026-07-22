@@ -227,24 +227,28 @@ class TestRedactDatabaseUrl:
         url = "postgresql://user:secret@db.example.com:5432/mydb"
         redacted = redact_database_url(url)
         assert "secret" not in redacted
-        assert "[REDACTED]" in redacted
+        assert "user" not in redacted
+        assert "db.example.com" in redacted
 
     def test_redacts_password_with_query_params(self):
         url = "postgresql://user:secret@db.example.com:5432/mydb?sslmode=require"
         redacted = redact_database_url(url)
         assert "secret" not in redacted
+        assert "user" not in redacted
         assert "?" not in redacted
 
     def test_redacts_empty_username_password(self):
         url = "postgresql://:pass@db.example.com/mydb"
         redacted = redact_database_url(url)
         assert "pass" not in redacted
+        assert "db.example.com" in redacted
 
     def test_no_password_no_redaction_needed(self):
         url = "postgresql://user@db.example.com:5432/mydb"
         redacted = redact_database_url(url)
-        # user is shown but no password to redact
-        assert "user" in redacted
+        # The entire userinfo (username included) is now stripped.
+        assert "user" not in redacted
+        assert "db.example.com" in redacted
 
     def test_no_userinfo(self):
         url = "postgresql://host/db"
@@ -286,5 +290,8 @@ class TestRedactDatabaseUrl:
         # The raw password must not appear in repr
         assert "postgresql://user:secret" not in repr_str
         assert ":secret@" not in repr_str
-        # The redacted version should be present
-        assert "[REDACTED]" in repr_str
+        # The entire userinfo is stripped, so the username must not appear
+        # in a credential-bearing context either.
+        assert "user:secret" not in repr_str
+        # The redacted URL (host-only, no userinfo) should be present.
+        assert "host/db" in repr_str

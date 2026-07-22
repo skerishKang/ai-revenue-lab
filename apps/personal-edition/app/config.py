@@ -26,39 +26,44 @@ _POSTGRES_URL_RE = re.compile(
 )
 
 def redact_database_url(url: str) -> str:
-    """Redact password (and userinfo) from a PostgreSQL connection URL.
+    """Redact all userinfo from a PostgreSQL connection URL.
 
-    Returns a safe representation that never contains the password or
-    query parameters.  If the URL does not look like a postgres URL it is
-    returned unchanged (SQLite paths contain no credentials).
+    The entire userinfo component (username **and** password) is removed, and
+    any query string and fragment are dropped entirely — query parameters may
+    contain additional secrets such as ``sslmode`` with credentials or
+    provider-specific auth options.  Only the scheme, host, port and path are
+    preserved.
+
+    A malformed postgres URL (no parseable host) is reduced to a fixed
+    placeholder so that no partial userinfo can leak.
+
+    For non-postgres URLs (e.g. SQLite paths) the query string is stripped as
+    a best-effort and the rest is returned unchanged.
     """
     if not isinstance(url, str) or not url:
         return url
     try:
         parsed = urlparse(url)
     except Exception:
-        # Not a parseable URL — strip query params as a best-effort.
         return url.split("?", 1)[0]
 
     scheme = (parsed.scheme or "").lower()
     if scheme not in ("postgresql", "postgres"):
-        # Not a postgres URL (e.g. SQLite path) — no credentials to redact.
+        # Not a postgres URL (e.g. SQLite path) — no userinfo to redact.
         return url.split("?", 1)[0]
 
-    if not parsed.hostname:
-        return url.split("?", 1)[0]
-
-    user = parsed.username or ""
     host = parsed.hostname
+    if not host:
+        # Malformed postgres URL — never echo back the raw string.
+        return "postgresql://[REDACTED]"
+
     port = f":{parsed.port}" if parsed.port else ""
-
-    if user:
-        netloc = f"{user}:[REDACTED]@{host}{port}"
-    else:
-        netloc = f"{host}{port}"
-
-    # Strip query parameters and fragment entirely.
-    return urlunparse(parsed._replace(netloc=netloc, query="", params="", fragment=""))
+    path = parsed.path or ""
+    # Drop userinfo, query and fragment entirely.
+    netloc = f"{host}{port}"
+    return urlunparse(parsed._replace(
+        netloc=netloc, query="", params="", fragment="", path=path,
+    ))
 
 
 class Settings(BaseSettings):
