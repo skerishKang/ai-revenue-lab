@@ -21,10 +21,11 @@ This repository is the portfolio-level workspace. Each revenue experiment has an
 
 ```text
 apps/
-├─ personal-edition/   # active first implementation
-├─ living-travel/      # active product-design track
-├─ world-feed/         # active information-research track
-└─ living-fiction/     # active narrative-design track
+├─ personal-edition/          # active first implementation
+├─ living-travel/             # active product-design track
+├─ world-feed/                # active information-research track
+├─ living-fiction/            # active narrative-design track
+└─ personal-video-archive/    # Business 13 incubation track
 ```
 
 Product-specific code, tests, configuration, migrations, scripts, and fixtures must remain inside the corresponding workspace. Shared code is extracted only after at least two working products demonstrate the same requirement.
@@ -40,6 +41,7 @@ See:
 - **Living Travel** — travel letters that adapt to the reader's daily feedback.
 - **World Feed** — a personalized global-local information feed.
 - **Living Fiction** — serialized stories whose optional branches react to reader choices and comments.
+- **Personal Video Archive (Business 13)** — user-defined topic feeds for newly published YouTube videos, combined with private viewing reflections, plans, ratings, tags, and records.
 
 ## Operating model
 
@@ -56,6 +58,7 @@ See:
 - product-specific workspace structure established;
 - Personal Edition implementation contract and HY3 benchmark established;
 - implementation begins with GitHub Issue #3 under `apps/personal-edition/`;
+- Personal Video Archive registered as Business 13 incubation under `apps/personal-video-archive/` with Issue #60;
 - other product tracks continue in parallel through research and product contracts, not speculative code.
 
 ## Governance rule
