@@ -300,7 +300,7 @@ def test_pending_branch_body_blocked(app_client, db_conn):
 
     # Try to access the pending branch
     resp = client.get(f"/read/branch/{branch_id}")
-    assert resp.status_code == 403
+    assert resp.status_code == 404
 
 
 # ── Admin tests ────────────────────────────────────────────────────────────
@@ -610,7 +610,7 @@ def test_security_headers(app_client):
     """Security headers are present on responses."""
     client, _ = app_client
     resp = client.get("/access")
-    assert resp.headers["Cache-Control"] == "no-store"
+    assert resp.headers["Cache-Control"] == "no-store, private"
     assert resp.headers["X-Frame-Options"] == "DENY"
     assert resp.headers["X-Content-Type-Options"] == "nosniff"
     assert "Content-Security-Policy" in resp.headers

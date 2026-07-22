@@ -30,7 +30,7 @@
   <div class="error-box">{{ error }}</div>
   {% endif %}
 
-  <form method="POST" action="/read" id="choice-form">
+  <form method="POST" action="/read/choice" id="choice-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <div class="form-group">
       <label for="comment">독자 의견 (선택)</label>

@@ -323,7 +323,9 @@ def publish_episode_in_tx(conn: sqlite3.Connection, episode_id: str) -> bool:
     transaction — the calling service owns it so the state change and its
     audit row commit or roll back atomically. The ``pending_review`` guard
     makes a duplicate/stale decision a no-op (returns ``False``) instead of
-    corrupting state.
+    corrupting state, and the ``episode_type='personal_branch'`` guard ensures
+    the editorial review flow can never publish a canon episode (canon is
+    published only through the standalone :func:`publish_episode`).
     """
     if not conn.in_transaction:
         raise RepositoryTransactionError(
@@ -331,7 +333,8 @@ def publish_episode_in_tx(conn: sqlite3.Connection, episode_id: str) -> bool:
         )
     cursor = conn.execute(
         "UPDATE episodes SET review_state = 'published' "
-        "WHERE id = ? AND review_state = 'pending_review'",
+        "WHERE id = ? AND review_state = 'pending_review' "
+        "AND episode_type = 'personal_branch'",
         (episode_id,),
     )
     return cursor.rowcount > 0
@@ -341,7 +344,8 @@ def reject_episode_in_tx(conn: sqlite3.Connection, episode_id: str) -> bool:
     """Set ``review_state='rejected'`` inside a caller-owned transaction.
 
     Transaction-aware counterpart of :func:`reject_episode`; see
-    :func:`publish_episode_in_tx` for the contract.
+    :func:`publish_episode_in_tx` for the contract (including the
+    ``personal_branch``-only guard that keeps canon out of the review flow).
     """
     if not conn.in_transaction:
         raise RepositoryTransactionError(
@@ -349,7 +353,8 @@ def reject_episode_in_tx(conn: sqlite3.Connection, episode_id: str) -> bool:
         )
     cursor = conn.execute(
         "UPDATE episodes SET review_state = 'rejected' "
-        "WHERE id = ? AND review_state = 'pending_review'",
+        "WHERE id = ? AND review_state = 'pending_review' "
+        "AND episode_type = 'personal_branch'",
         (episode_id,),
     )
     return cursor.rowcount > 0

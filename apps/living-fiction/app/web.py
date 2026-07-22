@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import copy
 import json
-import secrets
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -33,6 +32,7 @@ from app import auth
 from app import branch_repository as branch_repo
 from app import canon_repository as canon_repo
 from app import choice_repository as choice_repo
+from app import choice_service
 from app import episode_repository as ep_repo
 from app import generation_run_repository as gr_repo
 from app import reader_repository as reader_repo
@@ -41,8 +41,6 @@ from app import world_repository as world_repo
 from app.ai.mock import MockProvider
 from app.config import settings
 from app.db import get_connection
-from app.domain.enums import EpisodeType, ReviewState
-from app.pipeline.service import GenerationRequest, generate_personal_branch
 from app.preview_data import (
     BRANCH_EPISODE_CONTENT,
     BRANCH_EPISODE_PLAN,
@@ -56,6 +54,7 @@ ADMIN_COOKIE = auth.ADMIN_COOKIE_NAME
 READER_PREAUTH_COOKIE = auth.READER_PREAUTH_COOKIE_NAME
 ADMIN_PREAUTH_COOKIE = auth.ADMIN_PREAUTH_COOKIE_NAME
 WORLD_ID = WORLD_STATE.world_id
+CANON_CHECKPOINT_ID = "checkpoint-canon-1"
 
 
 # ── Security headers middleware ────────────────────────────────────────────
@@ -64,17 +63,22 @@ WORLD_ID = WORLD_STATE.world_id
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Scope security headers by response kind.
 
-    HTML documents receive the full defensive set (``no-store``, framing
-    protection, CSP). Non-HTML responses (the JSON health probe and static
-    assets) receive only the minimal ``nosniff`` hint so immutable static
-    files are not forced to ``no-store``.
+    HTML documents receive the full defensive set: ``no-store, private`` plus
+    ``Pragma: no-cache`` (legacy caches), ``X-Robots-Tag`` (never indexed),
+    ``Referrer-Policy: no-referrer`` (never leak URLs/tokens via Referer),
+    framing protection, ``nosniff``, and CSP. Non-HTML responses (the JSON
+    health probe and static assets) receive only the minimal ``nosniff`` hint
+    so immutable static files are not forced to ``no-store``.
     """
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
         content_type = response.headers.get("content-type", "")
         if content_type.startswith("text/html"):
-            response.headers["Cache-Control"] = "no-store"
+            response.headers["Cache-Control"] = "no-store, private"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
+            response.headers["Referrer-Policy"] = "no-referrer"
             response.headers["X-Frame-Options"] = "DENY"
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["Content-Security-Policy"] = (
@@ -93,9 +97,14 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 # ── DB dependency ──────────────────────────────────────────────────────────
 
 
-def get_db() -> sqlite3.Connection:
-    """Provide a per-request SQLite connection."""
-    conn = get_connection(settings.database_path)
+def get_db(request: Request) -> sqlite3.Connection:
+    """Provide a per-request SQLite connection.
+
+    Uses ``request.app.state.db_path`` (resolved once in the factory) so the
+    per-request connection always targets the same database file the startup
+    migrations ran against — never a divergent ``settings.database_path``.
+    """
+    conn = get_connection(request.app.state.db_path)
     try:
         yield conn
     finally:
@@ -175,6 +184,73 @@ def _verify_admin_csrf(session: dict[str, Any], provided: str | None) -> None:
         provided,
     ):
         raise HTTPException(status_code=403, detail="CSRF verification failed")
+
+
+# ── Origin / Host verification ─────────────────────────────────────────────
+
+
+def _expected_origin(request: Request) -> str:
+    """Derive the expected origin from the request's own scheme + Host header.
+
+    Never trusts ``X-Forwarded-*`` headers: the scheme comes from the ASGI
+    scope (the hop into this process) and the host from the raw ``Host`` header.
+    """
+    host = request.headers.get("host", "")
+    return f"{request.url.scheme}://{host}"
+
+
+def _verify_request_origin(request: Request) -> None:
+    """Reject state-changing requests whose Origin/Host is not this app.
+
+    Defense-in-depth against CSRF and DNS-rebinding, layered on top of the
+    per-form CSRF token:
+
+    * With an ``Origin`` header present, it must exactly match a configured
+      allowed origin (``LF_ALLOWED_ORIGINS``) or — when none are configured —
+      the origin derived from the request's own ``Host``.
+    * With no ``Origin`` header (same-origin form posts, some privacy modes),
+      the ``Host`` header must be present and, when origins are configured,
+      match a configured host. Outside production with no configured origins the
+      check is lenient (a present Host is accepted) so local development works
+      without configuration; in production with no configured origins it fails
+      closed rather than trusting an attacker-controllable Host.
+
+    ``X-Forwarded-*`` headers are never consulted. Every failure raises one
+    generic 403 so no condition is revealed.
+    """
+    configured = {
+        origin.strip()
+        for origin in settings.allowed_origins.split(",")
+        if origin.strip()
+    }
+    origin = request.headers.get("origin")
+    if origin:
+        if configured:
+            if origin not in configured:
+                raise HTTPException(
+                    status_code=403, detail="Invalid request origin"
+                )
+            return
+        if origin != _expected_origin(request):
+            raise HTTPException(
+                status_code=403, detail="Invalid request origin"
+            )
+        return
+    # No Origin header — fall back to a Host check.
+    host = request.headers.get("host")
+    if not host:
+        raise HTTPException(status_code=403, detail="Invalid request origin")
+    if configured:
+        allowed_hosts = {o.split("://", 1)[-1] for o in configured}
+        if host not in allowed_hosts:
+            raise HTTPException(
+                status_code=403, detail="Invalid request origin"
+            )
+        return
+    if settings.is_production:
+        # No allowlist to verify against in production: fail closed.
+        raise HTTPException(status_code=403, detail="Invalid request origin")
+    # Lenient non-production: a present Host is accepted.
 
 
 # ── Helper functions ───────────────────────────────────────────────────────
@@ -306,7 +382,8 @@ def register_web_routes(app: FastAPI) -> None:
             {"csrf_token": csrf_token, "error": None},
         )
         auth.set_preauth_cookie(
-            response, READER_PREAUTH_COOKIE, csrf_token, is_prod
+            response, READER_PREAUTH_COOKIE, csrf_token, is_prod,
+            auth.READER_PREAUTH_COOKIE_PATH,
         )
         return response
 
@@ -334,8 +411,14 @@ def register_web_routes(app: FastAPI) -> None:
                     "error": "초대 코드가 올바르지 않거나 이미 사용되었습니다.",
                 },
             )
-            auth.set_preauth_cookie(resp, READER_PREAUTH_COOKIE, csrf, is_prod)
+            auth.set_preauth_cookie(
+                resp, READER_PREAUTH_COOKIE, csrf, is_prod,
+                auth.READER_PREAUTH_COOKIE_PATH,
+            )
             return resp
+
+        # Reject cross-origin submissions before any credential check.
+        _verify_request_origin(request)
 
         # Verify pre-auth CSRF (signed double-submit cookie)
         cookie_value = request.cookies.get(READER_PREAUTH_COOKIE)
@@ -365,7 +448,9 @@ def register_web_routes(app: FastAPI) -> None:
 
         response = RedirectResponse(url="/read", status_code=status.HTTP_303_SEE_OTHER)
         auth.set_reader_cookie(response, token, is_prod)
-        auth.clear_preauth_cookie(response, READER_PREAUTH_COOKIE)
+        auth.clear_preauth_cookie(
+            response, READER_PREAUTH_COOKIE, auth.READER_PREAUTH_COOKIE_PATH
+        )
         return response
 
     # ── Reader: canon read ───────────────────────────────────────────────
@@ -440,31 +525,27 @@ def register_web_routes(app: FastAPI) -> None:
 
     # ── Reader: choice submission ──────────────────────────────────────────
 
-    @app.post("/read", response_class=HTMLResponse)
-    async def choice_submit(
+    def _process_choice_submission(
         request: Request,
-        conn: sqlite3.Connection = Depends(get_db),
-        choice: str = Form(...),
-        comment: str | None = Form(None),
-        csrf_token: str = Form(""),
+        conn: sqlite3.Connection,
+        session: dict[str, Any],
+        choice: str,
+        comment: str | None,
     ):
-        session = _get_reader_session(request, conn)
-        if session is None:
-            return RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
+        """Validate and apply the reader's canon choice via the choice service.
 
-        # Verify CSRF
-        _verify_reader_csrf(session, csrf_token)
-
+        Shared by the canonical ``POST /read/choice`` route and the
+        compatibility ``POST /read`` route so both enforce the identical
+        one-choice-per-canon, privacy-safe, generation-recoverable contract.
+        """
         reader_id = session["reader_id"]
 
-        # Get latest published canon episode
         episode = ep_repo.get_latest_published_canon_episode(conn, WORLD_ID)
         if episode is None:
             raise HTTPException(status_code=404, detail="Canon episode not found")
 
         choice_options = _get_choice_options(episode)
 
-        # Validate choice index
         try:
             choice_idx = int(choice)
         except (ValueError, TypeError):
@@ -489,47 +570,64 @@ def register_web_routes(app: FastAPI) -> None:
 
         choice_text = choice_options[choice_idx]
 
-        # Create reader choice
-        choice_id = secrets.token_urlsafe(16)
-        reader_choice = choice_repo.create_reader_choice(
+        submission = choice_service.submit_reader_choice(
             conn,
-            choice_id=choice_id,
+            world=WORLD_STATE,
+            world_id=WORLD_ID,
             reader_id=reader_id,
             canon_episode_id=episode.id,
+            canon_checkpoint_id=CANON_CHECKPOINT_ID,
             choice_text=choice_text,
             comment=comment,
+            build_provider=_make_branch_provider,
         )
 
-        # Generate personal branch via service layer
-        provider = _make_branch_provider(reader_choice.id, choice_text, comment)
-        gen_request = GenerationRequest(
-            world=WORLD_STATE,
-            episode_type=EpisodeType.PERSONAL_BRANCH,
-            reader_id=reader_id,
-            reader_choice_id=reader_choice.id,
-            reader_choice_text=choice_text,
-            reader_comment=comment,
-        )
-        result = generate_personal_branch(
-            conn, provider, gen_request,
-            world_id=WORLD_ID,
-            canon_checkpoint_id="checkpoint-canon-1",
-            prior_episode_id=episode.id,
-        )
-
-        if not result.succeeded:
-            # Clean up the choice if generation failed
-            # (choice was created but not applied)
+        if submission.status == "generation_failed":
             return RedirectResponse(
                 url="/read/status?error=1",
                 status_code=status.HTTP_303_SEE_OTHER,
             )
-
-        # PRG redirect to status page
+        # "submitted" and "already_completed" both land on the status screen.
         return RedirectResponse(
             url="/read/status",
             status_code=status.HTTP_303_SEE_OTHER,
         )
+
+    @app.post("/read/choice", response_class=HTMLResponse)
+    async def choice_submit(
+        request: Request,
+        conn: sqlite3.Connection = Depends(get_db),
+        choice: str = Form(...),
+        comment: str | None = Form(None),
+        csrf_token: str = Form(""),
+    ):
+        """Canonical reader choice submission (the form's actual target)."""
+        session = _get_reader_session(request, conn)
+        if session is None:
+            return RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
+
+        _verify_request_origin(request)
+        _verify_reader_csrf(session, csrf_token)
+
+        return _process_choice_submission(request, conn, session, choice, comment)
+
+    @app.post("/read", response_class=HTMLResponse, include_in_schema=False)
+    async def choice_submit_compat(
+        request: Request,
+        conn: sqlite3.Connection = Depends(get_db),
+        choice: str = Form(...),
+        comment: str | None = Form(None),
+        csrf_token: str = Form(""),
+    ):
+        """Compatibility alias for ``POST /read/choice`` (identical contract)."""
+        session = _get_reader_session(request, conn)
+        if session is None:
+            return RedirectResponse(url="/access", status_code=status.HTTP_303_SEE_OTHER)
+
+        _verify_request_origin(request)
+        _verify_reader_csrf(session, csrf_token)
+
+        return _process_choice_submission(request, conn, session, choice, comment)
 
     # ── Reader: pending status ───────────────────────────────────────────
 
@@ -594,9 +692,11 @@ def register_web_routes(app: FastAPI) -> None:
         if episode is None:
             raise HTTPException(status_code=404, detail="Branch episode not found")
 
-        # Only published branches are visible to readers
+        # Only published branches are visible to readers. A reader's own
+        # not-yet-published branch is reported as 404 (not 403) so its
+        # existence and review state are never revealed.
         if episode.review_state != "published":
-            raise HTTPException(status_code=403, detail="Branch not yet published")
+            raise HTTPException(status_code=404, detail="Branch not found")
 
         prose = _render_prose(episode)
         applied = _get_applied_input(episode)
@@ -631,6 +731,7 @@ def register_web_routes(app: FastAPI) -> None:
         conn: sqlite3.Connection = Depends(get_db),
         csrf_token: str = Form(""),
     ):
+        _verify_request_origin(request)
         session = _get_reader_session(request, conn)
         if session is not None:
             _verify_reader_csrf(session, csrf_token)
@@ -670,7 +771,8 @@ def register_web_routes(app: FastAPI) -> None:
             {"csrf_token": csrf_token, "error": None},
         )
         auth.set_preauth_cookie(
-            response, ADMIN_PREAUTH_COOKIE, csrf_token, is_prod
+            response, ADMIN_PREAUTH_COOKIE, csrf_token, is_prod,
+            auth.ADMIN_PREAUTH_COOKIE_PATH,
         )
         return response
 
@@ -692,8 +794,14 @@ def register_web_routes(app: FastAPI) -> None:
                     "error": "운영자 비밀키가 올바르지 않습니다.",
                 },
             )
-            auth.set_preauth_cookie(resp, ADMIN_PREAUTH_COOKIE, csrf, is_prod)
+            auth.set_preauth_cookie(
+                resp, ADMIN_PREAUTH_COOKIE, csrf, is_prod,
+                auth.ADMIN_PREAUTH_COOKIE_PATH,
+            )
             return resp
+
+        # Reject cross-origin submissions before any credential check.
+        _verify_request_origin(request)
 
         # Verify pre-auth CSRF (signed double-submit cookie)
         cookie_value = request.cookies.get(ADMIN_PREAUTH_COOKIE)
@@ -718,7 +826,9 @@ def register_web_routes(app: FastAPI) -> None:
             url="/admin/review", status_code=status.HTTP_303_SEE_OTHER
         )
         auth.set_admin_cookie(response, token, is_prod)
-        auth.clear_preauth_cookie(response, ADMIN_PREAUTH_COOKIE)
+        auth.clear_preauth_cookie(
+            response, ADMIN_PREAUTH_COOKIE, auth.ADMIN_PREAUTH_COOKIE_PATH
+        )
         return response
 
     # ── Admin: review queue ──────────────────────────────────────────────
@@ -825,24 +935,15 @@ def register_web_routes(app: FastAPI) -> None:
                 url="/admin/access", status_code=status.HTTP_303_SEE_OTHER
             )
 
-        # Verify CSRF
+        _verify_request_origin(request)
         _verify_admin_csrf(session, csrf_token)
 
-        branch = branch_repo.get_branch(conn, branch_id)
-        if branch is None:
-            raise HTTPException(status_code=404, detail="Branch not found")
-
-        episode = ep_repo.get_episode_by_id(conn, branch.branch_episode_id)
-        if episode is None:
-            raise HTTPException(status_code=404, detail="Branch episode not found")
-
-        # Atomic publish + immutable audit trail. The service guards the
-        # pending_review transition, so a stale/duplicate decision fails
-        # cleanly instead of double-applying.
+        # Atomic publish + immutable audit trail. The service resolves the
+        # episode from the branch and guards the personal_branch +
+        # pending_review transition, so a stale, duplicate, mis-targeted, or
+        # canon-targeting decision fails cleanly instead of double-applying.
         try:
-            review_service.approve_branch(
-                conn, branch_id=branch.id, episode_id=episode.id
-            )
+            review_service.approve_branch(conn, branch_id=branch_id)
         except review_service.ReviewDecisionError:
             raise HTTPException(status_code=409, detail="Branch already decided")
 
@@ -866,31 +967,17 @@ def register_web_routes(app: FastAPI) -> None:
                 url="/admin/access", status_code=status.HTTP_303_SEE_OTHER
             )
 
-        # Verify CSRF
+        _verify_request_origin(request)
         _verify_admin_csrf(session, csrf_token)
 
-        if not rejection_reason or not rejection_reason.strip():
-            raise HTTPException(
-                status_code=400,
-                detail="Rejection reason is required",
-            )
-
-        branch = branch_repo.get_branch(conn, branch_id)
-        if branch is None:
-            raise HTTPException(status_code=404, detail="Branch not found")
-
-        episode = ep_repo.get_episode_by_id(conn, branch.branch_episode_id)
-        if episode is None:
-            raise HTTPException(status_code=404, detail="Branch episode not found")
-
-        # Atomic reject + immutable audit trail. The service guards the
-        # pending_review transition, so a stale/duplicate decision fails
-        # cleanly instead of double-applying.
+        # Atomic reject + immutable audit trail. The service resolves the
+        # episode from the branch, whitespace-normalizes the reason (rejecting
+        # an empty one), and guards the personal_branch + pending_review
+        # transition.
         try:
             review_service.reject_branch(
                 conn,
-                branch_id=branch.id,
-                episode_id=episode.id,
+                branch_id=branch_id,
                 rejection_reason=rejection_reason,
             )
         except review_service.ReviewDecisionError:

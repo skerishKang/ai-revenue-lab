@@ -417,7 +417,7 @@ def test_admin_session_expiry_and_revocation(db_conn):
 def test_html_responses_get_full_header_set(app_client):
     client, _ = app_client
     resp = client.get("/access")
-    assert resp.headers["Cache-Control"] == "no-store"
+    assert resp.headers["Cache-Control"] == "no-store, private"
     assert resp.headers["X-Frame-Options"] == "DENY"
     assert resp.headers["X-Content-Type-Options"] == "nosniff"
     assert "Content-Security-Policy" in resp.headers
@@ -489,11 +489,11 @@ def test_secret_validation_prod_rejects_placeholder():
         s.validate_web_secrets()
 
 
-def test_secret_validation_prod_accepts_strong_distinct():
+def test_secret_validation_prod_accepts_structurally_strong_distinct():
     s = Settings(
         env="production",
-        admin_secret="a" * 40,
-        credential_hmac_key="b" * 40,
-        session_hmac_key="c" * 40,
+        admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
+        credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
+        session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
     )
     s.validate_web_secrets()  # no error

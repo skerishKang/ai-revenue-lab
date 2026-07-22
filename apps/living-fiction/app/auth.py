@@ -26,7 +26,7 @@ import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 
-from app.utils import now_utc_iso
+from app.utils import now_utc_iso, parse_iso_datetime
 
 
 # ── Constants ──────────────────────────────────────────────────────────────
@@ -45,6 +45,26 @@ CSRF_READER_PREAUTH = "reader-preauth"
 CSRF_ADMIN_PREAUTH = "admin-preauth"
 CSRF_READER_SESSION = "reader-session"
 CSRF_ADMIN_SESSION = "admin-session"
+
+# Session-token HMAC purposes — reader and admin session digests use distinct
+# purposes so the same raw token never yields the same stored digest across the
+# two session tables (a reader token digest can never collide with an admin one).
+SESSION_TOKEN_READER_PURPOSE = "reader-session-token"
+SESSION_TOKEN_ADMIN_PURPOSE = "admin-session-token"
+
+# Idle expiry: independent of the absolute ``expires_at``, a session is rejected
+# once it has been unused for this long. ``last_seen_at`` is refreshed (throttled)
+# on valid use but never extends the absolute expiry.
+IDLE_TIMEOUT_SECONDS = 1800
+IDLE_REFRESH_INTERVAL_SECONDS = 60
+
+# Cookie paths. The reader session must span ``/read``, ``/read/*`` and
+# ``/logout``, so it stays at ``/``. Admin surfaces are scoped under ``/admin``
+# and each pre-auth cookie is scoped to the access route that sets it.
+READER_SESSION_COOKIE_PATH = "/"
+ADMIN_SESSION_COOKIE_PATH = "/admin"
+READER_PREAUTH_COOKIE_PATH = "/access"
+ADMIN_PREAUTH_COOKIE_PATH = "/admin/access"
 
 _CSRF_KEY_PREFIX = "lf-csrf-v1:"
 
@@ -224,8 +244,14 @@ def revoke_invite(conn: sqlite3.Connection, credential_id: str) -> bool:
 # ── Session management ─────────────────────────────────────────────────────
 
 
-def _hash_token(token: str, hmac_key: str) -> str:
-    return _hmac_digest(hmac_key, token)
+def _hash_reader_token(token: str, hmac_key: str) -> str:
+    """Keyed digest of a reader session token (reader-purpose bound)."""
+    return _hmac_digest(hmac_key, SESSION_TOKEN_READER_PURPOSE + ":" + token)
+
+
+def _hash_admin_token(token: str, hmac_key: str) -> str:
+    """Keyed digest of an admin session token (admin-purpose bound)."""
+    return _hmac_digest(hmac_key, SESSION_TOKEN_ADMIN_PURPOSE + ":" + token)
 
 
 def _generate_token() -> str:
@@ -234,6 +260,67 @@ def _generate_token() -> str:
 
 def _expiry(now: datetime, ttl_hours: int = SESSION_TTL_HOURS) -> str:
     return (now + timedelta(hours=ttl_hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _seconds_between(earlier_iso: str, later_iso: str) -> float | None:
+    """Return ``later - earlier`` in seconds, or None if either is unparseable."""
+    try:
+        earlier = parse_iso_datetime(earlier_iso)
+        later = parse_iso_datetime(later_iso)
+    except (ValueError, TypeError):
+        return None
+    return (later - earlier).total_seconds()
+
+
+def _idle_expired(last_seen_iso: str | None, now_iso: str) -> bool:
+    """True when a session has been idle longer than ``IDLE_TIMEOUT_SECONDS``.
+
+    A missing ``last_seen_at`` (e.g. a row created before migration 008) is
+    treated as not idle-expired so the absolute ``expires_at`` remains the only
+    cap for legacy rows.
+    """
+    if last_seen_iso is None:
+        return False
+    elapsed = _seconds_between(last_seen_iso, now_iso)
+    if elapsed is None:
+        return False
+    return elapsed >= IDLE_TIMEOUT_SECONDS
+
+
+def _touch_last_seen(
+    conn: sqlite3.Connection,
+    table: str,
+    token_digest: str,
+    last_seen_iso: str | None,
+    now_iso: str,
+) -> None:
+    """Throttled ``last_seen_at`` refresh for idle-expiry tracking.
+
+    Writes at most once per ``IDLE_REFRESH_INTERVAL_SECONDS`` to avoid a DB
+    write on every request. Never touches ``expires_at`` (so the absolute
+    expiry is never extended) and never revives a revoked/expired row. Skips
+    silently when the connection is owned by a caller transaction so it never
+    interferes with concurrent request handling.
+    """
+    if table not in ("reader_sessions", "admin_sessions"):
+        raise ValueError(f"unexpected session table: {table}")
+    if conn.in_transaction:
+        return
+    if last_seen_iso is not None:
+        elapsed = _seconds_between(last_seen_iso, now_iso)
+        if elapsed is not None and elapsed < IDLE_REFRESH_INTERVAL_SECONDS:
+            return
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        conn.execute(
+            f"UPDATE {table} SET last_seen_at = ? "
+            "WHERE token_digest = ? AND revoked_at IS NULL AND expires_at > ?",
+            (now_iso, token_digest, now_iso),
+        )
+        conn.commit()
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
 
 
 def create_reader_session(
@@ -245,20 +332,23 @@ def create_reader_session(
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     token = _generate_token()
-    token_digest = _hash_token(token, hmac_key)
+    token_digest = _hash_reader_token(token, hmac_key)
     # Stored digest kept for schema compatibility; form CSRF is derived
     # statelessly from the raw token (see compute_session_csrf).
     csrf_digest = _hmac_digest(hmac_key, token)
     now = datetime.now(timezone.utc)
     expires = _expiry(now)
+    now_iso = now_utc_iso()
     session_id = secrets.token_urlsafe(16)
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute(
             "INSERT INTO reader_sessions "
-            "(id, reader_id, token_digest, csrf_token_digest, created_at, expires_at) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (session_id, reader_id, token_digest, csrf_digest, now_utc_iso(), expires),
+            "(id, reader_id, token_digest, csrf_token_digest, created_at, "
+            "expires_at, last_seen_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (session_id, reader_id, token_digest, csrf_digest, now_iso,
+             expires, now_iso),
         )
         conn.commit()
         return token
@@ -276,18 +366,20 @@ def create_admin_session(
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
     token = _generate_token()
-    token_digest = _hash_token(token, hmac_key)
+    token_digest = _hash_admin_token(token, hmac_key)
     csrf_digest = _hmac_digest(hmac_key, token)
     now = datetime.now(timezone.utc)
     expires = _expiry(now)
+    now_iso = now_utc_iso()
     session_id = secrets.token_urlsafe(16)
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute(
             "INSERT INTO admin_sessions "
-            "(id, token_digest, csrf_token_digest, created_at, expires_at) "
-            "VALUES (?, ?, ?, ?, ?)",
-            (session_id, token_digest, csrf_digest, now_utc_iso(), expires),
+            "(id, token_digest, csrf_token_digest, created_at, expires_at, "
+            "last_seen_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (session_id, token_digest, csrf_digest, now_iso, expires, now_iso),
         )
         conn.commit()
         return token
@@ -304,13 +396,15 @@ def get_reader_session(
 ) -> str | None:
     """Return the reader ID if the session is valid.
 
-    A session is valid only when it exists, is not revoked, and is not past
-    its absolute expiry. Returns ``None`` otherwise.
+    A session is valid only when it exists, is not revoked, is not past its
+    absolute expiry, and has not been idle longer than ``IDLE_TIMEOUT_SECONDS``.
+    A valid lookup throttled-refreshes ``last_seen_at`` (never extending the
+    absolute expiry). Returns ``None`` otherwise.
     """
-    token_digest = _hash_token(token, hmac_key)
+    token_digest = _hash_reader_token(token, hmac_key)
     now = now_utc_iso()
     row = conn.execute(
-        "SELECT reader_id, expires_at, revoked_at "
+        "SELECT reader_id, expires_at, revoked_at, last_seen_at "
         "FROM reader_sessions WHERE token_digest = ?",
         (token_digest,),
     ).fetchone()
@@ -320,6 +414,11 @@ def get_reader_session(
         return None
     if row["expires_at"] < now:
         return None
+    if _idle_expired(row["last_seen_at"], now):
+        return None
+    _touch_last_seen(
+        conn, "reader_sessions", token_digest, row["last_seen_at"], now
+    )
     return row["reader_id"]
 
 
@@ -328,11 +427,16 @@ def get_admin_session(
     token: str,
     hmac_key: str,
 ) -> bool:
-    """Return True if the admin session is valid (exists, not revoked, not expired)."""
-    token_digest = _hash_token(token, hmac_key)
+    """Return True if the admin session is valid.
+
+    Valid means: exists, not revoked, not past absolute expiry, and not idle
+    longer than ``IDLE_TIMEOUT_SECONDS``. A valid lookup throttled-refreshes
+    ``last_seen_at`` (never extending the absolute expiry).
+    """
+    token_digest = _hash_admin_token(token, hmac_key)
     now = now_utc_iso()
     row = conn.execute(
-        "SELECT expires_at, revoked_at "
+        "SELECT expires_at, revoked_at, last_seen_at "
         "FROM admin_sessions WHERE token_digest = ?",
         (token_digest,),
     ).fetchone()
@@ -342,6 +446,11 @@ def get_admin_session(
         return False
     if row["expires_at"] < now:
         return False
+    if _idle_expired(row["last_seen_at"], now):
+        return False
+    _touch_last_seen(
+        conn, "admin_sessions", token_digest, row["last_seen_at"], now
+    )
     return True
 
 
@@ -353,7 +462,7 @@ def delete_reader_session(
     """Delete a reader session by raw token (logout)."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
-    token_digest = _hash_token(token, hmac_key)
+    token_digest = _hash_reader_token(token, hmac_key)
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute(
@@ -375,7 +484,7 @@ def delete_admin_session(
     """Delete an admin session by raw token (logout)."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
-    token_digest = _hash_token(token, hmac_key)
+    token_digest = _hash_admin_token(token, hmac_key)
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute(
@@ -397,7 +506,7 @@ def revoke_reader_session(
     """Soft-revoke a reader session by raw token."""
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
-    token_digest = _hash_token(token, hmac_key)
+    token_digest = _hash_reader_token(token, hmac_key)
     now = now_utc_iso()
     conn.execute("BEGIN IMMEDIATE")
     try:
@@ -443,7 +552,7 @@ def set_reader_cookie(response, token: str, is_production: bool) -> None:
     response.set_cookie(
         READER_COOKIE_NAME,
         token,
-        path="/",
+        path=READER_SESSION_COOKIE_PATH,
         httponly=True,
         samesite="lax",
         secure=is_production,
@@ -454,7 +563,7 @@ def set_admin_cookie(response, token: str, is_production: bool) -> None:
     response.set_cookie(
         ADMIN_COOKIE_NAME,
         token,
-        path="/",
+        path=ADMIN_SESSION_COOKIE_PATH,
         httponly=True,
         samesite="lax",
         secure=is_production,
@@ -462,13 +571,13 @@ def set_admin_cookie(response, token: str, is_production: bool) -> None:
 
 
 def set_preauth_cookie(
-    response, name: str, value: str, is_production: bool
+    response, name: str, value: str, is_production: bool, path: str
 ) -> None:
     """Set a pre-auth double-submit CSRF cookie (HttpOnly; not JS-readable)."""
     response.set_cookie(
         name,
         value,
-        path="/",
+        path=path,
         httponly=True,
         samesite="lax",
         secure=is_production,
@@ -476,12 +585,12 @@ def set_preauth_cookie(
 
 
 def clear_reader_cookie(response) -> None:
-    response.delete_cookie(READER_COOKIE_NAME, path="/")
+    response.delete_cookie(READER_COOKIE_NAME, path=READER_SESSION_COOKIE_PATH)
 
 
 def clear_admin_cookie(response) -> None:
-    response.delete_cookie(ADMIN_COOKIE_NAME, path="/")
+    response.delete_cookie(ADMIN_COOKIE_NAME, path=ADMIN_SESSION_COOKIE_PATH)
 
 
-def clear_preauth_cookie(response, name: str) -> None:
-    response.delete_cookie(name, path="/")
+def clear_preauth_cookie(response, name: str, path: str) -> None:
+    response.delete_cookie(name, path=path)

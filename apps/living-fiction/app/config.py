@@ -21,6 +21,46 @@ _PLACEHOLDER_SECRETS = {
 }
 
 
+def _structurally_weak(value: str) -> bool:
+    """Minimal structural-weakness check for a production secret.
+
+    This is deliberately NOT an entropy measurement — it makes no claim about
+    the randomness of a value. It only rejects secrets that are obviously
+    unfit for production:
+
+    * empty or whitespace-dominated strings;
+    * a single repeated character (``"aaaa..."``);
+    * a short repeating pattern (``"ababab..."``, ``"abcabcabc..."``);
+    * a value built around a known placeholder, including prefix/suffix and
+      repetition variants (``"changeme"``, ``"my-changeme-1"``,
+      ``"passwordpassword..."``).
+
+    A value that passes here is merely "not obviously weak"; it is still the
+    operator's responsibility to use a genuinely random secret.
+    """
+    stripped = value.strip()
+    if not stripped:
+        return True
+    # Whitespace-dominated: more than half the characters are whitespace.
+    if len(stripped) * 2 < len(value):
+        return True
+    # Single repeated character.
+    if len(set(stripped)) == 1:
+        return True
+    # Short repeating pattern: the whole value is a short unit repeated 3+ times.
+    for period in range(2, 9):
+        if len(stripped) % period == 0 and len(stripped) >= period * 3:
+            unit = stripped[:period]
+            if unit * (len(stripped) // period) == stripped:
+                return True
+    # Known placeholder, or a prefix/suffix/repeat variant of one.
+    lowered = stripped.lower()
+    for placeholder in _PLACEHOLDER_SECRETS:
+        if placeholder in lowered:
+            return True
+    return False
+
+
 class Settings(BaseSettings):
     env: str = "development"
     app_name: str = "living-fiction"
@@ -34,6 +74,12 @@ class Settings(BaseSettings):
     admin_secret: str = ""
     credential_hmac_key: str = ""
     session_hmac_key: str = ""
+
+    # Comma-separated list of allowed request origins (scheme://host[:port])
+    # for state-changing requests. Used for Origin/Host verification in
+    # production; empty means "derive from the request Host" (lenient only
+    # outside production).
+    allowed_origins: str = ""
 
     model_config = {
         "env_file": ".env",
@@ -70,9 +116,10 @@ class Settings(BaseSettings):
                 raise ValueError(
                     f"{name} must be at least 32 characters in production"
                 )
-            if value.strip().lower() in _PLACEHOLDER_SECRETS:
+            if _structurally_weak(value):
                 raise ValueError(
-                    f"{name} looks like a placeholder; set a real secret"
+                    f"{name} is structurally weak (repeated, patterned, or "
+                    "placeholder-like); set a genuinely random secret"
                 )
         values = list(secrets.values())
         if len(set(values)) != len(values):
