@@ -46,8 +46,8 @@ class TestRouteContracts:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
-        assert data["discovery_provider"] == "fake"
-        assert data["llm_provider"] == "fake"
+        assert "FakeVideoDiscoveryProvider" in data["discovery_provider"]
+        assert "FakeLanguageModelProvider" in data["llm_provider"]
 
     def test_records_search_returns_200(self, client):
         response = client.get("/records")
@@ -151,5 +151,6 @@ class TestFullWorkflowViaHTTP:
 
             # Try to sync — should handle error gracefully
             response = ac.post(f"/topics/{topic_id}/sync")
-            # Should not crash, should redirect or show error
-            assert response.status_code in (303, 500, 200)
+            # Should not crash, should redirect or show error (NOT 500)
+            assert response.status_code != 500
+            assert response.status_code in (303, 200)

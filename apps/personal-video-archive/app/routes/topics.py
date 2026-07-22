@@ -2,23 +2,20 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.db import get_connection
 from app.factory import _build_services, _render_template
-from app.services import TopicService
+from app.services import DiscoveryService, TopicService
 
 router = APIRouter()
 
-
-def _get_topic_service(request: Request) -> TopicService:
-    conn = get_connection(request.app.state.db_path)
-    repos = _build_services(conn)
-    return TopicService(
-        repos["topic"], repos["rule"],
-        request.app.state.llm_provider,
-    )
+# Valid feed state filters
+FEED_STATES = [
+    "all", "unseen", "opened", "saved", "in_progress",
+    "completed", "revisit", "irrelevant",
+]
 
 
 @router.get("/topics", response_class=HTMLResponse)
@@ -55,7 +52,6 @@ def create_topic(
             request.app.state.llm_provider,
         )
         topic, proposal = service.create_topic(name=name, intent=intent)
-        # Store the proposal in the session-like state via template context
         return _render_template(
             request,
             "topics/review_rule.html",
@@ -82,6 +78,8 @@ def accept_rule(
     duration_preference: str = Form("any"),
     shorts_preference: str = Form("include"),
     default_sort: str = Form("newest"),
+    date_window_start: str = Form(""),
+    date_window_end: str = Form(""),
 ):
     from app.domain.enums import (
         DefaultSort,
@@ -92,6 +90,36 @@ def accept_rule(
 
     def _split(s: str) -> list[str]:
         return [x.strip() for x in s.split(",") if x.strip()]
+
+    # Validate date window
+    from datetime import datetime
+    dws = date_window_start.strip() if date_window_start else None
+    dwe = date_window_end.strip() if date_window_end else None
+    if dws:
+        try:
+            datetime.strptime(dws, "%Y-%m-%d")
+        except ValueError:
+            return _render_template(
+                request, "error.html",
+                {"message": "Invalid date_window_start format (use YYYY-MM-DD)", "code": 400},
+                status_code=400,
+            )
+    if dwe:
+        try:
+            datetime.strptime(dwe, "%Y-%m-%d")
+        except ValueError:
+            return _render_template(
+                request, "error.html",
+                {"message": "Invalid date_window_end format (use YYYY-MM-DD)", "code": 400},
+                status_code=400,
+            )
+    if dws and dwe:
+        if datetime.strptime(dws, "%Y-%m-%d") > datetime.strptime(dwe, "%Y-%m-%d"):
+            return _render_template(
+                request, "error.html",
+                {"message": "date_window_start must not be after date_window_end", "code": 400},
+                status_code=400,
+            )
 
     proposal = QueryRuleProposal(
         primary_query=primary_query,
@@ -104,6 +132,8 @@ def accept_rule(
         duration_preference=DurationPreference(duration_preference),
         shorts_preference=ShortsPreference(shorts_preference),
         default_sort=DefaultSort(default_sort),
+        date_window_start=dws,
+        date_window_end=dwe,
     )
 
     conn = get_connection(request.app.state.db_path)
@@ -122,9 +152,11 @@ def accept_rule(
 
 
 @router.get("/topics/{topic_id}", response_class=HTMLResponse)
-def topic_feed(request: Request, topic_id: str):
-    from app.services import DiscoveryService
-
+def topic_feed(
+    request: Request,
+    topic_id: str,
+    state: str = "all",
+):
     conn = get_connection(request.app.state.db_path)
     try:
         repos = _build_services(conn)
@@ -148,7 +180,15 @@ def topic_feed(request: Request, topic_id: str):
             )
 
         rules = topic_service.get_active_rule(topic_id)
-        feed = discovery_service.get_topic_feed(topic_id)
+
+        # Normalize state filter
+        if state not in FEED_STATES:
+            state = "all"
+
+        state_filter = None if state == "all" else state
+        feed = discovery_service.get_topic_feed(
+            topic_id, state_filter=state_filter
+        )
 
         return _render_template(
             request, "topics/feed.html",
@@ -156,6 +196,8 @@ def topic_feed(request: Request, topic_id: str):
                 "topic": topic,
                 "rules": rules,
                 "feed": feed,
+                "current_state_filter": state,
+                "feed_states": FEED_STATES,
             },
         )
     finally:
@@ -176,6 +218,12 @@ def sync_topic(request: Request, topic_id: str):
             request.app.state.llm_provider,
         )
         run, feed = discovery_service.sync_topic(topic_id)
+        return RedirectResponse(
+            url=f"/topics/{topic_id}", status_code=303
+        )
+    except Exception:
+        # Provider unavailable or sync failure: SyncRun already marked
+        # failed by sync_topic's except block. Redirect to feed (NOT 500).
         return RedirectResponse(
             url=f"/topics/{topic_id}", status_code=303
         )

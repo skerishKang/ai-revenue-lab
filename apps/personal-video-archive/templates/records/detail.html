@@ -136,7 +136,6 @@
     <div class="proposal-card badge-ai">
         <strong>AI Suggestion</strong> — {{ proposal.proposal_type.value }}
         <p class="small">Created {{ proposal.created_at[:10] }}</p>
-        {% set data = proposal.proposed_json | fromjson %}
         <div class="proposal-preview">
             <details>
                 <summary>Preview proposal</summary>

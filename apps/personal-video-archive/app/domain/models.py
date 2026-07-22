@@ -41,8 +41,54 @@ _YOUTUBE_SHORTS_RE = re.compile(
 # Canonical form: youtu.be/<id> or youtube.com/watch?v=<id>
 _CANONICAL_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
-# A tag: 1-40 chars, must start with a letter, then alphanumeric + dash/underscore
-_TAG_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,39}$")
+# Tag contract: 1-40 chars, must start with a letter (Unicode-aware),
+# then letters/digits/spaces/hyphens/underscores. Rejects empty, control chars,
+# HTML/script, and duplicates (checked separately).
+_TAG_RE = re.compile(r"^[A-Za-z\uac00-\ud7a3][A-Za-z0-9\uac00-\ud7a3 _-]{0,39}$")
+
+def validate_tags(tags: list[str]) -> list[str]:
+    """Validate a list of tags using the shared tag contract.
+
+    Rules:
+    - Must start with a letter (Unicode-aware: Latin or Hangul)
+    - 1-40 chars: letters, digits, spaces, hyphens, underscores
+    - No control characters
+    - No HTML/script content
+    - No duplicates (case-insensitive)
+    - No empty tags
+    - No comma-only values
+
+    Returns the validated tag list. Raises ValueError on invalid input.
+    """
+    seen: set[str] = set()
+    result: list[str] = []
+    for tag in tags:
+        if not isinstance(tag, str):
+            raise ValueError(f"Tag must be a string, got {type(tag).__name__}")
+        stripped = tag.strip()
+        if not stripped:
+            raise ValueError("Tags cannot be empty")
+        if not _TAG_RE.match(stripped):
+            raise ValueError(
+                f"Invalid tag: {tag!r}. Tags must start with a letter "
+                f"and contain only letters, digits, spaces, hyphens, and "
+                f"underscores (1-40 chars)."
+            )
+        # Check for control characters
+        if any(ord(c) < 32 for c in stripped):
+            raise ValueError(f"Tag contains control characters: {tag!r}")
+        # Check for HTML/script
+        lower = stripped.lower()
+        if "<script" in lower or "javascript:" in lower or "onerror" in lower:
+            raise ValueError(f"Tag contains dangerous content: {tag!r}")
+        # Check for duplicates (case-insensitive)
+        key = stripped.lower()
+        if key in seen:
+            raise ValueError(f"Duplicate tag: {tag!r}")
+        seen.add(key)
+        result.append(stripped)
+    return result
+
 
 # ISO 8601-ish date or datetime
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")

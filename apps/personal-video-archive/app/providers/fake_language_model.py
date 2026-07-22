@@ -19,6 +19,7 @@ from app.domain.models import (
     RecordStructureProposal,
     RuleChangeProposal,
     VideoClassification,
+    validate_tags,
 )
 from app.providers import LanguageModelProvider
 from app.providers.fake_video_discovery import _deterministic_seed

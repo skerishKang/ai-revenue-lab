@@ -1,7 +1,7 @@
 # Personal Video Archive — Phase 1 Product Contract
 
-Business: **13**  
-Status: **Phase 1 MVP implemented**  
+Business: **13**
+Status: **Phase 1 MVP implemented**
 Tracking issue: **#62**
 
 ## 1. Product statement

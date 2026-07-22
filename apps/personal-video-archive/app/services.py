@@ -31,6 +31,7 @@ from app.domain.models import (
     Topic,
     TopicVideo,
     VideoClassification,
+    validate_tags,
 )
 from app.providers import (
     LanguageModelProvider,
@@ -46,6 +47,14 @@ from app.repositories import (
     VideoRepository,
     ViewingRecordRepository,
 )
+
+
+# Map match levels to deterministic scores
+_MATCH_SCORES = {
+    "strong": 1.0,
+    "possible": 0.5,
+    "noise": 0.0,
+}
 
 
 class TopicService:
@@ -138,6 +147,12 @@ class DiscoveryService:
             videos_added = 0
             videos_updated = 0
 
+            # Batch classify all videos in the page (not one-by-one)
+            classifications = self._llm.classify_videos(page.videos, rules)
+            cls_by_video = {
+                c.video_id: c for c in classifications
+            }
+
             for video in page.videos:
                 existing = self._videos.get_by_provider_id(
                     video.provider, video.provider_video_id
@@ -146,7 +161,6 @@ class DiscoveryService:
                     self._videos.upsert(video)
                     videos_added += 1
                 else:
-                    # Update metadata if changed
                     if existing.title != video.title or existing.view_count != video.view_count:
                         self._videos.upsert(video)
                         videos_updated += 1
@@ -154,13 +168,16 @@ class DiscoveryService:
                 # Link topic-video (deduplication handled by repository)
                 tv = self._topic_videos.link(topic_id, video.id)
 
-                # Apply LLM classification if available
-                # (in Phase 1, we use the fake provider)
-                classifications = self._llm.classify_videos([video], rules)
-                if classifications:
-                    cls = classifications[0]
-                    if cls.is_excluded_candidate:
-                        self._topic_videos.set_excluded(tv.id, True)
+                # Apply batch classification results
+                cls = cls_by_video.get(video.id)
+                if cls is not None:
+                    score = _MATCH_SCORES.get(cls.match_level, 0.0)
+                    self._topic_videos.update_match(
+                        tv.id,
+                        match_score=score,
+                        match_reasons=cls.reasons,
+                        is_excluded=cls.is_excluded_candidate,
+                    )
 
             # Record quota
             self._quota.record(
@@ -198,9 +215,17 @@ class DiscoveryService:
         topic_id: str,
         sort: str = "newest",
         exclude_irrelevant: bool = True,
-    ) -> list[tuple[TopicVideo, DiscoveredVideo]]:
-        return self._topic_videos.list_for_topic(
-            topic_id, sort=sort, exclude_irrelevant=exclude_irrelevant
+        state_filter: str | None = None,
+    ) -> list[tuple[TopicVideo, DiscoveredVideo, PrivateViewingRecord | None]]:
+        """Get topic feed with optional state filtering.
+
+        Returns (TopicVideo, DiscoveredVideo, record_or_none) tuples.
+        """
+        return self._topic_videos.list_for_topic_with_records(
+            topic_id,
+            sort=sort,
+            exclude_irrelevant=exclude_irrelevant,
+            state_filter=state_filter,
         )
 
     def get_video_classifications(
@@ -248,28 +273,63 @@ class RecordService:
     ) -> TimestampReference:
         return self._records.add_timestamp_ref(record_id, seconds, label)
 
+    def delete_timestamp_ref(self, ts_id: str) -> None:
+        self._records.delete_timestamp_ref(ts_id)
+
     def propose_structure(
         self, record_id: str, rough_notes: str
     ) -> ProposalRecord:
-        """Generate an LLM structure proposal from rough notes."""
+        """Generate an LLM structure proposal from rough notes.
+
+        Validation order:
+        1. Record existence check
+        2. Input length validation
+        3. Provider invocation (only after validation passes)
+        4. Result validation as RecordStructureProposal
+        5. Persist proposal with validation status
+        """
+        # 1. Record existence check
+        record = self._records.get(record_id)
+        if record is None:
+            raise ValueError(f"Record not found: {record_id}")
+
+        # 2. Input length validation BEFORE provider call
+        if len(rough_notes) > 20000:
+            return self._proposals.create(
+                proposal_type=ProposalType.RECORD_STRUCTURE,
+                proposed_json="{}",
+                input_text=rough_notes[:20000],
+                record_id=record_id,
+                validation_status=ValidationStatus.INVALID,
+                validation_error="input notes exceed 20000 characters",
+            )
+
+        # 3. Provider invocation (only after validation passes)
         proposal = self._llm.structure_record(rough_notes)
 
-        # Validate the proposal
+        # 4. Validate result as RecordStructureProposal
         validation_status = ValidationStatus.VALID
         validation_error = ""
-
-        # Check for excessive length
-        if len(rough_notes) > 20000:
+        try:
+            # Re-validate by constructing the model
+            RecordStructureProposal(
+                title=proposal.title,
+                summary=proposal.summary,
+                reflection=proposal.reflection,
+                learned_point=proposal.learned_point,
+                agreement=proposal.agreement,
+                disagreement=proposal.disagreement,
+                uncertainty=proposal.uncertainty,
+                follow_up_plan=proposal.follow_up_plan,
+                tags=proposal.tags,
+                timestamp_references=proposal.timestamp_references,
+                rating=proposal.rating,
+            )
+        except Exception as exc:
             validation_status = ValidationStatus.INVALID
-            validation_error = "input notes exceed 20000 characters"
+            validation_error = str(exc)
 
-        # Validate tags
-        for tag in proposal.tags:
-            if len(tag) > 40 or not tag[0].isalnum():
-                validation_status = ValidationStatus.INVALID
-                validation_error = f"invalid tag: {tag!r}"
-                break
-
+        # 5. Persist proposal with validation status
         proposed_json = json.dumps(
             proposal.model_dump(mode="json"), ensure_ascii=False
         )
@@ -286,49 +346,94 @@ class RecordService:
     def accept_structure_proposal(
         self, proposal_id: str
     ) -> PrivateViewingRecord | None:
-        """Accept a structure proposal and apply it to the record."""
+        """Accept a structure proposal and apply it to the record.
+
+        All operations are wrapped in a transaction. If any step fails,
+        all changes are rolled back.
+        """
         proposal = self._proposals.get(proposal_id)
         if proposal is None:
             raise ValueError(f"Proposal not found: {proposal_id}")
         if proposal.status != ProposalStatus.PENDING:
             raise ValueError(f"Proposal is not pending: {proposal.status}")
+        if proposal.proposal_type != ProposalType.RECORD_STRUCTURE:
+            raise ValueError(
+                f"Proposal is not a record_structure proposal: "
+                f"{proposal.proposal_type}"
+            )
+        if proposal.validation_status != ValidationStatus.VALID:
+            raise ValueError(
+                f"Proposal validation failed: {proposal.validation_error}"
+            )
 
-        data = json.loads(proposal.proposed_json)
+        # Revalidate persisted JSON as RecordStructureProposal
+        try:
+            data = json.loads(proposal.proposed_json)
+            RecordStructureProposal(
+                title=data.get("title", ""),
+                summary=data.get("summary", ""),
+                reflection=data.get("reflection", ""),
+                learned_point=data.get("learned_point", ""),
+                agreement=data.get("agreement", ""),
+                disagreement=data.get("disagreement", ""),
+                uncertainty=data.get("uncertainty", ""),
+                follow_up_plan=data.get("follow_up_plan", ""),
+                tags=data.get("tags", []),
+                timestamp_references=data.get("timestamp_references", []),
+                rating=data.get("rating"),
+            )
+        except (json.JSONDecodeError, Exception) as exc:
+            raise ValueError(f"Proposal JSON is invalid: {exc}")
+
         record = self._records.get(proposal.record_id)
         if record is None:
             raise ValueError(f"Record not found: {proposal.record_id}")
 
-        # Apply structured fields, but preserve original free_form_note
-        updates = {
-            "reflection": data.get("reflection", ""),
-            "learned_point": data.get("learned_point", ""),
-            "agreement": data.get("agreement", ""),
-            "disagreement": data.get("disagreement", ""),
-            "uncertainty": data.get("uncertainty", ""),
-            "follow_up_plan": data.get("follow_up_plan", ""),
-            "tags": data.get("tags", []),
-        }
+        # Use the shared connection for transaction
+        conn = self._records._conn
 
-        # Apply timestamp references
-        for ts_data in data.get("timestamp_references", []):
-            self._records.add_timestamp_ref(
-                record.id,
-                ts_data["timestamp_seconds"],
-                ts_data.get("label", ""),
+        try:
+            # Collect existing timestamp IDs for replacement
+            existing_ts = self._records.list_timestamp_refs(record.id)
+            existing_ts_ids = [ts.id for ts in existing_ts]
+
+            # Apply structured fields, preserve original free_form_note
+            updates = {
+                "reflection": data.get("reflection", ""),
+                "learned_point": data.get("learned_point", ""),
+                "agreement": data.get("agreement", ""),
+                "disagreement": data.get("disagreement", ""),
+                "uncertainty": data.get("uncertainty", ""),
+                "follow_up_plan": data.get("follow_up_plan", ""),
+                "tags": data.get("tags", []),
+            }
+
+            if data.get("rating") is not None:
+                updates["rating"] = data["rating"]
+
+            self._records.update(record.id, **updates)
+
+            # Replace timestamps: delete old, add new
+            for ts_id in existing_ts_ids:
+                self._records.delete_timestamp_ref(ts_id)
+
+            for ts_data in data.get("timestamp_references", []):
+                self._records.add_timestamp_ref(
+                    record.id,
+                    ts_data["timestamp_seconds"],
+                    ts_data.get("label", ""),
+                )
+
+            # Mark proposal as accepted
+            self._proposals.update_status(
+                proposal_id, ProposalStatus.ACCEPTED
             )
 
-        # Apply rating if provided
-        if data.get("rating") is not None:
-            updates["rating"] = data["rating"]
+            return self._records.get(record.id)
 
-        result = self._records.update(record.id, **updates)
-
-        # Mark proposal as accepted
-        self._proposals.update_status(
-            proposal_id, ProposalStatus.ACCEPTED
-        )
-
-        return result
+        except Exception:
+            conn.rollback()
+            raise
 
     def reject_structure_proposal(
         self, proposal_id: str
@@ -396,14 +501,33 @@ class ProposalService:
     def accept_rule_change(
         self, proposal_id: str
     ) -> QueryRule | None:
-        """Accept a rule-change proposal and apply it."""
+        """Accept a rule-change proposal and apply it.
+
+        Revalidates persisted JSON as RuleChangeProposal before applying.
+        """
         proposal = self._proposals.get(proposal_id)
         if proposal is None:
             raise ValueError(f"Proposal not found: {proposal_id}")
         if proposal.status != ProposalStatus.PENDING:
             raise ValueError(f"Proposal is not pending: {proposal.status}")
 
-        data = json.loads(proposal.proposed_json)
+        # Revalidate persisted JSON as RuleChangeProposal
+        try:
+            data = json.loads(proposal.proposed_json)
+            RuleChangeProposal(
+                added_excluded_terms=data.get("added_excluded_terms", []),
+                added_related_queries=data.get("added_related_queries", []),
+                preferred_channels=data.get("preferred_channels", []),
+                excluded_channels=data.get("excluded_channels", []),
+                exclude_shorts=data.get("exclude_shorts", False),
+                date_window_start=data.get("date_window_start"),
+                date_window_end=data.get("date_window_end"),
+                duration_preference=data.get("duration_preference"),
+                rationale=data.get("rationale", ""),
+            )
+        except (json.JSONDecodeError, Exception) as exc:
+            raise ValueError(f"Proposal JSON is invalid: {exc}")
+
         topic_id = proposal.topic_id
         if topic_id is None:
             raise ValueError("Proposal has no topic_id")
@@ -415,21 +539,18 @@ class ProposalService:
         # Build updated rule fields
         updates: dict[str, Any] = {}
 
-        # Add excluded terms
         existing_excluded = list(rules.excluded_terms)
         for term in data.get("added_excluded_terms", []):
             if term not in existing_excluded:
                 existing_excluded.append(term)
         updates["excluded_terms"] = existing_excluded
 
-        # Add related queries
         existing_related = list(rules.related_queries)
         for term in data.get("added_related_queries", []):
             if term not in existing_related:
                 existing_related.append(term)
         updates["related_queries"] = existing_related
 
-        # Update channels
         if data.get("preferred_channels"):
             existing_included = list(rules.included_channels)
             for ch in data["preferred_channels"]:
@@ -444,17 +565,14 @@ class ProposalService:
                     existing_excluded_ch.append(ch)
             updates["excluded_channels"] = existing_excluded_ch
 
-        # Shorts
         if data.get("exclude_shorts"):
             updates["shorts_preference"] = "exclude"
 
-        # Date window
         if data.get("date_window_start"):
             updates["date_window_start"] = data["date_window_start"]
         if data.get("date_window_end"):
             updates["date_window_end"] = data["date_window_end"]
 
-        # Duration
         if data.get("duration_preference"):
             updates["duration_preference"] = data["duration_preference"]
 

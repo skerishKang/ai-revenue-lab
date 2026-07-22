@@ -514,6 +514,142 @@ class TopicVideoRepository:
         self._conn.commit()
         return self.get(topic_video_id)
 
+
+    def update_match(
+        self, topic_video_id: str,
+        match_score: float | None = None,
+        match_reasons: list[str] | None = None,
+        is_excluded: bool | None = None,
+    ) -> TopicVideo | None:
+        """Update match analysis fields for a topic-video association."""
+        updates = {"updated_at": _now()}
+        if match_score is not None:
+            updates["match_score"] = match_score
+        if match_reasons is not None:
+            updates["match_reasons"] = _json_dumps(match_reasons)
+        if is_excluded is not None:
+            updates["is_excluded"] = 1 if is_excluded else 0
+
+        set_clause = ", ".join(f"{k} = ?" for k in updates)
+        params = list(updates.values()) + [topic_video_id]
+        self._conn.execute(
+            f"UPDATE topic_videos SET {set_clause} WHERE id = ?", params
+        )
+        self._conn.commit()
+        return self.get(topic_video_id)
+
+    def list_for_topic_with_records(
+        self,
+        topic_id: str,
+        sort: str = "newest",
+        exclude_irrelevant: bool = False,
+        state_filter: str | None = None,
+    ) -> list[tuple[TopicVideo, DiscoveredVideo, PrivateViewingRecord | None]]:
+        """List topic-videos with optional record join and state filter."""
+        where = "tv.topic_id = ?"
+        params: list = [topic_id]
+        if exclude_irrelevant:
+            where += " AND tv.is_excluded = 0"
+
+        if sort == "newest":
+            order = "v_published DESC"
+        elif sort == "view_count":
+            order = "COALESCE(v_view_count, 0) DESC"
+        elif sort == "relevance":
+            order = "COALESCE(tv.match_score, 0) DESC, v_published DESC"
+        else:
+            order = "v_published DESC"
+
+        # Always LEFT JOIN viewing_records so we can show current state
+        join_clause = " LEFT JOIN viewing_records vr ON vr.topic_video_id = tv.id"
+        if state_filter:
+            where += " AND (vr.viewing_state = ? OR (vr.viewing_state IS NULL AND ? = 'unseen'))"
+            params.extend([state_filter, state_filter])
+
+        rows = self._conn.execute(
+            f"""SELECT
+                tv.id as tv_id, tv.topic_id as tv_topic_id,
+                tv.video_id as tv_video_id, tv.first_matched_at as tv_first,
+                tv.last_matched_at as tv_last, tv.match_score as tv_score,
+                tv.match_reasons as tv_reasons, tv.is_excluded as tv_excluded,
+                tv.provenance as tv_provenance,
+                tv.created_at as tv_created, tv.updated_at as tv_updated,
+                v.id as v_id, v.provider as v_provider,
+                v.provider_video_id as v_provider_id, v.canonical_url as v_url,
+                v.title as v_title, v.description as v_desc,
+                v.channel_id as v_channel_id, v.channel_title as v_channel_title,
+                v.published_at as v_published, v.duration_seconds as v_duration,
+                v.view_count as v_view_count, v.like_count as v_likes,
+                v.thumbnail_url as v_thumbnail, v.tags as v_tags,
+                v.provenance as v_provenance,
+                v.created_at as v_created, v.updated_at as v_updated,
+                vr.id as vr_id, vr.viewing_state as vr_state
+            FROM topic_videos tv
+            JOIN videos v ON tv.video_id = v.id
+            {join_clause}
+            WHERE {where}
+            ORDER BY {order}""",
+            params,
+        ).fetchall()
+
+        result = []
+        for row in rows:
+            tv = TopicVideo(
+                id=row["tv_id"],
+                topic_id=row["tv_topic_id"],
+                video_id=row["tv_video_id"],
+                first_matched_at=row["tv_first"],
+                last_matched_at=row["tv_last"],
+                match_score=row["tv_score"],
+                match_reasons=_json_loads(row["tv_reasons"]) or [],
+                is_excluded=bool(row["tv_excluded"]),
+                provenance=Provenance(row["tv_provenance"]),
+                created_at=row["tv_created"],
+                updated_at=row["tv_updated"],
+            )
+            video = DiscoveredVideo(
+                id=row["v_id"],
+                provider=row["v_provider"],
+                provider_video_id=row["v_provider_id"],
+                canonical_url=row["v_url"],
+                title=row["v_title"],
+                description=row["v_desc"],
+                channel_id=row["v_channel_id"],
+                channel_title=row["v_channel_title"],
+                published_at=row["v_published"],
+                duration_seconds=row["v_duration"],
+                view_count=row["v_view_count"],
+                like_count=row["v_likes"],
+                thumbnail_url=row["v_thumbnail"],
+                tags=_json_loads(row["v_tags"]) or [],
+                provenance=Provenance(row["v_provenance"]),
+                created_at=row["v_created"],
+                updated_at=row["v_updated"],
+            )
+            record = None
+            if row["vr_id"] is not None:
+                record = PrivateViewingRecord(
+                    id=row["vr_id"],
+                    topic_video_id=row["tv_id"],
+                    viewing_state=ViewingState(row["vr_state"]),
+                    rating=None,
+                    reflection="",
+                    learned_point="",
+                    agreement="",
+                    disagreement="",
+                    uncertainty="",
+                    follow_up_plan="",
+                    free_form_note="",
+                    tags=[],
+                    opened_date=None,
+                    completed_date=None,
+                    provenance=Provenance("user"),
+                    created_at=row["tv_created"],
+                    updated_at=row["tv_updated"],
+                )
+            result.append((tv, video, record))
+        return result
+
     @staticmethod
     def _row_to_tv(row: sqlite3.Row) -> TopicVideo:
         return TopicVideo(
@@ -644,6 +780,14 @@ class ViewingRecordRepository:
             )
             for r in rows
         ]
+
+
+    def delete_timestamp_ref(self, ts_id: str) -> None:
+        """Delete a timestamp reference by ID."""
+        self._conn.execute(
+            "DELETE FROM timestamp_references WHERE id = ?", (ts_id,)
+        )
+        self._conn.commit()
 
     def search(
         self,

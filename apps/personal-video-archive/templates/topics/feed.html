@@ -29,7 +29,7 @@
 </div>
 
 <div class="video-feed">
-    {% for tv, video in feed %}
+    {% for tv, video, record in feed %}
     <article class="video-card">
         <div class="video-thumbnail">
             <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}"
@@ -41,7 +41,7 @@
             </div>
             <h3 class="video-title">
                 <a href="{{ video.canonical_url }}" target="_blank"
-                   onclick="fetch('/videos/{{ video.id }}/open', {method:'POST'})">
+                   onclick="fetch('/topic-videos/{{ tv.id }}/open', {method:'POST'})">
                     {{ video.title }}
                 </a>
             </h3>
@@ -65,16 +65,18 @@
             <div class="video-actions">
                 <form method="post" action="/topic-videos/{{ tv.id }}/state" style="display:inline">
                     <select name="state" onchange="this.form.submit()">
-                        <option value="unseen" {% if false %}selected{% endif %}>unseen</option>
-                        <option value="opened">opened</option>
-                        <option value="saved">saved</option>
-                        <option value="in_progress">in progress</option>
-                        <option value="completed">completed</option>
-                        <option value="revisit">revisit</option>
-                        <option value="irrelevant">irrelevant</option>
+                        <option value="unseen" {% if record and record.viewing_state == "unseen" %}selected{% elif not record %}selected{% endif %}>unseen</option>
+                        <option value="opened" {% if record and record.viewing_state == "opened" %}selected{% endif %}>opened</option>
+                        <option value="saved" {% if record and record.viewing_state == "saved" %}selected{% endif %}>saved</option>
+                        <option value="in_progress" {% if record and record.viewing_state == "in_progress" %}selected{% endif %}>in_progress</option>
+                        <option value="completed" {% if record and record.viewing_state == "completed" %}selected{% endif %}>completed</option>
+                        <option value="revisit" {% if record and record.viewing_state == "revisit" %}selected{% endif %}>revisit</option>
+                        <option value="irrelevant" {% if record and record.viewing_state == "irrelevant" %}selected{% endif %}>irrelevant</option>
                     </select>
                 </form>
-                <a href="/videos/{{ video.id }}" class="btn btn-small btn-secondary">Record</a>
+                <form method="post" action="/topic-videos/{{ tv.id }}/records" style="display:inline;">
+                    <button type="submit" class="btn btn-small btn-secondary">기록 만들기</button>
+                </form>
             </div>
         </div>
     </article>

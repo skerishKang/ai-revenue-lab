@@ -89,10 +89,6 @@ def _get_db(request: Request):
         conn.close()
 
 
-def _get_topic_service(request: Request) -> TopicService:
-    return request.app.state.topic_service
-
-
 def _get_discovery_service(request: Request) -> DiscoveryService:
     return request.app.state.discovery_service
 
@@ -228,8 +224,8 @@ def _register_routes(app: FastAPI) -> None:
     def health():
         return {
             "status": "ok",
-            "discovery_provider": settings.discovery_provider,
-            "llm_provider": settings.llm_provider,
+            "discovery_provider": app.state.discovery_provider.__class__.__name__,
+            "llm_provider": app.state.llm_provider.__class__.__name__,
             "llm_model": settings.llm_model,
         }
 
