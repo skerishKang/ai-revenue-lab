@@ -1,7 +1,7 @@
 # Personal Video Archive — Local Worker Handoff
 
-Business: **13**
-Implementation issue: **#62**
+Business: **13**  
+Implementation issue: **#62**  
 Workspace: `apps/personal-video-archive/**`
 
 This document is intentionally executable as a local setup checklist.
