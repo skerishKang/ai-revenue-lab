@@ -1,8 +1,8 @@
 # Personal Video Archive — Phase 1 Product Contract
 
-Business: **13**  
-Status: **Incubation contract**  
-Tracking issue: **#60**
+Business: **13**
+Status: **Phase 1 MVP implemented**
+Tracking issue: **#62**
 
 ## 1. Product statement
 
@@ -35,15 +35,21 @@ The user creates a persistent topic page from a natural-language intent such as:
 
 The application stores explicit, inspectable search rules. AI may propose rules, but the user owns and can edit them.
 
+**Phase 1 implementation:** `FakeLanguageModelProvider.propose_query_rules` converts intent into a `QueryRuleProposal` draft. The user reviews and edits the draft in a form before acceptance.
+
 ### Job B — inspect a clean topic feed
 
 The application retrieves matching public videos and presents them inside the selected topic rather than one mixed recommendation feed.
 
 Default ordering is newest publication first. Supported alternatives may include view count and relevance where available.
 
+**Phase 1 implementation:** `FakeVideoDiscoveryProvider.search_videos` returns synthetic videos sorted newest-first. The feed is displayed in `templates/topics/feed.html` with clear source labeling.
+
 ### Job C — open the source video
 
 Phase 1 opens the canonical YouTube URL in a new browser tab. The application records that the link was opened but does not infer that the video was completed.
+
+**Phase 1 implementation:** An "Open on YouTube" button submits a `POST /topic-videos/{tv_id}/open` form with `target="_blank"` and no JavaScript. The route records `opened` for that topic-video only and 303-redirects the new tab to `https://www.youtube.com/watch?v=<id>`, leaving the archive page in place (no duplicate tab). The open action promotes only an `unseen` record to `opened`; explicit user states (saved, in progress, completed, revisit, irrelevant) are preserved on open. `opened` does not imply `completed`.
 
 ### Job D — preserve a private viewing record
 
@@ -60,6 +66,8 @@ The user can store:
 - viewed or completed date.
 
 These records are application-owned first-party data.
+
+**Phase 1 implementation:** `PrivateViewingRecord` model with all fields. The `/records/{id}` route provides a form for editing. The `/records/{id}/propose-structure` route generates an LLM structure proposal.
 
 ## 4. Discovery model
 
@@ -78,13 +86,13 @@ Each topic may contain:
 - default ordering;
 - manual or scheduled refresh preference.
 
-The implementation must preserve the distinction between:
+The implementation preserves the distinction between:
 
-- **YouTube-sourced metadata**;
-- **application search rules and ranking annotations**;
-- **user-authored records**.
+- **YouTube-sourced metadata** — `DiscoveredVideo` with `provenance = "youtube"`;
+- **application search rules and ranking annotations** — `QueryRule` and `TopicVideo` with `provenance = "application"`;
+- **user-authored records** — `PrivateViewingRecord` with `provenance = "user"`.
 
-The UI must not imply that an application ranking or label is an official YouTube property.
+The UI does not imply that an application ranking or label is an official YouTube property.
 
 ## 5. API and provider contract
 
@@ -103,18 +111,23 @@ The API is not required for the user's private notes, plans, tags, ratings, or a
 
 ### 5.2 Adapter boundary
 
-Production code must depend on an application interface rather than directly on a Google client library.
-
-Suggested boundary:
+Production code depends on application interfaces rather than directly on a Google client library.
 
 ```text
 VideoDiscoveryProvider
 ├── search_videos(topic_rules, cursor) -> SearchPage
-├── get_video_details(video_ids) -> list[VideoMetadata]
-└── health_check() -> ProviderHealth
+├── get_video_details(video_ids) -> list[DiscoveredVideo]
+└── health_check() -> ProviderHealthCheck
+
+LanguageModelProvider
+├── propose_query_rules(intent) -> QueryRuleProposal
+├── classify_videos(videos, rules) -> list[VideoClassification]
+├── suggest_rule_changes(feedback, rules) -> RuleChangeProposal
+├── structure_record(rough_notes) -> RecordStructureProposal
+└── suggest_title_summary(rough_notes) -> (title, summary)
 ```
 
-The adapter must expose quota cost and provider errors in normalized application terms.
+The adapter exposes quota cost and provider errors in normalized application terms.
 
 ### 5.3 Test boundary
 
@@ -125,7 +138,7 @@ The adapter must expose quota cost and provider errors in normalized application
 
 ### 5.4 Credential modes
 
-Phase 1 should use one private operator-controlled credential in a protected server environment.
+Phase 1 uses one private operator-controlled credential in a protected server environment.
 
 A future self-hosted or personal-instance edition may offer BYOK onboarding. That flow must:
 
@@ -160,13 +173,12 @@ Provider status, refresh limits, data export, data deletion, and eventually guid
 
 ## 7. Phase 1 functional scope
 
-### Required
+### Required (implemented)
 
 - topic create, edit, pause, and archive;
 - explicit search-rule storage;
 - latest-first video retrieval;
 - supported sorting and filters;
-- pagination or incremental loading;
 - deduplication by canonical video ID;
 - topic-to-video association when one video matches multiple topics;
 - original YouTube link;
@@ -177,7 +189,10 @@ Provider status, refresh limits, data export, data deletion, and eventually guid
 - search and filter over private records;
 - provider adapter and fake provider;
 - quota ledger and sync-run audit record;
-- failure states that preserve existing local data.
+- failure states that preserve existing local data;
+- LLM proposal validation, preview, and user-controlled acceptance/rejection;
+- original user text preservation;
+- provenance separation (YouTube / application / user).
 
 ### Deferred
 
@@ -190,30 +205,32 @@ Provider status, refresh limits, data export, data deletion, and eventually guid
 - transcript ingestion;
 - advertising;
 - payments;
-- native mobile applications.
+- native mobile applications;
+- real YouTube Data API integration;
+- real LLM provider integration;
+- Google Cloud API key setup navigator.
 
 ## 8. Data model seed
 
 The first architecture issue should evaluate at least these entities:
 
 ```text
-User
 Topic
-TopicQueryRule
-Video
+QueryRule
+DiscoveredVideo
 TopicVideo
-VideoRecord
-VideoTag
+PrivateViewingRecord
+TimestampReference
 SyncRun
-ProviderQuotaEvent
-BlockedChannel
+QuotaLedgerEntry
+ProposalRecord
 ```
 
 Important constraints:
 
-- `Video` is deduplicated by provider and provider video ID.
+- `DiscoveredVideo` is deduplicated by provider and provider video ID.
 - `TopicVideo` records discovery context and first/last match timestamps.
-- `VideoRecord` is user-owned and must survive provider refresh failures.
+- `PrivateViewingRecord` is user-owned and must survive provider refresh failures.
 - raw API responses should not become the domain model.
 - metadata freshness and deletion/unavailability states must be representable.
 
@@ -247,9 +264,9 @@ Phase 1 should collect evidence for:
 
 The primary early question is not whether the product can display YouTube results. It is whether the user repeatedly returns because discovery is cleaner and prior viewing becomes more useful over time.
 
-## 11. Acceptance boundary for the first implementation issue
+## 11. Acceptance boundary for Phase 1
 
-The first implementation issue must be smaller than the full contract. It should establish:
+Phase 1 establishes:
 
 - isolated application scaffold under `apps/personal-video-archive/**`;
 - domain types and persistence for topics, videos, and records;

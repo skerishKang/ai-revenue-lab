@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}New Topic — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Create Topic</h1>
+</div>
+
+<form method="post" action="/topics" class="form">
+    <div class="form-group">
+        <label for="name">Topic Name</label>
+        <input type="text" id="name" name="name" required maxlength="120"
+               placeholder="e.g. ChatGPT updates">
+    </div>
+    <div class="form-group">
+        <label for="intent">Natural-Language Intent</label>
+        <textarea id="intent" name="intent" required rows="4" maxlength="2000"
+                  placeholder="Describe what you want to follow. e.g. Show me newly published Korean and English videos about meaningful ChatGPT product updates, excluding Shorts and low-value reaction content."></textarea>
+        <p class="help-text">
+            The AI will convert this into a search-rule draft for your review.
+        </p>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Search Rules</button>
+</form>
+{% endblock %}
