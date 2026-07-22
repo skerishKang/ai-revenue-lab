@@ -8,6 +8,8 @@ injected via environment variables — no fallback defaults are provided
 for security-sensitive fields.
 """
 
+from urllib.parse import urlparse
+
 from pydantic_settings import BaseSettings
 
 _PLACEHOLDER_SECRETS = {
@@ -124,6 +126,52 @@ class Settings(BaseSettings):
         values = list(secrets.values())
         if len(set(values)) != len(values):
             raise ValueError("Web secrets must be distinct from one another")
+
+    def validate_allowed_origins(self) -> None:
+        """Validate ``LF_ALLOWED_ORIGINS`` for production.
+
+        In production the allowlist must be non-empty and every entry must be a
+        well-formed ``http://`` or ``https://`` origin with no path, query,
+        fragment, or embedded credentials. Duplicate entries are silently
+        normalized away. The actual configured values are never included in
+        error messages so a misconfigured secret is not leaked into logs.
+
+        Outside production the check is skipped so localhost / TestClient
+        workflows work without configuration.
+        """
+        if not self.is_production:
+            return
+        raw = [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+        if not raw:
+            raise ValueError(
+                "LF_ALLOWED_ORIGINS must not be empty in production"
+            )
+        seen: set[str] = set()
+        for origin in raw:
+            parsed = urlparse(origin)
+            if parsed.scheme not in ("http", "https"):
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must use http:// or https://"
+                )
+            if not parsed.netloc:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must include a host"
+                )
+            if parsed.path not in ("", "/"):
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must not include a path"
+                )
+            if parsed.query or parsed.fragment:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must not include query or fragment"
+                )
+            if parsed.username or parsed.password:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must not include credentials"
+                )
+            seen.add(origin)
+        # Normalize duplicates silently (no error, just dedup).
+        self.allowed_origins = ",".join(sorted(seen))
 
 
 settings = Settings()

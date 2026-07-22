@@ -339,6 +339,7 @@ def _ensure_secrets() -> None:
     """Fail closed if security secrets are not configured (or weak in prod)."""
     try:
         settings.validate_web_secrets()
+        settings.validate_allowed_origins()
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
 
@@ -582,6 +583,24 @@ def register_web_routes(app: FastAPI) -> None:
             build_provider=_make_branch_provider,
         )
 
+        if submission.status == "conflict":
+            prose = _render_prose(episode)
+            return templates.TemplateResponse(
+                request, "canon_read.html",
+                {
+                    "csrf_token": session["csrf_token"],
+                    "episode_type_label": "CANON",
+                    "episode_number_label": _episode_number_label(
+                        episode.episode_type, episode.episode_number
+                    ),
+                    "episode_title": episode.title,
+                    "episode_synopsis": episode.synopsis,
+                    "prose": prose,
+                    "choice_options": choice_options,
+                    "error": "이미 다른 선택을 제출하셨습니다.",
+                },
+                status_code=409,
+            )
         if submission.status == "generation_failed":
             return RedirectResponse(
                 url="/read/status?error=1",
@@ -995,6 +1014,7 @@ def register_web_routes(app: FastAPI) -> None:
         conn: sqlite3.Connection = Depends(get_db),
         csrf_token: str = Form(""),
     ):
+        _verify_request_origin(request)
         session = _get_admin_session(request, conn)
         if session is not None:
             _verify_admin_csrf(session, csrf_token)

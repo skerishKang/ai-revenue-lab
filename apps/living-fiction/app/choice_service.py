@@ -45,6 +45,10 @@ class ChoiceSubmission:
       * ``generation_failed`` — the choice is persisted but branch generation
         failed; the same submission can be retried and will resume the failed
         generation request rather than creating a duplicate.
+      * ``conflict`` — the reader already submitted a different choice (or a
+        different comment) for this canon episode. The first submission wins;
+        no provider call, no new choice/branch/episode is created, and the
+        existing private comment is never silently overwritten.
     """
 
     status: str
@@ -99,7 +103,14 @@ def submit_reader_choice(
                 # Constraint fired but no readable row — treat as a duplicate.
                 return ChoiceSubmission(status="already_completed")
 
-    # 2. Already applied to a branch → idempotent success, nothing to generate.
+    # 2. Conflict: the reader already submitted a different choice text or a
+    #    different comment for this canon. First submission wins — no provider
+    #    call, no new choice/branch/episode, and the existing private comment
+    #    is never silently overwritten.
+    if choice.choice_text != choice_text or choice.comment != comment:
+        return ChoiceSubmission(status="conflict", choice_id=choice.id)
+
+    # 3. Already applied to a branch → idempotent success, nothing to generate.
     if choice.applied_to_branch_id is not None:
         return ChoiceSubmission(
             status="already_completed",
@@ -107,7 +118,7 @@ def submit_reader_choice(
             choice_id=choice.id,
         )
 
-    # 3. Generate the personal branch. The idempotency key is derived from the
+    # 4. Generate the personal branch. The idempotency key is derived from the
     #    stable choice.id + canon checkpoint, so a retry after failure reclaims
     #    the failed generation request (CAS failed→pending) instead of creating
     #    a duplicate branch.

@@ -36,13 +36,26 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
 
     Phase 1 supports only the free, local, deterministic MockProvider.
     Unsupported provider names fail closed.
+
+    When *provider* is ``None`` the configured ``settings.ai_provider`` is
+    used so the factory always reflects the deployment configuration rather
+    than silently defaulting to MockProvider.
+
+    An injected object must satisfy the :class:`AIProvider` protocol
+    (``provider_name``, ``model``, ``cost_class`` attributes); arbitrary
+    objects are rejected at startup.
     """
     if provider is None:
-        return MockProvider()
+        provider = settings.ai_provider
     if isinstance(provider, str):
         if provider == "mock":
             return MockProvider()
         raise RuntimeError(f"unsupported provider: {provider}")
+    for attr in ("provider_name", "model", "cost_class"):
+        if not hasattr(provider, attr):
+            raise RuntimeError(
+                f"injected provider missing required attribute: {attr}"
+            )
     return provider
 
 
