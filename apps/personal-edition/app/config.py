@@ -1,4 +1,7 @@
-from pydantic import Field, model_validator
+import re
+from urllib.parse import urlparse, urlunparse
+
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings
 
 _DEFAULT_SECRETS = frozenset({
@@ -10,11 +13,67 @@ _VALID_PROVIDERS = frozenset({"mock", "external"})
 _VALID_COST_CLASSES = frozenset({"free", "paid", "local", "unknown"})
 _VALID_RESPONSE_FORMAT_MODES = frozenset({"json_schema", "json_object"})
 
+_VALID_DB_BACKENDS = frozenset({"sqlite", "postgresql"})
+
+# Matches postgresql:// or postgres:// with optional user[:password]@host
+_POSTGRES_URL_RE = re.compile(
+    r"^postgres(?:ql)?://"
+    r"(?:(?P<user>[^:/@]+)(?::(?P<pass>[^/@]*))?@)?"
+    r"(?P<host>[^:/@]+)"
+    r"(?::(?P<port>\d+))?"
+    r"(?P<path>/[^\s]*)?$",
+    re.IGNORECASE,
+)
+
+def redact_database_url(url: str) -> str:
+    """Redact password (and userinfo) from a PostgreSQL connection URL.
+
+    Returns a safe representation that never contains the password or
+    query parameters.  If the URL does not look like a postgres URL it is
+    returned unchanged (SQLite paths contain no credentials).
+    """
+    if not isinstance(url, str) or not url:
+        return url
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        # Not a parseable URL — strip query params as a best-effort.
+        return url.split("?", 1)[0]
+
+    scheme = (parsed.scheme or "").lower()
+    if scheme not in ("postgresql", "postgres"):
+        # Not a postgres URL (e.g. SQLite path) — no credentials to redact.
+        return url.split("?", 1)[0]
+
+    if not parsed.hostname:
+        return url.split("?", 1)[0]
+
+    user = parsed.username or ""
+    host = parsed.hostname
+    port = f":{parsed.port}" if parsed.port else ""
+
+    if user:
+        netloc = f"{user}:[REDACTED]@{host}{port}"
+    else:
+        netloc = f"{host}{port}"
+
+    # Strip query parameters and fragment entirely.
+    return urlunparse(parsed._replace(netloc=netloc, query="", params="", fragment=""))
+
 
 class Settings(BaseSettings):
     app_env: str = "development"
     app_base_url: str = "http://127.0.0.1:8000"
     database_path: str = "var/personal-edition.db"
+    db_backend: str = "sqlite"
+    # Use PE_DATABASE_URL env alias to avoid colliding with the ambient
+    # DATABASE_URL that many parent environments (including this repo's
+    # other apps) export.  The Personal Edition must never implicitly
+    # pick up another app's PostgreSQL URL.
+    database_url: str = Field(
+        default="",
+        validation_alias=AliasChoices("PE_DATABASE_URL"),
+    )
     ai_provider: str = "mock"
     ai_model: str = "mock-personal-edition-v1"
     ai_base_url: str = ""
@@ -49,6 +108,40 @@ class Settings(BaseSettings):
                     "COOKIE_SECURE must be true in production "
                     "(APP_ENV=production)"
                 )
+        return self
+
+    @model_validator(mode="after")
+    def _validate_db_backend(self):
+        if self.db_backend not in _VALID_DB_BACKENDS:
+            raise ValueError(
+                f"DB_BACKEND must be one of {sorted(_VALID_DB_BACKENDS)}, "
+                f"got '{self.db_backend}'"
+            )
+
+        if self.db_backend == "postgresql":
+            if not self.database_url:
+                raise ValueError(
+                    "DATABASE_URL is required when DB_BACKEND=postgresql"
+                )
+            if not _POSTGRES_URL_RE.match(self.database_url):
+                raise ValueError(
+                    "DATABASE_URL must be a valid PostgreSQL connection URL "
+                    "when DB_BACKEND=postgresql"
+                )
+        else:
+            # sqlite backend — production must not silently fall back to SQLite
+            # when a PostgreSQL URL was provided, and production must not use
+            # the default SQLite path without an explicit override.
+            if self.database_url:
+                raise ValueError(
+                    "DATABASE_URL must not be set when DB_BACKEND=sqlite"
+                )
+            if self.app_env == "production":
+                if self.database_path == "var/personal-edition.db":
+                    raise ValueError(
+                        "DATABASE_PATH must be explicitly set in production "
+                        "(APP_ENV=production, DB_BACKEND=sqlite)"
+                    )
         return self
 
     @model_validator(mode="after")
@@ -88,6 +181,15 @@ class Settings(BaseSettings):
                     "AI_BASE_URL must use HTTPS in production"
                 )
         return self
+
+    def __repr__(self) -> str:
+        """Redact sensitive fields in repr to prevent credential leakage."""
+        base = super().__repr__()
+        if self.database_url:
+            safe = redact_database_url(self.database_url)
+            # Replace the raw URL with the redacted version in the repr.
+            base = base.replace(self.database_url, safe)
+        return base
 
 
 settings = Settings()
