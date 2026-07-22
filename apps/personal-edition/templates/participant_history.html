@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}기록 — Personal Edition{% endblock %}
 {% block content %}
+{% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <div class="history-page">
   <div class="history-hero animate-fade-in">
     <img src="/static/images/edition-library-history.webp"
@@ -13,7 +14,7 @@
   {% if editions %}
   <div class="history-list">
     {% for edition in editions %}
-    <a href="/p/{{ participant.id }}/editions/{{ edition.edition_number }}"
+    <a href="{{ _base }}/editions/{{ edition.edition_number }}"
        class="history-item">
       <div class="history-thumb">
         {% if edition.edition_number == 1 %}

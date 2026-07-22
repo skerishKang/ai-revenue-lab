@@ -158,14 +158,40 @@ def participant_dashboard(request: Request, participant_id: str):
             if e.publication_state == "published"
         ]
         published.sort(key=lambda e: e.edition_number, reverse=True)
+        pending = [
+            e for e in editions
+            if e.publication_state == "pending"
+            and e.generation_status != "deleted"
+        ]
         inputs = input_repo.get_inputs_by_participant(conn_obj, participant.id)
+
+        has_feedback_on_latest = False
+        if published:
+            latest_feedbacks = fb_repo.get_feedback_by_edition(
+                conn_obj, published[0].id
+            )
+            has_feedback_on_latest = len(latest_feedbacks) > 0
     finally:
         conn_obj.close()
+
+    if published and has_feedback_on_latest:
+        workflow_stage = "feedback"
+    elif published:
+        workflow_stage = "published"
+    elif pending:
+        workflow_stage = "reviewing"
+    elif inputs:
+        workflow_stage = "input_received"
+    else:
+        workflow_stage = "record"
 
     context: dict[str, Any] = {
         "participant": participant,
         "published_editions": published,
+        "pending_editions": pending,
         "input_count": len(inputs),
+        "has_feedback_on_latest": has_feedback_on_latest,
+        "workflow_stage": workflow_stage,
     }
     resp, _ = _render_with_csrf(request, "participant_dashboard.html", context)
     return resp

@@ -1,12 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Personal Edition UI Preview{% endblock %}
 {% block content %}
-<div class="card auth-card">
+<div class="preview-index-page">
   <h1>Personal Edition UI Preview</h1>
-  <p class="subtitle">Cloudflare Pages 정적 프리뷰입니다. 실제 데이터는 사용되지 않습니다.</p>
-  <div class="button-group">
-    <a href="/admin/access/" class="btn btn-primary">관리자 프리뷰 보기</a>
-    <a href="/p/access/" class="btn btn-secondary">참여자 프리뷰 보기</a>
-  </div>
+  <p class="preview-index-sub">Cloudflare Pages 정적 프리뷰입니다. 실제 데이터는 사용되지 않습니다.</p>
+
+  <section class="preview-section">
+    <h2>참여자 화면</h2>
+    <ul class="preview-link-list">
+      <li><a href="/preview/participant/access/" class="btn btn-secondary">참여자 접속 화면</a></li>
+      <li><a href="/preview/participant/empty/" class="btn btn-secondary">참여자 홈 — 기록 없음</a></li>
+      <li><a href="/preview/participant/input-received/" class="btn btn-secondary">참여자 홈 — 기록 접수</a></li>
+      <li><a href="/preview/participant/editing/" class="btn btn-secondary">참여자 홈 — 편집 검토</a></li>
+      <li><a href="/preview/participant/published/" class="btn btn-secondary">참여자 홈 — 발행 완료</a></li>
+      <li><a href="/preview/participant/feedback/" class="btn btn-secondary">참여자 홈 — 피드백 완료</a></li>
+      <li><a href="/preview/participant/editions/modal-preview-edition/" class="btn btn-secondary">에디션 읽기</a></li>
+    </ul>
+  </section>
+
+  <section class="preview-section">
+    <h2>관리자 화면</h2>
+    <ul class="preview-link-list">
+      <li><a href="/admin/access/" class="btn btn-secondary">관리자 프리뷰 보기</a></li>
+    </ul>
+  </section>
 </div>
 {% endblock %}

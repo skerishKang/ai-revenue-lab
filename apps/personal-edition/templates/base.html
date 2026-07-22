@@ -9,7 +9,12 @@
 <body class="{% if request.url.path.startswith('/admin') %}admin-surface{% else %}participant-surface{% endif %}">
 <header class="site-header">
   <nav>
-    {% if request.url.path.startswith('/admin') %}
+    {% if is_preview is defined and is_preview %}
+    <span class="nav-brand">Personal Edition — UI Preview</span>
+    <div class="nav-links">
+      <a href="/">프리뷰 목록</a>
+    </div>
+    {% elif request.url.path.startswith('/admin') %}
     <a href="/admin/" class="nav-brand">Personal Edition 편집실</a>
     <div class="nav-links">
       <a href="/admin/">대시보드</a>
