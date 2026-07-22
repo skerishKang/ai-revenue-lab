@@ -26,6 +26,7 @@ from preview_fixtures.data import (
     make_generation_runs,
     make_inputs,
     make_participant,
+    make_pending_edition,
     make_queue_items,
     make_status_info,
     make_summary_counts,
@@ -92,6 +93,8 @@ def _render(
 ) -> str:
     context["request"] = _MockRequest(request_path)
     context["csrf_token"] = "preview-csrf-token"
+    context["is_preview"] = True
+    context["_link_prefix"] = "/preview/participant"
     template = env.get_template(template_name)
     return template.render(context)
 
@@ -229,7 +232,35 @@ def main() -> None:
     _write_page(
         env, "token_entry.html",
         {"error": None},
-        "/p/access", "p/access/index.html",
+        "/p/access", "preview/participant/access/index.html",
+    )
+
+    _write_page(
+        env, "participant_dashboard.html",
+        {
+            "participant": participant,
+            "published_editions": [],
+            "pending_editions": [],
+            "input_count": 0,
+            "has_feedback_on_latest": False,
+            "workflow_stage": "record",
+        },
+        "/preview/participant/empty",
+        "preview/participant/empty/index.html",
+    )
+
+    _write_page(
+        env, "participant_dashboard.html",
+        {
+            "participant": participant,
+            "published_editions": [],
+            "pending_editions": [make_pending_edition()],
+            "input_count": len(inputs),
+            "has_feedback_on_latest": False,
+            "workflow_stage": "reviewing",
+        },
+        "/preview/participant/editing",
+        "preview/participant/editing/index.html",
     )
 
     _write_page(
@@ -237,10 +268,27 @@ def main() -> None:
         {
             "participant": participant,
             "published_editions": published_editions,
+            "pending_editions": [],
             "input_count": len(inputs),
+            "has_feedback_on_latest": False,
+            "workflow_stage": "published",
         },
-        "/p/modal-preview-user",
-        "p/modal-preview-user/index.html",
+        "/preview/participant/published",
+        "preview/participant/published/index.html",
+    )
+
+    _write_page(
+        env, "participant_dashboard.html",
+        {
+            "participant": participant,
+            "published_editions": published_editions,
+            "pending_editions": [],
+            "input_count": len(inputs),
+            "has_feedback_on_latest": True,
+            "workflow_stage": "feedback",
+        },
+        "/preview/participant/feedback",
+        "preview/participant/feedback/index.html",
     )
 
     _write_page(
@@ -251,8 +299,8 @@ def main() -> None:
             "success": None,
             "raw_text": "",
         },
-        "/p/modal-preview-user/input",
-        "p/modal-preview-user/input/index.html",
+        "/preview/participant/input",
+        "preview/participant/input/index.html",
     )
 
     _write_page(
@@ -265,8 +313,8 @@ def main() -> None:
             "has_given_feedback": False,
             "next_edition_number": None,
         },
-        "/p/modal-preview-user/editions/modal-preview-edition",
-        "p/modal-preview-user/editions/modal-preview-edition/index.html",
+        "/preview/participant/edition",
+        "preview/participant/edition/index.html",
     )
 
     _write_page(
@@ -277,8 +325,20 @@ def main() -> None:
             "content": content,
             "error": None,
         },
-        "/p/modal-preview-user/editions/modal-preview-edition/feedback",
-        "p/modal-preview-user/editions/modal-preview-edition/feedback/index.html",
+        "/preview/participant/edition/feedback",
+        "preview/participant/edition/feedback/index.html",
+    )
+
+    _write_page(
+        env, "feedback_form.html",
+        {
+            "participant": participant,
+            "edition": edition_published,
+            "content": content,
+            "error": None,
+        },
+        "/preview/participant/editions/modal-preview-edition/feedback",
+        "preview/participant/editions/modal-preview-edition/feedback/index.html",
     )
 
     _write_page(
@@ -287,8 +347,8 @@ def main() -> None:
             "participant": participant,
             "edition_number": "modal-preview-edition",
         },
-        "/p/modal-preview-user/editions/modal-preview-edition/feedback/thanks",
-        "p/modal-preview-user/editions/modal-preview-edition/feedback/thanks/index.html",
+        "/preview/participant/edition/feedback/thanks",
+        "preview/participant/edition/feedback/thanks/index.html",
     )
 
     _write_page(
@@ -297,8 +357,8 @@ def main() -> None:
             "participant": participant,
             "editions": published_editions,
         },
-        "/p/modal-preview-user/history",
-        "p/modal-preview-user/history/index.html",
+        "/preview/participant/history",
+        "preview/participant/history/index.html",
     )
 
     _write_page(
@@ -307,8 +367,8 @@ def main() -> None:
             "participant": participant,
             "message": "요청하신 페이지를 찾을 수 없습니다.",
         },
-        "/p/modal-preview-user/not-found",
-        "p/modal-preview-user/not-found/index.html",
+        "/preview/participant/not-found",
+        "preview/participant/not-found/index.html",
     )
 
     _copy_static()

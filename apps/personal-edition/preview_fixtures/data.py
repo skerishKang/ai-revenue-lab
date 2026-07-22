@@ -224,3 +224,18 @@ def make_feedbacks_with_editions(
             "direction": feedback.direction,
         }
     ]
+
+
+def make_pending_edition() -> SimpleNamespace:
+    return SimpleNamespace(
+        id="pending-edition",
+        participant_id=PARTICIPANT_ID,
+        edition_number=1,
+        rendered_title="초안 구성 중",
+        generation_status="pending_review",
+        publication_state="pending",
+        structured_content=None,
+        published_at=None,
+        drafted_at="2024-01-10T10:00:00",
+        reviewer_notes="",
+    )

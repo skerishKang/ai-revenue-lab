@@ -255,7 +255,7 @@ class TestParticipantText:
         html = resp.text
         assert "Personal Edition" in html
         assert "당신의 기록이" in html
-        assert "개인 편집실 열기" in html
+        assert "비공개 편집실 입장" in html
 
     def test_access_page_privacy_notes(self):
         app, _ = _make_app(tempfile.mktemp(suffix=".db"))
@@ -572,6 +572,140 @@ class TestBodyClass:
         resp = client.get(f"/p/{pid}", cookies=cookies)
         assert 'class="participant-surface"' in resp.text
         assert 'class="admin-surface"' not in resp.text
+
+
+class TestGuidedWorkflow:
+    """Tests for the guided publishing workflow (Issue #57)."""
+
+    def test_access_page_workflow_steps(self):
+        """Access page shows the 4-step publishing workflow."""
+        app, _ = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        resp = client.get("/p/access")
+        html = resp.text
+        assert "기록을 남깁니다" in html
+        assert "AI가 초안을 구성합니다" in html
+        assert "편집자가 검토합니다" in html
+        assert "비공개 에디션으로 발행됩니다" in html
+        assert 'class="access-workflow"' in html
+
+    def test_access_page_workflow_is_ordered_list(self):
+        """Workflow steps use semantic ordered list."""
+        app, _ = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        resp = client.get("/p/access")
+        html = resp.text
+        assert "<ol" in html
+        assert 'aria-label="제작 흐름"' in html
+
+    def test_empty_state_shows_progress_bar(self):
+        """Empty dashboard shows the progress steps bar."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "progress-empty"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "진행 단계 테스트")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        assert 'aria-label="제작 진행 단계"' in html
+        assert "기록" in html
+        assert "초안 구성" in html
+        assert "편집 검토" in html
+        assert "발행" in html
+
+    def test_empty_state_primary_action(self):
+        """Empty state has '첫 기록 시작하기' as primary CTA."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "empty-primary"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "빈 상태 테스트")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        assert "첫 기록 시작하기" in html
+        assert 'class="btn btn-primary"' in html
+
+    def test_input_received_state(self):
+        """Input received state shows status and process image."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "input-recv"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "기록 접수 테스트")
+            input_repo.create_input(conn, participant_id=pid, raw_text="테스트 입력 " * 50, consent_confirmed=1)
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        assert "기록 접수됨" in html
+        assert "editorial-process-layers.webp" in html
+
+    def test_reviewing_state(self):
+        """Reviewing state shows pending status."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "review-test"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "검토 테스트")
+            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 50, consent_confirmed=1)
+            ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                   structured_content=json.dumps(_make_draft_payload()),
+                                   rendered_title="초안")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        assert "편집 검토 중" in html
+        assert "자동으로 공개되지 않" in html
+
+    def test_published_state(self):
+        """Published state shows edition and primary CTA."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "pub-state"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "발행 상태")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="발행 에디션")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        assert "발행 완료" in html
+        assert "최신 에디션 읽기" in html
+        assert "피드백 보내기" in html
+
+    def test_feedback_state(self):
+        """Feedback complete state shows feedback status."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "fb-state"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "피드백 상태")
+            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+                                         structured_content=json.dumps(_make_draft_payload()),
+                                         rendered_title="피드백 에디션")
+            ed_repo.update_edition_publication(conn, ed.id, "published")
+            fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed.id,
+                                    direction_choices=json.dumps(["continue_direction"]))
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        html = resp.text
+        assert "피드백 완료" in html
+        assert "새 기록 남기기" in html
+
+    def test_workspace_title(self):
+        """Dashboard uses '작업실' title instead of '홈'."""
+        app, db = _make_app(tempfile.mktemp(suffix=".db"))
+        client = TestClient(app)
+        pid = "ws-title"
+        with get_connection(db) as conn:
+            _create_participant(conn, pid, "작업실 타이틀")
+        cookies = _get_session_cookie(pid)
+        resp = client.get(f"/p/{pid}", cookies=cookies)
+        assert "작업실" in resp.text
+        assert "개인 출판 작업실" in resp.text
 
 
 # ------------------------------------------------------------------

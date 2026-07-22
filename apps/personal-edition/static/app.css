@@ -233,6 +233,41 @@ legend {
   border-left: 3px solid var(--forest);
 }
 
+/* --- Access Workflow Steps --- */
+.access-workflow {
+  font-family: var(--font-interface);
+  font-size: .8125rem;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: workflow;
+}
+.access-workflow-step {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--border);
+  counter-increment: workflow;
+}
+.access-workflow-step:last-child {
+  border-bottom: none;
+}
+.workflow-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--forest-soft);
+  color: var(--forest);
+  font-weight: 700;
+  font-size: .75rem;
+  flex-shrink: 0;
+}
+
 /* --- Token Entry (Access Page) --- */
 .access-page {
   display: grid;
@@ -329,7 +364,10 @@ legend {
   }
 }
 
-/* --- Dashboard --- */
+/* --- Dashboard / Workspace --- */
+.workspace-header {
+  margin-bottom: 1.5rem;
+}
 .dashboard-hero {
   width: 100%;
   margin-bottom: 1.5rem;
@@ -349,7 +387,158 @@ legend {
   font-family: var(--font-interface);
   font-size: .8125rem;
   color: var(--muted);
+  margin-bottom: 0;
+}
+
+/* --- Progress Steps --- */
+.progress-steps {
   margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.progress-track {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+}
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  flex-shrink: 0;
+}
+.progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  transition: background .15s, border-color .15s;
+}
+.progress-step.completed .progress-dot {
+  background: var(--forest);
+  border-color: var(--forest);
+}
+.progress-step.current .progress-dot {
+  background: var(--surface);
+  border-color: var(--forest);
+  box-shadow: 0 0 0 2px var(--forest-soft);
+}
+.progress-label {
+  font-family: var(--font-interface);
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.progress-step.completed .progress-label,
+.progress-step.current .progress-label {
+  color: var(--ink);
+}
+.progress-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  min-width: 1rem;
+  margin: 0 .25rem;
+}
+.progress-connector.completed {
+  background: var(--forest);
+}
+
+@media (max-width: 480px) {
+  .progress-track {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .progress-connector {
+    display: none;
+  }
+  .progress-step {
+    flex: 0 0 auto;
+  }
+}
+
+/* --- Workspace State Sections --- */
+.state-status {
+  margin-bottom: .75rem;
+}
+.status-indicator {
+  display: inline-block;
+  font-family: var(--font-interface);
+  font-size: .75rem;
+  font-weight: 700;
+  padding: .25rem .625rem;
+  border-radius: 3px;
+}
+.status-received {
+  background: var(--forest-soft);
+  color: var(--forest);
+}
+.status-reviewing {
+  background: #fff3e0;
+  color: #e65100;
+}
+.status-published-label {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.status-feedback {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+.state-hint {
+  font-size: .8125rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.state-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* State: empty */
+.state-empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.state-empty h2 {
+  font-family: var(--font-editorial);
+  font-size: 1.125rem;
+  margin-bottom: .5rem;
+}
+.state-empty p {
+  font-size: .9375rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+/* State: recorded / reviewing / feedback */
+.state-recorded,
+.state-reviewing,
+.state-feedback {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.state-recorded p,
+.state-reviewing p,
+.state-feedback p {
+  font-size: .9375rem;
+  color: var(--ink);
+  line-height: 1.7;
+  margin-bottom: .5rem;
 }
 
 /* State: no input */
@@ -371,57 +560,13 @@ legend {
   line-height: 1.7;
 }
 
-/* State: waiting */
-.state-waiting {
-  background: var(--forest-soft);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-.state-waiting img {
-  width: 100%;
-  max-width: 480px;
-  height: auto;
-  margin: 0 auto 1rem;
-}
-.state-waiting h2 {
-  font-family: var(--font-editorial);
-  font-size: 1.125rem;
-  margin-bottom: .5rem;
-}
-.state-waiting p {
-  font-size: .875rem;
-  color: var(--muted);
-  line-height: 1.7;
-  max-width: 480px;
-  margin: 0 auto;
-}
-.stage-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin: 1rem 0;
-  font-family: var(--font-interface);
-  font-size: .75rem;
-  color: var(--muted);
-}
-.stage-indicator {
-  display: flex;
-  align-items: center;
-  gap: .375rem;
-}
-.stage-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border);
-}
-.stage-dot.active {
-  background: var(--forest);
-}
-
 /* State: published */
+.state-published {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
 .state-published .latest-edition {
   display: block;
   padding: 1.25rem;

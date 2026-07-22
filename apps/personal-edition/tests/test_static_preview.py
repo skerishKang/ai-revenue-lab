@@ -22,11 +22,16 @@ REQUIRED_PAGES = [
     "admin/index.html",
     "admin/participants/modal-preview-user/index.html",
     "admin/review/modal-preview-edition/index.html",
-    "p/access/index.html",
-    "p/modal-preview-user/index.html",
-    "p/modal-preview-user/input/index.html",
-    "p/modal-preview-user/editions/modal-preview-edition/index.html",
-    "p/modal-preview-user/editions/modal-preview-edition/feedback/index.html",
+    "preview/participant/access/index.html",
+    "preview/participant/empty/index.html",
+    "preview/participant/editing/index.html",
+    "preview/participant/published/index.html",
+    "preview/participant/feedback/index.html",
+    "preview/participant/edition/index.html",
+    "preview/participant/edition/feedback/index.html",
+    "preview/participant/input/index.html",
+    "preview/participant/history/index.html",
+    "preview/participant/not-found/index.html",
 ]
 
 JINJA_PATTERN = re.compile(r"\{\{|\{%")

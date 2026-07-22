@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}피드백 — Personal Edition{% endblock %}
 {% block content %}
+{% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <div class="feedback-page animate-fade-in">
   <div class="feedback-header">
     <h1>다음 에디션을 위한 편집 메모</h1>
@@ -13,7 +14,7 @@
   {% endif %}
 
   <form method="post"
-        action="/p/{{ participant.id }}/editions/{{ edition.edition_number }}/feedback"
+        action="{{ _base }}/editions/{{ edition.edition_number }}/feedback"
         class="feedback-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
