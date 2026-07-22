@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from app.config import redact_database_url
+from app.config import normalize_pg_url_identity, redact_database_url
 from app.db_pg_migrations import (
     PgMigrationError,
     _compute_checksum,
@@ -438,11 +438,31 @@ TEST_POSTGRES_URL = os.environ.get("TEST_POSTGRES_URL", "")
 PE_DATABASE_URL = os.environ.get("PE_DATABASE_URL", "")
 PE_PG_TEST_INTEGRATION = os.environ.get("PE_PG_TEST_INTEGRATION", "").strip()
 
-# Safety guard: refuse to run if the test URL equals the real database URL.
-if TEST_POSTGRES_URL and PE_DATABASE_URL and TEST_POSTGRES_URL == PE_DATABASE_URL:
+# Safety guard: refuse to run if the test URL resolves to the same database
+# identity (host/port/database) as the real database URL.  This is NOT a raw
+# string equality check — it normalizes userinfo, query parameters, fragment,
+# and default-port omission so that equivalent URLs expressed differently are
+# still rejected.
+def _urls_resolve_to_same_db(a: str, b: str) -> bool:
+    """True if both URLs normalize to the same (host, port, database)."""
+    if not a or not b:
+        return False
+    ia = normalize_pg_url_identity(a)
+    ib = normalize_pg_url_identity(b)
+    # If either URL is unparseable, fall back to a conservative string check
+    # only if the raw strings are literally equal.
+    if ia is None or ib is None:
+        return a == b
+    return ia == ib
+
+
+if TEST_POSTGRES_URL and PE_DATABASE_URL and _urls_resolve_to_same_db(
+    TEST_POSTGRES_URL, PE_DATABASE_URL
+):
     raise RuntimeError(
-        "TEST_POSTGRES_URL must not be the same as PE_DATABASE_URL to prevent "
-        "destructive operations on the production/development database."
+        "TEST_POSTGRES_URL resolves to the same database identity as "
+        "PE_DATABASE_URL — refusing to run integration tests that could "
+        "damage the production/development database."
     )
 
 # Integration tests are skipped unless BOTH an explicit opt-in flag is set
@@ -679,7 +699,60 @@ class TestPgMigrationIntegration:
                 except Exception:
                     pass
 
-    def test_schema_parity_table_list(self, pg_conn_clean):
+    def test_effective_schema_via_current_schema(self, pg_conn_clean):
+        """The target schema must be resolved via ``current_schema()``, not
+        by tokenizing ``SHOW search_path``.
+
+        This test sets a multi-schema search_path including a leading test
+        schema and ``public``, then verifies that the drift check compares
+        against the **effective** schema (the first existing schema in the
+        path) rather than a literal ``$user`` token or the raw first token.
+        """
+        import uuid
+
+        schema_name = f"test_schema_{uuid.uuid4().hex}"
+        try:
+            pg_conn_clean.execute(f'CREATE SCHEMA "{schema_name}"')
+            # Multi-schema search_path: test schema first, then public.
+            pg_conn_clean.execute(f'SET search_path TO "{schema_name}", public')
+            pg_conn_clean.commit()
+        except Exception:
+            try:
+                pg_conn_clean.rollback()
+                pg_conn_clean.execute(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+                pg_conn_clean.commit()
+            except Exception:
+                pass
+            raise
+
+        try:
+            # current_schema() must resolve to the test schema, not "public"
+            # or the literal "$user".
+            row = pg_conn_clean.execute("SELECT current_schema()").fetchone()
+            effective = row[0] if row else None
+            assert effective == schema_name, (
+                f"current_schema() returned {effective!r}, expected "
+                f"{schema_name!r}"
+            )
+
+            apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+            pg_conn_clean.commit()
+
+            # Objects must be in the effective test schema, not public.
+            test_tables = get_pg_schema_tables(pg_conn_clean, schema_name)
+            public_tables = get_pg_schema_tables(pg_conn_clean, "public")
+            assert EXPECTED_ALL_TABLES.issubset(test_tables)
+            for table in EXPECTED_ALL_TABLES:
+                assert table not in public_tables
+        finally:
+            try:
+                pg_conn_clean.execute(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+                pg_conn_clean.commit()
+            except Exception:
+                try:
+                    pg_conn_clean.rollback()
+                except Exception:
+                    pass
         """schema parity table 목록."""
         apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
         pg_conn_clean.commit()

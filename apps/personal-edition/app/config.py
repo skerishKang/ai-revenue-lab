@@ -34,7 +34,10 @@ def redact_database_url(url: str) -> str:
     provider-specific auth options.  Only the scheme, host, port and path are
     preserved.
 
-    A malformed postgres URL (no parseable host) is reduced to a fixed
+    This function **never raises** — it is called outside the CLI's main
+    ``try`` block (before connection) so any exception would surface as an
+    uncaught traceback.  Malformed postgres URLs (bad port, bad IPv6,
+    percent-encoding errors, missing host, etc.) are all reduced to a fixed
     placeholder so that no partial userinfo can leak.
 
     For non-postgres URLs (e.g. SQLite paths) the query string is stripped as
@@ -42,28 +45,86 @@ def redact_database_url(url: str) -> str:
     """
     if not isinstance(url, str) or not url:
         return url
+
     try:
         parsed = urlparse(url)
+        scheme = (parsed.scheme or "").lower()
     except Exception:
-        return url.split("?", 1)[0]
+        # Even urlparse itself can raise on some malformed inputs.
+        return _PG_REDACTED_PLACEHOLDER if _looks_like_postgres(url) else url.split("?", 1)[0]
 
-    scheme = (parsed.scheme or "").lower()
     if scheme not in ("postgresql", "postgres"):
         # Not a postgres URL (e.g. SQLite path) — no userinfo to redact.
         return url.split("?", 1)[0]
 
-    host = parsed.hostname
+    # All extraction must be exception-safe: parsed.port raises ValueError on
+    # non-numeric ports, and percent-decoding/IPv6 edge cases can also raise.
+    try:
+        host = parsed.hostname
+        port = parsed.port  # may raise ValueError -> caught below
+        path = parsed.path or ""
+    except Exception:
+        return _PG_REDACTED_PLACEHOLDER
+
     if not host:
         # Malformed postgres URL — never echo back the raw string.
-        return "postgresql://[REDACTED]"
+        return _PG_REDACTED_PLACEHOLDER
 
-    port = f":{parsed.port}" if parsed.port else ""
+    port_part = f":{port}" if port else ""
+    netloc = f"{host}{port_part}"
+    try:
+        return urlunparse(parsed._replace(
+            netloc=netloc, query="", params="", fragment="", path=path,
+        ))
+    except Exception:
+        return _PG_REDACTED_PLACEHOLDER
+
+
+_PG_REDACTED_PLACEHOLDER = "postgresql://[REDACTED]"
+
+
+def _looks_like_postgres(url: str) -> bool:
+    """Best-effort check whether a string is a postgres-family URL."""
+    low = url.lower()
+    return low.startswith("postgresql://") or low.startswith("postgres://")
+
+
+def normalize_pg_url_identity(url: str) -> tuple[str, str, str] | None:
+    """Return a normalized ``(host, port, database)`` identity for a PG URL.
+
+    This performs NO network connection — it only parses the URL.  The
+    identity is used to detect when two different URL strings point at the
+    same database (e.g. differing only by userinfo, query parameters, or a
+    default-port omission).  Returns ``None`` if the URL cannot be parsed
+    as a postgres URL (in which case the caller should treat it as
+    non-matching rather than equivalent).
+
+    The default PostgreSQL port (5432) is normalized so that
+    ``host:5432/db`` and ``host/db`` compare equal.  Hostnames are
+    lower-cased for case-insensitive comparison.
+    """
+    if not isinstance(url, str) or not url:
+        return None
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return None
+    scheme = (parsed.scheme or "").lower()
+    if scheme not in ("postgresql", "postgres"):
+        return None
+    try:
+        host = (parsed.hostname or "").lower()
+        port = parsed.port  # may raise ValueError
+    except Exception:
+        return None
+    if not host:
+        return None
+    if port is None:
+        port = 5432
     path = parsed.path or ""
-    # Drop userinfo, query and fragment entirely.
-    netloc = f"{host}{port}"
-    return urlunparse(parsed._replace(
-        netloc=netloc, query="", params="", fragment="", path=path,
-    ))
+    # Strip leading slash so "/db" and "db" compare equal.
+    db = path.lstrip("/")
+    return (host, str(port), db)
 
 
 class Settings(BaseSettings):

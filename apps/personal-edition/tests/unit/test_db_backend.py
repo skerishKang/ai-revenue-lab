@@ -15,6 +15,7 @@ import pytest
 from app.config import (
     Settings,
     _POSTGRES_URL_RE,
+    normalize_pg_url_identity,
     redact_database_url,
 )
 
@@ -295,3 +296,162 @@ class TestRedactDatabaseUrl:
         assert "user:secret" not in repr_str
         # The redacted URL (host-only, no userinfo) should be present.
         assert "host/db" in repr_str
+
+
+class TestRedactionNeverRaises:
+    """redact_database_url must never raise, even on malformed input.
+
+    The CLI calls this function before the connection ``try`` block, so any
+    exception would surface as an uncaught traceback.
+    """
+
+    @pytest.mark.parametrize("url", [
+        "postgresql://user:secret@host:notaport/db",  # non-numeric port
+        "postgresql://user:secret@",  # no host
+        "postgresql://user:pass@host:99999/db",  # out-of-range port
+        "postgresql://[::1:5432/db",  # malformed IPv6
+        "postgresql://%ZZ%invalid@host/db",  # bad percent-encoding
+        "postgresql://user:secret@host/db?x=%",  # bad query encoding
+        "postgres://",  # bare scheme
+        "postgresql://host",  # host only, no db
+        "postgresql://",  # scheme only
+    ])
+    def test_never_raises(self, url):
+        # Must return a string without raising.
+        result = redact_database_url(url)
+        assert isinstance(result, str)
+        # For postgres-family URLs, no userinfo/password must survive.
+        if url.lower().startswith(("postgresql://", "postgres://")):
+            assert "secret" not in result
+            assert "pass" not in result
+            assert "user" not in result
+
+    def test_non_string_input(self):
+        assert redact_database_url(None) is None  # type: ignore[arg-type]
+        assert redact_database_url(123) == 123  # type: ignore[arg-type]
+
+    def test_empty_string(self):
+        assert redact_database_url("") == ""
+
+
+class TestNormalizePgUrlIdentity:
+    """Normalized (host, port, database) identity for equivalent-URL guard."""
+
+    def test_basic_identity(self):
+        assert normalize_pg_url_identity(
+            "postgresql://user:pass@host:5432/db"
+        ) == ("host", "5432", "db")
+
+    def test_default_port_normalized(self):
+        # Omitting the default port must compare equal.
+        assert normalize_pg_url_identity(
+            "postgresql://user:pass@host/db"
+        ) == ("host", "5432", "db")
+
+    def test_userinfo_does_not_affect_identity(self):
+        a = normalize_pg_url_identity("postgresql://alice:secret@host:5432/db")
+        b = normalize_pg_url_identity("postgresql://bob:other@host:5432/db")
+        assert a == b
+
+    def test_query_does_not_affect_identity(self):
+        a = normalize_pg_url_identity(
+            "postgresql://user:pass@host:5432/db?sslmode=require"
+        )
+        b = normalize_pg_url_identity(
+            "postgresql://user:pass@host:5432/db?sslmode=disable"
+        )
+        assert a == b
+
+    def test_query_order_does_not_affect_identity(self):
+        a = normalize_pg_url_identity(
+            "postgresql://user:pass@host:5432/db?sslmode=require&timeout=10"
+        )
+        b = normalize_pg_url_identity(
+            "postgresql://user:pass@host:5432/db?timeout=10&sslmode=require"
+        )
+        assert a == b
+
+    def test_different_port_is_different_identity(self):
+        a = normalize_pg_url_identity("postgresql://user:pass@host:5432/db")
+        b = normalize_pg_url_identity("postgresql://user:pass@host:5433/db")
+        assert a != b
+
+    def test_different_db_is_different_identity(self):
+        a = normalize_pg_url_identity("postgresql://user:pass@host:5432/db1")
+        b = normalize_pg_url_identity("postgresql://user:pass@host:5432/db2")
+        assert a != b
+
+    def test_different_host_is_different_identity(self):
+        a = normalize_pg_url_identity("postgresql://user:pass@host1:5432/db")
+        b = normalize_pg_url_identity("postgresql://user:pass@host2:5432/db")
+        assert a != b
+
+    def test_host_case_insensitive(self):
+        a = normalize_pg_url_identity("postgresql://user:pass@HOST:5432/db")
+        b = normalize_pg_url_identity("postgresql://user:pass@host:5432/db")
+        assert a == b
+
+    def test_postgres_scheme_alias(self):
+        a = normalize_pg_url_identity("postgresql://user:pass@host:5432/db")
+        b = normalize_pg_url_identity("postgres://user:pass@host:5432/db")
+        assert a == b
+
+    def test_non_postgres_url_returns_none(self):
+        assert normalize_pg_url_identity("sqlite:///path/to/db") is None
+        assert normalize_pg_url_identity("var/personal-edition.db") is None
+
+    def test_empty_and_none(self):
+        assert normalize_pg_url_identity("") is None
+        assert normalize_pg_url_identity(None) is None  # type: ignore[arg-type]
+
+    def test_malformed_returns_none(self):
+        # No host — unparseable as an identity.
+        assert normalize_pg_url_identity("postgresql://") is None
+        assert normalize_pg_url_identity("postgresql://user:pass@") is None
+
+    def test_malformed_port_returns_none(self):
+        # Non-numeric port must not raise.
+        assert normalize_pg_url_identity(
+            "postgresql://user:pass@host:notaport/db"
+        ) is None
+
+
+class TestEquivalentUrlGuard:
+    """The integration guard must reject equivalent test/prod URLs."""
+
+    def _same_db(self, a: str, b: str) -> bool:
+        from tests.integration.test_pg_migrations import _urls_resolve_to_same_db
+        return _urls_resolve_to_same_db(a, b)
+
+    def test_raw_equality_detected(self):
+        url = "postgresql://user:pass@host:5432/db"
+        assert self._same_db(url, url)
+
+    def test_userinfo_difference_detected(self):
+        a = "postgresql://alice:secret@host:5432/db"
+        b = "postgresql://bob:other@host:5432/db"
+        assert self._same_db(a, b)
+
+    def test_query_difference_detected(self):
+        a = "postgresql://user:pass@host:5432/db?sslmode=require"
+        b = "postgresql://user:pass@host:5432/db?sslmode=disable"
+        assert self._same_db(a, b)
+
+    def test_default_port_omission_detected(self):
+        a = "postgresql://user:pass@host:5432/db"
+        b = "postgresql://user:pass@host/db"
+        assert self._same_db(a, b)
+
+    def test_different_port_not_detected(self):
+        a = "postgresql://user:pass@host:5432/db"
+        b = "postgresql://user:pass@host:5433/db"
+        assert not self._same_db(a, b)
+
+    def test_different_db_not_detected(self):
+        a = "postgresql://user:pass@host:5432/prod"
+        b = "postgresql://user:pass@host:5432/test"
+        assert not self._same_db(a, b)
+
+    def test_empty_urls_not_detected(self):
+        assert not self._same_db("", "postgresql://user:pass@host/db")
+        assert not self._same_db("postgresql://user:pass@host/db", "")

@@ -234,18 +234,36 @@ def _discover_migrations(migrations_dir: str) -> list[Path]:
 
 
 def _get_current_search_path(conn: Connection[DictRow]) -> str:
-    """Return the current effective search_path as a comma-joined string."""
+    """Return the current search_path setting string.
+
+    This is used ONLY for restoring the original setting on exit — never
+    for computing the effective target schema.
+    """
     row = conn.execute("SHOW search_path").fetchone()
     val = row[0] if row else ""
     return str(val) if val else ""
 
 
 def _get_current_schema(conn: Connection[DictRow]) -> str:
-    """Return the first (current) schema name from the search_path."""
-    sp = _get_current_search_path(conn)
-    # search_path may contain "$user", "public", etc. Take the first token.
-    first = sp.split(",")[0].strip().strip('"') if sp else "public"
-    return first or "public"
+    """Return the effective target schema via ``SELECT current_schema()``.
+
+    PostgreSQL resolves the effective schema considering ``$user`` (which
+    falls back to ``public`` if the user-named schema does not exist).  Using
+    ``current_schema()`` avoids incorrectly treating the literal ``$user``
+    token as the target schema.
+
+    Raises :class:`PgMigrationError` if the result is NULL, failing closed
+    rather than guessing.
+    """
+    row = conn.execute("SELECT current_schema()").fetchone()
+    val = row[0] if row else None
+    if not val:
+        raise PgMigrationError(
+            "unknown",
+            "cannot determine effective schema: current_schema() returned NULL",
+            category="schema_drift",
+        )
+    return str(val)
 
 
 def _check_schema_drift(
