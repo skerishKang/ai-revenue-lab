@@ -58,23 +58,6 @@
     });
   }
 
-  function handleScrollReveal() {
-    var targets = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
-    if (reduceMotion || targets.length === 0 || !("IntersectionObserver" in window)) {
-      return; // content stays fully visible without JS animation
-    }
-    document.body.classList.add("reveal-init");
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-in");
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.06 });
-    targets.forEach(function (el) { observer.observe(el); });
-  }
-
   function handleCopyButtons() {
     var buttons = Array.prototype.slice.call(document.querySelectorAll("[data-copy]"));
     buttons.forEach(function (btn) {
@@ -94,6 +77,5 @@
 
   handleRunAnimation();
   handleProjectPrefill();
-  handleScrollReveal();
   handleCopyButtons();
 })();

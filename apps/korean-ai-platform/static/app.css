@@ -609,16 +609,18 @@ tr:last-child td { border-bottom: 0; }
 .switch-desc { font-size: .75rem; color: var(--muted); }
 
 /* =====================================================================
-   Scroll reveal (JS-gated, motion-safe)
+   Motion notes
+   Content is never hidden for scroll-reveal: an approval console must keep
+   every section visible. Life comes from the step timeline animation,
+   status pulse, hover states and transitions above.
    ===================================================================== */
-body.reveal-init .reveal { opacity: 0; transform: translateY(10px); }
-body.reveal-init .reveal.is-in { opacity: 1; transform: none; transition: opacity .45s ease, transform .45s ease; }
 
 /* =====================================================================
-   Responsive
+   Reduced motion
    ===================================================================== */
-@media (max-width: 1080px) {
-  .exec-layout { grid-template-columns: minmax(0, 1fr) 280px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .steps[data-animating] .step { opacity: 1; }
 }
 @media (max-width: 960px) {
   .app-shell { flex-direction: column; }
