@@ -20,6 +20,21 @@ operator.
 - Cold starts are expected: the first request after idle pays container
   startup plus one PostgreSQL connection + schema-current check.
 
+## Image packaging
+
+The Modal Image ships only the runtime sources, added explicitly with
+`Image.add_local_dir`. Modal 1.x does not auto-mount sibling local packages, so
+this entry never relies on automount and never copies the whole repository:
+
+- `app` → `/root/app` — the FastAPI package, carrying `templates/` and
+  `static/` to `/root/app/templates` and `/root/app/static` (where
+  `app/web.py` resolves them).
+- `migrations_postgres` → `/root/migrations_postgres` — verified at startup by
+  `app/factory.py`.
+
+Excluded from the Image: `tests/`, `tests_postgres_integration/`, local SQLite
+data, `.env`, virtualenvs, Git metadata, and other Business apps.
+
 ## Prerequisites
 
 1. A Modal account on the Starter plan (`$0 + compute`, $30/month free

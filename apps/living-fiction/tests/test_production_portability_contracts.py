@@ -543,3 +543,91 @@ def test_modal_entry_builds_asgi_app_with_health(monkeypatch, tmp_path, modal_en
     body = response.json()
     assert body["status"] == "ok"
     assert body["cost_class"] == "free"
+
+
+# ── Modal image packaging (explicit add_local_dir, testable seam) ──────────
+
+
+class _RecordingImage:
+    """Fake fluent Modal image that records ``add_local_dir`` calls.
+
+    Lets tests assert the exact local→remote mappings ``build_modal_image``
+    produces without touching the Modal network or building a real image.
+    """
+
+    def __init__(self):
+        self.calls = []
+
+    def add_local_dir(self, local_path, remote_path, **kwargs):
+        self.calls.append((Path(local_path), remote_path))
+        return self
+
+
+def test_build_modal_image_maps_runtime_dirs(modal_entry):
+    fake = _RecordingImage()
+    modal_entry.build_modal_image(base_image=fake)
+    root = modal_entry.PACKAGE_ROOT
+    mappings = {remote: local for local, remote in fake.calls}
+    assert mappings["/root/app"] == root / "app"
+    assert mappings["/root/migrations_postgres"] == root / "migrations_postgres"
+
+
+def test_build_modal_image_app_dir_carries_templates_and_static(modal_entry):
+    # app/web.py resolves templates/static relative to its own directory, so
+    # packaging app -> /root/app must carry them to /root/app/templates and
+    # /root/app/static (not /root/templates or /root/static).
+    fake = _RecordingImage()
+    modal_entry.build_modal_image(base_image=fake)
+    app_local = next(
+        local for local, remote in fake.calls if remote == "/root/app"
+    )
+    assert (app_local / "templates").is_dir()
+    assert (app_local / "static").is_dir()
+
+
+def test_build_modal_image_excludes_dev_and_foreign_paths(modal_entry):
+    fake = _RecordingImage()
+    modal_entry.build_modal_image(base_image=fake)
+    root = modal_entry.PACKAGE_ROOT
+    mapped_rel = {
+        local.relative_to(root).as_posix() for local, _ in fake.calls
+    }
+    # Exactly the two runtime dirs are shipped — nothing else.
+    assert mapped_rel == {"app", "migrations_postgres"}
+    forbidden = {
+        "tests",
+        "tests_postgres_integration",
+        ".env",
+        "var",
+        ".venv",
+        "apps/living-learning",
+        ".",
+    }
+    assert mapped_rel.isdisjoint(forbidden)
+    # Neither the package root nor the repository root is copied wholesale.
+    for local, remote in fake.calls:
+        assert local not in {root, root.parent, root.parent.parent}
+        assert remote != "/root"
+
+
+def test_build_modal_image_uses_add_local_dir_not_mount(modal_entry):
+    source = Path(modal_entry.__file__).read_text(encoding="utf-8")
+    assert "add_local_dir" in source
+    assert "modal.Mount" not in source
+    assert "MODAL_AUTOMOUNT" not in source
+
+
+def test_modal_entry_secret_required_keys(modal_entry):
+    keys = set(modal_entry.REQUIRED_SECRET_KEYS)
+    assert keys == {
+        "LF_ENV",
+        "LF_DATABASE_BACKEND",
+        "LF_DATABASE_URL",
+        "LF_ALLOWED_ORIGINS",
+        "LF_ADMIN_SECRET",
+        "LF_CREDENTIAL_HMAC_KEY",
+        "LF_SESSION_HMAC_KEY",
+    }
+    assert "LF_MIGRATION_DATABASE_URL" not in keys
+    source = Path(modal_entry.__file__).read_text(encoding="utf-8")
+    assert "required_keys=list(REQUIRED_SECRET_KEYS)" in source
