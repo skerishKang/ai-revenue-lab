@@ -1021,7 +1021,18 @@ p { margin: 0; }
   letter-spacing: -0.04em;
 }
 
-.edit-bar { display: flex; gap: 8px; }
+.record-head > div:first-child { min-width: 0; }
+
+.edit-bar {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.edit-bar .pill-button {
+  white-space: nowrap;
+  min-width: max-content;
+}
 
 .record-layout {
   display: grid;
