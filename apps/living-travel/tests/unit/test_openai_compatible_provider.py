@@ -7,6 +7,7 @@ HTTP client so no socket is ever opened.
 from __future__ import annotations
 
 import json
+import urllib.request
 
 import pytest
 from pydantic import BaseModel, Field
@@ -529,3 +530,261 @@ class TestNetworkIsolation:
         )
         assert len(t.requests) == 1
         assert all(isinstance(x, tuple) for x in t.requests)
+
+
+class TestRedirectBlocking:
+    def test_301_redirect_blocked(self):
+        t = _StubTransport()
+        t._handler = lambda *a: (301, b"")
+        provider = _provider(t)
+        result = provider.generate_structured(
+            task_name="editorial_plan",
+            system_prompt="p",
+            user_payload={},
+            response_schema=EditorialPlan,
+            request_id="req-r1",
+        )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.provider_error
+        assert "301" in result.error_message
+
+    def test_302_redirect_blocked(self):
+        t = _StubTransport()
+        t._handler = lambda *a: (302, b"")
+        provider = _provider(t)
+        result = provider.generate_structured(
+            task_name="editorial_plan",
+            system_prompt="p",
+            user_payload={},
+            response_schema=EditorialPlan,
+            request_id="req-r2",
+        )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.provider_error
+
+    def test_307_redirect_blocked(self):
+        t = _StubTransport()
+        t._handler = lambda *a: (307, b"")
+        provider = _provider(t)
+        result = provider.generate_structured(
+            task_name="editorial_plan",
+            system_prompt="p",
+            user_payload={},
+            response_schema=EditorialPlan,
+            request_id="req-r3",
+        )
+        assert result.success is False
+        assert result.error_category == ProviderErrorCategory.provider_error
+
+
+class TestSSRFValidation:
+    def test_127_0_0_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="loopback"):
+            transport.request(
+                "https://127.0.0.1:11434/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_127_0_0_2_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="loopback"):
+            transport.request(
+                "https://127.0.0.2/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_10_0_0_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="private"):
+            transport.request(
+                "https://10.0.0.1/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_172_17_0_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="private"):
+            transport.request(
+                "https://172.17.0.1/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_172_31_255_255_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="private"):
+            transport.request(
+                "https://172.31.255.255/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_169_254_1_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="private|link-local"):
+            transport.request(
+                "https://169.254.1.1/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_0_0_0_0_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="private|unspecified"):
+            transport.request(
+                "https://0.0.0.0/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_loopback_ipv6_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="loopback"):
+            transport.request(
+                "https://[::1]/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_development_http_localhost_allowed(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
+        # localhost resolving should not raise SSRF error
+        # We're testing the SSRF check, not actual connection
+        try:
+            transport._validate_destination("localhost")
+        except ProviderTransportError as e:
+            if "loopback" in str(e) or "private" in str(e):
+                pytest.fail("localhost should be allowed in development")
+
+    def test_development_127_0_0_1_ip_allowed(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
+        try:
+            transport._validate_destination("127.0.0.1")
+        except ProviderTransportError as e:
+            if "loopback" in str(e) or "private" in str(e):
+                pytest.fail("127.0.0.1 should be allowed in development")
+
+    def test_development_non_localhost_private_blocked(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
+        with pytest.raises(ProviderTransportError, match="private"):
+            transport._validate_destination("10.0.0.1")
+
+
+class TestResponseSizeLimit:
+    def test_urllib_transport_enforces_size_limit(self):
+        """Test that UrllibTransport rejects responses exceeding size limit."""
+        from app.ai.openai_compatible import (
+            UrllibTransport,
+            ProviderResponseTooLargeError,
+        )
+        from unittest.mock import patch, MagicMock
+
+        transport = UrllibTransport(environment="testing", max_response_size=100)
+
+        mock_response = MagicMock()
+        mock_response.status = 200
+        mock_response.read.return_value = b"x" * 200  # 200 bytes, limit is 100
+
+        with patch("urllib.request.build_opener") as mock_opener_builder:
+            mock_opener = MagicMock()
+            mock_opener.open.return_value.__enter__.return_value = mock_response
+            mock_opener_builder.return_value = mock_opener
+
+            with pytest.raises(ProviderResponseTooLargeError):
+                transport.request("https://example.com", b"{}", {}, 5.0)
+
+    def test_urllib_transport_accepts_within_limit(self):
+        """Test that UrllibTransport accepts responses within size limit."""
+        from app.ai.openai_compatible import UrllibTransport
+        from unittest.mock import patch, MagicMock
+
+        transport = UrllibTransport(environment="testing", max_response_size=1000)
+
+        mock_response = MagicMock()
+        mock_response.status = 200
+        mock_response.read.return_value = b"OK" + b"x" * 100
+
+        with patch("urllib.request.build_opener") as mock_opener_builder:
+            mock_opener = MagicMock()
+            mock_opener.open.return_value.__enter__.return_value = mock_response
+            mock_opener_builder.return_value = mock_opener
+
+            status, body = transport.request("https://example.com", b"{}", {}, 5.0)
+            assert status == 200
+
+
+class TestEndpointNormalization:
+    def test_base_url_with_v1_appended_correctly(self):
+        from app.config import Settings
+
+        s = Settings(
+            environment="testing",
+            ai_provider="openai_compatible",
+            ai_base_url="https://api.openai.com/v1",
+            ai_api_key="sk-test",
+            ai_model="gpt-4o-mini",
+        )
+        url = s.ai_chat_completions_url
+        assert url == "https://api.openai.com/v1/chat/completions"
+
+    def test_base_url_without_v1_has_v1_appended(self):
+        from app.config import Settings
+
+        s = Settings(
+            environment="testing",
+            ai_provider="openai_compatible",
+            ai_base_url="https://api.openai.com",
+            ai_api_key="sk-test",
+            ai_model="gpt-4o-mini",
+        )
+        url = s.ai_chat_completions_url
+        assert url == "https://api.openai.com/v1/chat/completions"
+
+    def test_base_url_with_existing_v1_path_no_double_v1(self):
+        from app.config import Settings
+
+        s = Settings(
+            environment="testing",
+            ai_provider="openai_compatible",
+            ai_base_url="https://api.openai.com/v1",
+            ai_api_key="sk-test",
+            ai_model="gpt-4o-mini",
+        )
+        url = s.ai_chat_completions_url
+        assert url.count("/v1") == 1
+        assert "/chat/completions" in url
+
+
+class TestCorrelationId:
+    def test_correlation_id_is_opaque(self):
+        from app.ai.openai_compatible import _make_correlation_id
+
+        opaque_id = _make_correlation_id("traveler-123_edition-456_plan-789")
+        assert opaque_id != "traveler-123_edition-456_plan-789"
+        assert len(opaque_id) == 32
+        assert opaque_id.isalnum()
+
+    def test_correlation_id_consistent_for_same_input(self):
+        from app.ai.openai_compatible import _make_correlation_id
+
+        id1 = _make_correlation_id("request-xyz")
+        id2 = _make_correlation_id("request-xyz")
+        assert id1 == id2
