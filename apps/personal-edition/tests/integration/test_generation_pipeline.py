@@ -1799,3 +1799,147 @@ class TestGenerationIdempotency:
         assert second.succeeded is True
         assert second.edition_id != first.edition_id
         conn.close()
+
+
+class TestClaimLifecycle:
+    """Verify claim-after-preflight ordering and failure lifecycle."""
+
+    def test_preflight_failure_does_not_claim(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn)
+        bundle = load_bundle("korean_founder")
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="nonexistent",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-preflight",
+            ),
+        )
+        assert result.succeeded is False
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-preflight")
+        assert record is None
+        conn.close()
+
+    def test_provider_failure_transitions_claim_to_failed(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn)
+        provider = MockProvider(
+            responses=[
+                {"kind": "error", "message": "plan boom"},
+                {"kind": "error", "message": "plan boom"},
+                {"kind": "error", "message": "plan boom"},
+            ]
+        )
+        service = GenerationService(provider=provider, max_retries=2)
+
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-fail",
+            ),
+        )
+        assert result.succeeded is False
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-fail")
+        assert record is not None
+        assert record.status == "failed"
+        assert record.failure_category == "provider"
+        assert record.failed_at is not None
+        conn.close()
+
+    def test_failed_claim_can_be_reclaimed_and_succeed(self):
+        conn = _setup_db()
+        bundle = load_bundle("korean_founder")
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        fail_provider = MockProvider(
+            responses=[
+                {"kind": "error", "message": "boom"},
+                {"kind": "error", "message": "boom"},
+                {"kind": "error", "message": "boom"},
+            ]
+        )
+        fail_service = GenerationService(provider=fail_provider, max_retries=2)
+        fail_result = fail_service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-reclaim",
+            ),
+        )
+        assert fail_result.succeeded is False
+
+        ok_provider = _make_provider(bundle)
+        ok_service = GenerationService(provider=ok_provider)
+        ok_result = ok_service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-reclaim",
+            ),
+        )
+        assert ok_result.succeeded is True
+        assert ok_result.edition_id is not None
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-reclaim")
+        assert record is not None
+        assert record.status == "completed"
+        assert record.edition_id == ok_result.edition_id
+        conn.close()
+
+    def test_idempotent_generation_uses_atomic_finalize(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-atomic",
+            ),
+        )
+        assert result.succeeded is True
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-atomic")
+        assert record is not None
+        assert record.status == "completed"
+        assert record.edition_id == result.edition_id
+
+        editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(editions) == 1
+        assert editions[0].id == result.edition_id
+        conn.close()

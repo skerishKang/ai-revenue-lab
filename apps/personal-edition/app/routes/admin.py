@@ -471,6 +471,21 @@ def admin_generate(
             url=f"/admin/participants/{participant_id}?error=csrf", status_code=303
         )
 
+    idempotency_key_clean = idempotency_key.strip()
+    if idempotency_key_clean:
+        if len(idempotency_key_clean) > 64:
+            return RedirectResponse(
+                url=f"/admin/participants/{participant_id}?error=invalid_idempotency_key",
+                status_code=303,
+            )
+        try:
+            uuid.UUID(idempotency_key_clean)
+        except ValueError:
+            return RedirectResponse(
+                url=f"/admin/participants/{participant_id}?error=invalid_idempotency_key",
+                status_code=303,
+            )
+
     conn = request.app.state.open_runtime_connection()
     error_code = None
     try:
@@ -486,7 +501,7 @@ def admin_generate(
             participant_id=participant_id,
             input_id=input_id,
             allow_short_sample=(allow_short_sample == "1"),
-            idempotency_key=(idempotency_key.strip() or None),
+            idempotency_key=(idempotency_key_clean or None),
         )
         result = service.generate_edition(conn, request=gen_request)
         if not result.succeeded:

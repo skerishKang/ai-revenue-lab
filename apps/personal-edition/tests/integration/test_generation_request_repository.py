@@ -388,3 +388,115 @@ class TestClaimGenerationRequest:
             SqliteRuntimeConnection(conn), "missing"
         ) is None
         conn.close()
+
+
+class TestFinalizeEditionForRequest:
+    def test_finalize_creates_edition_and_completes_request(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        edition = ed_repo.finalize_edition_for_request(
+            rt,
+            participant_id="p1",
+            idempotency_key="k1",
+            claim_token=claim.claim_token,
+            structured_content='{"sections": []}',
+            rendered_title="Finalized",
+            input_id=input_id,
+        )
+        assert edition.id
+        assert edition.generation_status == "pending_review"
+        assert edition.publication_state == "pending"
+
+        record = gen_req_repo.get_generation_request_by_key(rt, "k1")
+        assert record is not None
+        assert record.status == "completed"
+        assert record.edition_id == edition.id
+        assert record.completed_at is not None
+        conn.close()
+
+    def test_finalize_with_wrong_token_raises(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+            claim_token="token-a",
+        )
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="k1",
+                claim_token="token-wrong",
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id=input_id,
+            )
+        conn.close()
+
+    def test_finalize_unclaimed_key_raises(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="never-claimed",
+                claim_token="any-token",
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+            )
+        conn.close()
+
+    def test_finalize_replay_returns_existing_edition(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        edition = ed_repo.finalize_edition_for_request(
+            rt,
+            participant_id="p1",
+            idempotency_key="k1",
+            claim_token=claim.claim_token,
+            structured_content='{"sections": []}',
+            rendered_title="First",
+            input_id=input_id,
+        )
+
+        replay = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        assert replay.already_claimed is True
+        assert replay.edition_id == edition.id
+        assert replay.status == "completed"
+
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 1
+        conn.close()

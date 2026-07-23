@@ -452,6 +452,31 @@ class GenerationService:
             succeeded=False,
         ), claim
 
+    def _fail_claim(
+        self,
+        conn,
+        request: GenerationRequest,
+        claim_record,
+        failure_category: str,
+    ) -> None:
+        """Best-effort transition of a claimed generation request to failed.
+
+        If the transition fails (e.g. the lease already expired and another
+        worker reclaimed the key), the error is swallowed — the lease expiry
+        mechanism is the authoritative crash-recovery path.
+        """
+        if claim_record is None:
+            return
+        try:
+            gen_req_repo.fail_generation_request(
+                as_runtime_connection(conn),
+                idempotency_key=request.idempotency_key,
+                claim_token=claim_record.claim_token,
+                failure_category=failure_category,
+            )
+        except Exception:
+            pass
+
     def generate_edition(
         self,
         conn,
@@ -459,12 +484,6 @@ class GenerationService:
         request: GenerationRequest,
     ) -> GenerationResult:
         """Run the full pipeline for one edition (first or follow-up)."""
-        claim_record = None
-        if request.idempotency_key:
-            replay, claim_record = self._claim_idempotency_key(conn, request)
-            if replay is not None:
-                return replay
-
         participant = pt_repo.get_participant_by_id(conn, request.participant_id)
         if participant is None or participant.status != "active":
             return GenerationResult(
@@ -646,6 +665,12 @@ class GenerationService:
                 except (json.JSONDecodeError, TypeError):
                     prior_edition_summary = None
 
+        claim_record = None
+        if request.idempotency_key:
+            replay, claim_record = self._claim_idempotency_key(conn, request)
+            if replay is not None:
+                return replay
+
         plan_system = prompts.build_plan_system_prompt(language)
         plan_payload = prompts.build_plan_user_payload(
             participant_id=request.participant_id,
@@ -675,6 +700,7 @@ class GenerationService:
         )
 
         if plan is None:
+            self._fail_claim(conn, request, claim_record, "provider")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -701,6 +727,7 @@ class GenerationService:
                         ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
                     ),
                 )
+            self._fail_claim(conn, request, claim_record, "validation")
             return GenerationResult(
                 edition_id=None,
                 plan_run=StageOutcome(
@@ -746,6 +773,7 @@ class GenerationService:
         )
 
         if draft is None:
+            self._fail_claim(conn, request, claim_record, "provider")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -774,6 +802,7 @@ class GenerationService:
                         ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
                     ),
                 )
+            self._fail_claim(conn, request, claim_record, "validation")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -799,7 +828,23 @@ class GenerationService:
         rendered_title = draft.edition_title
 
         try:
-            if request.is_follow_up and request.feedback_id is not None:
+            if claim_record is not None:
+                new_edition = ed_repo.finalize_edition_for_request(
+                    as_runtime_connection(conn),
+                    participant_id=request.participant_id,
+                    idempotency_key=request.idempotency_key,
+                    claim_token=claim_record.claim_token,
+                    structured_content=structured_content,
+                    rendered_title=rendered_title,
+                    prior_edition_id=request.prior_edition_id,
+                    input_id=request.input_id,
+                    feedback_id=(
+                        request.feedback_id
+                        if request.is_follow_up
+                        else None
+                    ),
+                )
+            elif request.is_follow_up and request.feedback_id is not None:
                 new_edition = ed_repo.create_edition_with_feedback_applied(
                     as_runtime_connection(conn),
                     participant_id=request.participant_id,
@@ -831,6 +876,7 @@ class GenerationService:
                         "persistence failed",
                     ),
                 )
+            self._fail_claim(conn, request, claim_record, "persistence")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -851,14 +897,6 @@ class GenerationService:
                     run_id=draft_outcome.run_id,
                 ),
                 succeeded=False,
-            )
-
-        if request.idempotency_key and claim_record is not None:
-            gen_req_repo.complete_generation_request(
-                as_runtime_connection(conn),
-                idempotency_key=request.idempotency_key,
-                edition_id=new_edition.id,
-                claim_token=claim_record.claim_token,
             )
 
         return GenerationResult(

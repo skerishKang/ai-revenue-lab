@@ -780,3 +780,208 @@ def create_edition_with_feedback_applied(
         if conn.in_transaction:
             conn.rollback()
         raise
+
+
+def finalize_edition_for_request(
+    conn: RuntimeConnection,
+    *,
+    participant_id: str,
+    idempotency_key: str,
+    claim_token: str,
+    structured_content: str,
+    rendered_title: str,
+    prior_edition_id: str | None = None,
+    input_id: str | None = None,
+    feedback_id: str | None = None,
+) -> EditionRecord:
+    """Atomically create an edition, optionally apply feedback, and complete
+    the generation request in a single write transaction.
+
+    Crash safety: if the process dies mid-transaction, neither the edition
+    nor the request completion is persisted.  The claim lease will expire
+    and the request can be reclaimed for a fresh attempt.
+
+    The generation_request row is locked first (``SELECT ... FOR UPDATE``
+    on PostgreSQL) and verified to be in the ``claimed`` state with a
+    matching ``claim_token`` before any edition work begins.
+    """
+    if not isinstance(participant_id, str) or not participant_id.strip():
+        raise EditionValidationError(
+            "participant_id must be a non-empty string"
+        )
+    _validate_json_field(structured_content, "structured_content")
+
+    if conn.in_transaction:
+        raise RepositoryTransactionError(
+            "repository write requires an idle connection"
+        )
+
+    participant_id = participant_id.strip()
+    now = _now_utc_iso()
+
+    conn.begin_write()
+    try:
+        req = conn.execute(
+            "SELECT id FROM generation_requests "
+            "WHERE idempotency_key = ? AND status = 'claimed' "
+            "AND COALESCE(claim_token, '') = ?"
+            + conn.row_lock_suffix,
+            (idempotency_key, claim_token),
+        ).fetchone()
+        if req is None:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        participant = conn.execute(
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
+            (participant_id,),
+        ).fetchone()
+        if not participant:
+            conn.rollback()
+            raise EditionValidationError(
+                "participant does not exist or is not active"
+            )
+
+        edition_number = _next_edition_number_locked(conn, participant_id)
+
+        if prior_edition_id is not None:
+            prior = conn.execute(
+                "SELECT participant_id FROM editions WHERE id = ?",
+                (prior_edition_id,),
+            ).fetchone()
+            if not prior:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id references a non-existent edition"
+                )
+            if prior["participant_id"] != participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id must belong to the same participant"
+                )
+
+        if input_id is not None:
+            inp = conn.execute(
+                "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
+                (input_id,),
+            ).fetchone()
+            if not inp:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id references a non-existent input"
+                )
+            if inp["participant_id"] != participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id must belong to the same participant"
+                )
+            if inp["deleted_at"] is not None:
+                conn.rollback()
+                raise EditionValidationError(
+                    "input_id references a deleted input"
+                )
+
+        if feedback_id is not None:
+            fb = conn.execute(
+                f"SELECT {_FEEDBACK_SELECT} FROM feedback WHERE id = ?",
+                (feedback_id,),
+            ).fetchone()
+            if not fb:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback_id references a non-existent feedback record"
+                )
+            if fb["participant_id"] != participant_id:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback must belong to the same participant"
+                )
+            if fb["edition_id"] != prior_edition_id:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback must be for the prior edition"
+                )
+            if fb["applied_to_next_edition"] != 0:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback has already been applied"
+                )
+
+        edition_id = str(uuid.uuid4())
+
+        cursor = conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, prior_edition_id, "
+            "input_id, generation_status, structured_content, "
+            "rendered_title, publication_state, drafted_at) "
+            "VALUES (?, ?, ?, ?, ?, 'pending_review', ?, ?, 'pending', ?)",
+            (
+                edition_id,
+                participant_id,
+                edition_number,
+                prior_edition_id,
+                input_id,
+                structured_content,
+                rendered_title,
+                now,
+            ),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            raise RuntimeError("failed to insert edition record")
+
+        if feedback_id is not None:
+            cursor = conn.execute(
+                "UPDATE feedback SET applied_to_next_edition = 1 "
+                "WHERE id = ? AND applied_to_next_edition = 0",
+                (feedback_id,),
+            )
+            if cursor.rowcount != 1:
+                conn.rollback()
+                raise RuntimeError("failed to mark feedback as applied")
+
+        cursor = conn.execute(
+            "UPDATE generation_requests "
+            "SET edition_id = ?, status = 'completed', completed_at = ?, "
+            "updated_at = ? "
+            "WHERE idempotency_key = ? AND status = 'claimed' "
+            "AND COALESCE(claim_token, '') = ?",
+            (edition_id, now, now, idempotency_key, claim_token),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request completion failed"
+            )
+
+        conn.commit()
+        return EditionRecord(
+            id=edition_id,
+            participant_id=participant_id,
+            edition_number=edition_number,
+            prior_edition_id=prior_edition_id,
+            input_id=input_id,
+            generation_status="pending_review",
+            structured_content=structured_content,
+            rendered_title=rendered_title,
+            drafted_at=now,
+            reviewed_at=None,
+            published_at=None,
+            human_correction_minutes=None,
+            reviewer_notes=None,
+            publication_state="pending",
+        )
+    except (
+        EditionValidationError,
+        EditionStateConflict,
+        FeedbackValidationError,
+        RepositoryTransactionError,
+    ):
+        raise
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
