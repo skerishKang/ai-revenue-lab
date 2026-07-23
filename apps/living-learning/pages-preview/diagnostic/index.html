@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 현재 수준 진단 (합성 데이터 UI 프리뷰)">
+<title>현재 수준 확인 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>온보딩</span><b>진행 중</b></div>
+      <div class="ai-status__row"><span>단계</span><b>2 / 2 진단</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb">시작하기 · <b>현재 수준 확인</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="learner-chip"><span class="learner-chip__avatar" aria-hidden="true">지</span>합성 학습자 · LL-0417</span>
+    </div>
+
+    <div class="content content--reading">
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>시작하기 2 / 2</span>
+        <h1>지금 어디부터 시작할까요?</h1>
+        <p>짧은 5가지 질문으로 첫 수업의 난이도, 설명 방식, 속도를 맞춥니다. 정답이 있는 테스트가 아닙니다.</p>
+      </div>
+
+      <form class="stack rise rise-1" aria-label="현재 수준 진단">
+        <fieldset class="field">
+          <legend class="field__label">코딩 경험 <span class="field__hint">Python이 아니어도 괜찮습니다</span></legend>
+          <div class="seg">
+            <label><input type="radio" name="exp" value="none" checked><span>전혀 없음</span></label>
+            <label><input type="radio" name="exp" value="some"><span>조금 해봄</span></label>
+            <label><input type="radio" name="exp" value="mid"><span>다른 언어 경험</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="field__label">선호하는 설명 방식</legend>
+          <div class="seg">
+            <label><input type="radio" name="explain" value="concept"><span>개념 설명 먼저</span></label>
+            <label><input type="radio" name="explain" value="example" checked><span>예제 먼저</span></label>
+            <label><input type="radio" name="explain" value="half"><span>반반</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="field__label">하루에 낼 수 있는 학습 시간</legend>
+          <div class="seg">
+            <label><input type="radio" name="time" value="5"><span>약 5분</span></label>
+            <label><input type="radio" name="time" value="10" checked><span>약 10분</span></label>
+            <label><input type="radio" name="time" value="20"><span>20분 이상</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="field__label">이론과 실습의 비율</legend>
+          <div class="seg">
+            <label><input type="radio" name="balance" value="theory"><span>이론 중심</span></label>
+            <label><input type="radio" name="balance" value="half"><span>반반</span></label>
+            <label><input type="radio" name="balance" value="practice" checked><span>실습 중심</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="field__label">지금 자신감 수준</legend>
+          <div class="seg">
+            <label><input type="radio" name="conf" value="low" checked><span>조금 불안해요</span></label>
+            <label><input type="radio" name="conf" value="mid"><span>보통이에요</span></label>
+            <label><input type="radio" name="conf" value="high"><span>자신 있어요</span></label>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="callout callout--info mt-6 rise rise-2">
+        <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <span>이 응답은 첫 수업의 <b>난이도·설명 순서·속도</b>에만 사용됩니다. 이 프리뷰에서는 어디에도 저장되지 않습니다.</span>
+      </div>
+
+      <div class="pager rise rise-3">
+        <a class="btn btn--ghost" href="/goals/">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+          이전
+        </a>
+        <a class="btn btn--primary" href="/lesson-1/">첫 수업 시작
+          <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

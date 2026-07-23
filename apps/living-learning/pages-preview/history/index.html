@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 학습 이력 — 수업별 완료 상태, 이해도, 피드백과 다음 수업 반영 변화 (합성 데이터 UI 프리뷰)">
+<title>학습 이력 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>기록된 수업</span><b>2개</b></div>
+      <div class="ai-status__row"><span>누적 피드백</span><b>3건</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb"><b>학습 이력</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="learner-chip"><span class="learner-chip__avatar" aria-hidden="true">지</span>합성 학습자 · LL-0417</span>
+    </div>
+
+    <div class="content content--reading">
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>학습 이력</span>
+        <h1>수업 기록</h1>
+        <p>각 수업의 완료 상태와 이해도, 남긴 피드백, 그리고 그 피드백이 다음 수업을 어떻게 바꿨는지 기록됩니다.</p>
+      </div>
+
+      <div class="timeline rise rise-1">
+        <article class="tl-item tl-item--done">
+          <div class="card card--pad">
+            <div class="flex-between wrap gap-2">
+              <span class="badge badge--success"><span class="badge__dot"></span>완료</span>
+              <span class="muted small">2026-07-23 · 오늘</span>
+            </div>
+            <h2 class="h-lg mt-3">변수 심화 — 코드로 먼저</h2>
+            <p class="muted small mt-2">두 번째 수업 · 개념: 변수 · 코드 중심</p>
+            <div class="mt-4 flex gap-2 wrap">
+              <span class="badge badge--neutral">이해도 3 / 3</span>
+              <span class="badge badge--accent">피드백 반영됨</span>
+            </div>
+            <p class="small mt-3"><b>남긴 피드백</b> — 예시를 늘려 주세요 · 코드를 먼저 보여 주세요 · 용어를 쉽게 풀어 주세요</p>
+            <p class="small mt-2"><b>다음 수업 반영</b> — 코드 먼저 · 예제 3개 · 용어 즉시 해설 설정을 <a href="/changes/">조건문 수업에도 유지</a></p>
+          </div>
+        </article>
+
+        <article class="tl-item tl-item--done">
+          <div class="card card--pad">
+            <div class="flex-between wrap gap-2">
+              <span class="badge badge--success"><span class="badge__dot"></span>완료</span>
+              <span class="muted small">2026-07-22</span>
+            </div>
+            <h2 class="h-lg mt-3">변수는 값을 담아 두는 이름입니다</h2>
+            <p class="muted small mt-2">첫 수업 · 개념: 변수 · 설명 중심</p>
+            <div class="mt-4 flex gap-2 wrap">
+              <span class="badge badge--neutral">이해도 1 / 1 (힌트 후 정답)</span>
+              <span class="badge badge--violet">피드백 3건 제출</span>
+            </div>
+            <p class="small mt-3"><b>남긴 피드백</b> — 예시를 늘려 주세요 · 코드를 먼저 보여 주세요 · 용어를 쉽게 풀어 주세요</p>
+            <p class="small mt-2"><b>다음 수업 반영</b> — 설명 먼저 → <a href="/changes/">코드 먼저 · 예제 1→3개 · 복습 1→3개 · 속도 세분화</a></p>
+          </div>
+        </article>
+
+        <article class="tl-item tl-item--done">
+          <div class="card card--pad">
+            <div class="flex-between wrap gap-2">
+              <span class="badge badge--success"><span class="badge__dot"></span>완료</span>
+              <span class="muted small">2026-07-22</span>
+            </div>
+            <h2 class="h-lg mt-3">현재 수준 진단</h2>
+            <p class="muted small mt-2">온보딩 · 5개 항목</p>
+            <div class="mt-4 flex gap-2 wrap">
+              <span class="badge badge--neutral">결과: 입문 1단계</span>
+              <span class="badge badge--neutral">실습 중심 · 예제 먼저 선호</span>
+            </div>
+            <p class="small mt-3"><b>반영</b> — 첫 수업 난이도를 입문 1단계로, 예제 중심 선호를 초기 구성에 반영</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

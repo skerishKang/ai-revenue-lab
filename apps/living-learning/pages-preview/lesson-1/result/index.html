@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 이해도 확인 결과 — 정답·오답 상태와 설명 (합성 데이터 UI 프리뷰)">
+<title>이해도 확인 결과 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>이해도</span><b>정답 1 / 1</b></div>
+      <div class="ai-status__row"><span>반영 예정</span><b>숙련도 +</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb">첫 번째 10분 수업 · <b>이해도 확인</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="badge badge--success"><span class="badge__dot"></span>정답</span>
+    </div>
+
+    <div class="content content--reading">
+      <div class="stepper rise mb-8" aria-label="학습 단계 진행">
+        <span class="stepper__step stepper__step--done"><span class="stepper__num">1</span>진단</span>
+        <span class="stepper__bar stepper__bar--done"></span>
+        <span class="stepper__step stepper__step--done"><span class="stepper__num">2</span>첫 수업</span>
+        <span class="stepper__bar stepper__bar--done"></span>
+        <span class="stepper__step stepper__step--active"><span class="stepper__num">3</span>이해도 확인</span>
+        <span class="stepper__bar"></span>
+        <span class="stepper__step"><span class="stepper__num">4</span>피드백</span>
+      </div>
+
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>이해도 확인</span>
+        <h1>첫 수업 이해도 확인 결과</h1>
+      </div>
+
+      <div class="callout callout--success rise" role="status">
+        <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+        <span><b>정답입니다.</b> <span class="mono">study_minutes</span>에는 숫자 <span class="mono">10</span>이 담겨 있습니다. 숫자는 따옴표 없이 쓴다는 점을 정확히 짚었습니다.</span>
+      </div>
+
+      <section class="card card--pad mt-6 rise rise-1" aria-labelledby="recap">
+        <h2 id="recap" class="card__title">문제 다시 보기</h2>
+        <p class="mt-3"><strong>2행 <span class="mono">study_minutes = 10</span>에서 <span class="mono">study_minutes</span>에 담긴 값은?</strong></p>
+        <div class="stack mt-4">
+          <span class="quiz-opt quiz-opt--correct" aria-label="정답: A, 10"><span class="quiz-opt__key">A</span><span class="mono">10</span><span class="badge badge--success ml-auto">정답</span></span>
+          <span class="quiz-opt" aria-label="B, 문자열 10"><span class="quiz-opt__key">B</span><span class="mono">"10"</span> (문자열)</span>
+          <span class="quiz-opt" aria-label="C, 지민"><span class="quiz-opt__key">C</span><span class="mono">지민</span></span>
+          <span class="quiz-opt" aria-label="D, 비어 있음"><span class="quiz-opt__key">D</span>아무 값도 없음</span>
+        </div>
+      </section>
+
+      <section class="card card--pad mt-6 rise rise-2" aria-labelledby="why">
+        <h2 id="why" class="card__title">왜 그런가요?</h2>
+        <div class="prose mt-3">
+          <p><span class="mono">study_minutes = 10</span>은 오른쪽 숫자 <span class="mono">10</span>을 왼쪽 이름 <span class="mono">study_minutes</span>에 담습니다. 따라서 담긴 값은 숫자 10입니다.</p>
+          <p>B의 <span class="mono">"10"</span>은 따옴표로 감싸여 있어 <strong>문자열</strong>, 즉 글자입니다. 코드에서는 <span class="mono">10</span>과 <span class="mono">"10"</span>을 다른 종류로 다룹니다. C의 “지민”은 <span class="mono">name</span>에 담긴 값이고, D는 값이 비어 있다는 뜻인데 지금은 값이 담겨 있으므로 맞지 않습니다.</p>
+        </div>
+        <details class="reveal mt-4">
+          <summary>힌트: 숫자와 문자열을 구분하는 법</summary>
+          <div class="reveal__body">
+            <p>값에 <b>따옴표가 있으면 문자열</b>, <b>없으면 숫자</b>입니다. <span class="mono">10</span> → 숫자, <span class="mono">"10"</span> → 문자열. 이 규칙 하나면 이번 유형은 계속 맞힐 수 있습니다.</p>
+          </div>
+        </details>
+      </section>
+
+      <section class="card card--pad mt-6 rise rise-3" aria-labelledby="wrong-look">
+        <h2 id="wrong-look" class="card__title">만약 오답이었다면 이렇게 보입니다</h2>
+        <p class="card__sub">정답을 바로 알려주기보다, 다시 생각할 힌트를 먼저 드립니다.</p>
+        <div class="stack mt-4">
+          <span class="quiz-opt quiz-opt--wrong" aria-label="오답 예시: B, 문자열 10"><span class="quiz-opt__key">B</span><span class="mono">"10"</span> (문자열)<span class="badge badge--error ml-auto">오답</span></span>
+        </div>
+        <div class="callout callout--warning mt-4">
+          <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17h.01"/></svg>
+          <span><b>다시 생각해 볼게요.</b> 따옴표가 있는지 확인해 보세요. 값에 따옴표가 감싸여 있다면 숫자가 아니라 글자(문자열)입니다. <a href="/lesson-1/">개념 부분</a>을 한 번 더 보고 다시 도전할 수 있습니다.</span>
+        </div>
+      </section>
+
+      <div class="pager rise rise-4">
+        <a class="btn btn--ghost" href="/lesson-1/">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+          수업으로 돌아가기
+        </a>
+        <a class="btn btn--primary" href="/feedback/">다음: 학습 방식 피드백
+          <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
