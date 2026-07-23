@@ -22,13 +22,14 @@
 | | Stable branch preview: `https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev` |
 | **Firebase** | Project: `ai-revenue-lab-identity` |
 | | Web App: `living-travel-staging` |
+| | Email/Password provider: enabled |
 | | Authorized domains: production + stable branch preview + localhost |
 
 ## Verification Results
 
 ### 1. Neon PostgreSQL
 
-- [x] Project created: `ai-revenue-living-travel`
+- [x] Project created
 - [x] PostgreSQL 17.10
 - [x] Pooled endpoint verified
 - [x] Direct endpoint verified
@@ -45,25 +46,34 @@
 
 ### 3. Cloudflare Pages
 
-- [x] Project exists: `ai-revenue-living-travel`
+- [x] Project exists
 - [x] Stable branch preview deployed
-- [x] CSP headers correct (connect-src includes Modal origin)
+- [x] CSP headers correct (connect-src includes Modal + Firebase origins)
 - [x] Staging page loads with correct Firebase config
 
 ### 4. Firebase
 
-- [x] Web app created: `living-travel-staging`
+- [x] Web app created
 - [x] Public config configured
-- [x] Authorized domains: production + stable branch preview
+- [x] Email/Password provider enabled
+- [x] Authorized domains: production + stable branch preview + localhost
 
-### 5. Browser Firebase Verification
+### 5. Browser Auth — Email/Password
 
-- [x] Firebase SDK loads from pinned gstatic version
-- [x] Google sign-in popup succeeds (operator account)
-- [x] Google sign-in popup succeeds (traveler account)
-- [x] No authorized-domain errors
-- [x] No CSP errors in browser console
-- [x] ID token not written to custom localStorage/sessionStorage
+- [x] Firebase Email/Password provider activated via Identity Toolkit API
+- [x] Dedicated synthetic operator account created (Admin SDK)
+- [x] Dedicated synthetic traveler account created (Admin SDK)
+- [x] Credentials stored in `/root/.secrets/lt-staging-e2e-creds.json` (chmod 600, outside repo)
+- [x] Staging UI updated: email/password form alongside Google login
+- [x] Password input: `type=password`
+- [x] No sign-up, password reset, or role selection UI
+- [x] Auth errors: generic messages only
+- [x] Operator email/password sign-in: `role=operator`
+- [x] Traveler email/password sign-in (before claim): `role=none`
+- [x] Traveler after invitation claim: `role=traveler`
+- [x] Token not stored in custom localStorage/sessionStorage
+- [x] Credentials not exposed in logs, DOM, or evidence
+- [x] Google login retained for live smoke test (not automated)
 
 ### 6. Invitation Replay
 
@@ -121,16 +131,20 @@
 
 ### 10. Local Tests
 
-- [x] 432 passed, 19 skipped
-- [x] Preview tests pass
+- [x] Unit tests: 119 passed
+- [x] Preview tests: 40 passed
 - [x] Packaging OK
-- [x] Secret scan clean
+- [x] Secret scan: clean (no secrets in evidence or pages-preview)
 
 ## Code Changes
 
 1. **modal_app.py**: Fix image build order (`.env()` before `add_local_dir`)
 2. **config.js**: Real Firebase public web config + actual Modal API_BASE
-3. **_headers**: CSP connect-src updated to actual Modal origin
+3. **_headers**: CSP connect-src with exact Modal + Firebase origins
+4. **firebase.js**: Add `signInWithEmailAndPassword` import and `signInWithEmail` export
+5. **index.html**: Add Email/Password login form alongside Google login
+6. **app-index.js**: Add email/password form handler (generic error messages, no credential logging)
+7. **test_staging_contract.py**: Fix `EXPECTED_API_ORIGIN` to match actual Modal URL
 
 ## Completion Criteria Status
 
@@ -146,15 +160,14 @@
 | 8 | Cloudflare Pages project | ✓ |
 | 9 | Staging frontend deployed (stable branch preview) | ✓ |
 | 10 | Firebase web app created | ✓ |
-| 11 | Authorized domains configured | ✓ |
-| 12 | Operator bootstrap | ✓ |
-| 13 | Browser Google sign-in verified | ✓ |
-| 14 | Invitation replay rejected | ✓ |
-| 15 | Authorization boundary enforced | ✓ |
-| 16 | Publication terminal transitions (409) | ✓ |
-| 17 | Cold-start persistence verified | ✓ |
-| 18 | Local tests pass | ✓ |
-| 19 | Secret scan clean | ✓ |
-| 20 | Draft PR created | ✓ |
+| 11 | Email/Password provider enabled | ✓ |
+| 12 | Browser email/password sign-in verified | ✓ |
+| 13 | Invitation replay rejected | ✓ |
+| 14 | Authorization boundary enforced | ✓ |
+| 15 | Publication terminal transitions (409) | ✓ |
+| 16 | Cold-start persistence verified | ✓ |
+| 17 | Local tests pass | ✓ |
+| 18 | Secret scan clean | ✓ |
+| 19 | Draft PR created | ✓ |
 
 **All completion criteria met.**

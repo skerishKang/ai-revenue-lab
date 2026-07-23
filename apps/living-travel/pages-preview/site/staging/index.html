@@ -21,8 +21,25 @@
 
       <p id="auth-status" class="staging-status" role="status">상태 확인 중…</p>
 
+      <div id="email-auth-form" class="staging-panel">
+        <h2 class="staging-panel-title">Email / Password 로그인</h2>
+        <label for="login-email">Email</label>
+        <input id="login-email" type="text" autocomplete="username" placeholder="operator@example.com">
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" autocomplete="current-password" placeholder="••••••••">
+        <div class="staging-actions">
+          <button id="signin-email-btn" type="button" class="btn btn-primary">이메일 로그인</button>
+        </div>
+      </div>
+
+      <div class="staging-panel">
+        <h2 class="staging-panel-title">Google 로그인</h2>
+        <div class="staging-actions">
+          <button id="signin-btn" type="button" class="btn btn-outline">Google로 로그인</button>
+        </div>
+      </div>
+
       <div class="staging-actions">
-        <button id="signin-btn" type="button" class="btn btn-primary">Google로 로그인</button>
         <button id="signout-btn" type="button" class="btn btn-outline hidden">로그아웃</button>
       </div>
 

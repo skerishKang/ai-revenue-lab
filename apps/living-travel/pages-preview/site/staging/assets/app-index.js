@@ -1,11 +1,15 @@
 // Living Travel — Staging sign-in gate logic.
-import { onAuth, signInWithGoogle, signOutUser } from "./firebase.js";
+import { onAuth, signInWithGoogle, signInWithEmail, signOutUser } from "./firebase.js";
 import { api, describeError } from "./api.js";
 import { setHidden, setText } from "./dom.js";
 
 const statusEl = document.getElementById("auth-status");
 const signinBtn = document.getElementById("signin-btn");
 const signoutBtn = document.getElementById("signout-btn");
+const signinEmailBtn = document.getElementById("signin-email-btn");
+const loginEmail = document.getElementById("login-email");
+const loginPassword = document.getElementById("login-password");
+const emailAuthForm = document.getElementById("email-auth-form");
 const rolePanel = document.getElementById("role-panel");
 const roleText = document.getElementById("role-text");
 const gotoTraveler = document.getElementById("goto-traveler");
@@ -60,11 +64,15 @@ onAuth((user) => {
   if (user) {
     setText(statusEl, "로그인되었습니다.");
     setHidden(signinBtn, true);
+    setHidden(signinEmailBtn, true);
+    setHidden(emailAuthForm, true);
     setHidden(signoutBtn, false);
     refreshRole();
   } else {
     setText(statusEl, "로그인되어 있지 않습니다.");
     setHidden(signinBtn, false);
+    setHidden(signinEmailBtn, false);
+    setHidden(emailAuthForm, false);
     setHidden(signoutBtn, true);
   }
 });
@@ -75,6 +83,24 @@ signinBtn.addEventListener("click", async () => {
     await signInWithGoogle();
   } catch (err) {
     showError(err && err.message ? err.message : "로그인에 실패했습니다.");
+  }
+});
+
+signinEmailBtn.addEventListener("click", async () => {
+  showError("");
+  const email = loginEmail.value.trim();
+  const password = loginPassword.value;
+  if (!email || !password) {
+    showError("이메일과 비밀번호를 입력하세요.");
+    return;
+  }
+  try {
+    await signInWithEmail(email, password);
+    loginEmail.value = "";
+    loginPassword.value = "";
+  } catch (err) {
+    const msg = err && err.message ? err.message : "로그인에 실패했습니다.";
+    showError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
   }
 });
 
