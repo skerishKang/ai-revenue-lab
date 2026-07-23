@@ -44,9 +44,47 @@ v2 is rebuilt as a mobile-first Korean consumer marketplace reference:
 
 ## Open the prototype
 
-Open `index.html` in a modern browser.
+### Safe local worktree launcher
 
-The prototype is a single self-contained interaction document except for temporary remote font and image references. Navigation uses URL hashes:
+Run `LOCAL_PREVIEW.ps1` from PowerShell. The script:
+
+- fetches the exact remote reference branch;
+- leaves the user's existing checkout untouched;
+- creates or refreshes a dedicated detached worktree;
+- refuses to reset or clean a dirty target;
+- starts a local static server;
+- opens the prototype in the default browser.
+
+Default paths:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\LOCAL_PREVIEW.ps1
+```
+
+Override paths when required:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\LOCAL_PREVIEW.ps1 `
+  -RepoPath "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab" `
+  -WorktreePath "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-neighbor-market-reference" `
+  -Port 4173
+```
+
+### Manual opening
+
+Open `index.html` in a modern browser, or serve the directory:
+
+```bash
+python -m http.server 4173 --bind 127.0.0.1
+```
+
+Then open:
+
+```text
+http://127.0.0.1:4173/index.html
+```
+
+The prototype is a single interaction document except for temporary remote font and image references. Navigation uses URL hashes:
 
 - `#home`
 - `#explore`
@@ -69,14 +107,21 @@ The prototype is a single self-contained interaction document except for tempora
 
 - `index.html` — clickable product reference
 - `DESIGN_SPEC.md` — product, visual and interaction decisions
+- `UI_REFINEMENT_V3.md` — fixed consumer-marketplace finish rules for the next visual pass
 - `IMAGE_SOURCES.md` — temporary image and font source ledger
-- `LOCAL_HANDOFF_PROMPT.md` — strict future local-worker prompt
+- `LOCAL_HANDOFF_PROMPT.md` — strict future local-worker implementation prompt
+- `LOCAL_PREVIEW.ps1` — safe dedicated-worktree preview launcher
+- `SCREENSHOT_MATRIX.md` — required desktop, tablet, mobile and state screenshots
 
 ## Review sequence
 
-1. Review the prototype visually on desktop and mobile.
-2. Revise only the reference branch until approved.
-3. Create a separate documentation change for Business 5 registry assignment.
-4. Create a separate implementation branch under `apps/neighbor-market/**`.
-5. Give the local worker the strict handoff prompt and reference commit SHA.
-6. Keep the implementation PR Draft until screenshot comparison passes.
+1. Apply the v3 finish rules to the reference HTML.
+2. Sync the exact reference branch into a clean dedicated worktree.
+3. Open the prototype through the local server.
+4. Capture every required screenshot in `SCREENSHOT_MATRIX.md` without source changes.
+5. Review the prototype visually on desktop and mobile.
+6. Revise only the reference branch until approved.
+7. Create a separate documentation change for Business 5 registry assignment.
+8. Create a separate implementation branch under `apps/neighbor-market/**`.
+9. Give the local worker the strict handoff prompt and approved reference commit SHA.
+10. Keep the implementation PR Draft until screenshot comparison passes.
