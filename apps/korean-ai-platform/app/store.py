@@ -119,6 +119,22 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
     if errors:
         return None, errors
 
+    # Global external-model policy: when external transmission is disabled,
+    # block any overseas/non-domestic worker or validator model.
+    if not store.settings.allow_external:
+        worker = store.models[worker_model_id]
+        validator = store.models[validator_model_id]
+        if not worker.is_domestic:
+            errors["worker_model_id"] = (
+                f"외부 모델 전송이 허용되지 않았습니다. '{worker.name}'은(는) 해외 처리 모델입니다."
+            )
+        if not validator.is_domestic:
+            errors["validator_model_id"] = (
+                f"외부 모델 전송이 허용되지 않았습니다. '{validator.name}'은(는) 해외 처리 모델입니다."
+            )
+        if errors:
+            return None, errors
+
     project = store.projects[project_id]
     allowed = _split_paths(form.get("allowed_paths", "")) or list(project.default_allowed)
     denied = _split_paths(form.get("denied_paths", "")) or list(project.default_denied)
@@ -130,9 +146,28 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
     if errors:
         return None, errors
 
-    cost_limit, cost_error = parse_cost_limit(form.get("cost_limit_krw", ""))
-    if cost_error is not None:
-        errors["cost_limit_krw"] = cost_error
+    # Cost limit: blank input falls back to the global project default; an
+    # explicit value (including 0 = no limit) is parsed and validated.
+    cost_raw = (form.get("cost_limit_krw") or "").strip()
+    if cost_raw == "":
+        cost_limit = store.settings.project_cost_limit_krw
+    else:
+        cost_limit, cost_error = parse_cost_limit(cost_raw)
+        if cost_error is not None:
+            errors["cost_limit_krw"] = cost_error
+            return None, errors
+
+    # Validate enum inputs explicitly so a manipulated value yields a field
+    # error (form re-render) instead of an unhandled ValueError / HTTP 500.
+    try:
+        external_policy = ExternalPolicy(form.get("external_policy", "allow"))
+    except ValueError:
+        errors["external_policy"] = "외부 전송 정책 값이 올바르지 않습니다."
+    try:
+        branch_mode = BranchMode(form.get("branch_mode", "auto"))
+    except ValueError:
+        errors["branch_mode"] = "브랜치 생성 방식 값이 올바르지 않습니다."
+    if errors:
         return None, errors
 
     task = Task(
@@ -145,8 +180,8 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
         allowed_paths=allowed,
         denied_paths=denied,
         cost_limit_krw=cost_limit,
-        external_policy=ExternalPolicy(form.get("external_policy", "allow")),
-        branch_mode=BranchMode(form.get("branch_mode", "auto")),
+        external_policy=external_policy,
+        branch_mode=branch_mode,
     )
     store.tasks[task.id] = task
     return task, errors

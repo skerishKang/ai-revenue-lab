@@ -12,8 +12,16 @@
 </div>
 
 {% if saved %}
-<div class="callout callout-info" role="status">설정이 저장되었습니다. (데모: 메모리에만 유지되며 실제 키는 저장되지 않습니다.)</div>
+<div class="callout callout-info" role="status">설정이 저장되었습니다. (데모: 메모리에만 유지됩니다.)</div>
 {% endif %}
+{% if errors.get('project_cost_limit_krw') %}
+<div class="callout callout-danger" role="alert"><span class="callout-title">저장되지 않았습니다</span>{{ errors['project_cost_limit_krw'] }} 입력 값을 확인하세요. 변경사항은 저장되지 않았습니다.</div>
+{% endif %}
+
+{% set v_domestic = (form.get('domestic_first') == 'on') if form else settings.domestic_first %}
+{% set v_external = (form.get('allow_external') == 'on') if form else settings.allow_external %}
+{% set v_secret = (form.get('block_on_secret') == 'on') if form else settings.block_on_secret %}
+{% set v_cost = form.get('project_cost_limit_krw') if form else (settings.project_cost_limit_krw | int) %}
 
 <section class="section reveal" aria-labelledby="providers-title">
   <div class="section-head">
@@ -44,8 +52,10 @@
   <section class="section" aria-labelledby="byok-title" style="margin-bottom:1.4rem">
     <h2 class="section-title" id="byok-title">사용자 API 키 (BYOK)</h2>
     <p class="callout callout-warn">
-      <span class="callout-title">키는 저장·전송되지 않습니다</span>
-      이 데모는 입력한 API 키를 저장하거나 전송하지 않습니다. 등록 여부만 표시되며, 키 값은 즉시 폐기됩니다. 화면에는 마스킹된 값만 나타납니다.
+      <span class="callout-title">키 처리 방식 (Demo)</span>
+      입력한 API 키는 외부 AI provider로 전송하지 않으며, 서버의 DB·파일·환경변수·로그에 영속 저장하지 않습니다.
+      현재 요청에서 입력 존재 여부만 확인한 뒤 원문 값은 즉시 폐기되고, 화면과 응답에 raw key를 다시 출력하지 않습니다.
+      브라우저에서 이 앱 서버로는 폼 전송되므로, 실제 운영에서는 HTTPS와 비밀 저장소 연동이 필요합니다.
     </p>
     {% for model in byok_models %}
     {% set state = settings.byok.get(model.id) %}
@@ -60,8 +70,14 @@
         {% else %}
         <span class="chip">미등록</span>
         {% endif %}
-        · 저장하지 않음
+        · 빈 칸으로 저장하면 기존 상태가 유지됩니다.
       </p>
+      {% if state and state.registered %}
+      <label class="choice" style="margin-top:.3rem">
+        <input type="checkbox" name="apikey_unregister_{{ model.id }}">
+        등록 해제 (명시적 선택 시에만 해제)
+      </label>
+      {% endif %}
     </div>
     {% endfor %}
   </section>
@@ -69,29 +85,31 @@
   <section class="section" aria-labelledby="policy-title">
     <h2 class="section-title" id="policy-title">데이터·보안 정책</h2>
     <label class="switch">
-      <input type="checkbox" name="domestic_first" {{ 'checked' if settings.domestic_first }}>
+      <input type="checkbox" name="domestic_first" {{ 'checked' if v_domestic }}>
       <span class="switch-track" aria-hidden="true"></span>
       <span><span class="switch-label">국내 처리 우선</span><br><span class="switch-desc">국내·자체 호스팅 모델을 우선 권장합니다.</span></span>
     </label>
     <label class="switch">
-      <input type="checkbox" name="allow_external" {{ 'checked' if settings.allow_external }}>
+      <input type="checkbox" name="allow_external" {{ 'checked' if v_external }}>
       <span class="switch-track" aria-hidden="true"></span>
-      <span><span class="switch-label">외부 모델 전송 허용</span><br><span class="switch-desc">해외 클라우드 모델로의 데이터 전송을 허용합니다.</span></span>
+      <span><span class="switch-label">외부 모델 전송 허용</span><br><span class="switch-desc">끄면 해외 처리 모델로 작업 생성이 차단됩니다(집행되는 정책).</span></span>
     </label>
     <label class="switch">
-      <input type="checkbox" name="block_on_secret" {{ 'checked' if settings.block_on_secret }}>
+      <input type="checkbox" name="block_on_secret" {{ 'checked' if v_secret }}>
       <span class="switch-track" aria-hidden="true"></span>
-      <span><span class="switch-label">민감정보 발견 시 차단</span><br><span class="switch-desc">비밀키·개인정보가 감지되면 전송을 차단합니다.</span></span>
+      <span><span class="switch-label">민감정보 발견 시 차단</span><br><span class="switch-desc">실제 탐지기 미연결 · Demo 정책 미리보기(실제 차단 기능이 아닙니다).</span></span>
     </label>
-    <label class="switch">
-      <input type="checkbox" name="block_push_without_approval" {{ 'checked' if settings.block_push_without_approval }}>
-      <span class="switch-track" aria-hidden="true"></span>
-      <span><span class="switch-label">승인 없는 push 차단</span><br><span class="switch-desc">사람 승인 전에는 브랜치 반영을 허용하지 않습니다.</span></span>
-    </label>
+    <div class="callout callout-info" style="margin:.6rem 0">
+      <span class="callout-title">승인 없는 push 차단 · 필수 정책(읽기 전용)</span>
+      사람 승인 전 브랜치·커밋 생성 차단은 항상 적용됩니다. 이 항목은 해제할 수 없으며 POST로 false를 보내도 핵심 승인 게이트는 약화되지 않습니다.
+      현재 상태: <span class="chip chip-ok">항상 켜짐</span>
+    </div>
     <div class="field" style="margin-top:1rem">
       <label for="project_cost_limit_krw">프로젝트 기본 비용 한도 (원)</label>
       <input id="project_cost_limit_krw" name="project_cost_limit_krw" type="number" min="0" step="100"
-             value="{{ settings.project_cost_limit_krw | int }}">
+             value="{{ v_cost }}">
+      <p class="field-hint">작업 생성 시 비용 한도를 비워두면 이 기본값이 적용됩니다.</p>
+      {% if errors.get('project_cost_limit_krw') %}<p class="field-error">{{ errors['project_cost_limit_krw'] }}</p>{% endif %}
     </div>
   </section>
 

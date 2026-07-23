@@ -149,6 +149,7 @@
             {{ 'checked' if form.get('external_policy') == 'restrict' }}>
           외부 전송 제한 (국내·자체 호스팅 우선)
         </label>
+        {% if errors.get('external_policy') %}<p class="field-error">{{ errors['external_policy'] }}</p>{% endif %}
       </fieldset>
 
       <fieldset class="field">
@@ -163,6 +164,7 @@
             {{ 'checked' if form.get('branch_mode') == 'manual' }}>
           수동 브랜치 (승인 후에도 자동 생성하지 않음)
         </label>
+        {% if errors.get('branch_mode') %}<p class="field-error">{{ errors['branch_mode'] }}</p>{% endif %}
       </fieldset>
     </div>
   </div>

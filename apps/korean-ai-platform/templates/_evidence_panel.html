@@ -11,6 +11,7 @@
       <dt>승인자</dt>
       <dd>{{ task.approver }}</dd>
     </div>
+    {% if task.branch_name and task.commit_sha %}
     <div class="meta-item">
       <dt>데모 브랜치</dt>
       <dd class="sha-row"><span class="mono">{{ task.branch_name }}</span> <span class="tag">Demo</span>
@@ -21,6 +22,13 @@
       <dd class="sha-row"><span class="mono">{{ task.commit_sha }}</span> <span class="tag">Demo</span>
         <button type="button" class="copy-btn" data-copy="{{ task.commit_sha }}">복사</button></dd>
     </div>
+    {% else %}
+    <div class="meta-item">
+      <dt>반영 상태</dt>
+      <dd><span class="chip chip-warn">승인 완료 · 수동 반영 대기</span>
+        <span class="muted">(수동 브랜치 모드 — 데모 브랜치·커밋 미생성)</span></dd>
+    </div>
+    {% endif %}
     {% endif %}
     {% if task.status.value == 'rejected' %}
     <div class="meta-item">

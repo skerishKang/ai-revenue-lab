@@ -11,6 +11,7 @@ import hashlib
 
 from app import mock_data
 from app.domain import (
+    BranchMode,
     CostLine,
     Finding,
     ModelSpec,
@@ -226,11 +227,24 @@ def approve_task(task: Task, approver: str) -> None:
         raise IllegalTransition(
             f"'{task.status.value}' 상태에서는 승인할 수 없습니다."
         )
+    # Governance gate: a REJECT verdict (which is produced by any denied-path
+    # violation) cannot be approved. CAUTION (outside-allowed, cost/external
+    # warnings) may still be approved by a human who has reviewed the evidence.
+    if task.run is not None and (
+        task.run.verdict == Verdict.REJECT or _denied_violations(task)
+    ):
+        raise IllegalTransition(
+            "검증자 판단이 '권장하지 않음'(REJECT)이거나 수정 금지 경로 위반이 있어 "
+            "승인할 수 없습니다. 재작업 또는 거절만 선택할 수 있습니다."
+        )
     task.approver = approver or "검토자"
-    task.commit_sha = "demo-" + _short_hash(task.id + ":commit")
-    task.branch_name = f"feat/demo-{task.id}"
     task.completed_at = _now()
     task.status = TaskStatus.COMPLETED
+    if task.branch_mode == BranchMode.AUTO:
+        task.commit_sha = "demo-" + _short_hash(task.id + ":commit")
+        task.branch_name = f"feat/demo-{task.id}"
+    # BranchMode.MANUAL: record approval but leave branch_name/commit_sha as
+    # None — reflection happens manually outside this demo.
 
 
 def reject_task(task: Task, reason: str) -> None:

@@ -25,7 +25,11 @@
         <span class="step-label">사용자 승인 · 브랜치 반영</span>
         <span class="step-detail">
           {%- if task.status.value == 'completed' -%}
-            승인 완료 · {{ task.branch_name }} (Demo)
+            {%- if task.branch_name -%}
+              승인 완료 · {{ task.branch_name }} (Demo)
+            {%- else -%}
+              승인 완료 · 수동 반영 대기 (수동 브랜치 모드)
+            {%- endif -%}
           {%- else -%}
             사람이 승인하기 전에는 브랜치에 반영되지 않습니다.
           {%- endif -%}

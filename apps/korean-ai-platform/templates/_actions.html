@@ -1,16 +1,28 @@
 <section class="panel decision" aria-labelledby="actions-title">
   <h2 class="panel-title" id="actions-title">사람 승인</h2>
-  <p class="decision-note">승인해야만 데모 브랜치와 커밋이 생성됩니다. 승인 전에는 어떤 반영도 일어나지 않습니다.</p>
 
-  {% if settings.block_push_without_approval %}
-  <p class="callout callout-info">승인 없는 push 차단 정책이 켜져 있습니다.</p>
-  {% endif %}
-
+  {% if task.run and task.run.verdict.value == 'reject' %}
+  <p class="callout callout-danger" role="alert">
+    <span class="callout-title">승인 차단됨</span>
+    검증자 판단이 '권장하지 않음'(REJECT)이거나 수정 금지 경로 위반이 있어 승인할 수 없습니다. 재작업 또는 거절만 선택할 수 있습니다.
+  </p>
+  {% else %}
+  <p class="decision-note">
+    {%- if task.branch_mode.value == 'manual' -%}
+      승인하면 완료로 기록되며 브랜치·커밋은 생성하지 않습니다(수동 반영 대기).
+    {%- else -%}
+      승인해야만 데모 브랜치와 커밋이 생성됩니다. 승인 전에는 어떤 반영도 일어나지 않습니다.
+    {%- endif -%}
+  </p>
+  <p class="callout callout-info">승인 없는 push 차단은 항상 적용됩니다(필수 정책).</p>
   <form method="post" action="/tasks/{{ task.id }}/approve" class="action-form">
     <label for="approver">승인자 이름</label>
     <input id="approver" name="approver" type="text" placeholder="예: 검토자 김" value="검토자 김">
-    <button type="submit" class="btn btn-primary btn-block btn-lg">승인하고 데모 브랜치에 반영</button>
+    <button type="submit" class="btn btn-primary btn-block btn-lg">
+      {{ '승인하고 완료로 기록 (수동 반영)' if task.branch_mode.value == 'manual' else '승인하고 데모 브랜치에 반영' }}
+    </button>
   </form>
+  {% endif %}
 
   <form method="post" action="/tasks/{{ task.id }}/rework" class="action-form">
     <label for="rework-reason">재작업 요청 사유</label>

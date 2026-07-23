@@ -211,6 +211,8 @@ def settings_page(request: Request):
             "models": list(store.models.values()),
             "byok_models": byok_models,
             "saved": request.query_params.get("saved"),
+            "errors": {},
+            "form": None,
         },
     )
 
@@ -219,25 +221,58 @@ def settings_page(request: Request):
 async def settings_save(request: Request):
     store = _store(request)
     form = await request.form()
-    settings = store.settings
+    byok_models = [m for m in store.models.values() if m.requires_byok]
 
-    settings.domestic_first = form.get("domestic_first") == "on"
-    settings.allow_external = form.get("allow_external") == "on"
-    settings.block_on_secret = form.get("block_on_secret") == "on"
-    settings.block_push_without_approval = form.get("block_push_without_approval") == "on"
-
+    # Atomic validation: validate every input before mutating anything, so an
+    # invalid value never produces a partial update or a false "saved" banner.
+    errors: dict[str, str] = {}
     parsed_limit, limit_error = parse_cost_limit(
         str(form.get("project_cost_limit_krw") or "")
     )
-    if limit_error is None and parsed_limit is not None:
+    if limit_error is not None:
+        errors["project_cost_limit_krw"] = limit_error
+
+    if errors:
+        submitted = {
+            "domestic_first": str(form.get("domestic_first") or ""),
+            "allow_external": str(form.get("allow_external") or ""),
+            "block_on_secret": str(form.get("block_on_secret") or ""),
+            "project_cost_limit_krw": str(form.get("project_cost_limit_krw") or ""),
+        }
+        return render_template(
+            request,
+            "settings.html",
+            {
+                "settings": store.settings,  # unchanged
+                "models": list(store.models.values()),
+                "byok_models": byok_models,
+                "saved": None,
+                "errors": errors,
+                "form": submitted,
+            },
+        )
+
+    settings = store.settings
+    settings.domestic_first = form.get("domestic_first") == "on"
+    settings.allow_external = form.get("allow_external") == "on"
+    settings.block_on_secret = form.get("block_on_secret") == "on"
+    # Mandatory invariant: the approval gate is always enforced. The submitted
+    # value is intentionally ignored so it can never weaken the core control.
+    settings.block_push_without_approval = True
+    if parsed_limit is not None:
         settings.project_cost_limit_krw = parsed_limit
 
     for model in store.models.values():
         if not model.requires_byok:
             continue
         state = settings.byok.setdefault(model.id, ByokState())
-        # The API key value is read only to detect presence and is then
-        # discarded. Only the boolean registration flag is kept (Demo).
-        state.registered = bool(str(form.get(f"apikey_{model.id}", "")).strip())
+        raw = str(form.get(f"apikey_{model.id}", "") or "")
+        if raw.strip():
+            # Only the presence of a key is recorded; the raw value is
+            # discarded here and never persisted or echoed.
+            state.registered = True
+        # A blank key input preserves the existing registered state.
+        if form.get(f"apikey_unregister_{model.id}") == "on":
+            state.registered = False  # explicit unregistration only
 
     return RedirectResponse(url="/settings?saved=1", status_code=303)
