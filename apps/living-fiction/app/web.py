@@ -39,7 +39,7 @@ from app import reader_repository as reader_repo
 from app import review_service
 from app import world_repository as world_repo
 from app.ai.mock import MockProvider
-from app.config import settings
+from app.config import canonicalize_origin, settings
 from app.db import get_connection
 from app.preview_data import (
     BRANCH_EPISODE_CONTENT,
@@ -219,19 +219,24 @@ def _verify_request_origin(request: Request) -> None:
     generic 403 so no condition is revealed.
     """
     configured = {
-        origin.strip()
-        for origin in settings.allowed_origins.split(",")
-        if origin.strip()
+        canonical
+        for canonical in (
+            canonicalize_origin(o)
+            for o in settings.allowed_origins.split(",")
+            if o.strip()
+        )
+        if canonical
     }
     origin = request.headers.get("origin")
     if origin:
+        canonical_origin = canonicalize_origin(origin)
         if configured:
-            if origin not in configured:
+            if canonical_origin is None or canonical_origin not in configured:
                 raise HTTPException(
                     status_code=403, detail="Invalid request origin"
                 )
             return
-        if origin != _expected_origin(request):
+        if canonical_origin != canonicalize_origin(_expected_origin(request)):
             raise HTTPException(
                 status_code=403, detail="Invalid request origin"
             )
@@ -242,7 +247,7 @@ def _verify_request_origin(request: Request) -> None:
         raise HTTPException(status_code=403, detail="Invalid request origin")
     if configured:
         allowed_hosts = {o.split("://", 1)[-1] for o in configured}
-        if host not in allowed_hosts:
+        if host.lower() not in allowed_hosts:
             raise HTTPException(
                 status_code=403, detail="Invalid request origin"
             )

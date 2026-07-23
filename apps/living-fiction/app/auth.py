@@ -58,6 +58,14 @@ SESSION_TOKEN_ADMIN_PURPOSE = "admin-session-token"
 IDLE_TIMEOUT_SECONDS = 1800
 IDLE_REFRESH_INTERVAL_SECONDS = 60
 
+# Pre-auth CSRF tokens are short-lived: the access form is meant to be filled in
+# promptly, so a signed pre-auth token expires after this many seconds. This
+# bounds the window in which a leaked/intercepted pre-auth nonce could be replayed
+# and keeps the unauthenticated CSRF context from accumulating indefinitely.
+PREAUTH_CSRF_TTL_SECONDS = 600
+# Tolerated forward clock skew when validating the embedded issue timestamp.
+PREAUTH_CSRF_FUTURE_SKEW_SECONDS = 60
+
 # Cookie paths. The reader session must span ``/read``, ``/read/*`` and
 # ``/logout``, so it stays at ``/``. Admin surfaces are scoped under ``/admin``
 # and each pre-auth cookie is scoped to the access route that sets it.
@@ -93,10 +101,18 @@ def _derive_csrf_key(hmac_key: str, purpose: str) -> str:
 
 
 def issue_preauth_csrf(hmac_key: str, purpose: str) -> str:
-    """Return a signed pre-auth CSRF token of the form ``nonce.signature``."""
+    """Return a signed, time-bound pre-auth CSRF token.
+
+    Format: ``nonce.issued_at.signature`` where ``signature`` is a keyed
+    HMAC over ``nonce.issued_at`` for *purpose*. The embedded ``issued_at``
+    (unix seconds) lets :func:`verify_preauth_csrf` enforce a short TTL so the
+    unauthenticated CSRF context is short-lived.
+    """
     nonce = secrets.token_urlsafe(32)
-    sig = _hmac_digest(_derive_csrf_key(hmac_key, purpose), nonce)
-    return f"{nonce}.{sig}"
+    issued_at = int(datetime.now(timezone.utc).timestamp())
+    payload = f"{nonce}.{issued_at}"
+    sig = _hmac_digest(_derive_csrf_key(hmac_key, purpose), payload)
+    return f"{payload}.{sig}"
 
 
 def verify_preauth_csrf(
@@ -104,22 +120,42 @@ def verify_preauth_csrf(
     purpose: str,
     cookie_value: str | None,
     form_value: str | None,
+    *,
+    ttl_seconds: int = PREAUTH_CSRF_TTL_SECONDS,
+    now: datetime | None = None,
 ) -> bool:
     """Verify a pre-auth CSRF token.
 
-    The submitted form value must be a valid signed nonce for *purpose* and
-    must equal the double-submit cookie, binding the submission to the browser
-    that received the form.
+    The submitted form value must be a valid signed ``nonce.issued_at`` for
+    *purpose*, must equal the double-submit cookie (binding the submission to
+    the browser that received the form), and must have been issued within
+    ``ttl_seconds``. Tokens from the future beyond a small clock-skew tolerance
+    are rejected. ``now`` may be injected for deterministic tests.
     """
     if not cookie_value or not form_value:
         return False
     if not _constant_time_compare(cookie_value, form_value):
         return False
-    nonce, _, sig = form_value.partition(".")
-    if not nonce or not sig:
+    nonce, sep, rest = form_value.partition(".")
+    if not nonce or not sep:
         return False
-    expected = _hmac_digest(_derive_csrf_key(hmac_key, purpose), nonce)
-    return _constant_time_compare(expected, sig)
+    issued_str, sep2, sig = rest.partition(".")
+    if not issued_str or not sep2 or not sig:
+        return False
+    payload = f"{nonce}.{issued_str}"
+    expected = _hmac_digest(_derive_csrf_key(hmac_key, purpose), payload)
+    if not _constant_time_compare(expected, sig):
+        return False
+    try:
+        issued_at = int(issued_str)
+    except ValueError:
+        return False
+    current = int((now or datetime.now(timezone.utc)).timestamp())
+    if current - issued_at > ttl_seconds:
+        return False
+    if issued_at - current > PREAUTH_CSRF_FUTURE_SKEW_SECONDS:
+        return False
+    return True
 
 
 # ── CSRF: authenticated (derived from raw session token + purpose) ─────────

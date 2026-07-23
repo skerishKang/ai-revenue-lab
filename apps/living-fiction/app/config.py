@@ -63,6 +63,38 @@ def _structurally_weak(value: str) -> bool:
     return False
 
 
+def canonicalize_origin(origin: str) -> str | None:
+    """Normalize an origin to canonical ``scheme://host[:port]`` form.
+
+    Returns ``None`` when *origin* is not a well-formed ``http://``/``https://``
+    origin (missing host, or carrying a path/query/fragment/embedded
+    credentials). Otherwise returns the canonical form: lowercased scheme and
+    host, default ports dropped (80 for http, 443 for https), and no trailing
+    slash. Canonicalization makes allowlist matching robust to superficial
+    differences such as ``HTTPS://Example.com/`` vs ``https://example.com`` or
+    ``https://example.com:443`` vs ``https://example.com``.
+    """
+    parsed = urlparse(origin.strip())
+    if parsed.scheme not in ("http", "https"):
+        return None
+    host = parsed.hostname
+    if not host:
+        return None
+    if parsed.path not in ("", "/"):
+        return None
+    if parsed.query or parsed.fragment:
+        return None
+    if parsed.username or parsed.password:
+        return None
+    scheme = parsed.scheme.lower()
+    host = host.lower()
+    port = parsed.port
+    default_port = 443 if scheme == "https" else 80
+    if port is not None and port != default_port:
+        return f"{scheme}://{host}:{port}"
+    return f"{scheme}://{host}"
+
+
 class Settings(BaseSettings):
     env: str = "development"
     app_name: str = "living-fiction"
@@ -169,7 +201,11 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "LF_ALLOWED_ORIGINS entries must not include credentials"
                 )
-            seen.add(origin)
+            # Store the canonical form so equivalent origins (differing only by
+            # case, trailing slash, or explicit default port) collapse to one.
+            canonical = canonicalize_origin(origin)
+            if canonical is not None:
+                seen.add(canonical)
         # Normalize duplicates silently (no error, just dedup).
         self.allowed_origins = ",".join(sorted(seen))
 

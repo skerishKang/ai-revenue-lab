@@ -3,6 +3,7 @@ import re
 import sqlite3
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -16,7 +17,7 @@ from app import episode_repository as ep_repo
 from app import reader_repository as reader_repo
 from app import review_service
 from app.ai.mock import MockProvider
-from app.config import Settings, settings
+from app.config import Settings, canonicalize_origin, settings
 from app.db import apply_migrations, get_connection
 from app.dev_seed import _seed_canon, _seed_invite, _seed_world
 from app.preview_data import BRANCH_EPISODE_CONTENT, BRANCH_EPISODE_PLAN, WORLD_STATE
@@ -635,3 +636,194 @@ def test_full_private_header_set(app_client):
     assert resp.headers["X-Frame-Options"] == "DENY"
     assert resp.headers["X-Content-Type-Options"] == "nosniff"
     assert "Content-Security-Policy" in resp.headers
+
+
+# ── §3 Provider protocol validation ───────────────────────────────────────
+
+
+class _AttrsOnlyProvider:
+    """Has the identity attributes but no generate_structured method."""
+
+    provider_name = "attrs-only"
+    model = "attrs-only-v1"
+    cost_class = "free"
+
+
+class _NonCallableGenerateProvider:
+    """generate_structured exists but is not callable."""
+
+    provider_name = "noncallable"
+    model = "noncallable-v1"
+    cost_class = "free"
+    generate_structured = "not-a-method"
+
+
+def test_injected_provider_missing_generate_structured_fails(temp_db_path):
+    from app.factory import create_app
+
+    with pytest.raises(RuntimeError, match="generate_structured"):
+        create_app(
+            db_path=temp_db_path, provider=_AttrsOnlyProvider(), enable_web=False
+        )
+
+
+def test_injected_provider_noncallable_generate_structured_fails(temp_db_path):
+    from app.factory import create_app
+
+    with pytest.raises(RuntimeError, match="generate_structured"):
+        create_app(
+            db_path=temp_db_path,
+            provider=_NonCallableGenerateProvider(),
+            enable_web=False,
+        )
+
+
+def test_injected_provider_satisfying_protocol_accepted(temp_db_path):
+    from app.factory import create_app
+
+    app = create_app(
+        db_path=temp_db_path, provider=MockProvider(), enable_web=False
+    )
+    assert app.state.provider.provider_name == "mock"
+
+
+# ── §4 allowed-origin canonicalization ────────────────────────────────────
+
+
+def test_canonicalize_origin_normalizes_variants():
+    assert canonicalize_origin("https://example.com") == "https://example.com"
+    # Case + trailing slash collapse to the same canonical origin.
+    assert canonicalize_origin("HTTPS://Example.com/") == "https://example.com"
+    # Explicit default port is dropped.
+    assert canonicalize_origin("https://example.com:443") == "https://example.com"
+    assert canonicalize_origin("http://example.com:80") == "http://example.com"
+    # Non-default port is preserved.
+    assert (
+        canonicalize_origin("https://example.com:8443")
+        == "https://example.com:8443"
+    )
+
+
+def test_canonicalize_origin_rejects_malformed():
+    for bad in [
+        "not-a-url",
+        "ftp://example.com",
+        "https://example.com/path",
+        "https://example.com?q=1",
+        "https://example.com#frag",
+        "https://user:pass@example.com",
+        "https://",
+        "",
+    ]:
+        assert canonicalize_origin(bad) is None
+
+
+def test_production_allowed_origins_canonicalized_and_deduped():
+    s = Settings(
+        env="production",
+        admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
+        credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
+        session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
+        allowed_origins="HTTPS://Example.com/,https://example.com:443,https://example.com",
+    )
+    s.validate_allowed_origins()
+    # All three superficial variants collapse to one canonical origin.
+    assert s.allowed_origins == "https://example.com"
+
+
+def test_configured_origin_canonicalization_accepts_match(app_client):
+    client, code = app_client
+    orig = settings.allowed_origins
+    # Configure a non-canonical origin; the request sends the canonical form.
+    settings.allowed_origins = "HTTP://TestServer/"
+    try:
+        resp = client.get("/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/access",
+            data={"invite_code": code, "csrf_token": csrf},
+            headers={"Origin": "http://testserver"},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_configured_origin_canonicalization_rejects_mismatch(app_client):
+    client, code = app_client
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://living-fiction.example.com"
+    try:
+        resp = client.get("/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/access",
+            data={"invite_code": code, "csrf_token": csrf},
+            headers={"Origin": "http://testserver"},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 403
+    finally:
+        settings.allowed_origins = orig
+
+
+# ── §5 pre-auth CSRF TTL ──────────────────────────────────────────────────
+
+
+def test_preauth_csrf_token_carries_timestamp():
+    token = auth.issue_preauth_csrf("k", auth.CSRF_READER_PREAUTH)
+    parts = token.split(".")
+    assert len(parts) == 3
+    int(parts[1])  # embedded issued_at is an integer
+
+
+def test_preauth_csrf_fresh_token_accepted():
+    key = "test-key"
+    token = auth.issue_preauth_csrf(key, auth.CSRF_READER_PREAUTH)
+    assert auth.verify_preauth_csrf(key, auth.CSRF_READER_PREAUTH, token, token)
+
+
+def test_preauth_csrf_expired_token_rejected():
+    key = "test-key"
+    token = auth.issue_preauth_csrf(key, auth.CSRF_READER_PREAUTH)
+    future = datetime.now(timezone.utc) + timedelta(
+        seconds=auth.PREAUTH_CSRF_TTL_SECONDS + 5
+    )
+    assert not auth.verify_preauth_csrf(
+        key, auth.CSRF_READER_PREAUTH, token, token, now=future
+    )
+
+
+def test_preauth_csrf_future_dated_token_rejected():
+    key = "test-key"
+    token = auth.issue_preauth_csrf(key, auth.CSRF_READER_PREAUTH)
+    # Verifying as if "now" is far in the past makes the token look future-dated
+    # beyond the tolerated clock skew, so it must be rejected.
+    past = datetime.now(timezone.utc) - timedelta(seconds=3600)
+    assert not auth.verify_preauth_csrf(
+        key, auth.CSRF_READER_PREAUTH, token, token, now=past
+    )
+
+
+def test_preauth_csrf_ttl_boundary_accepted_within_window():
+    key = "test-key"
+    token = auth.issue_preauth_csrf(key, auth.CSRF_READER_PREAUTH)
+    # Just inside the TTL window the token is still valid.
+    edge = datetime.now(timezone.utc) + timedelta(
+        seconds=auth.PREAUTH_CSRF_TTL_SECONDS - 5
+    )
+    assert auth.verify_preauth_csrf(
+        key, auth.CSRF_READER_PREAUTH, token, token, now=edge
+    )
+
+
+def test_preauth_csrf_tampered_timestamp_rejected():
+    key = "test-key"
+    token = auth.issue_preauth_csrf(key, auth.CSRF_READER_PREAUTH)
+    nonce, issued_at, sig = token.split(".")
+    # Rewriting the timestamp without re-signing breaks the MAC.
+    forged = f"{nonce}.{int(issued_at) - 100000}.{sig}"
+    assert not auth.verify_preauth_csrf(
+        key, auth.CSRF_READER_PREAUTH, forged, forged
+    )

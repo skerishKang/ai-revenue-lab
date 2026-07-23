@@ -42,8 +42,9 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
     than silently defaulting to MockProvider.
 
     An injected object must satisfy the :class:`AIProvider` protocol
-    (``provider_name``, ``model``, ``cost_class`` attributes); arbitrary
-    objects are rejected at startup.
+    (``provider_name``, ``model``, ``cost_class`` attributes and a callable
+    ``generate_structured``); arbitrary or partially-implemented objects are
+    rejected at startup rather than failing later at generation time.
     """
     if provider is None:
         provider = settings.ai_provider
@@ -56,6 +57,10 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
             raise RuntimeError(
                 f"injected provider missing required attribute: {attr}"
             )
+    if not callable(getattr(provider, "generate_structured", None)):
+        raise RuntimeError(
+            "injected provider missing callable generate_structured"
+        )
     return provider
 
 
