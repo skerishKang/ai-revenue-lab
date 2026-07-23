@@ -1,81 +1,84 @@
-# Temporary Image, Font and Icon Sources
+# Image and Font Sources — Business 5 Resident-First Reference
 
 ## Status
 
-These assets exist only to review the Business 5 v2 reference design. They are not approved production assets.
+These assets are temporary reference inputs for visual review only. They are not approved production assets.
 
-Before production:
+The current HTML uses remote image URLs and remote Pretendard CSS so the resident-first information hierarchy can be reviewed before a separate asset-hardening task.
 
-1. download and freeze every approved asset;
-2. preserve required license material;
-3. remove remote hotlinks;
-4. review logos, faces, locations and private information;
-5. replace the apartment hero with a user-supplied or permission-cleared photograph of 방림명지로드힐.
-
-## Apartment hero
-
-Current temporary reference:
-
-- URL: `https://images.unsplash.com/photo-1545324418-cc1a3fa10c00`
-- Use: generic modern apartment-building context
-- Important: **not a photograph of 방림명지로드힐**
-- UI disclosure: `참고 이미지 · 실제 단지 사진 교체 전`
-
-Do not scrape or copy apartment photography from Apartment i, KB Real Estate, Naver Real Estate, Hogangnono, Richgo or a property listing into production. A publicly visible image is not automatically cleared for reuse.
-
-## Shop photographs
-
-All shop identities and offerings are synthetic. The photographs are temporary category illustrations.
-
-| Prototype use | Unsplash image URL |
-|---|---|
-| 반찬·식사 | `https://images.unsplash.com/photo-1547592180-85f173990554` |
-| 식탁·메뉴 | `https://images.unsplash.com/photo-1504674900247-0877df9cc836` |
-| 채소·도시락 준비 | `https://images.unsplash.com/photo-1547592166-23ac45744acd` |
-| 카페 | `https://images.unsplash.com/photo-1495474472287-4d71bcdd2085` |
-| 청소·홈케어 | `https://images.unsplash.com/photo-1581578731548-c64695cc6952` |
-| 교육·교실 | `https://images.unsplash.com/photo-1509062522246-3755977927d7` |
-| 헤어·뷰티 | `https://images.unsplash.com/photo-1522337660859-02fbefca4702` |
-| 반려견 | `https://images.unsplash.com/photo-1552053831-71594a27632d` |
-| 세무·문서 | `https://images.unsplash.com/photo-1450101499163-c8848c66ca85` |
-| 꽃·플라워 | `https://images.unsplash.com/photo-1490750967868-88aa4486c946` |
-| 사진 촬영 | `https://images.unsplash.com/photo-1516035069371-29a1b244cc32` |
-| 스트레칭·움직임 | `https://images.unsplash.com/photo-1518611012118-696072aa579a` |
-
-Reference transformation parameters append `auto=format`, `fit=crop`, width and quality values. They do not change the source identity.
-
-Official Unsplash license reference:
-
-- `https://unsplash.com/license`
-
-Even where copyright use is permitted, production must review model/property releases, visible brands, sensitive context and the suitability of presenting the image as a specific business.
+No image proves that a displayed business, resident relationship, price, benefit or service actually exists.
 
 ## Font
 
-Reference font:
-
-- Pretendard
-- CDN: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css`
+- Pretendard web CSS
+- Reference URL: `https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css`
 - Project: `https://github.com/orioncactus/pretendard`
 - License: SIL Open Font License 1.1
-- License text: `https://github.com/orioncactus/pretendard/blob/main/LICENSE`
+- Production action: pin and self-host an approved version or use the approved Korean system stack
 
-Production should pin and self-host an approved version rather than depending indefinitely on an unversioned remote stylesheet.
+## Temporary image host
+
+- Unsplash image CDN: `https://images.unsplash.com/`
+- Purpose: evaluate crop, density, category recognition and card balance
+- License reference: `https://unsplash.com/license`
+- Production action: download only approved assets, optimize them and document the final source ledger
+
+## Current category imagery
+
+All current identities and relationships are synthetic.
+
+| Reference use | Unsplash source ID |
+|---|---|
+| 반찬·식사 | `photo-1547592180-85f173990554` |
+| 청소·홈케어 | `photo-1581578731548-c64695cc6952` |
+| 교육·교실 | `photo-1509062522246-3755977927d7` |
+| 세무·전문업무 | `photo-1454165804606-c3d57bc86b40` |
+| 베이커리·디저트 | `photo-1578985545062-69928b1d9587` |
+| 헤어·뷰티 | `photo-1560066984-138dadb4c035` |
+| 반려견·돌봄 | `photo-1552053831-71594a27632d` |
+| 꽃·클래스 | `photo-1490750967868-88aa4486c946` |
+| 사진 촬영 | `photo-1542038784456-1ea8e935640e` |
+
+The exact transformation parameters are embedded in `index-v3.html`. Keep them unchanged during the first screenshot comparison.
+
+## Apartment image policy
+
+The current resident-first prototype does not use an apartment photograph as the main product message. The lead section focuses on residents helping residents.
+
+When an apartment photograph is added later:
+
+- it must not be described as 방림명지로드힐 unless user-supplied or permission-cleared;
+- do not scrape Apartment i, Naver, KB, Hogangnono, Richgo or real-estate-listing images;
+- avoid identifiable resident faces, vehicle plates and unit-identifying details;
+- store the final source and permission record.
+
+## Relationship honesty
+
+Photographs do not establish:
+
+- 방림명지로드힐 resident operation;
+- nearby-apartment resident operation;
+- actual participation;
+- actual resident benefit;
+- service quality;
+- management-office endorsement.
+
+Every current relationship tier is synthetic preview data.
 
 ## Icons
 
-The prototype uses hand-selected inline outline SVG paths following the simple interaction language of open-source line-icon sets.
+The prototype uses simple inline outline SVG paths.
 
-Reference license family:
+Reference design family:
 
-- Heroicons: MIT
+- Heroicons, MIT license
 - `https://heroicons.com/`
 
-No Baemin, Yogiyo, Karrot, Apartment i or other commercial-service icons, mascots, wordmarks or UI artwork are copied.
+No Baemin, Yogiyo, Karrot, Apartment i or other commercial-service logo, mascot, wordmark or proprietary UI artwork is copied.
 
 ## Public apartment facts
 
-The prototype uses only these public location/context facts:
+The prototype uses only:
 
 - 방림명지로드힐
 - 광주광역시 남구 대남대로85번길 3
@@ -83,9 +86,24 @@ The prototype uses only these public location/context facts:
 - 2개 동
 - 2015-10-30 사용승인
 
-Reference sources used during design research:
+Research references:
 
-- K-apt-derived apartment information: `https://apt.koreacharts.com/apt/A10027831/contents.html`
-- KB Real Estate complex page: `https://kbland.kr/se/c/30889`
+- `https://apt.koreacharts.com/apt/A10027831/contents.html`
+- `https://kbland.kr/se/c/30889`
 
-The management-office phone number visible on third-party pages is deliberately not included in the marketplace prototype.
+The management-office phone number and resident names are deliberately excluded.
+
+## Future asset-hardening checklist
+
+A separate task may:
+
+1. download the approved image set;
+2. remove unneeded metadata;
+3. create fixed WebP/JPEG sizes for card, detail and benefit uses;
+4. add deterministic dimensions and fallback assets;
+5. self-host the font;
+6. include required license and attribution records;
+7. replace synthetic stock images with participant-supplied business photos after consent;
+8. verify that no private resident information appears.
+
+Do not perform asset hardening as part of reference review unless separately instructed.
