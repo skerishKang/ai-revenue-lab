@@ -1,0 +1,13 @@
+{
+  "name": "living-fiction-proxy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Living Fiction thin proxy (Cloudflare Workers). Runtime tests use Miniflare.",
+  "scripts": {
+    "test": "node --test test/worker.test.mjs"
+  },
+  "devDependencies": {
+    "miniflare": "^3.20250712.0"
+  }
+}

@@ -25,7 +25,14 @@ from app.db import apply_migrations, get_connection
 from app.dev_seed import _seed_canon, _seed_invite, _seed_world
 from app.preview_data import BRANCH_EPISODE_CONTENT, BRANCH_EPISODE_PLAN, WORLD_STATE
 from app.utils import now_utc_iso
-from app.web import _expected_origin, _verify_request_origin
+from app.web import (
+    FORWARDED_HOST_HEADER,
+    FORWARDED_PROTO_HEADER,
+    PROXY_AUTH_HEADER,
+    _expected_origin,
+    _proxy_authenticated,
+    _verify_request_origin,
+)
 
 WORLD_ID = WORLD_STATE.world_id
 CANON_CHECKPOINT_ID = "checkpoint-canon-1"
@@ -1111,6 +1118,201 @@ def test_verify_origin_host_fallback_default_port_succeeds():
 def test_expected_origin_uses_scheme_and_host():
     req = _FakeRequest(scheme="https", headers={"host": "example.com:443"})
     assert _expected_origin(req) == "https://example.com:443"
+
+
+# ── §3b authenticated-proxy forwarded-origin contract (P0-4) ──────────────
+
+
+PROXY_SECRET = _strong_test_value("proxy-shared")
+
+
+def _with_proxy_settings(fn):
+    """Run *fn* with a strong proxy secret + allowlist configured, restoring
+    the original settings afterwards."""
+    orig_secret = settings.proxy_shared_secret
+    orig_origins = settings.allowed_origins
+    settings.proxy_shared_secret = PROXY_SECRET
+    settings.allowed_origins = "https://reader.example.com"
+    try:
+        return fn()
+    finally:
+        settings.proxy_shared_secret = orig_secret
+        settings.allowed_origins = orig_origins
+
+
+def _proxy_headers(host="reader.example.com", proto="https", secret=PROXY_SECRET):
+    headers = {
+        "host": "modal-upstream.example.com",  # raw Modal Host the app sees
+        FORWARDED_HOST_HEADER: host,
+        FORWARDED_PROTO_HEADER: proto,
+    }
+    if secret is not None:
+        headers[PROXY_AUTH_HEADER] = secret
+    return headers
+
+
+def test_proxy_auth_disabled_when_secret_missing():
+    orig = settings.proxy_shared_secret
+    settings.proxy_shared_secret = ""
+    try:
+        req = _FakeRequest(headers=_proxy_headers(secret="x" * 40))
+        assert not _proxy_authenticated(req)
+    finally:
+        settings.proxy_shared_secret = orig
+
+
+def test_proxy_auth_disabled_when_secret_weak():
+    orig = settings.proxy_shared_secret
+    settings.proxy_shared_secret = "short"
+    try:
+        req = _FakeRequest(headers=_proxy_headers(secret="short"))
+        assert not _proxy_authenticated(req)
+    finally:
+        settings.proxy_shared_secret = orig
+
+
+def test_proxy_auth_accepts_matching_header():
+    def run():
+        req = _FakeRequest(headers=_proxy_headers())
+        assert _proxy_authenticated(req)
+
+    _with_proxy_settings(run)
+
+
+def test_proxy_auth_rejects_mismatched_header():
+    def run():
+        req = _FakeRequest(headers=_proxy_headers(secret=_strong_test_value("other")))
+        assert not _proxy_authenticated(req)
+
+    _with_proxy_settings(run)
+
+
+def test_proxy_auth_rejects_missing_header():
+    def run():
+        req = _FakeRequest(headers=_proxy_headers(secret=None))
+        assert not _proxy_authenticated(req)
+
+    _with_proxy_settings(run)
+
+
+def test_expected_origin_trusts_forwarded_when_authenticated():
+    def run():
+        req = _FakeRequest(scheme="http", headers=_proxy_headers())
+        # Authenticated: the user-facing origin comes from the forwarded
+        # headers, not the raw Modal Host / ASGI scheme.
+        assert _expected_origin(req) == "https://reader.example.com"
+
+    _with_proxy_settings(run)
+
+
+def test_expected_origin_ignores_forwarded_when_not_authenticated():
+    def run():
+        # Spoofed forwarded headers but NO valid proxy secret: the app falls
+        # back to the raw Modal Host, so the forged origin is never honoured.
+        req = _FakeRequest(
+            scheme="http", headers=_proxy_headers(secret="forged-not-the-secret")
+        )
+        assert _expected_origin(req) == "http://modal-upstream.example.com"
+
+    _with_proxy_settings(run)
+
+
+def test_verify_origin_no_origin_via_authenticated_proxy_succeeds():
+    def run():
+        # No Origin header (same-origin form post) arriving through the
+        # authenticated proxy: the forwarded origin satisfies the allowlist.
+        _verify_request_origin(_FakeRequest(scheme="http", headers=_proxy_headers()))
+
+    _with_proxy_settings(run)
+
+
+def test_verify_origin_no_origin_direct_with_spoofed_forwarded_is_403():
+    def run():
+        # A direct Modal caller forges X-Forwarded-Host but cannot present the
+        # secret: the forwarded header is ignored and the raw Modal Host fails
+        # the allowlist -> generic 403.
+        _assert_origin_rejected(
+            _FakeRequest(
+                scheme="http", headers=_proxy_headers(secret="forged-not-the-secret")
+            )
+        )
+
+    _with_proxy_settings(run)
+
+
+def test_verify_origin_no_origin_direct_without_forwarded_is_403():
+    def run():
+        # Direct Modal POST with no Origin and no proxy auth: raw Modal Host is
+        # not in the allowlist -> 403.
+        _assert_origin_rejected(
+            _FakeRequest(scheme="http", headers={"host": "modal-upstream.example.com"})
+        )
+
+    _with_proxy_settings(run)
+
+
+def test_verify_origin_origin_header_still_allowlisted_via_proxy():
+    def run():
+        # Even through the authenticated proxy, a present Origin header must be
+        # in the allowlist.
+        good = _proxy_headers()
+        good["origin"] = "https://reader.example.com"
+        _verify_request_origin(_FakeRequest(scheme="http", headers=good))
+
+        bad = _proxy_headers()
+        bad["origin"] = "https://evil.example.com"
+        _assert_origin_rejected(_FakeRequest(scheme="http", headers=bad))
+
+    _with_proxy_settings(run)
+
+
+def test_validate_proxy_secret_rejects_weak_in_production():
+    s = Settings(
+        env="production",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("cred"),
+        session_hmac_key=_strong_test_value("sess"),
+        proxy_shared_secret="tooshort",
+    )
+    with pytest.raises(ValueError, match="at least 32 characters"):
+        s.validate_proxy_secret()
+
+
+def test_validate_proxy_secret_rejects_duplicate_of_web_secret():
+    shared = _strong_test_value("shared")
+    s = Settings(
+        env="production",
+        admin_secret=shared,
+        credential_hmac_key=_strong_test_value("cred"),
+        session_hmac_key=_strong_test_value("sess"),
+        proxy_shared_secret=shared,
+    )
+    with pytest.raises(ValueError, match="distinct"):
+        s.validate_proxy_secret()
+
+
+def test_validate_proxy_secret_accepts_strong_distinct():
+    s = Settings(
+        env="production",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("cred"),
+        session_hmac_key=_strong_test_value("sess"),
+        proxy_shared_secret=_strong_test_value("proxy"),
+    )
+    s.validate_proxy_secret()  # must not raise
+
+
+def test_validate_proxy_secret_missing_is_allowed_but_disables_trust():
+    # Missing secret is not a startup error (a non-proxied deployment still
+    # works) but the trust path is disabled -> forwarded never honoured.
+    s = Settings(
+        env="production",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("cred"),
+        session_hmac_key=_strong_test_value("sess"),
+        proxy_shared_secret="",
+    )
+    s.validate_proxy_secret()  # must not raise
 
 
 # ── §5 pre-auth CSRF TTL ──────────────────────────────────────────────────

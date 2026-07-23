@@ -4,11 +4,22 @@
 
 name = "living-fiction-proxy"
 main = "src/index.js"
+# Keep this date recent. The worker preserves every upstream Set-Cookie via
+# Headers.getSetCookie(), which is only available under a recent compatibility
+# date; an old date silently drops cookies (breaking sessions). The runtime
+# tests pin the same date (see test/worker.test.mjs).
 compatibility_date = "2025-01-01"
 
 [vars]
 # The Living Fiction upstream origin served by Modal (https only, no trailing
-# slash). Take the value from the https URL printed at the end of the
-# `modal deploy` output.
+# slash, no path/query/credentials). Take the value from the https URL printed
+# at the end of the `modal deploy` output.
 # The worker reads this at runtime; the origin is never hardcoded in code.
 UPSTREAM_ORIGIN = ""
+
+# UPSTREAM_PROXY_SECRET is a Worker SECRET, never a plaintext [vars] entry.
+# Set it with `wrangler secret put UPSTREAM_PROXY_SECRET` and use the SAME
+# CSPRNG value as the Modal app's LF_PROXY_SHARED_SECRET (>= 32 chars, distinct
+# from the admin/session/credential secrets). The worker fails closed (generic
+# 500) if this secret is missing or weak. Generate one with e.g.
+# `openssl rand -hex 32` and never commit the value.

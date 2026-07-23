@@ -16,6 +16,7 @@ Security properties:
 from __future__ import annotations
 
 import copy
+import hmac
 import json
 import sqlite3
 from pathlib import Path
@@ -39,7 +40,7 @@ from app import reader_repository as reader_repo
 from app import review_service
 from app import world_repository as world_repo
 from app.ai.mock import MockProvider
-from app.config import canonicalize_origin, settings
+from app.config import _structurally_weak, canonicalize_origin, settings
 from app.database.base import Connection
 from app.preview_data import (
     BRANCH_EPISODE_CONTENT,
@@ -192,12 +193,67 @@ def _verify_admin_csrf(session: dict[str, Any], provided: str | None) -> None:
 # ── Origin / Host verification ─────────────────────────────────────────────
 
 
-def _expected_origin(request: Request) -> str:
-    """Derive the expected origin from the request's own scheme + Host header.
+# Dedicated header the authenticated Cloudflare proxy uses to prove itself.
+# The app trusts X-Forwarded-Host / X-Forwarded-Proto ONLY when this header
+# carries the shared secret (constant-time compared). A direct Modal caller
+# cannot present the secret, so it can never forge a trusted forwarded origin.
+PROXY_AUTH_HEADER = "x-lf-proxy-auth"
+FORWARDED_HOST_HEADER = "x-forwarded-host"
+FORWARDED_PROTO_HEADER = "x-forwarded-proto"
+_MIN_PROXY_SECRET_LEN = 32
 
-    Never trusts ``X-Forwarded-*`` headers: the scheme comes from the ASGI
-    scope (the hop into this process) and the host from the raw ``Host`` header.
+
+def _proxy_secret_usable() -> bool:
+    """True only when a strong proxy shared secret is configured.
+
+    A missing or structurally weak secret disables the proxy-trust path
+    entirely (fail closed): forwarded headers are then never honoured.
     """
+    secret = settings.proxy_shared_secret
+    return (
+        bool(secret)
+        and len(secret) >= _MIN_PROXY_SECRET_LEN
+        and not _structurally_weak(secret)
+    )
+
+
+def _proxy_authenticated(request: Request) -> bool:
+    """True only when the request is authenticated by the Cloudflare proxy.
+
+    Requires a strong configured shared secret AND a dedicated header that
+    matches it under :func:`hmac.compare_digest`. A missing/weak secret or a
+    missing/mismatched header all yield ``False``, so forwarded headers are
+    never trusted for a direct Modal caller (fail closed).
+    """
+    if not _proxy_secret_usable():
+        return False
+    provided = request.headers.get(PROXY_AUTH_HEADER)
+    if not provided:
+        return False
+    return hmac.compare_digest(
+        provided.encode("utf-8"),
+        settings.proxy_shared_secret.encode("utf-8"),
+    )
+
+
+def _expected_origin(request: Request) -> str:
+    """Derive the expected origin for this request.
+
+    When — and only when — the request is authenticated by the Cloudflare proxy
+    (dedicated header verified against the shared secret), the user-facing
+    scheme and host come from ``X-Forwarded-Proto`` / ``X-Forwarded-Host``,
+    which the proxy sets from the original request. Otherwise the scheme comes
+    from the ASGI scope (the hop into this process) and the host from the raw
+    ``Host`` header; ``X-Forwarded-*`` is never trusted for a direct caller.
+    """
+    if _proxy_authenticated(request):
+        forwarded_host = request.headers.get(FORWARDED_HOST_HEADER, "")
+        if forwarded_host:
+            proto = (
+                request.headers.get(FORWARDED_PROTO_HEADER, "")
+                or request.url.scheme
+            )
+            return f"{proto}://{forwarded_host}"
     host = request.headers.get("host", "")
     return f"{request.url.scheme}://{host}"
 
@@ -218,8 +274,10 @@ def _verify_request_origin(request: Request) -> None:
       without configuration; in production with no configured origins it fails
       closed rather than trusting an attacker-controllable Host.
 
-    ``X-Forwarded-*`` headers are never consulted. Every failure raises one
-    generic 403 so no condition is revealed.
+    ``X-Forwarded-*`` headers are consulted ONLY for a request authenticated by
+    the Cloudflare proxy (see :func:`_proxy_authenticated`); for any other
+    caller they are ignored. Every failure raises one generic 403 so no
+    condition is revealed.
     """
     configured = {
         canonical
@@ -351,6 +409,7 @@ def _ensure_secrets() -> None:
     try:
         settings.validate_web_secrets()
         settings.validate_allowed_origins()
+        settings.validate_proxy_secret()
     except ValueError as exc:
         raise RuntimeError(str(exc)) from exc
 
