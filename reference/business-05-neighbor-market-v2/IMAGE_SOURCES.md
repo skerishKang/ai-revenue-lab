@@ -38,6 +38,7 @@ All current identities and relationships are synthetic.
 | 반려견·돌봄 | `photo-1552053831-71594a27632d` |
 | 꽃·클래스 | `photo-1490750967868-88aa4486c946` |
 | 사진 촬영 | `photo-1542038784456-1ea8e935640e` |
+| 반찬·도시락 (Tier 3 신규) | `photo-1517841905240-472988babdf9` |
 
 The exact transformation parameters are embedded in `index-v3.html`. Keep them unchanged during the first screenshot comparison.
 
