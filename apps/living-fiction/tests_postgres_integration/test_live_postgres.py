@@ -352,10 +352,10 @@ def test_invite_is_stored_as_digest_only_and_rotates(pg_conn):
     stored_values = {str(v) for v in row.values() if v is not None}
     assert code not in stored_values
 
-    assert bootstrap.active_bound_invite_id(pg_conn) is not None
-    assert bootstrap.revoke_active_bound_invites(pg_conn) >= 1
+    assert bootstrap.active_bound_invite_id(pg_conn, reader_id) is not None
+    assert bootstrap.revoke_active_bound_invites(pg_conn, reader_id) >= 1
     assert auth.verify_invite_code(pg_conn, code, HMAC_KEY) is None
-    assert bootstrap.active_bound_invite_id(pg_conn) is None
+    assert bootstrap.active_bound_invite_id(pg_conn, reader_id) is None
 
     replacement = bootstrap.issue_invite(pg_conn, HMAC_KEY, reader_id)
     assert auth.verify_invite_code(pg_conn, replacement, HMAC_KEY) == reader_id
@@ -464,3 +464,331 @@ def test_pool_is_bounded_and_returns_connections(migrated_url):
         second.close()
     finally:
         pool.close()
+
+
+# ── Repairable bootstrap: failure injection + concurrency (P0-2) ────────────
+
+
+class _FailOnCall:
+    """Wrap a callable to raise on exactly the Nth invocation, delegating
+    otherwise. Lets a bootstrap step crash once at a precise point, then succeed
+    on a later re-run (the call numbering shifts because already-created rows are
+    skipped), proving convergent repair."""
+
+    def __init__(self, fn, fail_on, exc):
+        self.fn = fn
+        self.fail_on = fail_on
+        self.exc = exc
+        self.calls = 0
+
+    def __call__(self, *args, **kwargs):
+        self.calls += 1
+        if self.calls == self.fail_on:
+            raise self.exc
+        return self.fn(*args, **kwargs)
+
+
+@pytest.fixture()
+def fresh_bootstrap_conn():
+    """A connection to a freshly migrated, isolated schema (per test)."""
+    import uuid  # noqa: PLC0415
+
+    schema = f"lf_it_boot_{uuid.uuid4().hex[:10]}"
+    _reset_schema(schema)
+    conn = connect_postgres(_with_search_path(_pg_url, schema))
+    apply_migrations(conn, PG_MIGRATIONS_DIR)
+    yield conn
+    conn.close()
+    _drop_schema(schema)
+
+
+def _counts(conn):
+    return {
+        "worlds": conn.execute("SELECT COUNT(*) AS n FROM worlds").fetchone()["n"],
+        "characters": conn.execute(
+            "SELECT COUNT(*) AS n FROM characters"
+        ).fetchone()["n"],
+        "locations": conn.execute(
+            "SELECT COUNT(*) AS n FROM locations"
+        ).fetchone()["n"],
+        "clues": conn.execute("SELECT COUNT(*) AS n FROM clues").fetchone()["n"],
+        "snapshots": conn.execute(
+            "SELECT COUNT(*) AS n FROM canon_snapshots"
+        ).fetchone()["n"],
+        "checkpoints": conn.execute(
+            "SELECT COUNT(*) AS n FROM canon_checkpoints"
+        ).fetchone()["n"],
+        "canon_episodes": conn.execute(
+            "SELECT COUNT(*) AS n FROM episodes WHERE episode_type = 'canon'"
+        ).fetchone()["n"],
+    }
+
+
+def _assert_complete_world(conn):
+    c = _counts(conn)
+    assert c["worlds"] == 1
+    assert c["characters"] == len(WORLD_STATE.characters)
+    assert c["locations"] == len(WORLD_STATE.locations)
+    assert c["clues"] == len(WORLD_STATE.clues)
+
+
+def _assert_complete_canon(conn):
+    c = _counts(conn)
+    assert c["snapshots"] == 1
+    assert c["checkpoints"] == 1
+    assert c["canon_episodes"] == 1
+    row = conn.execute(
+        "SELECT review_state, canon_snapshot_id, canon_checkpoint_id "
+        "FROM episodes WHERE episode_type = 'canon'"
+    ).fetchone()
+    assert row["review_state"] == "published"
+    assert row["canon_snapshot_id"] == bootstrap.CANON_SNAPSHOT_ID
+    assert row["canon_checkpoint_id"] == bootstrap.CANON_CHECKPOINT_ID
+
+
+def test_failure_right_after_world_create_recovers(fresh_bootstrap_conn, monkeypatch):
+    from app import world_repository as world_repo  # noqa: PLC0415
+
+    monkeypatch.setattr(
+        bootstrap.world_repo,
+        "create_character",
+        _FailOnCall(world_repo.create_character, 1, RuntimeError("crash")),
+    )
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_world(fresh_bootstrap_conn)
+    # World row exists but no children were created.
+    assert _counts(fresh_bootstrap_conn)["worlds"] == 1
+    assert _counts(fresh_bootstrap_conn)["characters"] == 0
+
+    bootstrap.ensure_world(fresh_bootstrap_conn)
+    _assert_complete_world(fresh_bootstrap_conn)
+
+
+def test_failure_after_partial_characters_recovers(fresh_bootstrap_conn, monkeypatch):
+    from app import world_repository as world_repo  # noqa: PLC0415
+
+    monkeypatch.setattr(
+        bootstrap.world_repo,
+        "create_character",
+        _FailOnCall(world_repo.create_character, 2, RuntimeError("crash")),
+    )
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_world(fresh_bootstrap_conn)
+    # Exactly one character survived the crash.
+    assert _counts(fresh_bootstrap_conn)["characters"] == 1
+
+    bootstrap.ensure_world(fresh_bootstrap_conn)
+    _assert_complete_world(fresh_bootstrap_conn)
+
+
+def test_failure_after_snapshot_create_recovers(fresh_bootstrap_conn, monkeypatch):
+    from app import canon_repository as canon_repo  # noqa: PLC0415
+
+    monkeypatch.setattr(
+        bootstrap.canon_repo,
+        "create_canon_checkpoint",
+        _FailOnCall(canon_repo.create_canon_checkpoint, 1, RuntimeError("crash")),
+    )
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_canon(fresh_bootstrap_conn)
+    c = _counts(fresh_bootstrap_conn)
+    assert c["snapshots"] == 1
+    assert c["checkpoints"] == 0
+    assert c["canon_episodes"] == 0
+
+    bootstrap.ensure_canon(fresh_bootstrap_conn)
+    _assert_complete_world(fresh_bootstrap_conn)
+    _assert_complete_canon(fresh_bootstrap_conn)
+
+
+def test_failure_after_checkpoint_create_recovers(fresh_bootstrap_conn, monkeypatch):
+    orig = bootstrap._generate_first_canon_episode
+    monkeypatch.setattr(
+        bootstrap,
+        "_generate_first_canon_episode",
+        _FailOnCall(orig, 1, RuntimeError("crash")),
+    )
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_canon(fresh_bootstrap_conn)
+    c = _counts(fresh_bootstrap_conn)
+    assert c["snapshots"] == 1
+    assert c["checkpoints"] == 1
+    assert c["canon_episodes"] == 0
+
+    bootstrap.ensure_canon(fresh_bootstrap_conn)
+    _assert_complete_canon(fresh_bootstrap_conn)
+
+
+def test_failure_after_episode_before_publish_recovers(
+    fresh_bootstrap_conn, monkeypatch
+):
+    from app import episode_repository as ep_repo  # noqa: PLC0415
+
+    monkeypatch.setattr(
+        bootstrap.ep_repo,
+        "publish_episode",
+        _FailOnCall(ep_repo.publish_episode, 1, RuntimeError("crash")),
+    )
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_canon(fresh_bootstrap_conn)
+    # Episode was generated but left unpublished.
+    row = fresh_bootstrap_conn.execute(
+        "SELECT review_state FROM episodes WHERE episode_type = 'canon'"
+    ).fetchone()
+    assert row["review_state"] == "pending_review"
+
+    bootstrap.ensure_canon(fresh_bootstrap_conn)
+    _assert_complete_canon(fresh_bootstrap_conn)
+
+
+def test_failure_before_invite_issues_no_duplicate(fresh_bootstrap_conn, monkeypatch):
+    orig = bootstrap.issue_invite
+    monkeypatch.setattr(
+        bootstrap, "issue_invite", _FailOnCall(orig, 1, RuntimeError("crash"))
+    )
+    reader_id = bootstrap.ensure_bootstrap_reader(fresh_bootstrap_conn)
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_active_invite(fresh_bootstrap_conn, HMAC_KEY, reader_id)
+    assert bootstrap.active_bound_invite_id(fresh_bootstrap_conn, reader_id) is None
+
+    bootstrap.ensure_active_invite(fresh_bootstrap_conn, HMAC_KEY, reader_id)
+    active = fresh_bootstrap_conn.execute(
+        "SELECT COUNT(*) AS n FROM invite_credentials "
+        "WHERE bound_reader_id = ? AND revoked_at IS NULL",
+        (reader_id,),
+    ).fetchone()["n"]
+    assert active == 1
+
+
+def test_failure_after_invite_issues_no_duplicate(fresh_bootstrap_conn, monkeypatch):
+    orig = bootstrap.issue_invite
+
+    def create_then_crash(conn, hmac_key, reader_id):
+        code = orig(conn, hmac_key, reader_id)  # invite row is committed...
+        raise RuntimeError("crash right after issuing")  # ...then we "crash"
+
+    monkeypatch.setattr(bootstrap, "issue_invite", create_then_crash)
+    reader_id = bootstrap.ensure_bootstrap_reader(fresh_bootstrap_conn)
+    with pytest.raises(RuntimeError):
+        bootstrap.ensure_active_invite(fresh_bootstrap_conn, HMAC_KEY, reader_id)
+
+    # Re-run sees the committed invite and must not create a second one.
+    assert bootstrap.ensure_active_invite(fresh_bootstrap_conn, HMAC_KEY, reader_id) is None
+    active = fresh_bootstrap_conn.execute(
+        "SELECT COUNT(*) AS n FROM invite_credentials "
+        "WHERE bound_reader_id = ? AND revoked_at IS NULL",
+        (reader_id,),
+    ).fetchone()["n"]
+    assert active == 1
+
+
+def test_world_conflict_fails_closed(fresh_bootstrap_conn):
+    bootstrap.ensure_world(fresh_bootstrap_conn)
+    fresh_bootstrap_conn.execute("BEGIN IMMEDIATE")
+    fresh_bootstrap_conn.execute(
+        "UPDATE worlds SET version = 'v999' WHERE id = ?", (WORLD_STATE.world_id,)
+    )
+    fresh_bootstrap_conn.commit()
+    with pytest.raises(bootstrap.BootstrapConflictError, match="version"):
+        bootstrap.ensure_world(fresh_bootstrap_conn)
+    # The conflicting row was NOT overwritten.
+    assert (
+        fresh_bootstrap_conn.execute(
+            "SELECT version FROM worlds WHERE id = ?", (WORLD_STATE.world_id,)
+        ).fetchone()["version"]
+        == "v999"
+    )
+
+
+def test_canon_duplicate_episode_fails_closed(fresh_bootstrap_conn):
+    bootstrap.ensure_canon(fresh_bootstrap_conn)
+    fresh_bootstrap_conn.execute("BEGIN IMMEDIATE")
+    fresh_bootstrap_conn.execute(
+        "INSERT INTO episodes (id, world_id, episode_type, episode_number, title, "
+        "synopsis, scene_list_json, character_ids_json, location_ids_json, "
+        "prose_json, created_at) VALUES (?, ?, 'canon', 2, 'x', 'x', '[]', '[]', "
+        "'[]', '[]', ?)",
+        (new_id(), WORLD_STATE.world_id, now_utc_iso()),
+    )
+    fresh_bootstrap_conn.commit()
+    with pytest.raises(bootstrap.BootstrapConflictError, match="canon episode"):
+        bootstrap.ensure_canon(fresh_bootstrap_conn)
+
+
+def test_concurrent_bootstrap_yields_single_entities():
+    import threading  # noqa: PLC0415
+    import uuid  # noqa: PLC0415
+
+    schema = f"lf_it_conc_{uuid.uuid4().hex[:10]}"
+    _reset_schema(schema)
+    url = _with_search_path(_pg_url, schema)
+    setup = connect_postgres(url)
+    try:
+        apply_migrations(setup, PG_MIGRATIONS_DIR)
+    finally:
+        setup.close()
+
+    results: list = []
+    errors: list = []
+
+    def worker():
+        conn = connect_postgres(url)
+        try:
+            results.append(bootstrap.run_locked_bootstrap(conn, HMAC_KEY))
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+        finally:
+            conn.close()
+
+    threads = [threading.Thread(target=worker) for _ in range(2)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    try:
+        assert not errors, f"concurrent bootstrap raised: {errors}"
+        # Both operators converged on the same bootstrap reader.
+        assert len(results) == 2
+        assert results[0][0] == results[1][0]
+
+        check = connect_postgres(url)
+        try:
+            c = _counts(check)
+            assert c["worlds"] == 1
+            assert c["canon_episodes"] == 1
+            readers = check.execute(
+                "SELECT COUNT(*) AS n FROM readers WHERE display_name = ?",
+                (bootstrap.BOOTSTRAP_READER_NAME,),
+            ).fetchone()["n"]
+            assert readers == 1
+            active_invites = check.execute(
+                "SELECT COUNT(*) AS n FROM invite_credentials "
+                "WHERE revoked_at IS NULL"
+            ).fetchone()["n"]
+            assert active_invites == 1
+        finally:
+            check.close()
+    finally:
+        _drop_schema(schema)
+
+
+def test_multi_reader_invite_scoping_preserves_others(fresh_bootstrap_conn):
+    reader_a = bootstrap.ensure_bootstrap_reader(fresh_bootstrap_conn)
+    reader_b = reader_repo.create_reader(
+        fresh_bootstrap_conn, display_name="다른 독서자"
+    ).id
+
+    code_b = bootstrap.issue_invite(fresh_bootstrap_conn, HMAC_KEY, reader_b)
+    assert auth.verify_invite_code(fresh_bootstrap_conn, code_b, HMAC_KEY) == reader_b
+
+    assert bootstrap.active_bound_invite_id(fresh_bootstrap_conn, reader_a) is None
+    assert bootstrap.active_bound_invite_id(fresh_bootstrap_conn, reader_b) is not None
+
+    bootstrap.issue_invite(fresh_bootstrap_conn, HMAC_KEY, reader_a)
+    revoked = bootstrap.revoke_active_bound_invites(fresh_bootstrap_conn, reader_a)
+    assert revoked == 1
+    assert bootstrap.active_bound_invite_id(fresh_bootstrap_conn, reader_a) is None
+    # Reader B's invite survives reader A's rotation.
+    assert bootstrap.active_bound_invite_id(fresh_bootstrap_conn, reader_b) is not None
+    assert auth.verify_invite_code(fresh_bootstrap_conn, code_b, HMAC_KEY) == reader_b

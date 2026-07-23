@@ -16,6 +16,7 @@ from pathlib import Path
 import pytest
 
 from app import auth
+from app import reader_repository as reader_repo
 from app.config import settings
 from app.database.engine import build_engine
 from app.database.errors import ConfigurationError, SchemaMismatchError
@@ -400,9 +401,9 @@ def test_bootstrap_reader_is_idempotent(migrated_conn):
 
 def test_bootstrap_invite_never_duplicates_active(migrated_conn):
     reader_id = bootstrap.ensure_bootstrap_reader(migrated_conn)
-    assert bootstrap.active_bound_invite_id(migrated_conn) is None
+    assert bootstrap.active_bound_invite_id(migrated_conn, reader_id) is None
     bootstrap.issue_invite(migrated_conn, HMAC_KEY, reader_id)
-    active = bootstrap.active_bound_invite_id(migrated_conn)
+    active = bootstrap.active_bound_invite_id(migrated_conn, reader_id)
     assert active is not None
     count = migrated_conn.execute(
         "SELECT COUNT(*) AS n FROM invite_credentials"
@@ -410,15 +411,43 @@ def test_bootstrap_invite_never_duplicates_active(migrated_conn):
     assert count == 1
 
 
+def test_bootstrap_invite_is_scoped_to_reader(migrated_conn):
+    """P1-1: invite queries/rotation are scoped to a single reader.
+
+    A second reader's active invite must be invisible to the first reader's
+    scoped lookup and untouched by the first reader's rotation.
+    """
+    reader_a = bootstrap.ensure_bootstrap_reader(migrated_conn, display_name="독서자")
+    reader_b = reader_repo.create_reader(
+        migrated_conn, display_name="두 번째 독서자"
+    ).id
+
+    code_b = bootstrap.issue_invite(migrated_conn, HMAC_KEY, reader_b)
+    assert auth.verify_invite_code(migrated_conn, code_b, HMAC_KEY) == reader_b
+
+    # Reader A has no invite even though reader B does.
+    assert bootstrap.active_bound_invite_id(migrated_conn, reader_a) is None
+    assert bootstrap.active_bound_invite_id(migrated_conn, reader_b) is not None
+
+    # Issuing for A and rotating A must not touch B's invite.
+    bootstrap.issue_invite(migrated_conn, HMAC_KEY, reader_a)
+    revoked = bootstrap.revoke_active_bound_invites(migrated_conn, reader_a)
+    assert revoked == 1
+    assert bootstrap.active_bound_invite_id(migrated_conn, reader_a) is None
+    # B's invite survives A's rotation.
+    assert bootstrap.active_bound_invite_id(migrated_conn, reader_b) is not None
+    assert auth.verify_invite_code(migrated_conn, code_b, HMAC_KEY) == reader_b
+
+
 def test_bootstrap_rotate_revokes_then_reissues(migrated_conn):
     reader_id = bootstrap.ensure_bootstrap_reader(migrated_conn)
     old_code = bootstrap.issue_invite(migrated_conn, HMAC_KEY, reader_id)
     assert auth.verify_invite_code(migrated_conn, old_code, HMAC_KEY) == reader_id
 
-    revoked = bootstrap.revoke_active_bound_invites(migrated_conn)
+    revoked = bootstrap.revoke_active_bound_invites(migrated_conn, reader_id)
     assert revoked == 1
     assert auth.verify_invite_code(migrated_conn, old_code, HMAC_KEY) is None
-    assert bootstrap.active_bound_invite_id(migrated_conn) is None
+    assert bootstrap.active_bound_invite_id(migrated_conn, reader_id) is None
 
     new_code = bootstrap.issue_invite(migrated_conn, HMAC_KEY, reader_id)
     assert new_code != old_code
