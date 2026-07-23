@@ -66,7 +66,7 @@ class DefaultResolver:
                 ips.add(ip)
             return list(ips)
         except socket.gaierror:
-            return []
+            raise ProviderTransportError("destination resolution failed")
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +112,6 @@ class UrllibTransport:
         request = urllib.request.Request(url, data=data, headers=headers, method="POST")
 
         opener = urllib.request.build_opener(_NoRedirectHandler)
-        urllib.request.install_opener(opener)
 
         try:
             host = self._extract_host(url)
@@ -166,14 +165,16 @@ class UrllibTransport:
         except ValueError:
             ips_to_check = [ipaddress.ip_address(ip) for ip in resolved_ips if ip]
 
+        # Fail-closed: if no IPs could be resolved, reject
+        if not ips_to_check:
+            raise ProviderTransportError("destination resolution failed")
+
         # Check environment-specific rules
         if self._environment in ("testing", "development"):
             # In development: allow HTTP only for localhost/loopback
-            # We need to check if this is a private/loopback destination
             for ip in ips_to_check:
                 if ip.is_loopback:
                     return
-                # Allow private only for localhost hostname
                 if hostname_lower != "localhost" and hostname_lower != "::1":
                     if ip.is_private or ip.is_link_local or ip.is_unspecified:
                         raise ProviderTransportError("SSRF blocked")
@@ -225,25 +226,10 @@ class OpenAICompatibleProvider:
         environment: str = "development",
         resolver: Resolver | None = None,
     ) -> None:
-        from urllib.parse import urljoin
-
-        base = base_url.rstrip("/")
-
-        # Proper endpoint normalization using path segments
-        if base.endswith("/chat/completions"):
-            self._chat_url = base
-        elif base.endswith("/v1/chat/completions"):
-            self._chat_url = base
-        else:
-            # Add /v1/chat/completions
-            if base.endswith("/v1"):
-                self._chat_url = base + "/chat/completions"
-            else:
-                self._chat_url = base + "/v1/chat/completions"
-
-        # Remove any query/fragment from final URL (already handled by urlparse)
-        # Double-slash prevention
-        self._chat_url = self._chat_url.replace("//", "/")
+        # Use the final chat-completions URL directly.
+        # URL normalization is handled by Settings.ai_chat_completions_url.
+        # The provider does NOT re-normalize or modify the URL.
+        self._chat_url = base_url
 
         self._api_key = api_key
         self._model = model

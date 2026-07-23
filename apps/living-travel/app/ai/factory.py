@@ -90,17 +90,12 @@ def _build_openai_compatible(
     settings: Settings,
     transport: Transport | None = None,
 ) -> OpenAICompatibleProvider:
-    cost_map = {
-        "free": CostClass.free,
-        "paid": CostClass.paid,
-        "local": CostClass.local,
-        "unknown": CostClass.unknown,
-    }
     return OpenAICompatibleProvider(
         base_url=settings.ai_chat_completions_url,
         api_key=settings.ai_api_key,
         model=settings.ai_model,
         timeout_seconds=settings.ai_timeout_seconds,
-        cost_class=cost_map.get(settings.ai_cost_class, CostClass.free),
+        cost_class=CostClass(settings.ai_cost_class),
         transport=transport,
+        environment=settings.environment,
     )
