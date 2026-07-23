@@ -189,6 +189,25 @@ def _has_non_comment_content(text: str) -> bool:
     return bool(text.strip())
 
 
+_CREATE_TABLE_RE = re.compile(
+    r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?"
+    r"(?:\"?[\w]+\"?\.)?"  # optional schema qualifier
+    r"\"?([\w]+)\"?",       # table name
+    re.IGNORECASE,
+)
+
+
+def _extract_created_tables(content: str) -> set[str]:
+    """Return the set of table names created by a migration's SQL.
+
+    Purely textual (read-only) — used by :func:`verify_pg_schema` to know
+    which tables an applied migration declares, without executing any DDL.
+    Handles optional ``IF NOT EXISTS``, an optional schema qualifier, and
+    optional double-quoted identifiers.
+    """
+    return {m.group(1) for m in _CREATE_TABLE_RE.finditer(content)}
+
+
 def _ensure_migrations_table(conn: Connection[DictRow]) -> None:
     """Create the schema_migrations table if it does not exist."""
     conn.execute(
@@ -238,9 +257,15 @@ def _get_current_search_path(conn: Connection[DictRow]) -> str:
 
     This is used ONLY for restoring the original setting on exit — never
     for computing the effective target schema.
+
+    The result column is aliased (``AS search_path``) so the value can be
+    read by name from a ``dict_row`` connection; positional ``row[0]``
+    access is not available on dict rows.
     """
     row = conn.execute("SHOW search_path").fetchone()
-    val = row[0] if row else ""
+    if not row:
+        return ""
+    val = row["search_path"] if "search_path" in row.keys() else list(row.values())[0]
     return str(val) if val else ""
 
 
@@ -252,11 +277,14 @@ def _get_current_schema(conn: Connection[DictRow]) -> str:
     ``current_schema()`` avoids incorrectly treating the literal ``$user``
     token as the target schema.
 
+    The result is aliased (``AS schema``) and read by name so the lookup
+    works on a ``dict_row`` connection.
+
     Raises :class:`PgMigrationError` if the result is NULL, failing closed
     rather than guessing.
     """
-    row = conn.execute("SELECT current_schema()").fetchone()
-    val = row[0] if row else None
+    row = conn.execute("SELECT current_schema() AS schema").fetchone()
+    val = row["schema"] if row else None
     if not val:
         raise PgMigrationError(
             "unknown",
@@ -651,14 +679,29 @@ def verify_pg_schema(
 ) -> dict[str, Any]:
     """Read-only schema verification for application startup.
 
-    This function does NOT apply migrations. It only verifies that:
-    1. The schema_migrations table exists
-    2. All recorded migration checksums match the migration files
-    3. No pending migrations exist (all migrations are applied)
+    This function does NOT apply migrations and does NOT create any
+    objects (no ``CREATE SCHEMA``, no DDL).  It only reads
+    ``information_schema`` / ``pg_catalog`` and the ``schema_migrations``
+    table, so it is safe to run with the Neon runtime role which has no
+    migration/owner privileges.
+
+    Verification performed (all read-only, fail-closed):
+
+    1. The effective schema resolves to a non-NULL value.
+    2. The ``schema_migrations`` table exists.
+    3. Every recorded migration version exists in the migration directory
+       (unknown recorded versions are rejected).
+    4. Every recorded migration checksum matches the migration file.
+    5. No pending migrations exist (all discovered migrations applied).
+    6. The tables the migrations declare (``CREATE TABLE``) actually exist
+       in the effective schema (partial schema / drift is rejected).
 
     This is the Neon production contract: application startup performs
-    read-only schema/version/checksum verification only. Explicit
+    read-only schema/version/checksum verification only.  Explicit
     migration CLI is the only path that applies migrations.
+
+    All result columns are aliased and read by name so the queries work on
+    a ``dict_row`` connection (positional ``row[0]`` is unavailable there).
 
     Parameters
     ----------
@@ -674,51 +717,59 @@ def verify_pg_schema(
     dict[str, Any]
         Verification result with keys:
         - ``applied_count``: number of applied migrations
-        - ``pending_count``: number of pending migrations
+        - ``pending_count``: number of pending migrations (always 0 on success)
         - ``versions``: list of applied version names
+        - ``schema``: the effective schema that was verified
 
     Raises
     ------
     PgMigrationError
-        If the schema_migrations table is missing, if a recorded
-        migration's checksum does not match the file, or if there are
-        pending migrations.
+        If the effective schema is NULL, the ``schema_migrations`` table is
+        missing, a recorded version is unknown, a checksum mismatches, there
+        are pending migrations, or declared tables are missing (drift).
     """
-    # Check if schema_migrations table exists (read-only)
+    effective_schema = _get_current_schema(conn)
+
     row = conn.execute(
         """
         SELECT EXISTS (
             SELECT 1 FROM information_schema.tables
             WHERE table_schema = current_schema()
             AND table_name = 'schema_migrations'
-        )
+        ) AS exists
         """
     ).fetchone()
-    if not row or not row[0]:
+    if not row or not row["exists"]:
         raise PgMigrationError(
             "startup",
             "schema_migrations table not found: run migration CLI first",
             category="discovery",
         )
 
-    # Read applied migrations (read-only)
     applied = _get_applied(conn)
     migrations = _discover_migrations(migrations_dir)
+    known_versions = {m.name for m in migrations}
 
-    # Verify checksums match (read-only)
+    unknown = sorted(set(applied) - known_versions)
+    if unknown:
+        raise PgMigrationError(
+            "startup",
+            f"recorded migrations not found in migration directory: {unknown}",
+            category="schema_drift",
+        )
+
+    expected_tables: set[str] = set()
     for m in migrations:
         version = m.name
         content, checksum = _read_migration(m)
+        if version in applied and applied[version] != checksum:
+            raise PgMigrationError(
+                version,
+                _safe_message("checksum_mismatch"),
+                category="checksum_mismatch",
+            )
+        expected_tables |= _extract_created_tables(content)
 
-        if version in applied:
-            if applied[version] != checksum:
-                raise PgMigrationError(
-                    version,
-                    _safe_message("checksum_mismatch"),
-                    category="checksum_mismatch",
-                )
-
-    # Check for pending migrations
     pending = [m.name for m in migrations if m.name not in applied]
     if pending:
         raise PgMigrationError(
@@ -727,8 +778,20 @@ def verify_pg_schema(
             category="discovery",
         )
 
+    expected_tables.discard("schema_migrations")
+    if expected_tables:
+        actual_tables = get_pg_schema_tables(conn, effective_schema)
+        missing = expected_tables - actual_tables
+        if missing:
+            raise PgMigrationError(
+                "startup",
+                f"schema drift detected: missing tables: {sorted(missing)}",
+                category="schema_drift",
+            )
+
     return {
         "applied_count": len(applied),
         "pending_count": 0,
         "versions": sorted(applied.keys()),
+        "schema": effective_schema,
     }

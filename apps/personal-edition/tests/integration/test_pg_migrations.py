@@ -984,7 +984,7 @@ class TestVerifyPgSchema:
             encoding="utf-8",
         )
 
-        with pytest.raises(PgMigrationError, match="checksum"):
+        with pytest.raises(PgMigrationError, match="content has changed"):
             verify_pg_schema(pg_conn_clean, str(tmp_dir))
 
     def test_verify_is_read_only(self, pg_conn_clean):
@@ -1008,3 +1008,227 @@ class TestVerifyPgSchema:
 
         assert tables_before == tables_after
         assert applied_before == applied_after
+
+
+# ---------------------------------------------------------------------------
+# dict_row contract tests (no real PostgreSQL required)
+#
+# verify_pg_schema runs against a real psycopg connection configured with
+# row_factory=dict_row, where rows are dicts keyed by column name and
+# positional row[0] access is unavailable.  The integration tests above are
+# skipped without TEST_POSTGRES_URL, so these fakes prove the dict-row access
+# pattern (explicit aliases + row["name"]) and the strengthened read-only
+# fail-closed checks WITHOUT a live database.
+# ---------------------------------------------------------------------------
+
+
+class _FakeDictCursor:
+    def __init__(self, rows):
+        self._rows = list(rows)
+
+    def fetchone(self):
+        return self._rows[0] if self._rows else None
+
+    def fetchall(self):
+        return list(self._rows)
+
+
+class _FakeDictRowConn:
+    """A dict_row-shaped fake connection.
+
+    Rows are plain dicts keyed by column name (exactly what psycopg's
+    ``dict_row`` factory yields).  A responder callable maps each SQL string
+    to its result rows, so tests control the database state precisely.
+    """
+
+    def __init__(self, responder):
+        self._responder = responder
+        self.executed = []
+
+    def execute(self, sql, params=None):
+        self.executed.append((sql, params))
+        return _FakeDictCursor(self._responder(sql, params))
+
+
+def _verify_responder(
+    *,
+    schema="public",
+    has_sm_table=True,
+    applied=None,
+    tables=None,
+):
+    """Build a dict-row responder for verify_pg_schema's read-only queries."""
+    applied = dict(applied or {})
+    tables = set(tables or set())
+
+    def responder(sql, params):
+        norm = " ".join(sql.split()).lower()
+        if "current_schema() as schema" in norm:
+            return [{"schema": schema}]
+        if "select exists" in norm and "schema_migrations" in norm:
+            return [{"exists": has_sm_table}]
+        if "from schema_migrations" in norm:
+            return [
+                {"version": v, "checksum": c} for v, c in sorted(applied.items())
+            ]
+        if "pg_catalog.pg_tables" in norm:
+            return [{"tablename": t} for t in sorted(tables)]
+        raise AssertionError(f"unexpected SQL in verify_pg_schema: {sql!r}")
+
+    return responder
+
+
+def _write_migration(dirpath: Path, name: str, body: str) -> str:
+    """Write a migration file and return its checksum."""
+    (dirpath / name).write_text(body, encoding="utf-8")
+    return _compute_checksum(body.encode("utf-8"))
+
+
+class TestVerifyPgSchemaDictRowContract:
+    """Prove verify_pg_schema works against dict_row-shaped rows (no PG)."""
+
+    def test_success_reads_exists_alias_by_name(self, tmp_path):
+        """The EXISTS result is aliased and read as row['exists']."""
+        d = tmp_path / "m"
+        d.mkdir()
+        checksum = _write_migration(
+            d, "pg_001_widgets.sql", "CREATE TABLE widgets (id TEXT PRIMARY KEY);"
+        )
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={"pg_001_widgets.sql": checksum},
+                tables={"widgets", "schema_migrations"},
+            )
+        )
+        result = verify_pg_schema(conn, str(d))
+        assert result["applied_count"] == 1
+        assert result["pending_count"] == 0
+        assert result["versions"] == ["pg_001_widgets.sql"]
+        assert result["schema"] == "public"
+
+    def test_rejects_missing_schema_migrations_table(self, tmp_path):
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(_verify_responder(has_sm_table=False))
+        with pytest.raises(PgMigrationError, match="schema_migrations table not found"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_null_effective_schema(self, tmp_path):
+        """A NULL current_schema() must fail closed, not guess."""
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(_verify_responder(schema=None))
+        with pytest.raises(PgMigrationError, match="current_schema\\(\\) returned NULL"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_unknown_recorded_migration(self, tmp_path):
+        """A recorded version absent from the migration dir must fail closed."""
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={
+                    "pg_001_a.sql": "x" * 64,
+                    "pg_999_ghost.sql": "y" * 64,  # not in the directory
+                },
+                tables={"a"},
+            )
+        )
+        with pytest.raises(
+            PgMigrationError, match="not found in migration directory"
+        ):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_checksum_mismatch(self, tmp_path):
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={"pg_001_a.sql": "deadbeef" + "0" * 56},  # wrong checksum
+                tables={"a"},
+            )
+        )
+        with pytest.raises(PgMigrationError, match="content has changed"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_pending_migration(self, tmp_path):
+        d = tmp_path / "m"
+        d.mkdir()
+        checksum_a = _write_migration(
+            d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);"
+        )
+        _write_migration(d, "pg_002_b.sql", "CREATE TABLE b (id TEXT PRIMARY KEY);")
+        # pg_001 recorded with its correct checksum -> pg_002 is pending.
+        conn = _FakeDictRowConn(
+            _verify_responder(applied={"pg_001_a.sql": checksum_a}, tables={"a"})
+        )
+        with pytest.raises(PgMigrationError, match="pending migrations"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_schema_drift_missing_table(self, tmp_path):
+        """A declared table absent from the effective schema must fail closed."""
+        d = tmp_path / "m"
+        d.mkdir()
+        checksum = _write_migration(
+            d,
+            "pg_001_multi.sql",
+            "CREATE TABLE a (id TEXT PRIMARY KEY);\n"
+            "CREATE TABLE b (id TEXT PRIMARY KEY);",
+        )
+        # Both migrations recorded with correct checksum, but table b is missing.
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={"pg_001_multi.sql": checksum},
+                tables={"a", "schema_migrations"},  # b missing -> drift
+            )
+        )
+        with pytest.raises(PgMigrationError, match="schema drift"):
+            verify_pg_schema(conn, str(d))
+
+    def test_errors_never_expose_secrets(self, tmp_path):
+        """Fail-closed error text must not carry driver/DSN/secret content."""
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        secret = "postgresql://alice:s3cr3t@db.internal.example.com:5432/prod"
+        for responder in (
+            _verify_responder(has_sm_table=False),
+            _verify_responder(schema=None),
+            _verify_responder(
+                applied={"pg_999_ghost.sql": "y" * 64}, tables=set()
+            ),
+        ):
+            conn = _FakeDictRowConn(responder)
+            with pytest.raises(PgMigrationError) as excinfo:
+                verify_pg_schema(conn, str(d))
+            text = f"{excinfo.value} {excinfo.value.message}"
+            assert secret not in text
+            assert "s3cr3t" not in text
+            assert "postgresql://" not in text
+
+
+class TestExtractCreatedTables:
+    def test_plain_create_table(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE TABLE widgets (id TEXT PRIMARY KEY);"
+        assert _extract_created_tables(sql) == {"widgets"}
+
+    def test_if_not_exists_and_schema_qualified_and_quoted(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = (
+            "CREATE TABLE IF NOT EXISTS public.widgets (id TEXT);\n"
+            'CREATE TABLE "gadgets" (id TEXT);\n'
+            "CREATE TABLE myschema.things (id TEXT);"
+        )
+        assert _extract_created_tables(sql) == {"widgets", "gadgets", "things"}
+
+    def test_no_tables(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        assert _extract_created_tables("CREATE INDEX ix ON widgets (id);") == set()

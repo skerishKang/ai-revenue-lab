@@ -114,3 +114,107 @@ class TestRuntimeOpener:
         src = inspect.getsource(_startup_sqlite)
         assert "apply_migrations" in src
         assert "get_connection" in src
+
+
+class _FakeState:
+    database_url = "postgresql://alice:s3cr3t@db.internal.example.com:5432/prod"
+
+
+class _FakeApp:
+    state = _FakeState()
+
+
+class _OneShot:
+    """Minimal cursor: fetchone returns the first row, fetchall all rows."""
+
+    def __init__(self, rows):
+        self._rows = list(rows)
+
+    def fetchone(self):
+        return self._rows[0] if self._rows else None
+
+    def fetchall(self):
+        return list(self._rows)
+
+
+class TestPostgresqlStartupSafeErrorBoundary:
+    """Startup connect/verify failures normalize to a fixed safe error.
+
+    The Neon contract requires that startup never expose a raw Psycopg
+    message, DSN, host, username, password, SQL, or params.  Failures are
+    converted to :class:`StartupDatabaseError` (category ``startup``) with
+    the original exception preserved only as ``__cause__``.
+    """
+
+    def test_startup_uses_read_only_verify_not_migrate(self):
+        import inspect
+        from app.factory import _startup_postgresql
+        src = inspect.getsource(_startup_postgresql)
+        assert "verify_pg_schema" in src
+        assert "apply_pg_migrations" not in src
+
+    def test_connect_failure_raises_safe_startup_error(self, monkeypatch):
+        import psycopg
+        from app.factory import _startup_postgresql
+        from app.db_runtime import StartupDatabaseError
+
+        secret = _FakeState.database_url
+
+        def boom(url):
+            raise psycopg.OperationalError(f"connection to {secret} failed")
+
+        monkeypatch.setattr("app.db_postgres.get_pg_connection", boom)
+
+        with pytest.raises(StartupDatabaseError) as excinfo:
+            _startup_postgresql(_FakeApp())
+
+        err = excinfo.value
+        assert err.safe_category == "startup"
+        text = f"{str(err)} {repr(err)}"
+        assert "s3cr3t" not in text
+        assert "postgresql://" not in text
+        assert "db.internal.example.com" not in text
+        assert isinstance(err.__cause__, psycopg.OperationalError)
+
+    def test_verify_failure_raises_safe_startup_error(self, monkeypatch):
+        from app.factory import _startup_postgresql
+        from app.db_pg_migrations import PgMigrationError
+        from app.db_runtime import StartupDatabaseError
+
+        class _NullSchemaConn:
+            """dict_row-shaped fake whose current_schema() is NULL.
+
+            This drives the REAL verify_pg_schema down its fail-closed path
+            (NULL effective schema -> PgMigrationError) without monkeypatching
+            the verifier, so the test is immune to module re-import pollution.
+            """
+
+            closed = False
+
+            def execute(self, sql, params=None):
+                norm = " ".join(sql.split()).lower()
+                if "current_schema() as schema" in norm:
+                    return _OneShot([{"schema": None}])
+                raise AssertionError(f"unexpected SQL: {sql!r}")
+
+            def close(self):
+                self.closed = True
+
+        fake_conn = _NullSchemaConn()
+        monkeypatch.setattr(
+            "app.db_postgres.get_pg_connection", lambda url: fake_conn
+        )
+
+        with pytest.raises(StartupDatabaseError) as excinfo:
+            _startup_postgresql(_FakeApp())
+
+        assert excinfo.value.safe_category == "startup"
+        assert isinstance(excinfo.value.__cause__, PgMigrationError)
+        assert fake_conn.closed, "startup must close the connection on failure"
+
+    def test_startup_error_str_repr_are_fixed_safe_text(self):
+        from app.db_runtime import StartupDatabaseError
+
+        err = StartupDatabaseError()
+        assert str(err) == "database error (category=startup)"
+        assert "category=startup" in repr(err)

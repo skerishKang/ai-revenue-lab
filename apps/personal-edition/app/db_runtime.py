@@ -341,6 +341,25 @@ class RuntimeTransactionError(DatabaseError):
         )
 
 
+class StartupDatabaseError(DatabaseError):
+    """Backend-neutral: PostgreSQL startup verification failed.
+
+    Raised by the application factory when the startup connection or the
+    read-only schema/version/checksum verification fails.  ``str``/``repr``
+    only ever contain the fixed safe category ``startup`` — never a raw
+    Psycopg message, DSN, host, username, password, SQL, or parameter.  The
+    original exception is preserved only as ``__cause__`` for internal
+    debugging.
+    """
+
+    safe_category = "startup"
+
+    def __init__(self) -> None:
+        RuntimeError.__init__(
+            self, f"database error (category={self.safe_category})"
+        )
+
+
 def _safe_constraint_name(exc: BaseException) -> str | None:
     diag = getattr(exc, "diag", None)
     name = getattr(diag, "constraint_name", None) if diag is not None else None
