@@ -58,13 +58,49 @@ def _iter_sql_statements(sql_text: str) -> Generator[str, None, None]:
 
 
 def _apply_one(conn: sqlite3.Connection, filename: str, sql_text: str) -> None:
-    for stmt in _iter_sql_statements(sql_text):
-        conn.execute(stmt)
-    conn.execute(
-        "INSERT OR IGNORE INTO schema_migrations (version, filename) VALUES (?, ?)",
-        (filename, filename),
-    )
-    conn.commit()
+    """Apply a single migration atomically.
+
+    The whole migration body runs inside one ``BEGIN IMMEDIATE`` transaction so
+    that DDL and DML succeed or fail together: on any error the transaction is
+    rolled back, leaving the prior schema and all rows intact (fail-closed).
+    ``PRAGMA foreign_keys`` cannot run inside a transaction, so it is applied
+    around the transactional body instead of within it.
+    """
+    statements = list(_iter_sql_statements(sql_text))
+    body: list[str] = []
+    fk_off = False
+    # Transaction-control keywords the engine manages itself; some legacy
+    # migrations embed their own BEGIN/COMMIT, which must not nest inside the
+    # engine's single transaction.
+    txn_keywords = ("BEGIN", "COMMIT", "END TRANSACTION", "ROLLBACK", "SAVEPOINT", "RELEASE")
+    for stmt in statements:
+        upper = stmt.strip().upper()
+        if upper.startswith("PRAGMA FOREIGN_KEYS"):
+            if "OFF" in upper:
+                fk_off = True
+            # Both OFF and ON are handled around the transaction body.
+            continue
+        if any(upper.startswith(kw) for kw in txn_keywords):
+            continue
+        body.append(stmt)
+
+    if fk_off:
+        conn.execute("PRAGMA foreign_keys=OFF")
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        for stmt in body:
+            conn.execute(stmt)
+        conn.execute(
+            "INSERT OR IGNORE INTO schema_migrations (version, filename) VALUES (?, ?)",
+            (filename, filename),
+        )
+        conn.execute("COMMIT")
+    except Exception:
+        conn.execute("ROLLBACK")
+        raise
+    finally:
+        if fk_off:
+            conn.execute("PRAGMA foreign_keys=ON")
 
 
 def _verify_foreign_key_integrity(conn: sqlite3.Connection) -> None:
@@ -91,6 +127,9 @@ def apply_migrations(db_path: str | None = None) -> None:
     if db_path != ":memory:":
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
+    # Autocommit mode: transactions are managed explicitly in _apply_one so each
+    # migration (DDL + DML) is atomic and rolls back cleanly on failure.
+    conn.isolation_level = None
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
     try:
@@ -101,7 +140,6 @@ def apply_migrations(db_path: str | None = None) -> None:
                 applied_at TEXT NOT NULL DEFAULT (datetime('now'))
             )"""
         )
-        conn.commit()
 
         applied = {
             row[0]
@@ -114,7 +152,6 @@ def apply_migrations(db_path: str | None = None) -> None:
                 try:
                     _apply_one(conn, mf.name, sql_text)
                 except Exception as exc:
-                    conn.rollback()
                     raise MigrationError(mf.name, exc) from exc
 
         # After all migrations are applied (fresh or staged upgrade), verify
