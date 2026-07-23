@@ -1,4 +1,4 @@
-# Business 5 · 우리단지 이웃가게 v2 Reference
+# Business 5 · 우리단지 이웃가게 v3 Reference
 
 Issue: #89  
 Branch: `design/business-05-neighbor-market-v2-89`  
@@ -24,23 +24,24 @@ Do not merge this reference branch into `main` until the visual direction is exp
 
 The public apartment facts used in the prototype are limited to name, address, 192 households, 2 buildings and 2015-10-30 use approval. No resident name, building/unit number, roster or identity evidence is included.
 
-## What changed from v1
+## Current primary prototype
 
-The first reference was rejected because it looked like a regional editorial landing page and used placeholder-style graphics.
+Use **`index-v3.html`**.
 
-v2 is rebuilt as a mobile-first Korean consumer marketplace reference:
+The earlier `index.html` remains only as a comparison artifact and is not the current visual target.
 
-- apartment selector and location context at the top;
-- large search field;
-- direct category entry;
+V3 applies the frozen consumer-marketplace finish rules:
+
+- reduced card radius and shadow;
+- refined Korean typography scale;
+- production-style search and select controls;
 - photographic business cards;
-- representative menu/service and price before detail navigation;
-- live availability language such as `오늘 주문 가능`, `오늘 상담 가능` and `오늘 예약 1자리`;
-- resident benefit banners;
-- business-specific actions such as order, reservation, quote and consultation;
+- mobile vertical shop list;
+- price, availability and benefit hierarchy;
+- business-specific order, reservation, quote and consultation actions;
 - mobile bottom navigation;
 - shop-detail sticky mobile actions;
-- dedicated favorites/my page and QA states.
+- dedicated benefits, owner registration, favorites/my and QA states.
 
 ## Open the prototype
 
@@ -53,7 +54,7 @@ Run `LOCAL_PREVIEW.ps1` from PowerShell. The script:
 - creates or refreshes a dedicated detached worktree;
 - refuses to reset or clean a dirty target;
 - starts a local static server;
-- opens the prototype in the default browser.
+- opens `index-v3.html` in the default browser.
 
 Default paths:
 
@@ -72,7 +73,7 @@ powershell -ExecutionPolicy Bypass -File .\LOCAL_PREVIEW.ps1 `
 
 ### Manual opening
 
-Open `index.html` in a modern browser, or serve the directory:
+Serve the directory:
 
 ```bash
 python -m http.server 4173 --bind 127.0.0.1
@@ -81,10 +82,10 @@ python -m http.server 4173 --bind 127.0.0.1
 Then open:
 
 ```text
-http://127.0.0.1:4173/index.html
+http://127.0.0.1:4173/index-v3.html
 ```
 
-The prototype is a single interaction document except for temporary remote font and image references. Navigation uses URL hashes:
+Navigation uses URL hashes:
 
 - `#home`
 - `#explore`
@@ -105,23 +106,23 @@ The prototype is a single interaction document except for temporary remote font 
 
 ## Files
 
-- `index.html` — clickable product reference
+- `index-v3.html` — current primary clickable product reference
+- `index.html` — superseded v2 comparison artifact
 - `DESIGN_SPEC.md` — product, visual and interaction decisions
-- `UI_REFINEMENT_V3.md` — fixed consumer-marketplace finish rules for the next visual pass
+- `UI_REFINEMENT_V3.md` — fixed consumer-marketplace finish rules
 - `IMAGE_SOURCES.md` — temporary image and font source ledger
 - `LOCAL_HANDOFF_PROMPT.md` — strict future local-worker implementation prompt
-- `LOCAL_PREVIEW.ps1` — safe dedicated-worktree preview launcher
+- `LOCAL_PREVIEW.ps1` — safe dedicated-worktree V3 preview launcher
 - `SCREENSHOT_MATRIX.md` — required desktop, tablet, mobile and state screenshots
 
 ## Review sequence
 
-1. Apply the v3 finish rules to the reference HTML.
-2. Sync the exact reference branch into a clean dedicated worktree.
-3. Open the prototype through the local server.
-4. Capture every required screenshot in `SCREENSHOT_MATRIX.md` without source changes.
-5. Review the prototype visually on desktop and mobile.
-6. Revise only the reference branch until approved.
-7. Create a separate documentation change for Business 5 registry assignment.
-8. Create a separate implementation branch under `apps/neighbor-market/**`.
-9. Give the local worker the strict handoff prompt and approved reference commit SHA.
-10. Keep the implementation PR Draft until screenshot comparison passes.
+1. Sync the exact reference branch into a clean dedicated worktree.
+2. Open `index-v3.html` through the local server.
+3. Capture every required screenshot in `SCREENSHOT_MATRIX.md` without source changes.
+4. Review the prototype visually on desktop and mobile.
+5. Revise only the reference branch until approved.
+6. Create a separate documentation change for Business 5 registry assignment.
+7. Create a separate implementation branch under `apps/neighbor-market/**`.
+8. Give the local worker the strict handoff prompt and approved reference commit SHA.
+9. Keep the implementation PR Draft until screenshot comparison passes.
