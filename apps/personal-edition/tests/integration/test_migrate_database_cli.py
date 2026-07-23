@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 class TestMigrationCliImport:
     """import only does not connect."""
 
-    def test_import_does_not_connect(self):
+    def test_import_does_not_connect(self, isolated_sys_modules):
         """Importing the migration script must not open a connection."""
         import importlib
         import sys

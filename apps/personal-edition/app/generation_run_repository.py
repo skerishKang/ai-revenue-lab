@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import json
 import re
-import sqlite3
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+if TYPE_CHECKING:
+    from app.db_runtime import RuntimeConnection
 
 _UTC_ISO_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
@@ -98,7 +103,7 @@ def _validate_generation_run(
         )
 
 
-def _row_to_record(row: sqlite3.Row) -> GenerationRunRecord:
+def _row_to_record(row: Any) -> GenerationRunRecord:
     return GenerationRunRecord(
         id=row["id"],
         task_type=row["task_type"],
@@ -122,7 +127,7 @@ def _row_to_record(row: sqlite3.Row) -> GenerationRunRecord:
 
 
 def create_generation_run(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     task_type: str,
     provider: str,
@@ -147,7 +152,7 @@ def create_generation_run(
     now = started_at or _now_utc_iso()
     run_id = str(uuid.uuid4())
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         cursor = conn.execute(
             "INSERT INTO generation_runs "
@@ -191,7 +196,7 @@ def create_generation_run(
 
 
 def update_generation_run(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     run_id: str,
     *,
     completed_at: str | None = None,
@@ -214,7 +219,7 @@ def update_generation_run(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         existing = conn.execute(
             "SELECT id FROM generation_runs WHERE id = ?",
@@ -281,7 +286,7 @@ def update_generation_run(
 
 
 def get_generation_run_by_id(
-    conn: sqlite3.Connection, run_id: str
+    conn: RuntimeConnection, run_id: str
 ) -> GenerationRunRecord | None:
     row = conn.execute(
         f"SELECT {_GENERATION_RUN_SELECT} FROM generation_runs WHERE id = ?",
@@ -291,7 +296,7 @@ def get_generation_run_by_id(
 
 
 def get_generation_runs_by_task_type(
-    conn: sqlite3.Connection, task_type: str
+    conn: RuntimeConnection, task_type: str
 ) -> list[GenerationRunRecord]:
     rows = conn.execute(
         f"SELECT {_GENERATION_RUN_SELECT} FROM generation_runs "
