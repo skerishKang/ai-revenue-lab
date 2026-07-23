@@ -504,10 +504,10 @@ def admin_generate(
         )
         result = service.generate_edition(conn, request=gen_request)
         if not result.succeeded:
-            logger.warning("Generation succeeded=False for participant %s", participant_id)
+            logger.warning("generation_failure result=succeeded=False")
             error_code = "generation_failed"
-    except Exception as exc:
-        logger.error("Generation failed for participant %s: %s", participant_id, exc)
+    except Exception:
+        logger.error("generation_failure category=exception")
         error_code = "generation_failed"
     finally:
         conn.close()

@@ -2665,3 +2665,110 @@ class TestTerminalPageCSRF:
             assert logout_resp.headers.get("location") == "/admin/access"
             assert "pe_admin_session" not in logout_resp.cookies
             assert "pe_admin_csrf" not in logout_resp.cookies
+
+
+class TestAdminGenerateIdempotencyKey:
+    def test_empty_key_redirects_with_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, _ = _make_app(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": "i1", "csrf_token": csrf_token, "idempotency_key": ""},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert "error=invalid_idempotency_key" in resp.headers.get("location", "")
+
+    def test_whitespace_key_redirects_with_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, _ = _make_app(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": "i1", "csrf_token": csrf_token, "idempotency_key": "   "},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert "error=invalid_idempotency_key" in resp.headers.get("location", "")
+
+    def test_malformed_key_redirects_with_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, _ = _make_app(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": "i1", "csrf_token": csrf_token, "idempotency_key": "not-a-uuid"},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert "error=invalid_idempotency_key" in resp.headers.get("location", "")
+
+    def test_oversized_key_redirects_with_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, _ = _make_app(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": "i1", "csrf_token": csrf_token, "idempotency_key": "a" * 65},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            assert resp.status_code == 303
+            assert "error=invalid_idempotency_key" in resp.headers.get("location", "")
+
+    def test_valid_uuid_key_passes_validation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app, _ = _make_app(Path(tmp))
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            resp = client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": "i1", "csrf_token": csrf_token, "idempotency_key": str(uuid.uuid4())},
+                cookies=all_cookies, follow_redirects=False,
+            )
+            location = resp.headers.get("location", "")
+            assert "error=invalid_idempotency_key" not in location
+
+    def test_generation_logging_no_raw_details(self, caplog):
+        import logging
+        caplog.set_level(logging.WARNING)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            app, _ = _make_app(Path(tmp))
+
+            class LeakyService:
+                def generate_edition(self, conn, request):
+                    raise RuntimeError(
+                        "postgres://user:secret@prod-db.example.com:5432/mydb"
+                    )
+
+            app.state.generation_service = LeakyService()
+            client = TestClient(app)
+            admin_cookies = _get_admin_session_cookie()
+            csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
+            all_cookies = {**admin_cookies, **csrf_cookie}
+            client.post(
+                "/admin/participants/p1/generate",
+                data={"input_id": "i1", "csrf_token": csrf_token, "idempotency_key": str(uuid.uuid4())},
+                cookies=all_cookies, follow_redirects=False,
+            )
+
+            for record in caplog.records:
+                msg = record.getMessage()
+                assert "prod-db.example.com" not in msg
+                assert "secret@" not in msg
+                assert "postgres://" not in msg
