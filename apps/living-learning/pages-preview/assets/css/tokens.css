@@ -1,0 +1,136 @@
+/* ============================================================
+   Living Learning — Adaptive Learning Studio
+   Design tokens
+   ============================================================ */
+
+:root {
+  /* ---- Ink shell (dark app chrome) ---- */
+  --ink-950: #0a0e16;
+  --ink-900: #0d1320;
+  --ink-850: #111827;
+  --ink-800: #161f30;
+  --ink-700: #1d2739;
+  --ink-600: #27324a;
+  --ink-500: #35425c;
+  --ink-border: #2a3547;
+  --ink-border-soft: #212c40;
+
+  /* ---- Reading pane (warm light) ---- */
+  --paper: #faf8f3;
+  --paper-2: #f4f0e8;
+  --paper-3: #ece7dd;
+  --surface: #ffffff;
+  --surface-warm: #fdfbf7;
+  --surface-sunken: #f6f3ec;
+  --line: #e7e1d6;
+  --line-strong: #d8d1c3;
+
+  /* ---- Text on light ---- */
+  --text-strong: #182135;
+  --text: #38415a;
+  --text-soft: #6a7388;
+  --text-faint: #949cb0;
+
+  /* ---- Text on ink ---- */
+  --ink-text: #eaf0f8;
+  --ink-text-soft: #a4b0c5;
+  --ink-text-faint: #6f7d95;
+
+  /* ---- Accent: cobalt ---- */
+  --accent: #2f6bff;
+  --accent-strong: #1f53d6;
+  --accent-deep: #173f9e;
+  --accent-soft: #e9f0ff;
+  --accent-softer: #f3f7ff;
+  --accent-glow: rgba(47, 107, 255, 0.16);
+  --accent-ring: rgba(47, 107, 255, 0.32);
+
+  /* ---- Cyan (restrained) ---- */
+  --cyan: #0f9bb8;
+  --cyan-strong: #0c7e96;
+  --cyan-soft: #e2f5f9;
+
+  /* ---- Violet (sparingly) ---- */
+  --violet: #6a5af0;
+  --violet-soft: #edeafd;
+
+  /* ---- Status ---- */
+  --success: #128a63;
+  --success-strong: #0d6e4e;
+  --success-soft: #e1f5ec;
+  --warning: #b06f0c;
+  --warning-soft: #faf0da;
+  --error: #c94f4f;
+  --error-strong: #a83c3c;
+  --error-soft: #fbe9e9;
+
+  /* ---- Typography ---- */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic",
+    "Noto Sans KR", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "D2Coding",
+    Consolas, "Malgun Gothic", monospace;
+
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-15: 0.9375rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-30: 1.875rem;
+  --fs-38: 2.375rem;
+  --fs-48: 3rem;
+
+  --lh-tight: 1.25;
+  --lh-snug: 1.4;
+  --lh-body: 1.65;
+  --lh-loose: 1.8;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ---- Spacing ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-20: 5rem;
+
+  /* ---- Radius ---- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-2xl: 28px;
+  --r-full: 999px;
+
+  /* ---- Elevation ---- */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 2px 8px rgba(16, 24, 40, 0.07), 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.1), 0 2px 6px rgba(16, 24, 40, 0.06);
+  --shadow-ink: 0 8px 28px rgba(4, 8, 16, 0.4);
+  --glow-accent: 0 0 0 1px var(--accent-ring), 0 8px 30px var(--accent-glow);
+
+  /* ---- Layout ---- */
+  --sidebar-w: 268px;
+  --content-max: 1080px;
+  --reading-max: 720px;
+  --banner-h: 34px;
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-med: 240ms;
+  --dur-slow: 420ms;
+}

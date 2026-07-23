@@ -13,15 +13,27 @@ dependencies = [
     "pydantic>=2.10,<3",
     "pydantic-settings>=2.6,<3",
     "python-multipart>=0.0.18",
+    "psycopg[binary]>=3.2,<4",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3,<9",
     "httpx>=0.28,<1",
+    "build>=1.2",
+]
+firebase = [
+    "firebase-admin>=6.5",
+]
+modal = [
+    "modal>=0.62",
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["app*"]
-exclude = ["migrations*", "tests*", "pages-preview*"]
+include = ["app*", "migrations*"]
+exclude = ["tests*", "pages-preview*"]
+
+[tool.setuptools.package-data]
+migrations = ["*.sql"]
+"migrations.postgresql" = ["*.sql"]
