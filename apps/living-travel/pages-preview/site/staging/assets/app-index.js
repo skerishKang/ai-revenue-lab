@@ -81,8 +81,8 @@ signinBtn.addEventListener("click", async () => {
   showError("");
   try {
     await signInWithGoogle();
-  } catch (err) {
-    showError(err && err.message ? err.message : "로그인에 실패했습니다.");
+  } catch {
+    showError("로그인에 실패했습니다.");
   }
 });
 
@@ -98,8 +98,7 @@ signinEmailBtn.addEventListener("click", async () => {
     await signInWithEmail(email, password);
     loginEmail.value = "";
     loginPassword.value = "";
-  } catch (err) {
-    const msg = err && err.message ? err.message : "로그인에 실패했습니다.";
+  } catch {
     showError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
   }
 });
@@ -108,8 +107,8 @@ signoutBtn.addEventListener("click", async () => {
   showError("");
   try {
     await signOutUser();
-  } catch (err) {
-    showError(err && err.message ? err.message : "로그아웃에 실패했습니다.");
+  } catch {
+    showError("로그아웃에 실패했습니다.");
   }
 });
 

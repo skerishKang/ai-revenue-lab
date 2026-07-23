@@ -3,7 +3,7 @@
 **Date**: 2026-07-24
 **PR**: #88 (Draft)
 **Branch**: `ops/living-travel-external-staging-74`
-**Head**: (set at final commit)
+**Deployment source**: PR #88 current head, verified through the Living Travel Cloudflare deployment status.
 
 ## Infrastructure Summary
 
@@ -63,7 +63,7 @@
 - [x] Firebase Email/Password provider activated via Identity Toolkit API
 - [x] Dedicated synthetic operator account created (Admin SDK)
 - [x] Dedicated synthetic traveler account created (Admin SDK)
-- [x] Credentials stored in `/root/.secrets/lt-staging-e2e-creds.json` (chmod 600, outside repo)
+- [x] Credentials are stored in a user-controlled secret store outside the repository
 - [x] Staging UI updated: email/password form alongside Google login
 - [x] Password input: `type=password`
 - [x] No sign-up, password reset, or role selection UI
@@ -132,6 +132,7 @@
 ### 10. Local Tests
 
 - [x] Unit tests: 119 passed
+- [x] Staging contract tests: 36 passed
 - [x] Preview tests: 40 passed
 - [x] Packaging OK
 - [x] Secret scan: clean (no secrets in evidence or pages-preview)
@@ -171,3 +172,13 @@
 | 19 | Draft PR created | ✓ |
 
 **All completion criteria met.**
+
+## Secret Storage
+
+Synthetic e2e credentials for the staging Email/Password flow are stored in a
+user-controlled secret store outside the repository (password manager / local
+secret store). The temporary /root/.secrets/ container path is ephemeral; the
+durable copy is managed independently by the operator.
+
+**No credentials, emails, UIDs, or file paths are recorded in this report or in
+the repository source code.**
