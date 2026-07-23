@@ -1301,15 +1301,21 @@ class TestExtractCreatedTables:
         from pathlib import Path
 
         migrations_dir = Path(__file__).parent.parent.parent / "migrations"
-        expected = set()
+        actual = set()
         for p in sorted(migrations_dir.glob("pg_*.sql")):
-            expected |= _extract_created_tables(p.read_text())
-        assert "participants" in expected
-        assert "inputs" in expected
-        assert "editions" in expected
-        assert "feedback" in expected
-        assert "generation_runs" in expected
-        assert "generation_requests" in expected
+            actual |= _extract_created_tables(p.read_text())
+        actual.discard("schema_migrations")
+        expected = {
+            "participants",
+            "inputs",
+            "editions",
+            "feedback",
+            "generation_runs",
+            "generation_requests",
+            "benchmark_runs",
+            "pilot_ops_records",
+        }
+        assert actual == expected, f"table set mismatch: extra={actual - expected}, missing={expected - actual}"
 
 
 class TestNeutralizeSqlFailClosed:
@@ -1343,3 +1349,65 @@ class TestNeutralizeSqlFailClosed:
         _neutralize_sql("SELECT $$valid dollar quote$$ FROM t")
         _neutralize_sql("SELECT $tag$valid tagged dollar$tag$ FROM t")
         _neutralize_sql("SELECT /* /* nested */ */ 1")
+
+
+class TestPreflightValidator:
+    def test_valid_canonical_migrations_pass_preflight(self):
+        from pathlib import Path
+        from app.db_pg_migrations import _validate_migration_sql
+
+        migrations_dir = Path(__file__).parent.parent.parent / "migrations"
+        for p in sorted(migrations_dir.glob("pg_*.sql")):
+            content = p.read_text()
+            _validate_migration_sql(content)
+
+    def test_dollar_quote_rejected_by_validator(self):
+        from app.db_pg_migrations import _validate_migration_sql, MigrationParseError
+
+        with pytest.raises(MigrationParseError):
+            _validate_migration_sql("CREATE TABLE foo (id int) $$body$$")
+
+    def test_nested_block_comment_rejected_by_validator(self):
+        from app.db_pg_migrations import _validate_migration_sql, MigrationParseError
+
+        with pytest.raises(MigrationParseError):
+            _validate_migration_sql("SELECT /** /* outer */ inner */ 1")
+
+    def test_validate_migration_sql_safe_error_message(self):
+        from app.db_pg_migrations import _validate_migration_sql, MigrationParseError
+
+        with pytest.raises(MigrationParseError) as exc_info:
+            _validate_migration_sql("SELECT $tag$leak not-a-secret$tag$ FROM t")
+        msg = str(exc_info.value)
+        assert "dollar-quoted" in msg
+        assert "not-a-secret" not in msg
+
+
+@pytestmark_integration
+class TestApplyPreflightGuard:
+    def test_malformed_sql_does_not_create_schema_migrations(self, pg_conn_clean, tmp_path):
+        from pathlib import Path
+        from app.db_pg_migrations import apply_pg_migrations, MigrationParseError
+
+        bad_dir = tmp_path / "bad_migrations"
+        bad_dir.mkdir()
+        (bad_dir / "pg_001_bad.sql").write_text("SELECT 'unterminated")
+
+        with pytest.raises(MigrationParseError):
+            apply_pg_migrations(pg_conn_clean, str(bad_dir))
+
+        row = pg_conn_clean.execute(
+            "SELECT EXISTS (SELECT 1 FROM information_schema.tables "
+            "WHERE table_schema = current_schema() "
+            "AND table_name = 'schema_migrations') AS exists"
+        ).fetchone()
+        assert not row["exists"], "schema_migrations should not exist"
+
+    def test_valid_migrations_apply_normally(self, pg_conn_clean):
+        from app.db_pg_migrations import apply_pg_migrations
+
+        migrations_dir = (
+            Path(__file__).parent.parent.parent / "migrations"
+        )
+        result = apply_pg_migrations(pg_conn_clean, str(migrations_dir))
+        assert len(result) > 0

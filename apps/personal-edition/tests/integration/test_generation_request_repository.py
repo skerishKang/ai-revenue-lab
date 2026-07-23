@@ -389,6 +389,76 @@ class TestClaimGenerationRequest:
         ) is None
         conn.close()
 
+    def test_claim_rejects_zero_lease(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        with pytest.raises(gen_req_repo.GenerationRequestError):
+            gen_req_repo.claim_generation_request(
+                SqliteRuntimeConnection(conn),
+                idempotency_key="k1",
+                participant_id="p1",
+                input_id=input_id,
+                lease_duration_seconds=0,
+            )
+        conn.close()
+
+    def test_claim_rejects_negative_lease(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        with pytest.raises(gen_req_repo.GenerationRequestError):
+            gen_req_repo.claim_generation_request(
+                SqliteRuntimeConnection(conn),
+                idempotency_key="k1",
+                participant_id="p1",
+                input_id=input_id,
+                lease_duration_seconds=-1,
+            )
+        conn.close()
+
+    def test_claim_rejects_oversized_lease(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        with pytest.raises(gen_req_repo.GenerationRequestError):
+            gen_req_repo.claim_generation_request(
+                SqliteRuntimeConnection(conn),
+                idempotency_key="k1",
+                participant_id="p1",
+                input_id=input_id,
+                lease_duration_seconds=86401,
+            )
+        conn.close()
+
+    def test_claim_rejects_bool_lease(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        with pytest.raises(gen_req_repo.GenerationRequestError):
+            gen_req_repo.claim_generation_request(
+                SqliteRuntimeConnection(conn),
+                idempotency_key="k1",
+                participant_id="p1",
+                input_id=input_id,
+                lease_duration_seconds=True,  # type: ignore
+            )
+        conn.close()
+
+    def test_claim_rejects_malformed_now(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        with pytest.raises(gen_req_repo.GenerationRequestError):
+            gen_req_repo.claim_generation_request(
+                SqliteRuntimeConnection(conn),
+                idempotency_key="k1",
+                participant_id="p1",
+                input_id=input_id,
+                now="not-a-datetime",
+            )
+        conn.close()
+
 
 class TestFinalizeEditionForRequest:
     def test_finalize_creates_edition_and_completes_request(self):

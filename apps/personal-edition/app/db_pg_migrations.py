@@ -334,6 +334,35 @@ def _extract_created_tables(content: str) -> set[str]:
     return {m.group(1) for m in _CREATE_TABLE_RE.finditer(_neutralize_sql(content))}
 
 
+def _validate_migration_sql(content: str) -> None:
+    """Validate migration SQL before any database writes.
+
+    Raises :class:`MigrationParseError` if the SQL contains:
+    - Unterminated block/nested comments, string literals, E-strings,
+      or dollar-quoted strings (via :func:`_neutralize_sql`).
+    - Dollar-quoted strings (``$$...$$``, ``$tag$...$tag$``) or nested
+      block comments, which :func:`_split_statements` does not understand.
+
+    The message is a fixed safe string; the original content is never
+    interpolated.
+    """
+    _neutralize_sql(content)
+
+    if "$" in content:
+        if _DOLLAR_TAG_RE.search(content) is not None:
+            raise MigrationParseError(
+                "migration SQL contains dollar-quoted strings "
+                "not supported by statement splitter"
+            )
+
+    if re.search(r"/\*", content):
+        if re.search(r"/\*.*?/\*", content, re.DOTALL):
+            raise MigrationParseError(
+                "migration SQL contains nested block comments "
+                "not supported by statement splitter"
+            )
+
+
 def _ensure_migrations_table(conn: Connection[DictRow]) -> None:
     """Create the schema_migrations table if it does not exist."""
     conn.execute(
@@ -576,12 +605,20 @@ def apply_pg_migrations(
     PgMigrationError
         If a migration fails, if an already-applied migration's content
         has changed, or if a partial migration is detected.
+    MigrationParseError
+        If any pending migration's SQL contains malformed or unsupported
+        constructs before any database writes begin.
     """
+    migrations = _discover_migrations(migrations_dir)
+
+    for m in migrations:
+        content, _ = _read_migration(m)
+        _validate_migration_sql(content)
+
     _ensure_migrations_table(conn)
     conn.commit()
 
     applied = _get_applied(conn)
-    migrations = _discover_migrations(migrations_dir)
 
     # Check for duplicate versions is now handled in _discover_migrations
     
@@ -875,6 +912,10 @@ def verify_pg_schema(
     applied = _get_applied(conn)
     migrations = _discover_migrations(migrations_dir)
     known_versions = {m.name for m in migrations}
+
+    for m in migrations:
+        content, _ = _read_migration(m)
+        _validate_migration_sql(content)
 
     unknown = sorted(set(applied) - known_versions)
     if unknown:

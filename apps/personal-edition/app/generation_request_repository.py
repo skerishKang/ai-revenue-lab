@@ -132,6 +132,28 @@ def claim_generation_request(
     if not isinstance(input_id, str) or not input_id.strip():
         raise GenerationRequestError("input_id must be a non-empty string")
 
+    if isinstance(lease_duration_seconds, bool) or not isinstance(
+        lease_duration_seconds, int
+    ) or lease_duration_seconds <= 0:
+        raise GenerationRequestError(
+            "lease_duration_seconds must be a positive integer"
+        )
+    if lease_duration_seconds > 86400:
+        raise GenerationRequestError(
+            "lease_duration_seconds must not exceed 86400"
+        )
+    if now is not None:
+        if not isinstance(now, str) or not now.strip():
+            raise GenerationRequestError(
+                "now must be a non-empty string when provided"
+            )
+        try:
+            _add_seconds(now, 0)
+        except Exception as exc:
+            raise GenerationRequestError(
+                "now must be a valid ISO 8601 datetime string"
+            ) from exc
+
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
