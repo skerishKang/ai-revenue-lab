@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 두 번째 수업 — 피드백을 반영해 코드를 먼저 보여주는 개인화 수업 (합성 데이터 UI 프리뷰)">
+<title>두 번째 수업 · 코드로 먼저 보는 변수 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>현재 수업</span><b>두 번째</b></div>
+      <div class="ai-status__row"><span>구성 방식</span><b>코드 먼저</b></div>
+      <div class="ai-status__row"><span>반영 피드백</span><b>3건</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb">두 번째 10분 수업 · <b>변수 심화</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="badge badge--accent"><span class="badge__dot"></span>코드 중심 · 예제 3개 · 복습 3개</span>
+    </div>
+
+    <div class="content content--wide">
+      <div class="callout callout--info rise" role="note">
+        <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke-linecap="round"/></svg>
+        <span><b>이 수업은 지민 님의 피드백으로 조정되었습니다.</b> 코드 먼저 · 예제 3개 · 용어 즉시 해설 · 느린 속도. <a href="/changes/">무엇이 달라졌는지 비교 보기</a></span>
+      </div>
+
+      <div class="stepper rise rise-1 mt-6 mb-8" aria-label="학습 단계 진행">
+        <span class="stepper__step stepper__step--done"><span class="stepper__num">1</span>진단</span>
+        <span class="stepper__bar stepper__bar--done"></span>
+        <span class="stepper__step stepper__step--done"><span class="stepper__num">2</span>첫 수업</span>
+        <span class="stepper__bar stepper__bar--done"></span>
+        <span class="stepper__step stepper__step--done"><span class="stepper__num">3</span>피드백</span>
+        <span class="stepper__bar stepper__bar--done"></span>
+        <span class="stepper__step stepper__step--active"><span class="stepper__num">4</span>두 번째 수업</span>
+      </div>
+
+      <div class="lesson">
+        <article>
+          <header class="page-head rise mb-6">
+            <span class="eyebrow"><span class="eyebrow__line"></span>개인화 수업 · 코드 먼저</span>
+            <h1>변수, 코드로 먼저 봅니다</h1>
+            <p>요청하신 대로 설명보다 코드를 먼저 보여 드립니다. 아래 예제 3개를 먼저 보고, 짧은 설명을 이어서 읽습니다.</p>
+          </header>
+
+          <section class="lesson-section rise rise-1" aria-labelledby="l2-code">
+            <h2 id="l2-code">1. 먼저 코드부터 — 예제 3개</h2>
+            <div class="code">
+              <div class="code__bar">
+                <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="code__file">lesson_02.py</span>
+                <span class="code__tag">예제 3개 · 실행 결과만 표시</span>
+              </div>
+              <pre><span class="ln" data-n="1"><span class="tok-com"># 예제 1 — 이름 담기</span></span><span class="ln" data-n="2"><span class="tok-var">name</span> <span class="tok-op">=</span> <span class="tok-str">"지민"</span></span><span class="ln" data-n="3">&nbsp;</span><span class="ln" data-n="4"><span class="tok-com"># 예제 2 — 나이 담기</span></span><span class="ln" data-n="5"><span class="tok-var">age</span> <span class="tok-op">=</span> <span class="tok-num">29</span></span><span class="ln" data-n="6">&nbsp;</span><span class="ln" data-n="7"><span class="tok-com"># 예제 3 — 공부 시간 담기</span></span><span class="ln" data-n="8"><span class="tok-var">study_minutes</span> <span class="tok-op">=</span> <span class="tok-num">10</span></span><span class="ln" data-n="9">&nbsp;</span><span class="ln" data-n="10"><span class="tok-fn">print</span>(<span class="tok-var">name</span>, <span class="tok-var">age</span>, <span class="tok-var">study_minutes</span>)</span></pre>
+            </div>
+
+            <div class="output mt-4">
+              <div class="output__bar"><span class="badge__dot" aria-hidden="true"></span>예상 실행 결과</div>
+              <pre>지민 29 10</pre>
+            </div>
+
+            <p class="small muted mt-3">용어가 낯설면 바로 아래 정의를 펼쳐 보세요. <span class="term">문자열</span>과 <span class="term">출력</span> 두 개만 알면 이 코드를 읽을 수 있습니다.</p>
+            <details class="reveal mt-3">
+              <summary><span class="term">문자열</span> 이란?</summary>
+              <div class="reveal__body"><span class="term-def">따옴표(<span class="mono">" "</span>)로 감싼 글자 데이터입니다. <span class="mono">"지민"</span>은 이름이라는 글자라 따옴표로 감쌉니다.</span></div>
+            </details>
+            <details class="reveal mt-2">
+              <summary><span class="term">출력</span>(print)이란?</summary>
+              <div class="reveal__body"><span class="term-def"><span class="mono">print()</span>는 괄호 안의 값을 화면에 보여주는 명령입니다. 쉼표(<span class="mono">,</span>)로 여러 값을 나열하면 한 줄에 이어서 보여 줍니다.</span></div>
+            </details>
+          </section>
+
+          <section class="lesson-section rise rise-2" aria-labelledby="l2-short">
+            <h2 id="l2-short">2. 짧은 설명</h2>
+            <div class="prose">
+              <p>세 이름(<span class="mono">name</span>, <span class="mono">age</span>, <span class="mono">study_minutes</span>)에 각각 값을 담았습니다.</p>
+              <p>글자는 따옴표, 숫자는 따옴표 없이. 이 규칙만 지키면 됩니다.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section rise rise-3" aria-labelledby="l2-review">
+            <h2 id="l2-review">3. 복습 문제 3개 <span class="badge badge--accent va-mid">+2 늘음</span></h2>
+            <p class="muted small">피드백대로 복습 문제를 1개에서 3개로 늘렸습니다. 풀이를 펼쳐 확인할 수 있습니다.</p>
+
+            <div class="card card--pad mt-4">
+              <p><strong>문제 1.</strong> <span class="mono">age = 29</span>에서 <span class="mono">age</span>에 담긴 값의 종류는?</p>
+              <div class="stack mt-3">
+                <a class="quiz-opt" href="/progress/"><span class="quiz-opt__key">A</span>숫자</a>
+                <a class="quiz-opt" href="/progress/"><span class="quiz-opt__key">B</span>문자열</a>
+              </div>
+              <details class="reveal mt-3"><summary>풀이 보기</summary><div class="reveal__body"><span class="mono">29</span>는 따옴표가 없으므로 <b>숫자</b>입니다. 정답은 A.</div></details>
+            </div>
+
+            <div class="card card--pad mt-4">
+              <p><strong>문제 2.</strong> <span class="mono">"지민"</span>을 감싼 따옴표의 역할로 알맞은 것은?</p>
+              <div class="stack mt-3">
+                <a class="quiz-opt" href="/progress/"><span class="quiz-opt__key">A</span>장식이다</a>
+                <a class="quiz-opt" href="/progress/"><span class="quiz-opt__key">B</span>글자(문자열)임을 나타낸다</a>
+              </div>
+              <details class="reveal mt-3"><summary>풀이 보기</summary><div class="reveal__body">따옴표는 이 값이 <b>글자(문자열)</b>임을 Python에 알려 줍니다. 정답은 B.</div></details>
+            </div>
+
+            <div class="card card--pad mt-4">
+              <p><strong>문제 3.</strong> <span class="mono">print(name, age)</span>의 출력으로 알맞은 것은?</p>
+              <div class="stack mt-3">
+                <a class="quiz-opt" href="/progress/"><span class="quiz-opt__key">A</span><span class="mono">지민 29</span></a>
+                <a class="quiz-opt" href="/progress/"><span class="quiz-opt__key">B</span><span class="mono">name age</span></a>
+              </div>
+              <details class="reveal mt-3"><summary>풀이 보기</summary><div class="reveal__body"><span class="mono">print</span>는 이름 자체가 아니라 그 안에 <b>담긴 값</b>을 출력합니다. 정답은 A (<span class="mono">지민 29</span>).</div></details>
+            </div>
+          </section>
+        </article>
+
+        <aside class="lesson__rail" aria-label="AI 학습 메모">
+          <div class="memo memo--ai rise rise-2">
+            <div class="memo__head"><span class="ai-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke-linecap="round"/></svg>적용된 개인화</span></div>
+            <div class="memo__row"><span>설명 순서</span><b>코드 먼저</b></div>
+            <div class="memo__row"><span>예제 수</span><b>1개 → 3개</b></div>
+            <div class="memo__row"><span>복습 문제</span><b>1개 → 3개</b></div>
+            <div class="memo__row"><span>용어</span><b>즉시 해설</b></div>
+            <div class="memo__row"><span>난이도</span><b><span class="dots" aria-label="5단계 중 2단계"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></b></div>
+          </div>
+
+          <div class="memo rise rise-3">
+            <div class="memo__head">첫 수업과 달라진 점</div>
+            <p class="small muted">설명 길이는 줄고, 코드와 예제·복습이 늘어났습니다. <a href="/changes/">전체 비교 보기</a></p>
+          </div>
+
+          <a class="btn btn--primary btn--block rise rise-3" href="/progress/">수업 완료하고 진도 보기
+            <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </a>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
