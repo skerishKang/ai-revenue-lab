@@ -155,6 +155,7 @@ def _validation_report(conn: sqlite3.Connection, lesson: LessonRecord) -> dict:
         "answer_grounding": result.answer_grounding,
         "adaptation_materiality": result.adaptation_materiality,
         "privacy_markup": result.privacy_markup,
+        "lineage_integrity": result.lineage_integrity,
         "publishable": result.publishable,
     }
 

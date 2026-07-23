@@ -180,6 +180,7 @@ def test_operator_review_detail_payload(portal_app):
     assert validation["answer_grounding"] == "passed"
     assert validation["adaptation_materiality"] == "not_applicable"
     assert validation["privacy_markup"] == "passed"
+    assert validation["lineage_integrity"] == "passed"
     assert validation["publishable"] is True
 
     # Lesson content includes term definitions and expected answers (operator-only).

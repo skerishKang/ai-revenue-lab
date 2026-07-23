@@ -82,21 +82,67 @@ _VALID_CONTENT = {
 }
 
 
-def _create_pending_lesson(path, learner_id, concept_id, plan, content, *, lesson_number=1, prior_lesson_id=None, source_feedback_id=None):
+def _create_pending_lesson(path, learner_id, concept_id, plan, content, *, lesson_number=1, prior_lesson_id=None, source_feedback_id=None, source_comprehension_response_id=None, lesson_id=None, publication_state="pending", generation_status="pending_review"):
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
-    lesson_id = f"les_{lesson_number}_{os.urandom(4).hex()}"
+    if lesson_id is None:
+        lesson_id = f"les_{lesson_number}_{os.urandom(4).hex()}"
     conn.execute(
         "INSERT INTO lessons (id, learner_id, concept_id, lesson_number, prior_lesson_id, generation_status, "
         "publication_state, lesson_plan_json, lesson_content_json, adaptation_summary, source_feedback_id, "
         "source_comprehension_response_id, created_at, updated_at) "
-        "VALUES (?, ?, ?, ?, ?, 'pending_review', 'pending', ?, ?, '', ?, NULL, datetime('now'), datetime('now'))",
-        (lesson_id, learner_id, concept_id, lesson_number, prior_lesson_id, json.dumps(plan), json.dumps(content), source_feedback_id),
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?, datetime('now'), datetime('now'))",
+        (lesson_id, learner_id, concept_id, lesson_number, prior_lesson_id, generation_status, publication_state, json.dumps(plan), json.dumps(content), source_feedback_id, source_comprehension_response_id),
     )
     conn.commit()
     conn.close()
     return lesson_id
+
+
+def _setup_second_lesson_lineage(path, learner_id, concept_id, second_content, *, second_id="les_2_fixed", fb_id="fb_fixed", comp_id="comp_fixed", directions=None, first_publication="published"):
+    """Create a fully consistent second-lesson lineage and return (first_id, second_id).
+
+    first lesson (published/closed) -> comprehension + feedback (applied to the
+    second lesson) -> second lesson referencing the exact feedback/comprehension.
+
+    The lesson<->feedback reference is circular (lesson.source_feedback_id ->
+    feedback.id and feedback.applied_to_lesson_id -> lesson.id), so the second
+    lesson is created first with a NULL feedback ref, the feedback is inserted,
+    then the lesson's feedback ref is set.
+    """
+    if directions is None:
+        directions = ["more_examples"]
+    first_id = _create_pending_lesson(
+        path, learner_id, concept_id, _VALID_PLAN, _VALID_CONTENT,
+        lesson_number=1, lesson_id="les_1_fixed", publication_state=first_publication,
+    )
+    # Second lesson first (feedback ref NULL for now).
+    _create_pending_lesson(
+        path, learner_id, concept_id, _VALID_PLAN, second_content,
+        lesson_number=2, prior_lesson_id=first_id, source_feedback_id=None,
+        source_comprehension_response_id=None, lesson_id=second_id,
+    )
+    conn = sqlite3.connect(path)
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute(
+        "INSERT INTO comprehension_responses (id, lesson_id, learner_id, understood, difficulty_rating, free_text, response_id, responded_at) "
+        "VALUES (?, ?, ?, 0, 3, '어려워요', ?, datetime('now'))",
+        (comp_id, first_id, learner_id, comp_id),
+    )
+    conn.execute(
+        "INSERT INTO feedback (id, lesson_id, learner_id, lesson_generation, direction_choices, free_text, applied_status, applied_to_lesson_id, created_at) "
+        "VALUES (?, ?, ?, 1, ?, '', 'applied_to_second', ?, datetime('now'))",
+        (fb_id, first_id, learner_id, json.dumps(directions), second_id),
+    )
+    # Now set the second lesson's exact provenance (feedback + comprehension).
+    conn.execute(
+        "UPDATE lessons SET source_feedback_id = ?, source_comprehension_response_id = ? WHERE id = ?",
+        (fb_id, comp_id, second_id),
+    )
+    conn.commit()
+    conn.close()
+    return first_id, second_id
 
 
 def _approve(client, lesson_id):
@@ -200,23 +246,8 @@ def test_privacy_markup_violation_approve_rejected(portal_app):
 def test_metadata_only_second_lesson_approve_rejected(portal_app):
     app, learner_id, concept_id, path = portal_app
     client = TestClient(app)
-    # First lesson.
-    first_id = _create_pending_lesson(path, learner_id, concept_id, _VALID_PLAN, _VALID_CONTENT, lesson_number=1)
-    # A feedback with a direction choice (drives the second lesson).
-    conn = sqlite3.connect(path)
-    conn.execute("PRAGMA foreign_keys=ON")
-    conn.execute(
-        "INSERT INTO feedback (id, lesson_id, learner_id, lesson_generation, direction_choices, free_text, applied_status, created_at) "
-        "VALUES ('fb1', ?, ?, 1, ?, '', 'applied_to_second', datetime('now'))",
-        (first_id, learner_id, json.dumps(["more_examples"])),
-    )
-    conn.commit()
-    conn.close()
     # Second lesson with IDENTICAL content (metadata-only change) -> not material.
-    second_id = _create_pending_lesson(
-        path, learner_id, concept_id, _VALID_PLAN, _VALID_CONTENT,
-        lesson_number=2, prior_lesson_id=first_id, source_feedback_id="fb1",
-    )
+    _, second_id = _setup_second_lesson_lineage(path, learner_id, concept_id, _VALID_CONTENT)
     resp = _approve(client, second_id)
     assert resp.status_code == 422
     state, audit = _state(path, second_id)
@@ -238,23 +269,10 @@ def test_valid_first_lesson_approve_succeeds(portal_app):
 def test_valid_materially_adapted_second_lesson_approve_succeeds(portal_app):
     app, learner_id, concept_id, path = portal_app
     client = TestClient(app)
-    first_id = _create_pending_lesson(path, learner_id, concept_id, _VALID_PLAN, _VALID_CONTENT, lesson_number=1)
-    conn = sqlite3.connect(path)
-    conn.execute("PRAGMA foreign_keys=ON")
-    conn.execute(
-        "INSERT INTO feedback (id, lesson_id, learner_id, lesson_generation, direction_choices, free_text, applied_status, created_at) "
-        "VALUES ('fb2', ?, ?, 1, ?, '', 'applied_to_second', datetime('now'))",
-        (first_id, learner_id, json.dumps(["more_examples"])),
-    )
-    conn.commit()
-    conn.close()
     # Second lesson with a materially adapted content (more code examples).
     adapted = json.loads(json.dumps(_VALID_CONTENT))
     adapted["code_examples"].append({"example_id": "ex2", "language": "python", "code": "y = 2\nprint(y)", "explanation": "두번째", "expected_output": "2"})
-    second_id = _create_pending_lesson(
-        path, learner_id, concept_id, _VALID_PLAN, adapted,
-        lesson_number=2, prior_lesson_id=first_id, source_feedback_id="fb2",
-    )
+    _, second_id = _setup_second_lesson_lineage(path, learner_id, concept_id, adapted)
     resp = _approve(client, second_id)
     assert resp.status_code == 200
     state, audit = _state(path, second_id)

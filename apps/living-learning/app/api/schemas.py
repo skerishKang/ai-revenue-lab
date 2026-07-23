@@ -239,6 +239,7 @@ class ValidationReportView(BaseModel):
     answer_grounding: str
     adaptation_materiality: str
     privacy_markup: str
+    lineage_integrity: str
     publishable: bool
 
 

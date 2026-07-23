@@ -43,14 +43,15 @@ class PublicationValidationResult(BaseModel):
     answer_grounding: str
     adaptation_materiality: str
     privacy_markup: str
+    lineage_integrity: str
 
     @property
     def publishable(self) -> bool:
         """All mandatory dimensions must pass.
 
         ``adaptation_materiality`` may be ``not_applicable`` for a first lesson
-        (no prior lesson to differ from); every other dimension must be
-        ``passed``.
+        (no prior lesson to differ from); every other dimension — including
+        ``lineage_integrity`` — must be ``passed``.
         """
         mandatory = [
             self.lesson_plan_schema,
@@ -58,6 +59,7 @@ class PublicationValidationResult(BaseModel):
             self.ast_safety,
             self.answer_grounding,
             self.privacy_markup,
+            self.lineage_integrity,
         ]
         if not all(v == PASSED for v in mandatory):
             return False
@@ -116,6 +118,10 @@ def validate_for_publication(conn: sqlite3.Connection, lesson) -> PublicationVal
     # Feedback-specific material adaptation.
     adaptation_materiality = _adaptation_materiality(conn, lesson, plan, content)
 
+    # Lineage integrity: the lesson's stored provenance must be internally
+    # consistent (first-lesson vs second-lesson contracts).
+    lineage_integrity = _lineage_integrity(conn, lesson)
+
     return PublicationValidationResult(
         lesson_plan_schema=lesson_plan_schema,
         lesson_content_schema=lesson_content_schema,
@@ -123,16 +129,22 @@ def validate_for_publication(conn: sqlite3.Connection, lesson) -> PublicationVal
         answer_grounding=answer_grounding,
         adaptation_materiality=adaptation_materiality,
         privacy_markup=privacy_markup,
+        lineage_integrity=lineage_integrity,
     )
 
 
 def _adaptation_materiality(conn: sqlite3.Connection, lesson, adapted_plan: dict, adapted_content: dict) -> str:
-    """First lesson => not_applicable; later lessons must be materially adapted."""
+    """First lesson => not_applicable; later lessons must be materially adapted.
+
+    Uses ONLY the exact feedback stored on the current lesson (no fallback to a
+    prior lesson's signal). If the current lesson has no source feedback, the
+    direction set is empty and materiality fails.
+    """
     if not lesson.prior_lesson_id:
         return NOT_APPLICABLE
 
     prior_row = conn.execute(
-        "SELECT lesson_plan_json, lesson_content_json, source_feedback_id FROM lessons WHERE id = ?",
+        "SELECT lesson_plan_json, lesson_content_json FROM lessons WHERE id = ?",
         (lesson.prior_lesson_id,),
     ).fetchone()
     if prior_row is None:
@@ -146,12 +158,11 @@ def _adaptation_materiality(conn: sqlite3.Connection, lesson, adapted_plan: dict
     except (ValueError, TypeError):
         prior_content = {}
 
-    # Direction choices come from the exact feedback that drove this lesson.
+    # Direction choices come ONLY from the exact feedback that drove THIS lesson.
     direction_choices: list[str] = []
-    source_feedback_id = lesson.source_feedback_id or prior_row["source_feedback_id"]
-    if source_feedback_id:
+    if lesson.source_feedback_id:
         fb = conn.execute(
-            "SELECT direction_choices FROM feedback WHERE id = ?", (source_feedback_id,)
+            "SELECT direction_choices FROM feedback WHERE id = ?", (lesson.source_feedback_id,)
         ).fetchone()
         if fb:
             try:
@@ -163,3 +174,108 @@ def _adaptation_materiality(conn: sqlite3.Connection, lesson, adapted_plan: dict
         prior_plan, prior_content, adapted_plan, adapted_content, direction_choices
     )
     return PASSED if not reasons else FAILED
+
+
+def _lineage_integrity(conn: sqlite3.Connection, lesson) -> str:
+    """Validate the lesson's stored provenance is internally consistent.
+
+    First lesson (lesson_number == 1):
+      prior_lesson_id IS NULL, source_feedback_id IS NULL,
+      source_comprehension_response_id IS NULL; and if a diagnostic snapshot is
+      referenced, its learner matches.
+
+    Second+ lesson (lesson_number > 1):
+      prior_lesson_id, source_feedback_id, source_comprehension_response_id all
+      present and consistent (prior lesson exists with matching learner/concept/
+      number and is published/closed; feedback belongs to the prior lesson and
+      learner, is applied to this lesson, has canonical non-empty directions;
+      comprehension belongs to the prior lesson and learner; diagnostic snapshot
+      learner matches).
+
+    Any contradiction => failed (no substitution from other rows).
+    """
+    from app.pipeline.validation import CANONICAL_DIRECTIONS
+
+    # Diagnostic snapshot learner match (applies to any lesson that references one).
+    if lesson.source_diagnostic_snapshot_id:
+        snap = conn.execute(
+            "SELECT learner_id FROM diagnostic_snapshots WHERE id = ?",
+            (lesson.source_diagnostic_snapshot_id,),
+        ).fetchone()
+        if snap is None or snap["learner_id"] != lesson.learner_id:
+            return FAILED
+
+    if lesson.lesson_number == 1:
+        # First lesson must have no generation lineage.
+        if lesson.prior_lesson_id:
+            return FAILED
+        if lesson.source_feedback_id:
+            return FAILED
+        if lesson.source_comprehension_response_id:
+            return FAILED
+        return PASSED
+
+    # Second+ lesson: all three provenance ids must be present.
+    if not lesson.prior_lesson_id:
+        return FAILED
+    if not lesson.source_feedback_id:
+        return FAILED
+    if not lesson.source_comprehension_response_id:
+        return FAILED
+
+    # Prior lesson contract.
+    prior = conn.execute(
+        "SELECT learner_id, concept_id, lesson_number, publication_state FROM lessons WHERE id = ?",
+        (lesson.prior_lesson_id,),
+    ).fetchone()
+    if prior is None:
+        return FAILED
+    if prior["learner_id"] != lesson.learner_id:
+        return FAILED
+    if prior["concept_id"] != lesson.concept_id:
+        return FAILED
+    if prior["lesson_number"] != lesson.lesson_number - 1:
+        return FAILED
+    if prior["publication_state"] not in ("published", "closed"):
+        return FAILED
+
+    # Feedback contract.
+    fb = conn.execute(
+        "SELECT id, lesson_id, learner_id, lesson_generation, applied_status, applied_to_lesson_id, direction_choices "
+        "FROM feedback WHERE id = ?",
+        (lesson.source_feedback_id,),
+    ).fetchone()
+    if fb is None:
+        return FAILED
+    if fb["lesson_id"] != lesson.prior_lesson_id:
+        return FAILED
+    if fb["learner_id"] != lesson.learner_id:
+        return FAILED
+    if fb["lesson_generation"] != prior["lesson_number"]:
+        return FAILED
+    if fb["applied_status"] != "applied_to_second":
+        return FAILED
+    if fb["applied_to_lesson_id"] != lesson.id:
+        return FAILED
+    try:
+        directions = json.loads(fb["direction_choices"] or "[]")
+    except (ValueError, TypeError):
+        return FAILED
+    if not directions:
+        return FAILED
+    if not all(d in CANONICAL_DIRECTIONS for d in directions):
+        return FAILED
+
+    # Comprehension contract.
+    comp = conn.execute(
+        "SELECT id, lesson_id, learner_id FROM comprehension_responses WHERE id = ?",
+        (lesson.source_comprehension_response_id,),
+    ).fetchone()
+    if comp is None:
+        return FAILED
+    if comp["lesson_id"] != lesson.prior_lesson_id:
+        return FAILED
+    if comp["learner_id"] != lesson.learner_id:
+        return FAILED
+
+    return PASSED
