@@ -202,12 +202,12 @@ class TestFeedStateFilter:
 
         response = client.get(f"/topics/{topic_id}?state=completed")
         assert response.status_code == 200
-        assert "filter-pill-selected" in response.text
-        # The completed pill carries the selected marker and aria-current.
+        assert "filter-chip" in response.text
+        # The completed pill carries the selected marker (active class) and aria-current.
         assert re.search(
-            r'\?state=completed"[^>]*filter-pill-selected', response.text
+            r'\?state=completed"[^>]*active', response.text
         ) or re.search(
-            r'filter-pill-selected[^>]*\?state=completed', response.text
+            r'active[^>]*\?state=completed', response.text
         )
 
     def test_filter_inclusion_exclusion_by_video_id(self, client):

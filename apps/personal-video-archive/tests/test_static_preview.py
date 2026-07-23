@@ -99,7 +99,7 @@ YOUTUBE_URL_PATTERN = re.compile(r'https?://(?:www\.)?youtube\.com/[^\s"\'<>]+',
 YTIMG_URL_PATTERN = re.compile(r'https?://i\.ytimg\.com/[^\s"\'<>]+', re.IGNORECASE)
 QUERY_HREF_PATTERN = re.compile(r'href="[^"]*\?[^"]*"')
 PILL_PATTERN = re.compile(
-    r'<a href="(?P<href>[^"]*)"[^>]*class="(?P<cls>filter-pill[^"]*)"[^>]*data-state="(?P<state>[a-z_]+)"[^>]*>'
+    r'<a href="(?P<href>[^"]*)"[^>]*class="(?P<cls>filter-chip[^"]*)"[^>]*data-state="(?P<state>[a-z_]+)"[^>]*>'
     r"\s*(?P<text>[^<]+)\s*</a>",
     re.DOTALL,
 )
@@ -191,14 +191,14 @@ class TestFeedFilterNavigation:
     def test_selected_pill_matches_state(self, preview_dir, state):
         content = _read(self._page(preview_dir, state))
         selected = [
-            p for p in _parse_pills(content) if "filter-pill-selected" in p["cls"]
+            p for p in _parse_pills(content) if "active" in p["cls"]
         ]
         assert len(selected) == 1, f"expected one selected pill for {state}"
         pill = selected[0]
         assert pill["href"] == self._expected_href(state)
         assert pill["state"] == state
         feed_filter_section = re.search(
-            r'<nav class="feed-state-filter"[^>]*>.*?</nav>', content, re.DOTALL
+            r'<nav class="filters"[^>]*>.*?</nav>', content, re.DOTALL
         )
         assert feed_filter_section is not None
         assert feed_filter_section.group(0).count('aria-current="page"') == 1
@@ -291,7 +291,7 @@ class TestPreviewStates:
     def test_accepted_structured_record_is_filled(self, preview_dir):
         content = _read(preview_dir / "records/pv-rec-0001/index.html")
         assert "배운 점" in content
-        assert "타임스탬프 참조" in content
+        assert "타임스탬프" in content
 
     def test_record_search_results(self, preview_dir):
         content = _read(preview_dir / "records/index.html")
@@ -544,7 +544,7 @@ class TestVideoRequirements:
         channels = set()
         for html_file in _all_html_files(preview_dir):
             content = _read(html_file)
-            for m in re.finditer(r'class="video-card-channel"[^>]*>([^<]+)<', content):
+            for m in re.finditer(r'class="[^"]*video-card-channel[^"]*"[^>]*>([^<]+)<', content):
                 channels.add(m.group(1).strip())
         return channels
 
@@ -620,8 +620,8 @@ class TestStaticRootContract:
         # Must NOT contain QA matrix markers
         assert "page_preview_landing" not in root_html, "Root is QA matrix, not product home"
         assert "qa_section_1" not in root_html, "Root contains QA section markers"
-        # Must contain product home markers
-        assert "home-section" in root_html, "Root missing home sections"
+        # Must contain product home markers (reference-port structure)
+        assert "discover-grid" in root_html, "Root missing home discovery grid"
         assert "home_continue_watching" in root_html or "이어 보기" in root_html, (
             "Root missing continue watching section"
         )
@@ -678,12 +678,14 @@ class TestStaticRootContract:
         # Check for section headers (Korean)
         assert "이어 보기" in root_html, "Missing continue watching section"
         assert "새로 발견한 영상" in root_html, "Missing new finds section"
-        assert "최근 기록" in root_html, "Missing recent notes section"
+        assert "나의 기록" in root_html, "Missing recent notes section"
         assert "다시 떠오른 기록" in root_html, "Missing resurfaced section"
-        # Check for video cards
-        video_cards = re.findall(r'<article class="video-card"', root_html)
-        assert len(video_cards) >= 6, (
-            f"Home has only {len(video_cards)} video cards, need >= 6"
+        # Check for content cards (reference-port home uses story/note/collection cards)
+        content_cards = re.findall(
+            r'class="[^"]*(?:story-card|note-card|collection-card)[^"]*"', root_html
+        )
+        assert len(content_cards) >= 6, (
+            f"Home has only {len(content_cards)} content cards, need >= 6"
         )
 
     def test_preview_youtube_button_is_anchor(self, preview_dir):
@@ -731,4 +733,81 @@ class TestStaticRootContract:
             assert 'value="in_progress" selected' in select, (
                 f"Continue watching item does not have in_progress selected: {select[:100]}"
             )
+
+
+class TestReferencePortPresentation:
+    """Strict contracts locking the approved reference UI structure (Issue #76 port)."""
+
+    def test_shell_topbar_and_mobile_nav_on_all_pages(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert 'class="topbar"' in content, f"Missing topbar in {rel}"
+            assert 'class="mobile-nav"' in content, f"Missing mobile-nav in {rel}"
+            assert 'class="shell"' in content, f"Missing shell wrapper in {rel}"
+
+    def test_no_legacy_sidebar_or_context_panel(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert 'class="sidebar"' not in content, f"Legacy sidebar in {rel}"
+            assert "context-panel" not in content, f"Legacy context-panel in {rel}"
+
+    def test_lang_switch_on_all_pages(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert "lang-switch" in content, f"Missing lang switch in {rel}"
+
+    def test_locale_html_lang_attribute(self, preview_dir):
+        ko_root = _read(preview_dir / "index.html")
+        en_root = _read(preview_dir / "en/index.html")
+        assert 'lang="ko"' in ko_root, "Korean root missing lang=ko"
+        assert 'lang="en"' in en_root, "English root missing lang=en"
+
+    @pytest.mark.parametrize(
+        "marker",
+        ["intro", "hero", "discover-grid", "collection-row", "notes-grid", "resurface"],
+    )
+    def test_home_reference_sections_both_locales(self, preview_dir, marker):
+        for path in ("index.html", "en/index.html"):
+            content = _read(preview_dir / path)
+            assert marker in content, f"Home {path} missing reference section '{marker}'"
+
+    @pytest.mark.parametrize(
+        "marker", ["topic-hero", "topic-aside", "feed-layout", "filter-chip"]
+    )
+    def test_topic_feed_reference_structure_both_locales(self, preview_dir, marker):
+        for path in (
+            "topics/pv-topic-0001/index.html",
+            "en/topics/pv-topic-0001/index.html",
+        ):
+            content = _read(preview_dir / path)
+            assert marker in content, f"Topic feed {path} missing '{marker}'"
+
+    @pytest.mark.parametrize(
+        "marker", ["record-layout", "record-main", "record-side", "paper-section"]
+    )
+    def test_record_detail_reference_structure_both_locales(self, preview_dir, marker):
+        for path in (
+            "records/pv-rec-0001/index.html",
+            "en/records/pv-rec-0001/index.html",
+        ):
+            content = _read(preview_dir / path)
+            assert marker in content, f"Record detail {path} missing '{marker}'"
+
+    def test_no_forbidden_aesthetic_markers(self, preview_dir):
+        forbidden = ["glass", "neon", "capsule-nav", "hover-lift", "glassmorphism"]
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file).lower()
+            rel = html_file.relative_to(preview_dir)
+            for token in forbidden:
+                assert token not in content, f"Forbidden aesthetic '{token}' in {rel}"
+
+    def test_feed_card_structure_in_topic_feed(self, preview_dir):
+        content = _read(preview_dir / "topics/pv-topic-0001/index.html")
+        assert 'class="feed-card' in content, "Topic feed missing feed-card articles"
+        assert "feed-body" in content, "Topic feed cards missing feed-body"
+        assert "match-line" in content, "Topic feed cards missing match-line"
+        assert "card-actions" in content, "Topic feed cards missing card-actions"
 

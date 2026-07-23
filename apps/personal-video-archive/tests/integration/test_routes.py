@@ -154,7 +154,7 @@ class TestPopulatedLiveHome:
         assert response.status_code == 200
         # Verify sections render
         assert "이어 보기" in response.text, "Missing continue watching section"
-        assert "최근 기록" in response.text, "Missing recent notes section"
+        assert "나의 기록" in response.text, "Missing recent notes section"
         assert "다시 떠오른 기록" in response.text, "Missing resurfaced section"
         # Verify actual content
         assert "Neural Network" in response.text, "Missing video title"
@@ -165,8 +165,8 @@ class TestPopulatedLiveHome:
         response = populated_client.get("/en/")
         assert response.status_code == 200
         # Verify sections render (English)
-        assert "Continue Watching" in response.text, "Missing continue watching section"
-        assert "Recent Notes" in response.text, "Missing recent notes section"
+        assert "Continue watching" in response.text, "Missing continue watching section"
+        assert "My notes" in response.text, "Missing recent notes section"
         assert "Resurfaced" in response.text, "Missing resurfaced section"
         # Verify actual content
         assert "Neural Network" in response.text, "Missing video title"
