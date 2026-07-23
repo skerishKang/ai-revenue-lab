@@ -34,7 +34,7 @@ HEADERS_FILE = SITE_DIR / "_headers"
 # Pinned values the contract fixes. If these change, the SDK import URLs in
 # firebase.js, API_BASE in config.js, and the /staging/* CSP must change too.
 EXPECTED_SDK_VERSION = "12.16.0"
-EXPECTED_API_ORIGIN = "https://ai-revenue-living-travel-staging--web.modal.run"
+EXPECTED_API_ORIGIN = "https://padiemipu--ai-revenue-living-travel-staging-web.modal.run"
 EXPECTED_AUTH_DOMAIN = "ai-revenue-lab-identity.firebaseapp.com"
 
 STAGING_HTML = ["index.html", "traveler.html", "operator.html"]
