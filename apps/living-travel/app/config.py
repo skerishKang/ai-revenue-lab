@@ -1,5 +1,8 @@
 """Application configuration with environment-backed settings."""
 
+import json as _json
+import os as _os
+
 from pydantic_settings import BaseSettings
 
 
@@ -65,6 +68,96 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "LT_AUTH_MODE=firebase requires LT_FIREBASE_PROJECT_ID."
                 )
+            _sa_json = _os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON", "")
+            _gac = _os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
+            if not _sa_json and not _gac:
+                raise ValueError(
+                    "LT_AUTH_MODE=firebase in non-testing environments requires "
+                    "FIREBASE_SERVICE_ACCOUNT_JSON or GOOGLE_APPLICATION_CREDENTIALS."
+                )
+            if _sa_json:
+                try:
+                    _parsed = _json.loads(_sa_json)
+                except (ValueError, _json.JSONDecodeError) as _exc:
+                    raise ValueError(
+                        "FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON."
+                    ) from _exc
+                if not isinstance(_parsed, dict):
+                    raise ValueError(
+                        "FIREBASE_SERVICE_ACCOUNT_JSON must be a JSON object."
+                    )
+                _required = {"type", "project_id", "private_key", "client_email"}
+                if not _required.issubset(_parsed.keys()):
+                    raise ValueError(
+                        "FIREBASE_SERVICE_ACCOUNT_JSON is missing required fields."
+                    )
+            elif _gac:
+                if not _os.path.isfile(_gac):
+                    raise ValueError(
+                        "GOOGLE_APPLICATION_CREDENTIALS does not point to a readable file."
+                    )
+                try:
+                    with open(_gac, "rb") as _f:
+                        _f.read(1)
+                except OSError:
+                    raise ValueError(
+                        "GOOGLE_APPLICATION_CREDENTIALS does not point to a readable file."
+                    )
+
+        if self.allowed_origins:
+            from urllib.parse import urlsplit as _urlsplit
+
+            _raw_entries = self.allowed_origins.split(",")
+            if any(not _entry.strip() for _entry in _raw_entries):
+                raise ValueError(
+                    "LT_ALLOWED_ORIGINS must not contain empty entries."
+                )
+
+            for _origin in self.allowed_origin_list:
+                if "*" in _origin:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS must not contain wildcard characters."
+                    )
+                _parts = _urlsplit(_origin)
+                if _parts.scheme not in ("http", "https"):
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must use http:// or https:// scheme."
+                    )
+                if not _parts.hostname:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must include a hostname."
+                    )
+                if _parts.username or _parts.password:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain userinfo."
+                    )
+                if _parts.path:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain a path."
+                    )
+                if _parts.query:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain a query."
+                    )
+                if _parts.fragment:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain a fragment."
+                    )
+                try:
+                    _port = _parts.port
+                except ValueError as _exc:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain an invalid port."
+                    ) from _exc
+                if _port is not None and not (1 <= _port <= 65535):
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain an invalid port."
+                    )
+
+        if self.environment in ("staging", "production") and not self.allowed_origin_list:
+            raise ValueError(
+                "LT_ALLOWED_ORIGINS must not be empty in staging/production."
+            )
 
     @property
     def allowed_origin_list(self) -> list[str]:

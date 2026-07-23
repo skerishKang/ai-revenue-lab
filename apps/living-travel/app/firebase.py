@@ -110,6 +110,8 @@ _verifier: TokenVerifier | None = None
 
 def set_token_verifier(verifier: TokenVerifier | None) -> None:
     global _verifier
+    if verifier is not None and get_settings().environment != "testing":
+        raise RuntimeError("token verifier injection is restricted to testing")
     _verifier = verifier
 
 

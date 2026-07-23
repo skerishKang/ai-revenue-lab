@@ -22,7 +22,7 @@ from app.db import get_connection
 from app.edition_repository import (
     get_edition_by_id,
     get_editions_by_traveler,
-    update_edition_publication,
+    transition_edition_publication,
 )
 from app.feedback_repository import get_unapplied_feedback_for_edition
 from app.pipeline.errors import PipelineError
@@ -325,7 +325,8 @@ async def publish(
             raise HTTPException(status_code=404, detail="not_found")
         if edition.generation_status != "pending_review":
             raise HTTPException(status_code=409, detail="not_reviewable")
-        update_edition_publication(conn, edition_id, "published")
+        if not transition_edition_publication(conn, edition_id, "pending", "published"):
+            raise HTTPException(status_code=409, detail="state_conflict")
     finally:
         conn.close()
     return {"publication_state": "published"}
@@ -343,7 +344,8 @@ async def reject(
             raise HTTPException(status_code=404, detail="not_found")
         if edition.generation_status != "pending_review":
             raise HTTPException(status_code=409, detail="not_reviewable")
-        update_edition_publication(conn, edition_id, "rejected")
+        if not transition_edition_publication(conn, edition_id, "pending", "rejected"):
+            raise HTTPException(status_code=409, detail="state_conflict")
     finally:
         conn.close()
     return {"publication_state": "rejected"}

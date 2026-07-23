@@ -72,15 +72,16 @@ class TestMigrationUrlFailClosed:
     def test_postgresql_missing_migration_url_fails(self):
         from app.config import Settings
 
+        db_url = "postgresql://localhost/test_db"
         with pytest.raises(ValueError) as exc:
             Settings(
                 database_backend="postgresql",
-                database_url="postgresql://user:pass@host/db",
+                database_url=db_url,
                 migration_database_url="",
                 environment="testing",
             )
         assert "LT_MIGRATION_DATABASE_URL" in str(exc.value)
-        assert "postgresql://user:pass@host/db" not in str(exc.value)
+        assert db_url not in str(exc.value)
 
     def test_postgresql_empty_migration_url_fails(self):
         from app.config import Settings
@@ -88,7 +89,7 @@ class TestMigrationUrlFailClosed:
         with pytest.raises(ValueError) as exc:
             Settings(
                 database_backend="postgresql",
-                database_url="postgresql://u:p@h/d",
+                database_url="postgresql://localhost/test_db",
                 migration_database_url="",
                 environment="testing",
             )
@@ -101,7 +102,7 @@ class TestMigrationUrlFailClosed:
             with pytest.raises(ValueError) as exc:
                 Settings(
                     database_backend="postgresql",
-                    database_url="postgresql://u:p@h/d",
+                    database_url="postgresql://localhost/test_db",
                     migration_database_url=bad_url,
                     environment="testing",
                 )
@@ -112,22 +113,22 @@ class TestMigrationUrlFailClosed:
 
         s = Settings(
             database_backend="postgresql",
-            database_url="postgresql://u:p@pooled.host/db",
-            migration_database_url="postgresql://u:p@direct.host/db",
+            database_url="postgresql://pooled.example.invalid/test_db",
+            migration_database_url="postgresql://direct.example.invalid/test_db",
             environment="testing",
         )
-        assert s.effective_migration_url == "postgresql://u:p@direct.host/db"
+        assert s.effective_migration_url == "postgresql://direct.example.invalid/test_db"
 
     def test_postgres_scheme_also_accepted(self):
         from app.config import Settings
 
         s = Settings(
             database_backend="postgresql",
-            database_url="postgres://u:p@pooled.host/db",
-            migration_database_url="postgres://u:p@direct.host/db",
+            database_url="postgres://pooled.example.invalid/test_db",
+            migration_database_url="postgres://direct.example.invalid/test_db",
             environment="testing",
         )
-        assert s.effective_migration_url == "postgres://u:p@direct.host/db"
+        assert s.effective_migration_url == "postgres://direct.example.invalid/test_db"
 
     def test_sqlite_no_migration_url_ok(self):
         from app.config import Settings
@@ -154,13 +155,13 @@ class TestMigrationUrlFailClosed:
     def test_error_message_no_url_leak(self):
         from app.config import Settings
 
-        secret_url = "postgresql://admin:s3cr3t-pw@neon.host/prod_db"
+        leak_marker = "leak_test_db"
         with pytest.raises(ValueError) as exc:
             Settings(
                 database_backend="postgresql",
-                database_url=secret_url,
+                database_url=f"postgresql://localhost/{leak_marker}",
                 migration_database_url="",
                 environment="testing",
             )
         error_text = str(exc.value)
-        assert "s3cr3t-pw" not in error_text.split("input_type")[0]
+        assert leak_marker not in error_text
