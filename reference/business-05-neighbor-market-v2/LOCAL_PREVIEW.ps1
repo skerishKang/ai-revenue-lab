@@ -78,7 +78,7 @@ if (-not $Existing) {
     Start-Sleep -Seconds 2
 }
 
-Write-Host "[6/6] Open the V3 reference in the default browser"
+Write-Host "[6/6] Open the resident-first reference in the default browser"
 Start-Process $Url
 
 Write-Host ""
@@ -87,5 +87,6 @@ Write-Host "Primary file: $PrimaryFile"
 Write-Host "Worktree: $WorktreePath"
 Write-Host "Branch: $Branch"
 Write-Host "SHA: $LocalSha"
+Write-Host "Priority: current apartment -> nearby apartment -> neighborhood"
 Write-Host ""
 Write-Host "This script does not modify, reset, stash or clean the user's existing checkout."
