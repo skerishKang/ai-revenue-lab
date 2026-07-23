@@ -54,7 +54,18 @@ class FirebaseTokenVerifier:
                 raise InvalidTokenError("token verification unavailable") from exc
             options = {"projectId": self._project_id}
             try:
-                self._app = firebase_admin.initialize_app(options=options)
+                import json
+                import os
+
+                sa_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+                if sa_json:
+                    from firebase_admin import credentials
+
+                    cred = credentials.Certificate(json.loads(sa_json))
+                    self._app = firebase_admin.initialize_app(cred, options=options)
+                else:
+                    # Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS)
+                    self._app = firebase_admin.initialize_app(options=options)
             except ValueError:
                 self._app = firebase_admin.get_app()
         return self._app
