@@ -48,18 +48,19 @@ MIGRATIONS_DIR = str(
     Path(__file__).resolve().parent.parent.parent / "migrations"
 )
 
-# The 7 domain/operational tables (excluding schema_migrations)
+# The 8 domain/operational tables (excluding schema_migrations)
 EXPECTED_DOMAIN_TABLES = {
     "participants",
     "inputs",
     "editions",
     "feedback",
     "generation_runs",
+    "generation_requests",
     "benchmark_runs",
     "pilot_ops_records",
 }
 
-# All tables including schema_migrations (8 total)
+# All tables including schema_migrations (9 total)
 EXPECTED_ALL_TABLES = EXPECTED_DOMAIN_TABLES | {"schema_migrations"}
 
 

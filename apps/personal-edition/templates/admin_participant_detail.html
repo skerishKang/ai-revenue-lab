@@ -49,6 +49,7 @@
       <form method="post" action="/admin/participants/{{ participant.id }}/generate" class="generate-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="hidden" name="input_id" value="{{ target_inp.id }}">
+        <input type="hidden" name="idempotency_key" value="{{ generation_idempotency_key }}">
 
         <div class="generate-input-target">
           <span class="target-label">대상 기록:</span>

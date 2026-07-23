@@ -1692,3 +1692,110 @@ class TestPersistenceFailureNormalization:
         p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
         assert len(p1_editions) == 1
         conn.close()
+
+
+class TestGenerationIdempotency:
+    """A durable idempotency key prevents duplicate editions.
+
+    The first submission claims the key and produces an edition; a re-submission
+    of the same key returns the existing edition without invoking the provider
+    again.  A different key produces a new edition.
+    """
+
+    def test_same_key_returns_existing_edition_without_regeneration(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        first = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-1",
+            ),
+        )
+        assert first.succeeded is True
+        calls_after_first = len(provider.requests)
+        assert calls_after_first > 0
+
+        second = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-1",
+            ),
+        )
+        assert second.succeeded is True
+        assert second.edition_id == first.edition_id
+        # Idempotent replay must not invoke the provider again.
+        assert len(provider.requests) == calls_after_first
+
+        editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(editions) == 1
+        conn.close()
+
+    def test_different_key_creates_new_edition(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        first = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-1",
+            ),
+        )
+        second = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-2",
+            ),
+        )
+        assert first.succeeded is True
+        assert second.succeeded is True
+        assert second.edition_id != first.edition_id
+
+        editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(editions) == 2
+        conn.close()
+
+    def test_no_key_is_not_idempotent(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        first = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1", input_id=inp.id, allow_short_sample=True
+            ),
+        )
+        second = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1", input_id=inp.id, allow_short_sample=True
+            ),
+        )
+        assert first.succeeded is True
+        assert second.succeeded is True
+        assert second.edition_id != first.edition_id
+        conn.close()

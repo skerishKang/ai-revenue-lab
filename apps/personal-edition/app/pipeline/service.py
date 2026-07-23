@@ -34,6 +34,7 @@ from typing import Any
 
 from app import edition_repository as ed_repo
 from app import feedback_repository as fb_repo
+from app import generation_request_repository as gen_req_repo
 from app import generation_run_repository as gr_repo
 from app import input_repository as input_repo
 from app import participant_repository as pt_repo
@@ -99,6 +100,7 @@ class GenerationRequest:
     feedback_id: str | None = None
     prohibited_inferences: tuple[str, ...] = ()
     allow_short_sample: bool = False
+    idempotency_key: str | None = None
 
 
 @dataclass(frozen=True)
@@ -414,6 +416,38 @@ class GenerationService:
         self._provider = provider
         self._max_retries = max_retries
 
+    def _claim_idempotency_key(self, conn, request: GenerationRequest):
+        """Atomically claim the request's idempotency key.
+
+        Returns a GenerationResult when the key was already claimed (a
+        duplicate submission): if the prior claim completed, the existing
+        edition is returned idempotently; otherwise a non-succeeded duplicate
+        result is returned so no second edition is produced.  Returns None when
+        this caller newly claimed the key and should proceed with generation.
+        """
+        claim = gen_req_repo.claim_generation_request(
+            as_runtime_connection(conn),
+            idempotency_key=request.idempotency_key,
+            participant_id=request.participant_id,
+            input_id=request.input_id,
+        )
+        if not claim.already_claimed:
+            return None
+        if claim.edition_id is not None:
+            replay = _idempotent_replay_outcome()
+            return GenerationResult(
+                edition_id=claim.edition_id,
+                plan_run=replay,
+                draft_run=replay,
+                succeeded=True,
+            )
+        return GenerationResult(
+            edition_id=None,
+            plan_run=_failed_outcome("duplicate generation request in progress"),
+            draft_run=_failed_outcome("duplicate generation request in progress"),
+            succeeded=False,
+        )
+
     def generate_edition(
         self,
         conn,
@@ -421,6 +455,11 @@ class GenerationService:
         request: GenerationRequest,
     ) -> GenerationResult:
         """Run the full pipeline for one edition (first or follow-up)."""
+        if request.idempotency_key:
+            replay = self._claim_idempotency_key(conn, request)
+            if replay is not None:
+                return replay
+
         participant = pt_repo.get_participant_by_id(conn, request.participant_id)
         if participant is None or participant.status != "active":
             return GenerationResult(
@@ -809,6 +848,13 @@ class GenerationService:
                 succeeded=False,
             )
 
+        if request.idempotency_key:
+            gen_req_repo.complete_generation_request(
+                as_runtime_connection(conn),
+                idempotency_key=request.idempotency_key,
+                edition_id=new_edition.id,
+            )
+
         return GenerationResult(
             edition_id=new_edition.id,
             plan_run=plan_outcome,
@@ -1143,6 +1189,15 @@ def _failed_outcome(message: str) -> StageOutcome:
         retry_count=0,
         error_category="not_attempted",
         error_message=message,
+    )
+
+
+def _idempotent_replay_outcome() -> StageOutcome:
+    return StageOutcome(
+        success=True,
+        validation_status=VALIDATION_PASSED,
+        retry_count=0,
+        error_message="idempotent replay of a completed generation request",
     )
 
 

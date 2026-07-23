@@ -80,7 +80,7 @@ class TestApplyMigrations:
         assert "schema_migrations" in tables
         conn.close()
 
-    def test_all_six_tables_exist(self):
+    def test_all_domain_tables_exist(self):
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
 
@@ -97,6 +97,7 @@ class TestApplyMigrations:
             "editions",
             "feedback",
             "generation_runs",
+            "generation_requests",
             "benchmark_runs",
             "pilot_ops_records",
         }

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 from typing import Any
 
 from fastapi import APIRouter, Form, Query, Request, Response
@@ -447,6 +448,7 @@ def admin_participant_detail(request: Request, participant_id: str, error: str =
         "generation_runs": gen_runs,
         "generation_error": generation_error,
         "feedback_map": MAP_FEEDBACK_DIRECTION_KO,
+        "generation_idempotency_key": str(uuid.uuid4()),
     }
     resp, _ = _render_with_csrf(request, "admin_participant_detail.html", context)
     return resp
@@ -458,6 +460,7 @@ def admin_generate(
     participant_id: str,
     input_id: str = Form(""),
     allow_short_sample: str = Form("0"),
+    idempotency_key: str = Form(""),
     csrf_token: str = Form(""),
 ):
     if not _get_admin(request):
@@ -483,6 +486,7 @@ def admin_generate(
             participant_id=participant_id,
             input_id=input_id,
             allow_short_sample=(allow_short_sample == "1"),
+            idempotency_key=(idempotency_key.strip() or None),
         )
         result = service.generate_edition(conn, request=gen_request)
         if not result.succeeded:
