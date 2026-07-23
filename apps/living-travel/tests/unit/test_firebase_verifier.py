@@ -72,6 +72,7 @@ class TestVerifierInjectionGuard:
         monkeypatch.setenv("LT_ENVIRONMENT", "staging")
         monkeypatch.setenv("LT_AUTH_MODE", "legacy")
         monkeypatch.setenv("LT_OPERATOR_SECRET", "test-secret-12345")
+        monkeypatch.setenv("LT_ALLOWED_ORIGINS", "https://test.example.com")
         from app.config import reset_settings
 
         reset_settings()
@@ -84,6 +85,7 @@ class TestVerifierInjectionGuard:
         monkeypatch.setenv("LT_ENVIRONMENT", "production")
         monkeypatch.setenv("LT_AUTH_MODE", "legacy")
         monkeypatch.setenv("LT_OPERATOR_SECRET", "test-secret-12345")
+        monkeypatch.setenv("LT_ALLOWED_ORIGINS", "https://test.example.com")
         from app.config import reset_settings
 
         reset_settings()

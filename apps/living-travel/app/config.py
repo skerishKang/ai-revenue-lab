@@ -91,32 +91,64 @@ class Settings(BaseSettings):
                     raise ValueError(
                         "FIREBASE_SERVICE_ACCOUNT_JSON is missing required fields."
                     )
-            elif _gac and not _os.path.isfile(_gac):
-                raise ValueError(
-                    "GOOGLE_APPLICATION_CREDENTIALS does not point to a readable file."
-                )
+            elif _gac:
+                if not _os.path.isfile(_gac):
+                    raise ValueError(
+                        "GOOGLE_APPLICATION_CREDENTIALS does not point to a readable file."
+                    )
+                try:
+                    with open(_gac, "rb") as _f:
+                        _f.read(1)
+                except OSError:
+                    raise ValueError(
+                        "GOOGLE_APPLICATION_CREDENTIALS does not point to a readable file."
+                    )
 
         if self.allowed_origins:
-            from urllib.parse import urlparse as _urlparse
+            from urllib.parse import urlsplit as _urlsplit
 
             for _origin in self.allowed_origin_list:
                 if "*" in _origin:
                     raise ValueError(
                         "LT_ALLOWED_ORIGINS must not contain wildcard characters."
                     )
-                if not _origin.startswith(("http://", "https://")):
+                _parts = _urlsplit(_origin)
+                if _parts.scheme not in ("http", "https"):
                     raise ValueError(
                         "LT_ALLOWED_ORIGINS entries must use http:// or https:// scheme."
                     )
-                _parsed_origin = _urlparse(_origin)
-                if _parsed_origin.path and _parsed_origin.path not in ("", "/"):
+                if not _parts.hostname:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must include a hostname."
+                    )
+                if _parts.username or _parts.password:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain userinfo."
+                    )
+                if _parts.path:
                     raise ValueError(
                         "LT_ALLOWED_ORIGINS entries must not contain a path."
                     )
-                if _parsed_origin.query or _parsed_origin.fragment:
+                if _parts.query:
                     raise ValueError(
-                        "LT_ALLOWED_ORIGINS entries must not contain query or fragment."
+                        "LT_ALLOWED_ORIGINS entries must not contain a query."
                     )
+                if _parts.fragment:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain a fragment."
+                    )
+                if _parts.port is not None:
+                    try:
+                        int(_parts.port)
+                    except (ValueError, TypeError):
+                        raise ValueError(
+                            "LT_ALLOWED_ORIGINS entries must not contain an invalid port."
+                        )
+
+        if self.environment in ("staging", "production") and not self.allowed_origin_list:
+            raise ValueError(
+                "LT_ALLOWED_ORIGINS must not be empty in staging/production."
+            )
 
     @property
     def allowed_origin_list(self) -> list[str]:

@@ -72,6 +72,7 @@ class TestFirebaseCredentialFailFast:
             auth_mode="firebase",
             environment="staging",
             firebase_project_id="test-project",
+            allowed_origins="https://test.example.com",
         )
         assert s.auth_mode == "firebase"
 
@@ -136,6 +137,7 @@ class TestFirebaseCredentialFailFast:
             auth_mode="firebase",
             environment="staging",
             firebase_project_id="test-project",
+            allowed_origins="https://test.example.com",
         )
         assert s.auth_mode == "firebase"
 
@@ -215,3 +217,127 @@ class TestCorsWildcardRejection:
 
         with pytest.raises(ValueError, match="fragment"):
             Settings(environment="testing", allowed_origins="https://example.com#frag")
+
+    def test_userinfo_in_origin_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="userinfo"):
+            Settings(environment="testing", allowed_origins="https://user@example.com")
+
+    def test_userinfo_with_password_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="userinfo"):
+            Settings(environment="testing", allowed_origins="https://user:pass@example.com")
+
+    def test_empty_scheme_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="hostname"):
+            Settings(environment="testing", allowed_origins="http://")
+
+    def test_https_no_host_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="hostname"):
+            Settings(environment="testing", allowed_origins="https://")
+
+    def test_triple_slash_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="hostname"):
+            Settings(environment="testing", allowed_origins="https:///example.com")
+
+    def test_trailing_slash_path_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="path"):
+            Settings(environment="testing", allowed_origins="https://example.com/")
+
+    def test_staging_empty_origins_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="must not be empty"):
+            Settings(
+                environment="staging",
+                auth_mode="legacy",
+                operator_secret="test-secret-12345",
+                allowed_origins="",
+            )
+
+    def test_production_empty_origins_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="must not be empty"):
+            Settings(
+                environment="production",
+                auth_mode="legacy",
+                operator_secret="test-secret-12345",
+                allowed_origins="",
+            )
+
+    def test_development_empty_origins_passes(self):
+        from app.config import Settings
+
+        s = Settings(
+            environment="development",
+            auth_mode="legacy",
+            operator_secret="test-secret-12345",
+            allowed_origins="",
+        )
+        assert s.allowed_origin_list == []
+
+    def test_branch_subdomain_origin_passes(self):
+        from app.config import Settings
+
+        s = Settings(
+            environment="testing",
+            allowed_origins="https://branch-name.ai-revenue-living-travel.pages.dev",
+        )
+        assert s.allowed_origin_list == [
+            "https://branch-name.ai-revenue-living-travel.pages.dev"
+        ]
+
+
+class TestGacReadableFile:
+    def test_gac_directory_fails(self, monkeypatch, tmp_path):
+        monkeypatch.delenv("FIREBASE_SERVICE_ACCOUNT_JSON", raising=False)
+        monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(tmp_path))
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="readable file"):
+            Settings(
+                auth_mode="firebase",
+                environment="staging",
+                firebase_project_id="test-project",
+            )
+
+    @pytest.mark.skipif(os.geteuid() == 0, reason="root can read any file")
+    def test_gac_unreadable_file_fails(self, monkeypatch, tmp_path):
+        cred_file = tmp_path / "cred.json"
+        cred_file.write_text("{}")
+        cred_file.chmod(0o000)
+        monkeypatch.delenv("FIREBASE_SERVICE_ACCOUNT_JSON", raising=False)
+        monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(cred_file))
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="readable file"):
+            Settings(
+                auth_mode="firebase",
+                environment="staging",
+                firebase_project_id="test-project",
+                allowed_origins="https://test.example.com",
+            )
+
+    def test_gac_error_no_path_leak(self, monkeypatch):
+        monkeypatch.delenv("FIREBASE_SERVICE_ACCOUNT_JSON", raising=False)
+        monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/nonexistent/secret/path.json")
+        from app.config import Settings
+
+        with pytest.raises(ValueError) as exc:
+            Settings(
+                auth_mode="firebase",
+                environment="staging",
+                firebase_project_id="test-project",
+            )
+        assert "/nonexistent/secret/path.json" not in str(exc.value)
