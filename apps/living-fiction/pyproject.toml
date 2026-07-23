@@ -20,6 +20,16 @@ dependencies = [
 dev = [
     "pytest>=8.3,<9",
     "httpx>=0.28,<1",
+    "psycopg[binary]>=3.2,<4",
+    "psycopg-pool>=3.2,<4",
+    "modal>=1,<2",
+]
+postgres = [
+    "psycopg[binary]>=3.2,<4",
+    "psycopg-pool>=3.2,<4",
+]
+deploy = [
+    "modal>=1,<2",
 ]
 
 [tool.setuptools.packages.find]

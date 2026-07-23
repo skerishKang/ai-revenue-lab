@@ -48,6 +48,7 @@ from app import generation_run_repository as gr_repo
 from app import reader_repository as reader_repo
 from app import world_repository as world_repo
 from app.ai.base import AIProvider
+from app.database.errors import IntegrityError
 from app.domain.enums import (
     AttemptResult,
     EpisodeType,
@@ -1132,7 +1133,7 @@ def generate_personal_branch(
         # The content run succeeded if we got here — no misleading success
         # on branch transaction failure
 
-    except sqlite3.IntegrityError:
+    except IntegrityError:
         conn.rollback()
         gr_repo.update_generation_run(
             conn, content_run_id,

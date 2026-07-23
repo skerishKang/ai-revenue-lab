@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.db import get_connection
 from app.domain.enums import ViewingState
-from app.factory import _build_services, _render_template
+from app.factory import _build_services, _locale_prefix, _render_template
 from app.services import RecordService
 
 router = APIRouter()
@@ -97,12 +97,13 @@ def open_topic_video(request: Request, tv_id: str):
 
         # Redirect to the canonical YouTube URL (new tab via frontend)
         video = repos["video"].get(tv.video_id)
+        lp = _locale_prefix(request)
         if video:
             return RedirectResponse(
                 url=video.canonical_url, status_code=303
             )
         return RedirectResponse(
-            url=f"/topic-videos/{tv_id}", status_code=303
+            url=f"{lp}/topic-videos/{tv_id}", status_code=303
         )
     finally:
         conn.close()
@@ -129,8 +130,9 @@ def create_record_for_topic_video(request: Request, tv_id: str):
             )
 
         record = record_service.get_or_create_record(tv_id)
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/records/{record.id}", status_code=303
+            url=f"{lp}/records/{record.id}", status_code=303
         )
     finally:
         conn.close()
@@ -177,8 +179,9 @@ def update_state(
             "SELECT topic_id FROM topic_videos WHERE id = ?", (tv_id,)
         ).fetchone()["topic_id"]
 
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/topics/{topic_id}?state={return_state}", status_code=303
+            url=f"{lp}/topics/{topic_id}?state={return_state}", status_code=303
         )
     finally:
         conn.close()

@@ -35,6 +35,8 @@ from preview_fixtures.data import (
     make_query_rule_proposal,
     make_record_completed,
     make_record_in_progress,
+    make_record_in_progress_2,
+    make_record_revisit,
     make_record_saved,
     make_search_results,
     make_structure_proposal,
@@ -45,6 +47,7 @@ from preview_fixtures.data import (
     make_topic1_videos,
     make_topic2_feed,
     make_topic2_topic_videos,
+    make_topic2_videos,
     make_topics,
 )
 
@@ -53,20 +56,7 @@ _TEMPLATE_DIR = _BASE_DIR / "templates"
 _STATIC_DIR = _BASE_DIR / "static"
 _OUTPUT_DIR = _BASE_DIR / "dist-preview"
 
-_PREVIEW_BANNER_TEXT = "UI Preview \u00b7 Synthetic data \u00b7 No persistence"
-_PREVIEW_BANNER = (
-    '<div class="preview-banner">' + _PREVIEW_BANNER_TEXT + "</div>"
-)
-
 _PREVIEW_CSS = """
-.preview-banner {
-  background: #fbbf24;
-  color: #92400e;
-  text-align: center;
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
 form button[type="submit"],
 form input[type="submit"] {
   opacity: 0.5;
@@ -82,7 +72,7 @@ _HEADERS_CONTENT = """\
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://i.ytimg.com; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
 """
 
 _ROBOTS_CONTENT = "User-agent: *\nDisallow: /\n"
@@ -165,9 +155,26 @@ def _build_jinja_env() -> Environment:
 
 
 def _render(env: Environment, template_name: str, context: dict, request_path: str) -> str:
+    from app.i18n import lang_switch_href, locale_from_path, locale_prefix, make_t
+
     ctx = dict(context)
     ctx["request"] = _MockRequest(request_path)
     ctx["is_preview"] = True
+
+    locale = locale_from_path(request_path)
+    query = ""
+    if "?" in request_path:
+        path_part, query = request_path.split("?", 1)
+        ctx["request"] = _MockRequest(path_part)
+    ctx["locale"] = locale
+    ctx["lp"] = locale_prefix(locale)
+    ctx["t"] = make_t(locale)
+    ctx["lang_switch_href"] = lang_switch_href(request_path.split("?")[0], query)
+    # Static preview has no configured portal: global controls render as
+    # safe non-navigating placeholders (PORTAL_BASE_URL contract).
+    ctx.setdefault("portal_home_href", "")
+    ctx.setdefault("portal_account_href", "")
+
     template = env.get_template(template_name)
     return template.render(ctx)
 
@@ -183,15 +190,8 @@ def _post_process(html: str) -> str:
         '<meta name="robots" content="noindex,nofollow">\n<meta name="viewport"',
         1,
     )
-    # preview styling (banner + visually-disabled submit controls)
+    # visually-disabled submit controls
     html = html.replace("</head>", f"<style>{_PREVIEW_CSS}</style>\n</head>", 1)
-    # visible preview banner immediately after <body ...>
-    html = re.sub(
-        r"(<body[^>]*>)",
-        lambda m: m.group(1) + "\n" + _PREVIEW_BANNER,
-        html,
-        count=1,
-    )
     # remove every inline event handler so no inline JS remains
     html = _strip_inline_handlers(html)
     return html
@@ -216,7 +216,7 @@ def _filter_rel_path(topic_id: str, state: str) -> str:
     return f"topics/{topic_id}/{state}/index.html"
 
 
-def _rewrite_preview_links(html: str, topic_id: str) -> str:
+def _rewrite_preview_links(html: str, topic_id: str, locale_prefix: str = "") -> str:
     """Map the live template's query-string links to real generated paths.
 
     The live FastAPI template renders filter pills as
@@ -227,18 +227,19 @@ def _rewrite_preview_links(html: str, topic_id: str) -> str:
     pills at the generated ``/topics/{id}/{state}`` pages and drops the inert
     ``topic_id`` query from the records link.
     """
+    lp = locale_prefix
     html = html.replace(
-        f'href="/topics/{topic_id}?state=all"', f'href="/topics/{topic_id}"'
+        f'href="{lp}/topics/{topic_id}?state=all"', f'href="{lp}/topics/{topic_id}"'
     )
     for state in FEED_STATES:
         if state == "all":
             continue
         html = html.replace(
-            f'href="/topics/{topic_id}?state={state}"',
-            f'href="/topics/{topic_id}/{state}"',
+            f'href="{lp}/topics/{topic_id}?state={state}"',
+            f'href="{lp}/topics/{topic_id}/{state}"',
         )
     html = html.replace(
-        f'href="/records?topic_id={topic_id}"', 'href="/records"'
+        f'href="{lp}/records?topic_id={topic_id}"', f'href="{lp}/records"'
     )
     return html
 
@@ -254,6 +255,21 @@ def _write_page(
     html = _render(env, template_name, context, request_path)
     html = _post_process(html)
     _write_raw_page(html, output_dir, output_rel_path)
+
+
+def _write_page_bilingual(
+    env: Environment,
+    template_name: str,
+    context: dict,
+    request_path: str,
+    output_dir: Path,
+    output_rel_path: str,
+) -> None:
+    """Write a page in both Korean (root) and English (/en/) locales."""
+    _write_page(env, template_name, context, request_path, output_dir, output_rel_path)
+    en_path = "/en" + request_path if not request_path.startswith("/en") else request_path
+    en_output = "en/" + output_rel_path if not output_rel_path.startswith("en/") else output_rel_path
+    _write_page(env, template_name, context, en_path, output_dir, en_output)
 
 
 def _write_raw_page(html: str, output_dir: Path, output_rel_path: str) -> None:
@@ -273,7 +289,7 @@ def _write_feed_page(
     sync_failed: bool = False,
     output_rel_path: str | None = None,
 ) -> None:
-    """Render one topic-feed page with preview-aware filter links."""
+    """Render one topic-feed page with preview-aware filter links (bilingual)."""
     context = {
         "topic": topic,
         "rules": rules,
@@ -282,12 +298,15 @@ def _write_feed_page(
         "feed_states": FEED_STATES,
         "sync_failed": sync_failed,
     }
-    html = _render(env, "topics/feed.html", context, f"/topics/{topic.id}")
-    html = _rewrite_preview_links(html, topic.id)
-    html = _post_process(html)
-    _write_raw_page(
-        html, output_dir, output_rel_path or _filter_rel_path(topic.id, state)
-    )
+    rel_path = output_rel_path or _filter_rel_path(topic.id, state)
+
+    for locale_prefix in ("", "/en"):
+        request_path = f"{locale_prefix}/topics/{topic.id}"
+        html = _render(env, "topics/feed.html", context, request_path)
+        html = _rewrite_preview_links(html, topic.id, locale_prefix)
+        html = _post_process(html)
+        out_rel = rel_path if not locale_prefix else f"en/{rel_path}"
+        _write_raw_page(html, output_dir, out_rel)
 
 
 def _write_topic_filter_pages(
@@ -348,6 +367,8 @@ def main(output_dir: Path | None = None) -> Path:
 
     videos = make_topic1_videos()
     topic1_tvs = make_topic1_topic_videos()
+    topic2_videos = make_topic2_videos()
+    topic2_tvs = make_topic2_topic_videos()
 
     rec_completed = make_record_completed()
     rec_in_progress = make_record_in_progress()
@@ -355,14 +376,53 @@ def main(output_dir: Path | None = None) -> Path:
     timestamps = make_timestamps()
     structure_proposal = make_structure_proposal()
 
-    # --- Preview landing / index -----------------------------------------
-    _write_page(env, "preview_index.html", {}, "/", output_dir, "index.html")
-
-    # --- Product home / topic list ---------------------------------------
-    _write_page(
-        env, "index.html", {"topics": topics}, "/home", output_dir, "home/index.html"
+    # --- Product home (root) ---------------------------------------------
+    # Populate with real fixtures: continue_watching, new_finds, recent_notes, resurfaced
+    topic1_videos = make_topic1_videos()
+    topic2_videos = make_topic2_videos()
+    topic1_tvs = make_topic1_topic_videos()
+    topic2_tvs = make_topic2_topic_videos()
+    
+    # continue_watching: in_progress records (min 2)
+    continue_watching = [
+        (topic2_tvs[0], topic2_videos[0], make_record_in_progress()),    # rfscVS0vtbw
+        (topic1_tvs[1], topic1_videos[1], make_record_in_progress_2()),  # eMlx5fFNoYc
+    ]
+    
+    # new_finds: recent videos (min 4)
+    new_finds = [
+        (topic1_tvs[1], topic1_videos[1], None),  # eMlx5fFNoYc
+        (topic1_tvs[2], topic1_videos[2], None),  # OIY2tWT3HHI
+        (topic2_tvs[1], topic2_videos[1], None),  # lkIFF4maKMU
+        (topic2_tvs[2], topic2_videos[2], None),  # 5C_HPTJg5ek
+    ]
+    
+    # recent_notes: records with notes (min 2)
+    recent_notes = [
+        (make_record_completed(), topic1_tvs[0], topic1_videos[0]),
+        (make_record_in_progress(), topic2_tvs[0], topic2_videos[0]),
+    ]
+    
+    # resurfaced: revisit records (min 1)
+    resurfaced = [
+        (make_record_revisit(), topic2_tvs[2], topic2_videos[2]),
+    ]
+    
+    _write_page_bilingual(
+        env, "index.html",
+        {
+            "topics": topics,
+            "continue_watching": continue_watching,
+            "new_finds": new_finds,
+            "recent_notes": recent_notes,
+            "resurfaced": resurfaced,
+        },
+        "/", output_dir, "index.html"
     )
-    _write_page(
+    
+    # --- QA state matrix (preview-states) --------------------------------
+    _write_page_bilingual(env, "preview_index.html", {}, "/preview-states", output_dir, "preview-states/index.html")
+    _write_page_bilingual(
         env,
         "topics/list.html",
         {"topics": topics},
@@ -372,12 +432,12 @@ def main(output_dir: Path | None = None) -> Path:
     )
 
     # --- New topic --------------------------------------------------------
-    _write_page(
+    _write_page_bilingual(
         env, "topics/new.html", {}, "/topics/new", output_dir, "topics/new/index.html"
     )
 
     # --- LLM query-rule review -------------------------------------------
-    _write_page(
+    _write_page_bilingual(
         env,
         "topics/review_rule.html",
         {"topic": topic1, "proposal": rule_proposal},
@@ -406,28 +466,37 @@ def main(output_dir: Path | None = None) -> Path:
         output_rel_path="topics/pv-topic-0001/refresh-failed/index.html",
     )
 
-    # --- Video detail -----------------------------------------------------
-    _write_page(
-        env,
-        "videos/detail.html",
-        {
-            "video": videos[0],
-            "topic_videos": [topic1_tvs[0]],
-            "records": [(topic1_tvs[0], rec_completed)],
-        },
-        "/videos/pv-video-0001",
-        output_dir,
-        "videos/pv-video-0001/index.html",
-    )
+    # --- Video detail pages (all videos from both topics) -----------------
+    all_videos = topic1_videos + topic2_videos
+    all_tvs = topic1_tvs + topic2_tvs
+    records_by_video = {
+        "pv-video-0001": [(topic1_tvs[0], rec_completed)],
+        "pv-video-0004": [(topic2_tvs[0], rec_in_progress)],
+        "pv-video-0006": [(topic2_tvs[2], make_record_revisit())],
+    }
+    for i, video in enumerate(all_videos):
+        tv = all_tvs[i]
+        _write_page_bilingual(
+            env,
+            "videos/detail.html",
+            {
+                "video": video,
+                "topic_videos": [tv],
+                "records": records_by_video.get(video.id, []),
+            },
+            f"/videos/{video.id}",
+            output_dir,
+            f"videos/{video.id}/index.html",
+        )
 
     # --- Private record detail / edit (free-form, minimal) ---------------
-    _write_page(
+    _write_page_bilingual(
         env,
         "records/detail.html",
         {
             "record": rec_saved,
-            "topic_video": topic1_tvs[2],
-            "video": videos[2],
+            "topic_video": topic2_tvs[3],
+            "video": topic2_videos[3],
             "timestamps": [],
             "pending_proposals": [],
         },
@@ -437,13 +506,13 @@ def main(output_dir: Path | None = None) -> Path:
     )
 
     # --- Record with a pending LLM structure proposal --------------------
-    _write_page(
+    _write_page_bilingual(
         env,
         "records/detail.html",
         {
             "record": rec_in_progress,
-            "topic_video": topic1_tvs[1],
-            "video": videos[1],
+            "topic_video": topic2_tvs[0],
+            "video": topic2_videos[0],
             "timestamps": [],
             "pending_proposals": [structure_proposal],
         },
@@ -453,7 +522,7 @@ def main(output_dir: Path | None = None) -> Path:
     )
 
     # --- Accepted / structured private record ----------------------------
-    _write_page(
+    _write_page_bilingual(
         env,
         "records/detail.html",
         {
@@ -468,21 +537,48 @@ def main(output_dir: Path | None = None) -> Path:
         "records/pv-rec-0001/index.html",
     )
 
+    # --- Revisit record (resurfaced on home) -----------------------------
+    rec_revisit = make_record_revisit()
+    _write_page_bilingual(
+        env,
+        "records/detail.html",
+        {
+            "record": rec_revisit,
+            "topic_video": topic2_tvs[2],
+            "video": topic2_videos[2],
+            "timestamps": [],
+            "pending_proposals": [],
+        },
+        "/records/pv-rec-0005",
+        output_dir,
+        "records/pv-rec-0005/index.html",
+    )
+
     # --- Record search results -------------------------------------------
-    _write_page(
+    _write_page_bilingual(
         env,
         "records/search.html",
         {
             "results": make_search_results(),
-            "filters": {"topic_id": None, "state": None, "tags": None, "q": "pytorch"},
+            "filters": {"topic_id": None, "state": None, "tags": None, "q": "python"},
         },
         "/records",
         output_dir,
         "records/index.html",
     )
 
+    # --- Proposals list (empty state) ------------------------------------
+    _write_page_bilingual(
+        env,
+        "proposals/list.html",
+        {"proposals": []},
+        "/proposals",
+        output_dir,
+        "proposals/index.html",
+    )
+
     # --- Validation error example ----------------------------------------
-    _write_page(
+    _write_page_bilingual(
         env,
         "error.html",
         {
@@ -499,10 +595,22 @@ def main(output_dir: Path | None = None) -> Path:
     )
 
     # --- Synthetic health page (resolves the nav link) -------------------
-    health_html = _post_process(
-        env.from_string(_HEALTH_TEMPLATE).render(request=_MockRequest("/health"))
-    )
-    _write_raw_page(health_html, output_dir, "health/index.html")
+    from app.i18n import lang_switch_href, locale_from_path, locale_prefix, make_t
+
+    for health_path, health_out in (("/health", "health/index.html"), ("/en/health", "en/health/index.html")):
+        health_locale = locale_from_path(health_path)
+        health_ctx = {
+            "request": _MockRequest(health_path),
+            "is_preview": True,
+            "locale": health_locale,
+            "lp": locale_prefix(health_locale),
+            "t": make_t(health_locale),
+            "lang_switch_href": lang_switch_href(health_path, ""),
+        }
+        health_html = _post_process(
+            env.from_string(_HEALTH_TEMPLATE).render(**health_ctx)
+        )
+        _write_raw_page(health_html, output_dir, health_out)
 
     _copy_static(output_dir)
     _write_headers(output_dir)

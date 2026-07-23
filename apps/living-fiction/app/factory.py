@@ -18,7 +18,9 @@ from fastapi import FastAPI
 from app.ai.base import AIProvider
 from app.ai.mock import MockProvider
 from app.config import settings
-from app.db import apply_migrations, get_connection
+from app.database.engine import build_engine
+from app.database.migrate_postgres import verify_schema_current
+from app.db import apply_migrations
 from app.web import register_web_routes
 
 
@@ -64,6 +66,22 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
     return provider
 
 
+def _verify_postgres_schema(engine: Any, migrations_dir: str) -> None:
+    """Fail closed unless the PostgreSQL schema is already current.
+
+    The runtime role never applies migrations; it only verifies that every
+    on-disk migration is fully applied. Extracted as a module-level seam so
+    tests that exercise production startup without a live database can
+    substitute a no-op while still exercising backend selection and origin /
+    secret validation.
+    """
+    conn = engine.acquire()
+    try:
+        verify_schema_current(conn, migrations_dir)
+    finally:
+        engine.release(conn)
+
+
 def create_app(
     *,
     db_path: str | None = None,
@@ -96,18 +114,35 @@ def create_app(
         description="Private literary archive with reader-responsive branching",
     )
 
+    # Validate the explicit backend selection first, failing closed on an
+    # unknown backend, production+sqlite, or a postgres backend with no runtime
+    # URL. Error messages never include the configured URL.
+    settings.validate_database()
+
     # Resolve DB path once so startup migrations and per-request connections
     # always target the same database file.
     resolved_db = db_path or settings.database_path
     app.state.db_path = resolved_db
 
-    # Run migrations at startup
-    migrations_dir = str(Path(__file__).resolve().parent.parent / "migrations")
-    conn = get_connection(resolved_db)
-    try:
-        apply_migrations(conn, migrations_dir)
-    finally:
-        conn.close()
+    # Build the backend-neutral connection engine and store it for the
+    # per-request get_db dependency.
+    engine = build_engine(settings, resolved_db)
+    app.state.db_engine = engine
+
+    app_root = Path(__file__).resolve().parent.parent
+    if engine.backend == "sqlite":
+        # Local/default backend: apply SQLite migrations at startup (the
+        # existing behaviour).
+        conn = engine.acquire()
+        try:
+            apply_migrations(conn, str(app_root / "migrations"))
+        finally:
+            engine.release(conn)
+    else:
+        # Production postgres backend: the schema must ALREADY be current. The
+        # runtime role never applies migrations; a missing or divergent schema
+        # fails startup closed rather than silently serving a broken database.
+        _verify_postgres_schema(engine, str(app_root / "migrations_postgres"))
 
     # Resolve provider
     resolved_provider = _resolve_provider(provider)

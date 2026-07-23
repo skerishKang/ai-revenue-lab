@@ -9,6 +9,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
+from app.database.errors import IntegrityError
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -84,7 +85,7 @@ def create_reader_choice(
             submitted_at=now,
             applied_to_branch_id=None, applied_at=None,
         )
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise ChoiceValidationError(
             f"duplicate choice (same reader+episode+choice): {exc}"

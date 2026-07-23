@@ -40,7 +40,7 @@ from app import review_service
 from app import world_repository as world_repo
 from app.ai.mock import MockProvider
 from app.config import canonicalize_origin, settings
-from app.db import get_connection
+from app.database.base import Connection
 from app.preview_data import (
     BRANCH_EPISODE_CONTENT,
     BRANCH_EPISODE_PLAN,
@@ -97,18 +97,21 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 # ── DB dependency ──────────────────────────────────────────────────────────
 
 
-def get_db(request: Request) -> sqlite3.Connection:
-    """Provide a per-request SQLite connection.
+def get_db(request: Request) -> Connection:
+    """Provide a per-request backend-neutral connection.
 
-    Uses ``request.app.state.db_path`` (resolved once in the factory) so the
-    per-request connection always targets the same database file the startup
-    migrations ran against — never a divergent ``settings.database_path``.
+    Acquires from ``request.app.state.db_engine`` (built once in the factory)
+    and releases it at request end. For the SQLite engine this opens a fresh
+    file connection per request — the existing local behaviour, always targeting
+    the database file the startup migrations ran against. For the postgres
+    engine it borrows a pooled connection and returns it to the pool on release.
     """
-    conn = get_connection(request.app.state.db_path)
+    engine = request.app.state.db_engine
+    conn = engine.acquire()
     try:
         yield conn
     finally:
-        conn.close()
+        engine.release(conn)
 
 
 # ── Session dependencies ───────────────────────────────────────────────────
@@ -190,10 +193,12 @@ def _verify_admin_csrf(session: dict[str, Any], provided: str | None) -> None:
 
 
 def _expected_origin(request: Request) -> str:
-    """Derive the expected origin from the request's own scheme + Host header.
+    """Derive the expected origin for this request.
 
-    Never trusts ``X-Forwarded-*`` headers: the scheme comes from the ASGI
-    scope (the hop into this process) and the host from the raw ``Host`` header.
+    The scheme comes from the ASGI scope (the hop into this process — Modal
+    terminates TLS and reports ``https``) and the host from the raw ``Host``
+    header. The app is served directly by Modal, so there is no trusted proxy
+    hop and ``X-Forwarded-*`` headers are never consulted.
     """
     host = request.headers.get("host", "")
     return f"{request.url.scheme}://{host}"
@@ -215,8 +220,9 @@ def _verify_request_origin(request: Request) -> None:
       without configuration; in production with no configured origins it fails
       closed rather than trusting an attacker-controllable Host.
 
-    ``X-Forwarded-*`` headers are never consulted. Every failure raises one
-    generic 403 so no condition is revealed.
+    The app is served directly by Modal, so the expected origin is derived from
+    the request's own scheme and ``Host``; ``X-Forwarded-*`` headers are never
+    consulted. Every failure raises one generic 403 so no condition is revealed.
     """
     configured = {
         canonical

@@ -9,6 +9,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
+from app.database.errors import IntegrityError
 from app.utils import new_id, now_utc_iso
 
 
@@ -75,7 +76,7 @@ def create_reader(
             created_at=now,
             deleted_at=None,
         )
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise ReaderValidationError(f"reader already exists: {exc}") from exc
     except Exception:

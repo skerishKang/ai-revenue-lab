@@ -1,0 +1,8 @@
+<a href="{{ lp }}/topics/{{ topic.id }}" class="topic-card">
+    <h3>{{ topic.name }}</h3>
+    <p class="topic-intent">{{ topic.intent }}</p>
+    <p class="small topic-meta">
+        {{ t("topic_created") }} {{ topic.created_at[:10] }}
+        {% if topic.is_archived %}<span class="badge badge-sm badge-muted">{{ t("topic_archived") }}</span>{% endif %}
+    </p>
+</a>
