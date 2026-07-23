@@ -34,7 +34,7 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_USER: lt_ci
-          POSTGRES_PASSWORD: lt_ci_pw
+          POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: lt_ci
         ports:
           - 5432:5432
@@ -45,7 +45,7 @@ jobs:
           --health-retries 5
 
     env:
-      LT_TEST_PG_URL: postgresql://lt_ci:lt_ci_pw@127.0.0.1:5432/lt_ci
+      LT_TEST_PG_URL: postgresql://lt_ci@127.0.0.1:5432/lt_ci
 
     steps:
       - name: Checkout repository
