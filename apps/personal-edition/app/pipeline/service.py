@@ -333,7 +333,7 @@ def _provider_call_with_retry(
         cost_class_value = last_result.cost_class.value
 
     run = gr_repo.create_generation_run(
-        conn,
+        SqliteRuntimeConnection(conn),
         task_type=task_name,
         provider=provider_name,
         advertised_model=model_name,
@@ -343,7 +343,7 @@ def _provider_call_with_retry(
     )
 
     gr_repo.update_generation_run(
-        conn,
+        SqliteRuntimeConnection(conn),
         run.id,
         completed_at=completed_at,
         latency_seconds=latency,
@@ -648,7 +648,7 @@ class GenerationService:
         except PlanValidationError as exc:
             if plan_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    conn,
+                    SqliteRuntimeConnection(conn),
                     plan_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -721,7 +721,7 @@ class GenerationService:
         except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    conn,
+                    SqliteRuntimeConnection(conn),
                     draft_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -780,7 +780,7 @@ class GenerationService:
         except Exception:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    conn,
+                    SqliteRuntimeConnection(conn),
                     draft_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -1194,7 +1194,7 @@ def _mark_run_validation_failed(
     if run_id is None:
         return
     gr_repo.update_generation_run(
-        conn,
+        SqliteRuntimeConnection(conn),
         run_id,
         success=0,
         validation_status=VALIDATION_FAILED,
