@@ -751,7 +751,6 @@ class GenerationService:
                 succeeded=False,
             )
 
-        edition_number = self._next_edition_number(conn, request.participant_id)
         structured_content = draft.model_dump_json()
         rendered_title = draft.edition_title
 
@@ -760,7 +759,6 @@ class GenerationService:
                 new_edition = ed_repo.create_edition_with_feedback_applied(
                     as_runtime_connection(conn),
                     participant_id=request.participant_id,
-                    edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
                     input_id=request.input_id,
                     structured_content=structured_content,
@@ -771,7 +769,6 @@ class GenerationService:
                 new_edition = ed_repo.create_edition(
                     as_runtime_connection(conn),
                     participant_id=request.participant_id,
-                    edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
                     input_id=request.input_id,
                     structured_content=structured_content,
@@ -1137,12 +1134,6 @@ class GenerationService:
             cost_class=outcome.cost_class,
             run_id=outcome.run_id,
         )
-
-    def _next_edition_number(self, conn, participant_id: str) -> int:
-        existing = ed_repo.get_editions_by_participant(conn, participant_id)
-        if not existing:
-            return 1
-        return max(e.edition_number for e in existing) + 1
 
 
 def _failed_outcome(message: str) -> StageOutcome:

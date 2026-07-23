@@ -798,3 +798,84 @@ class TestEditionTimestampValidation:
     def test_shape_invalid_rejected(self):
         with pytest.raises(ed_repo.EditionValidationError):
             ed_repo._validate_timestamp("not-a-timestamp", "test_field")
+
+
+class TestEditionAutoNumber:
+    """Edition number is computed inside the participant-locked transaction.
+
+    When ``edition_number`` is omitted, create_edition assigns
+    ``MAX(edition_number) + 1`` while holding the participant row lock, so the
+    number assignment is atomic with the insert (no duplicate-number race).
+    """
+
+    def test_auto_number_first_edition_is_one(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        result = ed_repo.create_edition(
+            SqliteRuntimeConnection(conn), participant_id="p1"
+        )
+        assert result.edition_number == 1
+        conn.close()
+
+    def test_auto_number_increments_sequentially(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        numbers = []
+        for _ in range(3):
+            e = ed_repo.create_edition(
+                SqliteRuntimeConnection(conn), participant_id="p1"
+            )
+            numbers.append(e.edition_number)
+        assert numbers == [1, 2, 3]
+        conn.close()
+
+    def test_auto_number_continues_after_explicit(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        ed_repo.create_edition(
+            SqliteRuntimeConnection(conn), participant_id="p1", edition_number=5
+        )
+        auto = ed_repo.create_edition(
+            SqliteRuntimeConnection(conn), participant_id="p1"
+        )
+        assert auto.edition_number == 6
+        conn.close()
+
+    def test_auto_number_independent_per_participant(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn, "p1")
+        _setup_participant(conn, "p2")
+
+        e1 = ed_repo.create_edition(
+            SqliteRuntimeConnection(conn), participant_id="p1"
+        )
+        e2 = ed_repo.create_edition(
+            SqliteRuntimeConnection(conn), participant_id="p2"
+        )
+        assert e1.edition_number == 1
+        assert e2.edition_number == 1
+        conn.close()
+
+    def test_auto_number_with_feedback_applied(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        _setup_participant(conn)
+
+        e1 = ed_repo.create_edition(
+            SqliteRuntimeConnection(conn), participant_id="p1"
+        )
+        e2 = ed_repo.create_edition_with_feedback_applied(
+            SqliteRuntimeConnection(conn),
+            participant_id="p1",
+            prior_edition_id=e1.id,
+        )
+        assert e1.edition_number == 1
+        assert e2.edition_number == 2
+        conn.close()

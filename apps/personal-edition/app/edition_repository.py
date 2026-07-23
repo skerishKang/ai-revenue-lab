@@ -160,17 +160,38 @@ def _is_editable(gen_status: str, pub_state: str) -> bool:
     return gen_status == "pending_review" and pub_state == "pending"
 
 
+def _next_edition_number_locked(conn: RuntimeConnection, participant_id: str) -> int:
+    """Compute the next edition number inside a participant-locked transaction.
+
+    Must be called AFTER the participant row has been locked (``SELECT ...
+    FOR UPDATE`` on PostgreSQL / ``BEGIN IMMEDIATE`` on SQLite) so that the
+    number assignment is atomic with the subsequent insert.  Computing the
+    number outside the locked transaction allows two concurrent requests to
+    derive the same ``edition_number`` and race on the unique
+    ``(participant_id, edition_number)`` constraint.
+    """
+    row = conn.execute(
+        "SELECT COALESCE(MAX(edition_number), 0) + 1 AS next_number "
+        "FROM editions WHERE participant_id = ?",
+        (participant_id,),
+    ).fetchone()
+    return int(row["next_number"])
+
+
 def create_edition(
     conn: RuntimeConnection,
     *,
     participant_id: str,
-    edition_number: int,
+    edition_number: int | None = None,
     prior_edition_id: str | None = None,
     input_id: str | None = None,
     structured_content: str | None = None,
     rendered_title: str | None = None,
 ) -> EditionRecord:
-    _validate_edition(participant_id, edition_number)
+    if not isinstance(participant_id, str) or not participant_id.strip():
+        raise EditionValidationError("participant_id must be a non-empty string")
+    if edition_number is not None:
+        _validate_edition(participant_id, edition_number)
     _validate_json_field(structured_content, "structured_content")
 
     if conn.in_transaction:
@@ -193,6 +214,9 @@ def create_edition(
             raise EditionValidationError(
                 "participant does not exist or is not active"
             )
+
+        if edition_number is None:
+            edition_number = _next_edition_number_locked(conn, participant_id)
 
         existing = conn.execute(
             "SELECT 1 FROM editions "
@@ -334,7 +358,8 @@ def update_edition_publication(
     try:
         current = conn.execute(
             "SELECT publication_state, generation_status, "
-            "structured_content FROM editions WHERE id = ?",
+            "structured_content FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -423,7 +448,8 @@ def update_edition_generation_status(
     try:
         current = conn.execute(
             "SELECT generation_status, publication_state "
-            "FROM editions WHERE id = ?",
+            "FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -483,7 +509,8 @@ def update_edition_content(
     try:
         existing = conn.execute(
             "SELECT generation_status, publication_state "
-            "FROM editions WHERE id = ?",
+            "FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if existing is None:
@@ -545,7 +572,8 @@ def delete_edition(conn: RuntimeConnection, edition_id: str) -> bool:
     conn.begin_write()
     try:
         current = conn.execute(
-            "SELECT publication_state FROM editions WHERE id = ?",
+            "SELECT publication_state FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -578,14 +606,17 @@ def create_edition_with_feedback_applied(
     conn: RuntimeConnection,
     *,
     participant_id: str,
-    edition_number: int,
+    edition_number: int | None = None,
     prior_edition_id: str | None = None,
     input_id: str | None = None,
     structured_content: str | None = None,
     rendered_title: str | None = None,
     feedback_id: str | None = None,
 ) -> EditionRecord:
-    _validate_edition(participant_id, edition_number)
+    if not isinstance(participant_id, str) or not participant_id.strip():
+        raise EditionValidationError("participant_id must be a non-empty string")
+    if edition_number is not None:
+        _validate_edition(participant_id, edition_number)
     _validate_json_field(structured_content, "structured_content")
 
     if conn.in_transaction:
@@ -608,6 +639,9 @@ def create_edition_with_feedback_applied(
             raise EditionValidationError(
                 "participant does not exist or is not active"
             )
+
+        if edition_number is None:
+            edition_number = _next_edition_number_locked(conn, participant_id)
 
         existing = conn.execute(
             "SELECT 1 FROM editions "
