@@ -486,6 +486,62 @@ class TestConcurrency:
         assert outcomes.count("ok") == 1
         assert outcomes.count("conflict") == n - 1
 
+        final = ed_repo.get_edition_by_id(pg_env.runtime, edition.id)
+        assert final is not None
+        assert final.publication_state == "published"
+
+    def test_concurrent_publish_vs_reject(self, pg_env):
+        import threading
+        from app import edition_repository as ed_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        edition = _make_edition(pg_env.runtime, "p1")
+        barrier = threading.Barrier(2)
+        outcomes: dict = {}
+
+        def publish_worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                ed_repo.update_edition_publication(rt, edition.id, "published")
+                outcomes["publish"] = "ok"
+            except ed_repo.EditionStateConflict:
+                outcomes["publish"] = "conflict"
+            finally:
+                rt.close()
+
+        def reject_worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                ed_repo.update_edition_publication(rt, edition.id, "rejected")
+                outcomes["reject"] = "ok"
+            except ed_repo.EditionStateConflict:
+                outcomes["reject"] = "conflict"
+            finally:
+                rt.close()
+
+        t_pub = threading.Thread(target=publish_worker)
+        t_rej = threading.Thread(target=reject_worker)
+        t_pub.start()
+        t_rej.start()
+        t_pub.join(timeout=15)
+        t_rej.join(timeout=15)
+
+        assert not t_pub.is_alive()
+        assert not t_rej.is_alive()
+
+        ok_count = sum(1 for v in outcomes.values() if v == "ok")
+        assert ok_count == 1
+
+        final = ed_repo.get_edition_by_id(pg_env.runtime, edition.id)
+        assert final is not None
+        assert final.publication_state in ("published", "rejected")
+        if outcomes["publish"] == "ok":
+            assert final.publication_state == "published"
+        else:
+            assert final.publication_state == "rejected"
+
     def test_concurrent_content_update_vs_publish(self, pg_env):
         """One thread publishes while another updates content concurrently.
 
@@ -570,6 +626,12 @@ class TestConcurrency:
         assert outcomes.count(False) == 1
         assert outcomes.count(True) == n - 1
 
+        row = pg_env.runtime.execute(
+            "SELECT COUNT(*) AS cnt FROM generation_requests "
+            "WHERE idempotency_key = 'concurrent-key'"
+        ).fetchone()
+        assert row["cnt"] == 1
+
     def test_lease_expiry_allows_reclaim(self, pg_env):
         import time
         from app import generation_request_repository as gen_req_repo
@@ -604,6 +666,57 @@ class TestConcurrency:
         )
         assert reclaimed.already_claimed is False
         assert reclaimed.claim_token != first.claim_token
+
+    def test_concurrent_lease_reclaim_one_wins(self, pg_env):
+        import threading
+        import time
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from app import generation_request_repository as gen_req_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        inp = _make_input(pg_env.runtime, "p1")
+
+        first = gen_req_repo.claim_generation_request(
+            pg_env.runtime,
+            idempotency_key="reclaim-key",
+            participant_id="p1",
+            input_id=inp.id,
+            lease_duration_seconds=1,
+        )
+        assert first.already_claimed is False
+
+        time.sleep(1.5)
+
+        n = 3
+        barrier = threading.Barrier(n)
+
+        def worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                record = gen_req_repo.claim_generation_request(
+                    rt,
+                    idempotency_key="reclaim-key",
+                    participant_id="p1",
+                    input_id=inp.id,
+                )
+                return record.already_claimed
+            finally:
+                rt.close()
+
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            outcomes = [f.result() for f in as_completed(
+                [pool.submit(worker) for _ in range(n)]
+            )]
+
+        assert outcomes.count(False) == 1
+        assert outcomes.count(True) == n - 1
+
+        row = pg_env.runtime.execute(
+            "SELECT COUNT(*) AS cnt FROM generation_requests "
+            "WHERE idempotency_key = 'reclaim-key'"
+        ).fetchone()
+        assert row["cnt"] == 1
 
 
 class TestIdempotency:
