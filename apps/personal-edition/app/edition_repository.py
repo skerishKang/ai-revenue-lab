@@ -792,7 +792,7 @@ def finalize_edition_for_request(
     structured_content: str,
     rendered_title: str,
     prior_edition_id: str | None = None,
-    input_id: str | None = None,
+    input_id: str,
     feedback_id: str | None = None,
 ) -> EditionRecord:
     """Atomically create an edition, optionally apply feedback, and complete
@@ -818,6 +818,10 @@ def finalize_edition_for_request(
         raise EditionValidationError(
             "participant_id must be a non-empty string"
         )
+    if not isinstance(input_id, str) or not input_id.strip():
+        raise EditionValidationError(
+            "input_id must be a non-empty string"
+        )
     _validate_json_field(structured_content, "structured_content")
 
     if conn.in_transaction:
@@ -826,6 +830,7 @@ def finalize_edition_for_request(
         )
 
     participant_id = participant_id.strip()
+    input_id = input_id.strip()
     now = _now_utc_iso()
 
     conn.begin_write()
@@ -846,7 +851,7 @@ def finalize_edition_for_request(
 
         if (
             req["participant_id"] != participant_id
-            or (input_id is not None and req["input_id"] != input_id)
+            or req["input_id"] != input_id
         ):
             conn.rollback()
             raise GenerationRequestOwnershipError(
@@ -904,26 +909,25 @@ def finalize_edition_for_request(
                     "prior_edition_id must belong to the same participant"
                 )
 
-        if db_input_id is not None:
-            inp = conn.execute(
-                "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
-                (db_input_id,),
-            ).fetchone()
-            if not inp:
-                conn.rollback()
-                raise EditionValidationError(
-                    "input_id references a non-existent input"
-                )
-            if inp["participant_id"] != db_participant_id:
-                conn.rollback()
-                raise EditionValidationError(
-                    "input_id must belong to the same participant"
-                )
-            if inp["deleted_at"] is not None:
-                conn.rollback()
-                raise EditionValidationError(
-                    "input_id references a deleted input"
-                )
+        inp = conn.execute(
+            "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
+            (db_input_id,),
+        ).fetchone()
+        if not inp:
+            conn.rollback()
+            raise EditionValidationError(
+                "input_id references a non-existent input"
+            )
+        if inp["participant_id"] != db_participant_id:
+            conn.rollback()
+            raise EditionValidationError(
+                "input_id must belong to the same participant"
+            )
+        if inp["deleted_at"] is not None:
+            conn.rollback()
+            raise EditionValidationError(
+                "input_id references a deleted input"
+            )
 
         if feedback_id is not None:
             fb = conn.execute(

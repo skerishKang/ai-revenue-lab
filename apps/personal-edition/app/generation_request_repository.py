@@ -80,13 +80,19 @@ def get_generation_request_by_key(
     conn: RuntimeConnection,
     idempotency_key: str,
 ) -> GenerationRequestRecord | None:
+    """Return a generation request by idempotency key.
+
+    The returned record always has ``claim_token=None`` — generic lookups
+    must not leak active capability tokens.  Internal code that requires
+    the raw token should use ``_get_generation_request_by_key_raw``.
+    """
     row = conn.execute(
         f"SELECT {_SELECT} FROM generation_requests WHERE idempotency_key = ?",
         (idempotency_key,),
     ).fetchone()
     if row is None:
         return None
-    return _row_to_record(row)
+    return replace(_row_to_record(row), claim_token=None)
 
 
 def claim_generation_request(

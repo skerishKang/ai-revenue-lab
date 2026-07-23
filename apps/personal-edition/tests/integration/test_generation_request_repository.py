@@ -462,6 +462,7 @@ class TestFinalizeEditionForRequest:
                 claim_token="any-token",
                 structured_content='{"sections": []}',
                 rendered_title="Bad",
+                input_id="i1",
             )
         conn.close()
 
@@ -650,6 +651,71 @@ class TestFinalizerOwnership:
         assert record.status == "claimed"
         conn.close()
 
+    def test_finalize_input_id_none_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        try:
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id=None,  # type: ignore
+            )
+            assert False, "should have raised"
+        except ed_repo.EditionValidationError:
+            pass
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 0
+        conn.close()
+
+    def test_finalize_input_id_empty_rejected(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id="",
+            )
+        with pytest.raises(ed_repo.EditionValidationError):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id="   ",
+            )
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 0
+        conn.close()
+
 
 class TestClaimTokenCapability:
     def test_duplicate_claim_returns_no_token(self):
@@ -759,6 +825,27 @@ class TestClaimTokenCapability:
         ).fetchone()
         assert row2["claim_token"] is None
         assert row2["lease_expires_at"] is None
+        conn.close()
+
+    def test_generic_lookup_token_is_none(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        assert claim.claim_token is not None
+
+        looked_up = gen_req_repo.get_generation_request_by_key(rt, "k1")
+        assert looked_up is not None
+        assert looked_up.claim_token is None
+        assert looked_up.id == claim.id
+        assert looked_up.status == "claimed"
         conn.close()
 
 
