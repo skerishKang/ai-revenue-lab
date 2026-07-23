@@ -96,3 +96,19 @@ class NonRetryableError(LessonPipelineError):
     def __init__(self, message: str) -> None:
         self.message = message
         super().__init__(f"Non-retryable error: {message}")
+
+
+class ConcurrentOperationError(LessonPipelineError):
+    """Raised when an idempotency claim is held by another in-flight owner."""
+
+    def __init__(self, operation_key: str) -> None:
+        self.operation_key = operation_key
+        super().__init__("A concurrent request for this operation is in progress")
+
+
+class OperationTerminalError(LessonPipelineError):
+    """Raised when an operation is blocked by a terminal (non-retryable) failure."""
+
+    def __init__(self, operation_key: str) -> None:
+        self.operation_key = operation_key
+        super().__init__("This operation previously failed terminally and will not be retried")

@@ -20,6 +20,8 @@ from app.pipeline.errors import (
     ExpectedAnswerMismatchError,
     NonRetryableError,
     ConflictingAnswerError,
+    ConcurrentOperationError,
+    OperationTerminalError,
 )
 
 __all__ = [
@@ -42,4 +44,6 @@ __all__ = [
     "ExpectedAnswerMismatchError",
     "NonRetryableError",
     "ConflictingAnswerError",
+    "ConcurrentOperationError",
+    "OperationTerminalError",
 ]

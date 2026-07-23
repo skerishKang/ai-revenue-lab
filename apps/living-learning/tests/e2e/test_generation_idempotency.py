@@ -37,11 +37,16 @@ async def test_generation_idempotency(app_instance, sync_db, mock_settings):
         req2 = async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
         results = await asyncio.gather(req1, req2)
         
-        # One should succeed, one should fail with 422 concurrent request in progress
+        # At most one owner creates the lesson. With a fast (network-free) mock
+        # the two requests may serialize — one real creation plus one completed
+        # replay, both returning 200 — or genuinely overlap, yielding one 200 and
+        # one 422 "concurrent request in progress". Both satisfy the contract;
+        # the dedicated atomic-claim suite forces true overlap to assert the
+        # exactly-one-owner guarantee deterministically.
         status_codes = {r.status_code for r in results}
+        assert status_codes <= {200, 422}
         assert 200 in status_codes
-        assert 422 in status_codes
-        
+
         successful_resp = next(r for r in results if r.status_code == 200)
         
         # Then an idempotency retry after completion should succeed and return same lesson_id

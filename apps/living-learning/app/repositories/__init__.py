@@ -53,8 +53,12 @@ from app.repositories.mastery_repository import (
     get_all_mastery_for_learner,
 )
 from app.repositories.generation_run_repository import (
+    GenerationAccounting,
     create_generation_run,
+    compute_accounting,
+    finalize_attempt_group,
     get_generation_run_by_id,
+    get_generation_runs_by_group,
     get_generation_runs_by_task_type,
     count_generation_runs_by_lesson,
     sum_tokens_by_lesson,
@@ -64,9 +68,23 @@ from app.repositories.pilot_evidence_repository import (
     get_pilot_evidence_by_id,
     get_pilot_evidence_by_learner,
 )
+from app.repositories.adaptation_repository import (
+    AdaptationDecisionRecord,
+    record_adaptation_decision,
+    get_adaptation_decisions_for_lesson,
+    get_adaptation_decisions_for_learner,
+)
 from app.repositories.idempotency_repository import (
-    claim_idempotency_request,
-    complete_idempotency_request,
+    ClaimOutcome,
+    IdempotencyRecord,
+    STATUS_COMPLETED,
+    STATUS_FAILED_RETRYABLE,
+    STATUS_FAILED_TERMINAL,
+    STATUS_PENDING,
+    claim_operation,
+    complete_operation,
+    fail_operation,
+    get_operation,
 )
 
 __all__ = [
@@ -111,11 +129,27 @@ __all__ = [
     "create_generation_run",
     "get_generation_run_by_id",
     "get_generation_runs_by_task_type",
+    "get_generation_runs_by_group",
     "count_generation_runs_by_lesson",
     "sum_tokens_by_lesson",
+    "compute_accounting",
+    "finalize_attempt_group",
+    "GenerationAccounting",
     "create_pilot_evidence",
     "get_pilot_evidence_by_id",
     "get_pilot_evidence_by_learner",
-    "claim_idempotency_request",
-    "complete_idempotency_request",
+    "AdaptationDecisionRecord",
+    "record_adaptation_decision",
+    "get_adaptation_decisions_for_lesson",
+    "get_adaptation_decisions_for_learner",
+    "ClaimOutcome",
+    "IdempotencyRecord",
+    "STATUS_PENDING",
+    "STATUS_COMPLETED",
+    "STATUS_FAILED_RETRYABLE",
+    "STATUS_FAILED_TERMINAL",
+    "claim_operation",
+    "complete_operation",
+    "fail_operation",
+    "get_operation",
 ]
