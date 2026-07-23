@@ -533,6 +533,8 @@ class TestConcurrency:
 
         ok_count = sum(1 for v in outcomes.values() if v == "ok")
         assert ok_count == 1
+        conflict_count = sum(1 for v in outcomes.values() if v == "conflict")
+        assert conflict_count == 1
 
         final = ed_repo.get_edition_by_id(pg_env.runtime, edition.id)
         assert final is not None
@@ -541,6 +543,7 @@ class TestConcurrency:
             assert final.publication_state == "published"
         else:
             assert final.publication_state == "rejected"
+        assert final.published_at is not None or final.reviewed_at is not None
 
     def test_concurrent_content_update_vs_publish(self, pg_env):
         """One thread publishes while another updates content concurrently.
@@ -551,6 +554,7 @@ class TestConcurrency:
         The edition must end in a consistent published state either way.
         """
         import threading
+        from concurrent.futures import ThreadPoolExecutor
         from app import edition_repository as ed_repo
 
         _make_participant(pg_env.runtime, "p1")
@@ -582,16 +586,17 @@ class TestConcurrency:
             finally:
                 rt.close()
 
-        t_pub = threading.Thread(target=publish_worker)
-        t_content = threading.Thread(target=content_worker)
-        t_pub.start()
-        t_content.start()
-        t_pub.join(timeout=15)
-        t_content.join(timeout=15)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            pub_future = pool.submit(publish_worker)
+            con_future = pool.submit(content_worker)
+            pub_result = pub_future.result(timeout=15)
+            con_result = con_future.result(timeout=15)
 
         final = ed_repo.get_edition_by_id(pg_env.runtime, edition.id)
         assert final is not None
         assert final.publication_state == "published"
+        assert pub_result == "ok"
+        assert con_result in ("ok", "conflict")
         assert content_outcome[0] in ("ok", "conflict")
 
     def test_concurrent_claim_same_key_one_wins(self, pg_env):
@@ -715,6 +720,190 @@ class TestConcurrency:
         row = pg_env.runtime.execute(
             "SELECT COUNT(*) AS cnt FROM generation_requests "
             "WHERE idempotency_key = 'reclaim-key'"
+        ).fetchone()
+        assert row["cnt"] == 1
+
+    def test_concurrent_lease_reclaim_exhaustive(self, pg_env):
+        import threading
+        import time
+        from concurrent.futures import ThreadPoolExecutor
+        from app import edition_repository as ed_repo
+        from app import generation_request_repository as gen_req_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        inp = _make_input(pg_env.runtime, "p1")
+
+        first = gen_req_repo.claim_generation_request(
+            pg_env.runtime,
+            idempotency_key="exhaustive-key",
+            participant_id="p1",
+            input_id=inp.id,
+            lease_duration_seconds=1,
+        )
+        assert first.already_claimed is False
+        assert first.claim_token is not None
+        stale_token = first.claim_token
+
+        time.sleep(1.5)
+
+        n = 3
+        barrier = threading.Barrier(n)
+        results: dict = {}
+
+        def worker(idx):
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                record = gen_req_repo.claim_generation_request(
+                    rt,
+                    idempotency_key="exhaustive-key",
+                    participant_id="p1",
+                    input_id=inp.id,
+                )
+                results[idx] = {
+                    "already_claimed": record.already_claimed,
+                    "claim_token": record.claim_token,
+                }
+            finally:
+                rt.close()
+
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            list(pool.map(worker, range(n)))
+
+        winners = [v for v in results.values() if not v["already_claimed"]]
+        losers = [v for v in results.values() if v["already_claimed"]]
+        assert len(winners) == 1
+        assert len(losers) == n - 1
+        winner_token = winners[0]["claim_token"]
+        assert winner_token is not None
+        assert winner_token != stale_token
+        for loser in losers:
+            assert loser["claim_token"] is None
+
+        row = pg_env.runtime.execute(
+            "SELECT COUNT(*) AS cnt FROM generation_requests "
+            "WHERE idempotency_key = 'exhaustive-key'"
+        ).fetchone()
+        assert row["cnt"] == 1
+
+        stale_rt = self._thread_runtime(pg_env.schema_name)
+        try:
+            with pytest.raises(ed_repo.EditionStateConflict):
+                ed_repo.finalize_edition_for_request(
+                    stale_rt,
+                    participant_id="p1",
+                    idempotency_key="exhaustive-key",
+                    claim_token=stale_token,
+                    structured_content='{"sections": []}',
+                    rendered_title="Stale",
+                    input_id=inp.id,
+                )
+        finally:
+            stale_rt.close()
+
+        stale_rt2 = self._thread_runtime(pg_env.schema_name)
+        try:
+            with pytest.raises(gen_req_repo.GenerationRequestError):
+                gen_req_repo.fail_generation_request(
+                    stale_rt2,
+                    idempotency_key="exhaustive-key",
+                    claim_token=stale_token,
+                    failure_category="provider",
+                )
+        finally:
+            stale_rt2.close()
+
+        win_rt = self._thread_runtime(pg_env.schema_name)
+        try:
+            edition = ed_repo.finalize_edition_for_request(
+                win_rt,
+                participant_id="p1",
+                idempotency_key="exhaustive-key",
+                claim_token=winner_token,
+                structured_content='{"sections": []}',
+                rendered_title="Winner",
+                input_id=inp.id,
+            )
+        finally:
+            win_rt.close()
+
+        editions = ed_repo.get_editions_by_participant(pg_env.runtime, "p1")
+        assert len(editions) == 1
+
+        final_req = gen_req_repo.get_generation_request_by_key(
+            pg_env.runtime, "exhaustive-key"
+        )
+        assert final_req is not None
+        assert final_req.status == "completed"
+
+    def test_concurrent_claim_different_owner_race(self, pg_env):
+        import threading
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from app import generation_request_repository as gen_req_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        _make_participant(pg_env.runtime, "p2")
+        inp1 = _make_input(pg_env.runtime, "p1")
+        inp2 = _make_input(pg_env.runtime, "p2")
+        n = 2
+        barrier = threading.Barrier(n)
+        outcomes: dict = {}
+
+        def worker_a():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                record = gen_req_repo.claim_generation_request(
+                    rt,
+                    idempotency_key="owner-race-key",
+                    participant_id="p1",
+                    input_id=inp1.id,
+                )
+                outcomes["a_already_claimed"] = record.already_claimed
+                outcomes["a_token"] = record.claim_token
+            except gen_req_repo.GenerationRequestOwnershipError:
+                outcomes["a_ownership_error"] = True
+            finally:
+                rt.close()
+
+        def worker_b():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                record = gen_req_repo.claim_generation_request(
+                    rt,
+                    idempotency_key="owner-race-key",
+                    participant_id="p2",
+                    input_id=inp2.id,
+                )
+                outcomes["b_already_claimed"] = record.already_claimed
+                outcomes["b_token"] = record.claim_token
+            except gen_req_repo.GenerationRequestOwnershipError:
+                outcomes["b_ownership_error"] = True
+            finally:
+                rt.close()
+
+        t_a = threading.Thread(target=worker_a)
+        t_b = threading.Thread(target=worker_b)
+        t_a.start()
+        t_b.start()
+        t_a.join(timeout=15)
+        t_b.join(timeout=15)
+        assert not t_a.is_alive()
+        assert not t_b.is_alive()
+
+        if "a_already_claimed" in outcomes:
+            assert outcomes["a_already_claimed"] is False
+            assert outcomes["a_token"] is not None
+            assert outcomes.get("b_ownership_error") is True
+        else:
+            assert outcomes["b_already_claimed"] is False
+            assert outcomes["b_token"] is not None
+            assert outcomes.get("a_ownership_error") is True
+
+        row = pg_env.runtime.execute(
+            "SELECT COUNT(*) AS cnt FROM generation_requests "
+            "WHERE idempotency_key = 'owner-race-key'"
         ).fetchone()
         assert row["cnt"] == 1
 
