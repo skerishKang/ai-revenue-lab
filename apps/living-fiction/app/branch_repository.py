@@ -11,6 +11,7 @@ import json
 import sqlite3
 from dataclasses import dataclass
 
+from app.database.errors import IntegrityError
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -110,7 +111,7 @@ def create_branch(
             rejoin_explanation=None, rejoined_at=None,
             created_at=now,
         )
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise BranchValidationError(
             f"duplicate branch (same reader+checkpoint+choice): {exc}"

@@ -40,7 +40,7 @@ from app import review_service
 from app import world_repository as world_repo
 from app.ai.mock import MockProvider
 from app.config import canonicalize_origin, settings
-from app.db import get_connection
+from app.database.base import Connection
 from app.preview_data import (
     BRANCH_EPISODE_CONTENT,
     BRANCH_EPISODE_PLAN,
@@ -97,18 +97,21 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 # ── DB dependency ──────────────────────────────────────────────────────────
 
 
-def get_db(request: Request) -> sqlite3.Connection:
-    """Provide a per-request SQLite connection.
+def get_db(request: Request) -> Connection:
+    """Provide a per-request backend-neutral connection.
 
-    Uses ``request.app.state.db_path`` (resolved once in the factory) so the
-    per-request connection always targets the same database file the startup
-    migrations ran against — never a divergent ``settings.database_path``.
+    Acquires from ``request.app.state.db_engine`` (built once in the factory)
+    and releases it at request end. For the SQLite engine this opens a fresh
+    file connection per request — the existing local behaviour, always targeting
+    the database file the startup migrations ran against. For the postgres
+    engine it borrows a pooled connection and returns it to the pool on release.
     """
-    conn = get_connection(request.app.state.db_path)
+    engine = request.app.state.db_engine
+    conn = engine.acquire()
     try:
         yield conn
     finally:
-        conn.close()
+        engine.release(conn)
 
 
 # ── Session dependencies ───────────────────────────────────────────────────
