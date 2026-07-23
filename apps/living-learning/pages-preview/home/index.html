@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 학습 홈 — 오늘의 10분 수업, 학습 경로, 숙련도, AI 개인화 상태 (합성 데이터 UI 프리뷰)">
+<title>학습 홈 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-text__name">Living Learning</span>
+        <span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span>
+      </span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/" aria-current="page">
+        <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>
+        학습 홈
+      </a>
+      <a class="nav-link" href="/lesson-1/">
+        <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>
+        오늘의 10분 수업
+      </a>
+      <a class="nav-link" href="/progress/">
+        <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        진도 · 숙련도
+      </a>
+      <a class="nav-link" href="/history/">
+        <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        학습 이력
+      </a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/">
+        <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        운영자 검토
+        <span class="nav-link__badge">3</span>
+      </a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>적용된 피드백</span><b>3건</b></div>
+      <div class="ai-status__row"><span>다음 수업 조정</span><b>코드 먼저</b></div>
+      <div class="ai-status__row"><span>현재 난이도</span><b>입문 2단계</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb"><b>학습 홈</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="learner-chip"><span class="learner-chip__avatar" aria-hidden="true">지</span>합성 학습자 · LL-0417</span>
+    </div>
+
+    <div class="content">
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>오늘도 10분</span>
+        <h1>안녕하세요, 지민 님</h1>
+        <p>어제 ‘변수’ 첫 수업을 마쳤어요. 오늘은 지민 님의 피드백을 반영해 코드를 먼저 보는 수업으로 준비했습니다.</p>
+      </div>
+
+      <section class="card card--pad rise rise-1" aria-labelledby="today-title">
+        <div class="flex-between wrap gap-3">
+          <div>
+            <span class="badge badge--accent"><span class="badge__dot"></span>오늘의 10분 수업</span>
+            <h2 id="today-title" class="h-lg mt-3">변수, 코드로 먼저 만나기</h2>
+            <p class="muted mt-2 small">개인화 반영 · 코드 먼저 · 예제 3개 · 복습 3개</p>
+          </div>
+          <div class="stepper" aria-label="수업 단계 진행">
+            <span class="stepper__step stepper__step--done"><span class="stepper__num">1</span>진단</span>
+            <span class="stepper__bar stepper__bar--done"></span>
+            <span class="stepper__step stepper__step--done"><span class="stepper__num">2</span>첫 수업</span>
+            <span class="stepper__bar stepper__bar--done"></span>
+            <span class="stepper__step stepper__step--active"><span class="stepper__num">3</span>두 번째 수업</span>
+          </div>
+        </div>
+        <div class="mt-6 flex gap-3 wrap">
+          <a class="btn btn--primary" href="/lesson-2/">이어서 학습하기
+            <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn--ghost" href="/changes/">무엇이 달라졌는지 보기</a>
+        </div>
+      </section>
+
+      <div class="grid grid--2 mt-8">
+        <section class="card card--pad rise rise-2" aria-labelledby="path-title">
+          <h2 id="path-title" class="card__title">현재 학습 경로</h2>
+          <p class="card__sub">AI·Python 기초 · 총 8개 개념</p>
+          <ul class="mt-4 stack">
+            <li class="flex-between"><span><span class="badge badge--success">완료</span> 변수란 무엇인가</span><span class="muted small">어제</span></li>
+            <li class="flex-between"><span><span class="badge badge--accent">학습 중</span> 값과 자료형</span><span class="muted small">오늘</span></li>
+            <li class="flex-between"><span><span class="badge badge--neutral">예정</span> 간단한 조건문</span><span class="muted small">다음</span></li>
+            <li class="flex-between"><span><span class="badge badge--neutral">예정</span> 작은 Python 예제</span><span class="muted small">—</span></li>
+          </ul>
+        </section>
+
+        <section class="card card--pad rise rise-3" aria-labelledby="mastery-title">
+          <h2 id="mastery-title" class="card__title">최근 숙련도</h2>
+          <p class="card__sub">최근 3개 개념 기준</p>
+          <div class="mt-4 stack">
+            <div>
+              <div class="flex-between small"><span>변수</span><b>72%</b></div>
+              <div class="meter mt-2"><div class="meter__fill" style="width:72%"></div></div>
+            </div>
+            <div>
+              <div class="flex-between small"><span>값 · 자료형</span><b>58%</b></div>
+              <div class="meter mt-2"><div class="meter__fill" style="width:58%"></div></div>
+            </div>
+            <div>
+              <div class="flex-between small"><span>조건문</span><b>31%</b></div>
+              <div class="meter mt-2"><div class="meter__fill meter__fill--warning" style="width:31%"></div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card card--pad mt-8 rise rise-4" aria-labelledby="next-change-title">
+        <div class="flex-between wrap gap-3">
+          <div>
+            <h2 id="next-change-title" class="card__title"><span class="ai-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke-linecap="round"/></svg>AI 개인화</span> 다음 수업 예상 변화</h2>
+            <p class="card__sub mt-2">첫 수업 이해도와 학습 방식 피드백 3건을 근거로 조정됩니다.</p>
+          </div>
+          <a class="btn btn--ghost btn--sm" href="/changes/">전체 비교 보기</a>
+        </div>
+        <div class="grid grid--3 mt-4">
+          <div class="reason"><span class="reason__tag">순서</span><span>설명이 길게 느껴진다고 답해, <b>코드를 먼저</b> 보여줍니다.</span></div>
+          <div class="reason"><span class="reason__tag">예시</span><span>“예시를 늘려 달라”는 피드백에 따라 예제를 <b>1개 → 3개</b>로 늘립니다.</span></div>
+          <div class="reason"><span class="reason__tag">용어</span><span>어려운 용어를 쉽게 풀어 달라고 답해, <b>즉시 정의</b>를 붙입니다.</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+</body>
+</html>

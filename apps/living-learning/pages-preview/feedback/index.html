@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 학습 방식 피드백 — 다음 수업에 반영됩니다 (합성 데이터 UI 프리뷰)">
+<title>학습 방식 피드백 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>선택한 피드백</span><b>3건</b></div>
+      <div class="ai-status__row"><span>반영 대상</span><b>두 번째 수업</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb">첫 번째 10분 수업 · <b>학습 방식 피드백</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="badge badge--accent"><span class="badge__dot"></span>3건 선택됨</span>
+    </div>
+
+    <div class="content content--reading">
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>피드백</span>
+        <h1>다음 수업, 어떻게 달라지면 좋을까요?</h1>
+        <p>첫 수업은 어땠나요? 골라 주신 방향을 근거로 AI가 두 번째 수업의 구성을 실제로 바꿉니다. 여러 개를 선택할 수 있습니다.</p>
+      </div>
+
+      <form class="stack rise rise-1" aria-label="학습 방식 피드백 선택">
+        <label class="choice">
+          <input type="checkbox" name="fb" value="more-examples" checked>
+          <span class="choice__radio" aria-hidden="true"></span>
+          <span>
+            <span class="choice__title">이론을 줄이고 예시를 늘려 주세요</span>
+            <span class="choice__desc">설명보다 더 많은 코드 예시로 배웁니다.</span>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" name="fb" value="code-first" checked>
+          <span class="choice__radio" aria-hidden="true"></span>
+          <span>
+            <span class="choice__title">Python 코드를 먼저 보여 주세요</span>
+            <span class="choice__desc">설명보다 코드를 먼저 보고, 뒤에 짧은 설명을 붙입니다.</span>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" name="fb" value="slower">
+          <span class="choice__radio" aria-hidden="true"></span>
+          <span>
+            <span class="choice__title">속도를 조금 늦춰 주세요</span>
+            <span class="choice__desc">단계를 더 잘게 나누고 한 번에 조금씩 진행합니다.</span>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" name="fb" value="more-review">
+          <span class="choice__radio" aria-hidden="true"></span>
+          <span>
+            <span class="choice__title">복습 문제를 늘려 주세요</span>
+            <span class="choice__desc">배운 내용을 바로 확인할 문제를 더 넣습니다.</span>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" name="fb" value="easier-terms" checked>
+          <span class="choice__radio" aria-hidden="true"></span>
+          <span>
+            <span class="choice__title">어려운 용어를 쉽게 풀어 주세요</span>
+            <span class="choice__desc">낯선 용어 옆에 바로 정의를 붙입니다.</span>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" name="fb" value="keep">
+          <span class="choice__radio" aria-hidden="true"></span>
+          <span>
+            <span class="choice__title">지금 방식이 좋아요</span>
+            <span class="choice__desc">현재 구성을 유지합니다.</span>
+          </span>
+        </label>
+      </form>
+
+      <div class="callout callout--info mt-6 rise rise-2">
+        <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke-linecap="round"/></svg>
+        <span>선택한 3건 — <b>예시 늘리기 · 코드 먼저 · 용어 쉽게</b> — 이 다음 화면에서 실제 변경 내역으로 어떻게 바뀌는지 보여 드립니다.</span>
+      </div>
+
+      <div class="pager rise rise-3">
+        <a class="btn btn--ghost" href="/lesson-1/result/">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+          이전
+        </a>
+        <a class="btn btn--primary" href="/changes/">변경 내역 보기
+          <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
