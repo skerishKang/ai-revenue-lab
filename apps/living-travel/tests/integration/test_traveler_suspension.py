@@ -214,3 +214,107 @@ class TestInactiveTravelerAccess:
             headers={"Authorization": "Bearer tok-react"},
         )
         assert resp.status_code == 200
+
+
+class TestMeEndpointSuspension:
+    def test_active_traveler_me_returns_traveler(self, firebase_app):
+        app, fake, db_path = firebase_app
+        _seed_traveler_with_identity(db_path, "uid-me-active")
+        fake.add("tok-me-active", TokenClaims(PROVIDER_FIREBASE, "uid-me-active"))
+
+        client = TestClient(app)
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-active"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["role"] == "traveler"
+        assert data["traveler_id"] is not None
+
+    def test_deactivated_traveler_me_returns_none(self, firebase_app):
+        app, fake, db_path = firebase_app
+        traveler_id = _seed_traveler_with_identity(db_path, "uid-me-deact")
+        fake.add("tok-me-deact", TokenClaims(PROVIDER_FIREBASE, "uid-me-deact"))
+
+        import sqlite3
+
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys=ON")
+        delete_traveler(conn, traveler_id)
+        conn.close()
+
+        client = TestClient(app)
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-deact"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["role"] == "none"
+        assert data["traveler_id"] is None
+
+    def test_reactivated_traveler_me_restores_traveler(self, firebase_app):
+        app, fake, db_path = firebase_app
+        traveler_id = _seed_traveler_with_identity(db_path, "uid-me-react")
+        fake.add("tok-me-react", TokenClaims(PROVIDER_FIREBASE, "uid-me-react"))
+
+        import sqlite3
+
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys=ON")
+        delete_traveler(conn, traveler_id)
+        conn.close()
+
+        client = TestClient(app)
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-react"})
+        assert resp.json()["role"] == "none"
+
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys=ON")
+        activate_traveler(conn, traveler_id)
+        conn.close()
+
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-react"})
+        assert resp.json()["role"] == "traveler"
+        assert resp.json()["traveler_id"] == traveler_id
+
+    def test_operator_me_returns_operator(self, firebase_app):
+        app, fake, db_path = firebase_app
+        _seed_operator(db_path, "uid-me-op")
+        fake.add("tok-me-op", TokenClaims(PROVIDER_FIREBASE, "uid-me-op"))
+
+        client = TestClient(app)
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-op"})
+        assert resp.status_code == 200
+        assert resp.json()["role"] == "operator"
+
+    def test_revoked_identity_me_returns_none(self, firebase_app):
+        app, fake, db_path = firebase_app
+        traveler_id = _seed_traveler_with_identity(db_path, "uid-me-revoked")
+        fake.add("tok-me-revoked", TokenClaims(PROVIDER_FIREBASE, "uid-me-revoked"))
+
+        import sqlite3
+
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys=ON")
+        identity = eid_repo.get_identity(conn, PROVIDER_FIREBASE, "uid-me-revoked")
+        eid_repo.revoke_identity(conn, identity.id)
+        conn.close()
+
+        client = TestClient(app)
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-revoked"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["role"] == "none"
+        assert data["traveler_id"] is None
+        assert data["revoked"] is True
+
+    def test_unmapped_identity_me_returns_none(self, firebase_app):
+        app, fake, db_path = firebase_app
+        fake.add("tok-me-unmapped", TokenClaims(PROVIDER_FIREBASE, "uid-me-unmapped"))
+
+        client = TestClient(app)
+        resp = client.get("/api/v1/me", headers={"Authorization": "Bearer tok-me-unmapped"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["role"] == "none"
+        assert data["traveler_id"] is None
