@@ -202,7 +202,7 @@ class TestChecksum:
 class TestMigrationImportNoConnection:
     """migration import 시 connection 0회."""
 
-    def test_import_does_not_connect(self):
+    def test_import_does_not_connect(self, isolated_sys_modules):
         """Importing the migration module must not open a connection."""
         import importlib
         import sys

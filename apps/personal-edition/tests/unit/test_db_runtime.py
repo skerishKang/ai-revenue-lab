@@ -136,7 +136,7 @@ def socket_guard(monkeypatch):
 
 
 class TestImportNoConnection:
-    def test_module_import_opens_no_socket(self, socket_guard):
+    def test_module_import_opens_no_socket(self, socket_guard, isolated_sys_modules):
         for mod in list(sys.modules):
             if mod.startswith("app.db_runtime") or mod == "app.db_postgres":
                 del sys.modules[mod]
@@ -718,7 +718,7 @@ class TestStaticContract:
                 # Must not raise (no unterminated quote/comment/dollar-quote).
                 translate_placeholders(sql)
 
-    def test_import_time_connection_zero(self, socket_guard):
+    def test_import_time_connection_zero(self, socket_guard, isolated_sys_modules):
         # Re-importing the whole runtime boundary stack opens no socket.
         for mod in list(sys.modules):
             if mod.startswith("app.db_runtime") or mod == "app.db_postgres":

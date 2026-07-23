@@ -592,7 +592,7 @@ class TestFeedbackSafeLogging:
 
 
 class TestImportNoNetwork:
-    def test_factory_and_participant_import_no_socket(self, monkeypatch):
+    def test_factory_and_participant_import_no_socket(self, monkeypatch, isolated_sys_modules):
         counter = {"n": 0}
         real = socket.socket
 

@@ -14,7 +14,7 @@ def test_postgresql_app_creation(monkeypatch):
     """PostgreSQL app creation configures the correct state."""
     monkeypatch.setattr(settings, "db_backend", "postgresql")
     monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
-    
+
     app = create_app()
     assert app.state.db_backend == "postgresql"
     assert app.state.database_url == "postgresql://user:pass@host/db"
@@ -24,7 +24,7 @@ def test_postgresql_db_path_override_rejected(monkeypatch):
     """db_path override is not supported for PostgreSQL backend."""
     monkeypatch.setattr(settings, "db_backend", "postgresql")
     monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
-    
+
     with pytest.raises(ValueError, match="db_path override is not supported"):
         create_app(db_path=":memory:")
 
@@ -64,18 +64,18 @@ class TestRuntimeOpener:
     def test_postgresql_opener_returns_postgres_runtime_connection(self, monkeypatch):
         monkeypatch.setattr(settings, "db_backend", "postgresql")
         monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
-        
+
         class MockPostgresRuntimeConnection:
             def open(self):
                 return self
             def close(self):
                 pass
-        
+
         monkeypatch.setattr(
             "app.factory.postgres_runtime_connection",
             lambda url: MockPostgresRuntimeConnection()
         )
-        
+
         app = create_app()
         conn = app.state.open_runtime_connection()
         try:
@@ -87,25 +87,25 @@ class TestRuntimeOpener:
         """The opener must return an already-opened connection, not a lazy adapter."""
         monkeypatch.setattr(settings, "db_backend", "postgresql")
         monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
-        
+
         opened = []
-        
+
         class MockPostgresRuntimeConnection:
             def open(self):
                 opened.append(True)
                 return self
             def close(self):
                 pass
-        
+
         monkeypatch.setattr(
             "app.factory.postgres_runtime_connection",
             lambda url: MockPostgresRuntimeConnection()
         )
-        
+
         app = create_app()
         conn = app.state.open_runtime_connection()
         conn.close()
-        
+
         assert opened, "opener must call .open() on the adapter"
 
     def test_startup_migration_uses_raw_sqlite(self):

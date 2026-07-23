@@ -147,7 +147,7 @@ class TestStaticContract:
         src = REPO_PY.read_text(encoding="utf-8")
         assert "import sqlite3" not in src
 
-    def test_import_no_network(self, monkeypatch):
+    def test_import_no_network(self, monkeypatch, isolated_sys_modules):
         counter = {"n": 0}
         real = socket.socket
 
