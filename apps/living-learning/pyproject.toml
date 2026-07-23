@@ -19,10 +19,23 @@ dev = [
     "pytest>=8.3,<9",
     "httpx>=0.28,<1",
 ]
+postgres = [
+    "psycopg[binary]>=3.2,<4",
+    "psycopg-pool>=3.2,<4",
+]
+firebase = [
+    "firebase-admin>=6.5",
+]
+modal = [
+    "modal>=0.62",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["app*"]
+
+[tool.setuptools.package-data]
+"*" = ["../migrations_postgres/*.sql"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
