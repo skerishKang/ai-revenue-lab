@@ -34,13 +34,12 @@ async def claim(
 ) -> dict:
     conn = get_connection()
     try:
-        with conn:
-            result = claim_invitation(
-                conn,
-                provider=claims.provider,
-                subject=claims.subject,
-                invitation_code=body.invitation_code,
-            )
+        result = claim_invitation(
+            conn,
+            provider=claims.provider,
+            subject=claims.subject,
+            invitation_code=body.invitation_code,
+        )
     finally:
         conn.close()
     if not result.ok:
