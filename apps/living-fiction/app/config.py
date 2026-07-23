@@ -156,6 +156,12 @@ class Settings(BaseSettings):
                 "LF_AI_MODEL is required when LF_AI_PROVIDER "
                 "is not 'mock'"
             )
+        if provider == "openai_compat":
+            if not self.ai_base_url or not self.ai_base_url.strip():
+                raise ValueError(
+                    "LF_AI_BASE_URL is required when LF_AI_PROVIDER "
+                    "is 'openai_compat'"
+                )
 
     # Phase 2 web security settings — no fallback defaults.
     admin_secret: str = ""

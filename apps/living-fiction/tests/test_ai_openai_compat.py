@@ -282,13 +282,14 @@ def test_endpoint_from_base_no_slash():
 def test_requires_api_key():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with pytest.raises(ValueError, match="LF_AI_API_KEY"):
-        OpenAICompatibleProvider(api_key="", model="test-model")
+        OpenAICompatibleProvider(api_key="", model="test-model", base_url="https://opencode.ai/zen/go/v1")
 
 
 def test_default_attributes():
     from app.ai.openai_compat import OpenAICompatibleProvider
     provider = OpenAICompatibleProvider(
         api_key="sk-test-key", model="deepseek-v4-flash",
+        base_url="https://opencode.ai/zen/go/v1",
     )
     assert provider.provider_name == "openai_compat"
     assert provider.model == "deepseek-v4-flash"
@@ -301,6 +302,7 @@ def test_custom_provider_name():
     provider = OpenAICompatibleProvider(
         api_key="sk-test-key", model="deepseek-v4-flash",
         provider_name="opencode_go",
+        base_url="https://opencode.ai/zen/go/v1",
     )
     assert provider.provider_name == "opencode_go"
     assert provider.model == "deepseek-v4-flash"
@@ -311,6 +313,7 @@ def test_opencode_go_default_url():
     provider = OpenAICompatibleProvider(
         api_key="sk-test-key", model="deepseek-v4-flash",
         provider_name="opencode_go",
+        base_url="https://opencode.ai/zen/go/v1",
     )
     assert provider.endpoint_url == "https://opencode.ai/zen/go/v1/chat/completions"
 
@@ -447,7 +450,7 @@ def test_successful_generation():
     from app.ai.openai_compat import OpenAICompatibleProvider
     expected = {"value": "hello", "number": 42}
     with patch("httpx.post", return_value=_mock_response(expected)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="deepseek-v4-flash")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="deepseek-v4-flash", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="You are a helpful assistant.",
             user_payload={"input": "test"}, response_schema=_TestResponse,
@@ -494,6 +497,7 @@ def test_successful_generation_opencode_go():
     with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 7})):
         provider = OpenAICompatibleProvider(
             api_key="sk-test", model="deepseek-v4-flash", provider_name="opencode_go",
+            base_url="https://opencode.ai/zen/go/v1",
         )
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
@@ -507,7 +511,7 @@ def test_successful_generation_finish_reason_none():
     from app.ai.openai_compat import OpenAICompatibleProvider
     resp = _mock_response({"value": "x", "number": 1}, finish_reason=None)
     with patch("httpx.post", return_value=resp):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r3b",
@@ -523,7 +527,7 @@ def test_json_instruction_in_request():
     """Verify the request body includes response_format=json_object."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         provider.generate_structured(
             task_name="t", system_prompt="Respond in JSON.", user_payload={},
             response_schema=_TestResponse, request_id="r20",
@@ -536,7 +540,7 @@ def test_json_instruction_in_system_prompt():
     """Verify the system prompt includes JSON instruction and schema."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r20a",
@@ -554,7 +558,7 @@ def test_json_instruction_with_empty_system_prompt():
     """JSON instruction must be present even with empty system_prompt."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r20b",
@@ -569,7 +573,7 @@ def test_private_payload_not_in_request_body():
     """Private user payload should not appear in error messages."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         provider.generate_structured(
             task_name="t", system_prompt="", user_payload={"secret": "my-secret-data"},
             response_schema=_TestResponse, request_id="r20c",
@@ -585,7 +589,7 @@ def test_private_payload_not_in_request_body():
 def test_invalid_json_response():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_text_response("not valid json {{{{")):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r4",
@@ -597,7 +601,7 @@ def test_invalid_json_response():
 def test_schema_mismatch_response():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "ok", "number": "bad"})):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r5",
@@ -609,7 +613,7 @@ def test_schema_mismatch_response():
 def test_empty_content():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_text_response("")):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r6",
@@ -621,7 +625,7 @@ def test_empty_content():
 def test_whitespace_content():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_text_response("   \n  \t  ")):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r7",
@@ -634,7 +638,7 @@ def test_finish_reason_length():
     from app.ai.openai_compat import OpenAICompatibleProvider
     resp = _mock_response({"value": "x", "number": 1}, finish_reason="length")
     with patch("httpx.post", return_value=resp):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r8",
@@ -647,7 +651,7 @@ def test_finish_reason_length():
 def test_missing_choices():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_no_choices_response()):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r9",
@@ -659,7 +663,7 @@ def test_missing_choices():
 def test_empty_choices():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_empty_choices_response()):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r10",
@@ -672,7 +676,7 @@ def test_missing_usage():
     from app.ai.openai_compat import OpenAICompatibleProvider
     resp = _mock_response({"value": "x", "number": 1}, prompt_tokens=None, completion_tokens=None, total_tokens=None)
     with patch("httpx.post", return_value=resp):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r11",
@@ -684,7 +688,7 @@ def test_missing_usage():
 def test_http_401_no_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(401)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r12",
@@ -696,7 +700,7 @@ def test_http_401_no_retry():
 def test_http_402_no_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(402)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r13",
@@ -708,7 +712,7 @@ def test_http_402_no_retry():
 def test_http_403_no_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(403)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r13a",
@@ -720,7 +724,7 @@ def test_http_403_no_retry():
 def test_http_404_no_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(404)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r13b",
@@ -732,7 +736,7 @@ def test_http_404_no_retry():
 def test_http_422_no_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(422)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r14",
@@ -748,7 +752,7 @@ def test_http_429_retry_after():
     resp2 = _mock_response({"value": "ok", "number": 1})
     responses = iter([resp1, resp2])
     with patch("httpx.post", side_effect=lambda *a, **kw: next(responses)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r15",
@@ -767,7 +771,7 @@ def test_http_429_retry_after_http_date():
     resp2 = _mock_response({"value": "ok", "number": 1})
     responses = iter([resp1, resp2])
     with patch("httpx.post", side_effect=lambda *a, **kw: next(responses)) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r15a",
@@ -779,7 +783,7 @@ def test_http_429_retry_after_http_date():
 def test_http_500_bounded_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(500)):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r16",
@@ -791,7 +795,7 @@ def test_http_500_bounded_retry():
 def test_http_503_bounded_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(503)):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r17",
@@ -803,7 +807,7 @@ def test_http_503_bounded_retry():
 def test_http_504_bounded_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(504)):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r17a",
@@ -815,7 +819,7 @@ def test_http_504_bounded_retry():
 def test_timeout_error():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", side_effect=TimeoutError("timed out")):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", timeout_seconds=0.001)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", timeout_seconds=0.001, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r18",
@@ -830,7 +834,7 @@ def test_timeout_error():
 def test_all_retries_exhausted():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(502)):
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r19",
@@ -846,7 +850,7 @@ def test_invalid_json_body_no_retry():
     """Response body that is invalid JSON should not retry."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_text_response("not valid json {{{{")) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r22",
@@ -859,7 +863,7 @@ def test_response_is_list_no_retry():
     """Response data that is a list instead of dict should not retry."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_list_response()) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r23",
@@ -872,7 +876,7 @@ def test_choice_not_dict_no_retry():
     """Response where choices[0] is not a dict should not retry."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_choice_not_dict_response()) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r24",
@@ -885,7 +889,7 @@ def test_schema_mismatch_no_retry():
     """Schema mismatch should not retry."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "ok", "number": "bad"})) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r25",
@@ -898,7 +902,7 @@ def test_unexpected_exception_no_retry():
     """Unexpected RuntimeError should not retry."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", side_effect=RuntimeError("unexpected")) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r26",
@@ -921,7 +925,7 @@ def test_transport_error_retry():
         return item
 
     with patch("httpx.post", side_effect=_side_effect) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2)
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2, base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r27",
@@ -937,7 +941,7 @@ def test_secret_not_in_error():
     """Verify error messages never contain the Authorization header value."""
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(401)):
-        provider = OpenAICompatibleProvider(api_key="sk-super-secret-value", model="test-model")
+        provider = OpenAICompatibleProvider(api_key="sk-super-secret-value", model="test-model", base_url="https://opencode.ai/zen/go/v1")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r21",
@@ -945,3 +949,119 @@ def test_secret_not_in_error():
     assert result.error_message is not None
     assert "sk-super-secret-value" not in result.error_message
     assert "Authorization" not in (result.error_message or "")
+
+
+# ── fail-closed: generic openai_compat requires explicit URL ────────────
+
+
+def test_openai_compat_missing_base_url_fails_closed():
+    """openai_compat with empty base URL must fail closed."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with pytest.raises(ValueError, match="base_url"):
+        OpenAICompatibleProvider(
+            api_key="sk-test", model="test-model",
+            base_url="",
+        )
+
+
+def test_openai_compat_whitespace_base_url_fails_closed():
+    """openai_compat with whitespace-only base URL must fail closed."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with pytest.raises(ValueError, match="base_url"):
+        OpenAICompatibleProvider(
+            api_key="sk-test", model="test-model",
+            base_url="   ",
+        )
+
+
+def test_constructor_missing_base_url_fails():
+    """Constructor without base_url must fail."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with pytest.raises(TypeError):
+        OpenAICompatibleProvider(
+            api_key="sk-test", model="test-model",
+        )
+
+
+def test_openai_compat_never_falls_back_to_opencode_go():
+    """openai_compat must not silently use OpenCode Go when URL is missing."""
+    from app.config import settings as s
+    from app.factory import _resolve_provider
+
+    saved = s.ai_provider, s.ai_api_key, s.ai_model, s.ai_base_url
+    s.ai_provider = "openai_compat"
+    s.ai_api_key = "sk-test"
+    s.ai_model = "test-model"
+    s.ai_base_url = ""
+    with pytest.raises(ValueError, match="LF_AI_BASE_URL"):
+        s.validate_ai_provider()
+    s.ai_provider, s.ai_api_key, s.ai_model, s.ai_base_url = saved
+
+
+def test_openai_compat_explicit_public_url_succeeds(monkeypatch):
+    """openai_compat with explicit public URL succeeds."""
+    import socket as _socket
+    from app.ai.openai_compat import OpenAICompatibleProvider
+
+    original_getaddrinfo = _socket.getaddrinfo
+
+    def fake_getaddrinfo(host, *args, **kwargs):
+        if host == "public.example.com":
+            return [(original_getaddrinfo("8.8.8.8", *args, **kwargs)[0])]
+        return original_getaddrinfo(host, *args, **kwargs)
+
+    monkeypatch.setattr(_socket, "getaddrinfo", fake_getaddrinfo)
+
+    provider = OpenAICompatibleProvider(
+        api_key="sk-test", model="test-model",
+        base_url="https://public.example.com/v1",
+    )
+    assert provider.endpoint_url == "https://public.example.com/v1/chat/completions"
+
+
+def test_opencode_go_without_base_url_setting_succeeds(monkeypatch):
+    """opencode_go works without LF_AI_BASE_URL."""
+    from app.config import settings as s
+    from app.factory import _resolve_provider
+
+    saved = s.ai_provider, s.ai_api_key, s.ai_model, s.ai_base_url
+    s.ai_provider = "opencode_go"
+    s.ai_api_key = "sk-test"
+    s.ai_model = "deepseek-v4-flash"
+    s.ai_base_url = ""
+    s.validate_ai_provider()
+    provider = _resolve_provider("opencode_go")
+    assert provider.provider_name == "opencode_go"
+    assert provider.endpoint_url == "https://opencode.ai/zen/go/v1/chat/completions"
+    s.ai_provider, s.ai_api_key, s.ai_model, s.ai_base_url = saved
+
+
+def test_opencode_go_supplied_base_url_cannot_redirect(monkeypatch):
+    """opencode_go ignores LF_AI_BASE_URL and uses canonical endpoint."""
+    from app.config import settings as s
+    from app.factory import _resolve_provider
+
+    saved = s.ai_provider, s.ai_api_key, s.ai_model, s.ai_base_url
+    s.ai_provider = "opencode_go"
+    s.ai_api_key = "sk-test"
+    s.ai_model = "deepseek-v4-flash"
+    s.ai_base_url = "https://evil.example.com/v1"
+    s.validate_ai_provider()
+    provider = _resolve_provider("opencode_go")
+    assert provider.endpoint_url == "https://opencode.ai/zen/go/v1/chat/completions"
+    s.ai_provider, s.ai_api_key, s.ai_model, s.ai_base_url = saved
+
+
+def test_mock_unaffected_by_base_url_validation():
+    """Mock provider remains unaffected by base URL validation."""
+    from app.config import settings as s
+    from app.ai.mock import MockProvider
+
+    saved = s.ai_provider, s.ai_api_key, s.ai_base_url
+    s.ai_provider = "mock"
+    s.ai_api_key = ""
+    s.ai_base_url = ""
+    s.validate_ai_provider()
+    p = MockProvider()
+    assert p.provider_name == "mock"
+    s.ai_provider, s.ai_api_key, s.ai_base_url = saved

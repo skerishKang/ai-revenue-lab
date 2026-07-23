@@ -61,7 +61,7 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
             if handled == "opencode_go":
                 base_url = "https://opencode.ai/zen/go/v1"
             else:
-                base_url = settings.ai_base_url or "https://opencode.ai/zen/go/v1"
+                base_url = settings.ai_base_url
             return OpenAICompatibleProvider(
                 api_key=settings.ai_api_key,
                 model=settings.ai_model,

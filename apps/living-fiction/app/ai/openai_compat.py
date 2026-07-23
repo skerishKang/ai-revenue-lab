@@ -151,7 +151,7 @@ class OpenAICompatibleProvider:
         api_key: str,
         model: str,
         provider_name: str = "openai_compat",
-        base_url: str | None = None,
+        base_url: str,
         cost_class: CostClass = CostClass.PAID,
         timeout_seconds: float = 60.0,
         max_retries: int = 2,
@@ -160,11 +160,13 @@ class OpenAICompatibleProvider:
             raise ValueError(
                 "LF_AI_API_KEY is required for this provider"
             )
+        if not base_url or not base_url.strip():
+            raise ValueError(
+                "base_url is required for OpenAICompatibleProvider"
+            )
         self._api_key = api_key
         self._model = model
         self._provider_name = provider_name
-        if base_url is None or base_url == "":
-            base_url = _OPENCODE_GO_BASE
         self._validated_url = validate_base_url(base_url)
         self._cost_class = cost_class
         self._timeout = httpx.Timeout(
