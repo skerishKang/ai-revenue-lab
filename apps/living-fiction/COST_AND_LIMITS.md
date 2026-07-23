@@ -5,16 +5,20 @@ account IDs, hostnames, or secrets appear in this document.
 
 ## Stack (all free tiers)
 
+The required production stack is **Modal Starter + Neon Free**. The request
+path is `Browser -> Modal FastAPI -> Neon PostgreSQL`; no edge proxy is part
+of the required stack (a Cloudflare Worker proxy is an optional future adapter
+only — see the note at the end).
+
 | Layer     | Plan                         | Always-on cost | Idle behaviour                     |
 | --------- | ---------------------------- | -------------- | ---------------------------------- |
 | Compute   | Modal **Starter** ($0/mo)    | $0             | 0 containers when idle             |
-| Edge      | Cloudflare **Workers Free**  | $0             | no isolates held between requests  |
 | Database  | Neon **Free** ($0/mo)        | $0             | compute suspends after 5 min idle  |
 
 **There is no always-warm resource anywhere in this stack.** Modal is
 configured with `min_containers=0` and `buffer_containers=0`; Neon Free
 scale-to-zero is mandatory (5-minute idle timeout, cannot be disabled on
-Free); Workers hold nothing between requests.
+Free).
 
 ## Quotas and caps as configured
 
@@ -33,14 +37,6 @@ Free); Workers hold nothing between requests.
   `max_idle=60 s`, `max_lifetime=300 s` — an idle container holds **zero**
   PostgreSQL connections, so Neon can scale to zero.
 
-### Cloudflare Workers Free (verified 2026-07-23 — https://developers.cloudflare.com/workers/platform/limits/)
-
-- **100,000 requests/day** (resets midnight UTC); over the limit the route
-  returns Error 1027 — configure the route to **fail closed**.
-- 10 ms CPU time per request (proxying does not count network wait time).
-- 50 subrequests per request — the proxy makes exactly **one**.
-- 128 MB memory per isolate; 3 MB compressed worker size.
-
 ### Neon Free (verified 2026-07-23 — https://neon.com/docs/introduction/plans)
 
 - **100 CU-hours/project/month** (e.g. 0.25 CU × 400 h), autoscaling up to
@@ -56,10 +52,9 @@ Free); Workers hold nothing between requests.
 One reader session (open `/access`, log in with invite, read episode 1,
 submit one choice, read the generated branch) produces roughly:
 
-- Workers: ~15–25 requests (HTML + form posts; static-free server-rendered
-  pages) — ≤0.025% of the daily Workers quota.
-- Modal: the same request count across ≤2 containers; a cold start adds one
-  container start (~seconds) after idle.
+- Modal: ~15–25 requests (HTML + form posts; static-free server-rendered
+  pages) across ≤2 containers; a cold start adds one container start
+  (~seconds) after idle.
 - Neon: a few seconds of compute per burst (connection + queries), then
   scale-to-zero after 5 minutes. Branch generation uses the deterministic
   free MockProvider — **zero AI API cost**.
@@ -71,8 +66,6 @@ every free quota by two orders of magnitude.
 
 ## Quota-exhaustion behaviour (fail closed)
 
-- Workers daily limit → Error 1027 to clients; the app and database are
-  untouched.
 - Modal Starter free credit exhausted → deployments stop scheduling until
   credits renew or an operator explicitly upgrades.
 - Neon CU-hours/egress exhausted → database compute suspended; the app's
@@ -83,25 +76,32 @@ every free quota by two orders of magnitude.
 
 ## No automatic paid upgrades
 
-No credit card is required for any of the three free tiers as configured, and
-none of them silently converts to paid usage. Upgrades happen only by an
+No credit card is required for either of the two free tiers as configured, and
+neither of them silently converts to paid usage. Upgrades happen only by an
 operator's explicit action.
 
 ### Conditions that justify a paid upgrade
 
-1. Sustained traffic above ~1,000 reader flows/day (Workers daily quota
-   pressure) → Workers Paid ($5/mo).
-2. Need for a custom domain or >2 concurrent containers → Modal Team
+1. Need for a custom domain or >2 concurrent containers → Modal Team
    ($250/mo + compute) — evaluate the actual concurrent-reader requirement
    first.
-3. Database storage approaching 0.5 GB, or compute need beyond 100
+2. Database storage approaching 0.5 GB, or compute need beyond 100
    CU-hours/month → Neon Launch (pay-for-what-you-use, $0.106/CU-hour).
-4. A real AI provider replaces the MockProvider → budget per-token provider
+3. A real AI provider replaces the MockProvider → budget per-token provider
    costs separately; this skeleton assumes $0 AI spend.
+4. An optional Cloudflare Worker proxy is added in front of Modal (future
+   adapter, not required) → Cloudflare Workers Free, then Workers Paid
+   ($5/mo) only if its daily quota becomes a constraint.
+
+## Optional future adapter (not required)
+
+A Cloudflare Worker proxy in front of Modal is an optional future adapter only.
+It is not part of the required production stack, is not deployed for Issue #77,
+and adds no required cost. If one is ever added, it sits between the browser
+and Modal; the required stack and its free-tier envelope above are unchanged.
 
 ## Sources
 
 - Modal pricing & Starter plan: https://modal.com/pricing (viewed 2026-07-23)
-- Cloudflare Workers limits: https://developers.cloudflare.com/workers/platform/limits/ (viewed 2026-07-23)
 - Neon plans & billing: https://neon.com/docs/introduction/plans (viewed 2026-07-23)
 - psycopg pool behaviour: https://www.psycopg.org/psycopg3/docs/api/pool.html

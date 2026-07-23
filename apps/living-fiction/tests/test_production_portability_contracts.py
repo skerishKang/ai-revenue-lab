@@ -3,9 +3,8 @@
 These tests run entirely on SQLite / offline: they pin the backend-selection
 and fail-closed rules, URL/secret non-leakage, SQL adaptation, the PostgreSQL
 migration manifest, bootstrap idempotency and invite privacy, and the static
-contracts of the Modal and Cloudflare deployment skeletons. Live PostgreSQL
-behaviour is covered separately by tests_postgres_integration/ (explicit run
-only).
+contracts of the Modal deployment skeleton. Live PostgreSQL behaviour is
+covered separately by tests_postgres_integration/ (explicit run only).
 """
 
 from __future__ import annotations
@@ -544,31 +543,3 @@ def test_modal_entry_builds_asgi_app_with_health(monkeypatch, tmp_path, modal_en
     body = response.json()
     assert body["status"] == "ok"
     assert body["cost_class"] == "free"
-
-
-# ── Cloudflare proxy skeleton ──────────────────────────────────────────────
-
-
-def test_cloudflare_worker_static_contracts():
-    source = (DEPLOY_DIR / "cloudflare" / "src" / "index.js").read_text(
-        encoding="utf-8"
-    )
-    assert "env.UPSTREAM_ORIGIN" in source
-    assert "modal.run" not in source
-    assert "AbortSignal.timeout" in source
-    assert "no-store" in source
-    assert "504" in source
-    assert "502" in source
-    assert "cacheEverything: false" in source
-    assert 'Access-Control-Allow-Origin": "*"' not in source
-    assert "Access-Control-Allow-Origin', '*'" not in source
-    assert "X-Forwarded-Host" in source
-
-
-def test_cloudflare_wrangler_example_has_no_real_origin():
-    source = (DEPLOY_DIR / "cloudflare" / "wrangler.toml.example").read_text(
-        encoding="utf-8"
-    )
-    assert 'UPSTREAM_ORIGIN = ""' in source
-    assert "modal.run" not in source
-    assert "workers.dev" not in source

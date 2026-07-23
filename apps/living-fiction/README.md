@@ -46,10 +46,11 @@ Phase A (this change, Issue #77): production portability foundation —
   startup when the schema is missing or behind;
 - operator bootstrap (`app/ops/bootstrap.py`) for migration, world/canon
   seeding, bootstrap reader, and reader-bound invite issue/rotation;
-- free-tier deployment skeletons: Modal Starter ASGI entry
-  (`deploy/modal/`) and Cloudflare Workers Free proxy
-  (`deploy/cloudflare/`) — skeletons only, deployed by an operator in
-  Phase B;
+- free-tier deployment skeleton: Modal Starter ASGI entry (`deploy/modal/`)
+  serving the app directly — skeleton only, deployed by an operator in
+  Phase B. The production request path is `Browser -> Modal FastAPI -> Neon
+  PostgreSQL`; no edge proxy is required. A Cloudflare Worker proxy is an
+  optional future adapter only and is not part of this skeleton;
 - `COST_AND_LIMITS.md` (free-tier envelope and upgrade conditions) and
   `PRODUCTION_PORTABILITY_AUDIT.md` (SQLite→PostgreSQL audit).
 
@@ -89,10 +90,11 @@ python -X utf8 -m app.ops.bootstrap rotate   # revoke + reissue the bound invite
 Invite codes are printed exactly once and stored only as keyed HMAC digests;
 a lost code cannot be recovered — rotate to issue a replacement.
 
-Deployment is Phase B and operator-driven: see `deploy/modal/README.md` and
-`deploy/cloudflare/README.md` for the exact steps, and `COST_AND_LIMITS.md`
-for the free-tier envelope (scale-to-zero everywhere, no always-on resource,
-no automatic paid upgrade).
+Deployment is Phase B and operator-driven: see `deploy/modal/README.md` for
+the exact steps, and `COST_AND_LIMITS.md` for the free-tier envelope
+(scale-to-zero everywhere, no always-on resource, no automatic paid upgrade).
+The required production stack is Modal Starter + Neon Free; `LF_ALLOWED_ORIGINS`
+is the app's own Modal HTTPS origin. No edge proxy is required.
 
 Live PostgreSQL integration tests are opt-in and never run in the default
 suite; point them at a DISPOSABLE database (they drop/create `lf_it_*`

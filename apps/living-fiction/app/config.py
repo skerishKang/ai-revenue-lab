@@ -140,15 +140,6 @@ class Settings(BaseSettings):
     credential_hmac_key: str = ""
     session_hmac_key: str = ""
 
-    # Shared secret authenticating the Cloudflare proxy worker. The worker
-    # presents it in a dedicated header (X-LF-Proxy-Auth); the app trusts
-    # X-Forwarded-Host / X-Forwarded-Proto ONLY when that header verifies via a
-    # constant-time comparison. The same CSPRNG value is stored as the worker's
-    # UPSTREAM_PROXY_SECRET. Empty disables the proxy-trust path entirely, so
-    # forwarded headers are never honoured (fail closed) and a direct Modal
-    # caller can never forge a trusted origin.
-    proxy_shared_secret: str = ""
-
     # Comma-separated list of allowed request origins (scheme://host[:port])
     # for state-changing requests. Used for Origin/Host verification in
     # production; empty means "derive from the request Host" (lenient only
@@ -198,43 +189,6 @@ class Settings(BaseSettings):
         values = list(secrets.values())
         if len(set(values)) != len(values):
             raise ValueError("Web secrets must be distinct from one another")
-
-    def validate_proxy_secret(self) -> None:
-        """Validate ``LF_PROXY_SHARED_SECRET`` fail-closed.
-
-        The proxy-trust path is enabled ONLY when this secret is present and
-        strong; a missing or weak secret disables forwarded-header trust at the
-        request level (fail closed), so a non-proxied deployment still starts.
-        Whenever the secret IS set it must be distinct from the admin / session
-        / credential secrets, and in production it must additionally be at least
-        32 characters and not structurally weak. Error messages never include
-        the configured value.
-        """
-        secret = self.proxy_shared_secret
-        if not secret:
-            return
-        others = {
-            self.admin_secret,
-            self.credential_hmac_key,
-            self.session_hmac_key,
-        }
-        if secret in others:
-            raise ValueError(
-                "LF_PROXY_SHARED_SECRET must be distinct from the admin, "
-                "session, and credential secrets"
-            )
-        if not self.is_production:
-            return
-        if len(secret) < 32:
-            raise ValueError(
-                "LF_PROXY_SHARED_SECRET must be at least 32 characters in "
-                "production"
-            )
-        if _structurally_weak(secret):
-            raise ValueError(
-                "LF_PROXY_SHARED_SECRET is structurally weak; set a genuinely "
-                "random secret"
-            )
 
     def validate_allowed_origins(self) -> None:
         """Validate ``LF_ALLOWED_ORIGINS`` for production.

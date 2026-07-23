@@ -47,18 +47,23 @@ operator.
 
 ## Deploy
 
-1. Create the Modal secret (values stay on Modal; only names appear here):
+1. Create the Modal secret (values stay on Modal; only names appear here).
+   `LF_ALLOWED_ORIGINS` is the app's own Modal HTTPS origin — the URL the
+   browser loads the app from. No edge proxy is required:
 
    ```bash
    modal secret create living-fiction-secrets \
        LF_ENV=production \
        LF_DATABASE_BACKEND=postgres \
        LF_DATABASE_URL="<runtime-role URL>" \
-       LF_ALLOWED_ORIGINS="https://<your-worker-hostname>" \
+       LF_ALLOWED_ORIGINS="https://ai-revenue-living-fiction--<your-team>.modal.run" \
        LF_ADMIN_SECRET="<random 32+ chars>" \
        LF_CREDENTIAL_HMAC_KEY="<random 32+ chars>" \
        LF_SESSION_HMAC_KEY="<random 32+ chars, distinct>"
    ```
+
+   `LF_MIGRATION_DATABASE_URL` is deliberately NOT a Modal runtime secret; it
+   is used only by the explicit operator migration/bootstrap commands above.
 
 2. Deploy from the package root so the `app` package uploads:
 

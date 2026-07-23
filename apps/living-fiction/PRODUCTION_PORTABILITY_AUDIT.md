@@ -2,8 +2,9 @@
 
 Scope: `apps/living-fiction/` only. Goal: keep the existing SQLite behaviour
 (418-test suite) while making PostgreSQL a selectable production backend, with
-a free-tier deployment skeleton (Modal Starter + Cloudflare Workers Free +
-Neon Free).
+a free-tier deployment skeleton (Modal Starter + Neon Free). The production
+request path is `Browser -> Modal FastAPI -> Neon PostgreSQL`; no edge proxy
+is required (a Cloudflare Worker proxy is an optional future adapter only).
 
 ## 1. Backend selection (explicit, never inferred)
 
@@ -100,15 +101,13 @@ Never runs at startup, never in CI.
   `ai-revenue-living-fiction`; `min_containers=0`, `buffer_containers=0`,
   `max_containers=2`, 60 s scaledown, 0.25 vCPU / 512 MB, no GPU/Volume/
   custom domain; secrets referenced by name only. API verified against
-  `modal==1.5.2`.
-- **Cloudflare** (`deploy/cloudflare/`): thin proxy; upstream from
-  `UPSTREAM_ORIGIN` env only (never hardcoded); method/body/query/headers
-  preserved; Host/X-Forwarded-* set; same-host-only CORS preflight;
-  Set-Cookie passthrough; Location rewritten to the user-facing hostname;
-  `Cache-Control: no-store` forced; bounded 30 s timeout; generic 502/504/500
-  bodies with no upstream URL; structurally not an open proxy; no path
-  blocking (reader `/access` untouched); `/admin/*` protection documented as
-  Cloudflare Access configuration.
+  `modal==1.5.2`. The browser talks to this Modal HTTPS origin directly;
+  `LF_ALLOWED_ORIGINS` is set to that origin.
+- **Cloudflare Worker proxy**: not part of this skeleton. The former
+  `deploy/cloudflare/` proxy was removed because the required path is
+  `Browser -> Modal FastAPI -> Neon PostgreSQL` with no edge proxy. A Worker
+  proxy may be re-added later as an optional future adapter; it is not an
+  Issue #77 acceptance condition and adds no required cost.
 
 ## 7. Test coverage
 
@@ -119,14 +118,18 @@ Always run (SQLite, no external services):
   fail-closed rules, URL/secret non-leakage, SQL adaptation, migration
   manifest/order/checksum/splitter, fail-closed schema verification,
   bootstrap idempotency + invite rotation + digest-only storage, Modal entry
-  import + ASGI startup + resource caps, Cloudflare proxy static contracts.
+  import + ASGI startup + resource caps.
 
 Explicit only (requires a local PostgreSQL; never part of the default run):
 
 - `tests_postgres_integration/` — live apply of `migrations_postgres/`,
   schema verification, bootstrap seeding through the adapter, uniqueness →
   neutral IntegrityError translation, anonymization trigger, pool acquire/
-  release, checksum tamper detection. Run with:
+  release, checksum tamper detection, plus a production-mode product flow
+  (real `create_app()` startup with `env=production` against a restricted
+  runtime role, CSPRNG secrets, Secure session cookies, the direct-Modal
+  origin contract, a single bootstrap invite, a divergent concurrent choice
+  resolving to exactly one 303 + one 409, and restart persistence). Run with:
 
   ```bash
   LF_TEST_POSTGRES_URL="postgresql://<role>@localhost:5432/<db>" \
@@ -137,9 +140,9 @@ Explicit only (requires a local PostgreSQL; never part of the default run):
 
 1. Provision Neon project + owner and runtime roles (no credentials exist in
    this repo).
-2. Create the Modal secret `living-fiction-secrets` with real values.
-3. `modal deploy` and `wrangler deploy` (Phase B), then set
-   `LF_ALLOWED_ORIGINS` to the worker hostname.
-4. Configure Cloudflare Access for `/admin/*` (email OTP).
-5. Replace the MockProvider with a real provider only with an explicit AI
+2. Create the Modal secret `living-fiction-secrets` with real values, setting
+   `LF_ALLOWED_ORIGINS` to the app's own Modal HTTPS origin.
+3. `modal deploy` (Phase B). No edge proxy / `wrangler deploy` is required;
+   Cloudflare hostname, DNS, and Access are out of scope for Issue #77.
+4. Replace the MockProvider with a real provider only with an explicit AI
    budget (see `COST_AND_LIMITS.md`).
