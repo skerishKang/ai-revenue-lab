@@ -69,7 +69,7 @@ class TestClaimGenerationRequest:
         assert first.already_claimed is False
         assert second.already_claimed is True
         assert second.id == first.id
-        assert second.claim_token == first.claim_token
+        assert second.claim_token is None
         conn.close()
 
     def test_different_participant_raises_ownership_error(self):
@@ -499,4 +499,438 @@ class TestFinalizeEditionForRequest:
 
         editions = ed_repo.get_editions_by_participant(rt, "p1")
         assert len(editions) == 1
+        conn.close()
+
+
+class TestFinalizerOwnership:
+    def test_wrong_participant_raises_ownership_error(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn, pid="p1")
+        _setup(conn, pid="p2")
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        with pytest.raises(ed_repo.GenerationRequestOwnershipError):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p2",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id=input_id,
+            )
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 0
+        conn.close()
+
+    def test_wrong_input_raises_ownership_error(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id_p1 = _setup(conn, pid="p1")
+        input_id_p2 = _setup(conn, pid="p2")
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id_p1,
+        )
+        with pytest.raises(ed_repo.GenerationRequestOwnershipError):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id=input_id_p2,
+            )
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 0
+        conn.close()
+
+    def test_stale_token_after_completion_raises(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        ed_repo.finalize_edition_for_request(
+            rt,
+            participant_id="p1",
+            idempotency_key="k1",
+            claim_token=claim.claim_token,
+            structured_content='{"sections": []}',
+            rendered_title="First",
+            input_id=input_id,
+        )
+        with pytest.raises(ed_repo.EditionStateConflict):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="p1",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Second",
+                input_id=input_id,
+            )
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 1
+        conn.close()
+
+    def test_expired_lease_with_valid_token_succeeds(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+            lease_duration_seconds=1,
+            now="2026-01-01T00:00:00.000Z",
+        )
+        edition = ed_repo.finalize_edition_for_request(
+            rt,
+            participant_id="p1",
+            idempotency_key="k1",
+            claim_token=claim.claim_token,
+            structured_content='{"sections": []}',
+            rendered_title="Late",
+            input_id=input_id,
+        )
+        assert edition.id is not None
+        record = gen_req_repo.get_generation_request_by_key(rt, "k1")
+        assert record is not None
+        assert record.status == "completed"
+        conn.close()
+
+    def test_failure_leaves_no_partial_rows(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        with pytest.raises(ed_repo.GenerationRequestOwnershipError):
+            ed_repo.finalize_edition_for_request(
+                rt,
+                participant_id="wrong-owner",
+                idempotency_key="k1",
+                claim_token=claim.claim_token,
+                structured_content='{"sections": []}',
+                rendered_title="Bad",
+                input_id=input_id,
+            )
+        editions = ed_repo.get_editions_by_participant(rt, "p1")
+        assert len(editions) == 0
+        record = gen_req_repo.get_generation_request_by_key(rt, "k1")
+        assert record is not None
+        assert record.status == "claimed"
+        conn.close()
+
+
+class TestClaimTokenCapability:
+    def test_duplicate_claim_returns_no_token(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        first = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        assert first.claim_token is not None
+
+        dup = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        assert dup.already_claimed is True
+        assert dup.claim_token is None
+        conn.close()
+
+    def test_completed_replay_returns_no_token(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        edition = ed_repo.create_edition(
+            rt,
+            participant_id="p1",
+            structured_content='{"sections": []}',
+            rendered_title="T",
+        )
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        gen_req_repo.complete_generation_request(
+            rt,
+            idempotency_key="k1",
+            edition_id=edition.id,
+            claim_token=claim.claim_token,
+        )
+        replay = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        assert replay.already_claimed is True
+        assert replay.claim_token is None
+        conn.close()
+
+    def test_terminal_row_has_null_token_and_lease(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        input_id = _setup(conn)
+        rt = SqliteRuntimeConnection(conn)
+
+        edition = ed_repo.create_edition(
+            rt,
+            participant_id="p1",
+            structured_content='{"sections": []}',
+            rendered_title="T",
+        )
+        claim = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        gen_req_repo.complete_generation_request(
+            rt,
+            idempotency_key="k1",
+            edition_id=edition.id,
+            claim_token=claim.claim_token,
+        )
+        row = conn.execute(
+            "SELECT claim_token, lease_expires_at FROM generation_requests "
+            "WHERE idempotency_key = 'k1'"
+        ).fetchone()
+        assert row["claim_token"] is None
+        assert row["lease_expires_at"] is None
+
+        claim2 = gen_req_repo.claim_generation_request(
+            rt,
+            idempotency_key="k2",
+            participant_id="p1",
+            input_id=input_id,
+        )
+        gen_req_repo.fail_generation_request(
+            rt,
+            idempotency_key="k2",
+            claim_token=claim2.claim_token,
+            failure_category="provider",
+        )
+        row2 = conn.execute(
+            "SELECT claim_token, lease_expires_at FROM generation_requests "
+            "WHERE idempotency_key = 'k2'"
+        ).fetchone()
+        assert row2["claim_token"] is None
+        assert row2["lease_expires_at"] is None
+        conn.close()
+
+
+class TestSchemaStateConstraints:
+    def _raw_insert(self, conn, **overrides):
+        defaults = dict(
+            id="r1",
+            idempotency_key="k1",
+            participant_id="p1",
+            input_id="i1",
+            edition_id=None,
+            status="claimed",
+            claim_token="tok",
+            lease_expires_at="2026-01-01T01:00:00.000Z",
+            failed_at=None,
+            failure_category=None,
+            created_at="2026-01-01T00:00:00.000Z",
+            completed_at=None,
+            updated_at="2026-01-01T00:00:00.000Z",
+        )
+        defaults.update(overrides)
+        conn.execute(
+            "INSERT INTO generation_requests "
+            "(id, idempotency_key, participant_id, input_id, edition_id, "
+            "status, claim_token, lease_expires_at, failed_at, "
+            "failure_category, created_at, completed_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                defaults["id"],
+                defaults["idempotency_key"],
+                defaults["participant_id"],
+                defaults["input_id"],
+                defaults["edition_id"],
+                defaults["status"],
+                defaults["claim_token"],
+                defaults["lease_expires_at"],
+                defaults["failed_at"],
+                defaults["failure_category"],
+                defaults["created_at"],
+                defaults["completed_at"],
+                defaults["updated_at"],
+            ),
+        )
+
+    def _make_db(self):
+        conn = get_connection(":memory:")
+        apply_migrations(conn, "migrations")
+        rt = SqliteRuntimeConnection(conn)
+        repo.create_participant(
+            rt, participant_id="p1", display_name="T", preferred_language="ko"
+        )
+        conn.execute(
+            "INSERT INTO inputs (id, participant_id, sequence_number, raw_text, "
+            "consent_confirmed, submitted_at) VALUES ('i1', 'p1', 1, 'text', 1, "
+            "'2026-01-01T00:00:00.000Z')"
+        )
+        conn.commit()
+        return conn
+
+    def test_valid_claimed_insert_succeeds(self):
+        conn = self._make_db()
+        self._raw_insert(conn)
+        conn.commit()
+        conn.close()
+
+    def test_valid_completed_insert_succeeds(self):
+        conn = self._make_db()
+        conn.execute(
+            "INSERT INTO editions (id, participant_id, edition_number, "
+            "generation_status, structured_content, rendered_title, "
+            "publication_state, drafted_at) VALUES "
+            "('e1', 'p1', 1, 'pending_review', '{}', 'T', 'pending', "
+            "'2026-01-01T00:00:00.000Z')"
+        )
+        self._raw_insert(
+            conn,
+            status="completed",
+            edition_id="e1",
+            completed_at="2026-01-01T00:01:00.000Z",
+            claim_token=None,
+            lease_expires_at=None,
+        )
+        conn.commit()
+        conn.close()
+
+    def test_valid_failed_insert_succeeds(self):
+        conn = self._make_db()
+        self._raw_insert(
+            conn,
+            status="failed",
+            failed_at="2026-01-01T00:01:00.000Z",
+            failure_category="provider",
+            claim_token=None,
+            lease_expires_at=None,
+        )
+        conn.commit()
+        conn.close()
+
+    def test_claimed_without_lease_fails(self):
+        conn = self._make_db()
+        with pytest.raises(Exception):
+            self._raw_insert(conn, lease_expires_at=None)
+            conn.commit()
+        conn.close()
+
+    def test_claimed_with_failed_at_fails(self):
+        conn = self._make_db()
+        with pytest.raises(Exception):
+            self._raw_insert(conn, failed_at="2026-01-01T00:01:00.000Z")
+            conn.commit()
+        conn.close()
+
+    def test_completed_without_edition_fails(self):
+        conn = self._make_db()
+        with pytest.raises(Exception):
+            self._raw_insert(
+                conn,
+                status="completed",
+                edition_id=None,
+                completed_at="2026-01-01T00:01:00.000Z",
+                claim_token=None,
+                lease_expires_at=None,
+            )
+            conn.commit()
+        conn.close()
+
+    def test_completed_with_claim_token_fails(self):
+        conn = self._make_db()
+        conn.execute(
+            "INSERT INTO editions (id, participant_id, edition_number, "
+            "generation_status, structured_content, rendered_title, "
+            "publication_state, drafted_at) VALUES "
+            "('e1', 'p1', 1, 'pending_review', '{}', 'T', 'pending', "
+            "'2026-01-01T00:00:00.000Z')"
+        )
+        with pytest.raises(Exception):
+            self._raw_insert(
+                conn,
+                status="completed",
+                edition_id="e1",
+                completed_at="2026-01-01T00:01:00.000Z",
+                claim_token="should-be-null",
+                lease_expires_at=None,
+            )
+            conn.commit()
+        conn.close()
+
+    def test_failed_without_category_fails(self):
+        conn = self._make_db()
+        with pytest.raises(Exception):
+            self._raw_insert(
+                conn,
+                status="failed",
+                failed_at="2026-01-01T00:01:00.000Z",
+                failure_category=None,
+                claim_token=None,
+                lease_expires_at=None,
+            )
+            conn.commit()
+        conn.close()
+
+    def test_failed_with_completed_at_fails(self):
+        conn = self._make_db()
+        with pytest.raises(Exception):
+            self._raw_insert(
+                conn,
+                status="failed",
+                failed_at="2026-01-01T00:01:00.000Z",
+                failure_category="provider",
+                completed_at="2026-01-01T00:02:00.000Z",
+                claim_token=None,
+                lease_expires_at=None,
+            )
+            conn.commit()
         conn.close()

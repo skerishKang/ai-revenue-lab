@@ -13,6 +13,7 @@ from app.feedback_repository import (
     _FEEDBACK_COLS,
     _FEEDBACK_SELECT,
 )
+from app.generation_request_repository import GenerationRequestOwnershipError
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
 
 if TYPE_CHECKING:
@@ -801,9 +802,17 @@ def finalize_edition_for_request(
     nor the request completion is persisted.  The claim lease will expire
     and the request can be reclaimed for a fresh attempt.
 
-    The generation_request row is locked first (``SELECT ... FOR UPDATE``
-    on PostgreSQL) and verified to be in the ``claimed`` state with a
-    matching ``claim_token`` before any edition work begins.
+    Ownership revalidation: the generation_request row is locked
+    (``SELECT ... FOR UPDATE`` on PostgreSQL) and its stored
+    ``participant_id``, ``input_id``, ``status``, ``claim_token``, and
+    ``edition_id`` are all verified before any edition work begins.  The
+    DB-stored ``participant_id`` and ``input_id`` are used as the
+    authoritative values for the edition insert.
+
+    Lease policy: the ``claim_token`` is the authoritative capability check.
+    If the token matches, finalization proceeds regardless of whether the
+    lease has expired — the lease is a crash-recovery hint, not a hard
+    deadline.  A mismatched or absent token always causes rejection.
     """
     if not isinstance(participant_id, str) or not participant_id.strip():
         raise EditionValidationError(
@@ -822,22 +831,54 @@ def finalize_edition_for_request(
     conn.begin_write()
     try:
         req = conn.execute(
-            "SELECT id FROM generation_requests "
-            "WHERE idempotency_key = ? AND status = 'claimed' "
-            "AND COALESCE(claim_token, '') = ?"
+            "SELECT id, participant_id, input_id, status, claim_token, "
+            "edition_id FROM generation_requests "
+            "WHERE idempotency_key = ?"
             + conn.row_lock_suffix,
-            (idempotency_key, claim_token),
+            (idempotency_key,),
         ).fetchone()
+
         if req is None:
             conn.rollback()
             raise EditionStateConflict(
                 "generation request is not in a completable claimed state"
             )
 
+        if (
+            req["participant_id"] != participant_id
+            or (input_id is not None and req["input_id"] != input_id)
+        ):
+            conn.rollback()
+            raise GenerationRequestOwnershipError(
+                "generation request belongs to a different participant "
+                "or input"
+            )
+
+        if req["status"] != "claimed":
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        if req["edition_id"] is not None:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        if req["claim_token"] is None or req["claim_token"] != claim_token:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        db_participant_id = req["participant_id"]
+        db_input_id = req["input_id"]
+
         participant = conn.execute(
             "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
             + conn.row_lock_suffix,
-            (participant_id,),
+            (db_participant_id,),
         ).fetchone()
         if not participant:
             conn.rollback()
@@ -845,7 +886,7 @@ def finalize_edition_for_request(
                 "participant does not exist or is not active"
             )
 
-        edition_number = _next_edition_number_locked(conn, participant_id)
+        edition_number = _next_edition_number_locked(conn, db_participant_id)
 
         if prior_edition_id is not None:
             prior = conn.execute(
@@ -857,23 +898,23 @@ def finalize_edition_for_request(
                 raise EditionValidationError(
                     "prior_edition_id references a non-existent edition"
                 )
-            if prior["participant_id"] != participant_id:
+            if prior["participant_id"] != db_participant_id:
                 conn.rollback()
                 raise EditionValidationError(
                     "prior_edition_id must belong to the same participant"
                 )
 
-        if input_id is not None:
+        if db_input_id is not None:
             inp = conn.execute(
                 "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
-                (input_id,),
+                (db_input_id,),
             ).fetchone()
             if not inp:
                 conn.rollback()
                 raise EditionValidationError(
                     "input_id references a non-existent input"
                 )
-            if inp["participant_id"] != participant_id:
+            if inp["participant_id"] != db_participant_id:
                 conn.rollback()
                 raise EditionValidationError(
                     "input_id must belong to the same participant"
@@ -894,7 +935,7 @@ def finalize_edition_for_request(
                 raise FeedbackValidationError(
                     "feedback_id references a non-existent feedback record"
                 )
-            if fb["participant_id"] != participant_id:
+            if fb["participant_id"] != db_participant_id:
                 conn.rollback()
                 raise FeedbackValidationError(
                     "feedback must belong to the same participant"
@@ -920,10 +961,10 @@ def finalize_edition_for_request(
             "VALUES (?, ?, ?, ?, ?, 'pending_review', ?, ?, 'pending', ?)",
             (
                 edition_id,
-                participant_id,
+                db_participant_id,
                 edition_number,
                 prior_edition_id,
-                input_id,
+                db_input_id,
                 structured_content,
                 rendered_title,
                 now,
@@ -946,7 +987,7 @@ def finalize_edition_for_request(
         cursor = conn.execute(
             "UPDATE generation_requests "
             "SET edition_id = ?, status = 'completed', completed_at = ?, "
-            "updated_at = ? "
+            "updated_at = ?, claim_token = NULL, lease_expires_at = NULL "
             "WHERE idempotency_key = ? AND status = 'claimed' "
             "AND COALESCE(claim_token, '') = ?",
             (edition_id, now, now, idempotency_key, claim_token),
@@ -960,10 +1001,10 @@ def finalize_edition_for_request(
         conn.commit()
         return EditionRecord(
             id=edition_id,
-            participant_id=participant_id,
+            participant_id=db_participant_id,
             edition_number=edition_number,
             prior_edition_id=prior_edition_id,
-            input_id=input_id,
+            input_id=db_input_id,
             generation_status="pending_review",
             structured_content=structured_content,
             rendered_title=rendered_title,
@@ -978,6 +1019,7 @@ def finalize_edition_for_request(
         EditionValidationError,
         EditionStateConflict,
         FeedbackValidationError,
+        GenerationRequestOwnershipError,
         RepositoryTransactionError,
     ):
         raise

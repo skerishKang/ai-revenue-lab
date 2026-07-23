@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
@@ -30,7 +30,7 @@ class GenerationRequestRecord:
     input_id: str
     edition_id: str | None
     status: str
-    claim_token: str
+    claim_token: str | None
     lease_expires_at: str | None
     failed_at: str | None
     failure_category: str | None
@@ -200,13 +200,19 @@ def claim_generation_request(
 
             if existing["status"] == "completed":
                 conn.commit()
-                return _row_to_record(existing, already_claimed=True)
+                return replace(
+                    _row_to_record(existing, already_claimed=True),
+                    claim_token=None,
+                )
 
             if existing["status"] == "claimed":
                 existing_lease = existing["lease_expires_at"]
                 if existing_lease is not None and existing_lease > now:
                     conn.commit()
-                    return _row_to_record(existing, already_claimed=True)
+                    return replace(
+                        _row_to_record(existing, already_claimed=True),
+                        claim_token=None,
+                    )
                 cursor = conn.execute(
                     "UPDATE generation_requests "
                     "SET claim_token = ?, lease_expires_at = ?, updated_at = ? "
@@ -300,7 +306,7 @@ def complete_generation_request(
         cursor = conn.execute(
             "UPDATE generation_requests "
             "SET edition_id = ?, status = 'completed', completed_at = ?, "
-            "updated_at = ? "
+            "updated_at = ?, claim_token = NULL, lease_expires_at = NULL "
             "WHERE idempotency_key = ? AND status = 'claimed' "
             "AND COALESCE(claim_token, '') = ?",
             (edition_id, now, now, idempotency_key, claim_token),
@@ -343,7 +349,7 @@ def fail_generation_request(
         cursor = conn.execute(
             "UPDATE generation_requests "
             "SET status = 'failed', failed_at = ?, failure_category = ?, "
-            "updated_at = ? "
+            "updated_at = ?, claim_token = NULL, lease_expires_at = NULL "
             "WHERE idempotency_key = ? AND status = 'claimed' "
             "AND COALESCE(claim_token, '') = ?",
             (now, failure_category, now, idempotency_key, claim_token),
