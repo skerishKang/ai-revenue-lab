@@ -391,6 +391,62 @@ def main() -> None:
         "preview/participant/not-found/index.html",
     )
 
+    _write_page(
+        env, "intro.html",
+        {},
+        "/preview/intro",
+        "preview/intro/index.html",
+    )
+
+    _write_page(
+        env, "transformation.html",
+        {
+            "participant": participant,
+            "edition": edition_published,
+            "content": content,
+        },
+        "/preview/participant/transformation",
+        "preview/participant/transformation/index.html",
+    )
+
+    _write_page(
+        env, "feedback_adaptation.html",
+        {
+            "participant": participant,
+            "edition": edition_published,
+            "content": content,
+        },
+        f"/preview/participant/editions/{edition_published.edition_number}/adaptation",
+        f"preview/participant/editions/{edition_published.edition_number}/adaptation/index.html",
+    )
+
+    _write_page(
+        env, "admin_evidence.html",
+        {
+            "edition": edition_pending,
+            "content": content,
+            "participant": participant,
+            "runs": runs,
+            "provider_name": "mock",
+            "model_name": "mock-personal-edition-v1",
+        },
+        "/admin/review/modal-preview-edition/evidence",
+        "admin/review/modal-preview-edition/evidence/index.html",
+    )
+
+    _write_page(
+        env, "admin_content_review.html",
+        {
+            "edition": edition_pending,
+            "content": content,
+            "participant": participant,
+            "input_count": len(inputs),
+            "feedbacks": feedbacks,
+        },
+        "/admin/review/modal-preview-edition/content",
+        "admin/review/modal-preview-edition/content/index.html",
+    )
+
     _copy_static()
     _write_headers()
     _write_robots_txt()

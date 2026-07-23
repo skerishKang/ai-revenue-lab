@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Content Review — Personal Edition{% endblock %}
+{% block content %}
+<div class="content-review-page">
+  <h1>콘텐츠 검토</h1>
+
+  <section class="content-review-header">
+    <h2>{{ edition.edition_number }}호 — {{ edition.title }}</h2>
+    <p class="edition-meta">주제: {{ edition.theme }} · 작성일: {{ edition.created_at }}</p>
+  </section>
+
+  <section class="content-review-body">
+    <div class="editorial-grid">
+      <div class="main">
+        <h3>본문</h3>
+        <div class="content-body">
+          {% for section in content.sections %}
+          <div class="content-section">
+            <h4>{{ section.title }}</h4>
+            <p>{{ section.body }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="sidebar">
+        <h4>작업 정보</h4>
+        <ul>
+          <li>작성자: {{ participant.display_name }}</li>
+          <li>상태: {{ edition.publication_state }}</li>
+          <li>원본 기록: {{ input_count }}개</li>
+        </ul>
+        <h4>피드백</h4>
+        <ul>
+          {% for fb in feedbacks %}
+          <li>{{ fb.direction }}: {{ fb.free_text|truncate(80) }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-review-actions">
+    <a href="/admin/review/modal-preview-edition/evidence/" class="btn btn-secondary">생성 증거</a>
+    <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
+  </section>
+</div>
+{% endblock %}

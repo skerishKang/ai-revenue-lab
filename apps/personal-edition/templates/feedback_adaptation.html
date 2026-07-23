@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Feedback Adaptation — Personal Edition{% endblock %}
+{% block content %}
+<div class="adaptation-page">
+  <h1>다음 호의 변화</h1>
+
+  <section class="adaptation-summary">
+    <h2>첫 호와 다음 호의 차이</h2>
+    <p>사용자의 피드백이 다음 에디션에 어떻게 반영되었는지 확인하세요.</p>
+  </section>
+
+  <section class="adaptation-comparison">
+    <div class="editorial-grid">
+      <div class="main">
+        <h3>첫 번째 에디션</h3>
+        <div class="edition-cover">
+          <img src="/static/images/img-edition-cover.svg" alt="첫 번째 에디션 표지">
+        </div>
+        <p>초기 초안에서 피드백을 받은 후, 다음 호에서 구조와 내용이 어떻게 달라졌는지 비교합니다.</p>
+      </div>
+      <div class="sidebar">
+        <h4>변경 내역</h4>
+        <ul>
+          <li>구조 재편: 섹션 순서 조정</li>
+          <li>내용 추가: 사용자 요청한 부분 보강</li>
+          <li>톤 조정: 더 부드러운 어조로 수정</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="adaptation-nav">
+    <a href="/preview/participant/history/" class="btn btn-secondary">지난 에디션 보기</a>
+  </section>
+</div>
+{% endblock %}

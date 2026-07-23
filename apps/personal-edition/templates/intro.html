@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Personal Edition{% endblock %}
+{% block content %}
+<div class="intro-page">
+  <section class="hero-section">
+    <img src="/static/images/img-hero-transformation.svg" alt="" aria-hidden="true">
+    <div class="hero-overlay">
+      <h1>Personal Edition</h1>
+      <p>개인 기록이 비공개 에디션으로</p>
+    </div>
+  </section>
+
+  <section class="intro-description">
+    <h2>작은 기록이 모여, 한 권의 에디션</h2>
+    <p>대화 조각, 메모, 음성 전사, 사진 메모가 AI와 편집자의 손을 거쳐 비공개 에디션으로 출판됩니다. 블로그도, 일기장도, 챗봇도 아닙니다. 개인만을 위한 정적 출판물입니다.</p>
+    <p><strong>합성 데이터 · 저장 없음</strong> — 데모를 체험해 보세요.</p>
+  </section>
+
+  <section class="intro-cta">
+    <a href="/preview/participant/access/" class="btn btn-primary">데모 시작하기</a>
+  </section>
+
+  <section class="intro-transformation">
+    <h2>어떻게 만들어지나요</h2>
+    <div class="transformation-flow">
+      <div class="transformation-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <div class="step-label">원본 기록</div>
+          <p>대화, 메모, 음성 전사, 사진 메모가 콜라주됩니다.</p>
+        </div>
+        <img src="/static/images/img-source-fragments.svg" alt="" aria-hidden="true">
+      </div>
+      <div class="transformation-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <div class="step-label">AI 초안</div>
+          <p>기록이 에디션 초안으로 정리됩니다.</p>
+        </div>
+      </div>
+      <div class="transformation-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <div class="step-label">편집자 검토</div>
+          <p>연필선과 교정 표시로 편집합니다.</p>
+        </div>
+        <img src="/static/images/img-editorial-review.svg" alt="" aria-hidden="true">
+      </div>
+      <div class="transformation-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <div class="step-label">발행 완료</div>
+          <p>비공개 에디션이 출판됩니다.</p>
+        </div>
+        <img src="/static/images/img-edition-cover.svg" alt="" aria-hidden="true">
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

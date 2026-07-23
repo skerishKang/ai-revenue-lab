@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Transformation — Personal Edition{% endblock %}
+{% block content %}
+<div class="transformation-page">
+  <h1>기록이 에디션으로</h1>
+
+  <section class="transformation-hero">
+    <img src="/static/images/img-hero-transformation.svg" alt="" aria-hidden="true">
+  </section>
+
+  <section class="transformation-detail">
+    <h2>소스 → 초안 → 편집 → 출판</h2>
+
+    <div class="transformation-step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-label">원본 기록</div>
+        <p>대화 조각, 메모, 음성 전사, 사진 메모가 콜라주됩니다.</p>
+      </div>
+      <img src="/static/images/img-source-fragments.svg" alt="" aria-hidden="true">
+    </div>
+
+    <div class="transformation-step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-label">AI 초안</div>
+        <p>기록이 에디션 초안으로 정리됩니다.</p>
+      </div>
+    </div>
+
+    <div class="transformation-step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-label">편집자 검토</div>
+        <p>연필선과 교정 표시로 편집합니다.</p>
+      </div>
+      <img src="/static/images/img-editorial-review.svg" alt="" aria-hidden="true">
+    </div>
+
+    <div class="transformation-step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-label">발행 완료</div>
+        <p>비공개 에디션이 출판됩니다.</p>
+      </div>
+      <img src="/static/images/img-edition-cover.svg" alt="" aria-hidden="true">
+    </div>
+  </section>
+
+  <section class="transformation-nav">
+    <a href="/preview/participant/published/" class="btn btn-secondary">발행된 에디션 보기</a>
+  </section>
+</div>
+{% endblock %}
