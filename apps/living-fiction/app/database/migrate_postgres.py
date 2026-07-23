@@ -172,6 +172,14 @@ def _read_dollar_tag(sql: str, start: int) -> str | None:
 
 
 def _ensure_migration_table(raw: Any) -> None:
+    """Create the migration bookkeeping table (DDL — apply path ONLY).
+
+    This is the ONE place a migration object may be created, and it is reached
+    exclusively from :func:`apply_migrations` (the operator migration command).
+    The runtime verifier (:func:`verify_schema_current`) never calls this, so a
+    read-only runtime role can verify the schema without CREATE rights and a
+    failed verification never leaves a new object behind.
+    """
     raw.execute(
         """
         CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -186,6 +194,10 @@ def _ensure_migration_table(raw: Any) -> None:
 def applied_migrations(conn: Any) -> dict[str, str]:
     """Return ``{version: checksum}`` for all applied migrations.
 
+    APPLY-PATH helper: ensures the bookkeeping table exists first, so it must
+    only be used from the operator migration command (owner/migration role).
+    The runtime verifier uses :func:`read_applied_migrations` instead.
+
     Accepts a :class:`~app.database.postgres.PostgresConnection` (uses its raw
     connection) or a raw Psycopg connection with dict rows.
     """
@@ -193,6 +205,27 @@ def applied_migrations(conn: Any) -> dict[str, str]:
     _ensure_migration_table(raw)
     cur = raw.execute("SELECT version, checksum FROM schema_migrations")
     return {row["version"]: row["checksum"] for row in cur.fetchall()}
+
+
+def read_applied_migrations(conn: Any) -> list[dict[str, Any]] | None:
+    """READ-ONLY view of applied migrations; ``None`` when the table is absent.
+
+    Uses only ``SELECT`` / catalog lookups so it is safe for a runtime role
+    without CREATE rights and never mutates the database. Returns the raw rows
+    (``[{"version": ..., "checksum": ...}, ...]``) WITHOUT de-duplicating so the
+    caller can detect duplicate versions, or ``None`` when the
+    ``schema_migrations`` table does not exist (schema never migrated).
+    """
+    raw = getattr(conn, "raw", conn)
+    cur = raw.execute("SELECT to_regclass('schema_migrations') AS reg")
+    row = cur.fetchone()
+    reg = row["reg"] if isinstance(row, dict) else (row[0] if row else None)
+    if reg is None:
+        return None
+    cur = raw.execute("SELECT version, checksum FROM schema_migrations")
+    return [
+        {"version": r["version"], "checksum": r["checksum"]} for r in cur.fetchall()
+    ]
 
 
 def apply_migrations(conn: Any, migrations_dir: str | Path) -> list[str]:
@@ -245,25 +278,65 @@ def apply_migrations(conn: Any, migrations_dir: str | Path) -> list[str]:
 
 
 def verify_schema_current(conn: Any, migrations_dir: str | Path) -> None:
-    """Fail closed unless every on-disk migration is applied.
+    """Fail closed unless the schema exactly matches the on-disk migrations.
 
-    Used by production startup. A missing migration (schema behind) or an
-    unknown applied version (unexpected schema) raises
-    :class:`~app.database.errors.SchemaMismatchError`. The runtime app never
-    applies migrations itself.
+    FULLY READ-ONLY: uses only ``SELECT`` / catalog lookups (via
+    :func:`read_applied_migrations`) and never creates or mutates any object, so
+    a runtime role without CREATE/ALTER/DROP rights can verify a current schema
+    and a failed verification leaves the database byte-for-byte unchanged.
+
+    Used by production startup. Fails closed (raises
+    :class:`~app.database.errors.SchemaMismatchError`) on any of:
+
+    * the ``schema_migrations`` table is absent (never migrated);
+    * a stored version has no matching on-disk file (``unknown``);
+    * an on-disk migration is not applied (``missing``);
+    * a version is recorded more than once (``duplicate``);
+    * a stored checksum differs from the on-disk file SHA-256
+      (``checksum_mismatch``).
+
+    The runtime app never applies migrations itself. Error messages contain only
+    counts — never the DB URL, user, host, or password.
     """
-    expected = expected_versions(migrations_dir)
-    applied = applied_migrations(conn)
-    expected_set = set(expected)
-    applied_set = set(applied)
+    on_disk = list_migrations(migrations_dir)
+    expected_checksums = {path.name: file_checksum(path) for path in on_disk}
+    expected_set = set(expected_checksums)
+
+    rows = read_applied_migrations(conn)
+    if rows is None:
+        raise SchemaMismatchError(
+            "database schema is not current (migration table absent); "
+            "run the migration command before starting the app"
+        )
+
+    stored: dict[str, str] = {}
+    duplicate_count = 0
+    for row in rows:
+        version = row["version"]
+        if version in stored:
+            duplicate_count += 1
+            continue
+        stored[version] = row["checksum"]
+    applied_set = set(stored)
+
     missing = sorted(expected_set - applied_set)
     unknown = sorted(applied_set - expected_set)
-    if missing or unknown:
+    checksum_mismatch = sorted(
+        version
+        for version in (expected_set & applied_set)
+        if stored[version] != expected_checksums[version]
+    )
+
+    if missing or unknown or duplicate_count or checksum_mismatch:
         detail = []
         if missing:
             detail.append(f"missing={len(missing)}")
         if unknown:
             detail.append(f"unknown={len(unknown)}")
+        if duplicate_count:
+            detail.append(f"duplicate={duplicate_count}")
+        if checksum_mismatch:
+            detail.append(f"checksum_mismatch={len(checksum_mismatch)}")
         raise SchemaMismatchError(
             "database schema is not current (" + ", ".join(detail) + "); "
             "run the migration command before starting the app"

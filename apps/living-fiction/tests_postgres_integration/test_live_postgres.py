@@ -53,6 +53,8 @@ from app.ops import bootstrap
 from app.preview_data import WORLD_STATE
 from app.utils import new_id, now_utc_iso
 
+import pg_provision
+
 APP_ROOT = Path(__file__).resolve().parent.parent
 PG_MIGRATIONS_DIR = APP_ROOT / "migrations_postgres"
 
@@ -96,6 +98,24 @@ def _drop_schema(schema: str) -> None:
         raw.close()
 
 
+def _schema_objects(schema: str) -> list[tuple[str, str]]:
+    """Snapshot (name, kind) of every relation in a schema, as the owner."""
+    import psycopg  # noqa: PLC0415
+    from psycopg.rows import dict_row  # noqa: PLC0415
+
+    raw = psycopg.connect(_pg_url, autocommit=True, row_factory=dict_row)
+    try:
+        cur = raw.execute(
+            "SELECT c.relname, c.relkind::text AS relkind "
+            "FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+            "WHERE n.nspname = %s ORDER BY c.relname, c.relkind",
+            (schema,),
+        )
+        return [(r["relname"], r["relkind"]) for r in cur.fetchall()]
+    finally:
+        raw.close()
+
+
 @pytest.fixture(scope="session")
 def migrated_url():
     """A fully migrated schema, reset once per session."""
@@ -120,6 +140,15 @@ def pg_conn(migrated_url):
     conn.close()
 
 
+@pytest.fixture(scope="session")
+def runtime_url(migrated_url):
+    """A restricted runtime-role URL for the migrated schema (DML, no DDL)."""
+    pg_provision.ensure_runtime_role(_pg_url)
+    pg_provision.grant_runtime_dml(_pg_url, "lf_it_main")
+    pg_provision.revoke_runtime_create(_pg_url, "lf_it_main")
+    return pg_provision.runtime_url(_pg_url, "lf_it_main")
+
+
 # ── Migration runner ────────────────────────────────────────────────────────
 
 
@@ -130,11 +159,40 @@ def test_reapply_is_noop_and_verify_passes(pg_conn):
     assert set(applied) == set(expected_versions(PG_MIGRATIONS_DIR))
 
 
-def test_verify_fails_closed_on_empty_schema():
+def test_verify_absent_table_fails_closed_and_creates_nothing():
     schema = "lf_it_empty"
     _reset_schema(schema)
     try:
+        before = _schema_objects(schema)
         conn = connect_postgres(_with_search_path(_pg_url, schema))
+        try:
+            with pytest.raises(SchemaMismatchError, match="migration table absent"):
+                verify_schema_current(conn, PG_MIGRATIONS_DIR)
+        finally:
+            conn.close()
+        # A failed verification must leave the schema byte-for-byte unchanged.
+        assert _schema_objects(schema) == before
+    finally:
+        _drop_schema(schema)
+
+
+def test_verify_present_but_empty_table_reports_missing():
+    schema = "lf_it_empty_tbl"
+    _reset_schema(schema)
+    try:
+        url = _with_search_path(_pg_url, schema)
+        import psycopg  # noqa: PLC0415
+
+        raw = psycopg.connect(url, autocommit=True)
+        try:
+            raw.execute(
+                "CREATE TABLE schema_migrations (version TEXT PRIMARY KEY, "
+                "checksum TEXT NOT NULL, applied_at TIMESTAMPTZ NOT NULL "
+                "DEFAULT now())"
+            )
+        finally:
+            raw.close()
+        conn = connect_postgres(url)
         try:
             with pytest.raises(SchemaMismatchError, match="missing=10"):
                 verify_schema_current(conn, PG_MIGRATIONS_DIR)
@@ -142,6 +200,71 @@ def test_verify_fails_closed_on_empty_schema():
             conn.close()
     finally:
         _drop_schema(schema)
+
+
+def test_verify_rejects_unknown_applied_version():
+    schema = "lf_it_unknown"
+    _reset_schema(schema)
+    try:
+        conn = connect_postgres(_with_search_path(_pg_url, schema))
+        try:
+            apply_migrations(conn, PG_MIGRATIONS_DIR)
+            conn.raw.execute(
+                "INSERT INTO schema_migrations (version, checksum) "
+                "VALUES ('999_bogus.sql', 'x')"
+            )
+            with pytest.raises(SchemaMismatchError, match="unknown=1"):
+                verify_schema_current(conn, PG_MIGRATIONS_DIR)
+        finally:
+            conn.close()
+    finally:
+        _drop_schema(schema)
+
+
+def test_verify_rejects_stored_checksum_mismatch():
+    schema = "lf_it_cksum"
+    _reset_schema(schema)
+    try:
+        conn = connect_postgres(_with_search_path(_pg_url, schema))
+        try:
+            apply_migrations(conn, PG_MIGRATIONS_DIR)
+            first = expected_versions(PG_MIGRATIONS_DIR)[0]
+            conn.raw.execute(
+                "UPDATE schema_migrations SET checksum = 'deadbeef' "
+                "WHERE version = %s",
+                (first,),
+            )
+            with pytest.raises(SchemaMismatchError, match="checksum_mismatch=1"):
+                verify_schema_current(conn, PG_MIGRATIONS_DIR)
+        finally:
+            conn.close()
+    finally:
+        _drop_schema(schema)
+
+
+def test_runtime_role_verifies_current_schema_without_create_rights(runtime_url):
+    conn = connect_postgres(runtime_url)
+    try:
+        verify_schema_current(conn, PG_MIGRATIONS_DIR)
+    finally:
+        conn.close()
+
+
+def test_runtime_role_cannot_create_alter_drop(runtime_url):
+    import psycopg  # noqa: PLC0415
+
+    raw = psycopg.connect(runtime_url, autocommit=True)
+    try:
+        for stmt in (
+            "CREATE TABLE lf_it_main.runtime_probe (id int)",
+            "ALTER TABLE lf_it_main.worlds ADD COLUMN probe int",
+            "DROP TABLE lf_it_main.worlds",
+        ):
+            with pytest.raises(psycopg.Error) as excinfo:
+                raw.execute(stmt)
+            assert excinfo.value.sqlstate == "42501"
+    finally:
+        raw.close()
 
 
 def test_checksum_tamper_is_detected(tmp_path):

@@ -278,20 +278,46 @@ class _FakeCursor:
     def __init__(self, rows):
         self._rows = rows
 
+    def fetchone(self):
+        return self._rows[0] if self._rows else None
+
     def fetchall(self):
         return self._rows
 
 
 class _FakeRaw:
-    def __init__(self, applied_rows):
+    """Models a read-only runtime connection for the schema verifier.
+
+    Refuses to execute any non-SELECT statement so a regression that makes the
+    runtime verifier issue DDL fails these tests loudly.
+    """
+
+    def __init__(self, applied_rows, table_exists=True):
         self.executed = []
         self._applied = applied_rows
+        self._table_exists = table_exists
 
     def execute(self, sql, params=()):
         self.executed.append(sql)
-        if sql.lstrip().upper().startswith("SELECT"):
-            return _FakeCursor(self._applied)
-        return _FakeCursor([])
+        assert sql.lstrip().upper().startswith("SELECT"), (
+            f"runtime verifier issued a non-SELECT statement: {sql!r}"
+        )
+        if "to_regclass" in sql:
+            return _FakeCursor([{"reg": 12345 if self._table_exists else None}])
+        return _FakeCursor(self._applied)
+
+
+def _manifest_rows():
+    return [
+        {"version": p.name, "checksum": file_checksum(p)}
+        for p in list_migrations(PG_MIGRATIONS_DIR)
+    ]
+
+
+def test_verify_schema_current_fails_closed_when_migration_table_absent():
+    raw = _FakeRaw([], table_exists=False)
+    with pytest.raises(SchemaMismatchError, match="migration table absent"):
+        verify_schema_current(raw, PG_MIGRATIONS_DIR)
 
 
 def test_verify_schema_current_fails_closed_on_empty_database():
@@ -300,19 +326,35 @@ def test_verify_schema_current_fails_closed_on_empty_database():
         verify_schema_current(raw, PG_MIGRATIONS_DIR)
 
 
+def test_verify_schema_current_is_read_only():
+    raw = _FakeRaw(_manifest_rows())
+    verify_schema_current(raw, PG_MIGRATIONS_DIR)
+    assert raw.executed
+    assert all(s.lstrip().upper().startswith("SELECT") for s in raw.executed)
+
+
 def test_verify_schema_current_accepts_complete_manifest():
-    rows = [
-        {"version": v, "checksum": "x"} for v in expected_versions(PG_MIGRATIONS_DIR)
-    ]
-    verify_schema_current(_FakeRaw(rows), PG_MIGRATIONS_DIR)
+    verify_schema_current(_FakeRaw(_manifest_rows()), PG_MIGRATIONS_DIR)
 
 
 def test_verify_schema_current_rejects_unknown_version():
-    rows = [
-        {"version": v, "checksum": "x"} for v in expected_versions(PG_MIGRATIONS_DIR)
-    ]
+    rows = _manifest_rows()
     rows.append({"version": "999_unexpected.sql", "checksum": "x"})
     with pytest.raises(SchemaMismatchError, match="unknown=1"):
+        verify_schema_current(_FakeRaw(rows), PG_MIGRATIONS_DIR)
+
+
+def test_verify_schema_current_rejects_checksum_mismatch():
+    rows = _manifest_rows()
+    rows[0] = {"version": rows[0]["version"], "checksum": "deadbeef"}
+    with pytest.raises(SchemaMismatchError, match="checksum_mismatch=1"):
+        verify_schema_current(_FakeRaw(rows), PG_MIGRATIONS_DIR)
+
+
+def test_verify_schema_current_rejects_duplicate_version():
+    rows = _manifest_rows()
+    rows.append(dict(rows[0]))
+    with pytest.raises(SchemaMismatchError, match="duplicate=1"):
         verify_schema_current(_FakeRaw(rows), PG_MIGRATIONS_DIR)
 
 
