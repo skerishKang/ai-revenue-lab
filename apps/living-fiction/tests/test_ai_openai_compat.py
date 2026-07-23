@@ -71,12 +71,13 @@ def test_deepseek_v4_flash_factory_smoke(monkeypatch):
     monkeypatch.setattr("app.config.settings.ai_provider", "deepseek")
     monkeypatch.setattr("app.config.settings.ai_api_key", "sk-test-key")
     monkeypatch.setattr("app.config.settings.ai_model", "deepseek-v4-flash")
-    monkeypatch.setattr("app.config.settings.ai_base_url", "https://api.deepseek.com")
+    monkeypatch.setattr("app.config.settings.ai_base_url", "")
 
     provider = _resolve_provider("deepseek")
     assert provider.provider_name == "deepseek"
     assert provider.model == "deepseek-v4-flash"
     assert provider.cost_class == CostClass.PAID
+    assert "opencode.ai/zen/go/v1" in provider.endpoint_url
 
 
 def test_no_api_key_mock_startup(monkeypatch):
@@ -92,20 +93,26 @@ def test_no_api_key_mock_startup(monkeypatch):
 
 def test_validate_base_url_ok():
     from app.ai.openai_compat import validate_base_url
+    result = validate_base_url("https://opencode.ai/zen/go/v1")
+    assert result == "https://opencode.ai/zen/go/v1"
+
+
+def test_validate_base_url_ok_deepseek():
+    from app.ai.openai_compat import validate_base_url
     result = validate_base_url("https://api.deepseek.com")
     assert "https://api.deepseek.com/v1" in result
 
 
 def test_validate_base_url_ok_with_v1():
     from app.ai.openai_compat import validate_base_url
-    result = validate_base_url("https://api.deepseek.com/v1")
-    assert result == "https://api.deepseek.com/v1"
+    result = validate_base_url("https://opencode.ai/zen/go/v1")
+    assert result == "https://opencode.ai/zen/go/v1"
 
 
 def test_validate_base_url_ok_with_full_path():
     from app.ai.openai_compat import validate_base_url
-    result = validate_base_url("https://api.deepseek.com/v1/chat/completions")
-    assert "api.deepseek.com" in result
+    result = validate_base_url("https://opencode.ai/zen/go/v1/chat/completions")
+    assert "opencode.ai" in result
 
 
 def test_malformed_url():
@@ -152,21 +159,29 @@ def test_link_local_url_rejection():
 
 def test_endpoint_no_duplicate_v1():
     from app.ai.openai_compat import _build_endpoint_url
-    url = _build_endpoint_url("https://api.deepseek.com/v1")
-    assert url == "https://api.deepseek.com/v1/chat/completions"
+    url = _build_endpoint_url("https://opencode.ai/zen/go/v1")
+    assert url == "https://opencode.ai/zen/go/v1/chat/completions"
     assert url.count("v1") == 1
+
+
+def test_endpoint_opencode_go_full_path():
+    from app.ai.openai_compat import validate_base_url, _build_endpoint_url
+    validated = validate_base_url("https://opencode.ai/zen/go/v1/chat/completions")
+    url = _build_endpoint_url(validated)
+    assert url == "https://opencode.ai/zen/go/v1/chat/completions"
+    assert url.count("chat/completions") == 1
 
 
 def test_endpoint_no_duplicate_chat_completions():
     from app.ai.openai_compat import _build_endpoint_url
-    url = _build_endpoint_url("https://api.deepseek.com/v1/chat/completions")
-    assert url == "https://api.deepseek.com/v1/chat/completions"
+    url = _build_endpoint_url("https://opencode.ai/zen/go/v1/chat/completions")
+    assert url == "https://opencode.ai/zen/go/v1/chat/completions"
     assert url.count("chat/completions") == 1
 
 
 def test_endpoint_from_base_no_slash():
     from app.ai.openai_compat import _build_endpoint_url
-    url = _build_endpoint_url("https://api.deepseek.com/v1")
+    url = _build_endpoint_url("https://opencode.ai/zen/go/v1")
     assert url.count("v1") == 1
     assert url.count("chat/completions") == 1
 
@@ -188,6 +203,7 @@ def test_default_attributes():
     assert provider.provider_name == "openai_compat"
     assert provider.model == "deepseek-v4-flash"
     assert provider.cost_class == CostClass.PAID
+    assert "opencode.ai/zen/go/v1" in provider.endpoint_url
 
 
 def test_custom_provider_name():

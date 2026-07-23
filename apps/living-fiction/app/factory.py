@@ -64,7 +64,7 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
                 provider_name=handled,
                 base_url=(
                     settings.ai_base_url
-                    or "https://api.deepseek.com"
+                    or "https://opencode.ai/zen/go/v1"
                 ),
             )
         raise RuntimeError(f"unsupported provider: {provider}")

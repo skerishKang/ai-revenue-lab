@@ -105,7 +105,7 @@ class OpenAICompatibleProvider:
         api_key: str,
         model: str,
         provider_name: str = "openai_compat",
-        base_url: str = "https://api.deepseek.com",
+        base_url: str = "https://opencode.ai/zen/go/v1",
         cost_class: CostClass = CostClass.PAID,
         timeout_seconds: float = 60.0,
         max_retries: int = 2,
