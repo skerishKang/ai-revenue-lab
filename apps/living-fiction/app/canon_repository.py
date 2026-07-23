@@ -10,6 +10,7 @@ import json
 import sqlite3
 from dataclasses import dataclass
 
+from app.database.errors import IntegrityError
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -123,7 +124,7 @@ def create_canon_snapshot(
             unresolved_threads_json=json.dumps(unresolved_threads),
             created_at=now,
         )
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise CanonValidationError(f"snapshot already exists: {exc}") from exc
     except Exception:
@@ -227,7 +228,7 @@ def create_canon_checkpoint(
             is_compatible_for_rejoin=is_compatible_for_rejoin,
             created_at=now,
         )
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise CanonValidationError(f"checkpoint already exists: {exc}") from exc
     except Exception:

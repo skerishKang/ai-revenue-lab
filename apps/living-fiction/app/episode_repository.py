@@ -10,6 +10,7 @@ import json
 import sqlite3
 from dataclasses import dataclass
 
+from app.database.errors import IntegrityError
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -145,7 +146,7 @@ def create_episode(
         )
         conn.commit()
         return get_episode_by_id(conn, episode_id)  # type: ignore
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise EpisodeValidationError(
             f"episode already exists (duplicate ID or number): {exc}"

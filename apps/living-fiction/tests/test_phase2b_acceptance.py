@@ -25,7 +25,10 @@ from app.db import apply_migrations, get_connection
 from app.dev_seed import _seed_canon, _seed_invite, _seed_world
 from app.preview_data import BRANCH_EPISODE_CONTENT, BRANCH_EPISODE_PLAN, WORLD_STATE
 from app.utils import now_utc_iso
-from app.web import _expected_origin, _verify_request_origin
+from app.web import (
+    _expected_origin,
+    _verify_request_origin,
+)
 
 WORLD_ID = WORLD_STATE.world_id
 CANON_CHECKPOINT_ID = "checkpoint-canon-1"
@@ -658,6 +661,8 @@ def _snapshot_web_settings():
         "session_hmac_key": settings.session_hmac_key,
         "allowed_origins": settings.allowed_origins,
         "database_path": settings.database_path,
+        "database_backend": settings.database_backend,
+        "database_url": settings.database_url,
     }
 
 
@@ -666,12 +671,18 @@ def _restore_web_settings(snapshot: dict) -> None:
         setattr(settings, key, value)
 
 
-def test_create_app_production_malformed_origin_fails_startup(temp_db_path):
+def test_create_app_production_malformed_origin_fails_startup(temp_db_path, monkeypatch):
     # A malformed allowlist entry must fail the real application startup with a
     # RuntimeError (the web layer wraps the config ValueError), not boot into a
     # silently-weakened allowlist.
     from app.factory import create_app
 
+    # Production requires the postgres backend; configure a valid (unconnected)
+    # postgres URL and stub the schema-current check so this test isolates the
+    # origin validation without needing a live database.
+    monkeypatch.setattr(
+        "app.factory._verify_postgres_schema", lambda engine, migrations_dir: None
+    )
     snapshot = _snapshot_web_settings()
     settings.env = "production"
     settings.admin_secret = _strong_test_value("admin")
@@ -679,6 +690,8 @@ def test_create_app_production_malformed_origin_fails_startup(temp_db_path):
     settings.session_hmac_key = _strong_test_value("session")
     settings.allowed_origins = "https://example.com:99999"
     settings.database_path = temp_db_path
+    settings.database_backend = "postgres"
+    settings.database_url = "postgresql://user:pw@localhost:5432/db"
     try:
         with pytest.raises(RuntimeError, match="invalid origin"):
             create_app(enable_web=True)
@@ -686,11 +699,17 @@ def test_create_app_production_malformed_origin_fails_startup(temp_db_path):
         _restore_web_settings(snapshot)
 
 
-def test_create_app_production_valid_origin_starts_up(temp_db_path):
+def test_create_app_production_valid_origin_starts_up(temp_db_path, monkeypatch):
     # Valid production settings (strong secrets + well-formed allowlist) boot the
     # full web surface successfully.
     from app.factory import create_app
 
+    # Production requires the postgres backend; configure a valid (unconnected)
+    # postgres URL and stub the schema-current check so this test isolates the
+    # origin validation without needing a live database.
+    monkeypatch.setattr(
+        "app.factory._verify_postgres_schema", lambda engine, migrations_dir: None
+    )
     snapshot = _snapshot_web_settings()
     settings.env = "production"
     settings.admin_secret = _strong_test_value("admin")
@@ -698,6 +717,8 @@ def test_create_app_production_valid_origin_starts_up(temp_db_path):
     settings.session_hmac_key = _strong_test_value("session")
     settings.allowed_origins = "https://living-fiction.example.com"
     settings.database_path = temp_db_path
+    settings.database_backend = "postgres"
+    settings.database_url = "postgresql://user:pw@localhost:5432/db"
     try:
         app = create_app(enable_web=True)
         assert app is not None

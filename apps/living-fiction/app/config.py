@@ -115,7 +115,21 @@ def canonicalize_origin(origin: str) -> str | None:
 class Settings(BaseSettings):
     env: str = "development"
     app_name: str = "living-fiction"
+
+    # Database backend selection. The backend is chosen EXPLICITLY; it is never
+    # inferred from the shape of a URL. ``sqlite`` is the local default;
+    # ``postgres`` is the only backend allowed in production.
+    database_backend: str = "sqlite"
     database_path: str = "var/living-fiction.db"
+    # Runtime pooled PostgreSQL URL (postgres backend only). Treated as a
+    # secret: never logged or included in error messages.
+    database_url: str = ""
+    # Owner/migration-role direct PostgreSQL URL used only by the migration
+    # command. Treated as a secret: never logged or included in error messages.
+    migration_database_url: str = ""
+    # Small bounded pool; sized so an idle deployment can scale to zero.
+    database_pool_max_size: int = 5
+
     ai_provider: str = "mock"
     ai_model: str = "mock-living-fiction-v1"
     prompt_version: str = "living-fiction-v1"
@@ -247,6 +261,44 @@ class Settings(BaseSettings):
             )
         # Normalize duplicates silently (no error, just dedup).
         self.allowed_origins = ",".join(sorted(seen))
+
+    def validate_database(self) -> None:
+        """Validate the database backend selection, failing closed.
+
+        Rules:
+          * ``LF_DATABASE_BACKEND`` must be exactly ``sqlite`` or ``postgres``
+            (case-insensitive). The backend is never inferred from a URL.
+          * Production allows only ``postgres``; ``production`` + ``sqlite``
+            fails closed so a file-backed DB can never serve production traffic.
+          * ``postgres`` requires a runtime ``LF_DATABASE_URL``; its absence
+            fails closed.
+
+        Error messages are generic and never include the configured URL or any
+        credential, so a misconfigured secret cannot leak into logs or startup
+        output.
+        """
+        from app.database.url import is_postgres_url  # noqa: PLC0415
+
+        backend = (self.database_backend or "").strip().lower()
+        if backend not in ("sqlite", "postgres"):
+            raise ValueError(
+                "LF_DATABASE_BACKEND must be 'sqlite' or 'postgres'"
+            )
+        self.database_backend = backend
+        if backend == "sqlite" and self.is_production:
+            raise ValueError(
+                "production requires the postgres database backend "
+                "(LF_DATABASE_BACKEND=postgres)"
+            )
+        if backend == "postgres":
+            if not self.database_url.strip():
+                raise ValueError(
+                    "postgres backend requires LF_DATABASE_URL to be set"
+                )
+            if not is_postgres_url(self.database_url):
+                raise ValueError(
+                    "LF_DATABASE_URL is not a valid PostgreSQL connection URL"
+                )
 
 
 settings = Settings()

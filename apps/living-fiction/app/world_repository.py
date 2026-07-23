@@ -20,6 +20,7 @@ from app.domain.models import (
     WorldRule,
     WorldState,
 )
+from app.database.errors import IntegrityError
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -95,7 +96,7 @@ def create_world(
             unresolved_global_questions=json.dumps(world.unresolved_global_questions),
             created_at=now,
         )
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise WorldValidationError(f"world already exists: {exc}") from exc
     except Exception:
@@ -156,7 +157,7 @@ def create_character(
             ),
         )
         conn.commit()
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise WorldValidationError(f"character already exists: {exc}") from exc
     except Exception:
@@ -206,7 +207,7 @@ def create_location(
             ),
         )
         conn.commit()
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise WorldValidationError(f"location already exists: {exc}") from exc
     except Exception:
@@ -248,7 +249,7 @@ def create_clue(
             (clue_id, world_id, description, introduced_in_episode, now),
         )
         conn.commit()
-    except sqlite3.IntegrityError as exc:
+    except IntegrityError as exc:
         conn.rollback()
         raise WorldValidationError(f"clue already exists: {exc}") from exc
     except Exception:
