@@ -44,6 +44,10 @@ def check_payload(payload: Any) -> None:
 
 
 def _walk(node: Any, *, path: str) -> None:
+    # Exempt user-generated comment field from markup safety checks.
+    # Comments are stored as-is and escaped by Jinja at render time.
+    if path == "applied_reader_input.comment":
+        return
     if isinstance(node, str):
         reason = _contains_unsafe(node)
         if reason is not None:

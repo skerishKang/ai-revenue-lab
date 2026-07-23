@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}운영자 로그인{% endblock %}
+{% block content %}
+<div class="access-brand">
+  <div class="brand-title">Living Fiction</div>
+  <div class="work-title">편집자 검토실</div>
+  <div class="episode-synopsis">
+    개인 분기는 편집 검토를 거쳐야 합니다.<br>
+    운영자 인증 수단으로 로그인하세요.
+  </div>
+</div>
+
+{% if error %}
+<div class="error-box">{{ error }}</div>
+{% endif %}
+
+<form method="POST" action="/admin/access" class="access-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="form-group">
+    <label for="admin_secret">운영자 비밀키</label>
+    <input type="password" id="admin_secret" name="admin_secret"
+           placeholder="운영자 비밀키를 입력하세요" autocomplete="off" required>
+  </div>
+  <button type="submit" class="btn">로그인</button>
+</form>
+
+<div class="footer-note">
+  운영자 전용 · 개인 독서 공간과 분리된 인증
+</div>
+{% endblock %}

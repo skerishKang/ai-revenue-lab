@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}글쓰기 — Personal Edition{% endblock %}
 {% block content %}
+{% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <div class="input-page">
   <div class="input-guidance">
     <h1>기록을 남겨주세요</h1>
@@ -20,7 +21,7 @@
   <div class="alert alert-success" role="alert">{{ success }}</div>
   {% endif %}
 
-  <form method="post" action="/p/{{ participant.id }}/input">
+  <form method="post" action="{{ _base }}/input">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
     <label for="raw_text">기록할 이야기</label>

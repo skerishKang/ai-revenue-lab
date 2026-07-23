@@ -1,0 +1,49 @@
+{
+  "content_version": "1.0",
+  "publication_title": "부산 2박: 조용한 아침과 로컬 밥상",
+  "edition_title": "두 번째 에디션 — 더 조용하고 느린 부산",
+  "destination": "부산",
+  "trip_frame": "2박 3일 국내 혼행",
+  "editorial_opening": "이전 에디션에서 더 조용하고 느린 코스를 요청하셨습니다. 이번에는 걸음 수를 줄이고 로컬 음식에 더 집중했습니다.",
+  "sections": [
+    {
+      "section_id": "sec_quiet_morning",
+      "title": "조용한 아침 산책 코스",
+      "narrative": "합성동 골목은 아침 시간대에 인적이 드물어 혼자 산책하기 좋습니다.",
+      "items": [
+        {
+          "item_id": "item_quiet_haegyeolri",
+          "information_class": "inspiration",
+          "as_of_date": "",
+          "source_ref": "src_haegyeolri",
+          "confidence": "approximate",
+          "verify_before_use": false
+        }
+      ]
+    },
+    {
+      "section_id": "sec_local_food",
+      "title": "로컬 밥상 — 혼자 먹기 좋은 식당",
+      "narrative": "합성동과 국제시장 근처에는 혼자서도 부담없이 식사할 수 있는 로컬 식당이 있습니다.",
+      "items": [
+        {
+          "item_id": "item_solo_dining",
+          "information_class": "stable_reference",
+          "as_of_date": "2025-06-01",
+          "source_ref": "src_gukje_market",
+          "confidence": "confirmed",
+          "verify_before_use": false
+        }
+      ]
+    },
+    {
+      "section_id": "sec_low_effort",
+      "title": "적은 이동으로 즐기는 코스",
+      "narrative": "이번 코스는 걸음 수를 최소화했습니다.",
+      "items": []
+    }
+  ],
+  "applied_feedback": [],
+  "next_edition_prompt": "더 특정 동네나 음식 종류를 원하시나요?",
+  "provenance_note": "이전 에디션 피드백을 반영하여 코스를 변경했습니다."
+}

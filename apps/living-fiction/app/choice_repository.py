@@ -103,6 +103,26 @@ def get_reader_choice(conn: sqlite3.Connection, choice_id: str) -> ReaderChoiceR
     return _row_to_record(row) if row else None
 
 
+def get_choice_for_reader_canon(
+    conn: sqlite3.Connection,
+    reader_id: str,
+    canon_episode_id: str,
+) -> ReaderChoiceRecord | None:
+    """Return the reader's single choice for a canon episode, if any.
+
+    Migration 008 enforces ``UNIQUE(reader_id, canon_episode_id)``, so at most
+    one row can exist. This lookup is the idempotency anchor for choice
+    submission: retries and duplicate submissions resolve to the same row
+    instead of creating a second choice (and therefore a second branch).
+    """
+    row = conn.execute(
+        f"SELECT {_SELECT} FROM reader_choices "
+        "WHERE reader_id = ? AND canon_episode_id = ?",
+        (reader_id, canon_episode_id),
+    ).fetchone()
+    return _row_to_record(row) if row else None
+
+
 def get_choices_by_reader(
     conn: sqlite3.Connection, reader_id: str
 ) -> list[ReaderChoiceRecord]:

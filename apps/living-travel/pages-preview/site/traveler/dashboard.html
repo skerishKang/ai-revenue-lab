@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel — 내 여행</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+
+  <nav class="navbar traveler-nav">
+    <a href="dashboard.html" class="brand">Living Travel</a>
+    <div class="nav-links">
+      <a href="dashboard.html" class="active">내 여행</a>
+      <a href="history.html">지난 기록</a>
+      <a href="../index.html">홈</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="notice">
+      <strong>Synthetic Preview</strong><br>
+      이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
+    </div>
+
+    <!-- Greeting -->
+    <div class="dashboard-header">
+      <div class="dashboard-greeting">
+        <h1>여행자 시범 님</h1>
+        <span class="meta">부산 · 2박 3일 · 혼행</span>
+      </div>
+      <span class="badge badge-active">active</span>
+    </div>
+
+    <!-- Current Edition -->
+    <div class="dashboard-current">
+      <div class="dashboard-section-title">
+        <h2>최신 에디션</h2>
+      </div>
+
+      <div class="dashboard-current-card">
+        <div class="dashboard-current-cover">
+          <div class="dashboard-current-cover-info">
+            <span class="badge badge-published">발행됨</span>
+            <h2>부산 2박: 조용한 아침과 로컬 밥상</h2>
+            <span class="meta">Edition #2 · 2026. 7. 22.</span>
+          </div>
+        </div>
+        <div class="dashboard-current-body">
+          <div class="dashboard-current-details">
+            <div class="dashboard-current-detail">
+              <strong>목적지</strong>
+              부산
+            </div>
+            <div class="dashboard-current-detail">
+              <strong>여행 기간</strong>
+              2박 3일
+            </div>
+            <div class="dashboard-current-detail">
+              <strong>발행일</strong>
+              2026. 7. 22.
+            </div>
+            <div class="dashboard-current-detail">
+              <strong>상태</strong>
+              <span class="badge badge-published">published</span>
+            </div>
+          </div>
+          <a href="edition.html" class="btn btn-accent">에디션 읽기</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="preferences-section">
+      <h3>여행 취향</h3>
+
+      <div class="preferences-grid">
+        <div class="preference-item">
+          <label>목적지</label>
+          <span class="value">부산</span>
+        </div>
+        <div class="preference-item">
+          <label>기간</label>
+          <span class="value">2박</span>
+        </div>
+        <div class="preference-item">
+          <label>취향</label>
+          <span class="value">골목 탐방 · 로컬 식당 · 조용한 아침 · 해안 산책</span>
+        </div>
+        <div class="preference-item">
+          <label>여행 스타일</label>
+          <span class="value">혼자 · 합리적 · 여유로운</span>
+        </div>
+        <div class="preference-item">
+          <label>제외</label>
+          <span class="value">유명 명소 · 야간 활동 · 번잡한 곳</span>
+        </div>
+        <div class="preference-item">
+          <label>언어</label>
+          <span class="value">한국어</span>
+        </div>
+      </div>
+
+      <form method="post" action="#" onsubmit="return false;">
+        <input type="hidden" name="csrf_token" value="preview-csrf-token">
+        <button type="submit" class="btn btn-disabled" disabled>취향 수정하기</button>
+        <span class="disabled-notice">정적 프리뷰: 저장되지 않습니다</span>
+      </form>
+    </div>
+
+    <!-- Account -->
+    <div class="preferences-section" style="border-color: var(--border-faded);">
+      <h3 style="color: var(--ink-faded);">계정</h3>
+      <p class="small">
+        <span class="badge badge-active">활성</span>
+        <span style="margin-left: 0.5rem;">탈퇴 요청: 없음</span>
+      </p>
+      <form method="post" action="#" onsubmit="return false;">
+        <input type="hidden" name="csrf_token" value="preview-csrf-token">
+        <button type="submit" class="btn btn-outline btn-sm btn-disabled" disabled>탈퇴 요청</button>
+        <span class="disabled-notice">정적 프리뷰: 처리되지 않습니다</span>
+      </form>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Living Travel — Synthetic Preview Only</p>
+  </footer>
+</body>
+</html>

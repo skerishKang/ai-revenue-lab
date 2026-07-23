@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Search Records — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>My Records</h1>
+</div>
+
+<form method="get" action="/records" class="form-inline">
+    <div class="form-group">
+        <input type="text" name="q" value="{{ filters.q or '' }}"
+               placeholder="Search notes, reflections, plans...">
+    </div>
+    <div class="form-group">
+        <select name="state">
+            <option value="">All States</option>
+            <option value="unseen" {% if filters.state == 'unseen' %}selected{% endif %}>unseen</option>
+            <option value="opened" {% if filters.state == 'opened' %}selected{% endif %}>opened</option>
+            <option value="saved" {% if filters.state == 'saved' %}selected{% endif %}>saved</option>
+            <option value="in_progress" {% if filters.state == 'in_progress' %}selected{% endif %}>in progress</option>
+            <option value="completed" {% if filters.state == 'completed' %}selected{% endif %}>completed</option>
+            <option value="revisit" {% if filters.state == 'revisit' %}selected{% endif %}>revisit</option>
+            <option value="irrelevant" {% if filters.state == 'irrelevant' %}selected{% endif %}>irrelevant</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="text" name="tags" value="{{ filters.tags or '' }}"
+               placeholder="Tags (comma-separated)">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% if results %}
+<div class="record-list">
+    {% for record, tv, video in results %}
+    <a href="/records/{{ record.id }}" class="record-card">
+        <div class="record-card-content">
+            <div class="record-state">
+                <span class="badge badge-user">{{ record.viewing_state | state_label }}</span>
+            </div>
+            <h3>{{ video.title }}</h3>
+            <p class="small">{{ video.channel_title }} · {{ video.published_at[:10] }}</p>
+            {% if record.free_form_note %}
+            <p class="record-preview">{{ record.free_form_note | truncate(200) }}</p>
+            {% endif %}
+            {% if record.tags %}
+            <div class="tags">
+                {% for tag in record.tags %}
+                <span class="badge badge-sm badge-muted">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No records found</h3>
+    <p>Try adjusting your search filters.</p>
+</div>
+{% endif %}
+{% endblock %}

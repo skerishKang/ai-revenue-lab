@@ -58,7 +58,7 @@ def test_health_smoke_reports_instantiated_provider_contract(temp_db_path):
     """Health reports actual runtime identity with canonical cost values."""
     from app.factory import create_app
 
-    app = create_app(db_path=temp_db_path)
+    app = create_app(db_path=temp_db_path, enable_web=False)
     with TestClient(app) as client:
         response = client.get("/health")
         assert response.status_code == 200
@@ -82,7 +82,7 @@ def test_health_uses_injected_provider_identity(temp_db_path):
         model="contract-model-v2",
         cost_class=CostClass.PAID,
     )
-    app = create_app(db_path=temp_db_path, provider=provider)
+    app = create_app(db_path=temp_db_path, provider=provider, enable_web=False)
     with TestClient(app) as client:
         assert client.get("/health").json() == {
             "status": "ok",

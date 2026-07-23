@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}한 시간을 잃어버리는 도시{% endblock %}
+{% block content %}
+<div class="access-brand">
+  <div class="brand-title">Living Fiction</div>
+  <div class="work-title">한 시간을 잃어버리는 도시</div>
+  <div class="episode-synopsis">
+    매일 밤 자정, 서린 구의 공공 기록에서 정확히 한 시간이 사라진다.<br>
+    시계는 움직이지만 주민들은 그 사이에 일어난 일을 기억하지 못한다.<br>
+    한 기록 보관 담당자가, 사라진 시간 동안 의식을 유지한 채 발견한 것들.
+  </div>
+</div>
+
+<div class="access-intro">
+  <p>비공개 개인 독서 공간입니다.</p>
+  <p>AI가 텍스트를 생성하는 데 사용되며, 독자의 선택이 이야기의 분기로 이어집니다.</p>
+</div>
+
+{% if error %}
+<div class="error-box">{{ error }}</div>
+{% endif %}
+
+<form method="POST" action="/access" class="access-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="form-group">
+    <label for="invite_code">초대 코드</label>
+    <input type="text" id="invite_code" name="invite_code"
+           placeholder="초대 코드를 입력하세요" autocomplete="off" required>
+  </div>
+  <button type="submit" class="btn">입장하기</button>
+</form>
+
+<div class="footer-note">
+  독립 출판물 · 편집 원고 · 사적인 독서 기록
+</div>
+{% endblock %}
