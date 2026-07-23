@@ -1,4 +1,4 @@
-# Business 5 · 우리단지 이웃가게 v3 Reference
+# Business 5 · 우리단지 이웃가게 Resident-First Reference
 
 Issue: #89  
 Branch: `design/business-05-neighbor-market-v2-89`  
@@ -6,13 +6,31 @@ Reference path: `reference/business-05-neighbor-market-v2/**`
 
 ## Status
 
-This is a controlled **reference design**, not an implementation branch and not a production service.
+This is a controlled reference design, not an implementation branch and not a production service.
 
-The purpose is to freeze product direction, content hierarchy, visual quality and interaction behavior before a local coding model is allowed to create `apps/neighbor-market/**`.
+The reference freezes product purpose, resident-priority rules, visual hierarchy and interaction behavior before a local coding model may create `apps/neighbor-market/**`.
 
-Do not merge this reference branch into `main` until the visual direction is explicitly approved.
+Keep the reference PR Draft until visual review is complete.
 
-## Product
+## Product purpose
+
+Business 5 is not primarily a nearby-shop directory.
+
+> 우리 아파트 주민이 하는 일을 먼저 발견하고, 서로 이용하며 돕는 생활경제 서비스.
+
+The fixed default order is:
+
+```text
+1. 방림명지로드힐 주민 운영
+2. 이웃 단지 주민 운영
+3. 우리 동네 가게
+```
+
+Tier 1 must be the first and strongest business section. Distance, discount size, sponsorship or payment must not move a lower tier above a higher tier.
+
+The authoritative rule is `COMMUNITY_PRIORITY_MODEL.md`.
+
+## Product identity
 
 - Business number proposal: **5**
 - Korean product name: **우리단지 이웃가게**
@@ -22,70 +40,59 @@ Do not merge this reference branch into `main` until the visual direction is exp
 - Public road address: **광주광역시 남구 대남대로85번길 3**
 - Proposed future workspace: `apps/neighbor-market/**`
 
-The public apartment facts used in the prototype are limited to name, address, 192 households, 2 buildings and 2015-10-30 use approval. No resident name, building/unit number, roster or identity evidence is included.
+The public apartment facts in the reference are limited to name, address, 192 households, 2 buildings and 2015-10-30 use approval. No resident name, unit number, roster or verification evidence is displayed.
 
 ## Current primary prototype
 
 Use **`index-v3.html`**.
 
-The earlier `index.html` remains only as a comparison artifact and is not the current visual target.
+The older `index.html` remains only as a comparison artifact and is not the current target.
 
-V3 applies the frozen consumer-marketplace finish rules:
+The current prototype includes:
 
-- reduced card radius and shadow;
-- refined Korean typography scale;
-- production-style search and select controls;
-- photographic business cards;
-- mobile vertical shop list;
-- price, availability and benefit hierarchy;
-- business-specific order, reservation, quote and consultation actions;
-- mobile bottom navigation;
-- shop-detail sticky mobile actions;
-- dedicated benefits, owner registration, favorites/my and QA states.
+- resident-mutual-aid lead copy;
+- explicit 1→2→3 relationship priority;
+- search and eight practical categories;
+- separate Tier 1, Tier 2 and Tier 3 home sections;
+- resident-priority grouped search results;
+- photographic business/service cards;
+- representative price, availability, action and benefit;
+- separate verification and benefit semantics;
+- relationship-first owner registration;
+- storefront, visiting, freelance, online and tutoring work types;
+- mobile bottom navigation and detail sticky actions;
+- benefits, my and QA states.
 
-## Open the prototype
+## Open the prototype locally
 
-### Safe local worktree launcher
+### Safe worktree launcher
 
-Run `LOCAL_PREVIEW.ps1` from PowerShell. The script:
+Run `LOCAL_PREVIEW.ps1` from the reference directory. It:
 
-- fetches the exact remote reference branch;
-- leaves the user's existing checkout untouched;
-- creates or refreshes a dedicated detached worktree;
+- fetches the exact remote branch;
+- leaves the existing checkout untouched;
+- creates or refreshes a detached dedicated worktree;
 - refuses to reset or clean a dirty target;
 - starts a local static server;
-- opens `index-v3.html` in the default browser.
-
-Default paths:
+- opens `index-v3.html`.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\LOCAL_PREVIEW.ps1
 ```
 
-Override paths when required:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\LOCAL_PREVIEW.ps1 `
-  -RepoPath "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab" `
-  -WorktreePath "G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-neighbor-market-reference" `
-  -Port 4173
-```
-
-### Manual opening
-
-Serve the directory:
-
-```bash
-python -m http.server 4173 --bind 127.0.0.1
-```
-
-Then open:
+Default local URL:
 
 ```text
 http://127.0.0.1:4173/index-v3.html
 ```
 
-Navigation uses URL hashes:
+Manual server:
+
+```bash
+python -m http.server 4173 --bind 127.0.0.1
+```
+
+## Routes
 
 - `#home`
 - `#explore`
@@ -97,32 +104,34 @@ Navigation uses URL hashes:
 
 ## Safety and honesty
 
-- All shop names, prices, benefits, opening states and service descriptions are synthetic.
+- All business names, relationship tiers, prices, benefits and availability states are synthetic.
 - No order, contact, login or registration data is transmitted.
-- Temporary Unsplash images are visual placeholders for reference review.
-- The apartment hero image is not a photograph of 방림명지로드힐; it is explicitly marked as a reference image.
-- Before production, the apartment photo must be replaced with a user-supplied or permission-cleared real photo.
-- The current representative-chair name is intentionally not displayed.
+- Unsplash imagery and remote Pretendard CSS are temporary reference assets.
+- No actual apartment photograph is claimed.
+- A real 방림명지로드힐 photograph must be user-supplied or permission-cleared before publication.
+- The representative-chair and all resident names are intentionally absent.
+- `주민 운영 확인` does not mean a quality guarantee or management-office endorsement.
 
 ## Files
 
-- `index-v3.html` — current primary clickable product reference
-- `index.html` — superseded v2 comparison artifact
-- `DESIGN_SPEC.md` — product, visual and interaction decisions
-- `UI_REFINEMENT_V3.md` — fixed consumer-marketplace finish rules
-- `IMAGE_SOURCES.md` — temporary image and font source ledger
-- `LOCAL_HANDOFF_PROMPT.md` — strict future local-worker implementation prompt
-- `LOCAL_PREVIEW.ps1` — safe dedicated-worktree V3 preview launcher
-- `SCREENSHOT_MATRIX.md` — required desktop, tablet, mobile and state screenshots
+- `index-v3.html` — primary resident-first clickable reference
+- `index.html` — superseded comparison artifact
+- `COMMUNITY_PRIORITY_MODEL.md` — authoritative three-tier product and ranking rule
+- `DESIGN_SPEC.md` — resident-first design and interaction contract
+- `UI_REFINEMENT_V3.md` — consumer-marketplace finish rules
+- `IMAGE_SOURCES.md` — temporary image and font ledger
+- `LOCAL_HANDOFF_PROMPT.md` — strict future implementation prompt
+- `LOCAL_PREVIEW.ps1` — safe local launcher
+- `SCREENSHOT_MATRIX.md` — required evidence matrix
 
 ## Review sequence
 
 1. Sync the exact reference branch into a clean dedicated worktree.
 2. Open `index-v3.html` through the local server.
-3. Capture every required screenshot in `SCREENSHOT_MATRIX.md` without source changes.
-4. Review the prototype visually on desktop and mobile.
-5. Revise only the reference branch until approved.
-6. Create a separate documentation change for Business 5 registry assignment.
+3. Capture all screenshots in `SCREENSHOT_MATRIX.md` without source changes.
+4. Verify Tier 1 → Tier 2 → Tier 3 ordering on home and search.
+5. Revise only the reference branch until explicitly approved.
+6. Create a separate portfolio-number documentation change.
 7. Create a separate implementation branch under `apps/neighbor-market/**`.
-8. Give the local worker the strict handoff prompt and approved reference commit SHA.
+8. Give the implementation worker the approved SHA and strict handoff prompt.
 9. Keep the implementation PR Draft until screenshot comparison passes.
