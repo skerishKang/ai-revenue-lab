@@ -244,19 +244,26 @@ class Settings(BaseSettings):
                     raise ValueError(
                         "LT_AI_BASE_URL must use https:// in staging/production."
                     )
+                import ipaddress as _ipaddress
                 _host = (_parts.hostname or "").lower()
-                if _host in (
-                    "localhost",
-                    "127.0.0.1",
-                    "::1",
-                    "0.0.0.0",
-                ) or _host.startswith(("169.254.", "10.", "172.16.", "192.168.")):
+                _localhost_names = {"localhost", "localhost.localdomain", "::1"}
+                if _host in _localhost_names:
+                    raise ValueError(
+                        "LT_AI_BASE_URL must not point to a localhost, loopback, "
+                        "or private network address in staging/production."
+                    )
+                try:
+                    _ip = _ipaddress.ip_address(_host)
+                except ValueError:
+                    _ip = None
+                if _ip is not None and not _ip.is_global:
                     raise ValueError(
                         "LT_AI_BASE_URL must not point to a localhost, loopback, "
                         "or private network address in staging/production."
                     )
             elif self.environment in ("testing", "development") and _parts.scheme == "http":
                 # testing and development allow HTTP for localhost/loopback only
+                import ipaddress as _ipaddress
                 _host = (_parts.hostname or "").lower()
                 if _host not in ("localhost", "127.0.0.1", "::1", "localhost.localdomain"):
                     raise ValueError(

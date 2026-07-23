@@ -136,7 +136,11 @@ class UrllibTransport:
             if isinstance(reason, Exception) and "timed out" in str(reason).lower():
                 raise ProviderTimeoutError("timeout") from e
             raise ProviderTransportError(str(reason)) from e
-        except (ProviderTimeoutError, ProviderHTTPError, ProviderResponseTooLargeError):
+        except socket.timeout as e:
+            raise ProviderTimeoutError("connection timed out") from e
+        except TimeoutError as e:
+            raise ProviderTimeoutError("timeout") from e
+        except (ProviderTimeoutError, ProviderHTTPError, ProviderTransportError, ProviderResponseTooLargeError):
             raise
         except Exception as e:
             raise ProviderTransportError(str(e)) from e
@@ -155,14 +159,13 @@ class UrllibTransport:
 
         hostname_lower = hostname.lower()
 
-        # Resolve hostname to IPs for SSRF check
-        resolved_ips = self._resolver.resolve(hostname_lower)
-
-        # Also check if hostname is a literal IP
+        # Check if hostname is a literal IP first
         try:
             literal_ip = ipaddress.ip_address(hostname_lower)
-            ips_to_check = [literal_ip] + [ipaddress.ip_address(ip) for ip in resolved_ips]
+            ips_to_check = [literal_ip]
         except ValueError:
+            # Not a literal IP — resolve via DNS
+            resolved_ips = self._resolver.resolve(hostname_lower)
             ips_to_check = [ipaddress.ip_address(ip) for ip in resolved_ips if ip]
 
         # Fail-closed: if no IPs could be resolved, reject
@@ -171,29 +174,26 @@ class UrllibTransport:
 
         # Check environment-specific rules
         if self._environment in ("testing", "development"):
-            # In development: allow HTTP only for localhost/loopback
-            for ip in ips_to_check:
-                if ip.is_loopback:
-                    return
-                if hostname_lower != "localhost" and hostname_lower != "::1":
-                    if ip.is_private or ip.is_link_local or ip.is_unspecified:
-                        raise ProviderTransportError("SSRF blocked")
+            # In development: allow HTTP only if ALL resolved IPs are loopback
+            # and hostname is localhost or a literal loopback IP
+            is_localhost_host = hostname_lower in ("localhost", "localhost.localdomain", "::1")
+            try:
+                literal_ip = ipaddress.ip_address(hostname_lower)
+                is_localhost_host = is_localhost_host or literal_ip.is_loopback
+            except ValueError:
+                pass
+
+            if not is_localhost_host:
+                raise ProviderTransportError("SSRF blocked")
+
+            if not all(ip.is_loopback for ip in ips_to_check):
+                raise ProviderTransportError("SSRF blocked")
             return
 
         # Staging/production: reject all non-global addresses
         for ip in ips_to_check:
-            if ip.is_loopback:
-                raise ProviderTransportError("destination is loopback address")
-            if ip.is_private:
-                raise ProviderTransportError("destination is private address")
-            if ip.is_link_local:
-                raise ProviderTransportError("destination is link-local address")
-            if ip.is_multicast:
-                raise ProviderTransportError("destination is multicast address")
-            if ip.is_reserved:
-                raise ProviderTransportError("destination is reserved address")
-            if ip.is_unspecified:
-                raise ProviderTransportError("destination is unspecified address")
+            if not ip.is_global:
+                raise ProviderTransportError("destination is not a global address")
 
 
 class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -351,8 +351,15 @@ class OpenAICompatibleProvider:
         if isinstance(usage, dict):
             pt = usage.get("prompt_tokens")
             ct = usage.get("completion_tokens")
-            prompt_tokens = int(pt) if isinstance(pt, int) and pt >= 0 else 0
-            completion_tokens = int(ct) if isinstance(ct, int) and ct >= 0 else 0
+            # Strict validation: must be non-negative int (not bool, not float, not str)
+            if pt is not None:
+                if isinstance(pt, bool) or not isinstance(pt, int) or pt < 0:
+                    return self._fail_result(start, ProviderErrorCategory.provider_error, "prompt_tokens is invalid")
+                prompt_tokens = pt
+            if ct is not None:
+                if isinstance(ct, bool) or not isinstance(ct, int) or ct < 0:
+                    return self._fail_result(start, ProviderErrorCategory.provider_error, "completion_tokens is invalid")
+                completion_tokens = ct
 
         try:
             choices = parsed.get("choices")

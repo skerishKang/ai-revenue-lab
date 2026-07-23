@@ -568,7 +568,7 @@ class TestAIProviderSettings:
     def test_staging_private_ip_fails(self):
         from app.config import Settings
 
-        with pytest.raises(ValueError, match="localhost|private|loopback"):
+        with pytest.raises(ValueError, match="localhost|private|loopback|global"):
             Settings(
                 environment="staging",
                 allowed_origins="https://example.com",
@@ -581,7 +581,7 @@ class TestAIProviderSettings:
     def test_staging_link_local_fails(self):
         from app.config import Settings
 
-        with pytest.raises(ValueError, match="localhost|private|loopback"):
+        with pytest.raises(ValueError, match="localhost|private|loopback|global"):
             Settings(
                 environment="staging",
                 allowed_origins="https://example.com",

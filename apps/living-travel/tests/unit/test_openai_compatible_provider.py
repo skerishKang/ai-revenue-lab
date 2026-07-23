@@ -582,7 +582,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="loopback"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://127.0.0.1:11434/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -592,7 +592,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="loopback"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://127.0.0.2/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -602,7 +602,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="private"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://10.0.0.1/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -612,7 +612,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="private"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://172.17.0.1/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -622,7 +622,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="private"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://172.31.255.255/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -632,7 +632,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="private|link-local"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://169.254.1.1/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -642,7 +642,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="private|unspecified"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://0.0.0.0/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -652,7 +652,77 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="staging")
-        with pytest.raises(ProviderTransportError, match="loopback"):
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://[::1]/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_127_0_0_2_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://127.0.0.2/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_10_0_0_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://10.0.0.1/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_172_17_0_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://172.17.0.1/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_172_31_255_255_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://172.31.255.255/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_169_254_1_1_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://169.254.1.1/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_0_0_0_0_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport.request(
+                "https://0.0.0.0/v1/chat/completions",
+                b"{}", {}, 5.0
+            )
+
+    def test_loopback_ipv6_blocked_in_staging(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        transport = UrllibTransport(environment="staging")
+        with pytest.raises(ProviderTransportError, match="not a global address"):
             transport.request(
                 "https://[::1]/v1/chat/completions",
                 b"{}", {}, 5.0
@@ -667,7 +737,7 @@ class TestSSRFValidation:
         try:
             transport._validate_destination("localhost")
         except ProviderTransportError as e:
-            if "loopback" in str(e) or "private" in str(e):
+            if "SSRF" in str(e) or "not a global" in str(e):
                 pytest.fail("localhost should be allowed in development")
 
     def test_development_127_0_0_1_ip_allowed(self):
@@ -677,7 +747,7 @@ class TestSSRFValidation:
         try:
             transport._validate_destination("127.0.0.1")
         except ProviderTransportError as e:
-            if "loopback" in str(e) or "private" in str(e):
+            if "SSRF" in str(e) or "not a global" in str(e):
                 pytest.fail("127.0.0.1 should be allowed in development")
 
     def test_development_non_localhost_private_blocked(self):
@@ -697,7 +767,15 @@ class TestResponseSizeLimit:
         )
         from unittest.mock import patch, MagicMock
 
-        transport = UrllibTransport(environment="testing", max_response_size=100)
+        class _FakeResolver:
+            def resolve(self, hostname: str) -> list[str]:
+                return ["8.8.8.8"]
+
+        transport = UrllibTransport(
+            environment="staging",
+            max_response_size=100,
+            resolver=_FakeResolver(),
+        )
 
         mock_response = MagicMock()
         mock_response.status = 200
@@ -716,7 +794,15 @@ class TestResponseSizeLimit:
         from app.ai.openai_compatible import UrllibTransport
         from unittest.mock import patch, MagicMock
 
-        transport = UrllibTransport(environment="testing", max_response_size=1000)
+        class _FakeResolver:
+            def resolve(self, hostname: str) -> list[str]:
+                return ["8.8.8.8"]
+
+        transport = UrllibTransport(
+            environment="staging",
+            max_response_size=1000,
+            resolver=_FakeResolver(),
+        )
 
         mock_response = MagicMock()
         mock_response.status = 200
