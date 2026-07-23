@@ -35,6 +35,7 @@ from app.db_pg_migrations import (
     _read_migration,
     _safe_message,
     _split_statements,
+    _validate_migration_sql,
     apply_pg_migrations,
     get_pg_check_constraints,
     get_pg_foreign_keys,
@@ -1381,6 +1382,30 @@ class TestPreflightValidator:
         msg = str(exc_info.value)
         assert "dollar-quoted" in msg
         assert "not-a-secret" not in msg
+
+
+class TestBlockCommentScannerBoundaries:
+    def test_sequential_block_comments_accepted(self):
+        _validate_migration_sql("/* first */ SELECT 1; /* second */ SELECT 2;")
+
+    def test_single_quoted_string_markers_ignored(self):
+        _validate_migration_sql("SELECT '/* not a comment */';")
+
+    def test_e_string_markers_ignored(self):
+        _validate_migration_sql("SELECT E'/* not a comment */';")
+
+    def test_double_quoted_identifier_markers_ignored(self):
+        _validate_migration_sql('SELECT "identifier/*text*/";')
+
+    def test_escaped_double_quote_identifier_markers_ignored(self):
+        _validate_migration_sql('SELECT "a""b/*text*/";')
+
+    def test_line_comment_internal_markers_ignored(self):
+        _validate_migration_sql("-- /* line comment */\nSELECT 1;")
+
+    def test_nested_block_comment_rejected(self):
+        with pytest.raises(MigrationParseError):
+            _validate_migration_sql("/* outer /* nested */ outer */ SELECT 1;")
 
 
 @pytestmark_integration
