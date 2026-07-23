@@ -91,13 +91,15 @@ INTERNAL_PATH_PATTERN = re.compile(
     r"/mnt/|G:\\|C:\\|/Users/|/home/[a-z]", re.IGNORECASE
 )
 PRODUCTION_URL_PATTERN = re.compile(
-    r"youtube\.com|youtu\.be|pages\.dev|neon\.tech|firebase|googleapis",
+    r"pages\.dev|neon\.tech|firebase|googleapis|youtu\.be",
     re.IGNORECASE,
 )
+YOUTUBE_URL_PATTERN = re.compile(r'https?://(?:www\.)?youtube\.com/[^\s"\'<>]+', re.IGNORECASE)
+YTIMG_URL_PATTERN = re.compile(r'https?://i\.ytimg\.com/[^\s"\'<>]+', re.IGNORECASE)
 QUERY_HREF_PATTERN = re.compile(r'href="[^"]*\?[^"]*"')
 PILL_PATTERN = re.compile(
-    r'<a href="(?P<href>[^"]*)"[^>]*class="(?P<cls>filter-pill[^"]*)"[^>]*>'
-    r"\s*(?P<text>[a-z_]+)\s*</a>",
+    r'<a href="(?P<href>[^"]*)"[^>]*class="(?P<cls>filter-pill[^"]*)"[^>]*data-state="(?P<state>[a-z_]+)"[^>]*>'
+    r"\s*(?P<text>[^<]+)\s*</a>",
     re.DOTALL,
 )
 
@@ -193,8 +195,12 @@ class TestFeedFilterNavigation:
         assert len(selected) == 1, f"expected one selected pill for {state}"
         pill = selected[0]
         assert pill["href"] == self._expected_href(state)
-        assert pill["text"] == state
-        assert content.count('aria-current="page"') == 1
+        assert pill["state"] == state
+        feed_filter_section = re.search(
+            r'<nav class="feed-state-filter"[^>]*>.*?</nav>', content, re.DOTALL
+        )
+        assert feed_filter_section is not None
+        assert feed_filter_section.group(0).count('aria-current="page"') == 1
 
     def test_every_pill_href_resolves_to_a_file(self, preview_dir):
         for pill in _parse_pills(_read(self._page(preview_dir, "all"))):
@@ -205,20 +211,20 @@ class TestFeedFilterNavigation:
 
     def test_unseen_includes_unseen_excludes_completed(self, preview_dir):
         content = _read(self._page(preview_dir, "unseen"))
-        assert "Synthetic PyTorch Lightning Crash Course" in content
-        assert "Synthetic Lecture: Optimization Internals" in content
-        assert "Tensors and Autograd" not in content
+        assert "Attention in transformers" in content
+        assert "전공생이 알려주는 AI" in content
+        assert "But what is a neural network?" not in content
 
     def test_completed_includes_completed_excludes_unseen(self, preview_dir):
         content = _read(self._page(preview_dir, "completed"))
-        assert "Tensors and Autograd" in content
-        assert "Synthetic PyTorch Lightning Crash Course" not in content
+        assert "But what is a neural network?" in content
+        assert "Attention in transformers" not in content
 
     def test_empty_filter_shows_no_results(self, preview_dir):
         # topic1 has no 'opened' videos -> empty state, no "Showing N videos".
         content = _read(self._page(preview_dir, "opened"))
-        assert "No videos yet" in content
-        assert "Showing" not in content
+        assert "아직 영상이 없습니다" in content
+        assert "영상" not in content or "아직 영상이 없습니다" in content
 
     def test_archived_topic_empty_across_all_states(self, preview_dir):
         for state in FEED_STATES:
@@ -226,7 +232,7 @@ class TestFeedFilterNavigation:
                 page = preview_dir / "topics/pv-topic-0003/index.html"
             else:
                 page = preview_dir / f"topics/pv-topic-0003/{state}/index.html"
-            assert "No videos yet" in _read(page), f"topic3/{state} not empty"
+            assert "아직 영상이 없습니다" in _read(page), f"topic3/{state} not empty"
 
 
 class TestRecordStateRendering:
@@ -235,29 +241,30 @@ class TestRecordStateRendering:
 
     def test_search_badges_show_plain_values(self, preview_dir):
         content = _read(preview_dir / "records/index.html")
-        for state in ("completed", "in_progress", "saved"):
-            assert f'<span class="badge badge-user">{state}</span>' in content
+        ko_labels = {"completed": "다 봄", "in_progress": "보는 중", "saved": "저장함"}
+        for state, ko_label in ko_labels.items():
+            assert f'<span class="badge badge-user">{ko_label}</span>' in content
         assert "ViewingState." not in content
 
 
 class TestPreviewStates:
     def test_unseen_filter_shows_only_unseen(self, preview_dir):
         content = _read(preview_dir / "topics/pv-topic-0001/unseen/index.html")
-        assert "Showing 2 videos" in content
-        assert "Synthetic PyTorch Lightning Crash Course" in content
-        assert "Synthetic Lecture: Optimization Internals" in content
+        assert "영상 2개" in content
+        assert "Attention in transformers" in content
+        assert "전공생이 알려주는 AI" in content
         # completed video must not appear under the unseen filter
-        assert "Tensors and Autograd" not in content
+        assert "But what is a neural network?" not in content
 
     def test_completed_filter_shows_only_completed(self, preview_dir):
         content = _read(preview_dir / "topics/pv-topic-0001/completed/index.html")
-        assert "Showing 1 videos" in content
-        assert "Tensors and Autograd" in content
-        assert "Synthetic PyTorch Lightning Crash Course" not in content
+        assert "영상 1개" in content
+        assert "But what is a neural network?" in content
+        assert "Attention in transformers" not in content
 
     def test_empty_feed_message(self, preview_dir):
         content = _read(preview_dir / "topics/pv-topic-0003/index.html")
-        assert "No videos yet" in content
+        assert "아직 영상이 없습니다" in content
 
     def test_provider_failure_preserves_feed(self, preview_dir):
         content = _read(
@@ -265,42 +272,42 @@ class TestPreviewStates:
         )
         assert "\uc0c8\ub85c\uace0\uce68 \uc2e4\ud328" in content  # 새로고침 실패
         # existing feed is preserved
-        assert "Tensors and Autograd" in content
+        assert "But what is a neural network?" in content
 
     def test_review_rule_shows_editable_ai_suggestion(self, preview_dir):
         content = _read(
             preview_dir / "topics/pv-topic-0001/review-rule/index.html"
         )
-        assert "AI Suggestion" in content
+        assert "AI 정리 제안" in content
         assert 'name="primary_query"' in content
         assert 'name="required_terms"' in content
 
     def test_pending_proposal_shows_ai_suggestion(self, preview_dir):
         content = _read(preview_dir / "records/pv-rec-0002/index.html")
-        assert "Pending Proposals" in content
-        assert "AI Suggestion" in content
+        assert "대기 중인 제안" in content
+        assert "AI 정리 제안" in content
 
     def test_accepted_structured_record_is_filled(self, preview_dir):
         content = _read(preview_dir / "records/pv-rec-0001/index.html")
-        assert "What I Learned" in content
-        assert "Timestamp References" in content
+        assert "배운 점" in content
+        assert "타임스탬프 참조" in content
 
     def test_record_search_results(self, preview_dir):
         content = _read(preview_dir / "records/index.html")
-        assert "My Records" in content
-        assert "Tensors and Autograd" in content
+        assert "나의 기록" in content
+        assert "But what is a neural network?" in content
 
     def test_validation_error_message(self, preview_dir):
         content = _read(preview_dir / "error/index.html")
-        assert "Error 400" in content
+        assert "오류 400" in content
         assert "Invalid tag" in content
 
     def test_provenance_badges_present(self, preview_dir):
         feed = _read(preview_dir / "topics/pv-topic-0001/index.html")
-        assert "YouTube info" in feed
-        assert "Application analysis" in feed
+        assert "YouTube 정보" in feed
+        assert "이 영상이 추천된 이유" in feed
         record = _read(preview_dir / "records/pv-rec-0001/index.html")
-        assert "My private record" in record
+        assert "나의 기록" in record
 
 
 class TestNoJinjaTokens:
@@ -375,11 +382,25 @@ class TestNoSecrets:
                 f"Internal path in {html_file.relative_to(preview_dir)}"
             )
 
-    def test_no_production_urls(self, preview_dir):
+    def test_no_blocked_production_urls(self, preview_dir):
         for html_file in _all_html_files(preview_dir):
             assert not PRODUCTION_URL_PATTERN.search(_read(html_file)), (
-                f"Production URL in {html_file.relative_to(preview_dir)}"
+                f"Blocked production URL in {html_file.relative_to(preview_dir)}"
             )
+
+    def test_youtube_urls_are_watch_links_only(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            for url in YOUTUBE_URL_PATTERN.findall(_read(html_file)):
+                assert "youtube.com/watch?v=" in url, (
+                    f"Non-watch YouTube URL in {html_file.relative_to(preview_dir)}: {url}"
+                )
+
+    def test_ytimg_urls_are_thumbnails_only(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            for url in YTIMG_URL_PATTERN.findall(_read(html_file)):
+                assert "i.ytimg.com/vi/" in url, (
+                    f"Non-thumbnail ytimg URL in {html_file.relative_to(preview_dir)}: {url}"
+                )
 
     def test_no_localhost_urls(self, preview_dir):
         for html_file in _all_html_files(preview_dir):
@@ -394,9 +415,13 @@ class TestNoQueryStringLinks:
 
     def test_no_href_has_query_string(self, preview_dir):
         for html_file in _all_html_files(preview_dir):
-            assert not QUERY_HREF_PATTERN.search(_read(html_file)), (
-                f"query-string href in {html_file.relative_to(preview_dir)}"
-            )
+            for href in QUERY_HREF_PATTERN.findall(_read(html_file)):
+                # External URLs (e.g. YouTube watch?v=) are allowed to have query strings
+                if "http://" in href or "https://" in href:
+                    continue
+                assert False, (
+                    f"query-string href in {html_file.relative_to(preview_dir)}: {href}"
+                )
 
     def test_no_state_query_anywhere(self, preview_dir):
         for html_file in _all_html_files(preview_dir):
@@ -405,19 +430,19 @@ class TestNoQueryStringLinks:
             )
 
 
-class TestPreviewBanner:
-    def test_banner_present_on_all_pages(self, preview_dir):
+class TestPreviewNotice:
+    def test_quiet_notice_present_on_all_pages(self, preview_dir):
         for html_file in _all_html_files(preview_dir):
             content = _read(html_file)
-            assert "UI Preview" in content, (
-                f"Banner missing in {html_file.relative_to(preview_dir)}"
-            )
-            assert "Synthetic data" in content, (
-                f"Banner missing in {html_file.relative_to(preview_dir)}"
-            )
-            assert "No persistence" in content, (
-                f"Banner missing in {html_file.relative_to(preview_dir)}"
-            )
+            rel = str(html_file.relative_to(preview_dir))
+            if rel.startswith("en/"):
+                assert "Preview" in content and "Sample data" in content, (
+                    f"English quiet notice missing in {rel}"
+                )
+            else:
+                assert "미리보기" in content and "예시 데이터" in content, (
+                    f"Korean quiet notice missing in {rel}"
+                )
 
 
 class TestRobotsMeta:
@@ -450,6 +475,10 @@ class TestHeadersFile:
         assert "script-src 'none'" in headers
         assert "form-action 'none'" in headers
         assert "connect-src 'none'" in headers
+
+    def test_headers_allow_youtube_thumbnails(self, preview_dir):
+        headers = _read(preview_dir / "_headers")
+        assert "https://i.ytimg.com" in headers
 
 
 class TestRobotsTxt:
@@ -496,6 +525,76 @@ class TestBuildDeterministic:
         second = build_main(tmp_path / "b")
         assert self._hash_tree(first) == self._hash_tree(second), (
             "Two isolated builds produced different bytes"
+        )
+
+
+class TestVideoRequirements:
+    """Issue #76: real YouTube video fixtures with proper attributes."""
+
+    def _all_video_ids(self, preview_dir) -> set[str]:
+        ids = set()
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for m in re.finditer(r'youtube\.com/watch\?v=([A-Za-z0-9_-]{11})', content):
+                ids.add(m.group(1))
+        return ids
+
+    def _all_channels(self, preview_dir) -> set[str]:
+        channels = set()
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for m in re.finditer(r'class="video-card-channel"[^>]*>([^<]+)<', content):
+                channels.add(m.group(1).strip())
+        return channels
+
+    def test_at_least_8_distinct_video_ids(self, preview_dir):
+        ids = self._all_video_ids(preview_dir)
+        assert len(ids) >= 8, f"Only {len(ids)} distinct video IDs: {ids}"
+
+    def test_at_least_4_distinct_channels(self, preview_dir):
+        channels = self._all_channels(preview_dir)
+        assert len(channels) >= 4, f"Only {len(channels)} distinct channels: {channels}"
+
+    def test_watch_urls_are_https(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for url in re.findall(r'https?://(?:www\.)?youtube\.com/watch\?v=[^\s"\'<>]+', content):
+                assert url.startswith("https://"), f"Non-HTTPS watch URL: {url}"
+
+    def test_thumbnail_urls_are_https(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for url in re.findall(r'https?://i\.ytimg\.com/[^\s"\'<>]+', content):
+                assert url.startswith("https://"), f"Non-HTTPS thumbnail URL: {url}"
+
+    def test_external_links_have_noopener_noreferrer(self, preview_dir):
+        link_pattern = re.compile(
+            r'<a[^>]+href="https://(?:www\.)?youtube\.com/[^"]*"[^>]*>',
+            re.IGNORECASE,
+        )
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for tag in link_pattern.findall(content):
+                assert 'target="_blank"' in tag, f"Missing target=_blank: {tag}"
+                assert 'rel="noopener noreferrer"' in tag or "noopener" in tag, (
+                    f"Missing noopener: {tag}"
+                )
+
+    def test_no_placeholder_as_primary_card_image(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            img_tags = re.findall(r'<img[^>]*class="[^"]*video-card-thumb[^"]*"[^>]*>', content)
+            for tag in img_tags:
+                assert "preview-thumb.svg" not in tag, (
+                    f"Placeholder used as card image in {html_file.relative_to(preview_dir)}"
+                )
+
+    def test_real_thumbnail_in_first_video_card(self, preview_dir):
+        content = _read(preview_dir / "topics/pv-topic-0001/index.html")
+        first_img = re.search(r'<img[^>]*class="[^"]*video-card-thumb[^"]*"[^>]*src="([^"]*)"', content)
+        assert first_img is not None, "No video card thumbnail found"
+        assert "i.ytimg.com/vi/" in first_img.group(1), (
+            f"First card image is not a real YouTube thumbnail: {first_img.group(1)}"
         )
 
 

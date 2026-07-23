@@ -39,7 +39,7 @@ class TestRouteContracts:
             },
         )
         assert response.status_code == 200
-        assert "Review Search Rules" in response.text
+        assert "검색 규칙 검토" in response.text
 
     def test_health_returns_200(self, client):
         response = client.get("/health")
@@ -69,13 +69,13 @@ class TestRouteContracts:
         """Index should show empty state when no topics exist."""
         response = client.get("/")
         assert response.status_code == 200
-        assert "No topics" in response.text or "Create Topic" in response.text
+        assert "아직 토픽이 없습니다" in response.text or "토픽 만들기" in response.text
 
     def test_no_results_state(self, client):
         """Records search should show no results when empty."""
         response = client.get("/records?q=nonexistent")
         assert response.status_code == 200
-        assert "No records" in response.text or "No records found" in response.text
+        assert "기록이 없습니다" in response.text
 
 
 class TestFullWorkflowViaHTTP:
@@ -90,7 +90,7 @@ class TestFullWorkflowViaHTTP:
             },
         )
         assert response.status_code == 200
-        assert "Review Search Rules" in response.text
+        assert "검색 규칙 검토" in response.text
 
         # Get the topics list to find our topic
         response = client.get("/topics")
