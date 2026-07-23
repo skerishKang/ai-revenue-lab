@@ -137,3 +137,15 @@ class LessonNotReadyError(LessonPipelineError):
     def __init__(self, lesson_id: str) -> None:
         self.lesson_id = lesson_id
         super().__init__("Lesson is not ready for delivery")
+
+
+class InvalidPublishedContentError(LessonPipelineError):
+    """Raised when a published lesson's stored content fails read-time validation.
+
+    The lesson is fail-closed (never served as an empty/partial lesson) and no
+    internal parse/validation detail is exposed to the learner.
+    """
+
+    def __init__(self, lesson_id: str) -> None:
+        self.lesson_id = lesson_id
+        super().__init__("Published lesson content failed validation")

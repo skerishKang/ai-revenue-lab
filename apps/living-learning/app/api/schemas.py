@@ -156,6 +156,101 @@ class ReviewDetailResponse(BaseModel):
     adaptation_summary: str
 
 
+# ---------------------------------------------------------------------------
+# Operator review detail: full structured payload for human review.
+# Includes expected answers/rationale and validation internals (operator-only;
+# never exposed on learner-facing routes).
+# ---------------------------------------------------------------------------
+class OperatorSectionView(BaseModel):
+    section_id: str
+    title: str
+    content: str
+    includes_code: bool = False
+    code_snippet: str = ""
+
+
+class OperatorCodeExampleView(BaseModel):
+    example_id: str
+    language: str
+    code: str
+    expected_output: str
+    explanation: str
+
+
+class OperatorTermView(BaseModel):
+    term: str
+    definition: str
+
+
+class OperatorReviewQuestionView(BaseModel):
+    question: str
+    correct_answer: str
+    explanation: str
+
+
+class InstructionalPlanView(BaseModel):
+    objective: str
+    section_order: list[str]
+    difficulty: str
+    example_count: int
+    review_question_count: int
+    feedback_actions: list[str]
+
+
+class OperatorLessonContentView(BaseModel):
+    sections: list[OperatorSectionView]
+    code_examples: list[OperatorCodeExampleView]
+    term_definitions: list[OperatorTermView]
+    review_questions: list[OperatorReviewQuestionView]
+
+
+class AdaptationMaterialChangeView(BaseModel):
+    dimension: str
+    before_value: str
+    after_value: str
+    reason: str
+
+
+class AdaptationView(BaseModel):
+    prior_lesson_id: str | None
+    feedback_signal: str | None
+    comprehension_signal: str | None
+    material_changes: list[AdaptationMaterialChangeView]
+
+
+class ValidationReportView(BaseModel):
+    content_schema: str
+    ast_safety: str
+    answer_grounding: str
+    adaptation_materiality: str
+    privacy_markup: str
+
+
+class GenerationEvidenceView(BaseModel):
+    provider: str
+    model: str
+    attempts: int
+    retries: int
+    latency_ms_total: float
+    input_tokens_total: int | None
+    output_tokens_total: int | None
+
+
+class OperatorReviewDetailResponse(BaseModel):
+    lesson_id: str
+    learner_id: str
+    concept_id: str
+    lesson_number: int
+    generation_status: str
+    publication_state: str
+    source_diagnostic_snapshot_id: str | None
+    instructional_plan: InstructionalPlanView
+    lesson_content: OperatorLessonContentView
+    adaptation: AdaptationView
+    validation: ValidationReportView
+    generation_evidence: GenerationEvidenceView
+
+
 class ReviewActionRequest(BaseModel):
     reason: str = Field(default="", max_length=MAX_FREE_TEXT)
 

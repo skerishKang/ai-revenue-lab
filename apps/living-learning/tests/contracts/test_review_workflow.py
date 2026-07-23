@@ -177,6 +177,21 @@ def test_concurrent_approve_reject_has_one_winner(file_db):
     finally:
         pipeline.conn.close()
 
+    # Create two real operator identities (the audit FK requires real rows).
+    setup = sqlite3.connect(file_db)
+    setup.row_factory = sqlite3.Row
+    setup.execute("PRAGMA foreign_keys=ON")
+    setup.execute(
+        "INSERT INTO external_identities (id, provider, issuer, subject, status) "
+        "VALUES ('op-1', 'firebase', 'ai-revenue-lab-identity', 'op1-sub', 'active')"
+    )
+    setup.execute(
+        "INSERT INTO external_identities (id, provider, issuer, subject, status) "
+        "VALUES ('op-2', 'firebase', 'ai-revenue-lab-identity', 'op2-sub', 'active')"
+    )
+    setup.commit()
+    setup.close()
+
     barrier = threading.Barrier(2)
     outcomes: list[str] = []
     lock = threading.Lock()

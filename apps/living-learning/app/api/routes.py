@@ -138,13 +138,24 @@ def _published_lesson_by_sequence(conn, learner_id: str, sequence: int):
 def _build_published_lesson(conn, lesson) -> schemas.PublishedLessonResponse:
     """Serialize a published lesson into a validated structure.
 
-    Deliberately omits internal prompts, provider payloads, expected answers and
-    validation rules — only learner-facing teaching content is exposed.
+    Read-time validation: JSON parse -> ``LessonContent`` Pydantic validation ->
+    learner-safe mapping. A published row that fails to parse or validate is
+    fail-closed (raised as ``InvalidPublishedContentError``, never served as an
+    empty lesson). Deliberately omits internal prompts, provider payloads,
+    expected answers and validation rules — only learner-facing teaching content
+    is exposed.
     """
+    from app.domain.models import LessonContent
+    from app.pipeline.errors import InvalidPublishedContentError
+
     try:
         content = json.loads(lesson.lesson_content_json or "{}")
-    except (ValueError, TypeError):
-        content = {}
+    except (ValueError, TypeError) as exc:
+        raise InvalidPublishedContentError(lesson.id) from exc
+    try:
+        LessonContent.model_validate(content)
+    except Exception as exc:
+        raise InvalidPublishedContentError(lesson.id) from exc
 
     sections = [
         schemas.SectionView(
@@ -310,13 +321,20 @@ def get_lesson(
     principal: Principal = Depends(require_learner),
     pipeline: LessonPipeline = Depends(get_learner_pipeline),
 ) -> schemas.PublishedLessonResponse:
+    from app.pipeline.errors import InvalidPublishedContentError
+
     # Learners only see published lessons. A missing or not-yet-approved lesson
     # collapses to a generic 404 (no internal state leakage).
     conn = _conn_from_pipeline(pipeline)
     lesson = _published_lesson_by_sequence(conn, principal.learner_id, sequence)
     if lesson is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found")
-    return _build_published_lesson(conn, lesson)
+    try:
+        return _build_published_lesson(conn, lesson)
+    except InvalidPublishedContentError:
+        # Fail closed: a published row that fails read-time validation is never
+        # served as an empty/partial lesson, and no internal detail is exposed.
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="unavailable")
 
 
 def _require_published_lesson(conn, learner_id: str, sequence: int):
@@ -490,8 +508,9 @@ def operator_review_list(
     conn = _conn(request)
     try:
         rows = conn.execute(
-            "SELECT id, learner_id, concept_id, lesson_number, generation_status "
-            "FROM lessons WHERE generation_status = 'pending_review' ORDER BY created_at"
+            "SELECT id, learner_id, concept_id, lesson_number, generation_status, publication_state "
+            "FROM lessons WHERE generation_status = 'pending_review' AND publication_state = 'pending' "
+            "ORDER BY created_at"
         ).fetchall()
     finally:
         _safe_close(conn)
@@ -509,27 +528,23 @@ def operator_review_list(
     )
 
 
-@router.get("/operator/review/{lesson_id}", response_model=schemas.ReviewDetailResponse)
+@router.get("/operator/review/{lesson_id}", response_model=schemas.OperatorReviewDetailResponse)
 def operator_review_detail(
     lesson_id: str,
     request: Request,
     principal: Principal = Depends(require_operator),
-) -> schemas.ReviewDetailResponse:
+) -> schemas.OperatorReviewDetailResponse:
+    from app.review_service import build_review_detail
+
     conn = _conn(request)
     try:
         lesson = get_lesson_by_id(conn, lesson_id)
+        if lesson is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found")
+        detail = build_review_detail(conn, lesson)
     finally:
         _safe_close(conn)
-    if lesson is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found")
-    return schemas.ReviewDetailResponse(
-        lesson_id=lesson.id,
-        learner_id=lesson.learner_id,
-        concept_id=lesson.concept_id,
-        lesson_number=lesson.lesson_number,
-        generation_status=lesson.generation_status,
-        adaptation_summary=lesson.adaptation_summary,
-    )
+    return schemas.OperatorReviewDetailResponse(**detail)
 
 
 @router.post("/operator/review/{lesson_id}/approve", response_model=schemas.ReviewActionResponse)
