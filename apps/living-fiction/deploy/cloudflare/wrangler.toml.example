@@ -1,0 +1,14 @@
+# Copy this file to wrangler.toml and fill in your own values.
+# Never commit a real wrangler.toml containing account details or the live
+# upstream origin.
+
+name = "living-fiction-proxy"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# The Living Fiction upstream origin served by Modal (https only, no trailing
+# slash). Take the value from the https URL printed at the end of the
+# `modal deploy` output.
+# The worker reads this at runtime; the origin is never hardcoded in code.
+UPSTREAM_ORIGIN = ""
