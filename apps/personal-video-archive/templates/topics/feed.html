@@ -1,11 +1,26 @@
 {% extends "base.html" %}
-{% block title %}{{ topic.name }} — Personal Video Archive{% endblock %}
-{% block shell_class %}has-context{% endblock %}
+{% block title %}{{ topic.name }} — {{ t("app_name") }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>{{ topic.name }}</h1>
-    <p class="subtitle">{{ topic.intent }}</p>
-</div>
+<section class="topic-hero">
+    <div>
+        <span class="eyebrow">Topic</span>
+        <h1>{{ topic.name }}</h1>
+        <p class="lede">{{ topic.intent }}</p>
+    </div>
+    <aside class="topic-aside">
+        <span class="eyebrow">{{ t("feed_rule_label") }}</span>
+        {% if rules %}
+        <p class="rule-line">"{{ rules.primary_query }}"</p>
+        {% if rules.related_queries %}
+        <p class="rule-line">{{ t("feed_rule_related") }}: {{ rules.related_queries | join(', ') }}</p>
+        {% endif %}
+        <p class="rule-line">{{ t("feed_rule_sort") }}: {{ rules.default_sort.value }} · {{ t("feed_rule_shorts") }}: {{ rules.shorts_preference.value }}</p>
+        {% else %}
+        <p class="rule-line">{{ t("feed_rule_none") }}</p>
+        {% endif %}
+        <p class="rule-line"><strong>{{ t("badge_app") }}</strong> · {{ t("badge_youtube") }}</p>
+    </aside>
+</section>
 
 {% if sync_failed %}
 <div class="provider-error-banner" role="alert">
@@ -13,55 +28,30 @@
 </div>
 {% endif %}
 
-{% if rules %}
-<div class="rules-summary">
-    <strong>{{ t("badge_app") }}</strong> —
-    {{ t("form_primary_query") }}: "{{ rules.primary_query }}" |
-    {{ t("form_default_sort") }}: {{ rules.default_sort.value }} |
-    {{ t("form_shorts") }}: {{ rules.shorts_preference.value }}
-</div>
-{% endif %}
-
 <div class="feed-actions">
-    <form method="post" action="{{ lp }}/topics/{{ topic.id }}/sync" style="display:inline">
-        <button type="submit" class="btn btn-primary">{{ t("feed_refresh") }}</button>
+    <form method="post" action="{{ lp }}/topics/{{ topic.id }}/sync" class="inline-form">
+        <button type="submit" class="primary-button">{{ t("feed_refresh") }}</button>
     </form>
-    <a href="{{ lp }}/records?{% if topic %}topic_id={{ topic.id }}{% endif %}" class="btn btn-secondary">{{ t("feed_my_records") }}</a>
+    <a href="{{ lp }}/records?topic_id={{ topic.id }}" class="pill-button">{{ t("feed_my_records") }}</a>
 </div>
 
 {% set topic_id = topic.id %}
 {% include "partials/_state_pills.html" %}
 
 {% if feed %}
-<div class="feed-header">
-    <span class="badge badge-info">{{ t("feed_newest_first") }}</span>
-    <span class="small">{{ t("feed_showing", n=feed | length) }}</span>
+<div class="feed-meta">
+    <span class="micro-label">{{ t("feed_newest_first") }}</span>
+    <span class="micro-label">{{ t("feed_showing", n=feed | length) }}</span>
 </div>
-
-<div class="video-feed">
+<section class="feed-layout">
     {% for tv, video, record in feed %}
     {% include "partials/_video_card.html" %}
     {% endfor %}
-</div>
+</section>
 {% else %}
 <div class="empty-state">
     <h3>{{ t("empty_videos_title") }}</h3>
     <p>{{ t("empty_videos_desc") }}</p>
 </div>
 {% endif %}
-{% endblock %}
-
-{% block context_panel %}
-<aside class="context-panel">
-    <h3>{{ topic.name }}</h3>
-    <div class="context-item">{{ topic.intent }}</div>
-    {% if rules %}
-    <div class="context-item">
-        <strong>{{ t("form_primary_query") }}</strong><br>{{ rules.primary_query }}
-    </div>
-    {% endif %}
-    <div class="context-item">
-        <a href="{{ lp }}/records?topic_id={{ topic.id }}">{{ t("feed_my_records") }}</a>
-    </div>
-</aside>
 {% endblock %}

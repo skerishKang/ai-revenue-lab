@@ -462,19 +462,28 @@ def main(output_dir: Path | None = None) -> Path:
         output_rel_path="topics/pv-topic-0001/refresh-failed/index.html",
     )
 
-    # --- Video detail -----------------------------------------------------
-    _write_page_bilingual(
-        env,
-        "videos/detail.html",
-        {
-            "video": videos[0],
-            "topic_videos": [topic1_tvs[0]],
-            "records": [(topic1_tvs[0], rec_completed)],
-        },
-        "/videos/pv-video-0001",
-        output_dir,
-        "videos/pv-video-0001/index.html",
-    )
+    # --- Video detail pages (all videos from both topics) -----------------
+    all_videos = topic1_videos + topic2_videos
+    all_tvs = topic1_tvs + topic2_tvs
+    records_by_video = {
+        "pv-video-0001": [(topic1_tvs[0], rec_completed)],
+        "pv-video-0004": [(topic2_tvs[0], rec_in_progress)],
+        "pv-video-0006": [(topic2_tvs[2], make_record_revisit())],
+    }
+    for i, video in enumerate(all_videos):
+        tv = all_tvs[i]
+        _write_page_bilingual(
+            env,
+            "videos/detail.html",
+            {
+                "video": video,
+                "topic_videos": [tv],
+                "records": records_by_video.get(video.id, []),
+            },
+            f"/videos/{video.id}",
+            output_dir,
+            f"videos/{video.id}/index.html",
+        )
 
     # --- Private record detail / edit (free-form, minimal) ---------------
     _write_page_bilingual(

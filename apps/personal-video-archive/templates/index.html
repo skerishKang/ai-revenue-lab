@@ -1,94 +1,176 @@
 {% extends "base.html" %}
 {% block title %}{{ t("app_name") }}{% endblock %}
-{% block shell_class %}has-context{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>{{ t("app_name") }}</h1>
-    <p class="subtitle">{{ t("home_subtitle") }}</p>
-</div>
+{% set hero = new_finds[0] if new_finds else none %}
+{% set cw = continue_watching[0] if continue_watching else none %}
+{% set mem = recent_notes[0] if recent_notes else none %}
+{% set resurf = resurfaced[0] if resurfaced else none %}
 
-{% if continue_watching %}
-<div class="home-section">
-    <div class="home-section-header">
-        <h2>{{ t("home_continue_watching") }}</h2>
+<section class="intro">
+    <span class="eyebrow">{{ t("app_name") }}</span>
+    <h1 class="display">{{ t("home_intro_title") }}</h1>
+    <p class="lede">{{ t("home_intro_desc") }}</p>
+</section>
+
+{% if hero %}
+{% set hv = hero[1] %}
+{% set htv = hero[0] %}
+<section class="hero">
+    <a class="hero-media" href="{{ lp }}/videos/{{ hv.id }}">
+        <img src="{{ hv.thumbnail_url }}" alt="{{ hv.title }}">
+        <div class="hero-overlay">
+            <div class="meta-row">
+                <span class="micro-label">{{ t("home_hero_label") }}</span>
+                <span class="meta-dot"></span>
+                <span>{{ hv.channel_title }}</span>
+            </div>
+            <h2>{{ hv.title }}</h2>
+            <p>{{ hv.description | truncate(120) }}</p>
+        </div>
+    </a>
+    <div class="hero-side">
+        {% if cw %}
+        {% set cwv = cw[1] %}
+        {% set cwrec = cw[2] %}
+        <div class="continue-card">
+            <span class="eyebrow">{{ t("home_continue_label") }}</span>
+            <div class="poster">
+                <a href="{{ lp }}/videos/{{ cwv.id }}"><img src="{{ cwv.thumbnail_url }}" alt="{{ cwv.title }}"></a>
+            </div>
+            <h3>{{ cwv.title }}</h3>
+            <p class="collection-meta">{{ cwv.channel_title }}</p>
+            <div class="progress"><span style="width:62%"></span></div>
+            <p class="collection-meta">{{ t("home_continue_progress") }} 62%</p>
+            <a class="primary-button" href="{{ lp }}/videos/{{ cwv.id }}">{{ t("home_continue_label") }}</a>
+        </div>
+        {% endif %}
+        {% if mem %}
+        {% set memrec = mem[0] %}
+        {% set memv = mem[2] %}
+        <a class="memory-tile" href="{{ lp }}/records/{{ memrec.id }}">
+            <small>{{ t("home_memory_label") }}</small>
+            <strong>{{ memrec.free_form_note | truncate(90) }}</strong>
+            <span>{{ memv.title | truncate(40) }}</span>
+        </a>
+        {% endif %}
     </div>
-    <div class="home-video-row">
-        {% for tv, video, record in continue_watching %}
-        {% include "partials/_video_card.html" %}
-        {% endfor %}
-    </div>
-</div>
+</section>
 {% endif %}
 
-{% if new_finds %}
-<div class="home-section">
-    <div class="home-section-header">
-        <h2>{{ t("home_new_finds") }}</h2>
-        <a href="{{ lp }}/topics">{{ t("home_see_all") }}</a>
+{% if new_finds | length > 1 %}
+<section class="section">
+    <div class="section-head">
+        <div>
+            <span class="eyebrow">{{ t("home_discover_label") }}</span>
+            <h2>{{ t("home_discover_label") }}</h2>
+        </div>
+        <p>{{ t("home_discover_desc") }}</p>
     </div>
-    <div class="home-video-row">
-        {% for tv, video, record in new_finds %}
-        {% include "partials/_video_card.html" %}
+    <div class="discover-grid">
+        {% for item in new_finds[1:] %}
+        {% set v = item[1] %}
+        {% set tv = item[0] %}
+        {% set card_class = "story-card" %}
+        {% if loop.index == 1 %}{% set card_class = "story-card large" %}
+        {% elif loop.index == 2 %}{% set card_class = "story-card tall" %}
+        {% endif %}
+        <a class="{{ card_class }}" href="{{ lp }}/videos/{{ v.id }}">
+            <img src="{{ v.thumbnail_url }}" alt="{{ v.title }}">
+            <div class="story-info">
+                <span class="micro-label">{{ v.channel_title }}</span>
+                <h3>{{ v.title }}</h3>
+                {% if tv.match_score %}
+                <p>{{ t("home_match_score", score=(tv.match_score * 100) | round(0) | int) }}</p>
+                {% endif %}
+            </div>
+        </a>
         {% endfor %}
     </div>
-</div>
+</section>
 {% endif %}
 
-<div class="home-section">
-    <div class="home-section-header">
-        <h2>{{ t("home_topics") }}</h2>
-        <a href="{{ lp }}/topics/new" class="btn btn-small btn-primary">{{ t("action_create_topic") }}</a>
+{% if topics %}
+<section class="section">
+    <div class="section-head">
+        <div>
+            <span class="eyebrow">{{ t("home_collections_label") }}</span>
+            <h2>{{ t("home_collections_label") }}</h2>
+        </div>
+        <a class="text-link" href="{{ lp }}/topics">{{ t("home_see_all") }}</a>
     </div>
-    {% if topics %}
-    <div class="topic-list">
+    <div class="collection-row">
         {% for topic in topics %}
-        {% include "partials/_topic_card.html" %}
+        <a class="collection-card" href="{{ lp }}/topics/{{ topic.id }}">
+            <div>
+                <h3 class="collection-title">{{ topic.name }}</h3>
+                <p class="collection-meta">{{ topic.intent | truncate(80) }}</p>
+            </div>
+            {% if topic_previews is defined and topic.id in topic_previews %}
+            <div class="mini-stack">
+                {% for pv in topic_previews[topic.id][:3] %}
+                <img src="{{ pv.thumbnail_url }}" alt="{{ pv.title }}">
+                {% endfor %}
+            </div>
+            {% endif %}
+            <p class="collection-meta">{{ t("topic_created") }} {{ topic.created_at[:10] }}</p>
+        </a>
         {% endfor %}
     </div>
-    {% else %}
-    <div class="empty-state">
-        <h3>{{ t("empty_topics_title") }}</h3>
-        <p>{{ t("empty_topics_desc") }}</p>
-        <a href="{{ lp }}/topics/new" class="btn btn-primary">{{ t("action_create_topic") }}</a>
-    </div>
-    {% endif %}
-</div>
+</section>
+{% endif %}
 
 {% if recent_notes %}
-<div class="home-section">
-    <div class="home-section-header">
-        <h2>{{ t("home_recent_notes") }}</h2>
-        <a href="{{ lp }}/records">{{ t("home_see_all") }}</a>
+<section class="section">
+    <div class="section-head">
+        <div>
+            <span class="eyebrow">{{ t("home_notes_label") }}</span>
+            <h2>{{ t("home_notes_label") }}</h2>
+        </div>
+        <a class="text-link" href="{{ lp }}/records">{{ t("home_see_all") }}</a>
     </div>
-    <div class="record-list">
-        {% for record, tv, video in recent_notes %}
-        {% include "partials/_record_card.html" %}
+    <div class="notes-grid">
+        {% for item in recent_notes %}
+        {% set rec = item[0] %}
+        {% set v = item[2] %}
+        <a class="note-card {% if loop.index == 1 %}feature{% endif %}" href="{{ lp }}/records/{{ rec.id }}">
+            {% if loop.index == 1 %}
+            <div class="note-thumb"><img src="{{ v.thumbnail_url }}" alt="{{ v.title }}"></div>
+            {% endif %}
+            <div>
+                <span class="status-pill">{{ t("state_" + (rec.viewing_state | state_label)) }}</span>
+                <blockquote>{{ rec.free_form_note | truncate(120) }}</blockquote>
+                <p class="collection-meta">{{ v.title | truncate(50) }}</p>
+                {% if rec.tags %}
+                <div class="tags">
+                    {% for tag in rec.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </a>
         {% endfor %}
     </div>
-</div>
+</section>
 {% endif %}
 
-{% if resurfaced %}
-<div class="home-section">
-    <div class="home-section-header">
-        <h2>{{ t("home_resurfaced") }}</h2>
+{% if resurf %}
+{% set rrec = resurf[0] %}
+{% set rv = resurf[2] %}
+<section class="resurface">
+    <div>
+        <span class="eyebrow">{{ t("home_resurfaced_label") }}</span>
+        <h2>{{ rv.title | truncate(60) }}</h2>
+        <p>{{ rrec.free_form_note | truncate(160) }}</p>
+        <a class="primary-button secondary" href="{{ lp }}/records/{{ rrec.id }}">{{ t("home_resurfaced_action") }}</a>
     </div>
-    <div class="record-list">
-        {% for record, tv, video in resurfaced %}
-        {% include "partials/_record_card.html" %}
-        {% endfor %}
-    </div>
+    <div class="poster"><img src="{{ rv.thumbnail_url }}" alt="{{ rv.title }}"></div>
+</section>
+{% endif %}
+
+{% if not new_finds and not continue_watching and not recent_notes and not topics %}
+<div class="empty-state">
+    <h3>{{ t("home_empty") }}</h3>
+    <p>{{ t("home_empty_desc") }}</p>
+    <a href="{{ lp }}/topics/new" class="primary-button">{{ t("action_create_topic") }}</a>
 </div>
 {% endif %}
-{% endblock %}
-
-{% block context_panel %}
-<aside class="context-panel">
-    <h3>{{ t("home_topics") }}</h3>
-    {% for topic in topics %}
-    <div class="context-item">
-        <a href="{{ lp }}/topics/{{ topic.id }}">{{ topic.name }}</a>
-    </div>
-    {% endfor %}
-</aside>
 {% endblock %}

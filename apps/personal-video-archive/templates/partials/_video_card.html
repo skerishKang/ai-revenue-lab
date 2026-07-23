@@ -1,51 +1,43 @@
-<article class="video-card" data-video-title="{{ video.title }}">
-    <div class="video-thumbnail">
+<article class="feed-card {% if loop is defined and loop.index == 1 %}wide{% endif %}" data-video-title="{{ video.title }}">
+    <div class="image">
         {% if is_preview %}
         <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer">
             <img class="video-card-thumb" src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
         </a>
         {% else %}
-        <img class="video-card-thumb" src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        <a href="{{ lp }}/videos/{{ video.id }}">
+            <img class="video-card-thumb" src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        </a>
         {% endif %}
     </div>
-    <div class="video-content">
-        <div class="video-meta-source">
-            <span class="badge badge-info badge-sm">{{ t("badge_youtube") }}</span>
-        </div>
-        <h3 class="video-title">{{ video.title }}</h3>
-        <p class="video-card-channel">{{ video.channel_title }}</p>
-        <p class="video-published small">
+    <div class="feed-body">
+        <span class="micro-label video-card-channel">{{ video.channel_title }}</span>
+        <h3>{{ video.title }}</h3>
+        <p>
             {{ t("feed_published") }} {{ video.published_at[:10] }}
             {% if video.duration_seconds %}
             · {{ (video.duration_seconds / 60) | round(1) }}{{ t("feed_duration_min") }}
             {% endif %}
-            {% if video.view_count %}
-            · {{ video.view_count | int | format_thousands }} {{ t("feed_views") }}
-            {% endif %}
         </p>
-
-        {% if tv.match_score is not none or tv.match_reasons %}
-        <div class="match-analysis">
-            <strong>{{ t("feed_why_recommended") }}</strong>
-            {% if tv.match_score is not none %}
-            · {{ t("feed_match_score", score=(tv.match_score * 100) | round | int) }}
+        <div class="match-line">
+            {% if record %}
+            <span class="status-pill">{{ t("state_" + record.viewing_state.value) }}</span>
+            {% else %}
+            <span class="status-pill">{{ t("state_unseen") }}</span>
             {% endif %}
-            {% if tv.match_reasons %}
-            <ul class="match-reasons">
-                {% for reason in tv.match_reasons %}
-                <li>{{ reason }}</li>
-                {% endfor %}
-            </ul>
+            {% if tv.match_score is not none %}
+            <span class="match-score">{{ t("feed_match_score", score=(tv.match_score * 100) | round | int) }}</span>
             {% endif %}
         </div>
+        {% if tv.match_reasons %}
+        <p class="match-reason">{{ tv.match_reasons[0] }}</p>
         {% endif %}
-
-        <div class="video-actions">
+        <div class="card-actions">
             {% if is_preview %}
-            <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-primary">{{ t("action_open_youtube") }}</a>
+            <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-small">{{ t("action_open_youtube") }}</a>
             {% else %}
             <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
-                <button type="submit" class="btn btn-small btn-primary">{{ t("action_open_youtube") }}</button>
+                <button type="submit" class="btn btn-small">{{ t("action_open_youtube") }}</button>
             </form>
             {% endif %}
             <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/state" class="inline-form">
@@ -57,8 +49,9 @@
                 </select>
             </form>
             <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/records" class="inline-form">
-                <button type="submit" class="btn btn-small btn-secondary">{{ t("action_create_record") }}</button>
+                <button type="submit" class="btn btn-small">{{ t("action_create_record") }}</button>
             </form>
         </div>
     </div>
+    <a class="more" href="{{ lp }}/videos/{{ video.id }}" aria-label="{{ t('feed_more') }}">···</a>
 </article>

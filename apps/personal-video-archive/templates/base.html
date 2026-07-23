@@ -1,54 +1,65 @@
 <!DOCTYPE html>
-<html lang="{{ locale | default('ko') }}">
+<html lang="{{ 'ko' if locale == 'ko' else 'en' }}">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ t("app_name") }}{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+<div class="shell">
+    {% if is_preview %}
     {% include "partials/_preview_notice.html" %}
-    <div class="app-shell {% block shell_class %}{% endblock %}">
-        <nav class="sidebar" aria-label="{{ t('nav_home') }}">
-            <a href="{{ lp }}/" class="sidebar-brand">{{ t("app_name") }}</a>
-            <div class="sidebar-nav">
-                <a href="{{ lp }}/" {% if request.url.path == lp + "/" or request.url.path == lp %}aria-current="page"{% endif %}>{{ t("nav_home") }}</a>
-                <a href="{{ lp }}/topics" {% if "/topics" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_topics") }}</a>
-                <a href="{{ lp }}/records" {% if "/records" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_records") }}</a>
-                <a href="{{ lp }}/proposals" {% if "/proposals" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_proposals") }}</a>
-            </div>
-            <div class="sidebar-footer">
-                <a href="{{ lang_switch_href }}" class="lang-switch">{{ t("lang_switch") }}</a>
-            </div>
-        </nav>
+    {% endif %}
 
-        <header class="app-header">
+    <header class="topbar">
+        <div class="topbar-inner">
             <a href="{{ lp }}/" class="brand">{{ t("app_name") }}</a>
-            <a href="{{ lang_switch_href }}" class="lang-switch">{{ t("lang_switch") }}</a>
-        </header>
+            <nav class="main-nav" aria-label="{{ t('nav_home') }}">
+                <a href="{{ lp }}/" {% if request.url.path == lp + '/' or request.url.path == lp %}aria-current="page" class="active"{% endif %}>{{ t("nav_home") }}</a>
+                <a href="{{ lp }}/topics" {% if '/topics' in request.url.path %}aria-current="page" class="active"{% endif %}>{{ t("nav_topics") }}</a>
+                <a href="{{ lp }}/records" {% if '/records' in request.url.path %}aria-current="page" class="active"{% endif %}>{{ t("nav_records") }}</a>
+                <a href="{{ lp }}/proposals" {% if '/proposals' in request.url.path %}aria-current="page" class="active"{% endif %}>{{ t("nav_proposals") }}</a>
+            </nav>
+            <div class="top-actions">
+                <a href="{{ lang_switch_href }}" class="lang-switch" aria-label="{{ t('lang_switch_label') }}">{{ t("lang_switch") }}</a>
+            </div>
+        </div>
+    </header>
 
-        <main class="app-main">
+    <main class="page">
+        <div class="app-main">
             {% block content %}{% endblock %}
-        </main>
+        </div>
+    </main>
 
-        {% block context_panel %}{% endblock %}
-    </div>
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>{{ t("app_name") }}</span>
+            <span>{{ t("footer_tagline") }}</span>
+        </div>
+    </footer>
 
     <nav class="mobile-nav" aria-label="{{ t('nav_home') }}">
         <div class="mobile-nav-inner">
-            <a href="{{ lp }}/" {% if request.url.path == lp + "/" or request.url.path == lp %}aria-current="page"{% endif %}>
-                <span class="nav-icon">⌂</span>{{ t("nav_home") }}
+            <a href="{{ lp }}/" {% if request.url.path == lp + '/' or request.url.path == lp %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">⌂</b>
+                <span>{{ t("nav_home") }}</span>
             </a>
-            <a href="{{ lp }}/topics" {% if "/topics" in request.url.path %}aria-current="page"{% endif %}>
-                <span class="nav-icon">▦</span>{{ t("nav_topics") }}
+            <a href="{{ lp }}/topics" {% if '/topics' in request.url.path %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">☰</b>
+                <span>{{ t("nav_topics") }}</span>
             </a>
-            <a href="{{ lp }}/records" {% if "/records" in request.url.path %}aria-current="page"{% endif %}>
-                <span class="nav-icon">✎</span>{{ t("nav_records") }}
+            <a href="{{ lp }}/records" {% if '/records' in request.url.path %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">✎</b>
+                <span>{{ t("nav_records") }}</span>
             </a>
-            <a href="{{ lp }}/proposals" {% if "/proposals" in request.url.path %}aria-current="page"{% endif %}>
-                <span class="nav-icon">✦</span>{{ t("nav_proposals") }}
+            <a href="{{ lp }}/proposals" {% if '/proposals' in request.url.path %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">✦</b>
+                <span>{{ t("nav_proposals") }}</span>
             </a>
         </div>
     </nav>
+</div>
 </body>
 </html>
