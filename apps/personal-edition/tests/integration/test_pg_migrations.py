@@ -1233,3 +1233,78 @@ class TestExtractCreatedTables:
         from app.db_pg_migrations import _extract_created_tables
 
         assert _extract_created_tables("CREATE INDEX ix ON widgets (id);") == set()
+
+    def test_line_comment_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "-- CREATE TABLE ghost (id TEXT);\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_block_comment_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "/* CREATE TABLE ghost (id TEXT); */\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_nested_block_comment_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "/* outer /* CREATE TABLE ghost (id TEXT); */ still comment */\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_single_quoted_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES ('CREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_single_quoted_string_with_escaped_quote_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES ('it''s a CREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_e_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES (E'CREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_e_string_with_backslash_escape_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES (E'line\\nCREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_dollar_quoted_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE FUNCTION f() RETURNS void AS $$ CREATE TABLE ghost (id TEXT); $$ LANGUAGE sql;\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_tagged_dollar_quoted_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE FUNCTION f() RETURNS void AS $fn$ CREATE TABLE ghost (id TEXT); $fn$ LANGUAGE sql;\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_e_prefix_inside_identifier_not_treated_as_string(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE TABLE resume (id TEXT);\nCREATE TABLE note (id TEXT);"
+        assert _extract_created_tables(sql) == {"resume", "note"}
+
+    def test_canonical_migrations_expected_table_set(self):
+        from app.db_pg_migrations import _extract_created_tables
+        from pathlib import Path
+
+        migrations_dir = Path(__file__).parent.parent.parent / "migrations"
+        expected = set()
+        for p in sorted(migrations_dir.glob("pg_*.sql")):
+            expected |= _extract_created_tables(p.read_text())
+        assert "participants" in expected
+        assert "inputs" in expected
+        assert "editions" in expected
+        assert "feedback" in expected
+        assert "generation_runs" in expected
+        assert "generation_requests" in expected

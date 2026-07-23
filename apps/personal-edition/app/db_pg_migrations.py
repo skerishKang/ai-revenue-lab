@@ -189,6 +189,96 @@ def _has_non_comment_content(text: str) -> bool:
     return bool(text.strip())
 
 
+_DOLLAR_TAG_RE = re.compile(r"\$([A-Za-z_]\w*)?\$")
+
+
+def _neutralize_sql(content: str) -> str:
+    """Replace comments and string literals with inert placeholders.
+
+    Ensures :data:`_CREATE_TABLE_RE` only matches real DDL, not text that
+    appears inside comments or string literals.
+
+    Handles:
+    - Line comments: ``-- ...``
+    - Block comments: ``/* ... */`` including nested ``/* /* */ */``
+    - Single-quoted strings: ``'...'`` with ``''`` escape
+    - E-strings: ``E'...'`` / ``e'...'`` with ``\\'`` and ``''`` escapes
+      (the ``E`` prefix must not be part of a larger identifier)
+    - Dollar-quoted strings: ``$$...$$`` or ``$tag$...$tag$``
+    """
+    out: list[str] = []
+    i = 0
+    n = len(content)
+
+    while i < n:
+        c = content[i]
+
+        if c == "-" and i + 1 < n and content[i + 1] == "-":
+            while i < n and content[i] != "\n":
+                i += 1
+            out.append(" ")
+            continue
+
+        if c == "/" and i + 1 < n and content[i + 1] == "*":
+            depth = 1
+            i += 2
+            while i < n and depth > 0:
+                if content[i] == "/" and i + 1 < n and content[i + 1] == "*":
+                    depth += 1
+                    i += 2
+                elif content[i] == "*" and i + 1 < n and content[i + 1] == "/":
+                    depth -= 1
+                    i += 2
+                else:
+                    i += 1
+            out.append(" ")
+            continue
+
+        if c in ("E", "e") and i + 1 < n and content[i + 1] == "'":
+            if i == 0 or not (content[i - 1].isalnum() or content[i - 1] == "_"):
+                i += 2
+                while i < n:
+                    if content[i] == "\\":
+                        i += 2
+                    elif content[i] == "'" and i + 1 < n and content[i + 1] == "'":
+                        i += 2
+                    elif content[i] == "'":
+                        i += 1
+                        break
+                    else:
+                        i += 1
+                out.append("''")
+                continue
+
+        if c == "$":
+            m = _DOLLAR_TAG_RE.match(content, i)
+            if m:
+                tag = m.group(0)
+                i += len(tag)
+                end = content.find(tag, i)
+                i = n if end == -1 else end + len(tag)
+                out.append("''")
+                continue
+
+        if c == "'":
+            i += 1
+            while i < n:
+                if content[i] == "'" and i + 1 < n and content[i + 1] == "'":
+                    i += 2
+                elif content[i] == "'":
+                    i += 1
+                    break
+                else:
+                    i += 1
+            out.append("''")
+            continue
+
+        out.append(c)
+        i += 1
+
+    return "".join(out)
+
+
 _CREATE_TABLE_RE = re.compile(
     r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?"
     r"(?:\"?[\w]+\"?\.)?"  # optional schema qualifier
@@ -204,8 +294,12 @@ def _extract_created_tables(content: str) -> set[str]:
     which tables an applied migration declares, without executing any DDL.
     Handles optional ``IF NOT EXISTS``, an optional schema qualifier, and
     optional double-quoted identifiers.
+
+    Comments (line, block, nested) and string literals (single-quoted,
+    E-quoted, dollar-quoted) are neutralised before matching so that
+    ``CREATE TABLE`` appearing inside them is never detected.
     """
-    return {m.group(1) for m in _CREATE_TABLE_RE.finditer(content)}
+    return {m.group(1) for m in _CREATE_TABLE_RE.finditer(_neutralize_sql(content))}
 
 
 def _ensure_migrations_table(conn: Connection[DictRow]) -> None:
