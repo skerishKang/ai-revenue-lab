@@ -55,3 +55,61 @@ class TestVerifierResolution:
         fake = FakeTokenVerifier({"t": claims})
         set_token_verifier(fake)
         assert get_token_verifier().verify("t") == claims
+
+
+class TestVerifierInjectionGuard:
+    def test_testing_allows_fake_verifier(self, monkeypatch):
+        monkeypatch.setenv("LT_ENVIRONMENT", "testing")
+        from app.config import reset_settings
+
+        reset_settings()
+        fake = FakeTokenVerifier({"t": TokenClaims(PROVIDER_FIREBASE, "uid-1")})
+        set_token_verifier(fake)
+        assert get_token_verifier().verify("t").subject == "uid-1"
+        reset_settings()
+
+    def test_staging_rejects_fake_verifier(self, monkeypatch):
+        monkeypatch.setenv("LT_ENVIRONMENT", "staging")
+        monkeypatch.setenv("LT_AUTH_MODE", "legacy")
+        monkeypatch.setenv("LT_OPERATOR_SECRET", "test-secret-12345")
+        from app.config import reset_settings
+
+        reset_settings()
+        fake = FakeTokenVerifier({"t": TokenClaims(PROVIDER_FIREBASE, "uid-1")})
+        with pytest.raises(RuntimeError, match="restricted to testing"):
+            set_token_verifier(fake)
+        reset_settings()
+
+    def test_production_rejects_fake_verifier(self, monkeypatch):
+        monkeypatch.setenv("LT_ENVIRONMENT", "production")
+        monkeypatch.setenv("LT_AUTH_MODE", "legacy")
+        monkeypatch.setenv("LT_OPERATOR_SECRET", "test-secret-12345")
+        from app.config import reset_settings
+
+        reset_settings()
+        fake = FakeTokenVerifier({"t": TokenClaims(PROVIDER_FIREBASE, "uid-1")})
+        with pytest.raises(RuntimeError, match="restricted to testing"):
+            set_token_verifier(fake)
+        reset_settings()
+
+    def test_reset_restores_real_verifier_path(self, monkeypatch):
+        monkeypatch.setenv("LT_ENVIRONMENT", "testing")
+        from app.config import reset_settings
+
+        reset_settings()
+        fake = FakeTokenVerifier({"t": TokenClaims(PROVIDER_FIREBASE, "uid-1")})
+        set_token_verifier(fake)
+        reset_token_verifier()
+        with pytest.raises(InvalidTokenError):
+            get_token_verifier()
+        reset_settings()
+
+    def test_none_verifier_allowed_in_any_environment(self, monkeypatch):
+        monkeypatch.setenv("LT_ENVIRONMENT", "production")
+        monkeypatch.setenv("LT_AUTH_MODE", "legacy")
+        monkeypatch.setenv("LT_OPERATOR_SECRET", "test-secret-12345")
+        from app.config import reset_settings
+
+        reset_settings()
+        set_token_verifier(None)
+        reset_settings()
