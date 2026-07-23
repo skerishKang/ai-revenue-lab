@@ -1,0 +1,116 @@
+"""Pytest configuration and shared fixtures."""
+
+from __future__ import annotations
+
+import os
+import tempfile
+from typing import Generator, Any
+
+import pytest
+import sqlite3
+
+from app.db import apply_migrations
+from app.config import Settings, reset_settings
+from app.ai import MockProvider
+
+
+class MockSettings:
+    app_name: str = "living-learning"
+    database_url: str = ":memory:"
+    environment: str = "testing"
+    provider_model: str = "mock/mock-fixture"
+    provider_type: str = "mock"
+
+
+@pytest.fixture
+def temp_db_path() -> Generator[str, None, None]:
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
+    yield db_path
+    _cleanup_sqlite_files(db_path)
+
+
+def _cleanup_sqlite_files(db_path: str) -> None:
+    """Best-effort removal of a SQLite database and its WAL/SHM sidecars.
+
+    On Windows a lingering connection (e.g. a request-scoped connection that a
+    route did not close) can hold a lock on the WAL/SHM files. Retry briefly and
+    then give up without failing the test — the files live in a temp directory
+    and will be reclaimed by the OS. This hardens test teardown only; it never
+    weakens an assertion.
+    """
+    import time
+
+    candidates = [db_path, f"{db_path}-wal", f"{db_path}-shm", f"{db_path}-journal"]
+    for _ in range(5):
+        remaining = False
+        for path in candidates:
+            if os.path.exists(path):
+                try:
+                    os.unlink(path)
+                except PermissionError:
+                    remaining = True
+        if not remaining:
+            return
+        time.sleep(0.05)
+
+
+@pytest.fixture
+def test_settings(temp_db_path: str) -> Settings:
+    reset_settings()
+    return Settings(database_url=temp_db_path, environment="testing")
+
+
+@pytest.fixture
+def conn(test_settings: Settings) -> Generator[sqlite3.Connection, None, None]:
+    apply_migrations(test_settings.database_url)
+    conn = sqlite3.connect(test_settings.database_url, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys=ON")
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
+@pytest.fixture
+def mock_settings() -> Any:
+    return MockSettings()
+
+
+FIRST_LESSON_PLAN_FIXTURE = {
+    "title": "변수와 값 이해하기",
+    "sections": [
+        {
+            "section_id": "s1",
+            "title": "변수란?",
+            "description": "변수는 데이터를 저장하는盒子",
+            "emphasis": "예제 중심",
+        },
+        {
+            "section_id": "s2",
+            "title": "값의 종류",
+            "description": "숫자, 문자열, 불린 등",
+            "emphasis": "실습 위주",
+        },
+    ],
+}
+
+
+SECOND_LESSON_PLAN_FIXTURE = {
+    "title": "변수와 값 심화 - 피드백 반영",
+    "sections": [
+        {
+            "section_id": "s1",
+            "title": "변수 더 깊이 이해하기",
+            "description": "이전보다 더 많은 예제 포함",
+            "emphasis": "코드 먼저 제시",
+        },
+        {
+            "section_id": "s2",
+            "title": "값과 변수 활용",
+            "description": "실전 예제 중심",
+            "emphasis": "복습 문제 추가",
+        },
+    ],
+}

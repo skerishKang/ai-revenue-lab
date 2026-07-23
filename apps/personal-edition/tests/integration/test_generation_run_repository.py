@@ -7,6 +7,7 @@ import pytest
 from app import generation_run_repository as gr_repo
 from app import participant_repository as repo
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 
 
 class TestGenerationRunCreate:
@@ -15,7 +16,7 @@ class TestGenerationRunCreate:
         apply_migrations(conn, "migrations")
 
         result = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
@@ -34,7 +35,7 @@ class TestGenerationRunCreate:
         apply_migrations(conn, "migrations")
 
         result = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="draft",
             provider="openai",
             advertised_model="gpt-4",
@@ -52,7 +53,7 @@ class TestGenerationRunCreate:
 
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="",
                 provider="mock",
                 advertised_model="mock-v1",
@@ -66,7 +67,7 @@ class TestGenerationRunCreate:
         conn.execute("BEGIN")
         with pytest.raises(repo.RepositoryTransactionError):
             gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="test",
                 provider="mock",
                 advertised_model="mock-v1",
@@ -80,14 +81,14 @@ class TestGenerationRunUpdate:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
 
         updated = gr_repo.update_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             run.id,
             completed_at="2026-01-01T00:00:00.000Z",
             latency_seconds=1.5,
@@ -109,14 +110,14 @@ class TestGenerationRunUpdate:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="draft",
             provider="mock",
             advertised_model="mock-v1",
         )
 
         updated = gr_repo.update_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             run.id,
             completed_at="2026-01-01T00:00:01.000Z",
             success=0,
@@ -135,7 +136,7 @@ class TestGenerationRunUpdate:
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
         result = gr_repo.update_generation_run(
-            conn, "nonexistent", success=1
+            SqliteRuntimeConnection(conn), "nonexistent", success=1
         )
         assert result is None
         conn.close()
@@ -145,12 +146,12 @@ class TestGenerationRunUpdate:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="test",
             provider="mock",
             advertised_model="mock-v1",
         )
-        unchanged = gr_repo.update_generation_run(conn, run.id)
+        unchanged = gr_repo.update_generation_run(SqliteRuntimeConnection(conn), run.id)
         assert unchanged is not None
         assert unchanged.id == run.id
         conn.close()
@@ -162,7 +163,7 @@ class TestGenerationRunLookup:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="validation",
             provider="mock",
             advertised_model="mock-v1",
@@ -183,19 +184,19 @@ class TestGenerationRunLookup:
         apply_migrations(conn, "migrations")
 
         gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
         gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
         gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="draft",
             provider="mock",
             advertised_model="mock-v1",
@@ -216,13 +217,13 @@ class TestGenerationRunFilePersistence:
             apply_migrations(conn, "migrations")
 
             run = gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="editorial_plan",
                 provider="mock",
                 advertised_model="mock-v1",
             )
             gr_repo.update_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 run.id,
                 completed_at="2026-01-01T00:00:01.000Z",
                 latency_seconds=2.0,
@@ -248,7 +249,7 @@ class TestGenerationRunTimestampValidation:
         apply_migrations(conn, "migrations")
 
         result = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
@@ -263,7 +264,7 @@ class TestGenerationRunTimestampValidation:
 
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="editorial_plan",
                 provider="mock",
                 advertised_model="mock-v1",
@@ -277,7 +278,7 @@ class TestGenerationRunTimestampValidation:
 
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="editorial_plan",
                 provider="mock",
                 advertised_model="mock-v1",
@@ -291,7 +292,7 @@ class TestGenerationRunTimestampValidation:
 
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="editorial_plan",
                 provider="mock",
                 advertised_model="mock-v1",
@@ -305,7 +306,7 @@ class TestGenerationRunTimestampValidation:
 
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.create_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 task_type="editorial_plan",
                 provider="mock",
                 advertised_model="mock-v1",
@@ -318,14 +319,14 @@ class TestGenerationRunTimestampValidation:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.update_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 run.id,
                 completed_at="2026-13-01T00:00:00.000Z",
             )
@@ -336,14 +337,14 @@ class TestGenerationRunTimestampValidation:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.update_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 run.id,
                 completed_at="2026-02-30T00:00:00.000Z",
             )
@@ -354,14 +355,14 @@ class TestGenerationRunTimestampValidation:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.update_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 run.id,
                 completed_at="2026-07-20T00:00:61.000Z",
             )
@@ -372,14 +373,14 @@ class TestGenerationRunTimestampValidation:
         apply_migrations(conn, "migrations")
 
         run = gr_repo.create_generation_run(
-            conn,
+            SqliteRuntimeConnection(conn),
             task_type="editorial_plan",
             provider="mock",
             advertised_model="mock-v1",
         )
         with pytest.raises(gr_repo.GenerationRunValidationError):
             gr_repo.update_generation_run(
-                conn,
+                SqliteRuntimeConnection(conn),
                 run.id,
                 completed_at="not-a-timestamp",
             )

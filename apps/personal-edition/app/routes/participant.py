@@ -23,7 +23,7 @@ from app.auth import (
     sign_session_token,
     verify_csrf_token,
 )
-from app.db import get_connection
+from app.db_runtime import DatabaseError
 from app.domain.enums import FeedbackDirection
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
 
@@ -47,7 +47,7 @@ def _get_participant(request: Request, session_token: str | None = None):
     pid = get_participant_id_from_session(session_data)
     if pid is None:
         return None
-    db_conn = get_connection(request.app.state.db_path)
+    db_conn = request.app.state.open_runtime_connection()
     try:
         participant = pt_repo.get_participant_by_id(db_conn, pid)
         if participant is None:
@@ -125,7 +125,7 @@ def token_entry_submit(
         })
         return resp
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         participant = pt_repo.get_active_participant_by_token(conn, token)
     finally:
@@ -150,7 +150,7 @@ def participant_dashboard(request: Request, participant_id: str):
     if participant is None or participant.id != participant_id:
         return RedirectResponse(url="/p/access", status_code=303)
 
-    conn_obj = get_connection(request.app.state.db_path)
+    conn_obj = request.app.state.open_runtime_connection()
     try:
         editions = ed_repo.get_editions_by_participant(conn_obj, participant.id)
         published = [
@@ -263,7 +263,7 @@ def input_form_submit(
         resp, _ = _render_with_csrf(request, "input_form.html", context)
         return resp
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         input_record = input_repo.create_input(
             conn,
@@ -271,6 +271,17 @@ def input_form_submit(
             raw_text=raw_text,
             consent_confirmed=consent,
         )
+    except DatabaseError as exc:
+        logger.error("input submission failed (category=%s)", exc.safe_category)
+        context = {
+            "participant": participant,
+            "error": "An error occurred while saving your input. Please try again.",
+            "success": None,
+            "csrf_token": "",
+            "raw_text": raw_text,
+        }
+        resp, _ = _render_with_csrf(request, "input_form.html", context)
+        return resp
     except Exception:
         logger.exception("input submission failed")
         context = {
@@ -302,7 +313,7 @@ def participant_history(request: Request, participant_id: str):
     if participant is None or participant.id != participant_id:
         return RedirectResponse(url="/p/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         editions = ed_repo.get_editions_by_participant(conn, participant.id)
         published = [
@@ -327,7 +338,7 @@ def edition_read_page(request: Request, participant_id: str, edition_number: int
     if participant is None or participant.id != participant_id:
         return RedirectResponse(url="/p/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         editions = ed_repo.get_editions_by_participant(conn, participant.id)
         target = None
@@ -400,7 +411,7 @@ def feedback_form_page(request: Request, participant_id: str, edition_number: in
     if participant is None or participant.id != participant_id:
         return RedirectResponse(url="/p/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         editions = ed_repo.get_editions_by_participant(conn, participant.id)
         target = None
@@ -484,7 +495,7 @@ def feedback_form_submit(
         resp, _ = _render_with_csrf(request, "feedback_form.html", context)
         return resp
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         editions = ed_repo.get_editions_by_participant(conn, participant.id)
         target = None
@@ -535,6 +546,18 @@ def feedback_form_submit(
                 selected_section_id=selected_section_id or None,
                 free_text=free_text.strip() or None,
             )
+        except DatabaseError as exc:
+            logger.error("feedback submission failed (category=%s)", exc.safe_category)
+            content = json.loads(target.structured_content) if target.structured_content else {}
+            context = {
+                "participant": participant,
+                "edition": target,
+                "content": content,
+                "error": "Feedback submission failed. Please try again.",
+                "csrf_token": "",
+            }
+            resp, _ = _render_with_csrf(request, "feedback_form.html", context)
+            return resp
         except Exception:
             logger.exception("feedback submission failed")
             content = json.loads(target.structured_content) if target.structured_content else {}

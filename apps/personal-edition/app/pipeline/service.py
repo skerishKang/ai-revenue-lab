@@ -34,9 +34,11 @@ from typing import Any
 
 from app import edition_repository as ed_repo
 from app import feedback_repository as fb_repo
+from app import generation_request_repository as gen_req_repo
 from app import generation_run_repository as gr_repo
 from app import input_repository as input_repo
 from app import participant_repository as pt_repo
+from app.db_runtime import as_runtime_connection
 from app.ai.base import AIProvider
 from app.domain.enums import CostClass, ProviderErrorCategory
 from app.domain.models import (
@@ -98,6 +100,7 @@ class GenerationRequest:
     feedback_id: str | None = None
     prohibited_inferences: tuple[str, ...] = ()
     allow_short_sample: bool = False
+    idempotency_key: str | None = None
 
 
 @dataclass(frozen=True)
@@ -332,7 +335,7 @@ def _provider_call_with_retry(
         cost_class_value = last_result.cost_class.value
 
     run = gr_repo.create_generation_run(
-        conn,
+        as_runtime_connection(conn),
         task_type=task_name,
         provider=provider_name,
         advertised_model=model_name,
@@ -342,7 +345,7 @@ def _provider_call_with_retry(
     )
 
     gr_repo.update_generation_run(
-        conn,
+        as_runtime_connection(conn),
         run.id,
         completed_at=completed_at,
         latency_seconds=latency,
@@ -412,6 +415,67 @@ class GenerationService:
             raise ValueError("max_retries must be >= 0")
         self._provider = provider
         self._max_retries = max_retries
+
+    def _claim_idempotency_key(self, conn, request: GenerationRequest):
+        """Atomically claim the request's idempotency key.
+
+        Returns a ``(replay_result, claim_record)`` tuple:
+
+        - ``replay_result`` is a :class:`GenerationResult` when the key was
+          already claimed (the caller should return it immediately), or
+          ``None`` when this caller newly claimed the key and should proceed
+          with generation.
+        - ``claim_record`` is the :class:`GenerationRequestRecord` (always
+          returned so the caller can forward ``claim_token`` to
+          ``complete_generation_request``).
+        """
+        claim = gen_req_repo.claim_generation_request(
+            as_runtime_connection(conn),
+            idempotency_key=request.idempotency_key,
+            participant_id=request.participant_id,
+            input_id=request.input_id,
+        )
+        if not claim.already_claimed:
+            return None, claim
+        if claim.edition_id is not None:
+            replay = _idempotent_replay_outcome()
+            return GenerationResult(
+                edition_id=claim.edition_id,
+                plan_run=replay,
+                draft_run=replay,
+                succeeded=True,
+            ), claim
+        return GenerationResult(
+            edition_id=None,
+            plan_run=_failed_outcome("duplicate generation request in progress"),
+            draft_run=_failed_outcome("duplicate generation request in progress"),
+            succeeded=False,
+        ), claim
+
+    def _fail_claim(
+        self,
+        conn,
+        request: GenerationRequest,
+        claim_record,
+        failure_category: str,
+    ) -> None:
+        """Best-effort transition of a claimed generation request to failed.
+
+        If the transition fails (e.g. the lease already expired and another
+        worker reclaimed the key), the error is swallowed — the lease expiry
+        mechanism is the authoritative crash-recovery path.
+        """
+        if claim_record is None:
+            return
+        try:
+            gen_req_repo.fail_generation_request(
+                as_runtime_connection(conn),
+                idempotency_key=request.idempotency_key,
+                claim_token=claim_record.claim_token,
+                failure_category=failure_category,
+            )
+        except Exception:
+            pass
 
     def generate_edition(
         self,
@@ -601,6 +665,12 @@ class GenerationService:
                 except (json.JSONDecodeError, TypeError):
                     prior_edition_summary = None
 
+        claim_record = None
+        if request.idempotency_key:
+            replay, claim_record = self._claim_idempotency_key(conn, request)
+            if replay is not None:
+                return replay
+
         plan_system = prompts.build_plan_system_prompt(language)
         plan_payload = prompts.build_plan_user_payload(
             participant_id=request.participant_id,
@@ -630,6 +700,7 @@ class GenerationService:
         )
 
         if plan is None:
+            self._fail_claim(conn, request, claim_record, "provider")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -647,7 +718,7 @@ class GenerationService:
         except PlanValidationError as exc:
             if plan_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    conn,
+                    as_runtime_connection(conn),
                     plan_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -656,6 +727,7 @@ class GenerationService:
                         ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
                     ),
                 )
+            self._fail_claim(conn, request, claim_record, "validation")
             return GenerationResult(
                 edition_id=None,
                 plan_run=StageOutcome(
@@ -701,6 +773,7 @@ class GenerationService:
         )
 
         if draft is None:
+            self._fail_claim(conn, request, claim_record, "provider")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -720,7 +793,7 @@ class GenerationService:
         except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    conn,
+                    as_runtime_connection(conn),
                     draft_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -729,6 +802,7 @@ class GenerationService:
                         ProviderErrorCategory.SCHEMA_MISMATCH, str(exc)
                     ),
                 )
+            self._fail_claim(conn, request, claim_record, "validation")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -750,16 +824,30 @@ class GenerationService:
                 succeeded=False,
             )
 
-        edition_number = self._next_edition_number(conn, request.participant_id)
         structured_content = draft.model_dump_json()
         rendered_title = draft.edition_title
 
         try:
-            if request.is_follow_up and request.feedback_id is not None:
-                new_edition = ed_repo.create_edition_with_feedback_applied(
-                    conn,
+            if claim_record is not None:
+                new_edition = ed_repo.finalize_edition_for_request(
+                    as_runtime_connection(conn),
                     participant_id=request.participant_id,
-                    edition_number=edition_number,
+                    idempotency_key=request.idempotency_key,
+                    claim_token=claim_record.claim_token,
+                    structured_content=structured_content,
+                    rendered_title=rendered_title,
+                    prior_edition_id=request.prior_edition_id,
+                    input_id=request.input_id,
+                    feedback_id=(
+                        request.feedback_id
+                        if request.is_follow_up
+                        else None
+                    ),
+                )
+            elif request.is_follow_up and request.feedback_id is not None:
+                new_edition = ed_repo.create_edition_with_feedback_applied(
+                    as_runtime_connection(conn),
+                    participant_id=request.participant_id,
                     prior_edition_id=request.prior_edition_id,
                     input_id=request.input_id,
                     structured_content=structured_content,
@@ -768,9 +856,8 @@ class GenerationService:
                 )
             else:
                 new_edition = ed_repo.create_edition(
-                    conn,
+                    as_runtime_connection(conn),
                     participant_id=request.participant_id,
-                    edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
                     input_id=request.input_id,
                     structured_content=structured_content,
@@ -779,7 +866,7 @@ class GenerationService:
         except Exception:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    conn,
+                    as_runtime_connection(conn),
                     draft_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -789,6 +876,7 @@ class GenerationService:
                         "persistence failed",
                     ),
                 )
+            self._fail_claim(conn, request, claim_record, "persistence")
             return GenerationResult(
                 edition_id=None,
                 plan_run=plan_outcome,
@@ -1137,12 +1225,6 @@ class GenerationService:
             run_id=outcome.run_id,
         )
 
-    def _next_edition_number(self, conn, participant_id: str) -> int:
-        existing = ed_repo.get_editions_by_participant(conn, participant_id)
-        if not existing:
-            return 1
-        return max(e.edition_number for e in existing) + 1
-
 
 def _failed_outcome(message: str) -> StageOutcome:
     return StageOutcome(
@@ -1151,6 +1233,15 @@ def _failed_outcome(message: str) -> StageOutcome:
         retry_count=0,
         error_category="not_attempted",
         error_message=message,
+    )
+
+
+def _idempotent_replay_outcome() -> StageOutcome:
+    return StageOutcome(
+        success=True,
+        validation_status=VALIDATION_PASSED,
+        retry_count=0,
+        error_message="idempotent replay of a completed generation request",
     )
 
 
@@ -1193,7 +1284,7 @@ def _mark_run_validation_failed(
     if run_id is None:
         return
     gr_repo.update_generation_run(
-        conn,
+        as_runtime_connection(conn),
         run_id,
         success=0,
         validation_status=VALIDATION_FAILED,

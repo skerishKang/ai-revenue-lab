@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 from typing import Any
 
 from fastapi import APIRouter, Form, Query, Request, Response
@@ -25,7 +26,6 @@ from app.auth import (
     verify_admin_secret,
     verify_csrf_token,
 )
-from app.db import get_connection
 from app.config import settings
 from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
@@ -291,7 +291,7 @@ def admin_dashboard(request: Request):
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         participants = conn.execute(
             "SELECT id, display_name, preferred_language, status, created_at "
@@ -384,7 +384,7 @@ def admin_participant_detail(request: Request, participant_id: str, error: str =
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
         if participant is None:
@@ -448,6 +448,7 @@ def admin_participant_detail(request: Request, participant_id: str, error: str =
         "generation_runs": gen_runs,
         "generation_error": generation_error,
         "feedback_map": MAP_FEEDBACK_DIRECTION_KO,
+        "generation_idempotency_key": str(uuid.uuid4()),
     }
     resp, _ = _render_with_csrf(request, "admin_participant_detail.html", context)
     return resp
@@ -459,6 +460,7 @@ def admin_generate(
     participant_id: str,
     input_id: str = Form(""),
     allow_short_sample: str = Form("0"),
+    idempotency_key: str = Form(""),
     csrf_token: str = Form(""),
 ):
     if not _get_admin(request):
@@ -469,7 +471,21 @@ def admin_generate(
             url=f"/admin/participants/{participant_id}?error=csrf", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    idempotency_key_clean = idempotency_key.strip()
+    if not idempotency_key_clean or len(idempotency_key_clean) > 64:
+        return RedirectResponse(
+            url=f"/admin/participants/{participant_id}?error=invalid_idempotency_key",
+            status_code=303,
+        )
+    try:
+        uuid.UUID(idempotency_key_clean)
+    except ValueError:
+        return RedirectResponse(
+            url=f"/admin/participants/{participant_id}?error=invalid_idempotency_key",
+            status_code=303,
+        )
+
+    conn = request.app.state.open_runtime_connection()
     error_code = None
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
@@ -484,13 +500,14 @@ def admin_generate(
             participant_id=participant_id,
             input_id=input_id,
             allow_short_sample=(allow_short_sample == "1"),
+            idempotency_key=idempotency_key_clean,
         )
         result = service.generate_edition(conn, request=gen_request)
         if not result.succeeded:
-            logger.warning("Generation succeeded=False for participant %s", participant_id)
+            logger.warning("generation_failure result=succeeded=False")
             error_code = "generation_failed"
-    except Exception as exc:
-        logger.error("Generation failed for participant %s: %s", participant_id, exc)
+    except Exception:
+        logger.error("generation_failure category=exception")
         error_code = "generation_failed"
     finally:
         conn.close()
@@ -510,7 +527,7 @@ def admin_review_page(request: Request, edition_id: str):
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         edition = ed_repo.get_edition_by_id(conn, edition_id)
         if edition is None:
@@ -597,7 +614,7 @@ def admin_review_edit(
             url=f"/admin/review/{edition_id}", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         edition = ed_repo.get_edition_by_id(conn, edition_id)
         if edition is None:
@@ -744,7 +761,7 @@ def admin_publish(
             url=f"/admin/review/{edition_id}", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         ed_repo.update_edition_publication(
             conn, edition_id, "published"
@@ -771,7 +788,7 @@ def admin_reject(
             url=f"/admin/review/{edition_id}", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         ed_repo.update_edition_publication(
             conn, edition_id, "rejected"

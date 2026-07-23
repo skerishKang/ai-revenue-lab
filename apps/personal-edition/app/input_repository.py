@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import json
 import re
-import sqlite3
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+if TYPE_CHECKING:
+    from app.db_runtime import RuntimeConnection
 
 _UTC_ISO_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
@@ -72,7 +77,7 @@ def _validate_input(
         raise InputValidationError("consent_confirmed must be 0 or 1")
 
 
-def _row_to_record(row: sqlite3.Row) -> InputRecord:
+def _row_to_record(row: Any) -> InputRecord:
     return InputRecord(
         id=row["id"],
         participant_id=row["participant_id"],
@@ -86,7 +91,7 @@ def _row_to_record(row: sqlite3.Row) -> InputRecord:
 
 
 def create_input(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
     raw_text: str,
@@ -107,10 +112,11 @@ def create_input(
     raw_text = raw_text.strip()
     now = submitted_at or _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         participant = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
             (participant_id,),
         ).fetchone()
         if not participant:
@@ -160,7 +166,7 @@ def create_input(
 
 
 def get_input_by_id(
-    conn: sqlite3.Connection, input_id: str
+    conn: RuntimeConnection, input_id: str
 ) -> InputRecord | None:
     row = conn.execute(
         f"SELECT {_INPUT_SELECT} FROM inputs WHERE id = ?",
@@ -170,7 +176,7 @@ def get_input_by_id(
 
 
 def get_inputs_by_participant(
-    conn: sqlite3.Connection, participant_id: str
+    conn: RuntimeConnection, participant_id: str
 ) -> list[InputRecord]:
     rows = conn.execute(
         f"SELECT {_INPUT_SELECT} FROM inputs "
@@ -181,7 +187,7 @@ def get_inputs_by_participant(
 
 
 def update_input_normalized_text(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     input_id: str,
     normalized_text: str,
 ) -> InputRecord | None:
@@ -190,7 +196,7 @@ def update_input_normalized_text(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         cursor = conn.execute(
             "UPDATE inputs SET normalized_text = ? WHERE id = ?",
@@ -206,14 +212,14 @@ def update_input_normalized_text(
         raise
 
 
-def delete_input(conn: sqlite3.Connection, input_id: str) -> bool:
+def delete_input(conn: RuntimeConnection, input_id: str) -> bool:
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
         )
 
     now = _now_utc_iso()
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         cursor = conn.execute(
             "UPDATE inputs SET deleted_at = ? WHERE id = ? "

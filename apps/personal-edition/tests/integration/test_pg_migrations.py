@@ -26,13 +26,16 @@ import pytest
 
 from app.config import normalize_pg_url_identity, redact_database_url
 from app.db_pg_migrations import (
+    MigrationParseError,
     PgMigrationError,
     _compute_checksum,
     _discover_migrations,
     _is_pg_migration,
+    _neutralize_sql,
     _read_migration,
     _safe_message,
     _split_statements,
+    _validate_migration_sql,
     apply_pg_migrations,
     get_pg_check_constraints,
     get_pg_foreign_keys,
@@ -41,24 +44,26 @@ from app.db_pg_migrations import (
     get_pg_schema_indexes,
     get_pg_schema_tables,
     get_pg_unique_constraints,
+    verify_pg_schema,
 )
 
 MIGRATIONS_DIR = str(
     Path(__file__).resolve().parent.parent.parent / "migrations"
 )
 
-# The 7 domain/operational tables (excluding schema_migrations)
+# The 8 domain/operational tables (excluding schema_migrations)
 EXPECTED_DOMAIN_TABLES = {
     "participants",
     "inputs",
     "editions",
     "feedback",
     "generation_runs",
+    "generation_requests",
     "benchmark_runs",
     "pilot_ops_records",
 }
 
-# All tables including schema_migrations (8 total)
+# All tables including schema_migrations (9 total)
 EXPECTED_ALL_TABLES = EXPECTED_DOMAIN_TABLES | {"schema_migrations"}
 
 
@@ -201,7 +206,7 @@ class TestChecksum:
 class TestMigrationImportNoConnection:
     """migration import 시 connection 0회."""
 
-    def test_import_does_not_connect(self):
+    def test_import_does_not_connect(self, isolated_sys_modules):
         """Importing the migration module must not open a connection."""
         import importlib
         import sys
@@ -572,10 +577,13 @@ class TestPgMigrationIntegration:
             "SELECT version, checksum, applied_at FROM schema_migrations "
             "ORDER BY version"
         ).fetchall()
-        assert len(rows) == 1
+        assert len(rows) == 2
         assert rows[0]["version"] == "pg_001_initial.sql"
         assert rows[0]["checksum"]
         assert rows[0]["applied_at"]
+        assert rows[1]["version"] == "pg_002_generation_requests.sql"
+        assert rows[1]["checksum"]
+        assert rows[1]["applied_at"]
 
     def test_checksum_mismatch_detected(self, pg_conn_clean, tmp_path):
         """이미 적용된 version의 SQL 내용이 변경되면 실패."""
@@ -590,7 +598,7 @@ class TestPgMigrationIntegration:
             migration_file.write_text(
                 original + "\n-- modified\n", encoding="utf-8"
             )
-            with pytest.raises(PgMigrationError, match="checksum"):
+            with pytest.raises(PgMigrationError, match="changed"):
                 apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
         finally:
             migration_file.write_text(original, encoding="utf-8")
@@ -635,7 +643,60 @@ class TestPgMigrationIntegration:
         ).fetchone()["c"]
         assert count == 0
 
-    def test_public_schema_not_polluted(self, pg_conn_clean):
+    def test_pending_partial_table_preserves_category(self, pg_conn_clean, tmp_path):
+        """partial_schema category must not be converted to apply_failed."""
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        (tmp_dir / "pg_001_valid.sql").write_text(
+            "CREATE TABLE valid_table (id TEXT PRIMARY KEY);",
+            encoding="utf-8",
+        )
+        (tmp_dir / "pg_002_dep.sql").write_text(
+            "CREATE TABLE dep_table (id TEXT PRIMARY KEY, "
+            "valid_id TEXT REFERENCES valid_table(id));",
+            encoding="utf-8",
+        )
+
+        apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        pg_conn_clean.commit()
+
+        pg_conn_clean.execute("DELETE FROM schema_migrations WHERE version = 'pg_002_dep.sql'")
+        pg_conn_clean.commit()
+
+        with pytest.raises(PgMigrationError) as exc_info:
+            apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        assert exc_info.value.category == "partial_schema"
+        assert "partial schema" in str(exc_info.value)
+
+        count = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations "
+            "WHERE version = 'pg_002_dep.sql'"
+        ).fetchone()["c"]
+        assert count == 0
+
+    def test_real_execution_failure_is_apply_failed(self, pg_conn_clean, tmp_path):
+        """Unexpected driver errors must be normalized to apply_failed."""
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        (tmp_dir / "pg_001_valid.sql").write_text(
+            "CREATE TABLE valid_table (id TEXT PRIMARY KEY);",
+            encoding="utf-8",
+        )
+        (tmp_dir / "pg_002_broken.sql").write_text(
+            "CREATE TABLE broken_table (id TEXT PRIMARY KEY); INVALID SQL HERE;",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(PgMigrationError) as exc_info:
+            apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        assert exc_info.value.category == "apply_failed"
+        assert exc_info.value.__cause__ is not None
+
+        count = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations "
+            "WHERE version = 'pg_002_broken.sql'"
+        ).fetchone()["c"]
+        assert count == 0
         """The public schema must never receive migration objects.
 
         After applying migrations in the isolated test schema, the public
@@ -684,7 +745,7 @@ class TestPgMigrationIntegration:
             pg_conn_clean.commit()
 
             row = pg_conn_clean.execute("SHOW search_path").fetchone()
-            current = row[0] if row else ""
+            current = row["search_path"] if row else ""
             assert schema_name in current, (
                 f"search_path was not restored after drift check; "
                 f"got {current!r}, expected to contain {schema_name!r}."
@@ -728,8 +789,8 @@ class TestPgMigrationIntegration:
         try:
             # current_schema() must resolve to the test schema, not "public"
             # or the literal "$user".
-            row = pg_conn_clean.execute("SELECT current_schema()").fetchone()
-            effective = row[0] if row else None
+            row = pg_conn_clean.execute("SELECT current_schema() AS cs").fetchone()
+            effective = row["cs"] if row else None
             assert effective == schema_name, (
                 f"current_schema() returned {effective!r}, expected "
                 f"{schema_name!r}"
@@ -916,3 +977,519 @@ class TestPgMigrationIntegration:
         assert "submitted_at" in not_null_cols
         assert "consent_confirmed" in not_null_cols
         assert "normalized_text" not in not_null_cols
+
+
+@pytestmark_integration
+class TestVerifyPgSchema:
+    """Integration tests for read-only schema verification (Neon contract).
+
+    Application startup must NOT run migrations — only verify schema/version/
+    checksum in read-only mode. These tests verify that contract.
+    """
+
+    def test_verify_fails_without_schema_migrations_table(self, pg_conn_clean):
+        """verify_pg_schema must fail if schema_migrations table is missing."""
+        with pytest.raises(PgMigrationError, match="schema_migrations table not found"):
+            verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
+
+    def test_verify_succeeds_after_migrations_applied(self, pg_conn_clean):
+        """verify_pg_schema must succeed after migrations are applied."""
+        apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+        pg_conn_clean.commit()
+
+        result = verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
+        assert result["applied_count"] == 2
+        assert result["pending_count"] == 0
+        assert "pg_001_initial.sql" in result["versions"]
+        assert "pg_002_generation_requests.sql" in result["versions"]
+
+    def test_verify_fails_with_pending_migrations(self, pg_conn_clean, tmp_path):
+        """verify_pg_schema must fail if there are pending migrations."""
+        # Create a temp migrations dir with 2 migrations
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        (tmp_dir / "pg_001_a.sql").write_text(
+            "CREATE TABLE a (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+        (tmp_dir / "pg_002_b.sql").write_text(
+            "CREATE TABLE b (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+
+        # Apply only the first migration
+        apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        pg_conn_clean.commit()
+
+        # Add a third migration file (pending)
+        (tmp_dir / "pg_003_c.sql").write_text(
+            "CREATE TABLE c (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+
+        with pytest.raises(PgMigrationError, match="pending migrations"):
+            verify_pg_schema(pg_conn_clean, str(tmp_dir))
+
+    def test_verify_fails_with_checksum_mismatch(self, pg_conn_clean, tmp_path):
+        """verify_pg_schema must fail if a recorded checksum doesn't match."""
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        migration_file = tmp_dir / "pg_001_test.sql"
+        migration_file.write_text(
+            "CREATE TABLE test (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+
+        apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        pg_conn_clean.commit()
+
+        # Modify the migration file
+        migration_file.write_text(
+            "CREATE TABLE test (id TEXT PRIMARY KEY, name TEXT);",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(PgMigrationError, match="content has changed"):
+            verify_pg_schema(pg_conn_clean, str(tmp_dir))
+
+    def test_verify_is_read_only(self, pg_conn_clean):
+        """verify_pg_schema must not modify the database."""
+        apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+        pg_conn_clean.commit()
+
+        # Get state before verify
+        tables_before = get_pg_schema_tables(pg_conn_clean)
+        applied_before = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations"
+        ).fetchone()["c"]
+
+        verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
+
+        # Get state after verify
+        tables_after = get_pg_schema_tables(pg_conn_clean)
+        applied_after = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations"
+        ).fetchone()["c"]
+
+        assert tables_before == tables_after
+        assert applied_before == applied_after
+
+
+# ---------------------------------------------------------------------------
+# dict_row contract tests (no real PostgreSQL required)
+#
+# verify_pg_schema runs against a real psycopg connection configured with
+# row_factory=dict_row, where rows are dicts keyed by column name and
+# positional row[0] access is unavailable.  The integration tests above are
+# skipped without TEST_POSTGRES_URL, so these fakes prove the dict-row access
+# pattern (explicit aliases + row["name"]) and the strengthened read-only
+# fail-closed checks WITHOUT a live database.
+# ---------------------------------------------------------------------------
+
+
+class _FakeDictCursor:
+    def __init__(self, rows):
+        self._rows = list(rows)
+
+    def fetchone(self):
+        return self._rows[0] if self._rows else None
+
+    def fetchall(self):
+        return list(self._rows)
+
+
+class _FakeDictRowConn:
+    """A dict_row-shaped fake connection.
+
+    Rows are plain dicts keyed by column name (exactly what psycopg's
+    ``dict_row`` factory yields).  A responder callable maps each SQL string
+    to its result rows, so tests control the database state precisely.
+    """
+
+    def __init__(self, responder):
+        self._responder = responder
+        self.executed = []
+
+    def execute(self, sql, params=None):
+        self.executed.append((sql, params))
+        return _FakeDictCursor(self._responder(sql, params))
+
+
+def _verify_responder(
+    *,
+    schema="public",
+    has_sm_table=True,
+    applied=None,
+    tables=None,
+):
+    """Build a dict-row responder for verify_pg_schema's read-only queries."""
+    applied = dict(applied or {})
+    tables = set(tables or set())
+
+    def responder(sql, params):
+        norm = " ".join(sql.split()).lower()
+        if "current_schema() as schema" in norm:
+            return [{"schema": schema}]
+        if "select exists" in norm and "schema_migrations" in norm:
+            return [{"exists": has_sm_table}]
+        if "from schema_migrations" in norm:
+            return [
+                {"version": v, "checksum": c} for v, c in sorted(applied.items())
+            ]
+        if "pg_catalog.pg_tables" in norm:
+            return [{"tablename": t} for t in sorted(tables)]
+        raise AssertionError(f"unexpected SQL in verify_pg_schema: {sql!r}")
+
+    return responder
+
+
+def _write_migration(dirpath: Path, name: str, body: str) -> str:
+    """Write a migration file and return its checksum."""
+    (dirpath / name).write_text(body, encoding="utf-8")
+    return _compute_checksum(body.encode("utf-8"))
+
+
+class TestVerifyPgSchemaDictRowContract:
+    """Prove verify_pg_schema works against dict_row-shaped rows (no PG)."""
+
+    def test_success_reads_exists_alias_by_name(self, tmp_path):
+        """The EXISTS result is aliased and read as row['exists']."""
+        d = tmp_path / "m"
+        d.mkdir()
+        checksum = _write_migration(
+            d, "pg_001_widgets.sql", "CREATE TABLE widgets (id TEXT PRIMARY KEY);"
+        )
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={"pg_001_widgets.sql": checksum},
+                tables={"widgets", "schema_migrations"},
+            )
+        )
+        result = verify_pg_schema(conn, str(d))
+        assert result["applied_count"] == 1
+        assert result["pending_count"] == 0
+        assert result["versions"] == ["pg_001_widgets.sql"]
+        assert result["schema"] == "public"
+
+    def test_rejects_missing_schema_migrations_table(self, tmp_path):
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(_verify_responder(has_sm_table=False))
+        with pytest.raises(PgMigrationError, match="schema_migrations table not found"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_null_effective_schema(self, tmp_path):
+        """A NULL current_schema() must fail closed, not guess."""
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(_verify_responder(schema=None))
+        with pytest.raises(PgMigrationError, match="current_schema\\(\\) returned NULL"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_unknown_recorded_migration(self, tmp_path):
+        """A recorded version absent from the migration dir must fail closed."""
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={
+                    "pg_001_a.sql": "x" * 64,
+                    "pg_999_ghost.sql": "y" * 64,  # not in the directory
+                },
+                tables={"a"},
+            )
+        )
+        with pytest.raises(
+            PgMigrationError, match="not found in migration directory"
+        ):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_checksum_mismatch(self, tmp_path):
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={"pg_001_a.sql": "deadbeef" + "0" * 56},  # wrong checksum
+                tables={"a"},
+            )
+        )
+        with pytest.raises(PgMigrationError, match="content has changed"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_pending_migration(self, tmp_path):
+        d = tmp_path / "m"
+        d.mkdir()
+        checksum_a = _write_migration(
+            d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);"
+        )
+        _write_migration(d, "pg_002_b.sql", "CREATE TABLE b (id TEXT PRIMARY KEY);")
+        # pg_001 recorded with its correct checksum -> pg_002 is pending.
+        conn = _FakeDictRowConn(
+            _verify_responder(applied={"pg_001_a.sql": checksum_a}, tables={"a"})
+        )
+        with pytest.raises(PgMigrationError, match="pending migrations"):
+            verify_pg_schema(conn, str(d))
+
+    def test_rejects_schema_drift_missing_table(self, tmp_path):
+        """A declared table absent from the effective schema must fail closed."""
+        d = tmp_path / "m"
+        d.mkdir()
+        checksum = _write_migration(
+            d,
+            "pg_001_multi.sql",
+            "CREATE TABLE a (id TEXT PRIMARY KEY);\n"
+            "CREATE TABLE b (id TEXT PRIMARY KEY);",
+        )
+        # Both migrations recorded with correct checksum, but table b is missing.
+        conn = _FakeDictRowConn(
+            _verify_responder(
+                applied={"pg_001_multi.sql": checksum},
+                tables={"a", "schema_migrations"},  # b missing -> drift
+            )
+        )
+        with pytest.raises(PgMigrationError, match="schema drift"):
+            verify_pg_schema(conn, str(d))
+
+    def test_errors_never_expose_secrets(self, tmp_path):
+        """Fail-closed error text must not carry driver/DSN/secret content."""
+        d = tmp_path / "m"
+        d.mkdir()
+        _write_migration(d, "pg_001_a.sql", "CREATE TABLE a (id TEXT PRIMARY KEY);")
+        secret = "postgresql://alice:s3cr3t@db.internal.example.com:5432/prod"
+        for responder in (
+            _verify_responder(has_sm_table=False),
+            _verify_responder(schema=None),
+            _verify_responder(
+                applied={"pg_999_ghost.sql": "y" * 64}, tables=set()
+            ),
+        ):
+            conn = _FakeDictRowConn(responder)
+            with pytest.raises(PgMigrationError) as excinfo:
+                verify_pg_schema(conn, str(d))
+            text = f"{excinfo.value} {excinfo.value.message}"
+            assert secret not in text
+            assert "s3cr3t" not in text
+            assert "postgresql://" not in text
+
+
+class TestExtractCreatedTables:
+    def test_plain_create_table(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE TABLE widgets (id TEXT PRIMARY KEY);"
+        assert _extract_created_tables(sql) == {"widgets"}
+
+    def test_if_not_exists_and_schema_qualified_and_quoted(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = (
+            "CREATE TABLE IF NOT EXISTS public.widgets (id TEXT);\n"
+            'CREATE TABLE "gadgets" (id TEXT);\n'
+            "CREATE TABLE myschema.things (id TEXT);"
+        )
+        assert _extract_created_tables(sql) == {"widgets", "gadgets", "things"}
+
+    def test_no_tables(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        assert _extract_created_tables("CREATE INDEX ix ON widgets (id);") == set()
+
+    def test_line_comment_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "-- CREATE TABLE ghost (id TEXT);\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_block_comment_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "/* CREATE TABLE ghost (id TEXT); */\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_nested_block_comment_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "/* outer /* CREATE TABLE ghost (id TEXT); */ still comment */\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_single_quoted_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES ('CREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_single_quoted_string_with_escaped_quote_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES ('it''s a CREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_e_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES (E'CREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_e_string_with_backslash_escape_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "INSERT INTO log (msg) VALUES (E'line\\nCREATE TABLE ghost (id TEXT);');\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_dollar_quoted_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE FUNCTION f() RETURNS void AS $$ CREATE TABLE ghost (id TEXT); $$ LANGUAGE sql;\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_tagged_dollar_quoted_string_ignored(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE FUNCTION f() RETURNS void AS $fn$ CREATE TABLE ghost (id TEXT); $fn$ LANGUAGE sql;\nCREATE TABLE real (id TEXT);"
+        assert _extract_created_tables(sql) == {"real"}
+
+    def test_e_prefix_inside_identifier_not_treated_as_string(self):
+        from app.db_pg_migrations import _extract_created_tables
+
+        sql = "CREATE TABLE resume (id TEXT);\nCREATE TABLE note (id TEXT);"
+        assert _extract_created_tables(sql) == {"resume", "note"}
+
+    def test_canonical_migrations_expected_table_set(self):
+        from app.db_pg_migrations import _extract_created_tables
+        from pathlib import Path
+
+        migrations_dir = Path(__file__).parent.parent.parent / "migrations"
+        actual = set()
+        for p in sorted(migrations_dir.glob("pg_*.sql")):
+            actual |= _extract_created_tables(p.read_text())
+        actual.discard("schema_migrations")
+        expected = {
+            "participants",
+            "inputs",
+            "editions",
+            "feedback",
+            "generation_runs",
+            "generation_requests",
+            "benchmark_runs",
+            "pilot_ops_records",
+        }
+        assert actual == expected, f"table set mismatch: extra={actual - expected}, missing={expected - actual}"
+
+
+class TestNeutralizeSqlFailClosed:
+    def test_unterminated_block_comment_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT /* unterminated block comment")
+
+    def test_unterminated_nested_block_comment_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT /* /* outer /* inner */ unterminated")
+
+    def test_unterminated_single_quoted_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT 'unterminated string")
+
+    def test_unterminated_e_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT E'unterminated e-string")
+
+    def test_unterminated_dollar_quoted_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT $$unterminated dollar quote")
+
+    def test_unterminated_tagged_dollar_quoted_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT $tag$unterminated tagged dollar quote")
+
+    def test_properly_terminated_constructs_do_not_raise(self):
+        _neutralize_sql("SELECT 'valid string' FROM t /* comment */")
+        _neutralize_sql("SELECT E'valid e-string' FROM t")
+        _neutralize_sql("SELECT $$valid dollar quote$$ FROM t")
+        _neutralize_sql("SELECT $tag$valid tagged dollar$tag$ FROM t")
+        _neutralize_sql("SELECT /* /* nested */ */ 1")
+
+
+class TestPreflightValidator:
+    def test_valid_canonical_migrations_pass_preflight(self):
+        from pathlib import Path
+        from app.db_pg_migrations import _validate_migration_sql
+
+        migrations_dir = Path(__file__).parent.parent.parent / "migrations"
+        for p in sorted(migrations_dir.glob("pg_*.sql")):
+            content = p.read_text()
+            _validate_migration_sql(content)
+
+    def test_dollar_quote_rejected_by_validator(self):
+        from app.db_pg_migrations import _validate_migration_sql, MigrationParseError
+
+        with pytest.raises(MigrationParseError):
+            _validate_migration_sql("CREATE TABLE foo (id int) $$body$$")
+
+    def test_nested_block_comment_rejected_by_validator(self):
+        from app.db_pg_migrations import _validate_migration_sql, MigrationParseError
+
+        with pytest.raises(MigrationParseError):
+            _validate_migration_sql("SELECT /** /* outer */ inner */ 1")
+
+    def test_validate_migration_sql_safe_error_message(self):
+        from app.db_pg_migrations import _validate_migration_sql, MigrationParseError
+
+        with pytest.raises(MigrationParseError) as exc_info:
+            _validate_migration_sql("SELECT $tag$leak not-a-secret$tag$ FROM t")
+        msg = str(exc_info.value)
+        assert "dollar-quoted" in msg
+        assert "not-a-secret" not in msg
+
+
+class TestBlockCommentScannerBoundaries:
+    def test_sequential_block_comments_accepted(self):
+        _validate_migration_sql("/* first */ SELECT 1; /* second */ SELECT 2;")
+
+    def test_single_quoted_string_markers_ignored(self):
+        _validate_migration_sql("SELECT '/* not a comment */';")
+
+    def test_e_string_markers_ignored(self):
+        _validate_migration_sql("SELECT E'/* not a comment */';")
+
+    def test_double_quoted_identifier_markers_ignored(self):
+        _validate_migration_sql('SELECT "identifier/*text*/";')
+
+    def test_escaped_double_quote_identifier_markers_ignored(self):
+        _validate_migration_sql('SELECT "a""b/*text*/";')
+
+    def test_line_comment_internal_markers_ignored(self):
+        _validate_migration_sql("-- /* line comment */\nSELECT 1;")
+
+    def test_nested_block_comment_rejected(self):
+        with pytest.raises(MigrationParseError):
+            _validate_migration_sql("/* outer /* nested */ outer */ SELECT 1;")
+
+
+@pytestmark_integration
+class TestApplyPreflightGuard:
+    def test_malformed_sql_does_not_create_schema_migrations(self, pg_conn_clean, tmp_path):
+        from pathlib import Path
+        from app.db_pg_migrations import apply_pg_migrations, MigrationParseError
+
+        bad_dir = tmp_path / "bad_migrations"
+        bad_dir.mkdir()
+        (bad_dir / "pg_001_bad.sql").write_text("SELECT 'unterminated")
+
+        with pytest.raises(MigrationParseError):
+            apply_pg_migrations(pg_conn_clean, str(bad_dir))
+
+        row = pg_conn_clean.execute(
+            "SELECT EXISTS (SELECT 1 FROM information_schema.tables "
+            "WHERE table_schema = current_schema() "
+            "AND table_name = 'schema_migrations') AS exists"
+        ).fetchone()
+        assert not row["exists"], "schema_migrations should not exist"
+
+    def test_valid_migrations_apply_normally(self, pg_conn_clean):
+        from app.db_pg_migrations import apply_pg_migrations
+
+        migrations_dir = (
+            Path(__file__).parent.parent.parent / "migrations"
+        )
+        result = apply_pg_migrations(pg_conn_clean, str(migrations_dir))
+        assert len(result) > 0
