@@ -75,6 +75,14 @@ def require_traveler(
 ) -> Principal:
     if not principal.is_traveler:
         raise HTTPException(status_code=403, detail="forbidden")
+    from app.traveler_repository import is_traveler_active
+
+    conn = get_connection()
+    try:
+        if not is_traveler_active(conn, principal.traveler_id):  # type: ignore[arg-type]
+            raise HTTPException(status_code=401, detail="unauthorized")
+    finally:
+        conn.close()
     return principal
 
 

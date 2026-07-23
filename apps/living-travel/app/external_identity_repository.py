@@ -81,7 +81,12 @@ def ensure_identity(
     principal_type: str = "pending",
     commit: bool = True,
 ) -> ExternalIdentityRecord:
-    """Return the existing identity for (provider, subject) or create it."""
+    """Return the existing identity for (provider, subject) or create it.
+
+    Uses INSERT ... ON CONFLICT DO NOTHING so concurrent first-login calls
+    never raise an unhandled IntegrityError; the canonical row is always
+    re-read after the insert attempt.
+    """
     existing = get_identity(conn, provider, subject)
     if existing is not None:
         return existing
@@ -89,45 +94,58 @@ def ensure_identity(
     now = _utcnow()
     conn.execute(
         f"INSERT INTO external_identities ({_SELECT}) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+        "ON CONFLICT (provider, subject) DO NOTHING",
         (identity_id, provider, subject, principal_type, None, None, now, None),
     )
     if commit:
         conn.commit()
-    return get_identity_by_id(conn, identity_id)  # type: ignore[return-value]
+    return get_identity(conn, provider, subject)  # type: ignore[return-value]
 
 
 def link_traveler(
     conn: sqlite3.Connection, identity_id: str, traveler_id: str, *, commit: bool = True
 ) -> ExternalIdentityRecord | None:
-    """Link an identity to a traveler. Refuses if already linked to an operator."""
-    current = get_identity_by_id(conn, identity_id)
-    if current is None or current.operator_id is not None:
-        return None
-    conn.execute(
+    """Link an identity to a traveler atomically.
+
+    The UPDATE itself enforces: not revoked, not already an operator, and
+    traveler_id is either NULL or already this traveler_id (idempotent re-link).
+    Returns None if the row was not eligible.
+    """
+    cur = conn.execute(
         "UPDATE external_identities "
-        "SET traveler_id = ?, principal_type = 'traveler' WHERE id = ?",
-        (traveler_id, identity_id),
+        "SET traveler_id = ?, principal_type = 'traveler' "
+        "WHERE id = ? AND revoked_at IS NULL AND operator_id IS NULL "
+        "AND (traveler_id IS NULL OR traveler_id = ?)",
+        (traveler_id, identity_id, traveler_id),
     )
     if commit:
         conn.commit()
+    if cur.rowcount == 0:
+        return None
     return get_identity_by_id(conn, identity_id)
 
 
 def link_operator(
     conn: sqlite3.Connection, identity_id: str, operator_id: str, *, commit: bool = True
 ) -> ExternalIdentityRecord | None:
-    """Link an identity to an operator principal. Refuses if linked to a traveler."""
-    current = get_identity_by_id(conn, identity_id)
-    if current is None or current.traveler_id is not None:
-        return None
-    conn.execute(
+    """Link an identity to an operator atomically.
+
+    The UPDATE itself enforces: not revoked, not already a traveler, and
+    operator_id is either NULL or already this operator_id (idempotent re-bind).
+    Returns None if the row was not eligible.
+    """
+    cur = conn.execute(
         "UPDATE external_identities "
-        "SET operator_id = ?, principal_type = 'operator' WHERE id = ?",
-        (operator_id, identity_id),
+        "SET operator_id = ?, principal_type = 'operator' "
+        "WHERE id = ? AND revoked_at IS NULL AND traveler_id IS NULL "
+        "AND (operator_id IS NULL OR operator_id = ?)",
+        (operator_id, identity_id, operator_id),
     )
     if commit:
         conn.commit()
+    if cur.rowcount == 0:
+        return None
     return get_identity_by_id(conn, identity_id)
 
 
