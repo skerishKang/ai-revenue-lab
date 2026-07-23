@@ -35,6 +35,7 @@ from preview_fixtures.data import (
     make_query_rule_proposal,
     make_record_completed,
     make_record_in_progress,
+    make_record_in_progress_2,
     make_record_revisit,
     make_record_saved,
     make_search_results,
@@ -380,8 +381,8 @@ def main(output_dir: Path | None = None) -> Path:
     
     # continue_watching: in_progress records (min 2)
     continue_watching = [
-        (topic2_tvs[0], topic2_videos[0], make_record_in_progress()),  # rfscVS0vtbw
-        (topic1_tvs[0], topic1_videos[0], make_record_completed()),    # aircAruvnKk (completed but shown)
+        (topic2_tvs[0], topic2_videos[0], make_record_in_progress()),    # rfscVS0vtbw
+        (topic1_tvs[1], topic1_videos[1], make_record_in_progress_2()),  # eMlx5fFNoYc
     ]
     
     # new_finds: recent videos (min 4)

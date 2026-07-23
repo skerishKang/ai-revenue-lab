@@ -710,3 +710,25 @@ class TestStaticRootContract:
             "home/index.html should not exist; root is the product home"
         )
 
+    def test_continue_watching_all_in_progress(self, preview_dir):
+        """All continue-watching items must have in_progress state, not completed."""
+        root_html = _read(preview_dir / "index.html")
+        # Find the continue watching section
+        continue_section_match = re.search(
+            r'이어 보기.*?(?=새로 발견한 영상|토픽|최근 기록|$)',
+            root_html,
+            re.DOTALL,
+        )
+        assert continue_section_match, "Could not find continue watching section"
+        continue_section = continue_section_match.group(0)
+        # Check that state selects show in_progress selected
+        state_selects = re.findall(
+            r'<select[^>]*name="state"[^>]*>.*?</select>',
+            continue_section,
+            re.DOTALL,
+        )
+        for select in state_selects:
+            assert 'value="in_progress" selected' in select, (
+                f"Continue watching item does not have in_progress selected: {select[:100]}"
+            )
+

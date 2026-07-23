@@ -297,7 +297,8 @@ def _register_routes(app: FastAPI) -> None:
                 "SELECT r.id as rec_id, r.viewing_state, r.free_form_note, "
                 "r.tags as rec_tags, r.updated_at, "
                 "tv.id as tv_id, tv.topic_id, tv.video_id, "
-                "v.id as vid, v.title, v.channel_title, v.published_at, v.thumbnail_url "
+                "v.id as vid, v.provider, v.provider_video_id, v.canonical_url, "
+                "v.title, v.channel_title, v.published_at, v.thumbnail_url "
                 "FROM viewing_records r "
                 "JOIN topic_videos tv ON r.topic_video_id = tv.id "
                 "JOIN videos v ON tv.video_id = v.id "
@@ -309,7 +310,8 @@ def _register_routes(app: FastAPI) -> None:
                 "SELECT r.id as rec_id, r.viewing_state, r.free_form_note, "
                 "r.tags as rec_tags, r.updated_at, "
                 "tv.id as tv_id, tv.topic_id, tv.video_id, "
-                "v.id as vid, v.title, v.channel_title, v.published_at, v.thumbnail_url "
+                "v.id as vid, v.provider, v.provider_video_id, v.canonical_url, "
+                "v.title, v.channel_title, v.published_at, v.thumbnail_url "
                 "FROM viewing_records r "
                 "JOIN topic_videos tv ON r.topic_video_id = tv.id "
                 "JOIN videos v ON tv.video_id = v.id "
@@ -332,8 +334,13 @@ def _register_routes(app: FastAPI) -> None:
 
 
 def _rows_to_feed_tuples(rows):
-    """Convert raw SQL rows to (TopicVideo, DiscoveredVideo, None) tuples."""
-    from app.domain.models import DiscoveredVideo, TopicVideo
+    """Convert raw SQL rows to (TopicVideo, DiscoveredVideo, PrivateViewingRecord|None) tuples.
+
+    Preserves viewing records when present (e.g., continue-watching items).
+    Returns None for the record when no viewing record exists (e.g., new-finds).
+    """
+    from app.domain.enums import ViewingState
+    from app.domain.models import DiscoveredVideo, PrivateViewingRecord, TopicVideo
 
     result = []
     for row in rows:
@@ -367,7 +374,19 @@ def _rows_to_feed_tuples(rows):
             created_at=row["v_created"],
             updated_at=row["v_updated"],
         )
-        result.append((tv, video, None))
+        # Preserve viewing record if present (continue-watching has rec_id)
+        record = None
+        if "rec_id" in row.keys() and row["rec_id"]:
+            record = PrivateViewingRecord(
+                id=row["rec_id"],
+                topic_video_id=row["tv_id"],
+                viewing_state=ViewingState(row["viewing_state"]),
+                free_form_note="",
+                tags=[],
+                created_at=row["updated_at"],
+                updated_at=row["updated_at"],
+            )
+        result.append((tv, video, record))
     return result
 
 
@@ -401,9 +420,9 @@ def _rows_to_record_tuples(rows):
         )
         video = DiscoveredVideo(
             id=row["vid"],
-            provider="youtube",
-            provider_video_id="",
-            canonical_url="",
+            provider=row["provider"] if "provider" in row.keys() else "youtube",
+            provider_video_id=row["provider_video_id"] if "provider_video_id" in row.keys() else row["vid"],
+            canonical_url=row["canonical_url"] if "canonical_url" in row.keys() else f"https://www.youtube.com/watch?v={row['vid']}",
             title=row["title"],
             description="",
             channel_id="",

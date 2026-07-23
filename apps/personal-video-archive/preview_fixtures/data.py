@@ -405,6 +405,29 @@ def make_record_in_progress() -> PrivateViewingRecord:
     )
 
 
+def make_record_in_progress_2() -> PrivateViewingRecord:
+    """A second in_progress record for continue-watching (eMlx5fFNoYc)."""
+    return PrivateViewingRecord(
+        id="pv-rec-0007",
+        topic_video_id="pv-tv-0002",
+        viewing_state=ViewingState.IN_PROGRESS,
+        rating=None,
+        reflection="",
+        learned_point="",
+        agreement="",
+        disagreement="",
+        uncertainty="",
+        follow_up_plan="",
+        free_form_note="메모: 어텐션 메커니즘 시각화 부분 다시 보기.",
+        tags=["transformer", "attention"],
+        opened_date="2026-01-22",
+        completed_date=None,
+        timestamp_references=[],
+        created_at="2026-01-22T09:00:00Z",
+        updated_at="2026-01-22T10:00:00Z",
+    )
+
+
 def make_record_saved() -> PrivateViewingRecord:
     """A minimal saved record (kWiCuklohdY)."""
     return PrivateViewingRecord(
