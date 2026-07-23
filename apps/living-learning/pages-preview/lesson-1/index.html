@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 첫 번째 10분 수업 — 변수는 값을 담아 두는 이름입니다 (설명 중심, 합성 데이터 UI 프리뷰)">
+<title>첫 수업 · 변수는 값을 담아 두는 이름입니다 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>AI 개인화 상태</div>
+      <div class="ai-status__row"><span>현재 수업</span><b>첫 수업</b></div>
+      <div class="ai-status__row"><span>구성 방식</span><b>설명 먼저</b></div>
+      <div class="ai-status__row"><span>난이도</span><b>입문 1단계</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb">첫 번째 10분 수업 · <b>변수</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="badge badge--neutral">설명 중심 · 예제 1개</span>
+    </div>
+
+    <div class="content content--wide">
+      <div class="stepper rise mb-8" aria-label="학습 단계 진행">
+        <span class="stepper__step stepper__step--done"><span class="stepper__num">1</span>진단 완료</span>
+        <span class="stepper__bar stepper__bar--done"></span>
+        <span class="stepper__step stepper__step--active"><span class="stepper__num">2</span>첫 수업</span>
+        <span class="stepper__bar"></span>
+        <span class="stepper__step"><span class="stepper__num">3</span>이해도 확인</span>
+        <span class="stepper__bar"></span>
+        <span class="stepper__step"><span class="stepper__num">4</span>피드백</span>
+      </div>
+
+      <div class="lesson">
+        <article>
+          <header class="page-head rise mb-6">
+            <span class="eyebrow"><span class="eyebrow__line"></span>개념 1 · 변수</span>
+            <h1>변수는 값을 담아 두는 이름입니다</h1>
+            <p>프로그램은 값을 어딘가에 담아 두고 다시 사용합니다. 그때 값에 붙여 주는 이름이 바로 변수입니다.</p>
+          </header>
+
+          <section class="lesson-section rise rise-1" aria-labelledby="s1">
+            <h2 id="s1">1. 먼저 개념부터</h2>
+            <div class="prose">
+              <p><strong>변수</strong>는 값에 붙인 이름표입니다. “지민”이라는 이름을 한 번 담아 두면, 그 뒤로는 <span class="mono">name</span>이라고 부르기만 하면 됩니다. 값을 매번 다시 쓰지 않아도 되니 실수가 줄고, 나중에 값을 한 곳에서만 바꾸면 됩니다.</p>
+              <p>값을 담을 때는 <span class="mono">=</span> 기호를 씁니다. 수학의 ‘같다’가 아니라, <em>오른쪽 값을 왼쪽 이름에 담는다</em>는 뜻입니다.</p>
+            </div>
+
+            <div class="concept mt-4">
+              <span class="badge badge--accent">개념 카드</span>
+              <p class="mt-3 small muted">변수 = 이름표를 붙인 상자. 상자 안에는 값이 들어 있습니다.</p>
+              <div class="concept__diagram">
+                <div class="concept__box"><small>이름 (변수)</small><b>name</b></div>
+                <span class="concept__arrow" aria-hidden="true">→</span>
+                <div class="concept__box"><small>담긴 값</small><b>"지민"</b></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section rise rise-2" aria-labelledby="s2">
+            <h2 id="s2">2. 코드로 보기</h2>
+            <p>이름 두 개에 값을 담고, 화면에 출력합니다.</p>
+            <div class="code mt-4">
+              <div class="code__bar">
+                <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="code__file">lesson_01.py</span>
+                <span class="code__tag">PYTHON · 실행 결과만 표시</span>
+              </div>
+              <pre><span class="ln" data-n="1"><span class="tok-var">name</span> <span class="tok-op">=</span> <span class="tok-str">"지민"</span></span><span class="ln ln--hot" data-n="2"><span class="tok-var">study_minutes</span> <span class="tok-op">=</span> <span class="tok-num">10</span></span><span class="ln" data-n="3">&nbsp;</span><span class="ln" data-n="4"><span class="tok-fn">print</span>(<span class="tok-var">name</span>)</span><span class="ln" data-n="5"><span class="tok-fn">print</span>(<span class="tok-var">study_minutes</span>)</span></pre>
+            </div>
+
+            <div class="output mt-4">
+              <div class="output__bar"><span class="badge__dot" aria-hidden="true"></span>예상 실행 결과</div>
+              <pre>지민
+10</pre>
+            </div>
+
+            <div class="line-notes">
+              <div class="line-note"><code>1행</code><span><span class="mono">name</span>이라는 이름에 문자열 <span class="mono">"지민"</span>을 담습니다. 문자열은 따옴표로 감쌉니다.</span></div>
+              <div class="line-note"><code>2행</code><span><span class="mono">study_minutes</span>에 숫자 <span class="mono">10</span>을 담습니다. 숫자는 따옴표 없이 씁니다.</span></div>
+              <div class="line-note"><code>4–5행</code><span><span class="mono">print()</span>는 괄호 안의 값을 화면에 출력합니다.</span></div>
+            </div>
+
+            <div class="callout callout--warning mt-4">
+              <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17h.01"/></svg>
+              <span><b>초보자 주의</b> — <span class="mono">"10"</span>(따옴표 있음)은 글자이고, <span class="mono">10</span>(따옴표 없음)은 숫자입니다. 지금은 둘을 다른 종류로 기억해 두면 충분합니다.</span>
+            </div>
+          </section>
+
+          <section class="lesson-section rise rise-3" aria-labelledby="s3">
+            <h2 id="s3">3. 이해도 확인</h2>
+            <div class="card card--pad">
+              <p class="small muted">한 문제만 답하면 첫 수업이 끝납니다.</p>
+              <p class="mt-3" id="q1"><strong>2행 <span class="mono">study_minutes = 10</span>에서 <span class="mono">study_minutes</span>에 담긴 값으로 알맞은 것은?</strong></p>
+              <div class="stack mt-4" role="list" aria-labelledby="q1">
+                <a class="quiz-opt" role="listitem" href="/lesson-1/result/"><span class="quiz-opt__key">A</span><span class="mono">10</span></a>
+                <a class="quiz-opt" role="listitem" href="/lesson-1/result/"><span class="quiz-opt__key">B</span><span class="mono">"10"</span> (따옴표 있는 문자열)</a>
+                <a class="quiz-opt" role="listitem" href="/lesson-1/result/"><span class="quiz-opt__key">C</span><span class="mono">지민</span></a>
+                <a class="quiz-opt" role="listitem" href="/lesson-1/result/"><span class="quiz-opt__key">D</span>아무 값도 담겨 있지 않다</a>
+              </div>
+            </div>
+          </section>
+        </article>
+
+        <aside class="lesson__rail" aria-label="AI 학습 메모">
+          <div class="memo memo--ai rise rise-2">
+            <div class="memo__head"><span class="ai-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke-linecap="round"/></svg>AI 학습 메모</span></div>
+            <p class="small muted">왜 이 예시를 골랐는지 투명하게 보여 드립니다.</p>
+            <div class="memo__row"><span>예시 선택 이유</span><b>익숙한 이름·시간</b></div>
+            <div class="memo__row"><span>현재 난이도</span><b><span class="dots" aria-label="5단계 중 1단계"><i class="on"></i><i></i><i></i><i></i><i></i></span></b></div>
+            <div class="memo__row"><span>설명 방식</span><b>개념 → 코드</b></div>
+            <div class="memo__row"><span>예상 소요</span><b>약 10분</b></div>
+          </div>
+
+          <details class="reveal rise rise-3">
+            <summary>도움말: = 기호가 헷갈려요</summary>
+            <div class="reveal__body">
+              <p><span class="mono">=</span>는 ‘같다’가 아니라 <b>‘오른쪽 값을 왼쪽에 담는다’</b>는 뜻입니다. <span class="mono">name = "지민"</span>은 “지민을 name에 담기”라고 읽으면 편합니다.</p>
+            </div>
+          </details>
+
+          <details class="reveal rise rise-3">
+            <summary>왜 print를 쓰나요?</summary>
+            <div class="reveal__body">
+              <p>값이 잘 담겼는지 눈으로 확인하는 가장 빠른 방법이 출력입니다. <span class="mono">print(이름)</span>으로 담은 값을 꺼내 볼 수 있습니다.</p>
+            </div>
+          </details>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

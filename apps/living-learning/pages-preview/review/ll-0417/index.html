@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 운영자 검토 수업 상세 — 생성·검증 결과와 개인화 방향 (합성 데이터 UI 프리뷰)">
+<title>검토 수업 상세 · LL-0417 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>검토 상태</div>
+      <div class="ai-status__row"><span>대상</span><b>LL-0417</b></div>
+      <div class="ai-status__row"><span>상태</span><b>pending_review</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb"><a href="/review/">운영자 검토</a> · <b>수업 상세</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="badge badge--warning"><span class="badge__dot"></span>pending_review</span>
+    </div>
+
+    <div class="content">
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>검토 수업 상세</span>
+        <h1>변수 심화 — 코드로 먼저</h1>
+        <p>합성 학습자 <span class="mono">LL-0417</span>의 두 번째 생성 수업입니다. 생성·검증 결과와 개인화 방향을 검토합니다.</p>
+      </div>
+
+      <div class="grid grid--sidebar">
+        <div class="stack">
+          <section class="card card--pad rise rise-1" aria-labelledby="lesson-preview">
+            <h2 id="lesson-preview" class="card__title">수업 내용 미리보기</h2>
+            <div class="mt-4 code">
+              <div class="code__bar">
+                <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="code__file">generated_lesson.py</span>
+                <span class="code__tag">코드 먼저 구성</span>
+              </div>
+              <pre><span class="ln" data-n="1"><span class="tok-var">name</span> <span class="tok-op">=</span> <span class="tok-str">"지민"</span></span><span class="ln" data-n="2"><span class="tok-var">age</span> <span class="tok-op">=</span> <span class="tok-num">29</span></span><span class="ln" data-n="3"><span class="tok-var">study_minutes</span> <span class="tok-op">=</span> <span class="tok-num">10</span></span><span class="ln" data-n="4"><span class="tok-fn">print</span>(<span class="tok-var">name</span>, <span class="tok-var">age</span>, <span class="tok-var">study_minutes</span>)</span></pre>
+            </div>
+            <p class="small muted mt-3">섹션 3개 · 예제 3개 · 복습 3개 · 용어 즉시 해설 2개. 학습자에게 보이기 전 검토용 사본입니다.</p>
+          </section>
+
+          <section class="card card--pad rise rise-2" aria-labelledby="validation">
+            <h2 id="validation" class="card__title">검증 결과</h2>
+            <div class="mt-3 stack">
+              <div class="flex gap-3"><span class="badge badge--success">통과</span><span class="small">코드 AST 구조 검사 — 허용되지 않은 호출 없음</span></div>
+              <div class="flex gap-3"><span class="badge badge--success">통과</span><span class="small">코드 실행 결과 grounding — 섹션 근거와 일치</span></div>
+              <div class="flex gap-3"><span class="badge badge--success">통과</span><span class="small">이해도 문제 정답·설명 일관성</span></div>
+              <div class="flex gap-3"><span class="badge badge--success">통과</span><span class="small">개인화 방향 반영 — 코드 먼저 · 예제 3개 확인</span></div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="stack" aria-label="검토 메타">
+          <div class="memo rise rise-2">
+            <div class="memo__head">학습자(익명)</div>
+            <div class="memo__row"><span>식별자</span><b class="mono">LL-0417</b></div>
+            <div class="memo__row"><span>시작일</span><b>2026-07-22</b></div>
+            <div class="memo__row"><span>수준</span><b>입문 1단계</b></div>
+            <div class="memo__row"><span>실개인정보</span><b>없음 (합성)</b></div>
+          </div>
+
+          <div class="memo memo--ai rise rise-3">
+            <div class="memo__head">생성 · 개인화</div>
+            <div class="memo__row"><span>생성 상태</span><b>완료</b></div>
+            <div class="memo__row"><span>provider</span><b class="mono">mock/mock-fixture</b></div>
+            <div class="memo__row"><span>개인화 방향</span><b>코드 먼저</b></div>
+            <div class="memo__row"><span>반영 근거</span><b>이해도 + 피드백 3</b></div>
+          </div>
+
+          <div class="callout callout--warning rise rise-3">
+            <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17h.01"/></svg>
+            <span>승인·출판 기능은 이 프리뷰에 없습니다. 이 수업은 <span class="mono">pending_review</span>로만 표시됩니다.</span>
+          </div>
+
+          <a class="btn btn--ghost btn--block rise rise-3" href="/review/">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+            목록으로
+          </a>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
