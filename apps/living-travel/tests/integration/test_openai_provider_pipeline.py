@@ -18,8 +18,12 @@ from app.db import apply_migrations, get_connection
 from app.domain.enums import EditionGenerationStatus
 from app.edition_repository import get_edition_by_id, get_editions_by_traveler
 from app.feedback_repository import create_feedback
-from app.generation_run_repository import count_generation_runs_by_edition
+from app.generation_run_repository import (
+    count_generation_runs_by_edition,
+    get_generation_runs_by_task_type,
+)
 from app.pipeline.errors import PipelineError
+from app.pipeline.prompts import DRAFT_PROMPT_VERSION, PLAN_PROMPT_VERSION
 from app.pipeline.service import GenerationService
 from app.source_repository import create_source
 from app.traveler_repository import create_traveler
@@ -52,6 +56,8 @@ SECOND_PLAN = {
         {"section_id": "sec_low_effort", "title": "적은 이동", "description": "코스"},
     ],
 }
+
+CHAT_COMPLETIONS_URL = "http://localhost:11434/v1/chat/completions"
 
 
 class _SequenceStub:
@@ -97,7 +103,7 @@ def _make_provider(
     **overrides: object,
 ) -> OpenAICompatibleProvider:
     kwargs: dict = {
-        "base_url": "http://localhost:11434/v1/chat/completions",
+        "base_url": CHAT_COMPLETIONS_URL,
         "api_key": "sk-test-placeholder",
         "model": "gpt-4o-mini",
         "timeout_seconds": 30,
@@ -106,6 +112,22 @@ def _make_provider(
     }
     kwargs.update(overrides)
     return OpenAICompatibleProvider(**kwargs)
+
+
+def _preferences(traveler) -> dict:
+    """Replicate the allowlisted preference boundary from routes_operator._preferences."""
+    return {
+        "destination": traveler.destination,
+        "trip_duration_nights": traveler.trip_duration_nights,
+        "trip_context": traveler.trip_context,
+        "budget_tendency": traveler.budget_tendency,
+        "pace_preference": traveler.pace_preference,
+        "interests": traveler.interests,
+        "exclusions": traveler.exclusions,
+        "tone_preference": traveler.tone_preference,
+        "length_preference": traveler.length_preference,
+        "preferred_language": traveler.preferred_language,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -222,8 +244,34 @@ class TestFirstEditionWithOpenAIProvider:
         assert len(editions) == 1
         assert editions[0].generation_status == EditionGenerationStatus.pending_review
 
+        assert stub.call_count == 2
+
+        for req_url, _data, _headers in stub.requests:
+            assert req_url == CHAT_COMPLETIONS_URL
+
         runs = count_generation_runs_by_edition(conn, editions[0].id)
         assert runs == 2
+
+        plan_runs = get_generation_runs_by_task_type(conn, "editorial_plan")
+        draft_runs = get_generation_runs_by_task_type(conn, "edition_draft")
+        assert len(plan_runs) == 1
+        assert len(draft_runs) == 1
+
+        plan_run = plan_runs[0]
+        assert plan_run.provider == "openai_compatible"
+        assert plan_run.advertised_model == "gpt-4o-mini"
+        assert plan_run.prompt_version == PLAN_PROMPT_VERSION
+        assert plan_run.success is True
+        assert plan_run.prompt_tokens == 50
+        assert plan_run.completion_tokens == 100
+
+        draft_run = draft_runs[0]
+        assert draft_run.provider == "openai_compatible"
+        assert draft_run.advertised_model == "gpt-4o-mini"
+        assert draft_run.prompt_version == DRAFT_PROMPT_VERSION
+        assert draft_run.success is True
+        assert draft_run.prompt_tokens == 50
+        assert draft_run.completion_tokens == 100
 
     def test_plan_failure_exhausts_attempts(
         self,
@@ -304,7 +352,7 @@ class TestSecondEditionWithOpenAIProvider:
         service1.generate_first_edition(
             traveler_id=traveler.id,
             input_id=None,
-            traveler_preferences={"destination": "부산"},
+            traveler_preferences=_preferences(traveler),
             source_items=source_dicts,
         )
 
@@ -326,12 +374,26 @@ class TestSecondEditionWithOpenAIProvider:
         second_content = service2.generate_second_edition(
             traveler_id=traveler.id,
             prior_edition_id=ed1.id,
-            traveler_preferences={"destination": "부산", "pace": "slow"},
+            traveler_preferences=_preferences(traveler),
             source_items=source_dicts,
         )
 
+        assert stub2.call_count == 2
+
+        draft_request = stub2.requests[1]
+        draft_url, draft_data, draft_headers = draft_request
+        assert draft_url == CHAT_COMPLETIONS_URL
+        draft_body = json.loads(draft_data)
+        draft_messages = draft_body["messages"]
+        draft_user_content = draft_messages[1]["content"]
+        assert "더 조용하고 느린 코스로" in draft_user_content
+
+        prior_sentinel = first_draft["editorial_opening"]
+        assert prior_sentinel in draft_user_content
+
         editions = get_editions_by_traveler(conn, traveler.id)
         assert len(editions) == 2
+        assert editions[1].generation_status == EditionGenerationStatus.pending_review
 
         from app.feedback_repository import get_unapplied_feedback_for_traveler
         unapplied = get_unapplied_feedback_for_traveler(conn, traveler.id)
@@ -351,8 +413,6 @@ class TestValidationAndRollback:
         source_dicts,
     ):
         bad_draft = dict(_load_fixture("source_bundle.json")["first_edition_fixture"])
-        # All plan sections present to pass validate_draft_against_plan, but
-        # one item references a source not in the validated set.
         bad_draft["sections"] = [
             {
                 "section_id": "sec_morning_gukje",
@@ -399,19 +459,51 @@ class TestValidationAndRollback:
         editions = get_editions_by_traveler(conn, traveler.id)
         assert len(editions) == 0
 
-    def test_privacy_sentinels_no_leak_in_transport(
+
+# ---------------------------------------------------------------------------
+# Privacy boundary
+# ---------------------------------------------------------------------------
+
+
+class TestPrivacyBoundary:
+    def test_forbidden_sentinels_not_in_outbound(
         self,
         conn,
-        traveler,
         source_dicts,
     ):
-        """Provider must not leak private data through transport headers.
+        """Verify that forbidden sentinel values placed in non-allowlisted
+        traveler fields never appear in the outbound transport body or headers.
 
-        Verifies that:
-        - Authorization uses Bearer scheme (API key never in body)
-        - X-Request-ID is opaque (hex hash, not raw request_id)
-        - No user-payload content appears in transport headers
+        Uses the same allowlisted preference boundary as
+        ``routes_operator._preferences`` — only specific fields are forwarded.
+        Fields like ``display_name``, ``raw_input``, and other PII must NOT
+        leak through.
         """
+        forbidden_sentinels = [
+            "firebase_uid_1:abc123XYZ",
+            "user@example.com",
+            "INVITE-CODE-7H5K9M2P",
+            "postgresql://user:pass@db.internal:5432/prod",
+            "operator-secret-9f8e7d6c5b4a",
+            "unrelated_traveler_value_42",
+            "부산에서 2박 3일 혼자 여행하려고 합니다",
+        ]
+
+        traveler = create_traveler(
+            conn,
+            display_name=forbidden_sentinels[0],
+            destination="부산",
+            trip_duration_nights=2,
+            trip_context="solo",
+            budget_tendency="budget-friendly",
+            pace_preference="comfortable",
+            interests=["neighborhood exploration", "local food"],
+            exclusions=["famous attractions"],
+            tone_preference="calm",
+            length_preference="medium",
+            preferred_language="ko",
+        )
+
         draft_fixture = _load_fixture("source_bundle.json")["first_edition_fixture"]
         stub = _SequenceStub([
             (200, FIRST_PLAN),
@@ -419,25 +511,30 @@ class TestValidationAndRollback:
         ])
         provider = _make_provider(stub)
         service = GenerationService(conn, provider)
+
         service.generate_first_edition(
             traveler_id=traveler.id,
             input_id=None,
-            traveler_preferences={"destination": "부산", "pace": "comfortable"},
+            traveler_preferences=_preferences(traveler),
             source_items=source_dicts,
         )
 
         for _url, data, headers in stub.requests:
             body_str = data.decode("utf-8", errors="replace")
 
+            for sentinel in forbidden_sentinels:
+                assert sentinel not in body_str, (
+                    f"Forbidden sentinel '{sentinel}' leaked in request body"
+                )
+                for hdr_key, hdr_val in headers.items():
+                    assert sentinel not in hdr_val, (
+                        f"Forbidden sentinel '{sentinel}' leaked in header {hdr_key}"
+                    )
+
             auth = headers.get("Authorization", "")
             assert auth.startswith("Bearer "), "Authorization must use Bearer scheme"
             assert "sk-test-placeholder" in auth, "API key must be in Authorization header"
-
-            api_key_in_body = (
-                "sk-test-placeholder" in body_str
-                or "Bearer" in body_str
-            )
-            assert not api_key_in_body, "API key must not appear in request body"
+            assert "Bearer" not in body_str, "Bearer scheme must not appear in body"
 
             req_id = headers.get("X-Request-ID", "")
             assert len(req_id) == 32, "X-Request-ID must be 32 hex chars"
@@ -445,11 +542,3 @@ class TestValidationAndRollback:
                 "X-Request-ID must be opaque hex"
             )
             assert req_id not in body_str, "X-Request-ID must not appear in body"
-
-            for hdr_key, hdr_val in headers.items():
-                assert "부산" not in hdr_val, (
-                    f"User content ('부산') leaked in header {hdr_key}"
-                )
-                assert "comfortable" not in hdr_val, (
-                    f"User preference leaked in header {hdr_key}"
-                )

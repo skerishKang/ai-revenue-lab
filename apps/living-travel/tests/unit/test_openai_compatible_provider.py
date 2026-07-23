@@ -732,10 +732,8 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
-        # localhost resolving should not raise SSRF error
-        # We're testing the SSRF check, not actual connection
         try:
-            transport._validate_destination("localhost")
+            transport._validate_destination("http", "localhost")
         except ProviderTransportError as e:
             if "SSRF" in str(e) or "not a global" in str(e):
                 pytest.fail("localhost should be allowed in development")
@@ -745,7 +743,7 @@ class TestSSRFValidation:
 
         transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
         try:
-            transport._validate_destination("127.0.0.1")
+            transport._validate_destination("http", "127.0.0.1")
         except ProviderTransportError as e:
             if "SSRF" in str(e) or "not a global" in str(e):
                 pytest.fail("127.0.0.1 should be allowed in development")
@@ -755,7 +753,76 @@ class TestSSRFValidation:
 
         transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
         with pytest.raises(ProviderTransportError, match="SSRF blocked"):
-            transport._validate_destination("10.0.0.1")
+            transport._validate_destination("http", "10.0.0.1")
+
+
+class TestSchemeAwareSSRF:
+    """Scheme-aware SSRF policy tests using fake resolver and mocked opener."""
+
+    class _FakeResolver:
+        def __init__(self, ips: list[str]):
+            self._ips = ips
+            self.resolve_calls: list[str] = []
+
+        def resolve(self, hostname: str) -> list[str]:
+            self.resolve_calls.append(hostname)
+            return list(self._ips)
+
+    def test_development_https_global_ipv4_allowed(self):
+        from app.ai.openai_compatible import UrllibTransport
+
+        resolver = self._FakeResolver(["8.8.8.8"])
+        transport = UrllibTransport(environment="development", resolver=resolver)
+        transport._validate_destination("https", "api.example.com")
+
+    def test_testing_https_global_ipv6_allowed(self):
+        from app.ai.openai_compatible import UrllibTransport
+
+        resolver = self._FakeResolver(["2001:4860:4860::8888"])
+        transport = UrllibTransport(environment="testing", resolver=resolver)
+        transport._validate_destination("https", "api.example.com")
+
+    def test_development_http_localhost_all_loopback_allowed(self):
+        from app.ai.openai_compatible import UrllibTransport
+
+        resolver = self._FakeResolver(["127.0.0.1"])
+        transport = UrllibTransport(environment="development", resolver=resolver)
+        transport._validate_destination("http", "localhost")
+
+    def test_development_http_public_hostname_blocked(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        resolver = self._FakeResolver(["8.8.8.8"])
+        transport = UrllibTransport(environment="development", resolver=resolver)
+        with pytest.raises(ProviderTransportError, match="SSRF blocked"):
+            transport._validate_destination("http", "api.example.com")
+
+    def test_development_https_public_and_private_mixed_blocked(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        resolver = self._FakeResolver(["8.8.8.8", "10.0.0.1"])
+        transport = UrllibTransport(environment="development", resolver=resolver)
+        with pytest.raises(ProviderTransportError, match="SSRF blocked"):
+            transport._validate_destination("https", "api.example.com")
+
+    def test_staging_global_and_loopback_mixed_blocked(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        resolver = self._FakeResolver(["8.8.8.8", "127.0.0.1"])
+        transport = UrllibTransport(environment="staging", resolver=resolver)
+        with pytest.raises(ProviderTransportError, match="not a global address"):
+            transport._validate_destination("https", "api.example.com")
+
+    def test_dns_empty_result_blocked(self):
+        from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
+
+        class _EmptyResolver:
+            def resolve(self, hostname: str) -> list[str]:
+                return []
+
+        transport = UrllibTransport(environment="staging", resolver=_EmptyResolver())
+        with pytest.raises(ProviderTransportError, match="destination resolution failed"):
+            transport._validate_destination("https", "api.example.com")
 
 
 class TestResponseSizeLimit:

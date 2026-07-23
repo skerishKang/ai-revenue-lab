@@ -114,9 +114,9 @@ class UrllibTransport:
         opener = urllib.request.build_opener(_NoRedirectHandler)
 
         try:
-            host = self._extract_host(url)
+            scheme, host = self._extract_scheme_and_host(url)
             if host:
-                self._validate_destination(host)
+                self._validate_destination(scheme, host)
 
             with opener.open(request, timeout=timeout) as resp:
                 body = resp.read(self._max_response_size + 1)
@@ -145,52 +145,58 @@ class UrllibTransport:
         except Exception as e:
             raise ProviderTransportError(str(e)) from e
 
-    def _extract_host(self, url: str) -> str | None:
+    def _extract_scheme_and_host(self, url: str) -> tuple[str, str | None]:
         from urllib.parse import urlparse
         try:
             parts = urlparse(url)
-            return parts.hostname
+            return parts.scheme.lower(), parts.hostname
         except Exception:
-            return None
+            return "", None
 
-    def _validate_destination(self, hostname: str) -> None:
+    def _validate_destination(self, scheme: str, hostname: str) -> None:
         if not hostname:
             raise ProviderTransportError("missing hostname")
 
         hostname_lower = hostname.lower()
 
-        # Check if hostname is a literal IP first
         try:
             literal_ip = ipaddress.ip_address(hostname_lower)
             ips_to_check = [literal_ip]
         except ValueError:
-            # Not a literal IP — resolve via DNS
             resolved_ips = self._resolver.resolve(hostname_lower)
             ips_to_check = [ipaddress.ip_address(ip) for ip in resolved_ips if ip]
 
-        # Fail-closed: if no IPs could be resolved, reject
         if not ips_to_check:
             raise ProviderTransportError("destination resolution failed")
 
-        # Check environment-specific rules
         if self._environment in ("testing", "development"):
-            # In development: allow HTTP only if ALL resolved IPs are loopback
-            # and hostname is localhost or a literal loopback IP
-            is_localhost_host = hostname_lower in ("localhost", "localhost.localdomain", "::1")
-            try:
-                literal_ip = ipaddress.ip_address(hostname_lower)
-                is_localhost_host = is_localhost_host or literal_ip.is_loopback
-            except ValueError:
-                pass
+            if scheme == "http":
+                is_localhost_host = hostname_lower in (
+                    "localhost",
+                    "localhost.localdomain",
+                    "::1",
+                )
+                try:
+                    literal_ip = ipaddress.ip_address(hostname_lower)
+                    is_localhost_host = is_localhost_host or literal_ip.is_loopback
+                except ValueError:
+                    pass
 
-            if not is_localhost_host:
-                raise ProviderTransportError("SSRF blocked")
+                if not is_localhost_host:
+                    raise ProviderTransportError("SSRF blocked")
 
-            if not all(ip.is_loopback for ip in ips_to_check):
-                raise ProviderTransportError("SSRF blocked")
-            return
+                if not all(ip.is_loopback for ip in ips_to_check):
+                    raise ProviderTransportError("SSRF blocked")
+                return
 
-        # Staging/production: reject all non-global addresses
+            if scheme == "https":
+                for ip in ips_to_check:
+                    if not ip.is_global:
+                        raise ProviderTransportError("SSRF blocked")
+                return
+
+            raise ProviderTransportError("unsupported scheme")
+
         for ip in ips_to_check:
             if not ip.is_global:
                 raise ProviderTransportError("destination is not a global address")
