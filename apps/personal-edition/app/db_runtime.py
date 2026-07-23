@@ -356,7 +356,30 @@ def classify_pg_error(exc: psycopg.Error) -> DatabaseError:
     SQLSTATE class (23 = integrity constraint violation).  The original
     exception is intended to be attached by the caller via
     ``raise ... from exc``; it is never interpolated into the message.
+
+    Neon contract: connection wake-up, transient connection failure, and
+    closed connection situations are classified as safe DatabaseError with
+    category="connection".
     """
+    # Connection errors (Neon wake-up, transient failure, closed connection)
+    if isinstance(exc, (
+        _pg_errors.ConnectionException,
+        _pg_errors.ConnectionFailure,
+        _pg_errors.ConnectionTimeout,
+        _pg_errors.ConnectionDoesNotExist,
+        _pg_errors.CannotConnectNow,
+        _pg_errors.SqlclientUnableToEstablishSqlconnection,
+        _pg_errors.SqlserverRejectedEstablishmentOfSqlconnection,
+        _pg_errors.AdminShutdown,
+        _pg_errors.CrashShutdown,
+        _pg_errors.OperatorIntervention,
+    )):
+        return DatabaseError(safe_category="connection")
+
+    # OperationalError is a broad category that includes connection issues
+    if isinstance(exc, psycopg.OperationalError):
+        return DatabaseError(safe_category="connection")
+
     constraint = _safe_constraint_name(exc)
     if isinstance(exc, _pg_errors.UniqueViolation):
         return DatabaseIntegrityError("unique", constraint)

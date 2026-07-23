@@ -527,8 +527,51 @@ class TestError:
         assert isinstance(err, DatabaseIntegrityError)
         assert err.kind == "not_null"
 
-    def test_unknown_driver_error_safe_category(self):
+    def test_operational_error_is_connection_category(self):
         exc = psycopg.OperationalError("connection refused")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert not isinstance(err, DatabaseIntegrityError)
+        assert err.safe_category == "connection"
+
+    def test_connection_failure_is_connection_category(self):
+        exc = pg_errors.ConnectionFailure("connection failure")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert err.safe_category == "connection"
+
+    def test_connection_timeout_is_connection_category(self):
+        exc = pg_errors.ConnectionTimeout("connection timeout")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert err.safe_category == "connection"
+
+    def test_connection_does_not_exist_is_connection_category(self):
+        exc = pg_errors.ConnectionDoesNotExist("connection does not exist")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert err.safe_category == "connection"
+
+    def test_cannot_connect_now_is_connection_category(self):
+        exc = pg_errors.CannotConnectNow("cannot connect now")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert err.safe_category == "connection"
+
+    def test_admin_shutdown_is_connection_category(self):
+        exc = pg_errors.AdminShutdown("admin shutdown")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert err.safe_category == "connection"
+
+    def test_crash_shutdown_is_connection_category(self):
+        exc = pg_errors.CrashShutdown("crash shutdown")
+        err = classify_pg_error(exc)
+        assert isinstance(err, DatabaseError)
+        assert err.safe_category == "connection"
+
+    def test_unknown_driver_error_safe_category(self):
+        exc = psycopg.ProgrammingError("syntax error")
         err = classify_pg_error(exc)
         assert isinstance(err, DatabaseError)
         assert not isinstance(err, DatabaseIntegrityError)
