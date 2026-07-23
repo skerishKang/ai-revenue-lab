@@ -9,6 +9,8 @@ SUPPORTED_LOCALES = ("ko", "en")
 DEFAULT_LOCALE = "ko"
 
 STRINGS: dict[str, dict[str, str]] = {
+    # --- Brand ------------------------------------------------------------
+    "app_name": {"ko": "나의 영상 아카이브", "en": "Personal Video Archive"},
     # --- Navigation -------------------------------------------------------
     "nav_home": {"ko": "홈", "en": "Home"},
     "nav_topics": {"ko": "토픽", "en": "Topics"},

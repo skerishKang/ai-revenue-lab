@@ -3,14 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Personal Video Archive{% endblock %}</title>
+    <title>{% block title %}{{ t("app_name") }}{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     {% include "partials/_preview_notice.html" %}
     <div class="app-shell {% block shell_class %}{% endblock %}">
         <nav class="sidebar" aria-label="{{ t('nav_home') }}">
-            <a href="{{ lp }}/" class="sidebar-brand">Personal Video Archive</a>
+            <a href="{{ lp }}/" class="sidebar-brand">{{ t("app_name") }}</a>
             <div class="sidebar-nav">
                 <a href="{{ lp }}/" {% if request.url.path == lp + "/" or request.url.path == lp %}aria-current="page"{% endif %}>{{ t("nav_home") }}</a>
                 <a href="{{ lp }}/topics" {% if "/topics" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_topics") }}</a>
@@ -23,7 +23,7 @@
         </nav>
 
         <header class="app-header">
-            <a href="{{ lp }}/" class="brand">Personal Video Archive</a>
+            <a href="{{ lp }}/" class="brand">{{ t("app_name") }}</a>
             <a href="{{ lang_switch_href }}" class="lang-switch">{{ t("lang_switch") }}</a>
         </header>
 

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}{{ t("page_preview_landing") }} — Personal Video Archive{% endblock %}
+{% block title %}{{ t("page_preview_landing") }} — {{ t("app_name") }}{% endblock %}
 {% block content %}
 <div class="page-intro">
     <h1>{{ t("page_preview_landing") }}</h1>
     <p class="subtitle">{{ t("page_preview_landing_desc") }}</p>
+    <p class="small"><a href="{{ lp }}/">{{ t("action_go_home") }}</a></p>
 </div>
 
 <div class="section">
     <h3>1 · {{ t("qa_section_1") }}</h3>
     <div class="topic-list">
-        <a href="{{ lp }}/" class="topic-card"><h3>{{ t("qa_home") }}</h3><p class="topic-intent">{{ t("home_subtitle") }}</p></a>
         <a href="{{ lp }}/topics" class="topic-card"><h3>{{ t("qa_topics_page") }}</h3><p class="topic-intent">{{ t("topics_title") }}</p></a>
         <a href="{{ lp }}/topics/new" class="topic-card"><h3>{{ t("qa_new_topic") }}</h3><p class="topic-intent">{{ t("form_intent") }}</p></a>
         <a href="{{ lp }}/topics/pv-topic-0001/review-rule" class="topic-card"><h3>{{ t("qa_review_rule") }}</h3><p class="topic-intent">{{ t("page_review_rules_desc") }}</p></a>

@@ -768,6 +768,64 @@ textarea {
   overflow: hidden;
 }
 
+/* --- Record detail grouped sections ------------------------------------ */
+
+.record-video-anchor {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-lg);
+}
+
+.record-video-thumb {
+  flex-shrink: 0;
+  width: 280px;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-ink);
+}
+
+.record-video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.record-video-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.record-video-info .video-title {
+  font-size: var(--text-lg);
+}
+
+.record-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.record-section-title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.record-form .form-group {
+  margin-bottom: var(--space-md);
+}
+
+.record-form .form-group:last-child {
+  margin-bottom: 0;
+}
+
 /* ==========================================================================
    State Filter Pills
    ========================================================================== */
@@ -1202,11 +1260,19 @@ hr {
   }
 
   .app-main {
-    padding: var(--space-md) var(--space-md) calc(var(--mobile-nav-height) + var(--space-xl));
+    padding: var(--space-md) var(--space-md) calc(var(--mobile-nav-height) + var(--space-2xl));
   }
 
   .mobile-nav {
     display: block;
+  }
+
+  .mobile-nav a {
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .video-feed {
@@ -1232,6 +1298,7 @@ hr {
 
   .feed-actions .btn {
     width: 100%;
+    min-height: 44px;
   }
 
   .video-actions {
@@ -1241,9 +1308,37 @@ hr {
 
   .video-actions .btn {
     width: 100%;
+    min-height: 44px;
   }
 
   .video-actions select {
     width: 100%;
+    min-height: 44px;
+  }
+
+  .filter-pill {
+    min-height: 40px;
+    padding: var(--space-xs) var(--space-md);
+  }
+
+  .record-video-anchor {
+    flex-direction: column;
+  }
+
+  .record-video-thumb {
+    width: 100%;
+  }
+
+  .record-section {
+    padding: var(--space-md);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    min-height: 48px;
   }
 }

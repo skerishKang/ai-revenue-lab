@@ -41,9 +41,13 @@
         {% endif %}
 
         <div class="video-actions">
+            {% if is_preview %}
+            <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-primary">{{ t("action_open_youtube") }}</a>
+            {% else %}
             <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
                 <button type="submit" class="btn btn-small btn-primary">{{ t("action_open_youtube") }}</button>
             </form>
+            {% endif %}
             <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/state" class="inline-form">
                 <input type="hidden" name="return_state" value="{{ current_state_filter | default('all') }}">
                 <select name="state" onchange="this.form.submit()">

@@ -35,6 +35,7 @@ from preview_fixtures.data import (
     make_query_rule_proposal,
     make_record_completed,
     make_record_in_progress,
+    make_record_revisit,
     make_record_saved,
     make_search_results,
     make_structure_proposal,
@@ -370,13 +371,52 @@ def main(output_dir: Path | None = None) -> Path:
     timestamps = make_timestamps()
     structure_proposal = make_structure_proposal()
 
-    # --- Preview landing / index -----------------------------------------
-    _write_page_bilingual(env, "preview_index.html", {}, "/", output_dir, "index.html")
-
-    # --- Product home / topic list ---------------------------------------
+    # --- Product home (root) ---------------------------------------------
+    # Populate with real fixtures: continue_watching, new_finds, recent_notes, resurfaced
+    topic1_videos = make_topic1_videos()
+    topic2_videos = make_topic2_videos()
+    topic1_tvs = make_topic1_topic_videos()
+    topic2_tvs = make_topic2_topic_videos()
+    
+    # continue_watching: in_progress records (min 2)
+    continue_watching = [
+        (topic2_tvs[0], topic2_videos[0], make_record_in_progress()),  # rfscVS0vtbw
+        (topic1_tvs[0], topic1_videos[0], make_record_completed()),    # aircAruvnKk (completed but shown)
+    ]
+    
+    # new_finds: recent videos (min 4)
+    new_finds = [
+        (topic1_tvs[1], topic1_videos[1], None),  # eMlx5fFNoYc
+        (topic1_tvs[2], topic1_videos[2], None),  # OIY2tWT3HHI
+        (topic2_tvs[1], topic2_videos[1], None),  # lkIFF4maKMU
+        (topic2_tvs[2], topic2_videos[2], None),  # 5C_HPTJg5ek
+    ]
+    
+    # recent_notes: records with notes (min 2)
+    recent_notes = [
+        (make_record_completed(), topic1_tvs[0], topic1_videos[0]),
+        (make_record_in_progress(), topic2_tvs[0], topic2_videos[0]),
+    ]
+    
+    # resurfaced: revisit records (min 1)
+    resurfaced = [
+        (make_record_revisit(), topic2_tvs[2], topic2_videos[2]),
+    ]
+    
     _write_page_bilingual(
-        env, "index.html", {"topics": topics}, "/home", output_dir, "home/index.html"
+        env, "index.html",
+        {
+            "topics": topics,
+            "continue_watching": continue_watching,
+            "new_finds": new_finds,
+            "recent_notes": recent_notes,
+            "resurfaced": resurfaced,
+        },
+        "/", output_dir, "index.html"
     )
+    
+    # --- QA state matrix (preview-states) --------------------------------
+    _write_page_bilingual(env, "preview_index.html", {}, "/preview-states", output_dir, "preview-states/index.html")
     _write_page_bilingual(
         env,
         "topics/list.html",
@@ -481,6 +521,23 @@ def main(output_dir: Path | None = None) -> Path:
         "/records/pv-rec-0001",
         output_dir,
         "records/pv-rec-0001/index.html",
+    )
+
+    # --- Revisit record (resurfaced on home) -----------------------------
+    rec_revisit = make_record_revisit()
+    _write_page_bilingual(
+        env,
+        "records/detail.html",
+        {
+            "record": rec_revisit,
+            "topic_video": topic2_tvs[2],
+            "video": topic2_videos[2],
+            "timestamps": [],
+            "pending_proposals": [],
+        },
+        "/records/pv-rec-0005",
+        output_dir,
+        "records/pv-rec-0005/index.html",
     )
 
     # --- Record search results -------------------------------------------

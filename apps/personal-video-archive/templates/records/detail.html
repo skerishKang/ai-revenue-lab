@@ -1,103 +1,116 @@
 {% extends "base.html" %}
-{% block title %}{{ t("page_record_title") }}: {{ video.title if video else record.id }} — Personal Video Archive{% endblock %}
+{% block title %}{{ t("page_record_title") }}: {{ video.title if video else record.id }} — {{ t("app_name") }}{% endblock %}
 {% block shell_class %}has-context{% endblock %}
 {% block content %}
 <div class="page-header">
     <h1>{{ t("page_record_title") }}</h1>
-    {% if video %}
-    <p class="subtitle">{{ video.title }}</p>
-    {% endif %}
 </div>
 
 {% if video %}
-<div class="video-meta-source">
-    <span class="badge badge-info badge-sm">{{ t("badge_youtube") }}</span>
-    <span class="badge badge-app badge-sm">{{ t("badge_app") }}</span>
-    <span class="badge badge-user badge-sm">{{ t("badge_user") }}</span>
+<div class="record-video-anchor card">
+    <div class="record-video-thumb">
+        {% if is_preview %}
+        <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer">
+            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        </a>
+        {% else %}
+        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        {% endif %}
+    </div>
+    <div class="record-video-info">
+        <h3 class="video-title">{{ video.title }}</h3>
+        <p class="video-card-channel">{{ video.channel_title }}</p>
+        <p class="video-published small">{{ t("feed_published") }} {{ video.published_at[:10] }}</p>
+        <div class="video-meta-source">
+            <span class="badge badge-info badge-sm">{{ t("badge_youtube") }}</span>
+            <span class="badge badge-app badge-sm">{{ t("badge_app") }}</span>
+            <span class="badge badge-user badge-sm">{{ t("badge_user") }}</span>
+        </div>
+        {% if is_preview %}
+        <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-primary">{{ t("action_open_youtube") }}</a>
+        {% endif %}
+    </div>
 </div>
 {% endif %}
 
-<form method="post" action="{{ lp }}/records/{{ record.id }}/update" class="form">
-    <div class="form-row">
-        <div class="form-group">
-            <label for="viewing_state">{{ t("form_viewing_state") }}</label>
-            <select id="viewing_state" name="viewing_state">
-                {% for s in ["unseen", "opened", "saved", "in_progress", "completed", "revisit", "irrelevant"] %}
-                <option value="{{ s }}" {% if record.viewing_state.value == s %}selected{% endif %}>{{ t("state_" + s) }}</option>
-                {% endfor %}
-            </select>
+<form method="post" action="{{ lp }}/records/{{ record.id }}/update" class="form record-form">
+    <div class="record-section">
+        <h3 class="record-section-title">{{ t("form_viewing_state") }}</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="viewing_state">{{ t("form_viewing_state") }}</label>
+                <select id="viewing_state" name="viewing_state">
+                    {% for s in ["unseen", "opened", "saved", "in_progress", "completed", "revisit", "irrelevant"] %}
+                    <option value="{{ s }}" {% if record.viewing_state.value == s %}selected{% endif %}>{{ t("state_" + s) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="rating">{{ t("form_rating") }}</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" value="{{ record.rating or '' }}">
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="rating">{{ t("form_rating") }}</label>
-            <input type="number" id="rating" name="rating" min="1" max="5"
-                   value="{{ record.rating or '' }}">
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label for="opened_date">{{ t("form_opened_date") }}</label>
-            <input type="date" id="opened_date" name="opened_date"
-                   value="{{ record.opened_date or '' }}">
-        </div>
-        <div class="form-group">
-            <label for="completed_date">{{ t("form_completed_date") }}</label>
-            <input type="date" id="completed_date" name="completed_date"
-                   value="{{ record.completed_date or '' }}">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="opened_date">{{ t("form_opened_date") }}</label>
+                <input type="date" id="opened_date" name="opened_date" value="{{ record.opened_date or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="completed_date">{{ t("form_completed_date") }}</label>
+                <input type="date" id="completed_date" name="completed_date" value="{{ record.completed_date or '' }}">
+            </div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="free_form_note">{{ t("form_free_note") }}</label>
-        <textarea id="free_form_note" name="free_form_note" rows="6"
-                  placeholder="{{ t('form_free_note_ph') }}">{{ record.free_form_note }}</textarea>
-        <p class="help-text">{{ t("form_free_note_help") }}</p>
+    <div class="record-section">
+        <h3 class="record-section-title">{{ t("form_free_note") }}</h3>
+        <div class="form-group">
+            <textarea id="free_form_note" name="free_form_note" rows="6" placeholder="{{ t('form_free_note_ph') }}">{{ record.free_form_note }}</textarea>
+            <p class="help-text">{{ t("form_free_note_help") }}</p>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="reflection">{{ t("form_reflection") }}</label>
-        <textarea id="reflection" name="reflection" rows="3">{{ record.reflection }}</textarea>
+    <div class="record-section">
+        <h3 class="record-section-title">{{ t("form_reflection") }}</h3>
+        <div class="form-group">
+            <label for="reflection">{{ t("form_reflection") }}</label>
+            <textarea id="reflection" name="reflection" rows="3">{{ record.reflection }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="learned_point">{{ t("form_learned") }}</label>
+            <textarea id="learned_point" name="learned_point" rows="3">{{ record.learned_point }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="agreement">{{ t("form_agreement") }}</label>
+            <textarea id="agreement" name="agreement" rows="2">{{ record.agreement }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="disagreement">{{ t("form_disagreement") }}</label>
+            <textarea id="disagreement" name="disagreement" rows="2">{{ record.disagreement }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="uncertainty">{{ t("form_uncertainty") }}</label>
+            <textarea id="uncertainty" name="uncertainty" rows="2">{{ record.uncertainty }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="follow_up_plan">{{ t("form_follow_up") }}</label>
+            <textarea id="follow_up_plan" name="follow_up_plan" rows="3">{{ record.follow_up_plan }}</textarea>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="learned_point">{{ t("form_learned") }}</label>
-        <textarea id="learned_point" name="learned_point" rows="3">{{ record.learned_point }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="agreement">{{ t("form_agreement") }}</label>
-        <textarea id="agreement" name="agreement" rows="2">{{ record.agreement }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="disagreement">{{ t("form_disagreement") }}</label>
-        <textarea id="disagreement" name="disagreement" rows="2">{{ record.disagreement }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="uncertainty">{{ t("form_uncertainty") }}</label>
-        <textarea id="uncertainty" name="uncertainty" rows="2">{{ record.uncertainty }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="follow_up_plan">{{ t("form_follow_up") }}</label>
-        <textarea id="follow_up_plan" name="follow_up_plan" rows="3">{{ record.follow_up_plan }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="tags">{{ t("form_tags") }}</label>
-        <input type="text" id="tags" name="tags"
-               value="{{ record.tags | join(', ') }}">
+    <div class="record-section">
+        <h3 class="record-section-title">{{ t("form_tags") }}</h3>
+        <div class="form-group">
+            <input type="text" id="tags" name="tags" value="{{ record.tags | join(', ') }}">
+        </div>
     </div>
 
     {% if timestamps %}
-    <div class="form-group">
-        <label>{{ t("form_timestamps") }}</label>
+    <div class="record-section">
+        <h3 class="record-section-title">{{ t("form_timestamps") }}</h3>
         <ul class="timestamp-list">
             {% for ts in timestamps %}
-            <li>{{ ts.timestamp_seconds // 60 }}:{{ '%02d' | format(ts.timestamp_seconds % 60) }}
-                {% if ts.label %} — {{ ts.label }}{% endif %}</li>
+            <li>{{ ts.timestamp_seconds // 60 }}:{{ '%02d' | format(ts.timestamp_seconds % 60) }}{% if ts.label %} — {{ ts.label }}{% endif %}</li>
             {% endfor %}
         </ul>
     </div>
@@ -109,23 +122,20 @@
     </div>
 </form>
 
-<hr>
-
-<div class="section">
-    <h3>{{ t("page_ai_structure") }}</h3>
+<div class="record-section">
+    <h3 class="record-section-title">{{ t("page_ai_structure") }}</h3>
     <p class="small">{{ t("page_ai_structure_desc") }}</p>
     <form method="post" action="{{ lp }}/records/{{ record.id }}/propose-structure" class="form">
         <div class="form-group">
-            <textarea name="rough_notes" rows="4"
-                      placeholder="{{ t('form_rough_notes_ph') }}"></textarea>
+            <textarea name="rough_notes" rows="4" placeholder="{{ t('form_rough_notes_ph') }}"></textarea>
         </div>
         <button type="submit" class="btn btn-secondary">{{ t("action_generate_proposal") }}</button>
     </form>
 </div>
 
 {% if pending_proposals %}
-<div class="section">
-    <h3>{{ t("page_pending_proposals") }}</h3>
+<div class="record-section">
+    <h3 class="record-section-title">{{ t("page_pending_proposals") }}</h3>
     {% for proposal in pending_proposals %}
     <div class="proposal-card">
         <strong>{{ t("badge_ai") }}</strong> — {{ proposal.proposal_type.value }}
@@ -146,19 +156,4 @@
     {% endfor %}
 </div>
 {% endif %}
-{% endblock %}
-
-{% block context_panel %}
-<aside class="context-panel">
-    {% if video %}
-    <h3>{{ t("page_video_info") }}</h3>
-    <div class="context-item">{{ video.title }}</div>
-    <div class="context-item">{{ video.channel_title }}</div>
-    <div class="context-item">{{ t("feed_published") }} {{ video.published_at[:10] }}</div>
-    {% endif %}
-    <h3>{{ t("form_viewing_state") }}</h3>
-    <div class="context-item">
-        <span class="badge badge-user">{{ t("state_" + (record.viewing_state | state_label)) }}</span>
-    </div>
-</aside>
 {% endblock %}
