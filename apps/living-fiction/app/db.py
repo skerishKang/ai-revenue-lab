@@ -3,11 +3,19 @@
 Independent from sibling apps. Applies SQL migration files from the
 migrations/ directory in sorted order, tracking applied versions in
 schema_migrations.
+
+``get_connection`` returns the backend-neutral
+:class:`~app.database.sqlite.SQLiteConnection` adapter so repository and service
+code never touches ``sqlite3`` directly. The SQLite migration runner below
+operates on the underlying raw connection (``conn.raw``) because it relies on
+SQLite-specific behaviour (``PRAGMA``, ``sqlite3.complete_statement``).
 """
 
 import os
 import sqlite3
 from pathlib import Path
+
+from app.database.sqlite import SQLiteConnection
 
 
 class MigrationError(RuntimeError):
@@ -17,15 +25,23 @@ class MigrationError(RuntimeError):
         super().__init__(f"migration {filename} failed: {original_error}")
 
 
-def get_connection(db_path: str) -> sqlite3.Connection:
+def get_connection(db_path: str) -> SQLiteConnection:
+    """Open a SQLite connection wrapped in the backend-neutral adapter.
+
+    The returned :class:`SQLiteConnection` is transparent — it delegates every
+    operation to the underlying ``sqlite3.Connection`` — but translates
+    ``sqlite3.IntegrityError`` into the neutral
+    :class:`~app.database.errors.IntegrityError` so callers stay
+    backend-agnostic.
+    """
     db_path = str(db_path)
     if db_path != ":memory:":
         parent = os.path.dirname(os.path.abspath(db_path))
         os.makedirs(parent, exist_ok=True)
-    conn = sqlite3.connect(db_path, check_same_thread=False)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    raw = sqlite3.connect(db_path, check_same_thread=False)
+    raw.row_factory = sqlite3.Row
+    raw.execute("PRAGMA foreign_keys = ON")
+    return SQLiteConnection(raw)
 
 
 def is_sql_trivia(value: str) -> bool:
@@ -71,9 +87,13 @@ def iter_sql_statements(sql: str):
 
 
 def apply_migrations(
-    conn: sqlite3.Connection,
+    conn,
     migrations_dir: str = "migrations",
 ) -> list[str]:
+    # Operate on the underlying raw sqlite3 connection so the SQLite-specific
+    # migration machinery (PRAGMA, complete_statement, sqlite3.Error) behaves
+    # exactly as before whether *conn* is the adapter or a raw connection.
+    conn = getattr(conn, "raw", conn)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS schema_migrations (
             version TEXT PRIMARY KEY,
