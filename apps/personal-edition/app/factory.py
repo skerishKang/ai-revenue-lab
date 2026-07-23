@@ -21,7 +21,7 @@ from app import security
 from app.ai.mock import MockProvider
 from app.config import settings
 from app.db import apply_migrations, get_connection
-from app.db_runtime import sqlite_runtime_connection
+from app.db_runtime import postgres_runtime_connection, sqlite_runtime_connection
 from app.domain.enums import FeedbackDirection
 from app.pipeline.service import GenerationService
 
@@ -77,14 +77,32 @@ def create_app(
     """
     app = FastAPI(title="Personal Edition", docs_url=None, redoc_url=None)
 
+    db_backend = settings.db_backend
     resolved_db = db_path
-    if not resolved_db:
-        if settings.db_backend == "postgresql":
-            raise NotImplementedError("PostgreSQL runtime backend is not yet implemented")
-        resolved_db = settings.database_path
 
-    app.state.db_path = resolved_db
-    app.state.open_runtime_connection = lambda: sqlite_runtime_connection(resolved_db)
+    if db_backend == "postgresql":
+        if resolved_db is not None:
+            raise ValueError(
+                "db_path override is not supported for PostgreSQL backend"
+            )
+        database_url = settings.database_url
+        if not database_url:
+            raise ValueError(
+                "PE_DATABASE_URL must be set when DB_BACKEND=postgresql"
+            )
+        app.state.db_backend = "postgresql"
+        app.state.database_url = database_url
+        app.state.open_runtime_connection = lambda: postgres_runtime_connection(
+            database_url
+        )
+    else:
+        if not resolved_db:
+            resolved_db = settings.database_path
+        app.state.db_backend = "sqlite"
+        app.state.db_path = resolved_db
+        app.state.open_runtime_connection = lambda: sqlite_runtime_connection(
+            resolved_db
+        )
 
     if provider is not None:
         app.state.provider = provider
@@ -107,18 +125,46 @@ def create_app(
 
     @app.on_event("startup")
     def _on_startup() -> None:
-        db_dir = os.path.dirname(os.path.abspath(resolved_db))
-        os.makedirs(db_dir, exist_ok=True)
-        conn = get_connection(resolved_db)
-        try:
-            migrations_dir = str(
-                Path(__file__).resolve().parent.parent / "migrations"
-            )
-            apply_migrations(conn, migrations_dir)
-        finally:
-            conn.close()
+        if app.state.db_backend == "postgresql":
+            _startup_postgresql(app)
+        else:
+            _startup_sqlite(resolved_db)
 
     return app
+
+
+def _startup_sqlite(db_path: str) -> None:
+    """SQLite startup: create directory and apply migrations."""
+    db_dir = os.path.dirname(os.path.abspath(db_path))
+    os.makedirs(db_dir, exist_ok=True)
+    conn = get_connection(db_path)
+    try:
+        migrations_dir = str(
+            Path(__file__).resolve().parent.parent / "migrations"
+        )
+        apply_migrations(conn, migrations_dir)
+    finally:
+        conn.close()
+
+
+def _startup_postgresql(app: FastAPI) -> None:
+    """PostgreSQL startup: validate schema and apply migrations.
+
+    Fail-closed: if the database is unreachable or schema validation
+    fails, the application refuses to start.
+    """
+    from app.db_postgres import PG_MIGRATIONS_DIR, get_pg_connection
+
+    database_url = app.state.database_url
+    conn = get_pg_connection(database_url)
+    try:
+        apply_migrations(conn, PG_MIGRATIONS_DIR)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 class _PrivacyHeadersMiddleware(BaseHTTPMiddleware):

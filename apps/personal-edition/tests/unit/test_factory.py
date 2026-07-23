@@ -1,28 +1,32 @@
 """Tests for the app factory initialization.
 
 Covers:
-- PostgreSQL runtime fail-closed
+- PostgreSQL runtime configuration
 - SQLite fallback behaviors
 - Runtime connection opener registration
 """
 import pytest
 from app.factory import create_app
 from app.config import settings
-from app.db_runtime import SqliteRuntimeConnection
+from app.db_runtime import PostgresRuntimeConnection, SqliteRuntimeConnection
 
-def test_postgresql_startup_rejected(monkeypatch):
-    """PostgreSQL app startup is explicitly rejected."""
+def test_postgresql_app_creation(monkeypatch):
+    """PostgreSQL app creation configures the correct state."""
     monkeypatch.setattr(settings, "db_backend", "postgresql")
     monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
     
-    with pytest.raises(NotImplementedError, match="PostgreSQL runtime backend is not yet implemented"):
-        create_app()
+    app = create_app()
+    assert app.state.db_backend == "postgresql"
+    assert app.state.database_url == "postgresql://user:pass@host/db"
+    assert callable(app.state.open_runtime_connection)
 
-def test_sqlite_override_allowed_in_postgres_mode(monkeypatch):
-    """If a test passes an explicit SQLite db_path, it's allowed even if backend is postgresql."""
+def test_postgresql_db_path_override_rejected(monkeypatch):
+    """db_path override is not supported for PostgreSQL backend."""
     monkeypatch.setattr(settings, "db_backend", "postgresql")
-    app = create_app(db_path=":memory:")
-    assert app.state.db_path == ":memory:"
+    monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
+    
+    with pytest.raises(ValueError, match="db_path override is not supported"):
+        create_app(db_path=":memory:")
 
 
 class TestRuntimeOpener:
@@ -57,15 +61,19 @@ class TestRuntimeOpener:
         app = create_app(db_path="/tmp/custom-test.db")
         assert app.state.db_path == "/tmp/custom-test.db"
 
-    def test_postgresql_factory_not_called(self, monkeypatch):
+    def test_postgresql_opener_returns_postgres_runtime_connection(self, monkeypatch):
         monkeypatch.setattr(settings, "db_backend", "postgresql")
         monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
-        with pytest.raises(NotImplementedError):
-            create_app()
+        app = create_app()
+        conn = app.state.open_runtime_connection()
+        try:
+            assert isinstance(conn, PostgresRuntimeConnection)
+        finally:
+            conn.close()
 
     def test_startup_migration_uses_raw_sqlite(self):
         import inspect
-        from app.factory import create_app
-        src = inspect.getsource(create_app)
+        from app.factory import _startup_sqlite
+        src = inspect.getsource(_startup_sqlite)
         assert "apply_migrations" in src
         assert "get_connection" in src

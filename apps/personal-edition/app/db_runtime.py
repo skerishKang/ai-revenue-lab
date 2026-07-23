@@ -575,3 +575,15 @@ def open_postgres_runtime(url: str) -> PostgresRuntimeConnection:
         lambda: _pg_db.get_pg_runtime_connection(url)
     )
     return adapter.open()
+
+
+def postgres_runtime_connection(url: str) -> PostgresRuntimeConnection:
+    """Return a PostgreSQL runtime connection factory for ``url``.
+
+    The connection is opened lazily on first use (via ``open()`` or context
+    manager).  This mirrors :func:`sqlite_runtime_connection` for symmetric
+    factory usage.
+    """
+    return PostgresRuntimeConnection(
+        lambda: _pg_db.get_pg_runtime_connection(url)
+    )
