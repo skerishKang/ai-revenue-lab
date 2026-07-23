@@ -577,10 +577,13 @@ class TestPgMigrationIntegration:
             "SELECT version, checksum, applied_at FROM schema_migrations "
             "ORDER BY version"
         ).fetchall()
-        assert len(rows) == 1
+        assert len(rows) == 2
         assert rows[0]["version"] == "pg_001_initial.sql"
         assert rows[0]["checksum"]
         assert rows[0]["applied_at"]
+        assert rows[1]["version"] == "pg_002_generation_requests.sql"
+        assert rows[1]["checksum"]
+        assert rows[1]["applied_at"]
 
     def test_checksum_mismatch_detected(self, pg_conn_clean, tmp_path):
         """이미 적용된 version의 SQL 내용이 변경되면 실패."""
@@ -595,7 +598,7 @@ class TestPgMigrationIntegration:
             migration_file.write_text(
                 original + "\n-- modified\n", encoding="utf-8"
             )
-            with pytest.raises(PgMigrationError, match="checksum"):
+            with pytest.raises(PgMigrationError, match="changed"):
                 apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
         finally:
             migration_file.write_text(original, encoding="utf-8")
@@ -689,7 +692,7 @@ class TestPgMigrationIntegration:
             pg_conn_clean.commit()
 
             row = pg_conn_clean.execute("SHOW search_path").fetchone()
-            current = row[0] if row else ""
+            current = row["search_path"] if row else ""
             assert schema_name in current, (
                 f"search_path was not restored after drift check; "
                 f"got {current!r}, expected to contain {schema_name!r}."
@@ -733,8 +736,8 @@ class TestPgMigrationIntegration:
         try:
             # current_schema() must resolve to the test schema, not "public"
             # or the literal "$user".
-            row = pg_conn_clean.execute("SELECT current_schema()").fetchone()
-            effective = row[0] if row else None
+            row = pg_conn_clean.execute("SELECT current_schema() AS cs").fetchone()
+            effective = row["cs"] if row else None
             assert effective == schema_name, (
                 f"current_schema() returned {effective!r}, expected "
                 f"{schema_name!r}"
@@ -942,9 +945,10 @@ class TestVerifyPgSchema:
         pg_conn_clean.commit()
 
         result = verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
-        assert result["applied_count"] == 1
+        assert result["applied_count"] == 2
         assert result["pending_count"] == 0
         assert "pg_001_initial.sql" in result["versions"]
+        assert "pg_002_generation_requests.sql" in result["versions"]
 
     def test_verify_fails_with_pending_migrations(self, pg_conn_clean, tmp_path):
         """verify_pg_schema must fail if there are pending migrations."""

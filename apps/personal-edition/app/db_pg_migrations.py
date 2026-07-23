@@ -535,6 +535,7 @@ def _check_schema_drift(
     version: str,
     content: str,
     is_applied: bool,
+    migration_prefix: list[tuple[str, str]] | None = None,
 ) -> None:
     """Run migration in a temporary schema to detect partial applies or drift.
 
@@ -543,18 +544,30 @@ def _check_schema_drift(
     hardcoded ``public``.  The original ``search_path`` is captured on entry
     and restored exactly on exit.  The temporary drift schema uses a random
     suffix to avoid collisions across concurrent runs.
+
+    ``migration_prefix`` is the ordered list of (version, content) for all
+    migrations that precede ``version`` in canonical order.  These are applied
+    first in the temp schema so that FK dependencies from earlier migrations
+    are satisfied when the current migration is validated.
     """
-    # Capture the real target schema and search_path BEFORE any drift work.
     original_search_path = _get_current_search_path(conn)
     target_schema = _get_current_schema(conn)
 
-    # Unique temp schema name to avoid concurrent-run collisions.
     temp_schema = f"drift_check_{uuid.uuid4().hex}"
 
     conn.execute("SAVEPOINT migration_drift_check")
     try:
         conn.execute(f'CREATE SCHEMA "{temp_schema}"')
         conn.execute(f'SET LOCAL search_path TO "{temp_schema}"')
+
+        prefix_tables: set[str] = set()
+        if migration_prefix:
+            for _prefix_version, prefix_content in migration_prefix:
+                for stmt in _split_statements(prefix_content):
+                    conn.execute(stmt)
+            prefix_tables = get_pg_schema_tables(conn, temp_schema)
+            if "schema_migrations" in prefix_tables:
+                prefix_tables.remove("schema_migrations")
 
         for stmt in _split_statements(content):
             conn.execute(stmt)
@@ -563,10 +576,12 @@ def _check_schema_drift(
         if "schema_migrations" in expected_tables:
             expected_tables.remove("schema_migrations")
 
+        current_tables = expected_tables - prefix_tables
+
         target_tables = get_pg_schema_tables(conn, target_schema)
 
         if not is_applied:
-            overlap = expected_tables.intersection(target_tables)
+            overlap = current_tables.intersection(target_tables)
             if overlap:
                 raise PgMigrationError(
                     version,
@@ -574,7 +589,7 @@ def _check_schema_drift(
                     category="partial_schema",
                 )
         else:
-            missing_tables = expected_tables - target_tables
+            missing_tables = current_tables - target_tables
             if missing_tables:
                 raise PgMigrationError(
                     version,
@@ -582,7 +597,7 @@ def _check_schema_drift(
                     category="schema_drift",
                 )
 
-            for table in expected_tables:
+            for table in current_tables:
                 exp_cols = get_pg_schema_columns(conn, table, temp_schema)
                 pub_cols = get_pg_schema_columns(conn, table, target_schema)
                 if exp_cols != pub_cols:
@@ -630,8 +645,8 @@ def _check_schema_drift(
 
         exp_indexes = get_pg_schema_indexes(conn, temp_schema)
         pub_indexes = get_pg_schema_indexes(conn, target_schema)
-        exp_idx = {(idx, tbl) for idx, tbl in exp_indexes if tbl in expected_tables}
-        pub_idx = {(idx, tbl) for idx, tbl in pub_indexes if tbl in expected_tables}
+        exp_idx = {(idx, tbl) for idx, tbl in exp_indexes if tbl in current_tables}
+        pub_idx = {(idx, tbl) for idx, tbl in pub_indexes if tbl in current_tables}
 
         if not is_applied:
             overlap_idx = exp_idx.intersection(pub_idx)
@@ -701,13 +716,13 @@ def apply_pg_migrations(
 
     applied = _get_applied(conn)
 
-    # Check for duplicate versions is now handled in _discover_migrations
-    
     applied_versions: list[str] = []
 
-    for m in migrations:
+    for idx, m in enumerate(migrations):
         version = m.name
         content, checksum = _read_migration(m)
+
+        prefix = [(mv.name, _read_migration(mv)[0]) for mv in migrations[:idx]]
 
         if version in applied:
             if applied[version] != checksum:
@@ -716,17 +731,17 @@ def apply_pg_migrations(
                     _safe_message("checksum_mismatch"),
                     category="checksum_mismatch",
                 )
-            # Integrity drift check
-            _check_schema_drift(conn, version, content, is_applied=True)
+            _check_schema_drift(
+                conn, version, content, is_applied=True, migration_prefix=prefix
+            )
             continue
 
-        # Unrecorded: partial detection
-        _check_schema_drift(conn, version, content, is_applied=False)
-
-        # Read content fresh for execution
-        statements = _split_statements(content)
-
         try:
+            _check_schema_drift(
+                conn, version, content, is_applied=False, migration_prefix=prefix
+            )
+
+            statements = _split_statements(content)
             for stmt in statements:
                 conn.execute(stmt)
             conn.execute(
