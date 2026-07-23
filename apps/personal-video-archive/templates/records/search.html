@@ -35,7 +35,7 @@
     <a href="/records/{{ record.id }}" class="record-card">
         <div class="record-card-content">
             <div class="record-state">
-                <span class="badge badge-user">{{ record.viewing_state }}</span>
+                <span class="badge badge-user">{{ record.viewing_state | state_label }}</span>
             </div>
             <h3>{{ video.title }}</h3>
             <p class="small">{{ video.channel_title }} · {{ video.published_at[:10] }}</p>
