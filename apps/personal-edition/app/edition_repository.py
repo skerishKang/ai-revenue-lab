@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import json
 import re
-import sqlite3
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from app.feedback_repository import (
     FeedbackValidationError,
@@ -12,6 +14,9 @@ from app.feedback_repository import (
     _FEEDBACK_SELECT,
 )
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+if TYPE_CHECKING:
+    from app.db_runtime import RuntimeConnection
 
 _UTC_ISO_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
@@ -132,7 +137,7 @@ def _validate_json_field(value: str | None, field_name: str) -> None:
         ) from exc
 
 
-def _row_to_record(row: sqlite3.Row) -> EditionRecord:
+def _row_to_record(row: Any) -> EditionRecord:
     return EditionRecord(
         id=row["id"],
         participant_id=row["participant_id"],
@@ -156,7 +161,7 @@ def _is_editable(gen_status: str, pub_state: str) -> bool:
 
 
 def create_edition(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
     edition_number: int,
@@ -176,10 +181,11 @@ def create_edition(
     participant_id = participant_id.strip()
     now = _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         participant = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
             (participant_id,),
         ).fetchone()
         if not participant:
@@ -289,7 +295,7 @@ def create_edition(
 
 
 def get_edition_by_id(
-    conn: sqlite3.Connection, edition_id: str
+    conn: RuntimeConnection, edition_id: str
 ) -> EditionRecord | None:
     row = conn.execute(
         f"SELECT {_EDITION_SELECT} FROM editions WHERE id = ?",
@@ -299,7 +305,7 @@ def get_edition_by_id(
 
 
 def get_editions_by_participant(
-    conn: sqlite3.Connection, participant_id: str
+    conn: RuntimeConnection, participant_id: str
 ) -> list[EditionRecord]:
     rows = conn.execute(
         f"SELECT {_EDITION_SELECT} FROM editions "
@@ -310,7 +316,7 @@ def get_editions_by_participant(
 
 
 def update_edition_publication(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     edition_id: str,
     new_publication_state: str,
 ) -> EditionRecord | None:
@@ -324,7 +330,7 @@ def update_edition_publication(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         current = conn.execute(
             "SELECT publication_state, generation_status, "
@@ -398,7 +404,7 @@ def update_edition_publication(
 
 
 def update_edition_generation_status(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     edition_id: str,
     new_generation_status: str,
 ) -> EditionRecord | None:
@@ -413,7 +419,7 @@ def update_edition_generation_status(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         current = conn.execute(
             "SELECT generation_status, publication_state "
@@ -459,7 +465,7 @@ def update_edition_generation_status(
 
 
 def update_edition_content(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     edition_id: str,
     *,
     structured_content: str | None = None,
@@ -473,7 +479,7 @@ def update_edition_content(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         existing = conn.execute(
             "SELECT generation_status, publication_state "
@@ -530,13 +536,13 @@ def update_edition_content(
         raise
 
 
-def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
+def delete_edition(conn: RuntimeConnection, edition_id: str) -> bool:
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         current = conn.execute(
             "SELECT publication_state FROM editions WHERE id = ?",
@@ -569,7 +575,7 @@ def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
 
 
 def create_edition_with_feedback_applied(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
     edition_number: int,
@@ -590,10 +596,11 @@ def create_edition_with_feedback_applied(
     participant_id = participant_id.strip()
     now = _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         participant = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
             (participant_id,),
         ).fetchone()
         if not participant:

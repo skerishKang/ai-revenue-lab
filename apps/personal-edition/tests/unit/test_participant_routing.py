@@ -177,12 +177,13 @@ def _setup_published_edition(tmp_path: Path):
     conn = get_connection(db_path)
     try:
         _create_participant(conn, "p1", "Test User")
+        rt = SqliteRuntimeConnection(conn)
         ed = ed_repo.create_edition(
-            conn, participant_id="p1", edition_number=1,
+            rt, participant_id="p1", edition_number=1,
             structured_content=json.dumps({"sections": [{"section_id": "s001"}]}),
             rendered_title="Test Edition",
         )
-        ed_repo.update_edition_publication(conn, ed.id, "published")
+        ed_repo.update_edition_publication(rt, ed.id, "published")
     finally:
         conn.close()
     recorder = ConnectionRecorder(app)

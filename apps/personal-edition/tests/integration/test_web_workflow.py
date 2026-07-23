@@ -713,11 +713,11 @@ class TestCrossParticipantIsolation:
                 _create_participant(conn, "p1", "User One")
                 _create_participant(conn, "p2", "User Two")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p2", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p2", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="P2 Edition",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies_p1 = _get_session_cookie("p1")
@@ -734,11 +734,11 @@ class TestCrossParticipantIsolation:
                 _create_participant(conn, "p1", "User One")
                 _create_participant(conn, "p2", "User Two")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p2", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p2", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="P2 Edition",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies_p1 = _get_session_cookie("p1")
@@ -765,7 +765,7 @@ class TestEditionVisibility:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Pending Edition",
                 )
@@ -784,11 +784,11 @@ class TestEditionVisibility:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Rejected Edition",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "rejected")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "rejected")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -804,11 +804,11 @@ class TestEditionVisibility:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Published Edition",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -999,7 +999,7 @@ class TestCSRFProtection:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                 )
                 edition_id = ed.id
@@ -1021,7 +1021,7 @@ class TestCSRFProtection:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                 )
                 edition_id = ed.id
@@ -1122,7 +1122,7 @@ class TestAdminReviewPublishReject:
         try:
             _create_participant(conn, "p1", "Test User")
             ed = ed_repo.create_edition(
-                conn, participant_id="p1", edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="Test Edition",
             )
@@ -1366,12 +1366,12 @@ class TestEditionReadingHistory:
                 _create_participant(conn, "p1", "User One")
                 for i in range(1, 4):
                     ed = ed_repo.create_edition(
-                        conn, participant_id="p1", edition_number=i,
+                        SqliteRuntimeConnection(conn), participant_id="p1", edition_number=i,
                         structured_content=json.dumps(_make_draft_payload()),
                         rendered_title=f"Edition {i}",
                     )
                     if i <= 2:
-                        ed_repo.update_edition_publication(conn, ed.id, "published")
+                        ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1388,11 +1388,11 @@ class TestEditionReadingHistory:
                 _create_participant(conn, "p1", "User One")
                 for i in range(1, 4):
                     ed = ed_repo.create_edition(
-                        conn, participant_id="p1", edition_number=i,
+                        SqliteRuntimeConnection(conn), participant_id="p1", edition_number=i,
                         structured_content=json.dumps(_make_draft_payload()),
                         rendered_title=f"Edition {i}",
                     )
-                    ed_repo.update_edition_publication(conn, ed.id, "published")
+                    ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1415,11 +1415,11 @@ class TestFeedbackPersistence:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Edition 1",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
                 edition_id = ed.id
             finally:
                 conn.close()
@@ -1453,11 +1453,11 @@ class TestFeedbackPersistence:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Edition 1",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1491,11 +1491,11 @@ class TestFeedbackPersistence:
             try:
                 _create_participant(conn, "p1", "User One")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Edition 1",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1527,12 +1527,12 @@ class TestSecondEditionContinuity:
                 _create_participant(conn, "p1", "User One")
                 draft1 = _make_draft_payload()
                 ed1 = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(draft1), rendered_title="Edition 1",
                 )
-                ed_repo.update_edition_publication(conn, ed1.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed1.id, "published")
                 fb = fb_repo.create_feedback(
-                    conn, participant_id="p1", edition_id=ed1.id,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_id=ed1.id,
                     direction_choices=json.dumps(["continue_direction"]),
                     free_text="계속 이 방향으로",
                 )
@@ -1543,12 +1543,12 @@ class TestSecondEditionContinuity:
                     "evidence": "피드백이 반영되었습니다.",
                 }
                 ed2 = ed_repo.create_edition_with_feedback_applied(
-                    conn, participant_id="p1", edition_number=2,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=2,
                     prior_edition_id=ed1.id, input_id=None,
                     structured_content=json.dumps(draft2), rendered_title="Edition 2",
                     feedback_id=fb.id,
                 )
-                ed_repo.update_edition_publication(conn, ed2.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed2.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1571,10 +1571,10 @@ class TestUnsafeContentEscaping:
                 malicious_draft = _make_draft_payload()
                 malicious_draft["sections"][0]["paragraphs"] = ["<script>alert('xss')</script>"]
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(malicious_draft), rendered_title="XSS Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1593,10 +1593,10 @@ class TestUnsafeContentEscaping:
                 malicious_draft = _make_draft_payload()
                 malicious_draft["sections"][0]["paragraphs"] = ['<img src=x onerror="alert(1)">']
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(malicious_draft), rendered_title="Event Handler Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1879,11 +1879,11 @@ class TestCSRFRegression:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -1908,7 +1908,7 @@ class TestCSRFRegression:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                 )
                 edition_id = ed.id
@@ -1927,11 +1927,11 @@ class TestCSRFRegression:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             p_cookies = _get_session_cookie("p1")
@@ -1955,7 +1955,7 @@ class TestCSRFRegression:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                 )
                 edition_id = ed.id
@@ -2042,7 +2042,7 @@ class TestEditionContentValidation:
         try:
             _create_participant(conn, "p1", "Test User")
             ed = ed_repo.create_edition(
-                conn, participant_id="p1", edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="Test Edition",
             )
@@ -2387,13 +2387,13 @@ class TestTerminalPageCSRF:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
                 fb_repo.create_feedback(
-                    conn, participant_id="p1", edition_id=ed.id,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_id=ed.id,
                     direction_choices='["more_practical"]',
                 )
             finally:
@@ -2428,11 +2428,11 @@ class TestTerminalPageCSRF:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             finally:
                 conn.close()
             cookies = _get_session_cookie("p1")
@@ -2579,13 +2579,13 @@ class TestTerminalPageCSRF:
             try:
                 _create_participant(conn, "p1", "Test User")
                 ed = ed_repo.create_edition(
-                    conn, participant_id="p1", edition_number=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_number=1,
                     structured_content=json.dumps(_make_draft_payload()),
                     rendered_title="Test",
                 )
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
                 fb_repo.create_feedback(
-                    conn, participant_id="p1", edition_id=ed.id,
+                    SqliteRuntimeConnection(conn), participant_id="p1", edition_id=ed.id,
                     direction_choices='["more_practical"]',
                 )
             finally:

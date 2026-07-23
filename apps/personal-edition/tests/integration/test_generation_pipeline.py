@@ -249,11 +249,11 @@ class TestFollowUpEdition:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -754,11 +754,11 @@ class TestAtomicPersistence:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -830,14 +830,14 @@ class TestAtomicPersistence:
         assert result_p2.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, result_p1.edition_id, "published"
+            SqliteRuntimeConnection(conn), result_p1.edition_id, "published"
         )
         ed_repo.update_edition_publication(
-            conn, result_p2.edition_id, "published"
+            SqliteRuntimeConnection(conn), result_p2.edition_id, "published"
         )
 
         fb_p2 = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p2",
             edition_id=result_p2.edition_id,
             direction_choices=json.dumps(
@@ -1023,7 +1023,7 @@ class TestProviderCapabilityErrorAccounting:
         assert first_edition.publication_state == "pending"
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -1083,11 +1083,11 @@ class TestProviderCapabilityErrorAccounting:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -1123,11 +1123,11 @@ class TestProviderCapabilityErrorAccounting:
         assert fb_after.applied_to_next_edition == 1
 
         ed_repo.update_edition_publication(
-            conn, first_follow_up.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_follow_up.edition_id, "published"
         )
 
         fb2 = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_follow_up.edition_id,
             direction_choices=json.dumps(
@@ -1135,7 +1135,7 @@ class TestProviderCapabilityErrorAccounting:
             ),
             free_text=bundle.feedback_free_text,
         )
-        fb_repo.mark_feedback_applied(conn, fb2.id)
+        fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb2.id)
         fb2_after = fb_repo.get_feedback_by_id(conn, fb2.id)
         assert fb2_after.applied_to_next_edition == 1
 
@@ -1171,7 +1171,7 @@ class TestProviderCapabilityErrorAccounting:
         inp = _create_input(conn, raw_text=bundle.input_text)
 
         ed1 = ed_repo.create_edition(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_number=1,
             input_id=inp.id,
@@ -1180,7 +1180,7 @@ class TestProviderCapabilityErrorAccounting:
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed1.id,
             direction_choices=json.dumps(list(bundle.feedback_directions)),
@@ -1188,13 +1188,13 @@ class TestProviderCapabilityErrorAccounting:
         )
         assert fb.applied_to_next_edition == 0
 
-        fb_repo.mark_feedback_applied(conn, fb.id)
+        fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb.id)
         fb_after = fb_repo.get_feedback_by_id(conn, fb.id)
         assert fb_after.applied_to_next_edition == 1
 
         with pytest.raises(FeedbackValidationError):
             ed_repo.create_edition_with_feedback_applied(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_number=2,
                 prior_edition_id=ed1.id,
@@ -1281,11 +1281,11 @@ class TestFileBackedDatabase:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -1418,11 +1418,11 @@ class TestPriorEditionSummaryFromDB:
         )
         assert first_result.succeeded is True
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(list(bundle.feedback_directions)),
@@ -1639,11 +1639,11 @@ class TestPersistenceFailureNormalization:
         )
         assert first_result.succeeded is True
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(list(bundle.feedback_directions)),

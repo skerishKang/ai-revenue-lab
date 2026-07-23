@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import json
 import re
-import sqlite3
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+if TYPE_CHECKING:
+    from app.db_runtime import RuntimeConnection
 
 _UTC_ISO_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
@@ -124,7 +129,7 @@ def _validate_json_field(value: str | None, field_name: str) -> None:
         ) from exc
 
 
-def _row_to_record(row: sqlite3.Row) -> FeedbackRecord:
+def _row_to_record(row: Any) -> FeedbackRecord:
     return FeedbackRecord(
         id=row["id"],
         participant_id=row["participant_id"],
@@ -138,7 +143,7 @@ def _row_to_record(row: sqlite3.Row) -> FeedbackRecord:
 
 
 def create_feedback(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
     edition_id: str,
@@ -161,10 +166,11 @@ def create_feedback(
     edition_id = edition_id.strip()
     now = submitted_at or _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         participant = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
             (participant_id,),
         ).fetchone()
         if not participant:
@@ -224,7 +230,7 @@ def create_feedback(
 
 
 def get_feedback_by_id(
-    conn: sqlite3.Connection, feedback_id: str
+    conn: RuntimeConnection, feedback_id: str
 ) -> FeedbackRecord | None:
     row = conn.execute(
         f"SELECT {_FEEDBACK_SELECT} FROM feedback WHERE id = ?",
@@ -234,7 +240,7 @@ def get_feedback_by_id(
 
 
 def get_feedback_by_edition(
-    conn: sqlite3.Connection, edition_id: str
+    conn: RuntimeConnection, edition_id: str
 ) -> list[FeedbackRecord]:
     rows = conn.execute(
         f"SELECT {_FEEDBACK_SELECT} FROM feedback "
@@ -245,14 +251,14 @@ def get_feedback_by_edition(
 
 
 def mark_feedback_applied(
-    conn: sqlite3.Connection, feedback_id: str
+    conn: RuntimeConnection, feedback_id: str
 ) -> FeedbackRecord | None:
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         cursor = conn.execute(
             "UPDATE feedback SET applied_to_next_edition = 1 "
@@ -269,13 +275,13 @@ def mark_feedback_applied(
         raise
 
 
-def delete_feedback(conn: sqlite3.Connection, feedback_id: str) -> bool:
+def delete_feedback(conn: RuntimeConnection, feedback_id: str) -> bool:
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         cursor = conn.execute(
             "DELETE FROM feedback WHERE id = ?",

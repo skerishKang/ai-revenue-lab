@@ -306,10 +306,10 @@ class TestParticipantText:
         pid = "fb-cta"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="테스트 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
         html = resp.text
@@ -442,7 +442,7 @@ class TestEditionVisibility:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "가시성 테스트")
             ed_repo.create_edition(
-                conn, participant_id=pid, edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="대기 중인 에디션")
         cookies = _get_session_cookie(pid)
@@ -456,10 +456,10 @@ class TestEditionVisibility:
         pid = "pub-vis"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "발행 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="발행된 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/history", cookies=cookies)
         assert "발행된 에디션" in resp.text
@@ -491,10 +491,10 @@ class TestHTMLEscaping:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "이미지 이스케이프 테스트")
             ed = ed_repo.create_edition(
-                conn, participant_id=pid, edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title='<img src=x onerror=alert(1)>')
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/history", cookies=cookies)
         assert '<img src=x' not in resp.text
@@ -513,10 +513,10 @@ class TestFeedbackLabels:
         pid = "fb-labels"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백 라벨 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="테스트 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
         for label in ["이 분위기와 방향을 계속 유지해주세요",
@@ -531,10 +531,10 @@ class TestFeedbackLabels:
         pid = "fb-no-en"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백 영어 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="테스트 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
         assert "Continue Direction" not in resp.text
@@ -547,10 +547,10 @@ class TestFeedbackLabels:
         pid = "fb-vals"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백 값 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="테스트 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/editions/1/feedback", cookies=cookies)
         assert 'value="continue_direction"' in resp.text
@@ -650,7 +650,7 @@ class TestGuidedWorkflow:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "검토 테스트")
             input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 50, consent_confirmed=1)
-            ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                    structured_content=json.dumps(_make_draft_payload()),
                                    rendered_title="초안")
         cookies = _get_session_cookie(pid)
@@ -666,10 +666,10 @@ class TestGuidedWorkflow:
         pid = "pub-state"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "발행 상태")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="발행 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         html = resp.text
@@ -684,11 +684,11 @@ class TestGuidedWorkflow:
         pid = "fb-state"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백 상태")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="피드백 에디션")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
-            fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed.id,
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
+            fb_repo.create_feedback(SqliteRuntimeConnection(conn), participant_id=pid, edition_id=ed.id,
                                     direction_choices=json.dumps(["continue_direction"]))
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
@@ -768,7 +768,7 @@ class TestGuidedWorkflow:
                 consent_confirmed=1,
             )
             ed_repo.create_edition(
-                conn, participant_id=pid, edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="초안",
             )
@@ -791,11 +791,11 @@ class TestGuidedWorkflow:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "발행단계")
             ed = ed_repo.create_edition(
-                conn, participant_id=pid, edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="발행",
             )
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         html = resp.text
@@ -815,13 +815,13 @@ class TestGuidedWorkflow:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백단계")
             ed = ed_repo.create_edition(
-                conn, participant_id=pid, edition_number=1,
+                SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                 structured_content=json.dumps(_make_draft_payload()),
                 rendered_title="피드백",
             )
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
             fb_repo.create_feedback(
-                conn, participant_id=pid, edition_id=ed.id,
+                SqliteRuntimeConnection(conn), participant_id=pid, edition_id=ed.id,
                 direction_choices=json.dumps(["continue_direction"]),
             )
         cookies = _get_session_cookie(pid)
@@ -848,10 +848,10 @@ class TestCoverThumbnails:
         pid = "cover-home"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "커버 홈 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="커버 테스트")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         assert "edition-cover-shift.webp" in resp.text or "edition-cover-archive.webp" in resp.text
@@ -863,10 +863,10 @@ class TestCoverThumbnails:
         pid = "cover-hist"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "커버 기록 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="커버 기록")
-            ed_repo.update_edition_publication(conn, ed.id, "published")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/history", cookies=cookies)
         assert "history-thumb" in resp.text
@@ -918,7 +918,7 @@ class TestAdminEditorialUI:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "대시보드 테스트")
             input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="긴 입력 내용 테스트 " * 20, consent_confirmed=1)
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="초안 에디션")
         admin_cookies = _get_admin_session_cookie()
@@ -964,7 +964,7 @@ class TestAdminEditorialUI:
         pid = "rev-prev"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "미리보기 참여자")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="미리보기 제목")
         admin_cookies = _get_admin_session_cookie()
@@ -981,7 +981,7 @@ class TestAdminEditorialUI:
         pid = "safe-edit"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "안전 편집")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="기존 제목")
         admin_cookies = _get_admin_session_cookie()
@@ -1016,7 +1016,7 @@ class TestAdminEditorialUI:
         pid = "pub-rej"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "발행 거부")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="발행 테스트")
         admin_cookies = _get_admin_session_cookie()
@@ -1039,10 +1039,10 @@ class TestAdminEditorialUI:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "다중 에디션")
             for i in range(1, 4):
-                ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=i,
+                ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=i,
                                              structured_content=json.dumps(_make_draft_payload()),
                                              rendered_title=f"에디션 #{i} 제목")
-                ed_repo.update_edition_publication(conn, ed.id, "published")
+                ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed.id, "published")
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}/history", cookies=cookies)
         assert resp.status_code == 200
@@ -1062,7 +1062,7 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "nav-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "네비게이션 테스트")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="네비 에디션")
 
@@ -1110,10 +1110,10 @@ class TestOperatorUIFixedContractAndNavigation:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "에디션3개")
             input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
-            ed1 = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
-            ed2 = ed_repo.create_edition(conn, participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
-            ed3 = ed_repo.create_edition(conn, participant_id=pid, edition_number=3, structured_content=json.dumps(_make_draft_payload()), rendered_title="3호")
-            fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["continue_direction"]))
+            ed1 = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
+            ed2 = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
+            ed3 = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=3, structured_content=json.dumps(_make_draft_payload()), rendered_title="3호")
+            fb_repo.create_feedback(SqliteRuntimeConnection(conn), participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["continue_direction"]))
 
         admin_cookies = _get_admin_session_cookie()
         client.cookies.update(admin_cookies)
@@ -1130,11 +1130,11 @@ class TestOperatorUIFixedContractAndNavigation:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "과거피드백")
             input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
-            ed1 = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
-            ed_repo.update_edition_publication(conn, ed1.id, "published")
-            fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["more_practical"]))
-            ed2 = ed_repo.create_edition(conn, participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
-            ed_repo.update_edition_publication(conn, ed2.id, "published")
+            ed1 = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed1.id, "published")
+            fb_repo.create_feedback(SqliteRuntimeConnection(conn), participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["more_practical"]))
+            ed2 = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
+            ed_repo.update_edition_publication(SqliteRuntimeConnection(conn), ed2.id, "published")
 
         admin_cookies = _get_admin_session_cookie()
         client.cookies.update(admin_cookies)
@@ -1151,7 +1151,7 @@ class TestOperatorUIFixedContractAndNavigation:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "실패참여자")
             input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content="{}", rendered_title="실패호")
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1, structured_content="{}", rendered_title="실패호")
             conn.execute("UPDATE editions SET generation_status = 'generation_failed' WHERE id = ?", (ed.id,))
 
         admin_cookies = _get_admin_session_cookie()
@@ -1215,9 +1215,9 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "fb-label-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "피드백표시")
-            ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
+            ed = ed_repo.create_edition(SqliteRuntimeConnection(conn), participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id=pid,
                 edition_id=ed.id,
                 direction_choices=json.dumps(["continue_direction", "more_reflective"]),

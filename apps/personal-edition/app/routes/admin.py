@@ -26,6 +26,7 @@ from app.auth import (
     verify_csrf_token,
 )
 from app.db import get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from app.config import settings
 from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
@@ -716,7 +717,7 @@ def admin_review_edit(
         final_rendered_title = rendered_title.strip() if rendered_title.strip() else validated_model.publication_title
 
         ed_repo.update_edition_content(
-            conn,
+            SqliteRuntimeConnection(conn),
             edition_id,
             structured_content=canonical_content,
             rendered_title=final_rendered_title,
@@ -747,7 +748,7 @@ def admin_publish(
     conn = get_connection(request.app.state.db_path)
     try:
         ed_repo.update_edition_publication(
-            conn, edition_id, "published"
+            SqliteRuntimeConnection(conn), edition_id, "published"
         )
     finally:
         conn.close()
@@ -774,7 +775,7 @@ def admin_reject(
     conn = get_connection(request.app.state.db_path)
     try:
         ed_repo.update_edition_publication(
-            conn, edition_id, "rejected"
+            SqliteRuntimeConnection(conn), edition_id, "rejected"
         )
     finally:
         conn.close()

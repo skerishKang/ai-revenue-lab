@@ -37,6 +37,7 @@ from app import feedback_repository as fb_repo
 from app import generation_run_repository as gr_repo
 from app import input_repository as input_repo
 from app import participant_repository as pt_repo
+from app.db_runtime import SqliteRuntimeConnection
 from app.ai.base import AIProvider
 from app.domain.enums import CostClass, ProviderErrorCategory
 from app.domain.models import (
@@ -757,7 +758,7 @@ class GenerationService:
         try:
             if request.is_follow_up and request.feedback_id is not None:
                 new_edition = ed_repo.create_edition_with_feedback_applied(
-                    conn,
+                    SqliteRuntimeConnection(conn),
                     participant_id=request.participant_id,
                     edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
@@ -768,7 +769,7 @@ class GenerationService:
                 )
             else:
                 new_edition = ed_repo.create_edition(
-                    conn,
+                    SqliteRuntimeConnection(conn),
                     participant_id=request.participant_id,
                     edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
