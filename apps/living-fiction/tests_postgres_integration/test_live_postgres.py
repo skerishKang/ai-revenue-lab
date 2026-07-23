@@ -25,14 +25,19 @@ Covered live behaviour:
 
 from __future__ import annotations
 
+import copy
 import os
+import re
 import shutil
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 
 from app import auth
+from app.config import settings
 from app import reader_repository as reader_repo
 from app.database.errors import IntegrityError as NeutralIntegrityError
 from app.database.errors import SchemaMismatchError
@@ -50,7 +55,7 @@ from app.database.pool import (
 )
 from app.database.postgres import connect_postgres
 from app.ops import bootstrap
-from app.preview_data import WORLD_STATE
+from app.preview_data import BRANCH_EPISODE_CONTENT, BRANCH_EPISODE_PLAN, WORLD_STATE
 from app.utils import new_id, now_utc_iso
 
 import pg_provision
@@ -792,3 +797,562 @@ def test_multi_reader_invite_scoping_preserves_others(fresh_bootstrap_conn):
     # Reader B's invite survives reader A's rotation.
     assert bootstrap.active_bound_invite_id(fresh_bootstrap_conn, reader_b) is not None
     assert auth.verify_invite_code(fresh_bootstrap_conn, code_b, HMAC_KEY) == reader_b
+
+
+# ── P0-3: Full product flow with restricted runtime role ────────────────────
+
+PRODUCT_ADMIN_SECRET = "pg-it-admin-secret-val"
+PRODUCT_CREDENTIAL_KEY = HMAC_KEY
+PRODUCT_SESSION_KEY = "pg-it-session-hmac-key-val"
+
+
+def _extract_csrf(html: str) -> str:
+    match = re.search(r'name="csrf_token" value="([^"]+)"', html)
+    assert match
+    return match.group(1)
+
+
+@contextmanager
+def _product_client(env):
+    orig = {
+        "database_backend": settings.database_backend,
+        "database_url": settings.database_url,
+        "admin_secret": settings.admin_secret,
+        "credential_hmac_key": settings.credential_hmac_key,
+        "session_hmac_key": settings.session_hmac_key,
+    }
+    settings.database_backend = "postgres"
+    settings.database_url = env["runtime_url"]
+    settings.admin_secret = PRODUCT_ADMIN_SECRET
+    settings.credential_hmac_key = PRODUCT_CREDENTIAL_KEY
+    settings.session_hmac_key = PRODUCT_SESSION_KEY
+    app = None
+    try:
+        from app.factory import create_app  # noqa: PLC0415
+
+        app = create_app()
+        with TestClient(app, follow_redirects=False) as client:
+            yield client
+    finally:
+        if app is not None:
+            app.state.db_engine.close()
+        for key, value in orig.items():
+            setattr(settings, key, value)
+
+
+def _login_reader_pg(client, invite_code):
+    resp = client.get("/access")
+    csrf = _extract_csrf(resp.text)
+    resp = client.post(
+        "/access",
+        data={"invite_code": invite_code, "csrf_token": csrf},
+        follow_redirects=False,
+    )
+    assert resp.status_code == 303
+
+
+def _login_admin_pg(client):
+    resp = client.get("/admin/access")
+    csrf = _extract_csrf(resp.text)
+    resp = client.post(
+        "/admin/access",
+        data={"admin_secret": PRODUCT_ADMIN_SECRET, "csrf_token": csrf},
+        follow_redirects=False,
+    )
+    assert resp.status_code == 303
+
+
+def _fresh_reader_invite(env):
+    conn = connect_postgres(env["owner_url"])
+    try:
+        reader = reader_repo.create_reader(
+            conn, display_name=f"it-product-{new_id()}"
+        )
+        code = bootstrap.issue_invite(conn, HMAC_KEY, reader.id)
+    finally:
+        conn.close()
+    return reader.id, code
+
+
+@pytest.fixture(scope="session")
+def product_env():
+    schema = "lf_it_product"
+    _reset_schema(schema)
+    url = _with_search_path(_pg_url, schema)
+    conn = connect_postgres(url)
+    try:
+        apply_migrations(conn, PG_MIGRATIONS_DIR)
+    finally:
+        conn.close()
+
+    pg_provision.ensure_runtime_role(_pg_url)
+    pg_provision.grant_runtime_dml(_pg_url, schema)
+    pg_provision.revoke_runtime_create(_pg_url, schema)
+
+    conn = connect_postgres(url)
+    try:
+        bootstrap.run_locked_bootstrap(conn, HMAC_KEY)
+        reader_id = bootstrap.ensure_bootstrap_reader(conn)
+        invite_code = bootstrap.issue_invite(conn, HMAC_KEY, reader_id)
+    finally:
+        conn.close()
+
+    rt_url = pg_provision.runtime_url(_pg_url, schema)
+    yield {
+        "owner_url": url,
+        "runtime_url": rt_url,
+        "invite_code": invite_code,
+        "reader_id": reader_id,
+        "schema": schema,
+    }
+    _drop_schema(schema)
+
+
+def test_product_invite_login_303(product_env):
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, product_env["invite_code"])
+        resp = client.get("/read", follow_redirects=False)
+        assert resp.status_code == 200
+
+
+def test_product_invite_code_not_stored_raw(product_env):
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        rows = conn.execute("SELECT * FROM invite_credentials").fetchall()
+        for row in rows:
+            values = {str(v) for v in row.values() if v is not None}
+            assert product_env["invite_code"] not in values
+    finally:
+        conn.close()
+
+
+def test_product_session_stored_as_digest(product_env):
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, product_env["invite_code"])
+        raw_token = client.cookies.get(auth.READER_COOKIE_NAME)
+        assert raw_token is not None
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        rows = conn.execute("SELECT * FROM reader_sessions").fetchall()
+        assert len(rows) > 0
+        for row in rows:
+            values = {str(v) for v in row.values() if v is not None}
+            assert raw_token not in values
+    finally:
+        conn.close()
+
+
+def test_product_admin_login_303(product_env):
+    with _product_client(product_env) as client:
+        _login_admin_pg(client)
+        resp = client.get("/admin/review", follow_redirects=False)
+        assert resp.status_code == 200
+
+
+def test_product_reader_admin_session_separation(product_env):
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, product_env["invite_code"])
+        resp = client.get("/admin/review", follow_redirects=False)
+        assert resp.status_code == 303
+        assert "/admin/access" in resp.headers["location"]
+
+
+def test_product_canon_read_authenticated(product_env):
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, product_env["invite_code"])
+        resp = client.get("/read")
+        assert resp.status_code == 200
+        assert "CANON" in resp.text
+
+
+def test_product_concurrent_choice_one_wins(product_env):
+    import threading  # noqa: PLC0415
+
+    from app import choice_service  # noqa: PLC0415
+    from app.ai.mock import MockProvider  # noqa: PLC0415
+
+    reader_id, code = _fresh_reader_invite(product_env)
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        canon_episode_id = conn.execute(
+            "SELECT id FROM episodes WHERE episode_type = 'canon' AND world_id = ? "
+            "ORDER BY episode_number ASC LIMIT 1",
+            (WORLD_STATE.world_id,),
+        ).fetchone()["id"]
+    finally:
+        conn.close()
+
+    def make_provider(choice_id, choice_text="", choice_comment=None):
+        content = copy.deepcopy(BRANCH_EPISODE_CONTENT)
+        content["applied_reader_input"]["reader_choice_id"] = choice_id
+        content["applied_reader_input"]["choice_text"] = choice_text
+        return MockProvider(
+            task_payloads={
+                "episode_plan": BRANCH_EPISODE_PLAN,
+                "episode_content": content,
+            }
+        )
+
+    results = []
+    barrier = threading.Barrier(2)
+
+    def submit():
+        c = connect_postgres(product_env["runtime_url"])
+        try:
+            barrier.wait()
+            submission = choice_service.submit_reader_choice(
+                c,
+                world=WORLD_STATE,
+                world_id=WORLD_STATE.world_id,
+                reader_id=reader_id,
+                canon_episode_id=canon_episode_id,
+                canon_checkpoint_id=bootstrap.CANON_CHECKPOINT_ID,
+                choice_text="선택지 1",
+                comment=None,
+                build_provider=make_provider,
+            )
+            results.append(submission.status)
+        except Exception as exc:  # noqa: BLE001
+            results.append(f"error: {exc}")
+        finally:
+            c.close()
+
+    threads = [threading.Thread(target=submit) for _ in range(2)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    statuses = sorted(results)
+    assert statuses in (
+        ["conflict", "submitted"],
+        ["already_completed", "submitted"],
+        ["submitted", "submitted"],
+    ), f"unexpected statuses: {results}"
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        choices = conn.execute(
+            "SELECT COUNT(*) AS n FROM reader_choices WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        branches = conn.execute(
+            "SELECT COUNT(*) AS n FROM branches WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        personal_eps = conn.execute(
+            "SELECT COUNT(*) AS n FROM episodes "
+            "WHERE episode_type = 'personal_branch' AND id IN "
+            "(SELECT branch_episode_id FROM branches WHERE reader_id = ?)",
+            (reader_id,),
+        ).fetchone()["n"]
+        assert choices == 1
+        assert branches == 1
+        assert personal_eps == 1
+    finally:
+        conn.close()
+
+
+def test_product_duplicate_choice_idempotent(product_env):
+    reader_id, code = _fresh_reader_invite(product_env)
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, code)
+        resp = client.get("/read")
+        csrf = _extract_csrf(resp.text)
+
+        first = client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert first.status_code == 303
+
+        second = client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert second.status_code == 303
+        assert "/read/status" in second.headers["location"]
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        branches = conn.execute(
+            "SELECT COUNT(*) AS n FROM branches WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        assert branches == 1
+    finally:
+        conn.close()
+
+
+def test_product_retry_no_duplicate_branch(product_env):
+    reader_id, code = _fresh_reader_invite(product_env)
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, code)
+        resp = client.get("/read")
+        csrf = _extract_csrf(resp.text)
+        client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        choices = conn.execute(
+            "SELECT COUNT(*) AS n FROM reader_choices WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        branches = conn.execute(
+            "SELECT COUNT(*) AS n FROM branches WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        personal_eps = conn.execute(
+            "SELECT COUNT(*) AS n FROM episodes "
+            "WHERE episode_type = 'personal_branch' AND id IN "
+            "(SELECT branch_episode_id FROM branches WHERE reader_id = ?)",
+            (reader_id,),
+        ).fetchone()["n"]
+        assert choices == 1
+        assert branches == 1
+        assert personal_eps == 1
+    finally:
+        conn.close()
+
+
+def test_product_pending_branch_404_not_403(product_env):
+    reader_id, code = _fresh_reader_invite(product_env)
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, code)
+        resp = client.get("/read")
+        csrf = _extract_csrf(resp.text)
+        client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+
+        conn = connect_postgres(product_env["owner_url"])
+        try:
+            branch = conn.execute(
+                "SELECT id FROM branches WHERE reader_id = ?",
+                (reader_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        assert branch is not None
+
+        resp = client.get(f"/read/branch/{branch['id']}")
+        assert resp.status_code == 404
+
+
+def test_product_admin_approve_publishes(product_env):
+    reader_id, code = _fresh_reader_invite(product_env)
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, code)
+        resp = client.get("/read")
+        csrf = _extract_csrf(resp.text)
+        client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+
+        conn = connect_postgres(product_env["owner_url"])
+        try:
+            branch = conn.execute(
+                "SELECT id FROM branches WHERE reader_id = ?",
+                (reader_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        branch_id = branch["id"]
+
+        _login_admin_pg(client)
+        resp = client.get(f"/admin/review/{branch_id}")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            f"/admin/review/{branch_id}/approve",
+            data={"csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+        resp = client.get(f"/read/branch/{branch_id}")
+        assert resp.status_code == 200
+
+
+def test_product_approve_creates_one_audit_row(product_env):
+    reader_id, code = _fresh_reader_invite(product_env)
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, code)
+        resp = client.get("/read")
+        csrf = _extract_csrf(resp.text)
+        client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+
+        conn = connect_postgres(product_env["owner_url"])
+        try:
+            branch = conn.execute(
+                "SELECT id FROM branches WHERE reader_id = ?",
+                (reader_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        branch_id = branch["id"]
+
+        _login_admin_pg(client)
+        resp = client.get(f"/admin/review/{branch_id}")
+        csrf = _extract_csrf(resp.text)
+        client.post(
+            f"/admin/review/{branch_id}/approve",
+            data={"csrf_token": csrf},
+            follow_redirects=False,
+        )
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        decisions = conn.execute(
+            "SELECT COUNT(*) AS n FROM review_decisions WHERE branch_id = ?",
+            (branch_id,),
+        ).fetchone()["n"]
+        assert decisions == 1
+    finally:
+        conn.close()
+
+
+def test_product_unauthenticated_redirected(product_env):
+    with _product_client(product_env) as client:
+        resp = client.get("/read", follow_redirects=False)
+        assert resp.status_code == 303
+        assert "/access" in resp.headers["location"]
+
+
+def test_product_reject_normalizes_reason(product_env):
+    reader_id, code = _fresh_reader_invite(product_env)
+    with _product_client(product_env) as client:
+        _login_reader_pg(client, code)
+        resp = client.get("/read")
+        csrf = _extract_csrf(resp.text)
+        client.post(
+            "/read/choice",
+            data={"choice": "0", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+
+        conn = connect_postgres(product_env["owner_url"])
+        try:
+            branch = conn.execute(
+                "SELECT id FROM branches WHERE reader_id = ?",
+                (reader_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        branch_id = branch["id"]
+
+        _login_admin_pg(client)
+        resp = client.get(f"/admin/review/{branch_id}")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            f"/admin/review/{branch_id}/reject",
+            data={"csrf_token": csrf, "rejection_reason": "  padded reason  "},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        decision = conn.execute(
+            "SELECT rejection_reason FROM review_decisions WHERE branch_id = ?",
+            (branch_id,),
+        ).fetchone()
+        assert decision["rejection_reason"] == "padded reason"
+    finally:
+        conn.close()
+
+
+def test_product_canon_unchanged_after_flow(product_env):
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        canon = conn.execute(
+            "SELECT review_state, episode_number FROM episodes "
+            "WHERE episode_type = 'canon' AND world_id = ?",
+            (WORLD_STATE.world_id,),
+        ).fetchone()
+        assert canon is not None
+        assert canon["review_state"] == "published"
+        assert canon["episode_number"] == 1
+    finally:
+        conn.close()
+
+
+def test_product_pool_close_new_app_works(product_env):
+    with _product_client(product_env) as client:
+        resp = client.get("/health")
+        assert resp.status_code == 200
+
+    with _product_client(product_env) as client:
+        resp = client.get("/health")
+        assert resp.status_code == 200
+
+
+def test_product_data_persists_in_postgres(product_env):
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        worlds = conn.execute("SELECT COUNT(*) AS n FROM worlds").fetchone()["n"]
+        characters = conn.execute(
+            "SELECT COUNT(*) AS n FROM characters"
+        ).fetchone()["n"]
+        canon_eps = conn.execute(
+            "SELECT COUNT(*) AS n FROM episodes WHERE episode_type = 'canon'"
+        ).fetchone()["n"]
+        assert worlds == 1
+        assert characters == len(WORLD_STATE.characters)
+        assert canon_eps == 1
+    finally:
+        conn.close()
+
+
+def test_product_runtime_role_cannot_ddl(product_env):
+    import psycopg  # noqa: PLC0415
+
+    raw = psycopg.connect(product_env["runtime_url"], autocommit=True)
+    try:
+        schema = product_env["schema"]
+        for stmt in (
+            f'CREATE TABLE "{schema}".runtime_probe (id int)',
+            f'ALTER TABLE "{schema}".worlds ADD COLUMN probe int',
+            f'DROP TABLE "{schema}".worlds',
+        ):
+            with pytest.raises(psycopg.Error) as excinfo:
+                raw.execute(stmt)
+            assert excinfo.value.sqlstate == "42501"
+    finally:
+        raw.close()
+
+
+def test_product_runtime_role_cannot_migrate(product_env):
+    import psycopg  # noqa: PLC0415
+    import uuid  # noqa: PLC0415
+
+    schema = f"lf_it_nomig_{uuid.uuid4().hex[:10]}"
+    _reset_schema(schema)
+    try:
+        pg_provision.grant_runtime_dml(_pg_url, schema)
+        pg_provision.revoke_runtime_create(_pg_url, schema)
+        rt_url = pg_provision.runtime_url(_pg_url, schema)
+        raw = psycopg.connect(rt_url, autocommit=True)
+        try:
+            with pytest.raises(psycopg.Error) as excinfo:
+                raw.execute("CREATE TABLE schema_migrations (version TEXT)")
+            assert excinfo.value.sqlstate == "42501"
+        finally:
+            raw.close()
+    finally:
+        _drop_schema(schema)

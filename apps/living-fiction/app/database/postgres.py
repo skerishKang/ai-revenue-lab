@@ -84,8 +84,13 @@ class PostgresConnection:
             self.commit()
             return self._raw.execute("SELECT 1")
         if word == "ROLLBACK":
+            upper = sql.strip().upper()
+            if upper.startswith("ROLLBACK TO"):
+                return self._raw.execute(sql)
             self.rollback()
             return self._raw.execute("SELECT 1")
+        if word in ("SAVEPOINT", "RELEASE"):
+            return self._raw.execute(sql)
         adapted = adapt_sql_for_postgres(sql)
         psycopg = _import_psycopg()
         try:

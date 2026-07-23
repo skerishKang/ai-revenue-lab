@@ -19,6 +19,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
+from app.database.errors import IntegrityError
 from app.reader_repository import RepositoryTransactionError
 from app.utils import now_utc_iso
 
@@ -335,17 +336,41 @@ def claim_branch_generation_request(
                 )
 
     # New request — insert
-    create_request_raw(
-        conn,
-        request_id=request_id,
-        idempotency_key=idempotency_key,
-        reader_id=reader_id,
-        reader_choice_id=reader_choice_id,
-        prior_episode_id=prior_episode_id,
-        canon_checkpoint_id=canon_checkpoint_id,
-        world_id=world_id,
-        operation_type=operation_type,
-    )
+    # Use a savepoint so a concurrent INSERT race (unique constraint on
+    # idempotency_key) does not abort the caller's transaction in PostgreSQL.
+    conn.execute("SAVEPOINT claim_insert")
+    try:
+        create_request_raw(
+            conn,
+            request_id=request_id,
+            idempotency_key=idempotency_key,
+            reader_id=reader_id,
+            reader_choice_id=reader_choice_id,
+            prior_episode_id=prior_episode_id,
+            canon_checkpoint_id=canon_checkpoint_id,
+            world_id=world_id,
+            operation_type=operation_type,
+        )
+        conn.execute("RELEASE SAVEPOINT claim_insert")
+    except IntegrityError:
+        conn.execute("ROLLBACK TO SAVEPOINT claim_insert")
+        conn.execute("RELEASE SAVEPOINT claim_insert")
+        # Lost a race on the idempotency key unique constraint: another
+        # connection inserted the same key between our SELECT and INSERT.
+        # Re-read and treat as an active pending claim (rejected).
+        existing = get_by_idempotency_key(conn, idempotency_key)
+        if existing is None:
+            raise CASClaimError(
+                "idempotency key constraint fired but no readable row"
+            )
+        return ClaimResult(
+            request_id=existing.id,
+            is_new=False,
+            is_replay=False,
+            is_rejected=True,
+            attempt_number=existing.attempt_number,
+            request_record=existing,
+        )
     new_record = get_by_idempotency_key(conn, idempotency_key)
     return ClaimResult(
         request_id=request_id,
