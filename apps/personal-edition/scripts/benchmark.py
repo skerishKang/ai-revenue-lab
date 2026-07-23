@@ -276,19 +276,19 @@ def _ensure_participant(
 ) -> tuple[str, str]:
     from app import input_repository as input_repo
     from app import participant_repository as pt_repo
-    from app.db_runtime import RuntimeConnection, SqliteRuntimeConnection
+    from app.db_runtime import RuntimeConnection, as_runtime_connection
 
     existing = pt_repo.get_participant_by_id(conn, participant_id)
     if existing is None:
         pt_repo.create_participant(
-            SqliteRuntimeConnection(conn),
+            as_runtime_connection(conn),
             participant_id=participant_id,
             display_name=f"Benchmark {participant_id}",
             preferred_language="ko",
         )
     raw_text = input_text or ("benchmark synthetic input text " * 150)
     inp = input_repo.create_input(
-        SqliteRuntimeConnection(conn),
+        as_runtime_connection(conn),
         participant_id=participant_id,
         raw_text=raw_text,
         consent_confirmed=1,

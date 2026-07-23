@@ -38,6 +38,7 @@ from app.db_runtime import (
     RuntimeTransactionError,
     SqliteRuntimeConnection,
     _safe_constraint_name,
+    as_runtime_connection,
     classify_pg_error,
     sqlite_runtime_connection,
     translate_placeholders,
@@ -963,3 +964,68 @@ class TestParamsValidation:
         adapter.execute("SELECT * FROM t WHERE a = ?", ["ok"])
         sql, params = fake.executed[-1]
         assert params == ("ok",)
+
+
+class _FakeRuntimeConnection:
+    """A minimal RuntimeConnection with a non-empty row_lock_suffix."""
+
+    row_lock_suffix = " FOR UPDATE"
+    in_transaction = False
+
+    def execute(self, sql, params=()):
+        raise NotImplementedError
+
+    def begin_write(self):
+        pass
+
+    def commit(self):
+        pass
+
+    def rollback(self):
+        pass
+
+    def close(self):
+        pass
+
+
+class TestAsRuntimeConnection:
+    """as_runtime_connection must never re-wrap a RuntimeConnection.
+
+    Re-wrapping a PostgreSQL RuntimeConnection in SqliteRuntimeConnection
+    would hide its row_lock_suffix (' FOR UPDATE' -> '') and break row
+    locking. The helper returns an existing RuntimeConnection unchanged and
+    only wraps a raw DB-API connection.
+    """
+
+    def test_runtime_connection_returned_unchanged(self):
+        fake = _FakeRuntimeConnection()
+        result = as_runtime_connection(fake)
+        assert result is fake
+        assert result.row_lock_suffix == " FOR UPDATE"
+
+    def test_sqlite_runtime_connection_returned_unchanged(self):
+        import sqlite3
+
+        raw = sqlite3.connect(":memory:")
+        try:
+            wrapped = SqliteRuntimeConnection(raw)
+            assert as_runtime_connection(wrapped) is wrapped
+        finally:
+            raw.close()
+
+    def test_postgres_runtime_connection_returned_unchanged(self):
+        adapter = PostgresRuntimeConnection(lambda: FakePgConnection())
+        assert as_runtime_connection(adapter) is adapter
+        assert adapter.row_lock_suffix == " FOR UPDATE"
+
+    def test_raw_sqlite_connection_wrapped(self):
+        import sqlite3
+
+        raw = sqlite3.connect(":memory:")
+        try:
+            result = as_runtime_connection(raw)
+            assert isinstance(result, SqliteRuntimeConnection)
+            assert result is not raw
+            assert result.row_lock_suffix == ""
+        finally:
+            raw.close()

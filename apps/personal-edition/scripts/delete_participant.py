@@ -5,7 +5,7 @@ import sys
 from app.config import settings
 from app.db import apply_migrations, get_connection
 from app import participant_repository as repo
-from app.db_runtime import SqliteRuntimeConnection
+from app.db_runtime import as_runtime_connection
 
 
 def main() -> int:
@@ -23,7 +23,7 @@ def main() -> int:
     conn = get_connection(args.database)
     try:
         apply_migrations(conn, "migrations")
-        deleted = repo.delete_participant(SqliteRuntimeConnection(conn), args.participant_id)
+        deleted = repo.delete_participant(as_runtime_connection(conn), args.participant_id)
         if deleted:
             print(f"Participant '{args.participant_id}' deleted successfully.")
             print("Token access has been revoked.")

@@ -32,7 +32,7 @@ _DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_DIR))
 
 from app import participant_repository as pt_repo
-from app.db_runtime import RuntimeConnection, SqliteRuntimeConnection
+from app.db_runtime import RuntimeConnection, as_runtime_connection
 from app.config import Settings
 from app.db import apply_migrations, get_connection
 
@@ -738,7 +738,7 @@ def execute_deletion(
     )
     record_operation(conn, request_record)
 
-    deleted = pt_repo.delete_participant(SqliteRuntimeConnection(conn), participant_id)
+    deleted = pt_repo.delete_participant(as_runtime_connection(conn), participant_id)
 
     completion_record = DeletionCompletionRecord(
         participant_id=participant_id,

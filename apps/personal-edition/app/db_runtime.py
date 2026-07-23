@@ -55,9 +55,11 @@ __all__ = [
     "DatabaseError",
     "DatabaseIntegrityError",
     "RuntimeTransactionError",
+    "StartupDatabaseError",
     "classify_pg_error",
     "SqliteRuntimeConnection",
     "sqlite_runtime_connection",
+    "as_runtime_connection",
     "PostgresRuntimeConnection",
     "open_postgres_runtime",
 ]
@@ -492,6 +494,27 @@ class SqliteRuntimeConnection:
 def sqlite_runtime_connection(db_path: str) -> SqliteRuntimeConnection:
     """Open the existing SQLite connection wrapped in the runtime boundary."""
     return SqliteRuntimeConnection(_sqlite_db.get_connection(db_path))
+
+
+def as_runtime_connection(conn: Any) -> RuntimeConnection:
+    """Return ``conn`` as a :class:`RuntimeConnection` without re-wrapping.
+
+    Acquisition-boundary helper.  If ``conn`` already satisfies the runtime
+    contract (it exposes ``begin_write`` and ``row_lock_suffix``), it is
+    returned unchanged — this preserves a PostgreSQL connection's
+    ``row_lock_suffix`` (``" FOR UPDATE"``) and never double-wraps an
+    existing runtime connection.  Only a raw DB-API connection (e.g. a bare
+    ``sqlite3.Connection`` from a test or CLI acquisition site) is wrapped in
+    :class:`SqliteRuntimeConnection`.
+
+    This is the single place a SQLite wrapper may be applied; service and
+    repository code must call this rather than constructing
+    ``SqliteRuntimeConnection`` directly, so a PostgreSQL runtime connection
+    is never hidden behind a SQLite adapter.
+    """
+    if hasattr(conn, "begin_write") and hasattr(conn, "row_lock_suffix"):
+        return conn
+    return SqliteRuntimeConnection(conn)
 
 
 # ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import sys
 from app.config import settings
 from app.db import apply_migrations, get_connection
 from app import participant_repository as repo
-from app.db_runtime import SqliteRuntimeConnection
+from app.db_runtime import as_runtime_connection
 
 
 def main() -> int:
@@ -31,7 +31,7 @@ def main() -> int:
     try:
         apply_migrations(conn, "migrations")
         result = repo.create_participant(
-            SqliteRuntimeConnection(conn),
+            as_runtime_connection(conn),
             participant_id=args.participant_id,
             display_name=args.display_name,
             preferred_language=args.language,

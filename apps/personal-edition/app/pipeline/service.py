@@ -37,7 +37,7 @@ from app import feedback_repository as fb_repo
 from app import generation_run_repository as gr_repo
 from app import input_repository as input_repo
 from app import participant_repository as pt_repo
-from app.db_runtime import SqliteRuntimeConnection
+from app.db_runtime import as_runtime_connection
 from app.ai.base import AIProvider
 from app.domain.enums import CostClass, ProviderErrorCategory
 from app.domain.models import (
@@ -333,7 +333,7 @@ def _provider_call_with_retry(
         cost_class_value = last_result.cost_class.value
 
     run = gr_repo.create_generation_run(
-        SqliteRuntimeConnection(conn),
+        as_runtime_connection(conn),
         task_type=task_name,
         provider=provider_name,
         advertised_model=model_name,
@@ -343,7 +343,7 @@ def _provider_call_with_retry(
     )
 
     gr_repo.update_generation_run(
-        SqliteRuntimeConnection(conn),
+        as_runtime_connection(conn),
         run.id,
         completed_at=completed_at,
         latency_seconds=latency,
@@ -648,7 +648,7 @@ class GenerationService:
         except PlanValidationError as exc:
             if plan_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    SqliteRuntimeConnection(conn),
+                    as_runtime_connection(conn),
                     plan_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -721,7 +721,7 @@ class GenerationService:
         except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    SqliteRuntimeConnection(conn),
+                    as_runtime_connection(conn),
                     draft_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -758,7 +758,7 @@ class GenerationService:
         try:
             if request.is_follow_up and request.feedback_id is not None:
                 new_edition = ed_repo.create_edition_with_feedback_applied(
-                    SqliteRuntimeConnection(conn),
+                    as_runtime_connection(conn),
                     participant_id=request.participant_id,
                     edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
@@ -769,7 +769,7 @@ class GenerationService:
                 )
             else:
                 new_edition = ed_repo.create_edition(
-                    SqliteRuntimeConnection(conn),
+                    as_runtime_connection(conn),
                     participant_id=request.participant_id,
                     edition_number=edition_number,
                     prior_edition_id=request.prior_edition_id,
@@ -780,7 +780,7 @@ class GenerationService:
         except Exception:
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
-                    SqliteRuntimeConnection(conn),
+                    as_runtime_connection(conn),
                     draft_outcome.run_id,
                     success=0,
                     validation_status=VALIDATION_FAILED,
@@ -1194,7 +1194,7 @@ def _mark_run_validation_failed(
     if run_id is None:
         return
     gr_repo.update_generation_run(
-        SqliteRuntimeConnection(conn),
+        as_runtime_connection(conn),
         run_id,
         success=0,
         validation_status=VALIDATION_FAILED,
