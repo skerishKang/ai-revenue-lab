@@ -132,7 +132,7 @@ def _provider_info(provider: Any) -> dict[str, str]:
 # ---------------------------------------------------------------------------
 
 
-def _create_benchmark_table(conn: sqlite3.Connection) -> None:
+def _create_benchmark_table(conn: RuntimeConnection) -> None:
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS benchmark_runs (
@@ -166,7 +166,7 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
     )
     try:
         conn.execute("SELECT run_group FROM benchmark_runs LIMIT 1")
-    except sqlite3.OperationalError:
+    except Exception:
         conn.execute(
             "ALTER TABLE benchmark_runs "
             "ADD COLUMN run_group TEXT NOT NULL DEFAULT 'default'"
@@ -175,7 +175,7 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
 
 
 def _record_benchmark_run(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     benchmark_name: str,
     fixture_name: str,
@@ -270,13 +270,13 @@ def _setup_benchmark_db(db_path: str) -> sqlite3.Connection:
 
 
 def _ensure_participant(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     participant_id: str,
     input_text: str | None = None,
 ) -> tuple[str, str]:
     from app import input_repository as input_repo
     from app import participant_repository as pt_repo
-    from app.db_runtime import SqliteRuntimeConnection
+    from app.db_runtime import RuntimeConnection, SqliteRuntimeConnection
 
     existing = pt_repo.get_participant_by_id(conn, participant_id)
     if existing is None:
@@ -297,7 +297,7 @@ def _ensure_participant(
 
 
 def _collect_tokens(
-    db_conn: sqlite3.Connection, *run_ids: str
+    db_conn: RuntimeConnection, *run_ids: str
 ) -> tuple[int | None, int | None]:
     from app import generation_run_repository as gr_repo
 
@@ -327,7 +327,7 @@ def _token_total(
 
 
 def _apply_human_correction(
-    conn: sqlite3.Connection, benchmark_name: str, minutes: float
+    conn: RuntimeConnection, benchmark_name: str, minutes: float
 ) -> None:
     conn.execute(
         "UPDATE benchmark_runs SET human_correction_minutes = ? "
@@ -346,7 +346,7 @@ def _run_editorial_plan(
     *,
     provider: Any,
     fixture: FixtureBundle,
-    db_conn: sqlite3.Connection,
+    db_conn: RuntimeConnection,
     participant_id: str,
     input_id: str,
     run_index: int,
@@ -464,7 +464,7 @@ def _run_first_edition(
     *,
     provider: Any,
     fixture: FixtureBundle,
-    db_conn: sqlite3.Connection,
+    db_conn: RuntimeConnection,
     participant_id: str,
     input_id: str,
     run_index: int,
@@ -571,7 +571,7 @@ def _run_feedback_second_edition(
     *,
     settings: Settings,
     fixture: FixtureBundle,
-    db_conn: sqlite3.Connection,
+    db_conn: RuntimeConnection,
     participant_id: str,
     input_id: str,
     run_index: int,
@@ -746,7 +746,7 @@ def _run_adversarial_grounding(
     *,
     provider: Any,
     fixture: FixtureBundle,
-    db_conn: sqlite3.Connection,
+    db_conn: RuntimeConnection,
     participant_id: str,
     input_id: str,
     run_index: int,
@@ -901,7 +901,7 @@ def _run_validator_feedback_repair(
     *,
     settings: Settings,
     fixture: FixtureBundle,
-    db_conn: sqlite3.Connection,
+    db_conn: RuntimeConnection,
     participant_id: str,
     input_id: str,
     run_index: int,
@@ -1168,7 +1168,7 @@ def _dispatch_task(
     task: str,
     settings: Settings,
     fixture: FixtureBundle,
-    db_conn: sqlite3.Connection,
+    db_conn: RuntimeConnection,
     participant_id: str,
     input_id: str,
     run_index: int,

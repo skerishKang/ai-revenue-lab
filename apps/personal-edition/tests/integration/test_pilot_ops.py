@@ -38,7 +38,7 @@ from scripts.pilot_ops import (
 def _setup_pilot_db(db_path: str = ":memory:"):
     conn = get_connection(db_path)
     apply_migrations(conn, "migrations")
-    _create_pilot_table(conn)
+    _create_pilot_table(SqliteRuntimeConnection(conn))
     return conn
 
 
@@ -59,9 +59,9 @@ class TestRecordOperation:
             success=True,
             validation_result="passed",
         )
-        result = record_operation(conn, record)
+        result = record_operation(SqliteRuntimeConnection(conn), record)
         assert result.record_id is not None
-        records = list_records(conn, participant_id="p1")
+        records = list_records(SqliteRuntimeConnection(conn), participant_id="p1")
         assert len(records) == 1
         assert records[0]["record_type"] == "benchmark_run"
         conn.close()
@@ -76,9 +76,9 @@ class TestRecordOperation:
             payment_date="2025-01-01",
             internal_reference="ref-001",
         )
-        result = record_operation(conn, record)
+        result = record_operation(SqliteRuntimeConnection(conn), record)
         assert result.record_id is not None
-        records = list_records(conn, participant_id="p1")
+        records = list_records(SqliteRuntimeConnection(conn), participant_id="p1")
         assert len(records) == 1
         assert records[0]["record_type"] == "payment_evidence"
         conn.close()
@@ -90,9 +90,9 @@ class TestRecordOperation:
             benchmark_run_id="run-001",
             human_correction_minutes=12.5,
         )
-        result = record_operation(conn, record)
+        result = record_operation(SqliteRuntimeConnection(conn), record)
         assert result.record_id is not None
-        records = list_records(conn, participant_id="p1")
+        records = list_records(SqliteRuntimeConnection(conn), participant_id="p1")
         assert len(records) == 1
         assert records[0]["record_type"] == "correction"
         conn.close()
@@ -119,9 +119,9 @@ class TestListRecords:
             payment_date="2025-01-01",
             internal_reference="ref-001",
         )
-        record_operation(conn, r1)
-        record_operation(conn, r2)
-        records = list_records(conn, participant_id="p1")
+        record_operation(SqliteRuntimeConnection(conn), r1)
+        record_operation(SqliteRuntimeConnection(conn), r2)
+        records = list_records(SqliteRuntimeConnection(conn), participant_id="p1")
         assert len(records) == 2
         conn.close()
 
@@ -145,8 +145,8 @@ class TestListRecords:
             payment_date="2025-01-01",
             internal_reference="ref-001",
         )
-        record_operation(conn, r1)
-        record_operation(conn, r2)
+        record_operation(SqliteRuntimeConnection(conn), r1)
+        record_operation(SqliteRuntimeConnection(conn), r2)
         records = list_records(
             conn, record_type=PilotRecordType.BENCHMARK_RUN.value
         )
@@ -172,7 +172,7 @@ class TestFileBackedPersistence:
                 task_type="full_pipeline",
                 started_at="2025-01-01T00:00:00.000Z",
             )
-            record_operation(conn, r1)
+            record_operation(SqliteRuntimeConnection(conn), r1)
             conn.close()
 
             conn2 = _setup_pilot_db(db_path)
@@ -198,8 +198,8 @@ class TestExportEvidence:
             task_type="full_pipeline",
             started_at="2025-01-01T00:00:00.000Z",
         )
-        record_operation(conn, r1)
-        exported = export_evidence(conn, export_safe=True)
+        record_operation(SqliteRuntimeConnection(conn), r1)
+        exported = export_evidence(SqliteRuntimeConnection(conn), export_safe=True)
         assert len(exported) == 1
         assert exported[0]["participant_id"] != "real-participant-id"
         assert exported[0]["participant_id"].startswith("P-")
@@ -223,9 +223,9 @@ class TestDeletionWorkflow:
             display_name="Test User",
             preferred_language="ko",
         )
-        result = execute_deletion(conn, "p1", reason="test deletion")
+        result = execute_deletion(SqliteRuntimeConnection(conn), "p1", reason="test deletion")
         assert result["deleted"] is True
-        records = list_records(conn, participant_id="p1")
+        records = list_records(SqliteRuntimeConnection(conn), participant_id="p1")
         assert len(records) == 2
         # Deterministic ordering contract: newest first (created_at DESC,
         # rowid DESC). The deletion completion is recorded after the request,

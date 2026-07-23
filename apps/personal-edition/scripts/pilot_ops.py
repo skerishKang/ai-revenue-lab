@@ -19,7 +19,6 @@ import argparse
 import hashlib
 import json
 import re
-import sqlite3
 import sys
 import uuid
 from datetime import datetime, timezone
@@ -33,7 +32,7 @@ _DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_DIR))
 
 from app import participant_repository as pt_repo
-from app.db_runtime import SqliteRuntimeConnection
+from app.db_runtime import RuntimeConnection, SqliteRuntimeConnection
 from app.config import Settings
 from app.db import apply_migrations, get_connection
 
@@ -485,7 +484,7 @@ def _record_model_for_type(
 # ---------------------------------------------------------------------------
 
 
-def _create_pilot_table(conn: sqlite3.Connection) -> None:
+def _create_pilot_table(conn: RuntimeConnection) -> None:
     conn.execute(
         f"""
         CREATE TABLE IF NOT EXISTS {_PILOT_OPS_TABLE} (
@@ -527,7 +526,7 @@ def _create_pilot_table(conn: sqlite3.Connection) -> None:
 
 
 def record_operation(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     record: PilotRecord,
 ) -> PilotRecord:
     _create_pilot_table(conn)
@@ -535,7 +534,7 @@ def record_operation(
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         payload = record.model_dump_json()
         conn.execute(
@@ -560,7 +559,7 @@ def record_operation(
 
 
 def list_records(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     record_type: str | None = None,
     participant_id: str | None = None,
@@ -613,7 +612,7 @@ def list_records(
 
 
 def get_record_by_id(
-    conn: sqlite3.Connection, record_id: str
+    conn: RuntimeConnection, record_id: str
 ) -> dict[str, Any] | None:
     _create_pilot_table(conn)
 
@@ -628,7 +627,7 @@ def get_record_by_id(
 
 
 def update_record(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     record_id: str,
     updates: dict[str, Any],
 ) -> bool:
@@ -653,7 +652,7 @@ def update_record(
     if conn.in_transaction:
         raise RuntimeError("repository write requires an idle connection")
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         payload = updated_record.model_dump_json()
         conn.execute(
@@ -700,7 +699,7 @@ def _redact_private_text(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def export_evidence(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str | None = None,
     export_safe: bool = False,
@@ -726,7 +725,7 @@ def export_evidence(
 
 
 def execute_deletion(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     participant_id: str,
     *,
     reason: str = "participant_requested",
