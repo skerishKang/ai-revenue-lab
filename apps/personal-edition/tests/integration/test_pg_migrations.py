@@ -26,10 +26,12 @@ import pytest
 
 from app.config import normalize_pg_url_identity, redact_database_url
 from app.db_pg_migrations import (
+    MigrationParseError,
     PgMigrationError,
     _compute_checksum,
     _discover_migrations,
     _is_pg_migration,
+    _neutralize_sql,
     _read_migration,
     _safe_message,
     _split_statements,
@@ -1308,3 +1310,36 @@ class TestExtractCreatedTables:
         assert "feedback" in expected
         assert "generation_runs" in expected
         assert "generation_requests" in expected
+
+
+class TestNeutralizeSqlFailClosed:
+    def test_unterminated_block_comment_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT /* unterminated block comment")
+
+    def test_unterminated_nested_block_comment_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT /* /* outer /* inner */ unterminated")
+
+    def test_unterminated_single_quoted_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT 'unterminated string")
+
+    def test_unterminated_e_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT E'unterminated e-string")
+
+    def test_unterminated_dollar_quoted_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT $$unterminated dollar quote")
+
+    def test_unterminated_tagged_dollar_quoted_string_raises(self):
+        with pytest.raises(MigrationParseError):
+            _neutralize_sql("SELECT $tag$unterminated tagged dollar quote")
+
+    def test_properly_terminated_constructs_do_not_raise(self):
+        _neutralize_sql("SELECT 'valid string' FROM t /* comment */")
+        _neutralize_sql("SELECT E'valid e-string' FROM t")
+        _neutralize_sql("SELECT $$valid dollar quote$$ FROM t")
+        _neutralize_sql("SELECT $tag$valid tagged dollar$tag$ FROM t")
+        _neutralize_sql("SELECT /* /* nested */ */ 1")

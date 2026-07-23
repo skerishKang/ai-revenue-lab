@@ -75,6 +75,15 @@ class PgMigrationError(RuntimeError):
         super().__init__(f"pg migration {version}: {message}")
 
 
+class MigrationParseError(RuntimeError):
+    """Raised when migration SQL contains malformed syntax.
+
+    Unterminated comments, strings, or dollar quotes are detected and
+    rejected with a fixed safe error message.  The original content
+    (position, snippet) is NOT included in the message for safety.
+    """
+
+
 def _is_pg_migration(name: str) -> bool:
     return name.endswith(".sql") and _PG_MIGRATION_RE.match(name) is not None
 
@@ -205,6 +214,9 @@ def _neutralize_sql(content: str) -> str:
     - E-strings: ``E'...'`` / ``e'...'`` with ``\\'`` and ``''`` escapes
       (the ``E`` prefix must not be part of a larger identifier)
     - Dollar-quoted strings: ``$$...$$`` or ``$tag$...$tag$``
+
+    Raises :class:`MigrationParseError` if any construct is unterminated
+    (reaches EOF before the closing delimiter).
     """
     out: list[str] = []
     i = 0
@@ -231,12 +243,17 @@ def _neutralize_sql(content: str) -> str:
                     i += 2
                 else:
                     i += 1
+            if depth > 0:
+                raise MigrationParseError(
+                    "unterminated block comment"
+                )
             out.append(" ")
             continue
 
         if c in ("E", "e") and i + 1 < n and content[i + 1] == "'":
             if i == 0 or not (content[i - 1].isalnum() or content[i - 1] == "_"):
                 i += 2
+                found_close = False
                 while i < n:
                     if content[i] == "\\":
                         i += 2
@@ -244,9 +261,14 @@ def _neutralize_sql(content: str) -> str:
                         i += 2
                     elif content[i] == "'":
                         i += 1
+                        found_close = True
                         break
                     else:
                         i += 1
+                if not found_close:
+                    raise MigrationParseError(
+                        "unterminated E-string literal"
+                    )
                 out.append("''")
                 continue
 
@@ -256,20 +278,30 @@ def _neutralize_sql(content: str) -> str:
                 tag = m.group(0)
                 i += len(tag)
                 end = content.find(tag, i)
-                i = n if end == -1 else end + len(tag)
+                if end == -1:
+                    raise MigrationParseError(
+                        "unterminated dollar-quoted string"
+                    )
+                i = end + len(tag)
                 out.append("''")
                 continue
 
         if c == "'":
             i += 1
+            found_close = False
             while i < n:
                 if content[i] == "'" and i + 1 < n and content[i + 1] == "'":
                     i += 2
                 elif content[i] == "'":
                     i += 1
+                    found_close = True
                     break
                 else:
                     i += 1
+            if not found_close:
+                raise MigrationParseError(
+                    "unterminated single-quoted string literal"
+                )
             out.append("''")
             continue
 
