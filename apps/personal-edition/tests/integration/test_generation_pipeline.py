@@ -63,7 +63,7 @@ def _create_input(conn, pid="p1", raw_text=None, consent_confirmed=1):
     if raw_text is None:
         raw_text = "word " * 600
     return input_repo.create_input(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=pid,
         raw_text=raw_text,
         consent_confirmed=consent_confirmed,
@@ -497,7 +497,7 @@ class TestInvalidInputs:
         conn = _setup_db()
         _create_participant(conn)
         inp = _create_input(conn)
-        input_repo.delete_input(conn, inp.id)
+        input_repo.delete_input(SqliteRuntimeConnection(conn), inp.id)
 
         provider = MockProvider(fixture_payload={"key": "val"})
         service = GenerationService(provider=provider)
@@ -513,7 +513,7 @@ class TestInvalidInputs:
         conn = _setup_db()
         _create_participant(conn)
         inp = input_repo.create_input(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             raw_text="word " * 600,
             consent_confirmed=0,

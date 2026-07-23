@@ -27,7 +27,7 @@ class TestInputCreate:
         _setup_participant(conn)
 
         result = input_repo.create_input(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             raw_text="Hello world",
             consent_confirmed=1,
@@ -47,13 +47,13 @@ class TestInputCreate:
         _setup_participant(conn)
 
         r1 = input_repo.create_input(
-            conn, participant_id="p1", raw_text="First"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="First"
         )
         r2 = input_repo.create_input(
-            conn, participant_id="p1", raw_text="Second"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="Second"
         )
         r3 = input_repo.create_input(
-            conn, participant_id="p1", raw_text="Third"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="Third"
         )
 
         assert r1.sequence_number == 1
@@ -68,10 +68,10 @@ class TestInputCreate:
         _setup_participant(conn, "p2")
 
         r1 = input_repo.create_input(
-            conn, participant_id="p1", raw_text="P1 text"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="P1 text"
         )
         r2 = input_repo.create_input(
-            conn, participant_id="p2", raw_text="P2 text"
+            SqliteRuntimeConnection(conn), participant_id="p2", raw_text="P2 text"
         )
 
         assert r1.sequence_number == 1
@@ -84,7 +84,7 @@ class TestInputCreate:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="nonexistent", raw_text="text"
+                SqliteRuntimeConnection(conn), participant_id="nonexistent", raw_text="text"
             )
         conn.close()
 
@@ -95,7 +95,7 @@ class TestInputCreate:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="p1", raw_text=""
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text=""
             )
         conn.close()
 
@@ -106,7 +106,7 @@ class TestInputCreate:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="p1", raw_text="text",
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text",
                 consent_confirmed=2,
             )
         conn.close()
@@ -119,7 +119,7 @@ class TestInputCreate:
         conn.execute("BEGIN")
         with pytest.raises(repo.RepositoryTransactionError):
             input_repo.create_input(
-                conn, participant_id="p1", raw_text="text"
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text"
             )
         conn.close()
 
@@ -131,7 +131,7 @@ class TestInputLookup:
         _setup_participant(conn)
 
         created = input_repo.create_input(
-            conn, participant_id="p1", raw_text="Hello"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="Hello"
         )
         found = input_repo.get_input_by_id(conn, created.id)
         assert found is not None
@@ -149,8 +149,8 @@ class TestInputLookup:
         apply_migrations(conn, "migrations")
         _setup_participant(conn)
 
-        input_repo.create_input(conn, participant_id="p1", raw_text="A")
-        input_repo.create_input(conn, participant_id="p1", raw_text="B")
+        input_repo.create_input(SqliteRuntimeConnection(conn), participant_id="p1", raw_text="A")
+        input_repo.create_input(SqliteRuntimeConnection(conn), participant_id="p1", raw_text="B")
 
         inputs = input_repo.get_inputs_by_participant(conn, "p1")
         assert len(inputs) == 2
@@ -173,10 +173,10 @@ class TestInputUpdate:
         _setup_participant(conn)
 
         created = input_repo.create_input(
-            conn, participant_id="p1", raw_text="Hello"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="Hello"
         )
         updated = input_repo.update_input_normalized_text(
-            conn, created.id, "hello world"
+            SqliteRuntimeConnection(conn), created.id, "hello world"
         )
         assert updated is not None
         assert updated.normalized_text == "hello world"
@@ -186,7 +186,7 @@ class TestInputUpdate:
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
         result = input_repo.update_input_normalized_text(
-            conn, "nonexistent", "text"
+            SqliteRuntimeConnection(conn), "nonexistent", "text"
         )
         assert result is None
         conn.close()
@@ -199,9 +199,9 @@ class TestInputDelete:
         _setup_participant(conn)
 
         created = input_repo.create_input(
-            conn, participant_id="p1", raw_text="Delete me"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="Delete me"
         )
-        assert input_repo.delete_input(conn, created.id) is True
+        assert input_repo.delete_input(SqliteRuntimeConnection(conn), created.id) is True
 
         found = input_repo.get_input_by_id(conn, created.id)
         assert found is not None
@@ -211,7 +211,7 @@ class TestInputDelete:
     def test_delete_input_returns_false_for_missing(self):
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
-        assert input_repo.delete_input(conn, "nonexistent") is False
+        assert input_repo.delete_input(SqliteRuntimeConnection(conn), "nonexistent") is False
         conn.close()
 
     def test_delete_input_idempotent(self):
@@ -220,10 +220,10 @@ class TestInputDelete:
         _setup_participant(conn)
 
         created = input_repo.create_input(
-            conn, participant_id="p1", raw_text="text"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text"
         )
-        assert input_repo.delete_input(conn, created.id) is True
-        assert input_repo.delete_input(conn, created.id) is False
+        assert input_repo.delete_input(SqliteRuntimeConnection(conn), created.id) is True
+        assert input_repo.delete_input(SqliteRuntimeConnection(conn), created.id) is False
         conn.close()
 
 
@@ -234,7 +234,7 @@ class TestInputTransactionRollback:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="missing", raw_text="text"
+                SqliteRuntimeConnection(conn), participant_id="missing", raw_text="text"
             )
         assert conn.in_transaction is False
         conn.close()
@@ -249,7 +249,7 @@ class TestInputFilePersistence:
             _setup_participant(conn)
 
             created = input_repo.create_input(
-                conn, participant_id="p1", raw_text="Persistent"
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text="Persistent"
             )
             conn.close()
 
@@ -268,7 +268,7 @@ class TestInputForeignKey:
         _setup_participant(conn)
 
         result = input_repo.create_input(
-            conn, participant_id="p1", raw_text="FK test"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="FK test"
         )
         row = conn.execute(
             "SELECT participant_id FROM inputs WHERE id = ?",
@@ -285,7 +285,7 @@ class TestInputTimestampValidation:
         _setup_participant(conn)
 
         result = input_repo.create_input(
-            conn, participant_id="p1", raw_text="text",
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text",
             submitted_at="2026-07-20T09:23:46.123Z",
         )
         assert result.submitted_at == "2026-07-20T09:23:46.123Z"
@@ -298,7 +298,7 @@ class TestInputTimestampValidation:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="p1", raw_text="text",
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text",
                 submitted_at="2026-13-20T09:23:46.123Z",
             )
         conn.close()
@@ -310,7 +310,7 @@ class TestInputTimestampValidation:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="p1", raw_text="text",
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text",
                 submitted_at="2026-02-30T09:23:46.123Z",
             )
         conn.close()
@@ -322,7 +322,7 @@ class TestInputTimestampValidation:
 
         with pytest.raises(input_repo.InputValidationError):
             input_repo.create_input(
-                conn, participant_id="p1", raw_text="text",
+                SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text",
                 submitted_at="not-a-timestamp",
             )
         conn.close()

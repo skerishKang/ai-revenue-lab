@@ -85,10 +85,15 @@ class RuntimeConnection(Protocol):
     ``begin_write`` is the explicit write-transaction contract.  ``execute``
     accepts qmark (``?``) placeholders for both backends; the PostgreSQL
     adapter translates them, SQLite passes them through unchanged.
+    ``row_lock_suffix`` provides the backend-appropriate row-locking clause
+    for SELECT statements inside write transactions.
     """
 
     @property
     def in_transaction(self) -> bool: ...
+
+    @property
+    def row_lock_suffix(self) -> str: ...
 
     def execute(self, sql: str, params: Sequence[Any] = ()) -> RuntimeCursor: ...
 
@@ -413,6 +418,10 @@ class SqliteRuntimeConnection:
     def in_transaction(self) -> bool:
         return self._conn.in_transaction
 
+    @property
+    def row_lock_suffix(self) -> str:
+        return ""
+
     def execute(self, sql: str, params: Sequence[Any] = ()) -> Any:
         if params:
             return self._conn.execute(sql, params)
@@ -480,6 +489,10 @@ class PostgresRuntimeConnection:
     def in_transaction(self) -> bool:
         self._require_open()
         return self._tx_state() is not _TxState.IDLE
+
+    @property
+    def row_lock_suffix(self) -> str:
+        return " FOR UPDATE"
 
     def execute(self, sql: str, params: Sequence[Any] = ()) -> Any:
         conn = self._require_open()

@@ -76,6 +76,10 @@ class RecordingRuntimeConnection:
     def in_transaction(self) -> bool:
         return self._inner.in_transaction
 
+    @property
+    def row_lock_suffix(self) -> str:
+        return self._inner.row_lock_suffix
+
     def execute(self, sql: str, params: Any = ()) -> Any:
         self.execute_count += 1
         return self._inner.execute(sql, params)

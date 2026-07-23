@@ -288,7 +288,7 @@ def _ensure_participant(
         )
     raw_text = input_text or ("benchmark synthetic input text " * 150)
     inp = input_repo.create_input(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=participant_id,
         raw_text=raw_text,
         consent_confirmed=1,

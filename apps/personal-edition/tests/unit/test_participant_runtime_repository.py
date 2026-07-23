@@ -79,6 +79,10 @@ class FakeRuntimeConnection:
         self._script: list[FakeCursor] = []
         self._script_idx = 0
 
+    @property
+    def row_lock_suffix(self) -> str:
+        return ""
+
     def script_next(self, cursor: FakeCursor):
         self._script.append(cursor)
 

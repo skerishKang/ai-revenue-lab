@@ -209,7 +209,7 @@ class TestImageAttributes:
         pid = "wait-img"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "대기 테스트")
-            input_repo.create_input(conn, participant_id=pid, raw_text="테스트 입력 " * 50, consent_confirmed=1)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="테스트 입력 " * 50, consent_confirmed=1)
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         self._check_image(resp.text, "/static/images/editorial-process-layers.webp", "waiting state")
@@ -635,7 +635,7 @@ class TestGuidedWorkflow:
         pid = "input-recv"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "기록 접수 테스트")
-            input_repo.create_input(conn, participant_id=pid, raw_text="테스트 입력 " * 50, consent_confirmed=1)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="테스트 입력 " * 50, consent_confirmed=1)
         cookies = _get_session_cookie(pid)
         resp = client.get(f"/p/{pid}", cookies=cookies)
         html = resp.text
@@ -649,7 +649,7 @@ class TestGuidedWorkflow:
         pid = "review-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "검토 테스트")
-            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 50, consent_confirmed=1)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 50, consent_confirmed=1)
             ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
                                    structured_content=json.dumps(_make_draft_payload()),
                                    rendered_title="초안")
@@ -742,7 +742,7 @@ class TestGuidedWorkflow:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "접수단계")
             input_repo.create_input(
-                conn, participant_id=pid, raw_text="테스트 " * 50,
+                SqliteRuntimeConnection(conn), participant_id=pid, raw_text="테스트 " * 50,
                 consent_confirmed=1,
             )
         cookies = _get_session_cookie(pid)
@@ -764,7 +764,7 @@ class TestGuidedWorkflow:
         with get_connection(db) as conn:
             _create_participant(conn, pid, "검토단계")
             input_repo.create_input(
-                conn, participant_id=pid, raw_text="기록 " * 50,
+                SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 50,
                 consent_confirmed=1,
             )
             ed_repo.create_edition(
@@ -917,7 +917,7 @@ class TestAdminEditorialUI:
         pid = "dash-kpi"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "대시보드 테스트")
-            input_repo.create_input(conn, participant_id=pid, raw_text="긴 입력 내용 테스트 " * 20, consent_confirmed=1)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="긴 입력 내용 테스트 " * 20, consent_confirmed=1)
             ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1,
                                          structured_content=json.dumps(_make_draft_payload()),
                                          rendered_title="초안 에디션")
@@ -948,7 +948,7 @@ class TestAdminEditorialUI:
         pid = "detail-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "상세 참여자")
-            input_repo.create_input(conn, participant_id=pid, raw_text="상세 읽기 본문 내용 테스트 " * 15, consent_confirmed=1)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="상세 읽기 본문 내용 테스트 " * 15, consent_confirmed=1)
         admin_cookies = _get_admin_session_cookie()
         resp = client.get(f"/admin/participants/{pid}", cookies=admin_cookies)
         assert resp.status_code == 200
@@ -1090,9 +1090,9 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "multi-inp-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "입력3개")
-            inp1 = input_repo.create_input(conn, participant_id=pid, raw_text="첫 번째 수신 기록 텍스트 " * 5)
-            inp2 = input_repo.create_input(conn, participant_id=pid, raw_text="두 번째 수신 기록 텍스트 " * 5)
-            inp3 = input_repo.create_input(conn, participant_id=pid, raw_text="세 번째 최신 수신 기록 텍스트 " * 5)
+            inp1 = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="첫 번째 수신 기록 텍스트 " * 5)
+            inp2 = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="두 번째 수신 기록 텍스트 " * 5)
+            inp3 = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="세 번째 최신 수신 기록 텍스트 " * 5)
 
         admin_cookies = _get_admin_session_cookie()
         client.cookies.update(admin_cookies)
@@ -1109,7 +1109,7 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "multi-ed-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "에디션3개")
-            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
             ed1 = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
             ed2 = ed_repo.create_edition(conn, participant_id=pid, edition_number=2, structured_content=json.dumps(_make_draft_payload()), rendered_title="2호")
             ed3 = ed_repo.create_edition(conn, participant_id=pid, edition_number=3, structured_content=json.dumps(_make_draft_payload()), rendered_title="3호")
@@ -1129,7 +1129,7 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "past-fb-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "과거피드백")
-            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
             ed1 = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content=json.dumps(_make_draft_payload()), rendered_title="1호")
             ed_repo.update_edition_publication(conn, ed1.id, "published")
             fb_repo.create_feedback(conn, participant_id=pid, edition_id=ed1.id, direction_choices=json.dumps(["more_practical"]))
@@ -1150,7 +1150,7 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "gen-fail-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "실패참여자")
-            input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
             ed = ed_repo.create_edition(conn, participant_id=pid, edition_number=1, structured_content="{}", rendered_title="실패호")
             conn.execute("UPDATE editions SET generation_status = 'generation_failed' WHERE id = ?", (ed.id,))
 
@@ -1168,7 +1168,7 @@ class TestOperatorUIFixedContractAndNavigation:
         pid = "err-safe-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "오류참여자")
-            inp = input_repo.create_input(conn, participant_id=pid, raw_text="기록 " * 10)
+            inp = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid, raw_text="기록 " * 10)
 
         admin_cookies = _get_admin_session_cookie()
         csrf_cookie, csrf_token = _get_admin_csrf_cookie_and_token()
@@ -1274,7 +1274,7 @@ class TestGenerationFailureHandling:
         pid = "fail-ret-test"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "실패테스트")
-            inp = input_repo.create_input(conn, participant_id=pid,
+            inp = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid,
                                           raw_text="테스트 입력입니다. " * 50, consent_confirmed=1)
             input_id = inp.id
 
@@ -1353,7 +1353,7 @@ class TestGenerationFailureHandling:
         pid = "fail-preserve"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "입력유지")
-            inp = input_repo.create_input(conn, participant_id=pid,
+            inp = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid,
                                           raw_text="유지되어야 할 입력입니다. " * 30,
                                           consent_confirmed=1)
             input_id = inp.id
@@ -1383,7 +1383,7 @@ class TestGenerationFailureHandling:
         pid = "fail-redirect"
         with get_connection(db) as conn:
             _create_participant(conn, pid, "리다이렉트")
-            inp = input_repo.create_input(conn, participant_id=pid,
+            inp = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id=pid,
                                           raw_text="리다이렉트 테스트 입력. " * 30,
                                           consent_confirmed=1)
             input_id = inp.id

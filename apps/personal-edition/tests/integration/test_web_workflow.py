@@ -1059,7 +1059,7 @@ class TestGenerationThroughWeb:
             conn = get_connection(db_path)
             try:
                 _create_participant(conn, "p1", "Test User")
-                inp = input_repo.create_input(conn, participant_id="p1", raw_text=_make_long_korean_text(600), consent_confirmed=1)
+                inp = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id="p1", raw_text=_make_long_korean_text(600), consent_confirmed=1)
                 input_id = inp.id
             finally:
                 conn.close()
@@ -1091,7 +1091,7 @@ class TestGenerationThroughWeb:
             try:
                 _create_participant(conn, "p1", "Test User")
                 short_text = "짧은 테스트 텍스트입니다. " * 10
-                inp = input_repo.create_input(conn, participant_id="p1", raw_text=short_text, consent_confirmed=1)
+                inp = input_repo.create_input(SqliteRuntimeConnection(conn), participant_id="p1", raw_text=short_text, consent_confirmed=1)
                 input_id = inp.id
             finally:
                 conn.close()
@@ -1696,7 +1696,7 @@ class TestFileBackedPersistence:
             try:
                 _create_participant(conn, "p1", "User One")
                 input_repo.create_input(
-                    conn, participant_id="p1", raw_text="ERSIST 테스트 입력입니다.", consent_confirmed=1,
+                    SqliteRuntimeConnection(conn), participant_id="p1", raw_text="ERSIST 테스트 입력입니다.", consent_confirmed=1,
                 )
             finally:
                 conn.close()

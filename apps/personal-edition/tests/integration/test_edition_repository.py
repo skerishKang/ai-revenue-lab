@@ -150,7 +150,7 @@ class TestEditionCreate:
         _setup_participant(conn, "p2")
 
         inp = input_repo.create_input(
-            conn, participant_id="p1", raw_text="text"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text"
         )
         with pytest.raises(ed_repo.EditionValidationError):
             ed_repo.create_edition(
@@ -167,9 +167,9 @@ class TestEditionCreate:
         _setup_participant(conn)
 
         inp = input_repo.create_input(
-            conn, participant_id="p1", raw_text="text"
+            SqliteRuntimeConnection(conn), participant_id="p1", raw_text="text"
         )
-        input_repo.delete_input(conn, inp.id)
+        input_repo.delete_input(SqliteRuntimeConnection(conn), inp.id)
 
         with pytest.raises(ed_repo.EditionValidationError):
             ed_repo.create_edition(
