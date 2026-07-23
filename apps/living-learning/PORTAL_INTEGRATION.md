@@ -25,10 +25,17 @@ Browser
 
 - Source of truth for all Living Learning code and migrations.
 - Pull-request gate: changes merge only through reviewed PRs.
-- CI runs the test suite on every PR.
+- **CI status:** GitHub-hosted CI (Actions) is currently **unavailable** because
+  of account billing/spending constraints. Until it is restored, merge evidence
+  uses an explicit **manual CI waiver** plus directly executed local acceptance
+  suites. The absence of hosted CI must **never** be described as green or
+  passed; every report states that evidence is worker-local.
 - Deploys the static frontend to Cloudflare Pages.
 - Deploys the FastAPI backend to Modal.
 - Holds environment-scoped secrets (injected into Modal/Cloudflare, never committed).
+
+A GitHub Actions gate remains a planned future item, but it is **not** an
+active gate today and must not be represented as one.
 
 ### Cloudflare
 
