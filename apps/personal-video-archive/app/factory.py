@@ -78,6 +78,14 @@ def _build_jinja_env() -> Environment:
 
     env.filters["format_thousands"] = _format_thousands
 
+    def _state_label(value: Any) -> Any:
+        # Render a viewing state as its user-facing value. Accepts either a
+        # ViewingState enum (returns ``.value``) or a plain string (returned
+        # unchanged) so the shared template is safe for both input shapes.
+        return getattr(value, "value", value)
+
+    env.filters["state_label"] = _state_label
+
     return env
 
 

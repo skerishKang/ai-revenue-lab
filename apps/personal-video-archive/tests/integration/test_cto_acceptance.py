@@ -1431,3 +1431,26 @@ class TestHealthRoute:
         data = response.json()
         assert "FakeVideoDiscoveryProvider" in data["discovery_provider"]
         assert "FakeLanguageModelProvider" in data["llm_provider"]
+
+
+class TestRecordSearchStateRendering:
+    """Gap 2: the records-search badge must show the user-facing state value,
+    never the raw ``ViewingState.X`` enum repr, in the live app."""
+
+    @pytest.mark.parametrize("state", ["saved", "completed", "in_progress"])
+    def test_search_badge_shows_state_value_not_enum(self, client, state):
+        topic_id = _create_topic_and_accept_rule(client)
+        _sync_topic(client, topic_id)
+        tv_id, _record_id = _create_record(client, topic_id)
+
+        resp = client.post(
+            f"/topic-videos/{tv_id}/state",
+            data={"state": state},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+        response = client.get("/records")
+        assert response.status_code == 200
+        assert f'<span class="badge badge-user">{state}</span>' in response.text
+        assert "ViewingState." not in response.text

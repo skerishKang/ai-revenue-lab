@@ -123,7 +123,7 @@ pytest tests/unit/ -v
 pytest tests/integration/ -v
 ```
 
-All 198 tests pass without network access.
+All 219 tests pass without network access.
 
 ## Static UI preview (Cloudflare Pages)
 
@@ -145,6 +145,17 @@ every preview state (topic list, new topic, query-rule review, populated /
 filtered / empty / failed feeds, video detail, private records, pending and
 accepted AI proposals, record search, and a validation error).
 
+Each topic feed is generated for **all eight filter states**
+(`all/unseen/opened/saved/in_progress/completed/revisit/irrelevant`) as real
+pages under `topics/<id>/<state>/`, so every filter pill resolves to a generated
+file whose selected pill and contents match the requested state — no query
+strings are relied on by the static host.
+
+The builder's `main(output_dir=None)` accepts an explicit output directory
+(defaulting to the workspace `dist-preview/`), so tests and repeated builds can
+target isolated temporary locations without depending on the worktree's
+`dist-preview/`.
+
 Every page shows a **"UI Preview · Synthetic data · No persistence"** banner,
 carries `noindex, nofollow`, and has all forms and JavaScript made inert.
 
@@ -163,8 +174,21 @@ Dedicated project: **ai-revenue-personal-video-archive**
 | Repository | `skerishKang/ai-revenue-lab` |
 | Production branch | `main` |
 | Root directory | `apps/personal-video-archive` |
-| Build command | `python -m scripts.build_static_preview` |
+| Environment variable | `PYTHON_VERSION=3.12` |
+| Build command | `python -m pip install -e . && python -m scripts.build_static_preview` |
 | Build output directory | `dist-preview` |
+
+`PYTHON_VERSION=3.12` matches `requires-python = ">=3.12"` in `pyproject.toml`;
+the `pip install -e .` step installs the runtime dependency (`jinja2`) the
+builder needs before the preview is generated into `dist-preview`.
+
+> **Deploy-target clarification.** The dedicated Business 13 preview is served
+> only from the `ai-revenue-personal-video-archive` project above. The
+> `ai-revenue-personal-edition` Cloudflare Pages project that a repository bot
+> may attach to pull requests belongs to a *different* Business workspace — it
+> is **not** the Business 13 deploy target and does not affect this product's
+> preview. This table documents the intended configuration only; no real
+> Cloudflare setting is changed by this work.
 
 The generated `_headers` enforces a restrictive Content-Security-Policy
 (`script-src 'none'; form-action 'none'; connect-src 'none'`) plus

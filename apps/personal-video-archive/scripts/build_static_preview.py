@@ -151,9 +151,16 @@ def _build_jinja_env() -> Environment:
         except (ValueError, TypeError):
             return str(value)
 
+    def _state_label(value: object) -> object:
+        # Render a viewing state as its user-facing value. Accepts either a
+        # ViewingState enum (returns ``.value``) or a plain string (returned
+        # unchanged) so the shared template is safe for both input shapes.
+        return getattr(value, "value", value)
+
     env.filters["tojson"] = _tojson
     env.filters["fromjson"] = _fromjson
     env.filters["format_thousands"] = _format_thousands
+    env.filters["state_label"] = _state_label
     return env
 
 
@@ -190,28 +197,114 @@ def _post_process(html: str) -> str:
     return html
 
 
+# The eight viewing-state filter pills rendered by ``topics/feed.html``.
+FEED_STATES = [
+    "all", "unseen", "opened", "saved", "in_progress",
+    "completed", "revisit", "irrelevant",
+]
+
+
+def _filter_rel_path(topic_id: str, state: str) -> str:
+    """Static output path (relative) for a topic feed filter state.
+
+    ``all`` maps to the topic's base page; every other state maps to a
+    dedicated sub-directory so each pill resolves to a real generated file on
+    a static host (where a query string cannot select another file).
+    """
+    if state == "all":
+        return f"topics/{topic_id}/index.html"
+    return f"topics/{topic_id}/{state}/index.html"
+
+
+def _rewrite_preview_links(html: str, topic_id: str) -> str:
+    """Map the live template's query-string links to real generated paths.
+
+    The live FastAPI template renders filter pills as
+    ``/topics/{id}?state={state}`` and the records link as
+    ``/records?topic_id={id}``. On a static host the query string does not
+    select another file, so this builder-side rewrite (a clear static
+    rendering boundary that leaves the shared template untouched) points the
+    pills at the generated ``/topics/{id}/{state}`` pages and drops the inert
+    ``topic_id`` query from the records link.
+    """
+    html = html.replace(
+        f'href="/topics/{topic_id}?state=all"', f'href="/topics/{topic_id}"'
+    )
+    for state in FEED_STATES:
+        if state == "all":
+            continue
+        html = html.replace(
+            f'href="/topics/{topic_id}?state={state}"',
+            f'href="/topics/{topic_id}/{state}"',
+        )
+    html = html.replace(
+        f'href="/records?topic_id={topic_id}"', 'href="/records"'
+    )
+    return html
+
+
 def _write_page(
     env: Environment,
     template_name: str,
     context: dict,
     request_path: str,
+    output_dir: Path,
     output_rel_path: str,
 ) -> None:
     html = _render(env, template_name, context, request_path)
     html = _post_process(html)
-    out_file = _OUTPUT_DIR / output_rel_path
+    _write_raw_page(html, output_dir, output_rel_path)
+
+
+def _write_raw_page(html: str, output_dir: Path, output_rel_path: str) -> None:
+    out_file = output_dir / output_rel_path
     out_file.parent.mkdir(parents=True, exist_ok=True)
     out_file.write_text(html, encoding="utf-8")
 
 
-def _write_raw_page(html: str, output_rel_path: str) -> None:
-    out_file = _OUTPUT_DIR / output_rel_path
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    out_file.write_text(html, encoding="utf-8")
+def _write_feed_page(
+    env: Environment,
+    topic,
+    feed,
+    rules,
+    state: str,
+    output_dir: Path,
+    *,
+    sync_failed: bool = False,
+    output_rel_path: str | None = None,
+) -> None:
+    """Render one topic-feed page with preview-aware filter links."""
+    context = {
+        "topic": topic,
+        "rules": rules,
+        "feed": feed,
+        "current_state_filter": state,
+        "feed_states": FEED_STATES,
+        "sync_failed": sync_failed,
+    }
+    html = _render(env, "topics/feed.html", context, f"/topics/{topic.id}")
+    html = _rewrite_preview_links(html, topic.id)
+    html = _post_process(html)
+    _write_raw_page(
+        html, output_dir, output_rel_path or _filter_rel_path(topic.id, state)
+    )
 
 
-def _copy_static() -> None:
-    dest = _OUTPUT_DIR / "static"
+def _write_topic_filter_pages(
+    env: Environment, topic, feed, rules, output_dir: Path
+) -> None:
+    """Generate all eight filter-state pages for a topic.
+
+    Every visible pill on every feed resolves to a real generated page whose
+    selected pill and contents match the requested state.
+    """
+    for state in FEED_STATES:
+        page_feed = feed if state == "all" else filter_feed_by_state(feed, state)
+        _write_feed_page(env, topic, page_feed, rules, state, output_dir)
+
+
+def _copy_static(output_dir: Path) -> None:
+    dest = output_dir / "static"
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(_STATIC_DIR, dest)
@@ -220,18 +313,25 @@ def _copy_static() -> None:
     (dest / placeholder_name).write_text(_PLACEHOLDER_SVG, encoding="utf-8")
 
 
-def _write_headers() -> None:
-    (_OUTPUT_DIR / "_headers").write_text(_HEADERS_CONTENT, encoding="utf-8")
+def _write_headers(output_dir: Path) -> None:
+    (output_dir / "_headers").write_text(_HEADERS_CONTENT, encoding="utf-8")
 
 
-def _write_robots_txt() -> None:
-    (_OUTPUT_DIR / "robots.txt").write_text(_ROBOTS_CONTENT, encoding="utf-8")
+def _write_robots_txt(output_dir: Path) -> None:
+    (output_dir / "robots.txt").write_text(_ROBOTS_CONTENT, encoding="utf-8")
 
 
-def main() -> None:
-    if _OUTPUT_DIR.exists():
-        shutil.rmtree(_OUTPUT_DIR)
-    _OUTPUT_DIR.mkdir(parents=True)
+def main(output_dir: Path | None = None) -> Path:
+    """Build the static preview and return the output directory used.
+
+    ``output_dir`` defaults to the workspace ``dist-preview`` directory.
+    Accepting an explicit directory lets tests build into isolated temporary
+    locations without depending on the worktree's ``dist-preview``.
+    """
+    output_dir = output_dir if output_dir is not None else _OUTPUT_DIR
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(parents=True)
 
     env = _build_jinja_env()
 
@@ -245,10 +345,6 @@ def main() -> None:
 
     topic1_feed = make_topic1_feed()
     topic2_feed = make_topic2_feed()
-    feed_states = [
-        "all", "unseen", "opened", "saved", "in_progress",
-        "completed", "revisit", "irrelevant",
-    ]
 
     videos = make_topic1_videos()
     topic1_tvs = make_topic1_topic_videos()
@@ -260,18 +356,25 @@ def main() -> None:
     structure_proposal = make_structure_proposal()
 
     # --- Preview landing / index -----------------------------------------
-    _write_page(env, "preview_index.html", {}, "/", "index.html")
+    _write_page(env, "preview_index.html", {}, "/", output_dir, "index.html")
 
     # --- Product home / topic list ---------------------------------------
     _write_page(
-        env, "index.html", {"topics": topics}, "/home", "home/index.html"
+        env, "index.html", {"topics": topics}, "/home", output_dir, "home/index.html"
     )
     _write_page(
-        env, "topics/list.html", {"topics": topics}, "/topics", "topics/index.html"
+        env,
+        "topics/list.html",
+        {"topics": topics},
+        "/topics",
+        output_dir,
+        "topics/index.html",
     )
 
     # --- New topic --------------------------------------------------------
-    _write_page(env, "topics/new.html", {}, "/topics/new", "topics/new/index.html")
+    _write_page(
+        env, "topics/new.html", {}, "/topics/new", output_dir, "topics/new/index.html"
+    )
 
     # --- LLM query-rule review -------------------------------------------
     _write_page(
@@ -279,119 +382,28 @@ def main() -> None:
         "topics/review_rule.html",
         {"topic": topic1, "proposal": rule_proposal},
         "/topics/pv-topic-0001/review-rule",
+        output_dir,
         "topics/pv-topic-0001/review-rule/index.html",
     )
 
-    # --- Populated newest-first feed (topic 1) ---------------------------
-    _write_page(
-        env,
-        "topics/feed.html",
-        {
-            "topic": topic1,
-            "rules": rules,
-            "feed": topic1_feed,
-            "current_state_filter": "all",
-            "feed_states": feed_states,
-            "sync_failed": False,
-        },
-        "/topics/pv-topic-0001",
-        "topics/pv-topic-0001/index.html",
-    )
-
-    # --- Feed filtered to unseen -----------------------------------------
-    _write_page(
-        env,
-        "topics/feed.html",
-        {
-            "topic": topic1,
-            "rules": rules,
-            "feed": filter_feed_by_state(topic1_feed, "unseen"),
-            "current_state_filter": "unseen",
-            "feed_states": feed_states,
-            "sync_failed": False,
-        },
-        "/topics/pv-topic-0001?state=unseen",
-        "topics/pv-topic-0001/unseen/index.html",
-    )
-
-    # --- Feed filtered to completed --------------------------------------
-    _write_page(
-        env,
-        "topics/feed.html",
-        {
-            "topic": topic1,
-            "rules": rules,
-            "feed": filter_feed_by_state(topic1_feed, "completed"),
-            "current_state_filter": "completed",
-            "feed_states": feed_states,
-            "sync_failed": False,
-        },
-        "/topics/pv-topic-0001?state=completed",
-        "topics/pv-topic-0001/completed/index.html",
-    )
-
-    # --- Empty / no-results feed -----------------------------------------
-    _write_page(
-        env,
-        "topics/feed.html",
-        {
-            "topic": topic3,
-            "rules": None,
-            "feed": [],
-            "current_state_filter": "all",
-            "feed_states": feed_states,
-            "sync_failed": False,
-        },
-        "/topics/pv-topic-0001/empty",
-        "topics/pv-topic-0001/empty/index.html",
-    )
+    # --- Topic feeds: all eight filter states each -----------------------
+    # Every visible pill on every feed resolves to a real generated page
+    # whose selected pill and contents match the requested state.
+    _write_topic_filter_pages(env, topic1, topic1_feed, rules, output_dir)
+    _write_topic_filter_pages(env, topic2, topic2_feed, None, output_dir)
+    # Archived topic: empty feed across all states (no-results coverage).
+    _write_topic_filter_pages(env, topic3, [], None, output_dir)
 
     # --- Provider refresh failure, existing feed preserved ---------------
-    _write_page(
+    _write_feed_page(
         env,
-        "topics/feed.html",
-        {
-            "topic": topic1,
-            "rules": rules,
-            "feed": topic1_feed,
-            "current_state_filter": "all",
-            "feed_states": feed_states,
-            "sync_failed": True,
-        },
-        "/topics/pv-topic-0001/refresh-failed",
-        "topics/pv-topic-0001/refresh-failed/index.html",
-    )
-
-    # --- Secondary topic feed (keeps topic-card links resolvable) --------
-    _write_page(
-        env,
-        "topics/feed.html",
-        {
-            "topic": topic2,
-            "rules": None,
-            "feed": topic2_feed,
-            "current_state_filter": "all",
-            "feed_states": feed_states,
-            "sync_failed": False,
-        },
-        "/topics/pv-topic-0002",
-        "topics/pv-topic-0002/index.html",
-    )
-
-    # --- Archived topic feed (empty) -------------------------------------
-    _write_page(
-        env,
-        "topics/feed.html",
-        {
-            "topic": topic3,
-            "rules": None,
-            "feed": [],
-            "current_state_filter": "all",
-            "feed_states": feed_states,
-            "sync_failed": False,
-        },
-        "/topics/pv-topic-0003",
-        "topics/pv-topic-0003/index.html",
+        topic1,
+        topic1_feed,
+        rules,
+        "all",
+        output_dir,
+        sync_failed=True,
+        output_rel_path="topics/pv-topic-0001/refresh-failed/index.html",
     )
 
     # --- Video detail -----------------------------------------------------
@@ -404,6 +416,7 @@ def main() -> None:
             "records": [(topic1_tvs[0], rec_completed)],
         },
         "/videos/pv-video-0001",
+        output_dir,
         "videos/pv-video-0001/index.html",
     )
 
@@ -419,6 +432,7 @@ def main() -> None:
             "pending_proposals": [],
         },
         "/records/pv-rec-0003",
+        output_dir,
         "records/pv-rec-0003/index.html",
     )
 
@@ -434,6 +448,7 @@ def main() -> None:
             "pending_proposals": [structure_proposal],
         },
         "/records/pv-rec-0002",
+        output_dir,
         "records/pv-rec-0002/index.html",
     )
 
@@ -449,6 +464,7 @@ def main() -> None:
             "pending_proposals": [],
         },
         "/records/pv-rec-0001",
+        output_dir,
         "records/pv-rec-0001/index.html",
     )
 
@@ -461,6 +477,7 @@ def main() -> None:
             "filters": {"topic_id": None, "state": None, "tags": None, "q": "pytorch"},
         },
         "/records",
+        output_dir,
         "records/index.html",
     )
 
@@ -477,6 +494,7 @@ def main() -> None:
             ),
         },
         "/error",
+        output_dir,
         "error/index.html",
     )
 
@@ -484,13 +502,14 @@ def main() -> None:
     health_html = _post_process(
         env.from_string(_HEALTH_TEMPLATE).render(request=_MockRequest("/health"))
     )
-    _write_raw_page(health_html, "health/index.html")
+    _write_raw_page(health_html, output_dir, "health/index.html")
 
-    _copy_static()
-    _write_headers()
-    _write_robots_txt()
+    _copy_static(output_dir)
+    _write_headers(output_dir)
+    _write_robots_txt(output_dir)
 
-    print(f"Static preview built at {_OUTPUT_DIR}")
+    print(f"Static preview built at {output_dir}")
+    return output_dir
 
 
 if __name__ == "__main__":
