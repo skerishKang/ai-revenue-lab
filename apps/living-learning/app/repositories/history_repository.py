@@ -132,6 +132,17 @@ def get_diagnostic_snapshots(
     return [_diag_row(r) for r in rows]
 
 
+def get_latest_diagnostic_snapshot(
+    conn: sqlite3.Connection, learner_id: str
+) -> DiagnosticSnapshotRecord | None:
+    row = conn.execute(
+        "SELECT * FROM diagnostic_snapshots WHERE learner_id = ? "
+        "ORDER BY created_at DESC, rowid DESC LIMIT 1",
+        (learner_id,),
+    ).fetchone()
+    return _diag_row(row) if row else None
+
+
 def _diag_row(row: sqlite3.Row) -> DiagnosticSnapshotRecord:
     return DiagnosticSnapshotRecord(
         id=row["id"],

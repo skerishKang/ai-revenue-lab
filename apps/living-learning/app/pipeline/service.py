@@ -88,6 +88,7 @@ from app.pipeline.prompts import (
     LESSON_PLAN_PROMPT,
 )
 from app.pipeline.validation import validate_lesson_content, validate_safe_content
+from app.repositories.history_repository import get_latest_diagnostic_snapshot
 from app.ai.base import AIProvider
 
 MAX_RETRIES = 3
@@ -226,6 +227,11 @@ class LessonPipeline:
             raise GenerationError("Learner not found")
         if learner.status not in ("active",):
             raise LearnerInactiveError(learner_id, learner.status)
+
+    def _latest_snapshot_id(self, learner_id: str) -> str | None:
+        """Diagnostic snapshot that drives generation (adaptation provenance)."""
+        snapshot = get_latest_diagnostic_snapshot(self.conn, learner_id)
+        return snapshot.id if snapshot else None
 
     # ------------------------------------------------------------------
     # Provider task execution with accounting
@@ -699,6 +705,7 @@ class LessonPipeline:
                 generation_status="pending_review",
                 lesson_plan_json=plan_data,
                 lesson_content_json=content_data,
+                source_diagnostic_snapshot_id=self._latest_snapshot_id(learner.id),
                 commit=False,
                 id=lesson_id,
             )
@@ -1057,6 +1064,7 @@ class LessonPipeline:
                 lesson_plan_json=adapted_data,
                 lesson_content_json=final_content_data,
                 adaptation_summary=adaptation_summary,
+                source_diagnostic_snapshot_id=self._latest_snapshot_id(learner_id),
                 commit=False,
                 id=lesson_id,
             )
@@ -1261,7 +1269,11 @@ class LessonPipeline:
             "topic": learner.topic,
             "total_lessons": len(lessons),
             "total_feedback": len(all_feedback),
-            "pending_review_lessons": sum(1 for l in lessons if l.generation_status == "pending_review"),
+            "pending_review_lessons": sum(
+                1
+                for l in lessons
+                if l.generation_status == "pending_review" and l.publication_state == "pending"
+            ),
         }
 
 

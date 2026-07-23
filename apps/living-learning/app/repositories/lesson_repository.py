@@ -26,6 +26,7 @@ class LessonRecord:
     adaptation_summary: str
     created_at: str
     updated_at: str
+    source_diagnostic_snapshot_id: str | None = None
 
 
 def _row_to_record(row: sqlite3.Row) -> LessonRecord:
@@ -42,13 +43,15 @@ def _row_to_record(row: sqlite3.Row) -> LessonRecord:
         adaptation_summary=row["adaptation_summary"],
         created_at=row["created_at"],
         updated_at=row["updated_at"],
+        source_diagnostic_snapshot_id=row["source_diagnostic_snapshot_id"],
     )
 
 
 _COLS = [
     "id", "learner_id", "concept_id", "lesson_number", "prior_lesson_id",
     "generation_status", "publication_state", "lesson_plan_json",
-    "lesson_content_json", "adaptation_summary", "created_at", "updated_at",
+    "lesson_content_json", "adaptation_summary", "source_diagnostic_snapshot_id",
+    "created_at", "updated_at",
 ]
 _SELECT = ", ".join(_COLS)
 
@@ -64,6 +67,7 @@ def create_lesson(
     lesson_plan_json: str = "{}",
     lesson_content_json: str = "{}",
     adaptation_summary: str = "",
+    source_diagnostic_snapshot_id: str | None = None,
     commit: bool = True,
     id: str = "",
 ) -> LessonRecord:
@@ -71,11 +75,11 @@ def create_lesson(
     lesson_id = id if id else f"lesson_{secrets.token_urlsafe(16)}"
     prior = None if prior_lesson_id == "" else prior_lesson_id
     conn.execute(
-        f"INSERT INTO lessons ({_SELECT}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        f"INSERT INTO lessons ({_SELECT}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (
             lesson_id, learner_id, concept_id, lesson_number, prior,
             generation_status, "pending", lesson_plan_json, lesson_content_json,
-            adaptation_summary, now, now,
+            adaptation_summary, source_diagnostic_snapshot_id, now, now,
         ),
     )
     if commit:
