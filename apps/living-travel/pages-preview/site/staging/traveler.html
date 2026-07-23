@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel — Staging Traveler</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="assets/staging.css">
+</head>
+<body>
+  <div class="staging-banner">Staging · Synthetic data · Connected API</div>
+
+  <nav class="navbar traveler-nav">
+    <a href="traveler.html" class="brand">Living Travel · Staging</a>
+    <div class="nav-links">
+      <a href="traveler.html" class="active">내 여행</a>
+      <a href="index.html">홈</a>
+      <a href="#" id="signout-link">로그아웃</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="notice">
+      <strong>Synthetic Preview</strong><br>
+      이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
+    </div>
+
+    <p id="status" class="staging-status" role="status">불러오는 중…</p>
+    <p id="error-region" class="alert alert-error hidden" role="alert"></p>
+
+    <div class="dashboard-header">
+      <div class="dashboard-greeting">
+        <h1 id="t-name">—</h1>
+        <span class="meta" id="t-meta">—</span>
+      </div>
+      <span class="badge" id="t-status">—</span>
+    </div>
+
+    <section class="preferences-section">
+      <h3>여행 취향</h3>
+      <div class="preferences-grid" id="t-prefs"></div>
+    </section>
+
+    <section class="dashboard-current">
+      <div class="dashboard-section-title">
+        <h2>내 에디션</h2>
+      </div>
+      <div id="t-editions"></div>
+    </section>
+
+    <section id="t-edition-detail" class="preferences-section hidden">
+      <div class="dashboard-section-title">
+        <h2 id="ed-title">에디션</h2>
+        <button type="button" class="btn-link" id="ed-close">목록으로</button>
+      </div>
+      <div id="ed-body"></div>
+
+      <div class="feedback-section">
+        <h3>피드백 남기기</h3>
+        <label for="fb-text">자유 의견</label>
+        <textarea id="fb-text" rows="3" maxlength="2000" placeholder="다음 에디션에 반영할 의견을 남겨주세요."></textarea>
+        <button type="button" class="btn btn-accent" id="fb-submit">피드백 제출</button>
+        <p id="fb-result" class="staging-status"></p>
+      </div>
+    </section>
+
+    <section class="preferences-section">
+      <h3>계정</h3>
+      <button type="button" class="btn btn-outline btn-sm" id="deactivate-btn">탈퇴 요청</button>
+      <p id="deactivate-result" class="staging-status"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Living Travel — Staging · Synthetic Preview</p>
+  </footer>
+
+  <script type="module" src="assets/app-traveler.js"></script>
+</body>
+</html>

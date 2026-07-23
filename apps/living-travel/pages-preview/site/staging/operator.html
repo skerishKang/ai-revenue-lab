@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel — Staging Editorial Desk</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="assets/staging.css">
+</head>
+<body class="operator-layout">
+  <div class="staging-banner">Staging · Synthetic data · Connected API</div>
+
+  <nav class="operator-nav">
+    <span class="brand">Living Travel · Staging Editorial Desk</span>
+    <div class="nav-links">
+      <a href="operator.html">Dashboard</a>
+      <a href="index.html">Home</a>
+      <a href="#" id="signout-link">Sign out</a>
+    </div>
+  </nav>
+
+  <main class="operator-main">
+    <div class="notice">
+      <strong>Synthetic Preview</strong><br>
+      이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
+    </div>
+
+    <p id="status" class="staging-status" role="status">Loading…</p>
+    <p id="error-region" class="alert alert-error hidden" role="alert"></p>
+
+    <div class="operator-desk-header">
+      <div>
+        <h1>Editorial Desk</h1>
+        <span class="operator-desk-summary" id="op-summary">—</span>
+      </div>
+    </div>
+
+    <section class="operator-section">
+      <div class="operator-section-header">
+        <h2>Traveler Index</h2>
+        <button type="button" class="btn btn-sm btn-outline" id="op-refresh">Refresh</button>
+      </div>
+      <div class="operator-traveler-list" id="op-travelers"></div>
+    </section>
+
+    <section class="operator-section">
+      <div class="operator-section-header">
+        <h2>New Traveler</h2>
+      </div>
+      <div class="operator-create-form">
+        <div class="operator-create-fields">
+          <div>
+            <label for="nt-name">Display Name</label>
+            <input type="text" id="nt-name" maxlength="200" placeholder="Traveler name">
+          </div>
+          <div>
+            <label for="nt-dest">Destination</label>
+            <input type="text" id="nt-dest" maxlength="200" placeholder="e.g. Busan">
+          </div>
+          <div>
+            <label for="nt-nights">Nights</label>
+            <input type="number" id="nt-nights" value="2" min="1" max="60">
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="nt-create">Create Traveler</button>
+        <p id="nt-result" class="staging-status"></p>
+      </div>
+    </section>
+
+    <section id="op-detail" class="operator-section hidden">
+      <div class="operator-section-header">
+        <h2 id="detail-name">Traveler</h2>
+        <button type="button" class="btn-link" id="detail-close">Close</button>
+      </div>
+      <div class="operator-dossier-grid" id="detail-info"></div>
+      <div class="staging-actions">
+        <button type="button" class="btn btn-sm btn-outline" id="act-invite">Invite</button>
+        <button type="button" class="btn btn-sm btn-outline" id="act-rotate">Rotate invite</button>
+        <button type="button" class="btn btn-sm btn-outline" id="act-activate">Activate</button>
+        <button type="button" class="btn btn-sm btn-outline" id="act-gen1">Generate first</button>
+        <button type="button" class="btn btn-sm btn-outline" id="act-gen2">Generate second</button>
+        <button type="button" class="btn btn-sm btn-outline" id="act-deactivate">Deactivate</button>
+      </div>
+      <p id="detail-result" class="staging-status"></p>
+      <div id="detail-invite" class="operator-token-box hidden">
+        <span class="operator-token-value" id="detail-invite-code"></span>
+      </div>
+      <div class="operator-section-header">
+        <h2>Editions</h2>
+      </div>
+      <div class="operator-edit-list" id="detail-editions"></div>
+    </section>
+
+    <section id="op-edition" class="operator-section hidden">
+      <div class="operator-section-header">
+        <h2 id="edition-title">Edition</h2>
+        <button type="button" class="btn-link" id="edition-close">Close</button>
+      </div>
+      <div id="edition-body"></div>
+      <div class="staging-actions">
+        <button type="button" class="btn btn-sm btn-success" id="edition-publish">Publish</button>
+        <button type="button" class="btn btn-sm btn-outline" id="edition-reject">Reject</button>
+      </div>
+      <p id="edition-result" class="staging-status"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Living Travel — Staging · Synthetic Preview</p>
+  </footer>
+
+  <script type="module" src="assets/app-operator.js"></script>
+</body>
+</html>
