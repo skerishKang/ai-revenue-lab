@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ video.title }} — Personal Video Archive{% endblock %}
+{% block shell_class %}has-context{% endblock %}
 {% block content %}
 <div class="page-header">
     <h1>{{ video.title }}</h1>
@@ -7,22 +8,27 @@
 
 <div class="video-detail">
     <div class="video-thumbnail-large">
-        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}"
-             onerror="this.style.display='none'">
+        {% if is_preview %}
+        <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer">
+            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}">
+        </a>
+        {% else %}
+        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}">
+        {% endif %}
     </div>
 
     <div class="video-meta-source">
-        <span class="badge badge-info">YouTube information</span>
+        <span class="badge badge-info">{{ t("badge_youtube") }}</span>
     </div>
 
     <p class="video-channel">{{ video.channel_title }}</p>
     <p class="video-published">
-        Published {{ video.published_at[:10] }}
+        {{ t("feed_published") }} {{ video.published_at[:10] }}
         {% if video.duration_seconds %}
-        · {{ (video.duration_seconds / 60) | round(1) }} min
+        · {{ (video.duration_seconds / 60) | round(1) }}{{ t("feed_duration_min") }}
         {% endif %}
         {% if video.view_count %}
-        · {{ video.view_count | int }} views
+        · {{ video.view_count | int | format_thousands }} {{ t("feed_views") }}
         {% endif %}
     </p>
 
@@ -30,10 +36,10 @@
 
     {% if topic_videos %}
     <div class="topic-links">
-        <h3>Topics</h3>
+        <h3>{{ t("page_topics_section") }}</h3>
         {% for tv in topic_videos %}
-        <a href="/topics/{{ tv.topic_id }}" class="badge badge-app">
-            Topic: {{ tv.topic_id }}
+        <a href="{{ lp }}/topics/{{ tv.topic_id }}" class="badge badge-app">
+            {{ tv.topic_id }}
         </a>
         {% endfor %}
     </div>
@@ -41,24 +47,24 @@
 
     {% if records %}
     <div class="records-section">
-        <h3>Viewing Records</h3>
+        <h3>{{ t("page_viewing_records") }}</h3>
         {% for tv, record in records %}
-        <div class="record-summary badge-user">
-            <form method="post" action="/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
+        <div class="record-summary">
+            <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
                 <button type="submit" class="btn btn-small btn-primary">
-                    Open on YouTube
+                    {{ t("action_open_youtube") }}
                 </button>
             </form>
             {% if record %}
-            <strong>My private record</strong> —
-            State: {{ record.viewing_state }}
-            {% if record.rating %}· Rating: {{ record.rating }}/5{% endif %}
-            {% if record.tags %}· Tags: {{ record.tags | join(', ') }}{% endif %}
-            <a href="/records/{{ record.id }}" class="btn btn-small btn-secondary">Edit</a>
+            <strong>{{ t("badge_user") }}</strong> —
+            {{ t("form_viewing_state") }}: {{ t("state_" + (record.viewing_state | state_label)) }}
+            {% if record.rating %}· {{ t("form_rating") }}: {{ record.rating }}/5{% endif %}
+            {% if record.tags %}· {{ t("form_tags") }}: {{ record.tags | join(', ') }}{% endif %}
+            <a href="{{ lp }}/records/{{ record.id }}" class="btn btn-small btn-secondary">{{ t("action_save") }}</a>
             {% else %}
-            <form method="post" action="/topic-videos/{{ tv.id }}/records" class="inline-form">
+            <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/records" class="inline-form">
                 <button type="submit" class="btn btn-small btn-secondary">
-                    Create Record for this topic
+                    {{ t("action_create_record") }}
                 </button>
             </form>
             {% endif %}
@@ -67,4 +73,18 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block context_panel %}
+<aside class="context-panel">
+    <h3>{{ t("page_video_info") }}</h3>
+    <div class="context-item">{{ video.channel_title }}</div>
+    <div class="context-item">{{ t("feed_published") }} {{ video.published_at[:10] }}</div>
+    {% if video.duration_seconds %}
+    <div class="context-item">{{ (video.duration_seconds / 60) | round(1) }}{{ t("feed_duration_min") }}</div>
+    {% endif %}
+    {% if video.view_count %}
+    <div class="context-item">{{ video.view_count | int | format_thousands }} {{ t("feed_views") }}</div>
+    {% endif %}
+</aside>
 {% endblock %}

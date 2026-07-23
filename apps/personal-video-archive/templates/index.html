@@ -1,45 +1,94 @@
 {% extends "base.html" %}
 {% block title %}Personal Video Archive{% endblock %}
+{% block shell_class %}has-context{% endblock %}
 {% block content %}
-<div class="page-intro">
+<div class="page-header">
     <h1>Personal Video Archive</h1>
-    <p class="subtitle">
-        Topic-first video discovery and private reflection.
-        Define subjects you want to follow, discover new videos in clean topic feeds,
-        and keep private records of what you learned and planned.
-    </p>
-    <p class="small">
-        <span class="badge badge-info">YouTube info</span>
-        <span class="badge badge-app">Application analysis</span>
-        <span class="badge badge-user">My private record</span>
-        <span class="badge badge-ai">AI suggestion</span>
-    </p>
+    <p class="subtitle">{{ t("home_subtitle") }}</p>
 </div>
 
-{% if topics %}
-<div class="topic-list">
-    {% for topic in topics %}
-    <a href="/topics/{{ topic.id }}" class="topic-card">
-        <div class="topic-card-content">
-            <h3>{{ topic.name }}</h3>
-            <p class="topic-intent">{{ topic.intent }}</p>
-            <p class="small topic-meta">
-                Created {{ topic.created_at[:10] }}
-                {% if topic.is_archived %}<span class="badge badge-sm badge-muted">Archived</span>{% endif %}
-            </p>
-        </div>
-    </a>
-    {% endfor %}
-</div>
-{% else %}
-<div class="empty-state">
-    <h3>No topics yet</h3>
-    <p>Create your first topic to start discovering videos by subject.</p>
-    <a href="/topics/new" class="btn btn-primary">Create Topic</a>
+{% if continue_watching %}
+<div class="home-section">
+    <div class="home-section-header">
+        <h2>{{ t("home_continue_watching") }}</h2>
+    </div>
+    <div class="home-video-row">
+        {% for tv, video, record in continue_watching %}
+        {% include "partials/_video_card.html" %}
+        {% endfor %}
+    </div>
 </div>
 {% endif %}
 
-<div class="actions">
-    <a href="/topics/new" class="btn btn-primary">Create Topic</a>
+{% if new_finds %}
+<div class="home-section">
+    <div class="home-section-header">
+        <h2>{{ t("home_new_finds") }}</h2>
+        <a href="{{ lp }}/topics">{{ t("home_see_all") }}</a>
+    </div>
+    <div class="home-video-row">
+        {% for tv, video, record in new_finds %}
+        {% include "partials/_video_card.html" %}
+        {% endfor %}
+    </div>
 </div>
+{% endif %}
+
+<div class="home-section">
+    <div class="home-section-header">
+        <h2>{{ t("home_topics") }}</h2>
+        <a href="{{ lp }}/topics/new" class="btn btn-small btn-primary">{{ t("action_create_topic") }}</a>
+    </div>
+    {% if topics %}
+    <div class="topic-list">
+        {% for topic in topics %}
+        {% include "partials/_topic_card.html" %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>{{ t("empty_topics_title") }}</h3>
+        <p>{{ t("empty_topics_desc") }}</p>
+        <a href="{{ lp }}/topics/new" class="btn btn-primary">{{ t("action_create_topic") }}</a>
+    </div>
+    {% endif %}
+</div>
+
+{% if recent_notes %}
+<div class="home-section">
+    <div class="home-section-header">
+        <h2>{{ t("home_recent_notes") }}</h2>
+        <a href="{{ lp }}/records">{{ t("home_see_all") }}</a>
+    </div>
+    <div class="record-list">
+        {% for record, tv, video in recent_notes %}
+        {% include "partials/_record_card.html" %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if resurfaced %}
+<div class="home-section">
+    <div class="home-section-header">
+        <h2>{{ t("home_resurfaced") }}</h2>
+    </div>
+    <div class="record-list">
+        {% for record, tv, video in resurfaced %}
+        {% include "partials/_record_card.html" %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block context_panel %}
+<aside class="context-panel">
+    <h3>{{ t("home_topics") }}</h3>
+    {% for topic in topics %}
+    <div class="context-item">
+        <a href="{{ lp }}/topics/{{ topic.id }}">{{ topic.name }}</a>
+    </div>
+    {% endfor %}
+</aside>
 {% endblock %}

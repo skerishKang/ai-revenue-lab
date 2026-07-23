@@ -6,7 +6,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.db import get_connection
-from app.factory import _build_services, _render_template
+from app.factory import _build_services, _locale_prefix, _render_template
 from app.services import ProposalService
 
 router = APIRouter()
@@ -49,11 +49,12 @@ def accept_rule_change(request: Request, proposal_id: str):
         proposal_service.accept_rule_change(proposal_id)
 
         proposal = repos["proposal"].get(proposal_id)
+        lp = _locale_prefix(request)
         if proposal and proposal.topic_id:
             return RedirectResponse(
-                url=f"/topics/{proposal.topic_id}", status_code=303
+                url=f"{lp}/topics/{proposal.topic_id}", status_code=303
             )
-        return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=f"{lp}/", status_code=303)
     finally:
         conn.close()
 
@@ -71,10 +72,11 @@ def reject_rule_change(request: Request, proposal_id: str):
         proposal_service.reject_rule_change(proposal_id)
 
         proposal = repos["proposal"].get(proposal_id)
+        lp = _locale_prefix(request)
         if proposal and proposal.topic_id:
             return RedirectResponse(
-                url=f"/topics/{proposal.topic_id}", status_code=303
+                url=f"{lp}/topics/{proposal.topic_id}", status_code=303
             )
-        return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=f"{lp}/", status_code=303)
     finally:
         conn.close()

@@ -1,0 +1,60 @@
+<article class="video-card" data-video-title="{{ video.title }}">
+    <div class="video-thumbnail">
+        {% if is_preview %}
+        <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer">
+            <img class="video-card-thumb" src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        </a>
+        {% else %}
+        <img class="video-card-thumb" src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        {% endif %}
+    </div>
+    <div class="video-content">
+        <div class="video-meta-source">
+            <span class="badge badge-info badge-sm">{{ t("badge_youtube") }}</span>
+        </div>
+        <h3 class="video-title">{{ video.title }}</h3>
+        <p class="video-card-channel">{{ video.channel_title }}</p>
+        <p class="video-published small">
+            {{ t("feed_published") }} {{ video.published_at[:10] }}
+            {% if video.duration_seconds %}
+            · {{ (video.duration_seconds / 60) | round(1) }}{{ t("feed_duration_min") }}
+            {% endif %}
+            {% if video.view_count %}
+            · {{ video.view_count | int | format_thousands }} {{ t("feed_views") }}
+            {% endif %}
+        </p>
+
+        {% if tv.match_score is not none or tv.match_reasons %}
+        <div class="match-analysis">
+            <strong>{{ t("feed_why_recommended") }}</strong>
+            {% if tv.match_score is not none %}
+            · {{ t("feed_match_score", score=(tv.match_score * 100) | round | int) }}
+            {% endif %}
+            {% if tv.match_reasons %}
+            <ul class="match-reasons">
+                {% for reason in tv.match_reasons %}
+                <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="video-actions">
+            <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
+                <button type="submit" class="btn btn-small btn-primary">{{ t("action_open_youtube") }}</button>
+            </form>
+            <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/state" class="inline-form">
+                <input type="hidden" name="return_state" value="{{ current_state_filter | default('all') }}">
+                <select name="state" onchange="this.form.submit()">
+                    {% for s in ["unseen", "opened", "saved", "in_progress", "completed", "revisit", "irrelevant"] %}
+                    <option value="{{ s }}" {% if record and record.viewing_state.value == s %}selected{% elif not record and s == "unseen" %}selected{% endif %}>{{ t("state_" + s) }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            <form method="post" action="{{ lp }}/topic-videos/{{ tv.id }}/records" class="inline-form">
+                <button type="submit" class="btn btn-small btn-secondary">{{ t("action_create_record") }}</button>
+            </form>
+        </div>
+    </div>
+</article>

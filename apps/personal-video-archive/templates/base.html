@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ locale | default('ko') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,23 +7,48 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <a href="/" class="logo">Personal Video Archive</a>
-            <nav class="nav">
-                <a href="/topics">Topics</a>
-                <a href="/records">My Records</a>
-                <a href="/health" class="nav-health">Health</a>
-            </nav>
+    {% include "partials/_preview_notice.html" %}
+    <div class="app-shell {% block shell_class %}{% endblock %}">
+        <nav class="sidebar" aria-label="{{ t('nav_home') }}">
+            <a href="{{ lp }}/" class="sidebar-brand">Personal Video Archive</a>
+            <div class="sidebar-nav">
+                <a href="{{ lp }}/" {% if request.url.path == lp + "/" or request.url.path == lp %}aria-current="page"{% endif %}>{{ t("nav_home") }}</a>
+                <a href="{{ lp }}/topics" {% if "/topics" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_topics") }}</a>
+                <a href="{{ lp }}/records" {% if "/records" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_records") }}</a>
+                <a href="{{ lp }}/proposals" {% if "/proposals" in request.url.path %}aria-current="page"{% endif %}>{{ t("nav_proposals") }}</a>
+            </div>
+            <div class="sidebar-footer">
+                <a href="{{ lang_switch_href }}" class="lang-switch">{{ t("lang_switch") }}</a>
+            </div>
+        </nav>
+
+        <header class="app-header">
+            <a href="{{ lp }}/" class="brand">Personal Video Archive</a>
+            <a href="{{ lang_switch_href }}" class="lang-switch">{{ t("lang_switch") }}</a>
+        </header>
+
+        <main class="app-main">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% block context_panel %}{% endblock %}
+    </div>
+
+    <nav class="mobile-nav" aria-label="{{ t('nav_home') }}">
+        <div class="mobile-nav-inner">
+            <a href="{{ lp }}/" {% if request.url.path == lp + "/" or request.url.path == lp %}aria-current="page"{% endif %}>
+                <span class="nav-icon">⌂</span>{{ t("nav_home") }}
+            </a>
+            <a href="{{ lp }}/topics" {% if "/topics" in request.url.path %}aria-current="page"{% endif %}>
+                <span class="nav-icon">▦</span>{{ t("nav_topics") }}
+            </a>
+            <a href="{{ lp }}/records" {% if "/records" in request.url.path %}aria-current="page"{% endif %}>
+                <span class="nav-icon">✎</span>{{ t("nav_records") }}
+            </a>
+            <a href="{{ lp }}/proposals" {% if "/proposals" in request.url.path %}aria-current="page"{% endif %}>
+                <span class="nav-icon">✦</span>{{ t("nav_proposals") }}
+            </a>
         </div>
-    </header>
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
-    <footer class="site-footer">
-        <div class="container">
-            <p class="small">Phase 1 MVP — synthetic fixtures only. No real YouTube API or LLM calls.</p>
-        </div>
-    </footer>
+    </nav>
 </body>
 </html>

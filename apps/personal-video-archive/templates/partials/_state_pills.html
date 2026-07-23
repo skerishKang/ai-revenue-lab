@@ -1,0 +1,10 @@
+<nav class="feed-state-filter" aria-label="{{ t('form_viewing_state') }}">
+    {% for fs in feed_states %}
+    <a href="{{ lp }}/topics/{{ topic_id }}?state={{ fs }}"
+       class="filter-pill {% if fs == current_state_filter %}filter-pill-selected{% endif %}"
+       data-state="{{ fs }}"
+       {% if fs == current_state_filter %}aria-current="page"{% endif %}>
+        {{ t("state_" + fs) }}
+    </a>
+    {% endfor %}
+</nav>

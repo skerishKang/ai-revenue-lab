@@ -15,6 +15,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
 from app.db import apply_migrations, get_connection
+from app.i18n import lang_switch_href, locale_from_path, locale_prefix, make_t
 from app.providers import LanguageModelProvider, VideoDiscoveryProvider
 from app.providers.fake_language_model import FakeLanguageModelProvider
 from app.providers.fake_video_discovery import FakeVideoDiscoveryProvider
@@ -79,9 +80,6 @@ def _build_jinja_env() -> Environment:
     env.filters["format_thousands"] = _format_thousands
 
     def _state_label(value: Any) -> Any:
-        # Render a viewing state as its user-facing value. Accepts either a
-        # ViewingState enum (returns ``.value``) or a plain string (returned
-        # unchanged) so the shared template is safe for both input shapes.
         return getattr(value, "value", value)
 
     env.filters["state_label"] = _state_label
@@ -119,6 +117,16 @@ def _render_template(
     template = jinja_env.get_template(template_name)
     ctx = context or {}
     ctx["request"] = request
+
+    path = request.url.path
+    locale = locale_from_path(path)
+    query = str(request.url.query) if request.url.query else ""
+    ctx["locale"] = locale
+    ctx["lp"] = locale_prefix(locale)
+    ctx["t"] = make_t(locale)
+    ctx["lang_switch_href"] = lang_switch_href(path, query)
+    ctx.setdefault("is_preview", False)
+
     html = template.render(ctx)
     return HTMLResponse(
         content=html,
@@ -164,7 +172,6 @@ def create_app(
     app.state.discovery_provider = discovery_provider or _build_discovery_provider()
     app.state.llm_provider = llm_provider or _build_llm_provider()
 
-    # Build repositories and services
     def _make_repos(conn):
         return {
             "topic": TopicRepository(conn),
@@ -220,13 +227,21 @@ def _build_services(conn):
     return repos
 
 
+def _locale_prefix(request: Request) -> str:
+    """Return the locale URL prefix for the current request path."""
+    if request.url.path.startswith("/en"):
+        return "/en"
+    return ""
+
+
 def _register_routes(app: FastAPI) -> None:
     from app.routes import proposals, records, topics, videos
 
-    app.include_router(topics.router)
-    app.include_router(videos.router)
-    app.include_router(records.router)
-    app.include_router(proposals.router)
+    for prefix in ("", "/en"):
+        app.include_router(topics.router, prefix=prefix)
+        app.include_router(videos.router, prefix=prefix)
+        app.include_router(records.router, prefix=prefix)
+        app.include_router(proposals.router, prefix=prefix)
 
     @app.get("/health")
     def health():
@@ -238,6 +253,7 @@ def _register_routes(app: FastAPI) -> None:
         }
 
     @app.get("/")
+    @app.get("/en/")
     def index(request: Request):
         conn = get_connection(request.app.state.db_path)
         try:
@@ -247,6 +263,159 @@ def _register_routes(app: FastAPI) -> None:
                 request.app.state.llm_provider,
             )
             topics = topic_service.list_topics()
-            return _render_template(request, "index.html", {"topics": topics})
+
+            continue_watching = conn.execute(
+                "SELECT r.id as rec_id, r.viewing_state, r.updated_at, "
+                "tv.id as tv_id, tv.topic_id, tv.video_id, tv.match_score, "
+                "tv.match_reasons, tv.first_matched_at, tv.last_matched_at, "
+                "tv.is_excluded, tv.created_at as tv_created, tv.updated_at as tv_updated, "
+                "v.id as vid, v.provider, v.provider_video_id, v.canonical_url, "
+                "v.title, v.description, v.channel_id, v.channel_title, "
+                "v.published_at, v.duration_seconds, v.view_count, v.like_count, "
+                "v.thumbnail_url, v.tags, v.created_at as v_created, v.updated_at as v_updated "
+                "FROM viewing_records r "
+                "JOIN topic_videos tv ON r.topic_video_id = tv.id "
+                "JOIN videos v ON tv.video_id = v.id "
+                "WHERE r.viewing_state = 'in_progress' "
+                "ORDER BY r.updated_at DESC LIMIT 4"
+            ).fetchall()
+
+            new_finds = conn.execute(
+                "SELECT tv.id as tv_id, tv.topic_id, tv.video_id, tv.match_score, "
+                "tv.match_reasons, tv.first_matched_at, tv.last_matched_at, "
+                "tv.is_excluded, tv.created_at as tv_created, tv.updated_at as tv_updated, "
+                "v.id as vid, v.provider, v.provider_video_id, v.canonical_url, "
+                "v.title, v.description, v.channel_id, v.channel_title, "
+                "v.published_at, v.duration_seconds, v.view_count, v.like_count, "
+                "v.thumbnail_url, v.tags, v.created_at as v_created, v.updated_at as v_updated "
+                "FROM topic_videos tv "
+                "JOIN videos v ON tv.video_id = v.id "
+                "ORDER BY v.created_at DESC LIMIT 4"
+            ).fetchall()
+
+            recent_notes = conn.execute(
+                "SELECT r.id as rec_id, r.viewing_state, r.free_form_note, "
+                "r.tags as rec_tags, r.updated_at, "
+                "tv.id as tv_id, tv.topic_id, tv.video_id, "
+                "v.id as vid, v.title, v.channel_title, v.published_at, v.thumbnail_url "
+                "FROM viewing_records r "
+                "JOIN topic_videos tv ON r.topic_video_id = tv.id "
+                "JOIN videos v ON tv.video_id = v.id "
+                "WHERE r.free_form_note != '' AND r.free_form_note IS NOT NULL "
+                "ORDER BY r.updated_at DESC LIMIT 3"
+            ).fetchall()
+
+            resurfaced = conn.execute(
+                "SELECT r.id as rec_id, r.viewing_state, r.free_form_note, "
+                "r.tags as rec_tags, r.updated_at, "
+                "tv.id as tv_id, tv.topic_id, tv.video_id, "
+                "v.id as vid, v.title, v.channel_title, v.published_at, v.thumbnail_url "
+                "FROM viewing_records r "
+                "JOIN topic_videos tv ON r.topic_video_id = tv.id "
+                "JOIN videos v ON tv.video_id = v.id "
+                "WHERE r.viewing_state = 'revisit' "
+                "ORDER BY r.updated_at DESC LIMIT 1"
+            ).fetchall()
+
+            return _render_template(
+                request, "index.html",
+                {
+                    "topics": topics,
+                    "continue_watching": _rows_to_feed_tuples(continue_watching),
+                    "new_finds": _rows_to_feed_tuples(new_finds),
+                    "recent_notes": _rows_to_record_tuples(recent_notes),
+                    "resurfaced": _rows_to_record_tuples(resurfaced),
+                },
+            )
         finally:
             conn.close()
+
+
+def _rows_to_feed_tuples(rows):
+    """Convert raw SQL rows to (TopicVideo, DiscoveredVideo, None) tuples."""
+    from app.domain.models import DiscoveredVideo, TopicVideo
+
+    result = []
+    for row in rows:
+        tv = TopicVideo(
+            id=row["tv_id"],
+            topic_id=row["topic_id"],
+            video_id=row["video_id"],
+            first_matched_at=row["first_matched_at"],
+            last_matched_at=row["last_matched_at"],
+            match_score=row["match_score"],
+            match_reasons=json.loads(row["match_reasons"]) if row["match_reasons"] else [],
+            is_excluded=bool(row["is_excluded"]),
+            created_at=row["tv_created"],
+            updated_at=row["tv_updated"],
+        )
+        video = DiscoveredVideo(
+            id=row["vid"],
+            provider=row["provider"],
+            provider_video_id=row["provider_video_id"],
+            canonical_url=row["canonical_url"],
+            title=row["title"],
+            description=row["description"],
+            channel_id=row["channel_id"],
+            channel_title=row["channel_title"],
+            published_at=row["published_at"],
+            duration_seconds=row["duration_seconds"],
+            view_count=row["view_count"],
+            like_count=row["like_count"],
+            thumbnail_url=row["thumbnail_url"],
+            tags=json.loads(row["tags"]) if row["tags"] else [],
+            created_at=row["v_created"],
+            updated_at=row["v_updated"],
+        )
+        result.append((tv, video, None))
+    return result
+
+
+def _rows_to_record_tuples(rows):
+    """Convert raw SQL rows to (PrivateViewingRecord, TopicVideo, DiscoveredVideo) tuples."""
+    from app.domain.enums import ViewingState
+    from app.domain.models import DiscoveredVideo, PrivateViewingRecord, TopicVideo
+
+    result = []
+    for row in rows:
+        record = PrivateViewingRecord(
+            id=row["rec_id"],
+            topic_video_id=row["tv_id"],
+            viewing_state=ViewingState(row["viewing_state"]),
+            free_form_note=row.get("free_form_note", ""),
+            tags=json.loads(row["rec_tags"]) if row.get("rec_tags") else [],
+            created_at=row["updated_at"],
+            updated_at=row["updated_at"],
+        )
+        tv = TopicVideo(
+            id=row["tv_id"],
+            topic_id=row["topic_id"],
+            video_id=row["video_id"],
+            first_matched_at=row["updated_at"],
+            last_matched_at=row["updated_at"],
+            match_score=None,
+            match_reasons=[],
+            is_excluded=False,
+            created_at=row["updated_at"],
+            updated_at=row["updated_at"],
+        )
+        video = DiscoveredVideo(
+            id=row["vid"],
+            provider="youtube",
+            provider_video_id="",
+            canonical_url="",
+            title=row["title"],
+            description="",
+            channel_id="",
+            channel_title=row["channel_title"],
+            published_at=row["published_at"],
+            duration_seconds=None,
+            view_count=None,
+            like_count=None,
+            thumbnail_url=row.get("thumbnail_url", ""),
+            tags=[],
+            created_at=row["updated_at"],
+            updated_at=row["updated_at"],
+        )
+        result.append((record, tv, video))
+    return result
