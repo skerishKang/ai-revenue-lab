@@ -1,0 +1,67 @@
+/* ── Living Travel — Staging (connected) surface styles ──
+   Loaded AFTER ../assets/style.css so design tokens (--forest, --terracotta,
+   etc.) are available. No inline styles are used in staging HTML, so the
+   /staging/* CSP can omit 'unsafe-inline'. */
+
+/* Distinct staging banner: terracotta signals "connected staging", unlike the
+   forest preview banner used by the synthetic pages. */
+.staging-banner {
+  background: var(--terracotta);
+  color: #fff7f3;
+  text-align: center;
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Utility: hide without inline styles. */
+.hidden {
+  display: none !important;
+}
+
+.staging-status {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  min-height: 1.2em;
+  margin: 0.5rem 0;
+}
+
+.staging-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.staging-panel {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--ivory-darker);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.staging-panel-title {
+  font-size: 0.95rem;
+  color: var(--forest);
+  margin-bottom: 0.5rem;
+}
+
+/* Readable JSON fallback for unknown structured_content shapes. */
+.staging-json {
+  background: var(--ivory-darker);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
