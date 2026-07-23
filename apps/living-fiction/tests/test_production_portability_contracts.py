@@ -627,6 +627,8 @@ def test_modal_entry_secret_required_keys(modal_entry):
         "LF_ADMIN_SECRET",
         "LF_CREDENTIAL_HMAC_KEY",
         "LF_SESSION_HMAC_KEY",
+        "LF_AI_API_KEY",
+        "LF_AI_BASE_URL",
     }
     assert "LF_MIGRATION_DATABASE_URL" not in keys
     source = Path(modal_entry.__file__).read_text(encoding="utf-8")

@@ -132,6 +132,8 @@ class Settings(BaseSettings):
 
     ai_provider: str = "mock"
     ai_model: str = "mock-living-fiction-v1"
+    ai_api_key: str = ""
+    ai_base_url: str = ""
     prompt_version: str = "living-fiction-v1"
     max_retries: int = 2
 
