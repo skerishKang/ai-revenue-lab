@@ -132,7 +132,7 @@
       <label for="cost_limit_krw">예상 비용 한도 (원)</label>
       <input id="cost_limit_krw" name="cost_limit_krw" type="number" min="0" step="100"
              value="{{ form.get('cost_limit_krw', '') }}" placeholder="예: 5000">
-      <p class="field-hint">실제 추정 비용이 이 값을 넘으면 승인 화면에 경고가 표시됩니다. 0 또는 비워두면 제한 없음.</p>
+      <p class="field-hint">실제 추정 비용이 이 값을 넘으면 승인 화면에 경고가 표시됩니다. 비워두면 프로젝트 기본 비용 한도가 적용되며, 0을 입력하면 제한 없음으로 처리됩니다.</p>
       {% if errors.get('cost_limit_krw') %}<p class="field-error">{{ errors['cost_limit_krw'] }}</p>{% endif %}
     </div>
 

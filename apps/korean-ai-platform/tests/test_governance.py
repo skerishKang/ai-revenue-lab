@@ -252,3 +252,17 @@ def test_valid_settings_save_succeeds(client, store):
     assert resp.status_code == 303
     assert "saved=1" in resp.headers["location"]
     assert store.settings.project_cost_limit_krw == 12345.0
+
+
+# --- Cost limit guidance text matches actual behavior -------------------
+
+
+def test_new_task_page_renders_cost_guidance(client):
+    resp = client.get("/tasks/new")
+    assert resp.status_code == 200
+    # Blank input applies the project default cost limit.
+    assert "프로젝트 기본 비용 한도" in resp.text
+    # Explicit 0 means no limit.
+    assert "제한 없음" in resp.text
+    # The old inaccurate phrasing ("0 또는 비워두면 제한 없음") must be gone.
+    assert "0 또는 비워두면 제한 없음" not in resp.text
