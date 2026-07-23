@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" role="img" aria-hidden="true">
+<rect width="400" height="533" fill="#fffdf9" stroke="#d7cec0" stroke-width="2"/>
+<g fill="#203c32">
+<text x="200" y="120" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="28" font-weight="bold">Personal Edition</text>
+<text x="200" y="150" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="16">No. 1 · 2026. 07</text>
+<text x="200" y="180" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="14">테마: 시작</text>
+<rect x="60" y="200" width="280" height="2" fill="#d7cec0"/>
+<text x="200" y="240" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="14" fill="#716b62">개인 기록에서 만들어진</text>
+<text x="200" y="265" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="14" fill="#716b62">비공개 에디션</text>
+</g>
+</svg>

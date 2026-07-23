@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-hidden="true">
+<rect width="800" height="450" fill="#f4f0e8"/>
+<g fill="#203c32" opacity="0.1">
+<circle cx="200" cy="200" r="60"/>
+<circle cx="300" cy="150" r="40"/>
+<circle cx="400" cy="220" r="50"/>
+<circle cx="500" cy="180" r="35"/>
+<circle cx="600" cy="240" r="55"/>
+</g>
+<g stroke="#203c32" stroke-width="2" fill="none">
+<path d="M100 380 Q200 340 300 360 T500 350"/>
+</g>
+<text x="400" y="420" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="20" fill="#24231f">메모 · 원고 · 기록이 모여</text>
+<text x="400" y="445" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="20" fill="#24231f">한 권의 에디션으로</text>
+</svg>

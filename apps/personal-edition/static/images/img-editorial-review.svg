@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-hidden="true">
+<rect width="600" height="450" fill="#fffdf9"/>
+<g stroke="#203c32" stroke-width="1" fill="none" opacity="0.3">
+<line x1="80" y1="100" x2="520" y2="100"/>
+<line x1="80" y1="140" x2="520" y2="140"/>
+<line x1="80" y1="180" x2="520" y2="180"/>
+<line x1="80" y1="220" x2="520" y2="220"/>
+<line x1="80" y1="260" x2="520" y2="260"/>
+<line x1="80" y1="300" x2="520" y2="300"/>
+<line x1="80" y1="340" x2="520" y2="340"/>
+</g>
+<g fill="#8c302d" opacity="0.15">
+<circle cx="100" cy="120" r="8"/>
+<circle cx="100" cy="160" r="8"/>
+<circle cx="100" cy="200" r="8"/>
+<circle cx="100" cy="280" r="8"/>
+<circle cx="100" cy="320" r="8"/>
+</g>
+<text x="300" y="420" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="16" fill="#24231f">연필선 · 교정 표시 · 순서 조정</text>
+</svg>
