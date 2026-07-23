@@ -673,3 +673,122 @@ tr:last-child td { border-bottom: 0; }
   .steps[data-animating] .step { opacity: 1; }
   body.reveal-init .reveal { opacity: 1; transform: none; }
 }
+
+/* =====================================================================
+   User Workspace — hero, templates, recent tasks
+   ===================================================================== */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.ws-hero {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-1);
+  padding: 2rem 2rem 1.6rem; margin-bottom: 1.7rem; text-align: center;
+}
+.ws-hero-title { font-size: 1.6rem; margin: 0 0 .4rem; letter-spacing: -.02em; }
+.ws-hero-sub { color: var(--muted); font-size: .88rem; margin: 0 auto 1.4rem; max-width: 56ch; }
+
+.ws-input-form { max-width: 640px; margin: 0 auto; text-align: left; }
+.ws-input-row { margin-bottom: .7rem; }
+.ws-textarea {
+  width: 100%; padding: .75rem .9rem; font-family: var(--font-body); font-size: .95rem;
+  border: 1.5px solid var(--border-strong); border-radius: 10px; background: var(--surface);
+  color: var(--ink); transition: border-color .15s, box-shadow .15s; resize: vertical;
+}
+.ws-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); outline: none; }
+.ws-input-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.ws-project-select {
+  flex: 1 1 auto; min-width: 140px; padding: .55rem .7rem; font-family: var(--font-body);
+  font-size: .875rem; border: 1px solid var(--border-strong); border-radius: 8px;
+  background: var(--surface); color: var(--ink);
+}
+.ws-start-btn { flex: 0 0 auto; }
+
+.ws-template-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .8rem;
+}
+.ws-template-card {
+  display: flex; align-items: flex-start; gap: .85rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-1); padding: 1rem 1.1rem; text-decoration: none; color: var(--ink);
+  transition: border-color .15s, box-shadow .15s, transform .12s;
+}
+.ws-template-card:hover { border-color: var(--primary); box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.ws-template-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ws-template-img { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 8px; }
+.ws-template-body { min-width: 0; }
+.ws-template-title { display: block; font-weight: 700; font-size: .92rem; margin-bottom: .2rem; }
+.ws-template-desc { display: block; font-size: .78rem; color: var(--muted); line-height: 1.45; }
+
+.ws-recent-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .8rem;
+}
+.ws-recent-card {
+  display: flex; flex-direction: column; gap: .35rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-1); padding: 1rem 1.1rem; text-decoration: none; color: var(--ink);
+  transition: border-color .15s, box-shadow .15s;
+}
+.ws-recent-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-2); }
+.ws-recent-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ws-recent-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .6rem; }
+.ws-recent-title { font-weight: 700; font-size: .92rem; line-height: 1.35; overflow-wrap: break-word; word-break: keep-all; }
+.ws-recent-project { font-size: .76rem; color: var(--muted); }
+.ws-recent-summary { font-size: .8rem; color: var(--ink-2); }
+.ws-recent-action { font-size: .8rem; font-weight: 650; color: var(--primary-ink); margin-top: .15rem; }
+
+.ws-empty {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 2rem; text-align: center; color: var(--muted);
+}
+
+/* =====================================================================
+   User task detail — summary + disclosure
+   ===================================================================== */
+.ws-summary { border-top: 3px solid var(--primary); }
+.ws-summary-status { font-size: 1.05rem; margin: 0 0 .6rem; }
+.ws-summary-result { font-size: .88rem; color: var(--ink-2); margin: .3rem 0; }
+.ws-summary-cost { font-size: .84rem; color: var(--muted); margin: .3rem 0; }
+.ws-summary-action { margin-top: .8rem; }
+.ws-action-hint { font-size: .84rem; color: var(--muted); font-weight: 600; }
+
+.ws-risk-list { margin: .6rem 0; }
+.ws-risk-item {
+  display: flex; align-items: flex-start; gap: .5rem;
+  font-size: .85rem; color: var(--red-ink); font-weight: 600; margin: .35rem 0;
+}
+.ws-risk-item svg { flex: 0 0 auto; margin-top: .15rem; color: var(--red); }
+
+.ws-disclosure {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-1); margin-bottom: 1.2rem; overflow: hidden;
+}
+.ws-disclosure-summary {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .85rem 1.2rem; cursor: pointer; font-weight: 700; font-size: .9rem;
+  color: var(--ink-2); background: var(--surface-2); list-style: none;
+  transition: background .15s;
+}
+.ws-disclosure-summary::-webkit-details-marker { display: none; }
+.ws-disclosure-summary::before { content: "▸"; color: var(--faint); font-size: .8rem; transition: transform .15s; }
+.ws-disclosure[open] .ws-disclosure-summary::before { transform: rotate(90deg); }
+.ws-disclosure-summary:hover { background: var(--sunken); }
+.ws-disclosure-summary:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.ws-disclosure-body { padding: 1.2rem 1.35rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.ws-disclosure-body .panel { box-shadow: none; border: 1px solid var(--border); }
+
+/* =====================================================================
+   Workspace responsive
+   ===================================================================== */
+@media (max-width: 560px) {
+  .ws-hero { padding: 1.4rem 1rem 1.2rem; }
+  .ws-hero-title { font-size: 1.3rem; }
+  .ws-input-actions { flex-direction: column; align-items: stretch; }
+  .ws-project-select { min-width: 0; }
+  .ws-start-btn { width: 100%; }
+  .ws-template-grid { grid-template-columns: 1fr; }
+  .ws-recent-grid { grid-template-columns: 1fr; }
+  .ws-disclosure-body { padding: 1rem 1rem; }
+}

@@ -16,7 +16,7 @@ def test_health(client):
 
 
 def test_dashboard_renders_core_message(client):
-    resp = client.get("/")
+    resp = client.get("/admin")
     assert resp.status_code == 200
     body = resp.text
     assert "작업·검증·승인까지 관리합니다" in body

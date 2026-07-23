@@ -1,42 +1,64 @@
 {% extends "base.html" %}
 {% block title %}{{ task.title }} · Korean AI Platform{% endblock %}
-{% block crumb %}<strong>AI Operations</strong> · 작업 실행{% endblock %}
+{% block crumb %}<strong>작업 상세</strong>{% endblock %}
 {% block content %}
 
 <header class="exec-header reveal">
   <div class="exec-header-top">
     <div>
       <h1 class="exec-title">{{ task.title }}</h1>
-      <p class="exec-id">{{ task.id }} · 생성 {{ task.created_at[:16] | replace('T', ' ') }}</p>
+      <p class="exec-id">생성 {{ task.created_at[:16] | replace('T', ' ') }} · {{ project.name if project else task.project_id }}</p>
     </div>
     <span class="badge badge-lg badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
   </div>
-  <div class="exec-meta">
-    <span class="exec-meta-item">실행 <strong>#{{ task.run.run_number if task.run else '—' }}</strong></span>
-    <span class="exec-meta-item">프로젝트 <strong>{{ project.name if project else task.project_id }}</strong></span>
-    <span class="exec-meta-item">작업자 <strong>{{ worker_model.name if worker_model else task.worker_model_id }}</strong></span>
-    <span class="exec-meta-item">검증자 <strong>{{ validator_model.name if validator_model else task.validator_model_id }}</strong></span>
-    <span class="exec-meta-item">비용 <strong>{{ task.run.cost_total_krw | krw if task.run else '—' }}</strong></span>
-    <span class="exec-meta-item">데이터 처리
-      {% for region in regions.regions %}<span class="chip {{ 'chip-overseas' if regions.overseas else 'chip-domestic' }}">{{ region }}</span>{% endfor %}
-      {% if regions.domestic_only %}<span class="chip chip-domestic">국내 전용</span>{% endif %}
-    </span>
-  </div>
 </header>
+
+<section class="ws-summary panel reveal" aria-label="작업 요약">
+  <h2 class="ws-summary-status">{{ user_status_summary(task.status.value) }}</h2>
+
+  {% if user_risk_warnings %}
+  <div class="ws-risk-list" role="alert">
+    {% for warning in user_risk_warnings %}
+    <p class="ws-risk-item">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+      {{ warning }}
+    </p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if user_result_summary %}
+  <p class="ws-summary-result">{{ user_result_summary }}</p>
+  {% endif %}
+
+  {% if user_cost_summary %}
+  <p class="ws-summary-cost">{{ user_cost_summary }}</p>
+  {% endif %}
+
+  <div class="ws-summary-action">
+    {% if task.status.value == 'ready' %}
+    <form method="post" action="/tasks/{{ task.id }}/run">
+      <button type="submit" class="btn btn-primary btn-lg">실행 시작</button>
+    </form>
+    {% elif task.status.value == 'awaiting_approval' %}
+    <a href="#decision-section" class="btn btn-primary btn-lg">{{ user_action_label(task.status.value) }}</a>
+    {% else %}
+    <span class="ws-action-hint">{{ user_action_label(task.status.value) }}</span>
+    {% endif %}
+  </div>
+</section>
 
 {% if error %}
 <div class="callout callout-danger" role="alert"><span class="callout-title">오류</span>{{ error }}</div>
 {% endif %}
 
 {% if task.status.value == 'ready' %}
-<section class="panel reveal">
-  <h2>실행 준비 완료</h2>
-  <p class="muted">작업자·검증자 모델과 허용 범위를 확인했다면 실행을 시작하세요. 실행은 데모로 진행되며, 승인 전에는 브랜치에 반영되지 않습니다.</p>
-  <form method="post" action="/tasks/{{ task.id }}/run">
-    <button type="submit" class="btn btn-primary btn-lg">실행 시작</button>
-  </form>
-</section>
-{% include "_meta.html" %}
+<details class="ws-disclosure">
+  <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
+  <div class="ws-disclosure-body">
+    {% include "_meta.html" %}
+  </div>
+</details>
 
 {% elif task.status.value == 'running' %}
 <section class="panel">
@@ -48,11 +70,16 @@
 {% include "_verdict_strip.html" %}
 <div class="exec-layout">
   <div class="exec-main">
-    {% include "_meta.html" %}
-    {% include "_run_panel.html" %}
-    {% include "_review_panel.html" %}
+    <details class="ws-disclosure">
+      <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
+      <div class="ws-disclosure-body">
+        {% include "_meta.html" %}
+        {% include "_run_panel.html" %}
+        {% include "_review_panel.html" %}
+      </div>
+    </details>
   </div>
-  <aside class="exec-aside" aria-label="의사결정">
+  <aside class="exec-aside" aria-label="의사결정" id="decision-section">
     {% include "_actions.html" %}
   </aside>
 </div>
@@ -65,9 +92,14 @@
 </div>
 <div class="exec-layout">
   <div class="exec-main">
-    {% include "_meta.html" %}
-    {% include "_run_panel.html" %}
-    {% include "_review_panel.html" %}
+    <details class="ws-disclosure">
+      <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
+      <div class="ws-disclosure-body">
+        {% include "_meta.html" %}
+        {% include "_run_panel.html" %}
+        {% include "_review_panel.html" %}
+      </div>
+    </details>
   </div>
   <aside class="exec-aside" aria-label="재실행">
     <section class="panel decision">
@@ -84,8 +116,13 @@
 {% include "_verdict_strip.html" %}
 <div class="exec-layout">
   <div class="exec-main">
-    {% include "_run_panel.html" %}
-    {% include "_review_panel.html" %}
+    <details class="ws-disclosure">
+      <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
+      <div class="ws-disclosure-body">
+        {% include "_run_panel.html" %}
+        {% include "_review_panel.html" %}
+      </div>
+    </details>
   </div>
   <aside class="exec-aside" aria-label="완료 기록">
     {% include "_evidence_panel.html" %}
@@ -93,9 +130,14 @@
 </div>
 
 {% elif task.status.value == 'rejected' %}
-{% include "_meta.html" %}
-{% include "_evidence_panel.html" %}
+<details class="ws-disclosure">
+  <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
+  <div class="ws-disclosure-body">
+    {% include "_meta.html" %}
+    {% include "_evidence_panel.html" %}
+  </div>
+</details>
 {% endif %}
 
-<p class="back-link"><a href="/">← 대시보드로 돌아가기</a></p>
+<p class="back-link"><a href="/">← 사용자 화면으로 돌아가기</a></p>
 {% endblock %}

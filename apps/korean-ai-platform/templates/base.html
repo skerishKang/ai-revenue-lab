@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Korean AI Platform{% endblock %}</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234361ee'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='17' font-weight='800' fill='%23fff' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="/static/app.css?v=kap-console-4">
+<link rel="stylesheet" href="/static/app.css?v=kap-ws-1">
 </head>
 {% set path = request.url.path %}
+{% set is_admin = path.startswith('/admin') %}
 <body>
 <a class="skip-link" href="#main">본문 바로가기</a>
 <div class="app-shell">
@@ -19,10 +20,14 @@
         <span class="brand-sub">AI 작업 컨트롤 플레인</span>
       </span>
     </a>
-    <nav class="sidebar-nav">
-      <a href="/" class="nav-link {{ 'active' if path == '/' }}">
+    <nav class="sidebar-nav" aria-label="화면 전환">
+      <a href="/" class="nav-link {{ 'active' if not is_admin and path == '/' }}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+        사용자 화면
+      </a>
+      <a href="/admin" class="nav-link {{ 'active' if is_admin }}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 3h6v6H3V3zm8 0h6v4h-6V3zM3 11h6v6H3v-6zm8-2h6v8h-6V9z"/></svg>
-        대시보드
+        운영자 화면 · Demo
       </a>
       <a href="/tasks/new" class="nav-link {{ 'active' if path == '/tasks/new' }}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
@@ -45,7 +50,7 @@
   <div class="main-col">
     <header class="topbar">
       <div class="topbar-inner">
-        <span class="topbar-crumb">{% block crumb %}<strong>AI Operations</strong>{% endblock %}</span>
+        <span class="topbar-crumb">{% block crumb %}<strong>Korean AI Platform</strong>{% endblock %}</span>
         <div class="topbar-actions">
           <span class="topbar-env" title="{{ persistence_label }}"><span class="env-dot" aria-hidden="true"></span>{{ persistence_label }}</span>
           {% if demo_mode %}
@@ -64,6 +69,6 @@
     </footer>
   </div>
 </div>
-<script src="/static/app.js?v=kap-console-4" defer></script>
+<script src="/static/app.js?v=kap-ws-1" defer></script>
 </body>
 </html>

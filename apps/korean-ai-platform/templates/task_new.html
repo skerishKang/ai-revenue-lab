@@ -11,12 +11,18 @@
   </div>
 </div>
 
+{% if template %}
+<div class="callout callout-info" role="status">
+  <span class="callout-title">템플릿: {{ template.title }}</span>
+  {{ template.short_description }} 아래 내용을 확인하고 필요하면 수정하세요.
+</div>
+{% endif %}
+
 <form method="post" action="/tasks" class="form-card" novalidate>
   {% if errors.get('_form') %}
   <div class="callout callout-danger" role="alert">{{ errors['_form'] }}</div>
   {% endif %}
 
-  <!-- 01 작업 정의 -->
   <div class="form-step">
     <div class="step-head">
       <span class="step-num">01</span>
@@ -57,7 +63,6 @@
     </div>
   </div>
 
-  <!-- 02 모델과 실행 정책 -->
   <div class="form-step">
     <div class="step-head">
       <span class="step-num">02</span>
@@ -172,7 +177,6 @@
     </div>
   </div>
 
-  <!-- 03 검토 후 생성 -->
   <div class="form-step">
     <div class="step-head">
       <span class="step-num">03</span>

@@ -4,6 +4,10 @@ Routes are thin: they delegate to the application service, which owns the
 transition-unit transactions. A task only receives a mock commit SHA and branch
 name after an explicit human approval (AUTO branch mode). DB failures surface a
 fixed safe message and never produce a success redirect.
+
+User workspace (``/``) and operator console (``/admin``) share the same
+service layer. No authentication or role enforcement exists — this is a
+clickable demo.
 """
 
 from __future__ import annotations
@@ -15,9 +19,18 @@ from fastapi.responses import RedirectResponse
 
 from app import engine
 from app.db import PersistenceError
+from app.demo_templates import TEMPLATES, get_template
 from app.domain import TaskStatus
 from app.factory import render_template
 from app.services import BaseTaskService, TaskNotFound
+from app.user_helpers import (
+    user_action_label,
+    user_cost_summary,
+    user_result_summary,
+    user_risk_warnings,
+    user_status_label,
+    user_status_summary,
+)
 
 router = APIRouter()
 
@@ -35,7 +48,25 @@ def _error_redirect(task_id: str, message: object) -> RedirectResponse:
 
 
 @router.get("/")
-def dashboard(request: Request):
+def workspace(request: Request):
+    service = _service(request)
+    tasks = service.list_tasks()
+    recent = tasks[:6]
+    projects = list(service.projects.values())
+    context = {
+        "templates": TEMPLATES,
+        "recent_tasks": recent,
+        "projects": projects,
+        "projects_map": service.projects,
+        "user_status_label": user_status_label,
+        "user_action_label": user_action_label,
+        "user_result_summary": user_result_summary,
+    }
+    return render_template(request, "workspace.html", context)
+
+
+@router.get("/admin")
+def admin_dashboard(request: Request):
     service = _service(request)
     counts = service.status_counts()
     active = sum(
@@ -71,6 +102,17 @@ def dashboard(request: Request):
 @router.get("/tasks/new")
 def task_new(request: Request):
     service = _service(request)
+    template_id = request.query_params.get("template", "")
+    tpl = get_template(template_id)
+    form: dict = {}
+    if tpl is not None:
+        form = {
+            "title": tpl.suggested_task_title,
+            "instruction": tpl.suggested_instruction,
+            "project_id": tpl.suggested_project_id,
+            "allowed_paths": ", ".join(tpl.suggested_allowed),
+            "denied_paths": ", ".join(tpl.suggested_denied),
+        }
     return render_template(
         request,
         "task_new.html",
@@ -78,7 +120,8 @@ def task_new(request: Request):
             "projects": list(service.projects.values()),
             "models": list(service.models.values()),
             "errors": {},
-            "form": {},
+            "form": form,
+            "template": tpl,
         },
     )
 
@@ -124,6 +167,7 @@ def task_create(
                 "models": list(service.models.values()),
                 "errors": errors,
                 "form": form,
+                "template": None,
             },
         )
     return RedirectResponse(url=f"/tasks/{task.id}", status_code=303)
@@ -145,6 +189,12 @@ def task_detail(request: Request, task_id: str):
         "regions": service.data_regions(task),
         "settings": service.get_settings(),
         "error": request.query_params.get("error"),
+        "user_status_label": user_status_label,
+        "user_action_label": user_action_label,
+        "user_status_summary": user_status_summary,
+        "user_risk_warnings": user_risk_warnings(task),
+        "user_cost_summary": user_cost_summary(task),
+        "user_result_summary": user_result_summary(task),
     }
     return render_template(request, "task_detail.html", context)
 
@@ -229,7 +279,6 @@ async def settings_save(request: Request):
     service = _service(request)
     raw_form = await request.form()
     form = {key: str(raw_form.get(key)) for key in raw_form.keys()}
-    # Preserve checkbox semantics: absent checkbox -> "" (treated as off).
     try:
         ok, errors = service.save_settings(form)
     except PersistenceError as exc:

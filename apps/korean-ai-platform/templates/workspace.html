@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Korean AI Platform{% endblock %}
+{% block crumb %}<strong>사용자 Workspace</strong>{% endblock %}
+{% block content %}
+
+<section class="ws-hero" aria-label="AI 요청 입력">
+  <h1 class="ws-hero-title">무엇을 AI에게 맡기고 싶으세요?</h1>
+  <p class="ws-hero-sub">
+    웹사이트 제작, 문서 정리, 자료 조사, 데이터 분석, 홍보 문구 작성,
+    코드 수정 같은 작업을 AI에게 요청하고 진행 과정과 결과를 확인할 수 있습니다.
+  </p>
+
+  <form method="get" action="/tasks/new" class="ws-input-form" role="search">
+    <div class="ws-input-row">
+      <label for="ws-instruction" class="sr-only">요청 내용</label>
+      <textarea id="ws-instruction" name="instruction" rows="2"
+        class="ws-textarea"
+        placeholder="예: 주문 페이지에 재고 부족 경고 메시지를 추가해 주세요"></textarea>
+    </div>
+    <div class="ws-input-actions">
+      <button type="button" class="btn btn-ghost btn-sm" disabled
+        title="Demo 단계에서는 파일 첨부를 지원하지 않습니다.">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        파일 추가 · Demo
+      </button>
+      <label for="ws-project" class="sr-only">프로젝트 선택</label>
+      <select id="ws-project" name="project_id" class="ws-project-select">
+        <option value="">프로젝트 선택</option>
+        {% for project in projects %}
+        <option value="{{ project.id }}">{{ project.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary btn-lg ws-start-btn">시작하기</button>
+    </div>
+  </form>
+</section>
+
+<section class="ws-templates section" aria-labelledby="ws-templates-title">
+  <div class="section-head">
+    <h2 class="section-title" id="ws-templates-title">자주 하는 작업</h2>
+    <span class="muted" style="font-size:.78rem">클릭하면 바로 시작할 수 있습니다</span>
+  </div>
+  <div class="ws-template-grid">
+    {% for tpl in templates %}
+    <a href="/tasks/new?template={{ tpl.id }}" class="ws-template-card">
+      <img src="{{ tpl.image_path }}" alt="" class="ws-template-img" width="48" height="48" loading="lazy">
+      <span class="ws-template-body">
+        <span class="ws-template-title">{{ tpl.title }}</span>
+        <span class="ws-template-desc">{{ tpl.short_description }}</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="ws-recent section" aria-labelledby="ws-recent-title">
+  <div class="section-head">
+    <h2 class="section-title" id="ws-recent-title">최근 작업</h2>
+    <a class="btn btn-secondary btn-sm" href="/tasks/new">새 작업</a>
+  </div>
+
+  {% if recent_tasks %}
+  <div class="ws-recent-grid">
+    {% for task in recent_tasks %}
+    {% set proj = projects_map.get(task.project_id) %}
+    <a href="/tasks/{{ task.id }}" class="ws-recent-card">
+      <div class="ws-recent-top">
+        <span class="ws-recent-title">{{ task.title }}</span>
+        <span class="badge badge-{{ task.status.value }}">{{ user_status_label(task.status.value) }}</span>
+      </div>
+      <span class="ws-recent-project">{{ proj.name if proj else task.project_id }}</span>
+      <span class="ws-recent-summary">{{ user_result_summary(task) }}</span>
+      <span class="ws-recent-action">{{ user_action_label(task.status.value) }} →</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="ws-empty">
+    <p>아직 작업이 없습니다. 위에서 요청을 입력하거나 템플릿을 선택해 시작하세요.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
