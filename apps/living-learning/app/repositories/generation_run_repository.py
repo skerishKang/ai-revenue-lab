@@ -69,6 +69,21 @@ class GenerationAccounting:
     any_success: bool
 
 
+@dataclass(frozen=True)
+class TaskAccounting:
+    """Accounting for a single provider task within an attempt group."""
+
+    task_type: str
+    provider: str
+    model: str
+    provider_call_count: int
+    retry_count: int
+    latency_ms_total: float
+    input_tokens_total: int | None
+    output_tokens_total: int | None
+    final_validation_result: str
+
+
 _COLS = [
     "id", "attempt_group_id", "attempt_number", "request_id", "task_type",
     "provider", "advertised_model", "cost_class", "prompt_version",
@@ -201,21 +216,71 @@ def sum_tokens_by_lesson(conn: sqlite3.Connection, lesson_id: str) -> tuple[int,
     return 0, 0
 
 
+def compute_task_breakdown(
+    conn: sqlite3.Connection, attempt_group_id: str
+) -> list[TaskAccounting]:
+    """Per-task accounting within an attempt group.
+
+    ``provider_call_count`` is the number of rows for the task; ``retry_count``
+    is ``MAX(attempt_number) - 1`` (attempts restart at 1 per task). Provider and
+    model are reported per task so a difference between tasks is not hidden.
+    """
+    rows = get_generation_runs_by_group(conn, attempt_group_id)
+    by_task: dict[str, list[GenerationRunRecord]] = {}
+    for r in rows:
+        by_task.setdefault(r.task_type, []).append(r)
+
+    breakdown: list[TaskAccounting] = []
+    for task_type, task_rows in by_task.items():
+        provider_call_count = len(task_rows)
+        retry_count = max(r.attempt_number for r in task_rows) - 1
+        latency_ms_total = sum(r.latency_ms for r in task_rows)
+        inputs = [r.prompt_tokens for r in task_rows if r.prompt_tokens is not None]
+        outputs = [r.completion_tokens for r in task_rows if r.completion_tokens is not None]
+        # Use the last attempt's provider/model/validation (the final state).
+        last = task_rows[-1]
+        breakdown.append(
+            TaskAccounting(
+                task_type=task_type,
+                provider=last.provider or "unknown",
+                model=last.advertised_model or "unknown",
+                provider_call_count=provider_call_count,
+                retry_count=retry_count,
+                latency_ms_total=latency_ms_total,
+                input_tokens_total=sum(inputs) if inputs else None,
+                output_tokens_total=sum(outputs) if outputs else None,
+                final_validation_result=last.validation_result,
+            )
+        )
+    return breakdown
+
+
 def compute_accounting(
     conn: sqlite3.Connection, attempt_group_id: str
 ) -> GenerationAccounting | None:
     """Aggregate accounting across every provider call in an attempt group.
 
-    Retry latency is summed across all calls; token totals are ``NULL`` if no
-    call reported usage (otherwise the sum of reported values); failed and
-    validation-repair calls are included because every call is a row.
+    ``provider_call_count`` is the total number of provider calls (every row,
+    including failures and validation-repair calls). ``retry_count`` is the sum
+    over tasks of ``MAX(attempt_number) - 1`` — attempts restart at 1 per task,
+    so this is NOT ``provider_call_count - 1`` when a group has multiple tasks
+    (e.g. lesson_plan + lesson_content). Token totals are ``NULL`` if no call
+    reported usage (otherwise the sum of reported values); latency is the true
+    sum across all calls.
     """
     rows = get_generation_runs_by_group(conn, attempt_group_id)
     if not rows:
         return None
 
     provider_call_count = len(rows)
-    retry_count = provider_call_count - 1
+
+    # retry_count = SUM over tasks of (MAX(attempt_number) - 1).
+    max_attempt_by_task: dict[str, int] = {}
+    for r in rows:
+        if r.attempt_number > max_attempt_by_task.get(r.task_type, 0):
+            max_attempt_by_task[r.task_type] = r.attempt_number
+    retry_count = sum(max_attempt - 1 for max_attempt in max_attempt_by_task.values())
+
     latency_ms_total = sum(r.latency_ms for r in rows)
 
     reported_input = [r.prompt_tokens for r in rows if r.prompt_tokens is not None]
