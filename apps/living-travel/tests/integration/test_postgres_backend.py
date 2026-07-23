@@ -115,6 +115,7 @@ class TestPostgresMigrations:
             "traveler_tokens",
             "traveler_sessions",
             "deactivation_requests",
+            "external_identities",
             "schema_migrations",
         }.issubset(tables)
 
@@ -128,7 +129,7 @@ class TestPostgresMigrations:
             cur.execute("SELECT COUNT(*) AS n FROM schema_migrations")
             count = cur.fetchone()["n"]
         conn.close()
-        assert count == 5
+        assert count == 6
 
     def test_schema_migrations_records_filenames(self, pg_clean_schema):
         from app.db import apply_migrations
@@ -140,7 +141,7 @@ class TestPostgresMigrations:
             names = [row["filename"] for row in cur.fetchall()]
         conn.close()
         assert names[0] == "001_initial.sql"
-        assert names[-1] == "005_deactivation_request_constraints.sql"
+        assert names[-1] == "006_external_identities.sql"
 
 
 class TestPostgresConnection:
