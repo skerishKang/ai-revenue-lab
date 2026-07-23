@@ -84,6 +84,80 @@ class RejectingIdentityVerifier:
         raise InvalidTokenError("invalid token")
 
 
+class FirebaseIdentityVerifier:
+    """Production verifier for Firebase client ID tokens.
+
+    Verifies a Firebase *client* ID token (not a custom token) via the Firebase
+    Admin SDK: signature, audience/project, issuer/project, expiration, subject
+    presence, ``email_verified``, and (when enabled) revocation. The Firebase
+    ``subject`` (UID) is carried as ``IdentityPrincipal.subject`` and must be
+    mapped through ``external_identities`` — it is never used as a learner id.
+
+    All failures collapse to a generic ``InvalidTokenError``; the raw token,
+    decoded claims, UID, email, and verification exception are never logged or
+    returned. ``firebase_admin`` is imported lazily so the module imports cleanly
+    without the SDK.
+    """
+
+    def __init__(self, project_id: str, *, check_revoked: bool = True) -> None:
+        self._project_id = project_id
+        self._check_revoked = check_revoked
+        self._app = None
+
+    def _get_app(self):
+        if self._app is not None:
+            return self._app
+        import json
+        import os
+
+        from firebase_admin import credentials
+        import firebase_admin
+
+        sa_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+        if sa_json:
+            cred = credentials.Certificate(json.loads(sa_json))
+        else:
+            # Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS).
+            cred = credentials.ApplicationDefault()
+        try:
+            self._app = firebase_admin.initialize_app(cred, {"projectId": self._project_id})
+        except ValueError:
+            # App already initialized; reuse the default app.
+            self._app = firebase_admin.get_app()
+        return self._app
+
+    def verify_bearer_token(self, token: str) -> IdentityPrincipal:
+        if not token:
+            raise InvalidTokenError("invalid token")
+        try:
+            from firebase_admin import auth
+        except ImportError as exc:  # pragma: no cover - SDK optional
+            raise InvalidTokenError("invalid token") from exc
+        try:
+            decoded = auth.verify_id_token(
+                token, app=self._get_app(), check_revoked=self._check_revoked
+            )
+        except Exception as exc:  # never leak details
+            raise InvalidTokenError("invalid token") from exc
+
+        subject = decoded.get("uid") or decoded.get("sub")
+        if not subject:
+            raise InvalidTokenError("invalid token")
+        # Enforce a verified email when one is present.
+        email = decoded.get("email")
+        email_verified = bool(decoded.get("email_verified", False))
+        if email and not email_verified:
+            raise InvalidTokenError("invalid token")
+
+        return IdentityPrincipal(
+            issuer=FIREBASE_ISSUER,
+            subject=str(subject),
+            email=email,
+            email_verified=email_verified,
+            claims={},
+        )
+
+
 # ---------------------------------------------------------------------------
 # Module-level verifier registry (dependency-injection seam).
 # Tests inject a FakeIdentityVerifier; production wires the Firebase verifier.
