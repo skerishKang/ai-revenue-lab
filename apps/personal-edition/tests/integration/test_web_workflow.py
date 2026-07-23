@@ -9,6 +9,7 @@ import json
 import os
 import sqlite3
 import tempfile
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -1068,7 +1069,7 @@ class TestGenerationThroughWeb:
             all_cookies = {**admin_cookies, **csrf_cookie}
             resp = client.post(
                 "/admin/participants/p1/generate",
-                data={"input_id": input_id, "csrf_token": csrf_token},
+                data={"input_id": input_id, "csrf_token": csrf_token, "idempotency_key": str(uuid.uuid4())},
                 cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
@@ -1100,7 +1101,7 @@ class TestGenerationThroughWeb:
             all_cookies = {**admin_cookies, **csrf_cookie}
             resp = client.post(
                 "/admin/participants/p1/generate",
-                data={"input_id": input_id, "csrf_token": csrf_token, "allow_short_sample": "0"},
+                data={"input_id": input_id, "csrf_token": csrf_token, "allow_short_sample": "0", "idempotency_key": str(uuid.uuid4())},
                 cookies=all_cookies, follow_redirects=False,
             )
             assert resp.status_code == 303
@@ -2641,7 +2642,7 @@ class TestTerminalPageCSRF:
 
             submit_resp = client.post(
                 "/admin/participants/nonexistent/generate",
-                data={"input_id": "", "csrf_token": dash_token},
+                data={"input_id": "", "csrf_token": dash_token, "idempotency_key": str(uuid.uuid4())},
                 cookies={**admin_cookies, "pe_admin_csrf": dash_csrf},
                 follow_redirects=False,
             )

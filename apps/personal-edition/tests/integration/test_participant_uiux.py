@@ -18,6 +18,7 @@ Covers:
 import os
 import sys
 import re
+import uuid
 
 import pytest
 from fastapi.testclient import TestClient
@@ -1183,7 +1184,7 @@ class TestOperatorUIFixedContractAndNavigation:
 
         resp = client.post(
             f"/admin/participants/{pid}/generate",
-            data={"csrf_token": csrf_token, "input_id": inp.id},
+            data={"csrf_token": csrf_token, "input_id": inp.id, "idempotency_key": str(uuid.uuid4())},
             follow_redirects=True,
         )
         assert resp.status_code == 200
@@ -1284,7 +1285,7 @@ class TestGenerationFailureHandling:
 
         resp = client.post(
             f"/admin/participants/{pid}/generate",
-            data={"input_id": input_id, "csrf_token": csrf_token},
+            data={"input_id": input_id, "csrf_token": csrf_token, "idempotency_key": str(uuid.uuid4())},
             cookies=all_cookies, follow_redirects=False,
         )
         assert resp.status_code == 303
@@ -1364,7 +1365,7 @@ class TestGenerationFailureHandling:
 
         client.post(
             f"/admin/participants/{pid}/generate",
-            data={"input_id": input_id, "csrf_token": csrf_token},
+            data={"input_id": input_id, "csrf_token": csrf_token, "idempotency_key": str(uuid.uuid4())},
             cookies=all_cookies, follow_redirects=False,
         )
 
@@ -1394,7 +1395,7 @@ class TestGenerationFailureHandling:
 
         resp = client.post(
             f"/admin/participants/{pid}/generate",
-            data={"input_id": input_id, "csrf_token": csrf_token},
+            data={"input_id": input_id, "csrf_token": csrf_token, "idempotency_key": str(uuid.uuid4())},
             cookies=all_cookies, follow_redirects=False,
         )
         assert resp.status_code == 303
