@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>우리단지 이웃가게 · 클릭 데모</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="demo-banner">
+    <div class="demo-banner-inner">
+      <span><strong>클릭 데모</strong> · 실제 로그인·주민확인·문의·예약·결제·저장은 작동하지 않습니다.</span>
+      <button type="button" data-action="reset-demo">데모 초기화</button>
+    </div>
+  </div>
+  <header class="header">
+    <div class="header-inner">
+      <button class="brand" type="button" data-route="home" aria-label="홈으로 이동">
+        <span class="mark">이</span><span><strong>우리단지 이웃가게</strong><small>방림명지로드힐 클릭 데모</small></span>
+      </button>
+      <nav class="top-nav" aria-label="주요 메뉴">
+        <button type="button" data-route="home">홈</button>
+        <button type="button" data-route="explore">탐색</button>
+        <button type="button" data-route="benefits">혜택</button>
+        <button type="button" data-route="saved">찜·요청</button>
+      </nav>
+      <div class="role-switch" aria-label="데모 역할 선택">
+        <button type="button" data-role="resident">주민</button>
+        <button type="button" data-role="owner">사업자</button>
+        <button type="button" data-role="operator">운영자</button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="page" data-page="home"></section>
+    <section class="page" data-page="explore"></section>
+    <section class="page" data-page="detail"></section>
+    <section class="page" data-page="benefits"></section>
+    <section class="page" data-page="saved"></section>
+    <section class="page" data-page="owner-register"></section>
+    <section class="page" data-page="owner-preview"></section>
+    <section class="page" data-page="owner-dashboard"></section>
+    <section class="page" data-page="operator-queue"></section>
+    <section class="page" data-page="operator-review"></section>
+  </main>
+  <footer class="footer"><div class="footer-inner"><strong>우리단지 이웃가게 · Phase 0 정적 데모</strong>모든 업체·주민 관계·가격·혜택·문의·검토 결과는 합성 예시입니다. 주민 운영 확인은 관리주체의 보증이나 서비스 품질 보증이 아닙니다.</div></footer>
+  <nav class="mobile-tabs" aria-label="모바일 메뉴">
+    <button type="button" data-route="home"><span>⌂</span>홈</button>
+    <button type="button" data-route="explore"><span>⌕</span>탐색</button>
+    <button type="button" data-route="benefits"><span>%</span>혜택</button>
+    <button type="button" data-route="saved"><span>♡</span>찜</button>
+    <button type="button" data-action="open-role"><span>☰</span>모드</button>
+  </nav>
+  <div class="modal-backdrop" id="modalBackdrop" role="presentation">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">데모 작업</h2><div id="modalBody"></div><div class="modal-actions"><button class="secondary" type="button" data-action="close-modal">취소</button><button class="primary" id="modalConfirm" type="button">확인</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
