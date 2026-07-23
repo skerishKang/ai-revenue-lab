@@ -355,12 +355,93 @@ def _validate_migration_sql(content: str) -> None:
                 "not supported by statement splitter"
             )
 
-    if re.search(r"/\*", content):
-        if re.search(r"/\*.*?/\*", content, re.DOTALL):
-            raise MigrationParseError(
-                "migration SQL contains nested block comments "
-                "not supported by statement splitter"
-            )
+    _check_block_comment_nesting(content)
+
+
+def _check_block_comment_nesting(sql: str) -> None:
+    """Raise :class:`MigrationParseError` if the SQL contains
+    actual nested block comments (depth >= 2).
+
+    Properly ignores ``/*`` and ``*/`` markers that appear inside
+    string literals, E-strings, double-quoted identifiers, or
+    line comments, avoiding false positives.
+    """
+    i = 0
+    n = len(sql)
+    depth = 0
+    while i < n:
+        ch = sql[i]
+        nxt = sql[i + 1] if i + 1 < n else ""
+
+        if depth > 0:
+            if ch == "/" and nxt == "*":
+                depth += 1
+                if depth >= 2:
+                    raise MigrationParseError(
+                        "migration SQL contains nested block comments "
+                        "not supported by statement splitter"
+                    )
+                i += 2
+            elif ch == "*" and nxt == "/":
+                depth -= 1
+                i += 2
+            elif ch == "\n":
+                i += 1
+            else:
+                i += 1
+            continue
+
+        if ch == "-" and nxt == "-":
+            while i < n and sql[i] != "\n":
+                i += 1
+            continue
+
+        if ch == "/" and nxt == "*":
+            depth = 1
+            i += 2
+            continue
+
+        if ch == "'":
+            i += 1
+            while i < n:
+                if sql[i] == "\\":
+                    i += 2
+                elif sql[i] == "'" and i + 1 < n and sql[i + 1] == "'":
+                    i += 2
+                elif sql[i] == "'":
+                    i += 1
+                    break
+                else:
+                    i += 1
+            continue
+
+        if ch in ("E", "e") and nxt == "'" and (
+            i == 0 or not (sql[i - 1].isalnum() or sql[i - 1] == "_")
+        ):
+            i += 2
+            while i < n:
+                if sql[i] == "\\":
+                    i += 2
+                elif sql[i] == "'" and i + 1 < n and sql[i + 1] == "'":
+                    i += 2
+                elif sql[i] == "'":
+                    i += 1
+                    break
+                else:
+                    i += 1
+            continue
+
+        if ch == '"':
+            i += 1
+            while i < n and sql[i] != '"':
+                if sql[i] == '"' and i + 1 < n and sql[i + 1] == '"':
+                    i += 2
+                else:
+                    i += 1
+            i += 1
+            continue
+
+        i += 1
 
 
 def _ensure_migrations_table(conn: Connection[DictRow]) -> None:

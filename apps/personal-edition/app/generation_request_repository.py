@@ -83,8 +83,7 @@ def get_generation_request_by_key(
     """Return a generation request by idempotency key.
 
     The returned record always has ``claim_token=None`` — generic lookups
-    must not leak active capability tokens.  Internal code that requires
-    the raw token should use ``_get_generation_request_by_key_raw``.
+    must not leak active capability tokens.
     """
     row = conn.execute(
         f"SELECT {_SELECT} FROM generation_requests WHERE idempotency_key = ?",

@@ -559,8 +559,9 @@ class TestConcurrency:
 
         _make_participant(pg_env.runtime, "p1")
         edition = _make_edition(pg_env.runtime, "p1")
+        original_content = edition.structured_content
         barrier = threading.Barrier(2)
-        content_outcome: list = []
+        updated_content = '{"sections": [{"body": "updated"}]}'
 
         def publish_worker():
             rt = self._thread_runtime(pg_env.schema_name)
@@ -578,11 +579,11 @@ class TestConcurrency:
                 ed_repo.update_edition_content(
                     rt,
                     edition.id,
-                    structured_content='{"sections": [{"body": "updated"}]}',
+                    structured_content=updated_content,
                 )
-                content_outcome.append("ok")
+                return "ok"
             except ed_repo.EditionStateConflict:
-                content_outcome.append("conflict")
+                return "conflict"
             finally:
                 rt.close()
 
@@ -597,7 +598,10 @@ class TestConcurrency:
         assert final.publication_state == "published"
         assert pub_result == "ok"
         assert con_result in ("ok", "conflict")
-        assert content_outcome[0] in ("ok", "conflict")
+        if con_result == "ok":
+            assert final.structured_content == updated_content
+        else:
+            assert final.structured_content == original_content
 
     def test_concurrent_claim_same_key_one_wins(self, pg_env):
         import threading
