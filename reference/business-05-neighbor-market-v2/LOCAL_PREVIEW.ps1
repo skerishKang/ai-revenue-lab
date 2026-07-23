@@ -7,6 +7,7 @@ param(
 $ErrorActionPreference = "Stop"
 $Branch = "design/business-05-neighbor-market-v2-89"
 $RelativeReference = "reference/business-05-neighbor-market-v2"
+$PrimaryFile = "index-v3.html"
 
 Write-Host "[1/6] Validate source repository"
 if (-not (Test-Path (Join-Path $RepoPath ".git"))) {
@@ -43,9 +44,9 @@ if (Test-Path $WorktreePath) {
 }
 
 $ReferencePath = Join-Path $WorktreePath $RelativeReference
-$IndexPath = Join-Path $ReferencePath "index.html"
+$IndexPath = Join-Path $ReferencePath $PrimaryFile
 if (-not (Test-Path $IndexPath)) {
-    throw "Reference index not found: $IndexPath"
+    throw "Reference prototype not found: $IndexPath"
 }
 
 Write-Host "[4/6] Verify exact branch head and clean state"
@@ -69,23 +70,20 @@ if (-not $Python) {
 }
 
 Set-Location $ReferencePath
-$Url = "http://127.0.0.1:$Port/index.html"
+$Url = "http://127.0.0.1:$Port/$PrimaryFile"
 
 $Existing = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
 if (-not $Existing) {
-    if ($Python.Name -eq "py.exe") {
-        Start-Process -FilePath $Python.Source -ArgumentList "-m", "http.server", "$Port", "--bind", "127.0.0.1" -WorkingDirectory $ReferencePath
-    } else {
-        Start-Process -FilePath $Python.Source -ArgumentList "-m", "http.server", "$Port", "--bind", "127.0.0.1" -WorkingDirectory $ReferencePath
-    }
+    Start-Process -FilePath $Python.Source -ArgumentList "-m", "http.server", "$Port", "--bind", "127.0.0.1" -WorkingDirectory $ReferencePath
     Start-Sleep -Seconds 2
 }
 
-Write-Host "[6/6] Open the reference in the default browser"
+Write-Host "[6/6] Open the V3 reference in the default browser"
 Start-Process $Url
 
 Write-Host ""
 Write-Host "Reference URL: $Url"
+Write-Host "Primary file: $PrimaryFile"
 Write-Host "Worktree: $WorktreePath"
 Write-Host "Branch: $Branch"
 Write-Host "SHA: $LocalSha"
