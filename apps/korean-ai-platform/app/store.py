@@ -96,7 +96,20 @@ def parse_cost_limit(raw: str) -> tuple[float | None, str | None]:
     return value, None
 
 
-def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[str, str]]:
+def validate_and_build_task(
+    models: dict[str, ModelSpec],
+    projects: dict[str, Project],
+    settings: SecuritySettings,
+    form: dict[str, str],
+    next_id,
+) -> tuple[Task | None, dict[str, str]]:
+    """Validate a task form and build a Task without persisting it.
+
+    Pure with respect to storage: it only calls ``next_id()`` (after all
+    validation passes) to allocate the ID. Both the in-memory ``create_task``
+    and the SQLite application service reuse this so validation rules stay
+    identical across backends.
+    """
     errors: dict[str, str] = {}
 
     title = form.get("title", "").strip()
@@ -109,11 +122,11 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
         errors["title"] = "작업 제목을 입력하세요."
     if not instruction:
         errors["instruction"] = "작업 지시를 입력하세요."
-    if project_id not in store.projects:
+    if project_id not in projects:
         errors["project_id"] = "프로젝트를 선택하세요."
-    if worker_model_id not in store.models:
+    if worker_model_id not in models:
         errors["worker_model_id"] = "작업 모델을 선택하세요."
-    if validator_model_id not in store.models:
+    if validator_model_id not in models:
         errors["validator_model_id"] = "검증 모델을 선택하세요."
 
     if errors:
@@ -121,9 +134,9 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
 
     # Global external-model policy: when external transmission is disabled,
     # block any overseas/non-domestic worker or validator model.
-    if not store.settings.allow_external:
-        worker = store.models[worker_model_id]
-        validator = store.models[validator_model_id]
+    if not settings.allow_external:
+        worker = models[worker_model_id]
+        validator = models[validator_model_id]
         if not worker.is_domestic:
             errors["worker_model_id"] = (
                 f"외부 모델 전송이 허용되지 않았습니다. '{worker.name}'은(는) 해외 처리 모델입니다."
@@ -135,7 +148,7 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
         if errors:
             return None, errors
 
-    project = store.projects[project_id]
+    project = projects[project_id]
     allowed = _split_paths(form.get("allowed_paths", "")) or list(project.default_allowed)
     denied = _split_paths(form.get("denied_paths", "")) or list(project.default_denied)
 
@@ -150,7 +163,7 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
     # explicit value (including 0 = no limit) is parsed and validated.
     cost_raw = (form.get("cost_limit_krw") or "").strip()
     if cost_raw == "":
-        cost_limit = store.settings.project_cost_limit_krw
+        cost_limit = settings.project_cost_limit_krw
     else:
         cost_limit, cost_error = parse_cost_limit(cost_raw)
         if cost_error is not None:
@@ -171,7 +184,7 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
         return None, errors
 
     task = Task(
-        id=store.next_id(),
+        id=next_id(),
         title=title,
         instruction=instruction,
         project_id=project_id,
@@ -183,5 +196,13 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
         external_policy=external_policy,
         branch_mode=branch_mode,
     )
-    store.tasks[task.id] = task
+    return task, errors
+
+
+def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[str, str]]:
+    task, errors = validate_and_build_task(
+        store.models, store.projects, store.settings, form, store.next_id
+    )
+    if task is not None:
+        store.tasks[task.id] = task
     return task, errors

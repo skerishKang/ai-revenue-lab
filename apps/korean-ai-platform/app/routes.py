@@ -1,7 +1,9 @@
 """Web routes for the Korean AI Platform demo MVP.
 
-All state changes go through the deterministic engine. A task only receives a
-mock commit SHA and branch name after an explicit human approval.
+Routes are thin: they delegate to the application service, which owns the
+transition-unit transactions. A task only receives a mock commit SHA and branch
+name after an explicit human approval (AUTO branch mode). DB failures surface a
+fixed safe message and never produce a success redirect.
 """
 
 from __future__ import annotations
@@ -12,24 +14,20 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 
 from app import engine
+from app.db import PersistenceError
 from app.domain import TaskStatus
 from app.factory import render_template
-from app.store import ByokState, Store, create_task, parse_cost_limit
+from app.services import BaseTaskService, TaskNotFound
 
 router = APIRouter()
 
 
-def _store(request: Request) -> Store:
-    return request.app.state.store
+def _service(request: Request) -> BaseTaskService:
+    return request.app.state.service
 
 
 def _error_redirect(task_id: str, message: object) -> RedirectResponse:
-    """Build a redirect carrying an error message safely.
-
-    The message (a fixed Korean engine string) is percent-encoded so the
-    Location header stays pure ASCII; raw non-ASCII bytes in a header would
-    make a real ASGI server fail the response.
-    """
+    """Redirect carrying a percent-encoded error (ASCII-safe Location header)."""
     return RedirectResponse(
         url=f"/tasks/{quote(task_id)}?error={quote(str(message))}",
         status_code=303,
@@ -38,8 +36,8 @@ def _error_redirect(task_id: str, message: object) -> RedirectResponse:
 
 @router.get("/")
 def dashboard(request: Request):
-    store = _store(request)
-    counts = store.status_counts()
+    service = _service(request)
+    counts = service.status_counts()
     active = sum(
         counts.get(s.value, 0)
         for s in (
@@ -49,8 +47,8 @@ def dashboard(request: Request):
             TaskStatus.REWORK,
         )
     )
-    settings = store.settings
-    tasks = store.list_tasks()
+    settings = service.get_settings()
+    tasks = service.list_tasks()
     policy_alerts = sum(
         1
         for t in tasks
@@ -60,11 +58,11 @@ def dashboard(request: Request):
         "tasks": tasks,
         "counts": counts,
         "active_count": active,
-        "project_count": len(store.projects),
-        "monthly_krw": store.monthly_estimated_krw(),
+        "project_count": len(service.projects),
+        "monthly_krw": service.monthly_estimated_krw(),
         "settings": settings,
-        "models_map": store.models,
-        "projects_map": store.projects,
+        "models_map": service.models,
+        "projects_map": service.projects,
         "policy_alerts": policy_alerts,
     }
     return render_template(request, "dashboard.html", context)
@@ -72,13 +70,13 @@ def dashboard(request: Request):
 
 @router.get("/tasks/new")
 def task_new(request: Request):
-    store = _store(request)
+    service = _service(request)
     return render_template(
         request,
         "task_new.html",
         {
-            "projects": list(store.projects.values()),
-            "models": list(store.models.values()),
+            "projects": list(service.projects.values()),
+            "models": list(service.models.values()),
             "errors": {},
             "form": {},
         },
@@ -99,7 +97,7 @@ def task_create(
     external_policy: str = Form("allow"),
     branch_mode: str = Form("auto"),
 ):
-    store = _store(request)
+    service = _service(request)
     form = {
         "title": title,
         "instruction": instruction,
@@ -112,14 +110,18 @@ def task_create(
         "external_policy": external_policy,
         "branch_mode": branch_mode,
     }
-    task, errors = create_task(store, form)
+    try:
+        task, errors = service.create_task(form)
+    except PersistenceError as exc:
+        errors = {"_form": str(exc)}
+        task = None
     if task is None:
         return render_template(
             request,
             "task_new.html",
             {
-                "projects": list(store.projects.values()),
-                "models": list(store.models.values()),
+                "projects": list(service.projects.values()),
+                "models": list(service.models.values()),
                 "errors": errors,
                 "form": form,
             },
@@ -129,19 +131,19 @@ def task_create(
 
 @router.get("/tasks/{task_id}")
 def task_detail(request: Request, task_id: str):
-    store = _store(request)
-    task = store.get_task(task_id)
+    service = _service(request)
+    task = service.get_task(task_id)
     if task is None:
         return render_template(
             request, "not_found.html", {"task_id": task_id}, status_code=404
         )
     context = {
         "task": task,
-        "project": store.projects.get(task.project_id),
-        "worker_model": store.models.get(task.worker_model_id),
-        "validator_model": store.models.get(task.validator_model_id),
-        "regions": engine.data_regions(task, store.models),
-        "settings": store.settings,
+        "project": service.projects.get(task.project_id),
+        "worker_model": service.models.get(task.worker_model_id),
+        "validator_model": service.models.get(task.validator_model_id),
+        "regions": service.data_regions(task),
+        "settings": service.get_settings(),
         "error": request.query_params.get("error"),
     }
     return render_template(request, "task_detail.html", context)
@@ -149,38 +151,41 @@ def task_detail(request: Request, task_id: str):
 
 @router.post("/tasks/{task_id}/run")
 def task_run(request: Request, task_id: str):
-    store = _store(request)
-    task = store.get_task(task_id)
-    if task is None:
-        return RedirectResponse(url="/", status_code=303)
+    service = _service(request)
     try:
-        engine.run_task(task, store.models)
-    except engine.IllegalTransition as exc:
+        service.run_task(task_id)
+    except TaskNotFound:
+        return RedirectResponse(url="/", status_code=303)
+    except PersistenceError as exc:
+        return _error_redirect(task_id, exc)
+    except (engine.IllegalTransition, ValueError) as exc:
         return _error_redirect(task_id, exc)
     return RedirectResponse(url=f"/tasks/{task_id}?ran=1", status_code=303)
 
 
 @router.post("/tasks/{task_id}/approve")
 def task_approve(request: Request, task_id: str, approver: str = Form("")):
-    store = _store(request)
-    task = store.get_task(task_id)
-    if task is None:
-        return RedirectResponse(url="/", status_code=303)
+    service = _service(request)
     try:
-        engine.approve_task(task, approver)
-    except engine.IllegalTransition as exc:
+        service.approve_task(task_id, approver)
+    except TaskNotFound:
+        return RedirectResponse(url="/", status_code=303)
+    except PersistenceError as exc:
+        return _error_redirect(task_id, exc)
+    except (engine.IllegalTransition, ValueError) as exc:
         return _error_redirect(task_id, exc)
     return RedirectResponse(url=f"/tasks/{task_id}", status_code=303)
 
 
 @router.post("/tasks/{task_id}/rework")
 def task_rework(request: Request, task_id: str, reason: str = Form("")):
-    store = _store(request)
-    task = store.get_task(task_id)
-    if task is None:
-        return RedirectResponse(url="/", status_code=303)
+    service = _service(request)
     try:
-        engine.request_rework(task, reason, store.models)
+        service.request_rework(task_id, reason)
+    except TaskNotFound:
+        return RedirectResponse(url="/", status_code=303)
+    except PersistenceError as exc:
+        return _error_redirect(task_id, exc)
     except (engine.IllegalTransition, ValueError) as exc:
         return _error_redirect(task_id, exc)
     return RedirectResponse(url=f"/tasks/{task_id}", status_code=303)
@@ -188,27 +193,29 @@ def task_rework(request: Request, task_id: str, reason: str = Form("")):
 
 @router.post("/tasks/{task_id}/reject")
 def task_reject(request: Request, task_id: str, reason: str = Form("")):
-    store = _store(request)
-    task = store.get_task(task_id)
-    if task is None:
-        return RedirectResponse(url="/", status_code=303)
+    service = _service(request)
     try:
-        engine.reject_task(task, reason)
-    except engine.IllegalTransition as exc:
+        service.reject_task(task_id, reason)
+    except TaskNotFound:
+        return RedirectResponse(url="/", status_code=303)
+    except PersistenceError as exc:
+        return _error_redirect(task_id, exc)
+    except (engine.IllegalTransition, ValueError) as exc:
         return _error_redirect(task_id, exc)
     return RedirectResponse(url=f"/tasks/{task_id}", status_code=303)
 
 
 @router.get("/settings")
 def settings_page(request: Request):
-    store = _store(request)
-    byok_models = [m for m in store.models.values() if m.requires_byok]
+    service = _service(request)
+    settings = service.get_settings()
+    byok_models = [m for m in service.models.values() if m.requires_byok]
     return render_template(
         request,
         "settings.html",
         {
-            "settings": store.settings,
-            "models": list(store.models.values()),
+            "settings": settings,
+            "models": list(service.models.values()),
             "byok_models": byok_models,
             "saved": request.query_params.get("saved"),
             "errors": {},
@@ -219,60 +226,38 @@ def settings_page(request: Request):
 
 @router.post("/settings")
 async def settings_save(request: Request):
-    store = _store(request)
-    form = await request.form()
-    byok_models = [m for m in store.models.values() if m.requires_byok]
-
-    # Atomic validation: validate every input before mutating anything, so an
-    # invalid value never produces a partial update or a false "saved" banner.
-    errors: dict[str, str] = {}
-    parsed_limit, limit_error = parse_cost_limit(
-        str(form.get("project_cost_limit_krw") or "")
-    )
-    if limit_error is not None:
-        errors["project_cost_limit_krw"] = limit_error
-
-    if errors:
-        submitted = {
-            "domestic_first": str(form.get("domestic_first") or ""),
-            "allow_external": str(form.get("allow_external") or ""),
-            "block_on_secret": str(form.get("block_on_secret") or ""),
-            "project_cost_limit_krw": str(form.get("project_cost_limit_krw") or ""),
-        }
+    service = _service(request)
+    raw_form = await request.form()
+    form = {key: str(raw_form.get(key)) for key in raw_form.keys()}
+    # Preserve checkbox semantics: absent checkbox -> "" (treated as off).
+    try:
+        ok, errors = service.save_settings(form)
+    except PersistenceError as exc:
+        byok_models = [m for m in service.models.values() if m.requires_byok]
         return render_template(
             request,
             "settings.html",
             {
-                "settings": store.settings,  # unchanged
-                "models": list(store.models.values()),
+                "settings": service.get_settings(),
+                "models": list(service.models.values()),
+                "byok_models": byok_models,
+                "saved": None,
+                "errors": {"_form": str(exc)},
+                "form": form,
+            },
+        )
+    if not ok:
+        byok_models = [m for m in service.models.values() if m.requires_byok]
+        return render_template(
+            request,
+            "settings.html",
+            {
+                "settings": service.get_settings(),
+                "models": list(service.models.values()),
                 "byok_models": byok_models,
                 "saved": None,
                 "errors": errors,
-                "form": submitted,
+                "form": form,
             },
         )
-
-    settings = store.settings
-    settings.domestic_first = form.get("domestic_first") == "on"
-    settings.allow_external = form.get("allow_external") == "on"
-    settings.block_on_secret = form.get("block_on_secret") == "on"
-    # Mandatory invariant: the approval gate is always enforced. The submitted
-    # value is intentionally ignored so it can never weaken the core control.
-    settings.block_push_without_approval = True
-    if parsed_limit is not None:
-        settings.project_cost_limit_krw = parsed_limit
-
-    for model in store.models.values():
-        if not model.requires_byok:
-            continue
-        state = settings.byok.setdefault(model.id, ByokState())
-        raw = str(form.get(f"apikey_{model.id}", "") or "")
-        if raw.strip():
-            # Only the presence of a key is recorded; the raw value is
-            # discarded here and never persisted or echoed.
-            state.registered = True
-        # A blank key input preserves the existing registered state.
-        if form.get(f"apikey_unregister_{model.id}") == "on":
-            state.registered = False  # explicit unregistration only
-
     return RedirectResponse(url="/settings?saved=1", status_code=303)

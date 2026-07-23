@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Korean AI Platform{% endblock %}</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234361ee'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='17' font-weight='800' fill='%23fff' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="/static/app.css?v=kap-console-3">
+<link rel="stylesheet" href="/static/app.css?v=kap-console-4">
 </head>
 {% set path = request.url.path %}
 <body>
@@ -29,14 +29,15 @@
         새 작업
       </a>
       <a href="/settings" class="nav-link {{ 'active' if path == '/settings' }}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M11.5 2.6a1.5 1.5 0 00-3 0v.55c-.4.1-.78.25-1.14.44l-.4-.39a1.5 1.5 0 00-2.12 2.12l.4.4c-.2.35-.34.73-.44 1.13H4.1a1.5 1.5 0 000 3h.7c.1.4.25.78.44 1.14l-.4.4a1.5 1.5 0 102.13 2.12l.39-.4c.36.2.74.34 1.14.44v.7a1.5 1.5 0 003 0v-.7c.4-.1.78-.25 1.14-.44l.4.39a1.5 1.5 0 002.12-2.12l-.4-.4c.2-.35.34-.73.44-1.13h.7a1.5 1.5 0 000-3h-.7a4.6 4.6 0 00-.44-1.14l.4-.4a1.5 1.5 0 10-2.13-2.12l-.39.4a4.6 4.6 0 00-1.14-.44V2.6zM10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" clip-rule="evenodd"/></svg>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M11.5 2.6a1.5 1.5 0 00-3 0v.55c-.4.1-.78.25-1.14.44l-.4-.39a1.5 1.5 0 00-2.12 2.12l.4.4c-.2.35-.34.73-.44 1.13H4.1a1.5 1.5 0 000 3h.7c.1.4.25.78.44 1.14l-.4.4a1.5 1.5 0 102.13 2.12l.39-.4c.36.2.74.34 1.14.44v.7a1.5 1.5 0 003 0v-.7c-.4-.1-.78-.25-1.14-.44l.4.39a1.5 1.5 0 002.12-2.12l-.4-.4c.2-.35.34-.73.44-1.13h.7a1.5 1.5 0 000-3h-.7a4.6 4.6 0 00-.44-1.14l.4-.4a1.5 1.5 0 10-2.13-2.12l-.39.4a4.6 4.6 0 00-1.14-.44V2.6zM10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" clip-rule="evenodd"/></svg>
         모델·보안 설정
       </a>
     </nav>
     <div class="sidebar-foot">
       {% if demo_mode %}
       <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Demo 환경</span>
-      <span class="muted">실제 AI·Git 미연결 · 인메모리 상태</span>
+      <span class="muted">실제 AI·Git 미연결</span>
+      <span class="muted">{{ persistence_label }}</span>
       {% endif %}
     </div>
   </aside>
@@ -46,6 +47,7 @@
       <div class="topbar-inner">
         <span class="topbar-crumb">{% block crumb %}<strong>AI Operations</strong>{% endblock %}</span>
         <div class="topbar-actions">
+          <span class="topbar-env" title="{{ persistence_label }}"><span class="env-dot" aria-hidden="true"></span>{{ persistence_label }}</span>
           {% if demo_mode %}
           <span class="topbar-env"><span class="env-dot" aria-hidden="true"></span>Demo · 실제 연동 없음</span>
           {% endif %}
@@ -62,6 +64,6 @@
     </footer>
   </div>
 </div>
-<script src="/static/app.js?v=kap-console-3" defer></script>
+<script src="/static/app.js?v=kap-console-4" defer></script>
 </body>
 </html>

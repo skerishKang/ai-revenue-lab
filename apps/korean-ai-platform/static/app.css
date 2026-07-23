@@ -154,11 +154,12 @@ img, svg { display: block; max-width: 100%; }
 }
 .topbar-inner {
   max-width: 1240px; margin: 0 auto; padding: .7rem 1.5rem;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem 1rem;
+  flex-wrap: wrap;
 }
 .topbar-crumb { font-size: .82rem; color: var(--muted); font-weight: 600; }
 .topbar-crumb strong { color: var(--ink); }
-.topbar-actions { display: flex; align-items: center; gap: .7rem; }
+.topbar-actions { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 .topbar-env {
   display: inline-flex; align-items: center; gap: .4rem;
   font-size: .72rem; font-weight: 700; color: var(--amber-ink);

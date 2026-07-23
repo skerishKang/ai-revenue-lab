@@ -14,6 +14,9 @@
 {% if saved %}
 <div class="callout callout-info" role="status">설정이 저장되었습니다. (데모: 메모리에만 유지됩니다.)</div>
 {% endif %}
+{% if errors.get('_form') %}
+<div class="callout callout-danger" role="alert">{{ errors['_form'] }}</div>
+{% endif %}
 {% if errors.get('project_cost_limit_krw') %}
 <div class="callout callout-danger" role="alert"><span class="callout-title">저장되지 않았습니다</span>{{ errors['project_cost_limit_krw'] }} 입력 값을 확인하세요. 변경사항은 저장되지 않았습니다.</div>
 {% endif %}

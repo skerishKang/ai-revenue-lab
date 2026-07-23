@@ -95,7 +95,25 @@ python -m pytest -q
   폐기하며, 화면과 응답에 raw key를 다시 출력하지 않습니다.
 - 브라우저에서 앱 서버로는 폼 전송되므로, 실제 운영에서는 HTTPS·비밀 저장소 연동이 필요합니다.
 - 키 입력을 비워 둔 채 저장하면 기존 등록 상태가 유지되며, 등록 해제는 명시적 체크박스로만 수행됩니다.
-- 상태는 프로세스 메모리에만 유지되는 데모 상태입니다. 비밀 값은 코드·픽스처·로그에 포함되지 않습니다.
+- 비밀 값은 코드·픽스처·로그에 포함되지 않습니다.
+
+## 영속 저장 (Persistence)
+
+- Business 14는 자체 **product-local SQLite DB**를 소유합니다. 다른 Business 또는
+  portal DB와 분리되며, 다른 Business DB를 직접 조회하지 않습니다.
+- 기본 backend·경로: `KAP_DB_BACKEND=sqlite`, `KAP_DATABASE_PATH=var/korean-ai-platform.db`
+  (Business 14 workspace 기준 상대 경로).
+- migration은 앱 startup(lifespan)에 deterministic·forward-only로 실행됩니다.
+  자세한 계약은 `docs/PERSISTENCE_CONTRACT.md` 참조.
+- 서버를 재시작해도 작업·실행 evidence·승인/거절/재작업·설정·BYOK 등록 상태가 복구됩니다.
+- 테스트에서는 `create_app(store=...)`로 인메모리 Store를 주입하거나,
+  `create_app(db_path=...)`로 임시 SQLite를 주입할 수 있습니다.
+- raw BYOK key는 저장하지 않습니다(등록 여부 boolean만 저장).
+- **단일 프로세스 제한**: SQLite 단일 파일·단일 프로세스 전제입니다. 멀티프로세스
+  워커, 백업·복원·암호화, production migration 실행은 미구현입니다.
+- **PostgreSQL 미구현**: `KAP_DB_BACKEND=postgresql`은 SQLite로 fallback하지 않고
+  고정된 설정 오류로 실패합니다(fail closed).
+- DB 파일을 삭제하면 로컬 상태가 초기화됩니다.
 
 ## 기술 스택
 
@@ -111,8 +129,9 @@ python -m pytest -q
 - **CSRF 방어 미구현**: 상태 변경 POST(생성·실행·승인·재작업·거절·설정)에 CSRF 토큰이 없습니다.
   단일 사용자 로컬 데모 전제이며, 실제 배포 시 필수 보완이 필요합니다.
 - **인증·사용자 분리 미구현**: 누구나 모든 작업과 설정에 접근할 수 있습니다.
-- **인메모리 저장소**: 서버를 재시작하면 모든 작업·설정 상태가 초기화됩니다. 영속 DB가 없습니다.
-- **동시성·멀티프로세스 미지원**: 상태를 프로세스 메모리에만 보관하므로 워커를 여러 개로 늘리면 상태가 일치하지 않습니다.
+- **단일 프로세스 SQLite**: product-local SQLite 단일 파일·단일 프로세스 전제입니다.
+  멀티프로세스 워커를 늘리면 상태가 일치하지 않습니다. 백업·복원·암호화 미구현.
+- **PostgreSQL runtime 미구현**: 선택 시 fail closed. production 배포·마이그레이션 미구현.
 - 모바일에서는 상태 확인 중심으로 동작합니다.
 
 ## 입력 검증 notes

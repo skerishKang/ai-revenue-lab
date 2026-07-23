@@ -12,6 +12,9 @@
 </div>
 
 <form method="post" action="/tasks" class="form-card" novalidate>
+  {% if errors.get('_form') %}
+  <div class="callout callout-danger" role="alert">{{ errors['_form'] }}</div>
+  {% endif %}
 
   <!-- 01 작업 정의 -->
   <div class="form-step">
