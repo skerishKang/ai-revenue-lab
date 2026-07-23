@@ -72,12 +72,14 @@
       <textarea id="allowed_paths" name="allowed_paths" rows="3"
         placeholder="예: app/, tests/ (줄바꿈 또는 쉼표로 구분)">{{ form.get('allowed_paths', '') }}</textarea>
       <p class="field-hint">비워두면 프로젝트 기본 허용 경로를 사용합니다.</p>
+      {% if errors.get('allowed_paths') %}<p class="field-error">{{ errors['allowed_paths'] }}</p>{% endif %}
     </div>
     <div class="field">
       <label for="denied_paths">수정 금지 경로</label>
       <textarea id="denied_paths" name="denied_paths" rows="3"
         placeholder="예: migrations/, secrets/ (줄바꿈 또는 쉼표로 구분)">{{ form.get('denied_paths', '') }}</textarea>
       <p class="field-hint">이 경로를 건드리면 검증 단계에서 경고가 표시됩니다.</p>
+      {% if errors.get('denied_paths') %}<p class="field-error">{{ errors['denied_paths'] }}</p>{% endif %}
     </div>
   </div>
 

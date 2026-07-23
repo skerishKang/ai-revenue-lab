@@ -13,6 +13,7 @@ from app.domain import (
     ChangedFile,
     TaskStatus,
     Verdict,
+    contains_traversal,
     evaluate_path_policy,
     normalize_path,
     path_matches,
@@ -30,16 +31,21 @@ def test_normalize_backslash_and_drive():
     assert normalize_path("C:") == ""
 
 
-def test_normalize_traversal_clamped_at_root():
-    assert normalize_path("../app/x.py") == "app/x.py"
-    assert normalize_path("../../app/x.py") == "app/x.py"
-    assert normalize_path("..") == ""
-    assert normalize_path("../") == ""
+def test_normalize_rejects_traversal():
+    # '..' anywhere is rejected (None), never silently resolved/clamped.
+    assert normalize_path("../app/x.py") is None
+    assert normalize_path("../../app/x.py") is None
+    assert normalize_path("..") is None
+    assert normalize_path("../") is None
+    assert normalize_path("apps/other/../../apps/allowed/file") is None
+    assert normalize_path("a/../b") is None
+    assert normalize_path("..\\app") is None  # backslash-normalized then rejected
 
 
 def test_normalize_dots_and_duplicate_slashes():
     assert normalize_path("./app//x.py") == "app/x.py"
-    assert normalize_path("app/./sub/../x.py") == "app/x.py"
+    assert normalize_path("app/./sub/x.py") == "app/sub/x.py"
+    assert normalize_path("app/./sub/../x.py") is None  # contains '..' -> rejected
     assert normalize_path("/app/") == "app"
     assert normalize_path("app//") == "app"
 
@@ -55,11 +61,13 @@ def test_match_similar_prefix_not_bypassed():
     assert not path_matches("apps/example", "apps/example-evil/x.py")
 
 
-def test_match_traversal_and_backslash_inputs():
-    # A denied pattern using traversal/backslash still resolves to the real dir.
-    assert path_matches("../../app/", "app/services/x.py")
+def test_match_traversal_rejected_backslash_normalized():
+    # Traversal patterns never match (rejected), backslash separators still work.
+    assert not path_matches("../../app/", "app/services/x.py")
+    assert not path_matches("../app/", "app/services/x.py")
+    assert not path_matches("a/../app/", "app/services/x.py")
     assert path_matches("app\\", "app/services/x.py")
-    assert path_matches("../app/", "app/services/x.py")
+    assert path_matches("app\\services", "app/services/x.py")
 
 
 def _files(*paths):
@@ -86,6 +94,87 @@ def test_denied_nested_under_allowed_flagged():
 def test_changed_file_outside_allowed_flagged():
     violations = evaluate_path_policy(_files("docs/x.md"), ["app/", "tests/"], [])
     assert any("docs/x.md" in v for v in violations)
+
+
+# --- Traversal rejection at creation + URL-encoding boundary ------------
+
+
+def test_create_task_rejects_traversal_in_allowed(store):
+    form = dict(CREATE_FORM)
+    form["allowed_paths"] = "apps/other/../../apps/allowed"
+    task, errors = create_task(store, form)
+    assert task is None
+    assert "allowed_paths" in errors
+
+
+def test_create_task_rejects_traversal_in_denied(store):
+    form = dict(CREATE_FORM)
+    form["denied_paths"] = "../secrets"
+    task, errors = create_task(store, form)
+    assert task is None
+    assert "denied_paths" in errors
+
+
+def test_create_task_rejects_backslash_traversal(store):
+    form = dict(CREATE_FORM)
+    form["denied_paths"] = "..\\app"
+    task, errors = create_task(store, form)
+    assert task is None
+    assert "denied_paths" in errors
+
+
+def test_contains_traversal_detects_segments():
+    assert contains_traversal("../x")
+    assert contains_traversal("a/../b")
+    assert contains_traversal("..\\x")
+    assert not contains_traversal("app/x")
+    assert not contains_traversal("file..txt")  # '..' inside a name is not traversal
+    assert not contains_traversal("%2e%2e")  # encoded form is literal, not '..'
+
+
+def test_encoded_traversal_is_inert_literal(store, models):
+    # '%2e%2e' is decoded exactly once by the framework, so it stays a literal
+    # string (not '..'): it is accepted and matches nothing.
+    form = dict(CREATE_FORM)
+    form["denied_paths"] = "%2e%2e"
+    task, errors = create_task(store, form)
+    assert errors == {}
+    assert task is not None
+    assert task.denied_paths == ["%2e%2e"]  # stored literally, no double decode
+    engine.run_task(task, models)
+    assert task.run.path_violations == []  # inert: matches no changed file
+    assert normalize_path("%2e%2e") == "%2e%2e"
+    assert not path_matches("%2e%2e", "app/services/x.py")
+
+
+def test_encoded_separators_are_inert():
+    # %2f ('/') and %5c ('\') remain literal characters; not treated as separators.
+    assert normalize_path("%2f") == "%2f"
+    assert normalize_path("%5c") == "%5c"
+    assert not path_matches("%2f", "app/x")
+    assert not path_matches("app%2fx", "app/x")
+    assert not path_matches("%5c", "app/x")
+
+
+def test_form_path_decoded_exactly_once(store):
+    # If the app double-decoded, '%2e%2e' would become '..' and be rejected.
+    # Acceptance + literal storage proves a single decode boundary.
+    form = dict(CREATE_FORM)
+    form["allowed_paths"] = "%2e%2e"
+    task, errors = create_task(store, form)
+    assert errors == {}
+    assert task.allowed_paths == ["%2e%2e"]
+
+
+def test_traversal_error_rendered_in_form(client):
+    form = dict(CREATE_FORM)
+    form["denied_paths"] = "../secrets"
+    resp = client.post("/tasks", data=form)
+    assert resp.status_code == 200  # re-rendered, task not created
+    # Single quotes are HTML-escaped to &#39; by autoescape, so match a
+    # quote-free substring of the message.
+    assert "사용할 수 없습니다" in resp.text
+    assert "field-error" in resp.text
 
 
 # --- Cost limit validation ----------------------------------------------

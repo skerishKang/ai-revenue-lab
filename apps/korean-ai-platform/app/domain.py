@@ -185,16 +185,31 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def normalize_path(raw: str) -> str:
-    """Normalize a user-supplied or changed-file path for policy comparison.
+def contains_traversal(raw: str) -> bool:
+    """True if any path segment is exactly ``..`` (after backslash normalization).
 
-    Converts backslashes to forward slashes, collapses duplicate slashes,
-    drops ``.`` segments, resolves ``..`` segments (clamped at the root so
-    traversal cannot escape), strips a leading drive letter (``C:``), and
-    removes a trailing ``*``/``**`` wildcard so prefix semantics apply.
+    Encoded sequences such as ``%2e%2e`` are literal characters here (form
+    input is decoded exactly once by the framework), so they are not treated
+    as traversal.
+    """
+    return any(
+        segment == ".."
+        for segment in (raw or "").strip().replace("\\", "/").split("/")
+    )
 
-    The result uses forward slashes with no leading or trailing slash. An
-    empty or purely relative-to-root traversal input normalizes to ``""``.
+
+def normalize_path(raw: str) -> str | None:
+    """Normalize a path for policy comparison, or return ``None`` if unsafe.
+
+    A path containing a ``..`` segment is **rejected** (returns ``None``)
+    rather than silently resolved. For a security input, refusing traversal
+    outright is safer than clamping it to the root, which could otherwise turn
+    ``apps/other/../../apps/allowed/file`` into ``apps/allowed/file``.
+
+    Also converts backslashes to forward slashes, collapses duplicate slashes,
+    drops ``.`` segments, strips a leading drive letter (``C:``), and removes a
+    trailing ``*``/``**`` wildcard so prefix semantics apply. The result uses
+    forward slashes with no leading or trailing slash; blank input yields ``""``.
     """
     text = (raw or "").strip().replace("\\", "/")
     if not text:
@@ -203,12 +218,10 @@ def normalize_path(raw: str) -> str:
     for segment in text.split("/"):
         if segment == "" or segment == ".":
             continue
+        if segment == "..":
+            return None
         if _DRIVE_SEGMENT.match(segment):
             stack = []
-            continue
-        if segment == "..":
-            if stack:
-                stack.pop()
             continue
         stack.append(segment)
     while stack and stack[-1] in ("*", "**"):
@@ -219,16 +232,17 @@ def normalize_path(raw: str) -> str:
 def path_matches(pattern: str, path: str) -> bool:
     """Segment-boundary path match used for allow/deny policies.
 
-    Both sides are normalized first, so backslashes, ``../``, duplicate
-    slashes, ``./`` prefixes, drive letters, and trailing wildcards cannot be
-    used to slip past the check. A pattern matches when it equals the path or
-    is a whole-segment directory prefix of it: ``app`` matches
+    Both sides are normalized first. A pattern containing ``..`` never matches
+    (it is rejected as traversal). Otherwise a pattern matches when it equals
+    the path or is a whole-segment directory prefix of it: ``app`` matches
     ``app/services/x.py`` but never ``application/x.py`` or ``app-evil/x.py``.
+    Backslashes, duplicate slashes, ``./`` prefixes, drive letters, and trailing
+    wildcards are normalized so they cannot slip past the check.
     """
     normalized_pattern = normalize_path(pattern)
-    if not normalized_pattern:
-        return False
     normalized_path = normalize_path(path)
+    if not normalized_pattern or normalized_path is None:
+        return False
     return normalized_path == normalized_pattern or normalized_path.startswith(
         normalized_pattern + "/"
     )

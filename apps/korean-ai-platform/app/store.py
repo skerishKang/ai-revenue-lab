@@ -18,6 +18,7 @@ from app.domain import (
     ModelSpec,
     Project,
     Task,
+    contains_traversal,
 )
 
 
@@ -121,6 +122,13 @@ def create_task(store: Store, form: dict[str, str]) -> tuple[Task | None, dict[s
     project = store.projects[project_id]
     allowed = _split_paths(form.get("allowed_paths", "")) or list(project.default_allowed)
     denied = _split_paths(form.get("denied_paths", "")) or list(project.default_denied)
+
+    if any(contains_traversal(p) for p in allowed):
+        errors["allowed_paths"] = "경로에 '..'를 사용할 수 없습니다."
+    if any(contains_traversal(p) for p in denied):
+        errors["denied_paths"] = "경로에 '..'를 사용할 수 없습니다."
+    if errors:
+        return None, errors
 
     cost_limit, cost_error = parse_cost_limit(form.get("cost_limit_krw", ""))
     if cost_error is not None:
