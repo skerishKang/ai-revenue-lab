@@ -139,7 +139,7 @@ def _make_app(tmp_path: Path, provider=None):
 
 def _create_participant(conn, pid="p1", name="Test User", lang="ko"):
     return pt_repo.create_participant(
-        conn, participant_id=pid, display_name=name, preferred_language=lang
+        SqliteRuntimeConnection(conn), participant_id=pid, display_name=name, preferred_language=lang
     )
 
 

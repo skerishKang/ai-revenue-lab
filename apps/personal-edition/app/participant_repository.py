@@ -1,8 +1,13 @@
-import sqlite3
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any
 
 from app import security
+
+if TYPE_CHECKING:
+    from app.db_runtime import RuntimeConnection
 
 
 @dataclass(frozen=True)
@@ -53,7 +58,7 @@ def _now_utc_iso() -> str:
     return now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}Z"
 
 
-def _row_to_record(row: sqlite3.Row) -> ParticipantRecord:
+def _row_to_record(row: Any) -> ParticipantRecord:
     return ParticipantRecord(
         id=row["id"],
         display_name=row["display_name"],
@@ -66,7 +71,7 @@ def _row_to_record(row: sqlite3.Row) -> ParticipantRecord:
 
 
 def create_participant(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
     display_name: str,
@@ -98,22 +103,18 @@ def create_participant(
     display_name = display_name.strip()
     now = _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
 
     try:
-        existing = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ?", (participant_id,)
-        ).fetchone()
-        if existing:
-            conn.rollback()
-            raise DuplicateParticipantError(
-                "participant identifier already exists"
-            )
-
         for _ in range(MAX_TOKEN_COLLISION_RETRIES):
             raw_token = security.generate_token()
             token_hash = security.hash_token(raw_token)
 
+            # Race-safe INSERT: ON CONFLICT DO NOTHING covers both the
+            # participant PK and access_token_hash unique constraint.
+            # Under PostgreSQL READ COMMITTED, a concurrent commit that
+            # conflicts will be visible to the subsequent SELECT within
+            # this same transaction after the no-op INSERT returns.
             cursor = conn.execute(
                 "INSERT INTO participants "
                 "(id, display_name, access_token_hash, preferred_language, "
@@ -121,7 +122,7 @@ def create_participant(
                 "created_at, updated_at) "
                 "VALUES (?, ?, ?, ?, 'calm_editorial', 'standard', "
                 "'active', ?, ?) "
-                "ON CONFLICT(access_token_hash) DO NOTHING",
+                "ON CONFLICT DO NOTHING",
                 (
                     participant_id,
                     display_name,
@@ -132,7 +133,7 @@ def create_participant(
                 ),
             )
 
-            if cursor.rowcount > 0:
+            if cursor.rowcount == 1:
                 record = ParticipantRecord(
                     id=participant_id,
                     display_name=display_name,
@@ -148,6 +149,23 @@ def create_participant(
                     one_time_token=raw_token,
                 )
 
+            if cursor.rowcount == 0:
+                existing = conn.execute(
+                    "SELECT 1 FROM participants WHERE id = ?",
+                    (participant_id,),
+                ).fetchone()
+                if existing:
+                    conn.rollback()
+                    raise DuplicateParticipantError(
+                        "participant identifier already exists"
+                    )
+                continue
+
+            conn.rollback()
+            raise RepositoryTransactionError(
+                "unexpected insert result"
+            )
+
         conn.rollback()
         raise TokenProvisioningError(
             "participant token provisioning failed after bounded retries"
@@ -155,6 +173,7 @@ def create_participant(
     except (
         DuplicateParticipantError,
         TokenProvisioningError,
+        RepositoryTransactionError,
     ):
         raise
     except Exception:
@@ -163,7 +182,7 @@ def create_participant(
 
 
 def get_active_participant_by_token(
-    conn: sqlite3.Connection, raw_token: str
+    conn: RuntimeConnection, raw_token: str
 ) -> ParticipantRecord | None:
     if not isinstance(raw_token, str) or not raw_token:
         return None
@@ -189,7 +208,7 @@ def get_active_participant_by_token(
 
 
 def get_participant_by_id(
-    conn: sqlite3.Connection, participant_id: str
+    conn: RuntimeConnection, participant_id: str
 ) -> ParticipantRecord | None:
     row = conn.execute(
         f"SELECT {_PARTICIPANT_SELECT} FROM participants WHERE id = ?",
@@ -199,7 +218,7 @@ def get_participant_by_id(
 
 
 def delete_participant(
-    conn: sqlite3.Connection, participant_id: str
+    conn: RuntimeConnection, participant_id: str
 ) -> bool:
     if not isinstance(participant_id, str) or not participant_id:
         return False
@@ -210,7 +229,7 @@ def delete_participant(
         )
 
     now = _now_utc_iso()
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
 
     try:
         cursor = conn.execute(

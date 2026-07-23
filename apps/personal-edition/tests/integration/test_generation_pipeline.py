@@ -21,6 +21,7 @@ from app import (
 )
 from app.ai.mock import MockProvider
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from app.domain.enums import ProviderErrorCategory
 from app.feedback_repository import FeedbackValidationError
 from app.pipeline.errors import (
@@ -51,7 +52,7 @@ def _setup_db():
 
 def _create_participant(conn, pid="p1", lang="ko"):
     pt_repo.create_participant(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=pid,
         display_name="Test User",
         preferred_language=lang,
@@ -446,7 +447,7 @@ class TestInvalidInputs:
         conn = _setup_db()
         _create_participant(conn)
         inp = _create_input(conn)
-        pt_repo.delete_participant(conn, "p1")
+        pt_repo.delete_participant(SqliteRuntimeConnection(conn), "p1")
 
         provider = MockProvider(fixture_payload={"key": "val"})
         service = GenerationService(provider=provider)

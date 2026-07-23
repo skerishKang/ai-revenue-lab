@@ -34,6 +34,7 @@ from app.auth import (
 )
 from app.config import Settings
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from app.domain.models import EditionContent, EditorialPlan, EditionSection
 from app.factory import create_app
 from app.pipeline.service import GenerationService
@@ -57,7 +58,7 @@ def _make_app(tmp_path: Path, provider=None):
 
 def _create_participant(conn, pid="p1", name="Test User", lang="ko"):
     return pt_repo.create_participant(
-        conn, participant_id=pid, display_name=name, preferred_language=lang
+        SqliteRuntimeConnection(conn), participant_id=pid, display_name=name, preferred_language=lang
     )
 
 
@@ -352,7 +353,7 @@ class TestParticipantAccess:
             try:
                 prov = _create_participant(conn, "p1", "Test User")
                 raw_token = prov.one_time_token
-                pt_repo.delete_participant(conn, "p1")
+                pt_repo.delete_participant(SqliteRuntimeConnection(conn), "p1")
             finally:
                 conn.close()
             csrf_cookie, csrf_token = _get_csrf_cookie_and_token()
@@ -378,7 +379,7 @@ class TestParticipantAccess:
 
             conn2 = get_connection(db_path)
             try:
-                pt_repo.delete_participant(conn2, "p1")
+                pt_repo.delete_participant(SqliteRuntimeConnection(conn2), "p1")
             finally:
                 conn2.close()
 

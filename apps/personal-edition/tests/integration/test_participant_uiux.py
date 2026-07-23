@@ -26,6 +26,7 @@ _DIR = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.insert(0, os.path.abspath(_DIR))
 
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from app.factory import create_app
 from app.auth import (
     create_participant_session, sign_session_token,
@@ -47,7 +48,7 @@ def _make_app(db_path, provider=None):
 
 
 def _create_participant(conn, pid, name):
-    return pt_repo.create_participant(conn, participant_id=pid, display_name=name, preferred_language="ko")
+    return pt_repo.create_participant(SqliteRuntimeConnection(conn), participant_id=pid, display_name=name, preferred_language="ko")
 
 
 def _get_session_cookie(pid):

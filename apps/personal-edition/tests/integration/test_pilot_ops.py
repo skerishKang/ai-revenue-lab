@@ -18,6 +18,7 @@ _DIR = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.insert(0, os.path.abspath(_DIR))
 
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from scripts.pilot_ops import (
     BenchmarkRunRecord,
     CorrectionRecord,
@@ -217,7 +218,7 @@ class TestDeletionWorkflow:
         conn = _setup_pilot_db()
         from app import participant_repository as pt_repo
         pt_repo.create_participant(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             display_name="Test User",
             preferred_language="ko",

@@ -8,11 +8,12 @@ import pytest
 from app import input_repository as input_repo
 from app import participant_repository as repo
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 
 
 def _setup_participant(conn, pid="p1"):
     repo.create_participant(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=pid,
         display_name="Test User",
         preferred_language="ko",

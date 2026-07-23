@@ -8,6 +8,11 @@ import pytest
 from app import participant_repository as repo
 from app import security
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
+
+
+def _rt(conn):
+    return SqliteRuntimeConnection(conn)
 
 
 class TestMigration:
@@ -56,7 +61,7 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="Test User",
             preferred_language="ko",
@@ -96,7 +101,7 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-sentinel",
             display_name="Sentinel Test",
             preferred_language="ko",
@@ -125,7 +130,7 @@ class TestCreateParticipant:
                 ), f"sentinel leaked in record.{field_name}"
         assert result.participant.deleted_at is None
 
-        found_id = repo.get_participant_by_id(conn, "p-sentinel")
+        found_id = repo.get_participant_by_id(_rt(conn), "p-sentinel")
         for field_name in (
             "id",
             "display_name",
@@ -140,7 +145,7 @@ class TestCreateParticipant:
                     SENTINEL not in val
                 ), f"sentinel leaked in id-lookup.{field_name}"
 
-        found_tok = repo.get_active_participant_by_token(conn, SENTINEL)
+        found_tok = repo.get_active_participant_by_token(_rt(conn), SENTINEL)
         assert found_tok is not None
         for field_name in (
             "id",
@@ -170,7 +175,7 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
         with pytest.raises(ValueError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Test",
                 preferred_language="fr",
@@ -182,14 +187,14 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
         with pytest.raises(ValueError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="",
                 preferred_language="ko",
             )
         with pytest.raises(ValueError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p2",
                 display_name="   ",
                 preferred_language="ko",
@@ -201,14 +206,14 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
         with pytest.raises(ValueError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="",
                 display_name="Test",
                 preferred_language="ko",
             )
         with pytest.raises(ValueError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="   ",
                 display_name="Test",
                 preferred_language="ko",
@@ -220,7 +225,7 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
         with pytest.raises(TypeError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id=123,
                 display_name="Test",
                 preferred_language="ko",
@@ -232,7 +237,7 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
         with pytest.raises(ValueError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id=" participant-1 ",
                 display_name="Test",
                 preferred_language="ko",
@@ -244,7 +249,7 @@ class TestCreateParticipant:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-ts",
             display_name="Test User",
             preferred_language="ko",
@@ -262,13 +267,13 @@ class TestLookup:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-lookup",
             display_name="Test User",
             preferred_language="ko",
         )
         found = repo.get_active_participant_by_token(
-            conn, result.one_time_token
+            _rt(conn), result.one_time_token
         )
         assert found is not None
         assert found.id == "p-lookup"
@@ -280,13 +285,13 @@ class TestLookup:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="Test User",
             preferred_language="ko",
         )
         found = repo.get_active_participant_by_token(
-            conn, "definitely-wrong-token"
+            _rt(conn), "definitely-wrong-token"
         )
         assert found is None
         conn.close()
@@ -296,12 +301,12 @@ class TestLookup:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-byid",
             display_name="Test User",
             preferred_language="ko",
         )
-        found = repo.get_participant_by_id(conn, "p-byid")
+        found = repo.get_participant_by_id(_rt(conn), "p-byid")
         assert found is not None
         assert found.id == "p-byid"
         assert found.display_name == "Test User"
@@ -312,15 +317,15 @@ class TestLookup:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-del",
             display_name="Test User",
             preferred_language="ko",
         )
-        repo.delete_participant(conn, "p-del")
+        repo.delete_participant(_rt(conn), "p-del")
 
         found = repo.get_active_participant_by_token(
-            conn, result.one_time_token
+            _rt(conn), result.one_time_token
         )
         assert found is None
         conn.close()
@@ -339,7 +344,7 @@ class TestLookup:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-ct",
             display_name="Const Time",
             preferred_language="ko",
@@ -347,7 +352,7 @@ class TestLookup:
 
         spy_calls.clear()
         found = repo.get_active_participant_by_token(
-            conn, result.one_time_token
+            _rt(conn), result.one_time_token
         )
         assert found is not None
         assert found.id == "p-ct"
@@ -355,14 +360,14 @@ class TestLookup:
 
         spy_calls.clear()
         wrong = repo.get_active_participant_by_token(
-            conn, "wrong-token-value"
+            _rt(conn), "wrong-token-value"
         )
         assert wrong is None
         assert len(spy_calls) == 0
 
         spy_calls.clear()
         found_again = repo.get_active_participant_by_token(
-            conn, result.one_time_token
+            _rt(conn), result.one_time_token
         )
         assert found_again is not None
         assert len(spy_calls) >= 1
@@ -381,12 +386,12 @@ class TestDelete:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-delts",
             display_name="Test User",
             preferred_language="ko",
         )
-        repo.delete_participant(conn, "p-delts")
+        repo.delete_participant(_rt(conn), "p-delts")
 
         row = conn.execute(
             "SELECT status, deleted_at FROM participants WHERE id = ?",
@@ -405,12 +410,12 @@ class TestDelete:
             apply_migrations(conn, "migrations")
 
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p-persists",
                 display_name="Persist Test",
                 preferred_language="ko",
             )
-            result = repo.delete_participant(conn, "p-persists")
+            result = repo.delete_participant(_rt(conn), "p-persists")
             assert result is True
             conn.close()
 
@@ -440,7 +445,7 @@ class TestExistingTransaction:
 
         with pytest.raises(repo.RepositoryTransactionError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Test",
                 preferred_language="ko",
@@ -467,7 +472,7 @@ class TestExistingTransaction:
 
         with pytest.raises(repo.RepositoryTransactionError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Test",
                 preferred_language="ko",
@@ -484,7 +489,7 @@ class TestExistingTransaction:
 
         with pytest.raises(repo.RepositoryTransactionError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Test",
                 preferred_language="ko",
@@ -511,7 +516,7 @@ class TestExistingTransaction:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="First",
             preferred_language="ko",
@@ -519,7 +524,7 @@ class TestExistingTransaction:
 
         conn.execute("BEGIN")
         with pytest.raises(repo.RepositoryTransactionError):
-            repo.delete_participant(conn, "p1")
+            repo.delete_participant(_rt(conn), "p1")
 
         assert conn.in_transaction is True
         row = conn.execute(
@@ -538,14 +543,14 @@ class TestCollision:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="existing",
             display_name="First",
             preferred_language="ko",
         )
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="new-one",
             display_name="Second",
             preferred_language="ko",
@@ -563,7 +568,7 @@ class TestCollision:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="existing",
             display_name="First",
             preferred_language="ko",
@@ -571,7 +576,7 @@ class TestCollision:
 
         with pytest.raises(repo.TokenProvisioningError) as excinfo:
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="another",
                 display_name="Second",
                 preferred_language="ko",
@@ -588,7 +593,7 @@ class TestCollision:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="existing",
             display_name="First",
             preferred_language="ko",
@@ -600,7 +605,7 @@ class TestCollision:
 
         with pytest.raises(repo.TokenProvisioningError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="another",
                 display_name="Second",
                 preferred_language="ko",
@@ -622,7 +627,7 @@ class TestCollision:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="existing",
             display_name="First",
             preferred_language="ko",
@@ -630,7 +635,7 @@ class TestCollision:
 
         with pytest.raises(repo.TokenProvisioningError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="another",
                 display_name="Second",
                 preferred_language="ko",
@@ -652,7 +657,7 @@ class TestCollision:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="existing",
             display_name="First",
             preferred_language="ko",
@@ -660,7 +665,7 @@ class TestCollision:
 
         with pytest.raises(repo.TokenProvisioningError) as excinfo:
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="another",
                 display_name="Second",
                 preferred_language="ko",
@@ -676,14 +681,14 @@ class TestCollision:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="existing",
             display_name="First",
             preferred_language="ko",
         )
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="caller-provided-id",
             display_name="Second",
             preferred_language="ko",
@@ -698,7 +703,7 @@ class TestDuplicateId:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="dup",
             display_name="First",
             preferred_language="ko",
@@ -706,14 +711,14 @@ class TestDuplicateId:
 
         with pytest.raises(repo.DuplicateParticipantError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="dup",
                 display_name="Second",
                 preferred_language="ko",
             )
         conn.close()
 
-    def test_duplicate_id_does_not_generate_token(self, monkeypatch):
+    def test_duplicate_id_generates_one_token_then_detects(self, monkeypatch):
         call_count = [0]
         monkeypatch.setattr(
             security,
@@ -727,7 +732,7 @@ class TestDuplicateId:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="dup",
             display_name="First",
             preferred_language="ko",
@@ -736,12 +741,12 @@ class TestDuplicateId:
         before = call_count[0]
         with pytest.raises(repo.DuplicateParticipantError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="dup",
                 display_name="Second",
                 preferred_language="ko",
             )
-        assert call_count[0] == before
+        assert call_count[0] == before + 1
         conn.close()
 
     def test_duplicate_id_does_not_change_existing(self):
@@ -749,7 +754,7 @@ class TestDuplicateId:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="Original",
             preferred_language="ko",
@@ -758,7 +763,7 @@ class TestDuplicateId:
 
         with pytest.raises(repo.DuplicateParticipantError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Changed",
                 preferred_language="en",
@@ -779,7 +784,7 @@ class TestDuplicateId:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="First",
             preferred_language="ko",
@@ -787,7 +792,7 @@ class TestDuplicateId:
 
         with pytest.raises(repo.DuplicateParticipantError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Second",
                 preferred_language="ko",
@@ -804,7 +809,7 @@ class TestDuplicateId:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="First",
             preferred_language="ko",
@@ -812,7 +817,7 @@ class TestDuplicateId:
 
         with pytest.raises(repo.DuplicateParticipantError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Second",
                 preferred_language="ko",
@@ -830,7 +835,7 @@ class TestDuplicateId:
         apply_migrations(conn, "migrations")
 
         repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p1",
             display_name="First",
             preferred_language="ko",
@@ -838,7 +843,7 @@ class TestDuplicateId:
 
         with pytest.raises(repo.DuplicateParticipantError):
             repo.create_participant(
-                conn,
+            _rt(conn),
                 participant_id="p1",
                 display_name="Second",
                 preferred_language="ko",
@@ -868,19 +873,19 @@ class TestNoNetwork:
         apply_migrations(conn, "migrations")
 
         result = repo.create_participant(
-            conn,
+            _rt(conn),
             participant_id="p-net",
             display_name="No Network",
             preferred_language="ko",
         )
         found = repo.get_active_participant_by_token(
-            conn, result.one_time_token
+            _rt(conn), result.one_time_token
         )
         assert found is not None
-        repo.delete_participant(conn, "p-net")
+        repo.delete_participant(_rt(conn), "p-net")
         assert (
             repo.get_active_participant_by_token(
-                conn, result.one_time_token
+            _rt(conn), result.one_time_token
             )
             is None
         )
