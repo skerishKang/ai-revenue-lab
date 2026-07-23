@@ -17,6 +17,7 @@ from fastapi import FastAPI
 
 from app.ai.base import AIProvider
 from app.ai.mock import MockProvider
+from app.ai.openai_compat import OpenAICompatibleProvider
 from app.config import settings
 from app.database.engine import build_engine
 from app.database.migrate_postgres import verify_schema_current
@@ -37,7 +38,8 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
     """Resolve the AI provider from a name string or instance.
 
     Phase 1 supports only the free, local, deterministic MockProvider.
-    Unsupported provider names fail closed.
+    Phase 3A adds OpenAI-compatible providers (``opencode_go``,
+    ``openai_compat``). Unsupported provider names fail closed.
 
     When *provider* is ``None`` the configured ``settings.ai_provider`` is
     used so the factory always reflects the deployment configuration rather
@@ -51,8 +53,21 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
     if provider is None:
         provider = settings.ai_provider
     if isinstance(provider, str):
-        if provider == "mock":
+        handled = provider.strip().lower()
+        if handled == "mock":
             return MockProvider()
+        if handled in ("opencode_go", "openai_compat"):
+            settings.validate_ai_provider()
+            if handled == "opencode_go":
+                base_url = "https://opencode.ai/zen/go/v1"
+            else:
+                base_url = settings.ai_base_url
+            return OpenAICompatibleProvider(
+                api_key=settings.ai_api_key,
+                model=settings.ai_model,
+                provider_name=handled,
+                base_url=base_url,
+            )
         raise RuntimeError(f"unsupported provider: {provider}")
     for attr in ("provider_name", "model", "cost_class"):
         if not hasattr(provider, attr):
