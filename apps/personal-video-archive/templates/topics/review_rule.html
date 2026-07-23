@@ -1,116 +1,115 @@
 {% extends "base.html" %}
-{% block title %}Review Search Rules — Personal Video Archive{% endblock %}
+{% block title %}{{ t("page_review_rules") }} — Personal Video Archive{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>Review Search Rules</h1>
-    <p class="subtitle">Topic: {{ topic.name }}</p>
+    <h1>{{ t("page_review_rules") }}</h1>
+    <p class="subtitle">{{ topic.name }}</p>
 </div>
 
-<div class="provenance-banner badge-ai">
-    <strong>AI Suggestion</strong> — These rules were generated from your intent.
-    Edit any field before accepting. Nothing is saved until you approve.
+<div class="provenance-banner">
+    <strong>{{ t("badge_ai") }}</strong> — {{ t("page_review_rules_desc") }}
 </div>
 
-<form method="post" action="/topics/{{ topic.id }}/accept-rule" class="form">
+<form method="post" action="{{ lp }}/topics/{{ topic.id }}/accept-rule" class="form">
     <div class="form-group">
-        <label for="primary_query">Primary Search Term</label>
+        <label for="primary_query">{{ t("form_primary_query") }}</label>
         <input type="text" id="primary_query" name="primary_query"
                value="{{ proposal.primary_query }}" required maxlength="200">
     </div>
 
     <div class="form-group">
-        <label for="related_queries">Related Queries (comma-separated)</label>
+        <label for="related_queries">{{ t("form_related_queries") }}</label>
         <input type="text" id="related_queries" name="related_queries"
                value="{{ proposal.related_queries | join(', ') }}" maxlength="500">
-        <p class="help-text">Additional search terms that capture the topic.</p>
+        <p class="help-text">{{ t("form_related_queries_help") }}</p>
     </div>
 
     <div class="form-group">
-        <label for="required_terms">Required Terms (comma-separated)</label>
+        <label for="required_terms">{{ t("form_required_terms") }}</label>
         <input type="text" id="required_terms" name="required_terms"
                value="{{ proposal.required_terms | join(', ') }}" maxlength="500">
-        <p class="help-text">Videos must contain at least one of these terms.</p>
+        <p class="help-text">{{ t("form_required_terms_help") }}</p>
     </div>
 
     <div class="form-group">
-        <label for="excluded_terms">Excluded Terms (comma-separated)</label>
+        <label for="excluded_terms">{{ t("form_excluded_terms") }}</label>
         <input type="text" id="excluded_terms" name="excluded_terms"
                value="{{ proposal.excluded_terms | join(', ') }}" maxlength="500">
-        <p class="help-text">Videos containing these terms will be filtered out.</p>
+        <p class="help-text">{{ t("form_excluded_terms_help") }}</p>
     </div>
 
     <div class="form-group">
-        <label for="preferred_languages">Preferred Languages (comma-separated)</label>
+        <label for="preferred_languages">{{ t("form_preferred_languages") }}</label>
         <input type="text" id="preferred_languages" name="preferred_languages"
                value="{{ proposal.preferred_languages | join(', ') }}" maxlength="200">
     </div>
 
     <div class="form-group">
-        <label for="included_channels">Included Channels (comma-separated)</label>
+        <label for="included_channels">{{ t("form_included_channels") }}</label>
         <input type="text" id="included_channels" name="included_channels"
                value="{{ proposal.included_channels | join(', ') }}" maxlength="1000">
     </div>
 
     <div class="form-group">
-        <label for="excluded_channels">Excluded Channels (comma-separated)</label>
+        <label for="excluded_channels">{{ t("form_excluded_channels") }}</label>
         <input type="text" id="excluded_channels" name="excluded_channels"
                value="{{ proposal.excluded_channels | join(', ') }}" maxlength="1000">
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label for="duration_preference">Duration</label>
+            <label for="duration_preference">{{ t("form_duration") }}</label>
             <select id="duration_preference" name="duration_preference">
-                <option value="any" {% if proposal.duration_preference.value == 'any' %}selected{% endif %}>Any</option>
-                <option value="short" {% if proposal.duration_preference.value == 'short' %}selected{% endif %}>Short</option>
-                <option value="medium" {% if proposal.duration_preference.value == 'medium' %}selected{% endif %}>Medium</option>
-                <option value="long" {% if proposal.duration_preference.value == 'long' %}selected{% endif %}>Long</option>
+                <option value="any" {% if proposal.duration_preference.value == 'any' %}selected{% endif %}>{{ t("form_duration_any") }}</option>
+                <option value="short" {% if proposal.duration_preference.value == 'short' %}selected{% endif %}>{{ t("form_duration_short") }}</option>
+                <option value="medium" {% if proposal.duration_preference.value == 'medium' %}selected{% endif %}>{{ t("form_duration_medium") }}</option>
+                <option value="long" {% if proposal.duration_preference.value == 'long' %}selected{% endif %}>{{ t("form_duration_long") }}</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="shorts_preference">Shorts</label>
+            <label for="shorts_preference">{{ t("form_shorts") }}</label>
             <select id="shorts_preference" name="shorts_preference">
-                <option value="include" {% if proposal.shorts_preference.value == 'include' %}selected{% endif %}>Include</option>
-                <option value="exclude" {% if proposal.shorts_preference.value == 'exclude' %}selected{% endif %}>Exclude</option>
+                <option value="include" {% if proposal.shorts_preference.value == 'include' %}selected{% endif %}>{{ t("form_shorts_include") }}</option>
+                <option value="exclude" {% if proposal.shorts_preference.value == 'exclude' %}selected{% endif %}>{{ t("form_shorts_exclude") }}</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="default_sort">Default Sort</label>
+            <label for="default_sort">{{ t("form_default_sort") }}</label>
             <select id="default_sort" name="default_sort">
-                <option value="newest" {% if proposal.default_sort.value == 'newest' %}selected{% endif %}>Newest First</option>
-                <option value="relevance" {% if proposal.default_sort.value == 'relevance' %}selected{% endif %}>Relevance</option>
-                <option value="view_count" {% if proposal.default_sort.value == 'view_count' %}selected{% endif %}>View Count</option>
+                <option value="newest" {% if proposal.default_sort.value == 'newest' %}selected{% endif %}>{{ t("form_sort_newest") }}</option>
+                <option value="relevance" {% if proposal.default_sort.value == 'relevance' %}selected{% endif %}>{{ t("form_sort_relevance") }}</option>
+                <option value="view_count" {% if proposal.default_sort.value == 'view_count' %}selected{% endif %}>{{ t("form_sort_views") }}</option>
             </select>
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label for="date_window_start">Date Window Start</label>
+            <label for="date_window_start">{{ t("form_date_start") }}</label>
             <input type="date" id="date_window_start" name="date_window_start"
                    value="{{ proposal.date_window_start or '' }}">
-            <p class="help-text">Optional. Only videos published on or after this date.</p>
+            <p class="help-text">{{ t("form_date_start_help") }}</p>
         </div>
 
         <div class="form-group">
-            <label for="date_window_end">Date Window End</label>
+            <label for="date_window_end">{{ t("form_date_end") }}</label>
             <input type="date" id="date_window_end" name="date_window_end"
                    value="{{ proposal.date_window_end or '' }}">
-            <p class="help-text">Optional. Only videos published on or before this date.</p>
+            <p class="help-text">{{ t("form_date_end_help") }}</p>
         </div>
     </div>
 
     {% if proposal.rationale %}
     <div class="info-box">
-        <strong>Rationale:</strong> {{ proposal.rationale }}
+        <strong>{{ t("page_rationale") }}:</strong> {{ proposal.rationale }}
     </div>
     {% endif %}
 
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Accept and Create Topic Feed</button>
-        <a href="/topics" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ t("action_accept_create") }}</button>
+        <a href="{{ lp }}/topics" class="btn btn-secondary">{{ t("action_cancel") }}</a>
     </div>
 </form>
 {% endblock %}
