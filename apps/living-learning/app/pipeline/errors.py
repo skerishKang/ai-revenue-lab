@@ -131,6 +131,18 @@ class ReviewStateConflictError(LessonPipelineError):
         super().__init__("Lesson review state conflict")
 
 
+class NotPublishableError(LessonPipelineError):
+    """Raised when a lesson fails the canonical publication validation gate.
+
+    The lesson stays ``publication_state='pending'`` and no audit row is written.
+    """
+
+    def __init__(self, lesson_id: str, result) -> None:
+        self.lesson_id = lesson_id
+        self.result = result
+        super().__init__("Lesson failed publication validation")
+
+
 class LessonNotReadyError(LessonPipelineError):
     """Raised when a learner requests a lesson that is not yet published."""
 

@@ -570,6 +570,8 @@ def operator_reject(
 def _review_action(
     request: Request, lesson_id: str, external_identity_id: str, reason: str, *, approve: bool
 ) -> schemas.ReviewActionResponse:
+    from app.pipeline.errors import NotPublishableError
+
     conn = _conn(request)
     try:
         if get_lesson_by_id(conn, lesson_id) is None:
@@ -581,6 +583,10 @@ def _review_action(
                 lesson = reject_lesson(conn, lesson_id, external_identity_id=external_identity_id, reason=reason)
         except ReviewStateConflictError:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="state_conflict")
+        except NotPublishableError:
+            # Validation-before-publication gate failed: state stays pending, no
+            # audit row written. Generic detail (no internal rule text exposed).
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="validation_failed")
     finally:
         _safe_close(conn)
     return schemas.ReviewActionResponse(lesson_id=lesson_id, publication_state=lesson.publication_state)

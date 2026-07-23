@@ -19,7 +19,7 @@ import json
 import secrets
 import sqlite3
 
-from app.pipeline.errors import ReviewStateConflictError
+from app.pipeline.errors import NotPublishableError, ReviewStateConflictError
 from app.repositories.lesson_repository import LessonRecord, _row_to_record
 
 
@@ -36,15 +36,40 @@ def _transition(
     action: str,
     external_identity_id: str,
     reason: str,
+    *,
+    validate: bool = False,
 ) -> LessonRecord:
     """Atomically transition publication_state and record an audit event.
 
+    Sequence (one transaction):
+        BEGIN IMMEDIATE
+        -> confirm lesson row exists
+        -> confirm generation_status='pending_review' AND publication_state='pending'
+        -> (approve only) run canonical publication validation; abort if not publishable
+        -> publication_state CAS
+        -> audit insert
+        -> COMMIT
+
     CAS: only a lesson that is ``pending_review`` and still ``pending`` moves.
     ``rowcount != 1`` => conflict (already decided, not generated, or a
-    concurrent reviewer won).
+    concurrent reviewer won). On validation failure the state stays ``pending``
+    and no audit row is written.
     """
     conn.execute("BEGIN IMMEDIATE")
     try:
+        row = conn.execute("SELECT * FROM lessons WHERE id = ?", (lesson_id,)).fetchone()
+        if row is None:
+            raise ReviewStateConflictError(lesson_id)
+        if row["generation_status"] != "pending_review" or row["publication_state"] != "pending":
+            raise ReviewStateConflictError(lesson_id)
+
+        if validate:
+            from app.pipeline.publication import validate_for_publication
+
+            result = validate_for_publication(conn, _row_to_record(row))
+            if not result.publishable:
+                raise NotPublishableError(lesson_id, result)
+
         rc = conn.execute(
             "UPDATE lessons SET publication_state = ?, updated_at = ? "
             "WHERE id = ? AND generation_status = 'pending_review' AND publication_state = 'pending'",
@@ -80,7 +105,10 @@ def approve_lesson(
     external_identity_id: str,
     reason: str = "",
 ) -> LessonRecord:
-    return _transition(conn, lesson_id, "published", "approved", external_identity_id, reason)
+    # Approve enforces the canonical publication validation gate.
+    return _transition(
+        conn, lesson_id, "published", "approved", external_identity_id, reason, validate=True
+    )
 
 
 def reject_lesson(
@@ -90,7 +118,10 @@ def reject_lesson(
     external_identity_id: str,
     reason: str = "",
 ) -> LessonRecord:
-    return _transition(conn, lesson_id, "rejected", "rejected", external_identity_id, reason)
+    # Reject is allowed even for content that fails validation.
+    return _transition(
+        conn, lesson_id, "rejected", "rejected", external_identity_id, reason, validate=False
+    )
 
 
 def get_review_events(conn: sqlite3.Connection, lesson_id: str) -> list[sqlite3.Row]:
@@ -107,92 +138,86 @@ def _validation_status(ok: bool) -> str:
     return "passed" if ok else "failed"
 
 
-def _run_validation_report(conn: sqlite3.Connection, lesson: LessonRecord, content: dict, plan: dict) -> dict:
-    """Re-run the deterministic validators against the stored content.
+def _validation_report(conn: sqlite3.Connection, lesson: LessonRecord) -> dict:
+    """Canonical publication validation report (same gate approve enforces).
 
-    Reports pass/fail per contract dimension. No internal rule text or raw
-    prompts are included — only the outcome labels.
+    Reports pass/fail per contract dimension plus the overall ``publishable``
+    verdict. No internal rule text or raw prompts are included — only outcome
+    labels.
     """
-    from app.domain.models import LessonContent
-    from app.pipeline.code_safety import validate_code_output
-    from app.pipeline.validation import is_answer_grounded, validate_safe_content
+    from app.pipeline.publication import validate_for_publication
 
-    # schema: Pydantic validation of the stored content.
-    try:
-        LessonContent.model_validate(content)
-        schema_result = "passed"
-    except Exception:
-        schema_result = "failed"
-
-    # AST safety: every code example and inline section snippet must be safe.
-    ast_ok = True
-    for ex in content.get("code_examples", []):
-        if ex.get("code") and not validate_code_output(ex.get("code", ""), ex.get("expected_output", "")):
-            ast_ok = False
-    for s in content.get("sections", []):
-        if s.get("includes_code") and s.get("code_snippet"):
-            if not validate_code_output(s.get("code_snippet", ""), ""):
-                ast_ok = False
-
-    # answer grounding: each review answer must be justified by taught material.
-    grounding_ok = all(
-        is_answer_grounded(q.get("correct_answer", ""), content)
-        for q in content.get("review_questions", [])
-    )
-
-    # adaptation materiality: only meaningful for a lesson with a prior lesson.
-    if lesson.prior_lesson_id:
-        prior = _row_to_record(
-            conn.execute("SELECT * FROM lessons WHERE id = ?", (lesson.prior_lesson_id,)).fetchone()
-        )
-        try:
-            prior_content = json.loads(prior.lesson_content_json or "{}")
-        except (ValueError, TypeError):
-            prior_content = {}
-        adaptation_result = _validation_status(content != prior_content)
-    else:
-        adaptation_result = "not_applicable"
-
-    # privacy / markup: no unsafe code, credential requests, or markup injection.
-    privacy_ok = not validate_safe_content(json.dumps(content, ensure_ascii=False))
-
+    result = validate_for_publication(conn, lesson)
     return {
-        "content_schema": schema_result,
-        "ast_safety": _validation_status(ast_ok),
-        "answer_grounding": _validation_status(grounding_ok),
-        "adaptation_materiality": adaptation_result,
-        "privacy_markup": _validation_status(privacy_ok),
+        "lesson_plan_schema": result.lesson_plan_schema,
+        "content_schema": result.lesson_content_schema,
+        "ast_safety": result.ast_safety,
+        "answer_grounding": result.answer_grounding,
+        "adaptation_materiality": result.adaptation_materiality,
+        "privacy_markup": result.privacy_markup,
+        "publishable": result.publishable,
     }
 
 
 def _generation_evidence(conn: sqlite3.Connection, lesson_id: str) -> dict:
+    """Provider accounting with exact call/retry semantics and task breakdown.
+
+    ``provider_call_count`` is the total number of provider calls; ``retry_count``
+    is the sum over tasks of ``MAX(attempt_number) - 1`` (NOT calls - 1, since a
+    lesson generation has multiple tasks). Provider/model are reported per task
+    so differences between tasks are not hidden.
+    """
+    from app.repositories.generation_run_repository import (
+        compute_accounting,
+        compute_task_breakdown,
+    )
+
+    # generation_runs are keyed by attempt_group "<lesson_id>:first|second".
     rows = conn.execute(
-        "SELECT provider, advertised_model, latency_ms, prompt_tokens, completion_tokens "
-        "FROM generation_runs WHERE lesson_id = ? ORDER BY attempt_number, created_at",
+        "SELECT DISTINCT attempt_group_id FROM generation_runs WHERE lesson_id = ?",
         (lesson_id,),
     ).fetchall()
-    if not rows:
-        return {
-            "provider": "unknown",
-            "model": "unknown",
-            "attempts": 0,
-            "retries": 0,
-            "latency_ms_total": 0.0,
-            "input_tokens_total": None,
-            "output_tokens_total": None,
-        }
-    attempts = len(rows)
-    latency_total = sum(r["latency_ms"] or 0.0 for r in rows)
-    inputs = [r["prompt_tokens"] for r in rows if r["prompt_tokens"] is not None]
-    outputs = [r["completion_tokens"] for r in rows if r["completion_tokens"] is not None]
+    groups = [r["attempt_group_id"] for r in rows]
+
+    total_calls = 0
+    total_retries = 0
+    total_latency = 0.0
+    all_inputs: list[int] = []
+    all_outputs: list[int] = []
+    tasks: list[dict] = []
+    for group in groups:
+        accounting = compute_accounting(conn, group)
+        if accounting is None:
+            continue
+        total_calls += accounting.provider_call_count
+        total_retries += accounting.retry_count
+        total_latency += accounting.latency_ms_total
+        if accounting.input_tokens_total is not None:
+            all_inputs.append(accounting.input_tokens_total)
+        if accounting.output_tokens_total is not None:
+            all_outputs.append(accounting.output_tokens_total)
+        for t in compute_task_breakdown(conn, group):
+            tasks.append(
+                {
+                    "task_type": t.task_type,
+                    "provider": t.provider,
+                    "model": t.model,
+                    "provider_call_count": t.provider_call_count,
+                    "retry_count": t.retry_count,
+                    "latency_ms_total": t.latency_ms_total,
+                    "input_tokens_total": t.input_tokens_total,
+                    "output_tokens_total": t.output_tokens_total,
+                    "final_validation_result": t.final_validation_result,
+                }
+            )
+
     return {
-        "provider": rows[0]["provider"] or "unknown",
-        "model": rows[0]["advertised_model"] or "unknown",
-        "attempts": attempts,
-        "retries": max(0, attempts - 1),
-        "latency_ms_total": latency_total,
-        "input_tokens_total": sum(inputs) if inputs else None,
-        "output_tokens_total": sum(outputs) if outputs else None,
+        "provider_call_count": total_calls,
+        "retry_count": total_retries,
+        "latency_ms_total": total_latency,
+        "input_tokens_total": sum(all_inputs) if all_inputs else None,
+        "output_tokens_total": sum(all_outputs) if all_outputs else None,
+        "tasks": tasks,
     }
 
 
@@ -260,9 +285,8 @@ def build_review_detail(conn: sqlite3.Connection, lesson: LessonRecord) -> dict:
         "feedback_actions": list(plan.get("applied_feedback", content.get("applied_feedback", []))),
     }
 
-    # Adaptation signals.
-    feedback_signal = None
-    comprehension_signal = None
+    # Adaptation signals — built from the EXACT generation-input provenance
+    # stored on the lesson (never a "latest row" arbitrary pick).
     decisions = conn.execute(
         "SELECT dimension, before_value, after_value, reason, signal_type, signal_reference_id "
         "FROM adaptation_decisions WHERE next_lesson_id = ? ORDER BY created_at",
@@ -277,16 +301,9 @@ def build_review_detail(conn: sqlite3.Connection, lesson: LessonRecord) -> dict:
         }
         for d in decisions
     ]
-    for d in decisions:
-        if d["signal_type"] == "feedback" and feedback_signal is None:
-            feedback_signal = d["signal_reference_id"]
-    if lesson.prior_lesson_id:
-        comp = conn.execute(
-            "SELECT id FROM comprehension_responses WHERE lesson_id = ? ORDER BY responded_at DESC LIMIT 1",
-            (lesson.prior_lesson_id,),
-        ).fetchone()
-        if comp:
-            comprehension_signal = comp["id"]
+
+    feedback_signal = _feedback_signal(conn, lesson.source_feedback_id)
+    comprehension_signal = _comprehension_signal(conn, lesson.source_comprehension_response_id)
 
     adaptation = {
         "prior_lesson_id": lesson.prior_lesson_id or None,
@@ -303,6 +320,8 @@ def build_review_detail(conn: sqlite3.Connection, lesson: LessonRecord) -> dict:
         "generation_status": lesson.generation_status,
         "publication_state": lesson.publication_state,
         "source_diagnostic_snapshot_id": lesson.source_diagnostic_snapshot_id,
+        "source_feedback_id": lesson.source_feedback_id,
+        "source_comprehension_response_id": lesson.source_comprehension_response_id,
         "instructional_plan": instructional_plan,
         "lesson_content": {
             "sections": sections,
@@ -311,6 +330,50 @@ def build_review_detail(conn: sqlite3.Connection, lesson: LessonRecord) -> dict:
             "review_questions": review_questions,
         },
         "adaptation": adaptation,
-        "validation": _run_validation_report(conn, lesson, content, plan),
+        "validation": _validation_report(conn, lesson),
         "generation_evidence": _generation_evidence(conn, lesson.id),
+    }
+
+
+def _bounded(text: str | None, limit: int = 500) -> str:
+    return (text or "")[:limit]
+
+
+def _feedback_signal(conn: sqlite3.Connection, feedback_id: str | None) -> dict | None:
+    """Structured feedback signal from the exact feedback that drove generation."""
+    if not feedback_id:
+        return None
+    row = conn.execute(
+        "SELECT id, direction_choices, free_text, lesson_generation FROM feedback WHERE id = ?",
+        (feedback_id,),
+    ).fetchone()
+    if row is None:
+        return None
+    try:
+        direction_choices = json.loads(row["direction_choices"] or "[]")
+    except (ValueError, TypeError):
+        direction_choices = []
+    return {
+        "feedback_id": row["id"],
+        "direction_choices": direction_choices,
+        "free_text": _bounded(row["free_text"]),
+        "lesson_generation": row["lesson_generation"],
+    }
+
+
+def _comprehension_signal(conn: sqlite3.Connection, response_id: str | None) -> dict | None:
+    """Structured comprehension signal from the exact response used in generation."""
+    if not response_id:
+        return None
+    row = conn.execute(
+        "SELECT id, understood, difficulty_rating, free_text FROM comprehension_responses WHERE id = ?",
+        (response_id,),
+    ).fetchone()
+    if row is None:
+        return None
+    return {
+        "response_id": row["id"],
+        "understood": bool(row["understood"]),
+        "difficulty_rating": row["difficulty_rating"],
+        "free_text": _bounded(row["free_text"]),
     }

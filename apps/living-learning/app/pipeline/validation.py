@@ -153,3 +153,82 @@ def validate_lesson_content(content_payload: dict, plan_payload: dict) -> list[s
             seen.add(issue)
             unique.append(issue)
     return unique
+
+
+def validate_material_adaptation(
+    original_plan: dict,
+    original_content: dict,
+    adapted_plan: dict,
+    adapted_content: dict,
+    direction_choices: set[str] | list[str],
+) -> list[str]:
+    """Canonical feedback-specific adaptation materiality check.
+
+    Returns a list of failure reasons (empty == material). This is the single
+    source of truth used both during second-lesson generation validation and
+    during operator publication validation, so the two can never diverge.
+
+    A change is material only if the requested feedback directions produced real
+    structural changes — not merely a title/metadata/adaptation-note edit.
+    """
+    directions = set(direction_choices)
+    error_reasons: list[str] = []
+
+    def extract_core(plan: dict, content: dict) -> dict:
+        return {
+            "plan_sections": [s.get("section_id") for s in plan.get("sections", [])],
+            "content_sections": [
+                {k: v for k, v in s.items() if k != "title"}
+                for s in content.get("sections", [])
+            ],
+            "review_questions": content.get("review_questions", []),
+            "code_examples": content.get("code_examples", []),
+        }
+
+    if extract_core(original_plan, original_content) == extract_core(adapted_plan, adapted_content):
+        error_reasons.append("metadata-only changes")
+
+    orig_sections = original_content.get("sections", []) or []
+    adapt_sections = adapted_content.get("sections", []) or []
+
+    if "reduce_theory" in directions:
+        orig_theory = sum(len(str(s)) for s in orig_sections)
+        adapt_theory = sum(len(str(s)) for s in adapt_sections)
+        orig_prac = len(original_content.get("code_examples", [])) + len(original_content.get("review_questions", []))
+        adapt_prac = len(adapted_content.get("code_examples", [])) + len(adapted_content.get("review_questions", []))
+        if not (adapt_theory < orig_theory or adapt_prac > orig_prac):
+            error_reasons.append("reduce_theory: theory did not decrease and practice did not increase")
+
+    if "more_examples" in directions:
+        if len(adapted_content.get("code_examples", [])) <= len(original_content.get("code_examples", [])):
+            error_reasons.append("more_examples: code_examples did not increase")
+
+    if "code_first" in directions:
+        first_sect = adapt_sections[0] if adapt_sections else {}
+        has_code = first_sect.get("includes_code") and first_sect.get("code_snippet")
+        if not has_code:
+            code_examples = adapted_content.get("code_examples") or []
+            first_ex = code_examples[0] if code_examples else {}
+            if not first_ex.get("code"):
+                error_reasons.append("code_first: first section has no code and first example is not code")
+
+    if "slower_pace" in directions:
+        orig_avg = sum(len(str(s)) for s in orig_sections) / max(1, len(orig_sections))
+        adapt_avg = sum(len(str(s)) for s in adapt_sections) / max(1, len(adapt_sections))
+        if adapt_avg >= orig_avg and len(adapt_sections) <= len(orig_sections):
+            error_reasons.append("slower_pace: granularity did not increase and length did not decrease")
+
+    if "more_review" in directions:
+        if len(adapted_content.get("review_questions", [])) <= len(original_content.get("review_questions", [])):
+            error_reasons.append("more_review: review_questions did not increase")
+
+    if "simplify_jargon" in directions:
+        orig_str = str(original_content).lower()
+        adapt_str = str(adapted_content).lower()
+        markers = ["복잡한", "용어", "개념", "이론"]
+        orig_jargon = sum(orig_str.count(m) for m in markers)
+        adapt_jargon = sum(adapt_str.count(m) for m in markers)
+        if adapt_jargon >= orig_jargon and "정의" not in adapt_str:
+            error_reasons.append("simplify_jargon: jargon did not decrease and no definitions added")
+
+    return error_reasons

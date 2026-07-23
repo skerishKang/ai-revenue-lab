@@ -146,29 +146,48 @@ def test_operator_review_detail_payload(portal_app):
     resp = client.get(f"/api/v1/operator/review/{lesson_id}", headers=_auth(OPERATOR_TOKEN))
     assert resp.status_code == 200
     body = resp.json()
-    # Metadata.
-    for field in ("lesson_id", "learner_id", "concept_id", "lesson_number", "generation_status", "publication_state"):
-        assert field in body
-    # Structured sub-objects.
-    plan = body["instructional_plan"]
-    for field in ("objective", "section_order", "difficulty", "example_count", "review_question_count", "feedback_actions"):
-        assert field in plan
+
+    # Metadata exact values.
+    assert body["lesson_id"] == lesson_id
+    assert body["learner_id"] == learner_id
+    assert body["lesson_number"] == 1
+    assert body["generation_status"] == "pending_review"
+    assert body["publication_state"] == "pending"
+
+    # First lesson: no feedback/comprehension provenance.
+    assert body["source_feedback_id"] is None
+    assert body["source_comprehension_response_id"] is None
+    assert body["adaptation"]["feedback_signal"] is None
+    assert body["adaptation"]["comprehension_signal"] is None
+    assert body["adaptation"]["prior_lesson_id"] is None
+
+    # Generation evidence: plan + content = 2 provider calls, 0 retries.
+    evidence = body["generation_evidence"]
+    assert evidence["provider_call_count"] == 2
+    assert evidence["retry_count"] == 0
+    task_types = {t["task_type"] for t in evidence["tasks"]}
+    assert task_types == {"lesson_plan", "lesson_content"}
+    for t in evidence["tasks"]:
+        assert t["provider_call_count"] == 1
+        assert t["retry_count"] == 0
+        assert t["provider"] == "mock"
+
+    # Validation: first lesson is publishable; materiality not_applicable.
+    validation = body["validation"]
+    assert validation["lesson_plan_schema"] == "passed"
+    assert validation["content_schema"] == "passed"
+    assert validation["ast_safety"] == "passed"
+    assert validation["answer_grounding"] == "passed"
+    assert validation["adaptation_materiality"] == "not_applicable"
+    assert validation["privacy_markup"] == "passed"
+    assert validation["publishable"] is True
+
+    # Lesson content includes term definitions and expected answers (operator-only).
     content = body["lesson_content"]
-    for field in ("sections", "code_examples", "term_definitions", "review_questions"):
-        assert field in content
-    # Operator view includes expected answers/rationale and expected output.
-    if content["review_questions"]:
-        assert "correct_answer" in content["review_questions"][0]
-        assert "explanation" in content["review_questions"][0]
-    if content["code_examples"]:
-        assert "expected_output" in content["code_examples"][0]
-    # Adaptation, validation, generation evidence present.
-    for field in ("prior_lesson_id", "feedback_signal", "comprehension_signal", "material_changes"):
-        assert field in body["adaptation"]
-    for field in ("content_schema", "ast_safety", "answer_grounding", "adaptation_materiality", "privacy_markup"):
-        assert field in body["validation"]
-    for field in ("provider", "model", "attempts", "retries", "latency_ms_total", "input_tokens_total", "output_tokens_total"):
-        assert field in body["generation_evidence"]
+    assert len(content["term_definitions"]) >= 1
+    assert content["review_questions"][0]["correct_answer"]
+    assert content["code_examples"][0]["expected_output"] == "10"
+
     # No raw prompt / secret leakage.
     assert "system_prompt" not in resp.text
     assert "Bearer" not in resp.text

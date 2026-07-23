@@ -87,7 +87,7 @@ from app.pipeline.prompts import (
     LESSON_CONTENT_PROMPT,
     LESSON_PLAN_PROMPT,
 )
-from app.pipeline.validation import validate_lesson_content, validate_safe_content
+from app.pipeline.validation import validate_lesson_content, validate_material_adaptation, validate_safe_content
 from app.repositories.history_repository import get_latest_diagnostic_snapshot
 from app.ai.base import AIProvider
 
@@ -361,7 +361,8 @@ class LessonPipeline:
         raise RetryExhaustedError(task_name, MAX_RETRIES)
 
     # ------------------------------------------------------------------
-    # Adaptation materiality (extracted for testability — blocker J)
+    # Adaptation materiality (delegates to the canonical validator so the
+    # generation-time and publication-time checks can never diverge).
     # ------------------------------------------------------------------
     def _verify_adaptation_changes(
         self,
@@ -371,71 +372,10 @@ class LessonPipeline:
         adapt_content: dict,
         direction_choices: set[str] | list[str],
     ) -> None:
-        """Raise AdaptationNotChangedError if the adaptation is not material.
-
-        Checks both that *something* changed (not metadata-only) and that each
-        requested feedback direction produced its intended structural change.
-        """
-        directions = set(direction_choices)
-        error_reasons: list[str] = []
-
-        def extract_core(plan: dict, content: dict) -> dict:
-            return {
-                "plan_sections": [s.get("section_id") for s in plan.get("sections", [])],
-                "content_sections": [
-                    {k: v for k, v in s.items() if k != "title"}
-                    for s in content.get("sections", [])
-                ],
-                "review_questions": content.get("review_questions", []),
-                "code_examples": content.get("code_examples", []),
-            }
-
-        if extract_core(orig_plan, orig_content) == extract_core(adapt_plan, adapt_content):
-            error_reasons.append("metadata-only changes")
-
-        orig_sections = orig_content.get("sections", []) or []
-        adapt_sections = adapt_content.get("sections", []) or []
-
-        if "reduce_theory" in directions:
-            orig_theory = sum(len(str(s)) for s in orig_sections)
-            adapt_theory = sum(len(str(s)) for s in adapt_sections)
-            orig_prac = len(orig_content.get("code_examples", [])) + len(orig_content.get("review_questions", []))
-            adapt_prac = len(adapt_content.get("code_examples", [])) + len(adapt_content.get("review_questions", []))
-            if not (adapt_theory < orig_theory or adapt_prac > orig_prac):
-                error_reasons.append("reduce_theory: theory did not decrease and practice did not increase")
-
-        if "more_examples" in directions:
-            if len(adapt_content.get("code_examples", [])) <= len(orig_content.get("code_examples", [])):
-                error_reasons.append("more_examples: code_examples did not increase")
-
-        if "code_first" in directions:
-            first_sect = adapt_sections[0] if adapt_sections else {}
-            has_code = first_sect.get("includes_code") and first_sect.get("code_snippet")
-            if not has_code:
-                code_examples = adapt_content.get("code_examples") or []
-                first_ex = code_examples[0] if code_examples else {}
-                if not first_ex.get("code"):
-                    error_reasons.append("code_first: first section has no code and first example is not code")
-
-        if "slower_pace" in directions:
-            orig_avg = sum(len(str(s)) for s in orig_sections) / max(1, len(orig_sections))
-            adapt_avg = sum(len(str(s)) for s in adapt_sections) / max(1, len(adapt_sections))
-            if adapt_avg >= orig_avg and len(adapt_sections) <= len(orig_sections):
-                error_reasons.append("slower_pace: granularity did not increase and length did not decrease")
-
-        if "more_review" in directions:
-            if len(adapt_content.get("review_questions", [])) <= len(orig_content.get("review_questions", [])):
-                error_reasons.append("more_review: review_questions did not increase")
-
-        if "simplify_jargon" in directions:
-            orig_str = str(orig_content).lower()
-            adapt_str = str(adapt_content).lower()
-            markers = ["복잡한", "용어", "개념", "이론"]
-            orig_jargon = sum(orig_str.count(m) for m in markers)
-            adapt_jargon = sum(adapt_str.count(m) for m in markers)
-            if adapt_jargon >= orig_jargon and "정의" not in adapt_str:
-                error_reasons.append("simplify_jargon: jargon did not decrease and no definitions added")
-
+        """Raise AdaptationNotChangedError if the adaptation is not material."""
+        error_reasons = validate_material_adaptation(
+            orig_plan, orig_content, adapt_plan, adapt_content, direction_choices
+        )
         if error_reasons:
             raise AdaptationNotChangedError({"reasons": error_reasons})
 
@@ -1065,6 +1005,8 @@ class LessonPipeline:
                 lesson_content_json=final_content_data,
                 adaptation_summary=adaptation_summary,
                 source_diagnostic_snapshot_id=self._latest_snapshot_id(learner_id),
+                source_feedback_id=feedback.id,
+                source_comprehension_response_id=comprehension["id"],
                 commit=False,
                 id=lesson_id,
             )

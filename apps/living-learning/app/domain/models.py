@@ -88,12 +88,18 @@ class ReviewQuestion(BaseModel):
     explanation: NonEmptyStr
 
 
+class TermDefinition(BaseModel):
+    term: NonEmptyStr
+    definition: NonEmptyStr
+
+
 class LessonContent(BaseModel):
     content_version: str = "1.0"
     title: NonEmptyStr
     sections: list[LessonContentSection] = Field(default_factory=list)
     review_questions: list[ReviewQuestion] = Field(default_factory=list)
     code_examples: list[CodeExample] = Field(default_factory=list)
+    term_definitions: list[TermDefinition] = Field(default_factory=list)
     applied_feedback: list[AppliedFeedbackItem] = Field(default_factory=list)
     adaptation_notes: str = ""
 

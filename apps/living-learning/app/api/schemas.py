@@ -211,29 +211,56 @@ class AdaptationMaterialChangeView(BaseModel):
     reason: str
 
 
+class FeedbackSignalView(BaseModel):
+    feedback_id: str
+    direction_choices: list[str]
+    free_text: str
+    lesson_generation: int
+
+
+class ComprehensionSignalView(BaseModel):
+    response_id: str
+    understood: bool
+    difficulty_rating: int
+    free_text: str
+
+
 class AdaptationView(BaseModel):
     prior_lesson_id: str | None
-    feedback_signal: str | None
-    comprehension_signal: str | None
+    feedback_signal: FeedbackSignalView | None
+    comprehension_signal: ComprehensionSignalView | None
     material_changes: list[AdaptationMaterialChangeView]
 
 
 class ValidationReportView(BaseModel):
+    lesson_plan_schema: str
     content_schema: str
     ast_safety: str
     answer_grounding: str
     adaptation_materiality: str
     privacy_markup: str
+    publishable: bool
 
 
-class GenerationEvidenceView(BaseModel):
+class TaskAccountingView(BaseModel):
+    task_type: str
     provider: str
     model: str
-    attempts: int
-    retries: int
+    provider_call_count: int
+    retry_count: int
     latency_ms_total: float
     input_tokens_total: int | None
     output_tokens_total: int | None
+    final_validation_result: str
+
+
+class GenerationEvidenceView(BaseModel):
+    provider_call_count: int
+    retry_count: int
+    latency_ms_total: float
+    input_tokens_total: int | None
+    output_tokens_total: int | None
+    tasks: list[TaskAccountingView]
 
 
 class OperatorReviewDetailResponse(BaseModel):
@@ -244,6 +271,8 @@ class OperatorReviewDetailResponse(BaseModel):
     generation_status: str
     publication_state: str
     source_diagnostic_snapshot_id: str | None
+    source_feedback_id: str | None
+    source_comprehension_response_id: str | None
     instructional_plan: InstructionalPlanView
     lesson_content: OperatorLessonContentView
     adaptation: AdaptationView

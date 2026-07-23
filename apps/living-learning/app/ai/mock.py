@@ -35,6 +35,9 @@ _DEFAULT_LESSON_CONTENT = {
             "expected_output": "10",
         }
     ],
+    "term_definitions": [
+        {"term": "변수", "definition": "값을 담아 두는 이름"},
+    ],
 }
 
 

@@ -67,21 +67,24 @@ CREATE TABLE IF NOT EXISTS lessons_new (
     lesson_content_json TEXT NOT NULL DEFAULT '{}',
     adaptation_summary TEXT NOT NULL DEFAULT '',
     source_diagnostic_snapshot_id TEXT REFERENCES diagnostic_snapshots(id),
+    source_feedback_id TEXT REFERENCES feedback(id),
+    source_comprehension_response_id TEXT REFERENCES comprehension_responses(id),
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- Fail-closed transfer: a plain INSERT aborts the migration on any constraint
 -- violation; the transaction rollback preserves the original table and rows.
--- The new provenance column is NULL for pre-existing lessons.
+-- The new provenance columns are NULL for pre-existing lessons.
 INSERT INTO lessons_new
     (id, learner_id, concept_id, lesson_number, prior_lesson_id, generation_status,
      publication_state, lesson_plan_json, lesson_content_json, adaptation_summary,
-     source_diagnostic_snapshot_id, created_at, updated_at)
+     source_diagnostic_snapshot_id, source_feedback_id, source_comprehension_response_id,
+     created_at, updated_at)
 SELECT
     id, learner_id, concept_id, lesson_number, prior_lesson_id, generation_status,
     publication_state, lesson_plan_json, lesson_content_json, adaptation_summary,
-    NULL, created_at, updated_at
+    NULL, NULL, NULL, created_at, updated_at
 FROM lessons;
 
 DROP TABLE lessons;
