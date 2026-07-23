@@ -50,7 +50,10 @@ import modal
 APP_NAME = "ai-revenue-living-fiction"
 SECRET_NAME = "living-fiction-secrets"
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+_ENTRY_PATH = Path(__file__).resolve()
+PACKAGE_ROOT = (
+    _ENTRY_PATH.parents[2] if len(_ENTRY_PATH.parents) > 2 else _ENTRY_PATH.parent
+)
 
 RUNTIME_DEPENDENCIES = (
     "fastapi>=0.115,<1",
