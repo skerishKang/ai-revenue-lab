@@ -155,6 +155,36 @@ def validate_lesson_content(content_payload: dict, plan_payload: dict) -> list[s
     return unique
 
 
+CANONICAL_DIRECTIONS = frozenset(
+    {
+        "reduce_theory",
+        "more_examples",
+        "code_first",
+        "slower_pace",
+        "more_review",
+        "simplify_jargon",
+    }
+)
+
+JARGON_MARKERS = ("복잡한", "용어", "개념", "이론")
+
+
+def is_code_first(content: dict) -> bool:
+    """Phase 1 code-first contract: the FIRST lesson section leads with code.
+
+    True only if the first section has ``includes_code=True`` AND a non-empty
+    ``code_snippet``. A separate ``code_examples`` list does NOT prove code-first
+    because it does not establish section rendering order.
+    """
+    sections = content.get("sections", []) or []
+    if not sections:
+        return False
+    first = sections[0]
+    if not isinstance(first, dict):
+        return False
+    return bool(first.get("includes_code")) and bool((first.get("code_snippet") or "").strip())
+
+
 def validate_material_adaptation(
     original_plan: dict,
     original_content: dict,
@@ -168,11 +198,18 @@ def validate_material_adaptation(
     source of truth used both during second-lesson generation validation and
     during operator publication validation, so the two can never diverge.
 
-    A change is material only if the requested feedback directions produced real
-    structural changes — not merely a title/metadata/adaptation-note edit.
+    A change is material only if EVERY requested feedback direction produced a
+    real structural change — not merely a title/metadata/adaptation-note edit.
+    An empty direction set is itself a failure: a second lesson cannot be
+    materially adapted without explicit canonical feedback.
     """
     directions = set(direction_choices)
     error_reasons: list[str] = []
+
+    # A second lesson must be driven by explicit feedback directions.
+    if not directions:
+        error_reasons.append("missing feedback directions")
+        return error_reasons
 
     def extract_core(plan: dict, content: dict) -> dict:
         return {
@@ -204,13 +241,9 @@ def validate_material_adaptation(
             error_reasons.append("more_examples: code_examples did not increase")
 
     if "code_first" in directions:
-        first_sect = adapt_sections[0] if adapt_sections else {}
-        has_code = first_sect.get("includes_code") and first_sect.get("code_snippet")
-        if not has_code:
-            code_examples = adapted_content.get("code_examples") or []
-            first_ex = code_examples[0] if code_examples else {}
-            if not first_ex.get("code"):
-                error_reasons.append("code_first: first section has no code and first example is not code")
+        # A real transition: original must NOT be code-first, adapted MUST be.
+        if not (not is_code_first(original_content) and is_code_first(adapted_content)):
+            error_reasons.append("code_first: no real explanation-first -> code-first transition")
 
     if "slower_pace" in directions:
         orig_avg = sum(len(str(s)) for s in orig_sections) / max(1, len(orig_sections))
@@ -225,10 +258,13 @@ def validate_material_adaptation(
     if "simplify_jargon" in directions:
         orig_str = str(original_content).lower()
         adapt_str = str(adapted_content).lower()
-        markers = ["복잡한", "용어", "개념", "이론"]
-        orig_jargon = sum(orig_str.count(m) for m in markers)
-        adapt_jargon = sum(adapt_str.count(m) for m in markers)
-        if adapt_jargon >= orig_jargon and "정의" not in adapt_str:
-            error_reasons.append("simplify_jargon: jargon did not decrease and no definitions added")
+        orig_jargon = sum(orig_str.count(m) for m in JARGON_MARKERS)
+        adapt_jargon = sum(adapt_str.count(m) for m in JARGON_MARKERS)
+        orig_terms = len(original_content.get("term_definitions", []) or [])
+        adapt_terms = len(adapted_content.get("term_definitions", []) or [])
+        # Require an actual jargon reduction OR an actual increase in term
+        # definitions (not mere presence of the string "정의").
+        if not (adapt_jargon < orig_jargon or adapt_terms > orig_terms):
+            error_reasons.append("simplify_jargon: jargon did not decrease and term definitions did not increase")
 
     return error_reasons

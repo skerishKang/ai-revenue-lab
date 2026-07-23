@@ -20,7 +20,7 @@ _DEFAULT_LESSON_CONTENT = {
     "content_version": "1.0",
     "title": "테스트 컨텐츠",
     "sections": [
-        {"section_id": "s1", "title": "섹션 1", "content": "내용 설명", "includes_code": True, "code_snippet": "x = 1"},
+        {"section_id": "s1", "title": "섹션 1", "content": "내용 설명", "includes_code": False, "code_snippet": ""},
     ],
     "review_questions": [
         {"question": "Q1: 무엇입니까?", "correct_answer": "설명", "explanation": "왜냐하면"},
