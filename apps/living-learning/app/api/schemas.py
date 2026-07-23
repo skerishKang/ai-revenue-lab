@@ -51,6 +51,7 @@ class GoalRequest(BaseModel):
 
 class GoalResponse(BaseModel):
     learner_id: str
+    goal_id: str
     goal: str
     recorded: bool
 
@@ -65,8 +66,9 @@ class DiagnosticRequest(BaseModel):
 
 class DiagnosticResponse(BaseModel):
     learner_id: str
+    snapshot_id: str
     snapshot_recorded: bool
-    initial_difficulty: str
+    derived_difficulty: str
 
 
 class LearningHomeResponse(BaseModel):
@@ -155,9 +157,68 @@ class ReviewDetailResponse(BaseModel):
 
 
 class ReviewActionRequest(BaseModel):
-    note: str = Field(default="", max_length=MAX_FREE_TEXT)
+    reason: str = Field(default="", max_length=MAX_FREE_TEXT)
 
 
 class ReviewActionResponse(BaseModel):
     lesson_id: str
+    publication_state: str
+
+
+# ---------------------------------------------------------------------------
+# Published lesson delivery (validated structure, not raw JSON)
+# ---------------------------------------------------------------------------
+class SectionView(BaseModel):
+    section_id: str
+    title: str
+    content: str
+    includes_code: bool = False
+
+
+class CodeExampleView(BaseModel):
+    example_id: str
+    language: str
+    code: str
+    explanation: str
+
+
+class TermDefinitionView(BaseModel):
+    term: str
+    definition: str
+
+
+class ExerciseView(BaseModel):
+    exercise_id: str
+    question: str
+    difficulty: str
+
+
+class PublishedLessonResponse(BaseModel):
+    lesson_id: str
+    lesson_number: int
+    objective: str
+    sections: list[SectionView]
+    code_examples: list[CodeExampleView]
+    term_definitions: list[TermDefinitionView]
+    exercises: list[ExerciseView]
+    adaptation_note: str
+
+
+# ---------------------------------------------------------------------------
+# Operator-driven generation (review-before-delivery)
+# ---------------------------------------------------------------------------
+class OperatorGenerateFirstRequest(BaseModel):
+    concept_id: str = Field(default="", max_length=MAX_SHORT_TEXT)
+    idempotency_key: str = Field(default="", max_length=MAX_SHORT_TEXT)
+
+
+class OperatorGenerateNextRequest(BaseModel):
+    comprehension_response_id: str = Field(min_length=1, max_length=MAX_SHORT_TEXT)
+    feedback_id: str = Field(min_length=1, max_length=MAX_SHORT_TEXT)
+    idempotency_key: str = Field(default="", max_length=MAX_SHORT_TEXT)
+
+
+class OperatorGenerateResponse(BaseModel):
+    lesson_id: str
     generation_status: str
+    publication_state: str

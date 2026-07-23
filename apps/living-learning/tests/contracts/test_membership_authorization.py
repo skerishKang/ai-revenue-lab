@@ -61,13 +61,15 @@ def test_unique_provider_issuer_subject_enforced(file_db):
 
 
 def test_membership_grants_role(file_db):
+    learner_id, _ = bootstrap_learner(file_db)
     conn = _conn(file_db)
     try:
         identity = ensure_external_identity(conn, provider="firebase", issuer="iss", subject="learner-1", commit=True)
-        grant_membership(conn, external_identity_id=identity.id, role=ROLE_LEARNER, commit=True)
+        grant_membership(conn, external_identity_id=identity.id, role=ROLE_LEARNER, learner_id=learner_id, commit=True)
         membership = get_active_membership(conn, identity.id, ROLE_LEARNER)
         assert membership is not None
         assert membership.role == ROLE_LEARNER
+        assert membership.learner_id == learner_id
         # No operator membership was auto-granted.
         assert get_active_membership(conn, identity.id, ROLE_OPERATOR) is None
     finally:
@@ -75,10 +77,11 @@ def test_membership_grants_role(file_db):
 
 
 def test_revoked_membership_is_not_active(file_db):
+    learner_id, _ = bootstrap_learner(file_db)
     conn = _conn(file_db)
     try:
         identity = ensure_external_identity(conn, provider="firebase", issuer="iss", subject="learner-2", commit=True)
-        membership = grant_membership(conn, external_identity_id=identity.id, role=ROLE_LEARNER, commit=True)
+        membership = grant_membership(conn, external_identity_id=identity.id, role=ROLE_LEARNER, learner_id=learner_id, commit=True)
         assert get_active_membership(conn, identity.id, ROLE_LEARNER) is not None
         revoke_membership(conn, membership.id, commit=True)
         assert get_active_membership(conn, identity.id, ROLE_LEARNER) is None

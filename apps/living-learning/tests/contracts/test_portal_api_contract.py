@@ -172,9 +172,43 @@ def test_private_response_is_no_store(portal_app):
 
 
 def test_learner_can_fetch_first_lesson(portal_app):
-    client = _client(portal_app)
+    """Review-before-delivery: operator generates -> learner denied while
+    pending_review -> operator approves -> learner can fetch the published
+    lesson as validated structured content."""
+    app, learner_id = portal_app
+    client = TestClient(app)
+
+    # Operator generates the first lesson (pending_review, not published).
+    gen = client.post(
+        f"/api/v1/operator/learners/{learner_id}/lessons/first/generate",
+        json={"idempotency_key": "portal-first"},
+        headers=_auth(OPERATOR_TOKEN),
+    )
+    assert gen.status_code == 200
+    assert gen.json()["generation_status"] == "pending_review"
+    assert gen.json()["publication_state"] == "pending"
+    lesson_id = gen.json()["lesson_id"]
+
+    # Learner cannot fetch it before approval.
+    denied = client.get("/api/v1/lessons/1", headers=_auth(LEARNER_TOKEN))
+    assert denied.status_code == 404
+
+    # Operator approves (publishes).
+    approve = client.post(
+        f"/api/v1/operator/review/{lesson_id}/approve",
+        json={"reason": "looks good"},
+        headers=_auth(OPERATOR_TOKEN),
+    )
+    assert approve.status_code == 200
+    assert approve.json()["publication_state"] == "published"
+
+    # Now the learner can fetch the published lesson.
     resp = client.get("/api/v1/lessons/1", headers=_auth(LEARNER_TOKEN))
     assert resp.status_code == 200
     body = resp.json()
     assert body["lesson_number"] == 1
-    assert body["generation_status"] == "pending_review"
+    assert "sections" in body
+    assert "exercises" in body
+    # No expected answers / internal fields are exposed.
+    assert "correct_answer" not in resp.text
+    assert "lesson_plan_json" not in resp.text

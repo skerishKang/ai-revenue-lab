@@ -87,10 +87,18 @@ def _get_conn(request: Request):
 def get_principal(request: Request) -> Principal:
     """Resolve a verified identity into a product-local principal.
 
-    Fail-closed: a verified identity with no active external identity row, or no
-    active membership, is rejected. Firebase authentication alone grants nothing.
+    Fail-closed: a verified identity is rejected unless its issuer matches the
+    expected Firebase identity project, it has an active external identity row,
+    and it has an active product membership. Firebase authentication alone
+    grants nothing. An ambiguous learner mapping (more than one distinct active
+    learner membership) is also rejected rather than arbitrarily resolved.
     """
     identity_principal = get_verified_identity(request)
+
+    # The verified issuer must be the expected shared identity project.
+    if identity_principal.issuer != FIREBASE_ISSUER:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
+
     conn = _get_conn(request)
     try:
         identity = get_external_identity(
@@ -105,7 +113,15 @@ def get_principal(request: Request) -> Principal:
             # Verified identity but no active product membership => no access.
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
         roles = frozenset(m.role for m in active)
-        learner_id = next((m.learner_id for m in active if m.learner_id), None)
+
+        # Fail-closed on an ambiguous learner mapping: never arbitrarily pick the
+        # first row if multiple distinct active learner memberships exist.
+        learner_ids = {m.learner_id for m in active if m.role == ROLE_LEARNER and m.learner_id}
+        if len(learner_ids) > 1:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="unavailable"
+            )
+        learner_id = next(iter(learner_ids), None)
     finally:
         try:
             conn.close()

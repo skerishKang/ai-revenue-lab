@@ -169,6 +169,12 @@ def grant_membership(
 ) -> ProductMembershipRecord:
     if role not in _ROLES:
         raise ValueError(f"invalid role: {role!r}")
+    # Role/learner_id invariant (also enforced by a DB CHECK in migration 010):
+    # a learner membership must reference a learner; operator/reviewer must not.
+    if role == ROLE_LEARNER and not learner_id:
+        raise ValueError("learner membership requires a learner_id")
+    if role in (ROLE_OPERATOR, ROLE_REVIEWER) and learner_id is not None:
+        raise ValueError(f"{role} membership must not reference a learner_id")
     now = _utcnow()
     membership_id = f"mem_{secrets.token_urlsafe(16)}"
     conn.execute(
