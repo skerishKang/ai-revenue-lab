@@ -23,7 +23,6 @@ from app.domain.models import ProviderResult
 
 class ProviderTimeoutError(Exception):
     """Raised when the provider request times out."""
-
     pass
 
 
@@ -37,17 +36,37 @@ class ProviderHTTPError(Exception):
 
 class ProviderTransportError(Exception):
     """Raised for transport-level errors (network, DNS, TLS, etc.)."""
-
     pass
 
 
 class ProviderResponseTooLargeError(Exception):
     """Raised when the provider response exceeds the size limit."""
-
     pass
 
 
 MAX_RESPONSE_SIZE = 2 * 1024 * 1024
+
+
+# ---------------------------------------------------------------------------
+# Resolver protocol for DNS verification
+# ---------------------------------------------------------------------------
+
+@runtime_checkable
+class Resolver(Protocol):
+    def resolve(self, hostname: str) -> list[str]: ...
+
+
+class DefaultResolver:
+    def resolve(self, hostname: str) -> list[str]:
+        try:
+            results = socket.getaddrinfo(hostname, None)
+            ips = set()
+            for family, _, _, _, sockaddr in results:
+                ip = sockaddr[0]
+                ips.add(ip)
+            return list(ips)
+        except socket.gaierror:
+            return []
 
 
 # ---------------------------------------------------------------------------
@@ -56,13 +75,6 @@ MAX_RESPONSE_SIZE = 2 * 1024 * 1024
 
 @runtime_checkable
 class Transport(Protocol):
-    """Injectable HTTP transport for the provider.
-
-    Default implementation uses ``urllib.request`` with redirect blocking
-    and SSRF protections.  Tests inject a stub that returns synthetic
-    responses without opening a real socket.
-    """
-
     def request(
         self,
         url: str,
@@ -70,42 +82,25 @@ class Transport(Protocol):
         headers: dict[str, str],
         timeout: float,
     ) -> tuple[int, bytes]:
-        """Execute the HTTP request.
-
-        Returns
-        -------
-        tuple[int, bytes]
-            HTTP status code and response body bytes.
-
-        Raises
-        ------
-        ProviderTimeoutError, ProviderHTTPError, ProviderTransportError,
-        ProviderResponseTooLargeError
-        """
+        """Execute the HTTP request."""
         ...
 
 
 class UrllibTransport:
-    """Default transport backed by ``urllib.request`` (stdlib, no extra dep).
-
-    Features
-    --------
-    - Redirect blocking (301, 302, 303, 307, 308 follow disabled)
-    - SSRF protection via ipaddress module
-    - Response size limit (2 MiB max)
-    - Custom exception normalization
-    """
-
     def __init__(
         self,
         *,
+        base_url: str = "",
         environment: str = "development",
-        allow_http_for_localhost: bool = True,
+        allow_http_for_localhost: bool = False,
         max_response_size: int = MAX_RESPONSE_SIZE,
+        resolver: Resolver | None = None,
     ) -> None:
+        self._base_url = base_url
         self._environment = environment
         self._allow_http_for_localhost = allow_http_for_localhost
         self._max_response_size = max_response_size
+        self._resolver = resolver or DefaultResolver()
 
     def request(
         self,
@@ -120,7 +115,6 @@ class UrllibTransport:
         urllib.request.install_opener(opener)
 
         try:
-            # SSRF validation before request
             host = self._extract_host(url)
             if host:
                 self._validate_destination(host)
@@ -128,32 +122,25 @@ class UrllibTransport:
             with opener.open(request, timeout=timeout) as resp:
                 body = resp.read(self._max_response_size + 1)
                 if len(body) > self._max_response_size:
-                    raise ProviderResponseTooLargeError(
-                        f"Response {len(body)} bytes exceeds limit {self._max_response_size}"
-                    )
+                    raise ProviderResponseTooLargeError("response too large")
                 return resp.status, body
         except urllib.error.HTTPError as e:
-            if e.code == 301 or e.code == 302 or e.code == 303 or \
-               e.code == 307 or e.code == 308:
+            if e.code in (301, 302, 303, 307, 308):
                 raise ProviderHTTPError(e.code, "redirect not allowed")
-            try:
-                body = e.read(self._max_response_size + 1)
-            except Exception:
-                body = b""
-            raise ProviderHTTPError(e.code, body.decode("utf-8", errors="replace")[:200])
+            raise ProviderHTTPError(e.code, "http error")
         except urllib.error.URLError as e:
-            reason = str(e.reason)
-            if "timed out" in reason.lower() or "timeout" in reason.lower():
-                raise ProviderTimeoutError(reason) from e
-            if isinstance(e.reason, socket.timeout):
+            reason = e.reason
+            if isinstance(reason, socket.timeout):
                 raise ProviderTimeoutError("connection timed out") from e
-            raise ProviderTransportError(reason) from e
-        except socket.timeout as e:
-            raise ProviderTimeoutError("connection timed out") from e
-        except socket.gaierror as e:
-            raise ProviderTransportError(f"DNS error: {e}") from e
+            if isinstance(reason, TimeoutError):
+                raise ProviderTimeoutError("timeout") from e
+            if isinstance(reason, Exception) and "timed out" in str(reason).lower():
+                raise ProviderTimeoutError("timeout") from e
+            raise ProviderTransportError(str(reason)) from e
         except (ProviderTimeoutError, ProviderHTTPError, ProviderResponseTooLargeError):
             raise
+        except Exception as e:
+            raise ProviderTransportError(str(e)) from e
 
     def _extract_host(self, url: str) -> str | None:
         from urllib.parse import urlparse
@@ -169,54 +156,46 @@ class UrllibTransport:
 
         hostname_lower = hostname.lower()
 
-        # Development/testing: allow HTTP only for localhost/loopback
-        if self._environment in ("testing", "development"):
-            if self._allow_http_for_localhost:
-                try:
-                    ip = ipaddress.ip_address(hostname_lower)
-                    if ip.is_loopback:
-                        return
-                except ValueError:
-                    pass
-                if hostname_lower in ("localhost", "localhost.localdomain"):
-                    return
+        # Resolve hostname to IPs for SSRF check
+        resolved_ips = self._resolver.resolve(hostname_lower)
 
-        # Staging/production: reject private, loopback, link-local, etc.
+        # Also check if hostname is a literal IP
         try:
-            ip = ipaddress.ip_address(hostname_lower)
+            literal_ip = ipaddress.ip_address(hostname_lower)
+            ips_to_check = [literal_ip] + [ipaddress.ip_address(ip) for ip in resolved_ips]
         except ValueError:
-            # hostname - verify via resolver if possible
+            ips_to_check = [ipaddress.ip_address(ip) for ip in resolved_ips if ip]
+
+        # Check environment-specific rules
+        if self._environment in ("testing", "development"):
+            # In development: allow HTTP only for localhost/loopback
+            # We need to check if this is a private/loopback destination
+            for ip in ips_to_check:
+                if ip.is_loopback:
+                    return
+                # Allow private only for localhost hostname
+                if hostname_lower != "localhost" and hostname_lower != "::1":
+                    if ip.is_private or ip.is_link_local or ip.is_unspecified:
+                        raise ProviderTransportError("SSRF blocked")
             return
 
-        if ip.is_loopback:
-            raise ProviderTransportError(
-                "destination is loopback address"
-            )
-        if ip.is_private:
-            raise ProviderTransportError(
-                "destination is private address"
-            )
-        if ip.is_link_local:
-            raise ProviderTransportError(
-                "destination is link-local address"
-            )
-        if ip.is_multicast:
-            raise ProviderTransportError(
-                "destination is multicast address"
-            )
-        if ip.is_reserved:
-            raise ProviderTransportError(
-                "destination is reserved address"
-            )
-        if ip.is_unspecified:
-            raise ProviderTransportError(
-                "destination is unspecified address"
-            )
+        # Staging/production: reject all non-global addresses
+        for ip in ips_to_check:
+            if ip.is_loopback:
+                raise ProviderTransportError("destination is loopback address")
+            if ip.is_private:
+                raise ProviderTransportError("destination is private address")
+            if ip.is_link_local:
+                raise ProviderTransportError("destination is link-local address")
+            if ip.is_multicast:
+                raise ProviderTransportError("destination is multicast address")
+            if ip.is_reserved:
+                raise ProviderTransportError("destination is reserved address")
+            if ip.is_unspecified:
+                raise ProviderTransportError("destination is unspecified address")
 
 
 class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
-    """Handler that blocks all HTTP redirects."""
-
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
 
@@ -227,34 +206,13 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 TASK_NAMES = frozenset({"editorial_plan", "edition_draft"})
 
-_CORRELATION_PREFIX = "lt-req-"
-
 
 def _make_correlation_id(request_id: str) -> str:
-    """Derive an opaque correlation ID from the request_id."""
     hasher = hashlib.sha256(request_id.encode("utf-8"))
     return hasher.hexdigest()[:32]
 
 
 class OpenAICompatibleProvider:
-    """Structured-generation provider for OpenAI-compatible chat-completions APIs.
-
-    Parameters
-    ----------
-    base_url:
-        Full chat-completions URL (e.g. ``https://api.openai.com/v1/chat/completions``).
-    api_key:
-        Bearer-token credential.
-    model:
-        Model identifier (e.g. ``gpt-4o-mini``).
-    timeout_seconds:
-        Per-request timeout.
-    cost_class:
-        Cost class assigned to every result from this provider.
-    transport:
-        Injectable HTTP transport (defaults to ``UrllibTransport``).
-    """
-
     def __init__(
         self,
         *,
@@ -265,14 +223,42 @@ class OpenAICompatibleProvider:
         cost_class: CostClass = CostClass.free,
         transport: Transport | None = None,
         environment: str = "development",
+        resolver: Resolver | None = None,
     ) -> None:
-        self._base_url = base_url
+        from urllib.parse import urljoin
+
+        base = base_url.rstrip("/")
+
+        # Proper endpoint normalization using path segments
+        if base.endswith("/chat/completions"):
+            self._chat_url = base
+        elif base.endswith("/v1/chat/completions"):
+            self._chat_url = base
+        else:
+            # Add /v1/chat/completions
+            if base.endswith("/v1"):
+                self._chat_url = base + "/chat/completions"
+            else:
+                self._chat_url = base + "/v1/chat/completions"
+
+        # Remove any query/fragment from final URL (already handled by urlparse)
+        # Double-slash prevention
+        self._chat_url = self._chat_url.replace("//", "/")
+
         self._api_key = api_key
         self._model = model
         self._timeout = timeout_seconds
         self._cost_class = cost_class
         self._environment = environment
-        self._transport = transport or UrllibTransport(environment=environment)
+
+        if transport is None:
+            self._transport = UrllibTransport(
+                base_url=base_url,
+                environment=environment,
+                resolver=resolver,
+            )
+        else:
+            self._transport = transport
 
         self._provider_name = "openai_compatible"
 
@@ -300,6 +286,7 @@ class OpenAICompatibleProvider:
         request_id: str,
     ) -> ProviderResult:
         start = time.monotonic()
+        opaque_id = _make_correlation_id(request_id)
 
         if task_name not in TASK_NAMES:
             return ProviderResult(
@@ -314,8 +301,10 @@ class OpenAICompatibleProvider:
 
         try:
             body = self._build_request_body(system_prompt, user_payload)
-            status, raw = self._do_request(body)
+            status, raw = self._do_request(body, opaque_id)
         except TimeoutError:
+            return self._fail_result(start, ProviderErrorCategory.timeout, "provider request timed out")
+        except ProviderTimeoutError:
             return self._fail_result(start, ProviderErrorCategory.timeout, "provider request timed out")
         except ProviderResponseTooLargeError:
             return self._fail_result(start, ProviderErrorCategory.provider_error, "provider response too large")
@@ -327,7 +316,7 @@ class OpenAICompatibleProvider:
                 latency_ms=(time.monotonic() - start) * 1000,
                 success=False,
                 error_category=ProviderErrorCategory.provider_error,
-                error_message=f"provider returned http {e.status_code}",
+                error_message="provider http error",
             )
         except ProviderTransportError as e:
             return ProviderResult(
@@ -342,7 +331,7 @@ class OpenAICompatibleProvider:
         except Exception:
             return self._fail_result(start, ProviderErrorCategory.unknown, "unexpected error")
 
-        latency_ms = (time.monotonic() - start)
+        latency_ms = (time.monotonic() - start) * 1000
 
         if status != 200:
             return ProviderResult(
@@ -355,28 +344,49 @@ class OpenAICompatibleProvider:
                 error_message=f"provider returned http {status}",
             )
 
+        # Strict envelope validation
+        if not isinstance(raw, bytes):
+            return self._fail_result(start, ProviderErrorCategory.invalid_json, "response is not bytes")
+
         try:
             parsed = json.loads(raw)
         except (json.JSONDecodeError, ValueError):
             return self._fail_result(start, ProviderErrorCategory.invalid_json, "provider returned malformed JSON")
 
-        usage = parsed.get("usage") or {}
-        prompt_tokens = usage.get("prompt_tokens", 0) or 0
-        completion_tokens = usage.get("completion_tokens", 0) or 0
+        if not isinstance(parsed, dict):
+            return self._fail_result(start, ProviderErrorCategory.provider_error, "response is not a JSON object")
+
+        usage = parsed.get("usage")
+        if usage is not None and not isinstance(usage, dict):
+            return self._fail_result(start, ProviderErrorCategory.provider_error, "usage is not a JSON object")
+
+        prompt_tokens = 0
+        completion_tokens = 0
+        if isinstance(usage, dict):
+            pt = usage.get("prompt_tokens")
+            ct = usage.get("completion_tokens")
+            prompt_tokens = int(pt) if isinstance(pt, int) and pt >= 0 else 0
+            completion_tokens = int(ct) if isinstance(ct, int) and ct >= 0 else 0
 
         try:
-            choices = parsed["choices"]
-        except (KeyError, TypeError, ValueError):
+            choices = parsed.get("choices")
+        except (KeyError, TypeError, AttributeError):
             return self._fail_result(start, ProviderErrorCategory.invalid_json, "provider response missing choices")
 
         if not isinstance(choices, list) or len(choices) == 0:
             return self._fail_result(start, ProviderErrorCategory.invalid_json, "provider returned empty choices")
 
-        message = choices[0].get("message", {})
-        content = message.get("content", "")
+        first_choice = choices[0]
+        if not isinstance(first_choice, dict):
+            return self._fail_result(start, ProviderErrorCategory.invalid_json, "first choice is not an object")
 
-        if not content or not isinstance(content, str):
-            return self._fail_result(start, ProviderErrorCategory.invalid_json, "provider returned empty content")
+        message = first_choice.get("message")
+        if not isinstance(message, dict):
+            return self._fail_result(start, ProviderErrorCategory.invalid_json, "message is not an object")
+
+        content = message.get("content")
+        if not isinstance(content, str) or not content.strip():
+            return self._fail_result(start, ProviderErrorCategory.invalid_json, "content is not a non-empty string")
 
         content_stripped = content.strip()
         if content_stripped.startswith("```"):
@@ -405,10 +415,6 @@ class OpenAICompatibleProvider:
             payload=validated.model_dump(),
             success=True,
         )
-
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
 
     def _fail_result(
         self,
@@ -439,14 +445,14 @@ class OpenAICompatibleProvider:
         }
         return json.dumps(body, ensure_ascii=False).encode("utf-8")
 
-    def _do_request(self, body: bytes) -> tuple[int, bytes]:
+    def _do_request(self, body: bytes, correlation_id: str) -> tuple[int, bytes]:
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self._api_key}",
-            "X-Request-ID": _make_correlation_id(_make_correlation_id("temp")),  # transient for now
+            "X-Request-ID": correlation_id,
         }
         return self._transport.request(
-            self._base_url,
+            self._chat_url,
             data=body,
             headers=headers,
             timeout=self._timeout,

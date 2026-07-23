@@ -603,10 +603,34 @@ class TestAIProviderSettings:
         )
         assert s.ai_base_url == "http://localhost:11434"
 
+    def test_testing_http_localhost_allowed(self):
+        from app.config import Settings
+
+        s = Settings(
+            environment="testing",
+            ai_provider="openai_compatible",
+            ai_base_url="http://localhost:11434",
+            ai_api_key="test-key",
+            ai_model="test-model",
+        )
+        assert s.ai_base_url == "http://localhost:11434"
+
+    def test_testing_http_non_localhost_blocked(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="HTTP LT_AI_BASE_URL in testing/development is only allowed for localhost or loopback addresses."):
+            Settings(
+                environment="testing",
+                ai_provider="openai_compatible",
+                ai_base_url="http://example.com",
+                ai_api_key="test-key",
+                ai_model="test-model",
+            )
+
     def test_development_non_loopback_http_fails(self):
         from app.config import Settings
 
-        with pytest.raises(ValueError, match="localhost|loopback"):
+        with pytest.raises(ValueError, match="HTTP LT_AI_BASE_URL in testing/development is only allowed for localhost or loopback addresses."):
             Settings(
                 environment="development",
                 ai_provider="openai_compatible",
@@ -765,14 +789,14 @@ class TestAIProviderSettings:
                 ai_model="gpt-4o-mini",
             )
 
-    def test_testing_http_url_allows_non_localhost(self):
+    def test_testing_http_non_localhost_blocked(self):
         from app.config import Settings
 
-        s = Settings(
-            environment="testing",
-            ai_provider="openai_compatible",
-            ai_base_url="http://api.openai.com",
-            ai_api_key="sk-test-key",
-            ai_model="gpt-4o-mini",
-        )
-        assert s.ai_base_url == "http://api.openai.com"
+        with pytest.raises(ValueError, match="HTTP LT_AI_BASE_URL in testing/development is only allowed for localhost or loopback addresses."):
+            Settings(
+                environment="testing",
+                ai_provider="openai_compatible",
+                ai_base_url="http://api.openai.com",
+                ai_api_key="sk-test-key",
+                ai_model="gpt-4o-mini",
+            )

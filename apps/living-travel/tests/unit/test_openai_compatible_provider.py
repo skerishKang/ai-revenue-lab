@@ -684,7 +684,7 @@ class TestSSRFValidation:
         from app.ai.openai_compatible import UrllibTransport, ProviderTransportError
 
         transport = UrllibTransport(environment="development", allow_http_for_localhost=True)
-        with pytest.raises(ProviderTransportError, match="private"):
+        with pytest.raises(ProviderTransportError, match="SSRF blocked"):
             transport._validate_destination("10.0.0.1")
 
 
