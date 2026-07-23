@@ -64,12 +64,49 @@ class TestRuntimeOpener:
     def test_postgresql_opener_returns_postgres_runtime_connection(self, monkeypatch):
         monkeypatch.setattr(settings, "db_backend", "postgresql")
         monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
+        
+        class MockPostgresRuntimeConnection:
+            def open(self):
+                return self
+            def close(self):
+                pass
+        
+        monkeypatch.setattr(
+            "app.factory.postgres_runtime_connection",
+            lambda url: MockPostgresRuntimeConnection()
+        )
+        
         app = create_app()
         conn = app.state.open_runtime_connection()
         try:
-            assert isinstance(conn, PostgresRuntimeConnection)
+            assert isinstance(conn, MockPostgresRuntimeConnection)
         finally:
             conn.close()
+
+    def test_postgresql_opener_returns_opened_connection(self, monkeypatch):
+        """The opener must return an already-opened connection, not a lazy adapter."""
+        monkeypatch.setattr(settings, "db_backend", "postgresql")
+        monkeypatch.setattr(settings, "database_url", "postgresql://user:pass@host/db")
+        
+        opened = []
+        
+        class MockPostgresRuntimeConnection:
+            def open(self):
+                opened.append(True)
+                return self
+            def close(self):
+                pass
+        
+        monkeypatch.setattr(
+            "app.factory.postgres_runtime_connection",
+            lambda url: MockPostgresRuntimeConnection()
+        )
+        
+        app = create_app()
+        conn = app.state.open_runtime_connection()
+        conn.close()
+        
+        assert opened, "opener must call .open() on the adapter"
 
     def test_startup_migration_uses_raw_sqlite(self):
         import inspect

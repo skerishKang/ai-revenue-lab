@@ -94,7 +94,7 @@ def create_app(
         app.state.database_url = database_url
         app.state.open_runtime_connection = lambda: postgres_runtime_connection(
             database_url
-        )
+        ).open()
     else:
         if not resolved_db:
             resolved_db = settings.database_path
