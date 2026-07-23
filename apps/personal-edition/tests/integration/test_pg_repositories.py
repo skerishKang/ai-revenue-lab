@@ -608,6 +608,7 @@ class TestConcurrency:
 
 class TestIdempotency:
     def test_claim_complete_replay(self, pg_env):
+        from app import edition_repository as ed_repo
         from app import generation_request_repository as gen_req_repo
 
         _make_participant(pg_env.runtime, "p1")
@@ -630,11 +631,14 @@ class TestIdempotency:
         assert duplicate.already_claimed is True
         assert duplicate.edition_id is None
 
-        gen_req_repo.complete_generation_request(
+        edition = ed_repo.finalize_edition_for_request(
             pg_env.runtime,
+            participant_id="p1",
             idempotency_key="key-1",
-            edition_id="e-123",
             claim_token=first.claim_token,
+            structured_content='{"sections": []}',
+            rendered_title="Test Edition",
+            input_id=inp.id,
         )
 
         replay = gen_req_repo.claim_generation_request(
@@ -644,4 +648,4 @@ class TestIdempotency:
             input_id=inp.id,
         )
         assert replay.already_claimed is True
-        assert replay.edition_id == "e-123"
+        assert replay.edition_id == edition.id
