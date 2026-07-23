@@ -25,8 +25,6 @@ from app.auth import (
     verify_admin_secret,
     verify_csrf_token,
 )
-from app.db import get_connection
-from app.db_runtime import SqliteRuntimeConnection
 from app.config import settings
 from app.domain.models import EditionContent
 from app.factory import _privacy_headers, _render_template, _set_cookie, _delete_cookie
@@ -292,7 +290,7 @@ def admin_dashboard(request: Request):
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         participants = conn.execute(
             "SELECT id, display_name, preferred_language, status, created_at "
@@ -385,7 +383,7 @@ def admin_participant_detail(request: Request, participant_id: str, error: str =
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
         if participant is None:
@@ -470,7 +468,7 @@ def admin_generate(
             url=f"/admin/participants/{participant_id}?error=csrf", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     error_code = None
     try:
         participant = pt_repo.get_participant_by_id(conn, participant_id)
@@ -511,7 +509,7 @@ def admin_review_page(request: Request, edition_id: str):
     if not _get_admin(request):
         return RedirectResponse(url="/admin/access", status_code=303)
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         edition = ed_repo.get_edition_by_id(conn, edition_id)
         if edition is None:
@@ -598,7 +596,7 @@ def admin_review_edit(
             url=f"/admin/review/{edition_id}", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         edition = ed_repo.get_edition_by_id(conn, edition_id)
         if edition is None:
@@ -717,7 +715,7 @@ def admin_review_edit(
         final_rendered_title = rendered_title.strip() if rendered_title.strip() else validated_model.publication_title
 
         ed_repo.update_edition_content(
-            SqliteRuntimeConnection(conn),
+            conn,
             edition_id,
             structured_content=canonical_content,
             rendered_title=final_rendered_title,
@@ -745,10 +743,10 @@ def admin_publish(
             url=f"/admin/review/{edition_id}", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         ed_repo.update_edition_publication(
-            SqliteRuntimeConnection(conn), edition_id, "published"
+            conn, edition_id, "published"
         )
     finally:
         conn.close()
@@ -772,10 +770,10 @@ def admin_reject(
             url=f"/admin/review/{edition_id}", status_code=303
         )
 
-    conn = get_connection(request.app.state.db_path)
+    conn = request.app.state.open_runtime_connection()
     try:
         ed_repo.update_edition_publication(
-            SqliteRuntimeConnection(conn), edition_id, "rejected"
+            conn, edition_id, "rejected"
         )
     finally:
         conn.close()
