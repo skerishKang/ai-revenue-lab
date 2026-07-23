@@ -126,6 +126,8 @@ def _render_template(
     ctx["t"] = make_t(locale)
     ctx["lang_switch_href"] = lang_switch_href(path, query)
     ctx.setdefault("is_preview", False)
+    ctx.setdefault("portal_home_href", settings.portal_home_href)
+    ctx.setdefault("portal_account_href", settings.portal_account_href)
 
     html = template.render(ctx)
     return HTMLResponse(

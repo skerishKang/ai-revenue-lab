@@ -170,6 +170,10 @@ def _render(env: Environment, template_name: str, context: dict, request_path: s
     ctx["lp"] = locale_prefix(locale)
     ctx["t"] = make_t(locale)
     ctx["lang_switch_href"] = lang_switch_href(request_path.split("?")[0], query)
+    # Static preview has no configured portal: global controls render as
+    # safe non-navigating placeholders (PORTAL_BASE_URL contract).
+    ctx.setdefault("portal_home_href", "")
+    ctx.setdefault("portal_account_href", "")
 
     template = env.get_template(template_name)
     return template.render(ctx)

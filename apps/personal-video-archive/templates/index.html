@@ -7,7 +7,7 @@
 {% set resurf = resurfaced[0] if resurfaced else none %}
 
 <section class="intro">
-    <span class="eyebrow">{{ t("app_name") }}</span>
+    <div class="page-identity"><span class="page-business">{{ t("business_kicker") }}</span><span class="page-divider">/</span><span class="eyebrow">{{ t("page_identity_eyebrow") }}</span></div>
     <h1 class="display">{{ t("home_intro_title") }}</h1>
     <p class="lede">{{ t("home_intro_desc") }}</p>
 </section>
@@ -120,7 +120,7 @@
 {% endif %}
 
 {% if recent_notes %}
-<section class="section">
+<section class="section" id="notes">
     <div class="section-head">
         <div>
             <span class="eyebrow">{{ t("home_notes_label") }}</span>
@@ -155,7 +155,7 @@
 {% if resurf %}
 {% set rrec = resurf[0] %}
 {% set rv = resurf[2] %}
-<section class="resurface">
+<section class="resurface" id="resurface">
     <div>
         <span class="eyebrow">{{ t("home_resurfaced_label") }}</span>
         <h2>{{ rv.title | truncate(60) }}</h2>

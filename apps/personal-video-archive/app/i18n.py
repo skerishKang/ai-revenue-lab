@@ -14,9 +14,24 @@ STRINGS: dict[str, dict[str, str]] = {
     # --- Navigation -------------------------------------------------------
     "nav_home": {"ko": "홈", "en": "Home"},
     "nav_topics": {"ko": "토픽", "en": "Topics"},
-    "nav_records": {"ko": "나의 기록", "en": "My Records"},
+    "nav_records": {"ko": "기록", "en": "Notes"},
+    "nav_resurface": {"ko": "다시 보기", "en": "Resurface"},
     "nav_proposals": {"ko": "AI 제안", "en": "AI Suggestions"},
+    "nav_search": {"ko": "검색", "en": "Search"},
     "lang_switch": {"ko": "English", "en": "한국어"},
+    # --- Global portal shell (AI Revenue Lab / Issue #83) ------------------
+    "business_kicker": {"ko": "Business 13", "en": "Business 13"},
+    "portal_service_label": {"ko": "서비스", "en": "Service"},
+    "portal_all_services": {"ko": "모든 서비스", "en": "All services"},
+    "portal_account": {"ko": "계정", "en": "Account"},
+    "portal_not_configured": {
+        "ko": "포털이 아직 연결되지 않았습니다",
+        "en": "Portal is not connected yet",
+    },
+    "page_identity_eyebrow": {
+        "ko": "개인 영상 아카이브",
+        "en": "Private video memory",
+    },
     # --- Home -------------------------------------------------------------
     "home_subtitle": {
         "ko": "주제별 영상 발견과 나만의 기록",
