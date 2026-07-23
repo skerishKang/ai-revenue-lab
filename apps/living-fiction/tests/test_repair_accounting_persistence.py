@@ -307,7 +307,7 @@ def test_health_reports_actual_provider(temp_db_path):
         model="test-model-123",
         provider_name="test-provider-xyz",
     )
-    app = create_app(db_path=temp_db_path, provider=custom_provider)
+    app = create_app(db_path=temp_db_path, provider=custom_provider, enable_web=False)
     with TestClient(app) as client:
         response = client.get("/health")
         assert response.status_code == 200

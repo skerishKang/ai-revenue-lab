@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ episode_title }}{% endblock %}
+{% block content %}
+<div class="episode-header">
+  <div class="stamp">PERSONAL BRANCH</div>
+  <div class="episode-number">{{ episode_number_label }}</div>
+  <h1 class="episode-title">{{ episode_title }}</h1>
+  <p class="episode-synopsis">{{ episode_synopsis }}</p>
+</div>
+
+<div class="paper">
+  <div class="meta-row">
+    <span><span class="meta-label">반영된 선택</span> {{ applied_choice_text }}</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="meta-label">분기 지점</span> {{ divergence_point }}</span>
+    <span><span class="meta-label">AI 생성</span> {{ provider }} / {{ model }}</span>
+  </div>
+</div>
+
+<div class="paper">
+  {% for beat in prose %}
+  <div class="prose-block">
+    <p class="scene-divider">▸ {{ beat.scene_title }}</p>
+    {% for paragraph in beat.paragraphs %}
+    <p>{{ paragraph }}</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+
+  <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 1rem;">
+    <span class="stamp">AI GENERATED</span>
+    본인만 볼 수 있는 개인 분기입니다.
+  </p>
+</div>
+
+<div style="text-align: center;">
+  <a href="/read" class="btn btn-secondary">Canon으로 돌아가기</a>
+</div>
+{% endblock %}

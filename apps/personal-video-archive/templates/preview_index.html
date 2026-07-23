@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}UI Preview — Personal Video Archive{% endblock %}
+{% block content %}
+<div class="page-intro">
+    <h1>Personal Video Archive — UI Preview</h1>
+    <p class="subtitle">
+        A static, synthetic preview of the accepted Phase 1 interface.
+        Every page is rendered from the real templates with fake data.
+        Nothing here is persisted, and no YouTube, LLM, database, or network
+        call is made.
+    </p>
+    <p class="small">
+        <span class="badge badge-info">YouTube info</span>
+        <span class="badge badge-app">Application analysis</span>
+        <span class="badge badge-user">My private record</span>
+        <span class="badge badge-ai">AI suggestion</span>
+    </p>
+</div>
+
+<div class="section">
+    <h3>1 · Create topic &amp; review rule</h3>
+    <div class="topic-list">
+        <a href="/home" class="topic-card"><div class="topic-card-content"><h3>Product home / topic list</h3><p class="topic-intent">All synthetic topics, newest first.</p></div></a>
+        <a href="/topics" class="topic-card"><div class="topic-card-content"><h3>Topics page</h3><p class="topic-intent">Dedicated topic list view.</p></div></a>
+        <a href="/topics/new" class="topic-card"><div class="topic-card-content"><h3>New topic form</h3><p class="topic-intent">Natural-language intent entry.</p></div></a>
+        <a href="/topics/pv-topic-0001/review-rule" class="topic-card"><div class="topic-card-content"><h3>LLM query-rule review</h3><p class="topic-intent">Editable AI-suggested search rules before acceptance.</p></div></a>
+    </div>
+</div>
+
+<div class="section">
+    <h3>2 · Inspect topic feed</h3>
+    <div class="topic-list">
+        <a href="/topics/pv-topic-0001" class="topic-card"><div class="topic-card-content"><h3>Populated feed (newest first)</h3><p class="topic-intent">Mixed viewing states with application analysis.</p></div></a>
+        <a href="/topics/pv-topic-0001/unseen" class="topic-card"><div class="topic-card-content"><h3>Feed filtered to unseen</h3><p class="topic-intent">Only videos not yet opened.</p></div></a>
+        <a href="/topics/pv-topic-0001/completed" class="topic-card"><div class="topic-card-content"><h3>Feed filtered to completed</h3><p class="topic-intent">Only finished videos.</p></div></a>
+        <a href="/topics/pv-topic-0003" class="topic-card"><div class="topic-card-content"><h3>Empty / no-results feed</h3><p class="topic-intent">Archived topic with no videos discovered yet.</p></div></a>
+        <a href="/topics/pv-topic-0001/refresh-failed" class="topic-card"><div class="topic-card-content"><h3>Provider refresh failure</h3><p class="topic-intent">Refresh failed but the existing feed is preserved.</p></div></a>
+    </div>
+</div>
+
+<div class="section">
+    <h3>3 · Open source &amp; video detail</h3>
+    <div class="topic-list">
+        <a href="/videos/pv-video-0001" class="topic-card"><div class="topic-card-content"><h3>Video detail</h3><p class="topic-intent">YouTube metadata, topics, and per-topic private records.</p></div></a>
+    </div>
+</div>
+
+<div class="section">
+    <h3>4 · Private records &amp; AI suggestions</h3>
+    <div class="topic-list">
+        <a href="/records/pv-rec-0003" class="topic-card"><div class="topic-card-content"><h3>Private record detail / edit</h3><p class="topic-intent">Free-form note preserved; structured fields editable.</p></div></a>
+        <a href="/records/pv-rec-0002" class="topic-card"><div class="topic-card-content"><h3>Pending LLM structure proposal</h3><p class="topic-intent">AI suggestion awaiting review; nothing applied yet.</p></div></a>
+        <a href="/records/pv-rec-0001" class="topic-card"><div class="topic-card-content"><h3>Accepted structured record</h3><p class="topic-intent">Fully structured record with timestamp references.</p></div></a>
+        <a href="/records" class="topic-card"><div class="topic-card-content"><h3>Record search results</h3><p class="topic-intent">Search and filter private records.</p></div></a>
+    </div>
+</div>
+
+<div class="section">
+    <h3>5 · Error &amp; system states</h3>
+    <div class="topic-list">
+        <a href="/error" class="topic-card"><div class="topic-card-content"><h3>Validation error example</h3><p class="topic-intent">A handled 400 with a clear, safe message.</p></div></a>
+        <a href="/health" class="topic-card"><div class="topic-card-content"><h3>Health (synthetic)</h3><p class="topic-intent">Static stand-in for the live JSON health endpoint.</p></div></a>
+    </div>
+</div>
+
+<div class="info-box">
+    <strong>Workflow:</strong>
+    create topic → review rule → inspect feed → open source → create private
+    record → review AI suggestion.
+</div>
+{% endblock %}

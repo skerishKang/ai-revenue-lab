@@ -169,14 +169,14 @@ class _Provider:
 
 
 def _once(path: str, provider: _Provider, barrier: threading.Barrier,
-          key: str, choice_id: str):
+          key: str, choice_id: str, reader_id: str = "reader-1"):
     from app.pipeline.service import GenerationRequest, generate_personal_branch
 
     conn = _conn(path)
     try:
         request = GenerationRequest(
             world=_world(), episode_type=EpisodeType.PERSONAL_BRANCH,
-            reader_id="reader-1", reader_choice_id=choice_id, idempotency_key=key,
+            reader_id=reader_id, reader_choice_id=choice_id, idempotency_key=key,
         )
         barrier.wait(timeout=5)
         return generate_personal_branch(
@@ -191,17 +191,17 @@ def _once(path: str, provider: _Provider, barrier: threading.Barrier,
         conn.close()
 
 
-def _parallel(path: str, provider: _Provider, calls: list[tuple[str, str]]):
+def _parallel(path: str, provider: _Provider, calls: list[tuple[str, str, str]]):
     barrier = threading.Barrier(2)
     with ThreadPoolExecutor(max_workers=2) as pool:
-        futures = [pool.submit(_once, path, provider, barrier, key, choice)
-                   for key, choice in calls]
+        futures = [pool.submit(_once, path, provider, barrier, key, choice, reader_id)
+                   for key, choice, reader_id in calls]
         return [future.result(timeout=15) for future in futures]
 
 
 def test_same_key_waits_inside_service_and_replays(db_path):
     provider = _Provider()
-    results = _parallel(db_path, provider, [("same-key", "choice-1")] * 2)
+    results = _parallel(db_path, provider, [("same-key", "choice-1", "reader-1")] * 2)
     assert all(result.succeeded for result in results), [r.error for r in results]
     assert results[0].episode_id == results[1].episode_id
     assert (provider.plan_calls, provider.content_calls) == (1, 1)
@@ -224,15 +224,19 @@ def test_different_keys_both_succeed_with_distinct_reserved_numbers(db_path):
     conn = _conn(db_path)
     now = "2026-07-21T00:00:00Z"
     conn.executemany(
+        "INSERT INTO readers(id, display_name, status, created_at) VALUES (?, ?, 'active', ?)",
+        [("reader-2", "Reader 2", now), ("reader-3", "Reader 3", now)],
+    )
+    conn.executemany(
         "INSERT INTO reader_choices(id, reader_id, canon_episode_id, choice_text, submitted_at) "
-        "VALUES (?, 'reader-1', 'ep-1', ?, ?)",
-        [("choice-a", "Inspect east", now), ("choice-b", "Inspect west", now)],
+        "VALUES (?, ?, 'ep-1', ?, ?)",
+        [("choice-a", "reader-2", "Inspect east", now), ("choice-b", "reader-3", "Inspect west", now)],
     )
     conn.commit()
     conn.close()
 
     provider = _Provider()
-    results = _parallel(db_path, provider, [("key-a", "choice-a"), ("key-b", "choice-b")])
+    results = _parallel(db_path, provider, [("key-a", "choice-a", "reader-2"), ("key-b", "choice-b", "reader-3")])
     assert all(result.succeeded for result in results), [r.error for r in results]
     assert results[0].episode_id != results[1].episode_id
     assert (provider.plan_calls, provider.content_calls) == (2, 2)
