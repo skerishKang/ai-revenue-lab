@@ -1,0 +1,442 @@
+/* Private Literary Archive — Living Fiction Phase 2A */
+/* System fonts only. No external assets. */
+
+:root {
+  --bg-deep: #0a0f1a;
+  --bg-paper: #1a1a22;
+  --text-primary: #e8e0d0;
+  --text-secondary: #b8b0a0;
+  --accent: #7d3a2c;
+  --accent-light: #9c5241;
+  --border: #3a3a4a;
+  --stamp: #8b7d6b;
+  --max-width: 42rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans KR", sans-serif;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.page-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+/* ── Typography ── */
+
+h1, h2, h3, h4 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans KR", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem;
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 0.95rem; }
+
+p { margin-bottom: 1rem; }
+
+a {
+  color: var(--accent-light);
+  text-decoration: none;
+}
+
+a:hover { text-decoration: underline; }
+
+/* ── Editorial stamps ── */
+
+.stamp {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--stamp);
+  background: rgba(125, 58, 44, 0.15);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Paper / manuscript area ── */
+
+.paper {
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.paper manuscript {
+  font-family: "Georgia", "Times New Roman", serif;
+}
+
+/* ── Episode header ── */
+
+.episode-header {
+  margin-bottom: 1.5rem;
+}
+
+.episode-number {
+  font-size: 0.8rem;
+  color: var(--stamp);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.episode-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.episode-synopsis {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* ── Prose ── */
+
+.prose-block {
+  margin-bottom: 1.25rem;
+}
+
+.prose-block p {
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.scene-divider {
+  text-align: center;
+  color: var(--border);
+  margin: 1.5rem 0;
+  font-size: 1.2rem;
+}
+
+/* ── Choice cards ── */
+
+.choice-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.choice-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  background: var(--bg-paper);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: block;
+  width: 100%;
+}
+
+.choice-card:hover {
+  border-color: var(--accent);
+  background: rgba(125, 58, 44, 0.08);
+}
+
+.choice-card input[type="radio"] {
+  display: none;
+}
+
+.choice-card input[type="radio"]:checked + .choice-label {
+  border-color: var(--accent);
+  background: rgba(125, 58, 44, 0.15);
+}
+
+.choice-card input[type="radio"]:checked + .choice-label .choice-indicator {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.choice-label {
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+/* ── Forms ── */
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-size: 0.95rem;
+}
+
+/* ── Buttons ── */
+
+.btn {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-light);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--text-secondary);
+}
+
+.btn-reject {
+  background: transparent;
+  border-color: #8b4a4a;
+  color: #c78a8a;
+}
+
+.btn-reject:hover {
+  background: rgba(139, 74, 74, 0.15);
+}
+
+/* ── Editorial timeline ── */
+
+.timeline {
+  list-style: none;
+  margin: 1.5rem 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline-item:last-child {
+  border-bottom: none;
+}
+
+.timeline-bullet {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.timeline-bullet.active {
+  background: var(--accent);
+}
+
+.timeline-bullet.pending {
+  background: var(--border);
+}
+
+.timeline-bullet.done {
+  background: #5a7a5a;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-label {
+  font-size: 0.8rem;
+  color: var(--stamp);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.timeline-text {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+/* ── Review queue ── */
+
+.queue-item {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  background: var(--bg-paper);
+}
+
+.queue-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.queue-item-id {
+  font-size: 0.75rem;
+  color: var(--stamp);
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.queue-item-summary {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ── Meta info ── */
+
+.meta-row {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.meta-label {
+  color: var(--stamp);
+  min-width: 6rem;
+}
+
+/* ── Access screen ── */
+
+.access-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.access-brand .brand-title {
+  font-size: 1.1rem;
+  color: var(--stamp);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.access-brand .work-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0.5rem 0;
+}
+
+.access-intro {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.access-form {
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+/* ── Footer ── */
+
+.footer-note {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Error message ── */
+
+.error-box {
+  background: rgba(139, 74, 74, 0.15);
+  border: 1px solid #8b4a4a;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  color: #c78a8a;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 600px) {
+  .page-container {
+    padding: 1rem 0.75rem;
+  }
+
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.15rem; }
+
+  .paper {
+    padding: 1.25rem;
+  }
+
+  .meta-row {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}

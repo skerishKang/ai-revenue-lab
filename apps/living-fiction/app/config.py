@@ -2,13 +2,118 @@
 
 Environment-backed settings via pydantic-settings. No hardcoded secrets.
 The MockProvider is the default and only provider in Phase 1.
+
+Phase 2 adds web session and credential HMAC keys. All secrets are
+injected via environment variables — no fallback defaults are provided
+for security-sensitive fields.
 """
+
+from urllib.parse import urlparse
 
 from pydantic_settings import BaseSettings
 
+_PLACEHOLDER_SECRETS = {
+    "changeme",
+    "change-me",
+    "change_me",
+    "secret",
+    "password",
+    "example",
+    "placeholder",
+}
+
+
+def _structurally_weak(value: str) -> bool:
+    """Minimal structural-weakness check for a production secret.
+
+    This is deliberately NOT an entropy measurement — it makes no claim about
+    the randomness of a value. It only rejects secrets that are obviously
+    unfit for production:
+
+    * empty or whitespace-dominated strings;
+    * a single repeated character (``"aaaa..."``);
+    * a short repeating pattern (``"ababab..."``, ``"abcabcabc..."``);
+    * a value built around a known placeholder, including prefix/suffix and
+      repetition variants (``"changeme"``, ``"my-changeme-1"``,
+      ``"passwordpassword..."``).
+
+    A value that passes here is merely "not obviously weak"; it is still the
+    operator's responsibility to use a genuinely random secret.
+    """
+    stripped = value.strip()
+    if not stripped:
+        return True
+    # Whitespace-dominated: more than half the characters are whitespace.
+    if len(stripped) * 2 < len(value):
+        return True
+    # Single repeated character.
+    if len(set(stripped)) == 1:
+        return True
+    # Short repeating pattern: the whole value is a short unit repeated 3+ times.
+    for period in range(2, 9):
+        if len(stripped) % period == 0 and len(stripped) >= period * 3:
+            unit = stripped[:period]
+            if unit * (len(stripped) // period) == stripped:
+                return True
+    # Known placeholder, or a prefix/suffix/repeat variant of one.
+    lowered = stripped.lower()
+    for placeholder in _PLACEHOLDER_SECRETS:
+        if placeholder in lowered:
+            return True
+    return False
+
+
+def canonicalize_origin(origin: str) -> str | None:
+    """Normalize an origin to canonical ``scheme://host[:port]`` form.
+
+    Returns ``None`` for anything that is not a well-formed absolute
+    ``http://``/``https://`` origin so callers reject it with a generic 403
+    rather than crashing. This deliberately absorbs the ``ValueError`` that
+    :mod:`urllib.parse` raises for malformed or out-of-range ports
+    (``https://example.com:notaport``, ``https://example.com:99999``) and for
+    malformed IPv6 literals (``https://[invalid``).
+
+    The canonical form lowercases the scheme and host, drops default ports
+    (80 for http, 443 for https), and carries no trailing slash. IPv6 hosts are
+    re-bracketed so the result stays a valid URL host (``http://[::1]:8000``).
+    Canonicalization makes allowlist matching robust to superficial differences
+    such as ``HTTPS://Example.com/`` vs ``https://example.com`` or
+    ``https://example.com:443`` vs ``https://example.com``.
+    """
+    try:
+        parsed = urlparse(origin.strip())
+    except ValueError:
+        return None
+    if parsed.scheme not in ("http", "https"):
+        return None
+    try:
+        host = parsed.hostname
+    except ValueError:
+        return None
+    if not host:
+        return None
+    if parsed.path not in ("", "/"):
+        return None
+    if parsed.query or parsed.fragment:
+        return None
+    if parsed.username or parsed.password:
+        return None
+    try:
+        port = parsed.port
+    except ValueError:
+        return None
+    scheme = parsed.scheme.lower()
+    # ``hostname`` is already lowercased; re-bracket IPv6 literals so the
+    # canonical origin remains a valid URL host.
+    host = f"[{host}]" if ":" in host else host
+    default_port = 443 if scheme == "https" else 80
+    if port is not None and port != default_port:
+        return f"{scheme}://{host}:{port}"
+    return f"{scheme}://{host}"
+
 
 class Settings(BaseSettings):
-    app_env: str = "development"
+    env: str = "development"
     app_name: str = "living-fiction"
     database_path: str = "var/living-fiction.db"
     ai_provider: str = "mock"
@@ -16,7 +121,132 @@ class Settings(BaseSettings):
     prompt_version: str = "living-fiction-v1"
     max_retries: int = 2
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    # Phase 2 web security settings — no fallback defaults.
+    admin_secret: str = ""
+    credential_hmac_key: str = ""
+    session_hmac_key: str = ""
+
+    # Comma-separated list of allowed request origins (scheme://host[:port])
+    # for state-changing requests. Used for Origin/Host verification in
+    # production; empty means "derive from the request Host" (lenient only
+    # outside production).
+    allowed_origins: str = ""
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "env_prefix": "LF_",
+    }
+
+    @property
+    def is_production(self) -> bool:
+        return self.env == "production"
+
+    def validate_web_secrets(self) -> None:
+        """Fail closed when web secrets are missing or (in production) weak.
+
+        Every environment requires all three secrets to be non-empty. In
+        production they must additionally be at least 32 characters, mutually
+        distinct, and not obvious placeholders — there is no source-code
+        fallback for any secret.
+        """
+        secrets = {
+            "LF_ADMIN_SECRET": self.admin_secret,
+            "LF_CREDENTIAL_HMAC_KEY": self.credential_hmac_key,
+            "LF_SESSION_HMAC_KEY": self.session_hmac_key,
+        }
+        missing = [name for name, value in secrets.items() if not value]
+        if missing:
+            raise ValueError(
+                "Missing required web secret(s): " + ", ".join(missing)
+            )
+        if not self.is_production:
+            return
+        for name, value in secrets.items():
+            if len(value) < 32:
+                raise ValueError(
+                    f"{name} must be at least 32 characters in production"
+                )
+            if _structurally_weak(value):
+                raise ValueError(
+                    f"{name} is structurally weak (repeated, patterned, or "
+                    "placeholder-like); set a genuinely random secret"
+                )
+        values = list(secrets.values())
+        if len(set(values)) != len(values):
+            raise ValueError("Web secrets must be distinct from one another")
+
+    def validate_allowed_origins(self) -> None:
+        """Validate ``LF_ALLOWED_ORIGINS`` for production.
+
+        In production the allowlist must be non-empty and every entry must be a
+        well-formed ``http://`` or ``https://`` origin with no path, query,
+        fragment, or embedded credentials. Validation fails closed: if any entry
+        is invalid — including malformed or out-of-range ports and malformed
+        IPv6 literals that only the canonicalizer detects — startup is rejected
+        rather than silently dropping the entry and weakening the allowlist.
+        Valid duplicate entries are normalized away (deduplicated). The actual
+        configured values are never included in error messages so a
+        misconfigured secret is not leaked into logs.
+
+        Outside production the check is skipped so localhost / TestClient
+        workflows work without configuration.
+        """
+        if not self.is_production:
+            return
+        raw = [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+        if not raw:
+            raise ValueError(
+                "LF_ALLOWED_ORIGINS must not be empty in production"
+            )
+        seen: set[str] = set()
+        for origin in raw:
+            try:
+                parsed = urlparse(origin)
+            except ValueError:
+                # urlparse cannot parse this input at all (e.g. an invalid IPv6
+                # literal). Fail closed rather than silently dropping the entry.
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS contains an invalid origin"
+                ) from None
+            if parsed.scheme not in ("http", "https"):
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must use http:// or https://"
+                )
+            if not parsed.netloc:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must include a host"
+                )
+            if parsed.path not in ("", "/"):
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must not include a path"
+                )
+            if parsed.query or parsed.fragment:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must not include query or fragment"
+                )
+            if parsed.username or parsed.password:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS entries must not include credentials"
+                )
+            # Fail closed on anything the canonicalizer rejects — malformed or
+            # out-of-range ports and malformed IPv6 literals that the urlparse
+            # checks above do not catch. Silently dropping such an entry would
+            # weaken the allowlist, so reject the whole configuration. Valid
+            # origins collapse to one canonical form (case / trailing slash /
+            # explicit default port) so equivalents deduplicate.
+            canonical = canonicalize_origin(origin)
+            if canonical is None:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS contains an invalid origin"
+                )
+            seen.add(canonical)
+        if not seen:
+            raise ValueError(
+                "LF_ALLOWED_ORIGINS must contain at least one valid origin"
+            )
+        # Normalize duplicates silently (no error, just dedup).
+        self.allowed_origins = ",".join(sorted(seen))
 
 
 settings = Settings()

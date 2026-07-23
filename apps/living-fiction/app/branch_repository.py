@@ -139,6 +139,17 @@ def get_branches_by_reader(
     return [_row_to_record(r) for r in rows]
 
 
+def get_branch_by_episode(
+    conn: sqlite3.Connection, episode_id: str
+) -> BranchRecord | None:
+    """Get the branch record for a given branch episode ID."""
+    row = conn.execute(
+        f"SELECT {_SELECT} FROM branches WHERE branch_episode_id = ?",
+        (episode_id,),
+    ).fetchone()
+    return _row_to_record(row) if row else None
+
+
 # mark_branch_rejoined and create_rejoin_request have been removed.
 # Rejoin state changes are only possible through perform_rejoin() in rejoin_service.py.
 # Direct repository-level state mutation bypasses are prohibited.

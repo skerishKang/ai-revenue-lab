@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}분기 검토{% endblock %}
+{% block content %}
+<div class="episode-header">
+  <div class="stamp">REVIEW</div>
+  <h1 class="episode-title">{{ branch_title }}</h1>
+  <div class="episode-synopsis">
+    <span class="stamp">{{ episode_type_label }}</span>
+    {{ episode_number_label }}
+  </div>
+</div>
+
+<div class="paper">
+  <div class="meta-row">
+    <span><span class="meta-label">분기 ID</span> {{ branch_id_prefix }}</span>
+    <span><span class="meta-label">독자</span> {{ reader_ref }}</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="meta-label">Canon 회차</span> {{ canon_episode }}</span>
+    <span><span class="meta-label">상태</span> {{ review_state_label }}</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="meta-label">생성 provenance</span> {{ provider }} / {{ model }}</span>
+    <span><span class="meta-label">연속성 검증</span> {{ continuity_status }}</span>
+  </div>
+
+  <hr style="border: none; border-top: 1px solid var(--border); margin: 1rem 0;">
+
+  <h3 style="margin-bottom: 0.5rem;">독자 선택</h3>
+  <p style="color: var(--text-primary); margin-bottom: 0.5rem;">{{ choice_text }}</p>
+
+  {% if choice_comment %}
+  <h3 style="margin-bottom: 0.5rem; margin-top: 1rem;">독자 의견</h3>
+  <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">{{ choice_comment }}</p>
+  {% endif %}
+
+  <h3 style="margin-bottom: 0.5rem; margin-top: 1rem;">생성된 분기</h3>
+  <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+    본문은 승인 전까지 검토용으로만 표시됩니다.
+  </p>
+
+  {% for beat in prose %}
+  <div class="prose-block">
+    <p class="scene-divider">▸ {{ beat.scene_title }}</p>
+    {% for paragraph in beat.paragraphs %}
+    <p>{{ paragraph }}</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="paper">
+  <form method="POST" action="/admin/review/{{ branch_id }}/approve" id="approve-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="btn">승인</button>
+  </form>
+
+  <form method="POST" action="/admin/review/{{ branch_id }}/reject" id="reject-form" style="margin-top: 0.75rem;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="form-group">
+      <label for="rejection_reason">거절 사유</label>
+      <textarea id="rejection_reason" name="rejection_reason"
+                placeholder="거절 사유를 입력하세요" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-reject">거절</button>
+  </form>
+</div>
+
+<div style="text-align: center; margin-top: 1.5rem;">
+  <a href="/admin/review" class="btn btn-secondary">대기열로 돌아가기</a>
+</div>
+{% endblock %}
