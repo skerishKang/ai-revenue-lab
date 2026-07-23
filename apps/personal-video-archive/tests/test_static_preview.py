@@ -59,8 +59,8 @@ def _filter_pages() -> list[str]:
 # Every required preview state (Issue #72) plus the supporting pages that keep
 # navigation links resolvable.
 REQUIRED_PAGES = [
-    "index.html",  # preview landing / index
-    "home/index.html",  # product home / topic list
+    "index.html",  # product home (Korean root)
+    "preview-states/index.html",  # QA state matrix
     "topics/index.html",  # topic list
     "topics/new/index.html",  # new topic
     "topics/pv-topic-0001/review-rule/index.html",  # LLM query-rule review
@@ -69,6 +69,7 @@ REQUIRED_PAGES = [
     "records/pv-rec-0003/index.html",  # private record detail / edit
     "records/pv-rec-0002/index.html",  # pending LLM structure proposal
     "records/pv-rec-0001/index.html",  # accepted structured record
+    "records/pv-rec-0005/index.html",  # revisit record (resurfaced on home)
     "records/index.html",  # record search results
     "error/index.html",  # validation error example
     "health/index.html",  # synthetic health page
@@ -608,3 +609,104 @@ class TestZeroNetwork:
         # Should complete entirely offline into an isolated directory.
         out = build_main(tmp_path / "offline")
         assert (out / "index.html").is_file()
+
+
+class TestStaticRootContract:
+    """Strict tests for Issue #76 CTO review requirements."""
+
+    def test_root_is_product_home_not_qa_matrix(self, preview_dir):
+        """Static root must be the product home, not the QA state matrix."""
+        root_html = _read(preview_dir / "index.html")
+        # Must NOT contain QA matrix markers
+        assert "page_preview_landing" not in root_html, "Root is QA matrix, not product home"
+        assert "qa_section_1" not in root_html, "Root contains QA section markers"
+        # Must contain product home markers
+        assert "home-section" in root_html, "Root missing home sections"
+        assert "home_continue_watching" in root_html or "이어 보기" in root_html, (
+            "Root missing continue watching section"
+        )
+
+    def test_preview_states_exists_separately(self, preview_dir):
+        """QA state matrix must exist at /preview-states, not root."""
+        assert (preview_dir / "preview-states/index.html").exists(), (
+            "Missing preview-states/index.html"
+        )
+        assert (preview_dir / "en/preview-states/index.html").exists(), (
+            "Missing en/preview-states/index.html"
+        )
+        preview_states_html = _read(preview_dir / "preview-states/index.html")
+        # Check for QA matrix markers (translated or section headers)
+        assert "UI 상태 미리보기" in preview_states_html or "qa_section_1" in preview_states_html or "1 ·" in preview_states_html, (
+            "preview-states is not the QA matrix"
+        )
+
+    def test_root_contains_real_thumbnails_in_first_viewport(self, preview_dir):
+        """Root first product section must contain at least two real thumbnail URLs."""
+        root_html = _read(preview_dir / "index.html")
+        # Find all thumbnail URLs in the first 900px (approx first 100 lines)
+        first_section = root_html[:5000]  # Approximate first viewport
+        thumbnail_urls = re.findall(r'https://i\.ytimg\.com/vi/[^/]+/hqdefault\.jpg', first_section)
+        assert len(thumbnail_urls) >= 2, (
+            f"Root first viewport has only {len(thumbnail_urls)} thumbnails, need >= 2"
+        )
+
+    def test_korean_brand_is_localized(self, preview_dir):
+        """Korean pages must use Korean brand name, not English."""
+        root_html = _read(preview_dir / "index.html")
+        assert "나의 영상 아카이브" in root_html, "Korean root missing Korean brand"
+        # English brand should NOT be the primary label (may appear in video titles)
+        title_match = re.search(r'<title>([^<]+)</title>', root_html)
+        assert title_match is not None
+        assert "나의 영상 아카이브" in title_match.group(1), (
+            "Korean page title is not localized"
+        )
+
+    def test_english_root_parity(self, preview_dir):
+        """English root must exist and use English brand."""
+        assert (preview_dir / "en/index.html").exists(), "Missing en/index.html"
+        en_root_html = _read(preview_dir / "en/index.html")
+        assert "Personal Video Archive" in en_root_html, "English root missing English brand"
+        title_match = re.search(r'<title>([^<]+)</title>', en_root_html)
+        assert title_match is not None
+        assert "Personal Video Archive" in title_match.group(1), (
+            "English page title is not localized"
+        )
+
+    def test_home_is_populated_with_all_sections(self, preview_dir):
+        """Home must be populated with continue_watching, new_finds, recent_notes, resurfaced."""
+        root_html = _read(preview_dir / "index.html")
+        # Check for section headers (Korean)
+        assert "이어 보기" in root_html, "Missing continue watching section"
+        assert "새로 발견한 영상" in root_html, "Missing new finds section"
+        assert "최근 기록" in root_html, "Missing recent notes section"
+        assert "다시 떠오른 기록" in root_html, "Missing resurfaced section"
+        # Check for video cards
+        video_cards = re.findall(r'<article class="video-card"', root_html)
+        assert len(video_cards) >= 6, (
+            f"Home has only {len(video_cards)} video cards, need >= 6"
+        )
+
+    def test_preview_youtube_button_is_anchor(self, preview_dir):
+        """In preview mode, the visible YouTube button must be an anchor, not a form."""
+        # Check a topic feed page
+        feed_html = _read(preview_dir / "topics/pv-topic-0001/index.html")
+        # Find the "YouTube에서 열기" button
+        youtube_button_pattern = re.compile(
+            r'<a[^>]+href="https://(?:www\.)?youtube\.com/watch\?v=[^"]*"[^>]*class="[^"]*btn[^"]*"[^>]*>',
+            re.IGNORECASE,
+        )
+        matches = youtube_button_pattern.findall(feed_html)
+        assert len(matches) > 0, "No YouTube anchor button found in preview"
+        # Verify it has target=_blank and rel=noopener noreferrer
+        for match in matches:
+            assert 'target="_blank"' in match, f"Missing target=_blank: {match}"
+            assert 'rel="noopener noreferrer"' in match or "noopener" in match, (
+                f"Missing noopener: {match}"
+            )
+
+    def test_no_home_index_html(self, preview_dir):
+        """The old /home path must not exist (root is the product home)."""
+        assert not (preview_dir / "home/index.html").exists(), (
+            "home/index.html should not exist; root is the product home"
+        )
+

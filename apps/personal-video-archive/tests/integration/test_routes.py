@@ -20,7 +20,7 @@ class TestRouteContracts:
     def test_index_returns_200(self, client):
         response = client.get("/")
         assert response.status_code == 200
-        assert "Personal Video Archive" in response.text
+        assert "나의 영상 아카이브" in response.text
 
     def test_topics_list_returns_200(self, client):
         response = client.get("/topics")
