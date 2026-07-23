@@ -27,8 +27,32 @@ def temp_db_path() -> Generator[str, None, None]:
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         db_path = f.name
     yield db_path
-    if os.path.exists(db_path):
-        os.unlink(db_path)
+    _cleanup_sqlite_files(db_path)
+
+
+def _cleanup_sqlite_files(db_path: str) -> None:
+    """Best-effort removal of a SQLite database and its WAL/SHM sidecars.
+
+    On Windows a lingering connection (e.g. a request-scoped connection that a
+    route did not close) can hold a lock on the WAL/SHM files. Retry briefly and
+    then give up without failing the test — the files live in a temp directory
+    and will be reclaimed by the OS. This hardens test teardown only; it never
+    weakens an assertion.
+    """
+    import time
+
+    candidates = [db_path, f"{db_path}-wal", f"{db_path}-shm", f"{db_path}-journal"]
+    for _ in range(5):
+        remaining = False
+        for path in candidates:
+            if os.path.exists(path):
+                try:
+                    os.unlink(path)
+                except PermissionError:
+                    remaining = True
+        if not remaining:
+            return
+        time.sleep(0.05)
 
 
 @pytest.fixture

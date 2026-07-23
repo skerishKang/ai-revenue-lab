@@ -67,6 +67,24 @@ def _apply_one(conn: sqlite3.Connection, filename: str, sql_text: str) -> None:
     conn.commit()
 
 
+def _verify_foreign_key_integrity(conn: sqlite3.Connection) -> None:
+    """Fail closed if any foreign-key violation (orphan row) exists.
+
+    ``PRAGMA foreign_key_check`` returns one row per violation. Running it
+    after migrations guarantees a freshly-migrated or staged-upgraded database
+    never silently contains orphaned references.
+    """
+    violations = conn.execute("PRAGMA foreign_key_check").fetchall()
+    if violations:
+        detail = "; ".join(
+            f"table={v[0]} rowid={v[1]} references={v[2]}" for v in violations
+        )
+        raise MigrationError(
+            "<foreign_key_check>",
+            ValueError(f"foreign-key violations detected: {detail}"),
+        )
+
+
 def apply_migrations(db_path: str | None = None) -> None:
     if db_path is None:
         db_path = get_settings().database_url
@@ -98,6 +116,10 @@ def apply_migrations(db_path: str | None = None) -> None:
                 except Exception as exc:
                     conn.rollback()
                     raise MigrationError(mf.name, exc) from exc
+
+        # After all migrations are applied (fresh or staged upgrade), verify
+        # referential integrity before the database is used.
+        _verify_foreign_key_integrity(conn)
     finally:
         conn.close()
 

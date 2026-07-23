@@ -44,7 +44,9 @@ def test_migrations_are_idempotent(temp_db_path: str) -> None:
         "SELECT COUNT(*) as cnt FROM schema_migrations"
     ).fetchone()
 
-    assert migrations["cnt"] == 8
+    # 001..009: adding migration 009 (portal/accounting contract) brings the
+    # total to nine applied migrations.
+    assert migrations["cnt"] == 9
 
     conn.close()
 

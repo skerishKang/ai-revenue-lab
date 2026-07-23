@@ -230,8 +230,8 @@ class ProviderResult(BaseModel):
     model: NonEmptyStr
     cost_class: str = "free"
     latency_ms: float = 0.0
-    prompt_tokens: int = 0
-    completion_tokens: int = 0
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
     payload: dict = Field(default_factory=dict)
     success: bool = True
     error_category: str = ""
