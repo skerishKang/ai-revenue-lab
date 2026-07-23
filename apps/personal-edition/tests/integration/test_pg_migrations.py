@@ -643,7 +643,60 @@ class TestPgMigrationIntegration:
         ).fetchone()["c"]
         assert count == 0
 
-    def test_public_schema_not_polluted(self, pg_conn_clean):
+    def test_pending_partial_table_preserves_category(self, pg_conn_clean, tmp_path):
+        """partial_schema category must not be converted to apply_failed."""
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        (tmp_dir / "pg_001_valid.sql").write_text(
+            "CREATE TABLE valid_table (id TEXT PRIMARY KEY);",
+            encoding="utf-8",
+        )
+        (tmp_dir / "pg_002_dep.sql").write_text(
+            "CREATE TABLE dep_table (id TEXT PRIMARY KEY, "
+            "valid_id TEXT REFERENCES valid_table(id));",
+            encoding="utf-8",
+        )
+
+        apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        pg_conn_clean.commit()
+
+        pg_conn_clean.execute("DELETE FROM schema_migrations WHERE version = 'pg_002_dep.sql'")
+        pg_conn_clean.commit()
+
+        with pytest.raises(PgMigrationError) as exc_info:
+            apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        assert exc_info.value.category == "partial_schema"
+        assert "partial schema" in str(exc_info.value)
+
+        count = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations "
+            "WHERE version = 'pg_002_dep.sql'"
+        ).fetchone()["c"]
+        assert count == 0
+
+    def test_real_execution_failure_is_apply_failed(self, pg_conn_clean, tmp_path):
+        """Unexpected driver errors must be normalized to apply_failed."""
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        (tmp_dir / "pg_001_valid.sql").write_text(
+            "CREATE TABLE valid_table (id TEXT PRIMARY KEY);",
+            encoding="utf-8",
+        )
+        (tmp_dir / "pg_002_broken.sql").write_text(
+            "CREATE TABLE broken_table (id TEXT PRIMARY KEY); INVALID SQL HERE;",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(PgMigrationError) as exc_info:
+            apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        assert exc_info.value.category == "apply_failed"
+        assert exc_info.value.__cause__ is not None
+
+        count = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations "
+            "WHERE version = 'pg_002_broken.sql'"
+        ).fetchone()["c"]
+        assert count == 0
         """The public schema must never receive migration objects.
 
         After applying migrations in the isolated test schema, the public

@@ -751,6 +751,9 @@ def apply_pg_migrations(
             )
             conn.commit()
             applied_versions.append(version)
+        except PgMigrationError:
+            conn.rollback()
+            raise
         except Exception as exc:
             conn.rollback()
             raise PgMigrationError(
