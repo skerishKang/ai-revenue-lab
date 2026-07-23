@@ -280,21 +280,12 @@ async def deactivation_request(
     """Create at most one durable pending deactivation request per traveler."""
     verify_csrf(request, csrf_token, traveler_ctx)
 
-    from datetime import datetime, timezone
-    from app.security import generate_high_entropy_token
-
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    request_id = "dr_" + generate_high_entropy_token(8)
+    from app.deactivation_repository import create_deactivation_request
 
     conn = get_connection()
     try:
         with conn:
-            conn.execute(
-                "INSERT OR IGNORE INTO deactivation_requests "
-                "(id, traveler_id, status, created_at, updated_at) "
-                "VALUES (?, ?, 'pending', ?, ?)",
-                (request_id, traveler_ctx.traveler_id, now, now),
-            )
+            create_deactivation_request(conn, traveler_ctx.traveler_id)
     finally:
         conn.close()
 

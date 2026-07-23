@@ -29,6 +29,24 @@ jobs:
       run:
         working-directory: apps/living-travel
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: lt_ci
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: lt_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lt_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      LT_TEST_PG_URL: postgresql://lt_ci@127.0.0.1:5432/lt_ci
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -129,3 +129,29 @@ def update_edition_publication(
     if commit:
         conn.commit()
     return cur.rowcount > 0
+
+
+def transition_edition_publication(
+    conn: sqlite3.Connection,
+    edition_id: str,
+    expected_state: str,
+    target_state: str,
+    *,
+    commit: bool = True,
+) -> bool:
+    """Atomically move an edition from expected_state to target_state.
+
+    The UPDATE itself conditions on generation_status = 'pending_review' AND
+    publication_state = expected_state, so concurrent publish/reject calls
+    result in exactly one winner (rowcount == 1) and all others get False.
+    """
+    now = _utcnow()
+    cur = conn.execute(
+        "UPDATE editions SET publication_state = ?, updated_at = ? "
+        "WHERE id = ? AND generation_status = 'pending_review' "
+        "AND publication_state = ?",
+        (target_state, now, edition_id, expected_state),
+    )
+    if commit:
+        conn.commit()
+    return cur.rowcount > 0
