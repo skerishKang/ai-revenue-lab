@@ -1,0 +1,57 @@
+<section class="panel" aria-labelledby="run-title">
+  <div class="panel-head">
+    <h2 id="run-title">실행 단계 <span class="muted">· 실행 #{{ task.run.run_number }}</span></h2>
+    <span class="badge badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
+  </div>
+
+  <ol class="steps" data-run-steps>
+    {% for step in task.run.steps %}
+    <li class="step step-{{ step.status.value }}" data-step-index="{{ loop.index0 }}">
+      <span class="step-icon" aria-hidden="true">
+        {%- if step.status.value == 'done' -%}✓
+        {%- elif step.status.value == 'warning' -%}!
+        {%- elif step.status.value == 'failed' -%}✕
+        {%- elif step.status.value == 'running' -%}…
+        {%- else -%}·{%- endif -%}
+      </span>
+      <span class="step-body">
+        <span class="step-label">{{ step.label }}</span>
+        <span class="step-detail">{{ step.detail }}</span>
+      </span>
+    </li>
+    {% endfor %}
+    <li class="step step-{{ 'pending' if task.status.value != 'completed' else 'done' }}" data-step-index="{{ task.run.steps | length }}">
+      <span class="step-icon" aria-hidden="true">{{ '✓' if task.status.value == 'completed' else '·' }}</span>
+      <span class="step-body">
+        <span class="step-label">사용자 승인 · 브랜치 반영</span>
+        <span class="step-detail">
+          {%- if task.status.value == 'completed' -%}
+            승인 완료 · {{ task.branch_name }} (Demo)
+          {%- else -%}
+            사람이 승인하기 전에는 브랜치에 반영되지 않습니다.
+          {%- endif -%}
+        </span>
+      </span>
+    </li>
+  </ol>
+
+  <div class="run-cols">
+    <div class="run-block">
+      <h3>작업 계획</h3>
+      <pre class="plan">{{ task.run.plan_text }}</pre>
+    </div>
+    <div class="run-block">
+      <h3>작업자 보고 <span class="tag tag-claim">주장</span></h3>
+      <p class="claim">{{ task.run.worker_claim }}</p>
+      <p class="field-hint">아래 검증 결과와 비교해 확인하세요. AI의 보고는 증거가 아닙니다.</p>
+    </div>
+  </div>
+
+  <div class="cost-summary">
+    <span>추정 비용 <strong>{{ task.run.cost_total_krw | krw }}</strong></span>
+    <span>한도 {{ task.cost_limit_krw | krw if task.cost_limit_krw else '제한 없음' }}</span>
+    {% if task.run.over_budget %}
+    <span class="badge badge-failed">비용 한도 초과</span>
+    {% endif %}
+  </div>
+</section>

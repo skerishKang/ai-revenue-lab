@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}새 작업 · Korean AI Platform{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>새 AI 작업</h1>
+  <p class="page-sub">작업 정의, 역할 배치, 허용 범위를 지정합니다. 실행과 반영은 이후 단계에서 진행됩니다.</p>
+</div>
+
+<form method="post" action="/tasks" class="form-card" novalidate>
+  <div class="field">
+    <label for="project_id">프로젝트 / 저장소</label>
+    <select id="project_id" name="project_id" required>
+      <option value="">선택하세요</option>
+      {% for project in projects %}
+      <option value="{{ project.id }}"
+        data-allowed="{{ project.default_allowed | join(',') }}"
+        data-denied="{{ project.default_denied | join(',') }}"
+        {{ 'selected' if form.get('project_id') == project.id }}>
+        {{ project.name }} · {{ project.repo_label }}
+      </option>
+      {% endfor %}
+    </select>
+    {% if errors.get('project_id') %}<p class="field-error">{{ errors['project_id'] }}</p>{% endif %}
+  </div>
+
+  <div class="field">
+    <label for="title">작업 제목</label>
+    <input id="title" name="title" type="text" value="{{ form.get('title', '') }}"
+           placeholder="예: 주문 생성 시 재고 검증 추가" required>
+    {% if errors.get('title') %}<p class="field-error">{{ errors['title'] }}</p>{% endif %}
+  </div>
+
+  <div class="field">
+    <label for="instruction">자연어 작업 지시</label>
+    <textarea id="instruction" name="instruction" rows="4"
+      placeholder="무엇을 바꾸고 싶은지 자연스럽게 적어 주세요." required>{{ form.get('instruction', '') }}</textarea>
+    {% if errors.get('instruction') %}<p class="field-error">{{ errors['instruction'] }}</p>{% endif %}
+  </div>
+
+  <div class="field-grid">
+    <div class="field">
+      <label for="worker_model_id">작업 모델</label>
+      <select id="worker_model_id" name="worker_model_id" required>
+        <option value="">선택하세요</option>
+        {% for model in models %}
+        <option value="{{ model.id }}" {{ 'selected' if form.get('worker_model_id') == model.id }}>
+          {{ model.name }} · {{ model.provider }} · {{ model.region_label }}
+        </option>
+        {% endfor %}
+      </select>
+      <p class="field-hint">실제 연결되지 않은 Demo 모델 목록입니다.</p>
+      {% if errors.get('worker_model_id') %}<p class="field-error">{{ errors['worker_model_id'] }}</p>{% endif %}
+    </div>
+    <div class="field">
+      <label for="validator_model_id">검증 모델</label>
+      <select id="validator_model_id" name="validator_model_id" required>
+        <option value="">선택하세요</option>
+        {% for model in models %}
+        <option value="{{ model.id }}" {{ 'selected' if form.get('validator_model_id') == model.id }}>
+          {{ model.name }} · {{ model.provider }} · {{ model.region_label }}
+        </option>
+        {% endfor %}
+      </select>
+      <p class="field-hint">작업자와 다른 모델을 고르면 교차 검증에 유리합니다.</p>
+      {% if errors.get('validator_model_id') %}<p class="field-error">{{ errors['validator_model_id'] }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="field-grid">
+    <div class="field">
+      <label for="allowed_paths">수정 허용 경로</label>
+      <textarea id="allowed_paths" name="allowed_paths" rows="3"
+        placeholder="예: app/, tests/ (줄바꿈 또는 쉼표로 구분)">{{ form.get('allowed_paths', '') }}</textarea>
+      <p class="field-hint">비워두면 프로젝트 기본 허용 경로를 사용합니다.</p>
+    </div>
+    <div class="field">
+      <label for="denied_paths">수정 금지 경로</label>
+      <textarea id="denied_paths" name="denied_paths" rows="3"
+        placeholder="예: migrations/, secrets/ (줄바꿈 또는 쉼표로 구분)">{{ form.get('denied_paths', '') }}</textarea>
+      <p class="field-hint">이 경로를 건드리면 검증 단계에서 경고가 표시됩니다.</p>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="cost_limit_krw">예상 비용 한도 (원)</label>
+    <input id="cost_limit_krw" name="cost_limit_krw" type="number" min="0" step="100"
+           value="{{ form.get('cost_limit_krw', '') }}" placeholder="예: 5000">
+    <p class="field-hint">실제 추정 비용이 이 값을 넘으면 승인 화면에 경고가 표시됩니다.</p>
+    {% if errors.get('cost_limit_krw') %}<p class="field-error">{{ errors['cost_limit_krw'] }}</p>{% endif %}
+  </div>
+
+  <fieldset class="field">
+    <legend>외부 전송 정책</legend>
+    <label class="choice">
+      <input type="radio" name="external_policy" value="allow"
+        {{ 'checked' if form.get('external_policy', 'allow') == 'allow' }}>
+      외부 모델 전송 허용
+    </label>
+    <label class="choice">
+      <input type="radio" name="external_policy" value="restrict"
+        {{ 'checked' if form.get('external_policy') == 'restrict' }}>
+      외부 전송 제한 (국내·자체 호스팅 우선)
+    </label>
+  </fieldset>
+
+  <fieldset class="field">
+    <legend>브랜치 생성 방식</legend>
+    <label class="choice">
+      <input type="radio" name="branch_mode" value="auto"
+        {{ 'checked' if form.get('branch_mode', 'auto') == 'auto' }}>
+      승인 시 자동으로 데모 브랜치 생성
+    </label>
+    <label class="choice">
+      <input type="radio" name="branch_mode" value="manual"
+        {{ 'checked' if form.get('branch_mode') == 'manual' }}>
+      수동 브랜치 (승인 후에도 자동 생성하지 않음)
+    </label>
+  </fieldset>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="/">취소</a>
+    <button type="submit" class="btn btn-primary">작업 생성</button>
+  </div>
+</form>
+{% endblock %}

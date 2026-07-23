@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Korean AI Platform{% endblock %}</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e5f'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='18' font-weight='700' fill='%23fff' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css?v=kap-mvp-1">
+</head>
+<body>
+<a class="skip-link" href="#main">본문 바로가기</a>
+<header class="site-header">
+  <nav class="nav" aria-label="주요 메뉴">
+    <a href="/" class="nav-brand">
+      <span class="brand-mark" aria-hidden="true">K</span>
+      Korean AI Platform
+    </a>
+    <div class="nav-links">
+      <a href="/">대시보드</a>
+      <a href="/tasks/new">새 작업</a>
+      <a href="/settings">모델·보안 설정</a>
+    </div>
+  </nav>
+</header>
+{% if demo_mode %}
+<div class="demo-banner" role="note">
+  데모(MVP) 화면입니다. 실제 AI·GitHub·실행기가 연결되지 않았고, 모든 데이터와 모델은 가짜입니다.
+</div>
+{% endif %}
+<main id="main" class="container">
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <p>Korean AI Platform · Business 14 · 인터랙티브 MVP 데모</p>
+</footer>
+<script src="/static/app.js?v=kap-mvp-1" defer></script>
+</body>
+</html>

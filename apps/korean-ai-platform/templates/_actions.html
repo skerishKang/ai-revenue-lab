@@ -1,0 +1,27 @@
+<section class="panel panel-actions" aria-labelledby="actions-title">
+  <h2 id="actions-title">사람 승인</h2>
+  <p class="muted">승인해야만 데모 브랜치와 커밋이 생성됩니다. 승인 전에는 어떤 반영도 일어나지 않습니다.</p>
+
+  {% if settings.block_push_without_approval %}
+  <p class="callout callout-info">승인 없는 push 차단 정책이 켜져 있습니다.</p>
+  {% endif %}
+
+  <form method="post" action="/tasks/{{ task.id }}/approve" class="action-form">
+    <label for="approver">승인자 이름</label>
+    <input id="approver" name="approver" type="text" placeholder="예: 검토자 김" value="검토자 김">
+    <button type="submit" class="btn btn-primary btn-block">승인하고 데모 브랜치에 반영</button>
+  </form>
+
+  <form method="post" action="/tasks/{{ task.id }}/rework" class="action-form action-rework">
+    <label for="rework-reason">재작업 요청 사유</label>
+    <textarea id="rework-reason" name="reason" rows="2"
+      placeholder="무엇을 다시 고칠지 적어 주세요. (필수)"></textarea>
+    <button type="submit" class="btn btn-secondary btn-block">재작업 요청</button>
+  </form>
+
+  <form method="post" action="/tasks/{{ task.id }}/reject" class="action-form action-reject">
+    <label for="reject-reason">거절 사유</label>
+    <input id="reject-reason" name="reason" type="text" placeholder="선택 입력">
+    <button type="submit" class="btn btn-danger btn-block">거절</button>
+  </form>
+</section>

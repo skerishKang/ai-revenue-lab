@@ -1,0 +1,50 @@
+<section class="panel" aria-labelledby="meta-title">
+  <h2 id="meta-title">작업 정의</h2>
+  <dl class="meta-grid">
+    <div class="meta-item">
+      <dt>작업 지시</dt>
+      <dd class="meta-instruction">{{ task.instruction }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>프로젝트</dt>
+      <dd>{{ project.name if project else task.project_id }}
+        {% if project %}<span class="muted"> · {{ project.repo_label }}</span>{% endif %}
+      </dd>
+    </div>
+    <div class="meta-item">
+      <dt>작업자 모델</dt>
+      <dd>{{ worker_model.name if worker_model else task.worker_model_id }}
+        <span class="muted"> ({{ worker_model.region_label if worker_model else '' }})</span>
+      </dd>
+    </div>
+    <div class="meta-item">
+      <dt>검증자 모델</dt>
+      <dd>{{ validator_model.name if validator_model else task.validator_model_id }}
+        <span class="muted"> ({{ validator_model.region_label if validator_model else '' }})</span>
+      </dd>
+    </div>
+    <div class="meta-item">
+      <dt>수정 허용 경로</dt>
+      <dd class="mono">{{ task.allowed_paths | join(', ') or '(프로젝트 기본)' }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>수정 금지 경로</dt>
+      <dd class="mono">{{ task.denied_paths | join(', ') or '(없음)' }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>비용 한도</dt>
+      <dd>{{ task.cost_limit_krw | krw if task.cost_limit_krw else '제한 없음' }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>외부 전송 정책</dt>
+      <dd>{{ '외부 전송 허용' if task.external_policy.value == 'allow' else '외부 전송 제한' }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>데이터 처리 위치</dt>
+      <dd>
+        {% for region in regions.regions %}<span class="chip {{ 'chip-warn' if regions.overseas else 'chip-ok' }}">{{ region }}</span> {% endfor %}
+        {% if regions.domestic_only %}<span class="chip chip-ok">국내 처리만 사용</span>{% endif %}
+      </dd>
+    </div>
+  </dl>
+</section>

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} · Korean AI Platform{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ task.title }}</h1>
+    <p class="page-sub mono">{{ task.id }} · 생성 {{ task.created_at }}</p>
+  </div>
+  <span class="badge badge-lg badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
+</div>
+
+{% if error %}
+<div class="callout callout-danger" role="alert">{{ error }}</div>
+{% endif %}
+
+{% include "_meta.html" %}
+
+{% if task.status.value == 'ready' %}
+<section class="panel panel-actions">
+  <h2>실행 준비 완료</h2>
+  <p class="muted">작업자·검증자 모델과 허용 범위를 확인했다면 실행을 시작하세요.</p>
+  <form method="post" action="/tasks/{{ task.id }}/run">
+    <button type="submit" class="btn btn-primary btn-block">실행 시작</button>
+  </form>
+</section>
+
+{% elif task.status.value == 'running' %}
+<section class="panel">
+  <h2>실행 중</h2>
+  <p class="muted">작업이 진행되고 있습니다… (Demo)</p>
+</section>
+
+{% elif task.status.value == 'awaiting_approval' %}
+{% include "_run_panel.html" %}
+{% include "_review_panel.html" %}
+{% include "_actions.html" %}
+
+{% elif task.status.value == 'rework' %}
+<div class="callout callout-warn" role="status">
+  <strong>재작업 대기 중.</strong> 마지막 실행 결과는 아래에 보관되어 있습니다.
+  사유를 반영해 다시 실행하세요.
+  <ul>{% for reason in task.rework_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+</div>
+{% include "_run_panel.html" %}
+<section class="panel panel-actions">
+  <h2>재실행</h2>
+  <form method="post" action="/tasks/{{ task.id }}/run">
+    <button type="submit" class="btn btn-primary btn-block">재작업 실행</button>
+  </form>
+</section>
+
+{% elif task.status.value == 'completed' %}
+{% include "_evidence_panel.html" %}
+{% include "_run_panel.html" %}
+{% include "_review_panel.html" %}
+
+{% elif task.status.value == 'rejected' %}
+{% include "_evidence_panel.html" %}
+{% endif %}
+
+<p class="back-link"><a href="/">← 대시보드로 돌아가기</a></p>
+{% endblock %}

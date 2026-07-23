@@ -1,0 +1,67 @@
+<section class="panel" aria-labelledby="evidence-title">
+  <h2 id="evidence-title">작업 기록 · 증거</h2>
+
+  <dl class="meta-grid">
+    <div class="meta-item">
+      <dt>최종 상태</dt>
+      <dd><span class="badge badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span></dd>
+    </div>
+    {% if task.status.value == 'completed' %}
+    <div class="meta-item">
+      <dt>승인자</dt>
+      <dd>{{ task.approver }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>데모 브랜치</dt>
+      <dd class="mono">{{ task.branch_name }} <span class="tag">Demo</span></dd>
+    </div>
+    <div class="meta-item">
+      <dt>데모 커밋 SHA</dt>
+      <dd class="mono">{{ task.commit_sha }} <span class="tag">Demo</span></dd>
+    </div>
+    {% endif %}
+    {% if task.status.value == 'rejected' %}
+    <div class="meta-item">
+      <dt>거절 사유</dt>
+      <dd>{{ task.rejected_reason }}</dd>
+    </div>
+    {% endif %}
+    <div class="meta-item">
+      <dt>총 비용</dt>
+      <dd>{{ task.run.cost_total_krw | krw if task.run else '—' }}</dd>
+    </div>
+    <div class="meta-item">
+      <dt>재작업 횟수</dt>
+      <dd>{{ task.rework_count }}회</dd>
+    </div>
+  </dl>
+
+  {% if task.rework_reasons %}
+  <h3>재작업 이력</h3>
+  <ol class="rework-history">
+    {% for reason in task.rework_reasons %}<li>{{ reason }}</li>{% endfor %}
+  </ol>
+  {% endif %}
+
+  {% if task.run %}
+  <h3>단계별 타임라인</h3>
+  <ol class="timeline">
+    {% for event in task.run.timeline %}
+    <li><span class="mono muted">{{ event.at }}</span> — {{ event.label }}
+      {% if event.detail %}<span class="muted"> ({{ event.detail }})</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+
+  <h3>변경 요약</h3>
+  <ul class="change-summary">
+    {% for file in task.run.changed_files %}
+    <li class="mono">{{ file.path }} <span class="add">+{{ file.additions }}</span> <span class="del">-{{ file.deletions }}</span></li>
+    {% endfor %}
+  </ul>
+
+  <h3>테스트 결과</h3>
+  <p>{{ task.run.tests.command }} → {{ task.run.tests.passed }} 통과,
+     {{ task.run.tests.failed }} 실패, {{ task.run.tests.skipped }} 건너뜀</p>
+  {% endif %}
+</section>

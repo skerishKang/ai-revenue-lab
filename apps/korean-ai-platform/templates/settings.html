@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}모델·보안 설정 · Korean AI Platform{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>모델 및 보안 설정</h1>
+  <p class="page-sub">모델 공급자, 데이터 처리 위치, 비용과 승인 정책을 관리합니다. (Demo)</p>
+</div>
+
+{% if saved %}
+<div class="callout callout-info" role="status">설정이 저장되었습니다. (데모: 메모리에만 유지되며 실제 키는 저장되지 않습니다.)</div>
+{% endif %}
+
+<section class="panel" aria-labelledby="providers-title">
+  <h2 id="providers-title">모델 공급자</h2>
+  <div class="table-wrap">
+  <table class="model-table">
+    <thead>
+      <tr>
+        <th scope="col">모델</th>
+        <th scope="col">공급자</th>
+        <th scope="col">데이터 처리 위치</th>
+        <th scope="col">호스팅</th>
+        <th scope="col">비용 등급</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for model in models %}
+      <tr>
+        <td>{{ model.name }}</td>
+        <td>{{ model.provider }}</td>
+        <td>{{ model.region_label }}</td>
+        <td>{{ model.hosting_label }}</td>
+        <td><span class="chip {{ 'chip-ok' if model.cost_class == 'local' else 'chip-warn' }}">{{ model.cost_class }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <p class="muted">모든 모델은 실제 연결되지 않은 Demo 항목입니다.</p>
+</section>
+
+<form method="post" action="/settings" class="form-card">
+  <section class="panel" aria-labelledby="byok-title">
+    <h2 id="byok-title">사용자 API 키 (BYOK)</h2>
+    <p class="callout callout-warn">
+      이 데모는 입력한 API 키를 <strong>저장하거나 전송하지 않습니다.</strong>
+      등록 여부만 표시되며, 키 값은 즉시 폐기됩니다. 화면에는 마스킹된 값만 나타납니다.
+    </p>
+    {% for model in byok_models %}
+    {% set state = settings.byok.get(model.id) %}
+    <div class="field">
+      <label for="apikey_{{ model.id }}">{{ model.name }} API 키</label>
+      <input id="apikey_{{ model.id }}" name="apikey_{{ model.id }}" type="password"
+             autocomplete="off" placeholder="••••••••••••••••" value="">
+      <p class="field-hint">
+        현재 상태:
+        {% if state and state.registered %}
+        <span class="chip chip-ok">등록됨 (Demo)</span>
+        {% else %}
+        <span class="chip">미등록</span>
+        {% endif %}
+        · 저장하지 않음
+      </p>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="panel" aria-labelledby="policy-title">
+    <h2 id="policy-title">데이터·보안 정책</h2>
+    <label class="choice">
+      <input type="checkbox" name="domestic_first" {{ 'checked' if settings.domestic_first }}>
+      국내 처리 우선
+    </label>
+    <label class="choice">
+      <input type="checkbox" name="allow_external" {{ 'checked' if settings.allow_external }}>
+      외부 모델 전송 허용
+    </label>
+    <label class="choice">
+      <input type="checkbox" name="block_on_secret" {{ 'checked' if settings.block_on_secret }}>
+      민감정보 발견 시 차단
+    </label>
+    <label class="choice">
+      <input type="checkbox" name="block_push_without_approval" {{ 'checked' if settings.block_push_without_approval }}>
+      승인 없는 push 차단
+    </label>
+    <div class="field">
+      <label for="project_cost_limit_krw">프로젝트 기본 비용 한도 (원)</label>
+      <input id="project_cost_limit_krw" name="project_cost_limit_krw" type="number" min="0" step="100"
+             value="{{ settings.project_cost_limit_krw | int }}">
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">설정 저장</button>
+  </div>
+</form>
+{% endblock %}

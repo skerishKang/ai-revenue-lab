@@ -1,0 +1,104 @@
+<section class="panel" aria-labelledby="review-title">
+  <div class="panel-head">
+    <h2 id="review-title">검증 및 승인</h2>
+    <span class="verdict verdict-{{ task.run.verdict.value }}">
+      검증자 판단: {{ verdict_label(task.run.verdict.value) }}
+    </span>
+  </div>
+
+  {% if task.run.path_violations %}
+  <div class="callout callout-danger" role="alert">
+    <strong>허용 범위 위반</strong>
+    <ul>
+      {% for v in task.run.path_violations %}<li>{{ v }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if task.run.security_notes %}
+  <div class="callout callout-warn">
+    <strong>보안·데이터 처리 주의</strong>
+    <ul>
+      {% for note in task.run.security_notes %}<li>{{ note }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="callout callout-info">
+    <strong>AI 주장 vs 실제 증거</strong>
+    <p>작업자 보고: “{{ task.run.worker_claim }}”</p>
+    <p>실제 테스트: {{ task.run.tests.passed }} 통과 / {{ task.run.tests.failed }} 실패 /
+       {{ task.run.tests.skipped }} 건너뜀 (전체 {{ task.run.tests.total }}건)</p>
+  </div>
+
+  <h3>검증자 소견</h3>
+  <ul class="findings">
+    {% for finding in task.run.findings %}
+    <li class="finding finding-{{ finding.level }}">
+      <span class="finding-level">{{ finding.level }}</span>
+      <span>{{ finding.text }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h3>변경 파일 ({{ task.run.changed_files | length }})</h3>
+  <div class="file-list">
+    {% for file in task.run.changed_files %}
+    <details class="file-diff" {{ 'open' if loop.first }}>
+      <summary>
+        <span class="mono">{{ file.path }}</span>
+        <span class="diff-stat"><span class="add">+{{ file.additions }}</span> <span class="del">-{{ file.deletions }}</span></span>
+      </summary>
+      <pre class="diff">{% for line in file.diff.split('\n') %}<span class="{% if line.startswith('+') %}diff-add{% elif line.startswith('-') %}diff-del{% elif line.startswith('@') %}diff-hunk{% endif %}">{{ line }}</span>
+{% endfor %}</pre>
+    </details>
+    {% endfor %}
+  </div>
+
+  <h3>테스트 결과</h3>
+  <p class="mono test-cmd">{{ task.run.tests.command }}</p>
+  <div class="table-wrap">
+  <table class="test-table">
+    <thead>
+      <tr><th scope="col">테스트</th><th scope="col">결과</th><th scope="col">비고</th></tr>
+    </thead>
+    <tbody>
+      {% for result in task.run.tests.results %}
+      <tr>
+        <td class="mono">{{ result.name }}</td>
+        <td><span class="badge badge-test-{{ result.status }}">{{ result.status }}</span></td>
+        <td class="muted">{{ result.detail }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <p class="muted">로컬 테스트 기준입니다. 원격 CI 실행은 별도로 구분됩니다. (Demo)</p>
+
+  <h3>비용</h3>
+  <div class="table-wrap">
+  <table class="cost-table">
+    <thead>
+      <tr><th scope="col">역할</th><th scope="col">모델</th><th scope="col">입력 토큰</th><th scope="col">출력 토큰</th><th scope="col">비용</th></tr>
+    </thead>
+    <tbody>
+      {% for line in task.run.cost_lines %}
+      <tr>
+        <td>{{ line.role }}</td>
+        <td>{{ line.model_name }}</td>
+        <td class="num">{{ "{:,}".format(line.tokens_in) }}</td>
+        <td class="num">{{ "{:,}".format(line.tokens_out) }}</td>
+        <td class="num">{{ line.krw | krw }}</td>
+      </tr>
+      {% endfor %}
+      <tr class="cost-total">
+        <td colspan="4">합계 (예상 {{ task.cost_limit_krw | krw if task.cost_limit_krw else '제한 없음' }})</td>
+        <td class="num">{{ task.run.cost_total_krw | krw }}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  {% if task.run.over_budget %}
+  <p class="callout callout-danger">추정 비용이 설정한 한도를 초과했습니다.</p>
+  {% endif %}
+</section>
