@@ -26,10 +26,14 @@ Covered live behaviour:
 from __future__ import annotations
 
 import copy
+import json
 import os
 import re
+import secrets
 import shutil
 import sqlite3
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -799,11 +803,31 @@ def test_multi_reader_invite_scoping_preserves_others(fresh_bootstrap_conn):
     assert auth.verify_invite_code(fresh_bootstrap_conn, code_b, HMAC_KEY) == reader_b
 
 
-# ── P0-3: Full product flow with restricted runtime role ────────────────────
+# ── P0-3: Full product flow in production mode (direct Modal + Neon) ────────
 
-PRODUCT_ADMIN_SECRET = "pg-it-admin-secret-val"
-PRODUCT_CREDENTIAL_KEY = HMAC_KEY
-PRODUCT_SESSION_KEY = "pg-it-session-hmac-key-val"
+# Runtime-generated CSPRNG secrets. Production requires each web secret to be
+# >= 32 chars, mutually distinct, and non-placeholder; genuine randomness
+# satisfies all of these without committing any literal a secret scanner would
+# flag. They are generated once per test session and shared between the
+# bootstrap (which signs the invite digest) and the app (which verifies it).
+PRODUCT_ADMIN_SECRET = secrets.token_urlsafe(32)
+PRODUCT_CREDENTIAL_KEY = secrets.token_urlsafe(32)
+PRODUCT_SESSION_KEY = secrets.token_urlsafe(32)
+# Synthetic Modal HTTPS origin standing in for the real ``*.modal.run`` host the
+# browser is served from. ``LF_ALLOWED_ORIGINS`` is set to exactly this and the
+# TestClient uses it as its base URL, so Host/Origin verification exercises the
+# real direct-Modal contract (no proxy, no X-Forwarded-* trust).
+PRODUCT_ORIGIN = "https://ai-revenue-living-fiction-test.modal.run"
+
+_PRODUCT_SETTINGS_KEYS = (
+    "env",
+    "database_backend",
+    "database_url",
+    "admin_secret",
+    "credential_hmac_key",
+    "session_hmac_key",
+    "allowed_origins",
+)
 
 
 def _extract_csrf(html: str) -> str:
@@ -812,32 +836,57 @@ def _extract_csrf(html: str) -> str:
     return match.group(1)
 
 
+def _canon_choice_options(env) -> list[str]:
+    conn = connect_postgres(env["owner_url"])
+    try:
+        row = conn.execute(
+            "SELECT next_choice_options_json FROM episodes "
+            "WHERE episode_type = 'canon' AND world_id = ? "
+            "ORDER BY episode_number ASC LIMIT 1",
+            (WORLD_STATE.world_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    return json.loads(row["next_choice_options_json"])
+
+
 @contextmanager
-def _product_client(env):
-    orig = {
-        "database_backend": settings.database_backend,
-        "database_url": settings.database_url,
-        "admin_secret": settings.admin_secret,
-        "credential_hmac_key": settings.credential_hmac_key,
-        "session_hmac_key": settings.session_hmac_key,
-    }
+def _product_app(env):
+    """Create a real production-mode app and tear it down afterwards.
+
+    Applies the full production settings (env=production, restricted runtime
+    URL, CSPRNG secrets, Modal allowlist), builds the app via ``create_app()``
+    — which runs the real startup schema verifier against PostgreSQL — and on
+    exit closes the engine and restores every touched setting.
+    """
+    orig = {key: getattr(settings, key) for key in _PRODUCT_SETTINGS_KEYS}
+    settings.env = "production"
     settings.database_backend = "postgres"
     settings.database_url = env["runtime_url"]
-    settings.admin_secret = PRODUCT_ADMIN_SECRET
-    settings.credential_hmac_key = PRODUCT_CREDENTIAL_KEY
-    settings.session_hmac_key = PRODUCT_SESSION_KEY
+    settings.admin_secret = env["admin_secret"]
+    settings.credential_hmac_key = env["credential_key"]
+    settings.session_hmac_key = env["session_key"]
+    settings.allowed_origins = env["allowed_origins"]
     app = None
     try:
         from app.factory import create_app  # noqa: PLC0415
 
         app = create_app()
-        with TestClient(app, follow_redirects=False) as client:
-            yield client
+        yield app
     finally:
         if app is not None:
             app.state.db_engine.close()
         for key, value in orig.items():
             setattr(settings, key, value)
+
+
+@contextmanager
+def _product_client(env):
+    with _product_app(env) as app:
+        with TestClient(
+            app, base_url=env["allowed_origins"], follow_redirects=False
+        ) as client:
+            yield client
 
 
 def _login_reader_pg(client, invite_code):
@@ -868,7 +917,7 @@ def _fresh_reader_invite(env):
         reader = reader_repo.create_reader(
             conn, display_name=f"it-product-{new_id()}"
         )
-        code = bootstrap.issue_invite(conn, HMAC_KEY, reader.id)
+        code = bootstrap.issue_invite(conn, env["credential_key"], reader.id)
     finally:
         conn.close()
     return reader.id, code
@@ -889,13 +938,18 @@ def product_env():
     pg_provision.grant_runtime_dml(_pg_url, schema)
     pg_provision.revoke_runtime_create(_pg_url, schema)
 
+    # Bootstrap under the advisory lock. run_locked_bootstrap seeds world +
+    # canon + the bootstrap reader and issues EXACTLY ONE active invite (via
+    # ensure_active_invite); we use the code it returns and never re-issue for
+    # the same reader, so the bootstrap reader ends with a single active invite.
     conn = connect_postgres(url)
     try:
-        bootstrap.run_locked_bootstrap(conn, HMAC_KEY)
-        reader_id = bootstrap.ensure_bootstrap_reader(conn)
-        invite_code = bootstrap.issue_invite(conn, HMAC_KEY, reader_id)
+        reader_id, invite_code = bootstrap.run_locked_bootstrap(
+            conn, PRODUCT_CREDENTIAL_KEY
+        )
     finally:
         conn.close()
+    assert invite_code is not None, "fresh schema must yield a new invite code"
 
     rt_url = pg_provision.runtime_url(_pg_url, schema)
     yield {
@@ -904,6 +958,10 @@ def product_env():
         "invite_code": invite_code,
         "reader_id": reader_id,
         "schema": schema,
+        "admin_secret": PRODUCT_ADMIN_SECRET,
+        "credential_key": PRODUCT_CREDENTIAL_KEY,
+        "session_key": PRODUCT_SESSION_KEY,
+        "allowed_origins": PRODUCT_ORIGIN,
     }
     _drop_schema(schema)
 
@@ -966,78 +1024,186 @@ def test_product_canon_read_authenticated(product_env):
         assert "CANON" in resp.text
 
 
-def test_product_concurrent_choice_one_wins(product_env):
-    import threading  # noqa: PLC0415
+def test_product_session_cookies_secure_in_production(product_env):
+    """In production mode every reader/admin session cookie is set Secure."""
+    with _product_client(product_env) as client:
+        resp = client.get("/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/access",
+            data={
+                "invite_code": product_env["invite_code"],
+                "csrf_token": csrf,
+            },
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+        reader_cookies = [
+            sc
+            for sc in resp.headers.get_list("set-cookie")
+            if sc.startswith("lf_reader_session=")
+        ]
+        assert reader_cookies, "reader session cookie not set"
+        assert all("secure" in sc.lower() for sc in reader_cookies)
 
-    from app import choice_service  # noqa: PLC0415
-    from app.ai.mock import MockProvider  # noqa: PLC0415
+        resp = client.get("/admin/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/admin/access",
+            data={"admin_secret": PRODUCT_ADMIN_SECRET, "csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+        admin_cookies = [
+            sc
+            for sc in resp.headers.get_list("set-cookie")
+            if sc.startswith("lf_admin_session=")
+        ]
+        assert admin_cookies, "admin session cookie not set"
+        assert all("secure" in sc.lower() for sc in admin_cookies)
 
-    reader_id, code = _fresh_reader_invite(product_env)
 
+def test_product_modal_origin_post_succeeds(product_env):
+    """A POST whose Origin is the configured Modal origin is accepted."""
+    with _product_client(product_env) as client:
+        resp = client.get("/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/access",
+            data={
+                "invite_code": product_env["invite_code"],
+                "csrf_token": csrf,
+            },
+            headers={"origin": PRODUCT_ORIGIN},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+
+def test_product_foreign_origin_post_403(product_env):
+    """A POST whose Origin is not in the allowlist is rejected (403)."""
+    with _product_client(product_env) as client:
+        resp = client.get("/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/access",
+            data={
+                "invite_code": product_env["invite_code"],
+                "csrf_token": csrf,
+            },
+            headers={"origin": "https://evil.example.com"},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 403
+
+
+def test_product_no_origin_direct_modal_post_succeeds(product_env):
+    """A direct Modal form POST carries no Origin header; verification falls
+    back to the request's own scheme + Host (from the HTTPS base URL), which
+    matches the allowlist — no proxy / X-Forwarded-* headers are involved."""
+    with _product_client(product_env) as client:
+        resp = client.get("/access")
+        csrf = _extract_csrf(resp.text)
+        resp = client.post(
+            "/access",
+            data={
+                "invite_code": product_env["invite_code"],
+                "csrf_token": csrf,
+            },
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+
+def test_product_bootstrap_reader_has_one_active_invite(product_env):
+    """The fixture seeds exactly one active invite for the bootstrap reader
+    (run_locked_bootstrap's return value; no second issue_invite call)."""
     conn = connect_postgres(product_env["owner_url"])
     try:
-        canon_episode_id = conn.execute(
-            "SELECT id FROM episodes WHERE episode_type = 'canon' AND world_id = ? "
-            "ORDER BY episode_number ASC LIMIT 1",
-            (WORLD_STATE.world_id,),
-        ).fetchone()["id"]
+        active = conn.execute(
+            "SELECT COUNT(*) AS n FROM invite_credentials "
+            "WHERE bound_reader_id = ? AND revoked_at IS NULL "
+            "AND (expires_at IS NULL OR expires_at >= ?)",
+            (product_env["reader_id"], now_utc_iso()),
+        ).fetchone()["n"]
     finally:
         conn.close()
+    assert active == 1
 
-    def make_provider(choice_id, choice_text="", choice_comment=None):
-        content = copy.deepcopy(BRANCH_EPISODE_CONTENT)
-        content["applied_reader_input"]["reader_choice_id"] = choice_id
-        content["applied_reader_input"]["choice_text"] = choice_text
-        return MockProvider(
-            task_payloads={
-                "episode_plan": BRANCH_EPISODE_PLAN,
-                "episode_content": content,
-            }
+
+def test_product_divergent_concurrent_choice_303_409(product_env):
+    """Two DIFFERENT valid choices for the same reader + canon episode, posted
+    at the same instant from two independent HTTPS clients that share the
+    reader's authenticated cookies.
+
+    Exactly one request wins (303 PRG redirect) and exactly one conflicts
+    (409). ``submitted``/``submitted`` and ``already_completed``/``submitted``
+    are NOT acceptable here — divergent choices must resolve to a single winner
+    plus a single privacy-safe conflict. The database ends with exactly one
+    choice, one branch, one personal-branch episode, and one generation request,
+    and the stored ``choice_text`` is the winner's.
+    """
+    reader_id, code = _fresh_reader_invite(product_env)
+    choice_options = _canon_choice_options(product_env)
+    assert len(choice_options) >= 2, "canon episode must offer >= 2 choices"
+
+    with _product_app(product_env) as app:
+        # Client A logs in and captures the authenticated cookies + CSRF token.
+        client_a = TestClient(
+            app, base_url=PRODUCT_ORIGIN, follow_redirects=False
         )
+        _login_reader_pg(client_a, code)
+        csrf = _extract_csrf(client_a.get("/read").text)
+        shared_cookies = dict(client_a.cookies)
 
-    results = []
-    barrier = threading.Barrier(2)
+        # Client B replicates the reader's authenticated cookies onto a separate
+        # HTTPS client (simulating the same browser session racing two tabs).
+        client_b = TestClient(
+            app, base_url=PRODUCT_ORIGIN, follow_redirects=False
+        )
+        for name, value in shared_cookies.items():
+            client_b.cookies.set(name, value)
 
-    def submit():
-        c = connect_postgres(product_env["runtime_url"])
-        try:
-            barrier.wait()
-            submission = choice_service.submit_reader_choice(
-                c,
-                world=WORLD_STATE,
-                world_id=WORLD_STATE.world_id,
-                reader_id=reader_id,
-                canon_episode_id=canon_episode_id,
-                canon_checkpoint_id=bootstrap.CANON_CHECKPOINT_ID,
-                choice_text="선택지 1",
-                comment=None,
-                build_provider=make_provider,
-            )
-            results.append(submission.status)
-        except Exception as exc:  # noqa: BLE001
-            results.append(f"error: {exc}")
-        finally:
-            c.close()
+        results: list[tuple[int, str]] = []
+        errors: list[BaseException] = []
+        barrier = threading.Barrier(2)
 
-    threads = [threading.Thread(target=submit) for _ in range(2)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
+        def post_choice(client: TestClient, choice_val: str) -> None:
+            try:
+                barrier.wait(timeout=10)
+                resp = client.post(
+                    "/read/choice",
+                    data={
+                        "choice": choice_val,
+                        "comment": "",
+                        "csrf_token": csrf,
+                    },
+                    follow_redirects=False,
+                )
+                results.append((resp.status_code, choice_val))
+            except BaseException as exc:  # noqa: BLE001
+                errors.append(exc)
 
-    statuses = sorted(results)
-    assert statuses in (
-        ["conflict", "submitted"],
-        ["already_completed", "submitted"],
-        ["submitted", "submitted"],
-    ), f"unexpected statuses: {results}"
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            f1 = pool.submit(post_choice, client_a, "0")
+            f2 = pool.submit(post_choice, client_b, "1")
+            f1.result(timeout=30)
+            f2.result(timeout=30)
+
+    # 0 uncaught exceptions; exactly one 303 and exactly one 409.
+    assert errors == [], f"uncaught exceptions: {errors}"
+    codes = sorted(code for code, _ in results)
+    assert codes == [303, 409], f"expected one 303 + one 409, got {results}"
+
+    winner_val = next(val for code, val in results if code == 303)
+    winner_text = choice_options[int(winner_val)]
 
     conn = connect_postgres(product_env["owner_url"])
     try:
         choices = conn.execute(
-            "SELECT COUNT(*) AS n FROM reader_choices WHERE reader_id = ?",
+            "SELECT choice_text FROM reader_choices WHERE reader_id = ?",
             (reader_id,),
-        ).fetchone()["n"]
+        ).fetchall()
         branches = conn.execute(
             "SELECT COUNT(*) AS n FROM branches WHERE reader_id = ?",
             (reader_id,),
@@ -1048,11 +1214,19 @@ def test_product_concurrent_choice_one_wins(product_env):
             "(SELECT branch_episode_id FROM branches WHERE reader_id = ?)",
             (reader_id,),
         ).fetchone()["n"]
-        assert choices == 1
-        assert branches == 1
-        assert personal_eps == 1
+        gen_requests = conn.execute(
+            "SELECT COUNT(*) AS n FROM branch_generation_requests "
+            "WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
     finally:
         conn.close()
+
+    assert len(choices) == 1
+    assert choices[0]["choice_text"] == winner_text
+    assert branches == 1
+    assert personal_eps == 1
+    assert gen_requests == 1
 
 
 def test_product_duplicate_choice_idempotent(product_env):
@@ -1356,3 +1530,149 @@ def test_product_runtime_role_cannot_migrate(product_env):
             raw.close()
     finally:
         _drop_schema(schema)
+
+
+_CANON_FINGERPRINT_COLS = (
+    "id",
+    "title",
+    "synopsis",
+    "prose_json",
+    "review_state",
+    "episode_number",
+)
+_SNAPSHOT_FINGERPRINT_COLS = (
+    "id",
+    "world_id",
+    "version",
+    "episode_number",
+    "accepted",
+    "world_state_json",
+    "character_states_json",
+    "location_states_json",
+    "clue_states_json",
+    "unresolved_threads_json",
+)
+
+
+def _canon_fingerprint(owner_url):
+    cols = ", ".join(_CANON_FINGERPRINT_COLS)
+    conn = connect_postgres(owner_url)
+    try:
+        row = conn.execute(
+            f"SELECT {cols} FROM episodes "
+            "WHERE episode_type = 'canon' AND world_id = ? "
+            "ORDER BY episode_number ASC LIMIT 1",
+            (WORLD_STATE.world_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    return tuple(row[c] for c in _CANON_FINGERPRINT_COLS)
+
+
+def _snapshot_fingerprint(owner_url):
+    cols = ", ".join(_SNAPSHOT_FINGERPRINT_COLS)
+    conn = connect_postgres(owner_url)
+    try:
+        row = conn.execute(
+            f"SELECT {cols} FROM canon_snapshots "
+            "WHERE world_id = ? ORDER BY version ASC LIMIT 1",
+            (WORLD_STATE.world_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    if row is None:
+        return None
+    return tuple(row[c] for c in _SNAPSHOT_FINGERPRINT_COLS)
+
+
+def test_product_restart_persistence(product_env):
+    """A full reader journey survives an app/engine restart against the same
+    PostgreSQL runtime URL.
+
+    App instance #1: reader login -> choice submit -> admin approve, then the
+    engine is closed. App instance #2 is recreated from the same runtime URL and
+    the original reader cookie is replayed onto a fresh HTTPS client; the
+    approved branch is still readable. The session row, branch, personal
+    episode, and review-decision (audit) row all persist, and the canon episode
+    + snapshot content are byte-for-byte unchanged.
+    """
+    reader_id, code = _fresh_reader_invite(product_env)
+    canon_before = _canon_fingerprint(product_env["owner_url"])
+    snapshot_before = _snapshot_fingerprint(product_env["owner_url"])
+
+    # ── App instance #1: login -> choice -> approve, then shut down. ──
+    with _product_app(product_env) as app:
+        client = TestClient(
+            app, base_url=PRODUCT_ORIGIN, follow_redirects=False
+        )
+        _login_reader_pg(client, code)
+        csrf = _extract_csrf(client.get("/read").text)
+        resp = client.post(
+            "/read/choice",
+            data={"choice": "0", "comment": "", "csrf_token": csrf},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+        conn = connect_postgres(product_env["owner_url"])
+        try:
+            branch_id = conn.execute(
+                "SELECT id FROM branches WHERE reader_id = ?", (reader_id,)
+            ).fetchone()["id"]
+        finally:
+            conn.close()
+
+        _login_admin_pg(client)
+        review_csrf = _extract_csrf(client.get(f"/admin/review/{branch_id}").text)
+        resp = client.post(
+            f"/admin/review/{branch_id}/approve",
+            data={"csrf_token": review_csrf},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 303
+
+        reader_cookies = dict(client.cookies)
+    # <- engine closed and settings restored here (the "restart").
+
+    # ── App instance #2: recreate from the same runtime URL. ──
+    with _product_app(product_env) as app:
+        fresh_client = TestClient(
+            app, base_url=PRODUCT_ORIGIN, follow_redirects=False
+        )
+        for name, value in reader_cookies.items():
+            fresh_client.cookies.set(name, value)
+
+        # Approved branch is readable using the original session cookie.
+        resp = fresh_client.get(f"/read/branch/{branch_id}")
+        assert resp.status_code == 200
+
+    # ── Persistence assertions against the database. ──
+    conn = connect_postgres(product_env["owner_url"])
+    try:
+        sessions = conn.execute(
+            "SELECT COUNT(*) AS n FROM reader_sessions WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        branches = conn.execute(
+            "SELECT COUNT(*) AS n FROM branches WHERE reader_id = ?",
+            (reader_id,),
+        ).fetchone()["n"]
+        personal_eps = conn.execute(
+            "SELECT COUNT(*) AS n FROM episodes "
+            "WHERE episode_type = 'personal_branch' AND id IN "
+            "(SELECT branch_episode_id FROM branches WHERE reader_id = ?)",
+            (reader_id,),
+        ).fetchone()["n"]
+        decisions = conn.execute(
+            "SELECT COUNT(*) AS n FROM review_decisions WHERE branch_id = ?",
+            (branch_id,),
+        ).fetchone()["n"]
+    finally:
+        conn.close()
+
+    assert sessions >= 1
+    assert branches == 1
+    assert personal_eps == 1
+    assert decisions == 1
+    assert _canon_fingerprint(product_env["owner_url"]) == canon_before
+    assert _snapshot_fingerprint(product_env["owner_url"]) == snapshot_before
