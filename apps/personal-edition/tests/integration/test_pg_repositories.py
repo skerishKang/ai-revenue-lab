@@ -368,34 +368,242 @@ class TestPublicPreservation:
 
 
 class TestConcurrency:
-    def test_auto_edition_numbering_is_sequential(self, pg_env):
+    """Real concurrent acceptance tests.
+
+    Each worker thread opens its own independent ``PostgresRuntimeConnection``
+    (autocommit=True) pointed at the isolated test schema.  A
+    ``threading.Barrier`` ensures all workers start their critical section
+    simultaneously so row-level contention is genuinely exercised.
+    """
+
+    def _thread_runtime(self, schema_name: str):
+        from app.db_postgres import get_pg_runtime_connection
+        from app.db_runtime import PostgresRuntimeConnection
+
+        def opener():
+            conn = get_pg_runtime_connection(TEST_POSTGRES_URL)
+            conn.execute(f'SET search_path TO "{schema_name}"')
+            return conn
+
+        return PostgresRuntimeConnection(opener).open()
+
+    def test_concurrent_edition_numbering_is_unique(self, pg_env):
+        import threading
+        from concurrent.futures import ThreadPoolExecutor, as_completed
         from app import edition_repository as ed_repo
 
         _make_participant(pg_env.runtime, "p1")
-        numbers = []
-        for _ in range(3):
-            edition = ed_repo.create_edition(
-                pg_env.runtime,
-                participant_id="p1",
-                structured_content='{"sections": []}',
-                rendered_title="E",
-            )
-            numbers.append(edition.edition_number)
-        assert numbers == [1, 2, 3]
+        n = 5
+        barrier = threading.Barrier(n)
+        errors: list = []
 
-    def test_cannot_publish_terminal_edition_twice(self, pg_env):
+        def worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                edition = ed_repo.create_edition(
+                    rt,
+                    participant_id="p1",
+                    structured_content='{"sections": []}',
+                    rendered_title="E",
+                )
+                return edition.edition_number
+            except Exception as exc:
+                errors.append(exc)
+                return None
+            finally:
+                rt.close()
+
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            numbers = [f.result() for f in as_completed(
+                [pool.submit(worker) for _ in range(n)]
+            )]
+
+        assert not errors, f"unexpected errors: {errors}"
+        assert sorted(numbers) == list(range(1, n + 1))
+
+    def test_concurrent_input_sequence_is_unique(self, pg_env):
+        import threading
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from app import input_repository as input_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        n = 5
+        barrier = threading.Barrier(n)
+        errors: list = []
+
+        def worker(i):
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                inp = input_repo.create_input(
+                    rt,
+                    participant_id="p1",
+                    raw_text=f"input {i}",
+                    consent_confirmed=1,
+                )
+                return inp.sequence_number
+            except Exception as exc:
+                errors.append(exc)
+                return None
+            finally:
+                rt.close()
+
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            seqs = [f.result() for f in as_completed(
+                [pool.submit(worker, i) for i in range(n)]
+            )]
+
+        assert not errors, f"unexpected errors: {errors}"
+        assert sorted(seqs) == list(range(1, n + 1))
+
+    def test_concurrent_publication_only_one_wins(self, pg_env):
+        import threading
+        from concurrent.futures import ThreadPoolExecutor, as_completed
         from app import edition_repository as ed_repo
 
         _make_participant(pg_env.runtime, "p1")
         edition = _make_edition(pg_env.runtime, "p1")
-        ed_repo.update_edition_publication(pg_env.runtime, edition.id, "published")
+        n = 4
+        barrier = threading.Barrier(n)
 
-        # published is terminal: a second transition must be rejected rather
-        # than silently overwrite state.
-        with pytest.raises(ed_repo.EditionStateConflict):
-            ed_repo.update_edition_publication(
-                pg_env.runtime, edition.id, "rejected"
-            )
+        def worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                ed_repo.update_edition_publication(rt, edition.id, "published")
+                return "ok"
+            except ed_repo.EditionStateConflict:
+                return "conflict"
+            finally:
+                rt.close()
+
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            outcomes = [f.result() for f in as_completed(
+                [pool.submit(worker) for _ in range(n)]
+            )]
+
+        assert outcomes.count("ok") == 1
+        assert outcomes.count("conflict") == n - 1
+
+    def test_concurrent_content_update_vs_publish(self, pg_env):
+        """One thread publishes while another updates content concurrently.
+
+        The publish must always succeed (content update does not change
+        publication_state).  The content update either succeeds (ran before
+        publish committed) or raises EditionStateConflict (ran after).
+        The edition must end in a consistent published state either way.
+        """
+        import threading
+        from app import edition_repository as ed_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        edition = _make_edition(pg_env.runtime, "p1")
+        barrier = threading.Barrier(2)
+        content_outcome: list = []
+
+        def publish_worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                ed_repo.update_edition_publication(rt, edition.id, "published")
+                return "ok"
+            finally:
+                rt.close()
+
+        def content_worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                ed_repo.update_edition_content(
+                    rt,
+                    edition.id,
+                    structured_content='{"sections": [{"body": "updated"}]}',
+                )
+                content_outcome.append("ok")
+            except ed_repo.EditionStateConflict:
+                content_outcome.append("conflict")
+            finally:
+                rt.close()
+
+        t_pub = threading.Thread(target=publish_worker)
+        t_content = threading.Thread(target=content_worker)
+        t_pub.start()
+        t_content.start()
+        t_pub.join(timeout=15)
+        t_content.join(timeout=15)
+
+        final = ed_repo.get_edition_by_id(pg_env.runtime, edition.id)
+        assert final is not None
+        assert final.publication_state == "published"
+        assert content_outcome[0] in ("ok", "conflict")
+
+    def test_concurrent_claim_same_key_one_wins(self, pg_env):
+        import threading
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from app import generation_request_repository as gen_req_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        inp = _make_input(pg_env.runtime, "p1")
+        n = 4
+        barrier = threading.Barrier(n)
+
+        def worker():
+            rt = self._thread_runtime(pg_env.schema_name)
+            try:
+                barrier.wait(timeout=10)
+                record = gen_req_repo.claim_generation_request(
+                    rt,
+                    idempotency_key="concurrent-key",
+                    participant_id="p1",
+                    input_id=inp.id,
+                )
+                return record.already_claimed
+            finally:
+                rt.close()
+
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            outcomes = [f.result() for f in as_completed(
+                [pool.submit(worker) for _ in range(n)]
+            )]
+
+        assert outcomes.count(False) == 1
+        assert outcomes.count(True) == n - 1
+
+    def test_lease_expiry_allows_reclaim(self, pg_env):
+        import time
+        from app import generation_request_repository as gen_req_repo
+
+        _make_participant(pg_env.runtime, "p1")
+        inp = _make_input(pg_env.runtime, "p1")
+
+        first = gen_req_repo.claim_generation_request(
+            pg_env.runtime,
+            idempotency_key="lease-key",
+            participant_id="p1",
+            input_id=inp.id,
+            lease_duration_seconds=1,
+        )
+        assert first.already_claimed is False
+
+        dup = gen_req_repo.claim_generation_request(
+            pg_env.runtime,
+            idempotency_key="lease-key",
+            participant_id="p1",
+            input_id=inp.id,
+        )
+        assert dup.already_claimed is True
+
+        time.sleep(1.5)
+
+        reclaimed = gen_req_repo.claim_generation_request(
+            pg_env.runtime,
+            idempotency_key="lease-key",
+            participant_id="p1",
+            input_id=inp.id,
+        )
+        assert reclaimed.already_claimed is False
+        assert reclaimed.claim_token != first.claim_token
 
 
 class TestIdempotency:
