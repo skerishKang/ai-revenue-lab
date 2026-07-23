@@ -592,6 +592,11 @@ def test_malformed_allowed_origin_startup_fails():
         "https://example.com/path",
         "https://example.com?q=1",
         "https://user:pass@example.com",
+        # Malformed / out-of-range ports and malformed IPv6 must fail closed
+        # (previously these were silently dropped by canonicalize_origin).
+        "https://example.com:notaport",
+        "https://example.com:99999",
+        "https://[invalid",
     ]:
         s = Settings(
             env="production",
@@ -604,6 +609,36 @@ def test_malformed_allowed_origin_startup_fails():
             s.validate_allowed_origins()
 
 
+def test_mixed_valid_and_malformed_origin_fails_whole_config():
+    # A single invalid entry among valid ones must reject the entire allowlist,
+    # not silently drop the bad entry and keep the good ones.
+    s = Settings(
+        env="production",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("credential"),
+        session_hmac_key=_strong_test_value("session"),
+        allowed_origins="https://good.example.com,https://example.com:99999",
+    )
+    with pytest.raises(ValueError):
+        s.validate_allowed_origins()
+
+
+def test_multiple_distinct_valid_origins_canonicalized_and_kept():
+    s = Settings(
+        env="production",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("credential"),
+        session_hmac_key=_strong_test_value("session"),
+        allowed_origins=(
+            "HTTPS://Example.com/,https://example.com:443,"
+            "https://api.example.com:8443"
+        ),
+    )
+    s.validate_allowed_origins()
+    # The two example.com variants dedup to one; the distinct port stays.
+    assert s.allowed_origins == "https://api.example.com:8443,https://example.com"
+
+
 def test_valid_production_origin_startup_succeeds():
     s = Settings(
         env="production",
@@ -613,6 +648,61 @@ def test_valid_production_origin_startup_succeeds():
         allowed_origins="https://living-fiction.example.com",
     )
     s.validate_allowed_origins()
+
+
+def _snapshot_web_settings():
+    return {
+        "env": settings.env,
+        "admin_secret": settings.admin_secret,
+        "credential_hmac_key": settings.credential_hmac_key,
+        "session_hmac_key": settings.session_hmac_key,
+        "allowed_origins": settings.allowed_origins,
+        "database_path": settings.database_path,
+    }
+
+
+def _restore_web_settings(snapshot: dict) -> None:
+    for key, value in snapshot.items():
+        setattr(settings, key, value)
+
+
+def test_create_app_production_malformed_origin_fails_startup(temp_db_path):
+    # A malformed allowlist entry must fail the real application startup with a
+    # RuntimeError (the web layer wraps the config ValueError), not boot into a
+    # silently-weakened allowlist.
+    from app.factory import create_app
+
+    snapshot = _snapshot_web_settings()
+    settings.env = "production"
+    settings.admin_secret = _strong_test_value("admin")
+    settings.credential_hmac_key = _strong_test_value("credential")
+    settings.session_hmac_key = _strong_test_value("session")
+    settings.allowed_origins = "https://example.com:99999"
+    settings.database_path = temp_db_path
+    try:
+        with pytest.raises(RuntimeError, match="invalid origin"):
+            create_app(enable_web=True)
+    finally:
+        _restore_web_settings(snapshot)
+
+
+def test_create_app_production_valid_origin_starts_up(temp_db_path):
+    # Valid production settings (strong secrets + well-formed allowlist) boot the
+    # full web surface successfully.
+    from app.factory import create_app
+
+    snapshot = _snapshot_web_settings()
+    settings.env = "production"
+    settings.admin_secret = _strong_test_value("admin")
+    settings.credential_hmac_key = _strong_test_value("credential")
+    settings.session_hmac_key = _strong_test_value("session")
+    settings.allowed_origins = "https://living-fiction.example.com"
+    settings.database_path = temp_db_path
+    try:
+        app = create_app(enable_web=True)
+        assert app is not None
+    finally:
+        _restore_web_settings(snapshot)
 
 
 def test_unsupported_settings_ai_provider_fails(temp_db_path):

@@ -181,9 +181,13 @@ class Settings(BaseSettings):
 
         In production the allowlist must be non-empty and every entry must be a
         well-formed ``http://`` or ``https://`` origin with no path, query,
-        fragment, or embedded credentials. Duplicate entries are silently
-        normalized away. The actual configured values are never included in
-        error messages so a misconfigured secret is not leaked into logs.
+        fragment, or embedded credentials. Validation fails closed: if any entry
+        is invalid — including malformed or out-of-range ports and malformed
+        IPv6 literals that only the canonicalizer detects — startup is rejected
+        rather than silently dropping the entry and weakening the allowlist.
+        Valid duplicate entries are normalized away (deduplicated). The actual
+        configured values are never included in error messages so a
+        misconfigured secret is not leaked into logs.
 
         Outside production the check is skipped so localhost / TestClient
         workflows work without configuration.
@@ -197,7 +201,14 @@ class Settings(BaseSettings):
             )
         seen: set[str] = set()
         for origin in raw:
-            parsed = urlparse(origin)
+            try:
+                parsed = urlparse(origin)
+            except ValueError:
+                # urlparse cannot parse this input at all (e.g. an invalid IPv6
+                # literal). Fail closed rather than silently dropping the entry.
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS contains an invalid origin"
+                ) from None
             if parsed.scheme not in ("http", "https"):
                 raise ValueError(
                     "LF_ALLOWED_ORIGINS entries must use http:// or https://"
@@ -218,11 +229,22 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "LF_ALLOWED_ORIGINS entries must not include credentials"
                 )
-            # Store the canonical form so equivalent origins (differing only by
-            # case, trailing slash, or explicit default port) collapse to one.
+            # Fail closed on anything the canonicalizer rejects — malformed or
+            # out-of-range ports and malformed IPv6 literals that the urlparse
+            # checks above do not catch. Silently dropping such an entry would
+            # weaken the allowlist, so reject the whole configuration. Valid
+            # origins collapse to one canonical form (case / trailing slash /
+            # explicit default port) so equivalents deduplicate.
             canonical = canonicalize_origin(origin)
-            if canonical is not None:
-                seen.add(canonical)
+            if canonical is None:
+                raise ValueError(
+                    "LF_ALLOWED_ORIGINS contains an invalid origin"
+                )
+            seen.add(canonical)
+        if not seen:
+            raise ValueError(
+                "LF_ALLOWED_ORIGINS must contain at least one valid origin"
+            )
         # Normalize duplicates silently (no error, just dedup).
         self.allowed_origins = ",".join(sorted(seen))
 
