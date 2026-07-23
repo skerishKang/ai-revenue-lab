@@ -419,11 +419,15 @@ class GenerationService:
     def _claim_idempotency_key(self, conn, request: GenerationRequest):
         """Atomically claim the request's idempotency key.
 
-        Returns a GenerationResult when the key was already claimed (a
-        duplicate submission): if the prior claim completed, the existing
-        edition is returned idempotently; otherwise a non-succeeded duplicate
-        result is returned so no second edition is produced.  Returns None when
-        this caller newly claimed the key and should proceed with generation.
+        Returns a ``(replay_result, claim_record)`` tuple:
+
+        - ``replay_result`` is a :class:`GenerationResult` when the key was
+          already claimed (the caller should return it immediately), or
+          ``None`` when this caller newly claimed the key and should proceed
+          with generation.
+        - ``claim_record`` is the :class:`GenerationRequestRecord` (always
+          returned so the caller can forward ``claim_token`` to
+          ``complete_generation_request``).
         """
         claim = gen_req_repo.claim_generation_request(
             as_runtime_connection(conn),
@@ -432,7 +436,7 @@ class GenerationService:
             input_id=request.input_id,
         )
         if not claim.already_claimed:
-            return None
+            return None, claim
         if claim.edition_id is not None:
             replay = _idempotent_replay_outcome()
             return GenerationResult(
@@ -440,13 +444,13 @@ class GenerationService:
                 plan_run=replay,
                 draft_run=replay,
                 succeeded=True,
-            )
+            ), claim
         return GenerationResult(
             edition_id=None,
             plan_run=_failed_outcome("duplicate generation request in progress"),
             draft_run=_failed_outcome("duplicate generation request in progress"),
             succeeded=False,
-        )
+        ), claim
 
     def generate_edition(
         self,
@@ -455,8 +459,9 @@ class GenerationService:
         request: GenerationRequest,
     ) -> GenerationResult:
         """Run the full pipeline for one edition (first or follow-up)."""
+        claim_record = None
         if request.idempotency_key:
-            replay = self._claim_idempotency_key(conn, request)
+            replay, claim_record = self._claim_idempotency_key(conn, request)
             if replay is not None:
                 return replay
 
@@ -848,11 +853,12 @@ class GenerationService:
                 succeeded=False,
             )
 
-        if request.idempotency_key:
+        if request.idempotency_key and claim_record is not None:
             gen_req_repo.complete_generation_request(
                 as_runtime_connection(conn),
                 idempotency_key=request.idempotency_key,
                 edition_id=new_edition.id,
+                claim_token=claim_record.claim_token,
             )
 
         return GenerationResult(

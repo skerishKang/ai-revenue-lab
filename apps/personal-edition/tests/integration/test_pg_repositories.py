@@ -403,12 +403,13 @@ class TestIdempotency:
         from app import generation_request_repository as gen_req_repo
 
         _make_participant(pg_env.runtime, "p1")
+        inp = _make_input(pg_env.runtime, "p1")
 
         first = gen_req_repo.claim_generation_request(
             pg_env.runtime,
             idempotency_key="key-1",
             participant_id="p1",
-            input_id="i1",
+            input_id=inp.id,
         )
         assert first.already_claimed is False
 
@@ -416,7 +417,7 @@ class TestIdempotency:
             pg_env.runtime,
             idempotency_key="key-1",
             participant_id="p1",
-            input_id="i1",
+            input_id=inp.id,
         )
         assert duplicate.already_claimed is True
         assert duplicate.edition_id is None
@@ -425,13 +426,14 @@ class TestIdempotency:
             pg_env.runtime,
             idempotency_key="key-1",
             edition_id="e-123",
+            claim_token=first.claim_token,
         )
 
         replay = gen_req_repo.claim_generation_request(
             pg_env.runtime,
             idempotency_key="key-1",
             participant_id="p1",
-            input_id="i1",
+            input_id=inp.id,
         )
         assert replay.already_claimed is True
         assert replay.edition_id == "e-123"
