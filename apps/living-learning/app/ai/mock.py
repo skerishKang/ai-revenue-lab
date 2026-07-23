@@ -112,7 +112,7 @@ class MockProvider:
         if "simplify_jargon" in dc and task_name == "adapted_lesson_plan":
             if payload.get("sections"):
                 payload["sections"][0]["description"] = "정의"
-        
+
         if "more_examples" in dc and task_name == "adapted_lesson_content":
             payload.setdefault("code_examples", []).append({"example_id": "ex2", "code": "y = 2\nprint(y)", "explanation": "test", "expected_output": "2"})
         if "code_first" in dc and task_name == "adapted_lesson_content":

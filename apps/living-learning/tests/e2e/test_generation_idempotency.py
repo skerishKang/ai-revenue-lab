@@ -31,12 +31,12 @@ async def test_generation_idempotency(app_instance, sync_db, mock_settings):
         cur = sync_db.cursor()
         cur.execute("SELECT id FROM concepts WHERE curriculum_id = ? ORDER BY sequence_order LIMIT 1", (curriculum_id,))
         concept_id = cur.fetchone()[0]
-        
+
         key = "idem-1"
         req1 = async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
         req2 = async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
         results = await asyncio.gather(req1, req2)
-        
+
         # At most one owner creates the lesson. With a fast (network-free) mock
         # the two requests may serialize — one real creation plus one completed
         # replay, both returning 200 — or genuinely overlap, yielding one 200 and
@@ -48,15 +48,15 @@ async def test_generation_idempotency(app_instance, sync_db, mock_settings):
         assert 200 in status_codes
 
         successful_resp = next(r for r in results if r.status_code == 200)
-        
+
         # Then an idempotency retry after completion should succeed and return same lesson_id
         req3 = await async_client.post("/api/v1/lessons", json={"learner_id": learner_id, "concept_id": concept_id, "idempotency_key": key})
         assert req3.status_code == 200
         assert req3.json()["lesson_id"] == successful_resp.json()["lesson_id"]
-        
+
         cur = sync_db.cursor()
         cur.execute("SELECT count(*) FROM lessons WHERE learner_id = ?", (learner_id,))
         assert cur.fetchone()[0] == 1
-        
+
         cur.execute("SELECT count(*) FROM generation_runs WHERE success = 1 AND task_type = 'lesson_plan'")
         assert cur.fetchone()[0] == 1

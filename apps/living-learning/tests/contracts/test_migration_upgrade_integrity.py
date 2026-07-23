@@ -11,6 +11,8 @@ import os
 import sqlite3
 import tempfile
 
+import pytest
+
 from app.db import MigrationError, apply_migrations, get_connection
 
 
@@ -43,35 +45,39 @@ def test_idempotent_rerun_keeps_nine_migrations():
         apply_migrations(path)  # re-run must be a no-op
         conn = sqlite3.connect(path)
         count = conn.execute("SELECT count(*) FROM schema_migrations").fetchone()[0]
-        assert count == 9
+        assert count == 10
         conn.close()
     finally:
         _cleanup(path)
 
 
 def test_staged_upgrade_from_pre_009_database():
-    """Simulate a database that stopped at 008, then upgrade to 009."""
+    """Simulate a database that stopped at 008, then upgrade through 009..010."""
     fd, path = tempfile.mkstemp(suffix=".db")
     os.close(fd)
     try:
-        # Apply only 001..008 by temporarily hiding 009 via a partial apply.
+        # Apply only 001..008 by stopping before 009.
         _apply_up_to(path, stop_before="009")
         conn = sqlite3.connect(path)
         pre_count = conn.execute("SELECT count(*) FROM schema_migrations").fetchone()[0]
         assert pre_count == 8
         conn.close()
 
-        # Now run the full migration set — 009 upgrades the schema.
+        # Now run the full migration set — 009 and 010 upgrade the schema.
         apply_migrations(path)
         conn = sqlite3.connect(path)
         post_count = conn.execute("SELECT count(*) FROM schema_migrations").fetchone()[0]
-        assert post_count == 9
-        # idempotency_requests now supports the widened status domain.
+        assert post_count == 10
+        # idempotency_requests now supports the widened status domain + fencing.
         cols = {r[1] for r in conn.execute("PRAGMA table_info(idempotency_requests)").fetchall()}
         assert "status" in cols
+        assert {"owner_token", "fencing_version"} <= cols
         # adaptation_decisions rebuilt with the new columns.
         adapt_cols = {r[1] for r in conn.execute("PRAGMA table_info(adaptation_decisions)").fetchall()}
         assert {"learner_id", "prior_lesson_id", "next_lesson_id", "dimension"} <= adapt_cols
+        # 010 tables exist.
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        assert {"lesson_review_events", "learning_goals", "diagnostic_snapshots"} <= tables
         conn.close()
     finally:
         _cleanup(path)
@@ -126,26 +132,43 @@ def test_membership_role_check_constraint_enforced():
     try:
         apply_migrations(path)
         conn = sqlite3.connect(path)
+        conn.execute("PRAGMA foreign_keys=ON")
         conn.execute(
             "INSERT INTO external_identities (id, provider, issuer, subject, status) "
             "VALUES ('eid1', 'firebase', 'iss', 'sub', 'active')"
         )
-        for role in ("learner", "operator", "reviewer"):
+        conn.execute("INSERT INTO learners (id, topic, status) VALUES ('L1', 'T', 'active')")
+        # Valid memberships: learner WITH learner_id; operator/reviewer WITHOUT.
+        conn.execute(
+            "INSERT INTO product_memberships (id, external_identity_id, role, learner_id, status) "
+            "VALUES ('mem_learner', 'eid1', 'learner', 'L1', 'active')"
+        )
+        for role in ("operator", "reviewer"):
             conn.execute(
-                "INSERT INTO product_memberships (id, external_identity_id, role, status) "
-                "VALUES (?, 'eid1', ?, 'active')",
+                "INSERT INTO product_memberships (id, external_identity_id, role, learner_id, status) "
+                "VALUES (?, 'eid1', ?, NULL, 'active')",
                 (f"mem_{role}", role),
             )
         conn.commit()
-        try:
+
+        # Invalid role is rejected.
+        with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO product_memberships (id, external_identity_id, role, status) "
-                "VALUES ('mem_bad', 'eid1', 'superuser', 'active')"
+                "INSERT INTO product_memberships (id, external_identity_id, role, learner_id, status) "
+                "VALUES ('mem_bad', 'eid1', 'superuser', NULL, 'active')"
             )
-            conn.commit()
-            assert False, "expected role CHECK failure"
-        except sqlite3.IntegrityError:
-            pass
+        # Learner membership with NULL learner_id is rejected by the CHECK.
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO product_memberships (id, external_identity_id, role, learner_id, status) "
+                "VALUES ('mem_bad2', 'eid1', 'learner', NULL, 'active')"
+            )
+        # Operator membership referencing a learner_id is rejected by the CHECK.
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO product_memberships (id, external_identity_id, role, learner_id, status) "
+                "VALUES ('mem_bad3', 'eid1', 'operator', 'L1', 'active')"
+            )
         conn.close()
     finally:
         _cleanup(path)

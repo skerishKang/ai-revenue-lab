@@ -56,14 +56,14 @@ def create_curriculum(
     version_norm = version.strip().lower()
     key = f"{topic_norm}:{version_norm}".encode("utf-8")
     curriculum_id = f"curr_{hashlib.md5(key).hexdigest()}"
-    
+
     concepts = concepts or []
-    
+
     # Check if exists to reuse
     existing = get_curriculum_by_id(conn, curriculum_id)
     if existing:
         return existing
-        
+
     conn.execute(
         f"INSERT INTO curricula ({_SELECT}) VALUES (?,?,?,?,?,?)",
         (curriculum_id, topic, version, description, json.dumps(concepts), now),

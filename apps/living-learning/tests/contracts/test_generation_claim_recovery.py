@@ -3,6 +3,7 @@
 On generation/validation/transaction failure the claim is transitioned to
 ``failed_retryable`` and a later retry can reclaim it and complete normally. A
 bounded lease also lets a stale ``pending`` claim (crashed owner) be reclaimed.
+Complete/fail are fenced on the ``ClaimHandle`` (owner_token + fencing_version).
 """
 
 from __future__ import annotations
@@ -13,7 +14,6 @@ from app.domain.operation import OperationIdentity, TASK_SECOND_LESSON
 from app.repositories import (
     STATUS_COMPLETED,
     STATUS_FAILED_RETRYABLE,
-    STATUS_PENDING,
     claim_operation,
     complete_operation,
     fail_operation,
@@ -42,10 +42,11 @@ def test_failure_transitions_claim_to_retryable(file_db):
         outcome = claim_operation(pipeline.conn, identity)
         pipeline.conn.commit()
         assert outcome.acquired
+        assert outcome.handle is not None
 
         # Simulate a generation/transaction failure: recover the claim.
         pipeline._begin_immediate()
-        fail_operation(pipeline.conn, identity.operation_key, terminal=False)
+        fail_operation(pipeline.conn, outcome.handle, terminal=False)
         pipeline.conn.commit()
 
         rec = get_operation(pipeline.conn, identity.operation_key)
@@ -59,24 +60,26 @@ def test_retryable_claim_can_be_reclaimed_and_completed(file_db):
     try:
         identity = _identity("k-retry")
         pipeline._begin_immediate()
-        assert claim_operation(pipeline.conn, identity).acquired
+        first = claim_operation(pipeline.conn, identity)
         pipeline.conn.commit()
+        assert first.acquired
 
         # First attempt fails -> retryable.
         pipeline._begin_immediate()
-        fail_operation(pipeline.conn, identity.operation_key, terminal=False)
+        fail_operation(pipeline.conn, first.handle, terminal=False)
         pipeline.conn.commit()
 
-        # A retry reclaims the failed_retryable claim.
+        # A retry reclaims the failed_retryable claim with a new handle.
         pipeline._begin_immediate()
         outcome = claim_operation(pipeline.conn, identity)
         pipeline.conn.commit()
         assert outcome.acquired
         assert outcome.record.attempt_number == 2
+        assert outcome.handle.fencing_version == 2
 
-        # The retry completes successfully.
+        # The retry completes successfully with its own handle.
         pipeline._begin_immediate()
-        complete_operation(pipeline.conn, identity.operation_key, result_json='{"lesson_id": "L2"}')
+        complete_operation(pipeline.conn, outcome.handle, result_json='{"lesson_id": "L2"}')
         pipeline.conn.commit()
 
         rec = get_operation(pipeline.conn, identity.operation_key)
@@ -114,17 +117,18 @@ def test_terminal_failure_is_not_reclaimable(file_db):
     try:
         identity = _identity("k-terminal")
         pipeline._begin_immediate()
-        assert claim_operation(pipeline.conn, identity).acquired
-        pipeline.conn.commit()
-
-        pipeline._begin_immediate()
-        fail_operation(pipeline.conn, identity.operation_key, terminal=True)
-        pipeline.conn.commit()
-
-        pipeline._begin_immediate()
         outcome = claim_operation(pipeline.conn, identity)
         pipeline.conn.commit()
-        assert outcome.terminal
-        assert not outcome.acquired
+        assert outcome.acquired
+
+        pipeline._begin_immediate()
+        fail_operation(pipeline.conn, outcome.handle, terminal=True)
+        pipeline.conn.commit()
+
+        pipeline._begin_immediate()
+        reclaimed = claim_operation(pipeline.conn, identity)
+        pipeline.conn.commit()
+        assert reclaimed.terminal
+        assert not reclaimed.acquired
     finally:
         pipeline.conn.close()

@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS lessons_new (
 );
 
 -- Note: prior_lesson_id might be '' in existing data, set to NULL if empty to satisfy FK
-INSERT INTO lessons_new 
-SELECT id, learner_id, concept_id, lesson_number, CASE WHEN prior_lesson_id = '' THEN NULL ELSE prior_lesson_id END, generation_status, publication_state, lesson_plan_json, lesson_content_json, adaptation_summary, created_at, updated_at 
+INSERT INTO lessons_new
+SELECT id, learner_id, concept_id, lesson_number, CASE WHEN prior_lesson_id = '' THEN NULL ELSE prior_lesson_id END, generation_status, publication_state, lesson_plan_json, lesson_content_json, adaptation_summary, created_at, updated_at
 FROM lessons;
 
 DROP TABLE lessons;
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS feedback_new (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-INSERT INTO feedback_new 
-SELECT id, lesson_id, learner_id, lesson_generation, direction_choices, free_text, applied_status, CASE WHEN applied_to_lesson_id = '' THEN NULL ELSE applied_to_lesson_id END, created_at 
+INSERT INTO feedback_new
+SELECT id, lesson_id, learner_id, lesson_generation, direction_choices, free_text, applied_status, CASE WHEN applied_to_lesson_id = '' THEN NULL ELSE applied_to_lesson_id END, created_at
 FROM feedback;
 
 DROP TABLE feedback;
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS pilot_evidence_new (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-INSERT INTO pilot_evidence_new 
+INSERT INTO pilot_evidence_new
 SELECT * FROM pilot_evidence;
 
 DROP TABLE pilot_evidence;

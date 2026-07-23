@@ -112,3 +112,28 @@ class OperationTerminalError(LessonPipelineError):
     def __init__(self, operation_key: str) -> None:
         self.operation_key = operation_key
         super().__init__("This operation previously failed terminally and will not be retried")
+
+
+# Defined in the repository layer to avoid a repository -> pipeline import cycle;
+# re-exported here so callers can keep importing from app.pipeline.errors.
+from app.repositories.idempotency_repository import LostClaimOwnershipError  # noqa: E402
+
+
+class ReviewStateConflictError(LessonPipelineError):
+    """Raised when an approve/reject CAS does not match the expected state.
+
+    Means the lesson is not in ``pending_review``/``pending`` (already published,
+    already rejected, or not generated) or a concurrent review won the race.
+    """
+
+    def __init__(self, lesson_id: str) -> None:
+        self.lesson_id = lesson_id
+        super().__init__("Lesson review state conflict")
+
+
+class LessonNotReadyError(LessonPipelineError):
+    """Raised when a learner requests a lesson that is not yet published."""
+
+    def __init__(self, lesson_id: str) -> None:
+        self.lesson_id = lesson_id
+        super().__init__("Lesson is not ready for delivery")

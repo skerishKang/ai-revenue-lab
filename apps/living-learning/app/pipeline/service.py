@@ -38,6 +38,7 @@ from app.domain.operation import (
     TASK_SECOND_LESSON,
 )
 from app.repositories import (
+    ClaimHandle,
     claim_operation,
     complete_operation,
     fail_operation,
@@ -73,6 +74,7 @@ from app.pipeline.errors import (
     ForeignFeedbackError,
     GenerationError,
     LearnerInactiveError,
+    LostClaimOwnershipError,
     NonRetryableError,
     OperationTerminalError,
     PrerequisiteNotMetError,
@@ -191,12 +193,24 @@ class LessonPipeline:
                 return {}
         return None
 
-    def _mark_claim_retryable(self, operation_key: str) -> None:
-        """Recover a claim to failed_retryable so a retry can reclaim it."""
+    def _mark_claim_retryable(self, handle: ClaimHandle | None) -> None:
+        """Recover a claim to failed_retryable so a retry can reclaim it.
+
+        If we are no longer the owner (a stale owner whose claim was reclaimed),
+        ``fail_operation`` raises ``LostClaimOwnershipError``; we swallow it
+        because the new owner now manages the claim lifecycle.
+        """
+        if handle is None:
+            return
         try:
             self._begin_immediate()
-            fail_operation(self.conn, operation_key, terminal=False)
+            fail_operation(self.conn, handle, terminal=False)
             self.conn.commit()
+        except LostClaimOwnershipError:
+            try:
+                self.conn.rollback()
+            except Exception:
+                pass
         except Exception:
             try:
                 self.conn.rollback()
@@ -573,7 +587,7 @@ class LessonPipeline:
     def start_first_lesson(self, learner_id: str, concept_id: str, idempotency_key: str = "") -> str:
         self._validate_learner_active(learner_id)
 
-        identity: OperationIdentity | None = None
+        handle: ClaimHandle | None = None
         if idempotency_key:
             identity = OperationIdentity(
                 task_type=TASK_FIRST_LESSON,
@@ -585,6 +599,7 @@ class LessonPipeline:
             replay = self._replay_result(outcome)
             if replay is not None:
                 return replay.get("lesson_id", "")
+            handle = outcome.handle
 
         try:
             valid, missing = validate_prerequisites(self.conn, concept_id, learner_id)
@@ -607,14 +622,16 @@ class LessonPipeline:
                 )
 
             candidate_id = f"lesson_{secrets.token_urlsafe(16)}"
-            return self._generate_full_lesson_content(candidate_id, learner, concept, identity)
+            return self._generate_full_lesson_content(candidate_id, learner, concept, handle)
+        except LostClaimOwnershipError:
+            # Stale owner: product writes (if any) were rolled back; do not touch the claim.
+            raise
         except Exception:
-            if identity is not None:
-                self._mark_claim_retryable(identity.operation_key)
+            self._mark_claim_retryable(handle)
             raise
 
     def _generate_full_lesson_content(
-        self, lesson_id: str, learner, concept, identity: OperationIdentity | None
+        self, lesson_id: str, learner, concept, handle: ClaimHandle | None
     ) -> str:
         attempt_group = f"{lesson_id}:first"
         plan_user_payload = {
@@ -687,18 +704,23 @@ class LessonPipeline:
             )
             self._persist_exercises(lesson_id, content_payload)
             finalize_attempt_group(self.conn, attempt_group, validation_result="passed", commit=False)
-            if identity is not None:
+            if handle is not None:
+                # Fenced CAS: if we are no longer the owner (stale), this raises
+                # LostClaimOwnershipError and the whole product transaction below
+                # rolls back — a stale owner's lesson never becomes product state.
                 complete_operation(
                     self.conn,
-                    identity.operation_key,
+                    handle,
                     result_json=json.dumps({"lesson_id": lesson_id, "status": "complete"}),
                 )
             self.conn.commit()
             return lesson_id
+        except LostClaimOwnershipError:
+            self.conn.rollback()
+            raise
         except Exception:
             self.conn.rollback()
-            if identity is not None:
-                self._mark_claim_retryable(identity.operation_key)
+            self._mark_claim_retryable(handle)
             raise
 
     def _persist_exercises(self, lesson_id: str, content_payload: dict) -> None:
@@ -798,7 +820,7 @@ class LessonPipeline:
         if lesson.learner_id != learner_id:
             raise ForeignFeedbackError(lesson_id, learner_id)
 
-        identity: OperationIdentity | None = None
+        handle: ClaimHandle | None = None
         if idempotency_key:
             identity = OperationIdentity(
                 task_type=TASK_FEEDBACK,
@@ -810,6 +832,7 @@ class LessonPipeline:
             replay = self._replay_result(outcome)
             if replay is not None:
                 return {"feedback_id": replay.get("feedback_id", ""), "is_duplicate": True}
+            handle = outcome.handle
 
         try:
             self._begin_immediate()
@@ -823,20 +846,24 @@ class LessonPipeline:
                     free_text=free_text,
                     commit=False,
                 )
-                if identity is not None:
+                if handle is not None:
                     complete_operation(
                         self.conn,
-                        identity.operation_key,
+                        handle,
                         result_json=json.dumps({"feedback_id": feedback.id}),
                     )
                 self.conn.commit()
                 return {"feedback_id": feedback.id, "is_duplicate": False}
+            except LostClaimOwnershipError:
+                self.conn.rollback()
+                raise
             except Exception:
                 self.conn.rollback()
                 raise
+        except LostClaimOwnershipError:
+            raise
         except Exception:
-            if identity is not None:
-                self._mark_claim_retryable(identity.operation_key)
+            self._mark_claim_retryable(handle)
             raise
 
     # ------------------------------------------------------------------
@@ -852,7 +879,7 @@ class LessonPipeline:
     ) -> dict:
         self._validate_learner_active(learner_id)
 
-        identity: OperationIdentity | None = None
+        handle: ClaimHandle | None = None
         if idempotency_key:
             identity = OperationIdentity(
                 task_type=TASK_SECOND_LESSON,
@@ -866,6 +893,7 @@ class LessonPipeline:
             replay = self._replay_result(outcome)
             if replay is not None:
                 return {"lesson_id": replay.get("lesson_id", ""), "adaptation_verified": True}
+            handle = outcome.handle
 
         try:
             original_lesson = get_lesson_by_id(self.conn, lesson_id)
@@ -915,12 +943,13 @@ class LessonPipeline:
                 original_lesson=original_lesson,
                 feedback=feedback,
                 comprehension=comprehension,
-                identity=identity,
+                handle=handle,
             )
             return {"lesson_id": new_lesson_id, "adaptation_verified": True}
+        except LostClaimOwnershipError:
+            raise
         except Exception:
-            if identity is not None:
-                self._mark_claim_retryable(identity.operation_key)
+            self._mark_claim_retryable(handle)
             raise
 
     def _generate_adapted_content(
@@ -930,7 +959,7 @@ class LessonPipeline:
         original_lesson,
         feedback,
         comprehension,
-        identity: OperationIdentity | None,
+        handle: ClaimHandle | None,
     ) -> str:
         learner = get_learner_by_id(self.conn, learner_id)
         concept = get_concept_by_id(self.conn, original_lesson.concept_id)
@@ -1071,19 +1100,24 @@ class LessonPipeline:
 
             finalize_attempt_group(self.conn, attempt_group, validation_result="passed", commit=False)
 
-            if identity is not None:
+            if handle is not None:
+                # Fenced CAS: a stale owner raises LostClaimOwnershipError and the
+                # entire product transaction (lesson, feedback application, mastery,
+                # adaptation decisions) rolls back.
                 complete_operation(
                     self.conn,
-                    identity.operation_key,
+                    handle,
                     result_json=json.dumps({"lesson_id": lesson_id, "status": "complete"}),
                 )
 
             self.conn.commit()
             return lesson_id
+        except LostClaimOwnershipError:
+            self.conn.rollback()
+            raise
         except Exception:
             self.conn.rollback()
-            if identity is not None:
-                self._mark_claim_retryable(identity.operation_key)
+            self._mark_claim_retryable(handle)
             raise
 
     # ------------------------------------------------------------------
@@ -1134,7 +1168,7 @@ class LessonPipeline:
         if not lesson or lesson.learner_id != learner_id:
             raise ForeignFeedbackError(exercise_id, learner_id)
 
-        identity: OperationIdentity | None = None
+        handle: ClaimHandle | None = None
         if idempotency_key:
             identity = OperationIdentity(
                 task_type=TASK_EXERCISE_ANSWER,
@@ -1150,6 +1184,7 @@ class LessonPipeline:
                     "is_correct": replay.get("is_correct"),
                     "is_duplicate": True,
                 }
+            handle = outcome.handle
 
         try:
             self._begin_immediate()
@@ -1188,20 +1223,24 @@ class LessonPipeline:
                     correct_increment=1 if is_correct else 0,
                     commit=False,
                 )
-                if identity is not None:
+                if handle is not None:
                     complete_operation(
                         self.conn,
-                        identity.operation_key,
+                        handle,
                         result_json=json.dumps({"response_id": resp.id, "is_correct": is_correct}),
                     )
                 self.conn.commit()
                 return {"response_id": resp.id, "is_correct": is_correct, "is_duplicate": False}
+            except LostClaimOwnershipError:
+                self.conn.rollback()
+                raise
             except Exception:
                 self.conn.rollback()
                 raise
+        except LostClaimOwnershipError:
+            raise
         except Exception:
-            if identity is not None:
-                self._mark_claim_retryable(identity.operation_key)
+            self._mark_claim_retryable(handle)
             raise
 
     # ------------------------------------------------------------------

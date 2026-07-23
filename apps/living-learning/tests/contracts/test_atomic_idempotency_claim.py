@@ -41,10 +41,10 @@ def test_concurrent_claim_has_exactly_one_owner(file_db):
                 pipeline.conn.rollback()
                 raise
             if outcome.acquired:
-                # Simulate doing the guarded work, then completing.
+                # Simulate doing the guarded work, then completing (fenced).
                 pipeline._begin_immediate()
                 complete_operation(
-                    pipeline.conn, identity.operation_key, result_json='{"ok": true}'
+                    pipeline.conn, outcome.handle, result_json='{"ok": true}'
                 )
                 pipeline.conn.commit()
                 verdict = "owner"

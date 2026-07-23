@@ -110,7 +110,7 @@ def test_mock_provider_tracks_requests() -> None:
 def test_mock_provider_default_payload_validation() -> None:
     from app.domain.models import LessonContent, LessonPlan
     provider = MockProvider()
-    
+
     # Should get LessonContent for lesson_content
     result = provider.generate_structured(
         task_name="lesson_content",
@@ -122,17 +122,17 @@ def test_mock_provider_default_payload_validation() -> None:
     payload = result.payload
     assert payload["title"] == "테스트 컨텐츠"
     assert payload["sections"][0]["content"] != ""
-    
+
     code_ex = payload["code_examples"][0]
     assert code_ex["code"] != ""
     assert code_ex["explanation"] != ""
     assert code_ex["expected_output"] != ""
-    
+
     req = payload["review_questions"][0]
     assert req["question"] != ""
     assert req["correct_answer"] != ""
     assert req["explanation"] != ""
-    
+
     # Should get LessonContent for adapted_lesson_content
     result2 = provider.generate_structured(
         task_name="adapted_lesson_content",

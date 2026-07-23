@@ -75,6 +75,7 @@ from app.repositories.adaptation_repository import (
     get_adaptation_decisions_for_learner,
 )
 from app.repositories.idempotency_repository import (
+    ClaimHandle,
     ClaimOutcome,
     IdempotencyRecord,
     STATUS_COMPLETED,
@@ -143,6 +144,7 @@ __all__ = [
     "get_adaptation_decisions_for_lesson",
     "get_adaptation_decisions_for_learner",
     "ClaimOutcome",
+    "ClaimHandle",
     "IdempotencyRecord",
     "STATUS_PENDING",
     "STATUS_COMPLETED",
