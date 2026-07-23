@@ -339,6 +339,7 @@ class ProviderResult(BaseModel):
     cost_class: CostClass = CostClass.FREE
     latency_seconds: float = Field(default=0.0, ge=0.0)
     retry_count: int = Field(default=0, ge=0)
+    finish_reason: str | None = None
     usage: ProviderUsage = Field(default_factory=ProviderUsage)
     payload: dict[str, Any] | None = None
     request_id: str | None = None

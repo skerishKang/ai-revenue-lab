@@ -141,10 +141,10 @@ class Settings(BaseSettings):
         provider = (self.ai_provider or "").strip().lower()
         if provider == "mock":
             return
-        if provider not in ("openai_compat", "deepseek"):
+        if provider not in ("opencode_go", "openai_compat"):
             raise ValueError(
-                f"LF_AI_PROVIDER must be 'mock', 'openai_compat', "
-                f"or 'deepseek'; got '{provider}'"
+                f"LF_AI_PROVIDER must be 'mock', 'opencode_go', "
+                f"or 'openai_compat'; got '{provider}'"
             )
         if not self.ai_api_key:
             raise ValueError(

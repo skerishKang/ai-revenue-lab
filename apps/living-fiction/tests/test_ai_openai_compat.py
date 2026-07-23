@@ -37,7 +37,7 @@ def test_live_provider_requires_api_key():
     from app.config import settings as s
 
     saved = s.ai_provider, s.ai_api_key, s.ai_model
-    s.ai_provider = "deepseek"
+    s.ai_provider = "opencode_go"
     s.ai_api_key = ""
     s.ai_model = "deepseek-v4-flash"
     with pytest.raises(ValueError, match="LF_AI_API_KEY"):
@@ -57,27 +57,31 @@ def test_live_provider_requires_model():
     s.ai_provider, s.ai_api_key, s.ai_model = saved
 
 
-def test_deprecated_deepseek_chat_is_not_default(monkeypatch):
-    monkeypatch.setattr("app.config.settings.ai_provider", "mock")
-    monkeypatch.setattr("app.config.settings.ai_model", "mock-living-fiction-v1")
+def test_deepseek_alias_removed():
     from app.config import settings as s
-    assert s.ai_provider == "mock"
-    assert s.ai_model == "mock-living-fiction-v1"
+
+    saved = s.ai_provider, s.ai_api_key, s.ai_model
+    s.ai_provider = "deepseek"
+    s.ai_api_key = "sk-test"
+    s.ai_model = "deepseek-v4-flash"
+    with pytest.raises(ValueError, match="LF_AI_PROVIDER"):
+        s.validate_ai_provider()
+    s.ai_provider, s.ai_api_key, s.ai_model = saved
 
 
-def test_deepseek_v4_flash_factory_smoke(monkeypatch):
+def test_opencode_go_factory_smoke(monkeypatch):
     from app.factory import _resolve_provider
 
-    monkeypatch.setattr("app.config.settings.ai_provider", "deepseek")
+    monkeypatch.setattr("app.config.settings.ai_provider", "opencode_go")
     monkeypatch.setattr("app.config.settings.ai_api_key", "sk-test-key")
     monkeypatch.setattr("app.config.settings.ai_model", "deepseek-v4-flash")
     monkeypatch.setattr("app.config.settings.ai_base_url", "")
 
-    provider = _resolve_provider("deepseek")
-    assert provider.provider_name == "deepseek"
+    provider = _resolve_provider("opencode_go")
+    assert provider.provider_name == "opencode_go"
     assert provider.model == "deepseek-v4-flash"
     assert provider.cost_class == CostClass.PAID
-    assert "opencode.ai/zen/go/v1" in provider.endpoint_url
+    assert provider.endpoint_url == "https://opencode.ai/zen/go/v1/chat/completions"
 
 
 def test_no_api_key_mock_startup(monkeypatch):
@@ -157,6 +161,92 @@ def test_link_local_url_rejection():
         validate_base_url("https://169.254.1.1")
 
 
+def test_query_rejection():
+    from app.ai.openai_compat import validate_base_url
+    with pytest.raises(ValueError, match="query"):
+        validate_base_url("https://api.deepseek.com/v1?foo=bar")
+
+
+def test_fragment_rejection():
+    from app.ai.openai_compat import validate_base_url
+    with pytest.raises(ValueError, match="fragment"):
+        validate_base_url("https://api.deepseek.com/v1#section")
+
+
+def test_invalid_port_rejection():
+    from app.ai.openai_compat import validate_base_url
+    with pytest.raises(ValueError):
+        validate_base_url("https://api.deepseek.com:notaport")
+
+
+def test_ipv6_loopback_rejection():
+    from app.ai.openai_compat import validate_base_url
+    with pytest.raises(ValueError, match="not allowed"):
+        validate_base_url("https://[::1]:8080")
+
+
+def test_ipv4_mapped_ipv6_loopback_rejection():
+    from app.ai.openai_compat import validate_base_url
+    with pytest.raises(ValueError, match="not allowed"):
+        validate_base_url("https://[::ffff:127.0.0.1]")
+
+
+def test_hostname_resolving_to_loopback_rejection(monkeypatch):
+    from app.ai.openai_compat import validate_base_url
+    import socket as _socket
+
+    original_getaddrinfo = _socket.getaddrinfo
+
+    def fake_getaddrinfo(host, *args, **kwargs):
+        if host == "evil.example":
+            return [(original_getaddrinfo("127.0.0.1", *args, **kwargs)[0])]
+        return original_getaddrinfo(host, *args, **kwargs)
+
+    monkeypatch.setattr(_socket, "getaddrinfo", fake_getaddrinfo)
+    with pytest.raises(ValueError, match="not allowed"):
+        validate_base_url("https://evil.example/v1")
+
+
+def test_hostname_resolving_to_link_local_rejection(monkeypatch):
+    from app.ai.openai_compat import validate_base_url
+    import socket as _socket
+
+    original_getaddrinfo = _socket.getaddrinfo
+
+    def fake_getaddrinfo(host, *args, **kwargs):
+        if host == "evil2.example":
+            return [(original_getaddrinfo("169.254.1.1", *args, **kwargs)[0])]
+        return original_getaddrinfo(host, *args, **kwargs)
+
+    monkeypatch.setattr(_socket, "getaddrinfo", fake_getaddrinfo)
+    with pytest.raises(ValueError, match="not allowed"):
+        validate_base_url("https://evil2.example/v1")
+
+
+def test_hostname_resolving_to_mixed_ips_rejection(monkeypatch):
+    from app.ai.openai_compat import validate_base_url
+    import socket as _socket
+
+    original_getaddrinfo = _socket.getaddrinfo
+
+    def fake_getaddrinfo(host, *args, **kwargs):
+        if host == "evil3.example":
+            public = original_getaddrinfo("8.8.8.8", *args, **kwargs)[0]
+            private = original_getaddrinfo("10.0.0.1", *args, **kwargs)[0]
+            return [public, private]
+        return original_getaddrinfo(host, *args, **kwargs)
+
+    monkeypatch.setattr(_socket, "getaddrinfo", fake_getaddrinfo)
+    with pytest.raises(ValueError, match="not allowed"):
+        validate_base_url("https://evil3.example/v1")
+
+
+def test_opencode_go_canonical_endpoint_exact_match():
+    from app.ai.openai_compat import validate_base_url
+    result = validate_base_url("https://opencode.ai/zen/go/v1")
+    assert result == "https://opencode.ai/zen/go/v1"
+
+
 def test_endpoint_no_duplicate_v1():
     from app.ai.openai_compat import _build_endpoint_url
     url = _build_endpoint_url("https://opencode.ai/zen/go/v1")
@@ -203,17 +293,26 @@ def test_default_attributes():
     assert provider.provider_name == "openai_compat"
     assert provider.model == "deepseek-v4-flash"
     assert provider.cost_class == CostClass.PAID
-    assert "opencode.ai/zen/go/v1" in provider.endpoint_url
+    assert provider.endpoint_url == "https://opencode.ai/zen/go/v1/chat/completions"
 
 
 def test_custom_provider_name():
     from app.ai.openai_compat import OpenAICompatibleProvider
     provider = OpenAICompatibleProvider(
         api_key="sk-test-key", model="deepseek-v4-flash",
-        provider_name="deepseek",
+        provider_name="opencode_go",
     )
-    assert provider.provider_name == "deepseek"
+    assert provider.provider_name == "opencode_go"
     assert provider.model == "deepseek-v4-flash"
+
+
+def test_opencode_go_default_url():
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    provider = OpenAICompatibleProvider(
+        api_key="sk-test-key", model="deepseek-v4-flash",
+        provider_name="opencode_go",
+    )
+    assert provider.endpoint_url == "https://opencode.ai/zen/go/v1/chat/completions"
 
 
 # ── helper response builders ─────────────────────────────────────────────
@@ -314,6 +413,33 @@ def _mock_empty_choices_response():
     return _MockResponse()
 
 
+def _mock_list_response():
+    """Response where data is a list instead of dict."""
+    class _MockResponse:
+        status_code = 200
+        def raise_for_status(self):
+            pass
+        def json(self):
+            return ["not", "a", "dict"]
+    return _MockResponse()
+
+
+def _mock_choice_not_dict_response():
+    """Response where choices[0] is not a dict."""
+    class _MockResponse:
+        status_code = 200
+        def raise_for_status(self):
+            pass
+        def json(self):
+            return {
+                "id": "chatcmpl-test",
+                "object": "chat.completion",
+                "choices": ["not a dict"],
+                "usage": {},
+            }
+    return _MockResponse()
+
+
 # ── success scenarios ────────────────────────────────────────────────────
 
 
@@ -333,10 +459,22 @@ def test_successful_generation():
     assert result.payload == expected
     assert result.usage.input_tokens == 50
     assert result.usage.output_tokens == 100
+    assert result.finish_reason == "stop"
 
 
-def test_successful_generation_custom_base_url():
+def test_successful_generation_custom_base_url(monkeypatch):
     from app.ai.openai_compat import OpenAICompatibleProvider
+    import socket as _socket
+
+    original_getaddrinfo = _socket.getaddrinfo
+
+    def fake_getaddrinfo(host, *args, **kwargs):
+        if host == "custom.api.com":
+            return [(original_getaddrinfo("8.8.8.8", *args, **kwargs)[0])]
+        return original_getaddrinfo(host, *args, **kwargs)
+
+    monkeypatch.setattr(_socket, "getaddrinfo", fake_getaddrinfo)
+
     expected = {"value": "custom", "number": 1}
     with patch("httpx.post", return_value=_mock_response(expected)) as mp:
         provider = OpenAICompatibleProvider(
@@ -351,18 +489,94 @@ def test_successful_generation_custom_base_url():
     assert url == "https://custom.api.com/v1/chat/completions"
 
 
-def test_successful_generation_deepseek_alias():
+def test_successful_generation_opencode_go():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 7})):
         provider = OpenAICompatibleProvider(
-            api_key="sk-test", model="deepseek-v4-flash", provider_name="deepseek",
+            api_key="sk-test", model="deepseek-v4-flash", provider_name="opencode_go",
         )
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r3",
         )
-    assert result.provider == "deepseek"
+    assert result.provider == "opencode_go"
     assert result.advertised_model == "deepseek-v4-flash"
+
+
+def test_successful_generation_finish_reason_none():
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    resp = _mock_response({"value": "x", "number": 1}, finish_reason=None)
+    with patch("httpx.post", return_value=resp):
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r3b",
+        )
+    assert result.success is True
+    assert result.finish_reason is None
+
+
+# ── structured JSON instruction tests ────────────────────────────────────
+
+
+def test_json_instruction_in_request():
+    """Verify the request body includes response_format=json_object."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider.generate_structured(
+            task_name="t", system_prompt="Respond in JSON.", user_payload={},
+            response_schema=_TestResponse, request_id="r20",
+        )
+    body = mp.call_args[1]["json"]
+    assert body["response_format"] == {"type": "json_object"}
+
+
+def test_json_instruction_in_system_prompt():
+    """Verify the system prompt includes JSON instruction and schema."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r20a",
+        )
+    body = mp.call_args[1]["json"]
+    messages = body["messages"]
+    system_content = messages[0]["content"]
+    assert "JSON" in system_content
+    assert "json_schema" in system_content or "JSON Schema" in system_content
+    assert "value" in system_content
+    assert "number" in system_content
+
+
+def test_json_instruction_with_empty_system_prompt():
+    """JSON instruction must be present even with empty system_prompt."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r20b",
+        )
+    body = mp.call_args[1]["json"]
+    system_content = body["messages"][0]["content"]
+    assert "Return exactly one valid JSON object" in system_content
+    assert "Do not use Markdown" in system_content
+
+
+def test_private_payload_not_in_request_body():
+    """Private user payload should not appear in error messages."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
+        provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={"secret": "my-secret-data"},
+            response_schema=_TestResponse, request_id="r20c",
+        )
+    body = mp.call_args[1]["json"]
+    user_content = body["messages"][1]["content"]
+    assert "my-secret-data" in user_content
 
 
 # ── error scenarios ──────────────────────────────────────────────────────
@@ -406,7 +620,7 @@ def test_empty_content():
 
 def test_whitespace_content():
     from app.ai.openai_compat import OpenAICompatibleProvider
-    with patch("httpx.post", return_value=_mock_text_response("   \\n  \\t  ")):
+    with patch("httpx.post", return_value=_mock_text_response("   \n  \t  ")):
         provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
@@ -427,6 +641,7 @@ def test_finish_reason_length():
         )
     assert result.success is False
     assert "length" in (result.error_message or "")
+    assert result.finish_reason == "length"
 
 
 def test_missing_choices():
@@ -490,6 +705,30 @@ def test_http_402_no_retry():
     assert mp.call_count == 1
 
 
+def test_http_403_no_retry():
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_error_response(403)) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r13a",
+        )
+    assert result.success is False
+    assert mp.call_count == 1
+
+
+def test_http_404_no_retry():
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_error_response(404)) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r13b",
+        )
+    assert result.success is False
+    assert mp.call_count == 1
+
+
 def test_http_422_no_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(422)) as mp:
@@ -518,6 +757,25 @@ def test_http_429_retry_after():
     assert result.retry_count == 1
 
 
+def test_http_429_retry_after_http_date():
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    from datetime import datetime, timezone, timedelta
+
+    resp1 = _mock_error_response(429)
+    future = datetime.now(timezone.utc) + timedelta(seconds=0)
+    resp1.headers = {"Retry-After": future.strftime("%a, %d %b %Y %H:%M:%S GMT")}
+    resp2 = _mock_response({"value": "ok", "number": 1})
+    responses = iter([resp1, resp2])
+    with patch("httpx.post", side_effect=lambda *a, **kw: next(responses)) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r15a",
+        )
+    assert result.success is True
+    assert result.retry_count == 1
+
+
 def test_http_500_bounded_retry():
     from app.ai.openai_compat import OpenAICompatibleProvider
     with patch("httpx.post", return_value=_mock_error_response(500)):
@@ -537,6 +795,18 @@ def test_http_503_bounded_retry():
         result = provider.generate_structured(
             task_name="t", system_prompt="", user_payload={},
             response_schema=_TestResponse, request_id="r17",
+        )
+    assert result.success is False
+    assert result.retry_count == 1
+
+
+def test_http_504_bounded_retry():
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_error_response(504)):
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=1)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r17a",
         )
     assert result.success is False
     assert result.retry_count == 1
@@ -569,20 +839,98 @@ def test_all_retries_exhausted():
     assert result.retry_count == 1
 
 
-# ── request body inspection ──────────────────────────────────────────────
+# ── no-retry on parsing/shape errors ────────────────────────────────────
 
 
-def test_json_instruction_in_request():
-    """Verify the request body includes response_format=json_object."""
+def test_invalid_json_body_no_retry():
+    """Response body that is invalid JSON should not retry."""
     from app.ai.openai_compat import OpenAICompatibleProvider
-    with patch("httpx.post", return_value=_mock_response({"value": "x", "number": 1})) as mp:
-        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model")
-        provider.generate_structured(
-            task_name="t", system_prompt="Respond in JSON.", user_payload={},
-            response_schema=_TestResponse, request_id="r20",
+    with patch("httpx.post", return_value=_mock_text_response("not valid json {{{{")) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r22",
         )
-    body = mp.call_args[1]["json"]
-    assert body["response_format"] == {"type": "json_object"}
+    assert result.success is False
+    assert mp.call_count == 1
+
+
+def test_response_is_list_no_retry():
+    """Response data that is a list instead of dict should not retry."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_list_response()) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r23",
+        )
+    assert result.success is False
+    assert mp.call_count == 1
+
+
+def test_choice_not_dict_no_retry():
+    """Response where choices[0] is not a dict should not retry."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_choice_not_dict_response()) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r24",
+        )
+    assert result.success is False
+    assert mp.call_count == 1
+
+
+def test_schema_mismatch_no_retry():
+    """Schema mismatch should not retry."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", return_value=_mock_response({"value": "ok", "number": "bad"})) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r25",
+        )
+    assert result.success is False
+    assert mp.call_count == 1
+
+
+def test_unexpected_exception_no_retry():
+    """Unexpected RuntimeError should not retry."""
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    with patch("httpx.post", side_effect=RuntimeError("unexpected")) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=3)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r26",
+        )
+    assert result.success is False
+    assert mp.call_count == 1
+
+
+def test_transport_error_retry():
+    """httpx.TransportError should retry."""
+    import httpx
+    from app.ai.openai_compat import OpenAICompatibleProvider
+    resp2 = _mock_response({"value": "ok", "number": 1})
+    responses = iter([httpx.ConnectError("connection refused"), resp2])
+
+    def _side_effect(*a, **kw):
+        item = next(responses)
+        if isinstance(item, BaseException):
+            raise item
+        return item
+
+    with patch("httpx.post", side_effect=_side_effect) as mp:
+        provider = OpenAICompatibleProvider(api_key="sk-test", model="test-model", max_retries=2)
+        result = provider.generate_structured(
+            task_name="t", system_prompt="", user_payload={},
+            response_schema=_TestResponse, request_id="r27",
+        )
+    assert result.success is True
+    assert result.retry_count == 1
+
+
+# ── secret safety ────────────────────────────────────────────────────────
 
 
 def test_secret_not_in_error():

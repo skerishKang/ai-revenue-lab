@@ -38,8 +38,8 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
     """Resolve the AI provider from a name string or instance.
 
     Phase 1 supports only the free, local, deterministic MockProvider.
-    Phase 3A adds OpenAI-compatible providers (``openai_compat``,
-    ``deepseek``). Unsupported provider names fail closed.
+    Phase 3A adds OpenAI-compatible providers (``opencode_go``,
+    ``openai_compat``). Unsupported provider names fail closed.
 
     When *provider* is ``None`` the configured ``settings.ai_provider`` is
     used so the factory always reflects the deployment configuration rather
@@ -56,16 +56,17 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
         handled = provider.strip().lower()
         if handled == "mock":
             return MockProvider()
-        if handled in ("openai_compat", "deepseek"):
+        if handled in ("opencode_go", "openai_compat"):
             settings.validate_ai_provider()
+            if handled == "opencode_go":
+                base_url = "https://opencode.ai/zen/go/v1"
+            else:
+                base_url = settings.ai_base_url or "https://opencode.ai/zen/go/v1"
             return OpenAICompatibleProvider(
                 api_key=settings.ai_api_key,
                 model=settings.ai_model,
                 provider_name=handled,
-                base_url=(
-                    settings.ai_base_url
-                    or "https://opencode.ai/zen/go/v1"
-                ),
+                base_url=base_url,
             )
         raise RuntimeError(f"unsupported provider: {provider}")
     for attr in ("provider_name", "model", "cost_class"):
