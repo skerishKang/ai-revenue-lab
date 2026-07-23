@@ -1,263 +1,291 @@
-# UI Refinement V3 — Consumer Marketplace Finish
+# UI Refinement V3 — Resident-First Consumer Marketplace Finish
 
 ## Status
 
-This document tightens the visual finish of the Business 5 reference before any local implementation begins.
+This document fixes the visual finish for the current `index-v3.html` reference.
 
-The product structure in `index.html` remains valid. The next design pass must make the interface feel like a maintained Korean consumer marketplace rather than a generated landing page.
+The interface should feel like a maintained Korean consumer marketplace, but the product purpose is resident mutual aid rather than generic nearby-commerce discovery.
 
-## Reference principles
+`COMMUNITY_PRIORITY_MODEL.md` controls ranking and relationship semantics. `DESIGN_SPEC.md` controls information architecture. This file controls finish quality.
 
-Use familiar interaction patterns from leading Korean consumer apps without copying logos, proprietary illustrations, wording, or exact layouts.
+## 1. First-screen comprehension
 
-- delivery-app clarity: location, search, category, availability, price and primary action;
-- local-business trust: owner profile, news, benefit, contact and correction path;
-- apartment context: one verified residential community, resident-only benefit and privacy-safe verification.
+Within the first mobile viewport, the user must understand:
 
-## Mandatory visual changes
+- the current community is 방림명지로드힐;
+- the service helps residents support resident-run work;
+- current-apartment profiles come first;
+- nearby-apartment profiles come second;
+- general local businesses come third.
 
-### 1. Reduce generated-looking geometry
+Required lead copy:
 
-Current cards use too many unrelated radii and floating shadows.
+> 우리 이웃이 하는 일을 먼저 찾고, 함께 이용해요.
 
-Use this fixed radius system:
+Do not lead with a generic apartment photograph, discount banner or nearby-shop claim.
 
-- image: `12px`;
-- search field and large action: `12px`;
-- standard card: `14px`;
+## 2. Relationship hierarchy finish
+
+### Tier 1
+
+- label: `방림명지로드힐 주민 운영`;
+- strongest trust treatment;
+- green trust token;
+- first business section;
+- optional narrow card accent;
+- must not look like a paid advertisement.
+
+### Tier 2
+
+- label: `이웃 단지 주민 운영`;
+- blue trust token;
+- second business section;
+- clearly different from Tier 1.
+
+### Tier 3
+
+- label: `우리 동네 가게`;
+- neutral gray token;
+- third business section;
+- no resident-operation implication.
+
+Relationship labels are not interchangeable with discount labels.
+
+## 3. Geometry
+
+Use a fixed radius system:
+
+- image: `10–12px`;
+- search and large action: `10px`;
+- standard desktop card: `12–14px`;
 - small control: `8px`;
-- status chip: `6px`;
-- circular controls only for icon-only buttons and avatars.
+- status label: `6px`;
+- circular shape only for icon-only controls and avatars.
 
-Do not use pill geometry for ordinary navigation, buttons, select fields or trust labels.
+Do not use pills for ordinary navigation, select fields or relationship labels.
 
-Use only two shadow levels:
+Most list cards use no shadow. Use separators and photography before elevation.
 
 ```css
 --shadow-rest: 0 1px 2px rgba(0,0,0,.04);
 --shadow-float: 0 8px 24px rgba(0,0,0,.08);
 ```
 
-Most list cards should have no shadow. Prefer dividers and image hierarchy.
+## 4. Typography
 
-### 2. Typography
+Use Pretendard with Korean system sans-serif fallback.
 
-Use Pretendard when available and system Korean sans-serif as fallback.
+| Role | Desktop | Mobile | Weight |
+|---|---:|---:|---:|
+| Location | 20 | 18 | 700–750 |
+| Lead title | 30 | 25 | 700–750 |
+| Page title | 30 | 26 | 700–750 |
+| Section title | 22 | 20 | 700–750 |
+| Card title | 17 | 16 | 650–700 |
+| Body | 13–14 | 12–14 | 400–550 |
+| Metadata | 10–12 | 10–12 | 400–600 |
+| Relationship label | 9–10 | 8–10 | 650–700 |
 
-```css
-font-family: Pretendard, -apple-system, BlinkMacSystemFont,
-  "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
-```
+Avoid ultra-bold paragraph text and excessive negative tracking.
 
-Required scale:
+## 5. Header and search
 
-| Role | Desktop | Mobile | Weight | Letter spacing |
-|---|---:|---:|---:|---:|
-| Apartment location | 20 | 18 | 750 | -0.025em |
-| Page title | 32 | 26 | 750 | -0.035em |
-| Section title | 22 | 20 | 750 | -0.025em |
-| Shop title | 17 | 16 | 700 | -0.015em |
-| Body | 14 | 14 | 400–500 | -0.005em |
-| Metadata | 12 | 12 | 400–600 | 0 |
-| Badge | 11 | 11 | 650 | 0 |
+- product header: 68px desktop / 56px mobile;
+- search is visually dominant but not a floating marketing card;
+- desktop query field, category select and search button remain one coherent unit;
+- mobile hides the category select and keeps one query field plus button;
+- native semantic select retained with custom arrow;
+- focus ring uses the brand token;
+- no thick dark borders or multiple shadows.
 
-Avoid weights above 800 except the compact brand mark. Avoid excessive negative tracking.
+The default search copy may mention a range of resident work:
 
-### 3. Header and search
+`반찬, 에어컨 청소, 수학, 세무 검색`
 
-Mobile header order:
+## 6. Priority explanation
 
-1. apartment selector;
-2. notification and account icons;
-3. sticky search field below the header after the user scrolls past the hero.
+A compact priority explanation may appear beside or below the lead copy:
 
-The search field must look like a real input, not a large decorative card:
+1. 우리 아파트 주민
+2. 이웃 아파트 주민
+3. 우리 동네 가게
 
-- height `48px` mobile / `52px` desktop;
-- neutral `#f4f5f4` fill;
-- one subtle focus ring;
-- icon left, clear button right when text exists;
-- no drop shadow;
-- category selector separated from the query input on desktop only.
+It should look like product guidance, not a policy document. On mobile it stacks in a quiet white information block.
 
-Custom select finish:
+## 7. Category navigation
 
-- native semantic `<select>` retained;
-- `appearance:none`;
-- one down-chevron;
-- no double border;
-- focus ring identical to search;
-- text vertically centered;
-- minimum width sufficient for Korean labels.
+Eight categories remain:
 
-### 4. Category navigation
+- 음식·반찬
+- 카페·디저트
+- 집수리·청소
+- 교육·과외
+- 뷰티·건강
+- 반려생활
+- 전문서비스
+- 취미·클래스
 
-Eight categories remain.
+Use one coherent line-icon family. No emoji, generic AI icons or saturated category colors.
 
-Do not use generic emoji or colored AI icons. Use one coherent line-icon family, identical stroke width and optical size.
+- desktop icon box: about 68px;
+- mobile icon box: about 58px;
+- four columns on mobile;
+- restrained brand tint for selected state.
 
-- icon container `56×56px` mobile, `68×68px` desktop;
-- light neutral background;
-- selected category uses a restrained brand tint, not a saturated tile;
-- category names remain one line;
-- exactly four columns on mobile.
+## 8. Business/service cards
 
-### 5. Benefit presentation
+Required information order:
 
-Benefits must not resemble generic SaaS gradient banners.
+1. photograph;
+2. relationship label;
+3. name and favorite;
+4. category and action mode;
+5. concrete one-line description;
+6. price or consultation basis;
+7. current availability;
+8. resident benefit.
 
-Use real service imagery with a readable solid or translucent label area.
+Mobile uses a vertical list with image-left/content-right rows. It must not become a grid of floating cards.
 
-Every benefit card exposes:
+Tier color may appear as a narrow left edge on desktop, but the photograph and content remain primary.
+
+No ratings, review counts or fake popularity numbers.
+
+## 9. Grouped discovery
+
+The explore page must preserve visible group headings:
+
+- 우리 아파트 주민의 가게와 서비스;
+- 이웃 아파트 주민의 가게와 서비스;
+- 우리 동네 가게.
+
+Filters may isolate a tier, but the default view is grouped in that order.
+
+`가까운 순` may exist as a secondary option, never as the selected default.
+
+## 10. Benefits
+
+Benefits are separate from relationship verification.
+
+Every benefit card should show:
 
 - provider name;
+- relationship label;
 - exact benefit;
 - eligibility;
-- expiry or `상시`;
-- one action.
+- expiry or `상시` in production;
+- current availability or action.
 
-No ambiguous `최대`, `특가`, countdown or urgency language.
+No `최대`, countdown or urgency language without exact conditions.
 
-### 6. Shop list cards
-
-Mobile is a vertically separated list, not a grid of floating cards.
-
-Required order:
-
-1. real photo;
-2. shop name and favorite;
-3. category and verification state;
-4. representative product/service;
-5. price or consultation mode;
-6. current availability;
-7. resident benefit.
-
-Desktop may use two columns, but each item retains the same information order.
-
-Required states:
-
-- `영업 중`;
-- `오늘 예약 가능`;
-- `오늘 상담 가능`;
-- `주문 마감`;
-- `정보 확인 필요`.
-
-Green is reserved for actual availability. Coral is reserved for resident benefits and primary commerce actions. Verification badges use neutral or dark-green text on a low-contrast background.
-
-### 7. Detail page
-
-The detail page prioritizes a decision, not an essay.
+## 11. Detail page
 
 Above the fold:
 
-- photo gallery;
-- shop name;
-- verification state;
+- gallery;
+- relationship label;
+- name;
+- category and action mode;
 - current availability;
-- service mode;
+- representative price;
 - benefit;
 - fixed mobile action bar.
 
 Below the fold:
 
-- representative products/services with prices;
-- use instructions;
-- business introduction;
-- recent news;
-- correction/report path.
+- representative services;
+- introduction;
+- relationship-verification disclosure;
+- correction or report path in the future service.
 
-The mobile action bar adapts by business type:
+Required Tier 1 disclosure:
 
-- food: `전화`, `문의`, `주문하기`;
-- repair: `전화`, `문의`, `견적받기`;
-- class: `전화`, `상담`, `예약하기`;
-- professional: `전화`, `상담`, `상담신청`.
+> 방림명지로드힐 주민 운영 확인은 거주 동·호수를 공개하지 않으며 서비스 품질을 보증하지 않습니다.
 
-Static reference actions must show that no message, order or data was sent.
+## 12. Registration page
 
-### 8. Image rules
+The first decision is relationship type:
 
-Temporary MVP stock photographs are acceptable, but images must look like business content rather than decorative stock art.
+1. 방림명지로드힐 주민이 직접 운영
+2. 주변 아파트 주민이 운영
+3. 일반 인근 가게이며 입주민 혜택 제공
 
-- no text embedded in images;
-- no obvious AI artifacts;
-- no smiling corporate stock teams;
-- no identifiable apartment residents;
-- no apartment photo claimed as 방림명지로드힐 unless user-supplied or permission-cleared;
-- each image uses a documented source;
-- consistent crop ratios by component;
-- lazy loading below the first viewport;
-- fixed aspect ratio prevents layout shift.
+Then select work form:
 
-Before production implementation, temporary remote images must be downloaded, optimized and checked into the product workspace with an attribution ledger where required.
+- offline shop;
+- visiting service;
+- freelance/professional service;
+- online sales;
+- tutoring/class;
+- product or craft sale.
 
-### 9. Apartment identity
+The screen must not imply that only storefront businesses can register.
 
-Public display name: `방림명지로드힐`.
+## 13. Images
 
-Public context may show:
+Temporary stock images are acceptable for the reference when:
 
-- 광주광역시 남구;
-- 192세대;
-- 2개 동;
-- apartment-level benefit coverage.
+- they depict the actual service category;
+- no text is embedded;
+- no obvious AI artifact;
+- no identifiable residents;
+- crop ratios remain consistent;
+- sources are recorded in `IMAGE_SOURCES.md`.
 
-Do not display:
+Do not claim any generic apartment image is 방림명지로드힐.
 
-- chairperson name in the resident-facing MVP;
-- building/unit numbers;
-- resident roster information;
-- private management-office contact details;
-- a claim that the management office officially endorses the service unless formally approved.
+Production images must be downloaded, reviewed, optimized and permission-cleared in a separate task.
 
-### 10. Desktop and mobile density
+## 14. Desktop and mobile density
 
-The product is mobile-first, but desktop must not become an oversized mobile mockup.
+### Desktop
 
-Desktop:
-
-- content width `1120–1180px`;
-- two-column shop results;
-- three-column benefit cards;
+- content width 1120–1180px;
+- two-column cards inside each tier;
 - detail content plus action sidebar;
-- maximum line length for descriptive text `68ch`.
+- three-column benefits where space permits;
+- descriptive line length under about 68ch.
 
-Mobile:
+### Mobile
 
-- side padding `16px`;
-- bottom navigation height `64–72px` including safe area;
-- no horizontal page overflow;
-- list separators aligned with text, not full-bleed through photographs;
-- sticky action bars do not cover content.
+- side padding 16px;
+- lead and priority explanation stack;
+- four category columns;
+- shop list rows use separators;
+- fixed bottom navigation;
+- detail action bar does not cover content;
+- no horizontal page overflow.
 
-## Rejected patterns
+## 15. Rejected patterns
 
-- oversized hero marketing copy;
-- dozens of rounded white cards on gray canvas;
-- every label rendered as a pill;
-- heavy drop shadows;
-- glossy gradients;
-- glassmorphism;
-- fake ratings or fake review counts;
-- generic AI illustration;
+- generic local-directory copy;
+- mixed equal list of every business;
+- Tier 1 reduced to one small filter;
+- distance-first sorting;
+- paid general business above resident profile;
+- oversized apartment hero;
+- excessive rounded white cards;
+- every label as a pill;
+- heavy shadows, glossy gradients or glassmorphism;
+- fake ratings and fake reviews;
 - map-first experience;
-- dashboard side navigation;
 - English-first headings;
-- unexplained icons;
-- default browser select appearance;
-- inconsistent icon stroke and size.
+- unfinished browser-default selects;
+- private resident or chairperson information.
 
-## V3 acceptance gate
+## 16. V3 acceptance gate
 
-The reference cannot be handed to the local implementation worker until all are true:
+The reference cannot be handed to an implementation worker until:
 
-- [ ] typography follows the fixed scale;
-- [ ] ordinary controls use the fixed radius system;
-- [ ] search and select controls have production-grade focus and spacing;
-- [ ] cards use real imagery and consistent crops;
-- [ ] mobile shop list reads in one scan without decorative clutter;
-- [ ] all business types have an appropriate action label;
-- [ ] apartment reference image is clearly generic or user-supplied;
-- [ ] no private resident or chairperson information is exposed;
-- [ ] screenshots at 390, 768 and 1440 have been reviewed;
-- [ ] no local worker has introduced visual discretion.
+- [ ] first-screen copy communicates residents helping residents;
+- [ ] Tier 1 appears before Tier 2 and Tier 3;
+- [ ] search results preserve the same group order;
+- [ ] all three relationship labels are visually distinct;
+- [ ] `가까운 순` is not default;
+- [ ] registration starts with relationship type;
+- [ ] storefront and non-storefront work are supported;
+- [ ] typography and controls follow the fixed system;
+- [ ] images load without broken states;
+- [ ] no private resident information is exposed;
+- [ ] screenshots at 390, 768 and 1440 are reviewed;
+- [ ] no local worker has introduced design discretion.
