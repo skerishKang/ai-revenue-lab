@@ -1,98 +1,109 @@
 {% extends "base.html" %}
 {% block title %}대시보드 · Korean AI Platform{% endblock %}
+{% block crumb %}<strong>AI Operations</strong> · 개요{% endblock %}
 {% block content %}
-<section class="hero" aria-labelledby="hero-title">
-  <p class="eyebrow">한국형 AI 실행 플랫폼</p>
-  <h1 id="hero-title">AI가 코드를 만드는 데서 끝나지 않도록,<br>작업·검증·승인까지 관리합니다.</h1>
-  <p class="hero-sub">
-    작업자 AI와 검증자 AI를 분리하고, 실제 변경 파일과 테스트 증거를 확인한 뒤
-    사람이 승인해야만 브랜치에 반영합니다.
-  </p>
-  <a class="btn btn-primary" href="/tasks/new">새 AI 작업 시작</a>
+
+<div class="hero-strip">
+  <div>
+    <p class="kicker">AI Operations Overview</p>
+    <h1>작업·검증·승인까지 관리합니다</h1>
+    <p class="hero-tag">AI가 코드를 만드는 데서 끝나지 않도록, 작업자·검증자 모델을 분리하고 데이터 처리 위치·비용·경로 정책과 사람 승인을 통제합니다.</p>
+  </div>
+  <a class="btn btn-primary btn-lg" href="/tasks/new">
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
+    새 AI 작업 시작
+  </a>
+</div>
+
+<section class="metrics reveal" aria-label="운영 요약 지표">
+  <div class="metric metric-accent-primary">
+    <span class="metric-value num">{{ counts.get('running', 0) + counts.get('rework', 0) }}</span>
+    <span class="metric-label">실행 중 · 재작업</span>
+  </div>
+  <div class="metric metric-accent-amber">
+    <span class="metric-value num">{{ counts.get('awaiting_approval', 0) }}</span>
+    <span class="metric-label">승인 대기</span>
+  </div>
+  <div class="metric metric-accent-teal">
+    <span class="metric-value num">{{ monthly_krw | int }}<span class="unit">원</span></span>
+    <span class="metric-label">이번 달 예상 AI 비용</span>
+  </div>
+  <div class="metric {{ 'metric-accent-red' if policy_alerts else '' }}">
+    <span class="metric-value num">{{ policy_alerts }}</span>
+    <span class="metric-label">정책 경고 · 차단</span>
+  </div>
+  <div class="metric">
+    <span class="metric-value num">{{ project_count }}</span>
+    <span class="metric-label">연결된 프로젝트</span>
+  </div>
 </section>
 
-<section class="stat-grid" aria-label="요약 지표">
-  <div class="stat-card">
-    <span class="stat-value">{{ active_count }}</span>
-    <span class="stat-label">활성 작업</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">{{ counts.get('awaiting_approval', 0) }}</span>
-    <span class="stat-label">승인 대기</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">{{ counts.get('running', 0) + counts.get('rework', 0) }}</span>
-    <span class="stat-label">진행·재작업</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">{{ counts.get('completed', 0) }}</span>
-    <span class="stat-label">완료</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">{{ monthly_krw | krw }}</span>
-    <span class="stat-label">이번 달 예상 AI 비용</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">{{ project_count }}</span>
-    <span class="stat-label">연결된 프로젝트</span>
-  </div>
+<section class="policy-strip reveal" aria-label="데이터 처리·보안 정책 상태">
+  <span class="policy-item"><span class="dot {{ 'dot-ok' if settings.domestic_first else 'dot-warn' }}" aria-hidden="true"></span>국내 처리 우선 {{ '켜짐' if settings.domestic_first else '꺼짐' }}</span>
+  <span class="policy-item"><span class="dot {{ 'dot-ok' if settings.allow_external else 'dot-warn' }}" aria-hidden="true"></span>외부 전송 {{ '허용' if settings.allow_external else '제한' }}</span>
+  <span class="policy-item"><span class="dot {{ 'dot-ok' if settings.block_push_without_approval else 'dot-warn' }}" aria-hidden="true"></span>승인 없는 push 차단 {{ '켜짐' if settings.block_push_without_approval else '꺼짐' }}</span>
+  <span class="policy-item">기본 비용 한도 <strong class="mono">&nbsp;{{ settings.project_cost_limit_krw | int }}원</strong></span>
 </section>
 
-<section class="panel" aria-labelledby="security-title">
-  <h2 id="security-title">데이터 처리·보안 상태</h2>
-  <ul class="security-list">
-    <li>
-      <span class="dot {{ 'dot-ok' if settings.domestic_first else 'dot-warn' }}" aria-hidden="true"></span>
-      국내 처리 우선: <strong>{{ '켜짐' if settings.domestic_first else '꺼짐' }}</strong>
-    </li>
-    <li>
-      <span class="dot {{ 'dot-ok' if settings.allow_external else 'dot-warn' }}" aria-hidden="true"></span>
-      외부 모델 전송 허용: <strong>{{ '켜짐' if settings.allow_external else '꺼짐' }}</strong>
-    </li>
-    <li>
-      <span class="dot {{ 'dot-ok' if settings.block_push_without_approval else 'dot-warn' }}" aria-hidden="true"></span>
-      승인 없는 push 차단: <strong>{{ '켜짐' if settings.block_push_without_approval else '꺼짐' }}</strong>
-    </li>
-    <li>
-      <span class="dot dot-ok" aria-hidden="true"></span>
-      프로젝트 기본 비용 한도: <strong>{{ settings.project_cost_limit_krw | krw }}</strong>
-    </li>
-  </ul>
-</section>
-
-<section class="panel" aria-labelledby="recent-title">
-  <div class="panel-head">
-    <h2 id="recent-title">최근 작업</h2>
-    <a class="btn btn-secondary" href="/tasks/new">새 작업</a>
+<section class="section reveal" aria-labelledby="recent-title">
+  <div class="section-head">
+    <h2 class="section-title" id="recent-title">최근 실행</h2>
+    <a class="btn btn-secondary btn-sm" href="/tasks/new">새 작업</a>
   </div>
+
   {% if tasks %}
-  <div class="task-table-wrap">
-  <table class="task-table">
-    <thead>
-      <tr>
-        <th scope="col">작업</th>
-        <th scope="col">상태</th>
-        <th scope="col">모델</th>
-        <th scope="col">비용</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for task in tasks %}
-      <tr>
-        <td>
-          <a href="/tasks/{{ task.id }}" class="task-link">{{ task.title }}</a>
-          <span class="task-id">{{ task.id }}</span>
-        </td>
-        <td><span class="badge badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span></td>
-        <td class="cell-model">{{ task.worker_model_id }} → {{ task.validator_model_id }}</td>
-        <td class="cell-cost">{{ (task.run.cost_total_krw | krw) if task.run else '—' }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="runs">
+    <div class="runs-head" aria-hidden="true">
+      <span>작업</span><span>모델 흐름</span><span>데이터 처리</span><span>비용</span><span>상태</span><span>업데이트</span>
+    </div>
+
+    {% for task in tasks %}
+    {% set w = models_map.get(task.worker_model_id) %}
+    {% set v = models_map.get(task.validator_model_id) %}
+    {% set proj = projects_map.get(task.project_id) %}
+    {% set updated = (task.completed_at or task.created_at) %}
+
+    <div class="run-row">
+      <span>
+        <a href="/tasks/{{ task.id }}" class="run-name">{{ task.title }}</a>
+        <span class="run-project">{{ proj.name if proj else task.project_id }} · <span class="mono">{{ task.id }}</span></span>
+      </span>
+      <span class="model-flow">
+        <span class="model-node">{{ w.name if w else task.worker_model_id }}</span>
+        <span class="model-arrow" aria-hidden="true">→</span>
+        <span class="model-node">{{ v.name if v else task.validator_model_id }}</span>
+      </span>
+      <span class="run-region">
+        {% if w %}<span class="chip {{ 'chip-domestic' if w.is_domestic else 'chip-overseas' }}">{{ '국내' if w.is_domestic else '해외' }}</span>{% endif %}
+        {% if v %}<span class="chip {{ 'chip-domestic' if v.is_domestic else 'chip-overseas' }}">{{ '국내' if v.is_domestic else '해외' }}</span>{% endif %}
+      </span>
+      <span class="run-cost">{{ (task.run.cost_total_krw | int ~ '원') if task.run else '—' }}</span>
+      <span><span class="badge badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span></span>
+      <span class="run-time">{{ updated[:16] | replace('T', ' ') }}</span>
+    </div>
+
+    <div class="run-card">
+      <div class="run-card-top">
+        <a href="/tasks/{{ task.id }}" class="run-name">{{ task.title }}</a>
+        <span class="badge badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
+      </div>
+      <div class="model-flow">
+        <span class="model-node">{{ w.name if w else task.worker_model_id }}</span>
+        <span class="model-arrow" aria-hidden="true">→</span>
+        <span class="model-node">{{ v.name if v else task.validator_model_id }}</span>
+      </div>
+      <div class="run-card-meta">
+        <span>{{ proj.name if proj else task.project_id }}</span>
+        {% if w %}<span class="chip {{ 'chip-domestic' if w.is_domestic else 'chip-overseas' }}">{{ '국내' if w.is_domestic else '해외' }} 처리</span>{% endif %}
+        {% if v %}<span class="chip {{ 'chip-domestic' if v.is_domestic else 'chip-overseas' }}">{{ '국내' if v.is_domestic else '해외' }} 처리</span>{% endif %}
+        <span class="run-cost">{{ (task.run.cost_total_krw | int ~ '원') if task.run else '—' }}</span>
+        <span class="run-time">{{ updated[:16] | replace('T', ' ') }}</span>
+      </div>
+    </div>
+    {% endfor %}
   </div>
   {% else %}
-  <p class="empty">아직 작업이 없습니다. 첫 작업을 만들어 보세요.</p>
+  <div class="runs"><p class="empty">아직 실행이 없습니다. 첫 AI 작업을 시작해 보세요.</p></div>
   {% endif %}
 </section>
 {% endblock %}

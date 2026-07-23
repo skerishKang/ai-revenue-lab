@@ -1,14 +1,12 @@
-<section class="panel" aria-labelledby="review-title">
+<section class="panel reveal" aria-labelledby="review-title">
   <div class="panel-head">
-    <h2 id="review-title">검증 및 승인</h2>
-    <span class="verdict verdict-{{ task.run.verdict.value }}">
-      검증자 판단: {{ verdict_label(task.run.verdict.value) }}
-    </span>
+    <h2 class="panel-title" id="review-title">검증 증거</h2>
+    <span class="muted" style="font-size:.78rem">변경 파일 · 테스트 · 비용</span>
   </div>
 
   {% if task.run.path_violations %}
   <div class="callout callout-danger" role="alert">
-    <strong>허용 범위 위반</strong>
+    <span class="callout-title">허용 범위 위반</span>
     <ul>
       {% for v in task.run.path_violations %}<li>{{ v }}</li>{% endfor %}
     </ul>
@@ -17,7 +15,7 @@
 
   {% if task.run.security_notes %}
   <div class="callout callout-warn">
-    <strong>보안·데이터 처리 주의</strong>
+    <span class="callout-title">보안·데이터 처리 주의</span>
     <ul>
       {% for note in task.run.security_notes %}<li>{{ note }}</li>{% endfor %}
     </ul>
@@ -25,7 +23,7 @@
   {% endif %}
 
   <div class="callout callout-info">
-    <strong>AI 주장 vs 실제 증거</strong>
+    <span class="callout-title">AI 주장 vs 실제 증거</span>
     <p>작업자 보고: “{{ task.run.worker_claim }}”</p>
     <p>실제 테스트: {{ task.run.tests.passed }} 통과 / {{ task.run.tests.failed }} 실패 /
        {{ task.run.tests.skipped }} 건너뜀 (전체 {{ task.run.tests.total }}건)</p>
@@ -46,11 +44,13 @@
     {% for file in task.run.changed_files %}
     <details class="file-diff" {{ 'open' if loop.first }}>
       <summary>
-        <span class="mono">{{ file.path }}</span>
+        <span class="file-path">{{ file.path }}</span>
         <span class="diff-stat"><span class="add">+{{ file.additions }}</span> <span class="del">-{{ file.deletions }}</span></span>
       </summary>
-      <pre class="diff">{% for line in file.diff.split('\n') %}<span class="{% if line.startswith('+') %}diff-add{% elif line.startswith('-') %}diff-del{% elif line.startswith('@') %}diff-hunk{% endif %}">{{ line }}</span>
+      <div class="diff-scroll">
+        <pre class="diff">{% for line in file.diff.split('\n') %}<span class="{% if line.startswith('+') %}diff-add{% elif line.startswith('-') %}diff-del{% elif line.startswith('@') %}diff-hunk{% endif %}">{{ line }}</span>
 {% endfor %}</pre>
+      </div>
     </details>
     {% endfor %}
   </div>
@@ -75,7 +75,7 @@
   </div>
   <p class="muted">로컬 테스트 기준입니다. 원격 CI 실행은 별도로 구분됩니다. (Demo)</p>
 
-  <h3>비용</h3>
+  <h3>비용 · 토큰</h3>
   <div class="table-wrap">
   <table class="cost-table">
     <thead>
@@ -92,7 +92,7 @@
       </tr>
       {% endfor %}
       <tr class="cost-total">
-        <td colspan="4">합계 (예상 {{ task.cost_limit_krw | krw if task.cost_limit_krw else '제한 없음' }})</td>
+        <td colspan="4">합계 (한도 {{ task.cost_limit_krw | krw if task.cost_limit_krw else '제한 없음' }})</td>
         <td class="num">{{ task.run.cost_total_krw | krw }}</td>
       </tr>
     </tbody>

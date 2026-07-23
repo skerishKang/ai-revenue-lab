@@ -1,0 +1,10 @@
+{% if task.run %}
+<div class="verdict-strip verdict-strip-{{ task.run.verdict.value }} reveal">
+  <span class="verdict verdict-{{ task.run.verdict.value }}">검증자 판단: {{ verdict_label(task.run.verdict.value) }}</span>
+  <span class="verdict-note">
+    {%- if task.run.path_violations %}허용 범위 위반 {{ task.run.path_violations | length }}건 · {% endif -%}
+    {%- if task.run.over_budget %}비용 한도 초과 · {% endif -%}
+    테스트 {{ task.run.tests.passed }} 통과 / {{ task.run.tests.failed }} 실패 / {{ task.run.tests.skipped }} 건너뜀
+  </span>
+</div>
+{% endif %}

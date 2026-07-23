@@ -1,7 +1,6 @@
-<section class="panel" aria-labelledby="run-title">
+<section class="panel reveal" aria-labelledby="run-title">
   <div class="panel-head">
-    <h2 id="run-title">실행 단계 <span class="muted">· 실행 #{{ task.run.run_number }}</span></h2>
-    <span class="badge badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
+    <h2 class="panel-title" id="run-title">실행 단계 <span class="muted">· 실행 #{{ task.run.run_number }}</span></h2>
   </div>
 
   <ol class="steps" data-run-steps>
@@ -45,13 +44,5 @@
       <p class="claim">{{ task.run.worker_claim }}</p>
       <p class="field-hint">아래 검증 결과와 비교해 확인하세요. AI의 보고는 증거가 아닙니다.</p>
     </div>
-  </div>
-
-  <div class="cost-summary">
-    <span>추정 비용 <strong>{{ task.run.cost_total_krw | krw }}</strong></span>
-    <span>한도 {{ task.cost_limit_krw | krw if task.cost_limit_krw else '제한 없음' }}</span>
-    {% if task.run.over_budget %}
-    <span class="badge badge-failed">비용 한도 초과</span>
-    {% endif %}
   </div>
 </section>

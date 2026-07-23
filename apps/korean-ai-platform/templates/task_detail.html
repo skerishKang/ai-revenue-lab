@@ -1,28 +1,42 @@
 {% extends "base.html" %}
 {% block title %}{{ task.title }} · Korean AI Platform{% endblock %}
+{% block crumb %}<strong>AI Operations</strong> · 작업 실행{% endblock %}
 {% block content %}
-<div class="page-head">
-  <div>
-    <h1>{{ task.title }}</h1>
-    <p class="page-sub mono">{{ task.id }} · 생성 {{ task.created_at }}</p>
+
+<header class="exec-header reveal">
+  <div class="exec-header-top">
+    <div>
+      <h1 class="exec-title">{{ task.title }}</h1>
+      <p class="exec-id">{{ task.id }} · 생성 {{ task.created_at[:16] | replace('T', ' ') }}</p>
+    </div>
+    <span class="badge badge-lg badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
   </div>
-  <span class="badge badge-lg badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
-</div>
+  <div class="exec-meta">
+    <span class="exec-meta-item">실행 <strong>#{{ task.run.run_number if task.run else '—' }}</strong></span>
+    <span class="exec-meta-item">프로젝트 <strong>{{ project.name if project else task.project_id }}</strong></span>
+    <span class="exec-meta-item">작업자 <strong>{{ worker_model.name if worker_model else task.worker_model_id }}</strong></span>
+    <span class="exec-meta-item">검증자 <strong>{{ validator_model.name if validator_model else task.validator_model_id }}</strong></span>
+    <span class="exec-meta-item">비용 <strong>{{ task.run.cost_total_krw | krw if task.run else '—' }}</strong></span>
+    <span class="exec-meta-item">데이터 처리
+      {% for region in regions.regions %}<span class="chip {{ 'chip-overseas' if regions.overseas else 'chip-domestic' }}">{{ region }}</span>{% endfor %}
+      {% if regions.domestic_only %}<span class="chip chip-domestic">국내 전용</span>{% endif %}
+    </span>
+  </div>
+</header>
 
 {% if error %}
-<div class="callout callout-danger" role="alert">{{ error }}</div>
+<div class="callout callout-danger" role="alert"><span class="callout-title">오류</span>{{ error }}</div>
 {% endif %}
 
-{% include "_meta.html" %}
-
 {% if task.status.value == 'ready' %}
-<section class="panel panel-actions">
+<section class="panel reveal">
   <h2>실행 준비 완료</h2>
-  <p class="muted">작업자·검증자 모델과 허용 범위를 확인했다면 실행을 시작하세요.</p>
+  <p class="muted">작업자·검증자 모델과 허용 범위를 확인했다면 실행을 시작하세요. 실행은 데모로 진행되며, 승인 전에는 브랜치에 반영되지 않습니다.</p>
   <form method="post" action="/tasks/{{ task.id }}/run">
-    <button type="submit" class="btn btn-primary btn-block">실행 시작</button>
+    <button type="submit" class="btn btn-primary btn-lg">실행 시작</button>
   </form>
 </section>
+{% include "_meta.html" %}
 
 {% elif task.status.value == 'running' %}
 <section class="panel">
@@ -31,30 +45,55 @@
 </section>
 
 {% elif task.status.value == 'awaiting_approval' %}
-{% include "_run_panel.html" %}
-{% include "_review_panel.html" %}
-{% include "_actions.html" %}
+{% include "_verdict_strip.html" %}
+<div class="exec-layout">
+  <div class="exec-main">
+    {% include "_meta.html" %}
+    {% include "_run_panel.html" %}
+    {% include "_review_panel.html" %}
+  </div>
+  <aside class="exec-aside" aria-label="의사결정">
+    {% include "_actions.html" %}
+  </aside>
+</div>
 
 {% elif task.status.value == 'rework' %}
 <div class="callout callout-warn" role="status">
-  <strong>재작업 대기 중.</strong> 마지막 실행 결과는 아래에 보관되어 있습니다.
-  사유를 반영해 다시 실행하세요.
+  <span class="callout-title">재작업 대기 중</span>
+  마지막 실행 결과는 아래에 보관되어 있습니다. 사유를 반영해 다시 실행하세요.
   <ul>{% for reason in task.rework_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
 </div>
-{% include "_run_panel.html" %}
-<section class="panel panel-actions">
-  <h2>재실행</h2>
-  <form method="post" action="/tasks/{{ task.id }}/run">
-    <button type="submit" class="btn btn-primary btn-block">재작업 실행</button>
-  </form>
-</section>
+<div class="exec-layout">
+  <div class="exec-main">
+    {% include "_meta.html" %}
+    {% include "_run_panel.html" %}
+    {% include "_review_panel.html" %}
+  </div>
+  <aside class="exec-aside" aria-label="재실행">
+    <section class="panel decision">
+      <h2 class="panel-title">재실행</h2>
+      <p class="decision-note">재작업 사유가 다음 실행의 작업 계획에 반영됩니다.</p>
+      <form method="post" action="/tasks/{{ task.id }}/run" class="action-form">
+        <button type="submit" class="btn btn-primary btn-block">재작업 실행</button>
+      </form>
+    </section>
+  </aside>
+</div>
 
 {% elif task.status.value == 'completed' %}
-{% include "_evidence_panel.html" %}
-{% include "_run_panel.html" %}
-{% include "_review_panel.html" %}
+{% include "_verdict_strip.html" %}
+<div class="exec-layout">
+  <div class="exec-main">
+    {% include "_run_panel.html" %}
+    {% include "_review_panel.html" %}
+  </div>
+  <aside class="exec-aside" aria-label="완료 기록">
+    {% include "_evidence_panel.html" %}
+  </aside>
+</div>
 
 {% elif task.status.value == 'rejected' %}
+{% include "_meta.html" %}
 {% include "_evidence_panel.html" %}
 {% endif %}
 

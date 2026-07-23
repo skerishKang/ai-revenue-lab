@@ -1,5 +1,5 @@
-<section class="panel" aria-labelledby="evidence-title">
-  <h2 id="evidence-title">작업 기록 · 증거</h2>
+<section class="panel reveal" aria-labelledby="evidence-title">
+  <h2 class="panel-title" id="evidence-title">작업 기록 · 증거</h2>
 
   <dl class="meta-grid">
     <div class="meta-item">
@@ -13,11 +13,13 @@
     </div>
     <div class="meta-item">
       <dt>데모 브랜치</dt>
-      <dd class="mono">{{ task.branch_name }} <span class="tag">Demo</span></dd>
+      <dd class="sha-row"><span class="mono">{{ task.branch_name }}</span> <span class="tag">Demo</span>
+        <button type="button" class="copy-btn" data-copy="{{ task.branch_name }}">복사</button></dd>
     </div>
     <div class="meta-item">
       <dt>데모 커밋 SHA</dt>
-      <dd class="mono">{{ task.commit_sha }} <span class="tag">Demo</span></dd>
+      <dd class="sha-row"><span class="mono">{{ task.commit_sha }}</span> <span class="tag">Demo</span>
+        <button type="button" class="copy-btn" data-copy="{{ task.commit_sha }}">복사</button></dd>
     </div>
     {% endif %}
     {% if task.status.value == 'rejected' %}
@@ -28,7 +30,7 @@
     {% endif %}
     <div class="meta-item">
       <dt>총 비용</dt>
-      <dd>{{ task.run.cost_total_krw | krw if task.run else '—' }}</dd>
+      <dd class="mono">{{ task.run.cost_total_krw | krw if task.run else '—' }}</dd>
     </div>
     <div class="meta-item">
       <dt>재작업 횟수</dt>
@@ -47,7 +49,7 @@
   <h3>단계별 타임라인</h3>
   <ol class="timeline">
     {% for event in task.run.timeline %}
-    <li><span class="mono muted">{{ event.at }}</span> — {{ event.label }}
+    <li><span class="mono muted">{{ event.at[:19] | replace('T', ' ') }}</span> — {{ event.label }}
       {% if event.detail %}<span class="muted"> ({{ event.detail }})</span>{% endif %}
     </li>
     {% endfor %}

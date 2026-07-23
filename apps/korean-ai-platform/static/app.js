@@ -23,7 +23,7 @@
         if (index === steps.length - 1) {
           container.removeAttribute("data-animating");
         }
-      }, 220 * index);
+      }, 200 * index);
     });
   }
 
@@ -58,6 +58,42 @@
     });
   }
 
+  function handleScrollReveal() {
+    var targets = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+    if (reduceMotion || targets.length === 0 || !("IntersectionObserver" in window)) {
+      return; // content stays fully visible without JS animation
+    }
+    document.body.classList.add("reveal-init");
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.06 });
+    targets.forEach(function (el) { observer.observe(el); });
+  }
+
+  function handleCopyButtons() {
+    var buttons = Array.prototype.slice.call(document.querySelectorAll("[data-copy]"));
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var value = btn.getAttribute("data-copy") || "";
+        var original = btn.textContent;
+        var done = function () {
+          btn.textContent = "복사됨";
+          window.setTimeout(function () { btn.textContent = original; }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(value).then(done, function () { btn.textContent = original; });
+        }
+      });
+    });
+  }
+
   handleRunAnimation();
   handleProjectPrefill();
+  handleScrollReveal();
+  handleCopyButtons();
 })();

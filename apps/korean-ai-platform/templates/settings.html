@@ -1,50 +1,51 @@
 {% extends "base.html" %}
 {% block title %}모델·보안 설정 · Korean AI Platform{% endblock %}
+{% block crumb %}<strong>AI Operations</strong> · 모델·보안 설정{% endblock %}
 {% block content %}
+
 <div class="page-head">
-  <h1>모델 및 보안 설정</h1>
-  <p class="page-sub">모델 공급자, 데이터 처리 위치, 비용과 승인 정책을 관리합니다. (Demo)</p>
+  <div>
+    <p class="kicker">Models &amp; Governance</p>
+    <h1 class="page-title">모델 및 보안 설정</h1>
+    <p class="page-sub">모델 공급자와 데이터 처리 위치, 비용·승인 정책을 관리합니다. (Demo)</p>
+  </div>
 </div>
 
 {% if saved %}
 <div class="callout callout-info" role="status">설정이 저장되었습니다. (데모: 메모리에만 유지되며 실제 키는 저장되지 않습니다.)</div>
 {% endif %}
 
-<section class="panel" aria-labelledby="providers-title">
-  <h2 id="providers-title">모델 공급자</h2>
-  <div class="table-wrap">
-  <table class="model-table">
-    <thead>
-      <tr>
-        <th scope="col">모델</th>
-        <th scope="col">공급자</th>
-        <th scope="col">데이터 처리 위치</th>
-        <th scope="col">호스팅</th>
-        <th scope="col">비용 등급</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for model in models %}
-      <tr>
-        <td>{{ model.name }}</td>
-        <td>{{ model.provider }}</td>
-        <td>{{ model.region_label }}</td>
-        <td>{{ model.hosting_label }}</td>
-        <td><span class="chip {{ 'chip-ok' if model.cost_class == 'local' else 'chip-warn' }}">{{ model.cost_class }}</span></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<section class="section reveal" aria-labelledby="providers-title">
+  <div class="section-head">
+    <h2 class="section-title" id="providers-title">모델 공급자</h2>
+    <span class="muted" style="font-size:.78rem">총 {{ models | length }}개 · 모두 Demo</span>
   </div>
-  <p class="muted">모든 모델은 실제 연결되지 않은 Demo 항목입니다.</p>
+  <div class="model-list">
+    {% for model in models %}
+    <div class="model-row">
+      <span class="model-mono {{ 'mono-byok' if model.requires_byok else ('mono-domestic' if model.is_domestic else 'mono-overseas') }}" aria-hidden="true">{{ model.provider[0] }}</span>
+      <span class="model-body">
+        <span class="model-name">{{ model.name }}</span>
+        <span class="model-provider">{{ model.provider }} · {{ model.hosting_label }}</span>
+        <span class="model-badges">
+          <span class="chip {{ 'chip-domestic' if model.is_domestic else 'chip-overseas' }}">{{ model.region_label }}</span>
+          <span class="chip chip-cost">{{ '자체 GPU' if model.cost_class == 'local' else '유료' }}</span>
+          {% if model.requires_byok %}<span class="chip chip-warn">BYOK</span>{% endif %}
+          <span class="chip chip-demo">Demo · 미연결</span>
+        </span>
+        <span class="conn" style="margin-top:.45rem"><span class="conn-dot" aria-hidden="true"></span>연결 상태: 데모 (실제 미연결)</span>
+      </span>
+    </div>
+    {% endfor %}
+  </div>
 </section>
 
-<form method="post" action="/settings" class="form-card">
-  <section class="panel" aria-labelledby="byok-title">
-    <h2 id="byok-title">사용자 API 키 (BYOK)</h2>
+<form method="post" action="/settings" class="form-card reveal">
+  <section class="section" aria-labelledby="byok-title" style="margin-bottom:1.4rem">
+    <h2 class="section-title" id="byok-title">사용자 API 키 (BYOK)</h2>
     <p class="callout callout-warn">
-      이 데모는 입력한 API 키를 <strong>저장하거나 전송하지 않습니다.</strong>
-      등록 여부만 표시되며, 키 값은 즉시 폐기됩니다. 화면에는 마스킹된 값만 나타납니다.
+      <span class="callout-title">키는 저장·전송되지 않습니다</span>
+      이 데모는 입력한 API 키를 저장하거나 전송하지 않습니다. 등록 여부만 표시되며, 키 값은 즉시 폐기됩니다. 화면에는 마스킹된 값만 나타납니다.
     </p>
     {% for model in byok_models %}
     {% set state = settings.byok.get(model.id) %}
@@ -65,25 +66,29 @@
     {% endfor %}
   </section>
 
-  <section class="panel" aria-labelledby="policy-title">
-    <h2 id="policy-title">데이터·보안 정책</h2>
-    <label class="choice">
+  <section class="section" aria-labelledby="policy-title">
+    <h2 class="section-title" id="policy-title">데이터·보안 정책</h2>
+    <label class="switch">
       <input type="checkbox" name="domestic_first" {{ 'checked' if settings.domestic_first }}>
-      국내 처리 우선
+      <span class="switch-track" aria-hidden="true"></span>
+      <span><span class="switch-label">국내 처리 우선</span><br><span class="switch-desc">국내·자체 호스팅 모델을 우선 권장합니다.</span></span>
     </label>
-    <label class="choice">
+    <label class="switch">
       <input type="checkbox" name="allow_external" {{ 'checked' if settings.allow_external }}>
-      외부 모델 전송 허용
+      <span class="switch-track" aria-hidden="true"></span>
+      <span><span class="switch-label">외부 모델 전송 허용</span><br><span class="switch-desc">해외 클라우드 모델로의 데이터 전송을 허용합니다.</span></span>
     </label>
-    <label class="choice">
+    <label class="switch">
       <input type="checkbox" name="block_on_secret" {{ 'checked' if settings.block_on_secret }}>
-      민감정보 발견 시 차단
+      <span class="switch-track" aria-hidden="true"></span>
+      <span><span class="switch-label">민감정보 발견 시 차단</span><br><span class="switch-desc">비밀키·개인정보가 감지되면 전송을 차단합니다.</span></span>
     </label>
-    <label class="choice">
+    <label class="switch">
       <input type="checkbox" name="block_push_without_approval" {{ 'checked' if settings.block_push_without_approval }}>
-      승인 없는 push 차단
+      <span class="switch-track" aria-hidden="true"></span>
+      <span><span class="switch-label">승인 없는 push 차단</span><br><span class="switch-desc">사람 승인 전에는 브랜치 반영을 허용하지 않습니다.</span></span>
     </label>
-    <div class="field">
+    <div class="field" style="margin-top:1rem">
       <label for="project_cost_limit_krw">프로젝트 기본 비용 한도 (원)</label>
       <input id="project_cost_limit_krw" name="project_cost_limit_krw" type="number" min="0" step="100"
              value="{{ settings.project_cost_limit_krw | int }}">
@@ -91,7 +96,7 @@
   </section>
 
   <div class="form-actions">
-    <button type="submit" class="btn btn-primary">설정 저장</button>
+    <button type="submit" class="btn btn-primary btn-lg">설정 저장</button>
   </div>
 </form>
 {% endblock %}

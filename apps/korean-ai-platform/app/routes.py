@@ -50,13 +50,22 @@ def dashboard(request: Request):
         )
     )
     settings = store.settings
+    tasks = store.list_tasks()
+    policy_alerts = sum(
+        1
+        for t in tasks
+        if t.run is not None and (t.run.path_violations or t.run.over_budget)
+    )
     context = {
-        "tasks": store.list_tasks(),
+        "tasks": tasks,
         "counts": counts,
         "active_count": active,
         "project_count": len(store.projects),
         "monthly_krw": store.monthly_estimated_krw(),
         "settings": settings,
+        "models_map": store.models,
+        "projects_map": store.projects,
+        "policy_alerts": policy_alerts,
     }
     return render_template(request, "dashboard.html", context)
 
