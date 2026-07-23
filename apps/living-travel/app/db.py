@@ -69,6 +69,10 @@ def _apply_one(conn: sqlite3.Connection, filename: str, sql_text: str) -> None:
 
 
 def apply_migrations(db_path: str | None = None) -> None:
+    if get_settings().database_backend == "postgresql":
+        from app.database.postgres import apply_pg_migrations
+
+        return apply_pg_migrations()
     if db_path is None:
         db_path = get_settings().database_url
     conn = sqlite3.connect(db_path)
@@ -102,6 +106,10 @@ def apply_migrations(db_path: str | None = None) -> None:
 
 
 def get_connection(db_path: str | None = None) -> sqlite3.Connection:
+    if get_settings().database_backend == "postgresql" and db_path is None:
+        from app.database.postgres import get_pg_connection
+
+        return get_pg_connection()  # type: ignore[return-value]
     if db_path is None:
         db_path = get_settings().database_url
     conn = sqlite3.connect(db_path)
