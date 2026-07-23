@@ -109,3 +109,48 @@ data, `.env`, virtualenvs, Git metadata, and other Business apps.
 - **Cost control**: see `../../COST_AND_LIMITS.md`. The Starter plan bills
   only active container seconds; idle costs nothing. Do not enable keep-warm,
   GPU, or paid plan features without the upgrade conditions in that document.
+
+## Production deployment record (non-secret)
+
+Actual Phase B deployment evidence. No secret material, connection host,
+password, invite code, or session token is recorded here — only public /
+non-secret identifiers.
+
+- **Deployment date**: 2026-07-24
+- **Architecture**: Browser → Modal FastAPI → Neon PostgreSQL (no edge proxy).
+- **Plans**: Neon **Free** (scale-to-zero) · Modal **Starter** (scale-to-zero).
+- **Modal app / function**: `ai-revenue-living-fiction` / `web`.
+- **Public Modal URL**: `https://padiemipu--ai-revenue-living-fiction-web.modal.run`
+- **Neon project**: `ai-revenue-living-fiction` (region `aws-ap-southeast-1`,
+  PostgreSQL 17).
+- **Database**: `living_fiction`.
+- **Owner / migration role**: `living_fiction_owner` (direct, unpooled —
+  operator-only; never a runtime secret).
+- **Runtime role**: `living_fiction_app` (pooled endpoint, `sslmode=require`,
+  DML-only least privilege).
+
+### Verification summary
+
+- **Migrations**: 10 applied via `bootstrap migrate`; re-run is idempotent
+  ("schema already current"); `schema_migrations` ordered with checksums.
+- **Runtime privilege matrix**: `CONNECT` / `USAGE` / `SELECT,INSERT,UPDATE,
+  DELETE` granted; `CREATE` on `public` revoked; no table ownership;
+  `CREATE` / `ALTER` / `DROP` all denied (SQLSTATE 42501) as `living_fiction_app`.
+- **Bootstrap**: 1 world, 1 published canon episode, 1 bootstrap reader,
+  1 active invite (DB stores only a keyed HMAC digest of the invite code).
+- **Smoke**: `/health`, `/access`, `/admin/access` all 200 over HTTPS; private
+  pages send `Cache-Control: no-store` and `X-Robots-Tag: noindex`; foreign-
+  `Origin` POST rejected 403; same-origin POST accepted; reader/admin cookies
+  are `Secure; HttpOnly; SameSite=lax`.
+- **Reader/admin workflow**: invite login → canon read → choice → branch
+  `pending_review` → admin approve → reader reads approved branch; DB ended with
+  1 choice, 1 branch, 1 personal episode, 1 review decision; invite/session
+  stored digest-only (no plaintext columns).
+- **Restart persistence**: after `modal app rollover --strategy recreate`, the
+  same in-memory reader cookie still read the approved branch (200); session,
+  branch, review, and audit rows persisted; canon snapshot/checkpoint unchanged.
+- **Cold start**: after >90 s idle, `/health` returned 200 in ~5.8 s (container
+  scaled to zero, then cold-started); reader session still valid afterwards.
+- **Cost controls**: Neon Free + scale-to-zero; Modal `min_containers=0`,
+  `max_containers=2`, no GPU, no Volume, no keep-warm; no paid upgrade or card
+  enrollment.
