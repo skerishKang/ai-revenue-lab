@@ -1,24 +1,22 @@
 {% extends "base.html" %}
-{% block title %}New Topic — Personal Video Archive{% endblock %}
+{% block title %}{{ t("page_new_topic") }} — Personal Video Archive{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>Create Topic</h1>
+    <h1>{{ t("page_new_topic") }}</h1>
 </div>
 
-<form method="post" action="/topics" class="form">
+<form method="post" action="{{ lp }}/topics" class="form">
     <div class="form-group">
-        <label for="name">Topic Name</label>
+        <label for="name">{{ t("form_topic_name") }}</label>
         <input type="text" id="name" name="name" required maxlength="120"
-               placeholder="e.g. ChatGPT updates">
+               placeholder="{{ t('form_topic_name_ph') }}">
     </div>
     <div class="form-group">
-        <label for="intent">Natural-Language Intent</label>
+        <label for="intent">{{ t("form_intent") }}</label>
         <textarea id="intent" name="intent" required rows="4" maxlength="2000"
-                  placeholder="Describe what you want to follow. e.g. Show me newly published Korean and English videos about meaningful ChatGPT product updates, excluding Shorts and low-value reaction content."></textarea>
-        <p class="help-text">
-            The AI will convert this into a search-rule draft for your review.
-        </p>
+                  placeholder="{{ t('form_intent_ph') }}"></textarea>
+        <p class="help-text">{{ t("form_intent_help") }}</p>
     </div>
-    <button type="submit" class="btn btn-primary">Generate Search Rules</button>
+    <button type="submit" class="btn btn-primary">{{ t("action_generate_rules") }}</button>
 </form>
 {% endblock %}

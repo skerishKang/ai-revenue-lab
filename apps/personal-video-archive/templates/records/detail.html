@@ -1,155 +1,220 @@
 {% extends "base.html" %}
-{% block title %}Record: {{ video.title if video else record.id }} — Personal Video Archive{% endblock %}
+{% block title %}{{ t("page_record_title") }}: {{ video.title if video else record.id }} — {{ t("app_name") }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>Viewing Record</h1>
-    {% if video %}
-    <p class="subtitle">{{ video.title }}</p>
-    {% endif %}
-</div>
-
-{% if video %}
-<div class="video-meta-source">
-    <span class="badge badge-info badge-sm">YouTube information</span>
-    <span class="badge badge-app badge-sm">Application analysis</span>
-    <span class="badge badge-user badge-sm">My private record</span>
-</div>
-{% endif %}
-
-<form method="post" action="/records/{{ record.id }}/update" class="form">
-    <div class="form-row">
-        <div class="form-group">
-            <label for="viewing_state">Viewing State</label>
-            <select id="viewing_state" name="viewing_state">
-                <option value="unseen" {% if record.viewing_state.value == 'unseen' %}selected{% endif %}>unseen</option>
-                <option value="opened" {% if record.viewing_state.value == 'opened' %}selected{% endif %}>opened</option>
-                <option value="saved" {% if record.viewing_state.value == 'saved' %}selected{% endif %}>saved</option>
-                <option value="in_progress" {% if record.viewing_state.value == 'in_progress' %}selected{% endif %}>in progress</option>
-                <option value="completed" {% if record.viewing_state.value == 'completed' %}selected{% endif %}>completed</option>
-                <option value="revisit" {% if record.viewing_state.value == 'revisit' %}selected{% endif %}>revisit</option>
-                <option value="irrelevant" {% if record.viewing_state.value == 'irrelevant' %}selected{% endif %}>irrelevant</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="rating">Rating (1-5)</label>
-            <input type="number" id="rating" name="rating" min="1" max="5"
-                   value="{{ record.rating or '' }}">
-        </div>
+<section class="record-head">
+    <div>
+        <span class="eyebrow">{{ t("page_record_title") }}</span>
+        <h1>{{ video.title if video else t("page_record_title") }}</h1>
+        <p class="lede">
+            {% if video %}{{ video.channel_title }} · {% endif %}
+            {{ t("topic_created") }} {{ record.created_at[:10] if record.created_at else '' }}
+        </p>
     </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label for="opened_date">Opened Date</label>
-            <input type="date" id="opened_date" name="opened_date"
-                   value="{{ record.opened_date or '' }}">
-        </div>
-        <div class="form-group">
-            <label for="completed_date">Completed Date</label>
-            <input type="date" id="completed_date" name="completed_date"
-                   value="{{ record.completed_date or '' }}">
-        </div>
+    <div class="edit-bar">
+        <a href="{{ lp }}/records" class="pill-button">{{ t("nav_records") }}</a>
     </div>
+</section>
 
-    <div class="form-group">
-        <label for="free_form_note">Free-Form Note (original text preserved)</label>
-        <textarea id="free_form_note" name="free_form_note" rows="6"
-                  placeholder="Your rough thoughts, notes, or observations...">{{ record.free_form_note }}</textarea>
-        <p class="help-text">This is your original text. It is never overwritten by AI suggestions.</p>
-    </div>
+<form method="post" action="{{ lp }}/records/{{ record.id }}/update" class="record-form">
+<section class="record-layout">
+    <div class="record-main">
+        <article class="paper-section">
+            <span class="eyebrow">{{ t("record_section_note") }}</span>
+            <h2>{{ t("form_free_note") }}</h2>
+            {% if record.free_form_note %}
+            <p class="quote-note">{{ record.free_form_note }}</p>
+            {% else %}
+            <p class="muted-text">{{ t("record_no_note") }}</p>
+            {% endif %}
+            <div class="form-group inline-edit">
+                <textarea id="free_form_note" name="free_form_note" rows="4" placeholder="{{ t('form_free_note_ph') }}" {% if is_preview %}disabled{% endif %}>{{ record.free_form_note }}</textarea>
+                <p class="help-text">{{ t("form_free_note_help") }}</p>
+            </div>
+        </article>
 
-    <div class="form-group">
-        <label for="reflection">Reflection</label>
-        <textarea id="reflection" name="reflection" rows="3">{{ record.reflection }}</textarea>
-    </div>
+        <article class="paper-section">
+            <span class="eyebrow">{{ t("record_section_thinking") }}</span>
+            <h2>{{ t("form_reflection") }}</h2>
+            <div class="thinking-grid">
+                <div class="thought">
+                    <strong>{{ t("record_section_learned") }}</strong>
+                    {% if record.learned_point %}
+                    <p>{{ record.learned_point }}</p>
+                    {% else %}
+                    <p class="muted-text">{{ t("record_no_learned") }}</p>
+                    {% endif %}
+                    <div class="form-group inline-edit">
+                        <textarea id="learned_point" name="learned_point" rows="2" {% if is_preview %}disabled{% endif %}>{{ record.learned_point }}</textarea>
+                    </div>
+                </div>
+                <div class="thought">
+                    <strong>{{ t("record_section_agreement") }}</strong>
+                    {% if record.agreement %}
+                    <p>{{ record.agreement }}</p>
+                    {% else %}
+                    <p class="muted-text">{{ t("record_no_agreement") }}</p>
+                    {% endif %}
+                    <div class="form-group inline-edit">
+                        <textarea id="agreement" name="agreement" rows="2" {% if is_preview %}disabled{% endif %}>{{ record.agreement }}</textarea>
+                    </div>
+                </div>
+                <div class="thought">
+                    <strong>{{ t("record_section_uncertainty") }}</strong>
+                    {% if record.uncertainty %}
+                    <p>{{ record.uncertainty }}</p>
+                    {% else %}
+                    <p class="muted-text">{{ t("record_no_uncertainty") }}</p>
+                    {% endif %}
+                    <div class="form-group inline-edit">
+                        <textarea id="uncertainty" name="uncertainty" rows="2" {% if is_preview %}disabled{% endif %}>{{ record.uncertainty }}</textarea>
+                    </div>
+                </div>
+                <div class="thought">
+                    <strong>{{ t("record_section_followup") }}</strong>
+                    {% if record.follow_up_plan %}
+                    <p>{{ record.follow_up_plan }}</p>
+                    {% else %}
+                    <p class="muted-text">{{ t("record_no_followup") }}</p>
+                    {% endif %}
+                    <div class="form-group inline-edit">
+                        <textarea id="follow_up_plan" name="follow_up_plan" rows="2" {% if is_preview %}disabled{% endif %}>{{ record.follow_up_plan }}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group inline-edit">
+                <label for="reflection">{{ t("form_reflection") }}</label>
+                <textarea id="reflection" name="reflection" rows="3" {% if is_preview %}disabled{% endif %}>{{ record.reflection }}</textarea>
+            </div>
+            <div class="form-group inline-edit">
+                <label for="disagreement">{{ t("form_disagreement") }}</label>
+                <textarea id="disagreement" name="disagreement" rows="2" {% if is_preview %}disabled{% endif %}>{{ record.disagreement }}</textarea>
+            </div>
+        </article>
 
-    <div class="form-group">
-        <label for="learned_point">What I Learned</label>
-        <textarea id="learned_point" name="learned_point" rows="3">{{ record.learned_point }}</textarea>
-    </div>
+        <article class="paper-section">
+            <span class="eyebrow">{{ t("record_section_ai") }}</span>
+            <h2>{{ t("page_ai_structure") }}</h2>
+            <p class="muted-text">{{ t("record_ai_desc") }}</p>
+        </article>
 
-    <div class="form-group">
-        <label for="agreement">Agreement</label>
-        <textarea id="agreement" name="agreement" rows="2">{{ record.agreement }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="disagreement">Disagreement / Uncertainty</label>
-        <textarea id="disagreement" name="disagreement" rows="2">{{ record.disagreement }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="uncertainty">Uncertainty</label>
-        <textarea id="uncertainty" name="uncertainty" rows="2">{{ record.uncertainty }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="follow_up_plan">Follow-Up Plan</label>
-        <textarea id="follow_up_plan" name="follow_up_plan" rows="3">{{ record.follow_up_plan }}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="tags">Tags (comma-separated)</label>
-        <input type="text" id="tags" name="tags"
-               value="{{ record.tags | join(', ') }}">
-    </div>
-
-    {% if timestamps %}
-    <div class="form-group">
-        <label>Timestamp References</label>
-        <ul class="timestamp-list">
-            {% for ts in timestamps %}
-            <li>{{ ts.timestamp_seconds // 60 }}:{{ '%02d' | format(ts.timestamp_seconds % 60) }}
-                {% if ts.label %} — {{ ts.label }}{% endif %}</li>
+        {% if pending_proposals %}
+        <article class="ai-card">
+            <span class="eyebrow">{{ t("badge_ai") }}</span>
+            <h3>{{ t("page_pending_proposals") }}</h3>
+            {% for proposal in pending_proposals %}
+            <div class="proposal-item">
+                <strong>{{ proposal.proposal_type.value }}</strong>
+                <p class="micro-label">{{ t("topic_created") }} {{ proposal.created_at[:10] }}</p>
+                <details>
+                    <summary>{{ t("page_preview_proposal") }}</summary>
+                    <pre>{{ proposal.proposed_json | truncate(500) }}</pre>
+                </details>
+                <div class="proposal-actions">
+                    <form method="post" action="{{ lp }}/proposals/{{ proposal.id }}/accept" class="inline-form">
+                        <button type="submit" class="btn btn-small btn-primary" {% if is_preview %}disabled{% endif %}>{{ t("action_accept") }}</button>
+                    </form>
+                    <form method="post" action="{{ lp }}/proposals/{{ proposal.id }}/reject" class="inline-form">
+                        <button type="submit" class="btn btn-small" {% if is_preview %}disabled{% endif %}>{{ t("action_reject") }}</button>
+                    </form>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
+        </article>
+        {% endif %}
 
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save Record</button>
-        <a href="/records/{{ record.id }}" class="btn btn-secondary">Cancel</a>
+        <div class="form-actions">
+            <button type="submit" class="primary-button" {% if is_preview %}disabled{% endif %}>{{ t("record_save") }}</button>
+            <a href="{{ lp }}/records/{{ record.id }}" class="pill-button">{{ t("action_cancel") }}</a>
+        </div>
     </div>
+
+    <aside class="record-side">
+        {% if video %}
+        <article class="source-panel">
+            <div class="poster">
+                {% if is_preview %}
+                <a href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+                </a>
+                {% else %}
+                <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+                {% endif %}
+            </div>
+            <div class="source-panel-body">
+                <span class="micro-label">{{ t("record_side_source") }}</span>
+                <h3>{{ video.title }}</h3>
+                <p>{{ video.channel_title }}</p>
+                {% if is_preview %}
+                <a class="primary-button" href="{{ video.canonical_url }}" target="_blank" rel="noopener noreferrer">{{ t("action_open_youtube") }} →</a>
+                {% endif %}
+            </div>
+        </article>
+        {% endif %}
+
+        <article class="facts">
+            <div class="fact">
+                <span>{{ t("record_side_state") }}</span>
+                <strong>
+                    <select id="viewing_state" name="viewing_state" {% if is_preview %}disabled{% endif %}>
+                        {% for s in ["unseen", "opened", "saved", "in_progress", "completed", "revisit", "irrelevant"] %}
+                        <option value="{{ s }}" {% if record.viewing_state.value == s %}selected{% endif %}>{{ t("state_" + s) }}</option>
+                        {% endfor %}
+                    </select>
+                </strong>
+            </div>
+            <div class="fact">
+                <span>{{ t("record_side_rating") }}</span>
+                <strong>
+                    <input type="number" id="rating" name="rating" min="1" max="5" value="{{ record.rating or '' }}" {% if is_preview %}disabled{% endif %}>
+                </strong>
+            </div>
+            <div class="fact">
+                <span>{{ t("record_side_opened") }}</span>
+                <strong><input type="date" id="opened_date" name="opened_date" value="{{ record.opened_date or '' }}" {% if is_preview %}disabled{% endif %}></strong>
+            </div>
+            <div class="fact">
+                <span>{{ t("record_side_completed") }}</span>
+                <strong><input type="date" id="completed_date" name="completed_date" value="{{ record.completed_date or '' }}" {% if is_preview %}disabled{% endif %}></strong>
+            </div>
+        </article>
+
+        {% if timestamps %}
+        <article class="facts">
+            <span class="eyebrow">{{ t("record_side_timestamps") }}</span>
+            <div class="timestamps">
+                {% for ts in timestamps %}
+                <span class="time-link">{{ ts.timestamp_seconds // 60 }}:{{ '%02d' | format(ts.timestamp_seconds % 60) }}{% if ts.label %} · {{ ts.label }}{% endif %}</span>
+                {% endfor %}
+            </div>
+        </article>
+        {% endif %}
+
+        <article class="facts">
+            <span class="eyebrow">{{ t("record_side_tags") }}</span>
+            <div class="form-group inline-edit">
+                <input type="text" id="tags" name="tags" value="{{ record.tags | join(', ') }}" placeholder="{{ t('form_tags_ph') }}" {% if is_preview %}disabled{% endif %}>
+            </div>
+            {% if record.tags %}
+            <div class="tags">
+                {% for tag in record.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+            </div>
+            {% endif %}
+        </article>
+    </aside>
+</section>
 </form>
 
-<hr>
-
-<div class="section">
-    <h3>AI Structure Proposal</h3>
-    <p class="small">
-        Paste rough notes below to get an AI-suggested structured record.
-        The proposal appears for your review — nothing is applied until you accept.
-    </p>
-    <form method="post" action="/records/{{ record.id }}/propose-structure" class="form">
-        <div class="form-group">
-            <textarea name="rough_notes" rows="4"
-                      placeholder="Paste your rough viewing notes here..."></textarea>
-        </div>
-        <button type="submit" class="btn btn-secondary">Generate Proposal</button>
-    </form>
-</div>
-
-{% if pending_proposals %}
-<div class="section">
-    <h3>Pending Proposals</h3>
-    {% for proposal in pending_proposals %}
-    <div class="proposal-card badge-ai">
-        <strong>AI Suggestion</strong> — {{ proposal.proposal_type.value }}
-        <p class="small">Created {{ proposal.created_at[:10] }}</p>
-        <div class="proposal-preview">
-            <details>
-                <summary>Preview proposal</summary>
-                <pre>{{ proposal.proposed_json | truncate(500) }}</pre>
-            </details>
-        </div>
-        <form method="post" action="/proposals/{{ proposal.id }}/accept" style="display:inline">
-            <button type="submit" class="btn btn-small btn-primary">Accept</button>
+<section class="record-ai-generate">
+    <article class="paper-section">
+        <span class="eyebrow">{{ t("page_ai_structure") }}</span>
+        <h2>{{ t("action_generate_proposal") }}</h2>
+        <p class="muted-text">{{ t("page_ai_structure_desc") }}</p>
+        <form method="post" action="{{ lp }}/records/{{ record.id }}/propose-structure" class="form">
+            <div class="form-group">
+                <textarea name="rough_notes" rows="4" placeholder="{{ t('form_rough_notes_ph') }}" {% if is_preview %}disabled{% endif %}></textarea>
+            </div>
+            <button type="submit" class="pill-button" {% if is_preview %}disabled{% endif %}>{{ t("action_generate_proposal") }}</button>
         </form>
-        <form method="post" action="/proposals/{{ proposal.id }}/reject" style="display:inline">
-            <button type="submit" class="btn btn-small btn-secondary">Reject</button>
-        </form>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+    </article>
+</section>
 {% endblock %}

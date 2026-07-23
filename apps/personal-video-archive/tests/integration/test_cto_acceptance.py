@@ -202,12 +202,12 @@ class TestFeedStateFilter:
 
         response = client.get(f"/topics/{topic_id}?state=completed")
         assert response.status_code == 200
-        assert "filter-pill-selected" in response.text
-        # The completed pill carries the selected marker and aria-current.
+        assert "filter-chip" in response.text
+        # The completed pill carries the selected marker (active class) and aria-current.
         assert re.search(
-            r'\?state=completed"[^>]*filter-pill-selected', response.text
+            r'\?state=completed"[^>]*active', response.text
         ) or re.search(
-            r'filter-pill-selected[^>]*\?state=completed', response.text
+            r'active[^>]*\?state=completed', response.text
         )
 
     def test_filter_inclusion_exclusion_by_video_id(self, client):
@@ -1084,7 +1084,7 @@ class TestMatchAnalysis:
             conn.close()
 
         response = client.get(f"/topics/{topic_id}")
-        assert "Application analysis" in response.text
+        assert "이 영상이 추천된 이유" in response.text
         # Jinja autoescapes the reason (e.g. apostrophes -> &#39;), so compare
         # against the escaped form to prove the reason string is actually rendered.
         assert str(escape(reason_text)) in response.text
@@ -1437,8 +1437,12 @@ class TestRecordSearchStateRendering:
     """Gap 2: the records-search badge must show the user-facing state value,
     never the raw ``ViewingState.X`` enum repr, in the live app."""
 
-    @pytest.mark.parametrize("state", ["saved", "completed", "in_progress"])
-    def test_search_badge_shows_state_value_not_enum(self, client, state):
+    @pytest.mark.parametrize("state,ko_label", [
+        ("saved", "저장함"),
+        ("completed", "다 봄"),
+        ("in_progress", "보는 중"),
+    ])
+    def test_search_badge_shows_state_value_not_enum(self, client, state, ko_label):
         topic_id = _create_topic_and_accept_rule(client)
         _sync_topic(client, topic_id)
         tv_id, _record_id = _create_record(client, topic_id)
@@ -1452,5 +1456,5 @@ class TestRecordSearchStateRendering:
 
         response = client.get("/records")
         assert response.status_code == 200
-        assert f'<span class="badge badge-user">{state}</span>' in response.text
+        assert f'<span class="badge badge-user">{ko_label}</span>' in response.text
         assert "ViewingState." not in response.text

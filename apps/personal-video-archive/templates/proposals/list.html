@@ -1,44 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Proposals — Personal Video Archive{% endblock %}
+{% block title %}{{ t("page_proposals_title") }} — Personal Video Archive{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>Pending Proposals</h1>
+    <h1>{{ t("page_proposals_title") }}</h1>
 </div>
 
 {% if proposals %}
 <div class="proposal-list">
     {% for proposal in proposals %}
-    <div class="proposal-card badge-ai">
+    <div class="proposal-card">
         <div class="proposal-header">
-            <strong>AI Suggestion</strong>
+            <strong>{{ t("badge_ai") }}</strong>
             <span class="badge badge-sm badge-muted">{{ proposal.proposal_type.value }}</span>
             {% if proposal.topic_id %}
-            <span class="badge badge-sm badge-app">Topic: {{ proposal.topic_id }}</span>
+            <span class="badge badge-sm badge-app">{{ proposal.topic_id }}</span>
             {% endif %}
             {% if proposal.record_id %}
-            <span class="badge badge-sm badge-user">Record: {{ proposal.record_id }}</span>
+            <span class="badge badge-sm badge-user">{{ proposal.record_id }}</span>
             {% endif %}
         </div>
-        <p class="small">Created {{ proposal.created_at[:10] }}</p>
+        <p class="small">{{ t("topic_created") }} {{ proposal.created_at[:10] }}</p>
         <div class="proposal-preview">
             <details>
-                <summary>Preview proposal JSON</summary>
+                <summary>{{ t("page_preview_json") }}</summary>
                 <pre>{{ proposal.proposed_json | truncate(1000) }}</pre>
             </details>
         </div>
         {% if proposal.topic_id %}
-        <form method="post" action="/proposals/{{ proposal.id }}/accept-rule-change" style="display:inline">
-            <button type="submit" class="btn btn-small btn-primary">Accept</button>
+        <form method="post" action="{{ lp }}/proposals/{{ proposal.id }}/accept-rule-change" style="display:inline">
+            <button type="submit" class="btn btn-small btn-primary">{{ t("action_accept") }}</button>
         </form>
-        <form method="post" action="/proposals/{{ proposal.id }}/reject-rule-change" style="display:inline">
-            <button type="submit" class="btn btn-small btn-secondary">Reject</button>
+        <form method="post" action="{{ lp }}/proposals/{{ proposal.id }}/reject-rule-change" style="display:inline">
+            <button type="submit" class="btn btn-small btn-secondary">{{ t("action_reject") }}</button>
         </form>
         {% else %}
-        <form method="post" action="/proposals/{{ proposal.id }}/accept" style="display:inline">
-            <button type="submit" class="btn btn-small btn-primary">Accept</button>
+        <form method="post" action="{{ lp }}/proposals/{{ proposal.id }}/accept" style="display:inline">
+            <button type="submit" class="btn btn-small btn-primary">{{ t("action_accept") }}</button>
         </form>
-        <form method="post" action="/proposals/{{ proposal.id }}/reject" style="display:inline">
-            <button type="submit" class="btn btn-small btn-secondary">Reject</button>
+        <form method="post" action="{{ lp }}/proposals/{{ proposal.id }}/reject" style="display:inline">
+            <button type="submit" class="btn btn-small btn-secondary">{{ t("action_reject") }}</button>
         </form>
         {% endif %}
     </div>
@@ -46,8 +46,8 @@
 </div>
 {% else %}
 <div class="empty-state">
-    <h3>No pending proposals</h3>
-    <p>All AI suggestions have been reviewed.</p>
+    <h3>{{ t("empty_proposals_title") }}</h3>
+    <p>{{ t("empty_proposals_desc") }}</p>
 </div>
 {% endif %}
 {% endblock %}

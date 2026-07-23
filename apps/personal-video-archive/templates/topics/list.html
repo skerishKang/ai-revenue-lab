@@ -1,31 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Topics — Personal Video Archive{% endblock %}
+{% block title %}{{ t("topics_title") }} — Personal Video Archive{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>Topics</h1>
-    <a href="/topics/new" class="btn btn-primary">Create Topic</a>
+<div class="page-header page-header-actions">
+    <h1>{{ t("topics_title") }}</h1>
+    <a href="{{ lp }}/topics/new" class="btn btn-primary">{{ t("action_create_topic") }}</a>
 </div>
 
 {% if topics %}
 <div class="topic-list">
     {% for topic in topics %}
-    <a href="/topics/{{ topic.id }}" class="topic-card">
-        <div class="topic-card-content">
-            <h3>{{ topic.name }}</h3>
-            <p class="topic-intent">{{ topic.intent }}</p>
-            <p class="small topic-meta">
-                Created {{ topic.created_at[:10] }}
-                {% if topic.is_archived %}<span class="badge badge-sm badge-muted">Archived</span>{% endif %}
-            </p>
-        </div>
-    </a>
+    {% include "partials/_topic_card.html" %}
     {% endfor %}
 </div>
 {% else %}
 <div class="empty-state">
-    <h3>No topics yet</h3>
-    <p>Create your first topic to start discovering videos by subject.</p>
-    <a href="/topics/new" class="btn btn-primary">Create Topic</a>
+    <h3>{{ t("empty_topics_title") }}</h3>
+    <p>{{ t("empty_topics_desc") }}</p>
+    <a href="{{ lp }}/topics/new" class="btn btn-primary">{{ t("action_create_topic") }}</a>
 </div>
 {% endif %}
 {% endblock %}

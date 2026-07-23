@@ -1,29 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ 'ko' if locale == 'ko' else 'en' }}">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Personal Video Archive{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ t("app_name") }}{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <a href="/" class="logo">Personal Video Archive</a>
-            <nav class="nav">
-                <a href="/topics">Topics</a>
-                <a href="/records">My Records</a>
-                <a href="/health" class="nav-health">Health</a>
+{% macro portal_control(href, cls) %}{% if href %}<a class="{{ cls }}" href="{{ href }}">{{ caller() }}</a>{% else %}<span class="{{ cls }}" title="{{ t('portal_not_configured') }}">{{ caller() }}</span>{% endif %}{% endmacro %}
+<div class="shell">
+    {% if is_preview %}
+    {% include "partials/_preview_notice.html" %}
+    {% endif %}
+
+    <div class="portalbar">
+        <div class="portalbar-inner">
+            {% call portal_control(portal_home_href, "portal-brand") %}<span class="portal-mark" aria-hidden="true">AR</span><span>AI Revenue Lab</span>{% endcall %}
+            <div class="portal-context">
+                {% call portal_control(portal_home_href, "service-switcher") %}<span class="service-switcher-label">{{ t("portal_service_label") }}</span><strong>{{ t("app_name") }}</strong><span aria-hidden="true">⌄</span>{% endcall %}
+            </div>
+            <div class="portal-actions">
+                {% call portal_control(portal_home_href, "portal-services") %}{{ t("portal_all_services") }}{% endcall %}
+                {% call portal_control(portal_account_href, "account-button") %}<span class="account-dot" aria-hidden="true"></span><span>{{ t("portal_account") }}</span>{% endcall %}
+            </div>
+        </div>
+    </div>
+
+    <header class="productbar">
+        <div class="productbar-inner">
+            <a href="{{ lp }}/" class="product-brand"><span class="product-kicker">{{ t("business_kicker") }}</span><span>{{ t("app_name") }}</span></a>
+            <nav class="main-nav" aria-label="{{ t('app_name') }}">
+                <a href="{{ lp }}/" {% if request.url.path == lp + '/' or request.url.path == lp %}aria-current="page" class="active"{% endif %}>{{ t("nav_home") }}</a>
+                <a href="{{ lp }}/topics" {% if '/topics' in request.url.path %}aria-current="page" class="active"{% endif %}>{{ t("nav_topics") }}</a>
+                <a href="{{ lp }}/records" {% if '/records' in request.url.path %}aria-current="page" class="active"{% endif %}>{{ t("nav_records") }}</a>
+                <a href="{{ lp }}/#resurface">{{ t("nav_resurface") }}</a>
             </nav>
+            <div class="top-actions">
+                <button type="button" class="icon-button" aria-label="{{ t('nav_search') }}">⌕</button>
+                <a href="{{ lang_switch_href }}" class="lang-button" aria-label="{{ t('lang_switch_label') }}">{{ t("lang_switch") }}</a>
+            </div>
         </div>
     </header>
-    <main class="container">
-        {% block content %}{% endblock %}
+
+    <main class="page">
+        <div class="app-main">
+            {% block content %}{% endblock %}
+        </div>
     </main>
-    <footer class="site-footer">
-        <div class="container">
-            <p class="small">Phase 1 MVP — synthetic fixtures only. No real YouTube API or LLM calls.</p>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>{{ t("app_name") }}</span>
+            <span>{{ t("footer_tagline") }}</span>
         </div>
     </footer>
+
+    <nav class="mobile-nav" aria-label="{{ t('app_name') }}">
+        <div class="mobile-nav-inner">
+            <a href="{{ lp }}/" {% if request.url.path == lp + '/' or request.url.path == lp %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">⌂</b>
+                <span>{{ t("nav_home") }}</span>
+            </a>
+            <a href="{{ lp }}/topics" {% if '/topics' in request.url.path %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">▦</b>
+                <span>{{ t("nav_topics") }}</span>
+            </a>
+            <a href="{{ lp }}/records" {% if '/records' in request.url.path %}aria-current="page" class="active"{% endif %}>
+                <b class="nav-icon">✎</b>
+                <span>{{ t("nav_records") }}</span>
+            </a>
+            <a href="{{ lp }}/#resurface">
+                <b class="nav-icon">↺</b>
+                <span>{{ t("nav_resurface") }}</span>
+            </a>
+        </div>
+    </nav>
+</div>
 </body>
 </html>

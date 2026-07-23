@@ -1,0 +1,17 @@
+<a href="{{ lp }}/records/{{ record.id }}" class="record-card">
+    <div class="record-state">
+        <span class="badge badge-user">{{ t("state_" + (record.viewing_state | state_label)) }}</span>
+    </div>
+    <h3>{{ video.title }}</h3>
+    <p class="small">{{ video.channel_title }} · {{ video.published_at[:10] }}</p>
+    {% if record.free_form_note %}
+    <p class="record-preview">{{ record.free_form_note | truncate(200) }}</p>
+    {% endif %}
+    {% if record.tags %}
+    <div class="tags">
+        {% for tag in record.tags %}
+        <span class="badge badge-sm badge-muted">{{ tag }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+</a>

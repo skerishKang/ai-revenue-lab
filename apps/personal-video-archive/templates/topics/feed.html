@@ -1,117 +1,57 @@
 {% extends "base.html" %}
-{% block title %}{{ topic.name }} — Personal Video Archive{% endblock %}
+{% block title %}{{ topic.name }} — {{ t("app_name") }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>{{ topic.name }}</h1>
-    <p class="subtitle">{{ topic.intent }}</p>
-</div>
+<section class="topic-hero">
+    <div>
+        <span class="eyebrow">Topic</span>
+        <h1>{{ topic.name }}</h1>
+        <p class="lede">{{ topic.intent }}</p>
+    </div>
+    <aside class="topic-aside">
+        <span class="eyebrow">{{ t("feed_rule_label") }}</span>
+        {% if rules %}
+        <p class="rule-line">"{{ rules.primary_query }}"</p>
+        {% if rules.related_queries %}
+        <p class="rule-line">{{ t("feed_rule_related") }}: {{ rules.related_queries | join(', ') }}</p>
+        {% endif %}
+        <p class="rule-line">{{ t("feed_rule_sort") }}: {{ rules.default_sort.value }} · {{ t("feed_rule_shorts") }}: {{ rules.shorts_preference.value }}</p>
+        {% else %}
+        <p class="rule-line">{{ t("feed_rule_none") }}</p>
+        {% endif %}
+        <p class="rule-line"><strong>{{ t("badge_app") }}</strong> · {{ t("badge_youtube") }}</p>
+    </aside>
+</section>
 
 {% if sync_failed %}
-<div class="provider-error-banner badge-user" role="alert">
-    <strong>새로고침 실패</strong> — 영상 제공 서비스에 연결할 수 없어 새 영상을
-    가져오지 못했습니다. 기존 목록은 그대로 유지됩니다. 잠시 후 다시 시도해 주세요.
-</div>
-{% endif %}
-
-{% if rules %}
-<div class="rules-summary badge-app">
-    <strong>Application Rule</strong> —
-    Primary: "{{ rules.primary_query }}" |
-    Sort: {{ rules.default_sort.value }} |
-    Shorts: {{ rules.shorts_preference.value }}
+<div class="provider-error-banner" role="alert">
+    <strong>{{ t("feed_sync_failed_title") }}</strong> — {{ t("feed_sync_failed_desc") }}
 </div>
 {% endif %}
 
 <div class="feed-actions">
-    <form method="post" action="/topics/{{ topic.id }}/sync" style="display:inline">
-        <button type="submit" class="btn btn-primary">Refresh Feed</button>
+    <form method="post" action="{{ lp }}/topics/{{ topic.id }}/sync" class="inline-form">
+        <button type="submit" class="primary-button">{{ t("feed_refresh") }}</button>
     </form>
-    <a href="/records?{% if topic %}topic_id={{ topic.id }}{% endif %}" class="btn btn-secondary">My Records</a>
+    <a href="{{ lp }}/records?topic_id={{ topic.id }}" class="pill-button">{{ t("feed_my_records") }}</a>
 </div>
 
-<nav class="feed-state-filter" aria-label="Filter by viewing state">
-    {% for fs in feed_states %}
-    <a href="/topics/{{ topic.id }}?state={{ fs }}"
-       class="filter-pill {% if fs == current_state_filter %}filter-pill-selected{% endif %}"
-       {% if fs == current_state_filter %}aria-current="page"{% endif %}>
-        {{ fs }}
-    </a>
-    {% endfor %}
-</nav>
+{% set topic_id = topic.id %}
+{% include "partials/_state_pills.html" %}
 
 {% if feed %}
-<div class="feed-header">
-    <span class="badge badge-info">Newest First</span>
-    <span class="small">Showing {{ feed | length }} videos</span>
+<div class="feed-meta">
+    <span class="micro-label">{{ t("feed_newest_first") }}</span>
+    <span class="micro-label">{{ t("feed_showing", n=feed | length) }}</span>
 </div>
-
-<div class="video-feed">
+<section class="feed-layout">
     {% for tv, video, record in feed %}
-    <article class="video-card" data-video-title="{{ video.title }}">
-        <div class="video-thumbnail">
-            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}"
-                 onerror="this.style.display='none'">
-        </div>
-        <div class="video-content">
-            <div class="video-meta-source">
-                <span class="badge badge-info badge-sm">YouTube info</span>
-            </div>
-            <h3 class="video-title">{{ video.title }}</h3>
-            <p class="video-channel">{{ video.channel_title }}</p>
-            <p class="video-published small">
-                Published {{ video.published_at[:10] }}
-                {% if video.duration_seconds %}
-                · {{ (video.duration_seconds / 60) | round(1) }} min
-                {% endif %}
-                {% if video.view_count %}
-                · {{ video.view_count | int | format_thousands }} views
-                {% endif %}
-            </p>
-
-            {% if tv.match_score is not none or tv.match_reasons %}
-            <div class="match-analysis badge-app badge-sm">
-                <strong>Application analysis</strong>
-                {% if tv.match_score is not none %}
-                · match score {{ (tv.match_score * 100) | round }}%
-                {% endif %}
-                {% if tv.match_reasons %}
-                <ul class="match-reasons">
-                    {% for reason in tv.match_reasons %}
-                    <li>{{ reason }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
-            {% endif %}
-
-            <div class="video-actions">
-                <form method="post" action="/topic-videos/{{ tv.id }}/open" target="_blank" class="inline-form">
-                    <button type="submit" class="btn btn-small btn-primary">Open on YouTube</button>
-                </form>
-                <form method="post" action="/topic-videos/{{ tv.id }}/state" class="inline-form">
-                    <input type="hidden" name="return_state" value="{{ current_state_filter }}">
-                    <select name="state" onchange="this.form.submit()">
-                        <option value="unseen" {% if record and record.viewing_state == "unseen" %}selected{% elif not record %}selected{% endif %}>unseen</option>
-                        <option value="opened" {% if record and record.viewing_state == "opened" %}selected{% endif %}>opened</option>
-                        <option value="saved" {% if record and record.viewing_state == "saved" %}selected{% endif %}>saved</option>
-                        <option value="in_progress" {% if record and record.viewing_state == "in_progress" %}selected{% endif %}>in_progress</option>
-                        <option value="completed" {% if record and record.viewing_state == "completed" %}selected{% endif %}>completed</option>
-                        <option value="revisit" {% if record and record.viewing_state == "revisit" %}selected{% endif %}>revisit</option>
-                        <option value="irrelevant" {% if record and record.viewing_state == "irrelevant" %}selected{% endif %}>irrelevant</option>
-                    </select>
-                </form>
-                <form method="post" action="/topic-videos/{{ tv.id }}/records" class="inline-form">
-                    <button type="submit" class="btn btn-small btn-secondary">기록 만들기</button>
-                </form>
-            </div>
-        </div>
-    </article>
+    {% include "partials/_video_card.html" %}
     {% endfor %}
-</div>
+</section>
 {% else %}
 <div class="empty-state">
-    <h3>No videos yet</h3>
-    <p>Click "Refresh Feed" to discover videos for this topic.</p>
+    <h3>{{ t("empty_videos_title") }}</h3>
+    <p>{{ t("empty_videos_desc") }}</p>
 </div>
 {% endif %}
 {% endblock %}

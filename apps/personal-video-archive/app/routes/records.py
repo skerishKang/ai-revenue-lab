@@ -6,7 +6,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.db import get_connection
-from app.factory import _build_services, _render_template
+from app.factory import _build_services, _locale_prefix, _render_template
 from app.services import RecordService
 
 router = APIRouter()
@@ -136,8 +136,9 @@ def update_record(
 
         record_service.update_record(record_id, **updates)
 
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/records/{record_id}", status_code=303
+            url=f"{lp}/records/{record_id}", status_code=303
         )
     finally:
         conn.close()
@@ -184,8 +185,9 @@ def add_timestamp(
 
         record_service.add_timestamp_ref(record_id, seconds, label)
 
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/records/{record_id}", status_code=303
+            url=f"{lp}/records/{record_id}", status_code=303
         )
     finally:
         conn.close()
@@ -226,8 +228,9 @@ def delete_timestamp(
 
         record_service.delete_timestamp_ref(ts_id)
 
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/records/{record_id}", status_code=303
+            url=f"{lp}/records/{record_id}", status_code=303
         )
     finally:
         conn.close()
@@ -248,8 +251,9 @@ def propose_structure(
             request.app.state.llm_provider,
         )
         proposal = record_service.propose_structure(record_id, rough_notes)
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/records/{record_id}", status_code=303
+            url=f"{lp}/records/{record_id}", status_code=303
         )
     finally:
         conn.close()
@@ -276,11 +280,12 @@ def accept_proposal(request: Request, proposal_id: str):
 
         # Redirect back to the record
         proposal = repos["proposal"].get(proposal_id)
+        lp = _locale_prefix(request)
         if proposal and proposal.record_id:
             return RedirectResponse(
-                url=f"/records/{proposal.record_id}", status_code=303
+                url=f"{lp}/records/{proposal.record_id}", status_code=303
             )
-        return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=f"{lp}/", status_code=303)
     finally:
         conn.close()
 
@@ -305,11 +310,12 @@ def reject_proposal(request: Request, proposal_id: str):
             )
 
         proposal = repos["proposal"].get(proposal_id)
+        lp = _locale_prefix(request)
         if proposal and proposal.record_id:
             return RedirectResponse(
-                url=f"/records/{proposal.record_id}", status_code=303
+                url=f"{lp}/records/{proposal.record_id}", status_code=303
             )
-        return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=f"{lp}/", status_code=303)
     finally:
         conn.close()
 

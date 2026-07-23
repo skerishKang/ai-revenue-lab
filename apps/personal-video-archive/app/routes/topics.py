@@ -6,7 +6,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.db import get_connection
-from app.factory import _build_services, _render_template
+from app.factory import _build_services, _locale_prefix, _render_template
 from app.services import DiscoveryService, TopicService
 
 router = APIRouter()
@@ -144,8 +144,9 @@ def accept_rule(
             request.app.state.llm_provider,
         )
         rule = service.accept_rule_draft(topic_id, proposal)
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/topics/{topic_id}", status_code=303
+            url=f"{lp}/topics/{topic_id}", status_code=303
         )
     finally:
         conn.close()
@@ -220,8 +221,9 @@ def sync_topic(request: Request, topic_id: str):
             request.app.state.llm_provider,
         )
         run, feed = discovery_service.sync_topic(topic_id)
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/topics/{topic_id}", status_code=303
+            url=f"{lp}/topics/{topic_id}", status_code=303
         )
     except Exception:
         # Provider unavailable or sync failure: the SyncRun is already marked
@@ -229,8 +231,9 @@ def sync_topic(request: Request, topic_id: str):
         # preserved. Redirect to the feed with a user-facing flag so the UI
         # can show a clear provider-unavailable message. No internal
         # exception text, path, or secret is exposed.
+        lp = _locale_prefix(request)
         return RedirectResponse(
-            url=f"/topics/{topic_id}?sync_failed=1", status_code=303
+            url=f"{lp}/topics/{topic_id}?sync_failed=1", status_code=303
         )
     finally:
         conn.close()
