@@ -280,85 +280,22 @@ class Settings(BaseSettings):
         """Normalize base URL and append /v1/chat/completions safely."""
         from urllib.parse import urlsplit, urlunsplit
 
-        base_parts = urlsplit(self.ai_base_url.rstrip("/"))
-        path_segments = [s for s in base_parts.path.split("/") if s]
+        parts = urlsplit(self.ai_base_url.rstrip("/"))
+        path = parts.path.rstrip("/")
 
-        if not path_segments or path_segments[-1] != "v1":
-            path_segments.append("v1")
-        
-        # Ensure that /chat/completions is not duplicated if already present.
-        # This check is slightly redundant since the provider handles it too.
-        if not path_segments or path_segments[-1] != "chat" or path_segments[-2] != "completions":
-            path_segments.extend(["chat", "completions"])
-        
-        # Reconstruct URL, ensuring no double slashes and no query/fragment in the base
-        normalized_path = "/" + "/".join(s for s in path_segments if s)
-        
-        # Check if the original path already ends with /chat/completions, then remove the appended one
-        original_path_normalized = base_parts.path.rstrip('/')
-        if original_path_normalized.endswith('/v1/chat/completions'):
-            final_path = original_path_normalized
-        elif original_path_normalized.endswith('/chat/completions'):
-            final_path = original_path_normalized
-        elif original_path_normalized.endswith('/v1'):
-            final_path = original_path_normalized + '/chat/completions'
+        if path.endswith("/chat/completions"):
+            final_path = path
+        elif path.endswith("/v1"):
+            final_path = path + "/chat/completions"
         else:
-            final_path = original_path_normalized + '/v1/chat/completions'
-        
-        # Ensure that the path never starts with // if it was originally root
-        if not final_path.startswith('/'):
-            final_path = '/' + final_path
+            final_path = path + "/v1/chat/completions"
 
-        # Handle root case where path_segments could be empty
-        if not path_segments:
-            final_path = '/v1/chat/completions'
-
-        # This logic is a bit convoluted. Let's simplify and make it explicit.
-        # The provider (OpenAICompatibleProvider) should handle the /v1/chat/completions part.
-        # This config property should only provide the normalized base_url without /v1/chat/completions.
-        # Let's revert this and implement this part in the OpenAICompatibleProvider's __init__.
-        # The config property should just return the validated and normalized ai_base_url.
-        
-        # Let me remove this. The `ai_chat_completions_url` property should produce the FINAL URL.
-
-        # Let's re-think this. The endpoint URL normalization needs to be robust here.
-        # The prompt says: "base URL은 OpenAI-compatible /v1 prefix를 지원할 수 있어야 합니다."
-        # "최종 chat-completions URL 생성 시: 이중 slash 방지, query/fragment 유입 방지, 사용자가 authorization header를 URL에 삽입할 수 없도록 처리"
-
-        # The OpenAICompatibleProvider already has logic in its __init__ to build the _chat_url.
-        # So this property should return the normalized base URL WITHOUT the /v1/chat/completions.
-        # This will be simpler.
-
-        # But the prompt says "ai_chat_completions_url property returns the chat completions URL"
-
-        # Let's try again with a cleaner approach.
-        # The goal is to produce `https://provider.example/v1/chat/completions` from inputs like:
-        # - `https://provider.example`
-        # - `https://provider.example/v1`
-        # - `https://provider.example/api/v1`
-        # And prevent `//v1`, `query`, `fragment`, `userinfo`.
-
-        _urlparts = urlsplit(self.ai_base_url.rstrip("/"))
-        _path = _urlparts.path.rstrip("/")
-
-        if _path.endswith("/chat/completions"):
-            # Already has chat/completions, assume it's complete
-            final_path = _path
-        elif _path.endswith("/v1"):
-            # Ends with /v1, append /chat/completions
-            final_path = _path + "/chat/completions"
-        else:
-            # Does not end with /v1, append /v1/chat/completions
-            final_path = _path + "/v1/chat/completions"
-        
-        # Reconstruct the URL parts, ensuring no query/fragment/userinfo remains
-        # urlunsplit will ensure no double slashes on scheme://netloc/path
         return urlunsplit((
-            _urlparts.scheme,
-            _urlparts.netloc,
-            final_path.replace("//", "/"), # prevent double slash in path itself
-            "", # no query
-            ""  # no fragment
+            parts.scheme,
+            parts.netloc,
+            final_path,
+            "",
+            "",
         ))
 
 
