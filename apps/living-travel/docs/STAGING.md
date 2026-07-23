@@ -24,8 +24,8 @@ Set via Modal Secret `ai-revenue-living-travel-staging`:
 | Variable | Description |
 |----------|-------------|
 | `LT_DATABASE_BACKEND` | Must be `postgresql` |
-| `LT_DATABASE_URL` | Neon pooled connection string |
-| `LT_MIGRATION_DATABASE_URL` | Neon direct (non-pooled) connection string |
+| `LT_DATABASE_URL` | Neon pooled connection string (runtime queries) |
+| `LT_MIGRATION_DATABASE_URL` | Neon direct (non-pooled) connection string — **required** |
 | `LT_AUTH_MODE` | Must be `firebase` |
 | `LT_FIREBASE_PROJECT_ID` | `ai-revenue-lab-identity` |
 | `LT_ALLOWED_ORIGINS` | Comma-separated allowed CORS origins |
@@ -86,6 +86,12 @@ idempotent execution. No manual migration step is required.
 - PostgreSQL migrations: `migrations/postgresql/001–006.sql`
 
 The migration engine selects the correct set based on `LT_DATABASE_BACKEND`.
+
+**PostgreSQL requires both URLs.** `LT_DATABASE_URL` (pooled) is used for
+runtime queries; `LT_MIGRATION_DATABASE_URL` (direct, non-pooled) is used for
+migrations and advisory locks. The application refuses to start if either is
+missing or has an invalid scheme. There is no silent fallback from the migration
+URL to the runtime URL.
 
 ## Operator Bootstrap
 

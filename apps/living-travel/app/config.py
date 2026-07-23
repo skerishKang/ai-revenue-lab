@@ -45,6 +45,20 @@ class Settings(BaseSettings):
                     "LT_DATABASE_BACKEND=postgresql requires a postgresql:// "
                     "LT_DATABASE_URL. Refusing to silently fall back to SQLite."
                 )
+            if not self.migration_database_url:
+                raise ValueError(
+                    "LT_DATABASE_BACKEND=postgresql requires "
+                    "LT_MIGRATION_DATABASE_URL (direct, non-pooled connection). "
+                    "Refusing to fall back to the runtime URL."
+                )
+            if not (
+                self.migration_database_url.startswith("postgresql://")
+                or self.migration_database_url.startswith("postgres://")
+            ):
+                raise ValueError(
+                    "LT_MIGRATION_DATABASE_URL must use a postgresql:// or "
+                    "postgres:// scheme."
+                )
 
         if self.auth_mode == "firebase" and self.environment != "testing":
             if not self.firebase_project_id:
@@ -58,7 +72,9 @@ class Settings(BaseSettings):
 
     @property
     def effective_migration_url(self) -> str:
-        """Direct (unpooled) URL for migrations; falls back to runtime URL."""
+        """Direct (unpooled) URL for migrations. No fallback for PostgreSQL."""
+        if self.database_backend == "postgresql":
+            return self.migration_database_url
         return self.migration_database_url or self.database_url
 
 
