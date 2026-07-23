@@ -10,7 +10,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.ai.providers import create_mock_provider, create_second_mock_provider
+from app.ai.factory import create_ai_provider
+from app.config import get_settings
 from app.api.auth import Principal, require_operator
 from app.api.schemas import CreateTravelerRequest
 from app.api.serializers import (
@@ -227,7 +228,9 @@ async def generate_first(
         preferences = _preferences(traveler)
         if preferences.get("preferred_language", "ko") != "ko":
             raise HTTPException(status_code=409, detail="unsupported_fixture")
-        provider = create_mock_provider(conn, preferences)
+        provider = create_ai_provider(
+            get_settings(), conn=conn, traveler_preferences=preferences,
+        )
         sources = _source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
         try:
@@ -275,8 +278,12 @@ async def generate_second(
         feedback_records = get_unapplied_feedback_for_edition(
             conn, traveler_id, prior.id
         )
-        provider = create_second_mock_provider(
-            conn, preferences, feedback_records, prior.structured_content
+        provider = create_ai_provider(
+            get_settings(),
+            conn=conn,
+            traveler_preferences=preferences,
+            feedback_records=feedback_records,
+            prior_content=prior.structured_content,
         )
         sources = _source_items(conn, traveler.destination)
         service = GenerationService(conn, provider)
