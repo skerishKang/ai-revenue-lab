@@ -41,6 +41,7 @@ from app.db_pg_migrations import (
     get_pg_schema_indexes,
     get_pg_schema_tables,
     get_pg_unique_constraints,
+    verify_pg_schema,
 )
 
 MIGRATIONS_DIR = str(
@@ -916,3 +917,94 @@ class TestPgMigrationIntegration:
         assert "submitted_at" in not_null_cols
         assert "consent_confirmed" in not_null_cols
         assert "normalized_text" not in not_null_cols
+
+
+@pytestmark_integration
+class TestVerifyPgSchema:
+    """Integration tests for read-only schema verification (Neon contract).
+
+    Application startup must NOT run migrations — only verify schema/version/
+    checksum in read-only mode. These tests verify that contract.
+    """
+
+    def test_verify_fails_without_schema_migrations_table(self, pg_conn_clean):
+        """verify_pg_schema must fail if schema_migrations table is missing."""
+        with pytest.raises(PgMigrationError, match="schema_migrations table not found"):
+            verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
+
+    def test_verify_succeeds_after_migrations_applied(self, pg_conn_clean):
+        """verify_pg_schema must succeed after migrations are applied."""
+        apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+        pg_conn_clean.commit()
+
+        result = verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
+        assert result["applied_count"] == 1
+        assert result["pending_count"] == 0
+        assert "pg_001_initial.sql" in result["versions"]
+
+    def test_verify_fails_with_pending_migrations(self, pg_conn_clean, tmp_path):
+        """verify_pg_schema must fail if there are pending migrations."""
+        # Create a temp migrations dir with 2 migrations
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        (tmp_dir / "pg_001_a.sql").write_text(
+            "CREATE TABLE a (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+        (tmp_dir / "pg_002_b.sql").write_text(
+            "CREATE TABLE b (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+
+        # Apply only the first migration
+        apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        pg_conn_clean.commit()
+
+        # Add a third migration file (pending)
+        (tmp_dir / "pg_003_c.sql").write_text(
+            "CREATE TABLE c (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+
+        with pytest.raises(PgMigrationError, match="pending migrations"):
+            verify_pg_schema(pg_conn_clean, str(tmp_dir))
+
+    def test_verify_fails_with_checksum_mismatch(self, pg_conn_clean, tmp_path):
+        """verify_pg_schema must fail if a recorded checksum doesn't match."""
+        tmp_dir = tmp_path / "migrations"
+        tmp_dir.mkdir()
+        migration_file = tmp_dir / "pg_001_test.sql"
+        migration_file.write_text(
+            "CREATE TABLE test (id TEXT PRIMARY KEY);", encoding="utf-8"
+        )
+
+        apply_pg_migrations(pg_conn_clean, str(tmp_dir))
+        pg_conn_clean.commit()
+
+        # Modify the migration file
+        migration_file.write_text(
+            "CREATE TABLE test (id TEXT PRIMARY KEY, name TEXT);",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(PgMigrationError, match="checksum"):
+            verify_pg_schema(pg_conn_clean, str(tmp_dir))
+
+    def test_verify_is_read_only(self, pg_conn_clean):
+        """verify_pg_schema must not modify the database."""
+        apply_pg_migrations(pg_conn_clean, MIGRATIONS_DIR)
+        pg_conn_clean.commit()
+
+        # Get state before verify
+        tables_before = get_pg_schema_tables(pg_conn_clean)
+        applied_before = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations"
+        ).fetchone()["c"]
+
+        verify_pg_schema(pg_conn_clean, MIGRATIONS_DIR)
+
+        # Get state after verify
+        tables_after = get_pg_schema_tables(pg_conn_clean)
+        applied_after = pg_conn_clean.execute(
+            "SELECT COUNT(*) AS c FROM schema_migrations"
+        ).fetchone()["c"]
+
+        assert tables_before == tables_after
+        assert applied_before == applied_after

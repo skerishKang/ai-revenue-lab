@@ -148,21 +148,22 @@ def _startup_sqlite(db_path: str) -> None:
 
 
 def _startup_postgresql(app: FastAPI) -> None:
-    """PostgreSQL startup: validate schema and apply migrations.
+    """PostgreSQL startup: read-only schema verification.
 
-    Fail-closed: if the database is unreachable or schema validation
+    Neon production contract: application startup does NOT run migrations.
+    It only verifies schema/version/checksum in read-only mode.
+    Explicit migration CLI is the only path that applies migrations.
+
+    Fail-closed: if the database is unreachable or schema verification
     fails, the application refuses to start.
     """
     from app.db_postgres import PG_MIGRATIONS_DIR, get_pg_connection
+    from app.db_pg_migrations import verify_pg_schema
 
     database_url = app.state.database_url
     conn = get_pg_connection(database_url)
     try:
-        apply_migrations(conn, PG_MIGRATIONS_DIR)
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
+        verify_pg_schema(conn, PG_MIGRATIONS_DIR)
     finally:
         conn.close()
 

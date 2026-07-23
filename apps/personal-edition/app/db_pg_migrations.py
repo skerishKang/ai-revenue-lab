@@ -641,3 +641,94 @@ def get_pg_check_constraints(
         (schema, table_name),
     ).fetchall()
     return [f"{row['conname']}: {row['definition']}" for row in rows]
+
+
+def verify_pg_schema(
+    conn: Connection[DictRow],
+    migrations_dir: str,
+    *,
+    redact_url: str = "",
+) -> dict[str, Any]:
+    """Read-only schema verification for application startup.
+
+    This function does NOT apply migrations. It only verifies that:
+    1. The schema_migrations table exists
+    2. All recorded migration checksums match the migration files
+    3. No pending migrations exist (all migrations are applied)
+
+    This is the Neon production contract: application startup performs
+    read-only schema/version/checksum verification only. Explicit
+    migration CLI is the only path that applies migrations.
+
+    Parameters
+    ----------
+    conn:
+        An open psycopg Connection (read-only operations only).
+    migrations_dir:
+        Path to the directory containing ``pg_*.sql`` migration files.
+    redact_url:
+        Optional redacted URL for error messages (never the raw URL).
+
+    Returns
+    -------
+    dict[str, Any]
+        Verification result with keys:
+        - ``applied_count``: number of applied migrations
+        - ``pending_count``: number of pending migrations
+        - ``versions``: list of applied version names
+
+    Raises
+    ------
+    PgMigrationError
+        If the schema_migrations table is missing, if a recorded
+        migration's checksum does not match the file, or if there are
+        pending migrations.
+    """
+    # Check if schema_migrations table exists (read-only)
+    row = conn.execute(
+        """
+        SELECT EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = current_schema()
+            AND table_name = 'schema_migrations'
+        )
+        """
+    ).fetchone()
+    if not row or not row[0]:
+        raise PgMigrationError(
+            "startup",
+            "schema_migrations table not found: run migration CLI first",
+            category="discovery",
+        )
+
+    # Read applied migrations (read-only)
+    applied = _get_applied(conn)
+    migrations = _discover_migrations(migrations_dir)
+
+    # Verify checksums match (read-only)
+    for m in migrations:
+        version = m.name
+        content, checksum = _read_migration(m)
+
+        if version in applied:
+            if applied[version] != checksum:
+                raise PgMigrationError(
+                    version,
+                    _safe_message("checksum_mismatch"),
+                    category="checksum_mismatch",
+                )
+
+    # Check for pending migrations
+    pending = [m.name for m in migrations if m.name not in applied]
+    if pending:
+        raise PgMigrationError(
+            "startup",
+            f"pending migrations detected: {pending}. Run migration CLI first.",
+            category="discovery",
+        )
+
+    return {
+        "applied_count": len(applied),
+        "pending_count": 0,
+        "versions": sorted(applied.keys()),
+    }
