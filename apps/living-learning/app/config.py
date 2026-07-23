@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     environment: str = "development"
     provider_model: str = "mock/mock-fixture"
     provider_type: str = "mock"
+    # Portal-ready boundary configuration.
+    identity_provider: str = "fake"
+    # Comma-separated exact origins. Empty => no CORS middleware (fail-closed).
+    allowed_origins: str = ""
 
     model_config = {"env_prefix": "LL_", "env_file": ".env", "extra": "ignore"}
 
@@ -21,6 +25,10 @@ class Settings(BaseSettings):
             if not db_path.is_absolute():
                 base_dir = Path(__file__).resolve().parent.parent.parent
                 self.database_url = str(base_dir / db_path)
+
+    @property
+    def allowed_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
 
 
 _settings: Settings | None = None

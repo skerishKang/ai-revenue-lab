@@ -54,10 +54,16 @@ def get_connection_from_state(request: Request):
 def get_pipeline(
     request: Request,
     provider: Annotated[AIProvider, Depends(get_provider_from_state)],
-) -> LessonPipeline:
+):
     settings = request.app.state.settings
     conn = get_connection_from_state(request)
-    return LessonPipeline(conn, provider, settings)
+    try:
+        yield LessonPipeline(conn, provider, settings)
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
 
 
 class CreateLearnerRequest(BaseModel):
