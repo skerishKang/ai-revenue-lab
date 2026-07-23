@@ -53,16 +53,18 @@ def _resolve_provider(provider: str | AIProvider | None) -> AIProvider:
     if provider is None:
         provider = settings.ai_provider
     if isinstance(provider, str):
-        if provider == "mock":
+        handled = provider.strip().lower()
+        if handled == "mock":
             return MockProvider()
-        if provider in ("openai_compat", "deepseek"):
+        if handled in ("openai_compat", "deepseek"):
+            settings.validate_ai_provider()
             return OpenAICompatibleProvider(
                 api_key=settings.ai_api_key,
                 model=settings.ai_model,
-                provider_name=provider,
+                provider_name=handled,
                 base_url=(
                     settings.ai_base_url
-                    or "https://api.deepseek.com/v1"
+                    or "https://api.deepseek.com"
                 ),
             )
         raise RuntimeError(f"unsupported provider: {provider}")
