@@ -298,6 +298,72 @@ class TestCorsWildcardRejection:
             "https://branch-name.ai-revenue-living-travel.pages.dev"
         ]
 
+    def test_trailing_comma_empty_segment_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="empty entries"):
+            Settings(environment="testing", allowed_origins="https://a.example.com,")
+
+    def test_leading_comma_empty_segment_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="empty entries"):
+            Settings(environment="testing", allowed_origins=",https://a.example.com")
+
+    def test_double_comma_empty_segment_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="empty entries"):
+            Settings(
+                environment="testing",
+                allowed_origins="https://a.example.com,,https://b.example.com",
+            )
+
+    def test_whitespace_only_segment_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="empty entries"):
+            Settings(
+                environment="testing",
+                allowed_origins="https://a.example.com,   ,https://b.example.com",
+            )
+
+    def test_invalid_port_string_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="invalid port"):
+            Settings(environment="testing", allowed_origins="https://example.com:invalid")
+
+    def test_port_out_of_range_high_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="invalid port"):
+            Settings(environment="testing", allowed_origins="https://example.com:99999")
+
+    def test_port_negative_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="invalid port"):
+            Settings(environment="testing", allowed_origins="https://example.com:-1")
+
+    def test_port_zero_fails(self):
+        from app.config import Settings
+
+        with pytest.raises(ValueError, match="invalid port"):
+            Settings(environment="testing", allowed_origins="https://example.com:0")
+
+    def test_port_443_passes(self):
+        from app.config import Settings
+
+        s = Settings(environment="testing", allowed_origins="https://example.com:443")
+        assert s.allowed_origin_list == ["https://example.com:443"]
+
+    def test_port_8788_passes(self):
+        from app.config import Settings
+
+        s = Settings(environment="testing", allowed_origins="http://localhost:8788")
+        assert s.allowed_origin_list == ["http://localhost:8788"]
+
 
 class TestGacReadableFile:
     def test_gac_directory_fails(self, monkeypatch, tmp_path):
@@ -312,22 +378,32 @@ class TestGacReadableFile:
                 firebase_project_id="test-project",
             )
 
-    @pytest.mark.skipif(os.geteuid() == 0, reason="root can read any file")
-    def test_gac_unreadable_file_fails(self, monkeypatch, tmp_path):
+    def test_gac_unreadable_file_deterministic(self, monkeypatch, tmp_path):
+        import builtins
+
         cred_file = tmp_path / "cred.json"
         cred_file.write_text("{}")
-        cred_file.chmod(0o000)
         monkeypatch.delenv("FIREBASE_SERVICE_ACCOUNT_JSON", raising=False)
         monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(cred_file))
+
+        real_open = builtins.open
+
+        def guarded_open(file, *args, **kwargs):
+            if os.fspath(file) == str(cred_file):
+                raise PermissionError("synthetic denial")
+            return real_open(file, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "open", guarded_open)
         from app.config import Settings
 
-        with pytest.raises(ValueError, match="readable file"):
+        with pytest.raises(ValueError, match="readable file") as exc:
             Settings(
                 auth_mode="firebase",
                 environment="staging",
                 firebase_project_id="test-project",
                 allowed_origins="https://test.example.com",
             )
+        assert str(cred_file) not in str(exc.value)
 
     def test_gac_error_no_path_leak(self, monkeypatch):
         monkeypatch.delenv("FIREBASE_SERVICE_ACCOUNT_JSON", raising=False)

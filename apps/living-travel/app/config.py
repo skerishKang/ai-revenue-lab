@@ -107,6 +107,12 @@ class Settings(BaseSettings):
         if self.allowed_origins:
             from urllib.parse import urlsplit as _urlsplit
 
+            _raw_entries = self.allowed_origins.split(",")
+            if any(not _entry.strip() for _entry in _raw_entries):
+                raise ValueError(
+                    "LT_ALLOWED_ORIGINS must not contain empty entries."
+                )
+
             for _origin in self.allowed_origin_list:
                 if "*" in _origin:
                     raise ValueError(
@@ -137,13 +143,16 @@ class Settings(BaseSettings):
                     raise ValueError(
                         "LT_ALLOWED_ORIGINS entries must not contain a fragment."
                     )
-                if _parts.port is not None:
-                    try:
-                        int(_parts.port)
-                    except (ValueError, TypeError):
-                        raise ValueError(
-                            "LT_ALLOWED_ORIGINS entries must not contain an invalid port."
-                        )
+                try:
+                    _port = _parts.port
+                except ValueError as _exc:
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain an invalid port."
+                    ) from _exc
+                if _port is not None and not (1 <= _port <= 65535):
+                    raise ValueError(
+                        "LT_ALLOWED_ORIGINS entries must not contain an invalid port."
+                    )
 
         if self.environment in ("staging", "production") and not self.allowed_origin_list:
             raise ValueError(
