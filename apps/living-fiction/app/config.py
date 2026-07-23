@@ -66,18 +66,30 @@ def _structurally_weak(value: str) -> bool:
 def canonicalize_origin(origin: str) -> str | None:
     """Normalize an origin to canonical ``scheme://host[:port]`` form.
 
-    Returns ``None`` when *origin* is not a well-formed ``http://``/``https://``
-    origin (missing host, or carrying a path/query/fragment/embedded
-    credentials). Otherwise returns the canonical form: lowercased scheme and
-    host, default ports dropped (80 for http, 443 for https), and no trailing
-    slash. Canonicalization makes allowlist matching robust to superficial
-    differences such as ``HTTPS://Example.com/`` vs ``https://example.com`` or
+    Returns ``None`` for anything that is not a well-formed absolute
+    ``http://``/``https://`` origin so callers reject it with a generic 403
+    rather than crashing. This deliberately absorbs the ``ValueError`` that
+    :mod:`urllib.parse` raises for malformed or out-of-range ports
+    (``https://example.com:notaport``, ``https://example.com:99999``) and for
+    malformed IPv6 literals (``https://[invalid``).
+
+    The canonical form lowercases the scheme and host, drops default ports
+    (80 for http, 443 for https), and carries no trailing slash. IPv6 hosts are
+    re-bracketed so the result stays a valid URL host (``http://[::1]:8000``).
+    Canonicalization makes allowlist matching robust to superficial differences
+    such as ``HTTPS://Example.com/`` vs ``https://example.com`` or
     ``https://example.com:443`` vs ``https://example.com``.
     """
-    parsed = urlparse(origin.strip())
+    try:
+        parsed = urlparse(origin.strip())
+    except ValueError:
+        return None
     if parsed.scheme not in ("http", "https"):
         return None
-    host = parsed.hostname
+    try:
+        host = parsed.hostname
+    except ValueError:
+        return None
     if not host:
         return None
     if parsed.path not in ("", "/"):
@@ -86,9 +98,14 @@ def canonicalize_origin(origin: str) -> str | None:
         return None
     if parsed.username or parsed.password:
         return None
+    try:
+        port = parsed.port
+    except ValueError:
+        return None
     scheme = parsed.scheme.lower()
-    host = host.lower()
-    port = parsed.port
+    # ``hostname`` is already lowercased; re-bracket IPv6 literals so the
+    # canonical origin remains a valid URL host.
+    host = f"[{host}]" if ":" in host else host
     default_port = 443 if scheme == "https" else 80
     if port is not None and port != default_port:
         return f"{scheme}://{host}:{port}"

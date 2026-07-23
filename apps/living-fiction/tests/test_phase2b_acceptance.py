@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import re
 import sqlite3
 import threading
@@ -7,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app import auth
@@ -15,15 +17,32 @@ from app import choice_repository as choice_repo
 from app import choice_service
 from app import episode_repository as ep_repo
 from app import reader_repository as reader_repo
+from app import review_decision_repository as rd_repo
 from app import review_service
 from app.ai.mock import MockProvider
 from app.config import Settings, canonicalize_origin, settings
 from app.db import apply_migrations, get_connection
 from app.dev_seed import _seed_canon, _seed_invite, _seed_world
 from app.preview_data import BRANCH_EPISODE_CONTENT, BRANCH_EPISODE_PLAN, WORLD_STATE
+from app.utils import now_utc_iso
+from app.web import _expected_origin, _verify_request_origin
 
 WORLD_ID = WORLD_STATE.world_id
 CANON_CHECKPOINT_ID = "checkpoint-canon-1"
+
+
+def _strong_test_value(label: str) -> str:
+    """Deterministically derive a structurally strong, distinct test secret.
+
+    Generates a high-entropy value at runtime (instead of committing a literal
+    that secret scanners flag) while keeping tests reproducible. Each label
+    yields a unique >=32-char value that is not a repeating pattern or
+    placeholder, so production secret-validation success tests stay meaningful.
+    """
+    digest = hashlib.sha256(
+        f"living-fiction-test-{label}".encode("utf-8")
+    ).hexdigest()
+    return f"lf-test-{label}-{digest}"
 
 
 def _extract_csrf(html: str) -> str:
@@ -359,13 +378,23 @@ def test_concurrent_different_choice_first_wins_second_conflict(app_client, temp
         f1.result(timeout=15)
         f2.result(timeout=15)
 
+    # Exactly one divergent submission wins (303 PRG redirect); the other is a
+    # privacy-safe conflict (409). Any other combination (two 303s, a 500, etc.)
+    # would mean the one-choice-per-canon contract broke under concurrency.
+    assert sorted(results) == [303, 409]
+
     conn = get_connection(temp_db_path)
     try:
         choice_count = conn.execute("SELECT COUNT(*) FROM reader_choices").fetchone()[0]
+        branch_count = conn.execute("SELECT COUNT(*) FROM branches").fetchone()[0]
+        personal_ep_count = conn.execute(
+            "SELECT COUNT(*) FROM episodes WHERE episode_type = 'personal_branch'"
+        ).fetchone()[0]
     finally:
         conn.close()
     assert choice_count == 1
-    assert 409 in results or 303 in results
+    assert branch_count == 1
+    assert personal_ep_count == 1
 
 
 def test_reader_admin_same_raw_token_different_db_digest(db_conn):
@@ -547,9 +576,9 @@ def test_admin_logout_bad_origin_403(app_client, temp_db_path):
 def test_production_missing_allowed_origins_startup_fails():
     s = Settings(
         env="production",
-        admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
-        credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
-        session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("credential"),
+        session_hmac_key=_strong_test_value("session"),
         allowed_origins="",
     )
     with pytest.raises(ValueError):
@@ -566,9 +595,9 @@ def test_malformed_allowed_origin_startup_fails():
     ]:
         s = Settings(
             env="production",
-            admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
-            credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
-            session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
+            admin_secret=_strong_test_value("admin"),
+            credential_hmac_key=_strong_test_value("credential"),
+            session_hmac_key=_strong_test_value("session"),
             allowed_origins=bad,
         )
         with pytest.raises(ValueError):
@@ -578,9 +607,9 @@ def test_malformed_allowed_origin_startup_fails():
 def test_valid_production_origin_startup_succeeds():
     s = Settings(
         env="production",
-        admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
-        credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
-        session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("credential"),
+        session_hmac_key=_strong_test_value("session"),
         allowed_origins="https://living-fiction.example.com",
     )
     s.validate_allowed_origins()
@@ -603,12 +632,52 @@ def test_unsupported_injected_provider_object_fails(temp_db_path):
         create_app(db_path=temp_db_path, provider=object(), enable_web=False)
 
 
+def _insert_canon_pointing_branch(db_conn, reader_id, canon_episode_id, choice_id):
+    """Insert an abnormal branch whose ``branch_episode_id`` targets canon.
+
+    This builds a real DB row (not a nonexistent id) that simulates a corrupted
+    or mis-targeted branch, so the review service's canon-protection guard can
+    be exercised against an actual branch record pointing at a canon episode.
+    """
+    branch_id = f"branch-canon-target-{choice_id}"
+    db_conn.execute(
+        "INSERT INTO branches (id, reader_id, canon_checkpoint_id, "
+        "prior_episode_id, branch_episode_id, reader_choice_id, status, "
+        "created_at) VALUES (?, ?, ?, ?, ?, ?, 'active', ?)",
+        (branch_id, reader_id, CANON_CHECKPOINT_ID, canon_episode_id,
+         canon_episode_id, choice_id, now_utc_iso()),
+    )
+    db_conn.commit()
+    return branch_id
+
+
 def test_review_service_rejects_canon_target(db_conn):
     _seed_world(db_conn)
     _seed_canon(db_conn)
     canon_ep = ep_repo.get_latest_published_canon_episode(db_conn, WORLD_ID)
+    canon_state_before = canon_ep.review_state
+    reader = reader_repo.create_reader(db_conn, display_name="Canon Target")
+    choice = choice_repo.create_reader_choice(
+        db_conn, choice_id="choice-canon-target", reader_id=reader.id,
+        canon_episode_id=canon_ep.id, choice_text="east",
+    )
+    branch_id = _insert_canon_pointing_branch(
+        db_conn, reader.id, canon_ep.id, choice.id
+    )
+
+    # Both decisions must refuse to touch a branch that targets a canon episode.
     with pytest.raises(review_service.ReviewDecisionError):
-        review_service.approve_branch(db_conn, branch_id="nonexistent-branch")
+        review_service.approve_branch(db_conn, branch_id=branch_id)
+    with pytest.raises(review_service.ReviewDecisionError):
+        review_service.reject_branch(
+            db_conn, branch_id=branch_id, rejection_reason="not allowed"
+        )
+
+    # Canon review_state is immutable and no audit rows were written.
+    canon_after = ep_repo.get_episode_by_id(db_conn, canon_ep.id)
+    assert canon_after.review_state == canon_state_before
+    assert rd_repo.get_decisions_for_branch(db_conn, branch_id) == []
+    assert rd_repo.get_decisions_for_episode(db_conn, canon_ep.id) == []
 
 
 def test_review_reason_normalization(db_conn):
@@ -618,8 +687,38 @@ def test_review_reason_normalization(db_conn):
     episode = ep_repo.get_latest_published_canon_episode(db_conn, WORLD_ID)
     r = _submit(db_conn, reader.id, episode.id, "east")
     assert r.status == "submitted"
-    branches = branch_repo.get_branches_by_reader(db_conn, reader.id)
-    branch_id = branches[0].id
+    branch = branch_repo.get_branches_by_reader(db_conn, reader.id)[0]
+    owner_before = branch.reader_id
+    prior_before = branch.prior_episode_id
+    checkpoint_before = branch.canon_checkpoint_id
+
+    review_service.reject_branch(
+        db_conn, branch_id=branch.id, rejection_reason="  품질   부족  "
+    )
+
+    # Episode is rejected and the audit row stores the normalized reason.
+    ep_after = ep_repo.get_episode_by_id(db_conn, branch.branch_episode_id)
+    assert ep_after.review_state == "rejected"
+    decisions = rd_repo.get_decisions_for_branch(db_conn, branch.id)
+    assert len(decisions) == 1
+    assert decisions[0].decision == "rejected"
+    assert decisions[0].rejection_reason == "품질 부족"
+
+    # Branch owner and canon binding are unchanged by the rejection.
+    branch_after = branch_repo.get_branch(db_conn, branch.id)
+    assert branch_after.reader_id == owner_before
+    assert branch_after.prior_episode_id == prior_before
+    assert branch_after.canon_checkpoint_id == checkpoint_before
+
+
+def test_review_reject_empty_reason_rejected(db_conn):
+    _seed_world(db_conn)
+    _seed_canon(db_conn)
+    reader = reader_repo.create_reader(db_conn, display_name="Empty Reason")
+    episode = ep_repo.get_latest_published_canon_episode(db_conn, WORLD_ID)
+    r = _submit(db_conn, reader.id, episode.id, "east")
+    assert r.status == "submitted"
+    branch_id = branch_repo.get_branches_by_reader(db_conn, reader.id)[0].id
     with pytest.raises(review_service.ReviewDecisionError):
         review_service.reject_branch(
             db_conn, branch_id=branch_id, rejection_reason="   "
@@ -704,6 +803,15 @@ def test_canonicalize_origin_normalizes_variants():
     )
 
 
+def test_canonicalize_origin_supports_ipv6_with_brackets():
+    # IPv6 hosts keep their brackets so the canonical origin stays a valid URL.
+    assert canonicalize_origin("http://[::1]:8000") == "http://[::1]:8000"
+    assert (
+        canonicalize_origin("https://[2001:db8::1]")
+        == "https://[2001:db8::1]"
+    )
+
+
 def test_canonicalize_origin_rejects_malformed():
     for bad in [
         "not-a-url",
@@ -714,6 +822,11 @@ def test_canonicalize_origin_rejects_malformed():
         "https://user:pass@example.com",
         "https://",
         "",
+        # Malformed / out-of-range ports and malformed IPv6 must not raise —
+        # they canonicalize to None so callers can return a generic 403.
+        "https://example.com:notaport",
+        "https://example.com:99999",
+        "https://[invalid",
     ]:
         assert canonicalize_origin(bad) is None
 
@@ -721,9 +834,9 @@ def test_canonicalize_origin_rejects_malformed():
 def test_production_allowed_origins_canonicalized_and_deduped():
     s = Settings(
         env="production",
-        admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
-        credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
-        session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("credential"),
+        session_hmac_key=_strong_test_value("session"),
         allowed_origins="HTTPS://Example.com/,https://example.com:443,https://example.com",
     )
     s.validate_allowed_origins()
@@ -766,6 +879,130 @@ def test_configured_origin_canonicalization_rejects_mismatch(app_client):
         assert resp.status_code == 403
     finally:
         settings.allowed_origins = orig
+
+
+# ── §3 request-origin verification contract (Origin + Host fallback) ──────
+
+
+class _FakeRequestURL:
+    def __init__(self, scheme: str):
+        self.scheme = scheme
+
+
+class _FakeRequest:
+    """Minimal stand-in exposing only what ``_verify_request_origin`` reads."""
+
+    def __init__(self, scheme: str = "https", headers: dict | None = None):
+        self.url = _FakeRequestURL(scheme)
+        self.headers = headers or {}
+
+
+def _assert_origin_rejected(request) -> None:
+    with pytest.raises(HTTPException) as exc:
+        _verify_request_origin(request)
+    assert exc.value.status_code == 403
+
+
+def test_verify_origin_malformed_port_is_403_not_500():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        # A malformed port must canonicalize to None -> generic 403, never a
+        # ValueError bubbling up as HTTP 500.
+        _assert_origin_rejected(
+            _FakeRequest(headers={"origin": "https://example.com:notaport"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_out_of_range_port_is_403():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        _assert_origin_rejected(
+            _FakeRequest(headers={"origin": "https://example.com:99999"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_malformed_ipv6_is_403():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        _assert_origin_rejected(
+            _FakeRequest(headers={"origin": "https://[invalid"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_configured_mismatch_is_403():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        _assert_origin_rejected(
+            _FakeRequest(headers={"origin": "https://other.example.com"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_canonical_match_succeeds():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        # Superficial variant (case + trailing slash) canonicalizes to the
+        # configured origin and is accepted.
+        _verify_request_origin(
+            _FakeRequest(headers={"origin": "HTTPS://Example.com/"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_host_fallback_malformed_host_is_403():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        # No Origin header; a malformed Host must not crash -> generic 403.
+        _assert_origin_rejected(
+            _FakeRequest(scheme="https", headers={"host": "[invalid"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_host_fallback_scheme_mismatch_is_403():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        # http request cannot satisfy an https allowlist entry (full-origin,
+        # not host-only, comparison).
+        _assert_origin_rejected(
+            _FakeRequest(scheme="http", headers={"host": "example.com"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_verify_origin_host_fallback_default_port_succeeds():
+    orig = settings.allowed_origins
+    settings.allowed_origins = "https://example.com"
+    try:
+        # HTTPS request with an explicit default port canonicalizes to the
+        # configured origin and is accepted via the Host fallback.
+        _verify_request_origin(
+            _FakeRequest(scheme="https", headers={"host": "example.com:443"})
+        )
+    finally:
+        settings.allowed_origins = orig
+
+
+def test_expected_origin_uses_scheme_and_host():
+    req = _FakeRequest(scheme="https", headers={"host": "example.com:443"})
+    assert _expected_origin(req) == "https://example.com:443"
 
 
 # ── §5 pre-auth CSRF TTL ──────────────────────────────────────────────────

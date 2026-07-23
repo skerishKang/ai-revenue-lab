@@ -12,6 +12,7 @@ Covers the CTO-review defect fixes:
 - Web secrets fail closed and are validated strictly in production (Defect 10)
 """
 
+import hashlib
 import re
 import subprocess
 import sys
@@ -32,6 +33,20 @@ WORLD_ID = WORLD_STATE.world_id
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
+
+
+def _strong_test_value(label: str) -> str:
+    """Deterministically derive a structurally strong, distinct test secret.
+
+    Generates a high-entropy value at runtime (instead of committing a literal
+    that secret scanners flag) while keeping tests reproducible. Each label
+    yields a unique >=32-char value that is not a repeating pattern or
+    placeholder, so production secret-validation success tests stay meaningful.
+    """
+    digest = hashlib.sha256(
+        f"living-fiction-test-{label}".encode("utf-8")
+    ).hexdigest()
+    return f"lf-test-{label}-{digest}"
 
 
 def _extract_csrf(html: str) -> str:
@@ -492,8 +507,8 @@ def test_secret_validation_prod_rejects_placeholder():
 def test_secret_validation_prod_accepts_structurally_strong_distinct():
     s = Settings(
         env="production",
-        admin_secret="x9Kq2mZ7vR4wLpN8bT1cY6hJ3fG5dS0eA",
-        credential_hmac_key="Wn5tY8uI2oP4lK7jH3gF6dS9aQ1wE5rT",
-        session_hmac_key="Mz8xCvB6nL4kJ2hG9fD3sA7qW1eR5tY8",
+        admin_secret=_strong_test_value("admin"),
+        credential_hmac_key=_strong_test_value("credential"),
+        session_hmac_key=_strong_test_value("session"),
     )
     s.validate_web_secrets()  # no error

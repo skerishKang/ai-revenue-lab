@@ -241,13 +241,16 @@ def _verify_request_origin(request: Request) -> None:
                 status_code=403, detail="Invalid request origin"
             )
         return
-    # No Origin header — fall back to a Host check.
+    # No Origin header — fall back to verifying the request's own origin
+    # (scheme + Host) against the allowlist as a *full* origin. A host-only
+    # comparison would ignore scheme and port, so an http request could satisfy an
+    # https allowlist entry; comparing the canonical expected origin closes that.
     host = request.headers.get("host")
     if not host:
         raise HTTPException(status_code=403, detail="Invalid request origin")
     if configured:
-        allowed_hosts = {o.split("://", 1)[-1] for o in configured}
-        if host.lower() not in allowed_hosts:
+        expected = canonicalize_origin(_expected_origin(request))
+        if expected is None or expected not in configured:
             raise HTTPException(
                 status_code=403, detail="Invalid request origin"
             )
