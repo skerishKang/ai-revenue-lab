@@ -14,4 +14,4 @@
 # staging API origin (must match API_BASE in staging/assets/config.js).
 /staging/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self'; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://ai-revenue-lab-identity.firebaseapp.com https://ai-revenue-living-travel-staging--web.modal.run; frame-src https://ai-revenue-lab-identity.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self'; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://ai-revenue-lab-identity.firebaseapp.com https://padiemipu--ai-revenue-living-travel-staging-web.modal.run; frame-src https://ai-revenue-lab-identity.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'

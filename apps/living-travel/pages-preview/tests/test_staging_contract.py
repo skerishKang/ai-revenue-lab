@@ -34,7 +34,7 @@ HEADERS_FILE = SITE_DIR / "_headers"
 # Pinned values the contract fixes. If these change, the SDK import URLs in
 # firebase.js, API_BASE in config.js, and the /staging/* CSP must change too.
 EXPECTED_SDK_VERSION = "12.16.0"
-EXPECTED_API_ORIGIN = "https://ai-revenue-living-travel-staging--web.modal.run"
+EXPECTED_API_ORIGIN = "https://padiemipu--ai-revenue-living-travel-staging-web.modal.run"
 EXPECTED_AUTH_DOMAIN = "ai-revenue-lab-identity.firebaseapp.com"
 
 STAGING_HTML = ["index.html", "traveler.html", "operator.html"]
@@ -294,6 +294,157 @@ class TestStagingLabels(unittest.TestCase):
     def test_synthetic_notice_present(self) -> None:
         for rel in STAGING_HTML:
             self.assertIn(SYNTHETIC_MARKER, _read(rel), f"{rel}: missing synthetic notice")
+
+
+# ---- Email/Password auth contract -------------------------------------------
+
+FORBIDDEN_AUTH_UI_PATTERNS = [
+    re.compile(r"sign.?up", re.IGNORECASE),
+    re.compile(r"reset.*password|password.*reset", re.IGNORECASE),
+    re.compile(r"create.?account", re.IGNORECASE),
+    re.compile(r"register", re.IGNORECASE),
+]
+CONSOLE_CREDENTIAL_RE = re.compile(
+    r"""console\.(log|error|warn|debug)\s*\(.*(?:email|password|token|credential|secret|authorization|bearer)""",
+    re.IGNORECASE,
+)
+
+
+class TestEmailAuthContract(unittest.TestCase):
+    """Contract tests for the Email/Password authentication implementation."""
+
+    def test_firebase_imports_sign_in_with_email_and_password(self) -> None:
+        text = _read("assets/firebase.js")
+        self.assertIn(
+            "signInWithEmailAndPassword",
+            text,
+            "firebase.js must import signInWithEmailAndPassword",
+        )
+
+    def test_firebase_exports_sign_in_with_email_wrapper(self) -> None:
+        text = _read("assets/firebase.js")
+        self.assertIn(
+            "export function signInWithEmail",
+            text,
+            "firebase.js must export a signInWithEmail wrapper",
+        )
+
+    def test_sign_in_with_email_delegates_to_sdk(self) -> None:
+        text = _read("assets/firebase.js")
+        self.assertIn(
+            "signInWithEmailAndPassword(auth, email, password)",
+            text,
+            "signInWithEmail must delegate to the SDK function",
+        )
+
+    def test_email_input_type_email(self) -> None:
+        html = _read("index.html")
+        login_email_line = [
+            l for l in html.splitlines() if 'id="login-email"' in l
+        ]
+        self.assertTrue(login_email_line, "login-email input not found")
+        self.assertIn(
+            'type="email"', login_email_line[0],
+            "login-email input must have type='email'",
+        )
+
+    def test_email_input_autocomplete_username(self) -> None:
+        html = _read("index.html")
+        login_email_line = [
+            l for l in html.splitlines() if 'id="login-email"' in l
+        ]
+        self.assertTrue(login_email_line, "login-email input not found")
+        self.assertIn(
+            'autocomplete="username"', login_email_line[0],
+            "login-email input must have autocomplete='username'",
+        )
+
+    def test_password_input_type_password(self) -> None:
+        html = _read("index.html")
+        login_pass_line = [
+            l for l in html.splitlines() if 'id="login-password"' in l
+        ]
+        self.assertTrue(login_pass_line, "login-password input not found")
+        self.assertIn(
+            'type="password"', login_pass_line[0],
+            "login-password input must have type='password'",
+        )
+
+    def test_password_input_autocomplete_current_password(self) -> None:
+        html = _read("index.html")
+        login_pass_line = [
+            l for l in html.splitlines() if 'id="login-password"' in l
+        ]
+        self.assertTrue(login_pass_line, "login-password input not found")
+        self.assertIn(
+            'autocomplete="current-password"', login_pass_line[0],
+            "login-password input must have autocomplete='current-password'",
+        )
+
+    def test_no_sign_up_password_reset_or_register_ui(self) -> None:
+        errors: list[str] = []
+        for rel in STAGING_HTML:
+            text = _read(rel)
+            for pattern in FORBIDDEN_AUTH_UI_PATTERNS:
+                if pattern.search(text):
+                    errors.append(
+                        f"{rel}: contains forbidden auth UI pattern: {pattern.pattern}"
+                    )
+        self.assertEqual(
+            errors, [], "Sign-up/password-reset UI must not appear:\n" + "\n".join(errors)
+        )
+
+    def test_no_credential_console_output(self) -> None:
+        errors: list[str] = []
+        for rel in STAGING_JS:
+            text = _read(rel)
+            if CONSOLE_CREDENTIAL_RE.search(text):
+                errors.append(f"{rel}: console.* may output credential data")
+        self.assertEqual(
+            errors, [], "Console must not log credentials:\n" + "\n".join(errors)
+        )
+
+    def test_no_raw_firebase_error_message_in_app_index(self) -> None:
+        """app-index.js must not display the raw Firebase err.message to the user."""
+        text = _read("assets/app-index.js")
+        forbidden = [
+            "err.message",
+            "error.message",
+        ]
+        for token in forbidden:
+            self.assertNotIn(token, text, f"app-index.js must not reference '{token}' in error display")
+
+    def test_generic_login_error_used(self) -> None:
+        text = _read("assets/app-index.js")
+        # Email sign-in handler must use the generic message.
+        self.assertIn(
+            "로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.",
+            text,
+        )
+
+    def test_google_sign_in_preserved(self) -> None:
+        html = _read("index.html")
+        self.assertIn("Google", html, "Google sign-in button must still be present")
+        js = _read("assets/app-index.js")
+        self.assertIn("signInWithGoogle", js, "app-index.js must still import signInWithGoogle")
+
+    def test_no_credential_stored_in_web_storage_by_app_scripts(self) -> None:
+        errors: list[str] = []
+        for rel in STAGING_JS:
+            text = _read(rel)
+            if WEB_STORAGE_RE.search(text):
+                errors.append(f"{rel}: uses Web Storage member access")
+        self.assertEqual(
+            errors,
+            [],
+            "No staging script may store email/password/token in Web Storage:\n"
+            + "\n".join(errors),
+        )
+
+    def test_email_form_has_no_role_selection_ui(self) -> None:
+        html = _read("index.html")
+        self.assertNotIn("traveler", html.split('id="email-auth-form"')[1].split('</div>')[0].lower(),
+                         msg="Email auth form must not contain role selection UI")
 
 
 if __name__ == "__main__":
