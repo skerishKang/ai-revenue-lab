@@ -308,7 +308,7 @@ class TestPreviewStates:
         assert "YouTube 정보" in feed
         assert "이 영상이 추천된 이유" in feed
         record = _read(preview_dir / "records/pv-rec-0001/index.html")
-        assert "나의 기록" in record
+        assert "기록" in record
 
 
 class TestNoJinjaTokens:
@@ -742,7 +742,8 @@ class TestReferencePortPresentation:
         for html_file in _all_html_files(preview_dir):
             content = _read(html_file)
             rel = html_file.relative_to(preview_dir)
-            assert 'class="topbar"' in content, f"Missing topbar in {rel}"
+            assert 'class="portalbar"' in content, f"Missing portalbar in {rel}"
+            assert 'class="productbar"' in content, f"Missing productbar in {rel}"
             assert 'class="mobile-nav"' in content, f"Missing mobile-nav in {rel}"
             assert 'class="shell"' in content, f"Missing shell wrapper in {rel}"
 
@@ -757,7 +758,7 @@ class TestReferencePortPresentation:
         for html_file in _all_html_files(preview_dir):
             content = _read(html_file)
             rel = html_file.relative_to(preview_dir)
-            assert "lang-switch" in content, f"Missing lang switch in {rel}"
+            assert "lang-button" in content, f"Missing lang switch in {rel}"
 
     def test_locale_html_lang_attribute(self, preview_dir):
         ko_root = _read(preview_dir / "index.html")
@@ -810,4 +811,119 @@ class TestReferencePortPresentation:
         assert "feed-body" in content, "Topic feed cards missing feed-body"
         assert "match-line" in content, "Topic feed cards missing match-line"
         assert "card-actions" in content, "Topic feed cards missing card-actions"
+
+
+class TestPortalShellPresentation:
+    """Strict contracts for the two-level portal shell (Issue #83 port)."""
+
+    def test_global_portal_bar_on_every_page(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert 'class="portalbar"' in content, f"Missing portalbar in {rel}"
+            assert "AI Revenue Lab" in content, f"Missing portal identity in {rel}"
+            assert 'class="portal-mark"' in content, f"Missing portal mark in {rel}"
+            assert 'class="service-switcher"' in content, (
+                f"Missing service switcher in {rel}"
+            )
+            assert 'class="account-button"' in content, (
+                f"Missing account entry in {rel}"
+            )
+
+    def test_business_13_product_identity_on_every_page(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert 'class="productbar"' in content, f"Missing productbar in {rel}"
+            assert 'class="product-kicker"' in content, (
+                f"Missing Business 13 kicker in {rel}"
+            )
+            assert "Business 13" in content, f"Missing Business 13 marker in {rel}"
+
+    def test_global_and_product_nav_semantically_distinct(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            portal_start = content.index('class="portalbar"')
+            product_start = content.index('class="productbar"')
+            page_start = content.index('class="page"')
+            assert portal_start < product_start < page_start, (
+                f"Shell layer order broken in {rel}"
+            )
+            global_block = content[portal_start:product_start]
+            assert "service-switcher" in global_block, (
+                f"Service switcher outside global bar in {rel}"
+            )
+            assert "account-button" in global_block, (
+                f"Account entry outside global bar in {rel}"
+            )
+            assert 'class="main-nav"' not in global_block, (
+                f"Product nav merged into global bar in {rel}"
+            )
+            assert 'class="main-nav"' in content[product_start:page_start], (
+                f"Product nav missing from product bar in {rel}"
+            )
+
+    def test_portal_mock_destinations_never_leak(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert "portal.html" not in content, f"Mock portal.html link in {rel}"
+            assert "account.html" not in content, f"Mock account.html link in {rel}"
+
+    def test_absent_portal_base_renders_safe_placeholders(self, preview_dir):
+        for path in ("index.html", "en/index.html"):
+            content = _read(preview_dir / path)
+            assert '<span class="portal-brand"' in content, (
+                f"{path}: portal brand should be a non-navigating placeholder"
+            )
+            assert '<span class="service-switcher"' in content, path
+            assert '<span class="portal-services"' in content, path
+            assert '<span class="account-button"' in content, path
+            assert '<a class="portal-brand"' not in content, path
+            assert '<a class="account-button"' not in content, path
+
+    def test_portal_urls_carry_no_private_material(self, preview_dir):
+        pattern = re.compile(
+            r"(token|api[_-]?key|uid|secret|password|invite[_-]?code)=",
+            re.IGNORECASE,
+        )
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            assert not pattern.search(content), f"Private material in URL in {rel}"
+
+    def test_mobile_bottom_nav_is_product_local(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir)
+            nav_block = content[content.index('class="mobile-nav"'):]
+            assert "AI Revenue Lab" not in nav_block, (
+                f"Global identity leaked into mobile bottom nav in {rel}"
+            )
+            assert "service-switcher" not in nav_block, rel
+            assert "account-button" not in nav_block, rel
+
+    def test_global_shell_korean_english_parity(self, preview_dir):
+        ko = _read(preview_dir / "index.html")
+        en = _read(preview_dir / "en/index.html")
+        for token in ("서비스", "모든 서비스", "계정", "나의 영상 아카이브"):
+            assert token in ko, f"Korean global shell missing '{token}'"
+        for token in ("Service", "All services", "Account", "Personal Video Archive"):
+            assert token in en, f"English global shell missing '{token}'"
+
+    def test_product_nav_reference_items_both_locales(self, preview_dir):
+        ko = _read(preview_dir / "index.html")
+        en = _read(preview_dir / "en/index.html")
+        for label in ("홈", "토픽", "기록", "다시 보기"):
+            assert f">{label}</a>" in ko, f"Korean product nav missing '{label}'"
+        for label in ("Home", "Topics", "Notes", "Resurface"):
+            assert f">{label}</a>" in en, f"English product nav missing '{label}'"
+
+    def test_home_page_identity_both_locales(self, preview_dir):
+        for path in ("index.html", "en/index.html"):
+            content = _read(preview_dir / path)
+            assert 'class="page-identity"' in content, path
+            assert 'class="page-business"' in content, path
+            assert 'id="resurface"' in content, path
 
