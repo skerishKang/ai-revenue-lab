@@ -1,0 +1,89 @@
+name: Korean AI Platform CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "apps/korean-ai-platform/**"
+      - ".github/workflows/korean-ai-platform-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/korean-ai-platform/**"
+      - ".github/workflows/korean-ai-platform-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: korean-ai-platform-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/korean-ai-platform/pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Run test suite
+        run: python -m pytest -q
+
+      - name: Run warning-strict test suite
+        run: python -m pytest -q -W error -W "ignore::starlette.exceptions.StarletteDeprecationWarning"
+
+      - name: Compile bytecode
+        run: python -m compileall -q app tests
+
+      - name: Startup import smoke
+        run: python -c "from app.main import app; assert app.title"
+
+      - name: Check whitespace in changed range
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+            git fetch origin "${{ github.event.pull_request.base.ref }}" --no-tags
+            echo "Pull request whitespace check: ${BASE}..${HEAD}"
+            git diff --check "${BASE}" "${HEAD}"
+          else
+            BEFORE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+            ZERO="0000000000000000000000000000000000000000"
+            if [ -z "${BEFORE}" ] || [ "${BEFORE}" = "${ZERO}" ]; then
+              if git rev-parse --verify origin/main >/dev/null 2>&1; then
+                BEFORE="$(git rev-parse origin/main)"
+                echo "No previous SHA; comparing against origin/main"
+              else
+                BEFORE="$(git hash-object -t tree /dev/null)"
+                echo "No previous SHA and no origin/main; comparing against empty tree"
+              fi
+            fi
+            echo "Push whitespace check: ${BEFORE}..${HEAD}"
+            git diff --check "${BEFORE}" "${HEAD}"
+          fi
