@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Living Learning 운영자 검토 대기 목록 — pending_review 기본, 자동 출판 없음 (합성 데이터 UI 프리뷰)">
+<title>운영자 검토 · Living Learning UI Preview</title>
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<div class="preview-banner" role="note" aria-label="프리뷰 안내">
+  <span class="preview-banner__dot" aria-hidden="true"></span>
+  <strong>UI Preview</strong>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>Synthetic learner</span>
+  <span class="preview-banner__sep" aria-hidden="true">·</span>
+  <span>No persistence</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar__brand" href="/" aria-label="Living Learning 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4 3-7 8-7s8 3 8 7"/><path d="M4 15h16"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/></svg></span>
+      <span class="brand-text"><span class="brand-text__name">Living Learning</span><span class="brand-text__tag">ADAPTIVE LEARNING STUDIO</span></span>
+    </a>
+    <nav class="sidebar__nav" aria-label="주요 메뉴">
+      <span class="nav-label">학습</span>
+      <a class="nav-link" href="/home/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>학습 홈</a>
+      <a class="nav-link" href="/lesson-1/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>오늘의 10분 수업</a>
+      <a class="nav-link" href="/progress/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>진도 · 숙련도</a>
+      <a class="nav-link" href="/history/"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>학습 이력</a>
+      <span class="nav-label">운영</span>
+      <a class="nav-link" href="/review/" aria-current="page"><svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>운영자 검토<span class="nav-link__badge">3</span></a>
+    </nav>
+    <div class="ai-status">
+      <div class="ai-status__head"><span class="ai-status__pulse" aria-hidden="true"></span>검토 상태</div>
+      <div class="ai-status__row"><span>기본값</span><b>pending_review</b></div>
+      <div class="ai-status__row"><span>자동 출판</span><b>비활성</b></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar__crumb">운영 · <b>운영자 검토</b></span>
+      <span class="topbar__spacer"></span>
+      <span class="badge badge--warning"><span class="badge__dot"></span>승인·출판 기능 없음</span>
+    </div>
+
+    <div class="content content--wide">
+      <div class="page-head rise">
+        <span class="eyebrow"><span class="eyebrow__line"></span>운영자 검토</span>
+        <h1>검토 대기 목록</h1>
+        <p>제품 계약상 생성된 수업은 자동 출판되지 않고 <span class="mono">pending_review</span> 상태로 여기에 쌓입니다. 이 프리뷰에는 승인·출판 기능이 없습니다.</p>
+      </div>
+
+      <div class="stat-cards rise rise-1">
+        <div class="stat-card"><b>3</b><span>검토 대기</span></div>
+        <div class="stat-card"><b>2</b><span>생성 완료</span></div>
+        <div class="stat-card"><b>1</b><span>검증 통과</span></div>
+        <div class="stat-card"><b>0</b><span>출판됨 <span class="muted">(항상 0)</span></span></div>
+      </div>
+
+      <div class="table-wrap mt-8 rise rise-2">
+        <table>
+          <caption class="muted small">검토 대기 중인 생성 수업 (모두 합성 학습자)</caption>
+          <thead>
+            <tr>
+              <th scope="col">학습자(익명)</th>
+              <th scope="col">수업 개념</th>
+              <th scope="col">생성 상태</th>
+              <th scope="col">검증 결과</th>
+              <th scope="col">개인화 방향</th>
+              <th scope="col">상태</th>
+              <th scope="col">상세</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="mono">LL-0417</span></td>
+              <td>변수 심화</td>
+              <td><span class="badge badge--success"><span class="badge__dot"></span>생성 완료</span></td>
+              <td><span class="badge badge--success">검증 통과</span></td>
+              <td>코드 먼저 · 예제 3개</td>
+              <td><span class="badge badge--warning">pending_review</span></td>
+              <td><a class="btn btn--ghost btn--sm" href="/review/ll-0417/">수업 상세</a></td>
+            </tr>
+            <tr>
+              <td><span class="mono">LL-0391</span></td>
+              <td>조건문 입문</td>
+              <td><span class="badge badge--success"><span class="badge__dot"></span>생성 완료</span></td>
+              <td><span class="badge badge--warning">검증 보류 · 근거 부족</span></td>
+              <td>예제 먼저 · 느린 속도</td>
+              <td><span class="badge badge--warning">pending_review</span></td>
+              <td><span class="muted small">검증 보류로 상세 제한</span></td>
+            </tr>
+            <tr>
+              <td><span class="mono">LL-0402</span></td>
+              <td>값과 자료형</td>
+              <td><span class="badge badge--error"><span class="badge__dot"></span>생성 실패 · 재시도 대기</span></td>
+              <td><span class="badge badge--neutral">검증 안 함</span></td>
+              <td>—</td>
+              <td><span class="badge badge--warning">pending_review</span></td>
+              <td><span class="muted small">생성 실패로 상세 없음</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warning mt-6 rise rise-3">
+        <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17h.01"/></svg>
+        <span>이 화면은 검토 대기 상태를 <b>조회</b>만 합니다. 승인·출판·삭제 버튼은 의도적으로 제공되지 않으며, 어떤 수업도 학습자에게 자동 노출되지 않습니다.</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
