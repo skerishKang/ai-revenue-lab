@@ -1,184 +1,150 @@
 # Living Travel External Staging Evidence (Issue #74)
 
-**Date**: 2026-07-24
-**PR**: #88 (Draft)
-**Branch**: `ops/living-travel-external-staging-74`
+**Date**: 2026-07-24  
+**PR**: #88  
+**Branch**: `ops/living-travel-external-staging-74`  
 **Deployment source**: PR #88 current head, verified through the Living Travel Cloudflare deployment status.
 
-## Infrastructure Summary
+## Infrastructure
 
-| Component | Details |
-|-----------|---------|
-| **Neon** | Project: `ai-revenue-living-travel` |
-| | Region: `aws-ap-southeast-1` |
-| | PostgreSQL: 17.10 |
-| | Pooled endpoint verified |
-| | Direct endpoint verified |
-| **Modal** | App: `ai-revenue-living-travel-staging` |
-| | URL: `https://padiemipu--ai-revenue-living-travel-staging-web.modal.run` |
-| | Secret: `ai-revenue-living-travel-staging` (8 keys) |
-| **Cloudflare Pages** | Project: `ai-revenue-living-travel` |
-| | Production: `https://ai-revenue-living-travel.pages.dev` |
-| | Stable branch preview: `https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev` |
-| **Firebase** | Project: `ai-revenue-lab-identity` |
-| | Web App: `living-travel-staging` |
-| | Email/Password provider: enabled |
-| | Authorized domains: production + stable branch preview + localhost |
+| Component | Verified staging resource |
+|---|---|
+| Neon | `ai-revenue-living-travel`, `aws-ap-southeast-1`, PostgreSQL 17.10 |
+| Modal | `ai-revenue-living-travel-staging` |
+| Modal endpoint | `https://padiemipu--ai-revenue-living-travel-staging-web.modal.run` |
+| Cloudflare Pages | `ai-revenue-living-travel` |
+| Production origin | `https://ai-revenue-living-travel.pages.dev` |
+| Stable branch preview | `https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev` |
+| Firebase project | `ai-revenue-lab-identity` |
+| Firebase Web App | `living-travel-staging` |
 
-## Verification Results
+The pooled runtime and direct migration endpoints were verified independently. Connection strings, hostnames, passwords, service-account details, account emails, Firebase UIDs, invitation codes, and internal entity IDs are not recorded here.
 
-### 1. Neon PostgreSQL
+## External staging verification
 
-- [x] Project created
-- [x] PostgreSQL 17.10
-- [x] Pooled endpoint verified
-- [x] Direct endpoint verified
+### Database and API
 
-### 2. Modal Deployment
+- [x] Dedicated Neon project and database operational
+- [x] PostgreSQL 17.10 confirmed
+- [x] Pooled runtime endpoint verified
+- [x] Direct migration endpoint verified
+- [x] Modal Secret configured with the required eight keys
+- [x] Modal application deployed
+- [x] `/health` returns `200 {"status":"ok"}`
+- [x] Startup migrations complete successfully
+- [x] No SQLite persistent volume is used by Modal
 
-- [x] Secret created (8 keys)
-- [x] App deployed
-- [x] `/health` returns `{"status":"ok"}`
-- [x] CORS: production origin allowed
-- [x] CORS: stable branch preview origin allowed
-- [x] CORS: unauthorized origin rejected (no ACAO header)
-- [x] CORS: no wildcard
+### CORS and CSP
 
-### 3. Cloudflare Pages
+- [x] Production Pages origin allowed by CORS
+- [x] Stable branch preview origin allowed by CORS
+- [x] Unauthorized origin receives no `Access-Control-Allow-Origin`
+- [x] No wildcard CORS origin
+- [x] Staging CSP contains the exact Modal and Firebase origins
+- [x] No `unsafe-eval` or wildcard script origin
 
-- [x] Project exists
-- [x] Stable branch preview deployed
-- [x] CSP headers correct (connect-src includes Modal + Firebase origins)
-- [x] Staging page loads with correct Firebase config
+### Firebase browser authentication
 
-### 4. Firebase
-
-- [x] Web app created
-- [x] Public config configured
+- [x] Firebase public Web config connected
 - [x] Email/Password provider enabled
-- [x] Authorized domains: production + stable branch preview + localhost
+- [x] Dedicated synthetic operator account created
+- [x] Dedicated synthetic traveler account created
+- [x] Email input uses `type="email"` and `autocomplete="username"`
+- [x] Password input uses `type="password"` and `autocomplete="current-password"`
+- [x] No sign-up, password-reset, or role-selection UI
+- [x] Authentication failures render only generic messages
+- [x] Operator Email/Password sign-in resolves to `role=operator`
+- [x] Traveler sign-in resolves to `role=none` before claim and `role=traveler` after claim
+- [x] Google sign-in remains available as an optional live smoke path
+- [x] Application scripts do not store credentials or ID tokens in custom Web Storage
+- [x] Credentials are not written to DOM output, console output, logs, or evidence
 
-### 5. Browser Auth — Email/Password
+Synthetic staging credentials are held in a user-controlled secret store outside the repository. The repository contains no account emails, passwords, Firebase UIDs, or credential file paths.
 
-- [x] Firebase Email/Password provider activated via Identity Toolkit API
-- [x] Dedicated synthetic operator account created (Admin SDK)
-- [x] Dedicated synthetic traveler account created (Admin SDK)
-- [x] Credentials are stored in a user-controlled secret store outside the repository
-- [x] Staging UI updated: email/password form alongside Google login
-- [x] Password input: `type=password`
-- [x] No sign-up, password reset, or role selection UI
-- [x] Auth errors: generic messages only
-- [x] Operator email/password sign-in: `role=operator`
-- [x] Traveler email/password sign-in (before claim): `role=none`
-- [x] Traveler after invitation claim: `role=traveler`
-- [x] Token not stored in custom localStorage/sessionStorage
-- [x] Credentials not exposed in logs, DOM, or evidence
-- [x] Google login retained for live smoke test (not automated)
+### Invitation replay and authorization
 
-### 6. Invitation Replay
+| Scenario | Result |
+|---|---|
+| First invitation claim | 200 |
+| Same-identity replay | 400 `invitation_claim_failed` |
+| Foreign-identity replay | 400 `invitation_claim_failed` |
+| Raw invitation code stored in DB | No; digest-only contract verified |
+| Final non-revoked identity mapping | Exactly one |
+| Traveler own preferences and editions | 200 |
+| Traveler access to operator endpoint | 403 |
+| Unmapped identity access to traveler endpoint | 401 |
+| Unmapped `/me` | `role=none` |
+| Deactivated traveler API access | 401 |
+| Deactivated `/me` | `role=none` |
+| Reactivated `/me` | `role=traveler` |
 
-| Step | Result |
-|------|--------|
-| Traveler A first claim | ✓ 200 |
-| Same-UID replay | ✓ 400 `invitation_claim_failed` |
-| Foreign-UID claim | ✓ 400 `invitation_claim_failed` |
-| Raw code DB storage | ✓ not stored |
-| Final identity mapping | ✓ exactly 1 non-revoked mapping |
+### Feedback and publication state machine
 
-### 7. Authorization Boundary
+| Scenario | Result |
+|---|---|
+| First generation | 200, `pending_review` |
+| Publish first edition | 200, `published` |
+| Traveler feedback with direction choices | 200 |
+| Second generation | 200 |
+| Reject second edition | 200, `rejected` |
+| Duplicate publish | 409 |
+| Reject after publish | 409 |
+| Duplicate reject | 409 |
+| Publish after reject | 409 |
+| Traveler edition visibility | Published visible; rejected hidden |
 
-| Step | Result |
-|------|--------|
-| Traveler own preferences | ✓ 200 |
-| Traveler own editions | ✓ 200 |
-| Traveler → operator endpoint | ✓ 403 |
-| Unmapped identity → traveler endpoint | ✓ 401 |
-| Unmapped identity /me | ✓ role=none |
-| Deactivated traveler API | ✓ 401 |
-| Deactivated /me | ✓ role=none |
-| Reactivated /me | ✓ role=traveler |
+### Cold-start persistence
 
-### 8. Feedback & Publication Workflow
-
-| Step | Result |
-|------|--------|
-| Operator generate-first | ✓ 200, state=pending, gen=pending_review |
-| Operator publish | ✓ 200, state=published |
-| Traveler feedback (with directions) | ✓ 200 |
-| Operator generate-second | ✓ 200 |
-| Operator reject second | ✓ 200, state=rejected |
-| Duplicate publish | ✓ 409 |
-| Reject after publish | ✓ 409 |
-| Duplicate reject | ✓ 409 |
-| Publish after reject | ✓ 409 |
-| Traveler sees published only | ✓ count=1, rejected not visible |
-
-### 9. Cold-Start Persistence
-
-- [x] Scale-to-zero confirmed (60s scaledown window)
-- [x] New container cold start: ~8s response time
-- [x] `/health` 200 after cold start
-- [x] Migrations re-run successfully
-- [x] Operator mapping persists
-- [x] Traveler mapping persists
-- [x] Consumed invitation not reusable
+- [x] Modal scale-to-zero window confirmed at 60 seconds
+- [x] New-container cold start observed at approximately eight seconds
+- [x] Post-cold-start `/health` returns 200
+- [x] Migrations re-run idempotently
+- [x] Operator and traveler mappings persist
+- [x] Consumed invitation remains unusable
 - [x] Traveler active status persists
-- [x] Edition publication state persists
-- [x] Feedback/edition relationship persists
+- [x] Publication state persists
+- [x] Feedback-to-edition relationship persists
 - [x] Neon rows persist
-- [x] No SQLite Volume
-- [x] Modal logs: no secrets, DB URLs, or tokens exposed
+- [x] Modal logs contain no secret, database URL, or token exposure
 
-### 10. Local Tests
+## Local verification reported for final cleanup head
 
-- [x] Unit tests: 119 passed
-- [x] Staging contract tests: 36 passed
-- [x] Preview tests: 40 passed
-- [x] Packaging OK
-- [x] Secret scan: clean (no secrets in evidence or pages-preview)
+- [x] Unit tests: **119 passed**
+- [x] Staging contract tests: **50 passed**
+  - Existing contract coverage plus **14 Email/Password authentication contract tests**
+- [x] Pages preview tests: **54 passed**
+- [x] Packaging: source distribution and wheel built successfully
+- [x] Modal import: `modal import ok`
+- [x] `git diff --check`: clean
+- [x] Secret and identifier scan: clean
 
-## Code Changes
+GitHub Actions was not used as acceptance evidence under the repository's private-CI cost policy. The acceptance evidence is the reported local test execution, inspected source contracts, successful Living Travel Cloudflare deployment, and external synthetic staging verification.
 
-1. **modal_app.py**: Fix image build order (`.env()` before `add_local_dir`)
-2. **config.js**: Real Firebase public web config + actual Modal API_BASE
-3. **_headers**: CSP connect-src with exact Modal + Firebase origins
-4. **firebase.js**: Add `signInWithEmailAndPassword` import and `signInWithEmail` export
-5. **index.html**: Add Email/Password login form alongside Google login
-6. **app-index.js**: Add email/password form handler (generic error messages, no credential logging)
-7. **test_staging_contract.py**: Fix `EXPECTED_API_ORIGIN` to match actual Modal URL
+## Repository changes
 
-## Completion Criteria Status
+1. `modal_app.py`: correct Modal image build ordering
+2. `config.js`: apply the real public Firebase Web config and actual Modal API origin
+3. `_headers`: pin CSP to the actual Modal and Firebase origins
+4. `firebase.js`: add `signInWithEmailAndPassword` through a narrow wrapper
+5. `index.html`: add the staging Email/Password sign-in form while retaining Google sign-in
+6. `app-index.js`: add generic-error Email/Password handling without credential logging
+7. `test_staging_contract.py`: pin the actual API origin and add 14 Email/Password security-contract tests
+8. This report: retain sanitized staging evidence only
 
-| # | Criterion | Status |
-|---|-----------|--------|
-| 1 | Neon project created | ✓ |
-| 2 | PostgreSQL 16+ database | ✓ (PG 17.10) |
-| 3 | Pooled + direct verified | ✓ |
-| 4 | Modal Secret created | ✓ |
-| 5 | Modal app deployed | ✓ |
-| 6 | /health returns ok | ✓ |
-| 7 | CORS configured (exact origins, no wildcard) | ✓ |
-| 8 | Cloudflare Pages project | ✓ |
-| 9 | Staging frontend deployed (stable branch preview) | ✓ |
-| 10 | Firebase web app created | ✓ |
-| 11 | Email/Password provider enabled | ✓ |
-| 12 | Browser email/password sign-in verified | ✓ |
-| 13 | Invitation replay rejected | ✓ |
-| 14 | Authorization boundary enforced | ✓ |
-| 15 | Publication terminal transitions (409) | ✓ |
-| 16 | Cold-start persistence verified | ✓ |
-| 17 | Local tests pass | ✓ |
-| 18 | Secret scan clean | ✓ |
-| 19 | Draft PR created | ✓ |
+## Completion criteria
 
-**All completion criteria met.**
+- [x] Dedicated Neon PostgreSQL operational
+- [x] Pooled and direct endpoints separated and verified
+- [x] Modal staging API healthy
+- [x] Firebase Web App and Email/Password provider operational
+- [x] Exact authorized domains, CORS origins, and CSP origins configured
+- [x] Cloudflare Living Travel stable branch preview operational
+- [x] Operator and traveler browser authentication verified
+- [x] Invitation replay rejected
+- [x] Authorization boundaries enforced
+- [x] Publication terminal transitions enforced
+- [x] Cold-start persistence verified
+- [x] No secret or synthetic account identifier committed
+- [x] Final local and preview suites pass
 
-## Secret Storage
-
-Synthetic e2e credentials for the staging Email/Password flow are stored in a
-user-controlled secret store outside the repository (password manager / local
-secret store). The temporary /root/.secrets/ container path is ephemeral; the
-durable copy is managed independently by the operator.
-
-**No credentials, emails, UIDs, or file paths are recorded in this report or in
-the repository source code.**
+**Living Travel external staging completion criteria are satisfied.**
