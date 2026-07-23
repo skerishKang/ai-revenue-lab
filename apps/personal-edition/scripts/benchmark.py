@@ -42,6 +42,8 @@ from app.config import Settings
 from app.db import apply_migrations, get_connection
 from app.domain.enums import ProviderErrorCategory
 from app.pipeline.errors import (
+    NOT_ATTEMPTED,
+    PlanValidationError,
     PROVIDER_FAILED,
     VALIDATION_FAILED,
     VALIDATION_PASSED,
@@ -87,6 +89,25 @@ ALL_TASKS = [
 
 
 def _build_provider(settings: Settings, fixture: FixtureBundle | None = None):
+    force_failure = os.environ.get("BENCHMARK_FORCE_FAILURE")
+    if force_failure and settings.ai_provider == "mock":
+        if force_failure == "provider":
+            return MockProvider(
+                model="mock-test",
+                responses=[
+                    {"kind": "error", "task": "editorial_plan"},
+                    {"kind": "error", "task": "editorial_plan"},
+                    {"kind": "error", "task": "editorial_plan"},
+                ],
+            )
+        if force_failure == "model_quality":
+            return MockProvider(
+                model="mock-test",
+                responses=[
+                    {"kind": "payload", "task": "editorial_plan", "payload": {"invalid": True}},
+                ],
+            )
+
     if settings.ai_provider == "mock":
         model = settings.ai_model
         if fixture is not None and fixture.plan_payload and fixture.draft_payload:
@@ -160,17 +181,122 @@ def _create_benchmark_table(conn: sqlite3.Connection) -> None:
             synthetic_result_ref TEXT,
             human_correction_minutes REAL,
             is_provider_failure INTEGER NOT NULL DEFAULT 0,
-            is_model_quality_failure INTEGER NOT NULL DEFAULT 0
+            is_model_quality_failure INTEGER NOT NULL DEFAULT 0,
+            failure_detail TEXT,
+            failure_stage TEXT,
+            generation_run_refs TEXT
         )
         """
     )
-    try:
-        conn.execute("SELECT run_group FROM benchmark_runs LIMIT 1")
-    except sqlite3.OperationalError:
+
+    existing_cols = {
+        row[1]
+        for row in conn.execute("PRAGMA table_info(benchmark_runs)").fetchall()
+    }
+
+    for col, typedef in [
+        ("failure_detail", "TEXT"),
+        ("failure_stage", "TEXT"),
+        ("generation_run_refs", "TEXT"),
+        ("provider_call_count", "INTEGER NOT NULL DEFAULT 0"),
+        ("case_id", "TEXT"),
+        ("phase_name", "TEXT"),
+        ("upstream_failure_detail", "TEXT"),
+        ("upstream_failure_stage", "TEXT"),
+    ]:
+        if col not in existing_cols:
+            conn.execute(f"ALTER TABLE benchmark_runs ADD COLUMN {col} {typedef}")
+
+    if "run_group" not in existing_cols:
         conn.execute(
             "ALTER TABLE benchmark_runs "
             "ADD COLUMN run_group TEXT NOT NULL DEFAULT 'default'"
         )
+
+    has_old_constraint = False
+    try:
+        row = conn.execute(
+            "SELECT sql FROM sqlite_master "
+            "WHERE type='table' AND name='benchmark_runs'"
+        ).fetchone()
+        if row and row[0]:
+            ddl = row[0].upper()
+            if "CHECK" in ddl and "FAILURE_CATEGORY" in ddl:
+                has_old_constraint = True
+    except sqlite3.Error:
+        pass
+
+    if has_old_constraint:
+        conn.execute("ALTER TABLE benchmark_runs RENAME TO benchmark_runs_old")
+        conn.execute(
+            """
+            CREATE TABLE benchmark_runs (
+                id TEXT PRIMARY KEY,
+                benchmark_name TEXT NOT NULL,
+                fixture_name TEXT NOT NULL,
+                run_group TEXT NOT NULL DEFAULT 'default',
+                run_index INTEGER NOT NULL,
+                provider TEXT NOT NULL,
+                advertised_model TEXT NOT NULL,
+                task_type TEXT NOT NULL,
+                prompt_version TEXT,
+                started_at TEXT NOT NULL,
+                completed_at TEXT,
+                latency_seconds REAL,
+                success INTEGER NOT NULL DEFAULT 0,
+                failure_category TEXT,
+                error_category TEXT,
+                error_message TEXT,
+                retry_count INTEGER NOT NULL DEFAULT 0,
+                input_tokens INTEGER,
+                output_tokens INTEGER,
+                total_tokens INTEGER,
+                validation_result TEXT,
+                synthetic_result_ref TEXT,
+                human_correction_minutes REAL,
+                is_provider_failure INTEGER NOT NULL DEFAULT 0,
+                is_model_quality_failure INTEGER NOT NULL DEFAULT 0,
+                failure_detail TEXT,
+                failure_stage TEXT,
+                generation_run_refs TEXT,
+                provider_call_count INTEGER NOT NULL DEFAULT 0,
+                case_id TEXT,
+                phase_name TEXT,
+                upstream_failure_detail TEXT,
+                upstream_failure_stage TEXT
+            )
+            """
+        )
+        old_cols = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(benchmark_runs_old)").fetchall()
+        }
+        new_cols_list = [
+            "id", "benchmark_name", "fixture_name", "run_group", "run_index",
+            "provider", "advertised_model", "task_type", "prompt_version",
+            "started_at", "completed_at", "latency_seconds", "success",
+            "failure_category", "error_category", "error_message",
+            "retry_count", "input_tokens", "output_tokens", "total_tokens",
+            "validation_result", "synthetic_result_ref",
+            "human_correction_minutes", "is_provider_failure",
+            "is_model_quality_failure", "failure_detail", "failure_stage",
+            "generation_run_refs", "provider_call_count",
+            "case_id", "phase_name",
+            "upstream_failure_detail", "upstream_failure_stage",
+        ]
+        cols_to_copy = [c for c in new_cols_list if c in old_cols]
+        placeholders = ", ".join(["?"] * len(cols_to_copy))
+        col_names = ", ".join(cols_to_copy)
+        rows = conn.execute(
+            f"SELECT {col_names} FROM benchmark_runs_old"
+        ).fetchall()
+        for row in rows:
+            conn.execute(
+                f"INSERT INTO benchmark_runs ({col_names}) VALUES ({placeholders})",
+                tuple(row),
+            )
+        conn.execute("DROP TABLE benchmark_runs_old")
+
     conn.commit()
 
 
@@ -197,10 +323,19 @@ def _record_benchmark_run(
     total_tokens: int | None,
     validation_result: str,
     synthetic_result_ref: str,
+    failure_detail: str | None = None,
+    failure_stage: str | None = None,
+    generation_run_refs: list[str] | None = None,
+    provider_call_count: int = 0,
+    case_id: str | None = None,
+    phase_name: str | None = None,
+    upstream_failure_detail: str | None = None,
+    upstream_failure_stage: str | None = None,
 ) -> None:
     run_id = str(uuid.uuid4())
     is_provider = 1 if failure_category == "provider" else 0
     is_model = 1 if failure_category == "model_quality" else 0
+    refs_json = json.dumps(generation_run_refs) if generation_run_refs else None
     conn.execute(
         "INSERT INTO benchmark_runs "
         "(id, benchmark_name, fixture_name, run_group, run_index, provider, "
@@ -208,9 +343,12 @@ def _record_benchmark_run(
         "latency_seconds, success, failure_category, error_category, "
         "error_message, retry_count, input_tokens, output_tokens, total_tokens, "
         "validation_result, synthetic_result_ref, human_correction_minutes, "
-        "is_provider_failure, is_model_quality_failure) "
+        "is_provider_failure, is_model_quality_failure, "
+        "failure_detail, failure_stage, generation_run_refs, "
+        "provider_call_count, case_id, phase_name, "
+        "upstream_failure_detail, upstream_failure_stage) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        "?, ?, NULL, ?, ?)",
+        "?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
             run_id,
             benchmark_name,
@@ -236,9 +374,129 @@ def _record_benchmark_run(
             synthetic_result_ref,
             is_provider,
             is_model,
+            failure_detail,
+            failure_stage,
+            refs_json,
+            provider_call_count,
+            case_id,
+            phase_name,
+            upstream_failure_detail,
+            upstream_failure_stage,
         ),
     )
     conn.commit()
+
+
+# ---------------------------------------------------------------------------
+# Failure taxonomy
+# ---------------------------------------------------------------------------
+
+_FAILURE_DETAILS = frozenset({
+    "rate_limit",
+    "auth_failure",
+    "timeout",
+    "connection_error",
+    "provider_error",
+    "response_format_unsupported",
+    "schema_rejected",
+    "refusal",
+    "invalid_json",
+    "schema_mismatch",
+    "deterministic_validation",
+    "grounding_failure",
+    "upstream_plan_failed",
+    "first_edition_setup_failed",
+    "not_attempted",
+    "unknown",
+})
+
+_PROVIDER_ERROR_CATEGORIES = frozenset({
+    ProviderErrorCategory.TIMEOUT.value,
+    ProviderErrorCategory.CONNECTION_ERROR.value,
+    ProviderErrorCategory.RATE_LIMIT.value,
+    ProviderErrorCategory.AUTH_FAILURE.value,
+    ProviderErrorCategory.PROVIDER_ERROR.value,
+    ProviderErrorCategory.RESPONSE_FORMAT_UNSUPPORTED.value,
+    ProviderErrorCategory.SCHEMA_REJECTED.value,
+    ProviderErrorCategory.REFUSAL.value,
+})
+
+
+# These rules come from normalize_validation_findings() in validators.py
+GROUNDING_RULES = frozenset({
+    "unknown_segment_reference",
+    "missing_provenance",
+    "prohibited_inference",
+    "invented_personal_fact",
+    "unsupported_grounding",
+})
+
+STRUCTURAL_RULES = frozenset({
+    "duplicate_section_id",
+    "section_not_in_plan",
+    "section_references_no_segments",
+    "paragraph_limit_exceeded",
+    "field_length_exceeded",
+    "continuity_violation",
+    "validator_rejected",
+})
+
+
+def _extract_validation_findings(exc: Exception | None) -> list[dict[str, str]]:
+    if exc is None:
+        return []
+    return normalize_validation_findings(exc)
+
+
+def _findings_from_outcome(outcome) -> list[dict[str, str]]:
+    if outcome.validation_status != VALIDATION_FAILED:
+        return []
+    return list(getattr(outcome, 'validation_findings', ()))
+
+
+def _classify_validation_failure(
+    error_category: str | None,
+    validation_status: str | None,
+    validation_findings: list[dict[str, str]] | None = None,
+) -> tuple[str | None, str | None]:
+    if validation_status == VALIDATION_PASSED:
+        return None, None
+
+    if validation_status == VALIDATION_FAILED and validation_findings:
+        for finding in validation_findings:
+            rule = finding.get("rule", "")
+            if rule in GROUNDING_RULES:
+                return "model_quality", "grounding_failure"
+        for finding in validation_findings:
+            rule = finding.get("rule", "")
+            if rule in STRUCTURAL_RULES:
+                return "model_quality", "deterministic_validation"
+        return "model_quality", "deterministic_validation"
+
+    if validation_status == VALIDATION_FAILED:
+        if error_category == ProviderErrorCategory.SCHEMA_MISMATCH.value:
+            return "model_quality", "schema_mismatch"
+        if error_category == ProviderErrorCategory.INVALID_JSON.value:
+            return "model_quality", "invalid_json"
+        return "model_quality", "deterministic_validation"
+
+    if error_category in _PROVIDER_ERROR_CATEGORIES:
+        return "provider", error_category
+
+    if validation_status == PROVIDER_FAILED:
+        return "provider", "unknown"
+
+    return "model_quality", "unknown"
+
+
+def _classify_failure_detailed(
+    result_validation_status: str | None,
+    result_error_category: str | None,
+    validation_findings: list[dict[str, str]] | None = None,
+) -> tuple[str | None, str | None]:
+    return _classify_validation_failure(
+        result_error_category, result_validation_status, validation_findings
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -249,16 +507,12 @@ def _record_benchmark_run(
 def _classify_failure(
     result_validation_status: str | None,
     result_error_category: str | None,
+    validation_findings: list[dict[str, str]] | None = None,
 ) -> str | None:
-    if result_validation_status == VALIDATION_PASSED:
-        return None
-    if result_error_category in (
-        None,
-        ProviderErrorCategory.SCHEMA_MISMATCH.value,
-        ProviderErrorCategory.INVALID_JSON.value,
-    ):
-        return "model_quality"
-    return "provider"
+    category, _detail = _classify_failure_detailed(
+        result_validation_status, result_error_category, validation_findings
+    )
+    return category
 
 
 def _setup_benchmark_db(db_path: str) -> sqlite3.Connection:
@@ -323,6 +577,67 @@ def _token_total(
     if input_tokens is not None or output_tokens is not None:
         return (input_tokens or 0) + (output_tokens or 0)
     return None
+
+
+def _sum_non_null_tokens(values: list[int | None]) -> int | None:
+    non_null = [v for v in values if v is not None]
+    if not non_null:
+        return None
+    return sum(non_null)
+
+
+def _build_case_result(case_id: str, phases: list[dict]) -> dict:
+    """Build a case-level result from phase-level results."""
+    case_phases = [p for p in phases if p.get("case_id") == case_id]
+
+    case_success = all(
+        p.get("success", False) or p.get("expected_rejection_observed", False)
+        for p in case_phases
+    )
+
+    case_failure_category = None
+    case_failure_detail = None
+    for p in case_phases:
+        if not p.get("success") and not p.get("expected_rejection_observed"):
+            case_failure_category = p.get("failure_category")
+            case_failure_detail = p.get("failure_detail")
+            break
+
+    case_provider_calls = sum(p.get("provider_call_count", 0) for p in case_phases)
+
+    all_refs = []
+    for p in case_phases:
+        for ref in p.get("generation_run_refs", []):
+            if ref not in all_refs:
+                all_refs.append(ref)
+
+    input_tokens = _sum_non_null_tokens([p.get("input_tokens") for p in case_phases])
+    output_tokens = _sum_non_null_tokens([p.get("output_tokens") for p in case_phases])
+
+    return {
+        "case_id": case_id,
+        "case_success": case_success,
+        "case_failure_category": case_failure_category,
+        "case_failure_detail": case_failure_detail,
+        "case_provider_call_count": case_provider_calls,
+        "case_generation_run_count": len(all_refs),
+        "case_generation_run_refs": all_refs,
+        "case_input_tokens": input_tokens,
+        "case_output_tokens": output_tokens,
+        "case_total_tokens": _token_total(input_tokens, output_tokens),
+    }
+
+
+def _stage_provider_call_count(outcome) -> int:
+    """Calculate actual HTTP calls from a stage outcome."""
+    if outcome.validation_status == NOT_ATTEMPTED:
+        return 0
+    if outcome.run_id is None:
+        return 0
+    return outcome.retry_count + 1
+
+
+
 
 
 def _apply_human_correction(
@@ -401,7 +716,7 @@ def _run_editorial_plan(
             )
             plan_valid = True
             combined_validation = VALIDATION_PASSED
-        except Exception:
+        except PlanValidationError:
             plan_valid = False
             combined_validation = VALIDATION_FAILED
     else:
@@ -409,8 +724,9 @@ def _run_editorial_plan(
         combined_validation = plan_outcome.validation_status or PROVIDER_FAILED
 
     combined_success = plan_valid and plan_outcome.success
-    failure_category = _classify_failure(
-        combined_validation, plan_outcome.error_category
+    plan_findings = _findings_from_outcome(plan_outcome) if not plan_valid else []
+    failure_category, failure_detail = _classify_failure_detailed(
+        combined_validation, plan_outcome.error_category, plan_findings
     )
 
     input_tokens, output_tokens = _collect_tokens(db_conn, plan_outcome.run_id)
@@ -419,6 +735,10 @@ def _run_editorial_plan(
     validation_result = "passed" if combined_success else "failed"
     ref_tag = "ok" if combined_success else "fail"
     synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    gen_refs = [r for r in [plan_outcome.run_id] if r]
+
+    case_id = f"{benchmark_name}:{fixture.name}:editorial_plan:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -442,6 +762,12 @@ def _run_editorial_plan(
         total_tokens=_token_total(input_tokens, output_tokens),
         validation_result=validation_result,
         synthetic_result_ref=synthetic_result_ref,
+        failure_detail=failure_detail,
+        failure_stage="plan" if not combined_success else None,
+        generation_run_refs=gen_refs,
+        provider_call_count=_stage_provider_call_count(plan_outcome),
+        case_id=case_id,
+        phase_name="editorial_plan",
     )
 
     return {
@@ -450,12 +776,19 @@ def _run_editorial_plan(
         "run_group": "editorial_plan",
         "success": combined_success,
         "failure_category": failure_category,
+        "failure_detail": failure_detail,
+        "failure_stage": "plan" if not combined_success else None,
         "latency_seconds": task_latency,
         "retry_count": plan_outcome.retry_count,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
+        "total_tokens": _token_total(input_tokens, output_tokens),
+        "provider_call_count": _stage_provider_call_count(plan_outcome),
+        "generation_run_refs": gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "editorial_plan",
     }
 
 
@@ -486,6 +819,8 @@ def _run_first_edition(
 
     plan_ok = result.plan_run.success
     draft_ok = result.draft_run.success
+    plan_attempted = result.plan_run.validation_status != NOT_ATTEMPTED
+    draft_attempted = result.draft_run.validation_status != NOT_ATTEMPTED
     combined_success = plan_ok and draft_ok
 
     if combined_success:
@@ -504,28 +839,42 @@ def _run_first_edition(
 
     last_error_category: str | None = None
     last_error_message: str | None = None
+    failure_stage: str | None = None
     if not combined_success:
-        if not draft_ok:
-            last_error_category = result.draft_run.error_category
-            last_error_message = result.draft_run.error_message
-        elif not plan_ok:
+        if not plan_ok and plan_attempted:
+            failure_stage = "plan"
             last_error_category = result.plan_run.error_category
             last_error_message = result.plan_run.error_message
+        elif not draft_ok and draft_attempted:
+            failure_stage = "draft"
+            last_error_category = result.draft_run.error_category
+            last_error_message = result.draft_run.error_message
 
     completed_at = _now_iso()
 
     if combined_success:
         failure_category = None
+        failure_detail = None
         validation_result = "passed"
         ref_tag = "ok"
     else:
-        failure_category = _classify_failure(
-            combined_validation, last_error_category
+        if failure_stage == "draft":
+            draft_findings = _findings_from_outcome(result.draft_run)
+        elif failure_stage == "plan":
+            draft_findings = _findings_from_outcome(result.plan_run)
+        else:
+            draft_findings = []
+        failure_category, failure_detail = _classify_failure_detailed(
+            combined_validation, last_error_category, draft_findings
         )
         validation_result = "failed"
         ref_tag = "fail"
 
     synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    gen_refs = [r for r in [result.plan_run.run_id, result.draft_run.run_id] if r]
+
+    case_id = f"{benchmark_name}:{fixture.name}:first_edition:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -549,6 +898,15 @@ def _run_first_edition(
         total_tokens=_token_total(input_tokens, output_tokens),
         validation_result=validation_result,
         synthetic_result_ref=synthetic_result_ref,
+        failure_detail=failure_detail,
+        failure_stage=failure_stage,
+        generation_run_refs=gen_refs,
+        provider_call_count=(
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
+        case_id=case_id,
+        phase_name="first_edition",
     )
 
     return {
@@ -557,12 +915,26 @@ def _run_first_edition(
         "run_group": "first_edition",
         "success": combined_success,
         "failure_category": failure_category,
+        "failure_detail": failure_detail,
+        "failure_stage": failure_stage,
         "latency_seconds": task_latency,
         "retry_count": total_retry,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
+        "total_tokens": _token_total(input_tokens, output_tokens),
+        "plan_attempted": plan_attempted,
+        "draft_attempted": draft_attempted,
+        "provider_call_count": (
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
+        "generation_run_refs": gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "first_edition",
+        "upstream_failure_stage": failure_stage,
+        "upstream_failure_detail": failure_detail,
     }
 
 
@@ -588,10 +960,63 @@ def _run_feedback_second_edition(
         prohibited_inferences=fixture.prohibited_inventions,
         allow_short_sample=True,
     )
+
+    task_started_at = _now_iso()
+    task_start = time.monotonic()
+
     first_result = service.generate_edition(db_conn, request=request)
 
     if not first_result.succeeded or first_result.edition_id is None:
-        started_at = _now_iso()
+        completed_at = _now_iso()
+        task_latency = time.monotonic() - task_start
+
+        first_input_tokens, first_output_tokens = _collect_tokens(
+            db_conn,
+            first_result.plan_run.run_id,
+            first_result.draft_run.run_id,
+        )
+        first_retry = (
+            first_result.plan_run.retry_count
+            + first_result.draft_run.retry_count
+        )
+
+        first_error_category = (
+            first_result.draft_run.error_category
+            or first_result.plan_run.error_category
+        )
+        first_error_message = (
+            first_result.draft_run.error_message
+            or first_result.plan_run.error_message
+        )
+
+        gen_refs = [
+            r for r in [
+                first_result.plan_run.run_id,
+                first_result.draft_run.run_id,
+            ] if r
+        ]
+
+        upstream_failure_stage = None
+        upstream_failure_detail = None
+        if not first_result.plan_run.success and first_result.plan_run.validation_status != NOT_ATTEMPTED:
+            upstream_failure_stage = "plan"
+            upstream_findings = _findings_from_outcome(first_result.plan_run)
+            _, upstream_failure_detail = _classify_failure_detailed(
+                first_result.plan_run.validation_status,
+                first_result.plan_run.error_category,
+                upstream_findings,
+            )
+        elif not first_result.draft_run.success and first_result.draft_run.validation_status != NOT_ATTEMPTED:
+            upstream_failure_stage = "draft"
+            upstream_findings = _findings_from_outcome(first_result.draft_run)
+            _, upstream_failure_detail = _classify_failure_detailed(
+                first_result.draft_run.validation_status,
+                first_result.draft_run.error_category,
+                upstream_findings,
+            )
+
+        case_id = f"{benchmark_name}:{fixture.name}:feedback_second_edition:{run_index}"
+
         _record_benchmark_run(
             db_conn,
             benchmark_name=benchmark_name,
@@ -601,32 +1026,57 @@ def _run_feedback_second_edition(
             provider_info=first_info,
             task_type="full_pipeline",
             prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
-            started_at=started_at,
-            completed_at=started_at,
-            latency_seconds=0,
+            started_at=task_started_at,
+            completed_at=completed_at,
+            latency_seconds=task_latency,
             success=False,
-            failure_category="model_quality",
-            error_category=None,
+            failure_category="pipeline_prevented",
+            error_category=first_error_category,
             error_message="first edition failed during feedback setup",
-            retry_count=0,
-            input_tokens=None,
-            output_tokens=None,
-            total_tokens=None,
+            retry_count=first_retry,
+            input_tokens=first_input_tokens,
+            output_tokens=first_output_tokens,
+            total_tokens=_token_total(first_input_tokens, first_output_tokens),
             validation_result="failed",
             synthetic_result_ref=f"bench-{fixture.name}-{run_index}-setup-fail",
+            failure_detail="first_edition_setup_failed",
+            failure_stage="plan" if not first_result.plan_run.success else "draft",
+            generation_run_refs=gen_refs,
+            provider_call_count=(
+                _stage_provider_call_count(first_result.plan_run)
+                + _stage_provider_call_count(first_result.draft_run)
+            ),
+            case_id=case_id,
+            phase_name="feedback_second_edition",
+            upstream_failure_detail=upstream_failure_detail,
+            upstream_failure_stage=upstream_failure_stage,
         )
         return {
             "fixture": fixture.name,
             "run_index": run_index,
             "run_group": "feedback_second_edition",
             "success": False,
-            "failure_category": "model_quality",
-            "latency_seconds": 0,
-            "retry_count": 0,
-            "input_tokens": None,
-            "output_tokens": None,
+            "failure_category": "pipeline_prevented",
+            "failure_detail": "first_edition_setup_failed",
+            "failure_stage": "plan" if not first_result.plan_run.success else "draft",
+            "latency_seconds": task_latency,
+            "retry_count": first_retry,
+            "input_tokens": first_input_tokens,
+            "output_tokens": first_output_tokens,
+            "total_tokens": _token_total(first_input_tokens, first_output_tokens),
+            "plan_attempted": first_result.plan_run.validation_status != NOT_ATTEMPTED,
+            "draft_attempted": first_result.draft_run.validation_status != NOT_ATTEMPTED,
+            "provider_call_count": (
+                _stage_provider_call_count(first_result.plan_run)
+                + _stage_provider_call_count(first_result.draft_run)
+            ),
+            "generation_run_refs": gen_refs,
             "validation_result": "failed",
             "synthetic_result_ref": f"bench-{fixture.name}-{run_index}-setup-fail",
+            "case_id": case_id,
+            "phase_name": "feedback_second_edition",
+            "upstream_failure_detail": upstream_failure_detail,
+            "upstream_failure_stage": upstream_failure_stage,
         }
 
     ed_repo.update_edition_publication(
@@ -642,9 +1092,6 @@ def _run_feedback_second_edition(
         free_text=fixture.feedback_free_text,
     )
     feedback_id = fb_record.id
-
-    started_at = _now_iso()
-    task_start = time.monotonic()
 
     follow_up_service = GenerationService(provider=provider)
     follow_up_request = GenerationRequest(
@@ -666,6 +1113,8 @@ def _run_feedback_second_edition(
     if combined_success:
         combined_validation = VALIDATION_PASSED
         failure_category = None
+        failure_detail = None
+        failure_stage = None
         last_error_category = None
         last_error_message = None
     else:
@@ -683,24 +1132,63 @@ def _run_feedback_second_edition(
             follow_up_result.draft_run.error_message
             or follow_up_result.plan_run.error_message
         )
-        failure_category = _classify_failure(
-            combined_validation, last_error_category
+        follow_findings = _findings_from_outcome(
+            follow_up_result.draft_run
+            if follow_up_result.draft_run.validation_status == VALIDATION_FAILED
+            else follow_up_result.plan_run
         )
+        failure_category, failure_detail = _classify_failure_detailed(
+            combined_validation, last_error_category, follow_findings
+        )
+        if not follow_up_result.plan_run.success:
+            failure_stage = "plan"
+        elif not follow_up_result.draft_run.success:
+            failure_stage = "draft"
+        else:
+            failure_stage = None
 
     total_retry = (
-        follow_up_result.plan_run.retry_count
+        first_result.plan_run.retry_count
+        + first_result.draft_run.retry_count
+        + follow_up_result.plan_run.retry_count
         + follow_up_result.draft_run.retry_count
     )
-    input_tokens, output_tokens = _collect_tokens(
-        db_conn,
+
+    all_gen_run_ids = (
+        first_result.plan_run.run_id,
+        first_result.draft_run.run_id,
         follow_up_result.plan_run.run_id,
         follow_up_result.draft_run.run_id,
     )
+    input_tokens, output_tokens = _collect_tokens(db_conn, *all_gen_run_ids)
 
     completed_at = _now_iso()
     validation_result = "passed" if combined_success else "failed"
     ref_tag = "ok" if combined_success else "fail"
     synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    first_gen_refs = [
+        r for r in [
+            first_result.plan_run.run_id,
+            first_result.draft_run.run_id,
+        ] if r
+    ]
+    follow_gen_refs = [
+        r for r in [
+            follow_up_result.plan_run.run_id,
+            follow_up_result.draft_run.run_id,
+        ] if r
+    ]
+    all_gen_refs = first_gen_refs + follow_gen_refs
+
+    total_provider_calls = (
+        _stage_provider_call_count(first_result.plan_run)
+        + _stage_provider_call_count(first_result.draft_run)
+        + _stage_provider_call_count(follow_up_result.plan_run)
+        + _stage_provider_call_count(follow_up_result.draft_run)
+    )
+
+    case_id = f"{benchmark_name}:{fixture.name}:feedback_second_edition:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -711,7 +1199,7 @@ def _run_feedback_second_edition(
         provider_info=first_info,
         task_type="full_pipeline",
         prompt_version=f"{PLAN_PROMPT_VERSION}+{DRAFT_PROMPT_VERSION}",
-        started_at=started_at,
+        started_at=task_started_at,
         completed_at=completed_at,
         latency_seconds=task_latency,
         success=combined_success,
@@ -724,6 +1212,12 @@ def _run_feedback_second_edition(
         total_tokens=_token_total(input_tokens, output_tokens),
         validation_result=validation_result,
         synthetic_result_ref=synthetic_result_ref,
+        failure_detail=failure_detail,
+        failure_stage=failure_stage,
+        generation_run_refs=all_gen_refs,
+        provider_call_count=total_provider_calls,
+        case_id=case_id,
+        phase_name="feedback_second_edition",
     )
 
     return {
@@ -732,12 +1226,23 @@ def _run_feedback_second_edition(
         "run_group": "feedback_second_edition",
         "success": combined_success,
         "failure_category": failure_category,
+        "failure_detail": failure_detail,
+        "failure_stage": failure_stage,
         "latency_seconds": task_latency,
         "retry_count": total_retry,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
+        "total_tokens": _token_total(input_tokens, output_tokens),
+        "plan_attempted": follow_up_result.plan_run.validation_status != NOT_ATTEMPTED,
+        "draft_attempted": follow_up_result.draft_run.validation_status != NOT_ATTEMPTED,
+        "provider_call_count": total_provider_calls,
+        "generation_run_refs": all_gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "feedback_second_edition",
+        "upstream_failure_stage": None,
+        "upstream_failure_detail": None,
     }
 
 
@@ -767,6 +1272,9 @@ def _run_adversarial_grounding(
     task_latency = time.monotonic() - task_start
     combined_success = result.succeeded
 
+    plan_attempted = result.plan_run.validation_status != NOT_ATTEMPTED
+    draft_attempted = result.draft_run.validation_status != NOT_ATTEMPTED
+
     if combined_success:
         combined_validation = VALIDATION_PASSED
     elif result.draft_run.validation_status == VALIDATION_FAILED:
@@ -783,21 +1291,35 @@ def _run_adversarial_grounding(
 
     last_error_category: str | None = None
     last_error_message: str | None = None
+    failure_stage: str | None = None
     if not combined_success:
-        if not result.draft_run.success:
-            last_error_category = result.draft_run.error_category
-            last_error_message = result.draft_run.error_message
-        elif not result.plan_run.success:
+        if not result.plan_run.success and plan_attempted:
+            failure_stage = "plan"
             last_error_category = result.plan_run.error_category
             last_error_message = result.plan_run.error_message
+        elif not result.draft_run.success and draft_attempted:
+            failure_stage = "draft"
+            last_error_category = result.draft_run.error_category
+            last_error_message = result.draft_run.error_message
 
     completed_at = _now_iso()
-    failure_category = _classify_failure(
-        combined_validation, last_error_category
+    if failure_stage == "draft":
+        adv_findings = _findings_from_outcome(result.draft_run)
+    elif failure_stage == "plan":
+        adv_findings = _findings_from_outcome(result.plan_run)
+    else:
+        adv_findings = []
+    failure_category, failure_detail = _classify_failure_detailed(
+        combined_validation, last_error_category, adv_findings
     )
+
     validation_result = "passed" if combined_success else "failed"
     ref_tag = "ok" if combined_success else "adversarial-caught"
     synthetic_result_ref = f"bench-{fixture.name}-{run_index}-{ref_tag}"
+
+    gen_refs = [r for r in [result.plan_run.run_id, result.draft_run.run_id] if r]
+
+    case_id = f"{benchmark_name}:{fixture.name}:adversarial_grounding:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -821,6 +1343,15 @@ def _run_adversarial_grounding(
         total_tokens=_token_total(input_tokens, output_tokens),
         validation_result=validation_result,
         synthetic_result_ref=synthetic_result_ref,
+        failure_detail=failure_detail,
+        failure_stage=failure_stage,
+        generation_run_refs=gen_refs,
+        provider_call_count=(
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
+        case_id=case_id,
+        phase_name="adversarial_grounding",
     )
 
     return {
@@ -829,12 +1360,26 @@ def _run_adversarial_grounding(
         "run_group": "adversarial_grounding",
         "success": combined_success,
         "failure_category": failure_category,
+        "failure_detail": failure_detail,
+        "failure_stage": failure_stage,
         "latency_seconds": task_latency,
         "retry_count": total_retry,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
+        "total_tokens": _token_total(input_tokens, output_tokens),
+        "plan_attempted": plan_attempted,
+        "draft_attempted": draft_attempted,
+        "provider_call_count": (
+            _stage_provider_call_count(result.plan_run)
+            + _stage_provider_call_count(result.draft_run)
+        ),
+        "generation_run_refs": gen_refs,
         "validation_result": validation_result,
         "synthetic_result_ref": synthetic_result_ref,
+        "case_id": case_id,
+        "phase_name": "adversarial_grounding",
+        "upstream_failure_stage": failure_stage,
+        "upstream_failure_detail": failure_detail,
     }
 
 
@@ -940,6 +1485,29 @@ def _run_validator_feedback_repair(
     )
 
     if not candidate.succeeded or candidate.content is None or candidate.plan is None:
+        cand_error_category = (
+            candidate.draft_outcome.error_category
+            or candidate.plan_outcome.error_category
+        )
+        cand_error_validation = (
+            candidate.draft_outcome.validation_status
+            or candidate.plan_outcome.validation_status
+        )
+        cand_failure_category, cand_failure_detail = _classify_failure_detailed(
+            cand_error_validation, cand_error_category,
+            _findings_from_outcome(candidate.draft_outcome)
+            if candidate.draft_outcome.validation_status == VALIDATION_FAILED
+            else _findings_from_outcome(candidate.plan_outcome)
+            if candidate.plan_outcome.validation_status == VALIDATION_FAILED
+            else [],
+        )
+        cand_gen_refs = [
+            r for r in [
+                candidate.plan_outcome.run_id,
+                candidate.draft_outcome.run_id,
+            ] if r
+        ]
+        case_id = f"{benchmark_name}:{fixture.name}:validator_feedback_repair:{run_index}"
         _record_benchmark_run(
             db_conn,
             benchmark_name=benchmark_name,
@@ -953,9 +1521,8 @@ def _run_validator_feedback_repair(
             completed_at=_now_iso(),
             latency_seconds=cand_latency,
             success=False,
-            failure_category="model_quality",
-            error_category=candidate.draft_outcome.error_category
-            or candidate.plan_outcome.error_category,
+            failure_category=cand_failure_category,
+            error_category=cand_error_category,
             error_message="candidate generation failed",
             retry_count=cand_retry,
             input_tokens=cand_in,
@@ -963,6 +1530,15 @@ def _run_validator_feedback_repair(
             total_tokens=_token_total(cand_in, cand_out),
             validation_result="failed",
             synthetic_result_ref=f"bench-{fixture.name}-{run_index}-candidate-fail",
+            failure_detail=cand_failure_detail,
+            failure_stage="plan" if not candidate.plan_outcome.success else "draft",
+            generation_run_refs=cand_gen_refs,
+            provider_call_count=(
+                _stage_provider_call_count(candidate.plan_outcome)
+                + _stage_provider_call_count(candidate.draft_outcome)
+            ),
+            case_id=case_id,
+            phase_name="repair_candidate_generation",
         )
         return [
             {
@@ -971,8 +1547,29 @@ def _run_validator_feedback_repair(
                 "phase": "repair_candidate_generation",
                 "success": False,
                 "validation_result": "failed",
+                "failure_category": cand_failure_category,
+                "failure_detail": cand_failure_detail,
+                "generation_run_refs": cand_gen_refs,
+                "provider_call_count": (
+                    _stage_provider_call_count(candidate.plan_outcome)
+                    + _stage_provider_call_count(candidate.draft_outcome)
+                ),
+                "repair_attempted": False,
+                "case_id": case_id,
+                "phase_name": "repair_candidate_generation",
+                "upstream_failure_stage": "plan" if not candidate.plan_outcome.success else "draft",
+                "upstream_failure_detail": cand_failure_detail,
             }
         ]
+
+    cand_gen_refs = [
+        r for r in [
+            candidate.plan_outcome.run_id,
+            candidate.draft_outcome.run_id,
+        ] if r
+    ]
+
+    case_id = f"{benchmark_name}:{fixture.name}:validator_feedback_repair:{run_index}"
 
     _record_benchmark_run(
         db_conn,
@@ -996,6 +1593,15 @@ def _run_validator_feedback_repair(
         total_tokens=_token_total(cand_in, cand_out),
         validation_result="passed",
         synthetic_result_ref=f"bench-{fixture.name}-{run_index}-candidate",
+        failure_detail=None,
+        failure_stage=None,
+        generation_run_refs=cand_gen_refs,
+        provider_call_count=(
+            _stage_provider_call_count(candidate.plan_outcome)
+            + _stage_provider_call_count(candidate.draft_outcome)
+        ),
+        case_id=case_id,
+        phase_name="repair_candidate_generation",
     )
     results.append(
         {
@@ -1008,8 +1614,18 @@ def _run_validator_feedback_repair(
             "retry_count": cand_retry,
             "input_tokens": cand_in,
             "output_tokens": cand_out,
+            "total_tokens": _token_total(cand_in, cand_out),
             "candidate_plan_run_id": candidate.plan_outcome.run_id,
             "candidate_draft_run_id": candidate.draft_outcome.run_id,
+            "generation_run_refs": cand_gen_refs,
+            "provider_call_count": (
+                _stage_provider_call_count(candidate.plan_outcome)
+                + _stage_provider_call_count(candidate.draft_outcome)
+            ),
+            "case_id": case_id,
+            "phase_name": "repair_candidate_generation",
+            "upstream_failure_stage": None,
+            "upstream_failure_detail": None,
         }
     )
 
@@ -1036,6 +1652,56 @@ def _run_validator_feedback_repair(
         bad_validation_failed = True
         bad_error = exc
 
+    if not bad_validation_failed:
+        _record_benchmark_run(
+            db_conn,
+            benchmark_name=benchmark_name,
+            fixture_name=fixture.name,
+            run_group="validator_feedback_repair",
+            run_index=run_index * 3 + 1,
+            provider_info=provider_info,
+            task_type="repair_bad_validation",
+            prompt_version=PLAN_PROMPT_VERSION,
+            started_at=_now_iso(),
+            completed_at=_now_iso(),
+            latency_seconds=0.0,
+            success=False,
+            failure_category="benchmark_harness_failure",
+            error_category=None,
+            error_message="corrupted candidate unexpectedly accepted by validator",
+            retry_count=0,
+            input_tokens=None,
+            output_tokens=None,
+            total_tokens=None,
+            validation_result="unexpectedly_passed",
+            synthetic_result_ref=f"bench-{fixture.name}-{run_index}-bad",
+            failure_detail="corrupted_candidate_unexpectedly_accepted",
+            failure_stage=None,
+            generation_run_refs=[],
+            provider_call_count=0,
+            case_id=case_id,
+            phase_name="repair_bad_validation",
+        )
+        return [
+            {
+                "fixture": fixture.name,
+                "run_index": run_index,
+                "phase": "repair_bad_validation",
+                "success": False,
+                "expected_rejection_observed": False,
+                "validation_result": "unexpectedly_passed",
+                "failure_category": "benchmark_harness_failure",
+                "failure_detail": "corrupted_candidate_unexpectedly_accepted",
+                "validator_findings": [],
+                "generation_run_refs": [],
+                "provider_call_count": 0,
+                "case_id": case_id,
+                "phase_name": "repair_bad_validation",
+                "upstream_failure_stage": None,
+                "upstream_failure_detail": None,
+            }
+        ]
+
     assert bad_validation_failed, (
         "validator-feedback repair: the deterministically corrupted candidate "
         "unexpectedly passed validation; the benchmark cannot demonstrate repair"
@@ -1059,25 +1725,40 @@ def _run_validator_feedback_repair(
         started_at=_now_iso(),
         completed_at=_now_iso(),
         latency_seconds=0.0,
-        success=False,
-        failure_category="model_quality",
-        error_category=ProviderErrorCategory.SCHEMA_MISMATCH.value,
-        error_message="deterministic validator rejected corrupted candidate",
+        success=True,
+        failure_category=None,
+        error_category=None,
+        error_message=None,
         retry_count=0,
         input_tokens=None,
         output_tokens=None,
         total_tokens=None,
-        validation_result="failed",
+        validation_result="rejected_as_expected",
         synthetic_result_ref=f"bench-{fixture.name}-{run_index}-bad",
+        failure_detail=None,
+        failure_stage=None,
+        generation_run_refs=[],
+        provider_call_count=0,
+        case_id=case_id,
+        phase_name="repair_bad_validation",
     )
     results.append(
         {
             "fixture": fixture.name,
             "run_index": run_index,
             "phase": "repair_bad_validation",
-            "success": False,
-            "validation_result": "failed",
+            "success": True,
+            "expected_rejection_observed": True,
+            "validation_result": "rejected_as_expected",
             "validator_findings": validator_findings,
+            "generation_run_refs": [],
+            "provider_call_count": 0,
+            "failure_category": None,
+            "failure_detail": None,
+            "case_id": case_id,
+            "phase_name": "repair_bad_validation",
+            "upstream_failure_stage": None,
+            "upstream_failure_detail": None,
         }
     )
 
@@ -1116,6 +1797,14 @@ def _run_validator_feedback_repair(
     repair_in, repair_out = _collect_tokens(db_conn, repair_outcome.run_id)
     repair_ref = f"bench-{fixture.name}-{run_index}-repair"
 
+    repair_gen_refs = [r for r in [repair_outcome.run_id] if r]
+
+    repair_category, repair_detail = _classify_failure_detailed(
+        repair_outcome.validation_status,
+        repair_outcome.error_category,
+        _findings_from_outcome(repair_outcome),
+    ) if not repair_success else (None, None)
+
     _record_benchmark_run(
         db_conn,
         benchmark_name=benchmark_name,
@@ -1129,7 +1818,7 @@ def _run_validator_feedback_repair(
         completed_at=_now_iso(),
         latency_seconds=repair_outcome.latency_seconds or 0.0,
         success=repair_success,
-        failure_category=None if repair_success else "model_quality",
+        failure_category=repair_category,
         error_category=repair_outcome.error_category,
         error_message=repair_outcome.error_message,
         retry_count=repair_outcome.retry_count,
@@ -1138,6 +1827,12 @@ def _run_validator_feedback_repair(
         total_tokens=_token_total(repair_in, repair_out),
         validation_result="passed" if repair_success else "failed",
         synthetic_result_ref=repair_ref,
+        failure_detail=repair_detail,
+        failure_stage="repair" if not repair_success else None,
+        generation_run_refs=repair_gen_refs,
+        provider_call_count=_stage_provider_call_count(repair_outcome),
+        case_id=case_id,
+        phase_name="repair_provider",
     )
     results.append(
         {
@@ -1152,9 +1847,20 @@ def _run_validator_feedback_repair(
             "retry_count": repair_outcome.retry_count,
             "input_tokens": repair_in,
             "output_tokens": repair_out,
+            "total_tokens": _token_total(repair_in, repair_out),
             "repair_run_id": repair_outcome.run_id,
             "correlation_id": correlation_id,
             "attempt_id": attempt_id,
+            "generation_run_refs": repair_gen_refs,
+            "provider_call_count": _stage_provider_call_count(repair_outcome),
+            "repair_attempted": True,
+            "failure_category": repair_category,
+            "failure_detail": repair_detail,
+            "failure_stage": "repair" if not repair_success else None,
+            "case_id": case_id,
+            "phase_name": "repair_provider",
+            "upstream_failure_stage": None,
+            "upstream_failure_detail": None,
         }
     )
 
@@ -1327,6 +2033,86 @@ def run_benchmark(
     conn.close()
 
     if output_path and info is not None:
+        case_ids = list(dict.fromkeys(
+            r.get("case_id") for r in results if r.get("case_id")
+        ))
+        case_results = [_build_case_result(cid, results) for cid in case_ids]
+
+        detail_counts: dict[str, int] = {}
+        for r in results:
+            detail = r.get("failure_detail")
+            if detail:
+                detail_counts[detail] = detail_counts.get(detail, 0) + 1
+
+        case_failure_detail_counts: dict[str, int] = {}
+        phase_failure_detail_counts: dict[str, int] = {}
+        for c in case_results:
+            if c["case_failure_detail"]:
+                case_failure_detail_counts[c["case_failure_detail"]] = (
+                    case_failure_detail_counts.get(c["case_failure_detail"], 0) + 1
+                )
+        for r in results:
+            if r.get("failure_detail") and not r.get("expected_rejection_observed"):
+                phase_failure_detail_counts[r["failure_detail"]] = (
+                    phase_failure_detail_counts.get(r["failure_detail"], 0) + 1
+                )
+
+        aggregate = {
+            "benchmark_case_count": len(case_results),
+            "benchmark_case_success_count": sum(
+                1 for c in case_results if c["case_success"]
+            ),
+            "benchmark_case_failure_count": sum(
+                1 for c in case_results if not c["case_success"]
+            ),
+            "phase_result_count": len(results),
+            "phase_success_count": sum(
+                1 for r in results
+                if r.get("success") or r.get("expected_rejection_observed")
+            ),
+            "phase_failure_count": sum(
+                1 for r in results
+                if not r.get("success") and not r.get("expected_rejection_observed")
+            ),
+            "generation_run_count": len(set(
+                ref for r in results for ref in r.get("generation_run_refs", [])
+            )),
+            "provider_call_count": sum(
+                r.get("provider_call_count", 0) for r in results
+            ),
+            "provider_failure_case_count": sum(
+                1 for c in case_results
+                if c["case_failure_category"] == "provider"
+            ),
+            "model_quality_failure_case_count": sum(
+                1 for c in case_results
+                if c["case_failure_category"] == "model_quality"
+            ),
+            "pipeline_prevented_case_count": sum(
+                1 for c in case_results
+                if c["case_failure_category"] == "pipeline_prevented"
+            ),
+            "failure_detail_counts": detail_counts,
+            "case_failure_detail_counts": case_failure_detail_counts,
+            "phase_failure_detail_counts": phase_failure_detail_counts,
+            "input_token_sum": _sum_non_null_tokens(
+                [r.get("input_tokens") for r in results]
+            ),
+            "output_token_sum": _sum_non_null_tokens(
+                [r.get("output_tokens") for r in results]
+            ),
+            "total_token_sum": _sum_non_null_tokens(
+                [r.get("total_tokens") for r in results]
+            ),
+            "rows_with_token_usage": sum(
+                1 for r in results if r.get("total_tokens") is not None
+            ),
+            "rows_missing_token_usage": sum(
+                1 for r in results if r.get("total_tokens") is None
+            ),
+        }
+        aggregate["total_runs"] = aggregate["phase_result_count"]
+
         report = {
             "benchmark_name": benchmark_name,
             "task": task,
@@ -1336,6 +2122,8 @@ def run_benchmark(
             "repeat": repeat,
             "total_runs": len(results),
             "results": results,
+            "case_results": case_results,
+            "aggregate": aggregate,
         }
         Path(output_path).write_text(
             json.dumps(report, indent=2, ensure_ascii=False),
@@ -1460,22 +2248,61 @@ def main() -> None:
             human_correction_minutes=args.correct,
         )
 
-        successes = sum(1 for r in results if r["success"])
-        failures = sum(1 for r in results if not r["success"])
+        case_ids_for_exit = list(dict.fromkeys(
+            r.get("case_id") for r in results if r.get("case_id")
+        ))
+        case_results_for_exit = [_build_case_result(cid, results) for cid in case_ids_for_exit]
+        case_successes = sum(1 for c in case_results_for_exit if c["case_success"])
+        case_failures = sum(1 for c in case_results_for_exit if not c["case_success"])
+
+        phase_successes = sum(
+            1 for r in results
+            if r.get("success") or r.get("expected_rejection_observed")
+        )
+        phase_failures = sum(
+            1 for r in results
+            if not r.get("success") and not r.get("expected_rejection_observed")
+        )
         provider_failures = sum(
             1 for r in results if r.get("failure_category") == "provider"
         )
         model_failures = sum(
             1 for r in results if r.get("failure_category") == "model_quality"
         )
+        pipeline_failures = sum(
+            1 for r in results
+            if r.get("failure_category") == "pipeline_prevented"
+        )
+
+        detail_counts: dict[str, int] = {}
+        for r in results:
+            d = r.get("failure_detail")
+            if d is not None:
+                detail_counts[d] = detail_counts.get(d, 0) + 1
+
+        unique_case_ids = set(r.get("case_id") for r in results if r.get("case_id"))
+        total_provider_calls = sum(r.get("provider_call_count", 0) for r in results)
 
         print("\n" + "=" * 40)
-        print(f"Total: {len(results)}  OK: {successes}  FAIL: {failures}")
+        print(
+            f"Cases: {len(unique_case_ids)}  "
+            f"OK: {case_successes}  FAIL: {case_failures}"
+        )
+        print(
+            f"Phases: {len(results)}  "
+            f"OK: {phase_successes}  FAIL: {phase_failures}"
+        )
+        print(f"Provider calls: {total_provider_calls}")
         print(
             f"Provider failures: {provider_failures}  "
-            f"Model-quality failures: {model_failures}"
+            f"Model-quality failures: {model_failures}  "
+            f"Pipeline-prevented: {pipeline_failures}"
         )
-        if failures > 0:
+        if detail_counts:
+            print("Failure details:")
+            for detail, count in sorted(detail_counts.items()):
+                print(f"  {detail}: {count}")
+        if case_failures > 0:
             sys.exit(1)
         return
 

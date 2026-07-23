@@ -353,9 +353,10 @@ def test_end_to_end_repair_benchmark_records_three_phases():
     assert "repair_provider" in by_phase
     assert by_phase["repair_candidate_generation"]["success"] is True
     assert by_phase["repair_candidate_generation"]["validation_result"] == "passed"
-    # bad phase must fail validation
-    assert by_phase["repair_bad_validation"]["success"] is False
-    assert by_phase["repair_bad_validation"]["validation_result"] == "failed"
+    # bad phase must reject corrupted candidate as expected
+    assert by_phase["repair_bad_validation"]["success"] is True
+    assert by_phase["repair_bad_validation"]["expected_rejection_observed"] is True
+    assert by_phase["repair_bad_validation"]["validation_result"] == "rejected_as_expected"
     # repair phase must pass
     assert by_phase["repair_provider"]["success"] is True
     assert by_phase["repair_provider"]["validation_result"] == "passed"

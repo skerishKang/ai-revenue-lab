@@ -362,6 +362,22 @@ def normalize_validation_findings(exc: Exception) -> list[dict[str, str]]:
     a provider as repair context. No raw participant input or private material
     is included; only the rule identity and the deterministic message.
     """
+    if isinstance(exc, GroundingError):
+        message = str(exc)
+        lowered = message.lower()
+        if "prohibit" in lowered or "invented" in lowered:
+            rule = "prohibited_inference"
+        elif "unknown segment" in lowered:
+            rule = "unknown_segment_reference"
+        elif "provenance" in lowered:
+            rule = "missing_provenance"
+        else:
+            rule = "unsupported_grounding"
+        return [{"rule": rule, "severity": "error", "message": message}]
+
+    if isinstance(exc, UnsafeMarkupError):
+        return [{"rule": "unsafe_markup", "severity": "error", "message": str(exc)}]
+
     message = str(exc)
     rule = "validator_rejected"
     lowered = message.lower()

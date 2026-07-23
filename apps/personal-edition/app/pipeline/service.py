@@ -118,6 +118,7 @@ class StageOutcome:
     model: str | None = None
     cost_class: str | None = None
     run_id: str | None = None
+    validation_findings: tuple[dict[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -197,6 +198,7 @@ class RepairOutcome:
     model: str | None
     cost_class: str | None
     run_id: str | None
+    validation_findings: tuple[dict[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -645,6 +647,8 @@ class GenerationService:
                 feedback_id=request.feedback_id,
             )
         except PlanValidationError as exc:
+            from app.pipeline.validators import normalize_validation_findings as _nvf
+            findings = tuple(_nvf(exc))
             if plan_outcome.run_id is not None:
                 gr_repo.update_generation_run(
                     conn,
@@ -672,6 +676,7 @@ class GenerationService:
                     model=plan_outcome.model,
                     cost_class=plan_outcome.cost_class,
                     run_id=plan_outcome.run_id,
+                    validation_findings=findings,
                 ),
                 draft_run=_failed_outcome("plan validation failed"),
                 succeeded=False,
@@ -718,6 +723,8 @@ class GenerationService:
                 prohibited_inferences=prohibited_inferences,
             )
         except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
+            from app.pipeline.validators import normalize_validation_findings as _nvf
+            findings = tuple(_nvf(exc))
             if draft_outcome.run_id is not None:
                 gr_repo.update_generation_run(
                     conn,
@@ -746,6 +753,7 @@ class GenerationService:
                     model=draft_outcome.model,
                     cost_class=draft_outcome.cost_class,
                     run_id=draft_outcome.run_id,
+                    validation_findings=findings,
                 ),
                 succeeded=False,
             )
@@ -952,13 +960,15 @@ class GenerationService:
                 feedback_id=None,
             )
         except PlanValidationError as exc:
+            from app.pipeline.validators import normalize_validation_findings as _nvf
+            findings = tuple(_nvf(exc))
             _mark_run_validation_failed(conn, plan_outcome.run_id, exc)
             return RepairCandidate(
                 succeeded=False,
                 content=None,
                 plan=plan,
                 segments=segments,
-                plan_outcome=_deterministic_failure_stage(plan_outcome, exc),
+                plan_outcome=_deterministic_failure_stage(plan_outcome, exc, findings),
                 draft_outcome=_failed_outcome("plan validation failed"),
             )
 
@@ -1005,6 +1015,8 @@ class GenerationService:
                 prohibited_inferences=prohibited_inferences,
             )
         except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
+            from app.pipeline.validators import normalize_validation_findings as _nvf
+            findings = tuple(_nvf(exc))
             _mark_run_validation_failed(conn, draft_outcome.run_id, exc)
             return RepairCandidate(
                 succeeded=False,
@@ -1012,7 +1024,7 @@ class GenerationService:
                 plan=plan,
                 segments=segments,
                 plan_outcome=plan_outcome,
-                draft_outcome=_deterministic_failure_stage(draft_outcome, exc),
+                draft_outcome=_deterministic_failure_stage(draft_outcome, exc, findings),
             )
 
         return RepairCandidate(
@@ -1102,6 +1114,8 @@ class GenerationService:
                 repair_request.allowed_plan_section_ids,
             )
         except validators.DETERMINISTIC_VALIDATION_ERRORS as exc:
+            from app.pipeline.validators import normalize_validation_findings as _nvf
+            findings = tuple(_nvf(exc))
             _mark_run_validation_failed(conn, outcome.run_id, exc)
             return RepairOutcome(
                 succeeded=False,
@@ -1119,6 +1133,7 @@ class GenerationService:
                 model=outcome.model,
                 cost_class=outcome.cost_class,
                 run_id=outcome.run_id,
+                validation_findings=findings,
             )
 
         return RepairOutcome(
@@ -1135,6 +1150,7 @@ class GenerationService:
             model=outcome.model,
             cost_class=outcome.cost_class,
             run_id=outcome.run_id,
+            validation_findings=(),
         )
 
     def _next_edition_number(self, conn, participant_id: str) -> int:
@@ -1155,7 +1171,8 @@ def _failed_outcome(message: str) -> StageOutcome:
 
 
 def _deterministic_failure_stage(
-    base_outcome: StageOutcome, exc: Exception
+    base_outcome: StageOutcome, exc: Exception,
+    findings: tuple[dict[str, str], ...] = (),
 ) -> StageOutcome:
     """Build a failed StageOutcome mirroring a deterministic validation error.
 
@@ -1177,6 +1194,7 @@ def _deterministic_failure_stage(
         model=base_outcome.model,
         cost_class=base_outcome.cost_class,
         run_id=base_outcome.run_id,
+        validation_findings=findings,
     )
 
 
