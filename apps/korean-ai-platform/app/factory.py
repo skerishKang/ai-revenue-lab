@@ -34,6 +34,10 @@ def _build_jinja_env() -> Environment:
     env.filters["tojson"] = _tojson
     env.filters["krw"] = _krw
     env.globals["demo_mode"] = settings.demo_mode
+
+    from app.pilot.config import pilot_settings
+    env.globals["pilot_configured"] = pilot_settings.configured
+
     return env
 
 
@@ -53,6 +57,13 @@ def create_app() -> FastAPI:
     from app import routes
 
     app.include_router(routes.router)
+
+    # Phase 1: BYOK Gateway Pilot
+    from app.pilot.gateway import router as pilot_api_router
+    from app.pilot.ui import router as pilot_ui_router
+
+    app.include_router(pilot_api_router)
+    app.include_router(pilot_ui_router)
 
     @app.get("/health")
     def health() -> dict[str, Any]:

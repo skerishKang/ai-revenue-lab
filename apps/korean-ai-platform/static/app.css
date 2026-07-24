@@ -643,11 +643,71 @@ ul { list-style: none; }
 /* Chip open-model */
 .chip-open-model { background: #fef3c7; color: #92400e; }
 
+/* ===== Phase 1: BYOK Gateway Pilot Styles ===== */
+
+.pilot-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.pilot-left, .pilot-right { display: flex; flex-direction: column; }
+.pilot-form {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+}
+.pilot-section { margin-bottom: 16px; }
+.pilot-section label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+.pilot-section textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 14px;
+  resize: vertical;
+}
+.pilot-key-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 14px;
+}
+.pilot-num-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.field-note { font-size: 12px; color: #888; display: block; margin-top: 4px; }
+.pilot-row { display: flex; gap: 16px; }
+.pilot-row .pilot-section { flex: 1; }
+.pilot-actions { margin-top: 16px; }
+.pilot-empty {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  color: #888;
+}
+.pilot-unconfigured { padding: 24px 0; }
+.pilot-steps { list-style: decimal; padding-left: 20px; }
+.pilot-steps li { padding: 6px 0; font-size: 14px; line-height: 1.6; }
+.pilot-result {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+}
+
 /* Responsive updates */
 @media (max-width: 1024px) {
   .playground-split { grid-template-columns: 1fr; }
   .pricing-grid { grid-template-columns: 1fr; }
   .steps-grid { grid-template-columns: 1fr; }
+  .pilot-split { grid-template-columns: 1fr; }
+  .pilot-row { flex-direction: column; }
 }
 
 @media (max-width: 768px) {
