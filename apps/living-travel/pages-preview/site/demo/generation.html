@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel — 여행판 생성 중</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/demo.css">
+</head>
+<body>
+  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+
+  <div class="demo-gen-page">
+    <div id="genContent">
+      <h1 style="color:var(--forest);">여행판을 만들고 있어요</h1>
+      <p class="subtitle" style="max-width:400px;margin:0 auto 1rem;">
+        데모 모드입니다. 실제 AI가 아닌 정해진 시나리오로 진행됩니다.
+      </p>
+
+      <div class="demo-gen-steps" id="genSteps">
+        <div class="demo-gen-step" id="step1">
+          <span class="demo-gen-step-icon">1</span>
+          <span class="demo-gen-step-text">취향 정리 중...</span>
+        </div>
+        <div class="demo-gen-step" id="step2">
+          <span class="demo-gen-step-icon">2</span>
+          <span class="demo-gen-step-text">여행판 구성 중...</span>
+        </div>
+        <div class="demo-gen-step" id="step3">
+          <span class="demo-gen-step-icon">3</span>
+          <span class="demo-gen-step-text">운영자 검토 준비 중...</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="genFailure" style="display:none;max-width:480px;width:100%;">
+      <div class="demo-failure-state">
+        <h3>⚠️ 여행판 생성에 실패했습니다</h3>
+        <p>데모 시나리오에서 일시적인 오류가 발생했습니다. 다시 시도해 주세요.</p>
+        <button class="btn btn-accent" onclick="retryGeneration()">다시 시도</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  let failed = false;
+
+  function simulateStep(stepNum) {
+    if (failed) return;
+    var prev = document.getElementById('step' + (stepNum - 1));
+    var curr = document.getElementById('step' + stepNum);
+    if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
+    if (curr) { curr.classList.add('active'); }
+
+    if (stepNum === 1) {
+      setTimeout(function() { simulateStep(2); }, 1200);
+    } else if (stepNum === 2) {
+      setTimeout(function() { simulateStep(3); }, 1400);
+    } else if (stepNum === 3) {
+      setTimeout(function() {
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('step3').classList.add('done');
+        setTimeout(function() {
+          if (Math.random() < 0.3) {
+            showFailure();
+          } else {
+            window.location.href = 'pending.html';
+          }
+        }, 600);
+      }, 1500);
+    }
+  }
+
+  function showFailure() {
+    failed = true;
+    document.getElementById('genContent').style.display = 'none';
+    document.getElementById('genFailure').style.display = 'block';
+  }
+
+  function retryGeneration() {
+    failed = false;
+    document.getElementById('genContent').style.display = 'block';
+    document.getElementById('genFailure').style.display = 'none';
+    document.getElementById('step1').className = 'demo-gen-step';
+    document.getElementById('step2').className = 'demo-gen-step';
+    document.getElementById('step3').className = 'demo-gen-step';
+    simulateStep(1);
+  }
+
+  // Start simulation
+  setTimeout(function() { simulateStep(1); }, 500);
+  </script>
+</body>
+</html>
