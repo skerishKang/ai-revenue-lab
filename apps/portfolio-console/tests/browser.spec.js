@@ -76,9 +76,9 @@ test.describe('Portfolio Console Browser Tests', () => {
     await page.click('#business-table-body tr[data-business-number="14"]');
     await page.waitForTimeout(200);
 
-    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 14');
+    await expect(page.locator('#detail-number')).toHaveText('비즈니스 14');
     await expect(page.locator('#detail-title')).toHaveText('Korean AI Platform');
-    await expect(page.locator('#detail-status')).toHaveText('REVIEW');
+    await expect(page.locator('#detail-status')).toHaveText('검토 중');
     await expect(page.locator('#detail-progress-value')).toHaveText('78%');
   });
 
@@ -104,7 +104,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     await firstPriority.click();
     await page.waitForTimeout(200);
 
-    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 01');
+    await expect(page.locator('#detail-number')).toHaveText('비즈니스 01');
   });
 
   test('disabled links have no href, tabindex=-1, and are keyboard-inert', async ({ page }) => {
@@ -133,7 +133,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     await page.waitForTimeout(200);
 
     expect(page.url()).not.toContain('#');
-    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 05');
+    await expect(page.locator('#detail-number')).toHaveText('비즈니스 05');
   });
 
   test('active external links have target=_blank and rel=noopener noreferrer', async ({ page }) => {
@@ -261,7 +261,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     await page.click('#business-table-body tr[data-business-number="16"]');
     await page.waitForTimeout(200);
 
-    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 16');
+    await expect(page.locator('#detail-number')).toHaveText('비즈니스 16');
     await expect(page.locator('#detail-title')).toHaveText('Test Business 16');
     await expect(page.locator('#detail-progress-value')).toHaveText('50%');
 
@@ -405,7 +405,7 @@ test.describe('Quick Launch Browser Tests', () => {
   test('existing row selection still works', async ({ page }) => {
     await page.click('#business-table-body tr[data-business-number="14"]');
     await page.waitForTimeout(200);
-    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 14');
+    await expect(page.locator('#detail-number')).toHaveText('비즈니스 14');
     await expect(page.locator('#detail-title')).toHaveText('Korean AI Platform');
   });
 
@@ -529,7 +529,7 @@ test.describe('Project Directory Browser Tests', () => {
     await page.waitForTimeout(200);
 
     await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
-    await expect(page.locator('#pd-detail-badge')).toHaveText('LIVE');
+    await expect(page.locator('#pd-detail-badge')).toHaveText('운영 중');
     await expect(page.locator('#pd-detail-repo')).toHaveText('skerishKang/lovetree3.0');
     await expect(page.locator('#pd-detail-workspace')).toHaveText('/');
   });
@@ -546,7 +546,7 @@ test.describe('Project Directory Browser Tests', () => {
     await page.click('.pd-card[data-project-id="personal-edition"]');
     await page.waitForTimeout(200);
 
-    await expect(page.locator('#pd-detail-biz')).toHaveText('BUSINESS 01');
+    await expect(page.locator('#pd-detail-biz')).toHaveText('비즈니스 01');
   });
 
   test('active page links have target=_blank and rel=noopener noreferrer', async ({ page }) => {
@@ -588,22 +588,100 @@ test.describe('Project Directory Browser Tests', () => {
     await expect(repoLink).not.toHaveAttribute('href');
   });
 
-  test('copy workspace button exists and is clickable', async ({ page }) => {
+  test('copy workspace button copies exact relative path', async ({ page }) => {
     await page.click('.pd-card[data-project-id="living-travel"]');
     await page.waitForTimeout(200);
 
     const copyButton = page.locator('#pd-copy-workspace');
     await expect(copyButton).toBeVisible();
-    await expect(copyButton).toHaveText('COPY WORKSPACE');
+    await expect(copyButton).toHaveText('폴더 경로 복사');
 
     await page.evaluate(() => {
-      navigator.clipboard = {
-        writeText: async () => {}
-      };
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: async (text) => { window.__copiedText = text; } },
+        writable: true,
+        configurable: true
+      });
     });
 
     await copyButton.click();
     await page.waitForTimeout(100);
+
+    const copiedValue = await page.evaluate(() => window.__copiedText);
+    expect(copiedValue).toBe('apps/living-travel/');
+
+    const note = page.locator('#pd-copy-note');
+    await expect(note).toContainText('apps/living-travel/');
+    await expect(note).not.toContainText('G:\\');
+    await expect(note).not.toContainText('C:\\');
+  });
+
+  test('copy workspace handles clipboard API missing', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="living-travel"]');
+    await page.waitForTimeout(200);
+
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: undefined,
+        writable: true,
+        configurable: true
+      });
+    });
+
+    const copyButton = page.locator('#pd-copy-workspace');
+    await copyButton.click();
+    await page.waitForTimeout(100);
+
+    const note = page.locator('#pd-copy-note');
+    await expect(note).toContainText('복사하지 못했습니다');
+  });
+
+  test('copy workspace handles clipboard rejection', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="living-travel"]');
+    await page.waitForTimeout(200);
+
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: async () => { throw new Error('Permission denied'); } },
+        writable: true,
+        configurable: true
+      });
+    });
+
+    const copyButton = page.locator('#pd-copy-workspace');
+    await copyButton.click();
+    await page.waitForTimeout(100);
+
+    const note = page.locator('#pd-copy-note');
+    await expect(note).toContainText('복사하지 못했습니다');
+  });
+
+  test('copy workspace root path handled correctly', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.waitForTimeout(200);
+
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: async (text) => { window.__copiedText = text; } },
+        writable: true,
+        configurable: true
+      });
+    });
+
+    const copyButton = page.locator('#pd-copy-workspace');
+    await copyButton.click();
+    await page.waitForTimeout(100);
+
+    const copiedValue = await page.evaluate(() => window.__copiedText);
+    expect(copiedValue).toBe('/');
+  });
+
+  test('copy workspace disabled for unconfirmed workspace', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="ai-finder-namgu"]');
+    await page.waitForTimeout(200);
+
+    const copyButton = page.locator('#pd-copy-workspace');
+    await expect(copyButton).toBeDisabled();
   });
 
   test('existing quick launch 13/8/5 still works', async ({ page }) => {
@@ -661,5 +739,218 @@ test.describe('Project Directory Browser Tests', () => {
 
     await page.reload({ waitUntil: 'networkidle' });
     expect(failed).toHaveLength(0);
+  });
+});
+
+test.describe('Language Toggle Browser Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+  });
+
+  test('initial load is Korean', async ({ page }) => {
+    await expect(page.locator('#topbar-title')).toHaveText('내 비즈니스 관리');
+    await expect(page.locator('#project-directory-heading')).toHaveText('프로젝트 모아보기');
+    await expect(page.locator('#registry-heading')).toHaveText('비즈니스 목록');
+    await expect(page.locator('#activity-heading')).toHaveText('우선 작업');
+  });
+
+  test('Project Directory heading is Korean', async ({ page }) => {
+    await expect(page.locator('#project-directory-heading')).toHaveText('프로젝트 모아보기');
+    await expect(page.locator('#all-projects-label')).toHaveText('전체 프로젝트');
+  });
+
+  test('Project Directory buttons show Korean labels', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"]');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-page-link')).toHaveText('페이지 열기');
+    await expect(page.locator('#pd-repo-link')).toHaveText('저장소 열기');
+    await expect(page.locator('#pd-copy-workspace')).toHaveText('폴더 경로 복사');
+  });
+
+  test('stage badges show Korean labels', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-badge')).toHaveText('운영 중');
+
+    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-badge')).toHaveText('개발 중');
+
+    await page.click('.pd-card[data-project-id="ai-finder-namgu"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-badge')).toHaveText('계획');
+  });
+
+  test('business state badges show Korean labels', async ({ page }) => {
+    await page.click('#business-table-body tr[data-business-number="2"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#detail-status')).toHaveText('운영 중');
+
+    await page.click('#business-table-body tr[data-business-number="14"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#detail-status')).toHaveText('검토 중');
+  });
+
+  test('EN click switches to English', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#topbar-title')).toHaveText('Business Operations');
+    await expect(page.locator('#project-directory-heading')).toHaveText('Project Directory');
+    await expect(page.locator('#registry-heading')).toHaveText('Business Registry');
+    await expect(page.locator('#activity-heading')).toHaveText('Priority Actions');
+    await expect(page.locator('#pd-page-link')).toHaveText('OPEN PAGE');
+    await expect(page.locator('#pd-repo-link')).toHaveText('OPEN REPOSITORY');
+    await expect(page.locator('#pd-copy-workspace')).toHaveText('COPY WORKSPACE');
+  });
+
+  test('Korean click restores Korean', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#topbar-title')).toHaveText('Business Operations');
+
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#topbar-title')).toHaveText('내 비즈니스 관리');
+    await expect(page.locator('#project-directory-heading')).toHaveText('프로젝트 모아보기');
+  });
+
+  test('refresh resets to Korean', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#topbar-title')).toHaveText('Business Operations');
+
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
+    await expect(page.locator('#topbar-title')).toHaveText('내 비즈니스 관리');
+  });
+
+  test('technical identifiers unchanged after language switch', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.waitForTimeout(200);
+
+    const repoBefore = await page.locator('#pd-detail-repo').textContent();
+    const workspaceBefore = await page.locator('#pd-detail-workspace').textContent();
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-detail-repo')).toHaveText(repoBefore);
+    await expect(page.locator('#pd-detail-workspace')).toHaveText(workspaceBefore);
+    await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
+  });
+
+  test('project names unchanged after language switch', async ({ page }) => {
+    const projectName = await page.locator('.pd-card-name').first().textContent();
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('.pd-card-name').first()).toHaveText(projectName);
+  });
+
+  test('search works after language switch', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+
+    await page.fill('#pd-search-input', 'lovetree');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+  });
+
+  test('filter works after language switch', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+
+    await page.selectOption('#pd-stage-filter', 'live');
+    await page.waitForTimeout(200);
+    const liveCount = await page.locator('.pd-card').count();
+    expect(liveCount).toBeGreaterThan(0);
+
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(liveCount);
+  });
+
+  test('selection maintained after language switch', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
+
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
+  });
+
+  test('language toggle buttons show active state', async ({ page }) => {
+    await expect(page.locator('#lang-ko')).toHaveClass(/is-active/);
+    await expect(page.locator('#lang-en')).not.toHaveClass(/is-active/);
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#lang-en')).toHaveClass(/is-active/);
+    await expect(page.locator('#lang-ko')).not.toHaveClass(/is-active/);
+  });
+
+  test('Quick Launch heading switches language', async ({ page }) => {
+    await expect(page.locator('#quick-launch-heading')).toHaveText('빠른 실행');
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#quick-launch-heading')).toHaveText('QUICK LAUNCH');
+
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#quick-launch-heading')).toHaveText('빠른 실행');
+  });
+
+  test('metric labels switch language', async ({ page }) => {
+    await expect(page.locator('#metric-tracked-label')).toHaveText('추적 중');
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#metric-tracked-label')).toHaveText('TRACKED');
+  });
+
+  test('table headers switch language', async ({ page }) => {
+    await expect(page.locator('#th-business')).toHaveText('비즈니스');
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#th-business')).toHaveText('BUSINESS');
+  });
+
+  test('no console errors after language switch', async ({ page }) => {
+    const errors = [];
+    page.on('console', msg => {
+      if (msg.type() === 'error') errors.push(msg.text());
+    });
+    page.on('pageerror', err => errors.push(err.message));
+
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  test('no horizontal overflow after language switch', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
   });
 });

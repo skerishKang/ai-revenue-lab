@@ -82,6 +82,11 @@ h1, h2, p { margin-top: 0; }
 h1 { margin-bottom: 0; font-size: clamp(24px, 3vw, 34px); line-height: 1.1; font-weight: 650; letter-spacing: -.035em; }
 h2 { margin-bottom: 0; font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
+.lang-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+.lang-button { border: 0; background: transparent; color: var(--muted); font: 650 10px/1 var(--mono); letter-spacing: .04em; cursor: pointer; padding: 3px 6px; border-radius: 4px; transition: background .13s ease, color .13s ease; }
+.lang-button:hover { background: var(--panel-hover); color: var(--text); }
+.lang-button.is-active { background: var(--accent-soft); color: var(--accent); }
+.lang-divider { color: var(--quiet); font: 10px/1 var(--mono); }
 .sync-state { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font: 10px/1 var(--mono); text-transform: uppercase; }
 .sync-state i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px var(--green-soft); }
 .icon-button { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); color: var(--muted); cursor: pointer; }

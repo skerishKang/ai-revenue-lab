@@ -10,21 +10,189 @@
   const sortControl = $("#sort-control");
   let selectedNumber = null;
   let selectedProjectId = null;
+  let currentLang = "ko";
+
+  const labels = {
+    ko: {
+      businessOperations: "내 비즈니스 관리",
+      quickLaunch: "빠른 실행",
+      projectDirectory: "프로젝트 모아보기",
+      businessRegistry: "비즈니스 목록",
+      priorityActions: "우선 작업",
+      search: "검색",
+      stage: "단계",
+      repository: "저장소",
+      workspace: "폴더",
+      page: "페이지",
+      progress: "진행 상황",
+      currentWork: "현재 작업",
+      nextAction: "다음 작업",
+      lastVerified: "마지막 확인",
+      openPage: "페이지 열기",
+      openRepository: "저장소 열기",
+      copyWorkspace: "폴더 경로 복사",
+      allProjects: "전체 프로젝트",
+      all: "전체",
+      projects: "개",
+      rows: "개",
+      items: "개",
+      noResults: "조건에 맞는 사업이 없습니다.",
+      noProjects: "조건에 맞는 프로젝트가 없습니다.",
+      selectBusiness: "사업을 선택하십시오.",
+      selectProject: "프로젝트를 선택하십시오.",
+      demoReadiness: "데모 준비도",
+      lifecycle: "라이프사이클",
+      deployment: "배포",
+      github: "GitHub",
+      openSurface: "화면 열기",
+      openGithub: "GitHub 열기",
+      openIssue: "Issue 열기",
+      actionNote: "확인된 링크만 활성화됩니다.",
+      actionNoteWithSurface: "확인된 배포 주소와 GitHub 근거만 연결되어 있습니다.",
+      actionNoteNoSurface: "확인된 배포 주소가 없어 GitHub 근거만 활성화했습니다.",
+      mode: "모드",
+      source: "소스",
+      range: "범위",
+      manual: "수동",
+      staticRegistry: "정적 레지스트리",
+      registryLoaded: "레지스트리 로드됨",
+      privateAdmin: "개인 관리자",
+      businesses: "비즈니스",
+      deployments: "배포",
+      modelsCost: "모델 & 비용",
+      registry: "레지스트리",
+      tracked: "추적 중",
+      demoSurfaces: "데모 화면",
+      needsAction: "조치 필요",
+      openSlots: "미배정",
+      trackedDesc: "번호가 배정되거나 제안된 사업",
+      demoDesc: "즉시 열 수 있는 확인된 화면",
+      actionDesc: "검토·배포·결정이 필요한 사업",
+      openDesc: "현재 표시 범위의 미배정 번호",
+      state: "상태",
+      sort: "정렬",
+      allStates: "전체 상태",
+      running: "운영 중",
+      reviewBuild: "검토 / 개발",
+      planning: "계획",
+      reserved: "예약",
+      numberAsc: "번호 ↑",
+      numberDesc: "번호 ↓",
+      actionPriority: "우선순위",
+      progressSort: "진행률",
+      business: "비즈니스",
+      surface: "화면",
+      nextActionCol: "다음 작업",
+      copySuccess: "폴더 경로를 복사했습니다",
+      copyFail: "폴더 경로를 복사하지 못했습니다.",
+      notDeployed: "미배포",
+      langKo: "한국어",
+      langEn: "EN"
+    },
+    en: {
+      businessOperations: "Business Operations",
+      quickLaunch: "QUICK LAUNCH",
+      projectDirectory: "Project Directory",
+      businessRegistry: "Business Registry",
+      priorityActions: "Priority Actions",
+      search: "SEARCH",
+      stage: "STAGE",
+      repository: "REPOSITORY",
+      workspace: "WORKSPACE",
+      page: "PAGE",
+      progress: "PROGRESS",
+      currentWork: "CURRENT WORK",
+      nextAction: "NEXT ACTION",
+      lastVerified: "LAST VERIFIED",
+      openPage: "OPEN PAGE",
+      openRepository: "OPEN REPOSITORY",
+      copyWorkspace: "COPY WORKSPACE",
+      allProjects: "ALL PROJECTS",
+      all: "ALL",
+      projects: "projects",
+      rows: "rows",
+      items: "items",
+      noResults: "No businesses match the search criteria.",
+      noProjects: "No projects match the criteria.",
+      selectBusiness: "Select a business.",
+      selectProject: "Select a project.",
+      demoReadiness: "DEMO READINESS",
+      lifecycle: "LIFECYCLE",
+      deployment: "DEPLOYMENT",
+      github: "GITHUB",
+      openSurface: "OPEN SURFACE",
+      openGithub: "OPEN GITHUB",
+      openIssue: "OPEN ISSUE",
+      actionNote: "Only verified links are enabled.",
+      actionNoteWithSurface: "Only verified deployment and GitHub evidence are linked.",
+      actionNoteNoSurface: "No verified deployment, so only GitHub evidence is enabled.",
+      mode: "MODE",
+      source: "SOURCE",
+      range: "RANGE",
+      manual: "MANUAL",
+      staticRegistry: "STATIC REGISTRY",
+      registryLoaded: "registry loaded",
+      privateAdmin: "PRIVATE ADMIN",
+      businesses: "Businesses",
+      deployments: "Deployments",
+      modelsCost: "Models & Cost",
+      registry: "Registry",
+      tracked: "TRACKED",
+      demoSurfaces: "DEMO SURFACES",
+      needsAction: "NEEDS ACTION",
+      openSlots: "OPEN SLOTS",
+      trackedDesc: "Assigned or proposed businesses",
+      demoDesc: "Verified surfaces that can be opened immediately",
+      actionDesc: "Businesses needing review, deployment, or decision",
+      openDesc: "Unassigned numbers in current display range",
+      state: "STATE",
+      sort: "SORT",
+      allStates: "ALL STATES",
+      running: "RUNNING",
+      reviewBuild: "REVIEW / BUILD",
+      planning: "PLANNING",
+      reserved: "RESERVED",
+      numberAsc: "NUMBER ↑",
+      numberDesc: "NUMBER ↓",
+      actionPriority: "ACTION PRIORITY",
+      progressSort: "PROGRESS",
+      business: "BUSINESS",
+      surface: "SURFACE",
+      nextActionCol: "NEXT ACTION",
+      copySuccess: "Workspace path copied",
+      copyFail: "Failed to copy workspace path.",
+      notDeployed: "Not deployed",
+      langKo: "한국어",
+      langEn: "EN"
+    }
+  };
 
   const stateLabels = {
-    running: "RUNNING",
-    review: "REVIEW",
-    planning: "PLANNING",
-    reserved: "RESERVED"
+    running: { ko: "운영 중", en: "RUNNING" },
+    review: { ko: "검토 중", en: "REVIEW" },
+    planning: { ko: "계획", en: "PLANNING" },
+    reserved: { ko: "예약", en: "RESERVED" }
   };
 
   const stageLabels = {
-    live: "LIVE",
-    demo: "DEMO",
-    build: "BUILD",
-    review: "REVIEW",
-    planned: "PLANNED"
+    live: { ko: "운영 중", en: "LIVE" },
+    demo: { ko: "데모", en: "DEMO" },
+    build: { ko: "개발 중", en: "BUILD" },
+    review: { ko: "검토 중", en: "REVIEW" },
+    planned: { ko: "계획", en: "PLANNED" }
   };
+
+  function t(key) {
+    return labels[currentLang][key] || labels.ko[key] || key;
+  }
+
+  function stateLabel(state) {
+    return stateLabels[state]?.[currentLang] || stateLabels[state]?.en || state;
+  }
+
+  function stageLabel(stage) {
+    return stageLabels[stage]?.[currentLang] || stageLabels[stage]?.en || stage;
+  }
 
   function pad(number) {
     return String(number).padStart(2, "0");
@@ -74,9 +242,9 @@
             </span>
           </div>
         </td>
-        <td><span class="status-badge status-${item.state}">${stateLabels[item.state]}</span></td>
+        <td><span class="status-badge status-${item.state}">${stateLabel(item.state)}</span></td>
         <td class="progress-cell">
-          <div class="progress-label"><span>DEMO</span><span>${item.progress}%</span></div>
+          <div class="progress-label"><span>${t("demoReadiness").replace("DEMO READINESS", "DEMO").replace("데모 준비도", "DEMO")}</span><span>${item.progress}%</span></div>
           <div class="progress-track"><i style="width:${item.progress}%"></i></div>
         </td>
         <td class="mono-cell">${item.surfaceType}</td>
@@ -88,8 +256,8 @@
 
   function renderTable() {
     const visible = filteredBusinesses();
-    tableBody.innerHTML = visible.map(rowTemplate).join("") || '<tr><td colspan="6" class="empty-state">검색 조건에 맞는 사업이 없습니다.</td></tr>';
-    $("#result-count").textContent = `${visible.length} rows`;
+    tableBody.innerHTML = visible.map(rowTemplate).join("") || `<tr><td colspan="6" class="empty-state">${t("noResults")}</td></tr>`;
+    $("#result-count").textContent = `${visible.length} ${t("rows")}`;
 
     tableBody.querySelectorAll(".business-row").forEach((row) => {
       const select = () => selectBusiness(Number(row.dataset.businessNumber));
@@ -126,9 +294,9 @@
     const item = businesses.find((business) => business.number === number);
     if (!item) return;
     selectedNumber = number;
-    $("#detail-number").textContent = `BUSINESS ${pad(item.number)}`;
+    $("#detail-number").textContent = `${t("business")} ${pad(item.number)}`;
     $("#detail-status").className = `status-badge status-${item.state}`;
-    $("#detail-status").textContent = stateLabels[item.state];
+    $("#detail-status").textContent = stateLabel(item.state);
     $("#detail-title").textContent = item.title;
     $("#detail-korean").textContent = item.koreanTitle;
     $("#detail-progress-value").textContent = `${item.progress}%`;
@@ -143,8 +311,8 @@
     configureLink("#github-link", item.githubUrl);
     configureLink("#issue-link", item.issueUrl);
     $("#action-note").textContent = item.surfaceUrl
-      ? "확인된 배포 주소와 GitHub 근거만 연결되어 있습니다."
-      : "확인된 배포 주소가 없어 GitHub 근거만 활성화했습니다.";
+      ? t("actionNoteWithSurface")
+      : t("actionNoteNoSurface");
     renderTable();
   }
 
@@ -154,7 +322,7 @@
       .sort((a, b) => b.priority - a.priority)
       .slice(0, 6);
 
-    $("#priority-count").textContent = `${actions.length} items`;
+    $("#priority-count").textContent = `${actions.length} ${t("items")}`;
     $("#priority-list").innerHTML = actions.map((item) => `
       <button class="priority-item" type="button" data-priority-number="${item.number}">
         <span class="priority-number">BIZ ${pad(item.number)}</span>
@@ -189,7 +357,7 @@
       <div class="pd-card${selectedClass}" data-project-id="${item.id}" tabindex="0" role="button" aria-pressed="${item.id === selectedProjectId}">
         <div class="pd-card-top">
           <span class="pd-card-name">${item.name}</span>
-          <span class="status-badge status-${item.stage}">${stageLabels[item.stage]}</span>
+          <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
         </div>
         <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
         <div class="pd-card-meta">
@@ -205,8 +373,8 @@
     const grid = $("#pd-grid");
     if (!grid) return;
     const visible = filteredProjects();
-    grid.innerHTML = visible.map(projectCardTemplate).join("") || '<div class="empty-state">조건에 맞는 프로젝트가 없습니다.</div>';
-    $("#project-count").textContent = `${visible.length} projects`;
+    grid.innerHTML = visible.map(projectCardTemplate).join("") || `<div class="empty-state">${t("noProjects")}</div>`;
+    $("#project-count").textContent = `${visible.length} ${t("projects")}`;
 
     grid.querySelectorAll(".pd-card").forEach((card) => {
       const select = () => selectProject(card.dataset.projectId);
@@ -245,20 +413,28 @@
     if (!item) return;
     selectedProjectId = id;
     $("#pd-detail-badge").className = `status-badge status-${item.stage}`;
-    $("#pd-detail-badge").textContent = stageLabels[item.stage];
-    $("#pd-detail-biz").textContent = item.businessNumber ? `BUSINESS ${pad(item.businessNumber)}` : "";
+    $("#pd-detail-badge").textContent = stageLabel(item.stage);
+    $("#pd-detail-biz").textContent = item.businessNumber ? `${t("business")} ${pad(item.businessNumber)}` : "";
     $("#pd-detail-title").textContent = item.name;
     $("#pd-detail-korean").textContent = item.koreanName;
     $("#pd-detail-purpose").textContent = item.purpose;
     $("#pd-detail-repo").textContent = item.repositoryLabel;
     $("#pd-detail-workspace").textContent = item.workspace;
-    $("#pd-detail-page").textContent = item.pageUrl || "미배포";
+    $("#pd-detail-page").textContent = item.pageUrl || t("notDeployed");
     $("#pd-detail-progress").textContent = item.progressNote;
     $("#pd-detail-current").textContent = item.currentWork;
     $("#pd-detail-verified").textContent = item.lastVerified;
     $("#pd-detail-next").textContent = item.nextAction;
     configureProjectLink("#pd-page-link", item.pageUrl);
     configureProjectLink("#pd-repo-link", item.repositoryUrl);
+    const copyBtn = $("#pd-copy-workspace");
+    if (item.workspace === "확인 필요") {
+      copyBtn.disabled = true;
+      copyBtn.classList.add("is-disabled");
+    } else {
+      copyBtn.disabled = false;
+      copyBtn.classList.remove("is-disabled");
+    }
     $("#pd-copy-note").textContent = "";
     renderProjectDirectory();
   }
@@ -274,12 +450,110 @@
       copyButton.addEventListener("click", () => {
         const item = projects.find((project) => project.id === selectedProjectId);
         if (!item) return;
+
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          $("#pd-copy-note").textContent = t("copyFail");
+          setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
+          return;
+        }
+
         navigator.clipboard.writeText(item.workspace).then(() => {
-          $("#pd-copy-note").textContent = `복사됨: ${item.workspace}`;
+          $("#pd-copy-note").textContent = `${t("copySuccess")}: ${item.workspace}`;
+          setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
+        }).catch(() => {
+          $("#pd-copy-note").textContent = t("copyFail");
           setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
         });
       });
     }
+  }
+
+  function updateStaticLabels() {
+    $("#topbar-title").textContent = t("businessOperations");
+    $(".ql-heading").textContent = t("quickLaunch");
+    $("#project-directory-heading").textContent = t("projectDirectory");
+    $("#registry-heading").textContent = t("businessRegistry");
+    $("#activity-heading").textContent = t("priorityActions");
+    $("#pd-search-label").textContent = t("search");
+    $("#pd-stage-label").textContent = t("stage");
+    $("#pd-detail-repo-label").textContent = t("repository");
+    $("#pd-detail-workspace-label").textContent = t("workspace");
+    $("#pd-detail-page-label").textContent = t("page");
+    $("#pd-detail-progress-label").textContent = t("progress");
+    $("#pd-detail-current-label").textContent = t("currentWork");
+    $("#pd-detail-verified-label").textContent = t("lastVerified");
+    $("#pd-next-action-label").textContent = t("nextAction");
+    $("#pd-page-link").textContent = t("openPage");
+    $("#pd-repo-link").textContent = t("openRepository");
+    $("#pd-copy-workspace").textContent = t("copyWorkspace");
+    $("#all-projects-label").textContent = t("allProjects");
+    $("#pd-stage-filter option[value='all']").textContent = t("all");
+    $("#pd-stage-filter option[value='live']").textContent = stageLabel("live");
+    $("#pd-stage-filter option[value='demo']").textContent = stageLabel("demo");
+    $("#pd-stage-filter option[value='build']").textContent = stageLabel("build");
+    $("#pd-stage-filter option[value='review']").textContent = stageLabel("review");
+    $("#pd-stage-filter option[value='planned']").textContent = stageLabel("planned");
+    $("#search-label").textContent = t("search");
+    $("#state-label").textContent = t("state");
+    $("#sort-label").textContent = t("sort");
+    $("#state-filter option[value='all']").textContent = t("allStates");
+    $("#state-filter option[value='running']").textContent = t("running");
+    $("#state-filter option[value='review']").textContent = t("reviewBuild");
+    $("#state-filter option[value='planning']").textContent = t("planning");
+    $("#state-filter option[value='reserved']").textContent = t("reserved");
+    $("#sort-control option[value='number-asc']").textContent = t("numberAsc");
+    $("#sort-control option[value='number-desc']").textContent = t("numberDesc");
+    $("#sort-control option[value='priority']").textContent = t("actionPriority");
+    $("#sort-control option[value='progress']").textContent = t("progressSort");
+    $("#th-business").textContent = t("business");
+    $("#th-state").textContent = t("state");
+    $("#th-progress").textContent = t("progress");
+    $("#th-surface").textContent = t("surface");
+    $("#th-github").textContent = t("github");
+    $("#th-next-action").textContent = t("nextActionCol");
+    $("#detail-progress-label").textContent = t("demoReadiness");
+    $("#detail-lifecycle-label").textContent = t("lifecycle");
+    $("#detail-workspace-label").textContent = t("workspace");
+    $("#detail-deployment-label").textContent = t("deployment");
+    $("#detail-github-label").textContent = t("github");
+    $("#detail-verified-label").textContent = t("lastVerified");
+    $("#detail-next-action-label").textContent = t("nextAction");
+    $("#surface-link").textContent = t("openSurface");
+    $("#github-link").textContent = t("openGithub");
+    $("#issue-link").textContent = t("openIssue");
+    $("#metric-tracked-label").textContent = t("tracked");
+    $("#metric-demo-label").textContent = t("demoSurfaces");
+    $("#metric-action-label").textContent = t("needsAction");
+    $("#metric-open-label").textContent = t("openSlots");
+    $("#metric-tracked-desc").textContent = t("trackedDesc");
+    $("#metric-demo-desc").textContent = t("demoDesc");
+    $("#metric-action-desc").textContent = t("actionDesc");
+    $("#metric-open-desc").textContent = t("openDesc");
+    $("#sidebar-mode-label").textContent = t("mode");
+    $("#sidebar-source-label").textContent = t("source");
+    $("#sidebar-range-label").textContent = t("range");
+    $("#sidebar-mode-value").textContent = t("manual");
+    $("#sidebar-source-value").textContent = t("staticRegistry");
+    $("#private-admin-label").textContent = t("privateAdmin");
+    $("#nav-businesses").textContent = t("businesses");
+    $("#nav-deployments").textContent = t("deployments");
+    $("#nav-models").textContent = t("modelsCost");
+    $("#nav-registry").textContent = t("registry");
+    $("#sync-state-text").textContent = t("registryLoaded");
+    $("#lang-ko").textContent = t("langKo");
+    $("#lang-en").textContent = t("langEn");
+  }
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    $("#lang-ko").classList.toggle("is-active", lang === "ko");
+    $("#lang-en").classList.toggle("is-active", lang === "en");
+    updateStaticLabels();
+    renderTable();
+    renderPriorityActions();
+    renderProjectDirectory();
+    if (selectedNumber) selectBusiness(selectedNumber);
+    if (selectedProjectId) selectProject(selectedProjectId);
   }
 
   $("#refresh-button").addEventListener("click", () => window.location.reload());
@@ -293,7 +567,11 @@
     });
   });
 
+  $("#lang-ko").addEventListener("click", () => setLanguage("ko"));
+  $("#lang-en").addEventListener("click", () => setLanguage("en"));
+
   updateMetrics();
+  updateStaticLabels();
   renderTable();
   renderPriorityActions();
   renderProjectDirectory();
