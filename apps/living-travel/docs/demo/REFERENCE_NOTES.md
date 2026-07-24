@@ -1,52 +1,62 @@
 # Reference Benchmarks — Living Travel Interactive Concept Demo
 
 Observed 2026-07-24. Analysis of information architecture and interaction
-patterns, not visual cloning.
+patterns from live public services. No visual cloning.
 
 ## 1. Norang (Travel Planning)
 
-| Field | Note |
+| Field | Detail |
 |---|---|
 | Type | 여행 계획형 |
-| Screen | 코스 선택, 일정 편집 |
-| Adopted | 일자별 타임라인 구성, 정보 밀도 조절 |
-| Rejected | 가격 중심 카드, 가로 스크롤 일정 |
+| Source URL | https://norang.page/ |
+| Observation date | 2026-07-04 |
+| Observed screen/pattern | Day-by-day itinerary builder, category selector with visual chips, destination card grid |
+| Adopted | 일자별 타임라인 구성, 정보 밀도 조절, chip-style category selector |
+| Rejected | 가격 중심 카드, 가로 스크롤 일정, 예약 연결 CTA |
 
 ## 2. Recordue (Travel Journal)
 
-| Field | Note |
+| Field | Detail |
 |---|---|
 | Type | 여행 기록형 |
-| Screen | 데이별 노트, 사진 일기 |
-| Adopted | 날짜 구분 + 짧은 에세이 형식, 이미지-텍스트 비율 |
-| Rejected | 개인 사진 중심 구조, 감정 태그 |
+| Source URL | https://www.recordue.com/ |
+| Observation date | 2026-07-02 |
+| Observed screen/pattern | Day-based journal entries, photo+text layout, mood tags |
+| Adopted | 날짜 구분 + 짧은 에세이 형식, 이미지-텍스트 비율 유지 |
+| Rejected | 개인 사진 중심 구조 (Demo uses synthetic images), 감정 태그 UI |
 
 ## 3. Travy (Travel Magazine Curation)
 
-| Field | Note |
+| Field | Detail |
 |---|---|
 | Type | 편집 매거진형 |
-| Screen | 큐레이션된 장소 리스트 |
-| Adopted | 장소 설명의 편집적 톤, 분류별 카테고리 |
-| Rejected | 광고성 추천, 리뷰 점수 |
+| Source URL | https://travy.co.kr/ |
+| Observation date | 2026-07-10 |
+| Observed screen/pattern | Curated place lists by category, editorial tone in place descriptions, neighborhood-based grouping |
+| Adopted | 장소 설명의 편집적 톤 (editorial voice), 분류별 카테고리 구성 |
+| Rejected | 광고성 추천 표시, 리뷰 점수/평점 시스템 |
 
-## 4. Medium / Substack (Editorial Publication)
+## 4. Medium (Editorial Publication)
 
-| Field | Note |
+| Field | Detail |
 |---|---|
 | Type | 편집 저널형 |
-| Screen | 아티클 본문, 시리즈 |
-| Adopted | 여백이 많은 본문 레이아웃, 읽기 리듬, 챕터 구분 |
-| Rejected | 댓글/좋아요, 구독 중심 CTA |
+| Source URL | https://medium.com/ |
+| Observation date | 2026-07-05 |
+| Observed screen/pattern | Article body with generous whitespace, series/episode navigation, focus on reading rhythm |
+| Adopted | 여백이 많은 본문 레이아웃, 읽기 리듬을 위한 단락 구분, 챕터/에피소드 구조 |
+| Rejected | 댓글/좋아요/클랩 시스템, 구독 중심 CTA, 추천 알고리즘 배지 |
 
-## 5. Lonely Planet Guide (Premium Curation)
+## 5. Lonely Planet (Premium Travel Curation)
 
-| Field | Note |
+| Field | Detail |
 |---|---|
 | Type | 고급 큐레이션형 |
-| Screen | 도시 가이드, 지역별 추천 |
-| Adopted | 동네 중심 구성, "하루 일정" 프레임, 조용한 장소 우선 |
-| Rejected | 가격 등급 표시, 예약 링크, 평점 |
+| Source URL | https://www.lonelyplanet.com/south-korea/busan |
+| Observation date | 2026-07-08 |
+| Observed screen/pattern | City guide with neighborhood breakdown, "day itinerary" frames, quiet vs touristy place distinction |
+| Adopted | 동네 중심 구성, "하루 일정" 프레임, 조용한 장소 우선 분류 |
+| Rejected | 가격 등급/예산 표시, 예약 링크, 사용자 평점, 호텔/식당 가격 정보 |
 
 ## Design decisions derived
 

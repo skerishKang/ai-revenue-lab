@@ -462,5 +462,139 @@ class TestInteractiveDemoContract(unittest.TestCase):
         self.assertIn("reduced-motion", css.lower(), "demo.css missing reduced-motion")
 
 
+# ---------------------------------------------------------------------------
+# Image asset and determinism tests
+# ---------------------------------------------------------------------------
+
+EXPECTED_IMAGES = [
+    "assets/images/busan-hero.webp",
+    "assets/images/busan-alley.webp",
+    "assets/images/busan-food.webp",
+    "assets/images/busan-sea.webp",
+    "assets/images/edition-cover.webp",
+    "assets/images/placeholder.webp",
+]
+
+PAGES_WITH_IMAGES = [
+    "demo/intro.html",
+    "demo/edition.html",
+    "demo/edition-2.html",
+    "demo/traveler-home.html",
+]
+
+# Image paths expected per page (relative to page location)
+PAGE_IMAGE_PATHS: dict[str, list[str]] = {
+    "demo/intro.html": ["../assets/images/busan-hero.webp"],
+    "demo/edition.html": [
+        "../assets/images/busan-alley.webp",
+        "../assets/images/busan-sea.webp",
+        "../assets/images/busan-food.webp",
+    ],
+    "demo/edition-2.html": [
+        "../assets/images/busan-alley.webp",
+        "../assets/images/busan-sea.webp",
+        "../assets/images/busan-sea.webp",
+    ],
+    "demo/traveler-home.html": ["../assets/images/edition-cover.webp"],
+}
+
+IMG_RE = re.compile(r'<img\b[^>]*>')
+
+
+class TestImageAssets(unittest.TestCase):
+    """Local synthetic WebP image asset contract."""
+
+    def test_all_expected_images_exist(self) -> None:
+        for img_rel in EXPECTED_IMAGES:
+            path = SITE_DIR / img_rel
+            self.assertTrue(path.exists(), f"Missing image: {img_rel}")
+            size = path.stat().st_size
+            self.assertGreater(size, 100, f"{img_rel} too small ({size} B)")
+            hero_max = 400 * 1024
+            section_max = 250 * 1024
+            if "hero" in img_rel:
+                self.assertLessEqual(size, hero_max, f"{img_rel} exceeds hero max ({size} > {hero_max})")
+            else:
+                self.assertLessEqual(size, section_max, f"{img_rel} exceeds section max ({size} > {section_max})")
+
+    def test_all_html_images_resolve(self) -> None:
+        errors: list[str] = []
+        for page, expected_imgs in PAGE_IMAGE_PATHS.items():
+            html = (SITE_DIR / page).read_text(encoding="utf-8")
+            for img_rel in expected_imgs:
+                resolved = _resolve(page, img_rel)
+                target = SITE_DIR / resolved
+                if not target.exists():
+                    errors.append(f"{page}: image '{img_rel}' → '{resolved}' does not exist")
+        self.assertEqual(errors, [], "Missing image references:\n" + "\n".join(errors))
+
+    def test_images_have_width_height_alt(self) -> None:
+        errors: list[str] = []
+        for page in PAGES_WITH_IMAGES:
+            html = (SITE_DIR / page).read_text(encoding="utf-8")
+            for match in IMG_RE.finditer(html):
+                tag = match.group()
+                if 'width=' not in tag:
+                    errors.append(f"{page}: <img> missing width: {tag[:60]}")
+                if 'height=' not in tag:
+                    errors.append(f"{page}: <img> missing height: {tag[:60]}")
+                if 'alt=' not in tag:
+                    errors.append(f"{page}: <img> missing alt: {tag[:60]}")
+                if 'onerror=' not in tag:
+                    errors.append(f"{page}: <img> missing onerror fallback: {tag[:60]}")
+        self.assertEqual(errors, [], "Image attribute issues:\n" + "\n".join(errors))
+
+    def test_below_fold_lazy_loading(self) -> None:
+        errors: list[str] = []
+        for page in PAGES_WITH_IMAGES:
+            html = (SITE_DIR / page).read_text(encoding="utf-8")
+            imgs = IMG_RE.findall(html)
+            for i, tag in enumerate(imgs):
+                is_first = (i == 0)
+                has_lazy = 'loading="lazy"' in tag or "loading='lazy'" in tag
+                if not is_first and not has_lazy:
+                    errors.append(f"{page}: non-first <img> missing loading='lazy': {tag[:60]}")
+        self.assertEqual(errors, [], "Lazy loading issues:\n" + "\n".join(errors))
+
+    def test_no_remote_images(self) -> None:
+        errors: list[str] = []
+        for page in PAGES_WITH_IMAGES:
+            html = (SITE_DIR / page).read_text(encoding="utf-8")
+            for match in IMG_RE.finditer(html):
+                tag = match.group()
+                if 'src="http://' in tag or "src='http://" in tag or 'src="https://' in tag or "src='https://" in tag:
+                    errors.append(f"{page}: remote image: {tag[:80]}")
+        self.assertEqual(errors, [], "Remote images found:\n" + "\n".join(errors))
+
+
+class TestDeterministicFlow(unittest.TestCase):
+    """Demo generation flow must be deterministic (no Math.random)."""
+
+    def test_no_math_random_in_generation(self) -> None:
+        html = (SITE_DIR / "demo/generation.html").read_text(encoding="utf-8")
+        self.assertNotIn("Math.random", html, "generation.html must not use Math.random")
+
+    def test_normal_flow_is_deterministic(self) -> None:
+        html = (SITE_DIR / "demo/generation.html").read_text(encoding="utf-8")
+        self.assertIn('window.location.href = \'pending.html\'', html,
+                      "generation.html must navigate to pending.html on success")
+        self.assertIn('triggerFailure', html,
+                      "generation.html must have a separate failure trigger")
+
+    def test_failure_button_exists(self) -> None:
+        html = (SITE_DIR / "demo/generation.html").read_text(encoding="utf-8")
+        self.assertIn("데모 실패 보기", html, "generation.html must have explicit failure button")
+        self.assertIn("triggerFailure", html, "failure button must call triggerFailure")
+
+    def test_retry_is_deterministic(self) -> None:
+        html = (SITE_DIR / "demo/generation.html").read_text(encoding="utf-8")
+        self.assertIn("retryGeneration", html, "generation.html must have retry function")
+        # retry must NOT have Math.random
+        retry_start = html.find("function retryGeneration")
+        if retry_start >= 0:
+            retry_body = html[retry_start:html.find("function", retry_start + 1)] if html.find("function", retry_start + 1) >= 0 else html[retry_start:]
+            self.assertNotIn("Math.random", retry_body, "retryGeneration must not use Math.random")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -32,6 +32,11 @@
           <span class="demo-gen-step-text">운영자 검토 준비 중...</span>
         </div>
       </div>
+
+      <div id="demoFailBtnWrapper" style="margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+        <span style="font-size:0.8rem;color:var(--ink-faded);">정상 흐름 외에 실패 상태도 확인해보세요.</span>
+        <button class="btn btn-outline btn-sm" onclick="triggerFailure()">데모 실패 보기</button>
+      </div>
     </div>
 
     <div id="genFailure" style="display:none;max-width:480px;width:100%;">
@@ -44,10 +49,10 @@
   </div>
 
   <script>
-  let failed = false;
+  var canceled = false;
 
   function simulateStep(stepNum) {
-    if (failed) return;
+    if (canceled) return;
     var prev = document.getElementById('step' + (stepNum - 1));
     var curr = document.getElementById('step' + stepNum);
     if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
@@ -62,9 +67,7 @@
         document.getElementById('step3').classList.remove('active');
         document.getElementById('step3').classList.add('done');
         setTimeout(function() {
-          if (Math.random() < 0.3) {
-            showFailure();
-          } else {
+          if (!canceled) {
             window.location.href = 'pending.html';
           }
         }, 600);
@@ -72,14 +75,14 @@
     }
   }
 
-  function showFailure() {
-    failed = true;
+  function triggerFailure() {
+    canceled = true;
     document.getElementById('genContent').style.display = 'none';
     document.getElementById('genFailure').style.display = 'block';
   }
 
   function retryGeneration() {
-    failed = false;
+    canceled = false;
     document.getElementById('genContent').style.display = 'block';
     document.getElementById('genFailure').style.display = 'none';
     document.getElementById('step1').className = 'demo-gen-step';
@@ -88,7 +91,6 @@
     simulateStep(1);
   }
 
-  // Start simulation
   setTimeout(function() { simulateStep(1); }, 500);
   </script>
 </body>
