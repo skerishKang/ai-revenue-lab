@@ -97,11 +97,16 @@
     const link = $(selector);
     if (url) {
       link.href = url;
+      link.target = "_blank";
       link.rel = "noopener noreferrer";
+      link.tabIndex = 0;
       link.classList.remove("is-disabled");
       link.removeAttribute("aria-disabled");
     } else {
-      link.href = "#";
+      link.removeAttribute("href");
+      link.removeAttribute("target");
+      link.removeAttribute("rel");
+      link.tabIndex = -1;
       link.classList.add("is-disabled");
       link.setAttribute("aria-disabled", "true");
     }

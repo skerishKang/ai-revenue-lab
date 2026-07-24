@@ -107,16 +107,33 @@ test.describe('Portfolio Console Browser Tests', () => {
     await expect(page.locator('#detail-number')).toHaveText('BUSINESS 01');
   });
 
-  test('inactive links are not clickable and have correct attributes', async ({ page }) => {
+  test('disabled links have no href, tabindex=-1, and are keyboard-inert', async ({ page }) => {
     await page.click('#business-table-body tr[data-business-number="5"]');
     await page.waitForTimeout(200);
 
     const surfaceLink = page.locator('#surface-link');
     await expect(surfaceLink).toHaveClass(/is-disabled/);
     await expect(surfaceLink).toHaveAttribute('aria-disabled', 'true');
+    await expect(surfaceLink).toHaveAttribute('tabindex', '-1');
+    await expect(surfaceLink).not.toHaveAttribute('href');
+    await expect(surfaceLink).not.toHaveAttribute('target');
+    await expect(surfaceLink).not.toHaveAttribute('rel');
 
     const computedStyle = await surfaceLink.evaluate(el => window.getComputedStyle(el).pointerEvents);
     expect(computedStyle).toBe('none');
+  });
+
+  test('disabled link Enter key does not change URL or selection', async ({ page }) => {
+    await page.click('#business-table-body tr[data-business-number="5"]');
+    await page.waitForTimeout(200);
+
+    const surfaceLink = page.locator('#surface-link');
+    await surfaceLink.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(200);
+
+    expect(page.url()).not.toContain('#');
+    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 05');
   });
 
   test('active external links have target=_blank and rel=noopener noreferrer', async ({ page }) => {
@@ -133,6 +150,7 @@ test.describe('Portfolio Console Browser Tests', () => {
       await expect(link).not.toHaveClass(/is-disabled/);
       await expect(link).toHaveAttribute('target', '_blank');
       await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+      await expect(link).toHaveAttribute('tabindex', '0');
     }
   });
 
@@ -177,7 +195,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     expect(overflow).toBeFalsy();
   });
 
-  test('mobile layout shows essential columns', async ({ page }) => {
+  test('mobile layout shows all essential columns', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(200);
 
@@ -188,50 +206,92 @@ test.describe('Portfolio Console Browser Tests', () => {
     await expect(firstRow.locator('.business-number')).toBeVisible();
     await expect(firstRow.locator('.business-title strong')).toBeVisible();
     await expect(firstRow.locator('.status-badge')).toBeVisible();
+    await expect(firstRow.locator('.progress-cell')).toBeVisible();
+    await expect(firstRow.locator('.action-cell')).toBeVisible();
   });
 
-  test('Business 16 addition does not break layout', async ({ page }) => {
-    await page.evaluate(() => {
-      const tableBody = document.getElementById('business-table-body');
-      const newRow = document.createElement('tr');
-      newRow.className = 'business-row';
-      newRow.dataset.businessNumber = '16';
-      newRow.innerHTML = `
-        <td><div class="business-id"><span class="business-number">16</span><span class="business-title"><strong>Test Business</strong><span>테스트 사업</span></span></div></td>
-        <td><span class="status-badge status-review">REVIEW</span></td>
-        <td class="progress-cell"><div class="progress-label"><span>DEMO</span><span>50%</span></div><div class="progress-track"><i style="width:50%"></i></div></td>
-        <td class="mono-cell">Static demo</td>
-        <td class="mono-cell">Issue #999</td>
-        <td class="action-cell">Add canonical data</td>
-      `;
-      tableBody.appendChild(newRow);
+  test('Business 16 registry expansion updates all derived surfaces', async ({ page }) => {
+    await page.route('**/app.js', async route => {
+      const response = await route.fetch();
+      const body = await response.text();
+      const insert = `window.ARL_BUSINESSES.push({
+  number: 16,
+  slug: "test-business-16",
+  title: "Test Business 16",
+  koreanTitle: "테스트 사업 16",
+  state: "review",
+  lifecycle: "concept",
+  progress: 50,
+  workspace: "apps/test-business-16/",
+  surfaceType: "Static demo",
+  surfaceUrl: null,
+  deployment: "Test deployment",
+  githubLabel: "Issue #999",
+  githubUrl: "https://github.com/skerishKang/ai-revenue-lab/issues/999",
+  issueUrl: "https://github.com/skerishKang/ai-revenue-lab/issues/999",
+  nextAction: "Add canonical data",
+  lastVerified: "2026-07-24",
+  priority: 50
+});
+`;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/javascript',
+        body: insert + body,
+      });
     });
-    await page.waitForTimeout(200);
+
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.waitForTimeout(300);
 
     const rows = page.locator('#business-table-body .business-row');
     await expect(rows).toHaveCount(16);
+
+    await expect(page.locator('#sidebar-range')).toHaveText('01–16');
+
+    await page.fill('#search-input', '16');
+    await page.waitForTimeout(200);
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first().locator('.business-number')).toHaveText('16');
+    await expect(rows.first().locator('.business-title strong')).toHaveText('Test Business 16');
+
+    await page.fill('#search-input', '');
+    await page.waitForTimeout(200);
+
+    await page.click('#business-table-body tr[data-business-number="16"]');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 16');
+    await expect(page.locator('#detail-title')).toHaveText('Test Business 16');
+    await expect(page.locator('#detail-progress-value')).toHaveText('50%');
+
+    const trackedText = await page.locator('#metric-tracked').textContent();
+    expect(parseInt(trackedText)).toBe(9);
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(overflow).toBeFalsy();
   });
 
-  test('Korean and English titles do not overflow', async ({ page }) => {
-    const titles = await page.evaluate(() => {
+  test('Korean and English titles do not overflow their cells', async ({ page }) => {
+    const overflowCheck = await page.evaluate(() => {
       const cells = document.querySelectorAll('.business-title');
-      return Array.from(cells).map(cell => {
-        const strong = cell.querySelector('strong');
-        const span = cell.querySelector('span');
-        return {
-          english: strong?.textContent || '',
-          korean: span?.textContent || '',
-          overflow: window.getComputedStyle(cell).overflow
-        };
-      });
+      const results = [];
+      for (const cell of cells) {
+        const rect = cell.getBoundingClientRect();
+        const parentRect = cell.parentElement.getBoundingClientRect();
+        results.push({
+          scrollWidth: cell.scrollWidth,
+          clientWidth: cell.clientWidth,
+          overflows: cell.scrollWidth > cell.clientWidth,
+          rectRight: Math.round(rect.right),
+          parentRight: Math.round(parentRect.right)
+        });
+      }
+      return results;
     });
 
-    for (const title of titles) {
-      expect(title.english.length).toBeGreaterThan(0);
-      expect(title.korean.length).toBeGreaterThan(0);
+    for (const result of overflowCheck) {
+      expect(result.overflows).toBeFalsy();
     }
   });
 
