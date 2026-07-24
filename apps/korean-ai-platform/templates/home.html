@@ -18,11 +18,11 @@
   </div>
   <div class="hero-visual">
     <div class="hero-stat-card">
-      <span class="stat-label">연동 모델</span>
+      <span class="stat-label">Demo 모델</span>
       <span class="stat-value">{{ model_count }}개</span>
     </div>
     <div class="hero-stat-card">
-      <span class="stat-label">지원 국가/지역</span>
+      <span class="stat-label">처리 지역 예시</span>
       <span class="stat-value">3개</span>
     </div>
     <div class="hero-stat-card">
@@ -48,6 +48,7 @@
         <span class="price">{{ model.input_krw_per_1k }}원/1K 토큰 (입력)</span>
         <span class="price">{{ model.output_krw_per_1k }}원/1K 토큰 (출력)</span>
         <span class="region">{{ model.region }}</span>
+        <span class="demo-label">Demo 가격</span>
       </div>
       <div class="model-tags">
         {% for tag in model.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
@@ -83,7 +84,7 @@
     <div class="feature-card">
       <div class="feature-icon">📊</div>
       <h3>사용량 관리</h3>
-      <p>원화 비용과 토큰 사용량을 실시간으로 확인합니다.</p>
+      <p>Demo 사용량과 예상 비용을 확인합니다.</p>
     </div>
   </div>
 </section>

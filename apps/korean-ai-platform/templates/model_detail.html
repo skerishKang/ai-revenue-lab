@@ -47,18 +47,18 @@
   <div class="model-detail-sidebar">
     <div class="model-detail-section">
       <h2>API Playground</h2>
+      {% if model.demo_available %}
       <p>이 모델로 Playground에서 테스트해 보세요.</p>
       <a href="/playground?model={{ model.id }}" class="btn btn-primary">Playground 열기</a>
+      {% else %}
+      <p>이 모델은 Playground에서 사용할 수 없습니다. (자체 호스팅 예정 · 카탈로그 미리보기만 제공)</p>
+      {% endif %}
     </div>
 
     <div class="model-detail-section">
-      <h2>연동 예제</h2>
-      {% for example in examples %}
-      <div class="example-item">
-        <span class="example-label">{{ example.label }}</span>
-        <button class="btn btn-ghost btn-sm copy-btn" data-copy-target="code-{{ example.id }}">복사</button>
-      </div>
-      {% endfor %}
+      <h2>연동 예제 보기</h2>
+      <p>API 문서에서 연동 예제를 확인하세요.</p>
+      <a href="/docs?model={{ model.id }}" class="btn btn-secondary">예제 보러 가기</a>
     </div>
 
     <div class="callout callout-warn">

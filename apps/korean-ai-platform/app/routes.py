@@ -12,9 +12,13 @@ from app.demo_data import (
     MODELS,
     MODELS_BY_ID,
     ROUTING_POLICIES,
+    REVOKED_KEY_IDS,
     compute_usage_summary,
+    generate_demo_key,
     generate_demo_response,
+    get_available_models,
     get_integration_examples,
+    mark_key_revoked,
 )
 from app.factory import render_template
 
@@ -23,12 +27,13 @@ router = APIRouter()
 
 @router.get("/")
 def home(request: Request):
+    available = get_available_models()
     return render_template(
         request,
         "home.html",
         {
-            "models": MODELS,
-            "model_count": len(MODELS),
+            "models": available,
+            "model_count": len(available),
             "provider_types": ["external", "domestic", "self-hosted"],
         },
     )
@@ -37,15 +42,16 @@ def home(request: Request):
 @router.get("/models")
 def model_catalog(request: Request):
     filter_type = request.query_params.get("type", "")
-    models = MODELS
+    available = get_available_models()
+    models = available
     if filter_type in ("external", "domestic", "self-hosted"):
-        models = [m for m in MODELS if m.provider_type == filter_type]
+        models = [m for m in available if m.provider_type == filter_type]
     return render_template(
         request,
         "models.html",
         {
             "models": models,
-            "all_models": MODELS,
+            "all_models": available,
             "filter_type": filter_type,
         },
     )
@@ -66,15 +72,21 @@ def model_detail(request: Request, model_id: str):
 
 @router.get("/playground")
 def playground(request: Request):
+    available = get_available_models()
+    model_id = request.query_params.get("model", "")
+    if model_id and model_id not in {m.id for m in available}:
+        model_id = ""
+    if not model_id and available:
+        model_id = available[0].id
     return render_template(
         request,
         "playground.html",
         {
-            "models": MODELS,
+            "models": available,
             "routing_policies": ROUTING_POLICIES,
             "result": None,
             "prompt": "",
-            "selected_model": "",
+            "selected_model": model_id,
             "routing_mode": "direct",
         },
     )
@@ -87,26 +99,35 @@ def playground_run(
     model_id: str = Form(""),
     routing_mode: str = Form("direct"),
 ):
+    available = get_available_models()
+    available_ids = {m.id for m in available}
+
     if routing_mode != "direct" and routing_mode:
         for policy in ROUTING_POLICIES:
             if policy.id == routing_mode:
                 model_id = policy.selected_model_id
                 break
 
-    if not model_id:
-        model_id = MODELS[0].id
-
     result = None
+    error = None
     if prompt.strip():
-        result = generate_demo_response(model_id, prompt, routing_mode)
+        if model_id and model_id in available_ids:
+            result = generate_demo_response(model_id, prompt, routing_mode)
+        else:
+            model_id = ""
+            error = "선택한 모델은 Demo를 지원하지 않습니다."
+
+    if not model_id and available:
+        model_id = available[0].id
 
     return render_template(
         request,
         "playground.html",
         {
-            "models": MODELS,
+            "models": available,
             "routing_policies": ROUTING_POLICIES,
             "result": result,
+            "error": error,
             "prompt": prompt,
             "selected_model": model_id,
             "routing_mode": routing_mode,
@@ -116,12 +137,22 @@ def playground_run(
 
 @router.get("/api-keys")
 def api_keys(request: Request):
+    created = request.query_params.get("created")
+    revoked = request.query_params.get("revoked")
+    invalid = request.query_params.get("invalid")
+    keys = list(DEMO_API_KEYS)
+    if created:
+        new_key = generate_demo_key()
+        keys = [new_key] + keys
     return render_template(
         request,
         "api_keys.html",
         {
-            "keys": DEMO_API_KEYS,
+            "keys": keys,
             "access_modes": ACCESS_MODES,
+            "created": created,
+            "revoked": revoked,
+            "invalid": invalid,
         },
     )
 
@@ -133,7 +164,11 @@ def api_key_create(request: Request):
 
 @router.post("/api-keys/{key_id}/revoke")
 def api_key_revoke(request: Request, key_id: str):
-    return RedirectResponse(url="/api-keys?revoked=1", status_code=303)
+    valid_ids = {k.id for k in DEMO_API_KEYS}
+    if key_id not in valid_ids:
+        return RedirectResponse(url="/api-keys?invalid=1", status_code=303)
+    mark_key_revoked(key_id)
+    return RedirectResponse(url=f"/api-keys?revoked={key_id}", status_code=303)
 
 
 @router.get("/usage")
@@ -151,14 +186,17 @@ def usage(request: Request):
 
 @router.get("/docs")
 def docs(request: Request):
-    model_id = request.query_params.get("model", "openai-gpt4o")
+    available = get_available_models()
+    model_id = request.query_params.get("model", "")
+    if not model_id or model_id not in {m.id for m in available}:
+        model_id = available[0].id if available else "openai-gpt4o"
     examples = get_integration_examples(model_id)
     return render_template(
         request,
         "docs.html",
         {
             "examples": examples,
-            "models": MODELS,
+            "models": available,
             "selected_model": model_id,
         },
     )

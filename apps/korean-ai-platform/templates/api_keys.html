@@ -8,23 +8,32 @@
   <p class="page-sub">Business 14 API 키를 생성·관리합니다. 실제 credential이 아닌 Demo 키입니다.</p>
 </div>
 
-{% if request.query_params.get('created') %}
+{% if created %}
 <div class="callout callout-success" role="alert">
   <span class="callout-title">키가 생성되었습니다</span>
-  Demo API 키가 생성되었습니다. 실제 키가 아니므로 안전하게 사용하실 수 없습니다.
+  Demo 생성 키가 추가되었습니다. 실제 키가 아니므로 안전하게 사용하실 수 없습니다.
 </div>
 {% endif %}
 
-{% if request.query_params.get('revoked') %}
+{% if revoked %}
 <div class="callout callout-warn" role="alert">
   <span class="callout-title">키가 폐기되었습니다</span>
-  Demo API 키가 폐기되었습니다.
+  {{ revoked }} 키가 폐기되었습니다. 해당 키는 더 이상 사용할 수 없습니다.
+</div>
+{% endif %}
+
+{% if invalid %}
+<div class="callout callout-danger" role="alert">
+  <span class="callout-title">오류</span>
+  유효하지 않은 키 ID입니다. 폐기할 수 없습니다.
 </div>
 {% endif %}
 
 <div class="section-head">
   <h2 class="section-title">발급된 API 키</h2>
-  <a href="/api-keys/create" class="btn btn-primary btn-sm">새 키 생성</a>
+  <form method="post" action="/api-keys/create" style="display:inline">
+    <button type="submit" class="btn btn-primary btn-sm">새 키 생성</button>
+  </form>
 </div>
 
 <table class="data-table">
@@ -40,17 +49,20 @@
   </thead>
   <tbody>
     {% for key in keys %}
+    {% set key_revoked = key.id == revoked or key.id in ('key-001', 'key-002') and revoked and key.id == revoked %}
     <tr>
       <td>{{ key.label }}</td>
       <td><code>{{ key.masked_key }}</code></td>
       <td>{{ key.created_at }}</td>
-      <td><span class="chip chip-{{ 'success' if key.status == 'active' else 'warn' }}">{{ key.status }}</span></td>
+      <td><span class="chip chip-{{ 'success' if key.id != revoked else 'warn' }}">{{ 'active' if key.id != revoked else 'revoked' }}</span></td>
       <td>{{ key.access_mode }}</td>
       <td>
         <button class="btn btn-ghost btn-sm copy-btn" data-copy="{{ key.masked_key }}">복사</button>
+        {% if key.id != revoked %}
         <form method="post" action="/api-keys/{{ key.id }}/revoke" style="display:inline">
           <button type="submit" class="btn btn-ghost btn-sm btn-danger">폐기</button>
         </form>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

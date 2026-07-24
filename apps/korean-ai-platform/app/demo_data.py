@@ -179,6 +179,10 @@ MODELS: list[ModelSpec] = [
 MODELS_BY_ID: dict[str, ModelSpec] = {m.id: m for m in MODELS}
 
 
+def get_available_models() -> list[ModelSpec]:
+    return [m for m in MODELS if m.demo_available]
+
+
 @dataclass(frozen=True)
 class RoutingPolicy:
     id: str
@@ -193,22 +197,22 @@ ROUTING_POLICIES: list[RoutingPolicy] = [
         id="cheapest",
         label="가장 저렴하게",
         description="예시 가격 기준 가장 낮은 비용의 모델을 선택합니다.",
-        selected_model_id="selfhost-ko-open",
-        reason="예시 가격 기준 최저 비용 모델 (Demo)",
+        selected_model_id="ncsoft-varco",
+        reason="예시 가격 기준 최저 비용 사용 가능 모델 (Demo)",
     ),
     RoutingPolicy(
         id="fastest",
         label="가장 빠르게",
         description="예시 latency 기준 가장 빠른 모델을 선택합니다.",
-        selected_model_id="selfhost-ko-open",
-        reason="예시 latency 기준 최저 응답 시간 (Demo)",
+        selected_model_id="ncsoft-varco",
+        reason="예시 latency 기준 최저 응답 시간 사용 가능 모델 (Demo)",
     ),
     RoutingPolicy(
         id="korean-first",
         label="한국어 우선",
         description="한국어 적합성이 가장 높은 모델을 선택합니다.",
         selected_model_id="naver-hyperclova-x",
-        reason="한국어 적합성 최고 점수 모델 (Demo)",
+        reason="한국어 적합성 최고 점수 사용 가능 모델 (Demo)",
     ),
     RoutingPolicy(
         id="domestic-first",
@@ -305,6 +309,29 @@ DEMO_API_KEYS: list[ApiKeyInfo] = [
         access_mode="byok",
     ),
 ]
+
+REVOKED_KEY_IDS: set[str] = set()
+
+
+def mark_key_revoked(key_id: str) -> None:
+    REVOKED_KEY_IDS.add(key_id)
+
+
+def is_key_revoked(key_id: str) -> bool:
+    return key_id in REVOKED_KEY_IDS
+
+
+def generate_demo_key() -> ApiKeyInfo:
+    import datetime
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    return ApiKeyInfo(
+        id="key-demo-new",
+        label="Demo 생성 키",
+        masked_key="kap-demo-****-****-a1b2",
+        created_at=now,
+        status="active",
+        access_mode="business14-credit",
+    )
 
 
 @dataclass(frozen=True)

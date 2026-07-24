@@ -83,23 +83,23 @@ class TestRoutingPolicies:
         ids = [p.id for p in ROUTING_POLICIES]
         assert len(ids) == len(set(ids))
 
-    def test_cheapest_selects_lowest_price_model(self):
+    def test_cheapest_selects_lowest_price_available_model(self):
         cheapest = next(p for p in ROUTING_POLICIES if p.id == "cheapest")
         model = MODELS_BY_ID[cheapest.selected_model_id]
-        all_models = list(MODELS_BY_ID.values())
-        min_price = min(m.input_krw_per_1k + m.output_krw_per_1k for m in all_models)
+        available = [m for m in MODELS_BY_ID.values() if m.demo_available]
+        min_price = min(m.input_krw_per_1k + m.output_krw_per_1k for m in available)
         assert model.input_krw_per_1k + model.output_krw_per_1k == min_price
 
-    def test_fastest_selects_lowest_latency_model(self):
+    def test_fastest_selects_lowest_latency_available_model(self):
         fastest = next(p for p in ROUTING_POLICIES if p.id == "fastest")
         model = MODELS_BY_ID[fastest.selected_model_id]
-        all_models = list(MODELS_BY_ID.values())
-        min_latency = min(m.latency_ms for m in all_models)
+        available = [m for m in MODELS_BY_ID.values() if m.demo_available]
+        min_latency = min(m.latency_ms for m in available)
         assert model.latency_ms == min_latency
 
-    def test_korean_first_selects_highest_korean_score(self):
+    def test_korean_first_selects_highest_korean_score_available(self):
         korean = next(p for p in ROUTING_POLICIES if p.id == "korean-first")
         model = MODELS_BY_ID[korean.selected_model_id]
-        all_models = list(MODELS_BY_ID.values())
-        max_score = max(m.korean_score for m in all_models)
+        available = [m for m in MODELS_BY_ID.values() if m.demo_available]
+        max_score = max(m.korean_score for m in available)
         assert model.korean_score == max_score

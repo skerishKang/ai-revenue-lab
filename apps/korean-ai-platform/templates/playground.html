@@ -51,6 +51,13 @@
   </div>
 </form>
 
+{% if error %}
+<div class="callout callout-danger" role="alert">
+  <span class="callout-title">오류</span>
+  {{ error }}
+</div>
+{% endif %}
+
 {% if result %}
 <div class="playground-result">
   <div class="result-header">

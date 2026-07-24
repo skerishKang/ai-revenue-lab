@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.demo_data import MODELS
+from app.demo_data import MODELS, get_available_models
 
 
 class TestCoreRoutes:
@@ -57,7 +57,8 @@ class TestModelCatalog:
     def test_all_models_rendered(self, client):
         resp = client.get("/models")
         assert resp.status_code == 200
-        for model in MODELS:
+        available = get_available_models()
+        for model in available:
             assert model.name in resp.text
 
     def test_filter_external(self, client):
@@ -184,7 +185,7 @@ class TestApiKeys:
     def test_api_key_revoke_redirect(self, client):
         resp = client.post("/api-keys/key-001/revoke", follow_redirects=False)
         assert resp.status_code == 303
-        assert "revoked=1" in resp.headers["location"]
+        assert "revoked=key-001" in resp.headers["location"]
 
     def test_access_modes_displayed(self, client):
         resp = client.get("/api-keys")
@@ -347,3 +348,142 @@ class TestNavigation:
         resp = client.get("/")
         assert resp.status_code == 200
         assert "모델·보안 설정" not in resp.text
+
+
+class TestP0FixApiKeyCreateCTA:
+    def test_create_cta_is_post_form(self, client):
+        resp = client.get("/api-keys")
+        assert resp.status_code == 200
+        assert 'method="post"' in resp.text
+        assert '/api-keys/create' in resp.text
+        assert 'a href="/api-keys/create"' not in resp.text
+
+    def test_create_cta_method_contract(self, client):
+        resp = client.get("/api-keys/create")
+        assert resp.status_code in (405, 404)
+
+    def test_create_post_redirects(self, client):
+        resp = client.post("/api-keys/create", follow_redirects=False)
+        assert resp.status_code == 303
+        assert "created=1" in resp.headers["location"]
+
+
+class TestP0FixKeyState:
+    def test_create_shows_new_row(self, client):
+        resp = client.get("/api-keys?created=1")
+        assert resp.status_code == 200
+        assert "Demo 생성 키" in resp.text
+        assert "active" in resp.text
+
+    def test_revoke_changes_target(self, client):
+        resp = client.get("/api-keys?revoked=key-001")
+        assert resp.status_code == 200
+        assert "revoked" in resp.text
+        assert "key-001" in resp.text
+
+    def test_revoke_other_key_unchanged(self, client):
+        resp = client.get("/api-keys?revoked=key-001")
+        assert resp.status_code == 200
+        assert "key-002" in resp.text
+
+    def test_invalid_key_revoke_no_success(self, client):
+        resp = client.get("/api-keys?invalid=1")
+        assert resp.status_code == 200
+        assert "유효하지 않은 키 ID" in resp.text
+        assert "새 키 생성" in resp.text
+
+    def test_invalid_key_post_no_success(self, client):
+        resp = client.post("/api-keys/nonexistent/revoke", follow_redirects=False)
+        assert resp.status_code == 303
+        assert "invalid=1" in resp.headers["location"]
+
+
+class TestP0FixUnavailableModel:
+    def test_routing_selects_available(self, client):
+        from app.demo_data import ROUTING_POLICIES, MODELS_BY_ID
+        for policy in ROUTING_POLICIES:
+            model = MODELS_BY_ID[policy.selected_model_id]
+            assert model.demo_available, f"Routing {policy.id} selects unavailable {model.id}"
+
+    def test_unavailable_direct_post_no_response(self, client):
+        resp = client.post("/playground", data={
+            "prompt": "test",
+            "model_id": "selfhost-ko-open",
+            "routing_mode": "direct",
+        })
+        assert resp.status_code == 200
+        assert "Demo 응답 결과" not in resp.text
+
+    def test_unavailable_not_in_model_list(self, client):
+        resp = client.get("/playground")
+        assert resp.status_code == 200
+        assert "Ko-Open 32B" not in resp.text
+
+
+class TestP1FixPlaygroundModel:
+    def test_playground_model_query_preserved(self, client):
+        resp = client.get("/playground?model=openai-gpt4o")
+        assert resp.status_code == 200
+        assert 'value="openai-gpt4o"' in resp.text
+        assert "selected" in resp.text
+
+    def test_playground_invalid_model_fallback(self, client):
+        resp = client.get("/playground?model=nonexistent")
+        assert resp.status_code == 200
+
+    def test_playground_unavailable_model_fallback(self, client):
+        resp = client.get("/playground?model=selfhost-ko-open")
+        assert resp.status_code == 200
+        assert 'value="selfhost-ko-open"' not in resp.text
+
+    def test_playground_available_model_selected(self, client):
+        resp = client.get("/playground?model=naver-hyperclova-x")
+        assert resp.status_code == 200
+        assert 'value="naver-hyperclova-x"' in resp.text
+        assert "selected" in resp.text
+
+
+class TestP1FixCopyTargets:
+    def test_docs_copy_targets_exist(self, client):
+        resp = client.get("/docs")
+        assert resp.status_code == 200
+        for example_id in ("curl", "python", "javascript", "openai-compatible"):
+            assert f'id="code-{example_id}"' in resp.text
+
+    def test_docs_copy_btn_has_data_copy_target(self, client):
+        resp = client.get("/docs")
+        assert resp.status_code == 200
+        assert "data-copy-target" in resp.text
+
+    def test_model_detail_no_copy_btn_without_target(self, client):
+        resp = client.get("/models/openai-gpt4o")
+        assert resp.status_code == 200
+        assert "data-copy-target" not in resp.text
+
+
+class TestP1FixHomeWording:
+    def test_home_uses_demo_model_not_connected_model(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "연동 모델" not in resp.text
+        assert "Demo 모델" in resp.text
+
+    def test_home_no_realtime_claim(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "실시간" not in resp.text
+
+    def test_home_model_cards_have_demo_label(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "Demo 가격" in resp.text
+
+
+class TestP2Gitignore:
+    def test_gitignore_exists(self):
+        from pathlib import Path
+        gitignore = Path(__file__).resolve().parent.parent / ".gitignore"
+        assert gitignore.exists()
+        content = gitignore.read_text()
+        assert "__pycache__" in content
+
