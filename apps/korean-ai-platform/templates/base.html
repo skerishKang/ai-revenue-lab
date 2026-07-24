@@ -44,14 +44,18 @@
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
         API 문서
       </a>
+      <a href="/pricing" class="nav-link {{ 'active' if path == '/pricing' }}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+        요금 구조
+      </a>
       <a href="/access" class="nav-link {{ 'active' if path == '/access' }}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M11.5 2.6a1.5 1.5 0 00-3 0v.55c-.4.1-.78.25-1.14.44l-.4-.39a1.5 1.5 0 00-2.12 2.12l.4.4c-.2.35-.34.73-.44 1.13H4.1a1.5 1.5 0 000 3h.7c.1.4.25.78.44 1.14l-.4.4a1.5 1.5 0 102.13 2.12l.39-.4c.36.2.74.34 1.14.44v.7a1.5 1.5 0 003 0v-.7c-.4-.1-.78-.25-1.14-.44l.4-.39a1.5 1.5 0 00-2.13-2.12l-.39.4a4.6 4.6 0 00-1.14-.44V8.7a4.6 4.6 0 001.14-.44l-.4-.4a1.5 1.5 0 102.13-2.12l-.39.4a4.6 4.6 0 00-1.14-.44V2.6zM10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" clip-rule="evenodd"/></svg>
         이용 방법
       </a>
     </nav>
     <div class="sidebar-foot">
-      <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Demo</span>
-      <span class="muted">합성 데이터 · 실제 호출 없음</span>
+      <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Phase 0 Mock Demo</span>
+      <span class="muted">실제 모델 호출 및 Provider 제휴 없음</span>
     </div>
   </aside>
 
@@ -60,7 +64,7 @@
       <div class="topbar-inner">
         <span class="topbar-crumb">{% block crumb %}<strong>Korean AI Platform</strong>{% endblock %}</span>
         <div class="topbar-actions">
-          <span class="topbar-env"><span class="env-dot" aria-hidden="true"></span>Demo · 실제 연동 없음</span>
+          <span class="topbar-env"><span class="env-dot" aria-hidden="true"></span>Phase 0 Mock Demo · 실제 모델 호출 및 Provider 제휴 없음</span>
         </div>
       </div>
     </header>
@@ -70,10 +74,11 @@
     </main>
 
     <footer class="site-footer">
-      Korean AI Platform · Business 14 Phase 0 · API Provider Demo
+      <p>Korean AI Platform · Business 14 Phase 0 · API Provider Mock Demo</p>
+      <p class="footer-disclaimer">화면에 표시된 회사명과 모델명은 제품 콘셉트 설명을 위한 예시입니다. 해당 회사와의 제휴, 재판매 계약 또는 상용 제공을 의미하지 않습니다.</p>
     </footer>
   </div>
 </div>
-<script src="/static/app.js?v=phase0-1" defer></script>
+<script src="/static/app.js?v=phase0-2" defer></script>
 </body>
 </html>

@@ -32,7 +32,7 @@ class TestModelData:
         for model in MODELS:
             assert model.id
             assert model.provider
-            assert model.provider_type in ("external", "domestic", "self-hosted")
+            assert model.provider_type in ("external", "domestic", "open-model")
             assert model.name
             assert model.input_krw_per_1k >= 0
             assert model.output_krw_per_1k >= 0
@@ -50,9 +50,9 @@ class TestModelData:
         domestic = [m for m in MODELS if m.provider_type == "domestic"]
         assert len(domestic) >= 2
 
-    def test_has_self_hosted_models(self):
-        self_hosted = [m for m in MODELS if m.provider_type == "self-hosted"]
-        assert len(self_hosted) >= 1
+    def test_has_open_model_models(self):
+        open_models = [m for m in MODELS if m.provider_type == "open-model"]
+        assert len(open_models) >= 1
 
     def test_tags_not_empty(self):
         for model in MODELS:

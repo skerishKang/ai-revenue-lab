@@ -5,95 +5,151 @@
 
 <section class="hero">
   <div class="hero-content">
-    <h1 class="hero-title">여러 AI 모델을 하나의 API로</h1>
+    <h1 class="hero-title">한국 개발자를 위한 하나의 AI API</h1>
     <p class="hero-sub">
-      한국형 AI API Provider Business 14입니다.<br>
-      외부·국내·자체 호스팅 모델을 통합 관리하고,
-      한국어 문서와 원화 비용으로 확인할 수 있습니다.
+      해외·국내·오픈모델을 한 API에서 비교하고 테스트하세요.<br>
+      모델별 원화 예상 비용, 응답 속도, 처리 위치까지 한 화면에서 확인합니다.
     </p>
     <div class="hero-ctas">
       <a href="/models" class="btn btn-primary btn-lg">모델 둘러보기</a>
-      <a href="/playground" class="btn btn-outline btn-lg">Playground에서 시험하기</a>
+      <a href="/playground" class="btn btn-outline btn-lg">Playground 실행</a>
     </div>
   </div>
-  <div class="hero-visual">
-    <div class="hero-stat-card">
-      <span class="stat-label">Demo 모델</span>
-      <span class="stat-value">{{ model_count }}개</span>
+  <div class="hero-mock">
+    <div class="mock-panel">
+      <div class="mock-row"><span class="mock-label">선택 모델</span><span class="mock-value">HyperCLOVA X</span></div>
+      <div class="mock-row"><span class="mock-label">Routing</span><span class="mock-value">한국어 우선</span></div>
+      <div class="mock-row"><span class="mock-label">예상 비용</span><span class="mock-value">₩2.80</span></div>
+      <div class="mock-row"><span class="mock-label">처리 위치</span><span class="mock-value">국내</span></div>
+      <div class="mock-code">
+        <code>curl https://api.kap.demo/v1/chat \<br>&nbsp;&nbsp;-H "Authorization: Bearer $KAP_KEY" \<br>&nbsp;&nbsp;-d '{"model": "hyperclova-x"}'</code>
+      </div>
     </div>
-    <div class="hero-stat-card">
-      <span class="stat-label">처리 지역 예시</span>
-      <span class="stat-value">3개</span>
-    </div>
-    <div class="hero-stat-card">
-      <span class="stat-label">API 형식</span>
-      <span class="stat-value">OpenAI 호환</span>
-    </div>
+  </div>
+</section>
+
+<section class="trust-strip">
+  <div class="trust-item">
+    <span class="trust-icon">🔑</span>
+    <span>하나의 API Key</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-icon">₩</span>
+    <span>원화 예상 비용</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-icon">📄</span>
+    <span>한국어 문서</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-icon">🔀</span>
+    <span>모델 Routing</span>
   </div>
 </section>
 
 <section class="section">
   <div class="section-head">
-    <h2 class="section-title">제공하는 모델</h2>
-    <span class="muted">외부·국내·자체 호스팅 모델을 한 곳에서 비교</span>
+    <h2 class="section-title">제공 모델</h2>
+    <span class="muted">Demo 카탈로그 {{ model_count }}개 모델</span>
   </div>
   <div class="model-grid">
-    {% for model in models %}
+    {% for model in models[:6] %}
     <a href="/models/{{ model.id }}" class="model-card">
       <div class="model-header">
         <span class="model-name">{{ model.name }}</span>
         <span class="chip chip-{{ model.provider_type }}">{{ model.provider }}</span>
       </div>
       <div class="model-meta">
-        <span class="price">{{ model.input_krw_per_1k }}원/1K 토큰 (입력)</span>
-        <span class="price">{{ model.output_krw_per_1k }}원/1K 토큰 (출력)</span>
+        <span class="price">입력 {{ model.input_krw_per_1k }}원/1K</span>
+        <span class="price">출력 {{ model.output_krw_per_1k }}원/1K</span>
         <span class="region">{{ model.region }}</span>
-        <span class="demo-label">Demo 가격</span>
       </div>
       <div class="model-tags">
-        {% for tag in model.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+        {% for tag in model.tags[:3] %}<span class="tag">{{ tag }}</span>{% endfor %}
+        <span class="tag tag-demo">Demo</span>
       </div>
     </a>
     {% endfor %}
   </div>
   <div class="section-foot">
-    <a href="/models" class="btn btn-secondary">전체 모델 보기</a>
+    <a href="/models" class="btn btn-secondary">전체 {{ model_count }}개 모델 보기</a>
   </div>
 </section>
 
 <section class="section">
   <div class="section-head">
-    <h2 class="section-title">핵심 기능</h2>
+    <h2 class="section-title">이용 방법</h2>
   </div>
-  <div class="feature-grid">
-    <div class="feature-card">
-      <div class="feature-icon">🧠</div>
-      <h3>모델 카탈로그</h3>
-      <p>외부·국내·자체 호스팅 모델을 한 번에 비교하고 선택합니다.</p>
+  <div class="steps-grid">
+    <div class="step-card">
+      <span class="step-num">1</span>
+      <h3>모델 선택</h3>
+      <p>외부·국내·오픈모델 중 필요한 모델을 선택합니다.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <h3>API Playground</h3>
-      <p>브라우저에서 API를 테스트하고 예시 응답을 확인합니다.</p>
+    <div class="step-card">
+      <span class="step-num">2</span>
+      <h3>한 API로 요청</h3>
+      <p>동일한 요청 형식으로 모든 모델에 접근합니다.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔑</div>
-      <h3>통합 API 키</h3>
-      <p>Business 14 Credit, BYOK, Self-hosted 중에서 선택합니다.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <h3>사용량 관리</h3>
-      <p>Demo 사용량과 예상 비용을 확인합니다.</p>
+    <div class="step-card">
+      <span class="step-num">3</span>
+      <h3>사용량·비용 확인</h3>
+      <p>원화 예상 비용과 토큰 사용량을 한 화면에서 확인합니다.</p>
     </div>
   </div>
 </section>
 
 <section class="section">
-  <div class="callout callout-info">
-    <span class="callout-title">Demo임을 알려드립니다</span>
-    이 서비스는 결정론적 Demo입니다. 실제 Provider 호출, 결제, GPU 할당이나 고객 데이터가 사용되지 않습니다.
-    모든 가격과 사용량은 예시 데이터이며, 실제 서비스 출시 시 변경될 수 있습니다.
+  <div class="section-head">
+    <h2 class="section-title">Routing 정책</h2>
+  </div>
+  <div class="routing-grid">
+    {% for policy in routing_policies %}
+    <div class="routing-card">
+      <h4>{{ policy.label }}</h4>
+      <p>{{ policy.description }}</p>
+    </div>
+    {% endfor %}
+    <div class="routing-card">
+      <h4>직접 선택</h4>
+      <p>특정 모델을 직접 지정하여 요청합니다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">상품 모드</h2>
+  </div>
+  <div class="modes-grid">
+    <div class="mode-card">
+      <h4>Unified Gateway</h4>
+      <p>하나의 API에서 여러 Provider로 요청을 전달합니다.</p>
+      <span class="tag tag-demo">Demo</span>
+    </div>
+    <div class="mode-card">
+      <h4>BYOK</h4>
+      <p>고객의 Provider key를 사용하고 통합 관리를 제공합니다.</p>
+      <span class="tag tag-demo">Demo</span>
+    </div>
+    <div class="mode-card">
+      <h4>Business 14 Credit</h4>
+      <p>통합 credit으로 사용량을 결제하는 사업 가설입니다.</p>
+      <span class="tag tag-demo">Demo</span>
+    </div>
+    <div class="mode-card">
+      <h4>Dedicated Inference</h4>
+      <p>전용 환경에서 오픈모델을 제공하는 확장 가설입니다.</p>
+      <span class="tag tag-demo">Demo</span>
+    </div>
+  </div>
+</section>
+
+<section class="section final-cta">
+  <h2>하나의 API로 여러 모델을 시험해 보세요.</h2>
+  <div class="hero-ctas">
+    <a href="/playground" class="btn btn-primary btn-lg">Playground 열기</a>
+    <a href="/docs" class="btn btn-outline btn-lg">API 예제 보기</a>
   </div>
 </section>
 

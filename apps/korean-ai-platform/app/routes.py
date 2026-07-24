@@ -1,4 +1,4 @@
-"""Routes for the Korean AI API Provider Phase 0 Demo."""
+"""Routes for the Korean AI API Provider Phase 0 Mock Demo."""
 
 from __future__ import annotations
 
@@ -12,11 +12,9 @@ from app.demo_data import (
     MODELS,
     MODELS_BY_ID,
     ROUTING_POLICIES,
-    REVOKED_KEY_IDS,
     compute_usage_summary,
     generate_demo_key,
     generate_demo_response,
-    get_available_models,
     get_integration_examples,
     mark_key_revoked,
 )
@@ -27,14 +25,13 @@ router = APIRouter()
 
 @router.get("/")
 def home(request: Request):
-    available = get_available_models()
     return render_template(
         request,
         "home.html",
         {
-            "models": available,
-            "model_count": len(available),
-            "provider_types": ["external", "domestic", "self-hosted"],
+            "models": MODELS,
+            "model_count": len(MODELS),
+            "routing_policies": ROUTING_POLICIES,
         },
     )
 
@@ -42,17 +39,50 @@ def home(request: Request):
 @router.get("/models")
 def model_catalog(request: Request):
     filter_type = request.query_params.get("type", "")
-    available = get_available_models()
-    models = available
-    if filter_type in ("external", "domestic", "self-hosted"):
-        models = [m for m in available if m.provider_type == filter_type]
+    search = request.query_params.get("q", "").strip().lower()
+    sort = request.query_params.get("sort", "recommended")
+
+    models = list(MODELS)
+
+    if filter_type in ("external", "domestic", "open-model"):
+        models = [m for m in models if m.provider_type == filter_type]
+    elif filter_type == "korean":
+        models = [m for m in models if m.korean_score >= 5]
+    elif filter_type == "coding":
+        models = [m for m in models if m.coding_score >= 4]
+    elif filter_type == "long-context":
+        models = [m for m in models if m.long_context]
+    elif filter_type == "image":
+        models = [m for m in models if m.image_input]
+    elif filter_type == "low-cost":
+        models = [m for m in models if m.low_cost]
+
+    if search:
+        models = [
+            m for m in models
+            if search in m.name.lower()
+            or search in m.provider.lower()
+            or any(search in t.lower() for t in m.tags)
+        ]
+
+    if sort == "price-asc":
+        models.sort(key=lambda m: m.input_krw_per_1k + m.output_krw_per_1k)
+    elif sort == "speed":
+        models.sort(key=lambda m: m.latency_ms)
+    elif sort == "context":
+        models.sort(key=lambda m: -m.context_window)
+    elif sort == "korean":
+        models.sort(key=lambda m: -m.korean_score)
+
     return render_template(
         request,
         "models.html",
         {
             "models": models,
-            "all_models": available,
+            "all_models": MODELS,
             "filter_type": filter_type,
+            "search": search,
+            "sort": sort,
         },
     )
 
@@ -72,19 +102,19 @@ def model_detail(request: Request, model_id: str):
 
 @router.get("/playground")
 def playground(request: Request):
-    available = get_available_models()
     model_id = request.query_params.get("model", "")
-    if model_id and model_id not in {m.id for m in available}:
+    if model_id and model_id not in MODELS_BY_ID:
         model_id = ""
-    if not model_id and available:
-        model_id = available[0].id
+    if not model_id:
+        model_id = MODELS[0].id
     return render_template(
         request,
         "playground.html",
         {
-            "models": available,
+            "models": MODELS,
             "routing_policies": ROUTING_POLICIES,
             "result": None,
+            "error": None,
             "prompt": "",
             "selected_model": model_id,
             "routing_mode": "direct",
@@ -99,35 +129,27 @@ def playground_run(
     model_id: str = Form(""),
     routing_mode: str = Form("direct"),
 ):
-    available = get_available_models()
-    available_ids = {m.id for m in available}
-
     if routing_mode != "direct" and routing_mode:
         for policy in ROUTING_POLICIES:
             if policy.id == routing_mode:
                 model_id = policy.selected_model_id
                 break
 
-    result = None
-    error = None
-    if prompt.strip():
-        if model_id and model_id in available_ids:
-            result = generate_demo_response(model_id, prompt, routing_mode)
-        else:
-            model_id = ""
-            error = "선택한 모델은 Demo를 지원하지 않습니다."
+    if not model_id or model_id not in MODELS_BY_ID:
+        model_id = MODELS[0].id
 
-    if not model_id and available:
-        model_id = available[0].id
+    result = None
+    if prompt.strip():
+        result = generate_demo_response(model_id, prompt, routing_mode)
 
     return render_template(
         request,
         "playground.html",
         {
-            "models": available,
+            "models": MODELS,
             "routing_policies": ROUTING_POLICIES,
             "result": result,
-            "error": error,
+            "error": None,
             "prompt": prompt,
             "selected_model": model_id,
             "routing_mode": routing_mode,
@@ -186,20 +208,24 @@ def usage(request: Request):
 
 @router.get("/docs")
 def docs(request: Request):
-    available = get_available_models()
     model_id = request.query_params.get("model", "")
-    if not model_id or model_id not in {m.id for m in available}:
-        model_id = available[0].id if available else "openai-gpt4o"
+    if not model_id or model_id not in MODELS_BY_ID:
+        model_id = MODELS[0].id
     examples = get_integration_examples(model_id)
     return render_template(
         request,
         "docs.html",
         {
             "examples": examples,
-            "models": available,
+            "models": MODELS,
             "selected_model": model_id,
         },
     )
+
+
+@router.get("/pricing")
+def pricing(request: Request):
+    return render_template(request, "pricing.html", {})
 
 
 @router.get("/access")

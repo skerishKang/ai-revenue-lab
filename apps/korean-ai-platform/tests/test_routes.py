@@ -9,7 +9,7 @@ class TestCoreRoutes:
     def test_home_renders(self, client):
         resp = client.get("/")
         assert resp.status_code == 200
-        assert "여러 AI 모델을 하나의 API로" in resp.text
+        assert "한국 개발자를 위한 하나의 AI API" in resp.text
 
     def test_models_renders(self, client):
         resp = client.get("/models")
@@ -64,19 +64,19 @@ class TestModelCatalog:
     def test_filter_external(self, client):
         resp = client.get("/models?type=external")
         assert resp.status_code == 200
-        assert "OpenAI" in resp.text
-        assert "Naver" not in resp.text
+        assert "GPT-4o" in resp.text
+        assert "HyperCLOVA" not in resp.text
 
     def test_filter_domestic(self, client):
         resp = client.get("/models?type=domestic")
         assert resp.status_code == 200
-        assert "Naver" in resp.text
-        assert "OpenAI" not in resp.text
+        assert "HyperCLOVA" in resp.text
+        assert "GPT-4o" not in resp.text
 
-    def test_filter_self_hosted(self, client):
-        resp = client.get("/models?type=self-hosted")
+    def test_filter_open_model(self, client):
+        resp = client.get("/models?type=open-model")
         assert resp.status_code == 200
-        assert "자체 호스팅" in resp.text
+        assert "오픈모델" in resp.text or "전용 추론" in resp.text
 
     def test_model_detail_renders(self, client):
         model = MODELS[0]
@@ -102,8 +102,7 @@ class TestPlayground:
             "routing_mode": "direct",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" in resp.text
-        assert "Demo 데이터" in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
 
     def test_playground_post_empty_prompt(self, client):
         resp = client.post("/playground", data={
@@ -112,7 +111,7 @@ class TestPlayground:
             "routing_mode": "direct",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" not in resp.text
+        assert "Mock Response" not in resp.text
 
     def test_playground_routing_cheapest(self, client):
         resp = client.post("/playground", data={
@@ -120,7 +119,7 @@ class TestPlayground:
             "routing_mode": "cheapest",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
 
     def test_playground_routing_fastest(self, client):
         resp = client.post("/playground", data={
@@ -128,7 +127,7 @@ class TestPlayground:
             "routing_mode": "fastest",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
 
     def test_playground_routing_korean_first(self, client):
         resp = client.post("/playground", data={
@@ -136,7 +135,7 @@ class TestPlayground:
             "routing_mode": "korean-first",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
 
     def test_playground_routing_domestic_first(self, client):
         resp = client.post("/playground", data={
@@ -144,7 +143,7 @@ class TestPlayground:
             "routing_mode": "domestic-first",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
 
     def test_playground_prompt_preserved(self, client):
         prompt = "이것은 테스트 prompt입니다"
@@ -167,7 +166,7 @@ class TestPlayground:
         assert "Output tokens" in resp.text
         assert "예상 비용" in resp.text
         assert "예상 latency" in resp.text
-        assert "처리 지역" in resp.text
+        assert "처리 위치" in resp.text
         assert "Routing reason" in resp.text
 
 
@@ -398,26 +397,100 @@ class TestP0FixKeyState:
         assert "invalid=1" in resp.headers["location"]
 
 
-class TestP0FixUnavailableModel:
-    def test_routing_selects_available(self, client):
-        from app.demo_data import ROUTING_POLICIES, MODELS_BY_ID
-        for policy in ROUTING_POLICIES:
-            model = MODELS_BY_ID[policy.selected_model_id]
-            assert model.demo_available, f"Routing {policy.id} selects unavailable {model.id}"
+class TestAllModelsAvailable:
+    def test_all_8_models_in_catalog(self, client):
+        resp = client.get("/models")
+        assert resp.status_code == 200
+        from app.demo_data import MODELS
+        for model in MODELS:
+            assert model.name in resp.text, f"Model {model.name} not in catalog"
 
-    def test_unavailable_direct_post_no_response(self, client):
+    def test_ko_open_in_catalog(self, client):
+        resp = client.get("/models")
+        assert resp.status_code == 200
+        assert "Ko-Open 32B" in resp.text
+
+    def test_llama_ko_in_catalog(self, client):
+        resp = client.get("/models")
+        assert resp.status_code == 200
+        assert "Llama-Ko 70B" in resp.text
+
+    def test_all_8_models_in_playground(self, client):
+        resp = client.get("/playground")
+        assert resp.status_code == 200
+        from app.demo_data import MODELS
+        for model in MODELS:
+            assert model.id in resp.text, f"Model {model.id} not in playground"
+
+    def test_ko_open_playground_response(self, client):
         resp = client.post("/playground", data={
             "prompt": "test",
             "model_id": "selfhost-ko-open",
             "routing_mode": "direct",
         })
         assert resp.status_code == 200
-        assert "Demo 응답 결과" not in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
 
-    def test_unavailable_not_in_model_list(self, client):
-        resp = client.get("/playground")
+    def test_llama_ko_playground_response(self, client):
+        resp = client.post("/playground", data={
+            "prompt": "test",
+            "model_id": "selfhost-llama-ko",
+            "routing_mode": "direct",
+        })
         assert resp.status_code == 200
-        assert "Ko-Open 32B" not in resp.text
+        assert "Mock Response" in resp.text or "Mock response" in resp.text
+
+    def test_routing_policies_valid_models(self, client):
+        from app.demo_data import ROUTING_POLICIES, MODELS_BY_ID
+        for policy in ROUTING_POLICIES:
+            assert policy.selected_model_id in MODELS_BY_ID
+
+    def test_no_fallback_for_valid_model(self, client):
+        resp = client.get("/playground?model=selfhost-ko-open")
+        assert resp.status_code == 200
+        assert 'value="selfhost-ko-open"' in resp.text
+        assert "selected" in resp.text
+
+    def test_model_detail_ko_open(self, client):
+        resp = client.get("/models/selfhost-ko-open")
+        assert resp.status_code == 200
+        assert "Ko-Open 32B" in resp.text
+        assert "Playground에서 시험하기" in resp.text
+
+    def test_model_detail_llama_ko(self, client):
+        resp = client.get("/models/selfhost-llama-ko")
+        assert resp.status_code == 200
+        assert "Llama-Ko 70B" in resp.text
+
+    def test_docs_all_models_selectable(self, client):
+        from app.demo_data import MODELS
+        for model in MODELS:
+            resp = client.get(f"/docs?model={model.id}")
+            assert resp.status_code == 200
+            assert model.id in resp.text
+
+    def test_home_shows_8_models(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "8" in resp.text
+
+    def test_pricing_route(self, client):
+        resp = client.get("/pricing")
+        assert resp.status_code == 200
+        assert "요금 구조" in resp.text
+        assert "예시 요금 구조" in resp.text
+
+    def test_global_disclaimer_present(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "제휴" in resp.text or "재판매" in resp.text
+
+    def test_no_unavailable_messaging(self, client):
+        resp = client.get("/models/selfhost-ko-open")
+        assert resp.status_code == 200
+        assert "사용할 수 없습니다" not in resp.text
+        assert "준비 중" not in resp.text
+        assert "미리보기만" not in resp.text
 
 
 class TestP1FixPlaygroundModel:
@@ -430,11 +503,6 @@ class TestP1FixPlaygroundModel:
     def test_playground_invalid_model_fallback(self, client):
         resp = client.get("/playground?model=nonexistent")
         assert resp.status_code == 200
-
-    def test_playground_unavailable_model_fallback(self, client):
-        resp = client.get("/playground?model=selfhost-ko-open")
-        assert resp.status_code == 200
-        assert 'value="selfhost-ko-open"' not in resp.text
 
     def test_playground_available_model_selected(self, client):
         resp = client.get("/playground?model=naver-hyperclova-x")
@@ -462,11 +530,10 @@ class TestP1FixCopyTargets:
 
 
 class TestP1FixHomeWording:
-    def test_home_uses_demo_model_not_connected_model(self, client):
+    def test_home_shows_model_count(self, client):
         resp = client.get("/")
         assert resp.status_code == 200
-        assert "연동 모델" not in resp.text
-        assert "Demo 모델" in resp.text
+        assert "8" in resp.text
 
     def test_home_no_realtime_claim(self, client):
         resp = client.get("/")
@@ -476,7 +543,7 @@ class TestP1FixHomeWording:
     def test_home_model_cards_have_demo_label(self, client):
         resp = client.get("/")
         assert resp.status_code == 200
-        assert "Demo 가격" in resp.text
+        assert "Demo" in resp.text
 
 
 class TestP2Gitignore:

@@ -5,46 +5,78 @@
 
 <div class="page-head">
   <h1 class="page-title">모델 카탈로그</h1>
-  <p class="page-sub">외부·국내·자체 호스팅 AI 모델을 한 곳에서 비교합니다. 모든 가격은 Demo 기준 예시 가격입니다.</p>
+  <p class="page-sub">외부·국내·오픈모델을 한 곳에서 비교합니다. 표시된 모델·가격·속도·처리 위치는 제품 검증을 위한 예시입니다.</p>
 </div>
 
-<div class="filter-bar">
-  <a href="/models" class="filter-chip {{ 'active' if not filter_type }}">전체</a>
-  <a href="/models?type=external" class="filter-chip {{ 'active' if filter_type == 'external' }}">외부 Provider</a>
-  <a href="/models?type=domestic" class="filter-chip {{ 'active' if filter_type == 'domestic' }}">국내 Provider</a>
-  <a href="/models?type=self-hosted" class="filter-chip {{ 'active' if filter_type == 'self-hosted' }}">자체 호스팅</a>
+<div class="catalog-toolbar">
+  <form method="get" action="/models" class="search-form">
+    <input type="text" name="q" value="{{ search }}" placeholder="모델명, Provider, 태그 검색" class="search-input">
+    <button type="submit" class="btn btn-secondary btn-sm">검색</button>
+  </form>
+  <div class="filter-chips">
+    <a href="/models" class="filter-chip {{ 'active' if not filter_type }}">전체</a>
+    <a href="/models?type=external" class="filter-chip {{ 'active' if filter_type == 'external' }}">외부 Provider</a>
+    <a href="/models?type=domestic" class="filter-chip {{ 'active' if filter_type == 'domestic' }}">국내 Provider</a>
+    <a href="/models?type=open-model" class="filter-chip {{ 'active' if filter_type == 'open-model' }}">오픈모델·전용 추론</a>
+    <a href="/models?type=korean" class="filter-chip {{ 'active' if filter_type == 'korean' }}">한국어 특화</a>
+    <a href="/models?type=coding" class="filter-chip {{ 'active' if filter_type == 'coding' }}">코딩</a>
+    <a href="/models?type=long-context" class="filter-chip {{ 'active' if filter_type == 'long-context' }}">긴 문맥</a>
+    <a href="/models?type=image" class="filter-chip {{ 'active' if filter_type == 'image' }}">이미지 입력</a>
+    <a href="/models?type=low-cost" class="filter-chip {{ 'active' if filter_type == 'low-cost' }}">저비용</a>
+  </div>
+  <div class="sort-select">
+    <label for="sort">정렬:</label>
+    <select id="sort" name="sort" onchange="window.location.href='/models?type={{ filter_type }}&q={{ search }}&sort='+this.value">
+      <option value="recommended" {{ 'selected' if sort == 'recommended' }}>추천</option>
+      <option value="price-asc" {{ 'selected' if sort == 'price-asc' }}>예상 가격 낮은 순</option>
+      <option value="speed" {{ 'selected' if sort == 'speed' }}>예상 속도 빠른 순</option>
+      <option value="context" {{ 'selected' if sort == 'context' }}>컨텍스트 큰 순</option>
+      <option value="korean" {{ 'selected' if sort == 'korean' }}>한국어 적합성 순</option>
+    </select>
+  </div>
 </div>
 
-<div class="model-grid">
+<div class="model-list">
   {% for model in models %}
-  <a href="/models/{{ model.id }}" class="model-card">
-    <div class="model-header">
-      <span class="model-name">{{ model.name }}</span>
-      <span class="chip chip-{{ model.provider_type }}">{{ model.provider }}</span>
+  <div class="model-row">
+    <div class="model-row-main">
+      <span class="provider-badge provider-{{ model.provider_type }}">{{ model.provider[0] }}</span>
+      <div class="model-row-info">
+        <a href="/models/{{ model.id }}" class="model-row-name">{{ model.name }}</a>
+        <span class="model-row-slug">{{ model.id }}</span>
+      </div>
+      <span class="chip chip-{{ model.provider_type }}">{{ model.provider_type }}</span>
+      <span class="tag tag-demo">Demo</span>
     </div>
-    <div class="model-pricing">
-      <span class="price">입력 {{ model.input_krw_per_1k }}원/1K</span>
-      <span class="price">출력 {{ model.output_krw_per_1k }}원/1K</span>
-      <span class="demo-label">Demo 가격</span>
+    <div class="model-row-meta">
+      <span class="meta-item">Context: {{ (model.context_window / 1000)|round|int }}K</span>
+      <span class="meta-item">입력: {{ model.input_krw_per_1k }}원/1K</span>
+      <span class="meta-item">출력: {{ model.output_krw_per_1k }}원/1K</span>
+      <span class="meta-item">Latency: {{ model.latency_ms }}ms</span>
+      <span class="meta-item">{{ model.region }}</span>
     </div>
-    <div class="model-meta">
-      <span class="region">{{ model.region }}</span>
-      <span class="latency">{{ model.latency_ms }}ms</span>
-      <span class="context">컨텍스트 {{ (model.context_window / 1000)|round|int }}K</span>
-    </div>
-    <div class="model-tags">
+    <div class="model-row-tags">
       {% for tag in model.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
-      {% if not model.demo_available %}<span class="tag tag-warn">준비 중</span>{% endif %}
     </div>
-  </a>
+    <div class="model-row-actions">
+      <a href="/playground?model={{ model.id }}" class="btn btn-primary btn-sm">시험하기</a>
+      <a href="/docs?model={{ model.id }}" class="btn btn-ghost btn-sm">예제</a>
+    </div>
+  </div>
   {% endfor %}
 </div>
 
 {% if not models %}
 <div class="empty-state">
-  <p>선택한 분류의 모델이 없습니다.</p>
+  <p>검색 결과가 없습니다.</p>
   <a href="/models" class="btn btn-secondary">전체 보기</a>
 </div>
 {% endif %}
+
+<div class="callout callout-info">
+  <span class="callout-title">Demo 카탈로그</span>
+  표시된 모델·가격·속도·처리 위치는 제품 검증을 위한 예시입니다.
+  각 회사와의 제휴·재판매·상용 제공을 의미하지 않습니다.
+</div>
 
 {% endblock %}

@@ -140,37 +140,37 @@ MODELS: list[ModelSpec] = [
     ),
     ModelSpec(
         id="selfhost-ko-open",
-        provider="자체 호스팅 (예정)",
-        provider_type="self-hosted",
+        provider="오픈모델·전용 추론",
+        provider_type="open-model",
         name="Ko-Open 32B",
         input_krw_per_1k=0.8,
         output_krw_per_1k=2.5,
-        region="국내 (자체 GPU 예정)",
+        region="국내 (전용 추론)",
         korean_score=4,
         coding_score=3,
         long_context=False,
         image_input=False,
         low_cost=True,
-        demo_available=False,
-        tags=["자체 호스팅", "국내 처리", "저비용", "오픈모델"],
+        demo_available=True,
+        tags=["오픈모델", "전용 추론", "국내 처리", "저비용"],
         latency_ms=350,
         context_window=32000,
     ),
     ModelSpec(
         id="selfhost-llama-ko",
-        provider="자체 호스팅 (예정)",
-        provider_type="self-hosted",
+        provider="오픈모델·전용 추론",
+        provider_type="open-model",
         name="Llama-Ko 70B",
         input_krw_per_1k=1.0,
         output_krw_per_1k=3.0,
-        region="국내 (자체 GPU 예정)",
+        region="국내 (전용 추론)",
         korean_score=3,
         coding_score=4,
         long_context=True,
         image_input=False,
         low_cost=True,
-        demo_available=False,
-        tags=["자체 호스팅", "국내 처리", "저비용", "오픈모델", "코딩"],
+        demo_available=True,
+        tags=["오픈모델", "전용 추론", "국내 처리", "저비용", "코딩"],
         latency_ms=500,
         context_window=128000,
     ),
@@ -180,7 +180,7 @@ MODELS_BY_ID: dict[str, ModelSpec] = {m.id: m for m in MODELS}
 
 
 def get_available_models() -> list[ModelSpec]:
-    return [m for m in MODELS if m.demo_available]
+    return list(MODELS)
 
 
 @dataclass(frozen=True)
@@ -196,30 +196,30 @@ ROUTING_POLICIES: list[RoutingPolicy] = [
     RoutingPolicy(
         id="cheapest",
         label="가장 저렴하게",
-        description="예시 가격 기준 가장 낮은 비용의 모델을 선택합니다.",
-        selected_model_id="ncsoft-varco",
-        reason="예시 가격 기준 최저 비용 사용 가능 모델 (Demo)",
+        description="Demo 가격 기준 가장 낮은 비용의 모델을 선택합니다.",
+        selected_model_id="selfhost-ko-open",
+        reason="Demo 가격 기준 최저 비용 모델 (Mock)",
     ),
     RoutingPolicy(
         id="fastest",
         label="가장 빠르게",
-        description="예시 latency 기준 가장 빠른 모델을 선택합니다.",
-        selected_model_id="ncsoft-varco",
-        reason="예시 latency 기준 최저 응답 시간 사용 가능 모델 (Demo)",
+        description="Demo latency 기준 가장 빠른 모델을 선택합니다.",
+        selected_model_id="selfhost-ko-open",
+        reason="Demo latency 기준 최저 응답 시간 모델 (Mock)",
     ),
     RoutingPolicy(
         id="korean-first",
         label="한국어 우선",
         description="한국어 적합성이 가장 높은 모델을 선택합니다.",
         selected_model_id="naver-hyperclova-x",
-        reason="한국어 적합성 최고 점수 사용 가능 모델 (Demo)",
+        reason="한국어 적합성 최고 점수 모델 (Mock)",
     ),
     RoutingPolicy(
         id="domestic-first",
-        label="국내·자체 처리 우선",
-        description="국내 또는 자체 호스팅 모델을 우선 선택합니다.",
+        label="국내·전용 추론 우선",
+        description="국내 또는 전용 추론 모델을 우선 선택합니다.",
         selected_model_id="naver-hyperclova-x",
-        reason="국내 처리 가능 모델 중 최고 성능 (Demo)",
+        reason="국내 처리 모델 중 최고 성능 (Mock)",
     ),
 ]
 
