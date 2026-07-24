@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}페이지를 찾을 수 없습니다 — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>페이지 없음</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">페이지를 찾을 수 없습니다</h1>
+  <p class="page-sub">{{ item }}을(를) 찾을 수 없습니다.</p>
+</div>
+
+<div class="empty-state">
+  <a href="/" class="btn btn-primary">Provider 홈으로 돌아가기</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}API 문서 — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>API 문서</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">API 문서</h1>
+  <p class="page-sub">Business 14 API에 대한 연동 예제입니다. 모든 예제는 Demo endpoint를 사용합니다.</p>
+</div>
+
+<div class="model-selector">
+  <label for="model">모델 선택:</label>
+  <select id="model" name="model" onchange="updateExamples(this.value)">
+    {% for model in models %}
+    <option value="{{ model.id }}" {{ 'selected' if selected_model == model.id else '' }}>
+      {{ model.name }} · {{ model.provider }}
+    </option>
+    {% endfor %}
+  </select>
+</div>
+
+<div class="examples-container">
+  {% for example in examples %}
+  <div class="example-block" id="example-{{ example.id }}">
+    <div class="example-header">
+      <h3>{{ example.label }}</h3>
+      <button class="btn btn-ghost btn-sm copy-btn" data-copy-target="code-{{ example.id }}">복사</button>
+    </div>
+    <pre class="code-block" id="code-{{ example.id }}"><code>{{ example.code }}</code></pre>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="callout callout-info">
+  <span class="callout-title">Demo endpoint</span>
+  endpoint: <code>https://api.example-kap.demo/v1</code><br>
+  key: <code>$KAP_API_KEY</code> (placeholder)<br>
+  실제 API key가 아니며, 실제 호출이 아닙니다.
+</div>
+
+<script>
+function updateExamples(modelId) {
+  window.location.href = '/docs?model=' + modelId;
+}
+</script>
+
+{% endblock %}

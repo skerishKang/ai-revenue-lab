@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}요금 구조 — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>요금 구조</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">요금 구조</h1>
+  <p class="page-sub">사업 가설을 보여주는 예시 요금 구조입니다. 실제 판매 중이 아닙니다.</p>
+</div>
+
+<div class="pricing-grid">
+  <div class="pricing-card">
+    <div class="pricing-header">
+      <h3>Developer Demo</h3>
+      <span class="pricing-badge">무료</span>
+    </div>
+    <p class="pricing-desc">여러 모델을 시험하고 API 연동을 확인합니다.</p>
+    <ul class="pricing-features">
+      <li>무료 Demo Credit</li>
+      <li>8개 모델 시험</li>
+      <li>기본 사용량 화면</li>
+      <li>한국어 문서</li>
+    </ul>
+    <a href="/playground" class="btn btn-outline btn-block">기능 살펴보기</a>
+  </div>
+
+  <div class="pricing-card pricing-card-featured">
+    <div class="pricing-header">
+      <h3>Pay as you go</h3>
+      <span class="pricing-badge">사용량 기반</span>
+    </div>
+    <p class="pricing-desc">통합 Credit으로 모델별 사용량을 과금합니다.</p>
+    <ul class="pricing-features">
+      <li>통합 Credit</li>
+      <li>모델별 사용량 과금</li>
+      <li>원화 비용 관리</li>
+      <li>자동 Routing</li>
+      <li>사용량 알림</li>
+    </ul>
+    <a href="/usage" class="btn btn-primary btn-block">도입 방식 보기</a>
+  </div>
+
+  <div class="pricing-card">
+    <div class="pricing-header">
+      <h3>Enterprise</h3>
+      <span class="pricing-badge">맞춤</span>
+    </div>
+    <p class="pricing-desc">전용 환경과 지원이 필요한 조직을 위한 상품입니다.</p>
+    <ul class="pricing-features">
+      <li>BYOK (Bring Your Own Key)</li>
+      <li>전용 Endpoint</li>
+      <li>국내 또는 지정 환경 추론</li>
+      <li>사용량·한도·지원</li>
+      <li>전담 기술 지원</li>
+    </ul>
+    <a href="/access" class="btn btn-outline btn-block">도입 방식 보기</a>
+  </div>
+</div>
+
+<div class="callout callout-info">
+  <span class="callout-title">예시 요금 구조 · 실제 판매 중 아님</span>
+  위 요금 구조는 제품 콘셉트 설명을 위한 예시입니다.
+  실제 결제, 청구, 또는 계약이 진행되지 않습니다.
+</div>
+
+{% endblock %}

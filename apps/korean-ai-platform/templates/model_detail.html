@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ model.name }} — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>{{ model.name }}</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <div class="model-detail-header">
+    <div>
+      <span class="provider-badge provider-{{ model.provider_type }}">{{ model.provider[0] }}</span>
+      <h1 class="page-title">{{ model.name }}</h1>
+      <span class="model-slug">{{ model.id }}</span>
+      <span class="tag tag-demo">Demo</span>
+    </div>
+    <div class="model-detail-actions">
+      <a href="/playground?model={{ model.id }}" class="btn btn-primary">Playground에서 시험하기</a>
+      <button class="btn btn-ghost copy-btn" data-copy="{{ model.id }}">모델 ID 복사</button>
+    </div>
+  </div>
+</div>
+
+<div class="model-detail-grid">
+  <div class="model-detail-main">
+    <div class="model-detail-section">
+      <h2>핵심 지표</h2>
+      <dl class="metrics-grid">
+        <div class="metric-item"><dt>입력 가격</dt><dd>{{ model.input_krw_per_1k }}원/1K 토큰</dd></div>
+        <div class="metric-item"><dt>출력 가격</dt><dd>{{ model.output_krw_per_1k }}원/1K 토큰</dd></div>
+        <div class="metric-item"><dt>Context</dt><dd>{{ model.context_window }} 토큰</dd></div>
+        <div class="metric-item"><dt>예상 Latency</dt><dd>{{ model.latency_ms }}ms</dd></div>
+        <div class="metric-item"><dt>처리 위치</dt><dd>{{ model.region }}</dd></div>
+        <div class="metric-item"><dt>한국어 적합성</dt><dd>{{ "★★★★★"[:model.korean_score] }}{{ "☆" * (5 - model.korean_score) }}</dd></div>
+        <div class="metric-item"><dt>코딩 적합성</dt><dd>{{ "★★★★★"[:model.coding_score] }}{{ "☆" * (5 - model.coding_score) }}</dd></div>
+      </dl>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>모델 개요</h2>
+      <p>{{ model.provider }}에서 제공하는 {{ model.name }} 모델입니다. {{ model.region }}에서 처리되며, 컨텍스트 윈도우는 {{ model.context_window }} 토큰입니다.</p>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>주요 사용 사례</h2>
+      <div class="tag-list">
+        {% for tag in model.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+        {% if model.long_context %}<span class="tag">긴 문맥</span>{% endif %}
+        {% if model.image_input %}<span class="tag">이미지 입력</span>{% endif %}
+        {% if model.low_cost %}<span class="tag">저비용</span>{% endif %}
+      </div>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>Routing 적합성</h2>
+      <ul class="routing-fit">
+        {% if model.low_cost %}<li>가장 저렴하게 라우팅에 적합</li>{% endif %}
+        {% if model.latency_ms <= 500 %}<li>가장 빠르게 라우팅에 적합</li>{% endif %}
+        {% if model.korean_score >= 5 %}<li>한국어 우선 라우팅에 적합</li>{% endif %}
+        {% if model.provider_type in ('domestic', 'open-model') %}<li>국내·전용 추론 우선 라우팅에 적합</li>{% endif %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="model-detail-sidebar">
+    <div class="model-detail-section">
+      <h2>API 코드 예제</h2>
+      <p>이 모델이 선택된 API 연동 예제입니다.</p>
+      <a href="/docs?model={{ model.id }}" class="btn btn-secondary btn-block">예제 보러 가기</a>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>Playground</h2>
+      <p>이 모델로 직접 테스트해 보세요.</p>
+      <a href="/playground?model={{ model.id }}" class="btn btn-primary btn-block">Playground 열기</a>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-title">Mock Demo</span>
+      이 모델의 모든 응답은 synthetic Mock Demo입니다. 실제 모델 추론 결과가 아닙니다.
+    </div>
+  </div>
+</div>
+
+{% endblock %}

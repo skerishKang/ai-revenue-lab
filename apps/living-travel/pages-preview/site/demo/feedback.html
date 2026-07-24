@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Travel — 의견 남기기</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/demo.css">
+</head>
+<body>
+  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+
+  <nav class="navbar traveler-nav">
+    <a href="traveler-home.html" class="brand">Living Travel</a>
+    <div class="nav-links">
+      <a href="traveler-home.html">내 여행</a>
+      <a href="history.html">지난 기록</a>
+      <a href="../index.html">홈</a>
+    </div>
+  </nav>
+
+  <div class="demo-feedback-page">
+    <div class="demo-feedback-container">
+      <h1>이 여행판에 의견을 남겨주세요</h1>
+      <p class="subtitle">선택한 의견을 다음 여행판의 편집 방향으로 사용합니다.</p>
+
+      <form method="get" action="comparison.html" onsubmit="return submitFeedback(event)">
+
+        <div class="preferences-section" style="margin-bottom:1rem;">
+          <h3>다음 여행판에서 원하는 방향</h3>
+
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="fb-slower" checked> 더 천천히</label>
+            <label><input type="checkbox" id="fb-less-tourist" checked> 유명 관광지 줄이기</label>
+            <label><input type="checkbox" id="fb-more-food"> 현지 음식 늘리기</label>
+            <label><input type="checkbox" id="fb-less-walk"> 걷는 일정 줄이기</label>
+            <label><input type="checkbox" id="fb-quieter" checked> 조용한 장소 늘리기</label>
+          </div>
+        </div>
+
+        <div class="preferences-section" style="margin-bottom:1rem;">
+          <h3>추가 의견 (선택)</h3>
+          <textarea id="freeText" rows="3" placeholder="더 조용하고 느린 동네 중심으로 바꿔 주세요." maxlength="200" oninput="updateCharCount()"></textarea>
+          <div class="char-counter"><span id="charCount">0</span>/200</div>
+        </div>
+
+        <div class="notice" style="margin-bottom:1.5rem;">
+          <strong>Demo mode</strong><br>
+          선택한 의견을 다음 여행판의 편집 방향으로 사용합니다. 실제 AI 처리 없이 미리 구성된 시나리오로 변화를 보여줍니다.
+        </div>
+
+        <button type="submit" class="btn btn-accent" style="width:100%;padding:0.75rem;font-size:1rem;">
+          다음 여행판에 반영하기
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  function updateCharCount() {
+    var el = document.getElementById('freeText');
+    var count = document.getElementById('charCount');
+    count.textContent = el.value.length;
+    if (el.value.length >= 200) {
+      el.value = el.value.substring(0, 200);
+      count.textContent = '200';
+    }
+  }
+
+  function submitFeedback(e) {
+    e.preventDefault();
+    window.location.href = 'comparison.html';
+  }
+  </script>
+</body>
+</html>
