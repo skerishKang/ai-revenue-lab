@@ -26,12 +26,10 @@ window.ARL_QUICK_LAUNCH = [
 
     container.innerHTML = items.map((item) => {
       const active = item.state === "verified" && item.url;
-      const hrefAttr = active ? ` href="${item.url}"` : "";
-      const extras = active
-        ? ' target="_blank" rel="noopener noreferrer"'
-        : ' aria-disabled="true" tabindex="-1"';
-      const cls = active ? "ql-item ql-active" : "ql-item ql-planned";
-      return `<a class="${cls}"${hrefAttr}${extras}>${item.label}</a>`;
+      if (active) {
+        return `<a class="ql-item ql-active" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label} <i>열기 ↗</i></a>`;
+      }
+      return `<span class="ql-item ql-planned" aria-disabled="true" tabindex="-1">${item.label} <i>준비 중</i></span>`;
     }).join("");
   }
 

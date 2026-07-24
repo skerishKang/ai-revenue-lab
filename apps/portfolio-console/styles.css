@@ -97,7 +97,9 @@ h2 { margin-bottom: 0; font-size: 15px; font-weight: 650; letter-spacing: -.01em
 }
 .ql-active { color: var(--accent); background: var(--accent-soft); }
 .ql-active:hover { background: rgba(140, 167, 255, .22); }
+.ql-active i { font-style: normal; color: var(--accent); opacity: .72; }
 .ql-planned { color: var(--quiet); background: rgba(104, 115, 132, .1); cursor: default; pointer-events: none; }
+.ql-planned i { font-style: normal; color: var(--quiet); opacity: .5; }
 
 .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
 .metric-card { min-width: 0; padding: 14px 15px 13px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }

@@ -67,6 +67,11 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn('class="ql-heading"', html)
         self.assertIn('src="./quick-launch.js"', html)
 
+    def test_quick_launch_indicators(self) -> None:
+        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
+        self.assertIn("열기", script)
+        self.assertIn("준비 중", script)
+
     def test_quick_launch_active_links_have_correct_attributes(self) -> None:
         script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
         self.assertIn('target="_blank"', script)
