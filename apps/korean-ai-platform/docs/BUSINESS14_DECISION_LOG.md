@@ -146,3 +146,34 @@ A later implementation report is insufficient by itself. The CTO review must ind
 - test and console evidence;
 - absence of secrets and unsupported commercial claims;
 - continued Draft/unmerged state of PR #79 and PR #112.
+
+## 2026-07-25 — Product-wide Korean default confirmed
+
+Decision: Korean (`ko-KR`) is the canonical product language and the default UI language for all Business 14 phases and surfaces.
+
+This applies to:
+
+- Phase 0 API Provider Demo;
+- Phase 1 BYOK Gateway;
+- Phase 2 multi-provider routing;
+- model catalog and Playground;
+- User Workspace;
+- Operator Console;
+- onboarding, settings, help, validation, errors, privacy, security, cost, and billing guidance;
+- future Business 14 product extensions.
+
+Operational rules:
+
+- first visit defaults to Korean;
+- missing or invalid locale state falls back to Korean;
+- English may be provided only as an explicit secondary locale;
+- new product work and documentation are completed in Korean first;
+- untranslated English-locale strings fall back to Korean;
+- full Korean/English parity is not a default implementation or merge requirement;
+- standard API fields, source code, commands, and Provider/model proper names may remain in English, while user-facing explanations and default navigation remain Korean.
+
+This is a Korea-market product decision, not a temporary single-user convenience.
+
+Canonical policy document:
+
+`docs/BUSINESS14_LANGUAGE_POLICY.md`
