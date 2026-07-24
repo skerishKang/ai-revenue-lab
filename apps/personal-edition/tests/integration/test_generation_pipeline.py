@@ -21,6 +21,7 @@ from app import (
 )
 from app.ai.mock import MockProvider
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from app.domain.enums import ProviderErrorCategory
 from app.feedback_repository import FeedbackValidationError
 from app.pipeline.errors import (
@@ -51,7 +52,7 @@ def _setup_db():
 
 def _create_participant(conn, pid="p1", lang="ko"):
     pt_repo.create_participant(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=pid,
         display_name="Test User",
         preferred_language=lang,
@@ -62,7 +63,7 @@ def _create_input(conn, pid="p1", raw_text=None, consent_confirmed=1):
     if raw_text is None:
         raw_text = "word " * 600
     return input_repo.create_input(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=pid,
         raw_text=raw_text,
         consent_confirmed=consent_confirmed,
@@ -248,11 +249,11 @@ class TestFollowUpEdition:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -446,7 +447,7 @@ class TestInvalidInputs:
         conn = _setup_db()
         _create_participant(conn)
         inp = _create_input(conn)
-        pt_repo.delete_participant(conn, "p1")
+        pt_repo.delete_participant(SqliteRuntimeConnection(conn), "p1")
 
         provider = MockProvider(fixture_payload={"key": "val"})
         service = GenerationService(provider=provider)
@@ -496,7 +497,7 @@ class TestInvalidInputs:
         conn = _setup_db()
         _create_participant(conn)
         inp = _create_input(conn)
-        input_repo.delete_input(conn, inp.id)
+        input_repo.delete_input(SqliteRuntimeConnection(conn), inp.id)
 
         provider = MockProvider(fixture_payload={"key": "val"})
         service = GenerationService(provider=provider)
@@ -512,7 +513,7 @@ class TestInvalidInputs:
         conn = _setup_db()
         _create_participant(conn)
         inp = input_repo.create_input(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             raw_text="word " * 600,
             consent_confirmed=0,
@@ -753,11 +754,11 @@ class TestAtomicPersistence:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -829,14 +830,14 @@ class TestAtomicPersistence:
         assert result_p2.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, result_p1.edition_id, "published"
+            SqliteRuntimeConnection(conn), result_p1.edition_id, "published"
         )
         ed_repo.update_edition_publication(
-            conn, result_p2.edition_id, "published"
+            SqliteRuntimeConnection(conn), result_p2.edition_id, "published"
         )
 
         fb_p2 = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p2",
             edition_id=result_p2.edition_id,
             direction_choices=json.dumps(
@@ -1022,7 +1023,7 @@ class TestProviderCapabilityErrorAccounting:
         assert first_edition.publication_state == "pending"
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -1082,11 +1083,11 @@ class TestProviderCapabilityErrorAccounting:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -1122,11 +1123,11 @@ class TestProviderCapabilityErrorAccounting:
         assert fb_after.applied_to_next_edition == 1
 
         ed_repo.update_edition_publication(
-            conn, first_follow_up.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_follow_up.edition_id, "published"
         )
 
         fb2 = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_follow_up.edition_id,
             direction_choices=json.dumps(
@@ -1134,7 +1135,7 @@ class TestProviderCapabilityErrorAccounting:
             ),
             free_text=bundle.feedback_free_text,
         )
-        fb_repo.mark_feedback_applied(conn, fb2.id)
+        fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb2.id)
         fb2_after = fb_repo.get_feedback_by_id(conn, fb2.id)
         assert fb2_after.applied_to_next_edition == 1
 
@@ -1170,7 +1171,7 @@ class TestProviderCapabilityErrorAccounting:
         inp = _create_input(conn, raw_text=bundle.input_text)
 
         ed1 = ed_repo.create_edition(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_number=1,
             input_id=inp.id,
@@ -1179,7 +1180,7 @@ class TestProviderCapabilityErrorAccounting:
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed1.id,
             direction_choices=json.dumps(list(bundle.feedback_directions)),
@@ -1187,13 +1188,13 @@ class TestProviderCapabilityErrorAccounting:
         )
         assert fb.applied_to_next_edition == 0
 
-        fb_repo.mark_feedback_applied(conn, fb.id)
+        fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb.id)
         fb_after = fb_repo.get_feedback_by_id(conn, fb.id)
         assert fb_after.applied_to_next_edition == 1
 
         with pytest.raises(FeedbackValidationError):
             ed_repo.create_edition_with_feedback_applied(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_number=2,
                 prior_edition_id=ed1.id,
@@ -1280,11 +1281,11 @@ class TestFileBackedDatabase:
         assert first_result.succeeded is True
 
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(
@@ -1417,11 +1418,11 @@ class TestPriorEditionSummaryFromDB:
         )
         assert first_result.succeeded is True
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(list(bundle.feedback_directions)),
@@ -1638,11 +1639,11 @@ class TestPersistenceFailureNormalization:
         )
         assert first_result.succeeded is True
         ed_repo.update_edition_publication(
-            conn, first_result.edition_id, "published"
+            SqliteRuntimeConnection(conn), first_result.edition_id, "published"
         )
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=first_result.edition_id,
             direction_choices=json.dumps(list(bundle.feedback_directions)),
@@ -1690,4 +1691,255 @@ class TestPersistenceFailureNormalization:
 
         p1_editions = ed_repo.get_editions_by_participant(conn, "p1")
         assert len(p1_editions) == 1
+        conn.close()
+
+
+class TestGenerationIdempotency:
+    """A durable idempotency key prevents duplicate editions.
+
+    The first submission claims the key and produces an edition; a re-submission
+    of the same key returns the existing edition without invoking the provider
+    again.  A different key produces a new edition.
+    """
+
+    def test_same_key_returns_existing_edition_without_regeneration(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        first = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-1",
+            ),
+        )
+        assert first.succeeded is True
+        calls_after_first = len(provider.requests)
+        assert calls_after_first > 0
+
+        second = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-1",
+            ),
+        )
+        assert second.succeeded is True
+        assert second.edition_id == first.edition_id
+        # Idempotent replay must not invoke the provider again.
+        assert len(provider.requests) == calls_after_first
+
+        editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(editions) == 1
+        conn.close()
+
+    def test_different_key_creates_new_edition(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        first = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-1",
+            ),
+        )
+        second = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-2",
+            ),
+        )
+        assert first.succeeded is True
+        assert second.succeeded is True
+        assert second.edition_id != first.edition_id
+
+        editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(editions) == 2
+        conn.close()
+
+    def test_no_key_is_not_idempotent(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        first = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1", input_id=inp.id, allow_short_sample=True
+            ),
+        )
+        second = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1", input_id=inp.id, allow_short_sample=True
+            ),
+        )
+        assert first.succeeded is True
+        assert second.succeeded is True
+        assert second.edition_id != first.edition_id
+        conn.close()
+
+
+class TestClaimLifecycle:
+    """Verify claim-after-preflight ordering and failure lifecycle."""
+
+    def test_preflight_failure_does_not_claim(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn)
+        bundle = load_bundle("korean_founder")
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="nonexistent",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-preflight",
+            ),
+        )
+        assert result.succeeded is False
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-preflight")
+        assert record is None
+        conn.close()
+
+    def test_provider_failure_transitions_claim_to_failed(self):
+        conn = _setup_db()
+        _create_participant(conn)
+        inp = _create_input(conn)
+        provider = MockProvider(
+            responses=[
+                {"kind": "error", "message": "plan boom"},
+                {"kind": "error", "message": "plan boom"},
+                {"kind": "error", "message": "plan boom"},
+            ]
+        )
+        service = GenerationService(provider=provider, max_retries=2)
+
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-fail",
+            ),
+        )
+        assert result.succeeded is False
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-fail")
+        assert record is not None
+        assert record.status == "failed"
+        assert record.failure_category == "provider"
+        assert record.failed_at is not None
+        conn.close()
+
+    def test_failed_claim_can_be_reclaimed_and_succeed(self):
+        conn = _setup_db()
+        bundle = load_bundle("korean_founder")
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+
+        fail_provider = MockProvider(
+            responses=[
+                {"kind": "error", "message": "boom"},
+                {"kind": "error", "message": "boom"},
+                {"kind": "error", "message": "boom"},
+            ]
+        )
+        fail_service = GenerationService(provider=fail_provider, max_retries=2)
+        fail_result = fail_service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-reclaim",
+            ),
+        )
+        assert fail_result.succeeded is False
+
+        ok_provider = _make_provider(bundle)
+        ok_service = GenerationService(provider=ok_provider)
+        ok_result = ok_service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-reclaim",
+            ),
+        )
+        assert ok_result.succeeded is True
+        assert ok_result.edition_id is not None
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-reclaim")
+        assert record is not None
+        assert record.status == "completed"
+        assert record.edition_id == ok_result.edition_id
+        conn.close()
+
+    def test_idempotent_generation_uses_atomic_finalize(self):
+        bundle = load_bundle("korean_founder")
+        conn = _setup_db()
+        _create_participant(conn, lang=bundle.language)
+        inp = _create_input(conn, raw_text=bundle.input_text)
+        provider = _make_provider(bundle)
+        service = GenerationService(provider=provider)
+
+        result = service.generate_edition(
+            conn,
+            request=GenerationRequest(
+                participant_id="p1",
+                input_id=inp.id,
+                allow_short_sample=True,
+                idempotency_key="key-atomic",
+            ),
+        )
+        assert result.succeeded is True
+
+        from app import generation_request_repository as gen_req_repo
+        from app.db_runtime import SqliteRuntimeConnection
+        rt = SqliteRuntimeConnection(conn)
+        record = gen_req_repo.get_generation_request_by_key(rt, "key-atomic")
+        assert record is not None
+        assert record.status == "completed"
+        assert record.edition_id == result.edition_id
+
+        editions = ed_repo.get_editions_by_participant(conn, "p1")
+        assert len(editions) == 1
+        assert editions[0].id == result.edition_id
         conn.close()
