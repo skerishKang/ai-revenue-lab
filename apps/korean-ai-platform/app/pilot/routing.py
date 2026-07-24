@@ -22,7 +22,6 @@ from app.pilot.errors import (
     PilotNotConfigured,
     ModelNotFound,
     ModelDisabled,
-    AmbiguousModelRoute,
     UnsupportedModel,
 )
 
