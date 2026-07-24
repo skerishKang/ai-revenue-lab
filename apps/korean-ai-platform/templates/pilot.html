@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}BYOK Gateway Pilot — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>BYOK Gateway Pilot</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">BYOK Gateway Pilot</h1>
+  <p class="page-sub">사용 중인 AI Provider 키를 저장하지 않고, Business 14의 통합 요청 형식으로 한 번 시험합니다.</p>
+</div>
+
+<div class="callout callout-info">
+  <span class="callout-title">Phase 1 Pilot</span>
+  인증, 다중 사용자 격리, 결제, SLA가 구현된 상용 서비스가 아닙니다.
+</div>
+
+{% if not pilot_configured %}
+<div class="pilot-unconfigured">
+  <div class="callout callout-warn">
+    <span class="callout-title">Pilot Provider가 설정되지 않았습니다</span>
+    서버에 Pilot Provider 환경변수(BUSINESS14_PILOT_BASE_URL, BUSINESS14_PILOT_MODEL_ID)가 설정되어 있어야 합니다.
+  </div>
+  <div class="section-foot">
+    <a href="/playground" class="btn btn-secondary">Mock Playground 사용하기</a>
+    <a href="/models" class="btn btn-ghost">모델 카탈로그 보기</a>
+  </div>
+</div>
+{% else %}
+
+<div class="pilot-split">
+  <div class="pilot-left">
+    <form method="post" action="/pilot" class="pilot-form">
+      <div class="pilot-section">
+        <label for="pilot_key">Provider API Key</label>
+        <input type="password" id="pilot_key" name="provider_key"
+          placeholder="sk-..." autocomplete="off" class="pilot-key-input" required
+          value="">
+        <span class="field-note">입력한 Provider key는 이번 요청 전달에만 사용되며 저장하지 않습니다.</span>
+      </div>
+
+      <div class="pilot-section">
+        <label for="pilot_model">모델</label>
+        <select id="pilot_model" name="model_id" class="model-select">
+          {% for model in pilot_models %}
+          <option value="{{ model.id }}" {{ 'selected' if selected_model == model.id else '' }}>
+            {{ model.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="pilot-section">
+        <label for="pilot_prompt">Prompt</label>
+        <textarea id="pilot_prompt" name="prompt" rows="5"
+          placeholder="메시지를 입력하세요..." required>{{ prompt }}</textarea>
+      </div>
+
+      <div class="pilot-row">
+        <div class="pilot-section">
+          <label for="pilot_temp">Temperature</label>
+          <input type="range" id="pilot_temp" name="temperature" min="0" max="100" value="20" class="range-input">
+          <span class="range-value">0.2</span>
+        </div>
+        <div class="pilot-section">
+          <label for="pilot_maxtokens">Max tokens</label>
+          <input type="number" id="pilot_maxtokens" name="max_tokens" value="300" min="1" max="4096" class="pilot-num-input">
+        </div>
+      </div>
+
+      <div class="pilot-actions">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">BYOK 요청 실행</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="pilot-right">
+    {% if error %}
+    <div class="callout callout-danger" role="alert">
+      <span class="callout-title">오류 ({{ error.code }})</span>
+      {{ error.message }}
+      {% if error.request_id %}
+      <br><span class="muted">Request ID: {{ error.request_id }}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div class="pilot-result">
+      <div class="result-header">
+        <h2>Pilot 응답</h2>
+        <span class="tag tag-demo">BYOK Pilot</span>
+      </div>
+
+      <div class="result-meta">
+        <div class="meta-grid">
+          <div class="meta-item"><dt>Request ID</dt><dd>{{ result.request_id }}</dd></div>
+          <div class="meta-item"><dt>Provider</dt><dd>{{ result.provider }}</dd></div>
+          <div class="meta-item"><dt>Model</dt><dd>{{ result.model }}</dd></div>
+          <div class="meta-item"><dt>Latency</dt><dd>{{ result.latency_ms }}ms</dd></div>
+          {% if result.usage %}
+          <div class="meta-item"><dt>Input tokens</dt><dd>{{ result.usage.prompt_tokens or 'N/A' }}</dd></div>
+          <div class="meta-item"><dt>Output tokens</dt><dd>{{ result.usage.completion_tokens or 'N/A' }}</dd></div>
+          {% endif %}
+          {% if result.estimated_krw is not none %}
+          <div class="meta-item"><dt>예상 비용</dt><dd>{{ result.estimated_krw }}원</dd></div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if result.choices %}
+      <div class="result-text">
+        <pre>{{ result.choices[0].message.content }}</pre>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="pilot-empty">
+      <p>Provider key와 prompt를 입력하고 BYOK 요청 실행을 클릭하세요.</p>
+      <p class="muted">실제 Provider API key가 필요합니다. 요청은 서버를 거쳐 Provider로 전달됩니다.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<div class="callout callout-info" style="margin-top: 24px;">
+  <span class="callout-title">BYOK Gateway Pilot 작동 방식</span>
+  <ol class="pilot-steps">
+    <li>고객이 <strong>Provider API key</strong>를 입력합니다 (비밀번호 필드, 저장되지 않음)</li>
+    <li>Business 14 서버가 요청을 <strong>허용된 Provider endpoint</strong>로 전달합니다</li>
+    <li>고객의 key가 <strong>Authorization 헤더</strong>로 전달됩니다</li>
+    <li>응답과 메타데이터(latency, tokens, request ID)가 반환됩니다</li>
+  </ol>
+</div>
+
+<div class="callout callout-warn">
+  <span class="callout-title">Mock Demo와의 차이</span>
+  <strong>/playground</strong>는 네트워크 연결 없이 결정론적 Mock 응답을 반환합니다.<br>
+  <strong>/pilot</strong>은 실제 Provider API key로 외부 모델을 호출합니다.
+</div>
+
+{% endblock %}
