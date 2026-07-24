@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>AI Revenue Lab · Portfolio Console</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="관리 콘솔 탐색">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">ARL</div>
+        <div>
+          <strong>Portfolio Console</strong>
+          <span>PRIVATE ADMIN</span>
+        </div>
+      </div>
+
+      <nav class="side-nav" aria-label="콘솔 메뉴">
+        <button class="nav-item is-active" type="button" data-view="businesses">
+          <span aria-hidden="true">▦</span>
+          Businesses
+        </button>
+        <button class="nav-item" type="button" data-view="deployments">
+          <span aria-hidden="true">↗</span>
+          Deployments
+        </button>
+        <button class="nav-item" type="button" data-view="github">
+          <span aria-hidden="true">⌘</span>
+          GitHub
+        </button>
+        <button class="nav-item" type="button" data-view="models">
+          <span aria-hidden="true">◇</span>
+          Models & Cost
+        </button>
+        <button class="nav-item" type="button" data-view="registry">
+          <span aria-hidden="true">≡</span>
+          Registry
+        </button>
+      </nav>
+
+      <div class="sidebar-meta">
+        <div><span>MODE</span><strong>MANUAL</strong></div>
+        <div><span>SOURCE</span><strong>STATIC REGISTRY</strong></div>
+        <div><span>RANGE</span><strong id="sidebar-range">01–15</strong></div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AI REVENUE LAB / INTERNAL</p>
+          <h1>Business Operations</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="sync-state"><i aria-hidden="true"></i> registry loaded</span>
+          <button type="button" class="icon-button" id="refresh-button" aria-label="화면 새로 고침">↻</button>
+        </div>
+      </header>
+
+      <section class="metric-grid" aria-label="사업 포트폴리오 요약">
+        <article class="metric-card">
+          <span>TRACKED</span>
+          <strong id="metric-tracked">00</strong>
+          <small>번호가 배정되거나 제안된 사업</small>
+        </article>
+        <article class="metric-card">
+          <span>DEMO SURFACES</span>
+          <strong id="metric-demo">00</strong>
+          <small>즉시 열 수 있는 확인된 화면</small>
+        </article>
+        <article class="metric-card">
+          <span>NEEDS ACTION</span>
+          <strong id="metric-action">00</strong>
+          <small>검토·배포·결정이 필요한 사업</small>
+        </article>
+        <article class="metric-card">
+          <span>OPEN SLOTS</span>
+          <strong id="metric-open">00</strong>
+          <small>현재 표시 범위의 미배정 번호</small>
+        </article>
+      </section>
+
+      <section class="control-strip" aria-label="사업 목록 제어">
+        <label class="search-control">
+          <span>SEARCH</span>
+          <input id="search-input" type="search" autocomplete="off" placeholder="번호 또는 제목 검색 (예: 14, fiction)">
+        </label>
+        <label>
+          <span>STATE</span>
+          <select id="state-filter">
+            <option value="all">ALL STATES</option>
+            <option value="running">RUNNING</option>
+            <option value="review">REVIEW / BUILD</option>
+            <option value="planning">PLANNING</option>
+            <option value="reserved">RESERVED</option>
+          </select>
+        </label>
+        <label>
+          <span>SORT</span>
+          <select id="sort-control">
+            <option value="number-asc">NUMBER ↑</option>
+            <option value="number-desc">NUMBER ↓</option>
+            <option value="priority">ACTION PRIORITY</option>
+            <option value="progress">PROGRESS</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="registry-panel" aria-labelledby="registry-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PRIMARY VIEW</p>
+              <h2 id="registry-heading">Business Registry</h2>
+            </div>
+            <span id="result-count">0 rows</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">BUSINESS</th>
+                  <th scope="col">STATE</th>
+                  <th scope="col">PROGRESS</th>
+                  <th scope="col">SURFACE</th>
+                  <th scope="col">GITHUB</th>
+                  <th scope="col">NEXT ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="business-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="detail-panel" id="detail-panel" aria-labelledby="detail-title">
+          <div class="detail-topline">
+            <span id="detail-number">BUSINESS --</span>
+            <span id="detail-status" class="status-badge status-reserved">IDLE</span>
+          </div>
+          <h2 id="detail-title">사업을 선택하십시오.</h2>
+          <p id="detail-korean" class="detail-korean">번호와 제목을 중심으로 운영 상태를 확인합니다.</p>
+
+          <div class="detail-progress" aria-label="선택 사업 진행률">
+            <div>
+              <span>DEMO READINESS</span>
+              <strong id="detail-progress-value">--%</strong>
+            </div>
+            <div class="progress-track"><i id="detail-progress-bar"></i></div>
+          </div>
+
+          <dl class="detail-facts">
+            <div><dt>LIFECYCLE</dt><dd id="detail-lifecycle">—</dd></div>
+            <div><dt>WORKSPACE</dt><dd id="detail-workspace">—</dd></div>
+            <div><dt>DEPLOYMENT</dt><dd id="detail-deployment">—</dd></div>
+            <div><dt>GITHUB</dt><dd id="detail-github">—</dd></div>
+            <div><dt>LAST VERIFIED</dt><dd id="detail-verified">—</dd></div>
+          </dl>
+
+          <section class="next-action-block">
+            <span>NEXT ACTION</span>
+            <p id="detail-next-action">목록에서 사업을 선택하십시오.</p>
+          </section>
+
+          <div class="detail-actions">
+            <a id="surface-link" class="primary-action is-disabled" href="#" target="_blank" rel="noreferrer">OPEN SURFACE</a>
+            <a id="github-link" class="secondary-action is-disabled" href="#" target="_blank" rel="noreferrer">OPEN GITHUB</a>
+            <a id="issue-link" class="secondary-action is-disabled" href="#" target="_blank" rel="noreferrer">OPEN ISSUE</a>
+          </div>
+          <p class="action-note" id="action-note">확인된 링크만 활성화됩니다.</p>
+        </aside>
+      </section>
+
+      <section class="activity-panel" aria-labelledby="activity-heading">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">OPERATOR QUEUE</p>
+            <h2 id="activity-heading">Priority Actions</h2>
+          </div>
+          <span id="priority-count">0 items</span>
+        </div>
+        <div id="priority-list" class="priority-list"></div>
+      </section>
+
+      <footer>
+        <span>Static private console · no authentication · no secrets · deploy behind Cloudflare Access</span>
+        <span id="build-label">BUILD 2026.07.24</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="./businesses.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
