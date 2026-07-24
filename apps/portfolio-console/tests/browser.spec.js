@@ -441,3 +441,225 @@ test.describe('Quick Launch Browser Tests', () => {
     expect(errors).toHaveLength(0);
   });
 });
+
+test.describe('Project Directory Browser Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+  });
+
+  test('renders 13 project cards', async ({ page }) => {
+    await expect(page.locator('.pd-card')).toHaveCount(13);
+  });
+
+  test('all project cards have name, stage badge, and repository', async ({ page }) => {
+    const cards = page.locator('.pd-card');
+    const count = await cards.count();
+    for (let i = 0; i < count; i++) {
+      const card = cards.nth(i);
+      await expect(card.locator('.pd-card-name')).not.toBeEmpty();
+      await expect(card.locator('.status-badge')).not.toBeEmpty();
+      await expect(card.locator('.pd-card-meta')).not.toBeEmpty();
+    }
+  });
+
+  test('project search filters by English name', async ({ page }) => {
+    await page.fill('#pd-search-input', 'lovetree');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+    await expect(page.locator('.pd-card-name').first()).toHaveText('LoveTree 3.0');
+  });
+
+  test('project search filters by Korean name', async ({ page }) => {
+    await page.fill('#pd-search-input', '러브버드');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+    await expect(page.locator('.pd-card-name').first()).toHaveText('LoveBud');
+  });
+
+  test('project search filters by repository', async ({ page }) => {
+    await page.fill('#pd-search-input', '400-ai-finder');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+    await expect(page.locator('.pd-card-name').first()).toHaveText('AI Finder / 광주 북구청');
+  });
+
+  test('project search filters by workspace', async ({ page }) => {
+    await page.fill('#pd-search-input', 'apps/living-travel');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+    await expect(page.locator('.pd-card-name').first()).toHaveText('Living Travel');
+  });
+
+  test('project search filters by purpose', async ({ page }) => {
+    await page.fill('#pd-search-input', '가계도');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(1);
+    await expect(page.locator('.pd-card-name').first()).toHaveText('LoveTree 3.0');
+  });
+
+  test('project search filters by business number', async ({ page }) => {
+    await page.fill('#pd-search-input', '14');
+    await page.waitForTimeout(200);
+    const cards = page.locator('.pd-card');
+    const count = await cards.count();
+    expect(count).toBeGreaterThanOrEqual(1);
+    const hasKoreanAI = await page.locator('.pd-card-name:has-text("Korean AI Platform")').count();
+    expect(hasKoreanAI).toBe(1);
+  });
+
+  test('stage filter limits visible projects', async ({ page }) => {
+    await page.selectOption('#pd-stage-filter', 'live');
+    await page.waitForTimeout(200);
+    const liveCount = await page.locator('.pd-card').count();
+    expect(liveCount).toBeGreaterThan(0);
+
+    await page.selectOption('#pd-stage-filter', 'planned');
+    await page.waitForTimeout(200);
+    const plannedCount = await page.locator('.pd-card').count();
+    expect(plannedCount).toBeGreaterThan(0);
+
+    await page.selectOption('#pd-stage-filter', 'all');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(13);
+  });
+
+  test('clicking a project card selects it and updates detail panel', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
+    await expect(page.locator('#pd-detail-badge')).toHaveText('LIVE');
+    await expect(page.locator('#pd-detail-repo')).toHaveText('skerishKang/lovetree3.0');
+    await expect(page.locator('#pd-detail-workspace')).toHaveText('/');
+  });
+
+  test('project detail shows purpose and progress note', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-detail-purpose')).toContainText('한국어');
+    await expect(page.locator('#pd-detail-progress')).toContainText('Draft PR');
+  });
+
+  test('project detail shows business number when assigned', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="personal-edition"]');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-detail-biz')).toHaveText('BUSINESS 01');
+  });
+
+  test('active page links have target=_blank and rel=noopener noreferrer', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"]');
+    await page.waitForTimeout(200);
+
+    const pageLink = page.locator('#pd-page-link');
+    await expect(pageLink).toHaveAttribute('target', '_blank');
+    await expect(pageLink).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(pageLink).toHaveAttribute('href', /^https:\/\//);
+  });
+
+  test('inactive page links are disabled', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.waitForTimeout(200);
+
+    const pageLink = page.locator('#pd-page-link');
+    await expect(pageLink).toHaveClass(/is-disabled/);
+    await expect(pageLink).toHaveAttribute('aria-disabled', 'true');
+    await expect(pageLink).toHaveAttribute('tabindex', '-1');
+    await expect(pageLink).not.toHaveAttribute('href');
+  });
+
+  test('active repository links have security attributes', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="ai-finder-bukgu"]');
+    await page.waitForTimeout(200);
+
+    const repoLink = page.locator('#pd-repo-link');
+    await expect(repoLink).toHaveAttribute('target', '_blank');
+    await expect(repoLink).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  test('inactive repository links are disabled', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="ai-finder-namgu"]');
+    await page.waitForTimeout(200);
+
+    const repoLink = page.locator('#pd-repo-link');
+    await expect(repoLink).toHaveClass(/is-disabled/);
+    await expect(repoLink).not.toHaveAttribute('href');
+  });
+
+  test('copy workspace button exists and is clickable', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="living-travel"]');
+    await page.waitForTimeout(200);
+
+    const copyButton = page.locator('#pd-copy-workspace');
+    await expect(copyButton).toBeVisible();
+    await expect(copyButton).toHaveText('COPY WORKSPACE');
+
+    await page.evaluate(() => {
+      navigator.clipboard = {
+        writeText: async () => {}
+      };
+    });
+
+    await copyButton.click();
+    await page.waitForTimeout(100);
+  });
+
+  test('existing quick launch 13/8/5 still works', async ({ page }) => {
+    await expect(page.locator('.ql-item')).toHaveCount(13);
+    await expect(page.locator('.ql-active')).toHaveCount(8);
+    await expect(page.locator('.ql-planned')).toHaveCount(5);
+  });
+
+  test('existing business registry still works', async ({ page }) => {
+    await expect(page.locator('#business-table-body .business-row')).toHaveCount(15);
+    await page.fill('#search-input', 'fiction');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#business-table-body .business-row')).toHaveCount(1);
+  });
+
+  test('no horizontal overflow on desktop with project directory', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1100 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
+  });
+
+  test('no horizontal overflow on tablet with project directory', async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
+  });
+
+  test('no horizontal overflow on mobile with project directory', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
+  });
+
+  test('no console errors with project directory', async ({ page }) => {
+    const errors = [];
+    page.on('console', msg => {
+      if (msg.type() === 'error') errors.push(msg.text());
+    });
+    page.on('pageerror', err => errors.push(err.message));
+
+    await page.reload({ waitUntil: 'networkidle' });
+    expect(errors).toHaveLength(0);
+  });
+
+  test('no failed local asset requests with project directory', async ({ page }) => {
+    const failed = [];
+    page.on('requestfailed', req => {
+      if (!req.url().startsWith('data:') && !req.url().startsWith('ws:')) {
+        failed.push(req.url());
+      }
+    });
+
+    await page.reload({ waitUntil: 'networkidle' });
+    expect(failed).toHaveLength(0);
+  });
+});

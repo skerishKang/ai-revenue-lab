@@ -101,6 +101,37 @@ h2 { margin-bottom: 0; font-size: 15px; font-weight: 650; letter-spacing: -.01em
 .ql-planned { color: var(--quiet); background: rgba(104, 115, 132, .1); cursor: default; pointer-events: none; }
 .ql-planned i { font-style: normal; color: var(--quiet); opacity: .5; }
 
+.project-directory { margin-top: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); overflow: hidden; }
+.pd-controls { display: grid; grid-template-columns: minmax(220px, 1fr) 140px; gap: 10px; padding: 12px 15px; border-bottom: 1px solid var(--line); }
+.pd-controls label > span { display: block; margin-bottom: 5px; color: var(--quiet); font: 10px/1 var(--mono); letter-spacing: .09em; }
+.pd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 14px 15px; }
+.pd-card { display: grid; gap: 8px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-raised); cursor: pointer; transition: border-color .13s ease, background .13s ease; }
+.pd-card:hover { border-color: var(--line-strong); background: var(--panel-hover); }
+.pd-card.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.pd-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pd-card-name { font-size: 13px; font-weight: 650; letter-spacing: -.01em; }
+.pd-card-korean { color: var(--muted); font-size: 11px; }
+.pd-card-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; color: var(--quiet); font: 10px/1.4 var(--mono); }
+.pd-card-progress { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pd-biz-label { color: var(--accent); font: 650 10px/1 var(--mono); letter-spacing: .06em; }
+.status-live { color: var(--green); background: var(--green-soft); }
+.status-demo { color: var(--purple); background: var(--purple-soft); }
+.status-build { color: var(--amber); background: var(--amber-soft); }
+.pd-detail { padding: 16px; border-top: 1px solid var(--line); }
+.pd-detail-topline { display: flex; align-items: center; gap: 10px; }
+.pd-detail h3 { margin: 14px 0 0; font-size: 20px; line-height: 1.16; letter-spacing: -.03em; }
+.pd-detail-korean { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+.pd-detail-purpose { margin: 12px 0 0; color: var(--text); font-size: 12px; line-height: 1.55; }
+.pd-detail-facts { margin: 16px 0 0; }
+.pd-detail-facts > div { display: grid; grid-template-columns: 100px 1fr; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.pd-detail-facts dt { color: var(--quiet); font: 9px/1.4 var(--mono); }
+.pd-detail-facts dd { margin: 0; color: var(--muted); font: 10px/1.4 var(--mono); overflow-wrap: anywhere; }
+.pd-next-action { margin-top: 14px; padding: 11px; border-left: 2px solid var(--accent); background: var(--accent-soft); }
+.pd-next-action span { color: var(--accent); font: 650 9px/1 var(--mono); letter-spacing: .08em; }
+.pd-next-action p { margin: 6px 0 0; color: var(--text); font-size: 12px; }
+.pd-detail-actions { display: grid; gap: 7px; margin-top: 14px; }
+.pd-copy-note { margin: 8px 0 0; color: var(--green); font: 10px/1.3 var(--mono); text-align: center; min-height: 14px; }
+
 .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
 .metric-card { min-width: 0; padding: 14px 15px 13px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
 .metric-card > span { display: block; color: var(--quiet); font: 10px/1 var(--mono); letter-spacing: .09em; }
@@ -193,6 +224,7 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
 
 @media (max-width: 768px) {
   .control-strip { grid-template-columns: 1fr; }
+  .pd-controls { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {

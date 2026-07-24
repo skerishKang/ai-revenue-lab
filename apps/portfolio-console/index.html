@@ -66,6 +66,61 @@
         <div id="quick-launch-list" class="ql-list"></div>
       </section>
 
+      <section class="project-directory" aria-label="프로젝트 디렉토리">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">ALL PROJECTS</p>
+            <h2 id="project-directory-heading">Project Directory</h2>
+          </div>
+          <span id="project-count">0 projects</span>
+        </div>
+        <div class="pd-controls">
+          <label class="pd-search">
+            <span>SEARCH</span>
+            <input id="pd-search-input" type="search" autocomplete="off" placeholder="이름, 저장소, 폴더, 목적 검색">
+          </label>
+          <label class="pd-stage-filter">
+            <span>STAGE</span>
+            <select id="pd-stage-filter">
+              <option value="all">ALL</option>
+              <option value="live">LIVE</option>
+              <option value="demo">DEMO</option>
+              <option value="build">BUILD</option>
+              <option value="review">REVIEW</option>
+              <option value="planned">PLANNED</option>
+            </select>
+          </label>
+        </div>
+        <div class="pd-grid" id="pd-grid"></div>
+        <aside class="pd-detail" id="pd-detail" aria-labelledby="pd-detail-title">
+          <div class="pd-detail-topline">
+            <span id="pd-detail-badge" class="status-badge status-planned">—</span>
+            <span id="pd-detail-biz" class="pd-biz-label"></span>
+          </div>
+          <h3 id="pd-detail-title">프로젝트를 선택하십시오.</h3>
+          <p id="pd-detail-korean" class="pd-detail-korean">13개 프로젝트의 저장소·폴더·단계를 확인합니다.</p>
+          <p id="pd-detail-purpose" class="pd-detail-purpose"></p>
+          <dl class="pd-detail-facts">
+            <div><dt>REPOSITORY</dt><dd id="pd-detail-repo">—</dd></div>
+            <div><dt>WORKSPACE</dt><dd id="pd-detail-workspace">—</dd></div>
+            <div><dt>PAGE</dt><dd id="pd-detail-page">—</dd></div>
+            <div><dt>PROGRESS</dt><dd id="pd-detail-progress">—</dd></div>
+            <div><dt>CURRENT WORK</dt><dd id="pd-detail-current">—</dd></div>
+            <div><dt>LAST VERIFIED</dt><dd id="pd-detail-verified">—</dd></div>
+          </dl>
+          <section class="pd-next-action">
+            <span>NEXT ACTION</span>
+            <p id="pd-detail-next">목록에서 프로젝트를 선택하십시오.</p>
+          </section>
+          <div class="pd-detail-actions">
+            <a id="pd-page-link" class="primary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN PAGE</a>
+            <a id="pd-repo-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN REPOSITORY</a>
+            <button id="pd-copy-workspace" class="secondary-action" type="button">COPY WORKSPACE</button>
+          </div>
+          <p class="pd-copy-note" id="pd-copy-note"></p>
+        </aside>
+      </section>
+
       <section class="metric-grid" aria-label="사업 포트폴리오 요약">
         <article class="metric-card">
           <span>TRACKED</span>
@@ -200,6 +255,7 @@
 
   <script src="./businesses.js"></script>
   <script src="./quick-launch.js"></script>
+  <script src="./projects.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

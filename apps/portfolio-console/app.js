@@ -2,18 +2,28 @@
   "use strict";
 
   const businesses = Array.isArray(window.ARL_BUSINESSES) ? window.ARL_BUSINESSES : [];
+  const projects = Array.isArray(window.ARL_PROJECTS) ? window.ARL_PROJECTS : [];
   const $ = (selector) => document.querySelector(selector);
   const tableBody = $("#business-table-body");
   const searchInput = $("#search-input");
   const stateFilter = $("#state-filter");
   const sortControl = $("#sort-control");
   let selectedNumber = null;
+  let selectedProjectId = null;
 
   const stateLabels = {
     running: "RUNNING",
     review: "REVIEW",
     planning: "PLANNING",
     reserved: "RESERVED"
+  };
+
+  const stageLabels = {
+    live: "LIVE",
+    demo: "DEMO",
+    build: "BUILD",
+    review: "REVIEW",
+    planned: "PLANNED"
   };
 
   function pad(number) {
@@ -163,6 +173,115 @@
     control.addEventListener(control === searchInput ? "input" : "change", renderTable);
   });
 
+  function filteredProjects() {
+    const query = ($("#pd-search-input")?.value || "").trim().toLowerCase();
+    const stage = $("#pd-stage-filter")?.value || "all";
+    return projects.filter((item) => {
+      const haystack = `${item.name} ${item.koreanName} ${item.businessNumber || ""} ${item.repositoryLabel} ${item.workspace} ${item.purpose}`.toLowerCase();
+      return (!query || haystack.includes(query)) && (stage === "all" || item.stage === stage);
+    });
+  }
+
+  function projectCardTemplate(item) {
+    const selectedClass = item.id === selectedProjectId ? " is-selected" : "";
+    const bizLabel = item.businessNumber ? `BIZ ${pad(item.businessNumber)}` : "";
+    return `
+      <div class="pd-card${selectedClass}" data-project-id="${item.id}" tabindex="0" role="button" aria-pressed="${item.id === selectedProjectId}">
+        <div class="pd-card-top">
+          <span class="pd-card-name">${item.name}</span>
+          <span class="status-badge status-${item.stage}">${stageLabels[item.stage]}</span>
+        </div>
+        <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
+        <div class="pd-card-meta">
+          <span>${item.repositoryLabel}</span>
+          <span>${item.workspace}</span>
+        </div>
+        <span class="pd-card-progress">${item.progressNote}</span>
+      </div>
+    `;
+  }
+
+  function renderProjectDirectory() {
+    const grid = $("#pd-grid");
+    if (!grid) return;
+    const visible = filteredProjects();
+    grid.innerHTML = visible.map(projectCardTemplate).join("") || '<div class="empty-state">조건에 맞는 프로젝트가 없습니다.</div>';
+    $("#project-count").textContent = `${visible.length} projects`;
+
+    grid.querySelectorAll(".pd-card").forEach((card) => {
+      const select = () => selectProject(card.dataset.projectId);
+      card.addEventListener("click", select);
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          select();
+        }
+      });
+    });
+  }
+
+  function configureProjectLink(selector, url) {
+    const link = $(selector);
+    if (!link) return;
+    if (url) {
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.tabIndex = 0;
+      link.classList.remove("is-disabled");
+      link.removeAttribute("aria-disabled");
+    } else {
+      link.removeAttribute("href");
+      link.removeAttribute("target");
+      link.removeAttribute("rel");
+      link.tabIndex = -1;
+      link.classList.add("is-disabled");
+      link.setAttribute("aria-disabled", "true");
+    }
+  }
+
+  function selectProject(id) {
+    const item = projects.find((project) => project.id === id);
+    if (!item) return;
+    selectedProjectId = id;
+    $("#pd-detail-badge").className = `status-badge status-${item.stage}`;
+    $("#pd-detail-badge").textContent = stageLabels[item.stage];
+    $("#pd-detail-biz").textContent = item.businessNumber ? `BUSINESS ${pad(item.businessNumber)}` : "";
+    $("#pd-detail-title").textContent = item.name;
+    $("#pd-detail-korean").textContent = item.koreanName;
+    $("#pd-detail-purpose").textContent = item.purpose;
+    $("#pd-detail-repo").textContent = item.repositoryLabel;
+    $("#pd-detail-workspace").textContent = item.workspace;
+    $("#pd-detail-page").textContent = item.pageUrl || "미배포";
+    $("#pd-detail-progress").textContent = item.progressNote;
+    $("#pd-detail-current").textContent = item.currentWork;
+    $("#pd-detail-verified").textContent = item.lastVerified;
+    $("#pd-detail-next").textContent = item.nextAction;
+    configureProjectLink("#pd-page-link", item.pageUrl);
+    configureProjectLink("#pd-repo-link", item.repositoryUrl);
+    $("#pd-copy-note").textContent = "";
+    renderProjectDirectory();
+  }
+
+  function initProjectDirectory() {
+    const pdSearch = $("#pd-search-input");
+    const pdStage = $("#pd-stage-filter");
+    if (pdSearch) pdSearch.addEventListener("input", renderProjectDirectory);
+    if (pdStage) pdStage.addEventListener("change", renderProjectDirectory);
+
+    const copyButton = $("#pd-copy-workspace");
+    if (copyButton) {
+      copyButton.addEventListener("click", () => {
+        const item = projects.find((project) => project.id === selectedProjectId);
+        if (!item) return;
+        navigator.clipboard.writeText(item.workspace).then(() => {
+          $("#pd-copy-note").textContent = `복사됨: ${item.workspace}`;
+          setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
+        });
+      });
+    }
+  }
+
   $("#refresh-button").addEventListener("click", () => window.location.reload());
   document.querySelectorAll(".nav-item").forEach((item) => {
     item.addEventListener("click", () => {
@@ -177,6 +296,10 @@
   updateMetrics();
   renderTable();
   renderPriorityActions();
+  renderProjectDirectory();
+  initProjectDirectory();
   const firstAction = businesses.find((item) => item.priority === Math.max(...businesses.map((entry) => entry.priority)));
   if (firstAction) selectBusiness(firstAction.number);
+  const firstProject = projects[0];
+  if (firstProject) selectProject(firstProject.id);
 })();
