@@ -122,3 +122,48 @@ class InvalidRequest(PilotError):
             message=detail,
             status_code=400,
         )
+
+
+class RegistryInvalid(PilotError):
+    def __init__(self, detail: str = "Provider registry 설정이 올바르지 않습니다.") -> None:
+        super().__init__(
+            code="registry_invalid",
+            message=detail,
+            status_code=500,
+        )
+
+
+class ProviderNotFound(PilotError):
+    def __init__(self, provider_id: str = "") -> None:
+        super().__init__(
+            code="provider_not_found",
+            message=f"Provider '{provider_id}'을(를) 찾을 수 없습니다." if provider_id else "요청한 Provider를 찾을 수 없습니다.",
+            status_code=400,
+        )
+
+
+class ModelNotFound(PilotError):
+    def __init__(self, model_id: str) -> None:
+        super().__init__(
+            code="model_not_found",
+            message=f"모델 '{model_id}'을(를) 레지스트리에서 찾을 수 없습니다.",
+            status_code=400,
+        )
+
+
+class ModelDisabled(PilotError):
+    def __init__(self, model_id: str) -> None:
+        super().__init__(
+            code="model_disabled",
+            message=f"모델 '{model_id}'은(는) 현재 비활성화되어 있습니다.",
+            status_code=400,
+        )
+
+
+class AmbiguousModelRoute(PilotError):
+    def __init__(self, model_id: str) -> None:
+        super().__init__(
+            code="ambiguous_model_route",
+            message=f"모델 '{model_id}'에 대한 라우팅 정보가 중복되거나 모호합니다.",
+            status_code=500,
+        )

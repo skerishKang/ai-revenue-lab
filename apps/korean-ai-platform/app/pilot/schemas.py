@@ -94,6 +94,7 @@ class PilotUsage(BaseModel):
 class PilotBusiness14Meta(BaseModel):
     mode: str = "byok-pilot"
     provider: str = ""
+    model_route: str = ""
     latency_ms: int = 0
     estimated_krw: float | None = None
     request_id: str = ""

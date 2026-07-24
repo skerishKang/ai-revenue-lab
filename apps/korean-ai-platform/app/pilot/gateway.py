@@ -1,11 +1,11 @@
-"""FastAPI router for the BYOK Gateway Pilot API.
+"""FastAPI router for the BYOK Gateway Pilot API (Phase 2).
 
 Routes:
-- GET  /api/pilot/health      — Pilot health check
+- GET  /api/pilot/health      — Pilot health check (multi-provider if configured)
 - GET  /api/pilot/models      — List pilot-available models
-- POST /api/pilot/v1/chat/completions — Chat completions via BYOK
+- POST /api/pilot/v1/chat/completions — Chat completions via BYOK with routing
 
-All pilot routes require the provider API key in the X-Business14-Provider-Key header.
+Supports multi-provider registry and legacy single-provider fallback.
 """
 
 from __future__ import annotations
@@ -26,10 +26,14 @@ from app.pilot.errors import (
     StreamNotSupported,
     ToolsNotSupported,
     UnsupportedModel,
+    RegistryInvalid,
+    ModelNotFound,
+    PilotNotConfigured,
 )
 from app.pilot import provider as prv
 from app.pilot.redaction import redact_sensitive
 from app.pilot.schemas import PilotChatRequest
+from app.pilot.registry import get_registry
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
@@ -49,7 +53,7 @@ _PLACEHOLDER_PATTERNS = [
 def _is_placeholder_key(key: str) -> bool:
     lower = key.lower().strip()
     if not key or key == "":
-        return False  # empty is handled separately
+        return False
     for pattern in _PLACEHOLDER_PATTERNS:
         if pattern in lower:
             return True
@@ -75,27 +79,46 @@ def _validate_chat_request(req: PilotChatRequest) -> None:
         raise InvalidRequest("messages 필드는 비어 있을 수 없습니다.")
     if not req.model:
         raise InvalidRequest("model 필드는 필수입니다.")
-    # Check model support (must be the configured pilot model or the upstream model name)
-    supported_models = [pilot_settings.pilot_model_id]
-    if pilot_settings.pilot_upstream_model:
-        supported_models.append(pilot_settings.pilot_upstream_model)
-    if req.model not in supported_models and req.model != pilot_settings.pilot_model_id:
-        raise UnsupportedModel(req.model)
 
 
 @router.get("/health")
 async def pilot_health():
-    """Pilot health check. Returns 503 if not configured."""
+    """Pilot health check. Returns configured provider summary."""
+    registry = get_registry()
+    if registry.configured:
+        return {
+            "status": "ok",
+            "mode": "byok-multi-provider-pilot",
+            "configured_providers": registry.provider_count,
+            "configured_models": registry.model_count,
+            "providers": registry.provider_summary(),
+        }
+    if pilot_settings.configured:
+        return {
+            "status": "ok",
+            "mode": "byok-pilot",
+            "configured_providers": 1,
+            "configured_models": 1,
+        }
     return {
-        "status": "ok" if pilot_settings.configured else "not_configured",
-        "mode": "byok-pilot",
-        "configured_providers": 1 if pilot_settings.configured else 0,
+        "status": "not_configured",
+        "mode": "not_configured",
+        "configured_providers": 0,
+        "configured_models": 0,
     }
 
 
 @router.get("/models")
 async def pilot_models():
-    """List models available for pilot."""
+    """List models available for pilot (multi-provider if configured)."""
+    registry = get_registry()
+    if registry.configured:
+        return {
+            "models": registry.list_models(),
+            "configured": True,
+            "mode": "multi-provider",
+        }
+
     if not pilot_settings.configured:
         return {"models": [], "configured": False}
 
@@ -116,6 +139,7 @@ async def pilot_models():
             }
         ],
         "configured": True,
+        "mode": "single-provider",
     }
 
 
@@ -124,11 +148,13 @@ async def pilot_chat_completions(
     request: PilotChatRequest,
     x_business14_provider_key: str | None = Header(None),
 ):
-    """Execute a BYOK chat completion against the configured upstream provider.
+    """Execute a BYOK chat completion with multi-provider routing.
+
+    Determines the target provider from the requested model ID,
+    then calls the upstream via the provider adapter.
 
     Requires X-Business14-Provider-Key header with a valid API key.
     """
-    # Log request metadata (no secrets, no prompts)
     request_id = f"b14req_{uuid.uuid4().hex[:12]}"
     logger.info(
         "pilot_request request_id=%s model=%s messages=%d",
@@ -139,31 +165,87 @@ async def pilot_chat_completions(
 
     try:
         api_key = _validate_provider_key(x_business14_provider_key)
-
-        if not pilot_settings.configured:
-            from app.pilot.errors import PilotNotConfigured
-            raise PilotNotConfigured()
-
         _validate_chat_request(request)
 
-        start_time = time.monotonic()
-        response_data = await prv.call_chat_completions(
-            api_key=api_key,
-            messages=request.messages,
-            temperature=request.temperature,
-            max_tokens=request.max_tokens,
-        )
-        latency_ms = int((time.monotonic() - start_time) * 1000)
+        if not request.model:
+            raise InvalidRequest("model 필드는 필수입니다.")
 
-        # Inject latency and request ID
-        response_data.setdefault("business14", {})
-        response_data["business14"]["latency_ms"] = latency_ms
-        response_data["business14"]["request_id"] = request_id
+        # Determine routing: registry first, legacy fallback
+        registry = get_registry()
+        mode = pilot_settings.mode_name
+
+        if registry.configured:
+            route = registry.get_model(request.model)
+            if route is None:
+                raise ModelNotFound(request.model)
+
+            mode = "byok-multi-provider-pilot"
+            logger.info(
+                "pilot_route request_id=%s model=%s provider=%s",
+                request_id,
+                request.model,
+                route.provider_id,
+            )
+
+            start_time = time.monotonic()
+            response_data = await prv.call_chat_completions(
+                api_key=api_key,
+                messages=request.messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                base_url=route.base_url,
+                upstream_model=route.upstream_model,
+                timeout_seconds=route.timeout_seconds,
+            )
+            latency_ms = int((time.monotonic() - start_time) * 1000)
+
+            response_data.setdefault("business14", {})
+            response_data["business14"]["mode"] = mode
+            response_data["business14"]["provider"] = route.provider_id
+            response_data["business14"]["model_route"] = request.model
+            response_data["business14"]["latency_ms"] = latency_ms
+            response_data["business14"]["request_id"] = request_id
+            response_data["business14"]["estimated_krw"] = None
+
+        elif pilot_settings.configured:
+            # Legacy single-provider mode
+            supported_models = [pilot_settings.pilot_model_id]
+            if pilot_settings.pilot_upstream_model:
+                supported_models.append(pilot_settings.pilot_upstream_model)
+
+            if request.model not in supported_models:
+                raise UnsupportedModel(request.model)
+
+            route = registry.get_legacy_target()
+            if route is None:
+                raise PilotNotConfigured()
+
+            start_time = time.monotonic()
+            response_data = await prv.call_chat_completions(
+                api_key=api_key,
+                messages=request.messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                base_url=route.base_url,
+                upstream_model=route.upstream_model,
+                timeout_seconds=route.timeout_seconds,
+            )
+            latency_ms = int((time.monotonic() - start_time) * 1000)
+
+            response_data.setdefault("business14", {})
+            response_data["business14"]["mode"] = "byok-pilot"
+            response_data["business14"]["provider"] = route.provider_id
+            response_data["business14"]["latency_ms"] = latency_ms
+            response_data["business14"]["request_id"] = request_id
+            response_data["business14"]["estimated_krw"] = None
+
+        else:
+            raise PilotNotConfigured()
 
         logger.info(
-            "pilot_success request_id=%s model=%s latency_ms=%d",
+            "pilot_success request_id=%s mode=%s latency_ms=%d",
             request_id,
-            request.model,
+            mode,
             latency_ms,
         )
 
