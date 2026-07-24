@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ model.name }} — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>{{ model.name }}</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">{{ model.name }}</h1>
+  <p class="page-sub">{{ model.provider }} · {{ model.region }}</p>
+</div>
+
+<div class="model-detail-grid">
+  <div class="model-detail-main">
+    <div class="model-detail-section">
+      <h2>모델 정보</h2>
+      <dl class="meta-grid">
+        <div class="meta-item"><dt>Provider</dt><dd>{{ model.provider }}</dd></div>
+        <div class="meta-item"><dt>분류</dt><dd>
+          <span class="chip chip-{{ model.provider_type }}">{{ model.provider_type }}</span>
+        </dd></div>
+        <div class="meta-item"><dt>처리 지역</dt><dd>{{ model.region }}</dd></div>
+        <div class="meta-item"><dt>컨텍스트 윈도우</dt><dd>{{ model.context_window }} 토큰</dd></div>
+        <div class="meta-item"><dt>예상 latency</dt><dd>{{ model.latency_ms }}ms (Demo)</dd></div>
+      </dl>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>가격 (Demo 기준)</h2>
+      <dl class="meta-grid">
+        <div class="meta-item"><dt>입력 가격</dt><dd>{{ model.input_krw_per_1k }}원/1K 토큰</dd></div>
+        <div class="meta-item"><dt>출력 가격</dt><dd>{{ model.output_krw_per_1k }}원/1K 토큰</dd></div>
+        <div class="meta-item"><dt>한국어 적합성</dt><dd>{{ "★★★★★"[:model.korean_score] }}{{ "☆" * (5 - model.korean_score) }}</dd></div>
+        <div class="meta-item"><dt>코딩 능력</dt><dd>{{ "★★★★★"[:model.coding_score] }}{{ "☆" * (5 - model.coding_score) }}</dd></div>
+      </dl>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>능력 태그</h2>
+      <div class="tag-list">
+        {% for tag in model.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+        {% if model.long_context %}<span class="tag">긴 문맥</span>{% endif %}
+        {% if model.image_input %}<span class="tag">이미지 입력</span>{% endif %}
+        {% if model.low_cost %}<span class="tag">저비용</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="model-detail-sidebar">
+    <div class="model-detail-section">
+      <h2>API Playground</h2>
+      <p>이 모델로 Playground에서 테스트해 보세요.</p>
+      <a href="/playground?model={{ model.id }}" class="btn btn-primary">Playground 열기</a>
+    </div>
+
+    <div class="model-detail-section">
+      <h2>연동 예제</h2>
+      {% for example in examples %}
+      <div class="example-item">
+        <span class="example-label">{{ example.label }}</span>
+        <button class="btn btn-ghost btn-sm copy-btn" data-copy-target="code-{{ example.id }}">복사</button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-title">Demo 모델</span>
+      {% if model.demo_available %}
+      이 모델은 Demo 응답을 제공합니다. 실제 API 호출이 아닙니다.
+      {% else %}
+      이 모델은 아직 Demo를 제공하지 않습니다.
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

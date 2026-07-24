@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}모델 카탈로그 — Korean AI Platform{% endblock %}
+{% block crumb %}<strong>모델 카탈로그</strong>{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">모델 카탈로그</h1>
+  <p class="page-sub">외부·국내·자체 호스팅 AI 모델을 한 곳에서 비교합니다. 모든 가격은 Demo 기준 예시 가격입니다.</p>
+</div>
+
+<div class="filter-bar">
+  <a href="/models" class="filter-chip {{ 'active' if not filter_type }}">전체</a>
+  <a href="/models?type=external" class="filter-chip {{ 'active' if filter_type == 'external' }}">외부 Provider</a>
+  <a href="/models?type=domestic" class="filter-chip {{ 'active' if filter_type == 'domestic' }}">국내 Provider</a>
+  <a href="/models?type=self-hosted" class="filter-chip {{ 'active' if filter_type == 'self-hosted' }}">자체 호스팅</a>
+</div>
+
+<div class="model-grid">
+  {% for model in models %}
+  <a href="/models/{{ model.id }}" class="model-card">
+    <div class="model-header">
+      <span class="model-name">{{ model.name }}</span>
+      <span class="chip chip-{{ model.provider_type }}">{{ model.provider }}</span>
+    </div>
+    <div class="model-pricing">
+      <span class="price">입력 {{ model.input_krw_per_1k }}원/1K</span>
+      <span class="price">출력 {{ model.output_krw_per_1k }}원/1K</span>
+      <span class="demo-label">Demo 가격</span>
+    </div>
+    <div class="model-meta">
+      <span class="region">{{ model.region }}</span>
+      <span class="latency">{{ model.latency_ms }}ms</span>
+      <span class="context">컨텍스트 {{ (model.context_window / 1000)|round|int }}K</span>
+    </div>
+    <div class="model-tags">
+      {% for tag in model.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+      {% if not model.demo_available %}<span class="tag tag-warn">준비 중</span>{% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+{% if not models %}
+<div class="empty-state">
+  <p>선택한 분류의 모델이 없습니다.</p>
+  <a href="/models" class="btn btn-secondary">전체 보기</a>
+</div>
+{% endif %}
+
+{% endblock %}
