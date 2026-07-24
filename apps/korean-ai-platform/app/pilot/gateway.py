@@ -28,6 +28,7 @@ from app.pilot.errors import (
     UnsupportedModel,
 )
 from app.pilot import provider as prv
+from app.pilot.redaction import redact_sensitive
 from app.pilot.schemas import PilotChatRequest
 
 logger = logging.getLogger("korean-ai-platform.pilot")
@@ -189,14 +190,14 @@ async def pilot_chat_completions(
         logger.error(
             "pilot_unexpected_error request_id=%s error=%s",
             request_id,
-            str(e),
+            redact_sensitive(str(e)),
         )
         return JSONResponse(
             status_code=500,
             content={
                 "error": {
                     "code": "internal_error",
-                    "message": "서버 내부 오류가 발생했습니다.",
+                    "message": "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
                     "request_id": request_id,
                 }
             },

@@ -27,32 +27,70 @@ from app.pilot.redaction import redact_headers, redact_sensitive
 logger = logging.getLogger("korean-ai-platform.pilot")
 
 
-def _validate_base_url(url: str) -> None:
-    """Validate that the base URL is safe (no SSRF)."""
-    if not url.startswith("https://"):
-        raise ValueError("Pilot base URL must use https://")
+import ipaddress
 
+
+def _validate_base_url(url: str) -> None:
+    """Validate that the base URL is safe (no SSRF).
+
+    Checks:
+    - scheme must be https://
+    - no URL credentials (username/password)
+    - hostname must be present
+    - no fragment
+    - no loopback, private, link-local, multicast, or reserved IP (IPv4 + IPv6)
+    - known safe hostnames may be allowed via allowlist
+
+    Note: DNS resolution is NOT performed here. The endpoint is server-configured
+    via environment variable, not user-supplied. This is not a complete SSRF
+    protection (DNS rebinding is not addressed).
+    """
     from urllib.parse import urlparse
 
     parsed = urlparse(url)
-    host = parsed.hostname or ""
 
-    # Block localhost / loopback
-    if host in ("localhost", "127.0.0.1", "::1", "0.0.0.0"):
+    # Scheme check
+    if parsed.scheme != "https":
+        raise ValueError("Pilot base URL must use https://")
+
+    # Block URL credentials
+    if parsed.username or parsed.password:
+        raise ValueError("Pilot base URL must not contain credentials")
+
+    # Block fragment
+    if parsed.fragment:
+        raise ValueError("Pilot base URL must not contain a fragment")
+
+    host = parsed.hostname
+    if not host:
+        raise ValueError("Pilot base URL must have a hostname")
+
+    host_lower = host.lower()
+
+    # Block known non-routable hostnames
+    if host_lower in ("localhost", "localhost.localdomain", "local", "broadcasthost"):
         raise ValueError("Pilot base URL must not point to localhost")
 
-    # Block private IP ranges
-    if host.startswith("10.") or host.startswith("192.168."):
-        raise ValueError("Pilot base URL must not point to a private IP")
+    # Try to parse as IP address (IPv4 or IPv6)
+    try:
+        addr = ipaddress.ip_address(host_lower)
+    except ValueError:
+        # Not an IP address — hostname is fine (DNS-based allowlist)
+        return
 
-    if host.startswith("172."):
-        parts = host.split(".")
-        if len(parts) == 4 and 16 <= int(parts[1]) <= 31:
-            raise ValueError("Pilot base URL must not point to a private IP")
-
-    # Block link-local
-    if host.startswith("169.254."):
+    # Block all private, reserved, and special-purpose addresses
+    if addr.is_loopback:
+        raise ValueError("Pilot base URL must not point to a loopback address")
+    if addr.is_private:
+        raise ValueError("Pilot base URL must not point to a private address")
+    if addr.is_link_local:
         raise ValueError("Pilot base URL must not point to a link-local address")
+    if addr.is_unspecified:
+        raise ValueError("Pilot base URL must not point to an unspecified address")
+    if addr.is_multicast:
+        raise ValueError("Pilot base URL must not point to a multicast address")
+    if addr.is_reserved:
+        raise ValueError("Pilot base URL must not point to a reserved address")
 
 
 def _build_upstream_request(
@@ -154,12 +192,15 @@ async def call_chat_completions(
             )
             raise UpstreamServerError()
 
-    if response.status_code == 401:
-        raise UpstreamAuthFailed()
-    if response.status_code == 429:
-        raise UpstreamRateLimited()
-    if response.status_code >= 500:
-        raise UpstreamServerError()
+    # Handle all non-2xx before attempting JSON parse
+    if response.status_code < 200 or response.status_code >= 300:
+        if response.status_code == 401 or response.status_code == 403:
+            raise UpstreamAuthFailed()
+        if response.status_code == 429:
+            raise UpstreamRateLimited()
+        if 300 <= response.status_code < 400:
+            raise MalformedUpstreamResponse()  # redirects
+        raise UpstreamServerError()  # all other non-2xx (404, 500, etc.)
 
     try:
         response_data = response.json()

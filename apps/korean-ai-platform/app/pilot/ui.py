@@ -8,8 +8,11 @@ from app.pilot.config import pilot_settings
 from app.pilot.demo_models import get_pilot_models
 from app.pilot.gateway import _validate_provider_key, _validate_chat_request
 from app.pilot.schemas import PilotChatRequest
-from app.pilot.provider import call_chat_completions
+from app.pilot import provider as prv
 from app.pilot.errors import PilotError
+import logging
+
+logger = logging.getLogger("korean-ai-platform.pilot")
 import time
 import uuid
 
@@ -51,17 +54,18 @@ async def pilot_page_post(
                 "selected_model": model_id,
                 "prompt": prompt,
                 "result": None,
-                "error": {"code": "pilot_not_configured", "message": "Pilot Provider가 설정되지 않았습니다.", "request_id": ""},
+                "error": {"code": "pilot_not_configured", "message": "Pilot Provider가 설정되지 않았습니다.", "request_id": uid()},
             },
         )
 
     result = None
     error = None
+    uid = lambda: f"b14req_{uuid.uuid4().hex[:12]}"
 
     if not provider_key.strip():
-        error = {"code": "missing_key", "message": "Provider API key를 입력하십시오.", "request_id": ""}
+        error = {"code": "missing_key", "message": "Provider API key를 입력하십시오.", "request_id": uid()}
     elif not prompt.strip():
-        error = {"code": "missing_prompt", "message": "Prompt를 입력하십시오.", "request_id": ""}
+        error = {"code": "missing_prompt", "message": "Prompt를 입력하십시오.", "request_id": uid()}
     else:
         try:
             api_key = _validate_provider_key(provider_key)
@@ -74,7 +78,7 @@ async def pilot_page_post(
             _validate_chat_request(chat_req)
 
             start = time.monotonic()
-            response_data = await call_chat_completions(
+            response_data = await prv.call_chat_completions(
                 api_key=api_key,
                 messages=chat_req.messages,
                 temperature=temperature,
@@ -96,16 +100,23 @@ async def pilot_page_post(
                 "choices": choices,
             }
         except PilotError as e:
-            error = {"code": e.code, "message": e.message, "request_id": ""}
-        except Exception as e:
-            error = {"code": "internal_error", "message": f"오류: {str(e)}", "request_id": ""}
+            error = {"code": e.code, "message": e.message, "request_id": uid()}
+        except Exception:
+            request_id_e = f"b14req_{uuid.uuid4().hex[:12]}"
+            logger.error("pilot_ui_error request_id=%s", request_id_e)
+            error = {
+                "code": "internal_error",
+                "message": "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                "request_id": request_id_e,
+            }
 
     return render_template(
         request,
         "pilot.html",
         {
-            "pilot_configured": pilot_settings.configured,                "pilot_models": get_pilot_models(),
-                "selected_model": model_id or pilot_settings.pilot_model_id,
+            "pilot_configured": pilot_settings.configured,
+            "pilot_models": get_pilot_models(),
+            "selected_model": model_id or pilot_settings.pilot_model_id,
             "prompt": prompt,
             "result": result,
             "error": error,
