@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import logging
 
-from fastapi import APIRouter, Header, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from app.factory import render_template
@@ -27,14 +27,11 @@ from app.pilot.locale import gettext, locale_from_request, Locale
 from app.pilot.errors import PilotError
 from app.pilot.schemas import PilotChatRequest
 from app.pilot.routing import resolve_configuration, resolve_route, PilotConfigurationState
-from app.pilot.registry import get_registry
 from app.pilot import provider as prv
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
 router = APIRouter()
-
-_INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니다."
 
 
 def _new_request_id() -> str:
@@ -49,7 +46,6 @@ async def workspace_page(request: Request):
     _ = lambda key: gettext(key, locale)  # noqa: E731
 
     state = resolve_configuration()
-    registry = get_registry()
 
     # Common context with translation function
     base_ctx = {
