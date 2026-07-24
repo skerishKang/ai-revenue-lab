@@ -6,9 +6,9 @@ window.ARL_QUICK_LAUNCH = [
   { label: "Living Fiction", url: null, state: "planned" },
   { label: "Living Learning", url: "https://ai-revenue-living-learning.pages.dev/", state: "verified" },
   { label: "Personal Video Archive", url: "https://feat-personal-video-archive.ai-revenue-personal-video-archive.pages.dev", state: "verified" },
-  { label: "LoveTree 3.0", url: null, state: "planned" },
+  { label: "LoveTree 3.0", url: "https://lovetree3.pages.dev/", state: "verified" },
   { label: "Korean AI Platform", url: null, state: "planned" },
-  { label: "AI Finder / 광주 북구청", url: null, state: "planned" },
+  { label: "AI Finder / 광주 북구청", url: "https://cgbukku.pages.dev/", state: "verified" },
   { label: "Love Matchmaking", url: null, state: "planned" },
   { label: "광주 남구청 AI Finder", url: null, state: "planned" },
   { label: "광주 서구청 AI Finder", url: null, state: "planned" }
