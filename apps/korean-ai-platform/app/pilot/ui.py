@@ -176,6 +176,7 @@ async def pilot_page_post(
                 base_url=target.base_url,
                 upstream_model=target.upstream_model,
                 timeout_seconds=target.timeout_seconds,
+                response_model=target.model_id,
             )
             latency_ms = int((time.monotonic() - start) * 1000)
 

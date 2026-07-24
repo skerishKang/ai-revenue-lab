@@ -23,6 +23,7 @@ from app.pilot.errors import (
     ModelNotFound,
     ModelDisabled,
     AmbiguousModelRoute,
+    UnsupportedModel,
 )
 
 logger = logging.getLogger("korean-ai-platform.pilot")
@@ -118,7 +119,6 @@ def resolve_route(model_id: str) -> RouteTarget:
         if pilot_settings.pilot_upstream_model and model_id == pilot_settings.pilot_upstream_model:
             pass
         else:
-            from app.pilot.errors import UnsupportedModel
             raise UnsupportedModel(model_id)
 
     upstream = pilot_settings.pilot_upstream_model or pilot_settings.pilot_model_id
@@ -131,12 +131,3 @@ def resolve_route(model_id: str) -> RouteTarget:
         timeout_seconds=pilot_settings.pilot_timeout_seconds,
     )
 
-
-def require_configured() -> None:
-    """Raise PilotNotConfigured if the pilot has no valid configuration."""
-    state = resolve_configuration()
-    if state in (PilotConfigurationState.NOT_CONFIGURED, PilotConfigurationState.INVALID_REGISTRY):
-        if state == PilotConfigurationState.INVALID_REGISTRY:
-            registry = get_registry()
-            raise RegistryInvalid(detail=registry.parse_error or "Provider registry 설정이 올바르지 않습니다.")
-        raise PilotNotConfigured()
