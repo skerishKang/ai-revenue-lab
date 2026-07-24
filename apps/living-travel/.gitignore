@@ -8,5 +8,6 @@ build/
 *.egg
 .mypy_cache/
 .pytest_cache/
+.venv/
 *.db
 *.sqlite3
