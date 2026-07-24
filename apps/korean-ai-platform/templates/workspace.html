@@ -10,11 +10,11 @@
     코드 수정 같은 작업을 AI에게 요청하고 진행 과정과 결과를 확인할 수 있습니다.
   </p>
 
-  <form method="get" action="/tasks/new" class="ws-input-form" role="search">
+  <form method="get" action="/tasks/new" class="ws-input-form">
     <div class="ws-input-row">
       <label for="ws-instruction" class="sr-only">요청 내용</label>
       <textarea id="ws-instruction" name="instruction" rows="2"
-        class="ws-textarea"
+        class="ws-textarea" required
         placeholder="예: 주문 페이지에 재고 부족 경고 메시지를 추가해 주세요"></textarea>
     </div>
     <div class="ws-input-actions">
@@ -32,6 +32,7 @@
       </select>
       <button type="submit" class="btn btn-primary btn-lg ws-start-btn">시작하기</button>
     </div>
+    <p class="ws-helper-text" id="ws-file-helper">파일 첨부는 현재 Demo에서 지원하지 않습니다.</p>
   </form>
 </section>
 

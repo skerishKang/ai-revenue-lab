@@ -36,7 +36,7 @@ def test_create_task_shows_ready_state(client):
     task_id = _create_task_http(client)
     resp = client.get(f"/tasks/{task_id}")
     assert resp.status_code == 200
-    assert "실행 대기" in resp.text
+    assert "Demo 실행을 시작할 수 있습니다" in resp.text
     assert "실행 시작" in resp.text
 
 
@@ -48,10 +48,9 @@ def test_full_flow_run_review_approve(client):
     assert "ran=1" in run_resp.headers["location"]
 
     review = client.get(f"/tasks/{task_id}")
-    assert "승인 대기" in review.text
+    assert "Demo 결과 확인이 필요합니다" in review.text
     assert "변경 파일" in review.text
     assert "검증자 판단" in review.text
-    # Approval gate: no branch/commit before approval.
     assert f"feat/demo-{task_id}" not in review.text
 
     approve = client.post(
@@ -61,7 +60,7 @@ def test_full_flow_run_review_approve(client):
     assert approve.status_code == 303
 
     done = client.get(f"/tasks/{task_id}")
-    assert "완료" in done.text
+    assert "Demo 작업이 완료됐습니다" in done.text
     assert f"feat/demo-{task_id}" in done.text
     assert "demo-" in done.text
 
@@ -76,12 +75,12 @@ def test_rework_flow_over_http(client):
     )
     assert rework.status_code == 303
     page = client.get(f"/tasks/{task_id}")
-    assert "재작업" in page.text
+    assert "Demo 재작업 중입니다" in page.text
     assert "재실행" in page.text
 
     client.post(f"/tasks/{task_id}/run")
     page2 = client.get(f"/tasks/{task_id}")
-    assert "승인 대기" in page2.text
+    assert "Demo 결과 확인이 필요합니다" in page2.text
 
 
 def test_rework_without_reason_is_rejected(client):
@@ -89,8 +88,7 @@ def test_rework_without_reason_is_rejected(client):
     client.post(f"/tasks/{task_id}/run")
     client.post(f"/tasks/{task_id}/rework", data={"reason": ""})
     page = client.get(f"/tasks/{task_id}")
-    # Still awaiting approval because empty reason is refused.
-    assert "승인 대기" in page.text
+    assert "Demo 결과 확인이 필요합니다" in page.text
 
 
 def test_reject_flow_over_http(client):

@@ -24,6 +24,7 @@ from app.domain import TaskStatus
 from app.factory import render_template
 from app.services import BaseTaskService, TaskNotFound
 from app.user_helpers import (
+    generate_title_from_instruction,
     user_action_label,
     user_cost_summary,
     user_result_summary,
@@ -104,6 +105,7 @@ def task_new(request: Request):
     service = _service(request)
     template_id = request.query_params.get("template", "")
     tpl = get_template(template_id)
+
     form: dict = {}
     if tpl is not None:
         form = {
@@ -113,6 +115,21 @@ def task_new(request: Request):
             "allowed_paths": ", ".join(tpl.suggested_allowed),
             "denied_paths": ", ".join(tpl.suggested_denied),
         }
+
+    query_instruction = request.query_params.get("instruction", "").strip()
+    query_project_id = request.query_params.get("project_id", "").strip()
+
+    if query_instruction:
+        form["instruction"] = query_instruction
+        form["title"] = generate_title_from_instruction(query_instruction)
+
+    if query_project_id:
+        valid_project_ids = set(service.projects.keys())
+        if query_project_id in valid_project_ids:
+            form["project_id"] = query_project_id
+        elif tpl is None:
+            form["project_id"] = ""
+
     return render_template(
         request,
         "task_new.html",

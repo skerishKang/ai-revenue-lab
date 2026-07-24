@@ -442,7 +442,7 @@ def test_web_settings_after_recreate(db_path):
 
 def test_web_backend_label(db_path):
     with _client(db_path) as client:
-        page = client.get("/")
+        page = client.get("/admin")
         assert "로컬 SQLite 저장" in page.text
 
 

@@ -9,6 +9,7 @@
 </head>
 {% set path = request.url.path %}
 {% set is_admin = path.startswith('/admin') %}
+{% set is_operator = path.startswith('/admin') or path == '/settings' %}
 <body>
 <a class="skip-link" href="#main">본문 바로가기</a>
 <div class="app-shell">
@@ -17,7 +18,7 @@
       <span class="brand-mark" aria-hidden="true">K</span>
       <span>
         <span class="brand-name">Korean AI Platform</span>
-        <span class="brand-sub">AI 작업 컨트롤 플레인</span>
+        <span class="brand-sub">{{ 'AI 작업 컨트롤 플레인' if is_operator else 'AI 작업 Workspace' }}</span>
       </span>
     </a>
     <nav class="sidebar-nav" aria-label="화면 전환">
@@ -33,16 +34,20 @@
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
         새 작업
       </a>
+      {% if is_operator %}
       <a href="/settings" class="nav-link {{ 'active' if path == '/settings' }}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M11.5 2.6a1.5 1.5 0 00-3 0v.55c-.4.1-.78.25-1.14.44l-.4-.39a1.5 1.5 0 00-2.12 2.12l.4.4c-.2.35-.34.73-.44 1.13H4.1a1.5 1.5 0 000 3h.7c.1.4.25.78.44 1.14l-.4.4a1.5 1.5 0 102.13 2.12l.39-.4c.36.2.74.34 1.14.44v.7a1.5 1.5 0 003 0v-.7c-.4-.1-.78-.25-1.14-.44l.4.39a1.5 1.5 0 002.12-2.12l-.4-.4c.2-.35.34-.73.44-1.13h.7a1.5 1.5 0 000-3h-.7a4.6 4.6 0 00-.44-1.14l.4-.4a1.5 1.5 0 10-2.13-2.12l-.39.4a4.6 4.6 0 00-1.14-.44V2.6zM10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" clip-rule="evenodd"/></svg>
         모델·보안 설정
       </a>
+      {% endif %}
     </nav>
     <div class="sidebar-foot">
       {% if demo_mode %}
       <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Demo 환경</span>
       <span class="muted">실제 AI·Git 미연결</span>
+      {% if is_operator %}
       <span class="muted">{{ persistence_label }}</span>
+      {% endif %}
       {% endif %}
     </div>
   </aside>
@@ -52,7 +57,9 @@
       <div class="topbar-inner">
         <span class="topbar-crumb">{% block crumb %}<strong>Korean AI Platform</strong>{% endblock %}</span>
         <div class="topbar-actions">
+          {% if is_operator %}
           <span class="topbar-env" title="{{ persistence_label }}"><span class="env-dot" aria-hidden="true"></span>{{ persistence_label }}</span>
+          {% endif %}
           {% if demo_mode %}
           <span class="topbar-env"><span class="env-dot" aria-hidden="true"></span>Demo · 실제 연동 없음</span>
           {% endif %}
@@ -65,7 +72,7 @@
     </main>
 
     <footer class="site-footer">
-      Korean AI Platform · Business 14 · 작업자·검증자 분리 및 사람 승인 데모
+      {{ '요청·진행·결과를 확인하는 클릭형 Demo' if not is_operator else 'Korean AI Platform · Business 14 · 작업자·검증자 분리 및 사람 승인 데모' }}
     </footer>
   </div>
 </div>

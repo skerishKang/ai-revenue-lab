@@ -9,7 +9,7 @@
       <h1 class="exec-title">{{ task.title }}</h1>
       <p class="exec-id">생성 {{ task.created_at[:16] | replace('T', ' ') }} · {{ project.name if project else task.project_id }}</p>
     </div>
-    <span class="badge badge-lg badge-{{ task.status.value }}">{{ status_label(task.status.value) }}</span>
+    <span class="badge badge-lg badge-{{ task.status.value }}">{{ user_status_label(task.status.value) }}</span>
   </div>
 </header>
 
@@ -67,12 +67,12 @@
 </section>
 
 {% elif task.status.value == 'awaiting_approval' %}
-{% include "_verdict_strip.html" %}
 <div class="exec-layout">
   <div class="exec-main">
     <details class="ws-disclosure">
       <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
       <div class="ws-disclosure-body">
+        {% include "_verdict_strip.html" %}
         {% include "_meta.html" %}
         {% include "_run_panel.html" %}
         {% include "_review_panel.html" %}
@@ -95,6 +95,7 @@
     <details class="ws-disclosure">
       <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
       <div class="ws-disclosure-body">
+        {% include "_verdict_strip.html" %}
         {% include "_meta.html" %}
         {% include "_run_panel.html" %}
         {% include "_review_panel.html" %}
@@ -113,21 +114,15 @@
 </div>
 
 {% elif task.status.value == 'completed' %}
-{% include "_verdict_strip.html" %}
-<div class="exec-layout">
-  <div class="exec-main">
-    <details class="ws-disclosure">
-      <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
-      <div class="ws-disclosure-body">
-        {% include "_run_panel.html" %}
-        {% include "_review_panel.html" %}
-      </div>
-    </details>
-  </div>
-  <aside class="exec-aside" aria-label="완료 기록">
+<details class="ws-disclosure">
+  <summary class="ws-disclosure-summary">기술 세부정보 보기</summary>
+  <div class="ws-disclosure-body">
+    {% include "_verdict_strip.html" %}
+    {% include "_run_panel.html" %}
+    {% include "_review_panel.html" %}
     {% include "_evidence_panel.html" %}
-  </aside>
-</div>
+  </div>
+</details>
 
 {% elif task.status.value == 'rejected' %}
 <details class="ws-disclosure">

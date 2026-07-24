@@ -13,6 +13,7 @@ from app.store import Store
 from app.user_helpers import (
     USER_ACTION_LABELS,
     USER_STATUS_LABELS,
+    generate_title_from_instruction,
     user_action_label,
     user_status_label,
 )
@@ -143,12 +144,12 @@ class TestUserStatusMapping:
             assert status.value in USER_ACTION_LABELS
 
     def test_status_labels_are_plain_language(self):
-        assert user_status_label("ready") == "시작할 준비가 됐습니다"
-        assert user_status_label("running") == "AI가 작업하고 있습니다"
-        assert user_status_label("awaiting_approval") == "확인이 필요합니다"
-        assert user_status_label("rework") == "요청한 내용을 다시 작업 중입니다"
-        assert user_status_label("completed") == "작업이 완료됐습니다"
-        assert user_status_label("rejected") == "작업이 중단됐습니다"
+        assert user_status_label("ready") == "Demo 실행을 시작할 수 있습니다"
+        assert user_status_label("running") == "Demo 실행 중입니다"
+        assert user_status_label("awaiting_approval") == "Demo 결과 확인이 필요합니다"
+        assert user_status_label("rework") == "Demo 재작업 중입니다"
+        assert user_status_label("completed") == "Demo 작업이 완료됐습니다"
+        assert user_status_label("rejected") == "Demo 작업이 중단됐습니다"
 
     def test_action_labels(self):
         assert user_action_label("ready") == "작업 시작"
@@ -166,7 +167,7 @@ class TestTaskDetailUserSummary:
         resp = client.get(f"/tasks/{task_id}")
         assert resp.status_code == 200
         assert "ws-summary" in resp.text
-        assert "시작할 준비가 됐습니다" in resp.text
+        assert "Demo 실행을 시작할 수 있습니다" in resp.text
 
     def test_task_detail_technical_in_disclosure(self, client):
         task_id = _create_task(client)
@@ -180,7 +181,7 @@ class TestTaskDetailUserSummary:
         client.post(f"/tasks/{task_id}/run")
         resp = client.get(f"/tasks/{task_id}")
         assert resp.status_code == 200
-        assert "결과가 준비됐습니다" in resp.text
+        assert "Demo 결과가 준비됐습니다" in resp.text
 
     def test_task_detail_completed_summary(self, client):
         task_id = _create_task(client)
@@ -188,7 +189,7 @@ class TestTaskDetailUserSummary:
         client.post(f"/tasks/{task_id}/approve", data={"approver": "검토자"})
         resp = client.get(f"/tasks/{task_id}")
         assert resp.status_code == 200
-        assert "검토가 완료됐습니다" in resp.text
+        assert "Demo 검토와 승인 절차가 완료됐습니다" in resp.text
 
     def test_task_detail_rejected_summary(self, client):
         task_id = _create_task(client)
@@ -196,7 +197,7 @@ class TestTaskDetailUserSummary:
         client.post(f"/tasks/{task_id}/reject", data={"reason": "부적절"})
         resp = client.get(f"/tasks/{task_id}")
         assert resp.status_code == 200
-        assert "작업이 중단됐습니다" in resp.text
+        assert "Demo 작업이 중단됐습니다" in resp.text
 
     def test_risk_warnings_visible_outside_disclosure(self, client, store):
         task = make_task(store, status=TaskStatus.READY)
@@ -244,24 +245,24 @@ class TestExistingFlowsPreserved:
         task_id = _create_task(client)
         client.post(f"/tasks/{task_id}/run")
         resp = client.get(f"/tasks/{task_id}")
-        assert "결과가 준비됐습니다" in resp.text
+        assert "Demo 결과가 준비됐습니다" in resp.text
         client.post(f"/tasks/{task_id}/approve", data={"approver": "검토자"})
         resp = client.get(f"/tasks/{task_id}")
-        assert "검토가 완료됐습니다" in resp.text
+        assert "Demo 검토와 승인 절차가 완료됐습니다" in resp.text
 
     def test_rework_flow_still_works(self, client):
         task_id = _create_task(client)
         client.post(f"/tasks/{task_id}/run")
         client.post(f"/tasks/{task_id}/rework", data={"reason": "수정 필요"})
         resp = client.get(f"/tasks/{task_id}")
-        assert "다시 작업하고 있습니다" in resp.text
+        assert "Demo 재작업 중입니다" in resp.text
 
     def test_reject_flow_still_works(self, client):
         task_id = _create_task(client)
         client.post(f"/tasks/{task_id}/run")
         client.post(f"/tasks/{task_id}/reject", data={"reason": "거절"})
         resp = client.get(f"/tasks/{task_id}")
-        assert "작업이 중단됐습니다" in resp.text
+        assert "Demo 작업이 중단됐습니다" in resp.text
 
     def test_settings_page_still_works(self, client):
         resp = client.get("/settings")
@@ -276,4 +277,219 @@ class TestMobileNavigation:
         assert 'href="/"' in resp.text
         assert 'href="/admin"' in resp.text
         assert 'href="/tasks/new"' in resp.text
-        assert 'href="/settings"' in resp.text
+
+
+class TestPrimaryCTAInputPreservation:
+    def test_instruction_prefill(self, client):
+        resp = client.get("/tasks/new?instruction=주문 오류를 수정해 주세요")
+        assert resp.status_code == 200
+        assert "주문 오류를 수정해 주세요" in resp.text
+
+    def test_title_auto_generated_from_instruction(self, client):
+        resp = client.get("/tasks/new?instruction=주문 페이지에 재고 부족 경고 메시지를 추가해 주세요")
+        assert resp.status_code == 200
+        assert "주문 페이지에 재고 부족 경고 메시지를 추가해 주세요" in resp.text
+
+    def test_valid_project_query_selected(self, client):
+        resp = client.get("/tasks/new?project_id=commerce-backend")
+        assert resp.status_code == 200
+        assert 'value="commerce-backend"' in resp.text
+        assert "selected" in resp.text
+
+    def test_invalid_project_query_ignored(self, client):
+        resp = client.get("/tasks/new?project_id=nonexistent-project")
+        assert resp.status_code == 200
+        assert 'value="nonexistent-project"' not in resp.text
+
+    def test_template_plus_explicit_instruction_priority(self, client):
+        resp = client.get("/tasks/new?template=code&instruction=사용자 지정 지시")
+        assert resp.status_code == 200
+        assert "사용자 지정 지시" in resp.text
+        tpl = TEMPLATES_BY_ID["code"]
+        assert tpl.suggested_instruction not in resp.text
+
+    def test_template_plus_valid_project_priority(self, client):
+        resp = client.get("/tasks/new?template=website&project_id=commerce-backend")
+        assert resp.status_code == 200
+        assert 'value="commerce-backend"' in resp.text
+
+    def test_blank_query_does_not_clear_template(self, client):
+        resp = client.get("/tasks/new?template=code&instruction=")
+        assert resp.status_code == 200
+        tpl = TEMPLATES_BY_ID["code"]
+        assert tpl.suggested_instruction in resp.text
+
+    def test_script_tag_escaped(self, client):
+        resp = client.get("/tasks/new?instruction=<script>alert(1)</script>")
+        assert resp.status_code == 200
+        assert "<script>alert(1)</script>" not in resp.text
+        assert "&lt;script&gt;" in resp.text
+
+
+class TestDemoTruthfulness:
+    def test_no_ai_working_message_on_home(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "AI가 작업하고 있습니다" not in resp.text
+
+    def test_no_ai_analyzing_message_on_detail(self, client):
+        task_id = _create_task(client)
+        client.post(f"/tasks/{task_id}/run")
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        assert "AI가 요청을 분석하고" not in resp.text
+
+    def test_demo_running_label_present(self, client):
+        task_id = _create_task(client)
+        client.post(f"/tasks/{task_id}/run")
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        assert "Demo 결과 확인이 필요합니다" in resp.text
+
+    def test_no_file_test_counts_in_recent_summary(self, client, store):
+        task = make_task(store, status=TaskStatus.READY)
+        from app import engine
+        engine.run_task(task, store.models)
+        task.status = TaskStatus.COMPLETED
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "파일 3개 변경" not in resp.text
+        assert "테스트 8개 통과" not in resp.text
+
+
+class TestDisclosureStructure:
+    def test_completed_commit_sha_inside_details(self, client):
+        task_id = _create_task(client)
+        client.post(f"/tasks/{task_id}/run")
+        client.post(f"/tasks/{task_id}/approve", data={"approver": "검토자"})
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        body = resp.text
+        details_start = body.index('<details class="ws-disclosure">')
+        details_end = body.rindex("</details>")
+        details_content = body[details_start:details_end]
+        assert "데모 커밋 SHA" in details_content
+
+    def test_completed_branch_inside_details(self, client):
+        task_id = _create_task(client)
+        client.post(f"/tasks/{task_id}/run")
+        client.post(f"/tasks/{task_id}/approve", data={"approver": "검토자"})
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        body = resp.text
+        details_start = body.index('<details class="ws-disclosure">')
+        details_end = body.rindex("</details>")
+        details_content = body[details_start:details_end]
+        assert "데모 브랜치" in details_content
+
+    def test_verdict_strip_inside_details(self, client):
+        task_id = _create_task(client)
+        client.post(f"/tasks/{task_id}/run")
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        body = resp.text
+        details_start = body.index('<details class="ws-disclosure">')
+        details_end = body.rindex("</details>")
+        details_content = body[details_start:details_end]
+        assert "검증자 판단" in details_content
+
+    def test_risk_warnings_outside_details(self, client, store):
+        task = make_task(store, status=TaskStatus.READY)
+        from app import engine
+        engine.run_task(task, store.models)
+        task.run.path_violations = ["허용 범위 밖 파일 변경"]
+        resp = client.get(f"/tasks/{task.id}")
+        assert resp.status_code == 200
+        body = resp.text
+        risk_pos = body.index("허용되지 않은 파일이 변경됐습니다")
+        if '<details class="ws-disclosure">' in body:
+            details_start = body.index('<details class="ws-disclosure">')
+            assert risk_pos < details_start
+
+    def test_approve_action_outside_details(self, client):
+        task_id = _create_task(client)
+        client.post(f"/tasks/{task_id}/run")
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        body = resp.text
+        action_pos = body.index("결과 확인")
+        details_start = body.index('<details class="ws-disclosure">')
+        assert action_pos < details_start
+
+    def test_header_badge_uses_user_label(self, client):
+        task_id = _create_task(client)
+        resp = client.get(f"/tasks/{task_id}")
+        assert resp.status_code == 200
+        assert "Demo 실행을 시작할 수 있습니다" in resp.text
+
+
+class TestUserShell:
+    def test_home_no_persistence_label(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "로컬 SQLite 저장" not in resp.text
+        assert "단일 프로세스" not in resp.text
+
+    def test_home_no_settings_nav(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "모델·보안 설정" not in resp.text
+
+    def test_home_has_workspace_brand(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "AI 작업 Workspace" in resp.text
+
+    def test_admin_has_persistence_label(self, client):
+        resp = client.get("/admin")
+        assert resp.status_code == 200
+        assert "로컬 SQLite 저장" in resp.text or "인메모리" in resp.text
+
+    def test_admin_has_settings_nav(self, client):
+        resp = client.get("/admin")
+        assert resp.status_code == 200
+        assert "모델·보안 설정" in resp.text
+
+    def test_settings_has_settings_nav(self, client):
+        resp = client.get("/settings")
+        assert resp.status_code == 200
+        assert "모델·보안 설정" in resp.text
+
+    def test_task_new_crumb_user_workspace(self, client):
+        resp = client.get("/tasks/new")
+        assert resp.status_code == 200
+        assert "사용자 Workspace" in resp.text
+
+    def test_user_admin_toggle_links_present(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "사용자 화면" in resp.text
+        assert "운영자 화면" in resp.text
+
+
+class TestTitleGeneration:
+    def test_empty_instruction_returns_empty(self):
+        assert generate_title_from_instruction("") == ""
+        assert generate_title_from_instruction("   ") == ""
+
+    def test_short_instruction_unchanged(self):
+        assert generate_title_from_instruction("주문 오류 수정") == "주문 오류 수정"
+
+    def test_whitespace_normalized(self):
+        assert generate_title_from_instruction("주문   오류를    수정해   주세요") == "주문 오류를 수정해 주세요"
+
+    def test_long_instruction_truncated(self):
+        long_text = "매우 긴 사용자 요청입니다. 이 텍스트는 40자를 초과하므로 잘려야 합니다."
+        result = generate_title_from_instruction(long_text)
+        assert len(result) == 41
+        assert result.endswith("…")
+
+    def test_exactly_40_chars_not_truncated(self):
+        text = "가" * 40
+        assert generate_title_from_instruction(text) == text
+
+    def test_41_chars_truncated(self):
+        text = "가" * 41
+        result = generate_title_from_instruction(text)
+        assert len(result) == 41
+        assert result.endswith("…")

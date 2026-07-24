@@ -6,15 +6,37 @@ The existing operator labels in ``domain.STATUS_LABELS`` are unchanged.
 
 from __future__ import annotations
 
+import re
+
 from app.domain import Task, TaskStatus
 
+
+def generate_title_from_instruction(instruction: str) -> str:
+    """Generate a short safe title from user instruction.
+
+    Rules:
+    1. Normalize all consecutive whitespace to single space
+    2. Strip leading/trailing whitespace
+    3. Max 40 characters
+    4. Append '…' if truncated
+    5. Empty instruction returns empty string
+    """
+    if not instruction:
+        return ""
+    normalized = re.sub(r"\s+", " ", instruction).strip()
+    if not normalized:
+        return ""
+    if len(normalized) <= 40:
+        return normalized
+    return normalized[:40] + "…"
+
 USER_STATUS_LABELS: dict[str, str] = {
-    "ready": "시작할 준비가 됐습니다",
-    "running": "AI가 작업하고 있습니다",
-    "awaiting_approval": "확인이 필요합니다",
-    "rework": "요청한 내용을 다시 작업 중입니다",
-    "completed": "작업이 완료됐습니다",
-    "rejected": "작업이 중단됐습니다",
+    "ready": "Demo 실행을 시작할 수 있습니다",
+    "running": "Demo 실행 중입니다",
+    "awaiting_approval": "Demo 결과 확인이 필요합니다",
+    "rework": "Demo 재작업 중입니다",
+    "completed": "Demo 작업이 완료됐습니다",
+    "rejected": "Demo 작업이 중단됐습니다",
 }
 
 USER_ACTION_LABELS: dict[str, str] = {
@@ -27,15 +49,15 @@ USER_ACTION_LABELS: dict[str, str] = {
 }
 
 USER_STATUS_SUMMARY: dict[str, str] = {
-    "ready": "작업을 시작할 준비가 됐습니다.",
-    "running": "AI가 요청을 분석하고 결과를 만들고 있습니다.",
+    "ready": "입력 내용을 확인한 후 Demo 실행을 시작할 수 있습니다.",
+    "running": "Demo 실행이 요청을 처리하고 예시 결과를 만들고 있습니다.",
     "awaiting_approval": (
-        "결과가 준비됐습니다. 내용을 확인한 후 "
+        "Demo 결과가 준비됐습니다. 내용을 확인한 후 "
         "승인하거나 수정 요청을 할 수 있습니다."
     ),
-    "rework": "수정 요청을 반영해 다시 작업하고 있습니다.",
-    "completed": "검토가 완료됐습니다.",
-    "rejected": "검토 과정에서 작업이 중단됐습니다.",
+    "rework": "수정 요청을 반영한 Demo 결과를 준비하고 있습니다.",
+    "completed": "Demo 검토와 승인 절차가 완료됐습니다.",
+    "rejected": "Demo 검토 과정에서 작업이 중단됐습니다.",
 }
 
 
@@ -91,18 +113,22 @@ def user_cost_summary(task: Task) -> str:
 
 
 def user_result_summary(task: Task) -> str:
-    """Short plain-language result summary for the user view."""
-    if task.run is None:
-        return "아직 실행되지 않았습니다."
-    files = len(task.run.changed_files)
-    tests = task.run.tests
-    parts: list[str] = []
-    if files > 0:
-        parts.append(f"파일 {files}개 변경")
-    if tests is not None:
-        parts.append(f"테스트 {tests.passed}개 통과")
-    if task.run.over_budget:
-        parts.append("비용 한도 초과")
-    if task.run.path_violations:
-        parts.append("경로 위반 감지")
-    return " · ".join(parts) if parts else "실행 완료"
+    """Short plain-language result summary for the user view.
+
+    Returns status-focused plain language. Technical details like file counts
+    and test counts are only shown in the disclosure section.
+    """
+    status = task.status.value
+    if status == "ready":
+        return "아직 Demo 실행 전입니다."
+    if status == "running":
+        return "Demo 실행 중입니다."
+    if status == "awaiting_approval":
+        return "예시 결과와 검토 내용이 준비됐습니다."
+    if status == "rework":
+        return "수정 요청을 반영하고 있습니다."
+    if status == "completed":
+        return "검토가 완료된 Demo 결과입니다."
+    if status == "rejected":
+        return "중단 사유를 확인할 수 있습니다."
+    return ""

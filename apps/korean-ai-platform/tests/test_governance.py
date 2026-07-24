@@ -91,7 +91,7 @@ def test_reject_approval_http_blocked_and_button_hidden(client):
     assert approve.status_code == 303
     assert "error=" in approve.headers["location"]
     page = client.get(f"/tasks/{task_id}")
-    assert "승인 대기" in page.text
+    assert "Demo 결과 확인이 필요합니다" in page.text
     assert "공격자" not in page.text
     assert f"feat/demo-{task_id}" not in page.text
 
