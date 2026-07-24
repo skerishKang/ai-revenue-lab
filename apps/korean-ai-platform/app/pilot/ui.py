@@ -1,15 +1,28 @@
-"""BYOK Gateway Pilot UI route."""
+"""BYOK Gateway Pilot UI route (Phase 2).
+
+Supports multi-provider registry and legacy single-provider fallback.
+"""
 
 from __future__ import annotations
 
 from fastapi import APIRouter, Form, Request
 from app.factory import render_template
 from app.pilot.config import pilot_settings
-from app.pilot.demo_models import get_pilot_models
-from app.pilot.gateway import _validate_provider_key, _validate_chat_request
+from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, get_pilot_model_count
+from app.pilot.gateway import _validate_provider_key
 from app.pilot.schemas import PilotChatRequest
 from app.pilot import provider as prv
-from app.pilot.errors import PilotError
+from app.pilot.errors import (
+    PilotError,
+    PilotNotConfigured,
+    ModelNotFound,
+    InvalidRequest,
+    StreamNotSupported,
+    ToolsNotSupported,
+    RegistryInvalid,
+)
+from app.pilot.registry import get_registry
+from app.pilot.routing import resolve_configuration, resolve_route, PilotConfigurationState
 import logging
 
 logger = logging.getLogger("korean-ai-platform.pilot")
@@ -23,15 +36,57 @@ def _new_request_id() -> str:
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
 
+def _validate_chat_request_ui(req: PilotChatRequest) -> None:
+    """Simple UI-side validation before calling backend."""
+    if req.stream:
+        raise StreamNotSupported()
+    if req.tools:
+        raise ToolsNotSupported()
+    if not req.messages:
+        raise InvalidRequest("messages 필드는 비어 있을 수 없습니다.")
+    if not req.model:
+        raise InvalidRequest("model 필드는 필수입니다.")
+
+
 @router.get("/pilot")
 async def pilot_page(request: Request):
+    state = resolve_configuration()
+    registry = get_registry()
+    mode_name = state.value if state else "not_configured"
+
+    if state == PilotConfigurationState.INVALID_REGISTRY:
+        return render_template(
+            request,
+            "pilot.html",
+            {
+                "pilot_configured": False,
+                "pilot_models": [],
+                "selected_model": "",
+                "pilot_provider_count": 0,
+                "pilot_model_count": 0,
+                "mode_name": "invalid_registry",
+                "is_multi_provider": False,
+                "prompt": "",
+                "result": None,
+                "error": {
+                    "code": "registry_invalid",
+                    "message": "Provider registry 설정이 올바르지 않습니다.",
+                    "request_id": _new_request_id(),
+                },
+            },
+        )
+
     return render_template(
         request,
         "pilot.html",
         {
-            "pilot_configured": pilot_settings.configured,
+            "pilot_configured": state in (PilotConfigurationState.VALID_REGISTRY, PilotConfigurationState.LEGACY),
             "pilot_models": get_pilot_models(),
             "selected_model": pilot_settings.pilot_model_id or "",
+            "pilot_provider_count": get_pilot_provider_count(),
+            "pilot_model_count": get_pilot_model_count(),
+            "mode_name": mode_name,
+            "is_multi_provider": state == PilotConfigurationState.VALID_REGISTRY,
             "prompt": "",
             "result": None,
             "error": None,
@@ -48,7 +103,32 @@ async def pilot_page_post(
     temperature: float = Form(0.2),
     max_tokens: int = Form(300),
 ):
-    if not pilot_settings.configured:
+    state = resolve_configuration()
+
+    if state == PilotConfigurationState.INVALID_REGISTRY:
+        registry = get_registry()
+        return render_template(
+            request,
+            "pilot.html",
+            {
+                "pilot_configured": False,
+                "pilot_models": [],
+                "selected_model": model_id,
+                "pilot_provider_count": 0,
+                "pilot_model_count": 0,
+                "mode_name": "invalid_registry",
+                "is_multi_provider": False,
+                "prompt": prompt,
+                "result": None,
+                "error": {
+                    "code": "registry_invalid",
+                    "message": "Provider registry 설정이 올바르지 않습니다.",
+                    "request_id": _new_request_id(),
+                },
+            },
+        )
+
+    if state == PilotConfigurationState.NOT_CONFIGURED:
         return render_template(
             request,
             "pilot.html",
@@ -56,6 +136,10 @@ async def pilot_page_post(
                 "pilot_configured": False,
                 "pilot_models": get_pilot_models(),
                 "selected_model": model_id,
+                "pilot_provider_count": 0,
+                "pilot_model_count": 0,
+                "mode_name": "not_configured",
+                "is_multi_provider": False,
                 "prompt": prompt,
                 "result": None,
                 "error": {"code": "pilot_not_configured", "message": "Pilot Provider가 설정되지 않았습니다.", "request_id": _new_request_id()},
@@ -78,7 +162,10 @@ async def pilot_page_post(
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            _validate_chat_request(chat_req)
+            _validate_chat_request_ui(chat_req)
+
+            # Determine routing target via resolver
+            target = resolve_route(chat_req.model)
 
             start = time.monotonic()
             response_data = await prv.call_chat_completions(
@@ -86,6 +173,10 @@ async def pilot_page_post(
                 messages=chat_req.messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                base_url=target.base_url,
+                upstream_model=target.upstream_model,
+                timeout_seconds=target.timeout_seconds,
+                response_model=target.model_id,
             )
             latency_ms = int((time.monotonic() - start) * 1000)
 
@@ -94,18 +185,18 @@ async def pilot_page_post(
             usage = response_data.get("usage")
 
             result = {
-                "request_id": biz14.get("request_id", f"b14req_{uuid.uuid4().hex[:12]}"),
-                "provider": biz14.get("provider", pilot_settings.pilot_provider_id),
-                "model": response_data.get("model", model_id),
+                "request_id": biz14.get("request_id", _new_request_id()),
+                "provider": target.provider_id,
+                "model": biz14.get("model", chat_req.model),
                 "latency_ms": latency_ms,
-                "estimated_krw": biz14.get("estimated_krw"),
+                "estimated_krw": None,
                 "usage": usage,
                 "choices": choices,
             }
         except PilotError as e:
             error = {"code": e.code, "message": e.message, "request_id": _new_request_id()}
         except Exception:
-            request_id_e = f"b14req_{uuid.uuid4().hex[:12]}"
+            request_id_e = _new_request_id()
             logger.error("pilot_ui_error request_id=%s", request_id_e)
             error = {
                 "code": "internal_error",
@@ -120,6 +211,10 @@ async def pilot_page_post(
             "pilot_configured": pilot_settings.configured,
             "pilot_models": get_pilot_models(),
             "selected_model": model_id or pilot_settings.pilot_model_id,
+            "pilot_provider_count": get_pilot_provider_count(),
+            "pilot_model_count": get_pilot_model_count(),
+            "mode_name": pilot_settings.mode_name,
+            "is_multi_provider": get_registry().configured,
             "prompt": prompt,
             "result": result,
             "error": error,

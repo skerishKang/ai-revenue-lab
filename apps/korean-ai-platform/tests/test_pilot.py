@@ -30,10 +30,12 @@ def _reset_pilot_config():
     saved = {
         "base_url": pilot_settings.pilot_base_url,
         "model_id": pilot_settings.pilot_model_id,
+        "registry_json": pilot_settings.provider_registry_json,
     }
     yield
     pilot_settings.pilot_base_url = saved["base_url"]
     pilot_settings.pilot_model_id = saved["model_id"]
+    pilot_settings.provider_registry_json = saved["registry_json"]
 
 
 def _configure_pilot():
@@ -42,6 +44,7 @@ def _configure_pilot():
     pilot_settings.pilot_provider_id = "test-provider"
     pilot_settings.pilot_upstream_model = "upstream-model-v1"
     pilot_settings.pilot_timeout_seconds = 10
+    pilot_settings.provider_registry_json = ""
 
 
 # ---------------------------------------------------------------------------
@@ -154,7 +157,7 @@ class TestSchemaValidation:
 
 
 class TestExtraFieldsRejectedViaAPI:
-    def test_base_url_rejected(self, client, monkeypatch):
+    def test_base_url_rejected(self, client):
         _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -280,7 +283,7 @@ class TestPlaceholderKey:
 
 
 # ---------------------------------------------------------------------------
-# Temperature default value test (CTO finding #2)
+# Temperature default value test
 # ---------------------------------------------------------------------------
 
 
@@ -325,7 +328,7 @@ class TestDefaultTemperature:
 
 
 # ---------------------------------------------------------------------------
-# Error redaction tests (CTO finding #3)
+# Error redaction tests
 # ---------------------------------------------------------------------------
 
 
@@ -547,7 +550,7 @@ class TestPilotPageUI:
 
     def test_page_not_commercial_service(self, client):
         resp = client.get("/pilot")
-        assert "Phase 1 Pilot" in resp.text
+        assert "Phase 2 Pilot" in resp.text or "BYOK Gateway Pilot" in resp.text
 
     def test_page_shows_unconfigured_message(self, client):
         resp = client.get("/pilot")
@@ -611,22 +614,12 @@ class TestRouteSmoke:
 
 
 # ---------------------------------------------------------------------------
-# Clean runtime install (CTO finding #1)
-# ---------------------------------------------------------------------------
-
-
-# ---------------------------------------------------------------------------
 # Integration tests: full API route → Provider adapter → MockTransport
 # ---------------------------------------------------------------------------
 
 
 class TestIntegrationFullPath:
-    """Full-path integration tests: HTTP route → real provider → MockTransport.
-
-    Unlike the monkeypatch-based tests above, these use the actual
-    call_chat_completions function (not a mock), verifying that
-    ChatMessage objects are properly serialized for upstream JSON.
-    """
+    """Full-path integration tests: HTTP route → real provider → MockTransport."""
 
     def test_api_route_integration(self, client):
         """API route → real provider → MockTransport → 200 + JSON verification."""
@@ -729,7 +722,7 @@ class TestIntegrationFullPath:
 
 
 # ---------------------------------------------------------------------------
-# UI unconfigured POST test (CTO finding: NameError fix)
+# UI unconfigured POST test
 # ---------------------------------------------------------------------------
 
 
@@ -741,7 +734,6 @@ class TestUIUnconfiguredPost:
         assert "pilot_not_configured" in resp.text
         assert "b14req_" in resp.text
         assert "NameError" not in resp.text
-        # 500 status should not be returned (and "500" should not appear as error code)
         assert resp.status_code != 500
 
 
