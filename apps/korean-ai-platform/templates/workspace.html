@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ _("workspace.heading") }} — Korean AI Platform{% endblock %}
+{% block crumb %}{{ _("workspace.title") }}{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1 class="page-title">{{ _("workspace.heading") }}</h1>
+  <p class="page-sub">{{ _("workspace.description") }}</p>
+</div>
+
+{% if error and error.code == "registry_invalid" %}
+<div class="callout callout-danger" role="alert" style="margin-bottom: 16px;">
+  <span class="callout-title">{{ _("error.registry_invalid") }}</span>
+  {% if error.request_id %}
+  <br><span class="muted">Request ID: {{ error.request_id }}</span>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if not pilot_configured and not error %}
+<div class="callout callout-warn" style="margin-bottom: 16px;">
+  <span class="callout-title">{{ _("error.pilot_not_configured") }}</span>
+</div>
+{% endif %}
+
+<div class="callout callout-info" style="margin-bottom: 16px;">
+  <span class="callout-title">{{ _("workspace.pilot_notice") }}</span>
+</div>
+
+<div class="workspace-layout">
+  <div class="workspace-sidebar">
+    <div class="ws-section">
+      <label for="ws_model">{{ _("workspace.select_model") }}</label>
+      <select id="ws_model" class="model-select" aria-label="{{ _('workspace.select_model') }}">
+        {% for model in pilot_models %}
+        <option value="{{ model.id }}" data-provider="{{ model.provider_name or '' }}">
+          {{ model.name }}{% if model.provider_name %} · {{ model.provider_name }}{% endif %}
+        </option>
+        {% endfor %}
+      </select>
+      {% if pilot_models %}
+      <span class="field-note" id="ws_provider_name">{{ _("workspace.model_provider") }}: {{ pilot_models[0].provider_name or '' }}</span>
+      {% endif %}
+    </div>
+
+    <div class="ws-section">
+      <label for="ws_key">{{ _("workspace.api_key") }}</label>
+      <input type="password" id="ws_key" class="ws-key-input"
+        placeholder="{{ _('workspace.key_placeholder') }}"
+        autocomplete="off" aria-label="{{ _('workspace.api_key') }}">
+      <span class="field-note" id="ws_key_status">{{ _("workspace.key_status_empty") }}</span>
+      <button id="ws_key_clear" class="btn btn-ghost btn-sm" style="display:none; margin-top:4px;">
+        {{ _("workspace.key_clear") }}
+      </button>
+    </div>
+
+    <div class="ws-section">
+      <span class="field-note ws-cost-notice">
+        <strong>{{ _("workspace.cost_label") }}:</strong> {{ _("workspace.cost_unknown") }}<br>
+        {{ _("workspace.cost_notice") }}
+      </span>
+    </div>
+
+    <div class="ws-section">
+      <span class="field-note ws-security-notice">
+        {{ _("workspace.security_notice") }}
+      </span>
+    </div>
+  </div>
+
+  <div class="workspace-main">
+    <div class="ws-chat-area" id="ws_chat" role="log" aria-live="polite" aria-label="대화 영역">
+      <div class="ws-empty" id="ws_empty">
+        <p>{{ _("workspace.description") }}</p>
+      </div>
+    </div>
+
+    <div class="ws-input-area">
+      <div class="ws-message-limit" id="ws_msg_limit" style="display:none;">
+        {{ _("workspace.message_limit_warning") }}
+      </div>
+      <div class="ws-input-row">
+        <textarea id="ws_input" class="ws-input"
+          placeholder="{{ _('workspace.chat_placeholder') }}"
+          rows="2" aria-label="{{ _('workspace.chat_placeholder') }}"></textarea>
+        <button id="ws_send" class="btn btn-primary ws-send-btn">
+          {{ _("workspace.send") }}
+        </button>
+      </div>
+      <div class="ws-actions">
+        <button id="ws_new_chat" class="btn btn-ghost btn-sm">{{ _("workspace.new_chat") }}</button>
+        <button id="ws_clear_chat" class="btn btn-ghost btn-sm">{{ _("workspace.clear_chat") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ws-overlay" id="ws_overlay" style="display:none;">
+  <div class="ws-loading">{{ _("common.loading") }}</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/app.js?v=phase3-1"></script>
+<script>
+(function() {
+  'use strict';
+
+  var models = {{ pilot_models_json|safe }};
+  var providerCount = {{ pilot_provider_count }};
+  var modelCount = {{ pilot_model_count }};
+  var errorCode = {{ error_code_json|safe }};
+  var lang = '{{ lang }}';
+
+  Business14Workspace.init({
+    models: models,
+    providerCount: providerCount,
+    modelCount: modelCount,
+    errorCode: errorCode,
+    lang: lang,
+    maxTokens: 512
+  });
+})();
+</script>
+{% endblock %}

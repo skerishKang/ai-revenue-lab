@@ -65,6 +65,11 @@ def create_app() -> FastAPI:
     app.include_router(pilot_api_router)
     app.include_router(pilot_ui_router)
 
+    # Phase 3: Korean session workspace
+    from app.pilot.workspace import router as workspace_router
+
+    app.include_router(workspace_router)
+
     @app.get("/health")
     def health() -> dict[str, Any]:
         return {
