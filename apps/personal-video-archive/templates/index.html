@@ -16,18 +16,20 @@
 {% set hv = hero[1] %}
 {% set htv = hero[0] %}
 <section class="hero">
-    <a class="hero-media" href="{{ lp }}/videos/{{ hv.id }}">
-        <img src="{{ hv.thumbnail_url }}" alt="{{ hv.title }}">
-        <div class="hero-overlay">
+    <div>
+        <a class="hero-media" href="{{ lp }}/videos/{{ hv.id }}">
+            <img src="{{ hv.thumbnail_url }}" alt="{{ hv.title }}">
+            <span class="hero-badge micro-label">{{ t("home_hero_label") }}</span>
+        </a>
+        <div class="hero-editorial">
             <div class="meta-row">
                 <span class="micro-label">{{ t("home_hero_label") }}</span>
-                <span class="meta-dot"></span>
                 <span>{{ hv.channel_title }}</span>
             </div>
             <h2>{{ hv.title }}</h2>
             <p>{{ hv.description | truncate(100) }}</p>
         </div>
-    </a>
+    </div>
     <div class="hero-side">
         {% if cw %}
         {% set cwv = cw[1] %}
@@ -71,12 +73,13 @@
         {% set v = item[1] %}
         {% set tv = item[0] %}
         {% set card_class = "story-card" %}
-        {% if loop.index == 1 %}{% set card_class = "story-card large" %}
-        {% elif loop.index == 2 %}{% set card_class = "story-card tall" %}
+        {% if loop.index == 1 %}{% set card_class = "story-card lead" %}
         {% endif %}
         <a class="{{ card_class }}" href="{{ lp }}/videos/{{ v.id }}">
-            <img src="{{ v.thumbnail_url }}" alt="{{ v.title }}">
-            <div class="story-info">
+            <div class="story-thumb">
+                <img src="{{ v.thumbnail_url }}" alt="{{ v.title }}">
+            </div>
+            <div class="story-meta">
                 <span class="micro-label">{{ v.channel_title }}</span>
                 <h3>{{ v.title }}</h3>
                 {% if tv.match_score %}

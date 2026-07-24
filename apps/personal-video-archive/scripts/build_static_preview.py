@@ -1,12 +1,14 @@
 """Build a static UI preview for Cloudflare Pages.
 
-Renders the *existing* Jinja2 templates with synthetic fixture data into
+Renders the *existing* Jinja2 templates with curated fixture data into
 ``dist-preview/`` so the accepted Phase 1 UI can be reviewed in a hosted
 browser without any backend service.
 
 Safety contract:
-    * synthetic fixtures only (no real personal data, no real YouTube ids);
-    * no database, FastAPI server, provider, API key, or network call;
+    * curated real public YouTube source fixtures (no private/user data);
+    * no YouTube Data API call;
+    * no build-time network call;
+    * no autoplay, iframe, or tracker;
     * inline event-handler JavaScript is stripped from every page;
     * forms are made inert via a restrictive Content-Security-Policy
       (``form-action 'none'; script-src 'none'``) in ``_headers``;

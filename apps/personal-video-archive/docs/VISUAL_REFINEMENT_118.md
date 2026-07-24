@@ -92,7 +92,7 @@ The current implementation (Phase 1, #76/#78) is coherent and functional, but it
 | `--surface-2` | `#F3F1EC` | Inset wells, filter pill idle |
 | `--ink` | `#181816` | Primary text (near-black) |
 | `--ink-2` | `#68655F` | Secondary text |
-| `--ink-3` | `#8F8A7E` | Tertiary/metadata text |
+| `--ink-3` | `#706D66` | Tertiary/metadata text (≥4.5:1 on canvas) |
 | `--line` | `#D8D3C9` | Borders, dividers (hairline) |
 | `--line-strong` | `#C8C3B8` | Emphasized borders |
 | `--signature` | `#7A4035` | Signature accent (muted rust/oxblood) |
