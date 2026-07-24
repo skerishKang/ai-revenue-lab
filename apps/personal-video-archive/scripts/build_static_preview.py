@@ -407,7 +407,13 @@ def main(output_dir: Path | None = None) -> Path:
     resurfaced = [
         (make_record_revisit(), topic2_tvs[2], topic2_videos[2]),
     ]
-    
+
+    # topic_previews: thumbnail stacks for collection cards on home
+    topic_previews = {
+        "pv-topic-0001": [topic1_videos[0], topic1_videos[1], topic1_videos[2]],
+        "pv-topic-0002": [topic2_videos[0], topic2_videos[1], topic2_videos[2]],
+    }
+
     _write_page_bilingual(
         env, "index.html",
         {
@@ -416,6 +422,7 @@ def main(output_dir: Path | None = None) -> Path:
             "new_finds": new_finds,
             "recent_notes": recent_notes,
             "resurfaced": resurfaced,
+            "topic_previews": topic_previews,
         },
         "/", output_dir, "index.html"
     )

@@ -25,7 +25,7 @@
                 <span>{{ hv.channel_title }}</span>
             </div>
             <h2>{{ hv.title }}</h2>
-            <p>{{ hv.description | truncate(120) }}</p>
+            <p>{{ hv.description | truncate(100) }}</p>
         </div>
     </a>
     <div class="hero-side">
@@ -101,10 +101,6 @@
     <div class="collection-row">
         {% for topic in topics %}
         <a class="collection-card" href="{{ lp }}/topics/{{ topic.id }}">
-            <div>
-                <h3 class="collection-title">{{ topic.name }}</h3>
-                <p class="collection-meta">{{ topic.intent | truncate(80) }}</p>
-            </div>
             {% if topic_previews is defined and topic.id in topic_previews %}
             <div class="mini-stack">
                 {% for pv in topic_previews[topic.id][:3] %}
@@ -112,7 +108,11 @@
                 {% endfor %}
             </div>
             {% endif %}
-            <p class="collection-meta">{{ t("topic_created") }} {{ topic.created_at[:10] }}</p>
+            <div>
+                <h3 class="collection-title">{{ topic.name }}</h3>
+                <p class="collection-meta">{{ topic.intent | truncate(80) }}</p>
+            </div>
+            <p class="collection-meta">{{ t("home_collection_videos", n=(topic_previews[topic.id] | length if topic_previews is defined and topic.id in topic_previews else 0)) }}</p>
         </a>
         {% endfor %}
     </div>
@@ -139,7 +139,7 @@
             <div>
                 <span class="status-pill">{{ t("state_" + (rec.viewing_state | state_label)) }}</span>
                 <blockquote>{{ rec.free_form_note | truncate(120) }}</blockquote>
-                <p class="collection-meta">{{ v.title | truncate(50) }}</p>
+                <p class="collection-meta">{{ v.channel_title }} · {{ v.title | truncate(50) }}</p>
                 {% if rec.tags %}
                 <div class="tags">
                     {% for tag in rec.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
@@ -159,7 +159,7 @@
     <div>
         <span class="eyebrow">{{ t("home_resurfaced_label") }}</span>
         <h2>{{ rv.title | truncate(60) }}</h2>
-        <p>{{ rrec.free_form_note | truncate(160) }}</p>
+        <p>{{ rrec.free_form_note | truncate(180) }}</p>
         <a class="primary-button secondary" href="{{ lp }}/records/{{ rrec.id }}">{{ t("home_resurfaced_action") }}</a>
     </div>
     <div class="poster"><img src="{{ rv.thumbnail_url }}" alt="{{ rv.title }}"></div>

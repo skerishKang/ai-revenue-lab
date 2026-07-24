@@ -1,0 +1,21 @@
+External font/icon CDN in HTML: NONE
+Local path leakage in HTML: NONE
+Secret leakage in HTML: NONE
+Horizontal overflow at 390x844: NO
+Horizontal overflow at 768x1024: NO
+Horizontal overflow at 1440x1100: NO
+Page korean_home (1440x1100): console_errors=0, broken_imgs=0, focus_visible=True, contrast={'minRatio': '1.08', 'lowContrast': [{'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(179, 192, 184)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.68'}, {'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(197, 203, 198)', 'bg': 'rgb(39, 44, 41)', 'ratio': '1.47'}, {'tag': 'SPAN', 'color': 'rgb(157, 164, 157)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '2.28'}]}
+Page english_home (1440x1100): console_errors=0, broken_imgs=0, focus_visible=True, contrast={'minRatio': '1.08', 'lowContrast': [{'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(179, 192, 184)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.68'}, {'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(197, 203, 198)', 'bg': 'rgb(39, 44, 41)', 'ratio': '1.47'}, {'tag': 'SPAN', 'color': 'rgb(157, 164, 157)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '2.28'}]}
+Page korean_topic_feed (1440x1100): console_errors=0, broken_imgs=0, focus_visible=True, contrast={'minRatio': '1.08', 'lowContrast': [{'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(179, 192, 184)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.68'}, {'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(197, 203, 198)', 'bg': 'rgb(39, 44, 41)', 'ratio': '1.47'}, {'tag': 'SPAN', 'color': 'rgb(157, 164, 157)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '2.28'}]}
+Page korean_record_detail (1440x1100): console_errors=0, broken_imgs=0, focus_visible=True, contrast={'minRatio': '1.08', 'lowContrast': [{'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(179, 192, 184)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.68'}, {'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(197, 203, 198)', 'bg': 'rgb(39, 44, 41)', 'ratio': '1.47'}, {'tag': 'SPAN', 'color': 'rgb(157, 164, 157)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '2.28'}]}
+Page korean_topics_list (1440x1100): console_errors=0, broken_imgs=0, focus_visible=True, contrast={'minRatio': '1.08', 'lowContrast': [{'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(179, 192, 184)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.68'}, {'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(197, 203, 198)', 'bg': 'rgb(39, 44, 41)', 'ratio': '1.47'}, {'tag': 'SPAN', 'color': 'rgb(157, 164, 157)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '2.28'}]}
+Page korean_records_search (1440x1100): console_errors=0, broken_imgs=0, focus_visible=True, contrast={'minRatio': '1.08', 'lowContrast': [{'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(179, 192, 184)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.68'}, {'tag': 'SPAN', 'color': 'rgb(252, 251, 248)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '1.08'}, {'tag': 'SPAN', 'color': 'rgb(197, 203, 198)', 'bg': 'rgb(39, 44, 41)', 'ratio': '1.47'}, {'tag': 'SPAN', 'color': 'rgb(157, 164, 157)', 'bg': 'rgba(0, 0, 0, 0)', 'ratio': '2.28'}]}
+Filter page 'all': active_pill=전체
+Filter page 'unseen': active_pill=아직 보지 않음
+Filter page 'opened': active_pill=열어봄
+Filter page 'saved': active_pill=저장함
+Filter page 'in_progress': active_pill=보는 중
+Filter page 'completed': active_pill=다 봄
+Filter page 'revisit': active_pill=다시 보기
+Filter page 'irrelevant': active_pill=관심 없음
+YouTube anchors: [{"href": "https://www.youtube.com/watch?v=aircAruvnKk", "target": "_blank", "rel": "noopener noreferrer"}, {"href": "https://www.youtube.com/watch?v=aircAruvnKk", "target": "_blank", "rel": "noopener noreferrer"}]
