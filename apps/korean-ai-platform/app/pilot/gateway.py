@@ -107,7 +107,7 @@ async def pilot_health():
             "mode": "invalid_registry",
             "configured_providers": 0,
             "configured_models": 0,
-            "registry_error": registry.parse_error or "Provider registry 설정이 올바르지 않습니다.",
+            "registry_error": "Provider registry 설정이 올바르지 않습니다.",
         }
 
     if state == PilotConfigurationState.LEGACY:

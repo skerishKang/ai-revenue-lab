@@ -70,7 +70,7 @@ async def pilot_page(request: Request):
                 "result": None,
                 "error": {
                     "code": "registry_invalid",
-                    "message": registry.parse_error or "Provider registry 설정이 올바르지 않습니다.",
+                    "message": "Provider registry 설정이 올바르지 않습니다.",
                     "request_id": _new_request_id(),
                 },
             },
@@ -122,7 +122,7 @@ async def pilot_page_post(
                 "result": None,
                 "error": {
                     "code": "registry_invalid",
-                    "message": registry.parse_error or "Provider registry 설정이 올바르지 않습니다.",
+                    "message": "Provider registry 설정이 올바르지 않습니다.",
                     "request_id": _new_request_id(),
                 },
             },

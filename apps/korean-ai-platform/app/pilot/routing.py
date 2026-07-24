@@ -100,9 +100,7 @@ def resolve_route(model_id: str) -> RouteTarget:
         raise PilotNotConfigured()
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
-        registry = get_registry()
-        detail = registry.parse_error or "Provider registry 설정이 올바르지 않습니다."
-        raise RegistryInvalid(detail=detail)
+        raise RegistryInvalid(detail="Provider registry 설정이 올바르지 않습니다.")
 
     if state == PilotConfigurationState.VALID_REGISTRY:
         registry = get_registry()
