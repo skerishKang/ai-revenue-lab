@@ -85,14 +85,14 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_quick_launch_verified_urls_use_https(self) -> None:
         script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
         urls = re.findall(r'url:\s*"(https?[^"]+)"', script)
-        self.assertEqual(len(urls), 6)
+        self.assertEqual(len(urls), 8)
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
 
     def test_quick_launch_item_counts(self) -> None:
         script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        self.assertEqual(script.count('state: "verified"'), 6)
-        self.assertEqual(script.count('state: "planned"'), 7)
+        self.assertEqual(script.count('state: "verified"'), 8)
+        self.assertEqual(script.count('state: "planned"'), 5)
 
 
 if __name__ == "__main__":

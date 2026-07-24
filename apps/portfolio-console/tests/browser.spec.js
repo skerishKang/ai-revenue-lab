@@ -320,17 +320,17 @@ test.describe('Quick Launch Browser Tests', () => {
     await expect(page.locator('.ql-item')).toHaveCount(13);
   });
 
-  test('has 6 active links with 열기 indicator', async ({ page }) => {
+  test('has 8 active links with 열기 indicator', async ({ page }) => {
     const active = page.locator('.ql-active');
-    await expect(active).toHaveCount(6);
+    await expect(active).toHaveCount(8);
 
     const indicator = active.first().locator('i');
     await expect(indicator).toContainText('열기');
   });
 
-  test('has 7 planned items with 준비 중 indicator', async ({ page }) => {
+  test('has 5 planned items with 준비 중 indicator', async ({ page }) => {
     const planned = page.locator('.ql-planned');
-    await expect(planned).toHaveCount(7);
+    await expect(planned).toHaveCount(5);
 
     const indicator = planned.first().locator('i');
     await expect(indicator).toContainText('준비 중');
