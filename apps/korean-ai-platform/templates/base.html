@@ -62,8 +62,13 @@
       </a>
     </nav>
     <div class="sidebar-foot">
+      {% if path == '/workspace' %}
       <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Phase 3 Workspace</span>
+      <span class="muted">실제 Provider 호출 · key 저장 안 함</span>
+      {% else %}
+      <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Phase 0 Mock Demo</span>
       <span class="muted">실제 모델 호출 · Provider 제휴 없음 · key 저장 안 함</span>
+      {% endif %}
     </div>
   </aside>
 
@@ -72,7 +77,13 @@
       <div class="topbar-inner">
         <span class="topbar-crumb">{% block crumb %}<strong>Korean AI Platform</strong>{% endblock %}</span>
         <div class="topbar-actions">
+          {% if path == '/workspace' %}
+          <span class="topbar-env"><span class="env-dot" aria-hidden="true"></span>Phase 3 Workspace · 실제 Provider 호출 가능 · key 저장 안 함</span>
+          <a href="?lang=en" class="btn btn-ghost btn-sm lang-switch" style="margin-left:8px;">English</a>
+          <a href="?lang=ko-KR" class="btn btn-ghost btn-sm lang-switch" style="margin-left:4px;">한국어</a>
+          {% else %}
           <span class="topbar-env"><span class="env-dot" aria-hidden="true"></span>Phase 0 Mock Demo · 실제 모델 호출 및 Provider 제휴 없음</span>
+          {% endif %}
         </div>
       </div>
     </header>
@@ -82,11 +93,17 @@
     </main>
 
     <footer class="site-footer">
+      {% if path == '/workspace' %}
+      <p>Business 14 Phase 3 · Session Workspace Pilot</p>
+      <p class="footer-disclaimer">실제 Provider 호출 가능 · Provider 제휴 없음 · key 저장 안 함</p>
+      {% else %}
       <p>Korean AI Platform · Business 14 Phase 0 · API Provider Mock Demo</p>
       <p class="footer-disclaimer">화면에 표시된 회사명과 모델명은 제품 콘셉트 설명을 위한 예시입니다. 해당 회사와의 제휴, 재판매 계약 또는 상용 제공을 의미하지 않습니다.</p>
+      {% endif %}
     </footer>
   </div>
 </div>
 <script src="/static/app.js?v=phase0-2" defer></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

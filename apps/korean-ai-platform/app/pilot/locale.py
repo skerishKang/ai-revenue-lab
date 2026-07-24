@@ -6,6 +6,7 @@ Policy (docs/BUSINESS14_LANGUAGE_POLICY.md):
 - Invalid locale: ko-KR
 - User explicitly selects 'en': English
 - Missing English translation: Korean fallback
+- Accept-Language header is ignored (user must explicitly choose)
 """
 
 from __future__ import annotations
@@ -50,6 +51,7 @@ _t("workspace.key_placeholder", "API key를 입력하세요...", "Enter your API
 _t("workspace.key_note", "입력한 key는 이 페이지 세션에서만 사용되며 저장하지 않습니다.", "Your key is used only for this page session and is not stored.")
 _t("workspace.key_status_set", "현재 페이지에서만 사용 중", "Active for this page only")
 _t("workspace.key_status_empty", "API key 없음", "No API key")
+_t("workspace.key_apply", "API key 적용", "Apply API Key")
 _t("workspace.key_clear", "API key 지우기", "Clear API Key")
 _t("workspace.chat_placeholder", "메시지를 입력하세요...", "Type your message...")
 _t("workspace.send", "보내기", "Send")
@@ -72,6 +74,10 @@ _t("workspace.request_id", "Request ID", "Request ID")
 _t("workspace.latency", "지연 시간", "Latency")
 _t("workspace.tokens", "토큰", "Tokens")
 _t("workspace.pilot_notice", "Phase 3 Pilot입니다. 인증, 다중 사용자 격리, 결제, SLA가 구현된 상용 서비스가 아닙니다.", "Phase 3 Pilot. This is not a production service with auth, multi-tenant isolation, billing, or SLA.")
+_t("workspace.provider_changed", "Provider가 변경되어 key와 대화가 초기화되었습니다. 새 API key를 입력하십시오.", "Provider changed. Key and conversation cleared. Enter a new API key.")
+_t("workspace.model_changed", "모델이 변경되어 대화가 초기화되었습니다.", "Model changed. Conversation cleared.")
+_t("workspace.empty_key", "API key가 설정되지 않았습니다.", "No API key set.")
+_t("workspace.lang_switch", "English", "한국어")
 
 # ── Errors (Korean) ─────────────────────────────────────────────────────
 _t("error.registry_invalid", "Provider registry 설정이 올바르지 않습니다.", "Provider registry configuration is invalid.")
@@ -130,9 +136,10 @@ _ = gettext  # Korean default
 
 
 def locale_from_request(request) -> Locale:
-    """Extract locale preference from request (cookie, query, header).
+    """Extract locale preference from request.
 
-    Priority: query param > cookie > Accept-Language > default ko-KR
+    Priority: query param > cookie > default ko-KR
+    Accept-Language header is ignored — user must explicitly choose.
     """
     # Query param
     q = request.query_params.get("lang", "")
@@ -144,9 +151,16 @@ def locale_from_request(request) -> Locale:
     if c in (Locale.KO, Locale.EN):
         return Locale(c)
 
-    # Accept-Language header
-    accept = request.headers.get("accept-language", "")
-    if accept.startswith("en"):
-        return Locale.EN
-
     return Locale.KO
+
+
+def set_locale_cookie(response, locale: Locale) -> None:
+    """Set locale_preference cookie on the response."""
+    response.set_cookie(
+        key="locale_preference",
+        value=locale.value,
+        httponly=True,
+        samesite="lax",
+        path="/",
+        max_age=365 * 24 * 3600,
+    )

@@ -8,6 +8,10 @@
   <p class="page-sub">{{ _("workspace.description") }}</p>
 </div>
 
+<div class="callout callout-info" style="margin-bottom: 16px;">
+  <span class="callout-title">{{ _("workspace.pilot_notice") }}</span>
+</div>
+
 {% if error and error.code == "registry_invalid" %}
 <div class="callout callout-danger" role="alert" style="margin-bottom: 16px;">
   <span class="callout-title">{{ _("error.registry_invalid") }}</span>
@@ -22,10 +26,6 @@
   <span class="callout-title">{{ _("error.pilot_not_configured") }}</span>
 </div>
 {% endif %}
-
-<div class="callout callout-info" style="margin-bottom: 16px;">
-  <span class="callout-title">{{ _("workspace.pilot_notice") }}</span>
-</div>
 
 <div class="workspace-layout">
   <div class="workspace-sidebar">
@@ -49,6 +49,9 @@
         placeholder="{{ _('workspace.key_placeholder') }}"
         autocomplete="off" aria-label="{{ _('workspace.api_key') }}">
       <span class="field-note" id="ws_key_status">{{ _("workspace.key_status_empty") }}</span>
+      <button id="ws_key_apply" class="btn btn-primary btn-sm" style="margin-top:4px;">
+        {{ _("workspace.key_apply") }}
+      </button>
       <button id="ws_key_clear" class="btn btn-ghost btn-sm" style="display:none; margin-top:4px;">
         {{ _("workspace.key_clear") }}
       </button>
@@ -95,32 +98,24 @@
   </div>
 </div>
 
-<div class="ws-overlay" id="ws_overlay" style="display:none;">
-  <div class="ws-loading">{{ _("common.loading") }}</div>
-</div>
-
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/app.js?v=phase3-1"></script>
+<script id="workspace-config" type="application/json">
+{{ workspace_config | tojson }}
+</script>
+<script src="/static/workspace.js?v=phase3-2" defer></script>
 <script>
 (function() {
   'use strict';
-
-  var models = {{ pilot_models_json|safe }};
-  var providerCount = {{ pilot_provider_count }};
-  var modelCount = {{ pilot_model_count }};
-  var errorCode = {{ error_code_json|safe }};
-  var lang = '{{ lang }}';
-
-  Business14Workspace.init({
-    models: models,
-    providerCount: providerCount,
-    modelCount: modelCount,
-    errorCode: errorCode,
-    lang: lang,
-    maxTokens: 512
-  });
+  var configEl = document.getElementById('workspace-config');
+  if (!configEl) return;
+  try {
+    var config = JSON.parse(configEl.textContent);
+    Business14Workspace.init(config);
+  } catch(e) {
+    console.error('Workspace config error', e);
+  }
 })();
 </script>
 {% endblock %}
