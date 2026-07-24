@@ -370,20 +370,22 @@ class TestMultiProviderAPI:
     def test_health_invalid_registry(self, client):
         _setup_invalid_registry()
         resp = client.get("/api/pilot/health")
-        assert resp.status_code == 200
+        assert resp.status_code == 500
         data = resp.json()
-        assert data["mode"] == "invalid_registry"
-        assert data["configured_providers"] == 0
-        assert "registry_error" in data
+        assert data["error"]["code"] == "registry_invalid"
+        assert data["error"]["message"] == "Provider registry 설정이 올바르지 않습니다."
+        assert data["error"]["request_id"].startswith("b14req_")
 
     def test_health_invalid_registry_with_legacy(self, client):
         _setup_invalid_registry()
         pilot_settings.pilot_base_url = "https://legacy.example.com"
         pilot_settings.pilot_model_id = "legacy-model"
         resp = client.get("/api/pilot/health")
-        assert resp.status_code == 200
+        assert resp.status_code == 500
         data = resp.json()
-        assert data["mode"] == "invalid_registry"
+        assert data["error"]["code"] == "registry_invalid"
+        # Legacy provider info must NOT appear in response
+        assert "legacy" not in str(data)
 
     def test_models_multi_provider(self, client):
         _setup_registry()
@@ -397,10 +399,9 @@ class TestMultiProviderAPI:
     def test_models_invalid_registry(self, client):
         _setup_invalid_registry()
         resp = client.get("/api/pilot/models")
-        assert resp.status_code == 200
+        assert resp.status_code == 500
         data = resp.json()
-        assert data["configured"] is False
-        assert data["mode"] == "invalid_registry"
+        assert data["error"]["code"] == "registry_invalid"
 
     def test_chat_invalid_registry(self, client):
         _setup_invalid_registry()
@@ -788,6 +789,107 @@ class TestLegacyPhase1Compat:
         finally:
             prv_mod.call_chat_completions = original
         assert resp.status_code == 200
+
+
+# ============================================================================
+# Sentinel-based non-exposure tests (CTO spec: internal details must not leak)
+# ============================================================================
+
+
+class TestRegistrySentinelNonExposure:
+    """Test that internal registry parse_error details are never exposed to users.
+
+    Uses sentinel strings (secret-provider-duplicate, secret-model-duplicate,
+    internal-registry-secret.example) that would appear in responses if
+    parse_error content leaks through any endpoint or UI path.
+    """
+
+    _SENTINELS = [
+        "secret-provider-duplicate",
+        "secret-model-duplicate",
+        "internal-registry-secret.example",
+        "http://internal-registry-secret.example/private",
+        "Duplicate provider_id",
+        "Duplicate model_id",
+        "must use https",
+        "parse_error",
+    ]
+
+    @pytest.fixture(params=[
+        # (registry_json, legacy_on) — each case is a structurally invalid registry
+        (json.dumps([{"provider_id": "secret-provider-duplicate", "base_url": "https://api.example.com", "models": [{"model_id": "m1", "upstream_model": "u1", "display_name": "M1"}]},
+                     {"provider_id": "secret-provider-duplicate", "base_url": "https://api.example.org", "models": [{"model_id": "m2", "upstream_model": "u2", "display_name": "M2"}]}]), False),
+        (json.dumps([{"provider_id": "p1", "base_url": "http://internal-registry-secret.example/private", "models": [{"model_id": "m1", "upstream_model": "u1", "display_name": "M1"}]}]), False),
+        (json.dumps([{"provider_id": "p1", "base_url": "https://api.example.com", "models": [{"model_id": "secret-model-duplicate", "upstream_model": "u1", "display_name": "M1"}]},
+                     {"provider_id": "p2", "base_url": "https://api.example.org", "models": [{"model_id": "secret-model-duplicate", "upstream_model": "u2", "display_name": "M2"}]}]), False),
+        (json.dumps([{"provider_id": "p1", "base_url": "https://api.example.com", "models": [{"model_id": "m1", "upstream_model": "u1", "display_name": "M1", "enabled": False}]}]), False),
+        (json.dumps([]), False),
+        # With legacy config also set (must still fail closed, no legacy info leaked)
+        (json.dumps([{"provider_id": "secret-provider-duplicate", "base_url": "https://api.example.com", "models": [{"model_id": "m1", "upstream_model": "u1", "display_name": "M1"}]},
+                     {"provider_id": "secret-provider-duplicate", "base_url": "https://api.example.org", "models": [{"model_id": "m2", "upstream_model": "u2", "display_name": "M2"}]}]), True),
+    ])
+    def _invalid_registry_setup(self, request):
+        yield request.param
+
+    @pytest.fixture
+    def _apply_invalid_registry(self, client, _invalid_registry_setup):
+        registry_json, legacy_on = _invalid_registry_setup
+        pilot_settings.provider_registry_json = registry_json
+        if legacy_on:
+            pilot_settings.pilot_base_url = "https://legacy.example.com"
+            pilot_settings.pilot_model_id = "legacy-model"
+            pilot_settings.pilot_provider_id = "legacy-provider"
+            pilot_settings.pilot_upstream_model = "upstream-legacy"
+        else:
+            pilot_settings.pilot_base_url = ""
+            pilot_settings.pilot_model_id = ""
+        reset_registry()
+        return client
+
+    def _assert_no_leakage(self, resp_text: str, endpoint_name: str):
+        for sentinel in self._SENTINELS:
+            assert sentinel not in resp_text, (
+                f"Sentinel '{sentinel}' leaked in {endpoint_name} response"
+            )
+
+    def _assert_invalid_registry_error(self, resp, endpoint_name: str):
+        assert resp.status_code == 500, f"{endpoint_name}: expected 500, got {resp.status_code}"
+        data = resp.json()
+        assert data["error"]["code"] == "registry_invalid"
+        assert data["error"]["message"] == "Provider registry 설정이 올바르지 않습니다."
+        assert data["error"]["request_id"].startswith("b14req_")
+        self._assert_no_leakage(resp.text, endpoint_name)
+
+    def test_health_no_leakage(self, _apply_invalid_registry):
+        resp = _apply_invalid_registry.get("/api/pilot/health")
+        self._assert_invalid_registry_error(resp, "health")
+
+    def test_models_no_leakage(self, _apply_invalid_registry):
+        resp = _apply_invalid_registry.get("/api/pilot/models")
+        self._assert_invalid_registry_error(resp, "models")
+
+    def test_chat_no_leakage(self, _apply_invalid_registry):
+        resp = _apply_invalid_registry.post(
+            "/api/pilot/v1/chat/completions",
+            json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
+            headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
+        )
+        self._assert_invalid_registry_error(resp, "chat")
+
+    def test_ui_get_no_leakage(self, _apply_invalid_registry):
+        resp = _apply_invalid_registry.get("/pilot")
+        assert resp.status_code == 200
+        self._assert_no_leakage(resp.text, "ui_get")
+        assert "registry_invalid" in resp.text
+
+    def test_ui_post_no_leakage(self, _apply_invalid_registry):
+        resp = _apply_invalid_registry.post(
+            "/pilot",
+            data={"provider_key": "sk-real-key", "prompt": "hello"},
+        )
+        assert resp.status_code == 200
+        self._assert_no_leakage(resp.text, "ui_post")
+        assert "registry_invalid" in resp.text or "올바르지 않습니다" in resp.text
 
 
 # ============================================================================

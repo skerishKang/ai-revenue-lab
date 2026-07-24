@@ -40,6 +40,27 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 
 router = APIRouter(prefix="/api/pilot")
 
+
+_INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니다."
+
+
+def _new_request_id() -> str:
+    return f"b14req_{uuid.uuid4().hex[:12]}"
+
+
+def _registry_invalid_response() -> JSONResponse:
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": {
+                "code": "registry_invalid",
+                "message": _INVALID_REGISTRY_MESSAGE,
+                "request_id": _new_request_id(),
+            }
+        },
+    )
+
+
 # Placeholder patterns to reject
 _PLACEHOLDER_PATTERNS = [
     "sk-your",
@@ -101,14 +122,7 @@ async def pilot_health():
         }
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
-        registry = get_registry()
-        return {
-            "status": "error",
-            "mode": "invalid_registry",
-            "configured_providers": 0,
-            "configured_models": 0,
-            "registry_error": "Provider registry 설정이 올바르지 않습니다.",
-        }
+        return _registry_invalid_response()
 
     if state == PilotConfigurationState.LEGACY:
         return {
@@ -143,12 +157,7 @@ async def pilot_models():
         }
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
-        return {
-            "models": [],
-            "configured": False,
-            "mode": "invalid_registry",
-            "error_code": "registry_invalid",
-        }
+        return _registry_invalid_response()
 
     if state == PilotConfigurationState.LEGACY:
         display_name = pilot_settings.pilot_model_id
