@@ -231,6 +231,7 @@ class OpenAICompatibleProvider:
         transport: Transport | None = None,
         environment: str = "development",
         resolver: Resolver | None = None,
+        monotonic: Callable[[], float] = time.monotonic,
     ) -> None:
         # Use the final chat-completions URL directly.
         # URL normalization is handled by Settings.ai_chat_completions_url.
@@ -242,6 +243,7 @@ class OpenAICompatibleProvider:
         self._timeout = timeout_seconds
         self._cost_class = cost_class
         self._environment = environment
+        self._monotonic = monotonic
 
         if transport is None:
             self._transport = UrllibTransport(
@@ -277,7 +279,7 @@ class OpenAICompatibleProvider:
         response_schema: type[BaseModel],
         request_id: str,
     ) -> ProviderResult:
-        start = time.monotonic()
+        start = self._monotonic()
         opaque_id = _make_correlation_id(request_id)
 
         if task_name not in TASK_NAMES:
@@ -285,7 +287,7 @@ class OpenAICompatibleProvider:
                 provider=self._provider_name,
                 model=self._model,
                 cost_class=self._cost_class,
-                latency_ms=(time.monotonic() - start) * 1000,
+                latency_ms=(self._monotonic() - start) * 1000,
                 success=False,
                 error_category=ProviderErrorCategory.unknown,
                 error_message=f"unsupported task: {task_name}",
@@ -305,7 +307,7 @@ class OpenAICompatibleProvider:
                 provider=self._provider_name,
                 model=self._model,
                 cost_class=self._cost_class,
-                latency_ms=(time.monotonic() - start) * 1000,
+                latency_ms=(self._monotonic() - start) * 1000,
                 success=False,
                 error_category=ProviderErrorCategory.provider_error,
                 error_message="provider http error",
@@ -315,7 +317,7 @@ class OpenAICompatibleProvider:
                 provider=self._provider_name,
                 model=self._model,
                 cost_class=self._cost_class,
-                latency_ms=(time.monotonic() - start) * 1000,
+                latency_ms=(self._monotonic() - start) * 1000,
                 success=False,
                 error_category=ProviderErrorCategory.provider_error,
                 error_message="provider request failed",
@@ -323,7 +325,7 @@ class OpenAICompatibleProvider:
         except Exception:
             return self._fail_result(start, ProviderErrorCategory.unknown, "unexpected error")
 
-        latency_ms = (time.monotonic() - start) * 1000
+        latency_ms = (self._monotonic() - start) * 1000
 
         if status != 200:
             return ProviderResult(
@@ -425,7 +427,7 @@ class OpenAICompatibleProvider:
             provider=self._provider_name,
             model=self._model,
             cost_class=self._cost_class,
-            latency_ms=(time.monotonic() - start) * 1000,
+            latency_ms=(self._monotonic() - start) * 1000,
             success=False,
             error_category=category,
             error_message=message,

@@ -64,6 +64,25 @@ def _raw(status: int, text: str) -> _StubTransport:
     return t
 
 
+class _FakeClock:
+    """Deterministic monotonic clock so latency assertions are stable.
+
+    The real ``time.monotonic`` can return identical values across the tiny
+    window of a network-free stub call on fast machines, which would make
+    ``latency_ms`` compute to ``0.0``. Injecting a strictly increasing clock
+    keeps the latency assertions deterministic while still exercising the
+    provider's ``(end - start) * 1000`` millisecond computation.
+    """
+
+    def __init__(self, start: float = 100.0, step: float = 0.25) -> None:
+        self._t = start
+        self._step = step
+
+    def __call__(self) -> float:
+        self._t += self._step
+        return self._t
+
+
 # ---------------------------------------------------------------------------
 # Shared provider factory
 # ---------------------------------------------------------------------------
@@ -156,7 +175,7 @@ class TestSuccessfulGeneration:
             ],
         }
         t = _ok(plan)
-        provider = _provider(t)
+        provider = _provider(t, monotonic=_FakeClock())
         result = provider.generate_structured(
             task_name="editorial_plan",
             system_prompt="plan",
@@ -492,7 +511,7 @@ class TestCostClassAndLatency:
 
     def test_latency_ms_positive_on_success(self):
         t = _ok({"central_theme": "x", "sections": []})
-        provider = _provider(t)
+        provider = _provider(t, monotonic=_FakeClock())
         result = provider.generate_structured(
             task_name="editorial_plan",
             system_prompt="p",
@@ -504,7 +523,7 @@ class TestCostClassAndLatency:
 
     def test_latency_ms_positive_on_failure(self):
         t = _raw(500, "error")
-        provider = _provider(t)
+        provider = _provider(t, monotonic=_FakeClock())
         result = provider.generate_structured(
             task_name="editorial_plan",
             system_prompt="p",
