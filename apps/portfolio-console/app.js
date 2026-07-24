@@ -97,6 +97,7 @@
     const link = $(selector);
     if (url) {
       link.href = url;
+      link.rel = "noopener noreferrer";
       link.classList.remove("is-disabled");
       link.removeAttribute("aria-disabled");
     } else {

@@ -1,0 +1,15 @@
+{
+  "name": "ai-revenue-lab-portfolio-console",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private static administrator dashboard for AI Revenue Lab Business portfolio review",
+  "scripts": {
+    "test": "python3 -m unittest discover -s tests -v && npx playwright test",
+    "test:static": "node --check businesses.js && node --check app.js && python3 -m unittest discover -s tests -v",
+    "test:browser": "npx playwright test",
+    "dev": "python3 -m http.server 4173"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0"
+  }
+}

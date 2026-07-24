@@ -86,7 +86,7 @@ window.ARL_BUSINESSES = [
     workspace: "reference/business-05-neighbor-market-v2/",
     surfaceType: "Static demo in Draft PR",
     surfaceUrl: null,
-    deployment: "No production deployment",
+    deployment: "Assignment pending; no production deployment",
     githubLabel: "Draft PR #109",
     githubUrl: "https://github.com/skerishKang/ai-revenue-lab/pull/109",
     issueUrl: "https://github.com/skerishKang/ai-revenue-lab/issues/99",
