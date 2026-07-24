@@ -23,13 +23,12 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.schemas import ChatMessage
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
 
 import ipaddress
-
-from app.pilot.schemas import ChatMessage
 
 
 def _serialize_messages(

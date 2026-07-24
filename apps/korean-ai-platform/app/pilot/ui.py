@@ -19,8 +19,10 @@ from app.pilot.errors import (
     InvalidRequest,
     StreamNotSupported,
     ToolsNotSupported,
+    RegistryInvalid,
 )
 from app.pilot.registry import get_registry
+from app.pilot.routing import resolve_configuration, resolve_route, PilotConfigurationState
 import logging
 
 logger = logging.getLogger("korean-ai-platform.pilot")
@@ -48,18 +50,43 @@ def _validate_chat_request_ui(req: PilotChatRequest) -> None:
 
 @router.get("/pilot")
 async def pilot_page(request: Request):
+    state = resolve_configuration()
     registry = get_registry()
+    mode_name = state.value if state else "not_configured"
+
+    if state == PilotConfigurationState.INVALID_REGISTRY:
+        return render_template(
+            request,
+            "pilot.html",
+            {
+                "pilot_configured": False,
+                "pilot_models": [],
+                "selected_model": "",
+                "pilot_provider_count": 0,
+                "pilot_model_count": 0,
+                "mode_name": "invalid_registry",
+                "is_multi_provider": False,
+                "prompt": "",
+                "result": None,
+                "error": {
+                    "code": "registry_invalid",
+                    "message": registry.parse_error or "Provider registry 설정이 올바르지 않습니다.",
+                    "request_id": _new_request_id(),
+                },
+            },
+        )
+
     return render_template(
         request,
         "pilot.html",
         {
-            "pilot_configured": pilot_settings.configured,
+            "pilot_configured": state in (PilotConfigurationState.VALID_REGISTRY, PilotConfigurationState.LEGACY),
             "pilot_models": get_pilot_models(),
             "selected_model": pilot_settings.pilot_model_id or "",
             "pilot_provider_count": get_pilot_provider_count(),
             "pilot_model_count": get_pilot_model_count(),
-            "mode_name": pilot_settings.mode_name,
-            "is_multi_provider": registry.configured,
+            "mode_name": mode_name,
+            "is_multi_provider": state == PilotConfigurationState.VALID_REGISTRY,
             "prompt": "",
             "result": None,
             "error": None,
@@ -76,7 +103,32 @@ async def pilot_page_post(
     temperature: float = Form(0.2),
     max_tokens: int = Form(300),
 ):
-    if not pilot_settings.configured:
+    state = resolve_configuration()
+
+    if state == PilotConfigurationState.INVALID_REGISTRY:
+        registry = get_registry()
+        return render_template(
+            request,
+            "pilot.html",
+            {
+                "pilot_configured": False,
+                "pilot_models": [],
+                "selected_model": model_id,
+                "pilot_provider_count": 0,
+                "pilot_model_count": 0,
+                "mode_name": "invalid_registry",
+                "is_multi_provider": False,
+                "prompt": prompt,
+                "result": None,
+                "error": {
+                    "code": "registry_invalid",
+                    "message": registry.parse_error or "Provider registry 설정이 올바르지 않습니다.",
+                    "request_id": _new_request_id(),
+                },
+            },
+        )
+
+    if state == PilotConfigurationState.NOT_CONFIGURED:
         return render_template(
             request,
             "pilot.html",
@@ -112,21 +164,8 @@ async def pilot_page_post(
             )
             _validate_chat_request_ui(chat_req)
 
-            # Determine routing target
-            registry = get_registry()
-            route = None
-            if pilot_settings.has_registry and not registry.configured:
-                raise RegistryInvalid(detail=registry.parse_error or "Provider registry 설정이 올바르지 않습니다.")
-            if registry.configured:
-                route = registry.get_model(chat_req.model)
-                if route is None:
-                    raise ModelNotFound(chat_req.model)
-
-            legacy_route = registry.get_legacy_target()
-            if route is None and legacy_route is None:
-                raise PilotNotConfigured()
-
-            target = route or legacy_route
+            # Determine routing target via resolver
+            target = resolve_route(chat_req.model)
 
             start = time.monotonic()
             response_data = await prv.call_chat_completions(

@@ -20,18 +20,6 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 
 
 @dataclass(frozen=True)
-class RouteTarget:
-    """Resolved routing target for a single provider call."""
-
-    provider_id: str
-    provider_name: str
-    model_id: str
-    upstream_model: str
-    base_url: str
-    timeout_seconds: int
-
-
-@dataclass(frozen=True)
 class ProviderConfig:
     """A configured upstream provider."""
 
@@ -102,6 +90,8 @@ class ProviderRegistry:
     """
 
     def __init__(self, raw_json: str = "") -> None:
+        from app.pilot.routing import RouteTarget
+
         self._providers: list[ProviderConfig] = []
         self._model_map: dict[str, RouteTarget] = {}
         self._disabled_model_ids: set[str] = set()
@@ -258,7 +248,7 @@ class ProviderRegistry:
     def disabled_model_count(self) -> int:
         return len(self._disabled_model_ids)
 
-    def get_model(self, model_id: str) -> RouteTarget | None:
+    def get_model(self, model_id: str):
         """Resolve a model ID to its RouteTarget (None if disabled or unknown)."""
         return self._model_map.get(model_id)
 
@@ -295,21 +285,6 @@ class ProviderRegistry:
             }
             for p in self._providers
         ]
-
-    def get_legacy_target(self) -> RouteTarget | None:
-        """Build a RouteTarget from Phase 1 single-provider env vars."""
-        if not pilot_settings.pilot_base_url or not pilot_settings.pilot_model_id:
-            return None
-        upstream = pilot_settings.pilot_upstream_model or pilot_settings.pilot_model_id
-        return RouteTarget(
-            provider_id=pilot_settings.pilot_provider_id,
-            provider_name=pilot_settings.pilot_provider_id.replace("-", " ").title(),
-            model_id=pilot_settings.pilot_model_id,
-            upstream_model=upstream,
-            base_url=pilot_settings.pilot_base_url,
-            timeout_seconds=pilot_settings.pilot_timeout_seconds,
-        )
-
 
 # Singleton registry, lazily initialized
 _registry: ProviderRegistry | None = None

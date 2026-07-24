@@ -1,13 +1,11 @@
 """BYOK Gateway Pilot configuration.
 
-Supports multi-provider registry via BUSINESS14_PROVIDER_REGISTRY_JSON
-with legacy single-provider fallback via BUSINESS14_PILOT_* variables.
+Provides raw env-var accessors only. Configuration state resolution
+(delegating to routing.PilotConfigurationState) happens in routing.py.
 
-Config states (checked at runtime via registry):
-- valid_registry: registry JSON valid
-- invalid_registry: registry JSON present but invalid → fail-closed
-- legacy: single-provider env vars configured
-- not_configured: nothing configured
+Raw accessors provided:
+- has_registry: provider_registry_json is non-empty
+- has_legacy: both pilot_base_url and pilot_model_id are set
 """
 
 from __future__ import annotations
@@ -28,24 +26,6 @@ class PilotSettings(BaseSettings):
     model_config = {"env_prefix": "BUSINESS14_"}
 
     @property
-    def configured(self) -> bool:
-        """True if configuration is usable.
-
-        - registry JSON present and parseable → True (full validation at registry init)
-        - registry JSON present but unparseable → False (fail-closed; UI shows invalid_registry)
-        - legacy single-provider → True
-        - nothing → False
-        """
-        if self.provider_registry_json:
-            try:
-                import json
-                json.loads(self.provider_registry_json)
-                return True
-            except (json.JSONDecodeError, ValueError):
-                return False
-        return bool(self.pilot_base_url and self.pilot_model_id)
-
-    @property
     def has_registry(self) -> bool:
         return bool(self.provider_registry_json)
 
@@ -54,7 +34,14 @@ class PilotSettings(BaseSettings):
         return bool(self.pilot_base_url and self.pilot_model_id)
 
     @property
+    def configured(self) -> bool:
+        """Quick check: any configuration source has data (may be invalid).
+        Full validation is done by routing.resolve_configuration()."""
+        return self.has_registry or self.has_legacy
+
+    @property
     def mode_name(self) -> str:
+        """Quick mode label (not validated)."""
         if self.provider_registry_json:
             return "byok-multi-provider-pilot"
         if self.pilot_base_url and self.pilot_model_id:
