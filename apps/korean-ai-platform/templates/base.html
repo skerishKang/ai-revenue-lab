@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="{{ 'en' if lang == 'en' else 'ko' }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,7 +67,7 @@
       <span class="muted">실제 Provider 호출 · key 저장 안 함</span>
       {% else %}
       <span class="env-pill"><span class="env-dot" aria-hidden="true"></span>Phase 0 Mock Demo</span>
-      <span class="muted">실제 모델 호출 · Provider 제휴 없음 · key 저장 안 함</span>
+      <span class="muted">실제 모델 호출 없음 · Provider 제휴 없음</span>
       {% endif %}
     </div>
   </aside>

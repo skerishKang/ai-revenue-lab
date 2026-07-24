@@ -52,6 +52,7 @@ async def workspace_page(request: Request):
     ctx = {
         "_": lambda key, **kw: gettext(key, locale, **kw),
         "lang": locale.value,
+        "html_lang": locale.value,
     }
 
     # Default config for JS init

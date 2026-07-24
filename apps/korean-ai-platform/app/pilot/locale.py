@@ -138,15 +138,25 @@ _ = gettext  # Korean default
 def locale_from_request(request) -> Locale:
     """Extract locale preference from request.
 
-    Priority: query param > cookie > default ko-KR
+    Rules:
+    1. lang query param exists:
+       - en -> English
+       - ko-KR -> Korean
+       - anything else -> Korean (invalid query never falls back to cookie)
+    2. No lang query param:
+       - valid cookie -> use cookie
+       - no cookie / invalid cookie -> Korean
     Accept-Language header is ignored — user must explicitly choose.
     """
-    # Query param
-    q = request.query_params.get("lang", "")
-    if q in (Locale.KO, Locale.EN):
-        return Locale(q)
+    # Check if lang key EXISTS in query params
+    if "lang" in request.query_params:
+        q = request.query_params.get("lang", "")
+        # Query present: use valid value or Korean for invalid/empty
+        if q in (Locale.KO, Locale.EN):
+            return Locale(q)
+        return Locale.KO
 
-    # Cookie
+    # No lang query: fall back to cookie
     c = request.cookies.get("locale_preference", "")
     if c in (Locale.KO, Locale.EN):
         return Locale(c)

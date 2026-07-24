@@ -79,6 +79,22 @@ BUSINESS14_PROVIDER_REGISTRY_JSON='[
 
 **Note:** When `BUSINESS14_PROVIDER_REGISTRY_JSON` is set and valid, multi-provider mode is used. Legacy env vars are ignored when registry is set. Invalid registry JSON causes a `registry_invalid` error — no silent fallback to legacy mode.
 
+### Phase 3: Korean-First Session Workspace Pilot
+
+- `GET /workspace` — Korean-first browser chat workspace
+- Korean default UI; explicit English switch via `?lang=en` or cookie
+- Accept-Language is ignored; missing/empty/invalid locale → Korean
+- Multi-turn conversation in browser JS memory (no server persistence)
+- Provider API key via password input + Apply button (key held in JS memory only)
+- Key input value cleared immediately after capture
+- Model change resets key and conversation (no cross-provider key/message leakage)
+- `POST /api/pilot/v1/chat/completions` directly (no separate workspace proxy endpoint)
+- Phase 2 multi-provider registry for model selection
+- Estimated cost: always `확인 불가` (unknown) — actual billing by the connected Provider
+- XSS-safe config injection via `application/json` script element
+- `innerHTML` not used; `textContent` and `replaceChildren` for content rendering
+- Page reload or tab close clears key and conversation
+
 ## API Endpoints
 
 | Method | Path | Description |
@@ -86,16 +102,18 @@ BUSINESS14_PROVIDER_REGISTRY_JSON='[
 | GET | `/api/pilot/health` | Provider configuration summary |
 | GET | `/api/pilot/models` | Aggregated model catalog |
 | POST | `/api/pilot/v1/chat/completions` | BYOK chat completions |
+| GET | `/workspace` | Korean-first session workspace UI |
 
 ### Key Delivery
 
 - Provider key is sent via `X-Business14-Provider-Key` request header
 - Keys are never persisted, logged, or returned in responses
 - Each request uses a single model; the key is forwarded to the mapped provider only
+- Workspace: key is captured via Apply button, held in JS memory, not stored in cookies/DOM/localStorage
 
 ## Cost
 
-BYOK has no Business 14 billing. Actual usage costs depend on the connected provider's contract. Pilot response metadata shows `estimated_krw: null` (unknown).
+BYOK has no Business 14 billing. Actual usage costs depend on the connected provider's contract. Pilot response metadata shows `estimated_krw: null` (unknown). Workspace displays `확인 불가` (cannot be determined).
 
 ## Security Boundary
 
@@ -104,6 +122,9 @@ BYOK has no Business 14 billing. Actual usage costs depend on the connected prov
 - Secret redaction on all log output
 - Request ID tracking for all errors
 - No streaming, tool calling, or image input support
+- Workspace: key in JS memory only, cleared on reload/tab-close/model-change
+- Workspace: XSS-safe rendering (textContent, replaceChildren, no innerHTML)
+- Workspace: config injected via `application/json` script element (not `|safe`)
 
 ## Testing
 
@@ -122,3 +143,6 @@ All tests use `httpx.MockTransport` — no external network calls.
 - [Phase 2 Charter](docs/PHASE2_MULTI_PROVIDER_CHARTER.md)
 - [Phase 2 Routing Contract](docs/PHASE2_ROUTING_CONTRACT.md)
 - [Phase 2 Pilot Runbook](docs/PHASE2_PILOT_RUNBOOK.md)
+- [Phase 3 Charter](docs/PHASE3_SESSION_WORKSPACE_CHARTER.md)
+- [Phase 3 Security Contract](docs/PHASE3_SESSION_SECURITY_CONTRACT.md)
+- [Phase 3 Workspace Runbook](docs/PHASE3_WORKSPACE_RUNBOOK.md)

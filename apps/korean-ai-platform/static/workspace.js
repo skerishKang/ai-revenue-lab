@@ -1,16 +1,19 @@
 /* Business 14 Workspace (Phase 3)
  * Client-side conversation manager.
+ * Self-initializing from DOMContentLoaded / readyState.
  * - Keys captured via "Apply" button, not per-keystroke
  * - Provider change clears key + messages (isolation)
  * - Reuses Phase 2 /api/pilot/v1/chat/completions directly
  * - XSS-safe: textContent only, no innerHTML for user/assistant content
+ * - try/finally ensures send button always recovers after errors
+ * - resetConversationView keeps empty state element in DOM
  */
 (function (global) {
   "use strict";
 
   var state = {
-    messages: [],       // [{role, content}]
-    apiKey: null,       // in-memory only
+    messages: [],
+    apiKey: null,
     activeModel: null,
     activeProvider: "",
     models: [],
@@ -18,7 +21,7 @@
     isSending: false,
     maxTokens: 512,
     errorCode: null,
-    config: null,       // loaded from #workspace-config JSON
+    config: null,
   };
 
   var DOM = {};
@@ -75,7 +78,6 @@
     var newProvider = opt.getAttribute("data-provider") || "";
     var newModel = opt.value;
 
-    // Skip reset on initial page load (first call from init)
     if (DOM._initializing) {
       state.activeModel = newModel;
       state.activeProvider = newProvider;
@@ -83,38 +85,28 @@
       return;
     }
 
-    // Model changed — clear key and messages for isolation
     var providerChanged = newProvider !== state.activeProvider;
     state.activeModel = newModel;
     state.activeProvider = newProvider;
     updateProviderDisplay();
 
-    // Clear state
+    // Clear key + messages for isolation
     state.apiKey = null;
-    state.messages = [];
-    DOM.chatArea.replaceChildren();
-    showEmpty(true);
+    resetConversationView();
     DOM.keyStatus.textContent = t("key_status_empty");
     DOM.keyInput.value = "";
     DOM.keyClear.style.display = "none";
-    DOM.msgLimit.style.display = "none";
 
-    if (providerChanged) {
-      addSystemMsg("🔄 " + t("provider_changed"));
-    } else {
-      addSystemMsg("🔄 " + t("model_changed"));
-    }
+    addSystemMsg("\uD83D\uDD04 " + (providerChanged ? t("provider_changed") : t("model_changed")));
     scrollToBottom();
     DOM.keyInput.focus();
   }
 
   function updateProviderDisplay() {
-    var note = document.getElementById("ws_provider_name");
+    var note = DOM.providerNote;
     if (note) {
       note.innerHTML = "";
-      note.appendChild(document.createTextNode(
-        t("model_provider") + ": " + state.activeProvider
-      ));
+      note.appendChild(document.createTextNode(t("model_provider") + ": " + state.activeProvider));
     }
   }
 
@@ -122,15 +114,15 @@
   function applyKey() {
     var value = DOM.keyInput.value.trim();
     if (value.length === 0) {
-      addSystemMsg("❌ " + t("empty_key"), true);
+      addSystemMsg("\u274C " + t("empty_key"), true);
       scrollToBottom();
       return;
     }
     state.apiKey = value;
-    DOM.keyInput.value = "";  // Clear input immediately
+    DOM.keyInput.value = "";
     DOM.keyStatus.textContent = t("key_status_set");
     DOM.keyClear.style.display = "";
-    addSystemMsg("🔑 " + t("key_status_set"));
+    addSystemMsg("\uD83D\uDD11 " + t("key_status_set"));
     scrollToBottom();
     DOM.input.focus();
   }
@@ -148,7 +140,7 @@
     DOM.keyClear.style.display = "none";
     DOM.keyInput.value = "";
     DOM.keyInput.focus();
-    addSystemMsg("🔑 " + t("key_status_empty"));
+    addSystemMsg("\uD83D\uDD11 " + t("key_status_empty"));
     scrollToBottom();
   }
 
@@ -156,21 +148,15 @@
   function addMessage(role, content) {
     var div = document.createElement("div");
     div.className = "ws-msg ws-msg-" + role;
-
     var meta = document.createElement("div");
     meta.className = "ws-msg-meta";
-    var label = role === "user" ? "You" : "Assistant";
-    if (role === "assistant") {
-      label = state.activeProvider || label;
-    }
+    var label = role === "user" ? "You" : (state.activeProvider || "Assistant");
     meta.appendChild(document.createTextNode(label));
     div.appendChild(meta);
-
     var body = document.createElement("div");
     body.className = "ws-msg-body";
-    body.appendChild(document.createTextNode(content));  // Safe: textContent
+    body.appendChild(document.createTextNode(content));
     div.appendChild(body);
-
     DOM.chatArea.appendChild(div);
   }
 
@@ -185,7 +171,6 @@
     if (!biz14) return;
     var div = document.createElement("div");
     div.className = "ws-msg ws-msg-meta";
-
     var parts = [];
     if (biz14.request_id) parts.push(t("request_id") + ": " + biz14.request_id);
     if (biz14.latency_ms) parts.push(t("latency") + ": " + biz14.latency_ms + "ms");
@@ -198,8 +183,7 @@
     if (biz14.estimated_krw === null || biz14.estimated_krw === undefined) {
       parts.push(t("cost_unknown"));
     }
-
-    div.appendChild(document.createTextNode(parts.join(" \u00b7 ")));
+    div.appendChild(document.createTextNode(parts.join(" \u00B7 ")));
     DOM.chatArea.appendChild(div);
   }
 
@@ -207,18 +191,23 @@
     DOM.chatArea.scrollTop = DOM.chatArea.scrollHeight;
   }
 
-  function showEmpty(show) {
-    DOM.empty.style.display = show ? "" : "none";
+  function resetConversationView() {
+    state.messages = [];
+    DOM.chatArea.replaceChildren(DOM.empty);
+    DOM.empty.style.display = "";
+    DOM.msgLimit.style.display = "none";
   }
 
-  // Rollback user message on failure: removes from state and DOM
+  // Rollback user message on failure
   function rollbackUserMessage() {
     state.messages.pop();
     var last = DOM.chatArea.lastChild;
     if (last && last.classList && last.classList.contains("ws-msg-user")) {
       DOM.chatArea.removeChild(last);
     }
-    showEmpty(state.messages.length === 0);
+    if (state.messages.length === 0) {
+      resetConversationView();
+    }
   }
 
   // ── Send message (direct Phase 2 API call) ──────────────────────────
@@ -239,15 +228,14 @@
 
     if (checkMessageLimit()) return;
 
-    // Validate key
     if (!state.apiKey) {
-      addSystemMsg("\u274c " + t("empty_key"), true);
+      addSystemMsg("\u274C " + t("empty_key"), true);
       scrollToBottom();
       return;
     }
 
     if (!state.activeModel) {
-      addSystemMsg("\u274c " + t("error"), true);
+      addSystemMsg("\u274C " + t("error"), true);
       scrollToBottom();
       return;
     }
@@ -257,18 +245,17 @@
     DOM.sendBtn.textContent = t("sending");
     DOM.input.value = "";
 
-    // Push to state BEFORE fetch so state is consistent
-    // Build msgs from state AFTER push (single source of truth)
+    // Push user message to state BEFORE fetch
     state.messages.push({ role: "user", content: text });
-    var msgs = state.messages.slice();  // copy for API body
+    var msgs = state.messages.slice();
 
-    // Render user message immediately
     addMessage("user", text);
-    showEmpty(false);
+    if (DOM.empty.style.display !== "none") {
+      DOM.empty.style.display = "none";
+    }
     scrollToBottom();
 
     try {
-      // Call Phase 2 API directly — no server-side proxy
       var resp = await fetch("/api/pilot/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -290,11 +277,10 @@
         var errMsg = data.error && data.error.message
           ? data.error.message
           : t("error") + " (code: " + (data.error && data.error.code || resp.status) + ")";
-        addSystemMsg("\u274c " + errMsg, true);
+        addSystemMsg("\u274C " + errMsg, true);
         if (data.error && data.error.request_id) {
           addSystemMsg("Request ID: " + data.error.request_id);
         }
-        DOM.sendBtn.textContent = t("retry");
         scrollToBottom();
         return;
       }
@@ -305,33 +291,26 @@
 
       addMessage("assistant", content);
       addMetadata(data.business14);
-
     } catch (err) {
       rollbackUserMessage();
-      addSystemMsg("\u274c " + t("error"), true);
+      addSystemMsg("\u274C " + t("error"), true);
+    } finally {
+      state.isSending = false;
+      DOM.sendBtn.disabled = false;
+      DOM.sendBtn.textContent = t("send");
+      scrollToBottom();
+      DOM.input.focus();
     }
-
-    state.isSending = false;
-    DOM.sendBtn.disabled = false;
-    DOM.sendBtn.textContent = t("send");
-    scrollToBottom();
-    DOM.input.focus();
   }
 
   // ── New chat / Clear ─────────────────────────────────────────────────
   function newChat() {
-    state.messages = [];
-    DOM.chatArea.replaceChildren();
-    showEmpty(true);
-    DOM.msgLimit.style.display = "none";
+    resetConversationView();
     DOM.input.focus();
   }
 
   function clearChat() {
-    state.messages = [];
-    DOM.chatArea.replaceChildren();
-    showEmpty(true);
-    DOM.msgLimit.style.display = "none";
+    resetConversationView();
     DOM.input.focus();
   }
 
@@ -357,7 +336,6 @@
       state.activeProvider = config.models[0].provider_name || "";
     }
 
-    // Cache DOM
     DOM.model = document.getElementById("ws_model");
     DOM.keyInput = document.getElementById("ws_key");
     DOM.keyStatus = document.getElementById("ws_key_status");
@@ -370,14 +348,13 @@
     DOM.newChatBtn = document.getElementById("ws_new_chat");
     DOM.clearChatBtn = document.getElementById("ws_clear_chat");
     DOM.msgLimit = document.getElementById("ws_msg_limit");
+    DOM.providerNote = document.getElementById("ws_provider_name");
 
-    // Disable send if not configured or invalid registry
     if (config.errorCode === "registry_invalid" || !config.pilotConfigured) {
       if (DOM.sendBtn) DOM.sendBtn.disabled = true;
       if (DOM.input) DOM.input.disabled = true;
     }
 
-    // Bind events
     DOM._initializing = true;
     if (DOM.model) DOM.model.addEventListener("change", onModelChange);
     if (DOM.keyApply) DOM.keyApply.addEventListener("click", applyKey);
@@ -388,22 +365,31 @@
     if (DOM.newChatBtn) DOM.newChatBtn.addEventListener("click", newChat);
     if (DOM.clearChatBtn) DOM.clearChatBtn.addEventListener("click", clearChat);
 
-    // Initialize provider display
     if (DOM.model && DOM.model.options.length > 0) {
       onModelChange();
     }
     DOM._initializing = false;
   }
 
+  // ── Self-initialization (no inline script needed) ───────────────────
+  function initializeFromDocument() {
+    var configEl = document.getElementById("workspace-config");
+    if (!configEl) return;
+    try {
+      var config = JSON.parse(configEl.textContent);
+      init(config);
+    } catch (e) {
+      console.error("Workspace config parse error", e);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeFromDocument, { once: true });
+  } else {
+    initializeFromDocument();
+  }
+
   // ── Expose ──────────────────────────────────────────────────────────
-  global.Business14Workspace = {
-    init: init,
-    sendMessage: sendMessage,
-    newChat: newChat,
-    clearChat: clearChat,
-    clearKey: clearKey,
-    applyKey: applyKey,
-    state: state,
-  };
+  global.Business14Workspace = { init: init, state: state };
 
 })(window);

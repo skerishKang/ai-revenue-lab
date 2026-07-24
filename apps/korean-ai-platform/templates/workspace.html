@@ -27,6 +27,17 @@
 </div>
 {% endif %}
 
+<div class="stat-cards" style="margin-bottom:16px;">
+  <div class="stat-card">
+    <span class="stat-label">{{ _("workspace.provider_count") }}</span>
+    <span class="stat-value" id="ws_provider_count">{{ pilot_provider_count }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">{{ _("workspace.model_count") }}</span>
+    <span class="stat-value" id="ws_model_count">{{ pilot_model_count }}</span>
+  </div>
+</div>
+
 <div class="workspace-layout">
   <div class="workspace-sidebar">
     <div class="ws-section">
@@ -104,18 +115,5 @@
 <script id="workspace-config" type="application/json">
 {{ workspace_config | tojson }}
 </script>
-<script src="/static/workspace.js?v=phase3-2" defer></script>
-<script>
-(function() {
-  'use strict';
-  var configEl = document.getElementById('workspace-config');
-  if (!configEl) return;
-  try {
-    var config = JSON.parse(configEl.textContent);
-    Business14Workspace.init(config);
-  } catch(e) {
-    console.error('Workspace config error', e);
-  }
-})();
-</script>
+<script src="/static/workspace.js?v=phase3-3" defer></script>
 {% endblock %}

@@ -146,6 +146,36 @@ class TestLocale:
         assert "AI 모델 대화" in text, "Accept-Language en must NOT switch to English"
         assert "AI Model Chat" not in text
 
+    def test_invalid_query_with_en_cookie_returns_korean(self, client):
+        """Invalid ?lang=invalid with en cookie -> Korean (query wins as invalid)."""
+        resp = client.get(
+            "/workspace?lang=invalid",
+            headers={"Cookie": "locale_preference=en"},
+        )
+        assert resp.status_code == 200
+        assert "AI 모델 대화" in resp.text
+        assert "AI Model Chat" not in resp.text
+
+    def test_french_query_with_en_cookie_returns_korean(self, client):
+        """Invalid ?lang=fr with en cookie -> Korean."""
+        resp = client.get(
+            "/workspace?lang=fr",
+            headers={"Cookie": "locale_preference=en"},
+        )
+        assert resp.status_code == 200
+        assert "AI 모델 대화" in resp.text
+        assert "AI Model Chat" not in resp.text
+
+    def test_empty_query_with_en_cookie_returns_korean(self, client):
+        """Empty ?lang= with en cookie -> Korean."""
+        resp = client.get(
+            "/workspace?lang=",
+            headers={"Cookie": "locale_preference=en"},
+        )
+        assert resp.status_code == 200
+        assert "AI 모델 대화" in resp.text
+        assert "AI Model Chat" not in resp.text
+
     def test_missing_english_fallback_to_korean(self, client):
         """English translation missing -> Korean fallback."""
         resp = client.get("/workspace?lang=en")
@@ -313,11 +343,53 @@ class TestWorkspacePage:
         # Should NOT show Phase 0 labels in the workspace page
         assert "Phase 0 Mock Demo" not in resp.text
 
-    def test_provider_count_displayed(self, client):
+    def test_provider_count_numeric_displayed(self, client):
         _setup_registry()
         resp = client.get("/workspace")
-        # Provider count should appear somewhere in the page
-        assert "Provider" in resp.text
+        # Check for the stat-value element with provider count = 2
+        assert 'id="ws_provider_count">2' in resp.text
+        # Also check the label is present
+        assert "Provider 수" in resp.text or "Providers" in resp.text
+
+    def test_model_count_numeric_displayed(self, client):
+        _setup_registry()
+        resp = client.get("/workspace")
+        # Check for the stat-value element with model count = 2
+        assert 'id="ws_model_count">2' in resp.text
+        # Also check the label is present
+        assert "모델 수" in resp.text or "Models" in resp.text
+
+    def test_html_lang_ko_default(self, client):
+        """Default workspace should have html lang=ko."""
+        resp = client.get("/workspace")
+        assert 'lang="ko"' in resp.text
+
+    def test_html_lang_en_on_explicit(self, client):
+        """?lang=en should set html lang=en."""
+        resp = client.get("/workspace?lang=en")
+        assert 'lang="en"' in resp.text
+
+    def test_html_lang_en_from_cookie(self, client):
+        """en cookie should set html lang=en."""
+        resp = client.get("/workspace", headers={"Cookie": "locale_preference=en"})
+        assert 'lang="en"' in resp.text
+
+    def test_html_lang_en_after_switch_to_ko(self, client):
+        """Switching back to Korean after English sets html lang=ko."""
+        resp_en = client.get("/workspace?lang=en")
+        assert 'lang="en"' in resp_en.text
+        resp_ko = client.get("/workspace?lang=ko-KR")
+        assert 'lang="ko"' in resp_ko.text
+
+    def test_no_inline_init_after_deferred_script(self, client):
+        """Workspace must not have inline Business14Workspace.init() after deferred script."""
+        _setup_registry()
+        resp = client.get("/workspace")
+        # The init should happen inside workspace.js via DOMContentLoaded, not inline
+        # Check there's no `Business14Workspace.init(` inline script
+        assert 'Business14Workspace.init(' not in resp.text
+
+
 
 
 # ============================================================================
@@ -381,6 +453,16 @@ class TestKeySafety:
         _setup_registry()
         resp = client.get("/workspace")
         assert 'src="/static/app.js' in resp.text
+
+    def test_try_finally_cleanup_in_js(self):
+        """workspace.js must use try/finally for sendMessage error recovery."""
+        import os
+        js_path = os.path.join(os.path.dirname(__file__), "..", "static", "workspace.js")
+        with open(js_path, encoding="utf-8") as f:
+            js_source = f.read()
+        assert "finally {" in js_source, "sendMessage must use try/finally for button cleanup"
+        assert "state.isSending = false" in js_source
+        assert "DOM.sendBtn.disabled = false" in js_source
 
 
 # ============================================================================
