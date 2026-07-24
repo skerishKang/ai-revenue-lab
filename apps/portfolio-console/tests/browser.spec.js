@@ -309,3 +309,135 @@ test.describe('Portfolio Console Browser Tests', () => {
     await expect(page.locator('#business-table-body .business-row')).toHaveCount(15);
   });
 });
+
+test.describe('Quick Launch Browser Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+  });
+
+  test('renders 13 quick launch items', async ({ page }) => {
+    await expect(page.locator('.ql-item')).toHaveCount(13);
+  });
+
+  test('has 6 active links with 열기 indicator', async ({ page }) => {
+    const active = page.locator('.ql-active');
+    await expect(active).toHaveCount(6);
+
+    const indicator = active.first().locator('i');
+    await expect(indicator).toContainText('열기');
+  });
+
+  test('has 7 planned items with 준비 중 indicator', async ({ page }) => {
+    const planned = page.locator('.ql-planned');
+    await expect(planned).toHaveCount(7);
+
+    const indicator = planned.first().locator('i');
+    await expect(indicator).toContainText('준비 중');
+  });
+
+  test('active items are <a> with href, target=_blank, rel=noopener noreferrer', async ({ page }) => {
+    const activeLinks = page.locator('.ql-active');
+    const count = await activeLinks.count();
+
+    for (let i = 0; i < count; i++) {
+      const link = activeLinks.nth(i);
+      await expect(link).toHaveAttribute('href', /^https:\/\//);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    }
+  });
+
+  test('planned items are <span> with aria-disabled and tabindex=-1', async ({ page }) => {
+    const plannedItems = page.locator('.ql-planned');
+    const count = await plannedItems.count();
+
+    for (let i = 0; i < count; i++) {
+      const item = plannedItems.nth(i);
+      await expect(item).not.toHaveAttribute('href');
+      await expect(item).not.toHaveAttribute('target');
+      await expect(item).not.toHaveAttribute('rel');
+      await expect(item).toHaveAttribute('aria-disabled', 'true');
+      await expect(item).toHaveAttribute('tabindex', '-1');
+    }
+  });
+
+  test('planned items use <span> tag', async ({ page }) => {
+    const plannedItems = page.locator('.ql-planned');
+    const count = await plannedItems.count();
+    for (let i = 0; i < count; i++) {
+      const tagName = await plannedItems.nth(i).evaluate(el => el.tagName);
+      expect(tagName).toBe('SPAN');
+    }
+  });
+
+  test('active items use <a> tag', async ({ page }) => {
+    const activeLinks = page.locator('.ql-active');
+    const count = await activeLinks.count();
+    for (let i = 0; i < count; i++) {
+      const tagName = await activeLinks.nth(i).evaluate(el => el.tagName);
+      expect(tagName).toBe('A');
+    }
+  });
+
+  test('existing business registry search still works', async ({ page }) => {
+    await page.fill('#search-input', 'fiction');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#business-table-body .business-row')).toHaveCount(1);
+    await expect(page.locator('#business-table-body .business-row').first()
+      .locator('.business-title strong')).toHaveText('Living Fiction');
+  });
+
+  test('existing state filter still works', async ({ page }) => {
+    await page.selectOption('#state-filter', 'running');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#business-table-body .business-row')).toHaveCount(4);
+  });
+
+  test('existing sort control still works', async ({ page }) => {
+    await page.selectOption('#sort-control', 'number-desc');
+    await page.waitForTimeout(200);
+    const firstNumber = await page.locator('#business-table-body .business-row')
+      .first().locator('.business-number').textContent();
+    expect(firstNumber).toBe('15');
+  });
+
+  test('existing row selection still works', async ({ page }) => {
+    await page.click('#business-table-body tr[data-business-number="14"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#detail-number')).toHaveText('BUSINESS 14');
+    await expect(page.locator('#detail-title')).toHaveText('Korean AI Platform');
+  });
+
+  test('no horizontal overflow on desktop with quick launch', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1100 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
+  });
+
+  test('no horizontal overflow on tablet with quick launch', async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
+  });
+
+  test('no horizontal overflow on mobile with quick launch', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > window.innerWidth);
+    expect(overflow).toBeFalsy();
+  });
+
+  test('no console errors with quick launch', async ({ page }) => {
+    const errors = [];
+    page.on('console', msg => {
+      if (msg.type() === 'error') errors.push(msg.text());
+    });
+    page.on('pageerror', err => errors.push(err.message));
+
+    await page.reload({ waitUntil: 'networkidle' });
+    expect(errors).toHaveLength(0);
+  });
+});
