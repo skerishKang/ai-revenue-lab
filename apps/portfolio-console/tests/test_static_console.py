@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_required_files_exist(self) -> None:
-        for relative in ("index.html", "styles.css", "businesses.js", "app.js", "_headers", "README.md"):
+        for relative in ("index.html", "styles.css", "businesses.js", "quick-launch.js", "app.js", "_headers", "README.md"):
             self.assertTrue((ROOT / relative).is_file(), relative)
 
     def test_html_has_private_and_noindex_contracts(self) -> None:
@@ -53,6 +53,41 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn("selectBusiness", script)
         self.assertNotIn("fetch(", script)
         self.assertNotIn("localStorage", script)
+
+    def test_quick_launch_file_has_data_and_render(self) -> None:
+        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
+        self.assertIn("window.ARL_QUICK_LAUNCH", script)
+        self.assertIn("renderQuickLaunch", script)
+        self.assertIn("verified", script)
+        self.assertIn("planned", script)
+
+    def test_quick_launch_html_section_exists(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="quick-launch-list"', html)
+        self.assertIn('class="ql-heading"', html)
+        self.assertIn('src="./quick-launch.js"', html)
+
+    def test_quick_launch_active_links_have_correct_attributes(self) -> None:
+        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
+        self.assertIn('target="_blank"', script)
+        self.assertIn('rel="noopener noreferrer"', script)
+
+    def test_quick_launch_planned_items_inert(self) -> None:
+        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
+        self.assertIn('aria-disabled="true"', script)
+        self.assertIn('tabindex="-1"', script)
+
+    def test_quick_launch_verified_urls_use_https(self) -> None:
+        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
+        urls = re.findall(r'url:\s*"(https?[^"]+)"', script)
+        self.assertEqual(len(urls), 6)
+        for url in urls:
+            self.assertTrue(url.startswith("https://"), url)
+
+    def test_quick_launch_item_counts(self) -> None:
+        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
+        self.assertEqual(script.count('state: "verified"'), 6)
+        self.assertEqual(script.count('state: "planned"'), 7)
 
 
 if __name__ == "__main__":
