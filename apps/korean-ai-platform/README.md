@@ -2,7 +2,20 @@
 
 ## Overview
 
-A Korean AI API Provider concept demo and BYOK (Bring Your Own Key) gateway pilot.
+Business 14는 한국 시장에서 여러 국내·해외 AI Provider와 모델을 하나의 인터페이스로 이용할 수 있도록 만드는 한국형 AI Provider 플랫폼이다.
+
+이 프로젝트의 출발점은 한국 사용자·기업·기관이 사용할 수 있는 독립적인 한국 중심 AI Provider 계층이 부족하다는 문제다. 따라서 제품의 기준 시장과 기본 사용자 경험은 한국이며, 해외 Provider 연동은 한국 사용자가 더 쉽게 활용하기 위한 수단으로 다룬다.
+
+### Product and Language Policy
+
+- Primary market: South Korea
+- Canonical product language: Korean (`ko-KR`)
+- Default UI language: Korean
+- English is an optional secondary locale, accessible through a language switch when implemented
+- New product flows, terminology, help text, validation messages, and documentation are authored in Korean first
+- English copy may be added or updated later and may temporarily fall back to Korean
+- Phase 2 does not require simultaneous expansion of every English screen or string
+- The Korea-first policy is a product-market decision, not a temporary single-user convenience
 
 ### Phase 0: AI API Provider Mock Demo
 
@@ -25,6 +38,7 @@ A Korean AI API Provider concept demo and BYOK (Bring Your Own Key) gateway pilo
 - Aggregated model catalog from all registered providers
 - Multi-provider health and model listing API
 - Legacy Phase 1 single-provider compatibility (when registry is not set)
+- Korean-first product copy; English localization expansion is deferred unless required for the pilot
 
 ## Environment Variables
 
