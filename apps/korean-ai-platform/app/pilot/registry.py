@@ -95,13 +95,16 @@ class ProviderRegistry:
     - list_models() -> list[dict]
     - provider_summary() -> list[dict]
     - configured: bool
-    - configure_count: int
+    - provider_count: int
     - model_count: int
+    - disabled_model_count: int
+    - parse_error: str | None
     """
 
     def __init__(self, raw_json: str = "") -> None:
         self._providers: list[ProviderConfig] = []
         self._model_map: dict[str, RouteTarget] = {}
+        self._disabled_model_ids: set[str] = set()
         self._providers_map: dict[str, ProviderConfig] = {}
         self._parse_error: str | None = None
 
@@ -121,9 +124,14 @@ class ProviderRegistry:
             self._parse_error = "Registry must be a JSON array of providers"
             return
 
+        if len(data) == 0:
+            self._parse_error = "Registry must contain at least one provider"
+            return
+
         seen_provider_ids: set[str] = set()
         seen_model_ids: set[str] = set()
         providers: list[ProviderConfig] = []
+        total_enabled_count = 0
 
         for idx, entry in enumerate(data):
             if not isinstance(entry, dict):
@@ -181,19 +189,24 @@ class ProviderRegistry:
                     return
 
                 model_name = (mentry.get("display_name") or model_id).strip()
-                enabled = mentry.get("enabled", True)
-                if not isinstance(enabled, bool):
-                    enabled = True
+                enabled_raw = mentry.get("enabled", True)
+                if not isinstance(enabled_raw, bool):
+                    self._parse_error = f"Provider '{provider_id}' model '{model_id}' enabled must be a boolean"
+                    return
 
                 models.append(ModelConfig(
                     model_id=model_id,
                     upstream_model=upstream,
                     display_name=model_name,
                     provider_id=provider_id,
-                    enabled=enabled,
+                    enabled=enabled_raw,
                 ))
 
-            # Check that enabled model references are self-consistent
+                if enabled_raw:
+                    total_enabled_count += 1
+                else:
+                    self._disabled_model_ids.add(model_id)
+
             provider_models = tuple(models)
             providers.append(ProviderConfig(
                 provider_id=provider_id,
@@ -203,10 +216,15 @@ class ProviderRegistry:
                 models=provider_models,
             ))
 
+        # Check that at least one model is enabled across the registry
+        if total_enabled_count == 0:
+            self._parse_error = "Registry must have at least one enabled model"
+            return
+
         self._providers = providers
         self._providers_map = {p.provider_id: p for p in providers}
 
-        # Build model map
+        # Build model map (enabled only)
         for provider in providers:
             for model in provider.models:
                 if not model.enabled:
@@ -219,12 +237,6 @@ class ProviderRegistry:
                     base_url=provider.base_url,
                     timeout_seconds=provider.timeout_seconds,
                 )
-
-        # Check for ambiguous model routes (same model_id in multiple providers)
-        # This is prevented by the seen_model_ids check above, but double-check
-        if len(self._model_map) != sum(1 for p in providers for m in p.models if m.enabled):
-            self._parse_error = "Internal inconsistency in model map build"
-            return
 
     @property
     def parse_error(self) -> str | None:
@@ -242,9 +254,17 @@ class ProviderRegistry:
     def model_count(self) -> int:
         return len(self._model_map)
 
+    @property
+    def disabled_model_count(self) -> int:
+        return len(self._disabled_model_ids)
+
     def get_model(self, model_id: str) -> RouteTarget | None:
-        """Resolve a model ID to its RouteTarget."""
+        """Resolve a model ID to its RouteTarget (None if disabled or unknown)."""
         return self._model_map.get(model_id)
+
+    def is_model_disabled(self, model_id: str) -> bool:
+        """Check if a model ID exists but is disabled."""
+        return model_id in self._disabled_model_ids
 
     def list_models(self) -> list[dict]:
         """Return a list of model dicts for API/UI display."""

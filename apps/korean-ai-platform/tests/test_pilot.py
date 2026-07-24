@@ -449,7 +449,7 @@ class TestMultiProviderAPI:
         assert resp.status_code == 400
         assert resp.json()["error"]["code"] == "model_not_found"
 
-    def test_disabled_model_404(self, client):
+    def test_disabled_model_returns_model_disabled(self, client):
         _setup_registry()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -457,7 +457,7 @@ class TestMultiProviderAPI:
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 400
-        assert resp.json()["error"]["code"] == "model_not_found"
+        assert resp.json()["error"]["code"] == "model_disabled"
 
     def test_business14_metadata_has_route(self, client):
         _setup_registry()
@@ -557,6 +557,16 @@ class TestKeyIsolation:
 
         # Must be 2 separate calls
         assert call_count[0] >= 2
+
+        # Verify Provider A received only key A
+        auth_a = captured_a.get("headers", {}).get("authorization", "")
+        assert "sk-key-for-a" in auth_a, "Provider A must receive its own key"
+        assert "sk-key-for-b" not in auth_a, "Provider A must NOT receive Provider B key"
+
+        # Verify Provider B received only key B
+        auth_b = captured_b.get("headers", {}).get("authorization", "")
+        assert "sk-key-for-b" in auth_b, "Provider B must receive its own key"
+        assert "sk-key-for-a" not in auth_b, "Provider B must NOT receive Provider A key"
 
     def test_key_not_in_response(self, client):
         _setup_registry()

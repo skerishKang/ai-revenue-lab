@@ -28,6 +28,7 @@ from app.pilot.errors import (
     UnsupportedModel,
     RegistryInvalid,
     ModelNotFound,
+    ModelDisabled,
     PilotNotConfigured,
 )
 from app.pilot import provider as prv
@@ -175,6 +176,8 @@ async def pilot_chat_completions(
         mode = pilot_settings.mode_name
 
         if registry.configured:
+            if registry.is_model_disabled(request.model):
+                raise ModelDisabled(request.model)
             route = registry.get_model(request.model)
             if route is None:
                 raise ModelNotFound(request.model)
@@ -196,6 +199,7 @@ async def pilot_chat_completions(
                 base_url=route.base_url,
                 upstream_model=route.upstream_model,
                 timeout_seconds=route.timeout_seconds,
+                response_model=route.model_id,
             )
             latency_ms = int((time.monotonic() - start_time) * 1000)
 
@@ -250,6 +254,10 @@ async def pilot_chat_completions(
         )
 
         return response_data
+
+        # Check for invalid registry (fail-closed - no legacy fallback)
+        if pilot_settings.has_registry and not registry.configured:
+            raise RegistryInvalid(detail=registry.parse_error or "Provider registry 설정이 올바르지 않습니다.")
 
     except PilotError as e:
         logger.warning(

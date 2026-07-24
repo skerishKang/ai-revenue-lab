@@ -114,6 +114,7 @@ async def call_chat_completions(
     base_url: str | None = None,
     upstream_model: str | None = None,
     timeout_seconds: int | None = None,
+    response_model: str | None = None,
 ) -> dict[str, Any]:
     """Call the upstream OpenAI-compatible chat completions endpoint.
 
@@ -130,6 +131,7 @@ async def call_chat_completions(
         base_url: Explicit base URL (Phase 2)
         upstream_model: Explicit upstream model name (Phase 2)
         timeout_seconds: Explicit timeout (Phase 2)
+        response_model: Model ID to return in response top-level (Phase 2)
 
     Returns:
         Parsed response dict with business14 metadata
@@ -140,7 +142,7 @@ async def call_chat_completions(
     resolved_url = base_url or pilot_settings.pilot_base_url
     resolved_upstream = upstream_model or pilot_settings.pilot_upstream_model or pilot_settings.pilot_model_id
     resolved_timeout = timeout_seconds or pilot_settings.pilot_timeout_seconds
-    resolved_model_id = pilot_settings.pilot_model_id  # fallback for response
+    resolved_model_id = response_model or pilot_settings.pilot_model_id
 
     if not resolved_url:
         raise PilotNotConfigured()

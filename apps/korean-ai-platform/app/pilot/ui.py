@@ -115,13 +115,13 @@ async def pilot_page_post(
             # Determine routing target
             registry = get_registry()
             route = None
+            if pilot_settings.has_registry and not registry.configured:
+                raise RegistryInvalid(detail=registry.parse_error or "Provider registry 설정이 올바르지 않습니다.")
             if registry.configured:
                 route = registry.get_model(chat_req.model)
                 if route is None:
-                    from app.pilot.errors import ModelNotFound
                     raise ModelNotFound(chat_req.model)
 
-            from app.pilot.errors import PilotNotConfigured
             legacy_route = registry.get_legacy_target()
             if route is None and legacy_route is None:
                 raise PilotNotConfigured()

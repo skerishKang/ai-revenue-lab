@@ -3,10 +3,11 @@
 Supports multi-provider registry via BUSINESS14_PROVIDER_REGISTRY_JSON
 with legacy single-provider fallback via BUSINESS14_PILOT_* variables.
 
-Priority:
-1. Valid multi-provider registry → use registry
-2. Single-provider variables → use legacy mode
-3. Neither → not configured
+Config states (checked at runtime via registry):
+- valid_registry: registry JSON valid
+- invalid_registry: registry JSON present but invalid → fail-closed
+- legacy: single-provider env vars configured
+- not_configured: nothing configured
 """
 
 from __future__ import annotations
@@ -28,13 +29,29 @@ class PilotSettings(BaseSettings):
 
     @property
     def configured(self) -> bool:
+        """True if configuration is usable.
+
+        - registry JSON present and parseable → True (full validation at registry init)
+        - registry JSON present but unparseable → False (fail-closed; UI shows invalid_registry)
+        - legacy single-provider → True
+        - nothing → False
+        """
         if self.provider_registry_json:
-            return True
+            try:
+                import json
+                json.loads(self.provider_registry_json)
+                return True
+            except (json.JSONDecodeError, ValueError):
+                return False
         return bool(self.pilot_base_url and self.pilot_model_id)
 
     @property
     def has_registry(self) -> bool:
         return bool(self.provider_registry_json)
+
+    @property
+    def has_legacy(self) -> bool:
+        return bool(self.pilot_base_url and self.pilot_model_id)
 
     @property
     def mode_name(self) -> str:
