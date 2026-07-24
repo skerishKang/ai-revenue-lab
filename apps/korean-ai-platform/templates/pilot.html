@@ -13,6 +13,16 @@
   인증, 다중 사용자 격리, 결제, SLA가 구현된 상용 서비스가 아닙니다.
 </div>
 
+{% if error %}
+<div class="callout callout-danger" role="alert" style="margin-bottom: 16px;">
+  <span class="callout-title">오류 ({{ error.code }})</span>
+  {{ error.message }}
+  {% if error.request_id %}
+  <br><span class="muted">Request ID: {{ error.request_id }}</span>
+  {% endif %}
+</div>
+{% endif %}
+
 {% if not pilot_configured %}
 <div class="pilot-unconfigured">
   <div class="callout callout-warn">
@@ -73,16 +83,6 @@
   </div>
 
   <div class="pilot-right">
-    {% if error %}
-    <div class="callout callout-danger" role="alert">
-      <span class="callout-title">오류 ({{ error.code }})</span>
-      {{ error.message }}
-      {% if error.request_id %}
-      <br><span class="muted">Request ID: {{ error.request_id }}</span>
-      {% endif %}
-    </div>
-    {% endif %}
-
     {% if result %}
     <div class="pilot-result">
       <div class="result-header">

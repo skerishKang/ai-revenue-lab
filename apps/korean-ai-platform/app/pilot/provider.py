@@ -29,6 +29,25 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 
 import ipaddress
 
+from app.pilot.schemas import ChatMessage
+
+
+def _serialize_messages(
+    messages: list[ChatMessage | dict[str, str]],
+) -> list[dict[str, str]]:
+    """Normalize messages to plain dicts for JSON serialization.
+
+    Pydantic ChatMessage objects are not directly JSON-serializable by
+    httpx's json= parameter. This function converts them to plain dicts.
+    """
+    serialized: list[dict[str, str]] = []
+    for message in messages:
+        if isinstance(message, ChatMessage):
+            serialized.append(message.model_dump())
+        else:
+            serialized.append(dict(message))
+    return serialized
+
 
 def _validate_base_url(url: str) -> None:
     """Validate that the base URL is safe (no SSRF).
@@ -160,7 +179,8 @@ async def call_chat_completions(
     base_url = pilot_settings.pilot_base_url
     _validate_base_url(base_url)
 
-    request_body = _build_upstream_request(api_key, messages, temperature, max_tokens)
+    serialized_messages = _serialize_messages(messages)
+    request_body = _build_upstream_request(api_key, serialized_messages, temperature, max_tokens)
     chat_url = f"{base_url.rstrip('/')}/v1/chat/completions"
 
     headers = {

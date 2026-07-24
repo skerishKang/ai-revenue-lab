@@ -613,6 +613,136 @@ class TestRouteSmoke:
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Integration tests: full API route → Provider adapter → MockTransport
+# ---------------------------------------------------------------------------
+
+
+class TestIntegrationFullPath:
+    """Full-path integration tests: HTTP route → real provider → MockTransport.
+
+    Unlike the monkeypatch-based tests above, these use the actual
+    call_chat_completions function (not a mock), verifying that
+    ChatMessage objects are properly serialized for upstream JSON.
+    """
+
+    def test_api_route_integration(self, client):
+        """API route → real provider → MockTransport → 200 + JSON verification."""
+        _configure_pilot()
+        captured_body = {}
+
+        async def fake_upstream(request):
+            import json
+            captured_body["body"] = json.loads(request.read())
+            return httpx.Response(200, json={
+                "id": "chatcmpl-test", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+            })
+
+        transport = httpx.MockTransport(fake_upstream)
+        from app.pilot import provider as prv
+        original_call = prv.call_chat_completions
+
+        async def patched_call(**kw):
+            kw["transport"] = transport
+            return await original_call(**kw)
+
+        prv.call_chat_completions = patched_call
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+                headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
+            )
+        finally:
+            prv.call_chat_completions = original_call
+
+        assert resp.status_code == 200
+        body = captured_body.get("body", {})
+        assert isinstance(body.get("messages"), list)
+        if body.get("messages"):
+            msg = body["messages"][0]
+            assert isinstance(msg, dict), f"message must be dict, got {type(msg)}"
+            assert msg == {"role": "user", "content": "hi"}
+
+    def test_ui_post_integration(self, client):
+        """UI POST → real provider → MockTransport → JSON verification."""
+        _configure_pilot()
+        captured_body = {}
+
+        async def fake_upstream(request):
+            import json
+            captured_body["body"] = json.loads(request.read())
+            return httpx.Response(200, json={
+                "id": "chatcmpl-test", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+            })
+
+        transport = httpx.MockTransport(fake_upstream)
+        from app.pilot import provider as prv
+        original_call = prv.call_chat_completions
+
+        async def patched_call(**kw):
+            kw["transport"] = transport
+            return await original_call(**kw)
+
+        prv.call_chat_completions = patched_call
+        try:
+            resp = client.post(
+                "/pilot",
+                data={
+                    "provider_key": "sk-real-key-12345abcdef",
+                    "model_id": "test-model-v1",
+                    "prompt": "hi",
+                    "temperature": 0.2,
+                    "max_tokens": 300,
+                },
+            )
+        finally:
+            prv.call_chat_completions = original_call
+
+        assert resp.status_code == 200
+        body = captured_body.get("body", {})
+        assert isinstance(body.get("messages"), list)
+        if body.get("messages"):
+            msg = body["messages"][0]
+            assert isinstance(msg, dict), f"message must be dict, got {type(msg)}"
+            assert msg == {"role": "user", "content": "hi"}
+
+    def test_serialize_chatmessage(self):
+        """Direct test of _serialize_messages."""
+        from app.pilot.provider import _serialize_messages
+        from app.pilot.schemas import ChatMessage
+
+        msgs = [ChatMessage(role="user", content="hello"), ChatMessage(role="assistant", content="world")]
+        result = _serialize_messages(msgs)
+        assert result == [{"role": "user", "content": "hello"}, {"role": "assistant", "content": "world"}]
+
+        result2 = _serialize_messages([{"role": "user", "content": "hi"}])
+        assert result2 == [{"role": "user", "content": "hi"}]
+
+        assert _serialize_messages([]) == []
+
+
+# ---------------------------------------------------------------------------
+# UI unconfigured POST test (CTO finding: NameError fix)
+# ---------------------------------------------------------------------------
+
+
+class TestUIUnconfiguredPost:
+    def test_post_when_not_configured_returns_200_with_error(self, client):
+        """POST /pilot when pilot is not configured should return 200 with error, not 500."""
+        resp = client.post("/pilot", data={"provider_key": "sk-test", "prompt": "hello"})
+        assert resp.status_code == 200
+        assert "pilot_not_configured" in resp.text
+        assert "b14req_" in resp.text
+        assert "NameError" not in resp.text
+        # 500 status should not be returned (and "500" should not appear as error code)
+        assert resp.status_code != 500
+
+
 class TestCleanInstall:
     def test_httpx_in_runtime_deps(self):
         """Verify httpx is a main dependency, not just dev."""

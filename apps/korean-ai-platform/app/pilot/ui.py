@@ -19,6 +19,10 @@ import uuid
 router = APIRouter()
 
 
+def _new_request_id() -> str:
+    return f"b14req_{uuid.uuid4().hex[:12]}"
+
+
 @router.get("/pilot")
 async def pilot_page(request: Request):
     return render_template(
@@ -54,18 +58,17 @@ async def pilot_page_post(
                 "selected_model": model_id,
                 "prompt": prompt,
                 "result": None,
-                "error": {"code": "pilot_not_configured", "message": "Pilot Provider가 설정되지 않았습니다.", "request_id": uid()},
+                "error": {"code": "pilot_not_configured", "message": "Pilot Provider가 설정되지 않았습니다.", "request_id": _new_request_id()},
             },
         )
 
     result = None
     error = None
-    uid = lambda: f"b14req_{uuid.uuid4().hex[:12]}"
 
     if not provider_key.strip():
-        error = {"code": "missing_key", "message": "Provider API key를 입력하십시오.", "request_id": uid()}
+        error = {"code": "missing_key", "message": "Provider API key를 입력하십시오.", "request_id": _new_request_id()}
     elif not prompt.strip():
-        error = {"code": "missing_prompt", "message": "Prompt를 입력하십시오.", "request_id": uid()}
+        error = {"code": "missing_prompt", "message": "Prompt를 입력하십시오.", "request_id": _new_request_id()}
     else:
         try:
             api_key = _validate_provider_key(provider_key)
@@ -100,7 +103,7 @@ async def pilot_page_post(
                 "choices": choices,
             }
         except PilotError as e:
-            error = {"code": e.code, "message": e.message, "request_id": uid()}
+            error = {"code": e.code, "message": e.message, "request_id": _new_request_id()}
         except Exception:
             request_id_e = f"b14req_{uuid.uuid4().hex[:12]}"
             logger.error("pilot_ui_error request_id=%s", request_id_e)
