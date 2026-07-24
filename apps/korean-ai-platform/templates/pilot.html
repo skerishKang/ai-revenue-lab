@@ -100,9 +100,8 @@
           <div class="meta-item"><dt>Input tokens</dt><dd>{{ result.usage.prompt_tokens or 'N/A' }}</dd></div>
           <div class="meta-item"><dt>Output tokens</dt><dd>{{ result.usage.completion_tokens or 'N/A' }}</dd></div>
           {% endif %}
-          {% if result.estimated_krw is not none %}
-          <div class="meta-item"><dt>예상 비용</dt><dd>{{ result.estimated_krw }}원</dd></div>
-          {% endif %}
+          <div class="meta-item"><dt>예상 비용</dt><dd>{% if result.estimated_krw is not none %}{{ result.estimated_krw }}원{% else %}확인 불가{% endif %}</dd></div>
+          <div class="meta-item"><dt>청구 안내</dt><dd>실제 사용료는 연결한 Provider 계정의 계약과 사용량에 따라 청구됩니다.</dd></div>
         </div>
       </div>
 

@@ -95,7 +95,7 @@ class PilotBusiness14Meta(BaseModel):
     mode: str = "byok-pilot"
     provider: str = ""
     latency_ms: int = 0
-    estimated_krw: float = 0.0
+    estimated_krw: float | None = None
     request_id: str = ""
 
 
@@ -118,8 +118,8 @@ class PilotModelInfo(BaseModel):
     provider_id: str
     provider_name: str
     pilot_available: bool = True
-    input_krw_per_1k: float = 0.0
-    output_krw_per_1k: float = 0.0
+    input_krw_per_1k: float | None = None
+    output_krw_per_1k: float | None = None
     tags: list[str] = Field(default_factory=list)
 
 

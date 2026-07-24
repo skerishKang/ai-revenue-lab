@@ -259,7 +259,7 @@ async def call_chat_completions(
             "mode": "byok-pilot",
             "provider": pilot_settings.pilot_provider_id,
             "latency_ms": 0,
-            "estimated_krw": 0.0,
+            "estimated_krw": None,
             "request_id": f"b14req_{uuid.uuid4().hex[:12]}",
         },
     }

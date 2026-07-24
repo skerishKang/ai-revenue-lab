@@ -98,7 +98,7 @@ async def pilot_page_post(
                 "provider": biz14.get("provider", pilot_settings.pilot_provider_id),
                 "model": response_data.get("model", model_id),
                 "latency_ms": latency_ms,
-                "estimated_krw": biz14.get("estimated_krw", 0.0),
+                "estimated_krw": biz14.get("estimated_krw"),
                 "usage": usage,
                 "choices": choices,
             }

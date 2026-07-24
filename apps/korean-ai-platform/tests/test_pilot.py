@@ -195,7 +195,7 @@ class TestPilotChatRequest:
             return {"id": "test", "object": "chat.completion", "model": "test-model-v1",
                     "choices": [{"index": 0, "message": {"role": "assistant", "content": "Hello!"}, "finish_reason": "stop"}],
                     "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
-                    "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 100, "estimated_krw": 0.0, "request_id": "b14req_test"}}
+                    "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 100, "estimated_krw": None, "request_id": "b14req_test"}}
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -204,6 +204,8 @@ class TestPilotChatRequest:
         )
         assert resp.status_code == 200
         assert resp.json()["choices"][0]["message"]["content"] == "Hello!"
+        # Cost metadata must be None (unknown, not free)
+        assert resp.json()["business14"]["estimated_krw"] is None
 
     def test_no_messages(self, client):
         _configure_pilot()
@@ -304,7 +306,7 @@ class TestDefaultTemperature:
                 "id": "test", "object": "chat.completion", "model": "test-model-v1",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 5, "completion_tokens": 5, "total_tokens": 10},
-                "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 50, "estimated_krw": 0.0, "request_id": "b14req_test"},
+                "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 50, "estimated_krw": None, "request_id": "b14req_test"},
             }
 
         monkeypatch.setattr(prv, "call_chat_completions", capturing_call)

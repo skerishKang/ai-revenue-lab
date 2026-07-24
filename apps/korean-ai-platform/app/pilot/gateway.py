@@ -110,8 +110,8 @@ async def pilot_models():
                 "provider_id": pilot_settings.pilot_provider_id,
                 "provider_name": provider_name,
                 "pilot_available": True,
-                "input_krw_per_1k": 0.0,
-                "output_krw_per_1k": 0.0,
+                "input_krw_per_1k": None,
+                "output_krw_per_1k": None,
                 "tags": ["pilot", "byok"],
             }
         ],
