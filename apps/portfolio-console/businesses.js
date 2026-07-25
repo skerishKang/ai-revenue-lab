@@ -164,7 +164,7 @@ window.ARL_BUSINESSES = [
     progress: 50,
     workspace: "apps/korean-ai-platform/",
     surfaceType: "Cloudflare Worker",
-    surfaceUrl: null,
+    surfaceUrl: "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace",
     deployment: "PR #142 merged — dedicated Worker deployed",
     githubLabel: "PR #142 merged",
     githubUrl: "https://github.com/skerishKang/ai-revenue-lab/pull/142",

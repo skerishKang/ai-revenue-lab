@@ -2,12 +2,12 @@ const { defineConfig, devices } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: 'tests',
-  timeout: 15000,
+  timeout: 10000,
   expect: { timeout: 5000 },
   fullyParallel: false,
   forbidOnly: true,
   retries: 0,
-  workers: 3,
+  workers: 1,
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:4173',
@@ -33,8 +33,8 @@ module.exports = defineConfig({
     command: process.platform === 'win32'
       ? 'python -m http.server 4173'
       : 'python3 -m http.server 4173',
-    port: 4173,
-    timeout: 15000,
+    url: 'http://127.0.0.1:4173',
+    timeout: 10000,
     reuseExistingServer: true,
   },
 });

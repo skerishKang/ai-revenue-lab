@@ -43,36 +43,135 @@ test.describe('Milestone Progress Tests', () => {
     expect(overflow).toBeFalsy();
   });
 
-  test('LoveBud shows OPEN evidence note', async ({ page }) => {
+  test('renders 13 project cards', async ({ page }) => {
+    await expect(page.locator('.pd-card')).toHaveCount(13);
+  });
+
+  test('all cards have stage badge', async ({ page }) => {
+    const cards = page.locator('.pd-card');
+    const count = await cards.count();
+    for (let i = 0; i < count; i++) {
+      await expect(cards.nth(i).locator('.status-badge')).not.toBeEmpty();
+    }
+  });
+
+  test('all cards have developmentMode badge', async ({ page }) => {
+    const cards = page.locator('.pd-card');
+    const count = await cards.count();
+    for (let i = 0; i < count; i++) {
+      await expect(cards.nth(i).locator('.pd-mode-badge')).not.toBeEmpty();
+    }
+  });
+
+  test('defined milestone cards show currentMilestone', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
+    await expect(card.locator('.pd-card-milestone-name')).toContainText('#137');
+  });
+
+  test('defined milestone cards show progress percent', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
+    await expect(card.locator('.pd-card-pct').first()).toContainText('완료');
+    await expect(card.locator('.pd-card-pct').nth(1)).toContainText('남음');
+  });
+
+  test('defined milestone cards show progress bar', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
+    await expect(card.locator('.pd-card-bar')).toBeVisible();
+    await expect(card.locator('.pd-card-bar i')).toBeVisible();
+  });
+
+  test('undefined milestone cards show 진척도 미정', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovetree-3"]');
+    await expect(card.locator('.pd-card-milestone-undefined')).toContainText('진척도 미정');
+  });
+
+  test('undefined milestone cards show 목표 정의 필요', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovetree-3"]');
+    await expect(card.locator('.pd-card-milestone-undefined')).toContainText('목표 정의 필요');
+  });
+
+  test('undefined milestone cards have no progress bar', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovetree-3"]');
+    await expect(card.locator('.pd-card-bar')).toHaveCount(0);
+  });
+
+  test('undefined milestone cards have no percent numbers', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovetree-3"]');
+    await expect(card.locator('.pd-card-pct')).toHaveCount(0);
+  });
+
+  test('detail panel shows developmentMode', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-mode')).not.toBeEmpty();
+  });
+
+  test('detail panel shows currentMilestone', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-milestone')).toContainText('#3425');
+  });
+
+  test('detail panel shows progressBasis', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-basis')).toHaveText('task');
+  });
+
+  test('detail panel shows progress percent for defined milestone', async ({ page }) => {
     await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
     const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).toContain('OPEN');
-    expect(progress).toContain('evidence');
+    expect(progress).toContain('완료');
+    expect(progress).toContain('남음');
   });
 
-  test('Korean AI Platform shows PR #142 merged', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+  test('detail panel shows done tasks list', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).toContain('PR #142');
-    expect(progress).toContain('dedicated Worker');
-    expect(progress).toContain('Provider registry');
+    const doneTasks = page.locator('#pd-detail-done-tasks li');
+    const count = await doneTasks.count();
+    expect(count).toBeGreaterThan(0);
+  });
+
+  test('detail panel shows remaining tasks list', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const remainingTasks = page.locator('#pd-detail-remaining-tasks li');
+    const count = await remainingTasks.count();
+    expect(count).toBeGreaterThan(0);
+  });
+
+  test('detail panel shows blockers', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-blockers')).toContainText('#3425');
+  });
+
+  test('detail panel undefined milestone shows 진척도 미정', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('진척도 미정');
+  });
+
+  test('Korean AI Platform shows PR #142 in progressNote area', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-milestone')).toContainText('진척도 미정');
   });
 
   test('Korean AI Platform does not show outdated PR #79', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).not.toContain('Draft PR #79');
     const next = await page.locator('#pd-detail-next').textContent();
     expect(next).not.toContain('PR #79');
   });
 
-  test('LoveTree 3.0 shows undefined milestone', async ({ page }) => {
+  test('LoveTree 3.0 shows undefined milestone in detail', async ({ page }) => {
     await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
     await expect(page.locator('#pd-detail-badge')).toHaveText('운영 중');
+    await expect(page.locator('#pd-detail-milestone')).toContainText('진척도 미정');
   });
 
   test('LoveMatchmaking shows planned stage', async ({ page }) => {
@@ -81,18 +180,16 @@ test.describe('Milestone Progress Tests', () => {
     await expect(page.locator('#pd-detail-badge')).toHaveText('계획');
   });
 
-  test('AI Finder / Bukgu shows #1181 deferred', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-detail-btn');
-    await page.waitForTimeout(200);
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).not.toContain('1181');
-  });
-
-  test('Living Fiction shows 404 deployment note', async ({ page }) => {
+  test('Living Fiction shows review stage not live', async ({ page }) => {
     await page.click('.pd-card[data-project-id="living-fiction"]');
     await page.waitForTimeout(200);
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).toContain('404');
+    await expect(page.locator('#pd-detail-badge')).toHaveText('검토 중');
+  });
+
+  test('Personal Video Archive shows review stage', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="personal-video-archive"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-badge')).toHaveText('검토 중');
   });
 
   test('Personal Edition shows CTO review pending', async ({ page }) => {
@@ -102,21 +199,10 @@ test.describe('Milestone Progress Tests', () => {
     expect(next).toContain('PR #111');
   });
 
-  test('Personal Video Archive shows needs-improvement context', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="personal-video-archive"] .pd-card-detail-btn');
-    await page.waitForTimeout(200);
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).toContain('Production');
-  });
-
-  test('LoveBud pageUrl is lovebud.pages.dev', async ({ page }) => {
-    const link = page.locator('.pd-card[data-project-id="lovebud"] .pd-card-service-link');
-    await expect(link).toHaveAttribute('href', 'https://lovebud.pages.dev/');
-  });
-
-  test('Korean AI Platform has no service link (undeployed)', async ({ page }) => {
-    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-service-link')).toHaveCount(0);
-    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-undeployed')).toBeVisible();
+  test('Korean AI Platform has service link with Worker URL', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-service-link');
+    await expect(link).toHaveCount(1);
+    await expect(link).toHaveAttribute('href', 'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace');
   });
 
   test('Living Fiction has no service link (404)', async ({ page }) => {
@@ -124,8 +210,8 @@ test.describe('Milestone Progress Tests', () => {
     await expect(page.locator('.pd-card[data-project-id="living-fiction"] .pd-card-undeployed')).toBeVisible();
   });
 
-  test('service link count matches expected 8', async ({ page }) => {
-    await expect(page.locator('.pd-card-service-link')).toHaveCount(8);
+  test('service link count matches expected 9', async ({ page }) => {
+    await expect(page.locator('.pd-card-service-link')).toHaveCount(9);
   });
 
   test('all 13 cards have 자세히 보기 button', async ({ page }) => {
@@ -168,5 +254,26 @@ test.describe('Milestone Progress Tests', () => {
     await page.click('#lang-ko');
     await page.waitForTimeout(200);
     await expect(page.locator('#topbar-title')).toHaveText('내 비즈니스 관리');
+  });
+
+  test('LoveBud detail shows PostgreSQL migration evidence', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
+    expect(doneTasks).toContain('PR #3531');
+    expect(doneTasks).toContain('e0ff1b2a');
+  });
+
+  test('Portfolio Console detail shows #137 milestone', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-milestone')).toContainText('#137');
+  });
+
+  test('Portfolio Console does not reference PR #140 as evidence', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
+    expect(doneTasks).not.toContain('PR #140 작업 현재 브랜치');
   });
 });

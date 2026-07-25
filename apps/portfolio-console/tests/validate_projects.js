@@ -4,8 +4,8 @@ const path = require('path');
 
 const rootDir = path.resolve(__dirname, '..');
 
-const ALLOWED_STAGES = ['live', 'demo', 'build', 'review', 'planned'];
-const ALLOWED_MODES = ['active-development', 'needs-improvement', 'planning'];
+const ALLOWED_STAGES = ['planned', 'building', 'review', 'live', 'paused'];
+const ALLOWED_MODES = ['not-started', 'active-development', 'needs-improvement', 'maintenance', 'complete', 'paused'];
 const ALLOWED_MILESTONE_STATUS = ['defined', 'undefined'];
 const EXPECTED_IDS = [
   'portfolio-console',
@@ -64,36 +64,43 @@ function validate() {
     assert(ALLOWED_STAGES.includes(p.stage), `${p.id}: invalid stage "${p.stage}"`);
     assert(typeof p.developmentMode === 'string', `${p.id}: developmentMode must be string`);
     assert(ALLOWED_MODES.includes(p.developmentMode), `${p.id}: invalid developmentMode "${p.developmentMode}"`);
-    assert(typeof p.progressBasis === 'string', `${p.id}: progressBasis must be string`);
     assert(p.milestoneStatus === 'defined' || p.milestoneStatus === 'undefined', `${p.id}: invalid milestoneStatus "${p.milestoneStatus}"`);
     assert(Array.isArray(p.milestoneTasks), `${p.id}: milestoneTasks must be array`);
-    assert(Array.isArray(p.currentMilestone), `${p.id}: currentMilestone must be array`);
     assert(Array.isArray(p.blockers), `${p.id}: blockers must be array`);
     assert(Array.isArray(p.futureRoadmap), `${p.id}: futureRoadmap must be array`);
     assert(typeof p.lastVerified === 'string', `${p.id}: lastVerified must be string`);
 
+    assert(p.progressPercent === undefined, `${p.id}: hardcoded progressPercent prohibited`);
+    assert(p.remainingPercent === undefined, `${p.id}: hardcoded remainingPercent prohibited`);
+
+    if (p.milestoneStatus === 'defined') {
+      assert(typeof p.currentMilestone === 'string' && p.currentMilestone.length > 0, `${p.id}: defined milestone must have non-empty string currentMilestone`);
+      assert(typeof p.progressBasis === 'string' && p.progressBasis.length > 0, `${p.id}: defined milestone must have non-empty progressBasis`);
+      assert(p.milestoneTasks.length > 0, `${p.id}: defined milestone must have at least one task`);
+      definedCount++;
+    } else {
+      assert(p.currentMilestone === null, `${p.id}: undefined milestone must have null currentMilestone`);
+      assert(p.milestoneTasks.length === 0, `${p.id}: undefined milestone must have zero tasks`);
+    }
+
+    if (p.stage === 'planned') {
+      assert(p.developmentMode === 'not-started', `${p.id}: planned project must have developmentMode "not-started"`);
+    }
+
     const taskIds = new Set();
     for (const task of p.milestoneTasks) {
       assert(typeof task.id === 'string', `${p.id}/${task.id}: task id must be string`);
-      assert(typeof task.name === 'string', `${p.id}/${task.id}: task name must be string`);
+      assert(typeof task.label === 'string' && task.label.length > 0, `${p.id}/${task.id}: task label must be non-empty string`);
+      assert(task.name === undefined, `${p.id}/${task.id}: task.name is prohibited, use task.label`);
       assert(typeof task.done === 'boolean', `${p.id}/${task.id}: done must be boolean`);
       assert(typeof task.evidence === 'string', `${p.id}/${task.id}: evidence must be string`);
-      if (task.done) {
-        assert(task.evidence.length > 0, `${p.id}/${task.id}: done task must have non-empty evidence`);
-      }
+      assert(task.evidence.length > 0, `${p.id}/${task.id}: evidence must be non-empty`);
       assert(!taskIds.has(task.id), `${p.id}: duplicate task id "${task.id}"`);
       taskIds.add(task.id);
     }
 
     totalTasks += p.milestoneTasks.length;
     totalDone += p.milestoneTasks.filter(t => t.done).length;
-
-    if (p.milestoneStatus === 'defined') {
-      assert(p.milestoneTasks.length > 0, `${p.id}: defined milestone must have at least one task`);
-      definedCount++;
-    } else {
-      assert(p.milestoneTasks.length === 0, `${p.id}: undefined milestone must have zero tasks`);
-    }
 
     assert(p.repositoryLabel !== undefined, `${p.id}: repositoryLabel must exist`);
     assert(p.workspace !== undefined, `${p.id}: workspace must exist`);
@@ -110,6 +117,16 @@ function validate() {
       assert(!p.workspace.match(/^[A-Z]:\\/), `${p.id}: no Windows absolute paths in workspace`);
     }
   }
+
+  const kap = projects.find(p => p.id === 'korean-ai-platform');
+  assert(kap.pageUrl === 'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace', `korean-ai-platform: incorrect pageUrl "${kap.pageUrl}"`);
+  assert(kap.stage === 'live', `korean-ai-platform: stage must be "live"`);
+
+  const lf = projects.find(p => p.id === 'living-fiction');
+  assert(lf.stage !== 'live', `living-fiction: stage must not be "live"`);
+
+  const pva = projects.find(p => p.id === 'personal-video-archive');
+  assert(pva.stage === 'review', `personal-video-archive: stage must be "review"`);
 
   if (errors.length > 0) {
     console.error(`VALIDATION FAILED: ${errors.length} error(s)`);

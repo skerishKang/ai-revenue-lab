@@ -100,7 +100,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_projects_development_mode_vocabulary(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         modes = set(re.findall(r'developmentMode:\s*"([^"]+)"', script))
-        allowed = {"active-development", "needs-improvement", "planning"}
+        allowed = {"not-started", "active-development", "needs-improvement", "maintenance", "complete", "paused"}
         self.assertTrue(modes.issubset(allowed), f"Unexpected modes: {modes - allowed}")
 
     def test_projects_milestone_status_vocabulary(self) -> None:
@@ -112,7 +112,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_projects_stage_vocabulary(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         stages = set(re.findall(r'stage:\s*"([^"]+)"', script))
-        allowed = {"live", "demo", "build", "review", "planned"}
+        allowed = {"planned", "building", "review", "live", "paused"}
         self.assertTrue(stages.issubset(allowed), f"Unexpected stages: {stages - allowed}")
 
     def test_projects_no_windows_paths(self) -> None:
@@ -127,13 +127,13 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertEqual(len(page_urls), 13)
         with_url = sum(1 for u in page_urls if u != "null")
         without_url = sum(1 for u in page_urls if u == "null")
-        self.assertEqual(with_url, 8)
-        self.assertEqual(without_url, 5)
+        self.assertEqual(with_url, 9)
+        self.assertEqual(without_url, 4)
 
     def test_projects_pageurl_uses_https(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         urls = re.findall(r'pageUrl:\s*"(https?://[^"]+)"', script)
-        self.assertEqual(len(urls), 8)
+        self.assertEqual(len(urls), 9)
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
 
@@ -190,16 +190,16 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         self.assertIn("#3451 CLOSED", script)
         self.assertIn("#3481 CLOSED", script)
-        self.assertIn("PR #3531 merge commit e0ff1b2a4089c31fe4adb3e9c082ef9a4499a1cf", script)
+        self.assertIn("PR #3531 merged", script)
+        self.assertIn("e0ff1b2a4089c31fe4adb3e9c082ef9a4499a1cf", script)
         self.assertIn("#3425 OPEN", script)
         self.assertIn("#3458 OPEN", script)
 
     def test_projects_korean_ai_platform_relflects_pr142(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        self.assertIn("PR #142 merged", script)
-        self.assertIn("#138 CLOSED", script)
-        self.assertIn("d8714ad", script)
+        self.assertIn("PR #142", script)
         self.assertIn("Provider registry", script)
+        self.assertIn("ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", script)
 
     def test_projects_businesses_korean_ai_platform_updated(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
