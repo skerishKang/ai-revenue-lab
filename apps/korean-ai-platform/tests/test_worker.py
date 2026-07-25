@@ -35,6 +35,21 @@ class TestWorkerEntrypoint:
                   "Referrer-Policy", "Cache-Control"):
             assert h in src
 
+    def test_root_redirects_before_asgi(self):
+        src = WORKER_SRC.read_text()
+        redirect_guard = 'if urlparse(request.url).path == "/":'
+        assert "from workers import Response, WorkerEntrypoint" in src
+        assert redirect_guard in src
+        assert '"Location": "/workspace"' in src
+        assert "status=307" in src
+        assert src.index(redirect_guard) < src.index("asgi.fetch(app,")
+
+    def test_root_redirect_keeps_security_headers(self):
+        src = WORKER_SRC.read_text()
+        redirect_block = src.split('if urlparse(request.url).path == "/":', 1)[1]
+        redirect_block = redirect_block.split("# Collect env bindings", 1)[0]
+        assert "**_SECURITY_HEADERS" in redirect_block
+
 
 class TestWranglerConfig:
     def test_name_exact(self):
