@@ -46,7 +46,21 @@ def _registry_json() -> str:
                     "upstream_model": "upstream-b",
                     "display_name": "Model B",
                     "enabled": True,
-                }
+                },
+            ],
+        },
+        {
+            "provider_id": "xss-provider",
+            "display_name": "</script><script>window.__b14_provider_xss=true</script>",
+            "base_url": "https://api.xss-provider.example",
+            "timeout_seconds": 30,
+            "models": [
+                {
+                    "model_id": "xss-model-v1",
+                    "upstream_model": "upstream-xss",
+                    "display_name": "</script><img src=x onerror=\"window.__b14_model_xss=true\">",
+                    "enabled": True,
+                },
             ],
         },
     ])
@@ -156,6 +170,17 @@ def run_desktop(p: Any) -> dict[str, Any]:
     assert len(errs) == 0, f"Console errors: {errs}"
     results["passed"] += 1
 
+    # XSS: workspace initialized despite malicious registry
+    assert page.evaluate("window.Business14Workspace !== undefined")
+    results["passed"] += 1
+
+    # XSS: provider display-name XSS not executed
+    assert page.evaluate("window.__b14_provider_xss") is None
+    assert page.evaluate("window.__b14_model_xss") is None
+    assert page.locator('script:not([src]):has-text("__b14_provider_xss")').count() == 0
+    assert page.locator('img[src="x"]').count() == 0
+    results["passed"] += 1
+
     # 3
     assert page.locator("#ws_chat").count() > 0
     results["passed"] += 1
@@ -259,11 +284,26 @@ def run_desktop(p: Any) -> dict[str, Any]:
     assert page.locator("html[lang=ko]").count() > 0
     results["passed"] += 1
 
-    # 21
-    page.locator("#ws_input").fill("<script>alert('xss')</script>")
+    # 21 - prompt XSS: textContent rendering, no DOM injection
+    page.locator("#ws_key").fill("xss-test-key")
+    page.locator("#ws_key_apply").click()
+    page.locator("#ws_input").fill("<script>window.__b14_prompt_xss=true</script>")
     page.locator("#ws_send").click()
-    page.wait_for_timeout(300)
-    assert "<script>alert('xss')</script>" not in page.locator("#ws_chat").inner_text()
+    page.wait_for_timeout(500)
+    chat_text = page.locator("#ws_chat").inner_text()
+    assert "<script>window.__b14_prompt_xss=true</script>" in chat_text
+    assert page.locator("#ws_chat script").count() == 0
+    assert page.evaluate("window.__b14_prompt_xss") is None
+    results["passed"] += 1
+
+    # 21b - prompt XSS img variant
+    page.locator("#ws_input").fill('<img src=x onerror="window.__b14_prompt_img_xss=true">')
+    page.locator("#ws_send").click()
+    page.wait_for_timeout(500)
+    chat_text2 = page.locator("#ws_chat").inner_text()
+    assert 'onerror="window.__b14_prompt_img_xss=true"' in chat_text2
+    assert page.locator("#ws_chat img").count() == 0
+    assert page.evaluate("window.__b14_prompt_img_xss") is None
     results["passed"] += 1
 
     # 22
@@ -422,6 +462,9 @@ def main() -> int:
         print(f"Passed scenarios: {desktop['passed']}")
         print(f"Console errors: {desktop.get('console_errors_desktop', 'N/A')}")
         print(f"Failed local assets: {desktop.get('failed_requests_desktop', 'N/A')}")
+        print(f"Provider XSS not executed: {desktop.get('provider_xss_ok', 'N/A')}")
+        print(f"Model XSS not executed: {desktop.get('model_xss_ok', 'N/A')}")
+        print(f"Prompt XSS textContent: {desktop.get('prompt_xss_ok', 'N/A')}")
         print(f"Copy regression passed: {desktop.get('copy_passed', 'N/A')}")
 
         print("\n=== MOBILE 390x844 ===")

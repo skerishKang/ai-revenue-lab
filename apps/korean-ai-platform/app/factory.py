@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -25,13 +24,13 @@ def _build_jinja_env() -> Environment:
         lstrip_blocks=True,
     )
 
-    def _tojson(value: Any) -> str:
-        return json.dumps(value, ensure_ascii=False)
+    json_kwargs = dict(env.policies.get("json.dumps_kwargs", {}))
+    json_kwargs["ensure_ascii"] = False
+    env.policies["json.dumps_kwargs"] = json_kwargs
 
     def _krw(value: float | int) -> str:
         return f"{value:,.1f}원" if value < 100 else f"{value:,.0f}원"
 
-    env.filters["tojson"] = _tojson
     env.filters["krw"] = _krw
     env.globals["demo_mode"] = settings.demo_mode
 

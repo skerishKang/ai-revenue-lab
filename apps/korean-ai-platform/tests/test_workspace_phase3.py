@@ -471,43 +471,110 @@ class TestKeySafety:
 
 
 class TestXSSConfigSafety:
-    """Verify workspace config is injected safely into <script type="application/json">."""
+    """Verify workspace config is injected safely via Jinja built-in tojson.
+
+    Jinja's tojson escapes <, >, & as \\u003c, \\u003e, \\u0026 so that
+    </script> cannot break out of the <script type="application/json"> block.
+    """
 
     def test_config_is_json_element(self, client):
         _setup_registry()
         resp = client.get("/workspace")
         assert '<script id="workspace-config" type="application/json">' in resp.text
 
-    def test_config_uses_tojson_safe_for_script_context(self, client):
-        _setup_registry()
-        resp = client.get("/workspace")
-        import re
-        m = re.search(r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>', resp.text, re.DOTALL)
-        assert m, "workspace-config script block not found"
-        raw = m.group(1)
-        assert raw.strip().startswith("{"), "JSON should start with {"
-        assert "&#34;" not in raw, "JSON should not contain HTML-escaped quotes"
-
     def test_config_json_is_valid(self, client):
         _setup_registry()
         resp = client.get("/workspace")
-        import json
         import re
-        m = re.search(r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>', resp.text, re.DOTALL)
+        m = re.search(
+            r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>',
+            resp.text, re.DOTALL,
+        )
         assert m, "workspace-config script block not found"
         parsed = json.loads(m.group(1))
         assert "models" in parsed or "providers" in parsed
 
-    def test_config_not_in_inline_script_var(self, client):
+    def test_no_raw_script_closing_tag(self, client):
         _setup_registry()
         resp = client.get("/workspace")
-        assert 'models = ' not in resp.text or 'var models' not in resp.text
+        import re
+        m = re.search(
+            r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>',
+            resp.text, re.DOTALL,
+        )
+        assert m
+        inner = m.group(1)
+        assert "</script>" not in inner
 
-    def test_no_html_entities_in_json(self, client):
+    def test_no_inline_script_var(self, client):
         _setup_registry()
         resp = client.get("/workspace")
-        assert "&#34;" not in resp.text
-        assert "&#x22;" not in resp.text
+        assert "models = " not in resp.text or "var models" not in resp.text
+
+
+class TestXSSMaliciousRegistry:
+    """Verify malicious provider/model display names cannot escape the JSON script block."""
+
+    MALICIOUS_PROVIDER = (
+        "</script><script>"
+        "window.__b14_provider_xss=true"
+        "</script>"
+    )
+    MALICIOUS_MODEL = (
+        "</script><img src=x "
+        'onerror="window.__b14_model_xss=true">'
+    )
+
+    def _setup_malicious_registry(self):
+        registry_data = [
+            {
+                "provider_id": "xss-provider",
+                "display_name": self.MALICIOUS_PROVIDER,
+                "base_url": "https://api.xss-provider.example",
+                "timeout_seconds": 30,
+                "models": [
+                    {
+                        "model_id": "xss-model-v1",
+                        "upstream_model": "upstream-xss",
+                        "display_name": self.MALICIOUS_MODEL,
+                        "enabled": True,
+                    }
+                ],
+            },
+        ]
+        pilot_settings.provider_registry_json = json.dumps(registry_data)
+        reset_registry()
+
+    def test_malicious_provider_not_raw(self, client):
+        self._setup_malicious_registry()
+        resp = client.get("/workspace")
+        assert resp.status_code == 200
+        assert "</script><script>window.__b14_provider_xss" not in resp.text
+
+    def test_malicious_model_not_raw(self, client):
+        self._setup_malicious_registry()
+        resp = client.get("/workspace")
+        assert "</script><img src=x" not in resp.text
+
+    def test_malicious_values_escaped_as_unicode(self, client):
+        self._setup_malicious_registry()
+        resp = client.get("/workspace")
+        assert "\\u003c/script\\u003e" in resp.text
+
+    def test_json_parseable_with_preserved_data(self, client):
+        self._setup_malicious_registry()
+        resp = client.get("/workspace")
+        import re
+        m = re.search(
+            r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>',
+            resp.text, re.DOTALL,
+        )
+        assert m, "workspace-config script block not found"
+        parsed = json.loads(m.group(1))
+        models = parsed.get("models", [])
+        assert len(models) > 0
+        assert models[0]["provider_name"] == self.MALICIOUS_PROVIDER
+        assert models[0]["name"] == self.MALICIOUS_MODEL
 
 
 # ============================================================================
