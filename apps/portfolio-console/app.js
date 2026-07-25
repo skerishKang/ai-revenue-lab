@@ -14,8 +14,7 @@
 
   const labels = {
     ko: {
-      businessOperations: "내 비즈니스 관리",
-      quickLaunch: "빠른 실행",
+       businessOperations: "내 비즈니스 관리",
       projectDirectory: "프로젝트 모아보기",
       businessRegistry: "비즈니스 목록",
       priorityActions: "우선 작업",
@@ -28,9 +27,10 @@
       currentWork: "현재 작업",
       nextAction: "다음 작업",
       lastVerified: "마지막 확인",
-      openPage: "페이지 열기",
+       openPage: "페이지 열기",
       openRepository: "저장소 열기",
       copyWorkspace: "폴더 경로 복사",
+      viewDetail: "자세히 보기",
       allProjects: "전체 프로젝트",
       all: "전체",
       projects: "개",
@@ -91,8 +91,7 @@
       langEn: "EN"
     },
     en: {
-      businessOperations: "Business Operations",
-      quickLaunch: "QUICK LAUNCH",
+       businessOperations: "Business Operations",
       projectDirectory: "Project Directory",
       businessRegistry: "Business Registry",
       priorityActions: "Priority Actions",
@@ -105,9 +104,10 @@
       currentWork: "CURRENT WORK",
       nextAction: "NEXT ACTION",
       lastVerified: "LAST VERIFIED",
-      openPage: "OPEN PAGE",
+       openPage: "OPEN PAGE",
       openRepository: "OPEN REPOSITORY",
       copyWorkspace: "COPY WORKSPACE",
+      viewDetail: "VIEW DETAIL",
       allProjects: "ALL PROJECTS",
       all: "ALL",
       projects: "projects",
@@ -355,19 +355,42 @@
   function projectCardTemplate(item) {
     const selectedClass = item.id === selectedProjectId ? " is-selected" : "";
     const bizLabel = item.businessNumber ? `BIZ ${pad(item.businessNumber)}` : "";
-    return `
-      <div class="pd-card${selectedClass}" data-project-id="${item.id}" tabindex="0" role="button" aria-pressed="${item.id === selectedProjectId}">
-        <div class="pd-card-top">
-          <span class="pd-card-name">${item.name}</span>
-          <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
-        </div>
-        <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
-        <div class="pd-card-meta">
-          <span>${item.repositoryLabel}</span>
-          <span>${item.workspace}</span>
-        </div>
-        <span class="pd-card-progress">${item.progressNote}</span>
+    const hasPageUrl = Boolean(item.pageUrl);
+    const undeployedBadge = hasPageUrl
+      ? ""
+      : `<span class="pd-card-undeployed" title="${t('notDeployed')}">${t('notDeployed')}</span>`;
+    const cardBody = `
+      <div class="pd-card-top">
+        <span class="pd-card-name">${item.name}</span>
+        <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
+        ${undeployedBadge}
       </div>
+      <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
+      <div class="pd-card-meta">
+        <span>${item.repositoryLabel}</span>
+        <span>${item.workspace}</span>
+      </div>
+      <span class="pd-card-progress">${item.progressNote}</span>
+    `;
+
+    if (hasPageUrl) {
+      return `
+        <article class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="true">
+          <a class="pd-card-service-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">
+            ${cardBody}
+          </a>
+          <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
+        </article>
+      `;
+    }
+
+    return `
+      <article class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="false">
+        <div class="pd-card-main">
+          ${cardBody}
+        </div>
+        <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
+      </article>
     `;
   }
 
@@ -379,12 +402,16 @@
     $("#project-count").textContent = `${visible.length} ${t("projects")}`;
 
     grid.querySelectorAll(".pd-card").forEach((card) => {
-      const select = () => selectProject(card.dataset.projectId);
-      card.addEventListener("click", select);
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          select();
+      const projectId = card.dataset.projectId;
+      const hasPageUrl = card.dataset.hasPageUrl === "true";
+
+      card.addEventListener("click", (event) => {
+        if (event.target.closest(".pd-card-detail-btn")) {
+          selectProject(projectId);
+          return;
+        }
+        if (!hasPageUrl) {
+          selectProject(projectId);
         }
       });
     });
@@ -472,7 +499,6 @@
 
   function updateStaticLabels() {
     $("#topbar-title").textContent = t("businessOperations");
-    $(".ql-heading").textContent = t("quickLaunch");
     $("#project-directory-heading").textContent = t("projectDirectory");
     $("#registry-heading").textContent = t("businessRegistry");
     $("#activity-heading").textContent = t("priorityActions");

@@ -72,9 +72,9 @@ window.ARL_PROJECTS = [
     repositoryLabel: "skerishKang/ai-revenue-lab",
     repositoryUrl: "https://github.com/skerishKang/ai-revenue-lab",
     workspace: "apps/living-fiction/",
-    pageUrl: "https://padiemipu--ai-revenue-living-fiction-web.modal.run",
+    pageUrl: null,
     stage: "live",
-    progressNote: "Modal 프로덕션 워크플로로 배포 완료.",
+    progressNote: "기존 Modal 배포 주소가 응답하지 않아(404) 배포 재검증이 필요함.",
     currentWork: "현재 작업 없음",
     nextAction: "합성 초대 자격 증명 및 데모 데이터 초기화 절차 문서화",
     lastVerified: "2026-07-24"

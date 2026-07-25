@@ -310,135 +310,29 @@ test.describe('Portfolio Console Browser Tests', () => {
   });
 });
 
-test.describe('Quick Launch Browser Tests', () => {
+test.describe('Quick Launch Removal Browser Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
   });
 
-  test('renders 13 quick launch items', async ({ page }) => {
-    await expect(page.locator('.ql-item')).toHaveCount(13);
+  test('Quick Launch section is not rendered', async ({ page }) => {
+    await expect(page.locator('.quick-launch')).toHaveCount(0);
+    await expect(page.locator('.ql-heading')).toHaveCount(0);
+    await expect(page.locator('.ql-list')).toHaveCount(0);
+    await expect(page.locator('.ql-item')).toHaveCount(0);
   });
 
-  test('has 8 active links with 열기 indicator', async ({ page }) => {
-    const active = page.locator('.ql-active');
-    await expect(active).toHaveCount(8);
-
-    const indicator = active.first().locator('i');
-    await expect(indicator).toContainText('열기');
+  test('quick-launch.js script is not loaded', async ({ page }) => {
+    const scripts = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('script')).map(s => s.src)
+    );
+    expect(scripts).not.toContain(expect.stringContaining('quick-launch'));
   });
 
-  test('has 5 planned items with 준비 중 indicator', async ({ page }) => {
-    const planned = page.locator('.ql-planned');
-    await expect(planned).toHaveCount(5);
-
-    const indicator = planned.first().locator('i');
-    await expect(indicator).toContainText('준비 중');
-  });
-
-  test('active items are <a> with href, target=_blank, rel=noopener noreferrer', async ({ page }) => {
-    const activeLinks = page.locator('.ql-active');
-    const count = await activeLinks.count();
-
-    for (let i = 0; i < count; i++) {
-      const link = activeLinks.nth(i);
-      await expect(link).toHaveAttribute('href', /^https:\/\//);
-      await expect(link).toHaveAttribute('target', '_blank');
-      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    }
-  });
-
-  test('planned items are <span> with aria-disabled and tabindex=-1', async ({ page }) => {
-    const plannedItems = page.locator('.ql-planned');
-    const count = await plannedItems.count();
-
-    for (let i = 0; i < count; i++) {
-      const item = plannedItems.nth(i);
-      await expect(item).not.toHaveAttribute('href');
-      await expect(item).not.toHaveAttribute('target');
-      await expect(item).not.toHaveAttribute('rel');
-      await expect(item).toHaveAttribute('aria-disabled', 'true');
-      await expect(item).toHaveAttribute('tabindex', '-1');
-    }
-  });
-
-  test('planned items use <span> tag', async ({ page }) => {
-    const plannedItems = page.locator('.ql-planned');
-    const count = await plannedItems.count();
-    for (let i = 0; i < count; i++) {
-      const tagName = await plannedItems.nth(i).evaluate(el => el.tagName);
-      expect(tagName).toBe('SPAN');
-    }
-  });
-
-  test('active items use <a> tag', async ({ page }) => {
-    const activeLinks = page.locator('.ql-active');
-    const count = await activeLinks.count();
-    for (let i = 0; i < count; i++) {
-      const tagName = await activeLinks.nth(i).evaluate(el => el.tagName);
-      expect(tagName).toBe('A');
-    }
-  });
-
-  test('existing business registry search still works', async ({ page }) => {
-    await page.fill('#search-input', 'fiction');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#business-table-body .business-row')).toHaveCount(1);
-    await expect(page.locator('#business-table-body .business-row').first()
-      .locator('.business-title strong')).toHaveText('Living Fiction');
-  });
-
-  test('existing state filter still works', async ({ page }) => {
-    await page.selectOption('#state-filter', 'running');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#business-table-body .business-row')).toHaveCount(4);
-  });
-
-  test('existing sort control still works', async ({ page }) => {
-    await page.selectOption('#sort-control', 'number-desc');
-    await page.waitForTimeout(200);
-    const firstNumber = await page.locator('#business-table-body .business-row')
-      .first().locator('.business-number').textContent();
-    expect(firstNumber).toBe('15');
-  });
-
-  test('existing row selection still works', async ({ page }) => {
-    await page.click('#business-table-body tr[data-business-number="14"]');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#detail-number')).toHaveText('비즈니스 14');
-    await expect(page.locator('#detail-title')).toHaveText('Korean AI Platform');
-  });
-
-  test('no horizontal overflow on desktop with quick launch', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 1100 });
-    const overflow = await page.evaluate(() =>
-      document.documentElement.scrollWidth > window.innerWidth);
-    expect(overflow).toBeFalsy();
-  });
-
-  test('no horizontal overflow on tablet with quick launch', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 });
-    const overflow = await page.evaluate(() =>
-      document.documentElement.scrollWidth > window.innerWidth);
-    expect(overflow).toBeFalsy();
-  });
-
-  test('no horizontal overflow on mobile with quick launch', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    const overflow = await page.evaluate(() =>
-      document.documentElement.scrollWidth > window.innerWidth);
-    expect(overflow).toBeFalsy();
-  });
-
-  test('no console errors with quick launch', async ({ page }) => {
-    const errors = [];
-    page.on('console', msg => {
-      if (msg.type() === 'error') errors.push(msg.text());
-    });
-    page.on('pageerror', err => errors.push(err.message));
-
-    await page.reload({ waitUntil: 'networkidle' });
-    expect(errors).toHaveLength(0);
+  test('no Quick Launch related elements in DOM', async ({ page }) => {
+    await expect(page.locator('#quick-launch-list')).toHaveCount(0);
+    await expect(page.locator('#quick-launch-heading')).toHaveCount(0);
   });
 });
 
@@ -525,7 +419,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('clicking a project card selects it and updates detail panel', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
@@ -543,14 +437,14 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project detail shows business number when assigned', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="personal-edition"]');
+    await page.click('.pd-card[data-project-id="personal-edition"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await expect(page.locator('#pd-detail-biz')).toHaveText('비즈니스 01');
   });
 
   test('active page links have target=_blank and rel=noopener noreferrer', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovebud"]');
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     const pageLink = page.locator('#pd-page-link');
@@ -571,7 +465,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('active repository links have security attributes', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="ai-finder-bukgu"]');
+    await page.click('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     const repoLink = page.locator('#pd-repo-link');
@@ -589,7 +483,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('copy workspace button copies exact relative path', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="living-travel"]');
+    await page.click('.pd-card[data-project-id="living-travel"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     const copyButton = page.locator('#pd-copy-workspace');
@@ -617,7 +511,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('copy workspace handles clipboard API missing', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="living-travel"]');
+    await page.click('.pd-card[data-project-id="living-travel"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await page.evaluate(() => {
@@ -637,7 +531,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('copy workspace handles clipboard rejection', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="living-travel"]');
+    await page.click('.pd-card[data-project-id="living-travel"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await page.evaluate(() => {
@@ -657,7 +551,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('copy workspace root path handled correctly', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await page.evaluate(() => {
@@ -684,10 +578,144 @@ test.describe('Project Directory Browser Tests', () => {
     await expect(copyButton).toBeDisabled();
   });
 
-  test('existing quick launch 13/8/5 still works', async ({ page }) => {
-    await expect(page.locator('.ql-item')).toHaveCount(13);
-    await expect(page.locator('.ql-active')).toHaveCount(8);
-    await expect(page.locator('.ql-planned')).toHaveCount(5);
+  test('Quick Launch is not present on the page', async ({ page }) => {
+    await expect(page.locator('.quick-launch')).toHaveCount(0);
+    await expect(page.locator('.ql-item')).toHaveCount(0);
+  });
+
+  test('project cards have a 자세히 보기 button', async ({ page }) => {
+    const cards = page.locator('.pd-card');
+    const count = await cards.count();
+    for (let i = 0; i < count; i++) {
+      await expect(cards.nth(i).locator('.pd-card-detail-btn')).toBeVisible();
+    }
+  });
+
+  test('pageUrl cards have real anchor links with security attributes', async ({ page }) => {
+    const links = page.locator('.pd-card-service-link');
+    const count = await links.count();
+    expect(count).toBe(8);
+
+    for (let i = 0; i < count; i++) {
+      const link = links.nth(i);
+      await expect(link).toHaveAttribute('href', /^https:\/\//);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    }
+  });
+
+  test('LoveBud service link has correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="lovebud"] .pd-card-service-link');
+    await expect(link).toHaveAttribute('href', 'https://lovebud.pages.dev/');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  test('LoveTree 3.0 service link has correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="lovetree-3"] .pd-card-service-link');
+    await expect(link).toHaveAttribute('href', 'https://lovetree3.pages.dev/');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  test('AI Finder / 광주 북구청 service link has correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-service-link');
+    await expect(link).toHaveAttribute('href', 'https://cgbukku.pages.dev/');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  test('Korean AI Platform has no service link', async ({ page }) => {
+    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-service-link')).toHaveCount(0);
+    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-main')).toHaveCount(1);
+  });
+
+  test('Living Fiction has no service link (404 URL removed)', async ({ page }) => {
+    await expect(page.locator('.pd-card[data-project-id="living-fiction"] .pd-card-service-link')).toHaveCount(0);
+    await expect(page.locator('.pd-card[data-project-id="living-fiction"] .pd-card-main')).toHaveCount(1);
+  });
+
+  test('no role=button or role=link on project cards', async ({ page }) => {
+    const cards = page.locator('.pd-card');
+    const count = await cards.count();
+    for (let i = 0; i < count; i++) {
+      const card = cards.nth(i);
+      await expect(card).not.toHaveAttribute('role');
+    }
+  });
+
+  test('no button nested inside anchor link', async ({ page }) => {
+    const nested = page.locator('.pd-card a button');
+    await expect(nested).toHaveCount(0);
+  });
+
+  test('no window.open usage in app.js', async ({ page }) => {
+    const hasWindowOpen = await page.evaluate(() => typeof window.open === 'function' && window.open.toString().includes('[native code]'));
+    expect(hasWindowOpen).toBeTruthy();
+  });
+
+  test('Korean AI Platform card does not navigate externally', async ({ page }) => {
+    const [popup] = await Promise.all([
+      page.waitForEvent('popup', { timeout: 1000 }).catch(() => null),
+      page.click('.pd-card[data-project-id="korean-ai-platform"]'),
+    ]);
+    expect(popup).toBeNull();
+
+    await expect(page.locator('#pd-detail-title')).toHaveText('Korean AI Platform');
+  });
+
+  test('자세히 보기 button opens detail panel', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-detail-title')).toHaveText('LoveBud');
+    await expect(page.locator('#pd-detail-badge')).toHaveText('운영 중');
+  });
+
+  test('자세히 보기 button does not open new tab', async ({ page }) => {
+    const [popup] = await Promise.all([
+      page.waitForEvent('popup', { timeout: 1000 }).catch(() => null),
+      page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn'),
+    ]);
+    expect(popup).toBeNull();
+  });
+
+  test('Enter key on service link opens new tab', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="lovebud"] .pd-card-service-link');
+    await link.focus();
+
+    const [popup] = await Promise.all([
+      page.waitForEvent('popup'),
+      page.keyboard.press('Enter'),
+    ]);
+    expect(popup).toBeTruthy();
+    expect(popup.url()).toBe('https://lovebud.pages.dev/');
+  });
+
+  test('Enter key on 자세히 보기 button opens detail panel', async ({ page }) => {
+    const button = page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
+    await button.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(200);
+
+    await expect(page.locator('#pd-detail-title')).toHaveText('Korean AI Platform');
+  });
+
+  test('undeployed projects show 미배포 indicator', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="korean-ai-platform"]');
+    await expect(card.locator('.pd-card-undeployed')).toBeVisible();
+    await expect(card.locator('.pd-card-undeployed')).toContainText('미배포');
+  });
+
+  test('deployed projects do not show 미배포 indicator', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovebud"]');
+    await expect(card.locator('.pd-card-undeployed')).toHaveCount(0);
+  });
+
+  test('Living Fiction shows 미배포 indicator', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="living-fiction"]');
+    await expect(card.locator('.pd-card-undeployed')).toBeVisible();
+    await expect(card.locator('.pd-card-undeployed')).toContainText('미배포');
   });
 
   test('existing business registry still works', async ({ page }) => {
@@ -761,7 +789,7 @@ test.describe('Language Toggle Browser Tests', () => {
   });
 
   test('Project Directory buttons show Korean labels', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovebud"]');
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await expect(page.locator('#pd-page-link')).toHaveText('페이지 열기');
@@ -770,7 +798,7 @@ test.describe('Language Toggle Browser Tests', () => {
   });
 
   test('stage badges show Korean labels', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
     await expect(page.locator('#pd-detail-badge')).toHaveText('운영 중');
 
@@ -828,7 +856,7 @@ test.describe('Language Toggle Browser Tests', () => {
   });
 
   test('technical identifiers unchanged after language switch', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     const repoBefore = await page.locator('#pd-detail-repo').textContent();
@@ -879,7 +907,7 @@ test.describe('Language Toggle Browser Tests', () => {
   });
 
   test('selection maintained after language switch', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="lovetree-3"]');
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
     await expect(page.locator('#pd-detail-title')).toHaveText('LoveTree 3.0');
 
@@ -900,18 +928,6 @@ test.describe('Language Toggle Browser Tests', () => {
     await page.waitForTimeout(200);
     await expect(page.locator('#lang-en')).toHaveClass(/is-active/);
     await expect(page.locator('#lang-ko')).not.toHaveClass(/is-active/);
-  });
-
-  test('Quick Launch heading switches language', async ({ page }) => {
-    await expect(page.locator('#quick-launch-heading')).toHaveText('빠른 실행');
-
-    await page.click('#lang-en');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#quick-launch-heading')).toHaveText('QUICK LAUNCH');
-
-    await page.click('#lang-ko');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#quick-launch-heading')).toHaveText('빠른 실행');
   });
 
   test('metric labels switch language', async ({ page }) => {

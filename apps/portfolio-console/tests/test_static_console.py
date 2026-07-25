@@ -9,8 +9,33 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_required_files_exist(self) -> None:
-        for relative in ("index.html", "styles.css", "businesses.js", "quick-launch.js", "app.js", "_headers", "README.md"):
+        for relative in ("index.html", "styles.css", "businesses.js", "app.js", "projects.js", "_headers", "README.md"):
             self.assertTrue((ROOT / relative).is_file(), relative)
+
+    def test_quick_launch_file_deleted(self) -> None:
+        self.assertFalse((ROOT / "quick-launch.js").is_file(), "quick-launch.js should be deleted")
+
+    def test_quick_launch_removed_from_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("quick-launch", html)
+        self.assertNotIn("ql-heading", html)
+        self.assertNotIn("ql-list", html)
+        self.assertNotIn("ql-item", html)
+        self.assertNotIn("ql-active", html)
+        self.assertNotIn("ql-planned", html)
+        self.assertNotIn("quick-launch.js", html)
+        self.assertNotIn("빠른 실행", html)
+
+    def test_quick_launch_removed_from_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("quickLaunch", script)
+        self.assertNotIn("ql-heading", script)
+        self.assertNotIn("renderQuickLaunch", script)
+
+    def test_quick_launch_removed_from_styles(self) -> None:
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        self.assertNotIn("quick-launch", css)
+        self.assertNotIn(".ql-", css)
 
     def test_html_has_private_and_noindex_contracts(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -54,46 +79,6 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertNotIn("fetch(", script)
         self.assertNotIn("localStorage", script)
 
-    def test_quick_launch_file_has_data_and_render(self) -> None:
-        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        self.assertIn("window.ARL_QUICK_LAUNCH", script)
-        self.assertIn("renderQuickLaunch", script)
-        self.assertIn("verified", script)
-        self.assertIn("planned", script)
-
-    def test_quick_launch_html_section_exists(self) -> None:
-        html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="quick-launch-list"', html)
-        self.assertIn('class="ql-heading"', html)
-        self.assertIn('src="./quick-launch.js"', html)
-
-    def test_quick_launch_indicators(self) -> None:
-        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        self.assertIn("열기", script)
-        self.assertIn("준비 중", script)
-
-    def test_quick_launch_active_links_have_correct_attributes(self) -> None:
-        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        self.assertIn('target="_blank"', script)
-        self.assertIn('rel="noopener noreferrer"', script)
-
-    def test_quick_launch_planned_items_inert(self) -> None:
-        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        self.assertIn('aria-disabled="true"', script)
-        self.assertIn('tabindex="-1"', script)
-
-    def test_quick_launch_verified_urls_use_https(self) -> None:
-        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        urls = re.findall(r'url:\s*"(https?[^"]+)"', script)
-        self.assertEqual(len(urls), 8)
-        for url in urls:
-            self.assertTrue(url.startswith("https://"), url)
-
-    def test_quick_launch_item_counts(self) -> None:
-        script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
-        self.assertEqual(script.count('state: "verified"'), 8)
-        self.assertEqual(script.count('state: "planned"'), 5)
-
     def test_projects_file_exists(self) -> None:
         self.assertTrue((ROOT / "projects.js").is_file(), "projects.js")
 
@@ -121,6 +106,33 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         for token in forbidden:
             self.assertNotIn(token, script)
 
+    def test_projects_pageurl_accurate(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        page_urls = re.findall(r'pageUrl:\s*("[^"]*"|null)', script)
+        self.assertEqual(len(page_urls), 13)
+        with_url = sum(1 for u in page_urls if u != "null")
+        without_url = sum(1 for u in page_urls if u == "null")
+        self.assertEqual(with_url, 8)
+        self.assertEqual(without_url, 5)
+
+    def test_projects_pageurl_uses_https(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        urls = re.findall(r'pageUrl:\s*"(https?://[^"]+)"', script)
+        self.assertEqual(len(urls), 8)
+        for url in urls:
+            self.assertTrue(url.startswith("https://"), url)
+
+    def test_projects_living_fiction_pageurl_null(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn('pageUrl: null', script)
+        self.assertNotIn('padiemipu--ai-revenue-living-fiction-web.modal.run', script)
+
+    def test_projects_no_secret_like_literals(self) -> None:
+        text = (ROOT / "projects.js").read_text(encoding="utf-8").lower()
+        forbidden = ("api_key", "private_key", "password", "database_url", "firebase_service_account")
+        for token in forbidden:
+            self.assertNotIn(token, text)
+
     def test_projects_html_section_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('id="pd-grid"', html)
@@ -134,6 +146,30 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn('id="pd-repo-link"', html)
         self.assertIn('aria-disabled="true"', html)
         self.assertIn('tabindex="-1"', html)
+
+    def test_projects_detail_button_present(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn('pd-card-detail-btn', script)
+
+    def test_projects_undeployed_indicator_present(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn('pd-card-undeployed', script)
+
+    def test_projects_no_role_button_on_card(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn('role="button"', script)
+        self.assertNotIn('role="link"', script)
+
+    def test_projects_no_window_open(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn('window.open', script)
+
+    def test_projects_use_real_anchor_links(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn('pd-card-service-link', script)
+        self.assertIn('href=', script)
+        self.assertIn('target="_blank"', script)
+        self.assertIn('rel="noopener noreferrer"', script)
 
 
 if __name__ == "__main__":
