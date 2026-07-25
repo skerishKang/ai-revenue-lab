@@ -1,0 +1,9 @@
+.venv/
+.venv-workers/
+node_modules/
+python_modules/.venv/
+python_modules/.venv-workers/
+python_modules/pydantic_core/
+python_modules/h11/
+python_modules/uvicorn/
+python_modules/anyio/

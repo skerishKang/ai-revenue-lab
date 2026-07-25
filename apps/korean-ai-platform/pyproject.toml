@@ -8,18 +8,18 @@ version = "0.2.0"
 description = "Korean AI Platform (Business 14) — API Provider Phase 0 Demo"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.115,<1",
-    "uvicorn>=0.32,<1",
-    "pydantic>=2.10,<3",
-    "pydantic-settings>=2.6,<3",
+    "starlette>=0.45,<1",
     "jinja2>=3.1,<4",
     "python-multipart>=0.0.9,<1",
     "httpx>=0.28,<1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
+    "uvicorn>=0.32,<1",
     "pytest>=8.3,<9",
+    "workers-py>=1.15.0",
+    "workers-runtime-sdk>=1.6.3",
 ]
 
 [tool.setuptools.packages.find]
@@ -31,3 +31,8 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore:Using .httpx. with .starlette.testclient",
+    "ignore:Setting per-request cookies",
+    "ignore:The `route` decorator is deprecated:DeprecationWarning",
+]

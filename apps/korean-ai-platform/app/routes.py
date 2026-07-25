@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Form, Request
-from fastapi.responses import RedirectResponse
+from starlette.routing import Router
+from starlette.responses import RedirectResponse
+from starlette.requests import Request
 
 from app.demo_data import (
     ACCESS_MODES,
@@ -20,10 +21,10 @@ from app.demo_data import (
 )
 from app.factory import render_template
 
-router = APIRouter()
+router = Router()
 
 
-@router.get("/")
+@router.route("/", methods=["GET"])
 def home(request: Request):
     return render_template(
         request,
@@ -36,7 +37,7 @@ def home(request: Request):
     )
 
 
-@router.get("/models")
+@router.route("/models", methods=["GET"])
 def model_catalog(request: Request):
     filter_type = request.query_params.get("type", "")
     search = request.query_params.get("q", "").strip().lower()
@@ -87,8 +88,9 @@ def model_catalog(request: Request):
     )
 
 
-@router.get("/models/{model_id}")
-def model_detail(request: Request, model_id: str):
+@router.route("/models/{model_id}", methods=["GET"])
+def model_detail(request: Request):
+    model_id = request.path_params["model_id"]
     model = MODELS_BY_ID.get(model_id)
     if model is None:
         return render_template(request, "not_found.html", {"item": "모델"}, status_code=404)
@@ -100,7 +102,7 @@ def model_detail(request: Request, model_id: str):
     )
 
 
-@router.get("/playground")
+@router.route("/playground", methods=["GET"])
 def playground(request: Request):
     model_id = request.query_params.get("model", "")
     if model_id and model_id not in MODELS_BY_ID:
@@ -122,13 +124,14 @@ def playground(request: Request):
     )
 
 
-@router.post("/playground")
-def playground_run(
+@router.route("/playground", methods=["POST"])
+async def playground_run(
     request: Request,
-    prompt: str = Form(""),
-    model_id: str = Form(""),
-    routing_mode: str = Form("direct"),
 ):
+    form = await request.form()
+    prompt = form.get("prompt", "")
+    model_id = form.get("model_id", "")
+    routing_mode = form.get("routing", "direct")
     if routing_mode != "direct" and routing_mode:
         for policy in ROUTING_POLICIES:
             if policy.id == routing_mode:
@@ -157,7 +160,7 @@ def playground_run(
     )
 
 
-@router.get("/api-keys")
+@router.route("/api-keys", methods=["GET"])
 def api_keys(request: Request):
     created = request.query_params.get("created")
     revoked = request.query_params.get("revoked")
@@ -179,13 +182,14 @@ def api_keys(request: Request):
     )
 
 
-@router.post("/api-keys/create")
+@router.route("/api-keys/create", methods=["POST"])
 def api_key_create(request: Request):
     return RedirectResponse(url="/api-keys?created=1", status_code=303)
 
 
-@router.post("/api-keys/{key_id}/revoke")
-def api_key_revoke(request: Request, key_id: str):
+@router.route("/api-keys/{key_id}/revoke", methods=["POST"])
+def api_key_revoke(request: Request):
+    key_id = request.path_params["key_id"]
     valid_ids = {k.id for k in DEMO_API_KEYS}
     if key_id not in valid_ids:
         return RedirectResponse(url="/api-keys?invalid=1", status_code=303)
@@ -193,7 +197,7 @@ def api_key_revoke(request: Request, key_id: str):
     return RedirectResponse(url=f"/api-keys?revoked={key_id}", status_code=303)
 
 
-@router.get("/usage")
+@router.route("/usage", methods=["GET"])
 def usage(request: Request):
     summary = compute_usage_summary()
     return render_template(
@@ -206,7 +210,7 @@ def usage(request: Request):
     )
 
 
-@router.get("/docs")
+@router.route("/docs", methods=["GET"])
 def docs(request: Request):
     model_id = request.query_params.get("model", "")
     if not model_id or model_id not in MODELS_BY_ID:
@@ -223,12 +227,12 @@ def docs(request: Request):
     )
 
 
-@router.get("/pricing")
+@router.route("/pricing", methods=["GET"])
 def pricing(request: Request):
     return render_template(request, "pricing.html", {})
 
 
-@router.get("/access")
+@router.route("/access", methods=["GET"])
 def access(request: Request):
     return render_template(
         request,

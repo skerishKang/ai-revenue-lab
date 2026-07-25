@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore", message=r"Using .httpx. with .starlette.testcl
 warnings.filterwarnings("ignore", message=r"Setting per-request cookies")
 
 import pytest
-from fastapi.testclient import TestClient
+from starlette.testclient import TestClient
 
 from app.factory import create_app
 
