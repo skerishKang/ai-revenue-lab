@@ -8,7 +8,7 @@ from __future__ import annotations
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from pydantic import ValidationError
+from app.pilot.schemas import ValidationError
 
 from app.factory import create_app
 from app.pilot.config import pilot_settings
@@ -103,16 +103,16 @@ class TestPilotModels:
 
 class TestSchemaValidation:
     def test_extra_fields_forbidden(self):
-        """Unknown fields should be rejected by Pydantic."""
-        with pytest.raises(ValidationError):
+        """Unknown fields should be rejected by dataclass."""
+        with pytest.raises(TypeError):
             PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], base_url="http://evil.com")
 
     def test_api_key_field_forbidden(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(TypeError):
             PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], api_key="sk-test")
 
     def test_endpoint_field_forbidden(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(TypeError):
             PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], endpoint="http://evil.com")
 
     def test_invalid_role(self):

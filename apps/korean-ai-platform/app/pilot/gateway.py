@@ -46,9 +46,18 @@ _INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니�
 
 
 # Allowed fields for PilotChatRequest (dataclass field names)
-_ALLOWED_CHAT_FIELDS = {
+_VALID_ROLES = frozenset({"system", "user", "assistant"})
+_ALLOWED_CHAT_FIELDS = frozenset({
     "model", "messages", "temperature", "max_tokens", "stream", "tools",
-}
+})
+_ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
+
+
+class _InvalidBody(PilotError):
+    """Request body validation error → HTTP 422."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(code="invalid_body", message=message, status_code=422)
 
 
 def _new_request_id() -> str:
@@ -99,28 +108,85 @@ def _validate_provider_key(x_business14_provider_key: str | None) -> str:
     return x_business14_provider_key
 
 
-def _reject_extra_fields(body: dict) -> dict:
-    """Reject JSON keys that are not declared on the dataclass."""
-    extra = set(body) - _ALLOWED_CHAT_FIELDS
+def _validate_body(raw: Any) -> dict:
+    """Deep-validate and normalize a chat completions JSON body → 422 on failure."""
+    if not isinstance(raw, dict):
+        raise _InvalidBody("Request body must be a JSON object")
+
+    extra = set(raw) - _ALLOWED_CHAT_FIELDS
     if extra:
-        raise InvalidRequest(f"Unexpected fields: {', '.join(sorted(extra))}")
-    return body
+        raise _InvalidBody(f"Unexpected top-level fields: {', '.join(sorted(extra))}")
 
+    # model
+    if not isinstance(raw.get("model"), str) or not raw["model"].strip():
+        raise _InvalidBody("model must be a non-empty string")
 
-def _validate_chat_request(req: PilotChatRequest) -> None:
-    if req.stream:
+    model = raw["model"].strip()
+    if len(model) > 200:
+        raise _InvalidBody("model must not exceed 200 characters")
+
+    # messages
+    msgs = raw.get("messages")
+    if not isinstance(msgs, list):
+        raise _InvalidBody("messages must be a non-empty array")
+    if len(msgs) < 1 or len(msgs) > 100:
+        raise _InvalidBody("messages must have 1–100 items")
+
+    validated_messages: list[dict[str, str]] = []
+    for i, msg in enumerate(msgs):
+        if not isinstance(msg, dict):
+            raise _InvalidBody(f"messages[{i}] must be a JSON object")
+        m_extra = set(msg) - _ALLOWED_MESSAGE_FIELDS
+        if m_extra:
+            raise _InvalidBody(f"messages[{i}] unexpected fields: {', '.join(sorted(m_extra))}")
+        role = msg.get("role")
+        if role not in _VALID_ROLES:
+            raise _InvalidBody(f"messages[{i}] role must be one of system/user/assistant")
+        content = msg.get("content")
+        if not isinstance(content, str) or not content.strip():
+            raise _InvalidBody(f"messages[{i}] content must be a non-empty string")
+        content = content.strip()
+        if len(content) > 32000:
+            raise _InvalidBody(f"messages[{i}] content must not exceed 32000 characters")
+        validated_messages.append({"role": role, "content": content})
+
+    # temperature
+    temp = raw.get("temperature")
+    if temp is not None:
+        if isinstance(temp, bool) or not isinstance(temp, (int, float)):
+            raise _InvalidBody("temperature must be a number or null")
+        temp = float(temp)
+        if temp < 0.0 or temp > 2.0:
+            raise _InvalidBody("temperature must be between 0.0 and 2.0")
+
+    # max_tokens
+    mt = raw.get("max_tokens")
+    if mt is not None:
+        if isinstance(mt, bool) or not isinstance(mt, int):
+            raise _InvalidBody("max_tokens must be an integer or null")
+        if mt < 1 or mt > 4096:
+            raise _InvalidBody("max_tokens must be between 1 and 4096")
+
+    # stream
+    st = raw.get("stream")
+    if st is not None and not isinstance(st, bool):
+        raise _InvalidBody("stream must be a boolean or null")
+    if st:
         raise StreamNotSupported()
-    if req.tools:
+
+    # tools
+    tl = raw.get("tools")
+    if tl is not None:
+        if not isinstance(tl, list):
+            raise _InvalidBody("tools must be an array or null")
         raise ToolsNotSupported()
-    if not req.messages or not isinstance(req.messages, list):
-        raise InvalidRequest("messages 필드는 비어 있을 수 없습니다.")
-    if not req.model:
-        raise InvalidRequest("model 필드는 필수입니다.")
-    for msg in req.messages:
-        if isinstance(msg, dict):
-            role = msg.get("role", "")
-            if role not in ("system", "user", "assistant"):
-                raise InvalidRequest(f"Invalid message role: {role!r}")
+
+    return {
+        "model": model,
+        "messages": validated_messages,
+        "temperature": float(temp) if temp is not None else 0.2,
+        "max_tokens": int(mt) if mt is not None else 300,
+    }
 
 
 @router.route("/health", methods=["GET"])
@@ -210,19 +276,11 @@ async def pilot_chat_completions(
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
         raw_body = await request.json()
-        if not isinstance(raw_body, dict):
-            raise InvalidRequest("Request body must be a JSON object")
 
-        _reject_extra_fields(raw_body)
-        request = PilotChatRequest(**raw_body)
-
+        body = _validate_body(raw_body)
         api_key = _validate_provider_key(x_business14_provider_key)
-        _validate_chat_request(request)
 
-        if not request.model:
-            raise InvalidRequest("model 필드는 필수입니다.")
-
-        route = resolve_route(request.model)
+        route = resolve_route(body["model"])
 
         state = resolve_configuration()
         mode = "byok-multi-provider-pilot" if state == PilotConfigurationState.VALID_REGISTRY else "byok-pilot"
@@ -230,7 +288,7 @@ async def pilot_chat_completions(
         logger.info(
             "pilot_route request_id=%s model=%s provider=%s state=%s",
             request_id,
-            request.model,
+            body["model"],
             route.provider_id,
             state.value,
         )
@@ -238,9 +296,9 @@ async def pilot_chat_completions(
         start_time = time.monotonic()
         response_data = await prv.call_chat_completions(
             api_key=api_key,
-            messages=request.messages,
-            temperature=request.temperature,
-            max_tokens=request.max_tokens,
+            messages=body["messages"],
+            temperature=body.get("temperature"),
+            max_tokens=body.get("max_tokens"),
             base_url=route.base_url,
             upstream_model=route.upstream_model,
             timeout_seconds=route.timeout_seconds,
@@ -251,7 +309,7 @@ async def pilot_chat_completions(
         response_data.setdefault("business14", {})
         response_data["business14"]["mode"] = mode
         response_data["business14"]["provider"] = route.provider_id
-        response_data["business14"]["model_route"] = request.model
+        response_data["business14"]["model_route"] = body["model"]
         response_data["business14"]["latency_ms"] = latency_ms
         response_data["business14"]["request_id"] = request_id
         response_data["business14"]["estimated_krw"] = None

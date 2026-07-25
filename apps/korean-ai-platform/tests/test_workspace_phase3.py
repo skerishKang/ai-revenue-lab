@@ -446,13 +446,13 @@ class TestKeySafety:
         """workspace.js must be loaded on the page."""
         _setup_registry()
         resp = client.get("/workspace")
-        assert 'src="/static/workspace.js' in resp.text or 'src="/static/workspace.js' in resp.text
+        assert 'src="/workspace.js' in resp.text
 
     def test_original_app_js_loaded(self, client):
         """Original app.js must still be loaded globally."""
         _setup_registry()
         resp = client.get("/workspace")
-        assert 'src="/static/app.js' in resp.text
+        assert 'src="/app.js' in resp.text
 
     def test_try_finally_cleanup_in_js(self):
         """workspace.js must use try/finally for sendMessage error recovery."""
@@ -602,7 +602,7 @@ class TestPhase3Regression:
         resp = client.get("/docs")
         assert resp.status_code == 200
         # app.js should be loaded globally
-        assert 'src="/static/app.js' in resp.text
+        assert 'src="/app.js' in resp.text
 
     def test_phase1_legacy_chat(self, client):
         pilot_settings.pilot_base_url = "https://api.test-pilot.example.com"

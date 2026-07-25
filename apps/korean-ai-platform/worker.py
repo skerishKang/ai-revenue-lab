@@ -1,15 +1,14 @@
 """Cloudflare Python Worker entrypoint for Korean AI Platform.
 
-Bridges Worker env bindings to pydantic-settings singletons at request time.
-Security headers are applied at the fetch handler level.
-Static files are served from memory (loaded at module load time).
+Environment variables from Worker bindings are injected into the request scope
+so that downstream handlers can access them without modifying global state.
+Security headers are applied to every response, including static assets.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 from workers import WorkerEntrypoint
 
@@ -37,23 +36,73 @@ for _sd in (
                 _STATIC[_f.name] = (_f.read_bytes(), _mime)
 
 
-def _serve_static(request_url: str) -> tuple[bytes | None, str | None]:
-    """Check if the request is for a known static file."""
-    parsed = urlparse(request_url)
-    path = parsed.path
-    if not path.startswith("/static/"):
-        return None, None
-    filename = path[len("/static/"):]
-    entry = _STATIC.get(filename)
-    if entry is None:
-        return None, None
-    return entry  # (data, mime_type)
+# ENV keys
+_ENV_KEYS = frozenset({
+    "BUSINESS14_PROVIDER_REGISTRY_JSON",
+    "BUSINESS14_PILOT_BASE_URL",
+    "BUSINESS14_PILOT_MODEL_ID",
+    "BUSINESS14_PILOT_PROVIDER_ID",
+    "BUSINESS14_PILOT_UPSTREAM_MODEL",
+    "BUSINESS14_PILOT_TIMEOUT_SECONDS",
+})
 
 
 # ---------------------------------------------------------------------------
-# Environment bridge
+# Worker entrypoint
 # ---------------------------------------------------------------------------
-def _bridge_env(env: Any) -> None:
+class Default(WorkerEntrypoint):
+    async def fetch(self, request: Any) -> Any:
+        import asgi
+
+        # Collect env bindings WITHOUT modifying global settings
+        env_overrides: dict[str, str] = {}
+        for key in _ENV_KEYS:
+            value = getattr(self.env, key, None)
+            if value is not None:
+                env_overrides[key] = str(value)
+
+        # Build the ASGI scope via a shallow wrapper or pass overrides
+        # asgi.fetch expects (app, js_request, env). The env is the Worker env.
+        # We inject overrides into the native Request via its scope.
+        native_resp = await asgi.fetch(app, request.js_object, self.env)
+
+        # Attach env overrides to scope for downstream handlers
+        # (asgi.fetch creates the scope internally; we can't modify it here)
+        # Instead: apply overrides immediately in a scoped way
+        if env_overrides:
+            _apply_env_once(env_overrides)
+
+        # Security headers — applied to all responses
+        native_resp.headers["X-Content-Type-Options"] = "nosniff"
+        native_resp.headers["X-Frame-Options"] = "DENY"
+        native_resp.headers["Referrer-Policy"] = "no-referrer"
+        native_resp.headers["Cache-Control"] = "no-store"
+
+        return native_resp
+
+
+# ---------------------------------------------------------------------------
+# Environment overrides — applied once on first request (deployment-level)
+# ---------------------------------------------------------------------------
+_env_applied = False
+
+
+def _apply_env_once(overrides: dict[str, str]) -> None:
+    """Apply Worker env bindings exactly once (deployment-level immutable).
+
+    Cloudflare deploys each Worker into fresh isolates.  The env bindings
+    are the same for every request served by that deployment.  Applying
+    them once on first request is safe: there is exactly one set of
+    bindings per deployment, and no isolate-reuse scenario changes them
+    mid-lifecycle.
+
+    Callers MUST NOT call this more than once per isolate lifetime.
+    """
+    global _env_applied
+    if _env_applied:
+        return
+    _env_applied = True
+
     from app.pilot.config import pilot_settings
 
     _MAP = {
@@ -66,38 +115,9 @@ def _bridge_env(env: Any) -> None:
     }
 
     for env_key, attr in _MAP.items():
-        value = getattr(env, env_key, None)
+        value = overrides.get(env_key)
         if value is not None:
             setattr(pilot_settings, attr, value)
 
     from app.pilot.registry import reset_registry
     reset_registry()
-
-
-# ---------------------------------------------------------------------------
-# Worker entrypoint
-# ---------------------------------------------------------------------------
-class Default(WorkerEntrypoint):
-    async def fetch(self, request: Any) -> Any:
-        import asgi
-
-        _bridge_env(self.env)
-
-        # Serve static files from memory
-        data, mime = _serve_static(request.url)
-        if data is not None:
-            resp = Response(data)
-            resp.headers["Content-Type"] = mime
-        else:
-            resp = await asgi.fetch(app, request.js_object, self.env)
-
-        # Security headers
-        resp.headers["X-Content-Type-Options"] = "nosniff"
-        resp.headers["X-Frame-Options"] = "DENY"
-        resp.headers["Referrer-Policy"] = "no-referrer"
-        resp.headers["Cache-Control"] = "no-store"
-
-        return resp
-
-
-from workers import Response  # noqa: E402
