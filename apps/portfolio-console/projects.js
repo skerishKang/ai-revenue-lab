@@ -11,7 +11,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://ai-revenue-portfolio-console.pages.dev",
     stage: "live",
     developmentMode: "active-development",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "#137 Portfolio Console v2 redesign",
     milestoneTasks: [
@@ -65,7 +65,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://lovebud.pages.dev/",
     stage: "live",
     developmentMode: "active-development",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "#3425 Architecture audit / #3458 Migration ledger",
     milestoneTasks: [
@@ -125,7 +125,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://feat-personal-edition-final.ai-revenue-personal-edition.pages.dev",
     stage: "review",
     developmentMode: "needs-improvement",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "PR #111 Draft review and merge",
     milestoneTasks: [
@@ -173,7 +173,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev",
     stage: "live",
     developmentMode: "active-development",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "#107 Phase 3B live-provider 활성화",
     milestoneTasks: [
@@ -215,7 +215,7 @@ window.ARL_PROJECTS = [
     pageUrl: null,
     stage: "review",
     developmentMode: "needs-improvement",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "배포 재검증",
     milestoneTasks: [
@@ -245,7 +245,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://ai-revenue-living-learning.pages.dev/",
     stage: "live",
     developmentMode: "active-development",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "적응형 레슨 데모 표준화",
     milestoneTasks: [
@@ -281,7 +281,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://feat-personal-video-archive.ai-revenue-personal-video-archive.pages.dev",
     stage: "review",
     developmentMode: "needs-improvement",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "고정 Production 확보",
     milestoneTasks: [
@@ -363,7 +363,7 @@ window.ARL_PROJECTS = [
     pageUrl: "https://cgbukku.pages.dev/",
     stage: "live",
     developmentMode: "active-development",
-    progressBasis: "task",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
     milestoneStatus: "defined",
     currentMilestone: "#1150 Official source freshness / #1080 Page agent parity",
     milestoneTasks: [
@@ -381,8 +381,8 @@ window.ARL_PROJECTS = [
       }
     ],
     progressNote: "Cloudflare Pages에 배포 완료.",
-    currentWork: "현재 작업 없음",
-    nextAction: "기능 확장 계획 수립",
+    currentWork: "#1150 공식 출처 최신정보 조회와 #1080 공식 fixture 확장",
+    nextAction: "#1150 구현 범위 검증 후 #1080의 다음 route fixture 작업 진행",
     blockers: [],
     futureRoadmap: ["#1181 Clone-first multi-site AI Finder architecture — planning-only/deferred"],
     lastVerified: "2026-07-26"

@@ -81,6 +81,7 @@ function validate() {
     } else {
       assert(p.currentMilestone === null, `${p.id}: undefined milestone must have null currentMilestone`);
       assert(p.milestoneTasks.length === 0, `${p.id}: undefined milestone must have zero tasks`);
+      assert(p.progressBasis === null || p.progressBasis === '', `${p.id}: undefined milestone must have null or empty progressBasis`);
     }
 
     if (p.stage === 'planned') {
@@ -127,6 +128,43 @@ function validate() {
 
   const pva = projects.find(p => p.id === 'personal-video-archive');
   assert(pva.stage === 'review', `personal-video-archive: stage must be "review"`);
+
+  const undefinedCount = projects.length - definedCount;
+  assert(definedCount === 8, `Expected exactly 8 defined milestones, got ${definedCount}`);
+  assert(undefinedCount === 5, `Expected exactly 5 undefined milestones, got ${undefinedCount}`);
+  assert(totalTasks === 25, `Expected exactly 25 total tasks, got ${totalTasks}`);
+  assert(totalDone === 8, `Expected exactly 8 done tasks, got ${totalDone}`);
+  assert(totalTasks - totalDone === 17, `Expected exactly 17 remaining tasks, got ${totalTasks - totalDone}`);
+
+  const withPageUrl = projects.filter(p => p.pageUrl !== null);
+  const withoutPageUrl = projects.filter(p => p.pageUrl === null);
+  assert(withPageUrl.length === 9, `Expected 9 projects with service links, got ${withPageUrl.length}`);
+  assert(withoutPageUrl.length === 4, `Expected 4 projects without service links, got ${withoutPageUrl.length}`);
+
+  const EXPECTED_CLASSIFICATIONS = {
+    'portfolio-console': { stage: 'live', mode: 'active-development', milestone: 'defined' },
+    'lovebud': { stage: 'live', mode: 'active-development', milestone: 'defined' },
+    'personal-edition': { stage: 'review', mode: 'needs-improvement', milestone: 'defined' },
+    'living-travel': { stage: 'live', mode: 'active-development', milestone: 'defined' },
+    'living-fiction': { stage: 'review', mode: 'needs-improvement', milestone: 'defined' },
+    'living-learning': { stage: 'live', mode: 'active-development', milestone: 'defined' },
+    'personal-video-archive': { stage: 'review', mode: 'needs-improvement', milestone: 'defined' },
+    'lovetree-3': { stage: 'live', mode: 'active-development', milestone: 'undefined' },
+    'korean-ai-platform': { stage: 'live', mode: 'needs-improvement', milestone: 'undefined' },
+    'ai-finder-bukgu': { stage: 'live', mode: 'active-development', milestone: 'defined' },
+    'love-matchmaking': { stage: 'planned', mode: 'not-started', milestone: 'undefined' },
+    'ai-finder-namgu': { stage: 'planned', mode: 'not-started', milestone: 'undefined' },
+    'ai-finder-seogu': { stage: 'planned', mode: 'not-started', milestone: 'undefined' }
+  };
+
+  for (const [id, expected] of Object.entries(EXPECTED_CLASSIFICATIONS)) {
+    const p = projects.find(proj => proj.id === id);
+    assert(p, `Missing project: ${id}`);
+    if (!p) continue;
+    assert(p.stage === expected.stage, `${id}: stage must be "${expected.stage}", got "${p.stage}"`);
+    assert(p.developmentMode === expected.mode, `${id}: developmentMode must be "${expected.mode}", got "${p.developmentMode}"`);
+    assert(p.milestoneStatus === expected.milestone, `${id}: milestoneStatus must be "${expected.milestone}", got "${p.milestoneStatus}"`);
+  }
 
   if (errors.length > 0) {
     console.error(`VALIDATION FAILED: ${errors.length} error(s)`);

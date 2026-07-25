@@ -112,10 +112,10 @@ test.describe('Milestone Progress Tests', () => {
     await expect(page.locator('#pd-detail-milestone')).toContainText('#3425');
   });
 
-  test('detail panel shows progressBasis', async ({ page }) => {
+  test('detail panel shows progressBasis in Korean', async ({ page }) => {
     await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-basis')).toHaveText('task');
+    await expect(page.locator('#pd-detail-basis')).toHaveText('완료 작업 수 / 전체 마일스톤 작업 수');
   });
 
   test('detail panel shows progress percent for defined milestone', async ({ page }) => {
@@ -275,5 +275,124 @@ test.describe('Milestone Progress Tests', () => {
     await page.waitForTimeout(200);
     const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
     expect(doneTasks).not.toContain('PR #140 작업 현재 브랜치');
+  });
+
+  test('Portfolio Console card shows exact 20% progress', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 20%');
+    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 80%');
+    const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
+    expect(barWidth).toBe('20%');
+  });
+
+  test('Portfolio Console detail shows 1/5 tasks', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('1/5');
+    const barWidth = await page.locator('#pd-detail-progress-bar').evaluate(el => el.style.width);
+    expect(barWidth).toBe('20%');
+  });
+
+  test('LoveBud card shows exact 50% progress', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovebud"]');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 50%');
+    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 50%');
+    const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
+    expect(barWidth).toBe('50%');
+  });
+
+  test('LoveBud detail shows 3/6 tasks', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('3/6');
+    const barWidth = await page.locator('#pd-detail-progress-bar').evaluate(el => el.style.width);
+    expect(barWidth).toBe('50%');
+  });
+
+  test('Personal Edition card shows exact 25% progress', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="personal-edition"]');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 25%');
+    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 75%');
+    const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
+    expect(barWidth).toBe('25%');
+  });
+
+  test('Personal Edition detail shows 1/4 tasks', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="personal-edition"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('1/4');
+    const barWidth = await page.locator('#pd-detail-progress-bar').evaluate(el => el.style.width);
+    expect(barWidth).toBe('25%');
+  });
+
+  test('Living Fiction card shows exact 0% progress', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="living-fiction"]');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 0%');
+    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 100%');
+    const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
+    expect(barWidth).toBe('0%');
+  });
+
+  test('Living Fiction detail shows 0/1 tasks', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="living-fiction"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('0/1');
+    const barWidth = await page.locator('#pd-detail-progress-bar').evaluate(el => el.style.width);
+    expect(barWidth).toBe('0%');
+  });
+
+  test('LoveTree card has no percent and no progress bar', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="lovetree-3"]');
+    await expect(card.locator('.pd-card-pct')).toHaveCount(0);
+    await expect(card.locator('.pd-card-bar')).toHaveCount(0);
+    await expect(card.locator('.pd-card-milestone-undefined')).toContainText('진척도 미정');
+    await expect(card.locator('.pd-card-milestone-undefined')).toContainText('목표 정의 필요');
+  });
+
+  test('Korean AI Platform card has no percent and no progress bar', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="korean-ai-platform"]');
+    await expect(card.locator('.pd-card-pct')).toHaveCount(0);
+    await expect(card.locator('.pd-card-bar')).toHaveCount(0);
+    await expect(card.locator('.pd-card-milestone-undefined')).toContainText('진척도 미정');
+    await expect(card.locator('.pd-card-milestone-undefined')).toContainText('목표 정의 필요');
+  });
+
+  test('LoveTree detail shows 진척도 미정 and no progress track', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="lovetree-3"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('진척도 미정');
+    await expect(page.locator('#pd-detail-progress')).toContainText('목표 정의 필요');
+    const trackDisplay = await page.locator('#pd-detail-progress-track').evaluate(el => el.style.display);
+    expect(trackDisplay).toBe('none');
+  });
+
+  test('Korean AI Platform detail shows 진척도 미정 and no progress track', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('진척도 미정');
+    await expect(page.locator('#pd-detail-progress')).toContainText('목표 정의 필요');
+    const trackDisplay = await page.locator('#pd-detail-progress-track').evaluate(el => el.style.display);
+    expect(trackDisplay).toBe('none');
+  });
+
+  test('AI Finder 북구청 shows actual currentWork with #1150 and #1080', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-current')).toContainText('#1150');
+    await expect(page.locator('#pd-detail-current')).toContainText('#1080');
+  });
+
+  test('AI Finder 북구청 nextAction references #1150 and #1080', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-next')).toContainText('#1150');
+    await expect(page.locator('#pd-detail-next')).toContainText('#1080');
+  });
+
+  test('AI Finder 북구청 does not show 현재 작업 없음', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const current = await page.locator('#pd-detail-current').textContent();
+    expect(current).not.toContain('현재 작업 없음');
   });
 });
