@@ -133,8 +133,8 @@ function validate() {
   assert(definedCount === 8, `Expected exactly 8 defined milestones, got ${definedCount}`);
   assert(undefinedCount === 5, `Expected exactly 5 undefined milestones, got ${undefinedCount}`);
   assert(totalTasks === 25, `Expected exactly 25 total tasks, got ${totalTasks}`);
-  assert(totalDone === 8, `Expected exactly 8 done tasks, got ${totalDone}`);
-  assert(totalTasks - totalDone === 17, `Expected exactly 17 remaining tasks, got ${totalTasks - totalDone}`);
+  assert(totalDone === 9, `Expected exactly 9 done tasks, got ${totalDone}`);
+  assert(totalTasks - totalDone === 16, `Expected exactly 16 remaining tasks, got ${totalTasks - totalDone}`);
 
   const withPageUrl = projects.filter(p => p.pageUrl !== null);
   const withoutPageUrl = projects.filter(p => p.pageUrl === null);
