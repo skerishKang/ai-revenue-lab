@@ -57,10 +57,19 @@
       staticRegistry: "정적 레지스트리",
       registryLoaded: "레지스트리 로드됨",
       privateAdmin: "개인 관리자",
-      businesses: "비즈니스",
-      deployments: "배포",
-      modelsCost: "모델 & 비용",
-      registry: "레지스트리",
+       businesses: "비즈니스",
+       deployments: "배포",
+       modelsCost: "모델 & 비용",
+       registry: "레지스트리",
+       projectStatus: "프로젝트 현황",
+       searchFilter: "검색·필터",
+       reset: "초기화",
+       searchPlaceholder: "이름, 저장소, 폴더, 목적, 현재 작업, 다음 작업 검색",
+       closePanel: "검색 패널 닫기",
+       sortDefault: "기본순",
+       sortProgressDesc: "진행률 높은 순",
+       sortProgressAsc: "진행률 낮은 순",
+       resultCount: "개 중",
       tracked: "추적 중",
       demoSurfaces: "데모 화면",
       needsAction: "조치 필요",
@@ -144,10 +153,19 @@
       staticRegistry: "STATIC REGISTRY",
       registryLoaded: "registry loaded",
       privateAdmin: "PRIVATE ADMIN",
-      businesses: "Businesses",
-      deployments: "Deployments",
-      modelsCost: "Models & Cost",
-      registry: "Registry",
+       businesses: "Businesses",
+       deployments: "Deployments",
+       modelsCost: "Models & Cost",
+       registry: "Registry",
+       projectStatus: "PROJECT STATUS",
+       searchFilter: "SEARCH & FILTER",
+       reset: "RESET",
+       searchPlaceholder: "Search by name, repo, folder, purpose, current work, next action",
+       closePanel: "Close search panel",
+       sortDefault: "DEFAULT",
+       sortProgressDesc: "PROGRESS DESC",
+       sortProgressAsc: "PROGRESS ASC",
+       resultCount: " of ",
       tracked: "TRACKED",
       demoSurfaces: "DEMO SURFACES",
       needsAction: "NEEDS ACTION",
@@ -400,13 +418,42 @@
     control.addEventListener(control === searchInput ? "input" : "change", renderTable);
   });
 
+  function computeProjectProgress(item) {
+    const progress = computeProgress(item.milestoneTasks);
+    if (!progress.hasProgress) return null;
+    return progress.progressPercent;
+  }
+
+  function sortedProjects(items, sortValue) {
+    if (sortValue === "default") return items;
+    return items.slice().sort((a, b) => {
+      const progressA = computeProjectProgress(a);
+      const progressB = computeProjectProgress(b);
+      if (progressA === null && progressB === null) return 0;
+      if (progressA === null) return 1;
+      if (progressB === null) return -1;
+      if (sortValue === "progress-desc") return progressB - progressA;
+      return progressA - progressB;
+    });
+  }
+
+  function formatResultCount(total, visible) {
+    if (currentLang === "ko") {
+      return `${total}${t("projects")} 중 ${visible}${t("projects")}`;
+    }
+    return `${visible} of ${total} ${t("projects")}`;
+  }
+
   function filteredProjects() {
     const query = ($("#pd-search-input")?.value || "").trim().toLowerCase();
     const stage = $("#pd-stage-filter")?.value || "all";
-    return projects.filter((item) => {
-      const haystack = `${item.name} ${item.koreanName} ${item.businessNumber || ""} ${item.repositoryLabel} ${item.workspace} ${item.purpose}`.toLowerCase();
-      return (!query || haystack.includes(query)) && (stage === "all" || item.stage === stage);
+    const devMode = $("#pd-dev-mode-filter")?.value || "all";
+    const sort = $("#pd-sort-filter")?.value || "default";
+    const filtered = projects.filter((item) => {
+      const haystack = `${item.name} ${item.koreanName} ${item.businessNumber || ""} ${item.purpose} ${item.repositoryLabel} ${item.workspace} ${item.currentWork} ${item.nextAction}`.toLowerCase();
+      return (!query || haystack.includes(query)) && (stage === "all" || item.stage === stage) && (devMode === "all" || item.developmentMode === devMode);
     });
+    return sortedProjects(filtered, sort);
   }
 
   function projectCardTemplate(item) {
@@ -475,7 +522,8 @@
     if (!grid) return;
     const visible = filteredProjects();
     grid.innerHTML = visible.map(projectCardTemplate).join("") || `<div class="empty-state">${t("noProjects")}</div>`;
-    $("#project-count").textContent = `${visible.length} ${t("projects")}`;
+    $("#project-count").textContent = formatResultCount(projects.length, visible.length);
+    $("#pd-result-count").textContent = formatResultCount(projects.length, visible.length);
 
     grid.querySelectorAll(".pd-card").forEach((card) => {
       const projectId = card.dataset.projectId;
@@ -568,8 +616,17 @@
   function initProjectDirectory() {
     const pdSearch = $("#pd-search-input");
     const pdStage = $("#pd-stage-filter");
+    const pdDevMode = $("#pd-dev-mode-filter");
+    const pdSort = $("#pd-sort-filter");
+    const pdReset = $("#pd-reset-filter");
     if (pdSearch) pdSearch.addEventListener("input", renderProjectDirectory);
     if (pdStage) pdStage.addEventListener("change", renderProjectDirectory);
+    if (pdDevMode) pdDevMode.addEventListener("change", renderProjectDirectory);
+    if (pdSort) pdSort.addEventListener("change", renderProjectDirectory);
+
+    if (pdReset) {
+      pdReset.addEventListener("click", resetFilters);
+    }
 
     const copyButton = $("#pd-copy-workspace");
     if (copyButton) {
@@ -590,8 +647,85 @@
           $("#pd-copy-note").textContent = t("copyFail");
           setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
         });
-      });
+       });
+     }
+   }
+
+  function resetFilters() {
+    const searchInput = $("#pd-search-input");
+    const stageFilter = $("#pd-stage-filter");
+    const devModeFilter = $("#pd-dev-mode-filter");
+    const sortFilter = $("#pd-sort-filter");
+    if (searchInput) searchInput.value = "";
+    if (stageFilter) stageFilter.value = "all";
+    if (devModeFilter) devModeFilter.value = "all";
+    if (sortFilter) sortFilter.value = "default";
+    renderProjectDirectory();
+  }
+
+  function openSearchPanel() {
+    const panel = $("#project-search-panel");
+    const trigger = document.querySelector('[data-project-view="search"]');
+    if (!panel || !trigger) return;
+    panel.hidden = false;
+    trigger.setAttribute("aria-expanded", "true");
+    trigger.classList.add("is-active");
+    const projectsBtn = document.querySelector('[data-project-view="projects"]');
+    if (projectsBtn) {
+      projectsBtn.classList.remove("is-active");
+      projectsBtn.removeAttribute("aria-current");
     }
+    const searchInput = $("#pd-search-input");
+    if (searchInput) searchInput.focus();
+  }
+
+  function closeSearchPanel({ restoreFocus = true } = {}) {
+    const panel = $("#project-search-panel");
+    const trigger =
+      document.querySelector('[data-project-view="search"]');
+
+    if (!panel || !trigger) return;
+
+    panel.hidden = true;
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.classList.remove("is-active");
+
+    const projectsBtn =
+      document.querySelector('[data-project-view="projects"]');
+
+    if (projectsBtn) {
+      projectsBtn.classList.add("is-active");
+      projectsBtn.setAttribute("aria-current", "page");
+    }
+
+    if (restoreFocus) {
+      trigger.focus();
+    }
+  }
+
+  function updateProjectNavLabels() {
+    $("#nav-projects").textContent = t("projectStatus");
+    $("#nav-search-filter").textContent = t("searchFilter");
+    $("#project-search-title").textContent = t("searchFilter");
+    $("#pd-reset-filter").textContent = t("reset");
+    $("#pd-search-input").placeholder = t("searchPlaceholder");
+    $("#project-search-close").setAttribute("aria-label", t("closePanel"));
+    $("#pd-stage-filter option[value='all']").textContent = t("all");
+    $("#pd-stage-filter option[value='live']").textContent = stageLabel("live");
+    $("#pd-stage-filter option[value='building']").textContent = stageLabel("building");
+    $("#pd-stage-filter option[value='review']").textContent = stageLabel("review");
+    $("#pd-stage-filter option[value='planned']").textContent = stageLabel("planned");
+    $("#pd-stage-filter option[value='paused']").textContent = stageLabel("paused");
+    $("#pd-dev-mode-filter option[value='all']").textContent = t("all");
+    $("#pd-dev-mode-filter option[value='not-started']").textContent = developmentModeLabel("not-started");
+    $("#pd-dev-mode-filter option[value='active-development']").textContent = developmentModeLabel("active-development");
+    $("#pd-dev-mode-filter option[value='needs-improvement']").textContent = developmentModeLabel("needs-improvement");
+    $("#pd-dev-mode-filter option[value='maintenance']").textContent = developmentModeLabel("maintenance");
+    $("#pd-dev-mode-filter option[value='complete']").textContent = developmentModeLabel("complete");
+    $("#pd-dev-mode-filter option[value='paused']").textContent = developmentModeLabel("paused");
+    $("#pd-sort-filter option[value='default']").textContent = t("sortDefault");
+    $("#pd-sort-filter option[value='progress-desc']").textContent = t("sortProgressDesc");
+    $("#pd-sort-filter option[value='progress-asc']").textContent = t("sortProgressAsc");
   }
 
   function updateStaticLabels() {
@@ -601,6 +735,8 @@
     $("#activity-heading").textContent = t("priorityActions");
     $("#pd-search-label").textContent = t("search");
     $("#pd-stage-label").textContent = t("stage");
+    $("#pd-dev-mode-label").textContent = t("devMode");
+    $("#pd-sort-label").textContent = t("sort");
     $("#pd-detail-repo-label").textContent = t("repository");
     $("#pd-detail-workspace-label").textContent = t("workspace");
     $("#pd-detail-page-label").textContent = t("page");
@@ -673,6 +809,7 @@
     $("#sync-state-text").textContent = t("registryLoaded");
     $("#lang-ko").textContent = t("langKo");
     $("#lang-en").textContent = t("langEn");
+    updateProjectNavLabels();
   }
 
   function setLanguage(lang) {
@@ -701,6 +838,38 @@
 
   $("#lang-ko").addEventListener("click", () => setLanguage("ko"));
   $("#lang-en").addEventListener("click", () => setLanguage("en"));
+
+  const navProjectsBtn = document.querySelector('[data-project-view="projects"]');
+  const navSearchBtn = document.querySelector('[data-project-view="search"]');
+  const closePanelBtn = $("#project-search-close");
+
+  if (navProjectsBtn) {
+    navProjectsBtn.addEventListener("click", () => {
+      closeSearchPanel();
+      resetFilters();
+    });
+  }
+
+  if (navSearchBtn) {
+    navSearchBtn.addEventListener("click", () => {
+      openSearchPanel();
+    });
+  }
+
+  if (closePanelBtn) {
+    closePanelBtn.addEventListener("click", () => {
+      closeSearchPanel();
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      const panel = $("#project-search-panel");
+      if (panel && !panel.hidden) {
+        closeSearchPanel();
+      }
+    }
+  });
 
   updateMetrics();
   updateStaticLabels();

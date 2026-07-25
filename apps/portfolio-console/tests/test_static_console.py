@@ -239,9 +239,48 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_lovebud_done_tasks_3_open_3(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         done_count = script.count('done: true')
-        # LoveBud has 3 done tasks, other projects have various done counts
         self.assertGreaterEqual(done_count, 7)
 
+    def test_sidebar_has_project_menu_buttons(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-project-view="projects"', html)
+        self.assertIn('data-project-view="search"', html)
+        self.assertIn('id="nav-projects"', html)
+        self.assertIn('id="nav-search-filter"', html)
+
+    def test_search_panel_exists(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="project-search-panel"', html)
+        self.assertIn('id="project-search-close"', html)
+        self.assertIn('id="pd-dev-mode-filter"', html)
+        self.assertIn('id="pd-sort-filter"', html)
+        self.assertIn('id="pd-reset-filter"', html)
+        self.assertIn('id="pd-result-count"', html)
+
+    def test_search_filter_button_has_accessibility_attributes(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-expanded="false"', html)
+        self.assertIn('aria-controls="project-search-panel"', html)
+
+    def test_project_status_has_aria_current(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-current="page"', html)
+
+    def test_pd_controls_removed_from_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="pd-controls"', html)
+
+    def test_no_localstorage_in_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("localStorage", script)
+
+    def test_no_cookie_in_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("cookie", script.lower())
+
+    def test_no_fetch_in_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("fetch(", script)
 
 if __name__ == "__main__":
     unittest.main()
