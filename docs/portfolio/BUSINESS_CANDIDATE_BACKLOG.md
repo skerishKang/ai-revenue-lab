@@ -3,6 +3,8 @@
 - Status: idea-preservation backlog; not the canonical Business Registry
 - Owner: AI Revenue Lab portfolio governance
 - Permanent UI execution issue: #154
+- Phase policy: `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
+- Current portfolio mode: `UI_ONLY`
 - Canonical numbering authority: `docs/portfolio/BUSINESS_REGISTRY.md`
 
 ## 1. Purpose
@@ -12,6 +14,20 @@ This document preserves every Business-scale idea discussed for AI Revenue Lab, 
 The backlog exists so ideas are not lost in conversation history or merged away merely because they resemble another product. A candidate may remain separate when its target user, result, buying decision, or primary use moment differs.
 
 This document does **not** silently assign canonical numbers. A candidate becomes canonical only after the registry procedure is completed: explicit issue, duplicate/conflict review, product boundary, workspace decision, reviewed registry update, and supporting documentation.
+
+New candidates follow the portfolio phase gates:
+
+```text
+product framing
+→ UI visual design
+→ UI approval
+→ UX design
+→ UX approval
+→ backend authorization decision
+→ backend implementation
+```
+
+During `UI_ONLY` mode, the backlog authorizes visual-reference planning only. It does not authorize UX or backend implementation.
 
 ## 2. Status vocabulary
 
@@ -108,16 +124,18 @@ Relationship is recorded as metadata; it is not a reason to erase the smaller id
 
 ## 6. UI-first execution
 
-Every candidate selected for implementation follows:
+Every candidate selected for work follows:
 
 - permanent umbrella Issue #154;
+- `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`;
 - `docs/operations/NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`;
 - a separate product-decision issue;
-- a separate clickable reference-demo issue;
-- a reference workspace under `reference/business-XX-<stable-slug>-v1/` when a number is approved or explicitly proposed for the experiment;
-- Web CTO direction, high-volume Web implementation, and risk-based Local model validation.
+- a separate Phase 1 UI-only issue;
+- Web CTO direction, high-volume Web implementation, and risk-based Local visual validation.
 
-The first milestone is a polished clickable demo using synthetic data and locally stored, documented assets. A reference demo does not prove production authentication, persistence, live-model operation, or public launch.
+The Phase 1 result is a polished visual reference using synthetic data and locally stored, documented assets. Minimal state switching is allowed only for visual review. It does not establish accepted UX, backend behavior, live data, authentication, persistence, or public launch.
+
+After `UI_APPROVED`, a separate UX issue may be opened. Backend remains frozen until `UX_APPROVED` and explicit user authorization.
 
 ## 7. Promotion to the canonical registry
 
