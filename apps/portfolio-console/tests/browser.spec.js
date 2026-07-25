@@ -1015,4 +1015,25 @@ test.describe('Language Toggle Browser Tests', () => {
     const nextAction = await page.locator('#pd-detail-next').textContent();
     expect(nextAction).not.toContain('PR #79');
   });
+
+  test('business row progress label shows Korean 데모 initially', async ({ page }) => {
+    const label = page.locator('#business-table-body .business-row').first().locator('.progress-label span').first();
+    await expect(label).toHaveText('데모');
+  });
+
+  test('business row progress label shows DEMO after EN click', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    const label = page.locator('#business-table-body .business-row').first().locator('.progress-label span').first();
+    await expect(label).toHaveText('DEMO');
+  });
+
+  test('business row progress label restores 데모 after Korean click', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    const label = page.locator('#business-table-body .business-row').first().locator('.progress-label span').first();
+    await expect(label).toHaveText('데모');
+  });
 });

@@ -86,6 +86,7 @@
       copySuccess: "폴더 경로를 복사했습니다",
       copyFail: "폴더 경로를 복사하지 못했습니다.",
       notDeployed: "미배포",
+      demoShort: "데모",
       langKo: "한국어",
       langEn: "EN"
     },
@@ -162,6 +163,7 @@
       copySuccess: "Workspace path copied",
       copyFail: "Failed to copy workspace path.",
       notDeployed: "Not deployed",
+      demoShort: "DEMO",
       langKo: "한국어",
       langEn: "EN"
     }
@@ -244,7 +246,7 @@
         </td>
         <td><span class="status-badge status-${item.state}">${stateLabel(item.state)}</span></td>
         <td class="progress-cell">
-          <div class="progress-label"><span>${t("demoReadiness").replace("DEMO READINESS", "DEMO").replace("데모 준비도", "DEMO")}</span><span>${item.progress}%</span></div>
+          <div class="progress-label"><span>${t("demoShort")}</span><span>${item.progress}%</span></div>
           <div class="progress-track"><i style="width:${item.progress}%"></i></div>
         </td>
         <td class="mono-cell">${item.surfaceType}</td>
