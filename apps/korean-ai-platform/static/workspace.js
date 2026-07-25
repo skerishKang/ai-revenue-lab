@@ -170,7 +170,7 @@
     DOM.chatArea.appendChild(div);
   }
 
-  function addMetadata(biz14) {
+  function addMetadata(biz14, usage) {
     if (!biz14) return;
     var div = document.createElement("div");
     div.className = "ws-msg ws-msg-meta";
@@ -179,9 +179,8 @@
     if (biz14.latency_ms) parts.push(t("latency") + ": " + biz14.latency_ms + "ms");
     if (biz14.provider) parts.push(t("model_provider") + ": " + biz14.provider);
     if (biz14.model_route) parts.push("Model: " + biz14.model_route);
-    if (biz14.usage) {
-      var u = biz14.usage;
-      parts.push(t("tokens") + ": " + (u.prompt_tokens || "?") + " \u2192 " + (u.completion_tokens || "?"));
+    if (usage) {
+      parts.push(t("tokens") + ": " + (usage.prompt_tokens || "?") + " \u2192 " + (usage.completion_tokens || "?"));
     }
     if (biz14.estimated_krw === null || biz14.estimated_krw === undefined) {
       parts.push(t("cost_unknown"));
@@ -293,7 +292,7 @@
       state.messages.push({ role: "assistant", content: content });
 
       addMessage("assistant", content);
-      addMetadata(data.business14);
+      addMetadata(data.business14, data.usage);
     } catch (err) {
       rollbackUserMessage();
       addSystemMsg("\u274C " + t("error"), true);
