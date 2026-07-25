@@ -113,7 +113,7 @@
 
 {% block scripts %}
 <script id="workspace-config" type="application/json">
-{{ workspace_config | tojson }}
+{{ workspace_config | tojson | safe }}
 </script>
 <script src="/static/workspace.js?v=phase3-3" defer></script>
 {% endblock %}

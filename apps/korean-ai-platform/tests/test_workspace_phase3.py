@@ -471,24 +471,43 @@ class TestKeySafety:
 
 
 class TestXSSConfigSafety:
-    """Verify workspace config is injected safely (no |safe for JSON)."""
+    """Verify workspace config is injected safely into <script type="application/json">."""
 
     def test_config_is_json_element(self, client):
         _setup_registry()
         resp = client.get("/workspace")
         assert '<script id="workspace-config" type="application/json">' in resp.text
 
-    def test_config_has_no_unsafe_safe_filter(self, client):
+    def test_config_uses_tojson_safe_for_script_context(self, client):
         _setup_registry()
         resp = client.get("/workspace")
-        # The config should NOT use |safe for JSON variables
-        assert 'pilot_models_json|safe' not in resp.text
+        import re
+        m = re.search(r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>', resp.text, re.DOTALL)
+        assert m, "workspace-config script block not found"
+        raw = m.group(1)
+        assert raw.strip().startswith("{"), "JSON should start with {"
+        assert "&#34;" not in raw, "JSON should not contain HTML-escaped quotes"
 
-    def test_config_not_in_script_with_safe(self, client):
+    def test_config_json_is_valid(self, client):
         _setup_registry()
         resp = client.get("/workspace")
-        # Verify raw JSON is not injected with |safe in script context
+        import json
+        import re
+        m = re.search(r'<script id="workspace-config" type="application/json">\s*(.*?)\s*</script>', resp.text, re.DOTALL)
+        assert m, "workspace-config script block not found"
+        parsed = json.loads(m.group(1))
+        assert "models" in parsed or "providers" in parsed
+
+    def test_config_not_in_inline_script_var(self, client):
+        _setup_registry()
+        resp = client.get("/workspace")
         assert 'models = ' not in resp.text or 'var models' not in resp.text
+
+    def test_no_html_entities_in_json(self, client):
+        _setup_registry()
+        resp = client.get("/workspace")
+        assert "&#34;" not in resp.text
+        assert "&#x22;" not in resp.text
 
 
 # ============================================================================
