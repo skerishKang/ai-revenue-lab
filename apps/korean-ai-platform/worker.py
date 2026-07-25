@@ -61,16 +61,12 @@ class Default(WorkerEntrypoint):
             if value is not None:
                 env_overrides[key] = str(value)
 
-        # Build the ASGI scope via a shallow wrapper or pass overrides
-        # asgi.fetch expects (app, js_request, env). The env is the Worker env.
-        # We inject overrides into the native Request via its scope.
-        native_resp = await asgi.fetch(app, request.js_object, self.env)
-
-        # Attach env overrides to scope for downstream handlers
-        # (asgi.fetch creates the scope internally; we can't modify it here)
-        # Instead: apply overrides immediately in a scoped way
+        # Apply Worker env bindings BEFORE app processes the request.
+        # This ensures even the very first request sees the correct config.
         if env_overrides:
             _apply_env_once(env_overrides)
+
+        native_resp = await asgi.fetch(app, request.js_object, self.env)
 
         # Security headers — applied to all responses
         native_resp.headers["X-Content-Type-Options"] = "nosniff"
