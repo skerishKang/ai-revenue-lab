@@ -26,8 +26,15 @@ router = Router()
 
 @router.route("/", methods=["GET"])
 def home(request: Request):
-    """Send the public Worker root to the supported Workspace entrypoint."""
-    return RedirectResponse(url="/workspace", status_code=307)
+    return render_template(
+        request,
+        "home.html",
+        {
+            "models": MODELS,
+            "model_count": len(MODELS),
+            "routing_policies": ROUTING_POLICIES,
+        },
+    )
 
 
 @router.route("/models", methods=["GET"])
