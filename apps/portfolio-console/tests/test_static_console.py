@@ -239,8 +239,130 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_lovebud_done_tasks_3_open_3(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         done_count = script.count('done: true')
-        # LoveBud has 3 done tasks, other projects have various done counts
         self.assertGreaterEqual(done_count, 7)
+
+    def test_sidebar_has_project_menu_buttons(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-project-view="projects"', html)
+        self.assertIn('data-project-view="search"', html)
+        self.assertIn('id="nav-projects"', html)
+        self.assertIn('id="nav-search-filter"', html)
+
+    def test_search_panel_exists(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="project-search-panel"', html)
+        self.assertIn('id="project-search-close"', html)
+        self.assertIn('id="pd-dev-mode-filter"', html)
+        self.assertIn('id="pd-sort-filter"', html)
+        self.assertIn('id="pd-reset-filter"', html)
+        self.assertIn('id="pd-result-count"', html)
+
+    def test_search_filter_button_has_accessibility_attributes(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-expanded="false"', html)
+        self.assertIn('aria-controls="project-search-panel"', html)
+
+    def test_project_status_has_aria_current(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-current="page"', html)
+
+    def test_pd_controls_removed_from_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="pd-controls"', html)
+
+    def test_no_localstorage_in_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("localStorage", script)
+
+    def test_no_cookie_in_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("cookie", script.lower())
+
+    def test_no_fetch_in_app_js(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("fetch(", script)
+
+    def test_no_quick_launch(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("quick-launch", html)
+        self.assertNotIn("ql-heading", html)
+        self.assertNotIn("ql-list", html)
+        self.assertNotIn("ql-item", html)
+        self.assertNotIn("quick-launch.js", html)
+        self.assertNotIn("빠른 실행", html)
+
+    def test_projects_file_exists(self) -> None:
+        self.assertTrue((ROOT / "projects.js").is_file(), "projects.js")
+
+    def test_projects_has_13_items(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        ids = re.findall(r'^\s{4}id:\s*"([^"]+)"', script, re.MULTILINE)
+        self.assertEqual(len(ids), 13)
+
+    def test_projects_all_have_required_fields(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        required = ("purpose", "repositoryLabel", "workspace", "stage", "progressNote", "currentWork", "nextAction", "lastVerified")
+        for field in required:
+            count = len(re.findall(rf'{field}:\s*"', script))
+            self.assertGreaterEqual(count, 13, f"{field} count")
+
+    def test_projects_all_have_data_contract_fields(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        fields = ("developmentMode", "progressBasis", "milestoneStatus", "milestoneTasks", "currentMilestone", "blockers", "futureRoadmap")
+        for field in fields:
+            count = len(re.findall(rf'{field}', script))
+            self.assertGreaterEqual(count, 13, f"{field} count")
+
+    def test_projects_development_mode_vocabulary(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        modes = set(re.findall(r'developmentMode:\s*"([^"]+)"', script))
+        allowed = {"not-started", "active-development", "needs-improvement", "maintenance", "complete", "paused"}
+        self.assertTrue(modes.issubset(allowed), f"Unexpected modes: {modes - allowed}")
+
+    def test_projects_milestone_status_vocabulary(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        statuses = set(re.findall(r'milestoneStatus:\s*"([^"]+)"', script))
+        allowed = {"defined", "undefined"}
+        self.assertTrue(statuses.issubset(allowed), f"Unexpected milestoneStatus: {statuses - allowed}")
+
+    def test_projects_stage_vocabulary(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        stages = set(re.findall(r'stage:\s*"([^"]+)"', script))
+        allowed = {"planned", "building", "review", "live", "paused"}
+        self.assertTrue(stages.issubset(allowed), f"Unexpected stages: {stages - allowed}")
+
+    def test_projects_no_windows_paths(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        forbidden = ("G:\\", "C:\\", "D:\\", "Users\\")
+        for token in forbidden:
+            self.assertNotIn(token, script)
+
+    def test_projects_pageurl_accurate(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        page_urls = re.findall(r'pageUrl:\s*("[^"]*"|null)', script)
+        self.assertEqual(len(page_urls), 13)
+        with_url = sum(1 for u in page_urls if u != "null")
+        without_url = sum(1 for u in page_urls if u == "null")
+        self.assertEqual(with_url, 9)
+        self.assertEqual(without_url, 4)
+
+    def test_projects_pageurl_uses_https(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        urls = re.findall(r'pageUrl:\s*"(https?://[^"]+)"', script)
+        self.assertEqual(len(urls), 9)
+        for url in urls:
+            self.assertTrue(url.startswith("https://"), url)
+
+    def test_projects_living_fiction_pageurl_null(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn('pageUrl: null', script)
+        self.assertNotIn('padiemipu--ai-revenue-living-fiction-web.modal.run', script)
+
+    def test_projects_no_secret_like_literals(self) -> None:
+        text = (ROOT / "projects.js").read_text(encoding="utf-8").lower()
+        forbidden = ("api_key", "private_key", "password", "database_url", "firebase_service_account")
+        for token in forbidden:
+            self.assertNotIn(token, text)
 
 
 if __name__ == "__main__":

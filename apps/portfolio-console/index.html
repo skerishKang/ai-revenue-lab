@@ -42,6 +42,17 @@
         </button>
       </nav>
 
+      <nav class="project-nav" aria-label="프로젝트 메뉴">
+        <button type="button" class="project-nav-item is-active" data-project-view="projects" aria-current="page">
+          <span aria-hidden="true">□</span>
+          <span id="nav-projects">프로젝트 현황</span>
+        </button>
+        <button type="button" class="project-nav-item" data-project-view="search" aria-expanded="false" aria-controls="project-search-panel">
+          <span aria-hidden="true">🔍</span>
+          <span id="nav-search-filter">검색·필터</span>
+        </button>
+      </nav>
+
       <div class="sidebar-meta">
         <div><span id="sidebar-mode-label">모드</span><strong id="sidebar-mode-value">수동</strong></div>
         <div><span id="sidebar-source-label">소스</span><strong id="sidebar-source-value">정적 레지스트리</strong></div>
@@ -74,24 +85,56 @@
           </div>
           <span id="project-count">0개</span>
         </div>
-        <div class="pd-controls">
-          <label class="pd-search">
-            <span id="pd-search-label">검색</span>
-            <input id="pd-search-input" type="search" autocomplete="off" placeholder="이름, 저장소, 폴더, 목적 검색">
-          </label>
-          <label class="pd-stage-filter">
-            <span id="pd-stage-label">단계</span>
-            <select id="pd-stage-filter">
-              <option value="all">전체</option>
-              <option value="live">운영 중</option>
-              <option value="building">개발 중</option>
-              <option value="review">검토 중</option>
-              <option value="planned">계획</option>
-              <option value="paused">일시 중지</option>
-            </select>
-          </label>
-        </div>
-        <div class="pd-grid" id="pd-grid"></div>
+         <section id="project-search-panel" class="project-search-panel" hidden>
+           <div class="project-search-panel-header">
+             <h3 id="project-search-title">검색·필터</h3>
+             <button type="button" class="project-search-close" id="project-search-close" aria-label="검색 패널 닫기">×</button>
+           </div>
+           <div class="project-search-fields">
+             <label class="pd-search">
+               <span id="pd-search-label">검색</span>
+               <input id="pd-search-input" type="search" autocomplete="off" placeholder="이름, 저장소, 폴더, 목적, 현재 작업, 다음 작업 검색">
+             </label>
+             <div class="pd-filter-row">
+               <label class="pd-stage-filter">
+                 <span id="pd-stage-label">단계</span>
+                 <select id="pd-stage-filter">
+                   <option value="all">전체</option>
+                   <option value="live">운영 중</option>
+                   <option value="building">개발 중</option>
+                   <option value="review">검토 중</option>
+                   <option value="planned">계획</option>
+                   <option value="paused">일시 중지</option>
+                 </select>
+               </label>
+               <label class="pd-dev-mode-filter">
+                 <span id="pd-dev-mode-label">개발 모드</span>
+                 <select id="pd-dev-mode-filter">
+                   <option value="all">전체</option>
+                   <option value="not-started">시작 전</option>
+                   <option value="active-development">개발 중</option>
+                   <option value="needs-improvement">개선 필요</option>
+                   <option value="maintenance">유지보수</option>
+                   <option value="complete">완료</option>
+                   <option value="paused">일시 중지</option>
+                 </select>
+               </label>
+               <label class="pd-sort-filter">
+                 <span id="pd-sort-label">정렬</span>
+                 <select id="pd-sort-filter">
+                   <option value="default">기본순</option>
+                   <option value="progress-desc">진행률 높은 순</option>
+                   <option value="progress-asc">진행률 낮은 순</option>
+                 </select>
+               </label>
+             </div>
+             <button type="button" id="pd-reset-filter" class="pd-reset-btn">초기화</button>
+           </div>
+           <div class="pd-result-count">
+             <span id="pd-result-count">13개 중 13개</span>
+           </div>
+         </section>
+         <div class="pd-grid" id="pd-grid"></div>
         <aside class="pd-detail" id="pd-detail" aria-labelledby="pd-detail-title">
           <div class="pd-detail-topline">
             <span id="pd-detail-badge" class="status-badge status-planned">—</span>

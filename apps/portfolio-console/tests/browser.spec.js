@@ -1,5 +1,17 @@
 const { test, expect } = require('@playwright/test');
 
+async function openSearchPanel(page) {
+  await page.click('[data-project-view="search"]');
+  await page.waitForSelector('#project-search-panel:not([hidden])', { state: 'visible' });
+}
+
+async function closeSearchPanel(page) {
+  const hidden = await page.locator('#project-search-panel').getAttribute('hidden');
+  if (hidden === null) {
+    await page.click('[data-project-view="projects"]');
+  }
+}
+
 test.describe('Portfolio Console Browser Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
@@ -358,6 +370,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project search filters by English name', async ({ page }) => {
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', 'lovetree');
     await page.waitForTimeout(200);
     await expect(page.locator('.pd-card')).toHaveCount(1);
@@ -365,6 +378,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project search filters by Korean name', async ({ page }) => {
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', '러브버드');
     await page.waitForTimeout(200);
     await expect(page.locator('.pd-card')).toHaveCount(1);
@@ -372,6 +386,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project search filters by repository', async ({ page }) => {
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', '400-ai-finder');
     await page.waitForTimeout(200);
     await expect(page.locator('.pd-card')).toHaveCount(1);
@@ -379,6 +394,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project search filters by workspace', async ({ page }) => {
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', 'apps/living-travel');
     await page.waitForTimeout(200);
     await expect(page.locator('.pd-card')).toHaveCount(1);
@@ -386,6 +402,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project search filters by purpose', async ({ page }) => {
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', '가계도');
     await page.waitForTimeout(200);
     await expect(page.locator('.pd-card')).toHaveCount(1);
@@ -393,6 +410,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('project search filters by business number', async ({ page }) => {
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', '14');
     await page.waitForTimeout(200);
     const cards = page.locator('.pd-card');
@@ -403,6 +421,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('stage filter limits visible projects', async ({ page }) => {
+    await openSearchPanel(page);
     await page.selectOption('#pd-stage-filter', 'live');
     await page.waitForTimeout(200);
     const liveCount = await page.locator('.pd-card').count();
@@ -882,6 +901,7 @@ test.describe('Language Toggle Browser Tests', () => {
     await page.click('#lang-en');
     await page.waitForTimeout(200);
 
+    await openSearchPanel(page);
     await page.fill('#pd-search-input', 'lovetree');
     await page.waitForTimeout(200);
     await expect(page.locator('.pd-card')).toHaveCount(1);
@@ -895,6 +915,7 @@ test.describe('Language Toggle Browser Tests', () => {
     await page.click('#lang-en');
     await page.waitForTimeout(200);
 
+    await openSearchPanel(page);
     await page.selectOption('#pd-stage-filter', 'live');
     await page.waitForTimeout(200);
     const liveCount = await page.locator('.pd-card').count();
