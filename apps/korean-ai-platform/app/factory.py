@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from markupsafe import Markup
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -26,7 +28,7 @@ def _build_jinja_env() -> Environment:
     )
 
     def _tojson(value: Any) -> str:
-        return json.dumps(value, ensure_ascii=False)
+        return Markup(json.dumps(value, ensure_ascii=False))
 
     def _krw(value: float | int) -> str:
         return f"{value:,.1f}원" if value < 100 else f"{value:,.0f}원"

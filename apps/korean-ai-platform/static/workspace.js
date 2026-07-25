@@ -105,8 +105,11 @@
   function updateProviderDisplay() {
     var note = DOM.providerNote;
     if (note) {
-      note.innerHTML = "";
-      note.appendChild(document.createTextNode(t("model_provider") + ": " + state.activeProvider));
+      note.replaceChildren(
+        document.createTextNode(
+          t("model_provider") + ": " + state.activeProvider
+        )
+      );
     }
   }
 

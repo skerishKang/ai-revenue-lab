@@ -645,3 +645,73 @@ class TestPhase3Regression:
         finally:
             prv.call_chat_completions = original
         assert resp.status_code == 200
+
+
+# ============================================================================
+# Phase 3 responsive shell and security contract tests
+# ============================================================================
+
+
+class TestPhase3ResponsiveContract:
+    """Verify mobile shell CSS and XSS-safe rendering contract."""
+
+    def test_mobile_shell_css_rules_exist(self):
+        import os
+        css_path = os.path.join(os.path.dirname(__file__), "..", "static", "app.css")
+        with open(css_path, encoding="utf-8") as f:
+            css = f.read()
+        assert "@media (max-width: 768px)" in css
+        assert ".app-shell" in css
+        assert "width: 100%" in css
+        assert "border-bottom: 1px solid #e5e5e5" in css
+        assert "flex-direction: column" in css
+
+    def test_sidebar_mobile_full_width(self):
+        import os
+        css_path = os.path.join(os.path.dirname(__file__), "..", "static", "app.css")
+        with open(css_path, encoding="utf-8") as f:
+            css = f.read()
+        assert ".sidebar {" in css
+        blocks = css.split("@media (max-width: 768px)")
+        assert any("width: 100%" in b for b in blocks), "sidebar width:100% not found in any 768px block"
+
+    def test_topbar_inner_mobile_column(self):
+        import os
+        css_path = os.path.join(os.path.dirname(__file__), "..", "static", "app.css")
+        with open(css_path, encoding="utf-8") as f:
+            css = f.read()
+        blocks = css.split("@media (max-width: 768px)")
+        assert any("flex-direction: column" in b for b in blocks), "flex-direction:column not found in any 768px block"
+
+    def test_ws_input_row_mobile_column(self):
+        import os
+        css_path = os.path.join(os.path.dirname(__file__), "..", "static", "app.css")
+        with open(css_path, encoding="utf-8") as f:
+            css = f.read()
+        blocks = css.split("@media (max-width: 768px)")
+        assert any("flex-direction: column" in b for b in blocks)
+        assert any("ws-input-row" in b for b in blocks)
+        assert any("align-items: stretch" in b for b in blocks)
+
+    def test_workspace_js_no_innerhtml(self):
+        import os
+        js_path = os.path.join(os.path.dirname(__file__), "..", "static", "workspace.js")
+        with open(js_path, encoding="utf-8") as f:
+            js = f.read()
+        innerhtml_count = js.count("innerHTML")
+        assert innerhtml_count == 1, f"Expected 1 comment-only innerHTML reference, found {innerhtml_count}: {js}"
+
+    def test_workspace_js_replacechildren_used(self):
+        import os
+        js_path = os.path.join(os.path.dirname(__file__), "..", "static", "workspace.js")
+        with open(js_path, encoding="utf-8") as f:
+            js = f.read()
+        assert "replaceChildren" in js
+
+    def test_language_button_no_inline_margin(self, client):
+        _setup_registry()
+        resp = client.get("/workspace")
+        assert 'style="margin-left:8px;"' not in resp.text
+        assert 'style="margin-left:4px;"' not in resp.text
+        assert 'lang-switch-en' in resp.text
+        assert 'lang-switch-ko' in resp.text

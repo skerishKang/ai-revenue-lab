@@ -387,13 +387,72 @@ ul { list-style: none; }
 }
 
 @media (max-width: 480px) {
-  .sidebar { position: fixed; left: -240px; height: 100vh; z-index: 100; transition: left 0.3s; }
-  .sidebar.open { left: 0; }
   .content { padding: 16px; }
   .stat-cards { grid-template-columns: 1fr; }
 }
 
-/* Hero with mock panel */
+.lang-switch { margin-left: 8px; }
+.lang-switch-ko { margin-left: 4px; }
+
+/* App Shell Mobile */
+@media (max-width: 768px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .sidebar-foot {
+    margin-top: 0;
+  }
+
+  .topbar-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .ws-input-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ws-send-btn {
+    width: 100%;
+  }
+
+  .ws-actions {
+    flex-wrap: wrap;
+  }
+}
+
+/* Responsive updates */
 .hero { display: flex; gap: 40px; align-items: center; padding: 48px 0; }
 .hero-content { flex: 1; }
 .hero-title { font-size: 36px; font-weight: 800; margin-bottom: 16px; color: #1a1a2e; }
