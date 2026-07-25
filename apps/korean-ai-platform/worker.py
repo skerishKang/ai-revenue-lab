@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
-from workers import WorkerEntrypoint
+from workers import Response, WorkerEntrypoint
 
 from app.main import app
 
@@ -46,6 +47,20 @@ _ENV_KEYS = frozenset({
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
 })
 
+_SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Cache-Control": "no-store",
+}
+
+
+def _apply_security_headers(response: Any) -> Any:
+    """Apply the production response policy to ASGI and Worker responses."""
+    for name, value in _SECURITY_HEADERS.items():
+        response.headers[name] = value
+    return response
+
 
 # ---------------------------------------------------------------------------
 # Worker entrypoint
@@ -53,6 +68,19 @@ _ENV_KEYS = frozenset({
 class Default(WorkerEntrypoint):
     async def fetch(self, request: Any) -> Any:
         import asgi
+
+        # The public Worker root is a product entrypoint, not the legacy demo
+        # home page. Intercept it before ASGI so the production URL cannot fail
+        # while rendering the legacy template.
+        if urlparse(request.url).path == "/":
+            return Response(
+                "",
+                status=307,
+                headers={
+                    "Location": "/workspace",
+                    **_SECURITY_HEADERS,
+                },
+            )
 
         # Collect env bindings
         env_overrides: dict[str, str] = {}
@@ -66,14 +94,7 @@ class Default(WorkerEntrypoint):
             _apply_env_once(env_overrides)
 
         native_resp = await asgi.fetch(app, request.js_object, self.env)
-
-        # Security headers — applied to all responses
-        native_resp.headers["X-Content-Type-Options"] = "nosniff"
-        native_resp.headers["X-Frame-Options"] = "DENY"
-        native_resp.headers["Referrer-Policy"] = "no-referrer"
-        native_resp.headers["Cache-Control"] = "no-store"
-
-        return native_resp
+        return _apply_security_headers(native_resp)
 
 
 # ---------------------------------------------------------------------------
