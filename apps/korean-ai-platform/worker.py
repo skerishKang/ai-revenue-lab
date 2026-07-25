@@ -69,14 +69,14 @@ class Default(WorkerEntrypoint):
         # With run_worker_first=true, Worker intercepts all requests.
         # Try ASSETS first, fall back to ASGI app if requested path is
         # not an asset.
-        js_req = request.js_object
-        path = js_req.url.path.rstrip("/")
+        from urllib.parse import urlparse
+        path = urlparse(request.url).path.rstrip("/")
         is_asset = path in ("/app.css", "/app.js", "/workspace.js")
 
         if is_asset:
-            native_resp = await self.env.ASSETS.fetch(js_req)
+            native_resp = await self.env.ASSETS.fetch(request.js_object)
         else:
-            native_resp = await asgi.fetch(app, js_req, self.env)
+            native_resp = await asgi.fetch(app, request.js_object, self.env)
 
         # Security headers — applied to all responses
         native_resp.headers["X-Content-Type-Options"] = "nosniff"
