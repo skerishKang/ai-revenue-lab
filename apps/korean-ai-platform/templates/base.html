@@ -6,9 +6,12 @@
 <title>{% block title %}Korean AI Platform{% endblock %}</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234361ee'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='17' font-weight='800' fill='%23fff' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="/app.css?v=phase0-1">
+{% if request.url.path == '/workspace' %}
+<link rel="stylesheet" href="/workspace-console.css?v=console-1">
+{% endif %}
 </head>
 {% set path = request.url.path %}
-<body>
+<body class="{{ 'workspace-page' if path == '/workspace' else '' }}">
 <a class="skip-link" href="#main">본문 바로가기</a>
 <div class="app-shell">
   <aside class="sidebar" aria-label="앱 내비게이션">
@@ -16,7 +19,7 @@
       <span class="brand-mark" aria-hidden="true">K</span>
       <span>
         <span class="brand-name">Korean AI Platform</span>
-        <span class="brand-sub">AI API Provider</span>
+        <span class="brand-sub">{{ 'Developer Console' if path == '/workspace' else 'AI API Provider' }}</span>
       </span>
     </a>
     <nav class="sidebar-nav" aria-label="화면 전환">
