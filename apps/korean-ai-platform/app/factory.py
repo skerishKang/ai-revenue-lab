@@ -22,6 +22,7 @@ def _build_root_static_routes() -> list[Route]:
     """Build root-level routes for static files (Worker [assets] compat)."""
     _ROOT_STATIC = {
         "app.css": "text/css",
+        "workspace-console.css": "text/css",
         "app.js": "application/javascript",
         "workspace.js": "application/javascript",
     }
