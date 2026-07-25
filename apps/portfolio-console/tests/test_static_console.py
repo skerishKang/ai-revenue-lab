@@ -15,7 +15,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_html_has_private_and_noindex_contracts(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('name="robots" content="noindex,nofollow,noarchive"', html)
-        self.assertIn("PRIVATE ADMIN", html)
+        self.assertIn('id="private-admin-label"', html)
         self.assertIn('id="business-table-body"', html)
         self.assertIn('id="detail-panel"', html)
         self.assertIn('id="priority-list"', html)
@@ -93,6 +93,47 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         script = (ROOT / "quick-launch.js").read_text(encoding="utf-8")
         self.assertEqual(script.count('state: "verified"'), 8)
         self.assertEqual(script.count('state: "planned"'), 5)
+
+    def test_projects_file_exists(self) -> None:
+        self.assertTrue((ROOT / "projects.js").is_file(), "projects.js")
+
+    def test_projects_has_13_items(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        ids = re.findall(r'id:\s*"([^"]+)"', script)
+        self.assertEqual(len(ids), 13)
+
+    def test_projects_all_have_required_fields(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        required = ("purpose", "repositoryLabel", "workspace", "stage", "progressNote", "currentWork", "nextAction", "lastVerified")
+        for field in required:
+            count = len(re.findall(rf'{field}:\s*"', script))
+            self.assertGreaterEqual(count, 13, f"{field} count")
+
+    def test_projects_stage_vocabulary(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        stages = set(re.findall(r'stage:\s*"([^"]+)"', script))
+        allowed = {"live", "demo", "build", "review", "planned"}
+        self.assertTrue(stages.issubset(allowed), f"Unexpected stages: {stages - allowed}")
+
+    def test_projects_no_windows_paths(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        forbidden = ("G:\\", "C:\\", "D:\\", "Users\\")
+        for token in forbidden:
+            self.assertNotIn(token, script)
+
+    def test_projects_html_section_exists(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="pd-grid"', html)
+        self.assertIn('id="pd-detail"', html)
+        self.assertIn('id="pd-search-input"', html)
+        self.assertIn('src="./projects.js"', html)
+
+    def test_projects_links_have_security_attributes(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="pd-page-link"', html)
+        self.assertIn('id="pd-repo-link"', html)
+        self.assertIn('aria-disabled="true"', html)
+        self.assertIn('tabindex="-1"', html)
 
 
 if __name__ == "__main__":
