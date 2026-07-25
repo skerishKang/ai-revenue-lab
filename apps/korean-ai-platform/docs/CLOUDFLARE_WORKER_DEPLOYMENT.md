@@ -55,50 +55,37 @@ curl http://127.0.0.1:8787/workspace
 
 ## Clean Checkout Build & Deployment
 
+Use the committed build script from the repo root:
+
 ```bash
-# 1. Clone fresh
-git clone git@github.com:skerishKang/ai-revenue-lab.git /tmp/b14-fresh
-cd /tmp/b14-fresh
-git checkout ops/business-14-dedicated-cloudflare-worker-138
-
-# 2. Install dependencies + sync Python packages
 cd apps/korean-ai-platform
-uv sync --frozen
-uv run pywrangler sync --force
-
-# 3. Remove developer-only artifacts (saves ~3 MiB gzip)
-rm -rf .venv/ .venv-workers/ tests/ browser_tests/ build/ \
-       korean_ai_platform.egg-info/ docs/
-
-# 4. Dry-run (verify size < 3 MiB)
-npx wrangler deploy --dry-run --name ai-revenue-korean-ai-platform
-
-# 5. Deploy
-npx wrangler deploy --name ai-revenue-korean-ai-platform
+bash ./deploy.sh --dry-run   # verify size without deploying
+bash ./deploy.sh             # production deploy
 ```
+
+The script performs:
+1. `uv sync --frozen` — install exact dependency versions
+2. `uv run pywrangler sync --force` — vendor Python packages for Pyodide
+3. `rm -rf .venv .venv-workers` — remove pywrangler-generated venvs
+4. `npx wrangler deploy` — upload to Cloudflare
 
 Expected output:
 ```
-Total Upload: ~4251 KiB / gzip: ~930 KiB
+Total Upload: ~4403 KiB / gzip: ~954 KiB
 ```
-
-**Note:** `uv run pywrangler deploy` bundles unnecessary developer directories
-(.venv/, .venv-workers/, tests/) producing ~4.24 MiB gzip which exceeds the
-free 3 MiB limit. The manual cleanup + `npx wrangler deploy` path produces
-930 KiB gzip — well within the free tier.
 
 ## Workers Builds (GitHub Automatic Deployment)
 
-Connect in Cloudflare Dashboard:
+Connect in Cloudflare Dashboard → Workers & Pages → `ai-revenue-korean-ai-platform` → Settings → Build:
 
 | Field | Value |
 |-------|-------|
 | Worker name | `ai-revenue-korean-ai-platform` |
 | GitHub repository | `skerishKang/ai-revenue-lab` |
-| Production branch | `main` |
+| Production branch | `ops/business-14-dedicated-cloudflare-worker-138` |
 | Root directory | `apps/korean-ai-platform` |
-| Build command | `uv sync --frozen` |
-| Deploy command | `uv run pywrangler deploy` |
+| Build command | *(leave empty)* |
+| Deploy command | `bash ./deploy.sh` |
 
 ## Environment Variables
 
