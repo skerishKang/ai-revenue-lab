@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{{ _("workspace.heading") }} — Korean AI Platform{% endblock %}
-{% block crumb %}Workspace / Session Console{% endblock %}
+{% block crumb %}{{ _("workspace.console_crumb") }}{% endblock %}
 {% block content %}
 
 <div class="workspace-console">
   <header class="console-heading">
     <div>
-      <div class="console-eyebrow">Developer Console</div>
+      <div class="console-eyebrow">{{ _("workspace.console_eyebrow") }}</div>
       <h1>{{ _("workspace.heading") }}</h1>
       <p>{{ _("workspace.description") }}</p>
     </div>
-    <div class="console-heading-meta" aria-label="Runtime metadata">
-      <span class="console-badge"><strong>Runtime</strong> Cloudflare Worker</span>
-      <span class="console-badge"><strong>Key mode</strong> Ephemeral BYOK</span>
+    <div class="console-heading-meta" aria-label="{{ _('workspace.runtime_metadata') }}">
+      <span class="console-badge"><strong>{{ _("workspace.runtime") }}</strong> {{ _("workspace.runtime_value") }}</span>
+      <span class="console-badge"><strong>{{ _("workspace.key_mode") }}</strong> {{ _("workspace.key_mode_value") }}</span>
     </div>
   </header>
 
@@ -21,10 +21,10 @@
     <div class="console-status-main">
       <span class="console-status-dot is-danger" aria-hidden="true"></span>
       <strong>{{ _("error.registry_invalid") }}</strong>
-      {% if error.request_id %}<span class="console-status-note">Request ID: {{ error.request_id }}</span>{% endif %}
+      {% if error.request_id %}<span class="console-status-note">{{ _("workspace.request_id") }}: {{ error.request_id }}</span>{% endif %}
     </div>
-    <span class="console-badge">Registry invalid</span>
-    <span class="console-badge">Requests blocked</span>
+    <span class="console-badge">{{ _("workspace.registry_invalid_badge") }}</span>
+    <span class="console-badge">{{ _("workspace.requests_blocked") }}</span>
   </div>
   {% else %}
   <div class="console-status-strip {{ 'is-warning' if not pilot_configured else '' }}">
@@ -35,35 +35,35 @@
         {{ _("error.pilot_not_configured") if not pilot_configured else _("workspace.security_notice") }}
       </span>
     </div>
-    <span class="console-badge"><strong>Provider</strong> {{ 'ready' if pilot_configured else 'not configured' }}</span>
-    <span class="console-badge"><strong>Storage</strong> none</span>
+    <span class="console-badge"><strong>{{ _("workspace.provider_status") }}</strong> {{ _("workspace.status_ready") if pilot_configured else _("workspace.status_not_configured") }}</span>
+    <span class="console-badge"><strong>{{ _("workspace.storage") }}</strong> {{ _("workspace.none") }}</span>
   </div>
   {% endif %}
 
-  <section class="console-metrics" aria-label="Workspace metrics">
+  <section class="console-metrics" aria-label="{{ _('workspace.metrics') }}">
     <div class="console-metric">
       <span class="console-metric-label">{{ _("workspace.provider_count") }}</span>
       <span class="console-metric-value" id="ws_provider_count">{{ pilot_provider_count }}</span>
-      <span class="console-metric-detail">registry</span>
+      <span class="console-metric-detail">{{ _("workspace.registry") }}</span>
     </div>
     <div class="console-metric">
       <span class="console-metric-label">{{ _("workspace.model_count") }}</span>
       <span class="console-metric-value" id="ws_model_count">{{ pilot_model_count }}</span>
-      <span class="console-metric-detail">available</span>
+      <span class="console-metric-detail">{{ _("workspace.available") }}</span>
     </div>
     <div class="console-metric">
-      <span class="console-metric-label">Session policy</span>
+      <span class="console-metric-label">{{ _("workspace.session_policy") }}</span>
       <span class="console-metric-value">RAM</span>
-      <span class="console-metric-detail">page lifetime only</span>
+      <span class="console-metric-detail">{{ _("workspace.page_lifetime") }}</span>
     </div>
   </section>
 
   <div class="console-grid">
-    <section class="console-panel connection-panel" aria-label="Connection settings">
+    <section class="console-panel connection-panel" aria-label="{{ _('workspace.connection_settings') }}">
       <div class="console-panel-header">
         <div>
-          <div class="console-panel-title">Connection settings</div>
-          <div class="console-panel-kicker">Provider routing</div>
+          <div class="console-panel-title">{{ _("workspace.connection_settings") }}</div>
+          <div class="console-panel-kicker">{{ _("workspace.provider_routing") }}</div>
         </div>
         <span class="console-badge">BYOK</span>
       </div>
@@ -100,7 +100,7 @@
         </div>
 
         <div class="connection-section">
-          <span class="connection-label">Cost and account</span>
+          <span class="connection-label">{{ _("workspace.cost_account") }}</span>
           <span class="field-note ws-cost-notice">
             <strong>{{ _("workspace.cost_label") }}:</strong> {{ _("workspace.cost_unknown") }}<br>
             {{ _("workspace.cost_notice") }}
@@ -108,7 +108,7 @@
         </div>
 
         <div class="connection-section">
-          <span class="connection-label">Security policy</span>
+          <span class="connection-label">{{ _("workspace.security_policy") }}</span>
           <div class="console-security-list">
             <div class="console-security-item">
               <span class="console-security-icon" aria-hidden="true">✓</span>
@@ -116,22 +116,22 @@
             </div>
             <div class="console-security-item">
               <span class="console-security-icon" aria-hidden="true">✓</span>
-              <span>Provider 변경 시 key와 session이 함께 초기화됩니다.</span>
+              <span>{{ _("workspace.security_provider_reset") }}</span>
             </div>
             <div class="console-security-item">
               <span class="console-security-icon" aria-hidden="true">✓</span>
-              <span>요청 메타데이터 외 대화 내용은 서버에 영속 저장하지 않습니다.</span>
+              <span>{{ _("workspace.security_no_persistence") }}</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="console-panel session-panel" aria-label="Conversation session">
+    <section class="console-panel session-panel" aria-label="{{ _('workspace.conversation_session') }}">
       <div class="console-panel-header">
         <div>
-          <div class="console-panel-title">Session workspace</div>
-          <div class="console-panel-kicker">Request / response stream</div>
+          <div class="console-panel-title">{{ _("workspace.session_workspace") }}</div>
+          <div class="console-panel-kicker">{{ _("workspace.request_response_stream") }}</div>
         </div>
         <div class="session-toolbar">
           <span class="session-id">session:new</span>
@@ -139,7 +139,7 @@
       </div>
 
       <div class="session-body">
-        <div class="ws-chat-area" id="ws_chat" role="log" aria-live="polite" aria-label="대화 영역">
+        <div class="ws-chat-area" id="ws_chat" role="log" aria-live="polite" aria-label="{{ _('workspace.conversation_session') }}">
           <div class="ws-empty" id="ws_empty">
             <div class="ws-empty-terminal" aria-hidden="true">
               <div class="ws-empty-terminal-head">
@@ -173,7 +173,7 @@
               <button id="ws_new_chat" class="btn btn-ghost btn-sm">{{ _("workspace.new_chat") }}</button>
               <button id="ws_clear_chat" class="btn btn-ghost btn-sm">{{ _("workspace.clear_chat") }}</button>
             </div>
-            <span class="ws-input-hint">Enter to send · Shift+Enter for line break</span>
+            <span class="ws-input-hint">{{ _("workspace.input_hint") }}</span>
           </div>
         </div>
       </div>
