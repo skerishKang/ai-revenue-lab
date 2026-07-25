@@ -10,10 +10,48 @@ window.ARL_PROJECTS = [
     workspace: "apps/portfolio-console/",
     pageUrl: "https://ai-revenue-portfolio-console.pages.dev",
     stage: "live",
+    developmentMode: "active-development",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "#137 Portfolio Console v2 redesign",
+    milestoneTasks: [
+      {
+        id: "pc-pr141-card-move",
+        label: "PR #141 카드 직접 이동",
+        done: true,
+        evidence: "PR #141 merged — 카드에서 서비스 URL 직접 오픈"
+      },
+      {
+        id: "pc-pr147-status-progress",
+        label: "PR #147 상태·진척률 계약",
+        done: false,
+        evidence: "PR #147 Draft — CTO 검토 대기"
+      },
+      {
+        id: "pc-search-filter-left",
+        label: "검색·필터 왼쪽 메뉴 이동",
+        done: false,
+        evidence: "미구현 — v2 redesign 범위"
+      },
+      {
+        id: "pc-wip-screen",
+        label: "작업 중 화면",
+        done: false,
+        evidence: "미구현 — v2 redesign 범위"
+      },
+      {
+        id: "pc-business-registry-split",
+        label: "Business Registry 분리",
+        done: false,
+        evidence: "미구현 — v2 redesign 범위"
+      }
+    ],
     progressNote: "Cloudflare Pages에 배포 완료. Cloudflare Access 인증 후 접근 가능.",
-    currentWork: "Project Directory 기능 추가 (Issue #132)",
-    nextAction: "Project Directory 검증 후 병합",
-    lastVerified: "2026-07-25"
+    currentWork: "Issue #140 프로젝트 상태·마일스톤 계약 검토 중",
+    nextAction: "PR #147 CTO 검토, 병합 및 Portfolio Console 배포",
+    blockers: [],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   },
   {
     id: "lovebud",
@@ -26,10 +64,54 @@ window.ARL_PROJECTS = [
     workspace: "/",
     pageUrl: "https://lovebud.pages.dev/",
     stage: "live",
-    progressNote: "Cloudflare Pages에 배포 완료.",
-    currentWork: "현재 작업 없음",
-    nextAction: "기능 확장 계획 수립",
-    lastVerified: "2026-07-25"
+    developmentMode: "active-development",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "#3425 Architecture audit / #3458 Migration ledger",
+    milestoneTasks: [
+      {
+        id: "lb-auth-audit",
+        label: "Architecture audit",
+        done: false,
+        evidence: "#3425 OPEN — architecture audit 진행 중"
+      },
+      {
+        id: "lb-migration-ledger",
+        label: "Migration ledger",
+        done: false,
+        evidence: "#3458 OPEN — migration ledger 및 provenance gate 미완료"
+      },
+      {
+        id: "lb-provenance-gate",
+        label: "Provenance gate",
+        done: false,
+        evidence: "#3458 OPEN — provenance gate 미완료"
+      },
+      {
+        id: "lb-auth-css-cache",
+        label: "Auth CSS cache busting",
+        done: true,
+        evidence: "#3451 CLOSED/COMPLETED"
+      },
+      {
+        id: "lb-tree-owner-binding",
+        label: "Tree owner binding",
+        done: true,
+        evidence: "#3481 CLOSED/COMPLETED"
+      },
+      {
+        id: "lb-postgres-migration",
+        label: "PostgreSQL migration execution evidence",
+        done: true,
+        evidence: "PR #3531 merged — e0ff1b2a4089c31fe4adb3e9c082ef9a4499a1cf"
+      }
+    ],
+    progressNote: "Cloudflare Pages에 배포 완료. OPEN parent Issue를 완료 evidence로 사용하지 않음.",
+    currentWork: "#3458 migration ledger 및 provenance gate 작업",
+    nextAction: "#3458의 다음 검증 가능한 child 완료",
+    blockers: ["#3425 OPEN", "#3458 OPEN"],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   },
   {
     id: "personal-edition",
@@ -42,10 +124,42 @@ window.ARL_PROJECTS = [
     workspace: "apps/personal-edition/",
     pageUrl: "https://feat-personal-edition-final.ai-revenue-personal-edition.pages.dev",
     stage: "review",
+    developmentMode: "needs-improvement",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "PR #111 Draft review and merge",
+    milestoneTasks: [
+      {
+        id: "pe-implementation",
+        label: "Implementation",
+        done: true,
+        evidence: "PR #111 head 3f44ac725c1b946776ae41d3b25bc8c2d56df626"
+      },
+      {
+        id: "pe-ctoreview",
+        label: "CTO review",
+        done: false,
+        evidence: "PR #111 Draft — CTO review pending"
+      },
+      {
+        id: "pe-merge",
+        label: "Merge",
+        done: false,
+        evidence: "PR #111 Draft — merge 대기"
+      },
+      {
+        id: "pe-production",
+        label: "Production deployment",
+        done: false,
+        evidence: "PR #111 Draft — production 배포 대기"
+      }
+    ],
     progressNote: "Draft PR #111 검토 중. CTO 변경 요청 대기.",
     currentWork: "시각 및 클릭 흐름 차단 요소 수정",
     nextAction: "PR #111 재검토",
-    lastVerified: "2026-07-24"
+    blockers: ["PR #111 OPEN Draft, mergeable: false"],
+    futureRoadmap: ["CTO review", "Merge", "Production deployment"],
+    lastVerified: "2026-07-26"
   },
   {
     id: "living-travel",
@@ -58,10 +172,36 @@ window.ARL_PROJECTS = [
     workspace: "apps/living-travel/",
     pageUrl: "https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev",
     stage: "live",
+    developmentMode: "active-development",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "#107 Phase 3B live-provider 활성화",
+    milestoneTasks: [
+      {
+        id: "lt-local-provider-spike",
+        label: "Local provider spike",
+        done: true,
+        evidence: "Issue #107 comment 5071926646 — local provider spike succeeded"
+      },
+      {
+        id: "lt-remote-workflow",
+        label: "Remote commit/PR",
+        done: false,
+        evidence: "원격 PR·commit 없음"
+      },
+      {
+        id: "lt-full-workflow",
+        label: "Full workflow complete",
+        done: false,
+        evidence: "전체 워크플로우 미완료 — test isolation 필요"
+      }
+    ],
     progressNote: "Cloudflare Pages + Modal + Neon 스택으로 배포 완료.",
-    currentWork: "현재 작업 없음",
-    nextAction: "60–90초 데모 시퀀스 준비",
-    lastVerified: "2026-07-24"
+    currentWork: "#107 Phase 3B live-provider 활성화",
+    nextAction: "test isolation, full workflow, Draft PR 생성",
+    blockers: ["원격 PR·commit 없음"],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   },
   {
     id: "living-fiction",
@@ -73,11 +213,25 @@ window.ARL_PROJECTS = [
     repositoryUrl: "https://github.com/skerishKang/ai-revenue-lab",
     workspace: "apps/living-fiction/",
     pageUrl: null,
-    stage: "live",
+    stage: "review",
+    developmentMode: "needs-improvement",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "배포 재검증",
+    milestoneTasks: [
+      {
+        id: "lf-deployment-reverification",
+        label: "배포 재검증",
+        done: false,
+        evidence: "기존 Modal 주소 404 — 배포 재검증 필요"
+      }
+    ],
     progressNote: "기존 Modal 배포 주소가 응답하지 않아(404) 배포 재검증이 필요함.",
-    currentWork: "현재 작업 없음",
+    currentWork: "배포 재검증 준비",
     nextAction: "합성 초대 자격 증명 및 데모 데이터 초기화 절차 문서화",
-    lastVerified: "2026-07-24"
+    blockers: ["배포 주소 404"],
+    futureRoadmap: ["배포 재검증"],
+    lastVerified: "2026-07-26"
   },
   {
     id: "living-learning",
@@ -90,10 +244,30 @@ window.ARL_PROJECTS = [
     workspace: "apps/living-learning/",
     pageUrl: "https://ai-revenue-living-learning.pages.dev/",
     stage: "live",
+    developmentMode: "active-development",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "적응형 레슨 데모 표준화",
+    milestoneTasks: [
+      {
+        id: "ll-static-demo",
+        label: "정적 데모 배포",
+        done: true,
+        evidence: "Cloudflare Pages 정적 데모 배포 완료 — https://ai-revenue-living-learning.pages.dev/"
+      },
+      {
+        id: "ll-adaptive-lesson",
+        label: "적응형 레슨 데모",
+        done: false,
+        evidence: "첫 레슨에서 적응형 레슨 데모 내레이션 표준화 필요"
+      }
+    ],
     progressNote: "Cloudflare Pages 정적 데모로 배포 완료.",
-    currentWork: "현재 작업 없음",
+    currentWork: "적응형 레슨 범위 정의 및 내레이션 표준화",
     nextAction: "첫 레슨 → 적응형 레슨 데모 내레이션 표준화",
-    lastVerified: "2026-07-24"
+    blockers: [],
+    futureRoadmap: ["적응형 레슨"],
+    lastVerified: "2026-07-26"
   },
   {
     id: "personal-video-archive",
@@ -105,11 +279,31 @@ window.ARL_PROJECTS = [
     repositoryUrl: "https://github.com/skerishKang/ai-revenue-lab",
     workspace: "apps/personal-video-archive/",
     pageUrl: "https://feat-personal-video-archive.ai-revenue-personal-video-archive.pages.dev",
-    stage: "demo",
-    progressNote: "병합된 브랜치 프리뷰로 배포 완료.",
-    currentWork: "현재 작업 없음",
+    stage: "review",
+    developmentMode: "needs-improvement",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "고정 Production 확보",
+    milestoneTasks: [
+      {
+        id: "pva-branch-preview",
+        label: "Branch preview",
+        done: true,
+        evidence: "병합된 브랜치 프리뷰 배포 완료 — branch preview"
+      },
+      {
+        id: "pva-production",
+        label: "고정 Production",
+        done: false,
+        evidence: "고정 Production 미확보 — branch preview만 존재"
+      }
+    ],
+    progressNote: "병합된 브랜치 프리뷰(branch preview)로 배포 완료. 고정 Production 미확보 상태.",
+    currentWork: "고정 Production 인프라 범위 결정",
     nextAction: "병합된 프리뷰 검증 및 다음 프로덕션 인프라 범위 결정",
-    lastVerified: "2026-07-24"
+    blockers: ["고정 Production 미확보"],
+    futureRoadmap: ["고정 Production"],
+    lastVerified: "2026-07-26"
   },
   {
     id: "lovetree-3",
@@ -122,10 +316,17 @@ window.ARL_PROJECTS = [
     workspace: "/",
     pageUrl: "https://lovetree3.pages.dev/",
     stage: "live",
-    progressNote: "Cloudflare Pages에 배포 완료.",
+    developmentMode: "active-development",
+    progressBasis: null,
+    milestoneStatus: "undefined",
+    currentMilestone: null,
+    milestoneTasks: [],
+    progressNote: "Cloudflare Pages에 배포 완료. 검증된 새 마일스톤 없음. 진척도 미정 · 목표 정의 필요.",
     currentWork: "현재 작업 없음",
     nextAction: "기능 확장 계획 수립",
-    lastVerified: "2026-07-25"
+    blockers: [],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   },
   {
     id: "korean-ai-platform",
@@ -136,12 +337,19 @@ window.ARL_PROJECTS = [
     repositoryLabel: "skerishKang/ai-revenue-lab",
     repositoryUrl: "https://github.com/skerishKang/ai-revenue-lab",
     workspace: "apps/korean-ai-platform/",
-    pageUrl: null,
-    stage: "build",
-    progressNote: "Phase 2 다중 Provider BYOK 라우팅이 PR #133으로 병합됨. Phase 3 한국어 세션 워크스페이스는 Draft PR #136에서 진행 중. 승인된 전용 배포 주소 없음.",
-    currentWork: "Phase 3 한국어 우선 세션 워크스페이스 검토 및 안정화",
-    nextAction: "PR #136의 CTO 검토 사항을 완료하고 병합 여부 결정",
-    lastVerified: "2026-07-25"
+    pageUrl: "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace",
+    stage: "live",
+    developmentMode: "needs-improvement",
+    progressBasis: null,
+    milestoneStatus: "undefined",
+    currentMilestone: null,
+    milestoneTasks: [],
+    progressNote: "PR #142 병합 완료. dedicated Worker 배포 완료. Provider registry 미설정, 실제 chat 비활성 상태.",
+    currentWork: "Provider registry 구성 및 BYOK chat 활성화",
+    nextAction: "Provider registry 구성 및 실제 BYOK chat 활성화",
+    blockers: ["Provider registry 미설정"],
+    futureRoadmap: ["Provider registry", "BYOK chat 활성화"],
+    lastVerified: "2026-07-26"
   },
   {
     id: "ai-finder-bukgu",
@@ -154,10 +362,30 @@ window.ARL_PROJECTS = [
     workspace: "/",
     pageUrl: "https://cgbukku.pages.dev/",
     stage: "live",
+    developmentMode: "active-development",
+    progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
+    milestoneStatus: "defined",
+    currentMilestone: "#1150 Official source freshness / #1080 Page agent parity",
+    milestoneTasks: [
+      {
+        id: "af-official-source-freshness",
+        label: "Official source freshness",
+        done: false,
+        evidence: "#1150 OPEN"
+      },
+      {
+        id: "af-page-agent-parity",
+        label: "Complete official fixtures for current civic routes",
+        done: false,
+        evidence: "#1080 OPEN"
+      }
+    ],
     progressNote: "Cloudflare Pages에 배포 완료.",
-    currentWork: "현재 작업 없음",
-    nextAction: "기능 확장 계획 수립",
-    lastVerified: "2026-07-25"
+    currentWork: "#1150 공식 출처 최신정보 조회와 #1080 공식 fixture 확장",
+    nextAction: "#1150 구현 범위 검증 후 #1080의 다음 route fixture 작업 진행",
+    blockers: [],
+    futureRoadmap: ["#1181 Clone-first multi-site AI Finder architecture — planning-only/deferred"],
+    lastVerified: "2026-07-26"
   },
   {
     id: "love-matchmaking",
@@ -170,10 +398,17 @@ window.ARL_PROJECTS = [
     workspace: "/",
     pageUrl: null,
     stage: "planned",
-    progressNote: "저장소 존재. 구현·배포 근거 없음.",
+    developmentMode: "not-started",
+    progressBasis: null,
+    milestoneStatus: "undefined",
+    currentMilestone: null,
+    milestoneTasks: [],
+    progressNote: "저장소 존재. 구현·배포 근거 없음. 진척도 미정 · 목표 정의 필요.",
     currentWork: "현재 작업 없음",
     nextAction: "구현 범위 정의",
-    lastVerified: "2026-07-25"
+    blockers: [],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   },
   {
     id: "ai-finder-namgu",
@@ -186,10 +421,17 @@ window.ARL_PROJECTS = [
     workspace: "확인 필요",
     pageUrl: null,
     stage: "planned",
-    progressNote: "구현·배포 근거 없음.",
+    developmentMode: "not-started",
+    progressBasis: null,
+    milestoneStatus: "undefined",
+    currentMilestone: null,
+    milestoneTasks: [],
+    progressNote: "구현·배포 근거 없음. 진척도 미정 · 목표 정의 필요.",
     currentWork: "현재 작업 없음",
     nextAction: "저장소 및 구현 범위 정의",
-    lastVerified: "2026-07-25"
+    blockers: [],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   },
   {
     id: "ai-finder-seogu",
@@ -202,9 +444,16 @@ window.ARL_PROJECTS = [
     workspace: "확인 필요",
     pageUrl: null,
     stage: "planned",
-    progressNote: "구현·배포 근거 없음.",
+    developmentMode: "not-started",
+    progressBasis: null,
+    milestoneStatus: "undefined",
+    currentMilestone: null,
+    milestoneTasks: [],
+    progressNote: "구현·배포 근거 없음. 진척도 미정 · 목표 정의 필요.",
     currentWork: "현재 작업 없음",
     nextAction: "저장소 및 구현 범위 정의",
-    lastVerified: "2026-07-25"
+    blockers: [],
+    futureRoadmap: [],
+    lastVerified: "2026-07-26"
   }
 ];

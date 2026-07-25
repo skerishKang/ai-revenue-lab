@@ -84,10 +84,10 @@
             <select id="pd-stage-filter">
               <option value="all">전체</option>
               <option value="live">운영 중</option>
-              <option value="demo">데모</option>
-              <option value="build">개발 중</option>
+              <option value="building">개발 중</option>
               <option value="review">검토 중</option>
               <option value="planned">계획</option>
+              <option value="paused">일시 중지</option>
             </select>
           </label>
         </div>
@@ -104,7 +104,22 @@
             <div><dt id="pd-detail-repo-label">저장소</dt><dd id="pd-detail-repo">—</dd></div>
             <div><dt id="pd-detail-workspace-label">폴더</dt><dd id="pd-detail-workspace">—</dd></div>
             <div><dt id="pd-detail-page-label">페이지</dt><dd id="pd-detail-page">—</dd></div>
+            <div><dt id="pd-detail-mode-label">개발 모드</dt><dd id="pd-detail-mode">—</dd></div>
+            <div><dt id="pd-detail-milestone-label">마일스톤</dt><dd id="pd-detail-milestone">—</dd></div>
+            <div><dt id="pd-detail-basis-label">진행 기준</dt><dd id="pd-detail-basis">—</dd></div>
             <div><dt id="pd-detail-progress-label">진행 상황</dt><dd id="pd-detail-progress">—</dd></div>
+          </dl>
+          <div class="pd-detail-progress-track" id="pd-detail-progress-track">
+            <div class="progress-track"><i id="pd-detail-progress-bar"></i></div>
+          </div>
+          <div class="pd-detail-tasks">
+            <span id="pd-detail-done-label">완료 작업</span>
+            <ul id="pd-detail-done-tasks" class="pd-task-list"></ul>
+            <span id="pd-detail-remaining-label">남은 작업</span>
+            <ul id="pd-detail-remaining-tasks" class="pd-task-list"></ul>
+          </div>
+          <dl class="pd-detail-facts">
+            <div><dt id="pd-detail-blockers-label">차단 사항</dt><dd id="pd-detail-blockers">—</dd></div>
             <div><dt id="pd-detail-current-label">현재 작업</dt><dd id="pd-detail-current">—</dd></div>
             <div><dt id="pd-detail-verified-label">마지막 확인</dt><dd id="pd-detail-verified">—</dd></div>
           </dl>

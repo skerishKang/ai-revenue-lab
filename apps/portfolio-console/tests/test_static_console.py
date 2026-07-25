@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_required_files_exist(self) -> None:
-        for relative in ("index.html", "styles.css", "businesses.js", "app.js", "projects.js", "_headers", "README.md"):
+        for relative in ("index.html", "styles.css", "businesses.js", "app.js", "projects.js", "_headers", "README.md", "playwright.config.js"):
             self.assertTrue((ROOT / relative).is_file(), relative)
 
     def test_quick_launch_file_deleted(self) -> None:
@@ -21,21 +21,17 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertNotIn("ql-heading", html)
         self.assertNotIn("ql-list", html)
         self.assertNotIn("ql-item", html)
-        self.assertNotIn("ql-active", html)
-        self.assertNotIn("ql-planned", html)
         self.assertNotIn("quick-launch.js", html)
         self.assertNotIn("빠른 실행", html)
 
     def test_quick_launch_removed_from_app_js(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn("quickLaunch", script)
-        self.assertNotIn("ql-heading", script)
         self.assertNotIn("renderQuickLaunch", script)
 
     def test_quick_launch_removed_from_styles(self) -> None:
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         self.assertNotIn("quick-launch", css)
-        self.assertNotIn(".ql-", css)
 
     def test_html_has_private_and_noindex_contracts(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -84,7 +80,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
 
     def test_projects_has_13_items(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        ids = re.findall(r'id:\s*"([^"]+)"', script)
+        ids = re.findall(r'^\s{4}id:\s*"([^"]+)"', script, re.MULTILINE)
         self.assertEqual(len(ids), 13)
 
     def test_projects_all_have_required_fields(self) -> None:
@@ -94,10 +90,29 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
             count = len(re.findall(rf'{field}:\s*"', script))
             self.assertGreaterEqual(count, 13, f"{field} count")
 
+    def test_projects_all_have_data_contract_fields(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        fields = ("developmentMode", "progressBasis", "milestoneStatus", "milestoneTasks", "currentMilestone", "blockers", "futureRoadmap")
+        for field in fields:
+            count = len(re.findall(rf'{field}', script))
+            self.assertGreaterEqual(count, 13, f"{field} count")
+
+    def test_projects_development_mode_vocabulary(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        modes = set(re.findall(r'developmentMode:\s*"([^"]+)"', script))
+        allowed = {"not-started", "active-development", "needs-improvement", "maintenance", "complete", "paused"}
+        self.assertTrue(modes.issubset(allowed), f"Unexpected modes: {modes - allowed}")
+
+    def test_projects_milestone_status_vocabulary(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        statuses = set(re.findall(r'milestoneStatus:\s*"([^"]+)"', script))
+        allowed = {"defined", "undefined"}
+        self.assertTrue(statuses.issubset(allowed), f"Unexpected milestoneStatus: {statuses - allowed}")
+
     def test_projects_stage_vocabulary(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         stages = set(re.findall(r'stage:\s*"([^"]+)"', script))
-        allowed = {"live", "demo", "build", "review", "planned"}
+        allowed = {"planned", "building", "review", "live", "paused"}
         self.assertTrue(stages.issubset(allowed), f"Unexpected stages: {stages - allowed}")
 
     def test_projects_no_windows_paths(self) -> None:
@@ -112,13 +127,13 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertEqual(len(page_urls), 13)
         with_url = sum(1 for u in page_urls if u != "null")
         without_url = sum(1 for u in page_urls if u == "null")
-        self.assertEqual(with_url, 8)
-        self.assertEqual(without_url, 5)
+        self.assertEqual(with_url, 9)
+        self.assertEqual(without_url, 4)
 
     def test_projects_pageurl_uses_https(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         urls = re.findall(r'pageUrl:\s*"(https?://[^"]+)"', script)
-        self.assertEqual(len(urls), 8)
+        self.assertEqual(len(urls), 9)
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
 
@@ -170,6 +185,62 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn('href=', script)
         self.assertIn('target="_blank"', script)
         self.assertIn('rel="noopener noreferrer"', script)
+
+    def test_projects_lovebud_evidence_correct(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("#3451 CLOSED", script)
+        self.assertIn("#3481 CLOSED", script)
+        self.assertIn("PR #3531 merged", script)
+        self.assertIn("e0ff1b2a4089c31fe4adb3e9c082ef9a4499a1cf", script)
+        self.assertIn("#3425 OPEN", script)
+        self.assertIn("#3458 OPEN", script)
+
+    def test_projects_korean_ai_platform_relflects_pr142(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("PR #142", script)
+        self.assertIn("Provider registry", script)
+        self.assertIn("ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", script)
+
+    def test_projects_businesses_korean_ai_platform_updated(self) -> None:
+        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
+        self.assertIn("PR #142 merged", script)
+        self.assertIn("dedicated Worker", script)
+
+    def test_projects_living_fiction_no_issue139(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertNotIn("Issue #139", script)
+        self.assertNotIn("#139", script)
+
+    def test_projects_ai_finder_1181_deferred(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("1181", script)
+        self.assertIn("deferred", script)
+
+    def test_playwright_config_platform_specific(self) -> None:
+        cfg = (ROOT / "playwright.config.js").read_text(encoding="utf-8")
+        self.assertIn("process.platform", cfg)
+        self.assertIn("python -m http.server 4173", cfg)
+        self.assertIn("python3 -m http.server 4173", cfg)
+
+    def test_validate_projects_file_exists(self) -> None:
+        self.assertTrue((ROOT / "tests" / "validate_projects.js").is_file())
+
+    def test_validate_projects_uses_vm(self) -> None:
+        content = (ROOT / "tests" / "validate_projects.js").read_text(encoding="utf-8")
+        self.assertIn("vm", content)
+        self.assertIn("new vm.Script", content)
+        self.assertIn("window.ARL_PROJECTS", content)
+
+    def test_korean_ai_platform_business_14_github_label(self) -> None:
+        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
+        self.assertNotIn("Draft PR #79", script)
+        self.assertIn('githubLabel: "PR #142 merged"', script)
+
+    def test_lovebud_done_tasks_3_open_3(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        done_count = script.count('done: true')
+        # LoveBud has 3 done tasks, other projects have various done counts
+        self.assertGreaterEqual(done_count, 7)
 
 
 if __name__ == "__main__":

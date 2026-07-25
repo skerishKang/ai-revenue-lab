@@ -79,7 +79,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     await expect(page.locator('#detail-number')).toHaveText('비즈니스 14');
     await expect(page.locator('#detail-title')).toHaveText('Korean AI Platform');
     await expect(page.locator('#detail-status')).toHaveText('검토 중');
-    await expect(page.locator('#detail-progress-value')).toHaveText('78%');
+    await expect(page.locator('#detail-progress-value')).toHaveText('50%');
   });
 
   test('detail panel shows next action and lifecycle', async ({ page }) => {
@@ -428,12 +428,12 @@ test.describe('Project Directory Browser Tests', () => {
     await expect(page.locator('#pd-detail-workspace')).toHaveText('/');
   });
 
-  test('project detail shows purpose and progress note', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+  test('project detail shows purpose and milestone info', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
     await expect(page.locator('#pd-detail-purpose')).toContainText('한국어');
-    await expect(page.locator('#pd-detail-progress')).toContainText('Draft PR');
+    await expect(page.locator('#pd-detail-progress')).toContainText('진척도 미정');
   });
 
   test('project detail shows business number when assigned', async ({ page }) => {
@@ -454,7 +454,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('inactive page links are disabled', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.click('.pd-card[data-project-id="love-matchmaking"]');
     await page.waitForTimeout(200);
 
     const pageLink = page.locator('#pd-page-link');
@@ -594,7 +594,7 @@ test.describe('Project Directory Browser Tests', () => {
   test('pageUrl cards have real anchor links with security attributes', async ({ page }) => {
     const links = page.locator('.pd-card-service-link');
     const count = await links.count();
-    expect(count).toBe(8);
+    expect(count).toBe(9);
 
     for (let i = 0; i < count; i++) {
       const link = links.nth(i);
@@ -625,9 +625,12 @@ test.describe('Project Directory Browser Tests', () => {
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  test('Korean AI Platform has no service link', async ({ page }) => {
-    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-service-link')).toHaveCount(0);
-    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-main')).toHaveCount(1);
+  test('Korean AI Platform has service link with correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-service-link');
+    await expect(link).toHaveCount(1);
+    await expect(link).toHaveAttribute('href', 'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   test('Living Fiction has no service link (404 URL removed)', async ({ page }) => {
@@ -654,13 +657,9 @@ test.describe('Project Directory Browser Tests', () => {
     expect(hasWindowOpen).toBeTruthy();
   });
 
-  test('Korean AI Platform card does not navigate externally', async ({ page }) => {
-    const [popup] = await Promise.all([
-      page.waitForEvent('popup', { timeout: 1000 }).catch(() => null),
-      page.click('.pd-card[data-project-id="korean-ai-platform"]'),
-    ]);
-    expect(popup).toBeNull();
-
+  test('Korean AI Platform detail button selects project', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
     await expect(page.locator('#pd-detail-title')).toHaveText('Korean AI Platform');
   });
 
@@ -702,7 +701,7 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('undeployed projects show 미배포 indicator', async ({ page }) => {
-    const card = page.locator('.pd-card[data-project-id="korean-ai-platform"]');
+    const card = page.locator('.pd-card[data-project-id="love-matchmaking"]');
     await expect(card.locator('.pd-card-undeployed')).toBeVisible();
     await expect(card.locator('.pd-card-undeployed')).toContainText('미배포');
   });
@@ -804,7 +803,7 @@ test.describe('Language Toggle Browser Tests', () => {
 
     await page.click('.pd-card[data-project-id="korean-ai-platform"]');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-badge')).toHaveText('개발 중');
+    await expect(page.locator('#pd-detail-badge')).toHaveText('운영 중');
 
     await page.click('.pd-card[data-project-id="ai-finder-namgu"]');
     await page.waitForTimeout(200);
@@ -1006,24 +1005,20 @@ test.describe('Language Toggle Browser Tests', () => {
     expect(title).toContain('내 비즈니스 관리');
   });
 
-  test('Korean AI Platform shows PR #133 and PR #136', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+  test('Korean AI Platform shows undefined milestone and Provider registry blocker', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
 
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).toContain('PR #133');
-    expect(progress).toContain('PR #136');
+    await expect(page.locator('#pd-detail-progress')).toContainText('진척도 미정');
+    await expect(page.locator('#pd-detail-blockers')).toContainText('Provider registry');
 
     const nextAction = await page.locator('#pd-detail-next').textContent();
-    expect(nextAction).toContain('PR #136');
+    expect(nextAction).toContain('Provider registry');
   });
 
-  test('Korean AI Platform does not show outdated PR #79', async ({ page }) => {
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+  test('Korean AI Platform does not show outdated PR #79 or PR #133', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-
-    const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).not.toContain('PR #79');
 
     const current = await page.locator('#pd-detail-current').textContent();
     expect(current).not.toContain('PR #79');

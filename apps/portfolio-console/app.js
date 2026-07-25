@@ -83,12 +83,22 @@
       business: "비즈니스",
       surface: "화면",
       nextActionCol: "다음 작업",
-      copySuccess: "폴더 경로를 복사했습니다",
-      copyFail: "폴더 경로를 복사하지 못했습니다.",
-      notDeployed: "미배포",
-      demoShort: "데모",
-      langKo: "한국어",
-      langEn: "EN"
+       copySuccess: "폴더 경로를 복사했습니다",
+       copyFail: "폴더 경로를 복사하지 못했습니다.",
+       notDeployed: "미배포",
+       demoShort: "데모",
+       langKo: "한국어",
+       langEn: "EN",
+       milestone: "마일스톤",
+       devMode: "개발 모드",
+       progressBasis: "진행 기준",
+       progressUndefined: "진척도 미정",
+       goalDefinitionNeeded: "목표 정의 필요",
+       doneTasks: "완료 작업",
+       remainingTasks: "남은 작업",
+       blockersLabel: "차단 사항",
+       doneShort: "완료",
+       remainingShort: "남음"
     },
     en: {
        businessOperations: "Business Operations",
@@ -160,12 +170,22 @@
       business: "BUSINESS",
       surface: "SURFACE",
       nextActionCol: "NEXT ACTION",
-      copySuccess: "Workspace path copied",
-      copyFail: "Failed to copy workspace path.",
-      notDeployed: "Not deployed",
-      demoShort: "DEMO",
-      langKo: "한국어",
-      langEn: "EN"
+       copySuccess: "Workspace path copied",
+       copyFail: "Failed to copy workspace path.",
+       notDeployed: "Not deployed",
+       demoShort: "DEMO",
+       langKo: "한국어",
+       langEn: "EN",
+       milestone: "MILESTONE",
+       devMode: "DEV MODE",
+       progressBasis: "PROGRESS BASIS",
+       progressUndefined: "PROGRESS UNDEFINED",
+       goalDefinitionNeeded: "GOAL DEFINITION NEEDED",
+       doneTasks: "DONE TASKS",
+       remainingTasks: "REMAINING TASKS",
+       blockersLabel: "BLOCKERS",
+       doneShort: "DONE",
+       remainingShort: "REMAINING"
     }
   };
 
@@ -178,11 +198,44 @@
 
   const stageLabels = {
     live: { ko: "운영 중", en: "LIVE" },
-    demo: { ko: "데모", en: "DEMO" },
-    build: { ko: "개발 중", en: "BUILD" },
+    building: { ko: "개발 중", en: "BUILDING" },
     review: { ko: "검토 중", en: "REVIEW" },
-    planned: { ko: "계획", en: "PLANNED" }
+    planned: { ko: "계획", en: "PLANNED" },
+    paused: { ko: "일시 중지", en: "PAUSED" }
   };
+
+  const developmentModeLabels = {
+    "not-started": { ko: "시작 전", en: "NOT STARTED" },
+    "active-development": { ko: "개발 중", en: "ACTIVE DEV" },
+    "needs-improvement": { ko: "개선 필요", en: "NEEDS IMPROVEMENT" },
+    "maintenance": { ko: "유지보수", en: "MAINTENANCE" },
+    "complete": { ko: "완료", en: "COMPLETE" },
+    "paused": { ko: "일시 중지", en: "PAUSED" }
+  };
+
+  function computeProgress(tasks) {
+    if (!Array.isArray(tasks) || tasks.length === 0) {
+      return {
+        hasProgress: false,
+        doneCount: 0,
+        totalCount: 0,
+        progressPercent: null,
+        remainingPercent: null
+      };
+    }
+
+    const totalCount = tasks.length;
+    const doneCount = tasks.filter(task => task.done).length;
+    const progressPercent = Math.round((doneCount / totalCount) * 100);
+
+    return {
+      hasProgress: true,
+      doneCount,
+      totalCount,
+      progressPercent,
+      remainingPercent: 100 - progressPercent
+    };
+  }
 
   function t(key) {
     return labels[currentLang][key] || labels.ko[key] || key;
@@ -194,6 +247,10 @@
 
   function stageLabel(stage) {
     return stageLabels[stage]?.[currentLang] || stageLabels[stage]?.en || stage;
+  }
+
+  function developmentModeLabel(mode) {
+    return developmentModeLabels[mode]?.[currentLang] || developmentModeLabels[mode]?.en || mode;
   }
 
   function pad(number) {
@@ -359,6 +416,20 @@
     const undeployedBadge = hasPageUrl
       ? ""
       : `<span class="pd-card-undeployed" title="${t('notDeployed')}">${t('notDeployed')}</span>`;
+    const progress = computeProgress(item.milestoneTasks);
+    const milestoneSection = progress.hasProgress
+      ? `<div class="pd-card-milestone">
+          <span class="pd-card-milestone-name">${item.currentMilestone}</span>
+          <div class="pd-card-progress-row">
+            <span class="pd-card-pct">${t("doneShort")} ${progress.progressPercent}%</span>
+            <span class="pd-card-pct">${t("remainingShort")} ${progress.remainingPercent}%</span>
+          </div>
+          <div class="pd-card-bar"><i style="width:${progress.progressPercent}%"></i></div>
+        </div>`
+      : `<div class="pd-card-milestone pd-card-milestone-undefined">
+          <span>${t("progressUndefined")}</span>
+          <span>${t("goalDefinitionNeeded")}</span>
+        </div>`;
     const cardBody = `
       <div class="pd-card-top">
         <span class="pd-card-name">${item.name}</span>
@@ -366,11 +437,16 @@
         ${undeployedBadge}
       </div>
       <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
+      <div class="pd-card-badges">
+        <span class="pd-mode-badge">${developmentModeLabel(item.developmentMode)}</span>
+      </div>
+      ${milestoneSection}
       <div class="pd-card-meta">
         <span>${item.repositoryLabel}</span>
         <span>${item.workspace}</span>
       </div>
-      <span class="pd-card-progress">${item.progressNote}</span>
+      <span class="pd-card-work">${item.currentWork}</span>
+      <span class="pd-card-next">${item.nextAction}</span>
     `;
 
     if (hasPageUrl) {
@@ -450,7 +526,28 @@
     $("#pd-detail-repo").textContent = item.repositoryLabel;
     $("#pd-detail-workspace").textContent = item.workspace;
     $("#pd-detail-page").textContent = item.pageUrl || t("notDeployed");
-    $("#pd-detail-progress").textContent = item.progressNote;
+    $("#pd-detail-mode").textContent = developmentModeLabel(item.developmentMode);
+    $("#pd-detail-milestone").textContent = item.currentMilestone || t("progressUndefined");
+    $("#pd-detail-basis").textContent = item.progressBasis || "—";
+    const progress = computeProgress(item.milestoneTasks);
+    if (progress.hasProgress) {
+      $("#pd-detail-progress").textContent = `${t("doneShort")} ${progress.progressPercent}% · ${t("remainingShort")} ${progress.remainingPercent}% (${progress.doneCount}/${progress.totalCount})`;
+      $("#pd-detail-progress-bar").style.width = `${progress.progressPercent}%`;
+      $("#pd-detail-progress-track").style.display = "";
+    } else {
+      $("#pd-detail-progress").textContent = `${t("progressUndefined")} · ${t("goalDefinitionNeeded")}`;
+      $("#pd-detail-progress-bar").style.width = "0%";
+      $("#pd-detail-progress-track").style.display = "none";
+    }
+    const doneTasks = item.milestoneTasks.filter(task => task.done);
+    const remainingTasks = item.milestoneTasks.filter(task => !task.done);
+    $("#pd-detail-done-tasks").innerHTML = doneTasks.length > 0
+      ? doneTasks.map(task => `<li>${task.label} — ${task.evidence}</li>`).join("")
+      : `<li>—</li>`;
+    $("#pd-detail-remaining-tasks").innerHTML = remainingTasks.length > 0
+      ? remainingTasks.map(task => `<li>${task.label} — ${task.evidence}</li>`).join("")
+      : `<li>—</li>`;
+    $("#pd-detail-blockers").textContent = item.blockers.length > 0 ? item.blockers.join(", ") : "—";
     $("#pd-detail-current").textContent = item.currentWork;
     $("#pd-detail-verified").textContent = item.lastVerified;
     $("#pd-detail-next").textContent = item.nextAction;
@@ -507,7 +604,13 @@
     $("#pd-detail-repo-label").textContent = t("repository");
     $("#pd-detail-workspace-label").textContent = t("workspace");
     $("#pd-detail-page-label").textContent = t("page");
+    $("#pd-detail-mode-label").textContent = t("devMode");
+    $("#pd-detail-milestone-label").textContent = t("milestone");
+    $("#pd-detail-basis-label").textContent = t("progressBasis");
     $("#pd-detail-progress-label").textContent = t("progress");
+    $("#pd-detail-done-label").textContent = t("doneTasks");
+    $("#pd-detail-remaining-label").textContent = t("remainingTasks");
+    $("#pd-detail-blockers-label").textContent = t("blockersLabel");
     $("#pd-detail-current-label").textContent = t("currentWork");
     $("#pd-detail-verified-label").textContent = t("lastVerified");
     $("#pd-next-action-label").textContent = t("nextAction");
@@ -517,10 +620,10 @@
     $("#all-projects-label").textContent = t("allProjects");
     $("#pd-stage-filter option[value='all']").textContent = t("all");
     $("#pd-stage-filter option[value='live']").textContent = stageLabel("live");
-    $("#pd-stage-filter option[value='demo']").textContent = stageLabel("demo");
-    $("#pd-stage-filter option[value='build']").textContent = stageLabel("build");
+    $("#pd-stage-filter option[value='building']").textContent = stageLabel("building");
     $("#pd-stage-filter option[value='review']").textContent = stageLabel("review");
     $("#pd-stage-filter option[value='planned']").textContent = stageLabel("planned");
+    $("#pd-stage-filter option[value='paused']").textContent = stageLabel("paused");
     $("#search-label").textContent = t("search");
     $("#state-label").textContent = t("state");
     $("#sort-label").textContent = t("sort");
