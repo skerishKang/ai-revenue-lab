@@ -61,21 +61,31 @@ git clone git@github.com:skerishKang/ai-revenue-lab.git /tmp/b14-fresh
 cd /tmp/b14-fresh
 git checkout ops/business-14-dedicated-cloudflare-worker-138
 
-# 2. Install dependencies
+# 2. Install dependencies + sync Python packages
 cd apps/korean-ai-platform
 uv sync --frozen
+uv run pywrangler sync --force
 
-# 3. Dry-run (verify size < 3 MiB)
-uv run pywrangler deploy --dry-run
+# 3. Remove developer-only artifacts (saves ~3 MiB gzip)
+rm -rf .venv/ .venv-workers/ tests/ browser_tests/ build/ \
+       korean_ai_platform.egg-info/ docs/
 
-# 4. Deploy
-uv run pywrangler deploy
+# 4. Dry-run (verify size < 3 MiB)
+npx wrangler deploy --dry-run --name ai-revenue-korean-ai-platform
+
+# 5. Deploy
+npx wrangler deploy --name ai-revenue-korean-ai-platform
 ```
 
 Expected output:
 ```
-Total Upload: <5 MiB / gzip: <3 MiB
+Total Upload: ~4251 KiB / gzip: ~930 KiB
 ```
+
+**Note:** `uv run pywrangler deploy` bundles unnecessary developer directories
+(.venv/, .venv-workers/, tests/) producing ~4.24 MiB gzip which exceeds the
+free 3 MiB limit. The manual cleanup + `npx wrangler deploy` path produces
+930 KiB gzip — well within the free tier.
 
 ## Workers Builds (GitHub Automatic Deployment)
 
