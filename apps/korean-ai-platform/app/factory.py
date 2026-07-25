@@ -23,6 +23,7 @@ def _build_root_static_routes() -> list[Route]:
     _ROOT_STATIC = {
         "app.css": "text/css",
         "workspace-console.css": "text/css",
+        "workspace-console-responsive.css": "text/css",
         "app.js": "application/javascript",
         "workspace.js": "application/javascript",
     }
