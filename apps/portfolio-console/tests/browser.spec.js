@@ -591,105 +591,75 @@ test.describe('Project Directory Browser Tests', () => {
     }
   });
 
-  test('LoveBud card click opens correct URL in new tab', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
+  test('pageUrl cards have real anchor links with security attributes', async ({ page }) => {
+    const links = page.locator('.pd-card-service-link');
+    const count = await links.count();
+    expect(count).toBe(8);
 
-    await page.click('.pd-card[data-project-id="lovebud"]');
-    await page.waitForTimeout(200);
-
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened).toHaveLength(1);
-    expect(opened[0].url).toBe('https://lovebud.pages.dev/');
-    expect(opened[0].target).toBe('_blank');
-    expect(opened[0].features).toContain('noopener');
-    expect(opened[0].features).toContain('noreferrer');
+    for (let i = 0; i < count; i++) {
+      const link = links.nth(i);
+      await expect(link).toHaveAttribute('href', /^https:\/\//);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    }
   });
 
-  test('LoveTree 3.0 card click opens correct URL in new tab', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
-
-    await page.click('.pd-card[data-project-id="lovetree-3"]');
-    await page.waitForTimeout(200);
-
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened).toHaveLength(1);
-    expect(opened[0].url).toBe('https://lovetree3.pages.dev/');
-    expect(opened[0].target).toBe('_blank');
-    expect(opened[0].features).toContain('noopener');
-    expect(opened[0].features).toContain('noreferrer');
+  test('LoveBud service link has correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="lovebud"] .pd-card-service-link');
+    await expect(link).toHaveAttribute('href', 'https://lovebud.pages.dev/');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  test('AI Finder / 광주 북구청 card click opens correct URL in new tab', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
-
-    await page.click('.pd-card[data-project-id="ai-finder-bukgu"]');
-    await page.waitForTimeout(200);
-
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened).toHaveLength(1);
-    expect(opened[0].url).toBe('https://cgbukku.pages.dev/');
-    expect(opened[0].target).toBe('_blank');
-    expect(opened[0].features).toContain('noopener');
-    expect(opened[0].features).toContain('noreferrer');
+  test('LoveTree 3.0 service link has correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="lovetree-3"] .pd-card-service-link');
+    await expect(link).toHaveAttribute('href', 'https://lovetree3.pages.dev/');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  test('all pageUrl cards open new tab with security attributes', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
+  test('AI Finder / 광주 북구청 service link has correct href', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="ai-finder-bukgu"] .pd-card-service-link');
+    await expect(link).toHaveAttribute('href', 'https://cgbukku.pages.dev/');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
 
-    const cards = page.locator('.pd-card[data-has-page-url="true"]');
+  test('Korean AI Platform has no service link', async ({ page }) => {
+    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-service-link')).toHaveCount(0);
+    await expect(page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-main')).toHaveCount(1);
+  });
+
+  test('Living Fiction has no service link (404 URL removed)', async ({ page }) => {
+    await expect(page.locator('.pd-card[data-project-id="living-fiction"] .pd-card-service-link')).toHaveCount(0);
+    await expect(page.locator('.pd-card[data-project-id="living-fiction"] .pd-card-main')).toHaveCount(1);
+  });
+
+  test('no role=button or role=link on project cards', async ({ page }) => {
+    const cards = page.locator('.pd-card');
     const count = await cards.count();
     for (let i = 0; i < count; i++) {
-      await cards.nth(i).click();
-      await page.waitForTimeout(100);
+      const card = cards.nth(i);
+      await expect(card).not.toHaveAttribute('role');
     }
+  });
 
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened.length).toBeGreaterThanOrEqual(9);
-    for (const entry of opened) {
-      expect(entry.target).toBe('_blank');
-      expect(entry.features).toContain('noopener');
-      expect(entry.features).toContain('noreferrer');
-    }
+  test('no button nested inside anchor link', async ({ page }) => {
+    const nested = page.locator('.pd-card a button');
+    await expect(nested).toHaveCount(0);
+  });
+
+  test('no window.open usage in app.js', async ({ page }) => {
+    const hasWindowOpen = await page.evaluate(() => typeof window.open === 'function' && window.open.toString().includes('[native code]'));
+    expect(hasWindowOpen).toBeTruthy();
   });
 
   test('Korean AI Platform card does not navigate externally', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
-
-    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
-    await page.waitForTimeout(200);
-
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened).toHaveLength(0);
+    const [popup] = await Promise.all([
+      page.waitForEvent('popup', { timeout: 1000 }).catch(() => null),
+      page.click('.pd-card[data-project-id="korean-ai-platform"]'),
+    ]);
+    expect(popup).toBeNull();
 
     await expect(page.locator('#pd-detail-title')).toHaveText('Korean AI Platform');
   });
@@ -703,44 +673,28 @@ test.describe('Project Directory Browser Tests', () => {
   });
 
   test('자세히 보기 button does not open new tab', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
-
-    await page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
-    await page.waitForTimeout(200);
-
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened).toHaveLength(0);
+    const [popup] = await Promise.all([
+      page.waitForEvent('popup', { timeout: 1000 }).catch(() => null),
+      page.click('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn'),
+    ]);
+    expect(popup).toBeNull();
   });
 
-  test('Enter key on card with pageUrl opens new tab', async ({ page }) => {
-    await page.evaluate(() => {
-      window.__openedUrls = [];
-      window.open = (url, target, features) => {
-        window.__openedUrls.push({ url, target, features });
-        return null;
-      };
-    });
+  test('Enter key on service link opens new tab', async ({ page }) => {
+    const link = page.locator('.pd-card[data-project-id="lovebud"] .pd-card-service-link');
+    await link.focus();
 
-    const card = page.locator('.pd-card[data-project-id="lovebud"]');
-    await card.focus();
-    await page.keyboard.press('Enter');
-    await page.waitForTimeout(200);
-
-    const opened = await page.evaluate(() => window.__openedUrls);
-    expect(opened).toHaveLength(1);
-    expect(opened[0].url).toBe('https://lovebud.pages.dev/');
-    expect(opened[0].target).toBe('_blank');
+    const [popup] = await Promise.all([
+      page.waitForEvent('popup'),
+      page.keyboard.press('Enter'),
+    ]);
+    expect(popup).toBeTruthy();
+    expect(popup.url()).toBe('https://lovebud.pages.dev/');
   });
 
-  test('Enter key on card without pageUrl opens detail panel', async ({ page }) => {
-    const card = page.locator('.pd-card[data-project-id="korean-ai-platform"]');
-    await card.focus();
+  test('Enter key on 자세히 보기 button opens detail panel', async ({ page }) => {
+    const button = page.locator('.pd-card[data-project-id="korean-ai-platform"] .pd-card-detail-btn');
+    await button.focus();
     await page.keyboard.press('Enter');
     await page.waitForTimeout(200);
 
@@ -756,6 +710,12 @@ test.describe('Project Directory Browser Tests', () => {
   test('deployed projects do not show 미배포 indicator', async ({ page }) => {
     const card = page.locator('.pd-card[data-project-id="lovebud"]');
     await expect(card.locator('.pd-card-undeployed')).toHaveCount(0);
+  });
+
+  test('Living Fiction shows 미배포 indicator', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="living-fiction"]');
+    await expect(card.locator('.pd-card-undeployed')).toBeVisible();
+    await expect(card.locator('.pd-card-undeployed')).toContainText('미배포');
   });
 
   test('existing business registry still works', async ({ page }) => {

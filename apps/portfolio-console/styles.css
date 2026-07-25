@@ -99,6 +99,8 @@ h2 { margin-bottom: 0; font-size: 15px; font-weight: 650; letter-spacing: -.01em
 .pd-card { display: grid; gap: 8px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-raised); cursor: pointer; transition: border-color .13s ease, background .13s ease; }
 .pd-card:hover { border-color: var(--line-strong); background: var(--panel-hover); }
 .pd-card.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.pd-card-service-link { display: grid; gap: 8px; color: inherit; text-decoration: none; }
+.pd-card-main { display: grid; gap: 8px; }
 .pd-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pd-card-name { font-size: 13px; font-weight: 650; letter-spacing: -.01em; }
 .pd-card-korean { color: var(--muted); font-size: 11px; }

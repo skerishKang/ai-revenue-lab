@@ -112,15 +112,20 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertEqual(len(page_urls), 13)
         with_url = sum(1 for u in page_urls if u != "null")
         without_url = sum(1 for u in page_urls if u == "null")
-        self.assertEqual(with_url, 9)
-        self.assertEqual(without_url, 4)
+        self.assertEqual(with_url, 8)
+        self.assertEqual(without_url, 5)
 
     def test_projects_pageurl_uses_https(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         urls = re.findall(r'pageUrl:\s*"(https?://[^"]+)"', script)
-        self.assertEqual(len(urls), 9)
+        self.assertEqual(len(urls), 8)
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
+
+    def test_projects_living_fiction_pageurl_null(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn('pageUrl: null', script)
+        self.assertNotIn('padiemipu--ai-revenue-living-fiction-web.modal.run', script)
 
     def test_projects_no_secret_like_literals(self) -> None:
         text = (ROOT / "projects.js").read_text(encoding="utf-8").lower()
@@ -149,6 +154,22 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_projects_undeployed_indicator_present(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertIn('pd-card-undeployed', script)
+
+    def test_projects_no_role_button_on_card(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn('role="button"', script)
+        self.assertNotIn('role="link"', script)
+
+    def test_projects_no_window_open(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn('window.open', script)
+
+    def test_projects_use_real_anchor_links(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn('pd-card-service-link', script)
+        self.assertIn('href=', script)
+        self.assertIn('target="_blank"', script)
+        self.assertIn('rel="noopener noreferrer"', script)
 
 
 if __name__ == "__main__":

@@ -359,21 +359,38 @@
     const undeployedBadge = hasPageUrl
       ? ""
       : `<span class="pd-card-undeployed" title="${t('notDeployed')}">${t('notDeployed')}</span>`;
-    return `
-      <div class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="${hasPageUrl}" tabindex="0" role="button" aria-pressed="${item.id === selectedProjectId}">
-        <div class="pd-card-top">
-          <span class="pd-card-name">${item.name}</span>
-          <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
-          ${undeployedBadge}
-        </div>
-        <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
-        <div class="pd-card-meta">
-          <span>${item.repositoryLabel}</span>
-          <span>${item.workspace}</span>
-        </div>
-        <span class="pd-card-progress">${item.progressNote}</span>
-        <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
+    const cardBody = `
+      <div class="pd-card-top">
+        <span class="pd-card-name">${item.name}</span>
+        <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
+        ${undeployedBadge}
       </div>
+      <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
+      <div class="pd-card-meta">
+        <span>${item.repositoryLabel}</span>
+        <span>${item.workspace}</span>
+      </div>
+      <span class="pd-card-progress">${item.progressNote}</span>
+    `;
+
+    if (hasPageUrl) {
+      return `
+        <article class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="true">
+          <a class="pd-card-service-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">
+            ${cardBody}
+          </a>
+          <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
+        </article>
+      `;
+    }
+
+    return `
+      <article class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="false">
+        <div class="pd-card-main">
+          ${cardBody}
+        </div>
+        <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
+      </article>
     `;
   }
 
@@ -387,29 +404,14 @@
     grid.querySelectorAll(".pd-card").forEach((card) => {
       const projectId = card.dataset.projectId;
       const hasPageUrl = card.dataset.hasPageUrl === "true";
-      const project = projects.find((p) => p.id === projectId);
 
       card.addEventListener("click", (event) => {
         if (event.target.closest(".pd-card-detail-btn")) {
           selectProject(projectId);
           return;
         }
-        if (hasPageUrl && project) {
-          window.open(project.pageUrl, "_blank", "noopener,noreferrer");
-        } else {
+        if (!hasPageUrl) {
           selectProject(projectId);
-        }
-      });
-
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          if (event.target.closest(".pd-card-detail-btn")) return;
-          event.preventDefault();
-          if (hasPageUrl && project) {
-            window.open(project.pageUrl, "_blank", "noopener,noreferrer");
-          } else {
-            selectProject(projectId);
-          }
         }
       });
     });
