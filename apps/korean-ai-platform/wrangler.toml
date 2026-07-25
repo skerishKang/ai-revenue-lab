@@ -7,4 +7,3 @@ workers_dev = true
 [assets]
 directory = "static"
 binding = "ASSETS"
-run_worker_first = true

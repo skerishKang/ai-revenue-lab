@@ -54,7 +54,7 @@ class Default(WorkerEntrypoint):
     async def fetch(self, request: Any) -> Any:
         import asgi
 
-        # Collect env bindings WITHOUT modifying global settings
+        # Collect env bindings
         env_overrides: dict[str, str] = {}
         for key in _ENV_KEYS:
             value = getattr(self.env, key, None)
@@ -65,18 +65,7 @@ class Default(WorkerEntrypoint):
         if env_overrides:
             _apply_env_once(env_overrides)
 
-        # Static assets: serve via ASSETS binding for root-path files.
-        # With run_worker_first=true, Worker intercepts all requests.
-        # Try ASSETS first, fall back to ASGI app if requested path is
-        # not an asset.
-        from urllib.parse import urlparse
-        path = urlparse(request.url).path.rstrip("/")
-        is_asset = path in ("/app.css", "/app.js", "/workspace.js")
-
-        if is_asset:
-            native_resp = await self.env.ASSETS.fetch(request.js_object)
-        else:
-            native_resp = await asgi.fetch(app, request.js_object, self.env)
+        native_resp = await asgi.fetch(app, request.js_object, self.env)
 
         # Security headers — applied to all responses
         native_resp.headers["X-Content-Type-Options"] = "nosniff"
