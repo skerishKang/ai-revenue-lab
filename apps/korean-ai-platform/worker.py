@@ -62,11 +62,21 @@ class Default(WorkerEntrypoint):
                 env_overrides[key] = str(value)
 
         # Apply Worker env bindings BEFORE app processes the request.
-        # This ensures even the very first request sees the correct config.
         if env_overrides:
             _apply_env_once(env_overrides)
 
-        native_resp = await asgi.fetch(app, request.js_object, self.env)
+        # Static assets: serve via ASSETS binding for root-path files.
+        # With run_worker_first=true, Worker intercepts all requests.
+        # Try ASSETS first, fall back to ASGI app if requested path is
+        # not an asset.
+        js_req = request.js_object
+        path = js_req.url.path.rstrip("/")
+        is_asset = path in ("/app.css", "/app.js", "/workspace.js")
+
+        if is_asset:
+            native_resp = await self.env.ASSETS.fetch(js_req)
+        else:
+            native_resp = await asgi.fetch(app, js_req, self.env)
 
         # Security headers — applied to all responses
         native_resp.headers["X-Content-Type-Options"] = "nosniff"
