@@ -79,7 +79,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     await expect(page.locator('#detail-number')).toHaveText('비즈니스 14');
     await expect(page.locator('#detail-title')).toHaveText('Korean AI Platform');
     await expect(page.locator('#detail-status')).toHaveText('검토 중');
-    await expect(page.locator('#detail-progress-value')).toHaveText('78%');
+    await expect(page.locator('#detail-progress-value')).toHaveText('50%');
   });
 
   test('detail panel shows next action and lifecycle', async ({ page }) => {
@@ -433,7 +433,8 @@ test.describe('Project Directory Browser Tests', () => {
     await page.waitForTimeout(200);
 
     await expect(page.locator('#pd-detail-purpose')).toContainText('한국어');
-    await expect(page.locator('#pd-detail-progress')).toContainText('Draft PR');
+    await expect(page.locator('#pd-detail-progress')).toContainText('PR #142');
+    await expect(page.locator('#pd-detail-progress')).toContainText('Provider registry');
   });
 
   test('project detail shows business number when assigned', async ({ page }) => {
@@ -804,7 +805,7 @@ test.describe('Language Toggle Browser Tests', () => {
 
     await page.click('.pd-card[data-project-id="korean-ai-platform"]');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-badge')).toHaveText('개발 중');
+    await expect(page.locator('#pd-detail-badge')).toHaveText('검토 중');
 
     await page.click('.pd-card[data-project-id="ai-finder-namgu"]');
     await page.waitForTimeout(200);
@@ -1006,24 +1007,25 @@ test.describe('Language Toggle Browser Tests', () => {
     expect(title).toContain('내 비즈니스 관리');
   });
 
-  test('Korean AI Platform shows PR #133 and PR #136', async ({ page }) => {
+  test('Korean AI Platform shows PR #142 merged and #138 closed', async ({ page }) => {
     await page.click('.pd-card[data-project-id="korean-ai-platform"]');
     await page.waitForTimeout(200);
 
     const progress = await page.locator('#pd-detail-progress').textContent();
-    expect(progress).toContain('PR #133');
-    expect(progress).toContain('PR #136');
+    expect(progress).toContain('PR #142');
+    expect(progress).toContain('Provider registry');
 
     const nextAction = await page.locator('#pd-detail-next').textContent();
-    expect(nextAction).toContain('PR #136');
+    expect(nextAction).toContain('Provider registry');
   });
 
-  test('Korean AI Platform does not show outdated PR #79', async ({ page }) => {
+  test('Korean AI Platform does not show outdated PR #79 or PR #133', async ({ page }) => {
     await page.click('.pd-card[data-project-id="korean-ai-platform"]');
     await page.waitForTimeout(200);
 
     const progress = await page.locator('#pd-detail-progress').textContent();
     expect(progress).not.toContain('PR #79');
+    expect(progress).not.toContain('PR #133');
 
     const current = await page.locator('#pd-detail-current').textContent();
     expect(current).not.toContain('PR #79');

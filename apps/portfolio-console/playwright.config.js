@@ -7,7 +7,7 @@ module.exports = defineConfig({
   fullyParallel: false,
   forbidOnly: true,
   retries: 0,
-  workers: 1,
+  workers: 3,
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:4173',
@@ -30,9 +30,11 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: 'python3 -m http.server 4173',
-    url: 'http://127.0.0.1:4173',
-    timeout: 10000,
+    command: process.platform === 'win32'
+      ? 'python -m http.server 4173'
+      : 'python3 -m http.server 4173',
+    port: 4173,
+    timeout: 15000,
     reuseExistingServer: true,
   },
 });
