@@ -24,8 +24,8 @@ uv sync --frozen
 echo "==> pywrangler sync"
 uv run pywrangler sync --force
 
-echo "==> Removing developer-only artifacts"
-rm -rf .venv .venv-workers tests browser_tests build korean_ai_platform.egg-info docs
+echo "==> Removing pywrangler-generated venvs (not needed at runtime)"
+rm -rf .venv .venv-workers
 
 echo "==> Deploying"
 if $DRY_RUN; then
