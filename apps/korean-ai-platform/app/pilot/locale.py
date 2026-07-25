@@ -79,6 +79,37 @@ _t("workspace.model_changed", "모델이 변경되어 대화가 초기화되었�
 _t("workspace.empty_key", "API key가 설정되지 않았습니다.", "No API key set.")
 _t("workspace.lang_switch", "English", "한국어")
 
+# Workspace developer-console labels.
+_t("workspace.console_crumb", "작업공간 / 세션 콘솔", "Workspace / Session Console")
+_t("workspace.console_eyebrow", "개발자 콘솔", "Developer Console")
+_t("workspace.runtime_metadata", "실행 환경 메타데이터", "Runtime metadata")
+_t("workspace.runtime", "실행 환경", "Runtime")
+_t("workspace.runtime_value", "Cloudflare Worker", "Cloudflare Worker")
+_t("workspace.key_mode", "키 모드", "Key mode")
+_t("workspace.key_mode_value", "세션형 BYOK", "Ephemeral BYOK")
+_t("workspace.registry_invalid_badge", "레지스트리 오류", "Registry invalid")
+_t("workspace.requests_blocked", "요청 차단됨", "Requests blocked")
+_t("workspace.provider_status", "Provider", "Provider")
+_t("workspace.status_ready", "준비됨", "ready")
+_t("workspace.status_not_configured", "미설정", "not configured")
+_t("workspace.storage", "저장", "Storage")
+_t("workspace.none", "없음", "none")
+_t("workspace.metrics", "작업공간 지표", "Workspace metrics")
+_t("workspace.registry", "레지스트리", "registry")
+_t("workspace.available", "사용 가능", "available")
+_t("workspace.session_policy", "세션 정책", "Session policy")
+_t("workspace.page_lifetime", "페이지 수명 동안만", "page lifetime only")
+_t("workspace.connection_settings", "연결 설정", "Connection settings")
+_t("workspace.provider_routing", "Provider 라우팅", "Provider routing")
+_t("workspace.cost_account", "비용 및 계정", "Cost and account")
+_t("workspace.security_policy", "보안 정책", "Security policy")
+_t("workspace.security_provider_reset", "Provider 변경 시 key와 세션이 함께 초기화됩니다.", "Changing Provider clears both the key and session.")
+_t("workspace.security_no_persistence", "요청 메타데이터 외 대화 내용은 서버에 영속 저장하지 않습니다.", "Conversation content is not persisted on the server beyond request metadata.")
+_t("workspace.conversation_session", "대화 세션", "Conversation session")
+_t("workspace.session_workspace", "세션 작업공간", "Session workspace")
+_t("workspace.request_response_stream", "요청 / 응답 스트림", "Request / response stream")
+_t("workspace.input_hint", "Enter로 전송 · Shift+Enter로 줄바꿈", "Enter to send · Shift+Enter for line break")
+
 # ── Errors (Korean) ─────────────────────────────────────────────────────
 _t("error.registry_invalid", "Provider registry 설정이 올바르지 않습니다.", "Provider registry configuration is invalid.")
 _t("error.model_not_found", "선택한 모델을 찾을 수 없습니다.", "Selected model not found.")
@@ -165,7 +196,7 @@ def locale_from_request(request) -> Locale:
 
 
 def set_locale_cookie(response, locale: Locale) -> None:
-    """Set locale_preference cookie on the response."""
+    """Set locale_preference cookie if the user explicitly switches locale."""
     response.set_cookie(
         key="locale_preference",
         value=locale.value,
