@@ -559,3 +559,248 @@ test.describe('Sidebar Search & Filter - Regression', () => {
     await expect(page.locator('#project-search-panel')).toHaveCount(1);
   });
 });
+
+test.describe('Sidebar Search & Filter - Accessibility Contracts', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+  });
+
+  test('close button returns focus to search trigger', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.fill('#pd-search-input', 'love');
+    await page.waitForTimeout(200);
+    await page.click('#project-search-close');
+    await page.waitForTimeout(200);
+    const btn = page.locator('[data-project-view="search"]');
+    const isFocused = await btn.evaluate(el => el === document.activeElement);
+    expect(isFocused).toBeTruthy();
+  });
+
+  test('Escape returns focus to search trigger', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.fill('#pd-search-input', 'love');
+    await page.waitForTimeout(200);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    const btn = page.locator('[data-project-view="search"]');
+    const isFocused = await btn.evaluate(el => el === document.activeElement);
+    expect(isFocused).toBeTruthy();
+  });
+
+  test('Escape maintains filter state', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.fill('#pd-search-input', 'love');
+    await page.selectOption('#pd-stage-filter', 'live');
+    await page.waitForTimeout(200);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(2);
+    await expect(page.locator('#project-count')).toHaveText('13개 중 2개');
+  });
+
+  test('close button maintains filter state', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.fill('#pd-search-input', 'love');
+    await page.selectOption('#pd-stage-filter', 'live');
+    await page.waitForTimeout(200);
+    await page.click('#project-search-close');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(2);
+    await expect(page.locator('#project-count')).toHaveText('13개 중 2개');
+  });
+
+  test('closed panel input is not programmatically focusable', async ({ page }) => {
+    const isFocused = await page.evaluate(() => {
+      const input = document.querySelector('#pd-search-input');
+      input.focus();
+      return input === document.activeElement;
+    });
+    expect(isFocused).toBeFalsy();
+  });
+
+  test('closed panel input is not keyboard focusable', async ({ page }) => {
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    const activeTag = await page.evaluate(() => document.activeElement.tagName);
+    const activeId = await page.evaluate(() => document.activeElement.id);
+    expect(activeId).not.toBe('pd-search-input');
+  });
+
+  test('opening panel focuses search input', async ({ page }) => {
+    await openSearchPanel(page);
+    const isFocused = await page.evaluate(() => {
+      const input = document.querySelector('#pd-search-input');
+      return input === document.activeElement;
+    });
+    expect(isFocused).toBeTruthy();
+  });
+
+  test('aria-expanded is false when panel closed', async ({ page }) => {
+    const btn = page.locator('[data-project-view="search"]');
+    await expect(btn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('aria-expanded is true when panel open', async ({ page }) => {
+    await openSearchPanel(page);
+    const btn = page.locator('[data-project-view="search"]');
+    await expect(btn).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('aria-expanded syncs back to false after close', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.click('#project-search-close');
+    await page.waitForTimeout(200);
+    const btn = page.locator('[data-project-view="search"]');
+    await expect(btn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('aria-expanded syncs back to false after Escape', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    const btn = page.locator('[data-project-view="search"]');
+    await expect(btn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('project status is active and search is inactive when closed', async ({ page }) => {
+    const projectsBtn = page.locator('[data-project-view="projects"]');
+    const searchBtn = page.locator('[data-project-view="search"]');
+    await expect(projectsBtn).toHaveClass(/is-active/);
+    await expect(projectsBtn).toHaveAttribute('aria-current', 'page');
+    await expect(searchBtn).not.toHaveClass(/is-active/);
+  });
+
+  test('search is active and project status is inactive when open', async ({ page }) => {
+    await openSearchPanel(page);
+    const projectsBtn = page.locator('[data-project-view="projects"]');
+    const searchBtn = page.locator('[data-project-view="search"]');
+    await expect(searchBtn).toHaveClass(/is-active/);
+    await expect(projectsBtn).not.toHaveClass(/is-active/);
+    await expect(projectsBtn).not.toHaveAttribute('aria-current');
+  });
+
+  test('project status button resets filters and shows 13 cards', async ({ page }) => {
+    await openSearchPanel(page);
+    await page.fill('#pd-search-input', 'love');
+    await page.selectOption('#pd-stage-filter', 'live');
+    await page.selectOption('#pd-dev-mode-filter', 'active-development');
+    await page.selectOption('#pd-sort-filter', 'progress-desc');
+    await page.waitForTimeout(200);
+    await page.click('[data-project-view="projects"]');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.pd-card')).toHaveCount(13);
+    await expect(page.locator('#project-count')).toHaveText('13개 중 13개');
+    await expect(page.locator('#pd-search-input')).toHaveValue('');
+    await expect(page.locator('#pd-stage-filter')).toHaveValue('all');
+    await expect(page.locator('#pd-dev-mode-filter')).toHaveValue('all');
+    await expect(page.locator('#pd-sort-filter')).toHaveValue('default');
+  });
+
+  test('close button has accessible name', async ({ page }) => {
+    await openSearchPanel(page);
+    const closeBtn = page.locator('#project-search-close');
+    const ariaLabel = await closeBtn.getAttribute('aria-label');
+    expect(ariaLabel).toBeTruthy();
+    expect(ariaLabel.length).toBeGreaterThan(0);
+  });
+});
+
+test.describe('Sidebar Search & Filter - EN Label Switching', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await openSearchPanel(page);
+  });
+
+  test('search label switches to EN', async ({ page }) => {
+    await expect(page.locator('#pd-search-label')).toHaveText('SEARCH');
+  });
+
+  test('stage label switches to EN', async ({ page }) => {
+    await expect(page.locator('#pd-stage-label')).toHaveText('STAGE');
+  });
+
+  test('dev mode label switches to EN', async ({ page }) => {
+    await expect(page.locator('#pd-dev-mode-label')).toHaveText('DEV MODE');
+  });
+
+  test('sort label switches to EN', async ({ page }) => {
+    await expect(page.locator('#pd-sort-label')).toHaveText('SORT');
+  });
+
+  test('reset button switches to EN', async ({ page }) => {
+    await expect(page.locator('#pd-reset-filter')).toHaveText('RESET');
+  });
+
+  test('panel title switches to EN', async ({ page }) => {
+    await expect(page.locator('#project-search-title')).toHaveText('SEARCH & FILTER');
+  });
+
+  test('close button accessible name switches to EN', async ({ page }) => {
+    const closeBtn = page.locator('#project-search-close');
+    const ariaLabel = await closeBtn.getAttribute('aria-label');
+    expect(ariaLabel).toBe('Close search panel');
+  });
+
+  test('result count shows EN format', async ({ page }) => {
+    await expect(page.locator('#project-count')).toHaveText('13 of 13 projects');
+  });
+
+  test('stage options switch to EN', async ({ page }) => {
+    await expect(page.locator('#pd-stage-filter option[value="all"]')).toHaveText('ALL');
+    await expect(page.locator('#pd-stage-filter option[value="live"]')).toHaveText('LIVE');
+    await expect(page.locator('#pd-stage-filter option[value="building"]')).toHaveText('BUILDING');
+    await expect(page.locator('#pd-stage-filter option[value="review"]')).toHaveText('REVIEW');
+    await expect(page.locator('#pd-stage-filter option[value="planned"]')).toHaveText('PLANNED');
+    await expect(page.locator('#pd-stage-filter option[value="paused"]')).toHaveText('PAUSED');
+  });
+
+  test('development mode options switch to EN', async ({ page }) => {
+    await expect(page.locator('#pd-dev-mode-filter option[value="all"]')).toHaveText('ALL');
+    await expect(page.locator('#pd-dev-mode-filter option[value="not-started"]')).toHaveText('NOT STARTED');
+    await expect(page.locator('#pd-dev-mode-filter option[value="active-development"]')).toHaveText('ACTIVE DEV');
+    await expect(page.locator('#pd-dev-mode-filter option[value="needs-improvement"]')).toHaveText('NEEDS IMPROVEMENT');
+    await expect(page.locator('#pd-dev-mode-filter option[value="maintenance"]')).toHaveText('MAINTENANCE');
+    await expect(page.locator('#pd-dev-mode-filter option[value="complete"]')).toHaveText('COMPLETE');
+    await expect(page.locator('#pd-dev-mode-filter option[value="paused"]')).toHaveText('PAUSED');
+  });
+
+  test('sort options switch to EN', async ({ page }) => {
+    await expect(page.locator('#pd-sort-filter option[value="default"]')).toHaveText('DEFAULT');
+    await expect(page.locator('#pd-sort-filter option[value="progress-desc"]')).toHaveText('PROGRESS DESC');
+    await expect(page.locator('#pd-sort-filter option[value="progress-asc"]')).toHaveText('PROGRESS ASC');
+  });
+
+  test('empty state switches to EN', async ({ page }) => {
+    await page.selectOption('#pd-stage-filter', 'paused');
+    await page.waitForTimeout(200);
+    await expect(page.locator('.empty-state')).toContainText('No projects match the criteria.');
+  });
+
+  test('search filter nav button switches to EN', async ({ page }) => {
+    await expect(page.locator('#nav-search-filter')).toHaveText('SEARCH & FILTER');
+  });
+
+  test('project status nav button switches to EN', async ({ page }) => {
+    await expect(page.locator('#nav-projects')).toHaveText('PROJECT STATUS');
+  });
+
+  test('search placeholder switches to EN', async ({ page }) => {
+    await expect(page.locator('#pd-search-input')).toHaveAttribute('placeholder', 'Search by name, repo, folder, purpose, current work, next action');
+  });
+
+  test('Korean labels restored after switching back', async ({ page }) => {
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-search-label')).toHaveText('검색');
+    await expect(page.locator('#pd-stage-label')).toHaveText('단계');
+    await expect(page.locator('#pd-dev-mode-label')).toHaveText('개발 모드');
+    await expect(page.locator('#pd-sort-label')).toHaveText('정렬');
+    await expect(page.locator('#pd-reset-filter')).toHaveText('초기화');
+    await expect(page.locator('#project-search-title')).toHaveText('검색·필터');
+  });
+});

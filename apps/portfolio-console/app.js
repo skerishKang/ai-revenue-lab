@@ -679,17 +679,27 @@
     if (searchInput) searchInput.focus();
   }
 
-  function closeSearchPanel() {
+  function closeSearchPanel({ restoreFocus = true } = {}) {
     const panel = $("#project-search-panel");
-    const trigger = document.querySelector('[data-project-view="search"]');
+    const trigger =
+      document.querySelector('[data-project-view="search"]');
+
     if (!panel || !trigger) return;
+
     panel.hidden = true;
     trigger.setAttribute("aria-expanded", "false");
     trigger.classList.remove("is-active");
-    const projectsBtn = document.querySelector('[data-project-view="projects"]');
+
+    const projectsBtn =
+      document.querySelector('[data-project-view="projects"]');
+
     if (projectsBtn) {
       projectsBtn.classList.add("is-active");
       projectsBtn.setAttribute("aria-current", "page");
+    }
+
+    if (restoreFocus) {
+      trigger.focus();
     }
   }
 
@@ -725,6 +735,8 @@
     $("#activity-heading").textContent = t("priorityActions");
     $("#pd-search-label").textContent = t("search");
     $("#pd-stage-label").textContent = t("stage");
+    $("#pd-dev-mode-label").textContent = t("devMode");
+    $("#pd-sort-label").textContent = t("sort");
     $("#pd-detail-repo-label").textContent = t("repository");
     $("#pd-detail-workspace-label").textContent = t("workspace");
     $("#pd-detail-page-label").textContent = t("page");
@@ -855,7 +867,6 @@
       const panel = $("#project-search-panel");
       if (panel && !panel.hidden) {
         closeSearchPanel();
-        if (navSearchBtn) navSearchBtn.focus();
       }
     }
   });
