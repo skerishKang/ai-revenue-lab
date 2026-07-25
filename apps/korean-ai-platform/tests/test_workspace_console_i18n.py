@@ -8,6 +8,7 @@ from app.pilot.locale import Locale, gettext
 APP_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_TEMPLATE = APP_ROOT / "templates" / "workspace.html"
 BASE_TEMPLATE = APP_ROOT / "templates" / "base.html"
+RESPONSIVE_CSS = APP_ROOT / "static" / "workspace-console-responsive.css"
 
 CONSOLE_KEYS = (
     "workspace.console_crumb",
@@ -68,3 +69,34 @@ def test_console_templates_do_not_hardcode_localized_interface_labels() -> None:
 
     assert "Developer Console" not in base
     assert '_("workspace.console_eyebrow")' in base
+
+
+def test_workspace_navigation_uses_locale_aware_labels() -> None:
+    base = BASE_TEMPLATE.read_text(encoding="utf-8")
+
+    for key in (
+        "nav.home",
+        "nav.models",
+        "nav.playground",
+        "nav.pilot",
+        "nav.api_keys",
+        "nav.usage",
+        "nav.docs",
+        "nav.pricing",
+        "nav.access",
+    ):
+        assert f'_("{key}")' in base
+
+    assert "Provider Home" in base
+    assert "Live Provider calls · keys are not stored" in base
+    assert "Phase 3 Workspace · live Provider calls · keys are not stored" in base
+
+
+def test_mobile_console_header_expands_instead_of_clipping() -> None:
+    css = RESPONSIVE_CSS.read_text(encoding="utf-8")
+
+    assert "@media (max-width: 620px)" in css
+    assert "height: auto;" in css
+    assert "min-height: 72px;" in css
+    assert "flex-direction: column;" in css
+    assert "align-items: flex-start;" in css
