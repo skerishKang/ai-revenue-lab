@@ -1,111 +1,183 @@
 {% extends "base.html" %}
 {% block title %}{{ _("workspace.heading") }} — Korean AI Platform{% endblock %}
-{% block crumb %}{{ _("workspace.title") }}{% endblock %}
+{% block crumb %}{{ _("workspace.console_crumb") }}{% endblock %}
 {% block content %}
 
-<div class="page-head">
-  <h1 class="page-title">{{ _("workspace.heading") }}</h1>
-  <p class="page-sub">{{ _("workspace.description") }}</p>
-</div>
+<div class="workspace-console">
+  <header class="console-heading">
+    <div>
+      <div class="console-eyebrow">{{ _("workspace.console_eyebrow") }}</div>
+      <h1>{{ _("workspace.heading") }}</h1>
+      <p>{{ _("workspace.description") }}</p>
+    </div>
+    <div class="console-heading-meta" aria-label="{{ _('workspace.runtime_metadata') }}">
+      <span class="console-badge"><strong>{{ _("workspace.runtime") }}</strong> {{ _("workspace.runtime_value") }}</span>
+      <span class="console-badge"><strong>{{ _("workspace.key_mode") }}</strong> {{ _("workspace.key_mode_value") }}</span>
+    </div>
+  </header>
 
-<div class="callout callout-info" style="margin-bottom: 16px;">
-  <span class="callout-title">{{ _("workspace.pilot_notice") }}</span>
-</div>
-
-{% if error and error.code == "registry_invalid" %}
-<div class="callout callout-danger" role="alert" style="margin-bottom: 16px;">
-  <span class="callout-title">{{ _("error.registry_invalid") }}</span>
-  {% if error.request_id %}
-  <br><span class="muted">Request ID: {{ error.request_id }}</span>
+  {% if error and error.code == "registry_invalid" %}
+  <div class="console-status-strip is-danger" role="alert">
+    <div class="console-status-main">
+      <span class="console-status-dot is-danger" aria-hidden="true"></span>
+      <strong>{{ _("error.registry_invalid") }}</strong>
+      {% if error.request_id %}<span class="console-status-note">{{ _("workspace.request_id") }}: {{ error.request_id }}</span>{% endif %}
+    </div>
+    <span class="console-badge">{{ _("workspace.registry_invalid_badge") }}</span>
+    <span class="console-badge">{{ _("workspace.requests_blocked") }}</span>
+  </div>
+  {% else %}
+  <div class="console-status-strip {{ 'is-warning' if not pilot_configured else '' }}">
+    <div class="console-status-main">
+      <span class="console-status-dot {{ 'is-ready' if pilot_configured else '' }}" aria-hidden="true"></span>
+      <strong>{{ _("workspace.pilot_notice") }}</strong>
+      <span class="console-status-note">
+        {{ _("error.pilot_not_configured") if not pilot_configured else _("workspace.security_notice") }}
+      </span>
+    </div>
+    <span class="console-badge"><strong>{{ _("workspace.provider_status") }}</strong> {{ _("workspace.status_ready") if pilot_configured else _("workspace.status_not_configured") }}</span>
+    <span class="console-badge"><strong>{{ _("workspace.storage") }}</strong> {{ _("workspace.none") }}</span>
+  </div>
   {% endif %}
-</div>
-{% endif %}
 
-{% if not pilot_configured and not error %}
-<div class="callout callout-warn" style="margin-bottom: 16px;">
-  <span class="callout-title">{{ _("error.pilot_not_configured") }}</span>
-</div>
-{% endif %}
-
-<div class="stat-cards" style="margin-bottom:16px;">
-  <div class="stat-card">
-    <span class="stat-label">{{ _("workspace.provider_count") }}</span>
-    <span class="stat-value" id="ws_provider_count">{{ pilot_provider_count }}</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-label">{{ _("workspace.model_count") }}</span>
-    <span class="stat-value" id="ws_model_count">{{ pilot_model_count }}</span>
-  </div>
-</div>
-
-<div class="workspace-layout">
-  <div class="workspace-sidebar">
-    <div class="ws-section">
-      <label for="ws_model">{{ _("workspace.select_model") }}</label>
-      <select id="ws_model" class="model-select" aria-label="{{ _('workspace.select_model') }}">
-        {% for model in pilot_models %}
-        <option value="{{ model.id }}" data-provider="{{ model.provider_name or '' }}">
-          {{ model.name }}{% if model.provider_name %} · {{ model.provider_name }}{% endif %}
-        </option>
-        {% endfor %}
-      </select>
-      {% if pilot_models %}
-      <span class="field-note" id="ws_provider_name">{{ _("workspace.model_provider") }}: {{ pilot_models[0].provider_name or '' }}</span>
-      {% endif %}
+  <section class="console-metrics" aria-label="{{ _('workspace.metrics') }}">
+    <div class="console-metric">
+      <span class="console-metric-label">{{ _("workspace.provider_count") }}</span>
+      <span class="console-metric-value" id="ws_provider_count">{{ pilot_provider_count }}</span>
+      <span class="console-metric-detail">{{ _("workspace.registry") }}</span>
     </div>
-
-    <div class="ws-section">
-      <label for="ws_key">{{ _("workspace.api_key") }}</label>
-      <input type="password" id="ws_key" class="ws-key-input"
-        placeholder="{{ _('workspace.key_placeholder') }}"
-        autocomplete="off" aria-label="{{ _('workspace.api_key') }}">
-      <span class="field-note" id="ws_key_status">{{ _("workspace.key_status_empty") }}</span>
-      <button id="ws_key_apply" class="btn btn-primary btn-sm" style="margin-top:4px;">
-        {{ _("workspace.key_apply") }}
-      </button>
-      <button id="ws_key_clear" class="btn btn-ghost btn-sm" style="display:none; margin-top:4px;">
-        {{ _("workspace.key_clear") }}
-      </button>
+    <div class="console-metric">
+      <span class="console-metric-label">{{ _("workspace.model_count") }}</span>
+      <span class="console-metric-value" id="ws_model_count">{{ pilot_model_count }}</span>
+      <span class="console-metric-detail">{{ _("workspace.available") }}</span>
     </div>
-
-    <div class="ws-section">
-      <span class="field-note ws-cost-notice">
-        <strong>{{ _("workspace.cost_label") }}:</strong> {{ _("workspace.cost_unknown") }}<br>
-        {{ _("workspace.cost_notice") }}
-      </span>
+    <div class="console-metric">
+      <span class="console-metric-label">{{ _("workspace.session_policy") }}</span>
+      <span class="console-metric-value">RAM</span>
+      <span class="console-metric-detail">{{ _("workspace.page_lifetime") }}</span>
     </div>
+  </section>
 
-    <div class="ws-section">
-      <span class="field-note ws-security-notice">
-        {{ _("workspace.security_notice") }}
-      </span>
-    </div>
-  </div>
-
-  <div class="workspace-main">
-    <div class="ws-chat-area" id="ws_chat" role="log" aria-live="polite" aria-label="대화 영역">
-      <div class="ws-empty" id="ws_empty">
-        <p>{{ _("workspace.description") }}</p>
+  <div class="console-grid">
+    <section class="console-panel connection-panel" aria-label="{{ _('workspace.connection_settings') }}">
+      <div class="console-panel-header">
+        <div>
+          <div class="console-panel-title">{{ _("workspace.connection_settings") }}</div>
+          <div class="console-panel-kicker">{{ _("workspace.provider_routing") }}</div>
+        </div>
+        <span class="console-badge">BYOK</span>
       </div>
-    </div>
 
-    <div class="ws-input-area">
-      <div class="ws-message-limit" id="ws_msg_limit" style="display:none;">
-        {{ _("workspace.message_limit_warning") }}
+      <div class="connection-body">
+        <div class="connection-section">
+          <label for="ws_model">{{ _("workspace.select_model") }}</label>
+          <select id="ws_model" class="model-select" aria-label="{{ _('workspace.select_model') }}">
+            {% for model in pilot_models %}
+            <option value="{{ model.id }}" data-provider="{{ model.provider_name or '' }}">
+              {{ model.name }}{% if model.provider_name %} · {{ model.provider_name }}{% endif %}
+            </option>
+            {% endfor %}
+          </select>
+          {% if pilot_models %}
+          <span class="field-note" id="ws_provider_name">{{ _("workspace.model_provider") }}: {{ pilot_models[0].provider_name or '' }}</span>
+          {% endif %}
+        </div>
+
+        <div class="connection-section">
+          <label for="ws_key">{{ _("workspace.api_key") }}</label>
+          <input type="password" id="ws_key" class="ws-key-input"
+            placeholder="{{ _('workspace.key_placeholder') }}"
+            autocomplete="off" aria-label="{{ _('workspace.api_key') }}">
+          <span class="field-note" id="ws_key_status">{{ _("workspace.key_status_empty") }}</span>
+          <div class="connection-actions">
+            <button id="ws_key_apply" class="btn btn-primary btn-sm">
+              {{ _("workspace.key_apply") }}
+            </button>
+            <button id="ws_key_clear" class="btn btn-ghost btn-sm" style="display:none;">
+              {{ _("workspace.key_clear") }}
+            </button>
+          </div>
+        </div>
+
+        <div class="connection-section">
+          <span class="connection-label">{{ _("workspace.cost_account") }}</span>
+          <span class="field-note ws-cost-notice">
+            <strong>{{ _("workspace.cost_label") }}:</strong> {{ _("workspace.cost_unknown") }}<br>
+            {{ _("workspace.cost_notice") }}
+          </span>
+        </div>
+
+        <div class="connection-section">
+          <span class="connection-label">{{ _("workspace.security_policy") }}</span>
+          <div class="console-security-list">
+            <div class="console-security-item">
+              <span class="console-security-icon" aria-hidden="true">✓</span>
+              <span>{{ _("workspace.security_notice") }}</span>
+            </div>
+            <div class="console-security-item">
+              <span class="console-security-icon" aria-hidden="true">✓</span>
+              <span>{{ _("workspace.security_provider_reset") }}</span>
+            </div>
+            <div class="console-security-item">
+              <span class="console-security-icon" aria-hidden="true">✓</span>
+              <span>{{ _("workspace.security_no_persistence") }}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="ws-input-row">
-        <textarea id="ws_input" class="ws-input"
-          placeholder="{{ _('workspace.chat_placeholder') }}"
-          rows="2" aria-label="{{ _('workspace.chat_placeholder') }}"></textarea>
-        <button id="ws_send" class="btn btn-primary ws-send-btn">
-          {{ _("workspace.send") }}
-        </button>
+    </section>
+
+    <section class="console-panel session-panel" aria-label="{{ _('workspace.conversation_session') }}">
+      <div class="console-panel-header">
+        <div>
+          <div class="console-panel-title">{{ _("workspace.session_workspace") }}</div>
+          <div class="console-panel-kicker">{{ _("workspace.request_response_stream") }}</div>
+        </div>
+        <div class="session-toolbar">
+          <span class="session-id">session:new</span>
+        </div>
       </div>
-      <div class="ws-actions">
-        <button id="ws_new_chat" class="btn btn-ghost btn-sm">{{ _("workspace.new_chat") }}</button>
-        <button id="ws_clear_chat" class="btn btn-ghost btn-sm">{{ _("workspace.clear_chat") }}</button>
+
+      <div class="session-body">
+        <div class="ws-chat-area" id="ws_chat" role="log" aria-live="polite" aria-label="{{ _('workspace.conversation_session') }}">
+          <div class="ws-empty" id="ws_empty">
+            <div class="ws-empty-terminal" aria-hidden="true">
+              <div class="ws-empty-terminal-head">
+                <span class="ws-empty-terminal-dot"></span>
+                <span class="ws-empty-terminal-dot"></span>
+                <span class="ws-empty-terminal-dot"></span>
+              </div>
+              <div class="ws-empty-terminal-body">
+                <div><span class="prompt">$</span> <span class="command">select provider --model</span></div>
+                <div><span class="prompt">$</span> <span class="command">attach key --ephemeral</span></div>
+                <div class="comment"># {{ _("workspace.description") }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ws-input-area">
+          <div class="ws-message-limit" id="ws_msg_limit" style="display:none;">
+            {{ _("workspace.message_limit_warning") }}
+          </div>
+          <div class="ws-input-row">
+            <textarea id="ws_input" class="ws-input"
+              placeholder="{{ _('workspace.chat_placeholder') }}"
+              rows="2" aria-label="{{ _('workspace.chat_placeholder') }}"></textarea>
+            <button id="ws_send" class="btn btn-primary ws-send-btn">
+              {{ _("workspace.send") }}
+            </button>
+          </div>
+          <div class="ws-actions">
+            <div>
+              <button id="ws_new_chat" class="btn btn-ghost btn-sm">{{ _("workspace.new_chat") }}</button>
+              <button id="ws_clear_chat" class="btn btn-ghost btn-sm">{{ _("workspace.clear_chat") }}</button>
+            </div>
+            <span class="ws-input-hint">{{ _("workspace.input_hint") }}</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
