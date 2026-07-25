@@ -146,7 +146,8 @@ The following are deferred:
 - live payment;
 - PostgreSQL production deployment;
 - GPU procurement;
-- provider-specific legal or commercial commitments.
+- provider-specific legal or commercial commitments;
+- complete Korean/English localization parity.
 
 These may be valid later work. They are not the first proof required for the original business hypothesis.
 
@@ -183,6 +184,8 @@ The Phase 0 implementation must:
 Phase 0 is ready for CTO product review when:
 
 - the home page clearly presents unified AI API supply rather than AI task completion;
+- Korean is the default UI language on first visit and when locale state is missing or invalid;
+- English, if implemented, is an explicit secondary choice and missing English strings fall back to Korean;
 - model catalog, Playground, examples, usage/credit, and routing preview are clickable;
 - Business 14 credit, BYOK, external provider, and self-hosted concepts are distinguishable;
 - all simulated claims are labeled;
@@ -202,3 +205,11 @@ The next CTO review must decide:
 5. Should PR #112 become a separate downstream application, a customer console, or an archived experiment?
 
 Until that review, the Phase 0 charter governs Business 14 sequencing.
+
+## 12. Product-wide language authority
+
+The canonical language contract is defined in:
+
+`docs/BUSINESS14_LANGUAGE_POLICY.md`
+
+It applies to every Business 14 phase and surface, not only Phase 0. Korean (`ko-KR`) is the canonical and default UI language. English is an optional secondary locale, and untranslated content falls back to Korean. Technical identifiers may retain standard English forms, but user-facing explanations and default navigation remain Korean.
