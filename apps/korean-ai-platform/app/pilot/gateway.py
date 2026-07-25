@@ -14,34 +14,41 @@ import logging
 import time
 import uuid
 
-from fastapi import APIRouter, Header
-from fastapi.responses import JSONResponse
+from starlette.routing import Router
+from starlette.responses import JSONResponse
+from starlette.requests import Request
 
 from app.pilot.config import pilot_settings
 from app.pilot.errors import (
     InvalidRequest,
     MissingProviderKey,
-    PilotError,
     PlaceholderKeyRejected,
+    PilotError,
     StreamNotSupported,
     ToolsNotSupported,
-    RegistryInvalid,
-    ModelNotFound,
-    ModelDisabled,
-    PilotNotConfigured,
 )
-from app.pilot.routing import resolve_configuration, resolve_route, PilotConfigurationState
-from app.pilot import provider as prv
 from app.pilot.redaction import redact_sensitive
-from app.pilot.schemas import PilotChatRequest
 from app.pilot.registry import get_registry
+from app.pilot.routing import (
+    PilotConfigurationState,
+    resolve_configuration,
+    resolve_route,
+)
+from app.pilot.schemas import PilotChatRequest
+
+from app.pilot import provider as prv
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
-router = APIRouter(prefix="/api/pilot")
-
+router = Router()
 
 _INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니다."
+
+
+# Allowed fields for PilotChatRequest (dataclass field names)
+_ALLOWED_CHAT_FIELDS = {
+    "model", "messages", "temperature", "max_tokens", "stream", "tools",
+}
 
 
 def _new_request_id() -> str:
@@ -92,6 +99,14 @@ def _validate_provider_key(x_business14_provider_key: str | None) -> str:
     return x_business14_provider_key
 
 
+def _reject_extra_fields(body: dict) -> dict:
+    """Reject JSON keys that are not declared on the dataclass."""
+    extra = set(body) - _ALLOWED_CHAT_FIELDS
+    if extra:
+        raise InvalidRequest(f"Unexpected fields: {', '.join(sorted(extra))}")
+    return body
+
+
 def _validate_chat_request(req: PilotChatRequest) -> None:
     if req.stream:
         raise StreamNotSupported()
@@ -101,60 +116,59 @@ def _validate_chat_request(req: PilotChatRequest) -> None:
         raise InvalidRequest("messages 필드는 비어 있을 수 없습니다.")
     if not req.model:
         raise InvalidRequest("model 필드는 필수입니다.")
+    for msg in req.messages:
+        if isinstance(msg, dict):
+            role = msg.get("role", "")
+            if role not in ("system", "user", "assistant"):
+                raise InvalidRequest(f"Invalid message role: {role!r}")
 
 
-@router.get("/health")
-async def pilot_health():
-    """Pilot health check. Returns configured provider summary.
-
-    Uses routing.resolve_configuration() as single source of truth.
-    """
+@router.route("/health", methods=["GET"])
+async def pilot_health(request: Request):
+    """Pilot health check. Uses routing.resolve_configuration()."""
     state = resolve_configuration()
 
     if state == PilotConfigurationState.VALID_REGISTRY:
         registry = get_registry()
-        return {
+        return JSONResponse({
             "status": "ok",
             "mode": "byok-multi-provider-pilot",
             "configured_providers": registry.provider_count,
             "configured_models": registry.model_count,
             "providers": registry.provider_summary(),
-        }
+        })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
         return _registry_invalid_response()
 
     if state == PilotConfigurationState.LEGACY:
-        return {
+        return JSONResponse({
             "status": "ok",
             "mode": "byok-pilot",
             "configured_providers": 1,
             "configured_models": 1,
-        }
+        })
 
-    return {
+    return JSONResponse({
         "status": "not_configured",
         "mode": "not_configured",
         "configured_providers": 0,
         "configured_models": 0,
-    }
+    })
 
 
-@router.get("/models")
-async def pilot_models():
-    """List models available for pilot (multi-provider if configured).
-
-    Uses routing.resolve_configuration() as single source of truth.
-    """
+@router.route("/models", methods=["GET"])
+async def pilot_models(request: Request):
+    """List models available for pilot (multi-provider if configured)."""
     state = resolve_configuration()
 
     if state == PilotConfigurationState.VALID_REGISTRY:
         registry = get_registry()
-        return {
+        return JSONResponse({
             "models": registry.list_models(),
             "configured": True,
             "mode": "multi-provider",
-        }
+        })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
         return _registry_invalid_response()
@@ -162,7 +176,7 @@ async def pilot_models():
     if state == PilotConfigurationState.LEGACY:
         display_name = pilot_settings.pilot_model_id
         provider_name = pilot_settings.pilot_provider_id
-        return {
+        return JSONResponse({
             "models": [
                 {
                     "id": pilot_settings.pilot_model_id,
@@ -177,46 +191,41 @@ async def pilot_models():
             ],
             "configured": True,
             "mode": "single-provider",
-        }
+        })
 
-    return {"models": [], "configured": False}
+    return JSONResponse({"models": [], "configured": False})
 
 
-@router.post("/v1/chat/completions")
+@router.route("/v1/chat/completions", methods=["POST"])
 async def pilot_chat_completions(
-    request: PilotChatRequest,
-    x_business14_provider_key: str | None = Header(None),
+    request: Request,
 ):
-    """Execute a BYOK chat completion with multi-provider routing.
-
-    Determines the target provider from the requested model ID,
-    then calls the upstream via the provider adapter.
-
-    Requires X-Business14-Provider-Key header with a valid API key.
-    """
+    """Execute a BYOK chat completion with multi-provider routing."""
     request_id = f"b14req_{uuid.uuid4().hex[:12]}"
     logger.info(
-        "pilot_request request_id=%s model=%s messages=%d",
+        "pilot_request request_id=%s",
         request_id,
-        request.model,
-        len(request.messages) if request.messages else 0,
     )
 
     try:
+        x_business14_provider_key = request.headers.get("x-business14-provider-key")
+        raw_body = await request.json()
+        if not isinstance(raw_body, dict):
+            raise InvalidRequest("Request body must be a JSON object")
+
+        _reject_extra_fields(raw_body)
+        request = PilotChatRequest(**raw_body)
+
         api_key = _validate_provider_key(x_business14_provider_key)
         _validate_chat_request(request)
 
         if not request.model:
             raise InvalidRequest("model 필드는 필수입니다.")
 
-        # Determine routing using configuration resolver
         route = resolve_route(request.model)
 
         state = resolve_configuration()
-        if state == PilotConfigurationState.VALID_REGISTRY:
-            mode = "byok-multi-provider-pilot"
-        else:
-            mode = "byok-pilot"
+        mode = "byok-multi-provider-pilot" if state == PilotConfigurationState.VALID_REGISTRY else "byok-pilot"
 
         logger.info(
             "pilot_route request_id=%s model=%s provider=%s state=%s",
@@ -254,7 +263,7 @@ async def pilot_chat_completions(
             latency_ms,
         )
 
-        return response_data
+        return JSONResponse(response_data)
 
     except PilotError as e:
         logger.warning(

@@ -7,3 +7,9 @@ __pycache__/
 *.sqlite3
 *.egg-info/
 build/
+node_modules/
+.dev.vars
+.venv-workers/
+python_modules/
+src/vendor/
+pylock.toml

@@ -1,0 +1,8 @@
+name = "ai-revenue-korean-ai-platform"
+main = "worker.py"
+compatibility_date = "2026-07-25"
+compatibility_flags = ["python_workers"]
+workers_dev = true
+
+[assets]
+directory = "static"

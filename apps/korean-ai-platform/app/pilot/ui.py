@@ -5,7 +5,8 @@ Supports multi-provider registry and legacy single-provider fallback.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Form, Request
+from starlette.routing import Router
+from starlette.requests import Request
 from app.factory import render_template
 from app.pilot.config import pilot_settings
 from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, get_pilot_model_count
@@ -29,7 +30,7 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 import time
 import uuid
 
-router = APIRouter()
+router = Router()
 
 
 def _new_request_id() -> str:
@@ -48,7 +49,7 @@ def _validate_chat_request_ui(req: PilotChatRequest) -> None:
         raise InvalidRequest("model 필드는 필수입니다.")
 
 
-@router.get("/pilot")
+@router.route("/pilot", methods=["GET"])
 async def pilot_page(request: Request):
     state = resolve_configuration()
     registry = get_registry()
@@ -94,15 +95,16 @@ async def pilot_page(request: Request):
     )
 
 
-@router.post("/pilot")
+@router.route("/pilot", methods=["POST"])
 async def pilot_page_post(
     request: Request,
-    provider_key: str = Form(""),
-    model_id: str = Form(""),
-    prompt: str = Form(""),
-    temperature: float = Form(0.2),
-    max_tokens: int = Form(300),
 ):
+    form = await request.form()
+    provider_key = form.get("provider_key", "")
+    model_id = form.get("model_id", "")
+    prompt = form.get("prompt", "")
+    temperature = float(form.get("temperature", 0.2))
+    max_tokens = int(form.get("max_tokens", 300))
     state = resolve_configuration()
 
     if state == PilotConfigurationState.INVALID_REGISTRY:

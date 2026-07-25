@@ -1,19 +1,16 @@
 """BYOK Gateway Pilot configuration.
 
-Provides raw env-var accessors only. Configuration state resolution
-(delegating to routing.PilotConfigurationState) happens in routing.py.
-
-Raw accessors provided:
-- has_registry: provider_registry_json is non-empty
-- has_legacy: both pilot_base_url and pilot_model_id are set
+Reads BUSINESS14_-prefixed environment variables via os.environ.
+Replaces pydantic-settings BaseSettings to avoid bundling
+pydantic-core (4 MiB WASM binary) in Cloudflare Workers.
 """
 
 from __future__ import annotations
 
-from pydantic_settings import BaseSettings
+import os
 
 
-class PilotSettings(BaseSettings):
+class PilotSettings:
     """BYOK Gateway Pilot configuration."""
 
     pilot_provider_id: str = "pilot-openai-compat"
@@ -23,7 +20,24 @@ class PilotSettings(BaseSettings):
     pilot_timeout_seconds: int = 30
     provider_registry_json: str = ""
 
-    model_config = {"env_prefix": "BUSINESS14_"}
+    def __init__(self) -> None:
+        self.pilot_provider_id = os.environ.get(
+            "BUSINESS14_PILOT_PROVIDER_ID", "pilot-openai-compat"
+        )
+        self.pilot_base_url = os.environ.get("BUSINESS14_PILOT_BASE_URL", "")
+        self.pilot_model_id = os.environ.get("BUSINESS14_PILOT_MODEL_ID", "")
+        self.pilot_upstream_model = os.environ.get(
+            "BUSINESS14_PILOT_UPSTREAM_MODEL", ""
+        )
+        try:
+            self.pilot_timeout_seconds = int(
+                os.environ.get("BUSINESS14_PILOT_TIMEOUT_SECONDS", "30")
+            )
+        except (ValueError, TypeError):
+            self.pilot_timeout_seconds = 30
+        self.provider_registry_json = os.environ.get(
+            "BUSINESS14_PROVIDER_REGISTRY_JSON", ""
+        )
 
     @property
     def has_registry(self) -> bool:
@@ -35,13 +49,10 @@ class PilotSettings(BaseSettings):
 
     @property
     def configured(self) -> bool:
-        """Quick check: any configuration source has data (may be invalid).
-        Full validation is done by routing.resolve_configuration()."""
         return self.has_registry or self.has_legacy
 
     @property
     def mode_name(self) -> str:
-        """Quick mode label (not validated)."""
         if self.provider_registry_json:
             return "byok-multi-provider-pilot"
         if self.pilot_base_url and self.pilot_model_id:

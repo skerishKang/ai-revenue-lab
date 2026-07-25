@@ -23,7 +23,7 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
-from app.pilot.schemas import ChatMessage
+from app.pilot.schemas import ChatMessage, dataclass_to_dict
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
@@ -38,7 +38,7 @@ def _serialize_messages(
     serialized: list[dict[str, str]] = []
     for message in messages:
         if isinstance(message, ChatMessage):
-            serialized.append(message.model_dump())
+                serialized.append(dataclass_to_dict(message))
         else:
             serialized.append(dict(message))
     return serialized

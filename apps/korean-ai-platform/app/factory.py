@@ -1,19 +1,46 @@
-"""Application factory for the Korean AI API Provider Phase 0 Demo."""
+"""Application factory for the Korean AI API Provider Phase 0 Demo (Starlette)."""
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
+from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.responses import HTMLResponse, JSONResponse
+from starlette.routing import Route
+from starlette.staticfiles import StaticFiles
 
 from app.config import settings
 
 _TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 _STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+
+
+def _build_root_static_routes() -> list[Route]:
+    """Build root-level routes for static files (Worker [assets] compat)."""
+    _ROOT_STATIC = {
+        "app.css": "text/css",
+        "app.js": "application/javascript",
+        "workspace.js": "application/javascript",
+    }
+
+    def _make_handler(filename: str, media_type: str):
+        async def _handler(request: Request):
+            file_path = _STATIC_DIR / filename
+            if file_path.is_file():
+                return HTMLResponse(
+                    content=file_path.read_bytes(), media_type=media_type
+                )
+            return HTMLResponse("Not Found", status_code=404)
+
+        return _handler
+
+    routes: list[Route] = []
+    for name, mime in _ROOT_STATIC.items():
+        routes.append(Route(f"/{name}", endpoint=_make_handler(name, mime), methods=["GET"]))
+    return routes
 
 
 def _build_jinja_env() -> Environment:
@@ -40,43 +67,53 @@ def _build_jinja_env() -> Environment:
     return env
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(
-        title="Korean AI Platform — API Provider Phase 0",
-        docs_url=None,
-        redoc_url=None,
-    )
+async def _health(request: Request) -> JSONResponse:
+    return JSONResponse({
+        "status": "ok",
+        "app": "korean-ai-platform",
+        "phase": "api-provider-phase0",
+        "demo_mode": settings.demo_mode,
+    })
 
+
+def create_app() -> Starlette:
     jinja_env = _build_jinja_env()
+
+    routes: list[Any] = [
+        Route("/health", endpoint=_health, methods=["GET"]),
+    ]
+
+    app = Starlette(routes=routes, on_startup=None)
     app.state.jinja_env = jinja_env
 
     if _STATIC_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
+        # Also serve static files at root for Worker [assets] compatibility
+        _static_routes = _build_root_static_routes()
+        for sr in _static_routes:
+            app.router.routes.append(sr)
 
-    from app import routes
-
-    app.include_router(routes.router)
+    from app import routes as phase0_routes
+    app.router.routes.extend(phase0_routes.router.routes)
 
     # Phase 1: BYOK Gateway Pilot
     from app.pilot.gateway import router as pilot_api_router
     from app.pilot.ui import router as pilot_ui_router
+    from starlette.routing import Route as StarletteRoute
 
-    app.include_router(pilot_api_router)
-    app.include_router(pilot_ui_router)
+    for route in pilot_api_router.routes:
+        new_route = StarletteRoute(
+            path="/api/pilot" + route.path,
+            endpoint=route.endpoint,
+            methods=list(route.methods) if route.methods else ["GET"],
+        )
+        app.router.routes.append(new_route)
+    for route in pilot_ui_router.routes:
+        app.router.routes.append(route)
 
     # Phase 3: Korean session workspace
     from app.pilot.workspace import router as workspace_router
-
-    app.include_router(workspace_router)
-
-    @app.get("/health")
-    def health() -> dict[str, Any]:
-        return {
-            "status": "ok",
-            "app": "korean-ai-platform",
-            "phase": "api-provider-phase0",
-            "demo_mode": settings.demo_mode,
-        }
+    app.router.routes.extend(workspace_router.routes)
 
     return app
 

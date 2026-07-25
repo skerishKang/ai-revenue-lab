@@ -19,7 +19,9 @@ from __future__ import annotations
 import json
 import logging
 
-from fastapi import APIRouter, Request, Response
+from starlette.routing import Router
+from starlette.requests import Request
+from starlette.responses import Response
 
 from app.factory import render_template
 from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, get_pilot_model_count
@@ -28,7 +30,7 @@ from app.pilot.routing import resolve_configuration, PilotConfigurationState
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
-router = APIRouter()
+router = Router()
 
 
 def _new_request_id() -> str:
@@ -36,7 +38,7 @@ def _new_request_id() -> str:
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
 
-@router.get("/workspace")
+@router.route("/workspace", methods=["GET"])
 async def workspace_page(request: Request):
     """Korean-first chat workspace page.
 
