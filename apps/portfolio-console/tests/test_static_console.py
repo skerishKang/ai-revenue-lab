@@ -15,7 +15,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_html_has_private_and_noindex_contracts(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('name="robots" content="noindex,nofollow,noarchive"', html)
-        self.assertIn("PRIVATE ADMIN", html)
+        self.assertIn('id="private-admin-label"', html)
         self.assertIn('id="business-table-body"', html)
         self.assertIn('id="detail-panel"', html)
         self.assertIn('id="priority-list"', html)

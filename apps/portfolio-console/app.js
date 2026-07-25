@@ -546,6 +546,7 @@
 
   function setLanguage(lang) {
     currentLang = lang;
+    document.documentElement.lang = lang === "en" ? "en" : "ko";
     $("#lang-ko").classList.toggle("is-active", lang === "ko");
     $("#lang-en").classList.toggle("is-active", lang === "en");
     updateStaticLabels();

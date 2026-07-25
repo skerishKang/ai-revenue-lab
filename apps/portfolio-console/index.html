@@ -15,18 +15,18 @@
         <div class="brand-mark" aria-hidden="true">ARL</div>
         <div>
           <strong>Portfolio Console</strong>
-          <span id="private-admin-label">PRIVATE ADMIN</span>
+          <span id="private-admin-label">개인 관리자</span>
         </div>
       </div>
 
       <nav class="side-nav" aria-label="콘솔 메뉴">
         <button class="nav-item is-active" type="button" data-view="businesses">
           <span aria-hidden="true">▦</span>
-          <span id="nav-businesses">Businesses</span>
+          <span id="nav-businesses">비즈니스</span>
         </button>
         <button class="nav-item" type="button" data-view="deployments">
           <span aria-hidden="true">↗</span>
-          <span id="nav-deployments">Deployments</span>
+          <span id="nav-deployments">배포</span>
         </button>
         <button class="nav-item" type="button" data-view="github">
           <span aria-hidden="true">⌘</span>
@@ -34,18 +34,18 @@
         </button>
         <button class="nav-item" type="button" data-view="models">
           <span aria-hidden="true">◇</span>
-          <span id="nav-models">Models & Cost</span>
+          <span id="nav-models">모델 & 비용</span>
         </button>
         <button class="nav-item" type="button" data-view="registry">
           <span aria-hidden="true">≡</span>
-          <span id="nav-registry">Registry</span>
+          <span id="nav-registry">레지스트리</span>
         </button>
       </nav>
 
       <div class="sidebar-meta">
-        <div><span id="sidebar-mode-label">MODE</span><strong id="sidebar-mode-value">MANUAL</strong></div>
-        <div><span id="sidebar-source-label">SOURCE</span><strong id="sidebar-source-value">STATIC REGISTRY</strong></div>
-        <div><span id="sidebar-range-label">RANGE</span><strong id="sidebar-range">01–15</strong></div>
+        <div><span id="sidebar-mode-label">모드</span><strong id="sidebar-mode-value">수동</strong></div>
+        <div><span id="sidebar-source-label">소스</span><strong id="sidebar-source-value">정적 레지스트리</strong></div>
+        <div><span id="sidebar-range-label">범위</span><strong id="sidebar-range">01–15</strong></div>
       </div>
     </aside>
 
@@ -53,7 +53,7 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">AI REVENUE LAB / INTERNAL</p>
-          <h1 id="topbar-title">Business Operations</h1>
+          <h1 id="topbar-title">내 비즈니스 관리</h1>
         </div>
         <div class="topbar-actions">
           <div class="lang-toggle" role="group" aria-label="언어 선택">
@@ -61,38 +61,38 @@
             <span class="lang-divider" aria-hidden="true">|</span>
             <button type="button" id="lang-en" class="lang-button">EN</button>
           </div>
-          <span class="sync-state"><i aria-hidden="true"></i> <span id="sync-state-text">registry loaded</span></span>
+          <span class="sync-state"><i aria-hidden="true"></i> <span id="sync-state-text">레지스트리 로드됨</span></span>
           <button type="button" class="icon-button" id="refresh-button" aria-label="화면 새로 고침">↻</button>
         </div>
       </header>
 
       <section class="quick-launch" aria-label="빠른 실행">
-        <div class="ql-heading" id="quick-launch-heading">QUICK LAUNCH</div>
+        <div class="ql-heading" id="quick-launch-heading">빠른 실행</div>
         <div id="quick-launch-list" class="ql-list"></div>
       </section>
 
       <section class="project-directory" aria-label="프로젝트 디렉토리">
         <div class="section-heading compact">
           <div>
-            <p class="eyebrow" id="all-projects-label">ALL PROJECTS</p>
-            <h2 id="project-directory-heading">Project Directory</h2>
+            <p class="eyebrow" id="all-projects-label">전체 프로젝트</p>
+            <h2 id="project-directory-heading">프로젝트 모아보기</h2>
           </div>
-          <span id="project-count">0 projects</span>
+          <span id="project-count">0개</span>
         </div>
         <div class="pd-controls">
           <label class="pd-search">
-            <span id="pd-search-label">SEARCH</span>
+            <span id="pd-search-label">검색</span>
             <input id="pd-search-input" type="search" autocomplete="off" placeholder="이름, 저장소, 폴더, 목적 검색">
           </label>
           <label class="pd-stage-filter">
-            <span id="pd-stage-label">STAGE</span>
+            <span id="pd-stage-label">단계</span>
             <select id="pd-stage-filter">
-              <option value="all">ALL</option>
-              <option value="live">LIVE</option>
-              <option value="demo">DEMO</option>
-              <option value="build">BUILD</option>
-              <option value="review">REVIEW</option>
-              <option value="planned">PLANNED</option>
+              <option value="all">전체</option>
+              <option value="live">운영 중</option>
+              <option value="demo">데모</option>
+              <option value="build">개발 중</option>
+              <option value="review">검토 중</option>
+              <option value="planned">계획</option>
             </select>
           </label>
         </div>
@@ -106,21 +106,21 @@
           <p id="pd-detail-korean" class="pd-detail-korean">13개 프로젝트의 저장소·폴더·단계를 확인합니다.</p>
           <p id="pd-detail-purpose" class="pd-detail-purpose"></p>
           <dl class="pd-detail-facts">
-            <div><dt id="pd-detail-repo-label">REPOSITORY</dt><dd id="pd-detail-repo">—</dd></div>
-            <div><dt id="pd-detail-workspace-label">WORKSPACE</dt><dd id="pd-detail-workspace">—</dd></div>
-            <div><dt id="pd-detail-page-label">PAGE</dt><dd id="pd-detail-page">—</dd></div>
-            <div><dt id="pd-detail-progress-label">PROGRESS</dt><dd id="pd-detail-progress">—</dd></div>
-            <div><dt id="pd-detail-current-label">CURRENT WORK</dt><dd id="pd-detail-current">—</dd></div>
-            <div><dt id="pd-detail-verified-label">LAST VERIFIED</dt><dd id="pd-detail-verified">—</dd></div>
+            <div><dt id="pd-detail-repo-label">저장소</dt><dd id="pd-detail-repo">—</dd></div>
+            <div><dt id="pd-detail-workspace-label">폴더</dt><dd id="pd-detail-workspace">—</dd></div>
+            <div><dt id="pd-detail-page-label">페이지</dt><dd id="pd-detail-page">—</dd></div>
+            <div><dt id="pd-detail-progress-label">진행 상황</dt><dd id="pd-detail-progress">—</dd></div>
+            <div><dt id="pd-detail-current-label">현재 작업</dt><dd id="pd-detail-current">—</dd></div>
+            <div><dt id="pd-detail-verified-label">마지막 확인</dt><dd id="pd-detail-verified">—</dd></div>
           </dl>
           <section class="pd-next-action">
-            <span id="pd-next-action-label">NEXT ACTION</span>
+            <span id="pd-next-action-label">다음 작업</span>
             <p id="pd-detail-next">목록에서 프로젝트를 선택하십시오.</p>
           </section>
           <div class="pd-detail-actions">
-            <a id="pd-page-link" class="primary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN PAGE</a>
-            <a id="pd-repo-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN REPOSITORY</a>
-            <button id="pd-copy-workspace" class="secondary-action" type="button">COPY WORKSPACE</button>
+            <a id="pd-page-link" class="primary-action is-disabled" tabindex="-1" aria-disabled="true">페이지 열기</a>
+            <a id="pd-repo-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">저장소 열기</a>
+            <button id="pd-copy-workspace" class="secondary-action" type="button">폴더 경로 복사</button>
           </div>
           <p class="pd-copy-note" id="pd-copy-note"></p>
         </aside>
@@ -128,22 +128,22 @@
 
       <section class="metric-grid" aria-label="사업 포트폴리오 요약">
         <article class="metric-card">
-          <span id="metric-tracked-label">TRACKED</span>
+          <span id="metric-tracked-label">추적 중</span>
           <strong id="metric-tracked">00</strong>
           <small id="metric-tracked-desc">번호가 배정되거나 제안된 사업</small>
         </article>
         <article class="metric-card">
-          <span id="metric-demo-label">DEMO SURFACES</span>
+          <span id="metric-demo-label">데모 화면</span>
           <strong id="metric-demo">00</strong>
           <small id="metric-demo-desc">즉시 열 수 있는 확인된 화면</small>
         </article>
         <article class="metric-card">
-          <span id="metric-action-label">NEEDS ACTION</span>
+          <span id="metric-action-label">조치 필요</span>
           <strong id="metric-action">00</strong>
           <small id="metric-action-desc">검토·배포·결정이 필요한 사업</small>
         </article>
         <article class="metric-card">
-          <span id="metric-open-label">OPEN SLOTS</span>
+          <span id="metric-open-label">미배정</span>
           <strong id="metric-open">00</strong>
           <small id="metric-open-desc">현재 표시 범위의 미배정 번호</small>
         </article>
@@ -151,26 +151,26 @@
 
       <section class="control-strip" aria-label="사업 목록 제어">
         <label class="search-control">
-          <span id="search-label">SEARCH</span>
+          <span id="search-label">검색</span>
           <input id="search-input" type="search" autocomplete="off" placeholder="번호 또는 제목 검색 (예: 14, fiction)">
         </label>
         <label>
-          <span id="state-label">STATE</span>
+          <span id="state-label">상태</span>
           <select id="state-filter">
-            <option value="all">ALL STATES</option>
-            <option value="running">RUNNING</option>
-            <option value="review">REVIEW / BUILD</option>
-            <option value="planning">PLANNING</option>
-            <option value="reserved">RESERVED</option>
+            <option value="all">전체 상태</option>
+            <option value="running">운영 중</option>
+            <option value="review">검토 / 개발</option>
+            <option value="planning">계획</option>
+            <option value="reserved">예약</option>
           </select>
         </label>
         <label>
-          <span id="sort-label">SORT</span>
+          <span id="sort-label">정렬</span>
           <select id="sort-control">
-            <option value="number-asc">NUMBER ↑</option>
-            <option value="number-desc">NUMBER ↓</option>
-            <option value="priority">ACTION PRIORITY</option>
-            <option value="progress">PROGRESS</option>
+            <option value="number-asc">번호 ↑</option>
+            <option value="number-desc">번호 ↓</option>
+            <option value="priority">우선순위</option>
+            <option value="progress">진행률</option>
           </select>
         </label>
       </section>
@@ -180,21 +180,21 @@
           <div class="section-heading">
             <div>
               <p class="eyebrow">PRIMARY VIEW</p>
-              <h2 id="registry-heading">Business Registry</h2>
+              <h2 id="registry-heading">비즈니스 목록</h2>
             </div>
-            <span id="result-count">0 rows</span>
+            <span id="result-count">0개</span>
           </div>
 
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th scope="col" id="th-business">BUSINESS</th>
-                  <th scope="col" id="th-state">STATE</th>
-                  <th scope="col" id="th-progress">PROGRESS</th>
-                  <th scope="col" id="th-surface">SURFACE</th>
-                  <th scope="col" id="th-github">GITHUB</th>
-                  <th scope="col" id="th-next-action">NEXT ACTION</th>
+                  <th scope="col" id="th-business">비즈니스</th>
+                  <th scope="col" id="th-state">상태</th>
+                  <th scope="col" id="th-progress">진행 상황</th>
+                  <th scope="col" id="th-surface">화면</th>
+                  <th scope="col" id="th-github">GitHub</th>
+                  <th scope="col" id="th-next-action">다음 작업</th>
                 </tr>
               </thead>
               <tbody id="business-table-body"></tbody>
@@ -212,29 +212,29 @@
 
           <div class="detail-progress" aria-label="선택 사업 진행률">
             <div>
-              <span id="detail-progress-label">DEMO READINESS</span>
+              <span id="detail-progress-label">데모 준비도</span>
               <strong id="detail-progress-value">--%</strong>
             </div>
             <div class="progress-track"><i id="detail-progress-bar"></i></div>
           </div>
 
           <dl class="detail-facts">
-            <div><dt id="detail-lifecycle-label">LIFECYCLE</dt><dd id="detail-lifecycle">—</dd></div>
-            <div><dt id="detail-workspace-label">WORKSPACE</dt><dd id="detail-workspace">—</dd></div>
-            <div><dt id="detail-deployment-label">DEPLOYMENT</dt><dd id="detail-deployment">—</dd></div>
-            <div><dt id="detail-github-label">GITHUB</dt><dd id="detail-github">—</dd></div>
-            <div><dt id="detail-verified-label">LAST VERIFIED</dt><dd id="detail-verified">—</dd></div>
+            <div><dt id="detail-lifecycle-label">라이프사이클</dt><dd id="detail-lifecycle">—</dd></div>
+            <div><dt id="detail-workspace-label">폴더</dt><dd id="detail-workspace">—</dd></div>
+            <div><dt id="detail-deployment-label">배포</dt><dd id="detail-deployment">—</dd></div>
+            <div><dt id="detail-github-label">GitHub</dt><dd id="detail-github">—</dd></div>
+            <div><dt id="detail-verified-label">마지막 확인</dt><dd id="detail-verified">—</dd></div>
           </dl>
 
           <section class="next-action-block">
-            <span id="detail-next-action-label">NEXT ACTION</span>
+            <span id="detail-next-action-label">다음 작업</span>
             <p id="detail-next-action">목록에서 사업을 선택하십시오.</p>
           </section>
 
           <div class="detail-actions">
-            <a id="surface-link" class="primary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN SURFACE</a>
-            <a id="github-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN GITHUB</a>
-            <a id="issue-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">OPEN ISSUE</a>
+            <a id="surface-link" class="primary-action is-disabled" tabindex="-1" aria-disabled="true">화면 열기</a>
+            <a id="github-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">GitHub 열기</a>
+            <a id="issue-link" class="secondary-action is-disabled" tabindex="-1" aria-disabled="true">Issue 열기</a>
           </div>
           <p class="action-note" id="action-note">확인된 링크만 활성화됩니다.</p>
         </aside>
@@ -244,9 +244,9 @@
         <div class="section-heading compact">
           <div>
             <p class="eyebrow">OPERATOR QUEUE</p>
-            <h2 id="activity-heading">Priority Actions</h2>
+            <h2 id="activity-heading">우선 작업</h2>
           </div>
-          <span id="priority-count">0 items</span>
+          <span id="priority-count">0개</span>
         </div>
         <div id="priority-list" class="priority-list"></div>
       </section>

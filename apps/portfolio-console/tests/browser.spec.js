@@ -953,4 +953,66 @@ test.describe('Language Toggle Browser Tests', () => {
       document.documentElement.scrollWidth > window.innerWidth);
     expect(overflow).toBeFalsy();
   });
+
+  test('initial html lang is ko', async ({ page }) => {
+    const lang = await page.evaluate(() => document.documentElement.lang);
+    expect(lang).toBe('ko');
+  });
+
+  test('EN click sets html lang to en', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    const lang = await page.evaluate(() => document.documentElement.lang);
+    expect(lang).toBe('en');
+  });
+
+  test('Korean click restores html lang to ko', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    const lang = await page.evaluate(() => document.documentElement.lang);
+    expect(lang).toBe('ko');
+  });
+
+  test('refresh resets html lang to ko', async ({ page }) => {
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
+    const lang = await page.evaluate(() => document.documentElement.lang);
+    expect(lang).toBe('ko');
+  });
+
+  test('static HTML defaults are Korean before JS', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'commit' });
+    const title = await page.locator('#topbar-title').textContent();
+    expect(title).toContain('내 비즈니스 관리');
+  });
+
+  test('Korean AI Platform shows PR #133 and PR #136', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.waitForTimeout(200);
+
+    const progress = await page.locator('#pd-detail-progress').textContent();
+    expect(progress).toContain('PR #133');
+    expect(progress).toContain('PR #136');
+
+    const nextAction = await page.locator('#pd-detail-next').textContent();
+    expect(nextAction).toContain('PR #136');
+  });
+
+  test('Korean AI Platform does not show outdated PR #79', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="korean-ai-platform"]');
+    await page.waitForTimeout(200);
+
+    const progress = await page.locator('#pd-detail-progress').textContent();
+    expect(progress).not.toContain('PR #79');
+
+    const current = await page.locator('#pd-detail-current').textContent();
+    expect(current).not.toContain('PR #79');
+
+    const nextAction = await page.locator('#pd-detail-next').textContent();
+    expect(nextAction).not.toContain('PR #79');
+  });
 });

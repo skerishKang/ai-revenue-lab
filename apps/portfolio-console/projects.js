@@ -138,10 +138,10 @@ window.ARL_PROJECTS = [
     workspace: "apps/korean-ai-platform/",
     pageUrl: null,
     stage: "build",
-    progressNote: "Draft PR #79 진행 중. 승인된 전용 배포 주소 없음.",
-    currentWork: "사용자 워크스페이스 및 운영자 콘솔 경험 구현",
-    nextAction: "별도 사용자 워크스페이스 및 운영자 콘솔 완성",
-    lastVerified: "2026-07-24"
+    progressNote: "Phase 2 다중 Provider BYOK 라우팅이 PR #133으로 병합됨. Phase 3 한국어 세션 워크스페이스는 Draft PR #136에서 진행 중. 승인된 전용 배포 주소 없음.",
+    currentWork: "Phase 3 한국어 우선 세션 워크스페이스 검토 및 안정화",
+    nextAction: "PR #136의 CTO 검토 사항을 완료하고 병합 여부 결정",
+    lastVerified: "2026-07-25"
   },
   {
     id: "ai-finder-bukgu",
