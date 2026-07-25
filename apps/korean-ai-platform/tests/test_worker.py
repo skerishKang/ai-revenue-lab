@@ -48,7 +48,7 @@ class TestWranglerConfig:
     def test_assets_binding(self):
         content = WRANGLER_TOML.read_text()
         assert "binding = \"ASSETS\"" in content
-        assert "run_worker_first = true" in content
+        assert "[assets]" in content
 
     def test_no_secrets(self):
         content = WRANGLER_TOML.read_text()

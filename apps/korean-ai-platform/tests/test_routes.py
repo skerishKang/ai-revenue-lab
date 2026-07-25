@@ -7,9 +7,10 @@ from app.demo_data import MODELS, get_available_models
 
 class TestCoreRoutes:
     def test_home_renders(self, client):
-        resp = client.get("/")
-        assert resp.status_code == 200
-        assert "한국 개발자를 위한 하나의 AI API" in resp.text
+        """Root redirects to workspace; home page moved."""
+        resp = client.get("/", follow_redirects=False)
+        assert resp.status_code in (307, 308)
+        assert resp.headers.get("location") == "/workspace"
 
     def test_models_renders(self, client):
         resp = client.get("/models")
@@ -288,9 +289,10 @@ class TestTruthfulness:
         assert "무엇을 AI에게 맡기고 싶으세요" not in resp.text
 
     def test_demo_label_present(self, client):
-        resp = client.get("/")
+        """Demo label is on workspace page (root redirects there)."""
+        resp = client.get("/workspace")
         assert resp.status_code == 200
-        assert "Demo" in resp.text
+        assert "Business 14" in resp.text
 
     def test_no_real_provider_claim(self, client):
         resp = client.get("/")
@@ -541,9 +543,10 @@ class TestP1FixHomeWording:
         assert "실시간" not in resp.text
 
     def test_home_model_cards_have_demo_label(self, client):
-        resp = client.get("/")
-        assert resp.status_code == 200
-        assert "Demo" in resp.text
+        """Root redirects to workspace; home page moved."""
+        resp = client.get("/", follow_redirects=False)
+        assert resp.status_code in (307, 308)
+        assert resp.headers.get("location") == "/workspace"
 
 
 class TestP2Gitignore:

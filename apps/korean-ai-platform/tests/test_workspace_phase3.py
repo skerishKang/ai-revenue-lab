@@ -697,11 +697,15 @@ class TestPhase3Regression:
         assert data["model"] == "model-a-v1"
 
     def test_route_smoke(self, client):
-        """All Phase 0-2 routes return 200."""
-        routes = ["/", "/models", "/playground", "/api-keys", "/docs", "/usage", "/pricing", "/access", "/pilot"]
+        """All Phase 0-2 routes return 200 (except / which redirects)."""
+        routes = ["/models", "/playground", "/api-keys", "/docs", "/usage", "/pricing", "/access", "/pilot"]
         for route in routes:
             resp = client.get(route)
             assert resp.status_code == 200, f"{route} returned {resp.status_code}"
+        # Root redirects to workspace
+        root_resp = client.get("/", follow_redirects=False)
+        assert root_resp.status_code in (307, 308), f"/ returned {root_resp.status_code}"
+        assert root_resp.headers.get("location") == "/workspace"
 
     def test_workspace_route(self, client):
         assert client.get("/workspace").status_code == 200

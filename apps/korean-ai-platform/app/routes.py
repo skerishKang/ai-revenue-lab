@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from starlette.responses import RedirectResponse
 from starlette.routing import Router
 from starlette.responses import RedirectResponse
 from starlette.requests import Request
@@ -25,16 +26,8 @@ router = Router()
 
 
 @router.route("/", methods=["GET"])
-def home(request: Request):
-    return render_template(
-        request,
-        "home.html",
-        {
-            "models": MODELS,
-            "model_count": len(MODELS),
-            "routing_policies": ROUTING_POLICIES,
-        },
-    )
+async def home(request: Request):
+    return RedirectResponse(url="/workspace", status_code=307)
 
 
 @router.route("/models", methods=["GET"])
