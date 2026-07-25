@@ -24,8 +24,8 @@ window.ARL_PROJECTS = [
       {
         id: "pc-pr147-status-progress",
         label: "PR #147 상태·진척률 계약",
-        done: false,
-        evidence: "PR #147 Draft — CTO 검토 대기"
+        done: true,
+        evidence: "PR #147 merged — 9f4c812a46d64849d4bbd4675f1587a02c2be9ee"
       },
       {
         id: "pc-search-filter-left",
@@ -47,8 +47,8 @@ window.ARL_PROJECTS = [
       }
     ],
     progressNote: "Cloudflare Pages에 배포 완료. Cloudflare Access 인증 후 접근 가능.",
-    currentWork: "Issue #140 프로젝트 상태·마일스톤 계약 검토 중",
-    nextAction: "PR #147 CTO 검토, 병합 및 Portfolio Console 배포",
+    currentWork: "Issue #140 병합 완료 · Production 배포 검증 준비",
+    nextAction: "Portfolio Console 배포 및 Cloudflare Access 검증 후 Issue #140 종료",
     blockers: [],
     futureRoadmap: [],
     lastVerified: "2026-07-26"

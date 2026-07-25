@@ -277,20 +277,48 @@ test.describe('Milestone Progress Tests', () => {
     expect(doneTasks).not.toContain('PR #140 작업 현재 브랜치');
   });
 
-  test('Portfolio Console card shows exact 20% progress', async ({ page }) => {
-    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 20%');
-    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 80%');
-    const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
-    expect(barWidth).toBe('20%');
-  });
-
-  test('Portfolio Console detail shows 1/5 tasks', async ({ page }) => {
+  test('Portfolio Console done tasks show PR #147 merged evidence', async ({ page }) => {
     await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-progress')).toContainText('1/5');
+    const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
+    expect(doneTasks).toContain('PR #147 merged');
+    expect(doneTasks).toContain('9f4c812a');
+  });
+
+  test('Portfolio Console done tasks do not reference Draft or CTO 검토 대기', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
+    expect(doneTasks).not.toContain('Draft');
+    expect(doneTasks).not.toContain('CTO 검토 대기');
+  });
+
+  test('Portfolio Console currentWork shows Production 배포 검증 준비', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-current')).toContainText('Production 배포 검증 준비');
+  });
+
+  test('Portfolio Console nextAction shows Cloudflare Access 검증', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-next')).toContainText('Cloudflare Access 검증');
+  });
+
+  test('Portfolio Console card shows exact 40% progress', async ({ page }) => {
+    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 40%');
+    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 60%');
+    const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
+    expect(barWidth).toBe('40%');
+  });
+
+  test('Portfolio Console detail shows 2/5 tasks', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#pd-detail-progress')).toContainText('2/5');
     const barWidth = await page.locator('#pd-detail-progress-bar').evaluate(el => el.style.width);
-    expect(barWidth).toBe('20%');
+    expect(barWidth).toBe('40%');
   });
 
   test('LoveBud card shows exact 50% progress', async ({ page }) => {
