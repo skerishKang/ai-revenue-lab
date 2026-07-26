@@ -1,11 +1,13 @@
 (() => {
   const app = window.WorldFeed = window.WorldFeed || {};
   const listeners = new Set();
+  const validStoryIds = new Set(["maker", "market-studio", "harbor", "cinema"]);
   const state = {
     route: "feed",
     filter: "feed",
     preference: "default",
     previousPreference: "default",
+    selectedStoryId: "maker",
     returnContext: null,
     reducedMotion: false
   };
@@ -16,6 +18,7 @@
       filter: state.filter,
       preference: state.preference,
       previousPreference: state.previousPreference,
+      selectedStoryId: state.selectedStoryId,
       returnContext: state.returnContext ? { ...state.returnContext } : null,
       reducedMotion: state.reducedMotion
     };
@@ -31,6 +34,13 @@
     state.route = route;
     if (["feed", "nearby", "culture"].includes(route)) state.filter = route;
     emit("route");
+  }
+
+  function setStoryId(storyId) {
+    const next = validStoryIds.has(storyId) ? storyId : "maker";
+    if (next === state.selectedStoryId) return;
+    state.selectedStoryId = next;
+    emit("story");
   }
 
   function setPreference(value) {
@@ -51,6 +61,7 @@
     state.filter = "feed";
     state.previousPreference = state.preference;
     state.preference = "default";
+    state.selectedStoryId = "maker";
     emit("reset");
   }
 
@@ -78,6 +89,7 @@
   app.store = {
     getState: snapshot,
     setRoute,
+    setStoryId,
     setPreference,
     undoPreference,
     resetAll,

@@ -1,50 +1,122 @@
 {
-  "render_mode": "exact source bytes inlined into Chromium because local URL navigation is blocked in this environment",
-  "desktop": {
-    "initial_route": "feed",
-    "initial_overflow": 0,
-    "keyboard_route_activation": true,
-    "nearby_overflow": 0,
+  "starting_head": "d92933e8851a67bb227f136145a07a8df2915e65",
+  "version_token": "world-feed-20260726-4",
+  "story_identity": {
+    "harbor": {
+      "expected_title": "낯선 항구의 저녁이 오늘의 첫 장면이 된 이유",
+      "opened_title": "낯선 항구의 저녁이 오늘의 첫 장면이 된 이유",
+      "shell_story_id": "harbor",
+      "source": "Atlas Letter",
+      "image": "./assets/images/hero-harbor.svg",
+      "why_title": "낯선 항구의 저녁이 오늘의 첫 장면이 된 이유",
+      "why_source": "Atlas Letter",
+      "pass": true
+    },
+    "market-studio": {
+      "expected_title": "시장 골목의 빈 점포가 저녁 공방으로 바뀌는 중",
+      "opened_title": "시장 골목의 빈 점포가 저녁 공방으로 바뀌는 중",
+      "shell_story_id": "market-studio",
+      "source": "Local Field Notes",
+      "image": "./assets/images/maker-studio.svg",
+      "why_title": "시장 골목의 빈 점포가 저녁 공방으로 바뀌는 중",
+      "why_source": "Local Field Notes",
+      "pass": true
+    },
+    "maker": {
+      "expected_title": "문 닫은 가게 안에서 다시 켜진 작업등",
+      "opened_title": "문 닫은 가게 안에서 다시 켜진 작업등",
+      "shell_story_id": "maker",
+      "source": "Local Field Notes",
+      "image": "./assets/images/maker-studio.svg",
+      "why_title": "문 닫은 가게 안에서 다시 켜진 작업등",
+      "why_source": "Local Field Notes",
+      "pass": true
+    },
+    "cinema": {
+      "expected_title": "상영 시간표보다 동네의 밤을 바꾸는 극장",
+      "opened_title": "상영 시간표보다 동네의 밤을 바꾸는 극장",
+      "shell_story_id": "cinema",
+      "source": "Neighborhood Screen",
+      "image": "./assets/images/small-cinema.svg",
+      "why_title": "상영 시간표보다 동네의 밤을 바꾸는 극장",
+      "why_source": "Neighborhood Screen",
+      "pass": true
+    }
+  },
+  "visible_adjusted_feed": {
+    "route": "feed",
+    "hash": "#feed",
+    "preference": "nearby",
+    "feed_view_hidden": null,
+    "adjusted_hidden": null,
+    "default_hidden": "",
+    "no_hidden_ancestor": true,
+    "lead_title": "시장 골목의 작업등이 피드의 첫 장면이 됐습니다",
+    "lead_image": "./assets/images/maker-studio.svg",
+    "lead_in_viewport": true
+  },
+  "undo": {
+    "route": "feed",
+    "hash": "#feed",
+    "preference": "default",
+    "default_no_hidden_ancestor": true,
+    "default_hidden": null,
+    "adjusted_hidden": "",
+    "lead_title": "낯선 항구의 저녁이 오늘의 첫 장면이 된 이유"
+  },
+  "reset": {
+    "route": "feed",
+    "hash": "#feed",
+    "preference": "default",
+    "default_no_hidden_ancestor": true,
+    "adjusted_hidden": ""
+  },
+  "history_context": {
+    "forward_story_id": "harbor",
+    "forward_story_title": "낯선 항구의 저녁이 오늘의 첫 장면이 된 이유",
+    "origin_route": "nearby",
+    "before_scroll_y": 29,
     "captured_scroll_y": 22,
-    "source_dialog_focus_restored": true,
-    "back_route": "nearby",
     "restored_scroll_y": 22,
-    "scroll_restored": true,
-    "focus_restored": true,
-    "forward_route": "story",
-    "preference_confirmation": "적용됨 · 가까운 이야기가 피드 앞쪽으로 이동합니다.",
-    "return_route": "nearby",
-    "return_focus": "open-maker-from-nearby",
-    "return_scroll_y": 22,
-    "adjusted_feed_visible": true,
-    "undo_restored_default": true,
-    "reset_route": "feed",
-    "reset_preference": "default",
-    "final_overflow": 0
+    "restored_focus_id": "open-maker-from-nearby",
+    "forward_maker_story_id": "maker"
+  },
+  "source_dialog": {
+    "focus_restored": true
+  },
+  "desktop": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "horizontal_overflow": 0
   },
   "mobile": {
-    "feed_overflow": 0,
-    "nav_all_visible": true,
-    "nearby_overflow": 0,
-    "story_overflow": 0,
-    "preferences_overflow": 0,
-    "preference_applied": true,
-    "return_route": "nearby",
-    "return_focus": "open-maker-from-nearby"
+    "viewport": [
+      390,
+      844
+    ],
+    "route": "feed",
+    "preference": "nearby",
+    "adjusted_no_hidden_ancestor": true,
+    "adjusted_lead_in_viewport": true,
+    "horizontal_overflow": 0,
+    "console_errors": [],
+    "page_errors": [],
+    "failed_requests": [],
+    "runtime_requests": []
   },
   "reduced_motion": {
-    "document_flag": "true",
-    "route": "culture",
-    "animation_duration": "1e-05s",
-    "overflow": 0
+    "root_flag": "true",
+    "route": "nearby",
+    "topic_animation_duration": "1e-05s"
   },
-  "console_errors": [],
-  "page_errors": [],
-  "failed_requests": [],
-  "external_requests": [],
-  "static_asset_scan": {
-    "referenced_local_files": 30,
-    "missing": [],
-    "failed_local_assets": 0
-  }
+  "errors": {
+    "console_errors": [],
+    "page_errors": [],
+    "failed_requests": [],
+    "runtime_requests": [],
+    "xhr_fetch_requests": []
+  },
+  "pass": true
 }

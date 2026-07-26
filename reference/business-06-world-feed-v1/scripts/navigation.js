@@ -55,15 +55,23 @@
       requestAnimationFrame(restore);
       setTimeout(restore, 80);
       setTimeout(() => { root.style.scrollBehavior = previousScrollBehavior; }, 140);
-      document.querySelector(`[data-route-view="${route}"]`)?.setAttribute("data-restoring", "true");
-      setTimeout(() => document.querySelector(`[data-route-view="${route}"]`)?.removeAttribute("data-restoring"), 180);
+      const view = document.querySelector(`[data-route-view="${route}"]`);
+      view?.setAttribute("data-restoring", "true");
+      setTimeout(() => view?.removeAttribute("data-restoring"), 180);
     }, 20);
     return true;
   }
 
-  function renderRoute(route, { focusMain = false, fromHistory = false } = {}) {
+  function currentHistoryState(route) {
+    return { route, storyId: app.store.getState().selectedStoryId };
+  }
+
+  function renderRoute(route, { focusMain = false, fromHistory = false, storyId = null } = {}) {
     const next = validRoutes.has(route) ? route : "feed";
-    document.querySelector(".review-shell").dataset.route = next;
+    if (storyId) app.store.setStoryId(storyId);
+    const shell = document.querySelector(".review-shell");
+    shell.dataset.route = next;
+    shell.dataset.storyId = app.store.getState().selectedStoryId;
     routeViews().forEach((view) => {
       const active = view.dataset.routeView === next;
       view.hidden = !active;
@@ -77,7 +85,7 @@
     if (focusMain && !fromHistory) document.getElementById("main")?.focus({ preventScroll: true });
   }
 
-  function navigate(route, { captureOrigin = false, originControl = null, replace = false } = {}) {
+  function navigate(route, { captureOrigin = false, originControl = null, replace = false, storyId = null } = {}) {
     const current = app.store.getState().route;
     if (captureOrigin && ["feed", "nearby", "culture"].includes(current)) {
       app.store.captureReturnContext({
@@ -86,15 +94,16 @@
         focusId: originControl?.id || document.activeElement?.id || null
       });
     }
+    if (storyId) app.store.setStoryId(storyId);
     const method = replace ? "replaceState" : "pushState";
-    history[method]({ route }, "", `#${route}`);
+    history[method](currentHistoryState(route), "", `#${route}`);
     renderRoute(route, { focusMain: true });
   }
 
   function returnToContext() {
     const context = app.store.getState().returnContext;
     const route = context?.route || "feed";
-    history.pushState({ route, restored: true }, "", `#${route}`);
+    history.pushState(currentHistoryState(route), "", `#${route}`);
     renderRoute(route);
   }
 
@@ -103,22 +112,26 @@
       control.addEventListener("click", (event) => {
         event.preventDefault();
         const target = control.dataset.routeLink;
-        const preserve = ["story", "why", "preferences"].includes(target);
-        navigate(target, { captureOrigin: preserve && target === "story", originControl: control });
+        navigate(target, { captureOrigin: target === "story", originControl: control });
       });
     });
     document.querySelectorAll("[data-return-context]").forEach((control) => {
       control.addEventListener("click", returnToContext);
     });
-    addEventListener("popstate", () => renderRoute(routeFromHash(), { fromHistory: true }));
+    addEventListener("popstate", (event) => {
+      const route = event.state?.route || routeFromHash();
+      renderRoute(route, { fromHistory: true, storyId: event.state?.storyId || null });
+    });
   }
 
   function initialize() {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     const route = routeFromHash();
-    history.replaceState({ route }, "", `#${route}`);
+    const storyId = history.state?.storyId || app.store.getState().selectedStoryId;
+    app.store.setStoryId(storyId);
+    history.replaceState(currentHistoryState(route), "", `#${route}`);
     bindNavigation();
-    renderRoute(route);
+    renderRoute(route, { storyId });
   }
 
   app.navigation = { initialize, navigate, renderRoute, returnToContext, routeFromHash };

@@ -156,6 +156,9 @@
   .preference-actions button { width: 100%; }
   .story-inline-actions { display: grid; grid-template-columns: 1fr; }
   .story-inline-actions > * { width: 100%; justify-content: center; }
-  .preference-return .solid-button { width: 100%; }
+  .preference-return .outline-button { width: 100%; }
   .source-dialog form { padding: 22px 18px; }
+}
+@media (max-width: 560px) {
+  .adjusted-feed .lead-image-wrap { height: 180px; min-height: 180px; }
 }

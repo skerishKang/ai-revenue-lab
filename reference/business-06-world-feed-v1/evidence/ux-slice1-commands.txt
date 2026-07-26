@@ -1,28 +1,28 @@
-Business 6 · World Feed Phase 2 UX Slice 1 validation
-Exact starting base: 48807067a261d8f1ca3814b4b26758dd6947788a
-Branch: feat/business-06-world-feed-ux-165
+Business 6 · World Feed UX Slice 1 focused correction
 
-1. JavaScript syntax
-node --check scripts/navigation.js
-node --check scripts/feed-state.js
-node --check scripts/story-state.js
-node --check scripts/preference-state.js
-node --check scripts/ux-app.js
-Result: exit 0 for all files
+Starting remote head:
+  d92933e8851a67bb227f136145a07a8df2915e65
 
-2. HTML and source contract
-Python html.parser parse of index.html
-Source-file physical line count scan
-Version query scan for world-feed-20260726-3
-Stale previous-version token scan
-localStorage and external runtime URL scan
-Result: exit 0; see ux-slice1-source-audit.json
+Focused source checks:
+  node --check scripts/feed-state.js
+  node --check scripts/navigation.js
+  node --check scripts/story-state.js
+  node --check scripts/preference-state.js
+  node --check scripts/ux-app.js
+  wc -l index.html scripts/*.js styles/**/*.css
+  scan index.html for world-feed-20260726-4
+  scan index.html for stale world-feed-20260726-3 loading references
+  scan all loaded CSS/JS for unversioned references
+  scan source for localStorage, document.cookie, fetch(), XMLHttpRequest, and external URLs
+  verify every repository-local SVG reference exists
 
-3. Chromium UX journey
-python /tmp/validate_world_feed_ux.py
-Viewport: 1440x900 and actual 390x844
-Reduced motion: Chromium context reduced_motion=reduce
-Result: exit 0; see ux-slice1-validation.json
+Browser validation:
+  python /mnt/data/world-feed-slice1-correction/validate.py
 
-Browser note:
-Local HTTP navigation is blocked by the managed Chromium environment. Exact index/CSS/JS/SVG bytes were therefore inlined into about:blank for browser execution. Static local-path validation separately proved that every referenced repository asset exists. No external runtime request was allowed.
+Browser dimensions:
+  desktop 1440x900
+  mobile 390x844
+  desktop reduced-motion 1440x900
+
+Environment note:
+  Local HTTP navigation is blocked by administrator policy. The validator inlines the exact source bytes into Managed Chromium and rewrites repository-local SVGs to data URIs solely for rendering evidence. Production source paths remain unchanged.
