@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { GitHubApiError } from "../../functions/_lib/github-client.js";
-import { MemorySnapshotCache, RuntimeSnapshotCache } from "../../functions/_lib/cache.js";
+import { MemorySnapshotCache, RuntimeSnapshotCache, SNAPSHOT_KEY } from "../../functions/_lib/cache.js";
 import { createGitHubStatusService } from "../../functions/_lib/github-status-service.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
 import {
@@ -113,6 +113,87 @@ test("failure without snapshot is normalized", async () => {
   assert.equal(result.payload.error.code, "UPSTREAM_UNAVAILABLE");
   assert.equal(JSON.stringify(result.payload).includes("<html>"), false);
 });
+
+test("KV same-key 429 preserves fresh GraphQL snapshot and memory L1", async () => {
+  let nowMs = NOW;
+  const memoryStore = new Map();
+  let putCalls = 0;
+  const kv = {
+    async get() { return null; },
+    async put() {
+      putCalls += 1;
+      assert.equal(memoryStore.has(SNAPSHOT_KEY), true, "memory must be written before KV persistence");
+      const error = new Error("same-key write rate limited");
+      error.status = 429;
+      throw error;
+    }
+  };
+  const cache = new RuntimeSnapshotCache({ kv, now: () => nowMs, memoryStore });
+  const counter = { count: 0 };
+  const service = createGitHubStatusService({ client: mockAggregateClient(aggregatePayload(), { counter }), cache,
+    now: () => nowMs, singleFlightKey: "kv-write-failure" });
+  const first = await service.getStatus();
+  assert.equal(first.status, 200);
+  assert.equal(first.payload.ok, true);
+  assert.equal(first.payload.stale, false);
+  assert.equal(first.payload.businesses.find((item) => item.number === 1).pullRequest.number, 111);
+  assert.equal(first.payload.errors.some((item) => item.code === "CACHE_WRITE_FAILED"), true);
+  assert.equal(first.payload.errors.some((item) => item.code === "UPSTREAM_UNAVAILABLE"), false);
+  assert.equal(JSON.stringify(first.payload).includes("same-key write rate limited"), false);
+  assert.equal(putCalls, 1);
+  assert.equal(counter.count, 1);
+
+  const second = await service.getStatus();
+  assert.equal(second.status, 200);
+  assert.equal(second.cacheState, "fresh");
+  assert.equal(second.payload.errors.some((item) => item.code === "CACHE_WRITE_FAILED"), true);
+  assert.equal(counter.count, 1, "fresh memory must prevent a second GraphQL request");
+  assert.equal(putCalls, 1);
+});
+
+test("KV persistence recovers after an earlier write failure", async () => {
+  let nowMs = NOW;
+  const memoryStore = new Map();
+  let persisted = null;
+  let putCalls = 0;
+  const kv = {
+    async get() { return persisted; },
+    async put(_key, text, options) {
+      putCalls += 1;
+      if (putCalls === 1) {
+        const error = new Error("429");
+        error.status = 429;
+        throw error;
+      }
+      assert.equal(options.expirationTtl, 86400);
+      persisted = JSON.parse(text);
+    }
+  };
+  const cache = new RuntimeSnapshotCache({ kv, now: () => nowMs, memoryStore });
+  const counter = { count: 0 };
+  const service = createGitHubStatusService({ client: mockAggregateClient(aggregatePayload(), { counter }), cache,
+    now: () => nowMs, singleFlightKey: "kv-persistence-recovery" });
+  const first = await service.getStatus();
+  assert.equal(first.status, 200);
+  assert.equal(first.payload.errors.some((item) => item.code === "CACHE_WRITE_FAILED"), true);
+  assert.equal(persisted, null);
+
+  nowMs += 181_000;
+  const recovered = await service.getStatus();
+  assert.equal(recovered.status, 200);
+  assert.equal(recovered.payload.stale, false);
+  assert.equal(recovered.payload.errors.some((item) => item.code === "CACHE_WRITE_FAILED"), false);
+  assert.equal(putCalls, 2);
+  assert.equal(counter.count, 2);
+  assert.equal(persisted.schemaVersion, 1);
+  assert.equal(persisted.snapshot.schemaVersion, 1);
+
+  const freshKvCache = new RuntimeSnapshotCache({ kv, now: () => nowMs, memoryStore: new Map() });
+  const freshRecord = await freshKvCache.get();
+  assert.equal(freshRecord.snapshot.ok, true);
+  assert.equal(freshRecord.snapshot.errors.some((item) => item.code === "CACHE_WRITE_FAILED"), false);
+});
+
 test("KV stores only versioned last-good snapshot", async () => {
   const kv = memoryKv();
   const cache = new RuntimeSnapshotCache({ kv, now: () => NOW, memoryStore: new Map() });
