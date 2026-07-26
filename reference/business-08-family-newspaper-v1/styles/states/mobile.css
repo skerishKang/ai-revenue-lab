@@ -1,0 +1,138 @@
+.mobile-review-stage {
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(90deg, rgba(20, 32, 31, 0.04) 1px, transparent 1px) 0 0 / 22px 22px,
+    var(--paper-deep);
+}
+
+.mobile-review-stage__caption {
+  margin-bottom: 14px;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.mobile-edition {
+  width: 390px;
+  max-width: 100%;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, rgba(36, 46, 39, 0.018) 0 1px, transparent 1px 4px),
+    var(--paper-light);
+  box-shadow: var(--shadow-paper);
+}
+
+.mobile-masthead {
+  padding: 12px 16px 9px;
+  border-top: 5px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+.mobile-masthead p,
+.mobile-masthead span {
+  margin: 0;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.mobile-masthead h2 {
+  margin: 4px 0;
+  font-size: 2.8rem;
+  letter-spacing: -0.07em;
+}
+
+.mobile-masthead span {
+  color: var(--accent-dark);
+}
+
+.mobile-lead-image {
+  margin: 0;
+  padding: 10px 12px 0;
+}
+
+.mobile-lead-image img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.mobile-lead-image figcaption {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.64rem;
+}
+
+.mobile-lead-copy {
+  padding: 14px 16px 10px;
+}
+
+.mobile-lead-copy h3 {
+  margin-bottom: 10px;
+  font-size: 2.15rem;
+  letter-spacing: -0.05em;
+}
+
+.mobile-lead-copy p:last-child {
+  margin-bottom: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.mobile-signal {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 16px 16px;
+  padding: 10px 12px;
+  color: var(--white);
+  background: var(--accent-dark);
+  font-size: 0.68rem;
+}
+
+.mobile-signal strong {
+  text-align: right;
+}
+
+.mobile-briefs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  border-top: 1px solid var(--ink);
+  background: var(--ink);
+}
+
+.mobile-briefs article {
+  min-height: 120px;
+  padding: 14px;
+  background: var(--paper);
+}
+
+.mobile-briefs span {
+  color: var(--accent-dark);
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.mobile-briefs h3 {
+  margin: 8px 0 0;
+  font-size: 1.15rem;
+}
+
+@media (max-width: 760px) {
+  .state-panel[data-state-panel="mobile"] .mobile-review-stage {
+    padding: 0;
+    background: var(--paper);
+  }
+
+  .mobile-review-stage__caption {
+    display: none;
+  }
+
+  .mobile-edition {
+    width: 100%;
+    box-shadow: none;
+  }
+}

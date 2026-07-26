@@ -1,0 +1,27 @@
+:root {
+  color-scheme: light;
+  --paper: #f4eedf;
+  --paper-deep: #e9dfca;
+  --paper-light: #fbf7ec;
+  --ink: #172826;
+  --ink-soft: #40504c;
+  --ink-faint: #74807a;
+  --rule: #9f9a88;
+  --rule-dark: #53605b;
+  --accent: #e4573d;
+  --accent-dark: #a93424;
+  --sun: #f2bf4b;
+  --mint: #6d9d86;
+  --review: #14201f;
+  --white: #fffdf7;
+  --shadow-paper: 0 22px 60px rgba(35, 42, 36, 0.18);
+  --shadow-small: 0 8px 18px rgba(35, 42, 36, 0.12);
+  --font-display: "Iowan Old Style", "Noto Serif KR", "Batang", "Times New Roman", serif;
+  --font-body: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  --font-condensed: "Arial Narrow", "Apple SD Gothic Neo", sans-serif;
+  --page-width: 1320px;
+  --page-padding: clamp(22px, 4vw, 64px);
+  --radius-small: 3px;
+  --focus: 3px solid #f2bf4b;
+  --fold-duration: 680ms;
+}
