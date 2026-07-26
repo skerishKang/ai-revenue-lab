@@ -1,0 +1,23 @@
+Focused correction validation commands
+
+1. Browser validation and evidence capture
+   python3 /mnt/data/world-feed-focused/validate.py
+   exit code: 0
+
+2. Source line counts
+   find reference/business-06-world-feed-v1 -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' -o -name '*.svg' -o -name '*.md' \) -print0 | sort -z | xargs -0 wc -l
+   exit code: 0
+
+3. Monolithic stylesheet removal
+   test ! -e reference/business-06-world-feed-v1/styles.css
+   exit code: 0
+
+4. Version query check
+   grep -c 'world-feed-20260726-2' reference/business-06-world-feed-v1/index.html
+   expected: 8
+   exit code: 0
+
+5. Local asset path check
+   every relative src/href in index.html resolves to a repository-local file after query removal
+   missing paths: 0
+   exit code: 0
