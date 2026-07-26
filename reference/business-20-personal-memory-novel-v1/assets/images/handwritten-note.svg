@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 420" role="img" aria-labelledby="t d">
+<title id="t">합성 손글씨 기억 메모</title><desc id="d">미색 메모지에 겨울 막차에 관한 짧은 문장을 손으로 적은 듯 표현한 원본 벡터</desc>
+<rect width="620" height="420" fill="#d6c8ae"/><path d="M50 35 H575 L560 382 H63 Z" fill="#f2e7cf" stroke="#ae9e82" stroke-width="3"/><g stroke="#c9b999" stroke-width="2" opacity=".7"><path d="M82 110H540"/><path d="M82 170H540"/><path d="M82 230H540"/><path d="M82 290H540"/><path d="M82 350H540"/></g>
+<g fill="none" stroke="#493f37" stroke-linecap="round" stroke-linejoin="round"><path d="M98 93 C130 62 150 115 178 84 C201 61 215 109 250 82 C270 67 300 104 330 80" stroke-width="6"/><path d="M108 151 C152 132 170 171 212 143 C244 121 275 165 314 139 C351 116 390 158 430 137 C455 125 478 140 515 131" stroke-width="7"/><path d="M104 211 C149 186 183 224 218 202 C255 178 290 217 329 194 C365 173 405 209 456 186" stroke-width="6"/><path d="M105 273 C150 244 192 286 238 259 C274 238 310 278 356 250 C394 228 438 270 505 238" stroke-width="7"/></g>
+<text x="104" y="334" font-family="sans-serif" font-size="18" fill="#745a68" transform="rotate(-2 104 334)">막차는 늦었고, 우리는 아무 말도 하지 않았다.</text><circle cx="510" cy="337" r="34" fill="none" stroke="#9c4c45" stroke-width="5" opacity=".7"/><path d="M488 337h45" stroke="#9c4c45" stroke-width="4"/>
+</svg>
