@@ -323,5 +323,38 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn("fetch(", script)
 
+    def test_work_heading_has_tabindex_neg1(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="work-view-heading"', html)
+        self.assertIn('tabindex="-1"', html[html.index('id="work-view-heading"'):html.index('id="work-view-heading"')+80])
+
+    def test_work_view_aria_labelledby(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-labelledby="work-view-heading"', html)
+
+    def test_work_view_no_hardcoded_aria_label(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('aria-label="작업 중인 프로젝트"', html)
+
+    def test_work_item_template_has_aria_labelledby(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn('aria-labelledby="${nameId}"', script)
+
+    def test_set_active_project_view_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function setActiveProjectView(view)", script)
+        self.assertIn('button.dataset.projectView === view', script)
+        self.assertIn('button.setAttribute("aria-current", "page")', script)
+
+    def test_format_project_unit_count_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function formatProjectUnitCount(count)", script)
+        self.assertIn('`${count}projects`', script.replace(" ", ""))
+
+    def test_work_view_count_uses_format_function(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn('$("#work-view-count").textContent = `${wipProjects.length}개`', script)
+        self.assertIn("formatProjectUnitCount(wipProjects.length)", script)
+
 if __name__ == "__main__":
     unittest.main()

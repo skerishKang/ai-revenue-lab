@@ -709,12 +709,7 @@
     if (grid) grid.style.display = "";
     panel.hidden = false;
     trigger.setAttribute("aria-expanded", "true");
-    trigger.classList.add("is-active");
-    const projectsBtn = document.querySelector('[data-project-view="projects"]');
-    if (projectsBtn) {
-      projectsBtn.classList.remove("is-active");
-      projectsBtn.removeAttribute("aria-current");
-    }
+    setActiveProjectView("search");
     const searchInput = $("#pd-search-input");
     if (searchInput) searchInput.focus();
   }
@@ -728,14 +723,9 @@
 
     panel.hidden = true;
     trigger.setAttribute("aria-expanded", "false");
-    trigger.classList.remove("is-active");
 
-    const projectsBtn =
-      document.querySelector('[data-project-view="projects"]');
-
-    if (setProjectsActive && projectsBtn) {
-      projectsBtn.classList.add("is-active");
-      projectsBtn.setAttribute("aria-current", "page");
+    if (setProjectsActive) {
+      setActiveProjectView("projects");
     }
 
     if (restoreFocus) {
@@ -743,11 +733,23 @@
     }
   }
 
-  function clearProjectNavActive() {
-    document.querySelectorAll(".project-nav-item").forEach(btn => {
-      btn.classList.remove("is-active");
-      btn.removeAttribute("aria-current");
+  function setActiveProjectView(view) {
+    document.querySelectorAll(".project-nav-item").forEach(button => {
+      const active = button.dataset.projectView === view;
+      button.classList.toggle("is-active", active);
+
+      if (active) {
+        button.setAttribute("aria-current", "page");
+      } else {
+        button.removeAttribute("aria-current");
+      }
     });
+  }
+
+  function formatProjectUnitCount(count) {
+    return currentLang === "ko"
+      ? `${count}개`
+      : `${count} projects`;
   }
 
   function renderWorkInProgressView() {
@@ -759,7 +761,7 @@
     const queue = $("#work-queue");
     if (!queue) return;
 
-    $("#work-view-count").textContent = `${wipProjects.length}개`;
+    $("#work-view-count").textContent = formatProjectUnitCount(wipProjects.length);
     $("#work-stats-total").textContent = `${t("workInProgress")} ${wipProjects.length}`;
     $("#work-stats-review").textContent = `${t("reviewImprovement")} ${reviewGroup.length}`;
     $("#work-stats-active").textContent = `${t("activeDevelopment")} ${activeGroup.length}`;
@@ -774,6 +776,7 @@
       const hasPageUrl = Boolean(item.pageUrl);
       const hasRepoUrl = Boolean(item.repositoryUrl);
       const blockersText = Array.isArray(item.blockers) && item.blockers.length > 0 ? item.blockers.join(", ") : "";
+      const nameId = `work-item-name-${item.id}`;
 
       let actionsHtml = "";
       if (hasPageUrl) {
@@ -784,9 +787,9 @@
       }
 
       return `
-        <article class="work-item" data-project-id="${item.id}">
+        <article class="work-item" data-project-id="${item.id}" aria-labelledby="${nameId}">
           <div class="work-item-top">
-            <span class="work-item-name">${item.name}</span>
+            <span id="${nameId}" class="work-item-name">${item.name}</span>
             <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
             <span class="pd-mode-badge">${developmentModeLabel(item.developmentMode)}</span>
           </div>
@@ -837,12 +840,7 @@
     const workView = $("#project-work-view");
     if (grid) grid.style.display = "none";
     if (workView) workView.hidden = false;
-    clearProjectNavActive();
-    const workBtn = document.querySelector('[data-project-view="work"]');
-    if (workBtn) {
-      workBtn.classList.add("is-active");
-      workBtn.setAttribute("aria-current", "page");
-    }
+    setActiveProjectView("work");
     renderWorkInProgressView();
     const heading = $("#work-view-heading");
     if (heading) heading.focus();
@@ -854,12 +852,6 @@
     if (workView) workView.hidden = true;
     if (grid) grid.style.display = "";
     closeSearchPanel({ setProjectsActive: true, restoreFocus: false });
-    clearProjectNavActive();
-    const projectsBtn = document.querySelector('[data-project-view="projects"]');
-    if (projectsBtn) {
-      projectsBtn.classList.add("is-active");
-      projectsBtn.setAttribute("aria-current", "page");
-    }
   }
 
   function updateProjectNavLabels() {

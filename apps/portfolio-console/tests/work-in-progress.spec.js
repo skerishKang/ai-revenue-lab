@@ -1,5 +1,10 @@
 const { test, expect } = require('@playwright/test');
 
+async function openSearchPanel(page) {
+  await page.click('[data-project-view="search"]');
+  await page.waitForSelector('#project-search-panel:not([hidden])', { state: 'visible' });
+}
+
 test.describe('Work In Progress Queue', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
@@ -291,5 +296,182 @@ test.describe('Work In Progress Queue', () => {
     await page.waitForTimeout(200);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(overflow).toBeFalsy();
+  });
+
+  test('aria-current: only projects on initial load', async ({ page }) => {
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
+    const projectsBtn = page.locator('[data-project-view="projects"]');
+    await expect(projectsBtn).toHaveAttribute('aria-current', 'page');
+    const workBtn = page.locator('[data-project-view="work"]');
+    await expect(workBtn).not.toHaveAttribute('aria-current');
+    const searchBtn = page.locator('[data-project-view="search"]');
+    await expect(searchBtn).not.toHaveAttribute('aria-current');
+  });
+
+  test('aria-current: only work after clicking work', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
+    const workBtn = page.locator('[data-project-view="work"]');
+    await expect(workBtn).toHaveAttribute('aria-current', 'page');
+  });
+
+  test('aria-current: search only and aria-expanded true after work to search', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('[data-project-view="search"]');
+    await page.waitForTimeout(200);
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
+    const searchBtn = page.locator('[data-project-view="search"]');
+    await expect(searchBtn).toHaveAttribute('aria-current', 'page');
+    await expect(searchBtn).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('aria-current: only projects after search close', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('[data-project-view="search"]');
+    await page.waitForTimeout(200);
+    await page.click('#project-search-close');
+    await page.waitForTimeout(200);
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
+    const projectsBtn = page.locator('[data-project-view="projects"]');
+    await expect(projectsBtn).toHaveAttribute('aria-current', 'page');
+  });
+
+  test('work view heading focused after click and has tabindex=-1', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    const headingId = await page.evaluate(() => document.activeElement.id);
+    expect(headingId).toBe('work-view-heading');
+    const tabindex = await page.locator('#work-view-heading').getAttribute('tabindex');
+    expect(tabindex).toBe('-1');
+  });
+
+  test('EN work view shows translated labels and count', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#work-view-heading')).toHaveText('IN PROGRESS');
+    const workSection = page.locator('#project-work-view');
+    await expect(workSection).toHaveAttribute('aria-labelledby', 'work-view-heading');
+    await expect(page.locator('#work-view-count')).toHaveText('10 projects');
+    const countText = await page.locator('#work-view-count').textContent();
+    expect(countText).not.toContain('개');
+    await expect(page.locator('#nav-work-in-progress')).toHaveText('IN PROGRESS');
+    await expect(page.locator('.work-group-heading').first()).toContainText('REVIEW & IMPROVEMENT');
+    await expect(page.locator('.work-group-heading').nth(1)).toContainText('ACTIVE DEVELOPMENT');
+    const reviewGroupItems = page.locator('.work-group').first().locator('.work-item');
+    await expect(reviewGroupItems).toHaveCount(4);
+    const activeGroupItems = page.locator('.work-group').nth(1).locator('.work-item');
+    await expect(activeGroupItems).toHaveCount(6);
+  });
+
+  test('EN work view service and repo links have correct labels', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    const serviceLinks = page.locator('.work-item-service-link');
+    const count = await serviceLinks.count();
+    for (let i = 0; i < count; i++) {
+      await expect(serviceLinks.nth(i)).toHaveText('OPEN SERVICE');
+    }
+    const repoLinks = page.locator('.work-item-repo-link');
+    const repoCount = await repoLinks.count();
+    for (let i = 0; i < repoCount; i++) {
+      await expect(repoLinks.nth(i)).toHaveText('OPEN REPOSITORY');
+    }
+  });
+
+  test('KO restored after EN work view', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('#lang-en');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#work-view-heading')).toHaveText('IN PROGRESS');
+    await page.click('#lang-ko');
+    await page.waitForTimeout(200);
+    await expect(page.locator('#work-view-heading')).toHaveText('작업 중');
+    await expect(page.locator('#work-view-count')).toHaveText('10개');
+  });
+
+  test('each work item article has accessible name with project name', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    const items = page.locator('.work-item');
+    const count = await items.count();
+    expect(count).toBe(10);
+    for (let i = 0; i < count; i++) {
+      const labelledBy = await items.nth(i).getAttribute('aria-labelledby');
+      expect(labelledBy).toBeTruthy();
+      expect(labelledBy).toMatch(/^work-item-name-/);
+      const nameText = await page.evaluate((id) => {
+        const el = document.getElementById(id);
+        return el ? el.textContent : '';
+      }, labelledBy);
+      expect(nameText.length).toBeGreaterThan(0);
+    }
+  });
+
+  test('work item accessible names match expected project names', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    const expectedNames = [
+      'Personal Edition',
+      'Living Fiction',
+      'Personal Video Archive',
+      'Korean AI Platform',
+      'Portfolio Console',
+      'LoveBud',
+      'Living Travel',
+      'Living Learning',
+      'LoveTree 3.0',
+      'AI Finder / 광주 북구청'
+    ];
+    const items = page.locator('.work-item');
+    const count = await items.count();
+    expect(count).toBe(10);
+    for (let i = 0; i < count; i++) {
+      const labelledBy = await items.nth(i).getAttribute('aria-labelledby');
+      expect(labelledBy).toBeTruthy();
+      const nameText = await page.evaluate((id) => {
+        const el = document.getElementById(id);
+        return el ? el.textContent : '';
+      }, labelledBy);
+      expect(nameText).toBe(expectedNames[i]);
+    }
+  });
+
+  test('aria-current: exactly one after work click', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
+  });
+
+  test('aria-current: exactly one after work to projects', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('[data-project-view="projects"]');
+    await page.waitForTimeout(200);
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
+  });
+
+  test('aria-current: exactly one after Escape', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    await page.click('[data-project-view="search"]');
+    await page.waitForTimeout(200);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    const count = await page.evaluate(() => document.querySelectorAll(".project-nav-item[aria-current='page']").length);
+    expect(count).toBe(1);
   });
 });
