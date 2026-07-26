@@ -1,0 +1,66 @@
+{
+  "validation_method": "Playwright Chromium page.set_content with exact local HTML/CSS/JS and repository SVG bytes inlined; direct URL navigation was blocked by the execution environment administrator policy",
+  "states": {
+    "overview": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "overview", "visibleStates": 1, "focusableControls": 18}
+    },
+    "person": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "person", "visibleStates": 1, "focusableControls": 18}
+    },
+    "place": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "place", "visibleStates": 1, "focusableControls": 18}
+    },
+    "event-object": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "event-object", "visibleStates": 1, "focusableControls": 18}
+    },
+    "explanation": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "explanation", "visibleStates": 1, "focusableControls": 18}
+    },
+    "mobile": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "mobile", "visibleStates": 1, "focusableControls": 18}
+    },
+    "ripple": {
+      "state_found": true,
+      "viewport": {"width": 1440, "height": 1000},
+      "horizontal_overflow": 0,
+      "metrics": {"scrollWidth": 1440, "clientWidth": 1440, "stateCount": 7, "activeState": "ripple", "visibleStates": 1, "focusableControls": 18}
+    }
+  },
+  "mobile": {
+    "state_found": true,
+    "viewport": {"width": 390, "height": 844},
+    "horizontal_overflow": 0,
+    "metrics": {"scrollWidth": 390, "clientWidth": 390, "stateCount": 7, "activeState": "mobile", "visibleStates": 1, "focusableControls": 18}
+  },
+  "keyboard": {
+    "home": "overview",
+    "arrow_right": "person",
+    "focus_visible": {"tag": "BUTTON", "outlineStyle": "solid", "outlineWidth": "3px"},
+    "pass": true
+  },
+  "reduced_motion": {"query": true, "mode": "reduced", "active": "ripple", "visibleRings": 0},
+  "motion_duration": "680ms",
+  "console_errors": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "runtime_requests": [],
+  "pass": true
+}
