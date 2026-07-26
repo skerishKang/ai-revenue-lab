@@ -106,8 +106,15 @@
        doneTasks: "완료 작업",
        remainingTasks: "남은 작업",
        blockersLabel: "차단 사항",
-       doneShort: "완료",
-       remainingShort: "남음"
+        doneShort: "완료",
+        remainingShort: "남음",
+         workInProgress: "작업 중",
+         workViewDesc: "개발·검토·보완이 필요한 프로젝트",
+         reviewImprovement: "보완·검토 필요",
+         activeDevelopment: "계속 개발",
+         blockedProjects: "차단 프로젝트",
+         openService: "서비스 열기",
+         noWorkInProgress: "작업 중인 프로젝트가 없습니다"
     },
     en: {
        businessOperations: "Business Operations",
@@ -202,8 +209,15 @@
        doneTasks: "DONE TASKS",
        remainingTasks: "REMAINING TASKS",
        blockersLabel: "BLOCKERS",
-       doneShort: "DONE",
-       remainingShort: "REMAINING"
+        doneShort: "DONE",
+        remainingShort: "REMAINING",
+        workInProgress: "IN PROGRESS",
+        workViewDesc: "Projects needing active development, review, or improvement",
+        reviewImprovement: "REVIEW & IMPROVEMENT",
+        activeDevelopment: "ACTIVE DEVELOPMENT",
+        blockedProjects: "BLOCKED PROJECTS",
+        openService: "OPEN SERVICE",
+        noWorkInProgress: "NO PROJECTS IN PROGRESS"
     }
   };
 
@@ -253,6 +267,28 @@
       progressPercent,
       remainingPercent: 100 - progressPercent
     };
+  }
+
+  function isWorkInProgress(project) {
+    return (
+      ["building", "review"].includes(project.stage) ||
+      ["active-development", "needs-improvement"].includes(project.developmentMode)
+    );
+  }
+
+  function isReviewImprovementGroup(project) {
+    return (
+      project.developmentMode === "needs-improvement" ||
+      project.stage === "review"
+    );
+  }
+
+  function isActiveDevelopmentGroup(project) {
+    if (isReviewImprovementGroup(project)) return false;
+    return (
+      project.developmentMode === "active-development" ||
+      project.stage === "building"
+    );
   }
 
   function t(key) {
@@ -667,6 +703,10 @@
     const panel = $("#project-search-panel");
     const trigger = document.querySelector('[data-project-view="search"]');
     if (!panel || !trigger) return;
+    const workView = $("#project-work-view");
+    if (workView) workView.hidden = true;
+    const grid = $("#pd-grid");
+    if (grid) grid.style.display = "";
     panel.hidden = false;
     trigger.setAttribute("aria-expanded", "true");
     trigger.classList.add("is-active");
@@ -679,7 +719,7 @@
     if (searchInput) searchInput.focus();
   }
 
-  function closeSearchPanel({ restoreFocus = true } = {}) {
+  function closeSearchPanel({ restoreFocus = true, setProjectsActive = true } = {}) {
     const panel = $("#project-search-panel");
     const trigger =
       document.querySelector('[data-project-view="search"]');
@@ -693,7 +733,7 @@
     const projectsBtn =
       document.querySelector('[data-project-view="projects"]');
 
-    if (projectsBtn) {
+    if (setProjectsActive && projectsBtn) {
       projectsBtn.classList.add("is-active");
       projectsBtn.setAttribute("aria-current", "page");
     }
@@ -703,9 +743,129 @@
     }
   }
 
+  function clearProjectNavActive() {
+    document.querySelectorAll(".project-nav-item").forEach(btn => {
+      btn.classList.remove("is-active");
+      btn.removeAttribute("aria-current");
+    });
+  }
+
+  function renderWorkInProgressView() {
+    const wipProjects = projects.filter(isWorkInProgress);
+    const reviewGroup = wipProjects.filter(isReviewImprovementGroup);
+    const activeGroup = wipProjects.filter(isActiveDevelopmentGroup);
+    const blockedCount = wipProjects.filter(p => Array.isArray(p.blockers) && p.blockers.length > 0).length;
+
+    const queue = $("#work-queue");
+    if (!queue) return;
+
+    $("#work-view-count").textContent = `${wipProjects.length}개`;
+    $("#work-stats-total").textContent = `${t("workInProgress")} ${wipProjects.length}`;
+    $("#work-stats-review").textContent = `${t("reviewImprovement")} ${reviewGroup.length}`;
+    $("#work-stats-active").textContent = `${t("activeDevelopment")} ${activeGroup.length}`;
+    $("#work-stats-blocked").textContent = `${t("blockedProjects")} ${blockedCount}`;
+
+    function workItemTemplate(item) {
+      const progress = computeProgress(item.milestoneTasks);
+      const bizLabel = item.businessNumber ? ` · BIZ ${pad(item.businessNumber)}` : "";
+      const milestoneInfo = progress.hasProgress
+        ? `${item.currentMilestone} — ${t("doneShort")} ${progress.progressPercent}% / ${t("remainingShort")} ${progress.remainingPercent}%`
+        : `${t("progressUndefined")} · ${t("goalDefinitionNeeded")}`;
+      const hasPageUrl = Boolean(item.pageUrl);
+      const hasRepoUrl = Boolean(item.repositoryUrl);
+      const blockersText = Array.isArray(item.blockers) && item.blockers.length > 0 ? item.blockers.join(", ") : "";
+
+      let actionsHtml = "";
+      if (hasPageUrl) {
+        actionsHtml += `<a class="work-item-link work-item-service-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t("openService")}</a>`;
+      }
+      if (hasRepoUrl) {
+        actionsHtml += `<a class="work-item-link work-item-repo-link" href="${item.repositoryUrl}" target="_blank" rel="noopener noreferrer">${t("openRepository")}</a>`;
+      }
+
+      return `
+        <article class="work-item" data-project-id="${item.id}">
+          <div class="work-item-top">
+            <span class="work-item-name">${item.name}</span>
+            <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
+            <span class="pd-mode-badge">${developmentModeLabel(item.developmentMode)}</span>
+          </div>
+          <span class="work-item-korean">${item.koreanName}${bizLabel}</span>
+          <div class="work-item-milestone${progress.hasProgress ? "" : " work-item-milestone-undefined"}">${milestoneInfo}</div>
+          <div class="work-item-detail">
+            <span class="work-item-label">${t("currentWork")}</span>
+            <span class="work-item-value">${item.currentWork}</span>
+          </div>
+          <div class="work-item-detail">
+            <span class="work-item-label">${t("nextAction")}</span>
+            <span class="work-item-value">${item.nextAction}</span>
+          </div>
+          ${blockersText ? `<div class="work-item-detail"><span class="work-item-label work-item-blocker-label">${t("blockersLabel")}</span><span class="work-item-value work-item-blocker-value">${blockersText}</span></div>` : ""}
+          <div class="work-item-detail">
+            <span class="work-item-label">${t("lastVerified")}</span>
+            <span class="work-item-value">${item.lastVerified}</span>
+          </div>
+          <div class="work-item-actions">
+            <button type="button" class="work-item-detail-btn" data-project-id="${item.id}" aria-label="${t("viewDetail")} ${item.name}">${t("viewDetail")}</button>
+            ${actionsHtml}
+          </div>
+        </article>
+      `;
+    }
+
+    const reviewHtml = reviewGroup.map(workItemTemplate).join("");
+    const activeHtml = activeGroup.map(workItemTemplate).join("");
+
+    queue.innerHTML = `
+      ${reviewGroup.length > 0 ? `<div class="work-group"><div class="work-group-heading">${t("reviewImprovement")} (${reviewGroup.length})</div><div class="work-group-items">${reviewHtml}</div></div>` : ""}
+      ${activeGroup.length > 0 ? `<div class="work-group"><div class="work-group-heading">${t("activeDevelopment")} (${activeGroup.length})</div><div class="work-group-items">${activeHtml}</div></div>` : ""}
+      ${wipProjects.length === 0 ? `<div class="empty-state">${t("noWorkInProgress")}</div>` : ""}
+    `;
+
+    queue.querySelectorAll(".work-item-detail-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectProject(btn.dataset.projectId);
+        showProjectsView();
+      });
+    });
+  }
+
+  function showWorkView() {
+    closeSearchPanel({ setProjectsActive: false });
+    const grid = $("#pd-grid");
+    const workView = $("#project-work-view");
+    if (grid) grid.style.display = "none";
+    if (workView) workView.hidden = false;
+    clearProjectNavActive();
+    const workBtn = document.querySelector('[data-project-view="work"]');
+    if (workBtn) {
+      workBtn.classList.add("is-active");
+      workBtn.setAttribute("aria-current", "page");
+    }
+    renderWorkInProgressView();
+    const heading = $("#work-view-heading");
+    if (heading) heading.focus();
+  }
+
+  function showProjectsView() {
+    const workView = $("#project-work-view");
+    const grid = $("#pd-grid");
+    if (workView) workView.hidden = true;
+    if (grid) grid.style.display = "";
+    closeSearchPanel({ setProjectsActive: true, restoreFocus: false });
+    clearProjectNavActive();
+    const projectsBtn = document.querySelector('[data-project-view="projects"]');
+    if (projectsBtn) {
+      projectsBtn.classList.add("is-active");
+      projectsBtn.setAttribute("aria-current", "page");
+    }
+  }
+
   function updateProjectNavLabels() {
     $("#nav-projects").textContent = t("projectStatus");
     $("#nav-search-filter").textContent = t("searchFilter");
+    $("#nav-work-in-progress").textContent = t("workInProgress");
     $("#project-search-title").textContent = t("searchFilter");
     $("#pd-reset-filter").textContent = t("reset");
     $("#pd-search-input").placeholder = t("searchPlaceholder");
@@ -809,6 +969,8 @@
     $("#sync-state-text").textContent = t("registryLoaded");
     $("#lang-ko").textContent = t("langKo");
     $("#lang-en").textContent = t("langEn");
+    $("#work-view-heading").textContent = t("workInProgress");
+    $("#work-view-desc").textContent = t("workViewDesc");
     updateProjectNavLabels();
   }
 
@@ -821,6 +983,8 @@
     renderTable();
     renderPriorityActions();
     renderProjectDirectory();
+    const workView = $("#project-work-view");
+    if (workView && !workView.hidden) renderWorkInProgressView();
     if (selectedNumber) selectBusiness(selectedNumber);
     if (selectedProjectId) selectProject(selectedProjectId);
   }
@@ -841,10 +1005,12 @@
 
   const navProjectsBtn = document.querySelector('[data-project-view="projects"]');
   const navSearchBtn = document.querySelector('[data-project-view="search"]');
+  const navWorkBtn = document.querySelector('[data-project-view="work"]');
   const closePanelBtn = $("#project-search-close");
 
   if (navProjectsBtn) {
     navProjectsBtn.addEventListener("click", () => {
+      showProjectsView();
       closeSearchPanel();
       resetFilters();
     });
@@ -852,7 +1018,14 @@
 
   if (navSearchBtn) {
     navSearchBtn.addEventListener("click", () => {
+      showProjectsView();
       openSearchPanel();
+    });
+  }
+
+  if (navWorkBtn) {
+    navWorkBtn.addEventListener("click", () => {
+      showWorkView();
     });
   }
 
