@@ -166,7 +166,7 @@ window.ARL_BUSINESSES = [
     githubLabel: "UI_APPROVED · Draft PR #175",
     githubUrl: "https://github.com/skerishKang/ai-revenue-lab/pull/175",
     issueUrl: "https://github.com/skerishKang/ai-revenue-lab/issues/170",
-    nextAction: "Keep PR #175 Draft pending separate Ready/merge authorization; open Phase 2 UX only through a separately authorized issue.",
+    nextAction: "Keep PR #175 Draft, OPEN, and unmerged pending separate Ready/merge authorization; open Phase 2 UX only through a separately authorized issue.",
     lastVerified: "2026-07-26",
     priority: 58
   },
