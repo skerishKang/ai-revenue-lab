@@ -36,8 +36,8 @@ window.ARL_PROJECTS = [
       {
         id: "pc-wip-screen",
         label: "작업 중 화면",
-        done: false,
-        evidence: "미구현 — v2 redesign 범위"
+        done: true,
+        evidence: "PR #159 merged — 447e85329e8e0ba3b3fd087f408d60f068099461"
       },
       {
         id: "pc-business-registry-split",
@@ -47,8 +47,8 @@ window.ARL_PROJECTS = [
       }
     ],
     progressNote: "Cloudflare Pages에 배포 완료. Cloudflare Access 인증 후 접근 가능.",
-    currentWork: "Issue #152 검색·필터 사이드바 이동 병합 완료 · Production 배포 검증 준비",
-    nextAction: "Portfolio Console Production 배포 및 Cloudflare Access 검증 후 Issue #152 종료",
+    currentWork: "Issue #157 작업 중 화면 병합 완료 · Production 배포 검증 준비",
+    nextAction: "Portfolio Console Production 배포 및 Cloudflare Access 검증 후 Issue #157 종료",
     blockers: [],
     futureRoadmap: [],
     lastVerified: "2026-07-26"

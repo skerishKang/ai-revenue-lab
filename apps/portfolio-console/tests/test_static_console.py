@@ -283,7 +283,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_projects_js_unchanged_in_wip_pr(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         self.assertIn("pc-wip-screen", script)
-        self.assertEqual(script.count("done: true"), 10)
+        self.assertEqual(script.count("done: true"), 11)
 
     def test_businesses_js_unchanged_in_wip_pr(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
