@@ -11,7 +11,7 @@ a { color: inherit; }
 .skip-link:focus { transform: translateY(0); }
 button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline-offset: 4px; }
 [hidden] { display: none !important; }
-.review-state { animation: state-in 220ms ease both; }
+.route-view { animation: state-in 220ms ease both; }
 @keyframes state-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .eyebrow { margin: 0 0 10px; color: var(--coral-dark); font-size: .72rem; font-weight: 800; letter-spacing: .14em; line-height: 1.25; }
 .signal { display: inline-flex; align-items: center; min-height: 25px; padding: 3px 9px; border-left: 3px solid currentColor; background: rgba(255,255,255,.48); color: var(--ink-soft); font-size: .75rem; font-weight: 760; letter-spacing: .025em; line-height: 1.3; }
