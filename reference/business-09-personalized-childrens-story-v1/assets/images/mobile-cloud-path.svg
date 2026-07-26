@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 560" role="img" aria-labelledby="title desc">
+  <title id="title">세로로 이어지는 구름길</title>
+  <desc id="desc">모바일 그림책을 위한 노란 장화와 세로형 구름 섬 장면</desc>
+  <defs>
+    <filter id="grain"><feTurbulence baseFrequency="0.75" numOctaves="2" seed="37"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .11 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#31586c"/><stop offset="1" stop-color="#9bbabf"/></linearGradient>
+  </defs>
+  <rect width="390" height="560" fill="url(#sky)"/>
+  <circle cx="309" cy="76" r="35" fill="#d5a33f"/>
+  <g fill="#f4eedf" filter="url(#grain)">
+    <path d="M-20 122c42-55 108-37 124 14 42-35 99-8 103 39H-20z"/>
+    <path d="M192 247c48-62 119-41 136 13 39-33 88-2 90 39H192z" opacity=".92"/>
+    <path d="M-16 395c49-68 129-47 148 13 46-37 108-4 109 45H-16z" opacity=".84"/>
+  </g>
+  <path d="M84 560c-10-91 23-153 99-186 63-27 104-68 122-126" stroke="#d5a33f" stroke-width="42" fill="none" stroke-linecap="round" opacity=".8"/>
+  <path d="M86 560c-8-88 27-144 101-178 60-27 98-65 116-119" stroke="#f4eedf" stroke-width="4" stroke-dasharray="9 15" fill="none" stroke-linecap="round"/>
+  <g transform="translate(120 346)">
+    <circle cx="36" cy="-20" r="23" fill="#9a6a45"/>
+    <path d="M15-25c8-29 47-31 60-2-17-8-43-8-60 2z" fill="#20333d"/>
+    <path d="M7 7h60v77H7z" rx="14" fill="#c94d32"/>
+    <path d="M13 80h20v51H1v-22h12zM43 80h20v51h33v-22H64l-1-29z" fill="#e0aa32"/>
+  </g>
+</svg>
