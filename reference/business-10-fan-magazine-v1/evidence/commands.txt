@@ -1,33 +1,37 @@
-# Browser and static validation commands
+# Business 10 Fan Magazine — Cover Reveal focused correction v2
+# Review source head: 931e059b75ffdf90c23b0322155d7f95b6852e2c
+# Target branch: feat/business-10-fan-magazine-ui
 
-Run date: 2026-07-26 (Asia/Seoul)
-Workspace: reference/business-10-fan-magazine-v1/
+# GitHub connector checks performed before modification:
+# - fetch PR #177: OPEN, DRAFT, unmerged, head 931e059b75ffdf90c23b0322155d7f95b6852e2c
+# - fetched exact-head index.html, mobile-reveal.css, and review-state.js
 
-## Direct browser attempts (blocked by sandbox policy)
-python3 -m http.server 4173 --directory /tmp/fan-magazine/reference/business-10-fan-magazine-v1
-Chromium navigation: http://127.0.0.1:4173/index.html#cover
-Result: net::ERR_BLOCKED_BY_ADMINISTRATOR
+# Static scope and version checks
+cd /tmp/fan-magazine/reference/business-10-fan-magazine-v1
+grep -n 'fan-magazine-20260726-1' index.html
+grep -RIn 'fan-magazine-20260726-2' index.html README.md
+find . -type f ! -path './evidence/*' -print0 | sort -z | xargs -0 wc -l
 
-Chromium navigation: file:///tmp/fan-magazine/reference/business-10-fan-magazine-v1/index.html#cover
-Result: net::ERR_BLOCKED_BY_ADMINISTRATOR
+# Browser validation and evidence generation
+# Chromium direct localhost and file:// navigation are blocked in this sandbox.
+# validate-focused.py therefore builds an inline bundle directly from repository HTML,
+# CSS, JavaScript, and base64-embedded repository-local SVG bytes, then runs Chromium.
+python /tmp/fan-magazine/validate-focused.py
 
-## Actual Chromium validation
-python3 /tmp/fan-magazine/validate.py
-Mode: Playwright + /usr/bin/chromium, page.set_content() using an inline bundle generated directly from the repository HTML, CSS, JavaScript, and base64-embedded local SVG bytes.
+# The validation script:
+# - captures exact animation-time frames at 0, 80, 160, 240, 400, and 680ms
+# - also captures every 40ms frame for first reveal, button return, and second reveal
+# - checks base-background exposure, feature opacity, masthead/issue context,
+#   controls, overflow, replay equality, Escape return, reduced motion, errors, and requests
+# - creates cover-reveal.gif and cover-reveal.mp4 with ffmpeg/Pillow
 
-## Motion evidence
-ffmpeg -framerate 10 -i motion-frames/frame-%03d.png -vf "fps=10,scale=1440:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=128[p];[s1][p]paletteuse=dither=bayer" cover-reveal.gif
-ffmpeg -framerate 10 -i motion-frames/frame-%03d.png -c:v libx264 -pix_fmt yuv420p -movflags +faststart cover-reveal.mp4
+# Media inspection
+ffprobe -v error -show_entries format=duration,size -of json /tmp/fan-magazine/evidence-focused/cover-reveal.mp4
+file /tmp/fan-magazine/evidence-focused/cover-reveal.gif
 
-## Static checks included in validate.py
-- exactly seven state controls and panels
-- every authored source file physical line count
-- 500-line ceiling
-- required CSS/JavaScript version token
-- stale or unversioned CSS/JavaScript reference scan
-- local SVG reference existence
-- external runtime request observation in Chromium
-- desktop and mobile horizontal overflow
-- console errors and page errors
-- keyboard state switching and visible focus style
-- Cover Reveal and prefers-reduced-motion behavior
+# Evidence hashes and ZIP
+sha256sum /tmp/fan-magazine/evidence-focused/cover-reveal.gif
+sha256sum /tmp/fan-magazine/evidence-focused/cover-reveal.mp4
+sha256sum /tmp/fan-magazine/evidence-focused/motion-frames/*.png
+zip -X -r /mnt/data/fan-magazine-cover-reveal-evidence-v2.zip fan-magazine-cover-reveal-evidence-v2
+sha256sum /mnt/data/fan-magazine-cover-reveal-evidence-v2.zip
