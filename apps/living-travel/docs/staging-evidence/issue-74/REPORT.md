@@ -3,7 +3,15 @@
 **Date**: 2026-07-24  
 **PR**: #88  
 **Branch**: `ops/living-travel-external-staging-74`  
-**Deployment source**: PR #88 current head, verified through the Living Travel Cloudflare deployment status.
+**Deployment source**: PR #88 current head, verified through the dedicated Living Travel Cloudflare deployment status.
+
+## Classification note
+
+This document records **external staging**, not a product production release.
+
+Cloudflare Pages may call a project's primary Git-connected branch the `Production branch`, and the project may expose a stable `pages.dev` primary URL. Those Cloudflare labels do not change this environment's portfolio classification. The Pages project, repository, branch, root, deployed SHA, and visible product identity must be verified independently.
+
+Portfolio terminology follows `docs/operations/CLOUDFLARE_PAGES_GIT_CONNECTION_RUNBOOK.md`.
 
 ## Infrastructure
 
@@ -12,13 +20,15 @@
 | Neon | `ai-revenue-living-travel`, `aws-ap-southeast-1`, PostgreSQL 17.10 |
 | Modal | `ai-revenue-living-travel-staging` |
 | Modal endpoint | `https://padiemipu--ai-revenue-living-travel-staging-web.modal.run` |
-| Cloudflare Pages | `ai-revenue-living-travel` |
-| Production origin | `https://ai-revenue-living-travel.pages.dev` |
+| Cloudflare Pages project | `ai-revenue-living-travel` |
+| Pages primary project origin used for staging | `https://ai-revenue-living-travel.pages.dev` |
 | Stable branch preview | `https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev` |
 | Firebase project | `ai-revenue-lab-identity` |
 | Firebase Web App | `living-travel-staging` |
 
 The pooled runtime and direct migration endpoints were verified independently. Connection strings, hostnames, passwords, service-account details, account emails, Firebase UIDs, invitation codes, and internal entity IDs are not recorded here.
+
+The phrase `Pages primary project origin` identifies the stable URL of the Pages project. It does not assert a product production release.
 
 ## External staging verification
 
@@ -36,7 +46,7 @@ The pooled runtime and direct migration endpoints were verified independently. C
 
 ### CORS and CSP
 
-- [x] Production Pages origin allowed by CORS
+- [x] Pages primary project origin used for staging allowed by CORS
 - [x] Stable branch preview origin allowed by CORS
 - [x] Unauthorized origin receives no `Access-Control-Allow-Origin`
 - [x] No wildcard CORS origin
@@ -118,7 +128,9 @@ Synthetic staging credentials are held in a user-controlled secret store outside
 - [x] `git diff --check`: clean
 - [x] Secret and identifier scan: clean
 
-GitHub Actions was not used as acceptance evidence under the repository's private-CI cost policy. The acceptance evidence is the reported local test execution, inspected source contracts, successful Living Travel Cloudflare deployment, and external synthetic staging verification.
+GitHub Actions was not used as acceptance evidence under the repository's private-CI cost policy. The historical acceptance evidence is the reported local test execution, inspected source contracts, dedicated Living Travel Cloudflare deployment, and external synthetic staging verification.
+
+A later reviewer must not infer current deployment state from this historical report alone. Current account-side configuration and exact deployed SHA require fresh verification.
 
 ## Repository changes
 
@@ -138,7 +150,8 @@ GitHub Actions was not used as acceptance evidence under the repository's privat
 - [x] Modal staging API healthy
 - [x] Firebase Web App and Email/Password provider operational
 - [x] Exact authorized domains, CORS origins, and CSP origins configured
-- [x] Cloudflare Living Travel stable branch preview operational
+- [x] Dedicated Cloudflare Living Travel branch preview operational
+- [x] Pages primary project origin used as staging and not classified as product production
 - [x] Operator and traveler browser authentication verified
 - [x] Invitation replay rejected
 - [x] Authorization boundaries enforced
@@ -147,4 +160,4 @@ GitHub Actions was not used as acceptance evidence under the repository's privat
 - [x] No secret or synthetic account identifier committed
 - [x] Final local and preview suites pass
 
-**Living Travel external staging completion criteria are satisfied.**
+**Living Travel external staging completion criteria were satisfied for the recorded PR #88 evidence. This statement is not a current production-release claim.**
