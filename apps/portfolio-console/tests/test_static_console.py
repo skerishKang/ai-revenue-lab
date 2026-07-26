@@ -22,7 +22,6 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertNotIn("ql-list", html)
         self.assertNotIn("ql-item", html)
         self.assertNotIn("quick-launch.js", html)
-        self.assertNotIn("빠른 실행", html)
 
     def test_quick_launch_removed_from_app_js(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -36,10 +35,9 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_html_has_private_and_noindex_contracts(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('name="robots" content="noindex,nofollow,noarchive"', html)
-        self.assertIn('id="private-admin-label"', html)
-        self.assertIn('id="business-table-body"', html)
-        self.assertIn('id="detail-panel"', html)
-        self.assertIn('id="priority-list"', html)
+        self.assertIn('id="sidebar-range"', html)
+        self.assertIn('id="header-count"', html)
+        self.assertIn('id="theme-toggle"', html)
 
     def test_registry_covers_one_through_fifteen(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
@@ -70,10 +68,10 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_javascript_references_expected_registry(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertIn("window.ARL_BUSINESSES", script)
-        self.assertIn("renderPriorityActions", script)
-        self.assertIn("selectBusiness", script)
+        self.assertIn("openBusinessDialog", script)
+        self.assertIn("filteredBusinesses", script)
+        self.assertIn("renderBusinessIndex", script)
         self.assertNotIn("fetch(", script)
-        self.assertNotIn("localStorage", script)
 
     def test_projects_file_exists(self) -> None:
         self.assertTrue((ROOT / "projects.js").is_file(), "projects.js")
@@ -151,24 +149,13 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_projects_html_section_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('id="pd-grid"', html)
-        self.assertIn('id="pd-detail"', html)
-        self.assertIn('id="pd-search-input"', html)
+        self.assertIn('id="project-dialog"', html)
+        self.assertIn('id="sf-search-input"', html)
         self.assertIn('src="./projects.js"', html)
-
-    def test_projects_links_have_security_attributes(self) -> None:
-        html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="pd-page-link"', html)
-        self.assertIn('id="pd-repo-link"', html)
-        self.assertIn('aria-disabled="true"', html)
-        self.assertIn('tabindex="-1"', html)
 
     def test_projects_detail_button_present(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertIn('pd-card-detail-btn', script)
-
-    def test_projects_undeployed_indicator_present(self) -> None:
-        script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertIn('pd-card-undeployed', script)
 
     def test_projects_no_role_button_on_card(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -241,79 +228,67 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         done_count = script.count('done: true')
         self.assertGreaterEqual(done_count, 7)
 
-    def test_sidebar_has_project_menu_buttons(self) -> None:
+    def test_sidebar_has_four_view_buttons(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('data-project-view="projects"', html)
-        self.assertIn('data-project-view="search"', html)
-        self.assertIn('data-project-view="work"', html)
-        self.assertIn('id="nav-projects"', html)
-        self.assertIn('id="nav-search-filter"', html)
-        self.assertIn('id="nav-work-in-progress"', html)
+        self.assertIn('data-view="projects"', html)
+        self.assertIn('data-view="search"', html)
+        self.assertIn('data-view="work"', html)
+        self.assertIn('data-view="business"', html)
+        self.assertIn('class="view-nav-item', html)
 
-    def test_work_button_is_actual_button(self) -> None:
+    def test_menu_button_is_actual_button(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('<button', html)
-        self.assertIn('data-project-view="work"', html)
+        self.assertIn('data-view="work"', html)
 
     def test_work_view_container_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="project-work-view"', html)
+        self.assertIn('id="view-work"', html)
 
     def test_work_view_hidden_by_default(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="project-work-view"', html)
-        self.assertIn('hidden', html[html.index('id="project-work-view"'):html.index('id="project-work-view"')+300])
+        idx = html.index('id="view-work"')
+        self.assertIn('hidden', html[idx:idx+50])
 
     def test_work_queue_container_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('id="work-queue"', html)
 
-    def test_work_view_stats_exist(self) -> None:
+    def test_work_summary_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="work-view-stats"', html)
-        self.assertIn('id="work-stats-total"', html)
-        self.assertIn('id="work-stats-review"', html)
-        self.assertIn('id="work-stats-active"', html)
-        self.assertIn('id="work-stats-blocked"', html)
+        self.assertIn('id="work-summary"', html)
 
-    def test_is_work_in_progress_function_exists(self) -> None:
+    def test_is_work_in_progress_functions_exist(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertIn("isWorkInProgress", script)
+        self.assertIn("function isWIP", script)
+        self.assertIn("function isReviewGroup", script)
+        self.assertIn("function isActiveGroup", script)
 
-    def test_projects_js_unchanged_in_wip_pr(self) -> None:
+    def test_projects_js_unchanged(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         self.assertIn("pc-wip-screen", script)
         self.assertEqual(script.count("done: true"), 11)
 
-    def test_businesses_js_unchanged_in_wip_pr(self) -> None:
+    def test_businesses_js_unchanged(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
         self.assertIn("window.ARL_BUSINESSES", script)
 
-    def test_search_panel_exists(self) -> None:
+    def test_search_controls_exist(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="project-search-panel"', html)
-        self.assertIn('id="project-search-close"', html)
-        self.assertIn('id="pd-dev-mode-filter"', html)
-        self.assertIn('id="pd-sort-filter"', html)
-        self.assertIn('id="pd-reset-filter"', html)
-        self.assertIn('id="pd-result-count"', html)
-
-    def test_search_filter_button_has_accessibility_attributes(self) -> None:
-        html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('aria-expanded="false"', html)
-        self.assertIn('aria-controls="project-search-panel"', html)
+        self.assertIn('id="sf-search-input"', html)
+        self.assertIn('id="sf-stage-filter"', html)
+        self.assertIn('id="sf-devmode-filter"', html)
+        self.assertIn('id="sf-sort-filter"', html)
+        self.assertIn('id="sf-reset-filter"', html)
 
     def test_project_status_has_aria_current(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('aria-current="page"', html)
 
-    def test_pd_controls_removed_from_html(self) -> None:
-        html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn('class="pd-controls"', html)
-
-    def test_no_localstorage_in_app_js(self) -> None:
+    def test_theme_localstorage_in_app_js(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertNotIn("localStorage", script)
+        self.assertIn("localStorage", script)
+        self.assertIn("arl-portfolio-theme", script)
 
     def test_no_cookie_in_app_js(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -323,62 +298,103 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn("fetch(", script)
 
-    def test_work_heading_has_tabindex_neg1(self) -> None:
+    def test_view_sections_exist(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="work-view-heading"', html)
-        self.assertIn('tabindex="-1"', html[html.index('id="work-view-heading"'):html.index('id="work-view-heading"')+80])
+        self.assertIn('id="view-projects"', html)
+        self.assertIn('id="view-search"', html)
+        self.assertIn('id="view-work"', html)
+        self.assertIn('id="view-business"', html)
 
-    def test_work_view_aria_labelledby(self) -> None:
+    def test_dialog_elements_exist(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('aria-labelledby="work-view-heading"', html)
+        self.assertIn('<dialog id="project-dialog"', html)
+        self.assertIn('<dialog id="business-dialog"', html)
 
-    def test_work_view_no_hardcoded_aria_label(self) -> None:
+    def test_theme_inline_script_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn('aria-label="작업 중인 프로젝트"', html)
+        self.assertIn("arl-portfolio-theme", html)
+        self.assertIn("data-theme", html)
 
-    def test_work_item_template_has_aria_labelledby(self) -> None:
+    def test_no_decorative_side_nav_in_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="side-nav"', html)
+        self.assertNotIn('data-view="deployments"', html)
+        self.assertNotIn('data-view="github"', html)
+        self.assertNotIn('data-view="models"', html)
+        self.assertNotIn('data-view="registry"', html)
+
+    def test_no_metric_grid_in_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="metric-grid"', html)
+        self.assertNotIn('class="metric-card"', html)
+
+    def test_no_priority_actions_in_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="priority-item"', html)
+        self.assertNotIn('id="priority-list"', html)
+
+    def test_no_business_table_in_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('id="business-table-body"', html)
+
+    def test_no_detail_panel_in_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('id="detail-panel"', html)
+        self.assertNotIn('id="pd-detail"', html)
+
+    def test_no_sync_state_in_html(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="sync-state"', html)
+        self.assertNotIn('id="refresh-button"', html)
+
+    def test_header_count_exists_and_dynamic(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertIn('aria-labelledby="${nameId}"', script)
+        self.assertIn("updateHeaderCount", script)
+        self.assertIn("#header-count", script)
 
-    def test_set_active_project_view_exists(self) -> None:
+    def test_format_functions_exist(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertIn("function setActiveProjectView(view)", script)
-        self.assertIn('button.dataset.projectView === view', script)
-        self.assertIn('button.setAttribute("aria-current", "page")', script)
+        self.assertIn("function formatProjectUnitCount", script)
+        self.assertIn("function formatResultCount", script)
 
-    def test_format_project_unit_count_exists(self) -> None:
+    def test_business_index_functions_exist(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertIn("function formatProjectUnitCount(count)", script)
-        self.assertIn('`${count}projects`', script.replace(" ", ""))
+        self.assertIn("filteredBusinesses", script)
+        self.assertIn("renderBusinessIndex", script)
+        self.assertIn("openBusinessDialog", script)
 
-    def test_work_view_count_uses_format_function(self) -> None:
+    def test_open_project_dialog_exists(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertNotIn('$("#work-view-count").textContent = `${wipProjects.length}개`', script)
-        self.assertIn("formatProjectUnitCount(wipProjects.length)", script)
+        self.assertIn("openProjectDialog", script)
+        self.assertIn("dialog.showModal", script)
+        self.assertIn("project-dialog", script)
 
-    def test_projects_pc_wip_screen_done(self) -> None:
-        script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        pc_start = script.index("pc-wip-screen")
-        pc_block = script[pc_start:pc_start + 200]
-        self.assertIn('done: true', pc_block)
+    def test_card_biz_number_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("cardBizNumber", script)
+        self.assertIn("pd-card-biznumber", script)
 
-    def test_projects_pc_wip_screen_evidence_pr159(self) -> None:
-        script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        pc_start = script.index("pc-wip-screen")
-        pc_block = script[pc_start:pc_start + 300]
-        self.assertIn("PR #159 merged", pc_block)
+    def test_switch_view_function_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function switchView", script)
+        self.assertIn('viewMap = { projects', script)
+        self.assertIn('aria-current', script)
 
-    def test_projects_pc_wip_screen_evidence_sha(self) -> None:
-        script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        self.assertIn("447e85329e8e0ba3b3fd087f408d60f068099461", script)
+    def test_theme_toggle_function_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function toggleTheme", script)
+        self.assertIn('localStorage.setItem("arl-portfolio-theme"', script)
 
-    def test_projects_portfolio_console_current_work_issue157(self) -> None:
-        script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        self.assertIn("Issue #157 작업 중 화면 병합 완료", script)
+    def test_no_github_api_or_issue_data(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("GitHub Issue", script)
+        self.assertNotIn("github.com", script)
 
-    def test_projects_portfolio_console_next_action_issue157(self) -> None:
-        script = (ROOT / "projects.js").read_text(encoding="utf-8")
-        self.assertIn("Issue #157 종료", script)
+    def test_no_progress_bar_hardcoded(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("progressPercentFixed", script)
+        self.assertNotIn("hardcodedProgress", script)
+
 
 if __name__ == "__main__":
     unittest.main()

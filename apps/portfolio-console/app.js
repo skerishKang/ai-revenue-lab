@@ -1,1049 +1,805 @@
 (() => {
   "use strict";
 
-  const businesses = Array.isArray(window.ARL_BUSINESSES) ? window.ARL_BUSINESSES : [];
+  // ── Data ──
   const projects = Array.isArray(window.ARL_PROJECTS) ? window.ARL_PROJECTS : [];
-  const $ = (selector) => document.querySelector(selector);
-  const tableBody = $("#business-table-body");
-  const searchInput = $("#search-input");
-  const stateFilter = $("#state-filter");
-  const sortControl = $("#sort-control");
-  let selectedNumber = null;
-  let selectedProjectId = null;
-  let currentLang = "ko";
+  const businesses = Array.isArray(window.ARL_BUSINESSES) ? window.ARL_BUSINESSES : [];
 
-  const labels = {
+  // ── DOM refs ──
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+  const views = ['projects', 'search', 'work', 'business'];
+
+  // ── State ──
+  let currentLang = 'ko';
+  let activeView = 'projects';
+  let selectedProjectId = null;
+
+  // ── Label helpers ──
+  const L = {
     ko: {
-       businessOperations: "내 비즈니스 관리",
-      projectDirectory: "프로젝트 모아보기",
-      businessRegistry: "비즈니스 목록",
-      priorityActions: "우선 작업",
-      search: "검색",
-      stage: "단계",
-      repository: "저장소",
-      workspace: "폴더",
-      page: "페이지",
-      progress: "진행 상황",
-      currentWork: "현재 작업",
-      nextAction: "다음 작업",
-      lastVerified: "마지막 확인",
-       openPage: "페이지 열기",
-      openRepository: "저장소 열기",
-      copyWorkspace: "폴더 경로 복사",
-      viewDetail: "자세히 보기",
-      allProjects: "전체 프로젝트",
-      all: "전체",
-      projects: "개",
-      rows: "개",
-      items: "개",
-      noResults: "조건에 맞는 사업이 없습니다.",
-      noProjects: "조건에 맞는 프로젝트가 없습니다.",
-      selectBusiness: "사업을 선택하십시오.",
-      selectProject: "프로젝트를 선택하십시오.",
-      demoReadiness: "데모 준비도",
-      lifecycle: "라이프사이클",
-      deployment: "배포",
-      github: "GitHub",
-      openSurface: "화면 열기",
-      openGithub: "GitHub 열기",
-      openIssue: "Issue 열기",
-      actionNote: "확인된 링크만 활성화됩니다.",
-      actionNoteWithSurface: "확인된 배포 주소와 GitHub 근거만 연결되어 있습니다.",
-      actionNoteNoSurface: "확인된 배포 주소가 없어 GitHub 근거만 활성화했습니다.",
-      mode: "모드",
-      source: "소스",
-      range: "범위",
-      manual: "수동",
-      staticRegistry: "정적 레지스트리",
-      registryLoaded: "레지스트리 로드됨",
-      privateAdmin: "개인 관리자",
-       businesses: "비즈니스",
-       deployments: "배포",
-       modelsCost: "모델 & 비용",
-       registry: "레지스트리",
-       projectStatus: "프로젝트 현황",
-       searchFilter: "검색·필터",
-       reset: "초기화",
-       searchPlaceholder: "이름, 저장소, 폴더, 목적, 현재 작업, 다음 작업 검색",
-       closePanel: "검색 패널 닫기",
-       sortDefault: "기본순",
-       sortProgressDesc: "진행률 높은 순",
-       sortProgressAsc: "진행률 낮은 순",
-       resultCount: "개 중",
-      tracked: "추적 중",
-      demoSurfaces: "데모 화면",
-      needsAction: "조치 필요",
-      openSlots: "미배정",
-      trackedDesc: "번호가 배정되거나 제안된 사업",
-      demoDesc: "즉시 열 수 있는 확인된 화면",
-      actionDesc: "검토·배포·결정이 필요한 사업",
-      openDesc: "현재 표시 범위의 미배정 번호",
-      state: "상태",
-      sort: "정렬",
-      allStates: "전체 상태",
-      running: "운영 중",
-      reviewBuild: "검토 / 개발",
-      planning: "계획",
-      reserved: "예약",
-      numberAsc: "번호 ↑",
-      numberDesc: "번호 ↓",
-      actionPriority: "우선순위",
-      progressSort: "진행률",
-      business: "비즈니스",
-      surface: "화면",
-      nextActionCol: "다음 작업",
-       copySuccess: "폴더 경로를 복사했습니다",
-       copyFail: "폴더 경로를 복사하지 못했습니다.",
-       notDeployed: "미배포",
-       demoShort: "데모",
-       langKo: "한국어",
-       langEn: "EN",
-       milestone: "마일스톤",
-       devMode: "개발 모드",
-       progressBasis: "진행 기준",
-       progressUndefined: "진척도 미정",
-       goalDefinitionNeeded: "목표 정의 필요",
-       doneTasks: "완료 작업",
-       remainingTasks: "남은 작업",
-       blockersLabel: "차단 사항",
-        doneShort: "완료",
-        remainingShort: "남음",
-         workInProgress: "작업 중",
-         workViewDesc: "개발·검토·보완이 필요한 프로젝트",
-         reviewImprovement: "보완·검토 필요",
-         activeDevelopment: "계속 개발",
-         blockedProjects: "차단 프로젝트",
-         openService: "서비스 열기",
-         noWorkInProgress: "작업 중인 프로젝트가 없습니다"
+      topbar: '내 비즈니스 관리',
+      topbarEn: 'Business Operations',
+      search: '검색',
+      stage: '단계',
+      devMode: '개발 모드',
+      sort: '정렬',
+      all: '전체',
+      live: '운영 중',
+      building: '개발 중',
+      review: '검토 중',
+      planned: '계획',
+      paused: '일시 중지',
+      notStarted: '시작 전',
+      activeDev: '개발 중',
+      needsImprove: '개선 필요',
+      maintenance: '유지보수',
+      complete: '완료',
+      sortDefault: '기본순',
+      sortProgressDesc: '진행률 높은 순',
+      sortProgressAsc: '진행률 낮은 순',
+      reset: '초기화',
+      workSummary: '작업 중 {total} · 보완/검토 {review} · 계속 개발 {active}',
+      project: 'PROJECT',
+      detail: '자세히 보기',
+      openService: '서비스 열기',
+      bizSearch: '번호, 제목 검색',
+      allStates: '전체 상태',
+      running: '운영 중',
+      reviewBuild: '검토 / 개발',
+      planning: '계획',
+      reserved: '예약',
+      numberAsc: '번호 ↑',
+      numberDesc: '번호 ↓',
+      actionPriority: '우선순위',
+      progressSort: '진행률',
+      viewDetail: '자세히 보기',
+      notDeployed: '미배포',
+      bizLabel: '비즈니스',
+      purpose: '목적',
+      milestone: '마일스톤',
+      currentWork: '현재 작업',
+      nextAction: '다음 작업',
+      repo: '저장소',
+      workspace: '폴더',
+      page: '페이지',
+      stageLabel: '단계',
+      devModeLabel: '개발 모드',
+      progressLabel: '진행 상황',
+      progressUndefined: '진척도 미정',
+      goalDefNeeded: '목표 정의 필요',
+      statusLabel: '상태',
+      nextActionLabel: '다음 작업',
+      lastVerified: '마지막 확인',
+      blocks: '차단 사항',
+      projectCount: '{n}개 프로젝트',
+      searchCount: '{n}개 중 {m}개',
+      workInProgress: '작업 중',
+      copyWorkspace: '복사',
     },
     en: {
-       businessOperations: "Business Operations",
-      projectDirectory: "Project Directory",
-      businessRegistry: "Business Registry",
-      priorityActions: "Priority Actions",
-      search: "SEARCH",
-      stage: "STAGE",
-      repository: "REPOSITORY",
-      workspace: "WORKSPACE",
-      page: "PAGE",
-      progress: "PROGRESS",
-      currentWork: "CURRENT WORK",
-      nextAction: "NEXT ACTION",
-      lastVerified: "LAST VERIFIED",
-       openPage: "OPEN PAGE",
-      openRepository: "OPEN REPOSITORY",
-      copyWorkspace: "COPY WORKSPACE",
-      viewDetail: "VIEW DETAIL",
-      allProjects: "ALL PROJECTS",
-      all: "ALL",
-      projects: "projects",
-      rows: "rows",
-      items: "items",
-      noResults: "No businesses match the search criteria.",
-      noProjects: "No projects match the criteria.",
-      selectBusiness: "Select a business.",
-      selectProject: "Select a project.",
-      demoReadiness: "DEMO READINESS",
-      lifecycle: "LIFECYCLE",
-      deployment: "DEPLOYMENT",
-      github: "GITHUB",
-      openSurface: "OPEN SURFACE",
-      openGithub: "OPEN GITHUB",
-      openIssue: "OPEN ISSUE",
-      actionNote: "Only verified links are enabled.",
-      actionNoteWithSurface: "Only verified deployment and GitHub evidence are linked.",
-      actionNoteNoSurface: "No verified deployment, so only GitHub evidence is enabled.",
-      mode: "MODE",
-      source: "SOURCE",
-      range: "RANGE",
-      manual: "MANUAL",
-      staticRegistry: "STATIC REGISTRY",
-      registryLoaded: "registry loaded",
-      privateAdmin: "PRIVATE ADMIN",
-       businesses: "Businesses",
-       deployments: "Deployments",
-       modelsCost: "Models & Cost",
-       registry: "Registry",
-       projectStatus: "PROJECT STATUS",
-       searchFilter: "SEARCH & FILTER",
-       reset: "RESET",
-       searchPlaceholder: "Search by name, repo, folder, purpose, current work, next action",
-       closePanel: "Close search panel",
-       sortDefault: "DEFAULT",
-       sortProgressDesc: "PROGRESS DESC",
-       sortProgressAsc: "PROGRESS ASC",
-       resultCount: " of ",
-      tracked: "TRACKED",
-      demoSurfaces: "DEMO SURFACES",
-      needsAction: "NEEDS ACTION",
-      openSlots: "OPEN SLOTS",
-      trackedDesc: "Assigned or proposed businesses",
-      demoDesc: "Verified surfaces that can be opened immediately",
-      actionDesc: "Businesses needing review, deployment, or decision",
-      openDesc: "Unassigned numbers in current display range",
-      state: "STATE",
-      sort: "SORT",
-      allStates: "ALL STATES",
-      running: "RUNNING",
-      reviewBuild: "REVIEW / BUILD",
-      planning: "PLANNING",
-      reserved: "RESERVED",
-      numberAsc: "NUMBER ↑",
-      numberDesc: "NUMBER ↓",
-      actionPriority: "ACTION PRIORITY",
-      progressSort: "PROGRESS",
-      business: "BUSINESS",
-      surface: "SURFACE",
-      nextActionCol: "NEXT ACTION",
-       copySuccess: "Workspace path copied",
-       copyFail: "Failed to copy workspace path.",
-       notDeployed: "Not deployed",
-       demoShort: "DEMO",
-       langKo: "한국어",
-       langEn: "EN",
-       milestone: "MILESTONE",
-       devMode: "DEV MODE",
-       progressBasis: "PROGRESS BASIS",
-       progressUndefined: "PROGRESS UNDEFINED",
-       goalDefinitionNeeded: "GOAL DEFINITION NEEDED",
-       doneTasks: "DONE TASKS",
-       remainingTasks: "REMAINING TASKS",
-       blockersLabel: "BLOCKERS",
-        doneShort: "DONE",
-        remainingShort: "REMAINING",
-        workInProgress: "IN PROGRESS",
-        workViewDesc: "Projects needing active development, review, or improvement",
-        reviewImprovement: "REVIEW & IMPROVEMENT",
-        activeDevelopment: "ACTIVE DEVELOPMENT",
-        blockedProjects: "BLOCKED PROJECTS",
-        openService: "OPEN SERVICE",
-        noWorkInProgress: "NO PROJECTS IN PROGRESS"
+      topbar: 'Business Operations',
+      topbarEn: 'Business Operations',
+      search: 'SEARCH',
+      stage: 'STAGE',
+      devMode: 'DEV MODE',
+      sort: 'SORT',
+      all: 'ALL',
+      live: 'LIVE',
+      building: 'BUILDING',
+      review: 'REVIEW',
+      planned: 'PLANNED',
+      paused: 'PAUSED',
+      notStarted: 'NOT STARTED',
+      activeDev: 'ACTIVE DEV',
+      needsImprove: 'NEEDS IMPROVEMENT',
+      maintenance: 'MAINTENANCE',
+      complete: 'COMPLETE',
+      sortDefault: 'DEFAULT',
+      sortProgressDesc: 'PROGRESS DESC',
+      sortProgressAsc: 'PROGRESS ASC',
+      reset: 'RESET',
+      workSummary: 'WIP {total} · Review {review} · Active {active}',
+      project: 'PROJECT',
+      detail: 'VIEW DETAIL',
+      openService: 'OPEN SERVICE',
+      bizSearch: 'Search by number, title',
+      allStates: 'ALL STATES',
+      running: 'RUNNING',
+      reviewBuild: 'REVIEW / BUILD',
+      planning: 'PLANNING',
+      reserved: 'RESERVED',
+      numberAsc: 'NUMBER ↑',
+      numberDesc: 'NUMBER ↓',
+      actionPriority: 'PRIORITY',
+      progressSort: 'PROGRESS',
+      viewDetail: 'VIEW DETAIL',
+      notDeployed: 'NOT DEPLOYED',
+      bizLabel: 'BIZ',
+      purpose: 'PURPOSE',
+      milestone: 'MILESTONE',
+      currentWork: 'CURRENT WORK',
+      nextAction: 'NEXT ACTION',
+      repo: 'REPOSITORY',
+      workspace: 'WORKSPACE',
+      page: 'PAGE',
+      stageLabel: 'STAGE',
+      devModeLabel: 'DEV MODE',
+      progressLabel: 'PROGRESS',
+      progressUndefined: 'PROGRESS UNDEFINED',
+      goalDefNeeded: 'GOAL DEFINITION NEEDED',
+      statusLabel: 'STATE',
+      nextActionLabel: 'NEXT ACTION',
+      lastVerified: 'LAST VERIFIED',
+      blocks: 'BLOCKERS',
+      projectCount: '{n} projects',
+      searchCount: '{m} of {n} projects',
+      workInProgress: 'IN PROGRESS',
+      copyWorkspace: 'COPY',
     }
   };
 
-  const stateLabels = {
-    running: { ko: "운영 중", en: "RUNNING" },
-    review: { ko: "검토 중", en: "REVIEW" },
-    planning: { ko: "계획", en: "PLANNING" },
-    reserved: { ko: "예약", en: "RESERVED" }
-  };
+  function t(key, vars = {}) {
+    let str = L[currentLang][key] || L.ko[key] || key;
+    for (const [k, v] of Object.entries(vars)) str = str.replace(`{${k}}`, v);
+    return str;
+  }
 
-  const stageLabels = {
-    live: { ko: "운영 중", en: "LIVE" },
-    building: { ko: "개발 중", en: "BUILDING" },
-    review: { ko: "검토 중", en: "REVIEW" },
-    planned: { ko: "계획", en: "PLANNED" },
-    paused: { ko: "일시 중지", en: "PAUSED" }
+  // ── Stage labels ──
+  const stageL = {
+    live: { ko: '운영 중', en: 'LIVE' },
+    building: { ko: '개발 중', en: 'BUILDING' },
+    review: { ko: '검토 중', en: 'REVIEW' },
+    planned: { ko: '계획', en: 'PLANNED' },
+    paused: { ko: '일시 중지', en: 'PAUSED' }
   };
+  function stageLabel(s) { return stageL[s]?.[currentLang] || s; }
 
-  const developmentModeLabels = {
-    "not-started": { ko: "시작 전", en: "NOT STARTED" },
-    "active-development": { ko: "개발 중", en: "ACTIVE DEV" },
-    "needs-improvement": { ko: "개선 필요", en: "NEEDS IMPROVEMENT" },
-    "maintenance": { ko: "유지보수", en: "MAINTENANCE" },
-    "complete": { ko: "완료", en: "COMPLETE" },
-    "paused": { ko: "일시 중지", en: "PAUSED" }
+  // ── Dev mode labels ──
+  const devL = {
+    'not-started': { ko: '시작 전', en: 'NOT STARTED' },
+    'active-development': { ko: '개발 중', en: 'ACTIVE DEV' },
+    'needs-improvement': { ko: '개선 필요', en: 'NEEDS IMPROVEMENT' },
+    'maintenance': { ko: '유지보수', en: 'MAINTENANCE' },
+    'complete': { ko: '완료', en: 'COMPLETE' },
+    'paused': { ko: '일시 중지', en: 'PAUSED' }
   };
+  function devLabel(m) { return devL[m]?.[currentLang] || m; }
 
+  // ── State labels (businesses) ──
+  const stateL = {
+    running: { ko: '운영 중', en: 'RUNNING' },
+    review: { ko: '검토 중', en: 'REVIEW' },
+    planning: { ko: '계획', en: 'PLANNING' },
+    reserved: { ko: '예약', en: 'RESERVED' }
+  };
+  function stateLabel(s) { return stateL[s]?.[currentLang] || s; }
+
+  // ── Progress helper ──
   function computeProgress(tasks) {
-    if (!Array.isArray(tasks) || tasks.length === 0) {
-      return {
-        hasProgress: false,
-        doneCount: 0,
-        totalCount: 0,
-        progressPercent: null,
-        remainingPercent: null
-      };
-    }
-
-    const totalCount = tasks.length;
-    const doneCount = tasks.filter(task => task.done).length;
-    const progressPercent = Math.round((doneCount / totalCount) * 100);
-
-    return {
-      hasProgress: true,
-      doneCount,
-      totalCount,
-      progressPercent,
-      remainingPercent: 100 - progressPercent
-    };
+    if (!Array.isArray(tasks) || tasks.length === 0) return null;
+    const done = tasks.filter(t => t.done).length;
+    return { done, total: tasks.length, pct: Math.round((done / tasks.length) * 100) };
   }
 
-  function isWorkInProgress(project) {
-    return (
-      ["building", "review"].includes(project.stage) ||
-      ["active-development", "needs-improvement"].includes(project.developmentMode)
-    );
+  // ── Pad ──
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  // ── Business number display ──
+  function bizDisplay(project) {
+    if (project.businessNumber != null) return `B${pad(project.businessNumber)}`;
+    return t('project');
   }
+  const cardBizNumber = bizDisplay;
 
-  function isReviewImprovementGroup(project) {
-    return (
-      project.developmentMode === "needs-improvement" ||
-      project.stage === "review"
-    );
-  }
-
-  function isActiveDevelopmentGroup(project) {
-    if (isReviewImprovementGroup(project)) return false;
-    return (
-      project.developmentMode === "active-development" ||
-      project.stage === "building"
-    );
-  }
-
-  function t(key) {
-    return labels[currentLang][key] || labels.ko[key] || key;
-  }
-
-  function stateLabel(state) {
-    return stateLabels[state]?.[currentLang] || stateLabels[state]?.en || state;
-  }
-
-  function stageLabel(stage) {
-    return stageLabels[stage]?.[currentLang] || stageLabels[stage]?.en || stage;
-  }
-
-  function developmentModeLabel(mode) {
-    return developmentModeLabels[mode]?.[currentLang] || developmentModeLabels[mode]?.en || mode;
-  }
-
-  function pad(number) {
-    return String(number).padStart(2, "0");
-  }
-
-  function updateMetrics() {
-    const tracked = businesses.filter((item) => item.state !== "reserved").length;
-    const demos = businesses.filter((item) => Boolean(item.surfaceUrl)).length;
-    const needsAction = businesses.filter((item) => ["review", "planning"].includes(item.state)).length;
-    const openSlots = businesses.filter((item) => item.state === "reserved").length;
-    $("#metric-tracked").textContent = pad(tracked);
-    $("#metric-demo").textContent = pad(demos);
-    $("#metric-action").textContent = pad(needsAction);
-    $("#metric-open").textContent = pad(openSlots);
-    const maxNumber = Math.max(...businesses.map((item) => item.number), 0);
-    $("#sidebar-range").textContent = `01–${pad(maxNumber)}`;
-  }
-
-  function filteredBusinesses() {
-    const query = searchInput.value.trim().toLowerCase();
-    const state = stateFilter.value;
-    const sort = sortControl.value;
-    const filtered = businesses.filter((item) => {
-      const haystack = `${item.number} ${pad(item.number)} ${item.title} ${item.koreanTitle} ${item.slug}`.toLowerCase();
-      return (!query || haystack.includes(query)) && (state === "all" || item.state === state);
-    });
-
-    return filtered.sort((a, b) => {
-      if (sort === "number-desc") return b.number - a.number;
-      if (sort === "priority") return b.priority - a.priority || a.number - b.number;
-      if (sort === "progress") return b.progress - a.progress || a.number - b.number;
-      return a.number - b.number;
-    });
-  }
-
-  function rowTemplate(item) {
-    const selectedClass = item.number === selectedNumber ? " is-selected" : "";
-    const reservedClass = item.state === "reserved" ? " is-reserved" : "";
-    return `
-      <tr class="business-row${selectedClass}${reservedClass}" data-business-number="${item.number}" tabindex="0" aria-selected="${item.number === selectedNumber}">
-        <td>
-          <div class="business-id">
-            <span class="business-number">${pad(item.number)}</span>
-            <span class="business-title">
-              <strong>${item.title}</strong>
-              <span>${item.koreanTitle}</span>
-            </span>
-          </div>
-        </td>
-        <td><span class="status-badge status-${item.state}">${stateLabel(item.state)}</span></td>
-        <td class="progress-cell">
-          <div class="progress-label"><span>${t("demoShort")}</span><span>${item.progress}%</span></div>
-          <div class="progress-track"><i style="width:${item.progress}%"></i></div>
-        </td>
-        <td class="mono-cell">${item.surfaceType}</td>
-        <td class="mono-cell">${item.githubLabel}</td>
-        <td class="action-cell">${item.nextAction}</td>
-      </tr>
-    `;
-  }
-
-  function renderTable() {
-    const visible = filteredBusinesses();
-    tableBody.innerHTML = visible.map(rowTemplate).join("") || `<tr><td colspan="6" class="empty-state">${t("noResults")}</td></tr>`;
-    $("#result-count").textContent = `${visible.length} ${t("rows")}`;
-
-    tableBody.querySelectorAll(".business-row").forEach((row) => {
-      const select = () => selectBusiness(Number(row.dataset.businessNumber));
-      row.addEventListener("click", select);
-      row.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          select();
-        }
-      });
-    });
-  }
-
-  function configureLink(selector, url) {
-    const link = $(selector);
-    if (url) {
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.tabIndex = 0;
-      link.classList.remove("is-disabled");
-      link.removeAttribute("aria-disabled");
-    } else {
-      link.removeAttribute("href");
-      link.removeAttribute("target");
-      link.removeAttribute("rel");
-      link.tabIndex = -1;
-      link.classList.add("is-disabled");
-      link.setAttribute("aria-disabled", "true");
-    }
-  }
-
-  function selectBusiness(number) {
-    const item = businesses.find((business) => business.number === number);
-    if (!item) return;
-    selectedNumber = number;
-    $("#detail-number").textContent = `${t("business")} ${pad(item.number)}`;
-    $("#detail-status").className = `status-badge status-${item.state}`;
-    $("#detail-status").textContent = stateLabel(item.state);
-    $("#detail-title").textContent = item.title;
-    $("#detail-korean").textContent = item.koreanTitle;
-    $("#detail-progress-value").textContent = `${item.progress}%`;
-    $("#detail-progress-bar").style.width = `${item.progress}%`;
-    $("#detail-lifecycle").textContent = item.lifecycle;
-    $("#detail-workspace").textContent = item.workspace;
-    $("#detail-deployment").textContent = item.deployment;
-    $("#detail-github").textContent = item.githubLabel;
-    $("#detail-verified").textContent = item.lastVerified;
-    $("#detail-next-action").textContent = item.nextAction;
-    configureLink("#surface-link", item.surfaceUrl);
-    configureLink("#github-link", item.githubUrl);
-    configureLink("#issue-link", item.issueUrl);
-    $("#action-note").textContent = item.surfaceUrl
-      ? t("actionNoteWithSurface")
-      : t("actionNoteNoSurface");
-    renderTable();
-  }
-
-  function renderPriorityActions() {
-    const actions = businesses
-      .filter((item) => item.priority > 0 && item.state !== "reserved")
-      .sort((a, b) => b.priority - a.priority)
-      .slice(0, 6);
-
-    $("#priority-count").textContent = `${actions.length} ${t("items")}`;
-    $("#priority-list").innerHTML = actions.map((item) => `
-      <button class="priority-item" type="button" data-priority-number="${item.number}">
-        <span class="priority-number">BIZ ${pad(item.number)}</span>
-        <span class="priority-title">${item.title}</span>
-        <span class="priority-action">${item.nextAction}</span>
-        <span class="priority-score">P${item.priority}</span>
-      </button>
-    `).join("");
-
-    document.querySelectorAll("[data-priority-number]").forEach((button) => {
-      button.addEventListener("click", () => selectBusiness(Number(button.dataset.priorityNumber)));
-    });
-  }
-
-  [searchInput, stateFilter, sortControl].forEach((control) => {
-    control.addEventListener(control === searchInput ? "input" : "change", renderTable);
-  });
-
-  function computeProjectProgress(item) {
-    const progress = computeProgress(item.milestoneTasks);
-    if (!progress.hasProgress) return null;
-    return progress.progressPercent;
-  }
-
-  function sortedProjects(items, sortValue) {
-    if (sortValue === "default") return items;
-    return items.slice().sort((a, b) => {
-      const progressA = computeProjectProgress(a);
-      const progressB = computeProjectProgress(b);
-      if (progressA === null && progressB === null) return 0;
-      if (progressA === null) return 1;
-      if (progressB === null) return -1;
-      if (sortValue === "progress-desc") return progressB - progressA;
-      return progressA - progressB;
-    });
+  function formatProjectUnitCount(count) {
+    return currentLang === 'ko' ? `${count}개` : `${count} projects`;
   }
 
   function formatResultCount(total, visible) {
-    if (currentLang === "ko") {
-      return `${total}${t("projects")} 중 ${visible}${t("projects")}`;
-    }
-    return `${visible} of ${total} ${t("projects")}`;
+    if (currentLang === 'ko') return `${total}개 중 ${visible}개`;
+    return `${visible} of ${total} projects`;
   }
 
-  function filteredProjects() {
-    const query = ($("#pd-search-input")?.value || "").trim().toLowerCase();
-    const stage = $("#pd-stage-filter")?.value || "all";
-    const devMode = $("#pd-dev-mode-filter")?.value || "all";
-    const sort = $("#pd-sort-filter")?.value || "default";
-    const filtered = projects.filter((item) => {
-      const haystack = `${item.name} ${item.koreanName} ${item.businessNumber || ""} ${item.purpose} ${item.repositoryLabel} ${item.workspace} ${item.currentWork} ${item.nextAction}`.toLowerCase();
-      return (!query || haystack.includes(query)) && (stage === "all" || item.stage === stage) && (devMode === "all" || item.developmentMode === devMode);
+  function isWIP(p) {
+    return ['building', 'review'].includes(p.stage) || ['active-development', 'needs-improvement'].includes(p.developmentMode);
+  }
+  function isReviewGroup(p) {
+    return p.developmentMode === 'needs-improvement' || p.stage === 'review';
+  }
+  function isActiveGroup(p) {
+    if (isReviewGroup(p)) return false;
+    return ['active-development', 'building'].includes(p.developmentMode) || p.stage === 'building';
+  }
+
+  // ── Theme ──
+  function initTheme() {
+    const stored = localStorage.getItem('arl-portfolio-theme');
+    const theme = (stored === 'dark' || stored === 'light') ? stored : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = $('#theme-toggle');
+    if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    return theme;
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem("arl-portfolio-theme", next);
+    const btn = $('#theme-toggle');
+    if (btn) btn.textContent = next === 'dark' ? '🌙' : '☀️';
+  }
+
+  // ── Language ──
+  function setLanguage(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang === 'en' ? 'en' : 'ko';
+    $$('.lang-btn').forEach(b => b.classList.toggle('is-active', b.dataset.lang === lang));
+    // Update nav labels
+    $$('.nav-label').forEach(el => {
+      const label = el.dataset[`label${lang === 'ko' ? 'Ko' : 'En'}`];
+      if (label) el.textContent = label;
     });
-    return sortedProjects(filtered, sort);
+    // Update misc labels
+    const searchLabel = $('.search-label');
+    if (searchLabel) searchLabel.textContent = t('search');
+    $$('.filter-label').forEach(el => {
+      if (el.parentElement?.querySelector('#sf-stage-filter')) el.textContent = t('stage');
+      else if (el.parentElement?.querySelector('#sf-devmode-filter')) el.textContent = t('devMode');
+      else if (el.parentElement?.querySelector('#sf-sort-filter')) el.textContent = t('sort');
+    });
+    const searchInput = $('#sf-search-input');
+    if (searchInput) searchInput.placeholder = t('search');
+    const resetBtn = $('#sf-reset-filter');
+    if (resetBtn) resetBtn.textContent = t('reset');
+    const prefix = $('#header-prefix');
+    if (prefix) {
+      prefix.textContent = prefix.dataset[`prefix${lang === 'ko' ? 'Ko' : 'En'}`] || prefix.textContent;
+    }
+    const bizSearch = $('#biz-search-input');
+    if (bizSearch) bizSearch.placeholder = t('bizSearch');
+    // Update selects
+    updateSelectLabels();
+    // Re-render
+    renderProjects();
+    renderWorkView();
+    renderBusinessIndex();
+    updateActiveView();
+    updateHeaderCount();
   }
 
-  function projectCardTemplate(item) {
-    const selectedClass = item.id === selectedProjectId ? " is-selected" : "";
-    const bizLabel = item.businessNumber ? `BIZ ${pad(item.businessNumber)}` : "";
-    const hasPageUrl = Boolean(item.pageUrl);
-    const undeployedBadge = hasPageUrl
-      ? ""
-      : `<span class="pd-card-undeployed" title="${t('notDeployed')}">${t('notDeployed')}</span>`;
-    const progress = computeProgress(item.milestoneTasks);
-    const milestoneSection = progress.hasProgress
-      ? `<div class="pd-card-milestone">
-          <span class="pd-card-milestone-name">${item.currentMilestone}</span>
-          <div class="pd-card-progress-row">
-            <span class="pd-card-pct">${t("doneShort")} ${progress.progressPercent}%</span>
-            <span class="pd-card-pct">${t("remainingShort")} ${progress.remainingPercent}%</span>
-          </div>
-          <div class="pd-card-bar"><i style="width:${progress.progressPercent}%"></i></div>
-        </div>`
-      : `<div class="pd-card-milestone pd-card-milestone-undefined">
-          <span>${t("progressUndefined")}</span>
-          <span>${t("goalDefinitionNeeded")}</span>
-        </div>`;
-    const cardBody = `
-      <div class="pd-card-top">
-        <span class="pd-card-name">${item.name}</span>
-        <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
-        ${undeployedBadge}
-      </div>
-      <span class="pd-card-korean">${item.koreanName}${bizLabel ? ` · ${bizLabel}` : ""}</span>
-      <div class="pd-card-badges">
-        <span class="pd-mode-badge">${developmentModeLabel(item.developmentMode)}</span>
-      </div>
-      ${milestoneSection}
-      <div class="pd-card-meta">
-        <span>${item.repositoryLabel}</span>
-        <span>${item.workspace}</span>
-      </div>
-      <span class="pd-card-work">${item.currentWork}</span>
-      <span class="pd-card-next">${item.nextAction}</span>
-    `;
-
-    if (hasPageUrl) {
-      return `
-        <article class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="true">
-          <a class="pd-card-service-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">
-            ${cardBody}
-          </a>
-          <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
-        </article>
-      `;
+  function updateSelectLabels() {
+    // Stage filter
+    const stageF = $('#sf-stage-filter');
+    if (stageF) {
+      stageF.options[0].textContent = t('all');
+      stageF.options[1].textContent = stageLabel('live');
+      stageF.options[2].textContent = stageLabel('building');
+      stageF.options[3].textContent = stageLabel('review');
+      stageF.options[4].textContent = stageLabel('planned');
+      stageF.options[5].textContent = stageLabel('paused');
     }
+    // Dev mode filter
+    const devF = $('#sf-devmode-filter');
+    if (devF) {
+      devF.options[0].textContent = t('all');
+      devF.options[1].textContent = devLabel('not-started');
+      devF.options[2].textContent = devLabel('active-development');
+      devF.options[3].textContent = devLabel('needs-improvement');
+      devF.options[4].textContent = devLabel('maintenance');
+      devF.options[5].textContent = devLabel('complete');
+      devF.options[6].textContent = devLabel('paused');
+    }
+    // Sort filter
+    const sortF = $('#sf-sort-filter');
+    if (sortF) {
+      sortF.options[0].textContent = t('sortDefault');
+      sortF.options[1].textContent = t('sortProgressDesc');
+      sortF.options[2].textContent = t('sortProgressAsc');
+    }
+    // Business state filter
+    const bsF = $('#biz-state-filter');
+    if (bsF) {
+      bsF.options[0].textContent = t('allStates');
+      bsF.options[1].textContent = t('running');
+      bsF.options[2].textContent = t('reviewBuild');
+      bsF.options[3].textContent = t('planning');
+      bsF.options[4].textContent = t('reserved');
+    }
+    // Business sort
+    const bSort = $('#biz-sort');
+    if (bSort) {
+      bSort.options[0].textContent = t('numberAsc');
+      bSort.options[1].textContent = t('numberDesc');
+      bSort.options[2].textContent = t('actionPriority');
+      bSort.options[3].textContent = t('progressSort');
+    }
+  }
+
+  // ── View navigation ──
+  function switchView(view) {
+    if (!views.includes(view)) return;
+    activeView = view;
+    // Hide all views
+    views.forEach(v => {
+      const el = $(`#view-${v}`);
+      if (el) el.hidden = v !== view;
+    });
+    // Clear search grid when leaving search view
+    if (view !== 'search') {
+      const searchGrid = $('#search-grid');
+      if (searchGrid) searchGrid.innerHTML = '';
+    }
+    // Update nav buttons
+    $$('.view-nav-item').forEach(btn => {
+      const isActive = btn.dataset.view === view;
+      btn.classList.toggle('is-active', isActive);
+      if (isActive) btn.setAttribute('aria-current', 'page');
+      else btn.removeAttribute('aria-current');
+    });
+    const viewMap = { projects: renderProjects, search: renderSearchView, work: renderWorkView, business: renderBusinessIndex };
+    const renderFn = viewMap[view];
+    if (renderFn) renderFn();
+    updateCounts();
+    closeDrawer();
+  }
+
+  function updateActiveView() {
+    views.forEach(v => {
+      const el = $(`#view-${v}`);
+      if (el) el.hidden = v !== activeView;
+    });
+  }
+
+  // ── Update counts ──
+  function updateHeaderCount() {
+    const badge = $('#header-count');
+    if (!badge) return;
+    const count = activeView === 'search'
+      ? t('searchCount', { n: projects.length, m: filteredProjects().length })
+      : activeView === 'work'
+        ? `${t('workInProgress')} ${wipProjects().length}`
+        : activeView === 'business'
+          ? `${t('bizLabel')} ${businesses.length}`
+          : t('projectCount', { n: projects.length });
+    badge.textContent = count;
+  }
+  const updateCounts = updateHeaderCount;
+
+  // ── Project card ──
+  function projectCardHTML(item) {
+    const biz = bizDisplay(item);
+    const isProject = item.businessNumber == null;
+    const progress = computeProgress(item.milestoneTasks);
+    const hasPage = Boolean(item.pageUrl);
+    const stageCls = `pd-card-stage-${item.stage}`;
 
     return `
-      <article class="pd-card${selectedClass}" data-project-id="${item.id}" data-has-page-url="false">
-        <div class="pd-card-main">
-          ${cardBody}
+      <article class="pd-card" data-project-id="${item.id}" tabindex="0" aria-label="${item.name}">
+        <div class="pd-card-biznumber ${isProject ? 'project-label' : ''}">${biz}</div>
+        <div class="pd-card-top">
+          <span class="pd-card-name">${item.name}</span>
+          <span class="pd-card-stage status-badge ${stageCls}">${stageLabel(item.stage)}</span>
         </div>
-        <button type="button" class="pd-card-detail-btn" aria-label="${t('viewDetail')}">${t('viewDetail')}</button>
+        <span class="pd-card-korean">${item.koreanName}</span>
+        <span class="pd-card-purpose">${item.purpose || ''}</span>
+        <span class="pd-card-milestone ${!progress ? 'pd-card-milestone-undefined' : ''}">
+          ${progress ? `${item.currentMilestone || ''} — ${progress.pct}%` : `${t('progressUndefined')} · ${t('goalDefNeeded')}`}
+        </span>
+        <span class="pd-card-currentwork">${item.currentWork || ''}</span>
+        <div class="pd-card-meta">
+          <span class="pd-card-devmode">${devLabel(item.developmentMode)}</span>
+        </div>
+        <div class="pd-card-actions">
+          <button type="button" class="pd-card-detail-btn" data-project-id="${item.id}" data-label-detail="${t('viewDetail')}">${t('viewDetail')}</button>
+          ${hasPage ? `<a class="pd-card-service-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
+        </div>
       </article>
     `;
   }
 
-  function renderProjectDirectory() {
-    const grid = $("#pd-grid");
+  // ── Filter helpers ──
+  function filteredProjects() {
+    const query = ($('#sf-search-input')?.value || '').trim().toLowerCase();
+    const stage = $('#sf-stage-filter')?.value || 'all';
+    const devMode = $('#sf-devmode-filter')?.value || 'all';
+    const sort = $('#sf-sort-filter')?.value || 'default';
+
+    let result = projects.filter(p => {
+      const haystack = `${p.name} ${p.koreanName} ${p.businessNumber || ''} ${p.purpose || ''} ${p.repositoryLabel || ''} ${p.workspace || ''} ${p.currentWork || ''} ${p.nextAction || ''}`.toLowerCase();
+      return (!query || haystack.includes(query)) &&
+        (stage === 'all' || p.stage === stage) &&
+        (devMode === 'all' || p.developmentMode === devMode);
+    });
+
+    if (sort === 'progress-desc' || sort === 'progress-asc') {
+      result = result.slice().sort((a, b) => {
+        const pa = computeProgress(a.milestoneTasks);
+        const pb = computeProgress(b.milestoneTasks);
+        const va = pa ? pa.pct : -1;
+        const vb = pb ? pb.pct : -1;
+        return sort === 'progress-desc' ? vb - va : va - vb;
+      });
+    }
+    return result;
+  }
+
+  function wipProjects() {
+    return projects.filter(isWIP);
+  }
+
+  // ── Render projects ──
+  function renderProjects() {
+    const gridId = activeView === 'search' ? 'search-grid' : 'pd-grid';
+    const grid = $(`#${gridId}`);
     if (!grid) return;
-    const visible = filteredProjects();
-    grid.innerHTML = visible.map(projectCardTemplate).join("") || `<div class="empty-state">${t("noProjects")}</div>`;
-    $("#project-count").textContent = formatResultCount(projects.length, visible.length);
-    $("#pd-result-count").textContent = formatResultCount(projects.length, visible.length);
+    const visible = activeView === 'search' ? filteredProjects() : projects;
+    grid.innerHTML = visible.map(projectCardHTML).join('');
+    attachCardEvents(grid);
+  }
 
-    grid.querySelectorAll(".pd-card").forEach((card) => {
-      const projectId = card.dataset.projectId;
-      const hasPageUrl = card.dataset.hasPageUrl === "true";
+  function renderSearchView() {
+    renderProjects();
+  }
 
-      card.addEventListener("click", (event) => {
-        if (event.target.closest(".pd-card-detail-btn")) {
-          selectProject(projectId);
-          return;
+  function attachCardEvents(grid) {
+    grid.querySelectorAll('.pd-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.pd-card-detail-btn') || e.target.closest('.pd-card-service-link')) return;
+        const id = card.dataset.projectId;
+        openProjectDialog(id);
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const id = card.dataset.projectId;
+          openProjectDialog(id);
         }
-        if (!hasPageUrl) {
-          selectProject(projectId);
-        }
+      });
+    });
+    grid.querySelectorAll('.pd-card-detail-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openProjectDialog(btn.dataset.projectId);
       });
     });
   }
 
-  function configureProjectLink(selector, url) {
-    const link = $(selector);
-    if (!link) return;
-    if (url) {
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.tabIndex = 0;
-      link.classList.remove("is-disabled");
-      link.removeAttribute("aria-disabled");
-    } else {
-      link.removeAttribute("href");
-      link.removeAttribute("target");
-      link.removeAttribute("rel");
-      link.tabIndex = -1;
-      link.classList.add("is-disabled");
-      link.setAttribute("aria-disabled", "true");
-    }
-  }
-
-  function selectProject(id) {
-    const item = projects.find((project) => project.id === id);
-    if (!item) return;
-    selectedProjectId = id;
-    $("#pd-detail-badge").className = `status-badge status-${item.stage}`;
-    $("#pd-detail-badge").textContent = stageLabel(item.stage);
-    $("#pd-detail-biz").textContent = item.businessNumber ? `${t("business")} ${pad(item.businessNumber)}` : "";
-    $("#pd-detail-title").textContent = item.name;
-    $("#pd-detail-korean").textContent = item.koreanName;
-    $("#pd-detail-purpose").textContent = item.purpose;
-    $("#pd-detail-repo").textContent = item.repositoryLabel;
-    $("#pd-detail-workspace").textContent = item.workspace;
-    $("#pd-detail-page").textContent = item.pageUrl || t("notDeployed");
-    $("#pd-detail-mode").textContent = developmentModeLabel(item.developmentMode);
-    $("#pd-detail-milestone").textContent = item.currentMilestone || t("progressUndefined");
-    $("#pd-detail-basis").textContent = item.progressBasis || "—";
-    const progress = computeProgress(item.milestoneTasks);
-    if (progress.hasProgress) {
-      $("#pd-detail-progress").textContent = `${t("doneShort")} ${progress.progressPercent}% · ${t("remainingShort")} ${progress.remainingPercent}% (${progress.doneCount}/${progress.totalCount})`;
-      $("#pd-detail-progress-bar").style.width = `${progress.progressPercent}%`;
-      $("#pd-detail-progress-track").style.display = "";
-    } else {
-      $("#pd-detail-progress").textContent = `${t("progressUndefined")} · ${t("goalDefinitionNeeded")}`;
-      $("#pd-detail-progress-bar").style.width = "0%";
-      $("#pd-detail-progress-track").style.display = "none";
-    }
-    const doneTasks = item.milestoneTasks.filter(task => task.done);
-    const remainingTasks = item.milestoneTasks.filter(task => !task.done);
-    $("#pd-detail-done-tasks").innerHTML = doneTasks.length > 0
-      ? doneTasks.map(task => `<li>${task.label} — ${task.evidence}</li>`).join("")
-      : `<li>—</li>`;
-    $("#pd-detail-remaining-tasks").innerHTML = remainingTasks.length > 0
-      ? remainingTasks.map(task => `<li>${task.label} — ${task.evidence}</li>`).join("")
-      : `<li>—</li>`;
-    $("#pd-detail-blockers").textContent = item.blockers.length > 0 ? item.blockers.join(", ") : "—";
-    $("#pd-detail-current").textContent = item.currentWork;
-    $("#pd-detail-verified").textContent = item.lastVerified;
-    $("#pd-detail-next").textContent = item.nextAction;
-    configureProjectLink("#pd-page-link", item.pageUrl);
-    configureProjectLink("#pd-repo-link", item.repositoryUrl);
-    const copyBtn = $("#pd-copy-workspace");
-    if (item.workspace === "확인 필요") {
-      copyBtn.disabled = true;
-      copyBtn.classList.add("is-disabled");
-    } else {
-      copyBtn.disabled = false;
-      copyBtn.classList.remove("is-disabled");
-    }
-    $("#pd-copy-note").textContent = "";
-    renderProjectDirectory();
-  }
-
-  function initProjectDirectory() {
-    const pdSearch = $("#pd-search-input");
-    const pdStage = $("#pd-stage-filter");
-    const pdDevMode = $("#pd-dev-mode-filter");
-    const pdSort = $("#pd-sort-filter");
-    const pdReset = $("#pd-reset-filter");
-    if (pdSearch) pdSearch.addEventListener("input", renderProjectDirectory);
-    if (pdStage) pdStage.addEventListener("change", renderProjectDirectory);
-    if (pdDevMode) pdDevMode.addEventListener("change", renderProjectDirectory);
-    if (pdSort) pdSort.addEventListener("change", renderProjectDirectory);
-
-    if (pdReset) {
-      pdReset.addEventListener("click", resetFilters);
-    }
-
-    const copyButton = $("#pd-copy-workspace");
-    if (copyButton) {
-      copyButton.addEventListener("click", () => {
-        const item = projects.find((project) => project.id === selectedProjectId);
-        if (!item) return;
-
-        if (!navigator.clipboard || !navigator.clipboard.writeText) {
-          $("#pd-copy-note").textContent = t("copyFail");
-          setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
-          return;
-        }
-
-        navigator.clipboard.writeText(item.workspace).then(() => {
-          $("#pd-copy-note").textContent = `${t("copySuccess")}: ${item.workspace}`;
-          setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
-        }).catch(() => {
-          $("#pd-copy-note").textContent = t("copyFail");
-          setTimeout(() => { $("#pd-copy-note").textContent = ""; }, 2000);
-        });
-       });
-     }
-   }
-
-  function resetFilters() {
-    const searchInput = $("#pd-search-input");
-    const stageFilter = $("#pd-stage-filter");
-    const devModeFilter = $("#pd-dev-mode-filter");
-    const sortFilter = $("#pd-sort-filter");
-    if (searchInput) searchInput.value = "";
-    if (stageFilter) stageFilter.value = "all";
-    if (devModeFilter) devModeFilter.value = "all";
-    if (sortFilter) sortFilter.value = "default";
-    renderProjectDirectory();
-  }
-
-  function openSearchPanel() {
-    const panel = $("#project-search-panel");
-    const trigger = document.querySelector('[data-project-view="search"]');
-    if (!panel || !trigger) return;
-    const workView = $("#project-work-view");
-    if (workView) workView.hidden = true;
-    const grid = $("#pd-grid");
-    if (grid) grid.style.display = "";
-    panel.hidden = false;
-    trigger.setAttribute("aria-expanded", "true");
-    setActiveProjectView("search");
-    const searchInput = $("#pd-search-input");
-    if (searchInput) searchInput.focus();
-  }
-
-  function closeSearchPanel({ restoreFocus = true, setProjectsActive = true } = {}) {
-    const panel = $("#project-search-panel");
-    const trigger =
-      document.querySelector('[data-project-view="search"]');
-
-    if (!panel || !trigger) return;
-
-    panel.hidden = true;
-    trigger.setAttribute("aria-expanded", "false");
-
-    if (setProjectsActive) {
-      setActiveProjectView("projects");
-    }
-
-    if (restoreFocus) {
-      trigger.focus();
-    }
-  }
-
-  function setActiveProjectView(view) {
-    document.querySelectorAll(".project-nav-item").forEach(button => {
-      const active = button.dataset.projectView === view;
-      button.classList.toggle("is-active", active);
-
-      if (active) {
-        button.setAttribute("aria-current", "page");
-      } else {
-        button.removeAttribute("aria-current");
-      }
-    });
-  }
-
-  function formatProjectUnitCount(count) {
-    return currentLang === "ko"
-      ? `${count}개`
-      : `${count} projects`;
-  }
-
-  function renderWorkInProgressView() {
-    const wipProjects = projects.filter(isWorkInProgress);
-    const reviewGroup = wipProjects.filter(isReviewImprovementGroup);
-    const activeGroup = wipProjects.filter(isActiveDevelopmentGroup);
-    const blockedCount = wipProjects.filter(p => Array.isArray(p.blockers) && p.blockers.length > 0).length;
-
-    const queue = $("#work-queue");
+  // ── Work view ──
+  function renderWorkView() {
+    const queue = $('#work-queue');
     if (!queue) return;
+    const wip = wipProjects();
+    const review = wip.filter(isReviewGroup);
+    const active = wip.filter(isActiveGroup);
+    const summary = $('#work-summary-text');
+    if (summary) summary.textContent = t('workSummary', { total: wip.length, review: review.length, active: active.length });
 
-    $("#work-view-count").textContent = formatProjectUnitCount(wipProjects.length);
-    $("#work-stats-total").textContent = `${t("workInProgress")} ${wipProjects.length}`;
-    $("#work-stats-review").textContent = `${t("reviewImprovement")} ${reviewGroup.length}`;
-    $("#work-stats-active").textContent = `${t("activeDevelopment")} ${activeGroup.length}`;
-    $("#work-stats-blocked").textContent = `${t("blockedProjects")} ${blockedCount}`;
-
-    function workItemTemplate(item) {
+    function wipItemHTML(item) {
       const progress = computeProgress(item.milestoneTasks);
-      const bizLabel = item.businessNumber ? ` · BIZ ${pad(item.businessNumber)}` : "";
-      const milestoneInfo = progress.hasProgress
-        ? `${item.currentMilestone} — ${t("doneShort")} ${progress.progressPercent}% / ${t("remainingShort")} ${progress.remainingPercent}%`
-        : `${t("progressUndefined")} · ${t("goalDefinitionNeeded")}`;
-      const hasPageUrl = Boolean(item.pageUrl);
-      const hasRepoUrl = Boolean(item.repositoryUrl);
-      const blockersText = Array.isArray(item.blockers) && item.blockers.length > 0 ? item.blockers.join(", ") : "";
-      const nameId = `work-item-name-${item.id}`;
-
-      let actionsHtml = "";
-      if (hasPageUrl) {
-        actionsHtml += `<a class="work-item-link work-item-service-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t("openService")}</a>`;
-      }
-      if (hasRepoUrl) {
-        actionsHtml += `<a class="work-item-link work-item-repo-link" href="${item.repositoryUrl}" target="_blank" rel="noopener noreferrer">${t("openRepository")}</a>`;
-      }
-
+      const stageCls = `pd-card-stage-${item.stage}`;
       return `
-        <article class="work-item" data-project-id="${item.id}" aria-labelledby="${nameId}">
+        <div class="work-item" data-project-id="${item.id}">
           <div class="work-item-top">
-            <span id="${nameId}" class="work-item-name">${item.name}</span>
-            <span class="status-badge status-${item.stage}">${stageLabel(item.stage)}</span>
-            <span class="pd-mode-badge">${developmentModeLabel(item.developmentMode)}</span>
+            <span class="work-item-name">${item.name}</span>
+            <span class="pd-card-stage status-badge ${stageCls}">${stageLabel(item.stage)}</span>
+            <span class="pd-card-devmode">${devLabel(item.developmentMode)}</span>
           </div>
-          <span class="work-item-korean">${item.koreanName}${bizLabel}</span>
-          <div class="work-item-milestone${progress.hasProgress ? "" : " work-item-milestone-undefined"}">${milestoneInfo}</div>
-          <div class="work-item-detail">
-            <span class="work-item-label">${t("currentWork")}</span>
-            <span class="work-item-value">${item.currentWork}</span>
-          </div>
-          <div class="work-item-detail">
-            <span class="work-item-label">${t("nextAction")}</span>
-            <span class="work-item-value">${item.nextAction}</span>
-          </div>
-          ${blockersText ? `<div class="work-item-detail"><span class="work-item-label work-item-blocker-label">${t("blockersLabel")}</span><span class="work-item-value work-item-blocker-value">${blockersText}</span></div>` : ""}
-          <div class="work-item-detail">
-            <span class="work-item-label">${t("lastVerified")}</span>
-            <span class="work-item-value">${item.lastVerified}</span>
-          </div>
+          <span class="work-item-korean">${item.koreanName}</span>
+          <span class="work-item-purpose">${item.purpose || ''}</span>
+          <span class="work-item-current">${item.currentWork || ''}</span>
+          <span class="work-item-progress">${progress ? `— ${progress.pct}% (${progress.done}/${progress.total})` : ''}</span>
           <div class="work-item-actions">
-            <button type="button" class="work-item-detail-btn" data-project-id="${item.id}" aria-label="${t("viewDetail")} ${item.name}">${t("viewDetail")}</button>
-            ${actionsHtml}
+            <button type="button" class="work-item-btn work-detail-btn" data-project-id="${item.id}">${t('viewDetail')}</button>
+            ${item.pageUrl ? `<a class="work-item-btn" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">${t('openService')}</a>` : ''}
           </div>
-        </article>
+        </div>
       `;
     }
 
-    const reviewHtml = reviewGroup.map(workItemTemplate).join("");
-    const activeHtml = activeGroup.map(workItemTemplate).join("");
+    queue.innerHTML = wip.map(wipItemHTML).join('');
+    queue.querySelectorAll('.work-detail-btn').forEach(btn => {
+      btn.addEventListener('click', () => openProjectDialog(btn.dataset.projectId));
+    });
+  }
 
-    queue.innerHTML = `
-      ${reviewGroup.length > 0 ? `<div class="work-group"><div class="work-group-heading">${t("reviewImprovement")} (${reviewGroup.length})</div><div class="work-group-items">${reviewHtml}</div></div>` : ""}
-      ${activeGroup.length > 0 ? `<div class="work-group"><div class="work-group-heading">${t("activeDevelopment")} (${activeGroup.length})</div><div class="work-group-items">${activeHtml}</div></div>` : ""}
-      ${wipProjects.length === 0 ? `<div class="empty-state">${t("noWorkInProgress")}</div>` : ""}
-    `;
+  // ── Business view ──
+  function filteredBusinesses() {
+    const query = ($('#biz-search-input')?.value || '').trim().toLowerCase();
+    const state = $('#biz-state-filter')?.value || 'all';
+    const sort = $('#biz-sort')?.value || 'number-asc';
 
-    queue.querySelectorAll(".work-item-detail-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        selectProject(btn.dataset.projectId);
-        showProjectsView();
+    let result = businesses.filter(b => {
+      const haystack = `${b.number} ${pad(b.number)} ${b.title} ${b.koreanTitle} ${b.slug}`.toLowerCase();
+      return (!query || haystack.includes(query)) && (state === 'all' || b.state === state);
+    });
+
+    result = result.slice().sort((a, b) => {
+      if (sort === 'number-desc') return b.number - a.number;
+      if (sort === 'priority') return (b.priority || 0) - (a.priority || 0) || a.number - b.number;
+      if (sort === 'progress') return (b.progress || 0) - (a.progress || 0) || a.number - b.number;
+      return a.number - b.number;
+    });
+    return result;
+  }
+
+  function renderBusinessIndex() {
+    const list = $('#biz-list');
+    if (!list) return;
+    const visible = filteredBusinesses();
+
+    list.innerHTML = visible.map(b => {
+      const reserved = b.state === 'reserved' ? ' is-reserved' : '';
+      const stateCls = `status-${b.state}`;
+      return `
+        <div class="biz-item${reserved}" data-biz-number="${b.number}" tabindex="0">
+          <span class="biz-number">${pad(b.number)}</span>
+          <div class="biz-title-group">
+            <span class="biz-title">${b.title}</span>
+            <span class="biz-korean">${b.koreanTitle}</span>
+          </div>
+          <span class="biz-state status-badge ${stateCls}">${stateLabel(b.state)}</span>
+          <div class="biz-progress">
+            <span>${b.progress}%</span>
+            <div class="biz-progress-bar"><i style="width:${b.progress}%"></i></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.biz-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const num = Number(item.dataset.bizNumber);
+        const biz = businesses.find(b => b.number === num);
+        if (biz) openBusinessDialog(biz);
+      });
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const num = Number(item.dataset.bizNumber);
+          const biz = businesses.find(b => b.number === num);
+          if (biz) openBusinessDialog(biz);
+        }
       });
     });
+
+    const headerBadge = $('#header-count');
+    if (headerBadge) headerBadge.textContent = `${t('bizLabel')} ${visible.length}`;
   }
 
-  function showWorkView() {
-    closeSearchPanel({ setProjectsActive: false });
-    const grid = $("#pd-grid");
-    const workView = $("#project-work-view");
-    if (grid) grid.style.display = "none";
-    if (workView) workView.hidden = false;
-    setActiveProjectView("work");
-    renderWorkInProgressView();
-    const heading = $("#work-view-heading");
-    if (heading) heading.focus();
-  }
+  // ── Dialog ──
+  let lastFocused = null;
 
-  function showProjectsView() {
-    const workView = $("#project-work-view");
-    const grid = $("#pd-grid");
-    if (workView) workView.hidden = true;
-    if (grid) grid.style.display = "";
-    closeSearchPanel({ setProjectsActive: true, restoreFocus: false });
-  }
+  function openProjectDialog(projectId) {
+    const item = projects.find(p => p.id === projectId);
+    if (!item) return;
+    selectedProjectId = projectId;
+    lastFocused = document.activeElement;
+    const dialog = $('#project-dialog');
+    if (!dialog) return;
 
-  function updateProjectNavLabels() {
-    $("#nav-projects").textContent = t("projectStatus");
-    $("#nav-search-filter").textContent = t("searchFilter");
-    $("#nav-work-in-progress").textContent = t("workInProgress");
-    $("#project-search-title").textContent = t("searchFilter");
-    $("#pd-reset-filter").textContent = t("reset");
-    $("#pd-search-input").placeholder = t("searchPlaceholder");
-    $("#project-search-close").setAttribute("aria-label", t("closePanel"));
-    $("#pd-stage-filter option[value='all']").textContent = t("all");
-    $("#pd-stage-filter option[value='live']").textContent = stageLabel("live");
-    $("#pd-stage-filter option[value='building']").textContent = stageLabel("building");
-    $("#pd-stage-filter option[value='review']").textContent = stageLabel("review");
-    $("#pd-stage-filter option[value='planned']").textContent = stageLabel("planned");
-    $("#pd-stage-filter option[value='paused']").textContent = stageLabel("paused");
-    $("#pd-dev-mode-filter option[value='all']").textContent = t("all");
-    $("#pd-dev-mode-filter option[value='not-started']").textContent = developmentModeLabel("not-started");
-    $("#pd-dev-mode-filter option[value='active-development']").textContent = developmentModeLabel("active-development");
-    $("#pd-dev-mode-filter option[value='needs-improvement']").textContent = developmentModeLabel("needs-improvement");
-    $("#pd-dev-mode-filter option[value='maintenance']").textContent = developmentModeLabel("maintenance");
-    $("#pd-dev-mode-filter option[value='complete']").textContent = developmentModeLabel("complete");
-    $("#pd-dev-mode-filter option[value='paused']").textContent = developmentModeLabel("paused");
-    $("#pd-sort-filter option[value='default']").textContent = t("sortDefault");
-    $("#pd-sort-filter option[value='progress-desc']").textContent = t("sortProgressDesc");
-    $("#pd-sort-filter option[value='progress-asc']").textContent = t("sortProgressAsc");
-  }
+    const body = $('#dialog-body');
+    const title = $('#dialog-title');
+    if (!body || !title) return;
 
-  function updateStaticLabels() {
-    $("#topbar-title").textContent = t("businessOperations");
-    $("#project-directory-heading").textContent = t("projectDirectory");
-    $("#registry-heading").textContent = t("businessRegistry");
-    $("#activity-heading").textContent = t("priorityActions");
-    $("#pd-search-label").textContent = t("search");
-    $("#pd-stage-label").textContent = t("stage");
-    $("#pd-dev-mode-label").textContent = t("devMode");
-    $("#pd-sort-label").textContent = t("sort");
-    $("#pd-detail-repo-label").textContent = t("repository");
-    $("#pd-detail-workspace-label").textContent = t("workspace");
-    $("#pd-detail-page-label").textContent = t("page");
-    $("#pd-detail-mode-label").textContent = t("devMode");
-    $("#pd-detail-milestone-label").textContent = t("milestone");
-    $("#pd-detail-basis-label").textContent = t("progressBasis");
-    $("#pd-detail-progress-label").textContent = t("progress");
-    $("#pd-detail-done-label").textContent = t("doneTasks");
-    $("#pd-detail-remaining-label").textContent = t("remainingTasks");
-    $("#pd-detail-blockers-label").textContent = t("blockersLabel");
-    $("#pd-detail-current-label").textContent = t("currentWork");
-    $("#pd-detail-verified-label").textContent = t("lastVerified");
-    $("#pd-next-action-label").textContent = t("nextAction");
-    $("#pd-page-link").textContent = t("openPage");
-    $("#pd-repo-link").textContent = t("openRepository");
-    $("#pd-copy-workspace").textContent = t("copyWorkspace");
-    $("#all-projects-label").textContent = t("allProjects");
-    $("#pd-stage-filter option[value='all']").textContent = t("all");
-    $("#pd-stage-filter option[value='live']").textContent = stageLabel("live");
-    $("#pd-stage-filter option[value='building']").textContent = stageLabel("building");
-    $("#pd-stage-filter option[value='review']").textContent = stageLabel("review");
-    $("#pd-stage-filter option[value='planned']").textContent = stageLabel("planned");
-    $("#pd-stage-filter option[value='paused']").textContent = stageLabel("paused");
-    $("#search-label").textContent = t("search");
-    $("#state-label").textContent = t("state");
-    $("#sort-label").textContent = t("sort");
-    $("#state-filter option[value='all']").textContent = t("allStates");
-    $("#state-filter option[value='running']").textContent = t("running");
-    $("#state-filter option[value='review']").textContent = t("reviewBuild");
-    $("#state-filter option[value='planning']").textContent = t("planning");
-    $("#state-filter option[value='reserved']").textContent = t("reserved");
-    $("#sort-control option[value='number-asc']").textContent = t("numberAsc");
-    $("#sort-control option[value='number-desc']").textContent = t("numberDesc");
-    $("#sort-control option[value='priority']").textContent = t("actionPriority");
-    $("#sort-control option[value='progress']").textContent = t("progressSort");
-    $("#th-business").textContent = t("business");
-    $("#th-state").textContent = t("state");
-    $("#th-progress").textContent = t("progress");
-    $("#th-surface").textContent = t("surface");
-    $("#th-github").textContent = t("github");
-    $("#th-next-action").textContent = t("nextActionCol");
-    $("#detail-progress-label").textContent = t("demoReadiness");
-    $("#detail-lifecycle-label").textContent = t("lifecycle");
-    $("#detail-workspace-label").textContent = t("workspace");
-    $("#detail-deployment-label").textContent = t("deployment");
-    $("#detail-github-label").textContent = t("github");
-    $("#detail-verified-label").textContent = t("lastVerified");
-    $("#detail-next-action-label").textContent = t("nextAction");
-    $("#surface-link").textContent = t("openSurface");
-    $("#github-link").textContent = t("openGithub");
-    $("#issue-link").textContent = t("openIssue");
-    $("#metric-tracked-label").textContent = t("tracked");
-    $("#metric-demo-label").textContent = t("demoSurfaces");
-    $("#metric-action-label").textContent = t("needsAction");
-    $("#metric-open-label").textContent = t("openSlots");
-    $("#metric-tracked-desc").textContent = t("trackedDesc");
-    $("#metric-demo-desc").textContent = t("demoDesc");
-    $("#metric-action-desc").textContent = t("actionDesc");
-    $("#metric-open-desc").textContent = t("openDesc");
-    $("#sidebar-mode-label").textContent = t("mode");
-    $("#sidebar-source-label").textContent = t("source");
-    $("#sidebar-range-label").textContent = t("range");
-    $("#sidebar-mode-value").textContent = t("manual");
-    $("#sidebar-source-value").textContent = t("staticRegistry");
-    $("#private-admin-label").textContent = t("privateAdmin");
-    $("#nav-businesses").textContent = t("businesses");
-    $("#nav-deployments").textContent = t("deployments");
-    $("#nav-models").textContent = t("modelsCost");
-    $("#nav-registry").textContent = t("registry");
-    $("#sync-state-text").textContent = t("registryLoaded");
-    $("#lang-ko").textContent = t("langKo");
-    $("#lang-en").textContent = t("langEn");
-    $("#work-view-heading").textContent = t("workInProgress");
-    $("#work-view-desc").textContent = t("workViewDesc");
-    updateProjectNavLabels();
-  }
+    const progress = computeProgress(item.milestoneTasks);
+    const isProject = item.businessNumber == null;
+    const biz = isProject ? t('project') : `B${pad(item.businessNumber)}`;
 
-  function setLanguage(lang) {
-    currentLang = lang;
-    document.documentElement.lang = lang === "en" ? "en" : "ko";
-    $("#lang-ko").classList.toggle("is-active", lang === "ko");
-    $("#lang-en").classList.toggle("is-active", lang === "en");
-    updateStaticLabels();
-    renderTable();
-    renderPriorityActions();
-    renderProjectDirectory();
-    const workView = $("#project-work-view");
-    if (workView && !workView.hidden) renderWorkInProgressView();
-    if (selectedNumber) selectBusiness(selectedNumber);
-    if (selectedProjectId) selectProject(selectedProjectId);
-  }
-
-  $("#refresh-button").addEventListener("click", () => window.location.reload());
-  document.querySelectorAll(".nav-item").forEach((item) => {
-    item.addEventListener("click", () => {
-      document.querySelectorAll(".nav-item").forEach((nav) => nav.classList.remove("is-active"));
-      item.classList.add("is-active");
-      if (item.dataset.view !== "businesses") {
-        $("#action-note").textContent = `${item.textContent.trim()} 화면은 다음 단계에서 연결할 수 있습니다.`;
-      }
-    });
-  });
-
-  $("#lang-ko").addEventListener("click", () => setLanguage("ko"));
-  $("#lang-en").addEventListener("click", () => setLanguage("en"));
-
-  const navProjectsBtn = document.querySelector('[data-project-view="projects"]');
-  const navSearchBtn = document.querySelector('[data-project-view="search"]');
-  const navWorkBtn = document.querySelector('[data-project-view="work"]');
-  const closePanelBtn = $("#project-search-close");
-
-  if (navProjectsBtn) {
-    navProjectsBtn.addEventListener("click", () => {
-      showProjectsView();
-      closeSearchPanel();
-      resetFilters();
-    });
-  }
-
-  if (navSearchBtn) {
-    navSearchBtn.addEventListener("click", () => {
-      showProjectsView();
-      openSearchPanel();
-    });
-  }
-
-  if (navWorkBtn) {
-    navWorkBtn.addEventListener("click", () => {
-      showWorkView();
-    });
-  }
-
-  if (closePanelBtn) {
-    closePanelBtn.addEventListener("click", () => {
-      closeSearchPanel();
-    });
-  }
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      const panel = $("#project-search-panel");
-      if (panel && !panel.hidden) {
-        closeSearchPanel();
-      }
+    let linksHTML = '';
+    if (item.pageUrl) linksHTML += `<a class="dialog-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>`;
+    if (item.repositoryUrl) linksHTML += `<a class="dialog-link" href="${item.repositoryUrl}" target="_blank" rel="noopener noreferrer">${t('repo')}</a>`;
+    if (item.workspace && item.workspace !== '확인 필요' && item.workspace !== '—') {
+      linksHTML += `<button type="button" class="dialog-link" id="dlg-copy-workspace" data-workspace="${item.workspace}">${t('copyWorkspace')}</button>`;
     }
-  });
 
-  updateMetrics();
-  updateStaticLabels();
-  renderTable();
-  renderPriorityActions();
-  renderProjectDirectory();
-  initProjectDirectory();
-  const firstAction = businesses.find((item) => item.priority === Math.max(...businesses.map((entry) => entry.priority)));
-  if (firstAction) selectBusiness(firstAction.number);
-  const firstProject = projects[0];
-  if (firstProject) selectProject(firstProject.id);
+    title.textContent = item.name;
+    body.innerHTML = `
+      <div class="dialog-biznumber">${biz}</div>
+      <div class="dialog-name">${item.name}</div>
+      <div class="dialog-korean">${item.koreanName}</div>
+      <hr class="dialog-divider">
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('purpose')}</span>
+        <span class="dialog-section-value">${item.purpose || '—'}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('stageLabel')}</span>
+        <span class="dialog-section-value"><span class="pd-card-stage pd-card-stage-${item.stage}">${stageLabel(item.stage)}</span> · ${devLabel(item.developmentMode)}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('milestone')}</span>
+        <span class="dialog-section-value">${item.currentMilestone || t('progressUndefined')} ${progress ? `— ${progress.pct}% (${progress.done}/${progress.total})` : ''}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('currentWork')}</span>
+        <span class="dialog-section-value">${item.currentWork || '—'}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('nextAction')}</span>
+        <span class="dialog-section-value">${item.nextAction || '—'}</span>
+      </div>
+      ${item.blockers?.length ? `<div class="dialog-section"><span class="dialog-section-label">${t('blocks')}</span><span class="dialog-section-value">${item.blockers.join(', ')}</span></div>` : ''}
+      <hr class="dialog-divider">
+      <div class="dialog-links">${linksHTML}</div>
+    `;
+
+    // Add workspace copy handler
+    const copyBtn = dialog.querySelector('#dlg-copy-workspace');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const ws = copyBtn.dataset.workspace;
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(ws);
+        }
+      });
+    }
+
+    dialog.showModal();
+    dialog.querySelector('.dialog-close-btn')?.focus();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function openBusinessDialog(biz) {
+    lastFocused = document.activeElement;
+    const dialog = $('#business-dialog');
+    if (!dialog) return;
+    const body = $('#biz-dialog-body');
+    const title = $('#biz-dialog-title');
+    if (!body || !title) return;
+
+    const stateCls = `status-${biz.state}`;
+    title.textContent = biz.title;
+    body.innerHTML = `
+      <div class="dialog-biznumber">B${pad(biz.number)}</div>
+      <div class="dialog-name">${biz.title}</div>
+      <div class="dialog-korean">${biz.koreanTitle}</div>
+      <hr class="dialog-divider">
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('statusLabel')}</span>
+        <span class="dialog-section-value"><span class="status-badge ${stateCls}">${stateLabel(biz.state)}</span></span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('progressLabel')}</span>
+        <span class="dialog-section-value">${biz.progress}%</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('nextAction')}</span>
+        <span class="dialog-section-value">${biz.nextAction || '—'}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('lastVerified')}</span>
+        <span class="dialog-section-value">${biz.lastVerified || '—'}</span>
+      </div>
+      <hr class="dialog-divider">
+      <div class="dialog-links">
+        ${biz.surfaceUrl ? `<a class="dialog-link" href="${biz.surfaceUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
+        ${biz.githubUrl ? `<a class="dialog-link" href="${biz.githubUrl}" target="_blank" rel="noopener noreferrer">GitHub</a>` : ''}
+      </div>
+    `;
+
+    dialog.showModal();
+    dialog.querySelector('#biz-dialog-close-btn')?.focus();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDialog(dialogId) {
+    const dialog = $(`#${dialogId || 'project-dialog'}`);
+    if (!dialog || !dialog.open) return;
+    dialog.close();
+    document.body.style.overflow = '';
+    // Restore focus
+    if (lastFocused && lastFocused.focus) {
+      setTimeout(() => lastFocused.focus(), 50);
+    }
+  }
+
+  // ── Mobile drawer ──
+  function openDrawer() {
+    const sidebar = $('#sidebar');
+    const overlay = $('#drawer-overlay');
+    if (sidebar) sidebar.classList.add('is-open');
+    if (overlay) overlay.classList.add('is-visible');
+  }
+
+  function closeDrawer() {
+    const sidebar = $('#sidebar');
+    const overlay = $('#drawer-overlay');
+    if (sidebar) sidebar.classList.remove('is-open');
+    if (overlay) overlay.classList.remove('is-visible');
+  }
+
+  // ── Init ──
+  function init() {
+    // Theme
+    initTheme();
+
+    // Language
+    setLanguage('ko');
+
+    // View navigation
+    $$('.view-nav-item').forEach(btn => {
+      btn.addEventListener('click', () => switchView(btn.dataset.view));
+    });
+
+    // Theme toggle
+    const themeBtn = $('#theme-toggle');
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+    // Language toggle
+    $$('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    });
+
+    // Dialogs
+    function setupDialog(dialogId, closeBtnId) {
+      const dialog = $(`#${dialogId}`);
+      if (!dialog) return;
+      dialog.addEventListener('close', () => {
+        document.body.style.overflow = '';
+        if (lastFocused && lastFocused.focus) {
+          setTimeout(() => lastFocused.focus(), 50);
+        }
+      });
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) closeDialog(dialogId);
+      });
+      const closeBtn = $(`#${closeBtnId}`);
+      if (closeBtn) closeBtn.addEventListener('click', () => closeDialog(dialogId));
+    }
+    setupDialog('project-dialog', 'dialog-close-btn');
+    setupDialog('business-dialog', 'biz-dialog-close-btn');
+
+    // Search / filter events
+    const searchInput = $('#sf-search-input');
+    const filterStage = $('#sf-stage-filter');
+    const filterDevMode = $('#sf-devmode-filter');
+    const filterSort = $('#sf-sort-filter');
+    const resetBtn = $('#sf-reset-filter');
+
+    [searchInput, filterStage, filterDevMode, filterSort].forEach(el => {
+      if (!el) return;
+      el.addEventListener(el.type === 'search' ? 'input' : 'change', () => {
+        if (activeView === 'search') renderSearchView();
+        updateCounts();
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        if (filterStage) filterStage.value = 'all';
+        if (filterDevMode) filterDevMode.value = 'all';
+        if (filterSort) filterSort.value = 'default';
+        if (activeView === 'search') renderSearchView();
+        updateCounts();
+      });
+    }
+
+    // Business filters
+    const bizSearch = $('#biz-search-input');
+    const bizState = $('#biz-state-filter');
+    const bizSort = $('#biz-sort');
+    [bizSearch, bizState, bizSort].forEach(el => {
+      if (!el) return;
+      el.addEventListener(el.type === 'search' ? 'input' : 'change', () => {
+        if (activeView === 'business') renderBusinessIndex();
+      });
+    });
+
+    // Mobile drawer
+    const menuToggle = $('#menu-toggle');
+    if (menuToggle) menuToggle.addEventListener('click', openDrawer);
+    const drawerClose = $('#drawer-close');
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+    const drawerOverlay = $('#drawer-overlay');
+    if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+    // Initial render
+    switchView('projects');
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState !== 'loading') init();
 })();
