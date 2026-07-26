@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Business 9 우리 아이 이야기 Phase 1 시각 UI 참고본">
+  <title>우리 아이 이야기 — Phase 1 Visual Reference</title>
+  <link rel="stylesheet" href="./styles/tokens.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/base.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/layout.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/components.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/states/cover.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/states/spread.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/states/transform-branch.css?v=personalized-childrens-story-20260726-1">
+  <link rel="stylesheet" href="./styles/states/parent-mobile-bloom.css?v=personalized-childrens-story-20260726-1">
+  <script src="./scripts/review-state.js?v=personalized-childrens-story-20260726-1" defer></script>
+</head>
+<body>
+  <header class="review-rail" aria-label="시각 상태 검토 도구">
+    <div class="review-brand">
+      <span class="review-kicker">PHASE 1 · UI ONLY</span>
+      <strong>우리 아이 이야기</strong>
+    </div>
+    <nav class="state-tabs" aria-label="대표 시각 상태">
+      <button type="button" class="state-tab is-active" data-state-target="cover" aria-current="page"><span>01</span>표지</button>
+      <button type="button" class="state-tab" data-state-target="spread"><span>02</span>펼침면</button>
+      <button type="button" class="state-tab" data-state-target="transformation"><span>03</span>하루의 변환</button>
+      <button type="button" class="state-tab" data-state-target="branch"><span>04</span>다음 장</button>
+      <button type="button" class="state-tab" data-state-target="parent-note"><span>05</span>보호자 메모</button>
+      <button type="button" class="state-tab" data-state-target="mobile"><span>06</span>모바일</button>
+      <button type="button" class="state-tab" data-state-target="bloom"><span>07</span>Story Bloom</button>
+    </nav>
+    <div class="review-status" aria-live="polite">
+      <span id="state-position">1 / 7</span>
+      <small>← → 키로 이동</small>
+    </div>
+  </header>
+
+  <main class="review-stage" id="review-stage">
+    <section class="visual-state is-active" data-state="cover" aria-labelledby="cover-title">
+      <article class="book-surface cover-book">
+        <div class="cover-copy">
+          <div class="book-mark"><span>오늘의 이야기</span><span>제1호 · 비가 온 목요일</span></div>
+          <p class="eyebrow">우리 아이 이야기 · 09</p>
+          <h1 id="cover-title">장화가<br><em>구름을 밟은 날</em></h1>
+          <p class="cover-deck">젖은 골목 끝에서 작은 장화 한 켤레가 하늘로 가는 길을 발견했습니다.</p>
+          <aside class="inspiration-note">
+            <span>오늘의 작은 영감</span>
+            <p>비 온 뒤 물웅덩이를 오래 바라본 장면에서</p>
+            <time datetime="2026-07-24">2026. 07. 24.</time>
+          </aside>
+        </div>
+        <figure class="cover-figure">
+          <img src="./assets/images/rain-alley-boots.svg" alt="비 오는 골목에서 노란 장화를 신은 작은 대리 캐릭터가 물웅덩이를 바라보는 콜라주 장면">
+          <figcaption>그림 조각 01 · 노란 장화와 비의 지도</figcaption>
+        </figure>
+        <span class="cover-folio">표지</span>
+      </article>
+    </section>
+
+    <section class="visual-state" data-state="spread" aria-labelledby="spread-title" hidden>
+      <article class="book-surface story-spread">
+        <div class="spread-page spread-art-page">
+          <div class="chapter-stamp"><span>제2장</span><strong>구름 섬의 낮은 파도</strong></div>
+          <img src="./assets/images/cloud-islands-boat.svg" alt="구름 섬 사이를 종이배로 건너는 작은 대리 캐릭터의 그림책 장면">
+          <span class="page-number">12</span>
+        </div>
+        <div class="spread-gutter" aria-hidden="true"></div>
+        <div class="spread-page spread-copy-page">
+          <p class="spread-kicker">비의 지도는 물에 젖지 않았다.</p>
+          <h2 id="spread-title">장화 밑창에<br>작은 항구가 생겼다.</h2>
+          <div class="story-copy">
+            <p>아이의 첫걸음이 물웅덩이를 누르자, 둥근 파문은 천천히 하늘로 올라갔습니다. 파문마다 구름이 한 장씩 접혔고, 가장 낮은 구름은 종이배가 되었습니다.</p>
+            <p>“길을 모르면 먼저 물어보면 돼.” 아이가 말하자, 노란 장화의 끈이 가느다란 돛줄로 변했습니다. 배는 서두르지 않고, 대답할 준비가 된 섬부터 찾아갔습니다.</p>
+          </div>
+          <aside class="margin-whisper"><span>작은 소리</span>비 냄새는 종이 끝처럼 서늘했다.</aside>
+          <span class="page-number">13</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="visual-state" data-state="transformation" aria-labelledby="transformation-title" hidden>
+      <article class="book-surface transformation-book">
+        <header class="transformation-heading">
+          <p class="eyebrow">아이의 하루가 바뀐 장면</p>
+          <h2 id="transformation-title">평범한 장화가<br>하늘을 건너는 장비가 되기까지</h2>
+          <p>기록을 보여주는 대신, 한 장면의 감각이 이야기 속에서 어떻게 다른 의미를 얻는지 두 펼침면으로 나란히 놓았습니다.</p>
+        </header>
+        <div class="transformation-panels">
+          <figure class="source-panel">
+            <span class="panel-label">오늘의 조각 · 골목</span>
+            <img src="./assets/images/rain-alley-boots.svg" alt="비 온 골목과 노란 장화의 일상 장면">
+            <figcaption>물웅덩이를 건너기 전, 잠깐 멈춘 발.</figcaption>
+          </figure>
+          <div class="transformation-thread" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <small>조용히<br>달라진다</small>
+          </div>
+          <figure class="fiction-panel">
+            <span class="panel-label">이야기의 조각 · 구름 항로</span>
+            <img src="./assets/images/cloud-islands-boat.svg" alt="장화가 구름 항로를 건너는 탐험 장비가 된 허구 장면">
+            <figcaption>질문할 용기가 돛이 된 뒤, 열린 하늘.</figcaption>
+          </figure>
+        </div>
+        <footer class="provenance-line">합성 장면 · 실제 아동 기록 아님 · reference-only <span>18—19</span></footer>
+      </article>
+    </section>
+
+    <section class="visual-state" data-state="branch" aria-labelledby="branch-title" hidden>
+      <article class="book-surface branch-book">
+        <header class="branch-heading">
+          <div><p class="eyebrow">선택 뒤의 다음 장</p><h2 id="branch-title">같은 용기에서 피어나는<br>서로 다른 두 장면</h2></div>
+          <p>버튼을 고르는 게임이 아니라, 다음 장이 가질 수 있는 두 가지 편집 방향을 미리 펼쳐 봅니다.</p>
+        </header>
+        <div class="branch-proofs" aria-label="두 개의 다음 장 시안 비교">
+          <article class="branch-proof branch-proof-a">
+            <div class="proof-meta"><span>가제 A</span><span>제3장 · 20—21</span></div>
+            <img src="./assets/images/paper-forest-library.svg" alt="도서관 영수증이 종이 숲의 길로 변하는 장면">
+            <div class="proof-copy"><h3>종이 숲의 가장 조용한 질문</h3><p>아이는 모르는 글자 앞에서 멈추지 않고, 나뭇잎 모양의 책갈피에게 먼저 이름을 물어봅니다.</p></div>
+          </article>
+          <article class="branch-proof branch-proof-b">
+            <div class="proof-meta"><span>가제 B</span><span>제3장 · 20—21</span></div>
+            <img src="./assets/images/night-garden-seed.svg" alt="작은 씨앗이 밤 정원의 등불로 변하는 장면">
+            <div class="proof-copy"><h3>밤 정원에 켜진 작은 대답</h3><p>아이는 기다리는 동안 씨앗 옆에 앉아, 대답이 늦어도 질문은 사라지지 않는다는 것을 배웁니다.</p></div>
+          </article>
+        </div>
+        <p class="branch-caption">두 시안은 분기 가능성을 보여주는 정적 편집 증거이며 실제 선택 흐름이 아닙니다.</p>
+      </article>
+    </section>
+
+    <section class="visual-state" data-state="parent-note" aria-labelledby="parent-title" hidden>
+      <article class="book-surface parent-book">
+        <div class="parent-story-art">
+          <img src="./assets/images/night-garden-seed.svg" alt="빛나는 씨앗을 바라보는 대리 캐릭터의 야간 정원 장면">
+          <span class="chapter-stamp small"><span>제4장</span><strong>대답이 늦게 오는 정원</strong></span>
+          <span class="page-number">26</span>
+        </div>
+        <div class="parent-story-copy">
+          <p class="spread-kicker">씨앗은 곧바로 빛나지 않았다.</p>
+          <h2 id="parent-title">기다림 속에서도<br>질문은 작아지지 않았다.</h2>
+          <p>아이는 흙 위에 손바닥을 가만히 올렸습니다. 대답이 들리지 않을 때는 한 번 더 묻고, 그래도 조용하면 곁에 앉아 기다렸습니다.</p>
+          <blockquote>“모른다고 말해도 괜찮아. 그다음 질문이 길을 만들 테니까.”</blockquote>
+          <span class="page-number">27</span>
+        </div>
+        <aside class="parent-margin-note">
+          <span>보호자의 작은 메모</span>
+          <strong>낯선 상황에서<br>먼저 질문해보기</strong>
+          <p>정답을 재촉하지 않고, 물어보는 행동 자체를 용기로 다룹니다.</p>
+          <time datetime="2026-07-26">이 장의 마음 · 2026. 07. 26.</time>
+        </aside>
+      </article>
+    </section>
+
+    <section class="visual-state" data-state="mobile" aria-labelledby="mobile-title" hidden>
+      <article class="mobile-edition">
+        <header class="mobile-book-head">
+          <span>우리 아이 이야기 · 제1호</span>
+          <span>01</span>
+        </header>
+        <div class="mobile-hero">
+          <img src="./assets/images/mobile-cloud-path.svg" alt="노란 장화를 신은 대리 캐릭터가 세로로 이어진 구름길을 걷는 모바일 그림책 장면">
+          <div class="mobile-title-card">
+            <p>비가 온 목요일</p>
+            <h2 id="mobile-title">장화가<br><em>구름을 밟은 날</em></h2>
+          </div>
+        </div>
+        <div class="mobile-opening">
+          <p class="opening-mark">이야기의 시작</p>
+          <p>골목의 마지막 물웅덩이에서, 아이는 하늘로 이어지는 아주 낮은 발자국을 발견했습니다.</p>
+          <small>오늘의 작은 영감 · 비 온 뒤 오래 바라본 물웅덩이</small>
+        </div>
+      </article>
+    </section>
+
+    <section class="visual-state" data-state="bloom" aria-labelledby="bloom-title" hidden>
+      <article class="book-surface bloom-book">
+        <div class="bloom-copy">
+          <p class="eyebrow">Story Bloom · 이야기 피어남</p>
+          <h2 id="bloom-title">노란 장화 곁에서<br>구름 항로가 피어납니다.</h2>
+          <p>일상의 물건은 자리를 옮기지 않습니다. 대신 그 주위에 이야기의 층이 차례로 나타나며, 같은 장면이 새로운 의미를 얻습니다.</p>
+          <button type="button" class="replay-bloom" id="replay-bloom">다시 피우기 <span aria-hidden="true">↻</span></button>
+          <small>680ms · reduced-motion 즉시 전환</small>
+        </div>
+        <figure class="bloom-stage" id="bloom-stage" data-bloom-ready="false">
+          <img src="./assets/images/boot-bloom-layers.svg" alt="노란 장화 주변에 구름과 종이배가 층층이 피어나는 장면">
+          <span class="bloom-layer bloom-cloud-one" aria-hidden="true"></span>
+          <span class="bloom-layer bloom-cloud-two" aria-hidden="true"></span>
+          <span class="bloom-layer bloom-sail" aria-hidden="true"></span>
+          <span class="bloom-layer bloom-path bloom-path-one" aria-hidden="true"></span>
+          <span class="bloom-layer bloom-path bloom-path-two" aria-hidden="true"></span>
+          <span class="bloom-layer bloom-path bloom-path-three" aria-hidden="true"></span>
+          <figcaption>장화는 그대로, 이야기는 주위에서 피어난다.</figcaption>
+        </figure>
+        <span class="page-number bloom-folio">32—33</span>
+      </article>
+    </section>
+  </main>
+
+  <div class="mobile-review-controls" aria-label="모바일 상태 이동">
+    <button type="button" id="previous-state">이전</button>
+    <span id="mobile-state-position">1 / 7</span>
+    <button type="button" id="next-state">다음</button>
+  </div>
+
+  <footer class="reference-boundary">
+    <span>REFERENCE-ONLY · SYNTHETIC CONTENT</span>
+    <span>UI_NOT_READY · UX / BACKEND / DEPLOYMENT NOT IMPLEMENTED</span>
+  </footer>
+</body>
+</html>
