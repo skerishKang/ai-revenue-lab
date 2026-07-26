@@ -16,6 +16,7 @@
     app.navigation.initialize();
     app.story.initialize();
     app.preferences.initialize();
+    app.stateMatrix.initialize();
     syncFilterLabel(app.store.getState());
   }
 

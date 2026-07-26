@@ -9,7 +9,7 @@ h1, h2, h3 { overflow-wrap: normal; word-break: keep-all; }
 a { color: inherit; }
 .skip-link { position: fixed; left: 12px; top: 12px; z-index: 100; transform: translateY(-180%); background: var(--ink); color: #fff; padding: 10px 14px; }
 .skip-link:focus { transform: translateY(0); }
-button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline-offset: 4px; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--coral); outline-offset: 4px; }
 [hidden] { display: none !important; }
 .route-view { animation: state-in 220ms ease both; }
 @keyframes state-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

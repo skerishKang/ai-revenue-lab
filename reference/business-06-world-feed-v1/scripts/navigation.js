@@ -1,11 +1,15 @@
 (() => {
   const app = window.WorldFeed = window.WorldFeed || {};
-  const validRoutes = new Set(["feed", "nearby", "culture", "story", "why", "preferences"]);
+  const validRoutes = new Set([
+    "loading", "feed", "nearby", "culture", "story", "why", "preferences",
+    "empty", "error", "story-unavailable", "source-unavailable"
+  ]);
   const routeViews = () => [...document.querySelectorAll("[data-route-view]")];
   let restoreTimer = 0;
 
   function routeFromHash() {
     const value = location.hash.slice(1).split("?")[0];
+    if (!value) return "loading";
     return validRoutes.has(value) ? value : "feed";
   }
 
