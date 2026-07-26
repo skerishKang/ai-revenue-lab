@@ -401,6 +401,24 @@ class SourceIsolationTests(unittest.TestCase):
             (source / "index.html").symlink_to(outside)
             with self.assertRaises(validator.ValidationError):
                 validator.check_source_isolation(root, SOURCE_DIRECTORY)
+class PublicUrlVerificationTests(unittest.TestCase):
+    def test_default_retry_parameters_are_multi_minute_bounded(self) -> None:
+        self.assertEqual(validator.verify_public_url_with_retry.__defaults__, (25, 12.0, 15, 60))
+
+    def test_rejects_empty_expected_file(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            expected = Path(directory) / "expected.html"
+            expected.write_bytes(b"")
+            with self.assertRaises(validator.ValidationError):
+                validator.verify_public_url_with_retry("https://example.com/", expected, max_retries=1, retry_delay=0.05)
+
+    def test_curl_fetch_returns_zero_on_missing_curl_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "out.html"
+            status, error = validator._curl_fetch("https://nonexistent.invalid/path", output, 5, 10)
+            self.assertEqual(status, 0)
+            self.assertTrue(len(error) > 0)
+
 class WorkflowStaticContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.workflow = (Path(__file__).resolve().parents[1] / "workflows" / "provision-approved-business-pages.yml").read_text(encoding="utf-8")
@@ -429,6 +447,30 @@ class WorkflowStaticContractTests(unittest.TestCase):
             "--commit-dirty=false",
         ):
             self.assertIn(marker, self.workflow)
+    def test_no_runner_temp_in_job_level_env(self) -> None:
+        job_env_block = self.workflow.split("env:")[1].split("steps:")[0]
+        self.assertNotIn("REPOSITORY_METADATA_FILE", job_env_block)
+
+    def test_runtime_path_initialized_via_github_env(self) -> None:
+        self.assertIn("Initialize runtime paths", self.workflow)
+        self.assertIn(
+            "echo \"REPOSITORY_METADATA_FILE=${RUNNER_TEMP}/pages-repository-metadata.json\" >> \"${GITHUB_ENV}\"",
+            self.workflow,
+        )
+
+    def test_verify_public_url_subcommand_with_multi_minute_bounded_retry(self) -> None:
+        for marker in ("verify-public-url", "--max-retries 25", "--retry-delay 12"):
+            self.assertIn(marker, self.workflow)
+
+    def test_public_verification_requires_http_200_and_exact_bytes(self) -> None:
+        self.assertIn("public-bytes", self.workflow)
+        self.assertNotIn("--head ", self.workflow)
+        self.assertNotIn("--fail", self.workflow)
+
+    def test_public_verification_reports_final_error_on_failure(self) -> None:
+        script = (Path(__file__).resolve().parents[1] / "scripts" / "validate_pages_provisioning.py").read_text(encoding="utf-8")
+        self.assertIn("Last error:", script)
+
     def test_full_validation_and_fail_closed_cloudflare_contract(self) -> None:
         for marker in ("cloudflare-lookup", "cloudflare-payload", "cloudflare-project", "cloudflare-deployment", "public-bytes", "--max-time 60", "--connect-timeout 15"):
             self.assertIn(marker, self.workflow)

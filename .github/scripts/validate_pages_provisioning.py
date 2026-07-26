@@ -7,6 +7,8 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -362,6 +364,71 @@ def verify_public_bytes(expected_file: Path, actual_file: Path) -> None:
         raise ValidationError("approved index.html is empty")
     if actual != expected:
         raise ValidationError("public HTML bytes do not match approved index.html")
+def _curl_fetch(
+    url: str,
+    output: Path,
+    connect_timeout: int,
+    request_timeout: int,
+) -> tuple[int, str]:
+    result = subprocess.run(
+        [
+            "curl", "--location", "--silent", "--show-error",
+            "--connect-timeout", str(connect_timeout),
+            "--max-time", str(request_timeout),
+            "--output", str(output),
+            "--write-out", "%{http_code}",
+            url,
+        ],
+        capture_output=True, text=True,
+        timeout=request_timeout + 10,
+    )
+    http_status = result.stdout.strip()
+    curl_error = result.stderr.strip()
+    if result.returncode != 0:
+        return 0, curl_error or f"curl exited with code {result.returncode}"
+    if not http_status:
+        return 0, "empty HTTP status from curl"
+    return int(http_status), curl_error
+
+def verify_public_url_with_retry(
+    url: str,
+    expected_file: Path,
+    max_retries: int = 25,
+    retry_delay: float = 12.0,
+    connect_timeout: int = 15,
+    request_timeout: int = 60,
+) -> None:
+    expected_bytes = expected_file.read_bytes()
+    if not expected_bytes:
+        raise ValidationError("approved index.html is empty")
+    last_error = ""
+    success = False
+    for attempt in range(1, max_retries + 1):
+        actual_file = Path(tempfile.mktemp(suffix=".html"))
+        try:
+            status, curl_error = _curl_fetch(url, actual_file, connect_timeout, request_timeout)
+            if status == 0:
+                last_error = curl_error
+                time.sleep(retry_delay)
+                continue
+            if status != 200:
+                last_error = f"HTTP {status}"
+                time.sleep(retry_delay)
+                continue
+            actual_bytes = actual_file.read_bytes()
+            if actual_bytes != expected_bytes:
+                last_error = "byte mismatch"
+                time.sleep(retry_delay)
+                continue
+            success = True
+            return
+        finally:
+            actual_file.unlink(missing_ok=True)
+    raise ValidationError(
+        f"Public URL verification failed for {url} "
+        f"after {max_retries} attempts. Last error: {last_error}"
+    )
+
 def check_source_isolation(repository_root: Path, source_directory: str) -> None:
     repository_root = repository_root.resolve(strict=True)
     source_path = repository_root / source_directory.rstrip("/")
@@ -433,6 +500,13 @@ def build_parser() -> argparse.ArgumentParser:
     public_bytes = subparsers.add_parser("public-bytes")
     public_bytes.add_argument("--expected-file", required=True, type=Path)
     public_bytes.add_argument("--actual-file", required=True, type=Path)
+    verify_url = subparsers.add_parser("verify-public-url")
+    verify_url.add_argument("--url", required=True)
+    verify_url.add_argument("--expected-file", required=True, type=Path)
+    verify_url.add_argument("--max-retries", type=int, default=25)
+    verify_url.add_argument("--retry-delay", type=float, default=12.0)
+    verify_url.add_argument("--connect-timeout", type=int, default=15)
+    verify_url.add_argument("--request-timeout", type=int, default=60)
     return parser
 def main() -> int:
     args = build_parser().parse_args()
@@ -464,6 +538,15 @@ def main() -> int:
         elif args.command == "public-bytes":
             verify_public_bytes(args.expected_file, args.actual_file)
             print("Public HTML bytes match approved index.html.")
+        elif args.command == "verify-public-url":
+            verify_public_url_with_retry(
+                args.url, args.expected_file,
+                max_retries=args.max_retries,
+                retry_delay=args.retry_delay,
+                connect_timeout=args.connect_timeout,
+                request_timeout=args.request_timeout,
+            )
+            print(f"Public URL {args.url} verified.")
         else:
             raise ValidationError("unknown command")
     except (ValidationError, subprocess.CalledProcessError, FileNotFoundError) as exc:
