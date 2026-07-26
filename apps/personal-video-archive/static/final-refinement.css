@@ -1,0 +1,157 @@
+/* Final visual corrections for Issue #118.
+   Loaded after style.css so the accepted editorial system stays intact. */
+
+/* Keep long source titles typographically complete without a one-character
+   final line. Chromium's pretty wrapping is progressive enhancement; the
+   desktop size/tracking adjustment is the deterministic fallback. */
+.record-head h1 {
+  text-wrap: pretty;
+}
+
+@media (min-width: 981px) {
+  .record-head {
+    gap: 24px;
+  }
+
+  .record-head h1 {
+    font-size: 40px;
+    line-height: 1.13;
+    letter-spacing: -0.045em;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 980px) {
+  .record-head h1 {
+    font-size: 39px;
+    line-height: 1.14;
+  }
+}
+
+/* Record metadata controls share the same quiet editorial grammar while
+   preserving native form semantics, keyboard operation, names, and values. */
+.record-form .facts .fact > strong {
+  flex: 0 0 174px;
+  width: 174px;
+}
+
+.record-form .facts select,
+.record-form .facts input[type="number"],
+.record-form .facts input[type="date"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background-color: var(--surface);
+  color: var(--ink);
+  font: 600 var(--fs-xs) / 1.2 var(--sans);
+  letter-spacing: -0.01em;
+  box-shadow: none;
+  color-scheme: light;
+}
+
+.record-form .facts select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='m7 10 5 5 5-5' stroke='%2368655F' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  background-size: 14px 14px;
+}
+
+.record-form .facts input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.record-form .facts input[type="date"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.record-form .facts select:not(:disabled):focus-visible,
+.record-form .facts input[type="number"]:not(:disabled):focus-visible,
+.record-form .facts input[type="date"]:not(:disabled):focus-visible {
+  border-color: var(--signature);
+  outline: 2px solid var(--signature);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--signature-soft);
+}
+
+.record-form .facts select:disabled,
+.record-form .facts input[type="number"]:disabled,
+.record-form .facts input[type="date"]:disabled,
+.record-form .facts select[readonly],
+.record-form .facts input[type="number"][readonly],
+.record-form .facts input[type="date"][readonly] {
+  border-color: #D5D0C7;
+  background-color: #EEEAE3;
+  color: var(--ink-2);
+  -webkit-text-fill-color: var(--ink-2);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* A true video media box replaces the former 405px mobile minimum. The
+   thumbnail now defines a compact first-view composition and fills the box. */
+@media (max-width: 640px) {
+  .hero-media {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+  }
+
+  .hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-editorial {
+    margin-top: 12px;
+  }
+
+  .hero-editorial .meta-row {
+    gap: 6px 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .hero-editorial h2 {
+    margin-bottom: 6px;
+    font-size: 24px;
+    line-height: 1.18;
+    letter-spacing: -0.035em;
+    text-wrap: pretty;
+  }
+
+  .hero-editorial p {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .record-form .facts .fact {
+    align-items: center;
+  }
+
+  .record-form .facts .fact > strong {
+    flex-basis: 168px;
+    width: 168px;
+  }
+
+  .record-form .facts select,
+  .record-form .facts input[type="number"],
+  .record-form .facts input[type="date"] {
+    min-height: 42px;
+    font-size: 12px;
+  }
+}
