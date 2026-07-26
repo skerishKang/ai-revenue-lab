@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>World Feed — 나의 세계 편집면</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 이동</a>
+  <div class="review-shell" data-current-state="home">
+    <header class="masthead">
+      <div class="brand-block">
+        <a class="brand" href="#home" data-state-link="home" aria-label="World Feed 홈 상태 보기">
+          <span class="brand-mark" aria-hidden="true">WF</span>
+          <span><strong>World Feed</strong><small>나의 세계 편집면</small></span>
+        </a>
+        <p class="edition-note">SEOUL EDITION · SYNTHETIC / 2026.07</p>
+      </div>
+      <div class="masthead-meta">
+        <p><span>오늘의 시선</span><strong>낯선 도시의 저녁,<br>가까운 골목의 온도</strong></p>
+        <span class="issue-tag">Phase 1 visual reference</span>
+      </div>
+    </header>
+
+    <nav class="review-nav" aria-label="시각 검토 상태">
+      <button type="button" class="review-tab is-active" data-state="home" aria-pressed="true">홈</button>
+      <button type="button" class="review-tab" data-state="topic" aria-pressed="false">장소와 동네</button>
+      <button type="button" class="review-tab" data-state="story" aria-pressed="false">이야기 상세</button>
+      <button type="button" class="review-tab" data-state="why" aria-pressed="false">왜 보였나요</button>
+      <button type="button" class="review-tab" data-state="adjusted" aria-pressed="false">반응 이후</button>
+      <button type="button" class="review-tab" data-state="mobile" aria-pressed="false">모바일 구성</button>
+      <button type="button" class="review-tab" data-state="motion" aria-pressed="false">Horizon Shift</button>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <section class="review-state is-active" id="home" data-state-panel="home" aria-labelledby="home-title">
+        <div class="home-grid">
+          <article class="lead-story horizon-stage" data-motion-surface>
+            <div class="lead-image-wrap">
+              <img class="lead-image" src="./assets/images/hero-harbor.svg" alt="해질녘 항구 도시를 표현한 합성 편집 일러스트">
+              <div class="signal signal-world">세계 · 해안 도시</div>
+              <div class="image-index" aria-hidden="true">01 / 06</div>
+            </div>
+            <div class="lead-copy">
+              <p class="eyebrow">PERSONAL WORLD DISPATCH</p>
+              <h1 id="home-title">낯선 항구의 저녁이<br>오늘의 첫 장면이 된 이유</h1>
+              <p class="dek">바다와 도시가 맞닿는 산책로, 낮은 집들의 색, 늦게 문을 여는 작은 식당. 여행 계획이 아니라 지금 보고 싶은 세계의 질감을 짧게 모았습니다.</p>
+              <div class="story-source stable-source"><span>Atlas Letter</span><time datetime="2026-03-18">과거 합성 기록 · 4분 읽기</time></div>
+              <div class="lead-actions" aria-label="시각 검토용 상태 전환">
+                <button type="button" class="text-button" data-state-jump="story">짧은 맥락 보기 <span aria-hidden="true">↗</span></button>
+                <button type="button" class="text-button muted" data-state-jump="why">왜 나에게 보였나요?</button>
+              </div>
+            </div>
+          </article>
+
+          <aside class="dispatch-rail" aria-label="오늘의 편집 신호">
+            <div class="rail-heading"><span>YOUR SIGNALS</span><span>03</span></div>
+            <article class="signal-note local-note">
+              <span class="signal signal-nearby">가까운 곳 · 광주</span>
+              <h2>오래된 시장의 빈 점포가 저녁 공방으로 바뀌는 중</h2>
+              <p>도자기, 책 수선, 작은 공연이 한 골목에 모이는 가상의 지역 변화 기록.</p>
+              <div class="story-source"><span>Local Field Notes</span><time>합성 · 6일 전</time></div>
+            </article>
+            <article class="signal-note personal-note">
+              <span class="signal signal-personal">나의 관심 · 영화와 장소</span>
+              <h2>영화를 고르는 대신, 동네 극장을 고르는 사람들</h2>
+              <div class="story-source"><span>Small Screen Journal</span><time>합성 · 12일 전</time></div>
+            </article>
+          </aside>
+        </div>
+
+        <div class="section-rule"><span>오늘의 발견 05</span><span>세계 / 가까운 곳 / 나의 관심</span></div>
+
+        <div class="feed-mosaic" data-stagger-list>
+          <article class="portrait-post stagger-item">
+            <img src="./assets/images/night-market.svg" alt="밤 시장을 표현한 합성 편집 일러스트">
+            <div>
+              <span class="signal signal-world">세계 · 시장</span>
+              <h2>자정 이후에 시작되는 시장의 색</h2>
+              <p>간판보다 천막과 조명이 먼저 기억되는 도시 풍경.</p>
+              <div class="story-source"><span>Night Atlas</span><time>합성 · 9일 전</time></div>
+            </div>
+          </article>
+
+          <article class="text-post stagger-item">
+            <span class="post-number">02</span>
+            <span class="signal signal-personal">나의 관심 · 공예</span>
+            <h2>완성된 그릇보다 손의 속도를 보는 전시</h2>
+            <p>제작 과정의 흔적을 지우지 않고, 실패한 형태까지 한 테이블에 놓는 가상의 공예전 이야기입니다.</p>
+            <div class="story-source"><span>Form & Hand</span><time>합성 · 2주 전</time></div>
+          </article>
+
+          <article class="wide-post stagger-item">
+            <img src="./assets/images/sea-train.svg" alt="바닷가를 달리는 작은 기차를 표현한 합성 편집 일러스트">
+            <div class="wide-copy">
+              <span class="signal signal-world">세계 · 장소</span>
+              <h2>창문을 열면 바다가 먼저 들어오는 느린 열차</h2>
+              <p>목적지보다 이동 장면이 오래 남는 해안선 발견.</p>
+              <div class="story-source"><span>Moving Places</span><time>합성 · 18일 전</time></div>
+            </div>
+          </article>
+
+          <article class="sports-post stagger-item">
+            <img src="./assets/images/stadium-culture.svg" alt="지역 경기장 응원 문화를 표현한 합성 편집 일러스트">
+            <div>
+              <span class="signal signal-nearby">스포츠 문화 · 지역 공동체</span>
+              <h2>경기보다 먼저 시작되는 동네의 합창</h2>
+              <p>점수나 예측이 아니라, 경기장 밖 상점과 응원 노래가 만드는 지역 문화에 관한 합성 기록.</p>
+              <div class="story-source"><span>Terrace Culture</span><time>합성 · 과거 기록</time></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="review-state" id="topic" data-state-panel="topic" aria-labelledby="topic-title" hidden>
+        <header class="topic-header">
+          <div>
+            <p class="eyebrow">INTEREST STREAM / PLACES & NEIGHBORHOODS</p>
+            <h1 id="topic-title">장소와 동네</h1>
+            <p>도시를 관광 명소보다 골목의 사용법으로 보는 편집면.</p>
+          </div>
+          <div class="topic-switch" aria-label="주제 시각 전환">
+            <button type="button" class="chip is-selected" data-topic="neighborhood" aria-pressed="true">장소와 동네</button>
+            <button type="button" class="chip" data-topic="craft" aria-pressed="false">공예와 손</button>
+          </div>
+        </header>
+
+        <div class="topic-layout horizon-stage" data-motion-surface>
+          <div class="topic-hero">
+            <img class="lead-image" src="./assets/images/small-cinema.svg" alt="동네 소극장을 표현한 합성 편집 일러스트">
+            <span class="vertical-word" aria-hidden="true">NEIGHBORHOOD</span>
+          </div>
+          <div class="topic-main-copy">
+            <span class="signal signal-nearby">가까운 곳 · 작은 극장</span>
+            <h2>상영 시간표보다<br>동네의 밤을 바꾸는 극장</h2>
+            <p>한 편의 영화가 끝난 뒤에도 사람들이 흩어지지 않는 이유. 작은 극장 주변의 서점, 식당, 버스 정류장을 함께 보는 짧은 장소 기록입니다.</p>
+            <div class="story-source stable-source"><span>Neighborhood Screen</span><time>합성 · 7분 읽기</time></div>
+          </div>
+          <div class="topic-stack" data-stagger-list>
+            <article class="compact-post stagger-item"><span class="post-number">A</span><div><span class="signal signal-world">세계 · 골목</span><h3>오래된 간판을 지우지 않는 새 가게들</h3><div class="story-source"><span>Street Type</span><time>합성</time></div></div></article>
+            <article class="compact-post stagger-item"><span class="post-number">B</span><div><span class="signal signal-nearby">가까운 곳 · 시장</span><h3>낮에는 시장, 저녁에는 작업실이 되는 통로</h3><div class="story-source"><span>Local Field Notes</span><time>합성</time></div></div></article>
+            <article class="compact-post stagger-item"><span class="post-number">C</span><div><span class="signal signal-personal">나의 관심 · 건축</span><h3>창문 하나로 기억되는 작은 집</h3><div class="story-source"><span>Quiet Architecture</span><time>합성</time></div></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="review-state" id="story" data-state-panel="story" aria-labelledby="story-title" hidden>
+        <div class="story-detail">
+          <button class="back-link" type="button" data-state-jump="home">← 편집면으로 돌아가기</button>
+          <div class="story-kicker"><span class="signal signal-world">세계 · 해안 도시</span><span>짧은 이야기</span></div>
+          <h1 id="story-title">낯선 항구의 저녁이 오늘의 첫 장면이 된 이유</h1>
+          <p class="story-intro">이 화면은 원문 기사를 대신하지 않습니다. World Feed가 한 장면을 발견하게 된 맥락만 짧게 편집합니다.</p>
+          <figure class="story-figure">
+            <img src="./assets/images/hero-harbor.svg" alt="해질녘 항구 도시를 표현한 합성 편집 일러스트">
+            <figcaption>현재 사실을 나타내지 않는 시각 검토용 합성 장면.</figcaption>
+          </figure>
+          <div class="story-body-grid">
+            <div class="story-body">
+              <p class="dropcap">해가 늦게 지는 계절의 항구는 낮과 밤 사이의 시간을 길게 늘입니다. 사람들은 목적지를 향하기보다 물가를 따라 걷고, 작은 가게들은 가장 밝은 조명 대신 문 앞의 의자를 먼저 내놓습니다.</p>
+              <p>이 편집면이 주목한 것은 특정 도시의 최신 소식이 아니라, 바다와 골목이 만나는 장소의 리듬입니다. 비슷한 장면을 좋아했던 기록과 최근 본 공예·건축 이야기가 함께 작용했다는 설정입니다.</p>
+              <p>더 자세한 정보가 필요한 경우 원문 출처로 이동해야 하며, 여기서는 장문의 재작성이나 사실 대체를 하지 않습니다.</p>
+            </div>
+            <aside class="source-card" aria-label="출처 정보">
+              <p class="eyebrow">SOURCE FORWARD</p>
+              <h2>Atlas Letter</h2>
+              <dl><div><dt>형식</dt><dd>합성 여행 에세이 메모</dd></div><div><dt>기록 시점</dt><dd>과거 가상 아카이브</dd></div><div><dt>World Feed 편집</dt><dd>장소 맥락 3문단</dd></div></dl>
+              <button type="button" class="source-button" disabled aria-disabled="true">원문 이동은 Phase 1에서 비활성</button>
+            </aside>
+          </div>
+          <div class="related-strip">
+            <div class="section-rule"><span>관련 발견</span><span>03</span></div>
+            <div class="related-grid">
+              <article><span class="signal signal-personal">나의 관심 · 공예</span><h3>손의 속도가 남아 있는 그릇</h3></article>
+              <article><span class="signal signal-world">세계 · 이동</span><h3>창문이 넓은 해안 열차</h3></article>
+              <article><span class="signal signal-nearby">가까운 곳 · 산책</span><h3>저녁에만 열리는 시장 통로</h3></article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="review-state" id="why" data-state-panel="why" aria-labelledby="why-title" hidden>
+        <div class="why-layout">
+          <div class="why-story-preview">
+            <img src="./assets/images/ceramic-hands.svg" alt="도자기를 빚는 손을 표현한 합성 편집 일러스트">
+            <span class="signal signal-personal">나의 관심 · 공예</span>
+            <h2>완성된 그릇보다 손의 속도를 보는 전시</h2>
+            <div class="story-source"><span>Form & Hand</span><time>합성 · 2주 전</time></div>
+          </div>
+          <div class="why-panel">
+            <p class="eyebrow">WHY THIS APPEARED</p>
+            <h1 id="why-title">왜 나에게 보였나요?</h1>
+            <p class="why-lead">최근에 본 이야기의 공통점이 ‘완성품보다 만드는 과정’에 가까웠기 때문입니다.</p>
+            <ol class="reason-list">
+              <li><span>01</span><div><strong>공예와 제작 과정</strong><p>도자기, 수선, 작은 작업실 이야기를 여러 번 오래 보았습니다.</p></div></li>
+              <li><span>02</span><div><strong>가까운 장소의 변화</strong><p>전시 자체보다 동네 공간이 어떻게 쓰이는지에 관심을 보였습니다.</p></div></li>
+              <li><span>03</span><div><strong>짧은 시각 이야기</strong><p>긴 기사보다 이미지와 짧은 맥락이 있는 항목을 자주 선택했습니다.</p></div></li>
+            </ol>
+            <p class="plain-note">점수나 내부 계산식은 보여주지 않습니다. 이 설명은 사용자가 이해할 수 있는 수준의 시각 예시이며 실제 추천 로직이 아닙니다.</p>
+            <div class="why-actions"><button type="button" class="solid-button" data-state-jump="adjusted">이런 이야기 더 보기</button><button type="button" class="outline-button" data-state-jump="adjusted">조금 덜 보기</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="review-state" id="adjusted" data-state-panel="adjusted" aria-labelledby="adjusted-title" hidden>
+        <header class="adjusted-header"><div><p class="eyebrow">VISUAL COMPARISON</p><h1 id="adjusted-title">반응 이후, 편집면의 무게가 달라졌습니다</h1></div><p>완전한 선호 설정 UX가 아니라 전후의 시각 변화만 보여줍니다.</p></header>
+        <div class="compare-toggle" role="group" aria-label="전후 비교 보기"><button type="button" class="chip is-selected" data-compare="before" aria-pressed="true">이전</button><button type="button" class="chip" data-compare="after" aria-pressed="false">이후</button></div>
+        <div class="comparison-canvas" data-compare-view="before">
+          <section class="comparison-panel before-panel" aria-labelledby="before-label"><div class="compare-label"><span id="before-label">BEFORE</span><span>균형 편집</span></div><div class="mini-feed"><article class="mini-lead"><img src="./assets/images/hero-harbor.svg" alt=""><div><span class="signal signal-world">세계</span><h2>항구의 저녁</h2></div></article><article><span class="signal signal-nearby">가까운 곳</span><h3>시장 통로의 변화</h3></article><article><span class="signal signal-personal">나의 관심</span><h3>작은 극장의 밤</h3></article></div></section>
+          <section class="comparison-panel after-panel" aria-labelledby="after-label"><div class="compare-label"><span id="after-label">AFTER</span><span>공예·장소 비중 상승</span></div><div class="mini-feed"><article class="mini-lead"><img src="./assets/images/ceramic-hands.svg" alt=""><div><span class="signal signal-personal">나의 관심</span><h2>손의 속도가 남은 전시</h2></div></article><article class="after-accent"><span class="signal signal-nearby">가까운 곳</span><h3>시장 안 저녁 공방</h3></article><article><span class="signal signal-world">세계</span><h3>항구 도시의 산책로</h3></article></div></section>
+        </div>
+      </section>
+
+      <section class="review-state" id="mobile" data-state-panel="mobile" aria-labelledby="mobile-title" hidden>
+        <div class="mobile-review-header"><div><p class="eyebrow">390 PX COMPOSITION</p><h1 id="mobile-title">첫 viewport와 세로 리듬</h1></div><p>실제 390px 브라우저에서도 같은 구성으로 검증합니다.</p></div>
+        <div class="device-stage">
+          <div class="device-frame" aria-label="390픽셀 모바일 시각 구성 예시">
+            <div class="mobile-ui">
+              <header><span class="brand-mark">WF</span><div><strong>World Feed</strong><small>나의 세계 편집면</small></div><span class="mobile-date">07.26</span></header>
+              <div class="mobile-lead"><img src="./assets/images/hero-harbor.svg" alt="해질녘 항구 도시를 표현한 합성 편집 일러스트"><span class="signal signal-world">세계 · 해안 도시</span></div>
+              <div class="mobile-copy"><p class="eyebrow">TODAY'S DISPATCH</p><h2>낯선 항구의 저녁이<br>오늘의 첫 장면이 된 이유</h2><div class="story-source"><span>Atlas Letter</span><time>합성 · 4분</time></div></div>
+              <article class="mobile-post"><span class="signal signal-nearby">가까운 곳 · 광주</span><h3>오래된 시장의 빈 점포가 저녁 공방으로 바뀌는 중</h3></article>
+              <article class="mobile-post image-post"><img src="./assets/images/night-market.svg" alt=""><div><span class="signal signal-personal">나의 관심 · 시장</span><h3>자정 이후에 시작되는 색</h3></div></article>
+            </div>
+          </div>
+          <div class="mobile-notes"><span>01</span><p><strong>첫 화면 정체성</strong>대표 이미지, 개인 편집 문구, 세계 신호가 한 viewport 안에 들어옵니다.</p><span>02</span><p><strong>수평 overflow 없음</strong>이미지와 긴 한국어 제목이 390px 폭 안에서 줄바꿈됩니다.</p><span>03</span><p><strong>카드 반복 회피</strong>이미지 전면, 텍스트 전용, 좁은 썸네일 항목을 섞습니다.</p></div>
+        </div>
+      </section>
+
+      <section class="review-state" id="motion" data-state-panel="motion" aria-labelledby="motion-title" hidden>
+        <header class="motion-header"><div><p class="eyebrow">SIGNATURE MOTION / 650 MS</p><h1 id="motion-title">Horizon Shift</h1><p>주제와 장소가 바뀔 때 시선의 수평선이 옮겨가는 듯한 전환.</p></div><button type="button" class="solid-button" id="play-motion">모션 재생</button></header>
+        <div class="motion-demo horizon-stage" data-motion-surface data-motion-mode="harbor">
+          <div class="motion-image-track">
+            <img class="motion-image current-image" src="./assets/images/hero-harbor.svg" alt="합성 항구 도시 장면">
+            <img class="motion-image next-image" src="./assets/images/ceramic-hands.svg" alt="합성 공예 장면">
+          </div>
+          <div class="motion-label-stack"><span class="signal signal-world motion-label-current">세계 · 해안 도시</span><span class="signal signal-personal motion-label-next">나의 관심 · 공예</span><h2 class="motion-title-current">항구의 저녁</h2><h2 class="motion-title-next">손의 속도가 남은 전시</h2></div>
+          <div class="motion-posts" data-stagger-list>
+            <article class="stagger-item"><span>01</span><h3>산책로 끝의 작은 식당</h3></article>
+            <article class="stagger-item"><span>02</span><h3>바다를 향한 낮은 창문</h3></article>
+            <article class="stagger-item"><span>03</span><h3>저녁에만 켜지는 시장 조명</h3></article>
+          </div>
+          <div class="story-source motion-source stable-source"><span>World Feed visual reference</span><time>출처 맥락은 안정적으로 유지</time></div>
+        </div>
+        <div class="motion-legend"><span><i class="legend-line image-line"></i>대표 이미지 수평 이동</span><span><i class="legend-line label-line"></i>라벨 90ms 지연</span><span><i class="legend-line posts-line"></i>포스트 60ms stagger</span><span><i class="legend-line source-line"></i>출처 라인 고정</span></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p><strong>시각 검토용 합성 콘텐츠이며 현재 사실을 나타내지 않습니다.</strong></p>
+      <p>Business 6 · World Feed · Phase 1 UI reference · UX / backend / deployment excluded</p>
+    </footer>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>
