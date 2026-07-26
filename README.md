@@ -110,6 +110,15 @@ Personal Edition is the first planned portal integration target. Its current inv
 - Each Business is reviewed and released independently.
 - The portal does not weaken product-local authorization, privacy, or test gates.
 
+Canonical operating documents:
+
+- `docs/operations/README.md`
+- `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
+- `docs/operations/NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
+- `docs/operations/CLOUDFLARE_PAGES_GIT_CONNECTION_RUNBOOK.md`
+
+Git state, hosted-review state, UI/UX approval, backend authorization, and product production release are separate. A Cloudflare Pages or Workers URL does not by itself advance a product phase or prove a release.
+
 ## Current portfolio status
 
 - independent product workspace architecture is established;
@@ -141,5 +150,13 @@ Every portal-integrated Business must additionally record:
 - deployment lifecycle;
 - deletion and revocation behavior;
 - evidence that authenticated but unauthorized users are denied.
+
+Every hosted review or deployed product must also record enough evidence to distinguish:
+
+- the intended Cloudflare project or Worker;
+- connected repository and branch;
+- root directory when applicable;
+- exact deployed SHA;
+- hosted-review, staging, or product-production classification.
 
 The goal is not to prove that one model is best. The goal is to determine whether abundant AI production can create economically valuable products that would not be viable with human production alone.
