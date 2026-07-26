@@ -366,7 +366,7 @@ test.describe('Correction Gate 161 — Card GitHub Status', () => {
     await expect(states).toHaveCount(13);
     const texts = await states.allTextContents();
     for (const text of texts) {
-      expect(text.trim()).toBe('자동 동기화 미연결');
+      expect(text.trim()).toBe('GitHub 자동 동기화 미연결');
     }
   });
 
@@ -389,7 +389,7 @@ test.describe('Correction Gate 161 — Card GitHub Status', () => {
     const states = page.locator('.pd-card-github-state');
     const texts = await states.allTextContents();
     for (const text of texts) {
-      expect(text.trim()).toBe('자동 동기화 미연결');
+      expect(text.trim()).toBe('GitHub 자동 동기화 미연결');
     }
   });
 
@@ -482,6 +482,49 @@ test.describe('Correction Gate 161 — Dialog Content', () => {
     await expect(dialog.locator('.dialog-section-label', { hasText: 'GITHUB STATUS' })).toBeVisible();
     await expect(dialog.locator('.dialog-section-value', { hasText: 'GITHUB LIVE SYNC NOT CONNECTED' })).toBeVisible();
     await page.keyboard.press('Escape');
+  });
+});
+
+test.describe('Correction Gate 161 — Business Dialog Language Switch', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+  });
+
+  test('business dialog KO/EN/KO live update without closing', async ({ page }) => {
+    await page.click('.view-nav-item[data-view="business"]');
+    await page.waitForTimeout(300);
+    await page.locator('.biz-item').first().click();
+    await page.waitForTimeout(300);
+    const dialog = page.locator('#business-dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '상태' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '진행 상황' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '다음 작업' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '마지막 확인' })).toBeVisible();
+    await page.evaluate(() => {
+      const btn = document.querySelector('#lang-en');
+      if (btn) btn.click();
+    });
+    await page.waitForTimeout(300);
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: 'STATE' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: 'PROGRESS' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: 'NEXT ACTION' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: 'LAST VERIFIED' })).toBeVisible();
+    await page.evaluate(() => {
+      const btn = document.querySelector('#lang-ko');
+      if (btn) btn.click();
+    });
+    await page.waitForTimeout(300);
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '상태' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '진행 상황' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '다음 작업' })).toBeVisible();
+    await expect(dialog.locator('.dialog-section-label', { hasText: '마지막 확인' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    await expect(dialog).toBeHidden();
   });
 });
 

@@ -14,6 +14,7 @@
   let currentLang = 'ko';
   let activeView = 'projects';
   let selectedProjectId = null;
+  let selectedBusinessNumber = null;
 
   // ── Label helpers ──
   const L = {
@@ -77,6 +78,7 @@
       workInProgress: '작업 중',
       copyWorkspace: '복사',
       githubStatus: 'GitHub 상태',
+      githubCardDisconnected: 'GitHub 자동 동기화 미연결',
       githubDisconnected: '자동 동기화 미연결',
       progressBasis: '진척 기준',
       completedTasks: '완료 작업',
@@ -145,6 +147,7 @@
       workInProgress: 'IN PROGRESS',
       copyWorkspace: 'COPY',
       githubStatus: 'GITHUB STATUS',
+      githubCardDisconnected: 'GITHUB LIVE SYNC NOT CONNECTED',
       githubDisconnected: 'GITHUB LIVE SYNC NOT CONNECTED',
       progressBasis: 'PROGRESS BASIS',
       completedTasks: 'COMPLETED TASKS',
@@ -305,6 +308,19 @@
         }
       }
     }
+    // Re-render open business dialog without closing
+    const businessDialog = $('#business-dialog');
+    if (businessDialog?.open && selectedBusinessNumber != null) {
+      const biz = businesses.find(b => b.number === selectedBusinessNumber);
+      if (biz) {
+        const body = $('#biz-dialog-body');
+        const title = $('#biz-dialog-title');
+        if (body && title) {
+          title.textContent = biz.title;
+          body.innerHTML = businessDialogContentHTML(biz);
+        }
+      }
+    }
   }
 
   function updateSelectLabels() {
@@ -426,7 +442,7 @@
           ${progress ? `${item.currentMilestone || ''} — ${progress.pct}%` : `${t('progressUndefined')} · ${t('goalDefNeeded')}`}
         </span>
         <span class="pd-card-currentwork">${item.currentWork || ''}</span>
-        <div class="pd-card-github-state">${t('githubDisconnected')}</div>
+        <div class="pd-card-github-state">${t('githubCardDisconnected')}</div>
         <div class="pd-card-meta">
           <span class="pd-card-devmode">${devLabel(item.developmentMode)}</span>
         </div>
@@ -721,17 +737,9 @@
     document.body.style.overflow = 'hidden';
   }
 
-  function openBusinessDialog(biz) {
-    lastFocused = document.activeElement;
-    const dialog = $('#business-dialog');
-    if (!dialog) return;
-    const body = $('#biz-dialog-body');
-    const title = $('#biz-dialog-title');
-    if (!body || !title) return;
-
+  function businessDialogContentHTML(biz) {
     const stateCls = `status-${biz.state}`;
-    title.textContent = biz.title;
-    body.innerHTML = `
+    return `
       <div class="dialog-biznumber">B${pad(biz.number)}</div>
       <div class="dialog-name">${biz.title}</div>
       <div class="dialog-korean">${biz.koreanTitle}</div>
@@ -758,6 +766,19 @@
         ${biz.githubUrl ? `<a class="dialog-link" href="${biz.githubUrl}" target="_blank" rel="noopener noreferrer">GitHub</a>` : ''}
       </div>
     `;
+  }
+
+  function openBusinessDialog(biz) {
+    lastFocused = document.activeElement;
+    selectedBusinessNumber = biz.number;
+    const dialog = $('#business-dialog');
+    if (!dialog) return;
+    const body = $('#biz-dialog-body');
+    const title = $('#biz-dialog-title');
+    if (!body || !title) return;
+
+    title.textContent = biz.title;
+    body.innerHTML = businessDialogContentHTML(biz);
 
     dialog.showModal();
     dialog.querySelector('#biz-dialog-close-btn')?.focus();
@@ -830,6 +851,13 @@
     }
     setupDialog('project-dialog', 'dialog-close-btn');
     setupDialog('business-dialog', 'biz-dialog-close-btn');
+    // Reset selected business on dialog close
+    const bizDialog = $('#business-dialog');
+    if (bizDialog) {
+      bizDialog.addEventListener('close', () => {
+        selectedBusinessNumber = null;
+      });
+    }
 
     // Search / filter events
     const searchInput = $('#sf-search-input');
