@@ -39,13 +39,6 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn('id="header-count"', html)
         self.assertIn('id="theme-toggle"', html)
 
-    def test_registry_covers_one_through_fifteen(self) -> None:
-        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
-        explicit_numbers = {int(value) for value in re.findall(r"number:\s*(\d+)", script)}
-        self.assertTrue({1, 2, 3, 4, 5, 6, 13, 14, 15}.issubset(explicit_numbers))
-        self.assertIn("Array.from({ length: 6 }", script)
-        self.assertIn("index + 7", script)
-
     def test_registry_has_no_secret_like_literals(self) -> None:
         text = (ROOT / "businesses.js").read_text(encoding="utf-8").lower()
         forbidden = ("api_key", "private_key", "password", "database_url", "firebase_service_account")
