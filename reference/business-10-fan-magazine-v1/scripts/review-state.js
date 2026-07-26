@@ -10,16 +10,43 @@
   const revealToggle = document.querySelector("[data-reveal-toggle]");
   const revealStatus = document.querySelector("[data-reveal-status]");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let revealStatusTimer = 0;
 
   const normalizeState = (value) => states.includes(value) ? value : "cover";
   const currentState = () => normalizeState(shell.dataset.currentState);
+  const isRevealed = () => revealStage?.classList.contains("is-revealed") ?? false;
+
+  function clearRevealStatusTimer() {
+    window.clearTimeout(revealStatusTimer);
+    revealStatusTimer = 0;
+  }
+
+  function setRevealState(revealed, { announceTransition = true } = {}) {
+    if (!revealStage) return;
+    clearRevealStatusTimer();
+    revealStage.classList.toggle("is-revealed", revealed);
+    revealToggle.setAttribute("aria-pressed", String(revealed));
+    revealToggle.textContent = revealed ? "표지로 돌아가기" : "커버 리빌 재생";
+
+    if (reducedMotion.matches) {
+      revealStatus.textContent = revealed ? "펼침면 즉시 전환됨" : "표지 즉시 전환됨";
+      return;
+    }
+
+    if (!announceTransition) {
+      revealStatus.textContent = revealed ? "펼침면 상태 · 680ms 완료" : "표지 상태 · 680ms";
+      return;
+    }
+
+    revealStatus.textContent = revealed ? "펼침면 전환 중 · 0–680ms" : "표지 복귀 중 · 0–680ms";
+    revealStatusTimer = window.setTimeout(() => {
+      revealStatus.textContent = revealed ? "펼침면 상태 · 680ms 완료" : "표지 상태 · 복귀 완료";
+      revealStatusTimer = 0;
+    }, 700);
+  }
 
   function resetReveal() {
-    if (!revealStage) return;
-    revealStage.classList.remove("is-revealed");
-    revealToggle.setAttribute("aria-pressed", "false");
-    revealToggle.textContent = "커버 리빌 재생";
-    revealStatus.textContent = reducedMotion.matches ? "표지 상태 · reduced motion" : "표지 상태 · 680ms";
+    setRevealState(false, { announceTransition: false });
   }
 
   function showState(nextState, options = {}) {
@@ -52,21 +79,12 @@
   }
 
   function toggleReveal() {
-    if (!revealStage) return;
-    const revealed = !revealStage.classList.contains("is-revealed");
-    revealStage.classList.toggle("is-revealed", revealed);
-    revealToggle.setAttribute("aria-pressed", String(revealed));
-    revealToggle.textContent = revealed ? "표지로 돌아가기" : "커버 리빌 재생";
-    revealStatus.textContent = reducedMotion.matches
-      ? (revealed ? "펼침면 즉시 전환됨" : "표지 즉시 전환됨")
-      : (revealed ? "펼침면 상태 · 680ms 완료" : "표지 상태 · 재생 가능");
+    setRevealState(!isRevealed());
   }
 
   function updateMotionPreference() {
     document.documentElement.dataset.reducedMotion = String(reducedMotion.matches);
-    if (currentState() === "reveal") {
-      revealStatus.textContent = reducedMotion.matches ? "표지 상태 · reduced motion" : "표지 상태 · 680ms";
-    }
+    if (currentState() === "reveal") setRevealState(isRevealed(), { announceTransition: false });
   }
 
   stateButtons.forEach((button) => {
@@ -87,7 +105,10 @@
       event.preventDefault();
       stepState(1);
     }
-    if (event.key === "Escape" && currentState() === "reveal") resetReveal();
+    if (event.key === "Escape" && currentState() === "reveal" && isRevealed()) {
+      event.preventDefault();
+      setRevealState(false);
+    }
   });
 
   if (typeof reducedMotion.addEventListener === "function") {
