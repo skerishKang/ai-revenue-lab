@@ -29,13 +29,13 @@ def bundled_html() -> str:
         return f'src="data:image/svg+xml;base64,{encoded}"'
 
     html = re.sub(r'<link rel="stylesheet" href="([^"]+)">', inline_style, html)
-    html = re.sub(r'<script src="([^"]+)" defer></script>', '', html)
+    html = re.sub(r'<script src="([^"]+)" defer></script>', "", html)
     html = re.sub(r'src="(\./assets/images/[^"]+\.svg)"', inline_image, html)
     scripts = []
     for raw_source in script_sources:
         source = raw_source.split("?", 1)[0].removeprefix("./")
         scripts.append((ROOT / source).read_text(encoding="utf-8"))
-    return html.replace('</body>', '<script>\n' + '\n'.join(scripts) + '\n</script>\n</body>')
+    return html.replace("</body>", "<script>\n" + "\n".join(scripts) + "\n</script>\n</body>")
 
 
 async def load_page(page) -> dict[str, list[str]]:
@@ -59,7 +59,9 @@ async def inspect_state(page, state: str, width: int, height: int) -> dict:
       stateCount: window.__PMM_REVIEW__.stateCount,
       activeState: window.__PMM_REVIEW__.getActiveState(),
       visibleStates: [...document.querySelectorAll('[data-review-state]')].filter(el => !el.hidden).length,
-      focusableControls: [...document.querySelectorAll('button, [tabindex]')].filter(el => !el.hidden).length
+      focusableControls: [...document.querySelectorAll('button, [tabindex]')].filter(el => (
+        !el.closest('[hidden]') && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'
+      )).length
     })""")
     return {
         "state_found": ok,
@@ -67,6 +69,129 @@ async def inspect_state(page, state: str, width: int, height: int) -> dict:
         "horizontal_overflow": max(0, metrics["scrollWidth"] - metrics["clientWidth"]),
         "metrics": metrics,
     }
+
+
+async def validate_explanation_drawer(page) -> dict:
+    await page.evaluate("window.__PMM_REVIEW__.setStateByName('explanation')")
+    before = await page.evaluate("""() => {
+      const state = document.querySelector('[data-review-state="explanation"]');
+      const toggle = state.querySelector('[data-explanation-toggle]');
+      const drawer = state.querySelector('[data-explanation-drawer]');
+      return {drawerHidden: drawer.hidden, expanded: toggle.getAttribute('aria-expanded')};
+    }""")
+
+    await page.locator('[data-review-state="explanation"] [data-explanation-toggle]').click()
+    opened = await page.evaluate("""() => {
+      const state = document.querySelector('[data-review-state="explanation"]');
+      const toggle = state.querySelector('[data-explanation-toggle]');
+      const drawer = state.querySelector('[data-explanation-drawer]');
+      const style = getComputedStyle(drawer);
+      const rect = drawer.getBoundingClientRect();
+      return {
+        drawerHidden: drawer.hidden,
+        drawerVisible: !drawer.hidden && style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0,
+        expanded: toggle.getAttribute('aria-expanded'),
+        focusIsDrawer: document.activeElement === drawer,
+        focusHiddenAncestor: Boolean(document.activeElement?.closest('[hidden]')),
+        drawerInsideActiveState: drawer.closest('[data-review-state]') === state && !state.hidden
+      };
+    }""")
+
+    await page.evaluate("""() => {
+      document.querySelector('[data-review-state="explanation"] [data-explanation-toggle]').click();
+    }""")
+    closed = await page.evaluate("""() => {
+      const state = document.querySelector('[data-review-state="explanation"]');
+      const toggle = state.querySelector('[data-explanation-toggle]');
+      const drawer = state.querySelector('[data-explanation-drawer]');
+      return {
+        drawerHidden: drawer.hidden,
+        expanded: toggle.getAttribute('aria-expanded'),
+        focusIsToggle: document.activeElement === toggle,
+        focusHiddenAncestor: Boolean(document.activeElement?.closest('[hidden]'))
+      };
+    }""")
+
+    await page.locator('[data-review-state="explanation"] [data-explanation-toggle]').click()
+    await page.evaluate("window.__PMM_REVIEW__.setStateByName('overview')")
+    after_state_change = await page.evaluate("""() => {
+      const state = document.querySelector('[data-review-state="explanation"]');
+      const toggle = state.querySelector('[data-explanation-toggle]');
+      const drawer = state.querySelector('[data-explanation-drawer]');
+      return {
+        drawerHidden: drawer.hidden,
+        expanded: toggle.getAttribute('aria-expanded'),
+        explanationStateHidden: state.hidden,
+        focusHiddenAncestor: Boolean(document.activeElement?.closest('[hidden]')),
+        focusedStateButton: document.activeElement?.matches('[data-review-state-button]') || false
+      };
+    }""")
+
+    result = {
+        "before": before,
+        "opened": opened,
+        "closed": closed,
+        "after_state_change": after_state_change,
+    }
+    result["pass"] = (
+        before == {"drawerHidden": True, "expanded": "false"}
+        and opened["drawerVisible"]
+        and opened["expanded"] == "true"
+        and opened["focusIsDrawer"]
+        and not opened["focusHiddenAncestor"]
+        and opened["drawerInsideActiveState"]
+        and closed["drawerHidden"]
+        and closed["expanded"] == "false"
+        and closed["focusIsToggle"]
+        and not closed["focusHiddenAncestor"]
+        and after_state_change["drawerHidden"]
+        and after_state_change["expanded"] == "false"
+        and after_state_change["explanationStateHidden"]
+        and not after_state_change["focusHiddenAncestor"]
+        and after_state_change["focusedStateButton"]
+    )
+    return result
+
+
+async def validate_selection_isolation(page) -> dict:
+    await page.evaluate("window.__PMM_REVIEW__.setStateByName('overview')")
+    initial = await page.evaluate("""() => ({
+      overview: document.querySelector('[data-review-state="overview"] [data-selected-copy]').textContent,
+      ripple: document.querySelector('[data-review-state="ripple"] [data-selected-copy]').textContent
+    })""")
+    await page.locator('[data-review-state="overview"] .overview-label--place').click()
+    after_overview = await page.evaluate("""() => ({
+      overview: document.querySelector('[data-review-state="overview"] [data-selected-copy]').textContent,
+      ripple: document.querySelector('[data-review-state="ripple"] [data-selected-copy]').textContent
+    })""")
+
+    await page.evaluate("window.__PMM_REVIEW__.setStateByName('ripple')")
+    before_ripple_click = await page.evaluate("""() => ({
+      overview: document.querySelector('[data-review-state="overview"] [data-selected-copy]').textContent,
+      ripple: document.querySelector('[data-review-state="ripple"] [data-selected-copy]').textContent
+    })""")
+    await page.locator('[data-review-state="ripple"] [data-select-item]').click()
+    after_ripple = await page.evaluate("""() => ({
+      overview: document.querySelector('[data-review-state="overview"] [data-selected-copy]').textContent,
+      ripple: document.querySelector('[data-review-state="ripple"] [data-selected-copy]').textContent,
+      copyNodesDistinct: document.querySelector('[data-review-state="overview"] [data-selected-copy]') !== document.querySelector('[data-review-state="ripple"] [data-selected-copy]')
+    })""")
+
+    result = {
+        "initial": initial,
+        "after_overview_selection": after_overview,
+        "before_ripple_selection": before_ripple_click,
+        "after_ripple_selection": after_ripple,
+    }
+    result["pass"] = (
+        after_overview["overview"] != initial["overview"]
+        and after_overview["ripple"] == initial["ripple"]
+        and before_ripple_click["overview"] == after_overview["overview"]
+        and after_ripple["ripple"] != before_ripple_click["ripple"]
+        and after_ripple["overview"] == before_ripple_click["overview"]
+        and after_ripple["copyNodesDistinct"]
+    )
+    return result
 
 
 async def main(_: str) -> None:
@@ -84,6 +209,9 @@ async def main(_: str) -> None:
             states[name] = await inspect_state(page, name, 1440, 1000)
 
         mobile = await inspect_state(page, "mobile", 390, 844)
+        explanation_drawer = await validate_explanation_drawer(page)
+        selection_isolation = await validate_selection_isolation(page)
+
         await page.keyboard.press("Home")
         home_state = await page.evaluate("window.__PMM_REVIEW__.getActiveState()")
         await page.keyboard.press("ArrowRight")
@@ -93,8 +221,13 @@ async def main(_: str) -> None:
           const style = getComputedStyle(document.activeElement);
           return {tag: document.activeElement.tagName, outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth};
         }""")
-        focus_pass = focus_style['outlineStyle'] != 'none' and focus_style['outlineWidth'] != '0px'
-        keyboard = {"home": home_state, "arrow_right": arrow_state, "focus_visible": focus_style, "pass": home_state == "overview" and arrow_state == "person" and focus_pass}
+        focus_pass = focus_style["outlineStyle"] != "none" and focus_style["outlineWidth"] != "0px"
+        keyboard = {
+            "home": home_state,
+            "arrow_right": arrow_state,
+            "focus_visible": focus_style,
+            "pass": home_state == "overview" and arrow_state == "person" and focus_pass,
+        }
 
         reduced_context = await browser.new_context(reduced_motion="reduce", viewport={"width": 1440, "height": 1000})
         reduced_page = await reduced_context.new_page()
@@ -110,8 +243,11 @@ async def main(_: str) -> None:
 
         result = {
             "validation_method": "Playwright Chromium page.set_content with exact local HTML/CSS/JS and repository SVG bytes inlined; direct URL navigation was blocked by the execution environment administrator policy",
+            "version": await page.evaluate("window.__PMM_REVIEW__.version"),
             "states": states,
             "mobile": mobile,
+            "explanation_drawer": explanation_drawer,
+            "selection_isolation": selection_isolation,
             "keyboard": keyboard,
             "reduced_motion": reduced,
             "motion_duration": await page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--ripple-duration').trim()"),
@@ -123,6 +259,8 @@ async def main(_: str) -> None:
         result["pass"] = (
             all(value["state_found"] and value["horizontal_overflow"] == 0 and value["metrics"]["visibleStates"] == 1 for value in states.values())
             and mobile["horizontal_overflow"] == 0
+            and explanation_drawer["pass"]
+            and selection_isolation["pass"]
             and keyboard["pass"]
             and reduced["query"] and reduced["mode"] == "reduced" and reduced["visibleRings"] == 0
             and not result["console_errors"]

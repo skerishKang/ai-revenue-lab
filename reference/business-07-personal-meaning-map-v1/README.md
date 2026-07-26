@@ -43,7 +43,7 @@ These controls exist only to inspect the visual system and motion. They do not e
 Every loaded CSS and JavaScript resource uses:
 
 ```text
-personal-meaning-map-20260726-1
+personal-meaning-map-20260726-2
 ```
 
 ## Run
