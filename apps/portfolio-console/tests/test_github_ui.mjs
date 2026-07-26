@@ -42,8 +42,10 @@ test("live response merges strictly by Business number", () => {
 test("Korean and English live labels are deterministic", () => {
   assert.equal(ui.labelsFor("ko").checksPass, "검사 통과");
   assert.equal(ui.labelsFor("ko").draftPr, "PR 초안");
+  assert.equal(ui.labelsFor("ko").closedPr, "PR 닫힘");
   assert.equal(ui.labelsFor("en").checksPass, "CHECKS PASS");
   assert.equal(ui.labelsFor("en").draftPr, "DRAFT PR");
+  assert.equal(ui.labelsFor("en").closedPr, "CLOSED PR");
 });
 
 test("B01 live Draft PR summary is compact", () => {
@@ -51,6 +53,12 @@ test("B01 live Draft PR summary is compact", () => {
   assert.equal(summary.connection, "SYNCED");
   assert.equal(summary.primary, "DRAFT PR #111");
   assert.equal(summary.checks, "CHECKS PENDING");
+});
+
+test("closed unmerged pull request is not labeled open", () => {
+  const live = { number: 4, connectionState: "connected", issue: null, pullRequest: { number: 200, state: "closed", draft: false, merged: false }, checks: { state: "unavailable" } };
+  assert.equal(ui.liveSummary(live, payload(), "ko").primary, "PR 닫힘 #200");
+  assert.equal(ui.liveSummary(live, payload(), "en").primary, "CLOSED PR #200");
 });
 
 test("B09 preserves UI_APPROVED static judgment beside live Draft facts", () => {
