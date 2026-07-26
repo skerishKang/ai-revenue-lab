@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1100" role="img" aria-labelledby="t d">
+<title id="t">오디오 편지 조각</title><desc id="d">종이, 봉투, 우표와 잔잔한 신호선을 겹친 원본 벡터</desc>
+<defs><filter id="s"><feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#11151b" flood-opacity=".2"/></filter><linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#11151b"/><stop offset="1" stop-color="#5c7694"/></linearGradient></defs>
+<rect width="1200" height="1100" fill="#d8cec0"/>
+<path d="M0 810C240 680 390 720 580 820s376 98 620-55v335H0z" fill="url(#night)"/>
+<g filter="url(#s)">
+ <g transform="translate(120 90) rotate(-5 340 245)"><rect width="680" height="490" fill="#fcfaf5"/><path d="M0 0l340 250L680 0" fill="#eee7db"/><path d="M0 490l250-270M680 490L430 220" fill="none" stroke="#d2ccc0" stroke-width="4"/><circle cx="340" cy="255" r="65" fill="#a65348"/><path d="M318 255h44M340 233v44" stroke="#fcfaf5" stroke-width="5" opacity=".8"/></g>
+ <g transform="translate(550 420) rotate(6 250 280)"><rect width="500" height="560" fill="#f2eee5"/><rect x="36" y="36" width="428" height="488" fill="none" stroke="#c7bcaa" stroke-width="3"/><rect x="355" y="56" width="82" height="98" fill="#5c7694"/><circle cx="396" cy="105" r="25" fill="none" stroke="#f2eee5" stroke-width="3"/><g stroke="#b9afa0" stroke-width="10"><path d="M75 210h330"/><path d="M75 260h290"/><path d="M75 310h345"/><path d="M75 360h270"/></g><path d="M75 445c84-56 180-55 282 3" fill="none" stroke="#c58a3d" stroke-width="9"/><text x="74" y="495" font-family="Georgia" font-size="28" fill="#11151b">to myself, tonight</text></g>
+</g>
+<path d="M80 850c140-70 265-66 365 8 112 83 215 78 330-7 97-71 201-76 330-3" fill="none" stroke="#c58a3d" stroke-width="11" stroke-linecap="round"/>
+<path d="M80 850c140-70 265-66 365 8 112 83 215 78 330-7 97-71 201-76 330-3" fill="none" stroke="#f2eee5" stroke-width="2" stroke-dasharray="7 20"/>
+</svg>
