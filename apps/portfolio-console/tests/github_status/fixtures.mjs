@@ -31,13 +31,13 @@ export const jsonResponse = (data, status = 200, headers = {}) => new Response(J
   status,
   headers: { "Content-Type": "application/json", ...headers }
 });
-export function rollup(state = "SUCCESS") {
-  const node = state === "PENDING"
+export function rollup(state = "SUCCESS", { totalCount = 1, nodes = null } = {}) {
+  const defaultNode = state === "PENDING" || state === "EXPECTED"
     ? { __typename: "CheckRun", status: "IN_PROGRESS", conclusion: null }
-    : state === "FAILURE"
-      ? { __typename: "CheckRun", status: "COMPLETED", conclusion: "FAILURE" }
+    : state === "FAILURE" || state === "ERROR"
+      ? { __typename: "CheckRun", status: "COMPLETED", conclusion: state }
       : { __typename: "CheckRun", status: "COMPLETED", conclusion: "SUCCESS" };
-  return { state, contexts: { totalCount: 1, nodes: [node] } };
+  return { state, contexts: { totalCount, nodes: nodes || [defaultNode] } };
 }
 function gqlIssue(number) {
   return { number, title: `Issue ${number}`, state: "OPEN", updatedAt: "2026-07-27T00:00:00Z", url: `https://github.com/${GITHUB_REPOSITORY}/issues/${number}` };
