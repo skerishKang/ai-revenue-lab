@@ -367,20 +367,22 @@ def verify_public_bytes(expected_file: Path, actual_file: Path) -> None:
 def _curl_fetch(
     url: str,
     output: Path,
-    connect_timeout: int,
-    request_timeout: int,
+    connect_timeout: float,
+    request_timeout: float,
 ) -> tuple[int, str]:
+    max_time_int = max(1, int(request_timeout))
+    connect_int = max(1, int(connect_timeout))
     result = subprocess.run(
         [
             "curl", "--location", "--silent", "--show-error",
-            "--connect-timeout", str(connect_timeout),
-            "--max-time", str(request_timeout),
+            "--connect-timeout", str(connect_int),
+            "--max-time", str(max_time_int),
             "--output", str(output),
             "--write-out", "%{http_code}",
             url,
         ],
         capture_output=True, text=True,
-        timeout=request_timeout + 10,
+        timeout=float(max_time_int) + 10.0,
     )
     http_status = result.stdout.strip()
     curl_error = result.stderr.strip()
@@ -393,37 +395,44 @@ def _curl_fetch(
 def verify_public_url_with_retry(
     url: str,
     expected_file: Path,
-    max_retries: int = 25,
+    deadline: float = 300.0,
+    max_retries: int = 60,
     retry_delay: float = 12.0,
-    connect_timeout: int = 15,
-    request_timeout: int = 60,
+    connect_timeout: float = 15.0,
+    request_timeout: float = 60.0,
 ) -> None:
     expected_bytes = expected_file.read_bytes()
     if not expected_bytes:
         raise ValidationError("approved index.html is empty")
+    start = time.monotonic()
+    end_by = start + deadline
     last_error = ""
-    success = False
     for attempt in range(1, max_retries + 1):
+        remaining = end_by - time.monotonic()
+        effective_timeout = min(request_timeout, remaining - 2.0)
+        if effective_timeout < 5.0:
+            raise ValidationError(
+                f"Public URL verification failed for {url} "
+                f"after {deadline:.0f}s deadline. Last error: {last_error}"
+            )
         actual_file = Path(tempfile.mktemp(suffix=".html"))
         try:
-            status, curl_error = _curl_fetch(url, actual_file, connect_timeout, request_timeout)
+            status, curl_error = _curl_fetch(url, actual_file, connect_timeout, effective_timeout)
             if status == 0:
                 last_error = curl_error
-                time.sleep(retry_delay)
-                continue
-            if status != 200:
+            elif status != 200:
                 last_error = f"HTTP {status}"
-                time.sleep(retry_delay)
-                continue
-            actual_bytes = actual_file.read_bytes()
-            if actual_bytes != expected_bytes:
+            else:
+                actual_bytes = actual_file.read_bytes()
+                if actual_bytes == expected_bytes:
+                    return
                 last_error = "byte mismatch"
-                time.sleep(retry_delay)
-                continue
-            success = True
-            return
         finally:
             actual_file.unlink(missing_ok=True)
+        if attempt < max_retries:
+            sleep_time = min(retry_delay, max(0.0, end_by - time.monotonic() - 1.0))
+            if sleep_time > 0.01:
+                time.sleep(sleep_time)
     raise ValidationError(
         f"Public URL verification failed for {url} "
         f"after {max_retries} attempts. Last error: {last_error}"
@@ -503,10 +512,11 @@ def build_parser() -> argparse.ArgumentParser:
     verify_url = subparsers.add_parser("verify-public-url")
     verify_url.add_argument("--url", required=True)
     verify_url.add_argument("--expected-file", required=True, type=Path)
-    verify_url.add_argument("--max-retries", type=int, default=25)
+    verify_url.add_argument("--deadline", type=float, default=300.0)
+    verify_url.add_argument("--request-timeout", type=float, default=60.0)
+    verify_url.add_argument("--connect-timeout", type=float, default=15.0)
     verify_url.add_argument("--retry-delay", type=float, default=12.0)
-    verify_url.add_argument("--connect-timeout", type=int, default=15)
-    verify_url.add_argument("--request-timeout", type=int, default=60)
+    verify_url.add_argument("--max-retries", type=int, default=60)
     return parser
 def main() -> int:
     args = build_parser().parse_args()
@@ -541,6 +551,7 @@ def main() -> int:
         elif args.command == "verify-public-url":
             verify_public_url_with_retry(
                 args.url, args.expected_file,
+                deadline=args.deadline,
                 max_retries=args.max_retries,
                 retry_delay=args.retry_delay,
                 connect_timeout=args.connect_timeout,

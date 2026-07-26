@@ -321,12 +321,12 @@ jobs:
           python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py verify-public-url \
             --url "${DEPLOYMENT_URL}/" \
             --expected-file "${expected_file}" \
-            --max-retries 25 --retry-delay 12
+            --deadline 300
 
           python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py verify-public-url \
             --url "${expected_production_url}" \
             --expected-file "${expected_file}" \
-            --max-retries 25 --retry-delay 12
+            --deadline 300
 
           deployment_id="$(jq -r '.deployment_id' "${deployment_metadata}")"
           commit_verification="$(jq -r '.commit_verification' "${deployment_metadata}")"

@@ -2,6 +2,7 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 import unittest
+from unittest.mock import patch, call
 from pathlib import Path
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "validate_pages_provisioning.py"
 SPEC = importlib.util.spec_from_file_location("validator", SCRIPT)
@@ -402,15 +403,16 @@ class SourceIsolationTests(unittest.TestCase):
             with self.assertRaises(validator.ValidationError):
                 validator.check_source_isolation(root, SOURCE_DIRECTORY)
 class PublicUrlVerificationTests(unittest.TestCase):
-    def test_default_retry_parameters_are_multi_minute_bounded(self) -> None:
-        self.assertEqual(validator.verify_public_url_with_retry.__defaults__, (25, 12.0, 15, 60))
+    def test_default_deadline_is_300_seconds(self) -> None:
+        defaults = validator.verify_public_url_with_retry.__defaults__
+        self.assertEqual(defaults[0], 300.0)
 
     def test_rejects_empty_expected_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             expected = Path(directory) / "expected.html"
             expected.write_bytes(b"")
             with self.assertRaises(validator.ValidationError):
-                validator.verify_public_url_with_retry("https://example.com/", expected, max_retries=1, retry_delay=0.05)
+                validator.verify_public_url_with_retry("https://example.com/", expected, deadline=30.0, max_retries=2)
 
     def test_curl_fetch_returns_zero_on_missing_curl_output(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -418,6 +420,211 @@ class PublicUrlVerificationTests(unittest.TestCase):
             status, error = validator._curl_fetch("https://nonexistent.invalid/path", output, 5, 10)
             self.assertEqual(status, 0)
             self.assertTrue(len(error) > 0)
+
+class PublicUrlTimingTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.__enter__())
+        self.expected = self.root / "expected.html"
+        self.expected.write_bytes(b"<html>verified</html>")
+
+    def tearDown(self):
+        self.temp.__exit__(None, None, None)
+
+    def _patch(self):
+        self.monotonic_patcher = patch.object(validator.time, "monotonic")
+        self.sleep_patcher = patch.object(validator.time, "sleep")
+        self.fetch_patcher = patch.object(validator, "_curl_fetch")
+        self.mock_monotonic = self.monotonic_patcher.start()
+        self.mock_sleep = self.sleep_patcher.start()
+        self.mock_fetch = self.fetch_patcher.start()
+        self.addCleanup(self.monotonic_patcher.stop)
+        self.addCleanup(self.sleep_patcher.stop)
+        self.addCleanup(self.fetch_patcher.stop)
+
+    def _make_clock(self, *ticks: float):
+        self.mock_monotonic.side_effect = list(ticks)
+
+    @staticmethod
+    def _write_actual(output_path: Path, body: bytes) -> None:
+        output_path.write_bytes(body)
+
+    def test_respects_deadline_on_curl_failure(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 302.0, 302.0)
+        self.mock_fetch.return_value = (0, "curl: (7) connection refused")
+
+        with self.assertRaises(validator.ValidationError) as ctx:
+            validator.verify_public_url_with_retry(
+                "https://example.com/", self.expected,
+                deadline=300.0, max_retries=60, retry_delay=12.0,
+            )
+        self.assertIn("deadline", str(ctx.exception))
+        self.assertIn("connection refused", str(ctx.exception))
+
+    def test_request_timeout_capped_by_remaining_budget(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 290.0, 290.0, 295.0, 295.0)
+        rts: list[float] = []
+        call_count = 0
+
+        def fetch_side(url, output, ct, rt):
+            nonlocal call_count
+            call_count += 1
+            rts.append(rt)
+            if call_count == 1:
+                output.write_bytes(b"<html>wrong</html>")
+            else:
+                output.write_bytes(b"<html>verified</html>")
+            return (200, "")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        validator.verify_public_url_with_retry(
+            "https://example.com/", self.expected,
+            deadline=300.0, max_retries=5, retry_delay=12.0, request_timeout=60.0,
+        )
+        self.assertGreaterEqual(call_count, 2)
+        self.assertGreater(rts[0], rts[1])
+
+    def test_sleep_capped_by_remaining_budget(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 295.0, 295.0, 296.0, 296.0, 297.0, 297.0)
+
+        def fetch_side(url, output, ct, rt):
+            return (0, "fail")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_public_url_with_retry(
+                "https://example.com/", self.expected,
+                deadline=300.0, max_retries=5, retry_delay=12.0,
+            )
+        slept_args = [c[0][0] for c in self.mock_sleep.call_args_list if c[0][0] > 0.01]
+        for s in slept_args:
+            self.assertLessEqual(s, 5.0)
+
+    def test_no_sleep_after_last_attempt(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0)
+
+        call_count = 0
+
+        def fetch_side(url, output, ct, rt):
+            nonlocal call_count
+            call_count += 1
+            return (0, "fail")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_public_url_with_retry(
+                "https://example.com/", self.expected,
+                deadline=300.0, max_retries=3, retry_delay=12.0,
+            )
+        self.assertLessEqual(len(self.mock_sleep.call_args_list), 2)
+        self.assertEqual(call_count, 3)
+
+    def test_success_after_tls_error(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 1.0, 1.0, 2.0, 2.0)
+
+        call_count = 0
+
+        def fetch_side(url, output, ct, rt):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                return (0, "curl: (60) SSL certificate problem")
+            output.write_bytes(b"<html>verified</html>")
+            return (200, "")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        validator.verify_public_url_with_retry(
+            "https://example.com/", self.expected,
+            deadline=300.0, max_retries=5, retry_delay=0.1,
+        )
+        self.assertEqual(call_count, 2)
+
+    def test_success_after_http_non_200(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 1.0, 1.0, 2.0, 2.0)
+
+        call_count = 0
+
+        def fetch_side(url, output, ct, rt):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                return (502, "")
+            output.write_bytes(b"<html>verified</html>")
+            return (200, "")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        validator.verify_public_url_with_retry(
+            "https://example.com/", self.expected,
+            deadline=300.0, max_retries=5, retry_delay=0.1,
+        )
+        self.assertEqual(call_count, 2)
+
+    def test_success_after_byte_mismatch(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0)
+
+        call_count = 0
+
+        def fetch_side(url, output, ct, rt):
+            nonlocal call_count
+            call_count += 1
+            output.write_bytes(b"<html>verified</html>")
+            return (200, "")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        with patch.object(Path, "read_bytes") as mock_read:
+            mock_read.side_effect = [
+                b"<html>verified</html>",
+                b"<html>wrong</html>",
+                b"<html>wrong</html>",
+                b"<html>verified</html>",
+            ]
+            validator.verify_public_url_with_retry(
+                "https://example.com/", self.expected,
+                deadline=300.0, max_retries=5, retry_delay=0.1,
+            )
+        self.assertEqual(call_count, 3)
+
+    def test_deadline_exhaustion_includes_last_error(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 302.0, 302.0)
+        self.mock_fetch.return_value = (0, "curl: (28) connection timeout")
+
+        with self.assertRaises(validator.ValidationError) as ctx:
+            validator.verify_public_url_with_retry(
+                "https://example.com/", self.expected,
+                deadline=300.0, max_retries=60, retry_delay=0.1,
+            )
+        self.assertIn("connection timeout", str(ctx.exception))
+        self.assertIn("Last error", str(ctx.exception))
+
+    def test_http_200_and_exact_bytes_required(self):
+        self._patch()
+        self._make_clock(0.0, 0.0, 1.0, 1.0, 2.0, 2.0)
+
+        def fetch_side(url, output, ct, rt):
+            output.write_bytes(b"<html>wrong</html>")
+            return (200, "")
+
+        self.mock_fetch.side_effect = fetch_side
+
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_public_url_with_retry(
+                "https://example.com/", self.expected,
+                deadline=30.0, max_retries=2, retry_delay=0.1,
+            )
 
 class WorkflowStaticContractTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -459,7 +666,7 @@ class WorkflowStaticContractTests(unittest.TestCase):
         )
 
     def test_verify_public_url_subcommand_with_multi_minute_bounded_retry(self) -> None:
-        for marker in ("verify-public-url", "--max-retries 25", "--retry-delay 12"):
+        for marker in ("verify-public-url", "--deadline 300"):
             self.assertIn(marker, self.workflow)
 
     def test_public_verification_requires_http_200_and_exact_bytes(self) -> None:
