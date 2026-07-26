@@ -110,9 +110,8 @@
   background: var(--ink);
   color: var(--paper-bright);
   clip-path: inset(0 0 0 0);
-  transition:
-    clip-path var(--motion-reveal) cubic-bezier(0.22, 0.72, 0.18, 1),
-    opacity var(--motion-medium) ease;
+  transition: clip-path var(--motion-reveal) cubic-bezier(0.22, 0.72, 0.18, 1);
+  will-change: clip-path;
 }
 
 .reveal-cover-image {
@@ -172,8 +171,7 @@
   display: grid;
   grid-template-columns: 88px minmax(0, 0.9fr) minmax(360px, 1.1fr);
   gap: 0;
-  opacity: 0;
-  transition: opacity var(--motion-medium) ease 160ms;
+  opacity: 1;
 }
 
 .reveal-rail {
@@ -225,8 +223,7 @@
 }
 
 .reveal-stage.is-revealed .reveal-cover {
-  clip-path: inset(0 100% 0 0);
-  opacity: 0;
+  clip-path: inset(0 0 0 100%);
 }
 
 .reveal-stage.is-revealed .reveal-cover-image img {
@@ -234,7 +231,6 @@
 }
 
 .reveal-stage.is-revealed .reveal-feature {
-  z-index: 3;
   opacity: 1;
 }
 
