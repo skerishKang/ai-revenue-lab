@@ -1,57 +1,35 @@
-const CACHE_KEY = "https://portfolio-console.internal/github-status/v1";
-const memoryStore = new Map();
+const SNAPSHOT_KEY = "github-status:v1:last-good";
+const DEFAULT_EXPIRATION_TTL = 86400;
+const runtimeMemory = new Map();
 
+function validRecord(value) {
+  return value && value.schemaVersion === 1 && Number.isFinite(value.storedAtMs) && value.snapshot?.schemaVersion === 1;
+}
 export class MemorySnapshotCache {
-  constructor({ now = () => Date.now() } = {}) {
-    this.now = now;
-    this.value = null;
-  }
-
-  async get() {
-    return this.value;
-  }
-
-  async set(snapshot) {
-    this.value = { snapshot, storedAtMs: this.now() };
-  }
+  constructor({ now = () => Date.now() } = {}) { this.now = now; this.value = null; }
+  async get() { return this.value; }
+  async set(snapshot) { this.value = { schemaVersion: 1, snapshot, storedAtMs: this.now() }; }
 }
-
 export class RuntimeSnapshotCache {
-  constructor({ cacheApi = globalThis.caches?.default, now = () => Date.now() } = {}) {
-    this.cacheApi = cacheApi;
-    this.now = now;
+  constructor({ kv, now = () => Date.now(), memoryStore = runtimeMemory, expirationTtl = DEFAULT_EXPIRATION_TTL } = {}) {
+    this.kv = kv; this.now = now; this.memoryStore = memoryStore; this.expirationTtl = expirationTtl;
   }
-
   async get() {
-    const memory = memoryStore.get(CACHE_KEY);
-    if (memory) return memory;
-    if (!this.cacheApi) return null;
+    const memory = this.memoryStore.get(SNAPSHOT_KEY);
+    if (validRecord(memory)) return memory;
+    if (!this.kv?.get) return null;
     try {
-      const response = await this.cacheApi.match(new Request(CACHE_KEY));
-      if (!response) return null;
-      const value = await response.json();
-      if (!value?.snapshot || !Number.isFinite(value?.storedAtMs)) return null;
-      memoryStore.set(CACHE_KEY, value);
+      const value = await this.kv.get(SNAPSHOT_KEY, { type: "json", cacheTtl: 30 });
+      if (!validRecord(value)) return null;
+      this.memoryStore.set(SNAPSHOT_KEY, value);
       return value;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   }
-
   async set(snapshot) {
-    const value = { snapshot, storedAtMs: this.now() };
-    memoryStore.set(CACHE_KEY, value);
-    if (!this.cacheApi) return;
-    try {
-      const response = new Response(JSON.stringify(value), {
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          "Cache-Control": "max-age=86400"
-        }
-      });
-      await this.cacheApi.put(new Request(CACHE_KEY), response);
-    } catch {
-      // Cache API is optional. Module memory remains the safe best-effort fallback.
-    }
+    const value = { schemaVersion: 1, snapshot, storedAtMs: this.now() };
+    if (!this.kv?.put) throw new Error("KV cache binding is unavailable.");
+    await this.kv.put(SNAPSHOT_KEY, JSON.stringify(value), { expirationTtl: this.expirationTtl });
+    this.memoryStore.set(SNAPSHOT_KEY, value);
   }
 }
+export { SNAPSHOT_KEY };
