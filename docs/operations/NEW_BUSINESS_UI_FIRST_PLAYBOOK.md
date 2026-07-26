@@ -20,6 +20,7 @@ The mandatory sequence is:
 Product framing
 → UI visual design
 → UI approval
+→ optional approved Phase 1 UI deployment
 → UX and interaction design
 → UX approval
 → backend authorization decision
@@ -162,7 +163,8 @@ The following are out of scope for the UI phase:
 - final navigation semantics and information architecture;
 - comprehensive loading, empty, validation, error, recovery, and permission states;
 - real forms, durable input, personalization logic, or recommendations;
-- authentication, API, database, provider, crawling, payment, billing, or production deployment.
+- authentication, API, database, provider, crawling, payment, or billing;
+- deployment unless it is a separately authorized publication of an already `UI_APPROVED` static Phase 1 reference under Section 8.1.
 
 The visual proposition must be understandable within 30–90 seconds.
 
@@ -274,6 +276,22 @@ Each UI child issue requires:
 - explicit user approval before `UI_APPROVED`.
 
 A successful build is not proof of visual quality. A clickable visual reference is not UX approval. A branch preview is not production.
+
+### 8.1 Optional deployment of an approved static UI
+
+`UI_APPROVED` does not itself authorize deployment. After UI approval, the user may separately authorize publication of the exact accepted static reference for browser review or public presentation.
+
+Before execution, record:
+
+- deployment purpose and visibility;
+- Preview or publicly accessible Production mode;
+- Git integration or direct upload;
+- Cloudflare project name and whether the project is Business-specific;
+- source branch or exact commit;
+- root directory, build command, and output directory;
+- whether a custom domain is in scope.
+
+Unless separately authorized, deployment must not modify source files, create commits, move the branch head, mark a PR ready, merge a PR, close an issue, start UX, or start backend work. The deployment report must include the actual URL, deployed commit, asset and console checks, and confirmation that GitHub gate states remain unchanged.
 
 ## 9. Reusable UI-only child issue template
 
