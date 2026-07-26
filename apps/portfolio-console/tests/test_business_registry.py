@@ -56,7 +56,9 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIn('state: "review"', block)
         self.assertIn('surfaceType: "Approved visual reference in Draft PR"', block)
         self.assertIn('githubLabel: "UI_APPROVED · Draft PR #175"', block)
+        self.assertIn("Draft, OPEN, and unmerged", block)
         self.assertIn("pending separate Ready/merge authorization", block)
+        self.assertIn("Phase 2 UX only through a separately authorized issue", block)
         self.assertNotIn("obtain exact-head CTO approval", block)
 
     def test_business_fifteen_remains_reserved(self) -> None:
