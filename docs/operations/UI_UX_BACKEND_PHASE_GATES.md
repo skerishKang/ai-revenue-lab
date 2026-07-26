@@ -125,6 +125,23 @@ Only `UI_APPROVED` authorizes a separate UX child issue.
 
 After approval, the accepted UI becomes the visual baseline. Material changes to typography, color, image direction, layout grammar, or signature motion must be documented rather than silently introduced during UX work.
 
+### 3.4 Optional Phase 1 UI deployment after approval
+
+A Business with `UI_APPROVED` may be deployed as a static Phase 1 visual reference only when the user separately and explicitly authorizes that deployment.
+
+The deployment authorization must state the intended mode and target. Preview versus publicly accessible production, Git integration versus direct upload, project naming, branch or exact commit, and domain use are deployment-specific decisions. None is implied by `UI_APPROVED` alone.
+
+An approved Phase 1 UI deployment:
+
+- publishes only the already accepted static UI reference and its repository-local assets;
+- does not authorize source changes, a new commit, branch movement, PR Ready status, merge, or issue closure unless separately requested;
+- does not convert review controls or synthetic states into accepted UX;
+- does not authorize authentication, persistence, APIs, databases, live AI, analytics, billing, or other backend work;
+- must report the deployed branch or exact commit and preserve the approved visual head;
+- must be recorded as deployment evidence separately from UI, UX, and backend gate status.
+
+A deployment is not proof of UX approval, backend authorization, production readiness, or product completion.
+
 ## 4. Phase 2 — UX and interaction design
 
 ### 4.1 Entry condition
