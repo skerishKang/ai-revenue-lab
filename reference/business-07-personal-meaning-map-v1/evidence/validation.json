@@ -1,0 +1,38 @@
+{
+  "artifact": "Business 7 Personal Meaning Map Phase 1 visual UI reference",
+  "starting_base": "48807067a261d8f1ca3814b4b26758dd6947788a",
+  "branch": "feat/business-07-personal-meaning-map-ui",
+  "version_query": "personal-meaning-map-20260726-1",
+  "expected_states": [
+    "overview",
+    "person",
+    "place",
+    "event-object",
+    "explanation",
+    "mobile",
+    "ripple"
+  ],
+  "results": {
+    "static_validation": "PASS",
+    "browser_validation": "PASS_WITH_NAVIGATION_LIMITATION",
+    "desktop_horizontal_overflow_px": 0,
+    "mobile_390_horizontal_overflow_px": 0,
+    "console_errors": 0,
+    "page_errors": 0,
+    "failed_local_assets": 0,
+    "external_runtime_requests": 0,
+    "keyboard_state_navigation": "PASS",
+    "visible_focus": "PASS",
+    "meaning_ripple_duration": "680ms",
+    "reduced_motion": "PASS"
+  },
+  "browser_limitation": "Direct localhost and file URL navigation was blocked by administrator policy. Playwright Chromium page.set_content rendered the exact local HTML/CSS/JS with repository SVG bytes inlined for layout, interaction, console, error, request, motion, and reduced-motion checks.",
+  "boundaries": {
+    "ui_only": true,
+    "ui_not_ready": true,
+    "ux_implemented": false,
+    "backend_implemented": false,
+    "deployment_implemented": false,
+    "synthetic_reference_only": true
+  }
+}
