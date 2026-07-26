@@ -1,0 +1,62 @@
+{
+  "states": {
+    "home": {"current": "home", "visible": true},
+    "topic": {"current": "topic", "visible": true},
+    "story": {"current": "story", "visible": true},
+    "why": {"current": "why", "visible": true},
+    "adjusted": {"current": "adjusted", "visible": true},
+    "mobile": {"current": "mobile", "visible": true},
+    "motion": {"current": "motion", "visible": true}
+  },
+  "console_errors": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "external_requests": [],
+  "horizontal_overflow": {
+    "desktop-home": false,
+    "desktop-topic": false,
+    "desktop-story": false,
+    "desktop-why": false,
+    "desktop-adjusted": false,
+    "desktop-mobile": false,
+    "desktop-motion": false,
+    "mobile-home": false
+  },
+  "reduced_motion": {
+    "root_attribute": "true",
+    "button_text": "즉시 전환됨",
+    "animation_duration": "1e-05s"
+  },
+  "version_query": "world-feed-20260726-2",
+  "keyboard_arrow_state": "topic",
+  "focus_visible_target": "topic",
+  "mobile_console_errors": [],
+  "mobile_failed_requests": [],
+  "console_error_count": 0,
+  "page_error_count": 0,
+  "failed_request_count": 0,
+  "external_request_count": 0,
+  "source_file_lines": {
+    "IMAGE_SOURCES.md": 32,
+    "README.md": 65,
+    "app.js": 125,
+    "assets/images/ceramic-hands.svg": 1,
+    "assets/images/hero-harbor.svg": 19,
+    "assets/images/maker-studio.svg": 1,
+    "assets/images/neighborhood-bookshop.svg": 1,
+    "assets/images/night-market.svg": 8,
+    "assets/images/sea-train.svg": 5,
+    "assets/images/small-cinema.svg": 6,
+    "assets/images/stadium-culture.svg": 6,
+    "index.html": 173,
+    "styles/base.css": 26,
+    "styles/components.css": 27,
+    "styles/layout.css": 41,
+    "styles/states/adjusted-mobile-motion.css": 98,
+    "styles/states/home-topic.css": 103,
+    "styles/states/story-why.css": 44,
+    "styles/tokens.css": 19
+  },
+  "all_source_files_under_500": true,
+  "monolithic_styles_css_present": false
+}
