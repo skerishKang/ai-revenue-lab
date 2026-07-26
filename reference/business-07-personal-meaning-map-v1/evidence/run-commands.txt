@@ -1,0 +1,24 @@
+# Static checks
+python evidence/validate-reference.py
+
+# Optional local URL review outside the constrained execution environment
+python -m http.server 4177
+# open http://127.0.0.1:4177/
+
+# Browser validation in this execution environment
+# Direct localhost/file URL navigation was blocked by administrator policy.
+# The script uses Playwright Chromium page.set_content with the exact local HTML/CSS/JS
+# and repository SVG bytes inlined, then checks states, overflow, keyboard, focus, motion,
+# reduced motion, console, page errors, requests, and local assets.
+python evidence/browser-validate.py
+
+# Binary capture generation (written outside the repository workspace)
+python evidence/capture-evidence.py
+
+# Generated external evidence
+# /mnt/data/personal-meaning-map-artifacts/1440-overview.png
+# /mnt/data/personal-meaning-map-artifacts/1440-place.png
+# /mnt/data/personal-meaning-map-artifacts/1440-explanation.png
+# /mnt/data/personal-meaning-map-artifacts/390x844-mobile.png
+# /mnt/data/personal-meaning-map-artifacts/meaning-ripple.gif
+# /mnt/data/personal-meaning-map-artifacts/reduced-motion.png
