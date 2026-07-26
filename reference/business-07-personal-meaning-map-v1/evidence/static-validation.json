@@ -11,7 +11,7 @@
     "assets/images/rain-window.svg": 9,
     "assets/images/topographic-field.svg": 20,
     "evidence/browser-validate.py": 145,
-    "evidence/browser-validation.json": 155,
+    "evidence/browser-validation.json": 66,
     "evidence/capture-evidence.py": 95,
     "evidence/run-commands.txt": 24,
     "evidence/static-validation.json": 84,
@@ -23,7 +23,7 @@
     "styles/components.css": 255,
     "styles/layout.css": 274,
     "styles/states/event-explanation.css": 193,
-    "styles/states/mobile-ripple.css": 333,
+    "styles/states/mobile-ripple.css": 332,
     "styles/states/overview.css": 131,
     "styles/states/person-place.css": 218,
     "styles/tokens.css": 23
