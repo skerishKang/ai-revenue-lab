@@ -13,14 +13,14 @@
   const LABELS = {
     ko: {
       synced: "동기화됨", syncPending: "동기화 대기", stale: "오래된 정보", notConnected: "연결 안 됨", unmapped: "미연결",
-      issueOpen: "Issue 열림", issueClosed: "Issue 닫힘", draftPr: "PR 초안", openPr: "PR 열림", merged: "병합됨",
+      issueOpen: "Issue 열림", issueClosed: "Issue 닫힘", draftPr: "PR 초안", openPr: "PR 열림", closedPr: "PR 닫힘", merged: "병합됨",
       checksPass: "검사 통과", checksFail: "검사 실패", checksPending: "검사 중", checksUnavailable: "검사 없음",
       lastSync: "마지막 동기화", repository: "저장소", latestMain: "최신 main SHA", mappedIssue: "연결 Issue",
       mappedPr: "연결 PR", prHead: "PR head SHA", lastActivity: "최근 GitHub 활동", githubStatus: "GitHub 상태", partial: "일부 정보 없음"
     },
     en: {
       synced: "SYNCED", syncPending: "SYNC PENDING", stale: "STALE", notConnected: "NOT CONNECTED", unmapped: "UNMAPPED",
-      issueOpen: "ISSUE OPEN", issueClosed: "ISSUE CLOSED", draftPr: "DRAFT PR", openPr: "OPEN PR", merged: "MERGED",
+      issueOpen: "ISSUE OPEN", issueClosed: "ISSUE CLOSED", draftPr: "DRAFT PR", openPr: "OPEN PR", closedPr: "CLOSED PR", merged: "MERGED",
       checksPass: "CHECKS PASS", checksFail: "CHECKS FAIL", checksPending: "CHECKS PENDING", checksUnavailable: "CHECKS UNAVAILABLE",
       lastSync: "LAST SYNC", repository: "REPOSITORY", latestMain: "LATEST MAIN SHA", mappedIssue: "MAPPED ISSUE",
       mappedPr: "MAPPED PR", prHead: "PR HEAD SHA", lastActivity: "LAST GITHUB ACTIVITY", githubStatus: "GITHUB STATUS", partial: "PARTIAL DATA"
@@ -69,9 +69,16 @@
     if (live.connectionState === "partial") return labels.partial;
     return labels.synced;
   }
+  function pullRequestLabel(pullRequest, labels) {
+    if (!pullRequest) return null;
+    if (pullRequest.merged) return labels.merged;
+    if (pullRequest.state === "closed") return labels.closedPr;
+    if (pullRequest.draft) return labels.draftPr;
+    return labels.openPr;
+  }
   function primaryFact(live, labels) {
     const pr = live?.pullRequest;
-    if (pr) return `${pr.merged ? labels.merged : pr.draft ? labels.draftPr : labels.openPr} #${pr.number}`;
+    if (pr) return `${pullRequestLabel(pr, labels)} #${pr.number}`;
     const issue = live?.issue;
     if (issue) return `${issue.state === "open" ? labels.issueOpen : labels.issueClosed} #${issue.number}`;
     return labels.unmapped;
@@ -150,7 +157,7 @@
     const issue = live.issue;
     const pr = live.pullRequest;
     const issueValue = issue ? `${escapeHtml(issue.title)} · ${escapeHtml(issue.state)} #${issue.number}` : "—";
-    const prValue = pr ? `${escapeHtml(pr.title)} · ${escapeHtml(pr.merged ? labels.merged : pr.draft ? labels.draftPr : labels.openPr)} #${pr.number}` : "—";
+    const prValue = pr ? `${escapeHtml(pr.title)} · ${escapeHtml(pullRequestLabel(pr, labels))} #${pr.number}` : "—";
     const block = globalObject.document.createElement("div");
     block.dataset.githubLiveBlock = "true";
     block.dataset.githubLiveSignature = signature;
