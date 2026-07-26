@@ -51,6 +51,10 @@
           <span aria-hidden="true">🔍</span>
           <span id="nav-search-filter">검색·필터</span>
         </button>
+        <button type="button" class="project-nav-item" data-project-view="work">
+          <span aria-hidden="true">⚙</span>
+          <span id="nav-work-in-progress">작업 중</span>
+        </button>
       </nav>
 
       <div class="sidebar-meta">
@@ -177,6 +181,23 @@
           </div>
           <p class="pd-copy-note" id="pd-copy-note"></p>
         </aside>
+      </section>
+
+      <section id="project-work-view" class="project-work-view" hidden aria-labelledby="work-view-heading">
+        <div class="work-view-header">
+          <div>
+            <p class="eyebrow" id="work-view-desc">개발·검토·보완이 필요한 프로젝트</p>
+            <h2 id="work-view-heading" tabindex="-1">작업 중</h2>
+          </div>
+          <span id="work-view-count">0</span>
+        </div>
+        <div class="work-view-stats" id="work-view-stats">
+          <span id="work-stats-total"></span>
+          <span id="work-stats-review"></span>
+          <span id="work-stats-active"></span>
+          <span id="work-stats-blocked"></span>
+        </div>
+        <div id="work-queue" class="work-queue"></div>
       </section>
 
       <section class="metric-grid" aria-label="사업 포트폴리오 요약">

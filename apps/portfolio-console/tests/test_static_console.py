@@ -245,8 +245,49 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('data-project-view="projects"', html)
         self.assertIn('data-project-view="search"', html)
+        self.assertIn('data-project-view="work"', html)
         self.assertIn('id="nav-projects"', html)
         self.assertIn('id="nav-search-filter"', html)
+        self.assertIn('id="nav-work-in-progress"', html)
+
+    def test_work_button_is_actual_button(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('<button', html)
+        self.assertIn('data-project-view="work"', html)
+
+    def test_work_view_container_exists(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="project-work-view"', html)
+
+    def test_work_view_hidden_by_default(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="project-work-view"', html)
+        self.assertIn('hidden', html[html.index('id="project-work-view"'):html.index('id="project-work-view"')+300])
+
+    def test_work_queue_container_exists(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="work-queue"', html)
+
+    def test_work_view_stats_exist(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="work-view-stats"', html)
+        self.assertIn('id="work-stats-total"', html)
+        self.assertIn('id="work-stats-review"', html)
+        self.assertIn('id="work-stats-active"', html)
+        self.assertIn('id="work-stats-blocked"', html)
+
+    def test_is_work_in_progress_function_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("isWorkInProgress", script)
+
+    def test_projects_js_unchanged_in_wip_pr(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("pc-wip-screen", script)
+        self.assertEqual(script.count("done: true"), 10)
+
+    def test_businesses_js_unchanged_in_wip_pr(self) -> None:
+        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
+        self.assertIn("window.ARL_BUSINESSES", script)
 
     def test_search_panel_exists(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -281,6 +322,39 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_no_fetch_in_app_js(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn("fetch(", script)
+
+    def test_work_heading_has_tabindex_neg1(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="work-view-heading"', html)
+        self.assertIn('tabindex="-1"', html[html.index('id="work-view-heading"'):html.index('id="work-view-heading"')+80])
+
+    def test_work_view_aria_labelledby(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('aria-labelledby="work-view-heading"', html)
+
+    def test_work_view_no_hardcoded_aria_label(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('aria-label="작업 중인 프로젝트"', html)
+
+    def test_work_item_template_has_aria_labelledby(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn('aria-labelledby="${nameId}"', script)
+
+    def test_set_active_project_view_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function setActiveProjectView(view)", script)
+        self.assertIn('button.dataset.projectView === view', script)
+        self.assertIn('button.setAttribute("aria-current", "page")', script)
+
+    def test_format_project_unit_count_exists(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function formatProjectUnitCount(count)", script)
+        self.assertIn('`${count}projects`', script.replace(" ", ""))
+
+    def test_work_view_count_uses_format_function(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn('$("#work-view-count").textContent = `${wipProjects.length}개`', script)
+        self.assertIn("formatProjectUnitCount(wipProjects.length)", script)
 
 if __name__ == "__main__":
     unittest.main()

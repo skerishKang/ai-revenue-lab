@@ -788,6 +788,29 @@ test.describe('Project Directory Browser Tests', () => {
   });
 });
 
+test.describe('Work In Progress Browser Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.waitForTimeout(1000);
+  });
+
+  test('work button exists and is a real button', async ({ page }) => {
+    const workBtn = page.locator('[data-project-view="work"]');
+    await expect(workBtn).toHaveCount(1);
+    const tagName = await workBtn.evaluate(el => el.tagName);
+    expect(tagName).toBe('BUTTON');
+  });
+
+  test('work view hidden and projects visible by default', async ({ page }) => {
+    await expect(page.locator('#project-work-view')).toBeHidden();
+    await expect(page.locator('.pd-card')).toHaveCount(13);
+  });
+
+  test('service links count is 9 in work view context', async ({ page }) => {
+    await expect(page.locator('.pd-card-service-link')).toHaveCount(9);
+  });
+});
+
 test.describe('Language Toggle Browser Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
