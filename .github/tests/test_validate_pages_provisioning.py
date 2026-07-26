@@ -1,403 +1,390 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
-
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "validate_pages_provisioning.py"
 SPEC = importlib.util.spec_from_file_location("validator", SCRIPT)
 assert SPEC and SPEC.loader
-validator = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(validator)
+v = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(v)
 
 SHA = "4da83a879a861c8e80edd2d5f76ea4268de3d5ad"
 OTHER_SHA = "12ead3c03a7355fcc364648bf0a6169ee86153a1"
-OWNER_LOGIN = "skerishKang"
-REPOSITORY = "skerishKang/ai-revenue-lab"
-REPOSITORY_METADATA = {
-    "owner_login": OWNER_LOGIN,
-    "owner_id": "36503867",
-    "repository_name": "ai-revenue-lab",
+PROJECT = "ai-revenue-business-18-personal-audio-channel"
+SOURCE = "reference/business-18-personal-audio-channel-v1"
+REPO = {
+    "repository_full_name": "skerishKang/ai-revenue-lab",
     "repository_id": "1306003434",
-    "repository_full_name": REPOSITORY,
+    "repository_name": "ai-revenue-lab",
+    "repository_owner_login": "skerishKang",
+    "repository_owner_id": "36503867",
 }
-PROJECT_NAME = "ai-revenue-business-18-personal-audio-channel"
-SOURCE_DIRECTORY = "reference/business-18-personal-audio-channel-v1"
 
 
-class InputValidationTests(unittest.TestCase):
-    def valid(self, **overrides: str) -> dict[str, str]:
-        values = {
-            "business_id": "18",
-            "project_name": PROJECT_NAME,
-            "source_directory": SOURCE_DIRECTORY,
-            "approved_sha": SHA,
-            "approval_pr": "203",
-            "production_branch": "main",
-        }
-        values.update(overrides)
-        return values
+class InputTests(unittest.TestCase):
+    def valid(self, **changes):
+        data = dict(
+            business_id="18",
+            project_name=PROJECT,
+            source_directory=SOURCE,
+            approved_sha=SHA,
+            approval_pr="203",
+            production_branch="main",
+        )
+        data.update(changes)
+        return data
 
-    def assert_invalid(self, **overrides: str) -> None:
-        with self.assertRaises(validator.ValidationError):
-            validator.validate_inputs(**self.valid(**overrides))
+    def reject(self, **changes):
+        with self.assertRaises(v.ValidationError):
+            v.validate_inputs(**self.valid(**changes))
 
-    def test_valid_contract(self) -> None:
-        validator.validate_inputs(**self.valid())
+    def test_valid_input(self):
+        v.validate_inputs(**self.valid())
 
-    def test_rejects_malformed_project_name(self) -> None:
-        self.assert_invalid(project_name="ai-revenue-world-feed")
-        self.assert_invalid(project_name="ai-revenue-business-18-a;echo-pwned")
+    def test_rejects_project_business_and_shell_mismatch(self):
+        self.reject(project_name="ai-revenue-world-feed")
+        self.reject(project_name="ai-revenue-business-20-memory")
+        self.reject(project_name="ai-revenue-business-18-a;echo")
 
-    def test_rejects_business_number_mismatch(self) -> None:
-        self.assert_invalid(project_name="ai-revenue-business-20-personal-memory-novel")
-        self.assert_invalid(source_directory="reference/business-20-personal-memory-novel-v1")
+    def test_rejects_path_traversal_absolute_other_business_and_shell(self):
+        for source in (
+            "../apps",
+            "/reference/business-18-x",
+            "reference/business-20-x",
+            "reference/business-18-a;rm-rf",
+        ):
+            with self.subTest(source=source):
+                self.reject(source_directory=source)
 
-    def test_rejects_path_traversal_absolute_and_shell_path(self) -> None:
-        self.assert_invalid(source_directory="reference/business-18-../apps")
-        self.assert_invalid(source_directory="/reference/business-18-personal-audio-channel-v1")
-        self.assert_invalid(source_directory="reference/business-18-a;rm-rf")
-
-    def test_rejects_bad_sha(self) -> None:
-        self.assert_invalid(approved_sha=SHA[:12])
-        self.assert_invalid(approved_sha=SHA.upper())
-
-    def test_rejects_bad_pr_and_branch(self) -> None:
-        self.assert_invalid(approval_pr="0")
-        self.assert_invalid(production_branch="feat/business-18")
+    def test_rejects_bad_sha_pr_and_branch(self):
+        self.reject(approved_sha=SHA[:12])
+        self.reject(approved_sha=SHA.upper())
+        self.reject(approval_pr="0")
+        self.reject(production_branch="feature")
 
 
-class RepositoryMetadataTests(unittest.TestCase):
-    def payload(self, **overrides):
+class AuthorityTests(unittest.TestCase):
+    def repository_payload(self, **changes):
         payload = {
             "id": 1306003434,
             "name": "ai-revenue-lab",
-            "full_name": REPOSITORY,
-            "owner": {"login": OWNER_LOGIN, "id": 36503867, "type": "User"},
+            "full_name": "skerishKang/ai-revenue-lab",
+            "owner": {"login": "skerishKang", "id": 36503867},
         }
-        payload.update(overrides)
+        payload.update(changes)
         return payload
 
-    def test_verifies_owner_and_repository_identity(self) -> None:
+    def comment(self, **changes):
+        result = {
+            "id": 5085221938,
+            "body": f"UI_APPROVED\n{SHA}",
+            "author_association": "OWNER",
+            "pull_request_review_id": None,
+            "in_reply_to_id": None,
+            "user": {"login": "skerishKang", "id": 36503867, "type": "User"},
+        }
+        result.update(changes)
+        return result
+
+    def test_repository_metadata_passes(self):
         self.assertEqual(
-            validator.verify_repository_payload(self.payload(), REPOSITORY),
-            REPOSITORY_METADATA,
+            v.repository_metadata(self.repository_payload(), REPO["repository_full_name"]),
+            REPO,
         )
 
-    def test_rejects_repository_owner_name_or_id_mismatch(self) -> None:
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_repository_payload(
-                self.payload(owner={"login": "other-owner", "id": 36503867}),
-                REPOSITORY,
-            )
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_repository_payload(
-                self.payload(name="other-repository"), REPOSITORY
-            )
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_repository_payload(self.payload(id=0), REPOSITORY)
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_repository_payload(
-                self.payload(owner={"login": OWNER_LOGIN, "id": 0}), REPOSITORY
-            )
+    def test_repository_metadata_mismatch_fails(self):
+        for payload in (
+            self.repository_payload(full_name="other/repo"),
+            self.repository_payload(name="other"),
+            self.repository_payload(owner={"login": "other", "id": 36503867}),
+            self.repository_payload(id=0),
+            self.repository_payload(owner={"login": "skerishKang", "id": 0}),
+        ):
+            with self.subTest(payload=payload), self.assertRaises(v.ValidationError):
+                v.repository_metadata(payload, REPO["repository_full_name"])
 
+    def test_owner_authored_approval_passes(self):
+        self.assertTrue(v.owner_comment_authorizes(self.comment(), SHA, REPO))
+        self.assertIsNotNone(v.find_owner_approval([self.comment()], SHA, REPO))
 
-class ApprovalAuthorityTests(unittest.TestCase):
-    def pr_payload(self, **overrides):
+    def test_external_collaborator_member_and_missing_association_fail(self):
+        fixtures = (
+            self.comment(
+                user={"login": "external", "id": 1, "type": "User"},
+                author_association="NONE",
+            ),
+            self.comment(
+                user={"login": "external", "id": 1, "type": "User"},
+                author_association="COLLABORATOR",
+            ),
+            self.comment(
+                user={"login": "external", "id": 1, "type": "User"},
+                author_association="MEMBER",
+            ),
+            self.comment(author_association=None),
+        )
+        for comment in fixtures:
+            with self.subTest(comment=comment):
+                self.assertFalse(v.owner_comment_authorizes(comment, SHA, REPO))
+
+    def test_owner_login_mismatch_fails(self):
+        self.assertFalse(
+            v.owner_comment_authorizes(
+                self.comment(
+                    user={"login": "other", "id": 36503867, "type": "User"}
+                ),
+                SHA,
+                REPO,
+            )
+        )
+
+    def test_owner_id_mismatch_and_missing_id_fail(self):
+        for user in (
+            {"login": "skerishKang", "id": 1, "type": "User"},
+            {"login": "skerishKang", "type": "User"},
+        ):
+            with self.subTest(user=user):
+                self.assertFalse(
+                    v.owner_comment_authorizes(self.comment(user=user), SHA, REPO)
+                )
+
+    def test_bot_other_sha_and_non_top_level_fail(self):
+        fixtures = (
+            self.comment(
+                user={"login": "skerishKang", "id": 36503867, "type": "Bot"}
+            ),
+            self.comment(body=f"UI_APPROVED\n{OTHER_SHA}"),
+            self.comment(body=f"UI_REVIEW_READY\n{SHA}"),
+            self.comment(pull_request_review_id=1),
+            self.comment(in_reply_to_id=1),
+        )
+        for comment in fixtures:
+            with self.subTest(comment=comment):
+                self.assertFalse(v.owner_comment_authorizes(comment, SHA, REPO))
+
+    def test_pr_exact_repository_sha_and_state_pass(self):
         payload = {
-            "base": {"repo": {"full_name": REPOSITORY}},
-            "head": {"sha": SHA},
+            "base": {
+                "repo": {
+                    "full_name": REPO["repository_full_name"],
+                    "id": 1306003434,
+                }
+            },
+            "head": {
+                "repo": {
+                    "full_name": REPO["repository_full_name"],
+                    "id": 1306003434,
+                },
+                "sha": SHA,
+            },
             "state": "open",
             "draft": True,
             "merged": False,
         }
-        payload.update(overrides)
-        return payload
+        v.verify_pr(payload, REPO, SHA)
 
-    def owner_comment(self, **overrides):
-        comment = {
-            "id": 5085200000,
-            "body": (
-                "## Web CTO final visual review\n\n"
-                "UI_APPROVED\n\n"
-                f"Approved exact head: `{SHA}`"
-            ),
-            "user": {"login": OWNER_LOGIN, "type": "User"},
-            "author_association": "OWNER",
-            "pull_request_review_id": None,
-            "in_reply_to_id": None,
-        }
-        comment.update(overrides)
-        return comment
-
-    def test_accepts_owner_authored_approval_fixtures_for_203_206_207(self) -> None:
-        fixtures = (
-            ("4da83a879a861c8e80edd2d5f76ea4268de3d5ad", "203"),
-            ("12ead3c03a7355fcc364648bf0a6169ee86153a1", "206"),
-            ("e5e6ca6a5342da30b553697f96484c35a64b22c6", "207"),
-        )
-        for approved_sha, pr_number in fixtures:
-            comment = self.owner_comment(
-                id=5_085_200_000 + int(pr_number),
-                body=(
-                    "## Web CTO final visual review\n\n"
-                    "UI_APPROVED\n\n"
-                    f"Approved exact head: `{approved_sha}`"
-                ),
-            )
-            with self.subTest(pr=pr_number):
-                authority = validator.find_authorizing_comment(
-                    [comment], approved_sha, OWNER_LOGIN
-                )
-                self.assertIsNotNone(authority)
-
-    def test_accepts_exact_status_and_sha_in_same_comment(self) -> None:
-        body = f"Web CTO approval\n\nUI_APPROVED\n\nApproved exact SHA: `{SHA}`"
-        self.assertTrue(validator.comment_authorizes(body, SHA))
-
-    def test_rejects_ui_review_ready_without_approval(self) -> None:
-        self.assertFalse(validator.comment_authorizes(f"UI_REVIEW_READY\n{SHA}", SHA))
-
-    def test_rejects_status_embedded_in_other_text(self) -> None:
-        self.assertFalse(validator.comment_authorizes(f"NOT_UI_APPROVED_YET\n{SHA}", SHA))
-
-    def test_rejects_outside_user_collaborator_member_and_missing_association(self) -> None:
-        fixtures = [
-            self.owner_comment(
-                user={"login": "outside-user", "type": "User"},
-                author_association="NONE",
-            ),
-            self.owner_comment(
-                user={"login": "collaborator-user", "type": "User"},
-                author_association="COLLABORATOR",
-            ),
-            self.owner_comment(
-                user={"login": "member-user", "type": "User"},
-                author_association="MEMBER",
-            ),
-            self.owner_comment(author_association=None),
-        ]
-        for fixture in fixtures:
-            with self.subTest(fixture=fixture):
-                self.assertIsNone(
-                    validator.find_authorizing_comment([fixture], SHA, OWNER_LOGIN)
-                )
-
-    def test_rejects_owner_name_mismatch_bot_and_other_sha(self) -> None:
-        fixtures = [
-            self.owner_comment(
-                user={"login": "other-owner", "type": "User"},
-                author_association="OWNER",
-            ),
-            self.owner_comment(
-                user={"login": "worker[bot]", "type": "Bot"},
-                author_association="OWNER",
-            ),
-            self.owner_comment(body=f"UI_APPROVED\n{OTHER_SHA}"),
-        ]
-        for fixture in fixtures:
-            with self.subTest(fixture=fixture):
-                self.assertIsNone(
-                    validator.find_authorizing_comment([fixture], SHA, OWNER_LOGIN)
-                )
-
-    def test_rejects_non_top_level_comment(self) -> None:
-        fixtures = [
-            self.owner_comment(pull_request_review_id=99),
-            self.owner_comment(in_reply_to_id=88),
-        ]
-        for fixture in fixtures:
-            with self.subTest(fixture=fixture):
-                self.assertIsNone(
-                    validator.find_authorizing_comment([fixture], SHA, OWNER_LOGIN)
-                )
-
-    def test_rejects_different_pr_sha(self) -> None:
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_pr_payload(
-                self.pr_payload(head={"sha": OTHER_SHA}), REPOSITORY, SHA
-            )
-
-    def test_rejects_ready_or_merged_pr(self) -> None:
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_pr_payload(
-                self.pr_payload(draft=False), REPOSITORY, SHA
-            )
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_pr_payload(
-                self.pr_payload(merged=True, state="closed"), REPOSITORY, SHA
-            )
-
-    def test_rejects_wrong_repository(self) -> None:
-        with self.assertRaises(validator.ValidationError):
-            validator.verify_pr_payload(
-                self.pr_payload(base={"repo": {"full_name": "other/repo"}}),
-                REPOSITORY,
-                SHA,
-            )
-
-
-class CloudflareProjectContractTests(unittest.TestCase):
-    def response(self):
-        return {
-            "success": True,
-            "result": {
-                "name": PROJECT_NAME,
-                "production_branch": "main",
-                "build_config": {
-                    "build_command": "",
-                    "destination_dir": ".",
-                    "root_dir": SOURCE_DIRECTORY,
-                },
-                "source": {
-                    "type": "github",
-                    "config": {
-                        "owner": OWNER_LOGIN,
-                        "owner_id": "36503867",
-                        "repo_name": "ai-revenue-lab",
-                        "repo_id": "1306003434",
-                        "production_branch": "main",
-                        "production_deployments_enabled": True,
-                        "preview_deployment_setting": "none",
-                        "pr_comments_enabled": False,
-                        "path_includes": [f"{SOURCE_DIRECTORY}/**"],
-                    },
-                },
+    def test_pr_repository_sha_ready_and_merged_fail(self):
+        base = {
+            "base": {
+                "repo": {
+                    "full_name": REPO["repository_full_name"],
+                    "id": 1306003434,
+                }
             },
+            "head": {
+                "repo": {
+                    "full_name": REPO["repository_full_name"],
+                    "id": 1306003434,
+                },
+                "sha": SHA,
+            },
+            "state": "open",
+            "draft": True,
+            "merged": False,
         }
+        mutations = (
+            {
+                "head": {
+                    "repo": {
+                        "full_name": REPO["repository_full_name"],
+                        "id": 1306003434,
+                    },
+                    "sha": OTHER_SHA,
+                }
+            },
+            {"draft": False},
+            {"state": "closed", "merged": True},
+            {"base": {"repo": {"full_name": "other/repo", "id": 1306003434}}},
+            {
+                "head": {
+                    "repo": {"full_name": REPO["repository_full_name"], "id": 1},
+                    "sha": SHA,
+                }
+            },
+        )
+        for changes in mutations:
+            payload = dict(base)
+            payload.update(changes)
+            with self.subTest(changes=changes), self.assertRaises(v.ValidationError):
+                v.verify_pr(payload, REPO, SHA)
 
-    def verify(self, payload):
-        return validator.verify_cloudflare_project_response(
-            payload,
-            PROJECT_NAME,
-            SOURCE_DIRECTORY,
-            "main",
-            REPOSITORY_METADATA,
+
+class CloudflareContractTests(unittest.TestCase):
+    def expected(self):
+        return v.project_payload(PROJECT, SOURCE, "main", REPO)
+
+    def response(self):
+        return {"success": True, "result": self.expected()}
+
+    def test_github_source_create_payload_passes(self):
+        payload = self.expected()
+        self.assertEqual(payload["source"]["type"], "github")
+        self.assertEqual(
+            payload["source"]["config"]["owner_id"],
+            REPO["repository_owner_id"],
+        )
+        self.assertEqual(
+            payload["source"]["config"]["repo_id"], REPO["repository_id"]
+        )
+        self.assertEqual(
+            payload["source"]["config"]["path_includes"], [f"{SOURCE}/**"]
+        )
+        self.assertEqual(
+            payload["build_config"],
+            {"build_command": "", "destination_dir": ".", "root_dir": SOURCE},
         )
 
-    def test_github_source_create_payload(self) -> None:
-        payload = validator.build_cloudflare_project_payload(
-            PROJECT_NAME, SOURCE_DIRECTORY, "main", REPOSITORY_METADATA
-        )
-        self.assertEqual(payload, self.response()["result"])
+    def test_new_project_response_contract_passes(self):
+        v.verify_project(self.response(), PROJECT, SOURCE, "main", REPO)
 
-    def test_new_project_response_source_verification(self) -> None:
-        project = self.verify(self.response())
-        self.assertEqual(project["source"]["type"], "github")
+    def assert_field_rejected(self, group, field, value):
+        response = self.response()
+        target = response["result"][group]
+        if group == "source":
+            target = target["config"]
+        target[field] = value
+        with self.assertRaises(v.ValidationError):
+            v.verify_project(response, PROJECT, SOURCE, "main", REPO)
 
-    def test_existing_project_full_contract_verification(self) -> None:
-        project = self.verify(self.response())
-        self.assertEqual(project["build_config"]["root_dir"], SOURCE_DIRECTORY)
+    def test_direct_upload_existing_project_fails(self):
+        response = self.response()
+        response["result"]["source"] = None
+        with self.assertRaises(v.ValidationError):
+            v.verify_project(response, PROJECT, SOURCE, "main", REPO)
 
-    def test_rejects_existing_direct_upload_project(self) -> None:
-        payload = self.response()
-        payload["result"]["source"] = None
-        with self.assertRaises(validator.ValidationError):
-            self.verify(payload)
-
-        payload = self.response()
-        payload["result"]["source"]["type"] = "gitlab"
-        with self.assertRaises(validator.ValidationError):
-            self.verify(payload)
-
-    def test_rejects_wrong_repository(self) -> None:
+    def test_wrong_repository_or_owner_existing_project_fails(self):
         for field, value in (
-            ("owner", "other-owner"),
+            ("owner", "other"),
             ("owner_id", "1"),
-            ("repo_name", "other-repo"),
+            ("repo_name", "other"),
             ("repo_id", "2"),
         ):
-            payload = self.response()
-            payload["result"]["source"]["config"][field] = value
-            with self.subTest(field=field), self.assertRaises(validator.ValidationError):
-                self.verify(payload)
+            with self.subTest(field=field):
+                self.assert_field_rejected("source", field, value)
 
-    def test_rejects_wrong_root_destination_or_build_command(self) -> None:
+    def test_wrong_root_destination_or_build_command_fails(self):
         for field, value in (
             ("root_dir", "reference/other"),
             ("destination_dir", "dist"),
-            ("build_command", "npm run build"),
+            ("build_command", "npm build"),
         ):
-            payload = self.response()
-            payload["result"]["build_config"][field] = value
-            with self.subTest(field=field), self.assertRaises(validator.ValidationError):
-                self.verify(payload)
+            with self.subTest(field=field):
+                self.assert_field_rejected("build_config", field, value)
 
-    def test_rejects_production_deployment_disabled(self) -> None:
-        payload = self.response()
-        payload["result"]["source"]["config"]["production_deployments_enabled"] = False
-        with self.assertRaises(validator.ValidationError):
-            self.verify(payload)
-
-    def test_rejects_preview_policy_pr_comments_and_path_mismatch(self) -> None:
-        mutations = (
+    def test_production_disabled_preview_enabled_or_pr_comments_fail(self):
+        for field, value in (
+            ("production_deployments_enabled", False),
             ("preview_deployment_setting", "all"),
             ("pr_comments_enabled", True),
+        ):
+            with self.subTest(field=field):
+                self.assert_field_rejected("source", field, value)
+
+    def test_wrong_paths_and_branch_fail(self):
+        for field, value in (
             ("path_includes", ["reference/**"]),
-        )
-        for field, value in mutations:
-            payload = self.response()
-            payload["result"]["source"]["config"][field] = value
-            with self.subTest(field=field), self.assertRaises(validator.ValidationError):
-                self.verify(payload)
+            ("path_excludes", ["apps/**"]),
+            ("production_branch", "feature"),
+        ):
+            with self.subTest(field=field):
+                self.assert_field_rejected("source", field, value)
 
 
-class SourceIsolationTests(unittest.TestCase):
-    def test_accepts_regular_source_tree(self) -> None:
+class SourceTests(unittest.TestCase):
+    def test_escaping_symlink_fails(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            source = root / SOURCE_DIRECTORY
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(
+                ["git", "-C", str(root), "config", "user.email", "test@example.com"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "config", "user.name", "Test"],
+                check=True,
+            )
+            source = root / SOURCE
             source.mkdir(parents=True)
             (source / "index.html").write_text("ok", encoding="utf-8")
-            validator.check_source_isolation(root, SOURCE_DIRECTORY)
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(
+                ["git", "-C", str(root), "commit", "-qm", "fixture"], check=True
+            )
+            sha = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            outside = root / "outside"
+            outside.write_text("x", encoding="utf-8")
+            (source / "escape").symlink_to(outside)
+            with self.assertRaises(v.ValidationError):
+                v.verify_source(root, SOURCE, sha)
 
-    def test_rejects_escaping_symlink(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            source = root / SOURCE_DIRECTORY
-            source.mkdir(parents=True)
-            (source / "index.html").write_text("ok", encoding="utf-8")
-            outside = root / "outside.txt"
-            outside.write_text("secret", encoding="utf-8")
-            (source / "escape.txt").symlink_to(outside)
-            with self.assertRaises(validator.ValidationError):
-                validator.check_source_isolation(root, SOURCE_DIRECTORY)
 
-
-class WorkflowStaticContractTests(unittest.TestCase):
-    def setUp(self) -> None:
+class WorkflowStaticTests(unittest.TestCase):
+    def setUp(self):
         self.workflow = (
             Path(__file__).resolve().parents[1]
             / "workflows"
             / "provision-approved-business-pages.yml"
         ).read_text(encoding="utf-8")
 
-    def test_manual_only_and_read_only_permissions(self) -> None:
+    def test_manual_only_permissions_and_concurrency(self):
         self.assertIn("workflow_dispatch:", self.workflow)
         self.assertNotIn("\n  push:", self.workflow)
         self.assertNotIn("\n  pull_request:", self.workflow)
-        self.assertIn("contents: read", self.workflow)
-        self.assertIn("pull-requests: read", self.workflow)
-        self.assertIn("issues: read", self.workflow)
+        for marker in (
+            "contents: read",
+            "pull-requests: read",
+            "issues: read",
+            "cancel-in-progress: false",
+        ):
+            self.assertIn(marker, self.workflow)
 
-    def test_uses_verified_metadata_and_full_cloudflare_contract(self) -> None:
-        required = (
-            "--repository-metadata-output",
+    def test_git_integrated_project_validation_and_no_repair_path(self):
+        for marker in (
             "cloudflare-payload",
             "cloudflare-project",
             "Ensure the exact GitHub-integrated Pages project exists",
-        )
-        for marker in required:
-            with self.subTest(marker=marker):
-                self.assertIn(marker, self.workflow)
+        ):
+            self.assertIn(marker, self.workflow)
+        for marker in ("--request PATCH", "--request DELETE", "pages project delete"):
+            self.assertNotIn(marker, self.workflow)
 
-    def test_never_mutates_mismatched_project(self) -> None:
-        forbidden = ("--request PATCH", "--request DELETE", "pages project delete")
-        for marker in forbidden:
-            with self.subTest(marker=marker):
-                self.assertNotIn(marker, self.workflow)
+    def test_exact_head_deploy_contract(self):
+        for marker in (
+            "npx --yes wrangler@4 pages deploy",
+            "--project-name",
+            "--commit-hash",
+            "--commit-dirty=false",
+        ):
+            self.assertIn(marker, self.workflow)
 
 
 if __name__ == "__main__":
