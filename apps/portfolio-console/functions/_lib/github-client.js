@@ -32,8 +32,8 @@ export const STATUS_QUERY = `query PortfolioGithubStatus($owner: String!, $name:
   repository(owner: $owner, name: $name) {
     nameWithOwner url
     defaultBranchRef { name target { ... on Commit { oid messageHeadline committedDate } } }
-    issues(states: OPEN) { totalCount }
-    pullRequests(states: OPEN) { totalCount }
+    issues(first: 1, states: OPEN) { totalCount }
+    pullRequests(first: 1, states: OPEN) { totalCount }
     ${mapped.filter((item) => item.issueNumber).map(issueSelection).join("\n    ")}
     ${mapped.filter((item) => item.pullRequestNumber).map(pullRequestSelection).join("\n    ")}
   }
@@ -60,28 +60,31 @@ function graphQlRateLimited(errors) {
 }
 
 export function normalizeStatusCheckRollup(rollup) {
-  const contexts = rollup?.contexts?.nodes;
-  if (!rollup || !Array.isArray(contexts) || contexts.length === 0) {
-    return { state: "unavailable", source: "pr_head", total: 0, completed: 0 };
-  }
-  const failures = new Set(["FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE", "ERROR"]);
-  const success = new Set(["SUCCESS", "NEUTRAL", "SKIPPED"]);
-  let failed = false; let pending = false; let completed = 0;
+  if (!rollup) return { state: "unavailable", source: "pr_head_rollup", total: 0, completed: 0 };
+  const contexts = Array.isArray(rollup?.contexts?.nodes) ? rollup.contexts.nodes : [];
+  const reportedTotal = Number(rollup?.contexts?.totalCount);
+  const total = Number.isFinite(reportedTotal) && reportedTotal >= 0 ? Math.floor(reportedTotal) : contexts.length;
+  const aggregateState = String(rollup.state || "").toUpperCase();
+  const normalizedState = aggregateState === "SUCCESS"
+    ? "pass"
+    : aggregateState === "FAILURE" || aggregateState === "ERROR"
+      ? "fail"
+      : aggregateState === "PENDING" || aggregateState === "EXPECTED"
+        ? "pending"
+        : "unavailable";
+  const terminalStatusStates = new Set(["SUCCESS", "FAILURE", "ERROR"]);
+  let completed = 0;
   for (const context of contexts) {
     const typename = String(context?.__typename || "");
     if (typename === "CheckRun") {
-      const status = String(context?.status || "").toUpperCase();
-      const conclusion = String(context?.conclusion || "").toUpperCase();
-      if (status !== "COMPLETED") pending = true;
-      else { completed += 1; if (failures.has(conclusion)) failed = true; else if (!success.has(conclusion)) pending = true; }
+      if (String(context?.status || "").toUpperCase() === "COMPLETED") completed += 1;
     } else if (typename === "StatusContext") {
-      const state = String(context?.state || "").toUpperCase();
-      if (failures.has(state)) { failed = true; completed += 1; }
-      else if (state === "SUCCESS") completed += 1;
-      else pending = true;
-    } else pending = true;
+      if (terminalStatusStates.has(String(context?.state || "").toUpperCase())) completed += 1;
+    }
   }
-  return { state: failed ? "fail" : pending ? "pending" : "pass", source: "pr_head", total: contexts.length, completed };
+  const result = { state: normalizedState, source: "pr_head_rollup", total, completed };
+  if (total > contexts.length) result.truncated = true;
+  return result;
 }
 
 export class GitHubClient {
