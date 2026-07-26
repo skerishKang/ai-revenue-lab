@@ -1,0 +1,23 @@
+:root {
+  --paper: #eee7d7;
+  --paper-light: #f7f2e7;
+  --paper-deep: #ded2bb;
+  --ink: #252c29;
+  --ink-soft: #59615c;
+  --rule: rgba(37, 44, 41, 0.24);
+  --rule-strong: rgba(37, 44, 41, 0.52);
+  --mineral: #4e6d72;
+  --mineral-deep: #2f5056;
+  --botanical: #65715a;
+  --moss: #879078;
+  --clay: #a45f46;
+  --ochre: #b58a43;
+  --blue-wash: #738d96;
+  --shadow: 0 18px 44px rgba(65, 52, 33, 0.13);
+  --serif: Georgia, "Times New Roman", "Batang", "바탕", serif;
+  --sans: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --content-max: 1440px;
+  --gutter: clamp(18px, 3vw, 46px);
+  --ripple-duration: 680ms;
+}
