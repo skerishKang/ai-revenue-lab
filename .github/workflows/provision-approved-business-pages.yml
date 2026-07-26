@@ -52,7 +52,6 @@ jobs:
       PRODUCTION_BRANCH: ${{ inputs.production_branch }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      REPOSITORY_METADATA_FILE: ${{ runner.temp }}/pages-repository-metadata.json
 
     steps:
       - name: Require dispatch from the default branch
@@ -66,6 +65,12 @@ jobs:
             echo "This provisioning workflow must be dispatched from the default branch." >&2
             exit 1
           }
+
+      - name: Initialize runtime paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "REPOSITORY_METADATA_FILE=${RUNNER_TEMP}/pages-repository-metadata.json" >> "${GITHUB_ENV}"
 
       - name: Check out trusted workflow authority
         uses: actions/checkout@v4
