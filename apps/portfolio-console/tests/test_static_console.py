@@ -9,7 +9,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_required_files_exist(self) -> None:
-        for relative in ("index.html", "styles.css", "businesses.js", "app.js", "projects.js", "_headers", "README.md", "playwright.config.js"):
+        for relative in (
+            "index.html",
+            "styles.css",
+            "businesses.js",
+            "app.js",
+            "projects.js",
+            "github-live-status.js",
+            "_headers",
+            "_routes.json",
+            "README.md",
+            "playwright.config.js",
+        ):
             self.assertTrue((ROOT / relative).is_file(), relative)
 
     def test_quick_launch_file_deleted(self) -> None:
@@ -52,9 +63,10 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
 
-    def test_csp_blocks_external_connections_and_forms(self) -> None:
+    def test_csp_allows_only_same_origin_connections_and_blocks_forms(self) -> None:
         headers = (ROOT / "_headers").read_text(encoding="utf-8")
-        self.assertIn("connect-src 'none'", headers)
+        self.assertIn("connect-src 'self'", headers)
+        self.assertNotIn("connect-src *", headers)
         self.assertIn("form-action 'none'", headers)
         self.assertIn("frame-ancestors 'none'", headers)
 
@@ -378,7 +390,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn("function toggleTheme", script)
         self.assertIn('localStorage.setItem("arl-portfolio-theme"', script)
 
-    def test_no_github_api_or_issue_data(self) -> None:
+    def test_no_github_api_or_issue_data_in_legacy_app_bundle(self) -> None:
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn("GitHub Issue", script)
         self.assertNotIn("github.com", script)
