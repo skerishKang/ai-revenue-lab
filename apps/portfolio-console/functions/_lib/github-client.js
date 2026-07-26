@@ -1,132 +1,117 @@
-import { assertAllowedRepository } from "./business-github-map.js";
+import { BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY, assertAllowedRepository } from "./business-github-map.js";
 
 const API_BASE = "https://api.github.com";
+const GRAPHQL_URL = `${API_BASE}/graphql`;
 const API_VERSION = "2026-03-10";
 const ACCEPT = "application/vnd.github+json";
 const USER_AGENT = "ai-revenue-portfolio-console";
 
 export class GitHubApiError extends Error {
-  constructor(code, status, message = "GitHub data is temporarily unavailable.") {
-    super(message);
-    this.name = "GitHubApiError";
-    this.code = code;
-    this.status = status;
+  constructor(code, status, message = "GitHub data is temporarily unavailable.", details = {}) {
+    super(message); this.name = "GitHubApiError"; this.code = code; this.status = status; this.details = details;
   }
 }
 
-function repositoryPath(repository) {
-  assertAllowedRepository(repository);
-  return repository.split("/").map(encodeURIComponent).join("/");
+function issueSelection(mapping) {
+  return `issue${mapping.issueNumber}: issue(number: ${mapping.issueNumber}) { number title state updatedAt url }`;
+}
+function pullRequestSelection(mapping) {
+  return `pr${mapping.pullRequestNumber}: pullRequest(number: ${mapping.pullRequestNumber}) {
+    number title state isDraft merged headRefOid baseRefName updatedAt url
+    commits(last: 1) { nodes { commit { statusCheckRollup {
+      state contexts(first: 100) { totalCount nodes {
+        __typename
+        ... on CheckRun { status conclusion }
+        ... on StatusContext { state }
+      } }
+    } } } }
+  }`;
+}
+const mapped = BUSINESS_GITHUB_MAP.filter((item) => item.repository === GITHUB_REPOSITORY);
+export const STATUS_QUERY = `query PortfolioGithubStatus($owner: String!, $name: String!, $draftQuery: String!) {
+  repository(owner: $owner, name: $name) {
+    nameWithOwner url
+    defaultBranchRef { name target { ... on Commit { oid messageHeadline committedDate } } }
+    issues(states: OPEN) { totalCount }
+    pullRequests(states: OPEN) { totalCount }
+    ${mapped.filter((item) => item.issueNumber).map(issueSelection).join("\n    ")}
+    ${mapped.filter((item) => item.pullRequestNumber).map(pullRequestSelection).join("\n    ")}
+  }
+  draftPullRequests: search(query: $draftQuery, type: ISSUE, first: 1) { issueCount }
+}`;
+
+function rateLimitDetails(response) {
+  return {
+    retryAfter: response.headers.get("Retry-After") || null,
+    resetAtEpochSeconds: response.headers.get("X-RateLimit-Reset") || null
+  };
+}
+function isRateLimitedResponse(response) {
+  return response.status === 429 || response.status === 403 || response.headers.get("X-RateLimit-Remaining") === "0";
+}
+function safeGraphQLErrors(errors) {
+  return Array.isArray(errors) ? errors.map((error) => ({
+    path: Array.isArray(error?.path) ? error.path.filter((part) => typeof part === "string" || Number.isInteger(part)) : [],
+    type: typeof error?.type === "string" ? error.type : null
+  })) : [];
+}
+function graphQlRateLimited(errors) {
+  return Array.isArray(errors) && errors.some((error) => /rate.?limit|abuse|secondary/i.test(String(error?.message || "")));
 }
 
-export function normalizeChecks(checkRuns = [], statuses = []) {
-  const failConclusions = new Set(["failure", "timed_out", "cancelled", "action_required", "startup_failure"]);
-  const passConclusions = new Set(["success", "neutral", "skipped"]);
-  let failed = false;
-  let pending = false;
-  let total = 0;
-  let completed = 0;
-
-  for (const run of checkRuns || []) {
-    total += 1;
-    const status = String(run?.status || "").toLowerCase();
-    const conclusion = String(run?.conclusion || "").toLowerCase();
-    if (status !== "completed") {
-      pending = true;
-      continue;
-    }
-    completed += 1;
-    if (failConclusions.has(conclusion)) failed = true;
-    else if (!passConclusions.has(conclusion)) pending = true;
+export function normalizeStatusCheckRollup(rollup) {
+  const contexts = rollup?.contexts?.nodes;
+  if (!rollup || !Array.isArray(contexts) || contexts.length === 0) {
+    return { state: "unavailable", source: "pr_head", total: 0, completed: 0 };
   }
-
-  for (const statusItem of statuses || []) {
-    total += 1;
-    const state = String(statusItem?.state || "").toLowerCase();
-    if (state === "failure" || state === "error") {
-      failed = true;
-      completed += 1;
-    } else if (state === "pending" || state === "expected") {
-      pending = true;
-    } else if (state === "success") {
-      completed += 1;
-    } else {
-      pending = true;
-    }
+  const failures = new Set(["FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE", "ERROR"]);
+  const success = new Set(["SUCCESS", "NEUTRAL", "SKIPPED"]);
+  let failed = false; let pending = false; let completed = 0;
+  for (const context of contexts) {
+    const typename = String(context?.__typename || "");
+    if (typename === "CheckRun") {
+      const status = String(context?.status || "").toUpperCase();
+      const conclusion = String(context?.conclusion || "").toUpperCase();
+      if (status !== "COMPLETED") pending = true;
+      else { completed += 1; if (failures.has(conclusion)) failed = true; else if (!success.has(conclusion)) pending = true; }
+    } else if (typename === "StatusContext") {
+      const state = String(context?.state || "").toUpperCase();
+      if (failures.has(state)) { failed = true; completed += 1; }
+      else if (state === "SUCCESS") completed += 1;
+      else pending = true;
+    } else pending = true;
   }
-
-  const state = total === 0 ? "unavailable" : failed ? "fail" : pending ? "pending" : "pass";
-  return { state, source: "pr_head", total, completed };
+  return { state: failed ? "fail" : pending ? "pending" : "pass", source: "pr_head", total: contexts.length, completed };
 }
 
 export class GitHubClient {
-  constructor({ authProvider, fetchImpl = fetch }) {
-    this.authProvider = authProvider;
-    this.fetchImpl = fetchImpl;
-  }
-
-  async request(path, { retryAuth = true } = {}) {
-    if (typeof path !== "string" || !path.startsWith("/")) {
-      throw new GitHubApiError("INVALID_GITHUB_PATH", 500);
-    }
-    const url = new URL(path, API_BASE);
-    if (url.origin !== API_BASE) throw new GitHubApiError("INVALID_GITHUB_HOST", 500);
+  constructor({ authProvider, fetchImpl = fetch }) { this.authProvider = authProvider; this.fetchImpl = fetchImpl; }
+  async graphql(repository, { retryAuth = true } = {}) {
+    assertAllowedRepository(repository);
+    const [owner, name] = repository.split("/");
     const token = await this.authProvider.getToken();
-    const response = await this.fetchImpl(url.toString(), {
-      headers: {
-        Accept: ACCEPT,
-        Authorization: `Bearer ${token}`,
-        "X-GitHub-Api-Version": API_VERSION,
-        "User-Agent": USER_AGENT
-      }
+    const response = await this.fetchImpl(GRAPHQL_URL, {
+      method: "POST",
+      headers: { Accept: ACCEPT, Authorization: `Bearer ${token}`, "Content-Type": "application/json",
+        "X-GitHub-Api-Version": API_VERSION, "User-Agent": USER_AGENT },
+      body: JSON.stringify({ query: STATUS_QUERY, variables: { owner, name, draftQuery: `repo:${repository} is:pr is:open is:draft` } })
     });
     if (response.status === 401 && retryAuth) {
       this.authProvider.invalidate();
       await this.authProvider.getToken({ forceRefresh: true });
-      return this.request(path, { retryAuth: false });
+      return this.graphql(repository, { retryAuth: false });
     }
-    if (!response.ok) {
-      throw new GitHubApiError("GITHUB_REQUEST_FAILED", response.status);
+    if (isRateLimitedResponse(response)) {
+      throw new GitHubApiError("UPSTREAM_RATE_LIMITED", response.status, "GitHub rate limit is temporarily preventing synchronization.", rateLimitDetails(response));
     }
-    try {
-      return await response.json();
-    } catch {
-      throw new GitHubApiError("GITHUB_RESPONSE_INVALID", 502);
+    if (!response.ok) throw new GitHubApiError("GITHUB_REQUEST_FAILED", response.status);
+    let payload;
+    try { payload = await response.json(); } catch { throw new GitHubApiError("GITHUB_RESPONSE_INVALID", 502); }
+    if (graphQlRateLimited(payload?.errors)) {
+      throw new GitHubApiError("UPSTREAM_RATE_LIMITED", 403, "GitHub rate limit is temporarily preventing synchronization.");
     }
+    if (!payload?.data) throw new GitHubApiError("GRAPHQL_DATA_UNAVAILABLE", 502);
+    return { data: payload.data, errors: safeGraphQLErrors(payload.errors) };
   }
-
-  async getRepository(repository) {
-    return this.request(`/repos/${repositoryPath(repository)}`);
-  }
-
-  async getLatestCommit(repository, branch) {
-    return this.request(`/repos/${repositoryPath(repository)}/commits/${encodeURIComponent(branch)}`);
-  }
-
-  async getIssue(repository, number) {
-    return this.request(`/repos/${repositoryPath(repository)}/issues/${encodeURIComponent(String(number))}`);
-  }
-
-  async getPullRequest(repository, number) {
-    return this.request(`/repos/${repositoryPath(repository)}/pulls/${encodeURIComponent(String(number))}`);
-  }
-
-  async getChecks(repository, sha) {
-    const base = `/repos/${repositoryPath(repository)}/commits/${encodeURIComponent(sha)}`;
-    const [runs, statuses] = await Promise.all([
-      this.request(`${base}/check-runs?per_page=100`),
-      this.request(`${base}/status`)
-    ]);
-    return normalizeChecks(runs?.check_runs || [], statuses?.statuses || []);
-  }
-
-  async getSummary(repository) {
-    assertAllowedRepository(repository);
-    const queries = ["is:issue is:open", "is:pr is:open", "is:pr is:open is:draft"];
-    const counts = await Promise.all(queries.map((query) => {
-      const q = encodeURIComponent(`repo:${repository} ${query}`);
-      return this.request(`/search/issues?q=${q}&per_page=1`).then((result) => Number(result?.total_count || 0));
-    }));
-    return { openIssues: counts[0], openPullRequests: counts[1], draftPullRequests: counts[2] };
-  }
+  getStatusAggregation(repository = GITHUB_REPOSITORY) { return this.graphql(repository); }
 }
