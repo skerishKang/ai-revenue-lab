@@ -15,7 +15,7 @@ if SPEC is None or SPEC.loader is None:
     raise RuntimeError("Unable to load validate-browser.py")
 VALIDATOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VALIDATOR)
-build_in_memory_document = VALIDATOR.build_in_memory_document
+build_in_memory_document = VALIDATOR.build_document
 
 FRAME_TIMES_MS = [0, 85, 170, 255, 340, 425, 510, 595, 680]
 
