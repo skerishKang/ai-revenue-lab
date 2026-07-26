@@ -76,8 +76,15 @@ test("20 concurrent forceRefresh calls exchange once", async () => {
   assert.equal(exchanges, 1);
   assert.deepEqual(new Set(values), new Set(["token-1"]));
 });
-test("fixed GraphQL query contains all mapped aliases", () => {
+test("fixed GraphQL query contains all mapped aliases and paginates every connection", () => {
   assert.match(STATUS_QUERY, /query PortfolioGithubStatus/);
+  assert.match(STATUS_QUERY, /issues\(first:\s*1,\s*states:\s*OPEN\)/);
+  assert.match(STATUS_QUERY, /pullRequests\(first:\s*1,\s*states:\s*OPEN\)/);
+  assert.match(STATUS_QUERY, /commits\(last:\s*1\)/);
+  assert.match(STATUS_QUERY, /contexts\(first:\s*100\)/);
+  assert.match(STATUS_QUERY, /search\(query:\s*\$draftQuery,\s*type:\s*ISSUE,\s*first:\s*1\)/);
+  assert.doesNotMatch(STATUS_QUERY, /issues\(states:\s*OPEN\)/);
+  assert.doesNotMatch(STATUS_QUERY, /pullRequests\(states:\s*OPEN\)/);
   for (const mapping of BUSINESS_GITHUB_MAP) {
     if (mapping.issueNumber) assert.match(STATUS_QUERY, new RegExp(`issue${mapping.issueNumber}: issue\\(number: ${mapping.issueNumber}\\)`));
     if (mapping.pullRequestNumber) assert.match(STATUS_QUERY, new RegExp(`pr${mapping.pullRequestNumber}: pullRequest\\(number: ${mapping.pullRequestNumber}\\)`));
@@ -92,6 +99,18 @@ test("checks pass", () => assert.equal(normalizeStatusCheckRollup(rollup("SUCCES
 test("checks fail", () => assert.equal(normalizeStatusCheckRollup(rollup("FAILURE")).state, "fail"));
 test("checks pending", () => assert.equal(normalizeStatusCheckRollup(rollup("PENDING")).state, "pending"));
 test("checks unavailable", () => assert.equal(normalizeStatusCheckRollup(null).state, "unavailable"));
+test("rollup aggregate failure overrides first 100 successful contexts", () => {
+  const successNodes = Array.from({ length: 100 }, () => ({ __typename: "CheckRun", status: "COMPLETED", conclusion: "SUCCESS" }));
+  const checks = normalizeStatusCheckRollup(rollup("FAILURE", { totalCount: 145, nodes: successNodes }));
+  assert.deepEqual(checks, { state: "fail", source: "pr_head_rollup", total: 145, completed: 100, truncated: true });
+});
+test("rollup aggregate pending is authoritative", () => {
+  const checks = normalizeStatusCheckRollup(rollup("PENDING", { totalCount: 145,
+    nodes: Array.from({ length: 100 }, () => ({ __typename: "CheckRun", status: "COMPLETED", conclusion: "SUCCESS" })) }));
+  assert.equal(checks.state, "pending");
+  assert.equal(checks.total, 145);
+  assert.equal(checks.truncated, true);
+});
 test("normal cold refresh uses exactly token exchange plus GraphQL", async () => {
   let requests = 0;
   const fetchImpl = async (url) => {
