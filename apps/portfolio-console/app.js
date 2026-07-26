@@ -76,6 +76,14 @@
       searchCount: '{n}개 중 {m}개',
       workInProgress: '작업 중',
       copyWorkspace: '복사',
+      githubStatus: 'GitHub 상태',
+      githubDisconnected: '자동 동기화 미연결',
+      progressBasis: '진척 기준',
+      completedTasks: '완료 작업',
+      remainingTasks: '남은 작업',
+      noCompletedTasks: '완료된 작업 없음',
+      noRemainingTasks: '남은 작업 없음',
+      repository: '저장소',
     },
     en: {
       topbar: 'Business Operations',
@@ -136,6 +144,14 @@
       searchCount: '{m} of {n} projects',
       workInProgress: 'IN PROGRESS',
       copyWorkspace: 'COPY',
+      githubStatus: 'GITHUB STATUS',
+      githubDisconnected: 'GITHUB LIVE SYNC NOT CONNECTED',
+      progressBasis: 'PROGRESS BASIS',
+      completedTasks: 'COMPLETED TASKS',
+      remainingTasks: 'REMAINING TASKS',
+      noCompletedTasks: 'NO COMPLETED TASKS',
+      noRemainingTasks: 'NO REMAINING TASKS',
+      repository: 'REPOSITORY',
     }
   };
 
@@ -267,6 +283,28 @@
     renderBusinessIndex();
     updateActiveView();
     updateHeaderCount();
+    // Re-render open dialog without closing
+    const projectDialog = $('#project-dialog');
+    if (projectDialog?.open && selectedProjectId) {
+      const item = projects.find(p => p.id === selectedProjectId);
+      if (item) {
+        const body = $('#dialog-body');
+        const title = $('#dialog-title');
+        if (body && title) {
+          title.textContent = item.name;
+          body.innerHTML = dialogContentHTML(item);
+        }
+        const copyBtn = projectDialog.querySelector('#dlg-copy-workspace');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => {
+            const ws = copyBtn.dataset.workspace;
+            if (navigator.clipboard?.writeText) {
+              navigator.clipboard.writeText(ws);
+            }
+          });
+        }
+      }
+    }
   }
 
   function updateSelectLabels() {
@@ -388,6 +426,7 @@
           ${progress ? `${item.currentMilestone || ''} — ${progress.pct}%` : `${t('progressUndefined')} · ${t('goalDefNeeded')}`}
         </span>
         <span class="pd-card-currentwork">${item.currentWork || ''}</span>
+        <div class="pd-card-github-state">${t('githubDisconnected')}</div>
         <div class="pd-card-meta">
           <span class="pd-card-devmode">${devLabel(item.developmentMode)}</span>
         </div>
@@ -571,31 +610,26 @@
   // ── Dialog ──
   let lastFocused = null;
 
-  function openProjectDialog(projectId) {
-    const item = projects.find(p => p.id === projectId);
-    if (!item) return;
-    selectedProjectId = projectId;
-    lastFocused = document.activeElement;
-    const dialog = $('#project-dialog');
-    if (!dialog) return;
-
-    const body = $('#dialog-body');
-    const title = $('#dialog-title');
-    if (!body || !title) return;
-
+  function dialogContentHTML(item) {
     const progress = computeProgress(item.milestoneTasks);
     const isProject = item.businessNumber == null;
     const biz = isProject ? t('project') : `B${pad(item.businessNumber)}`;
+    const doneTasks = (item.milestoneTasks || []).filter(t => t.done);
+    const remainingTasks = (item.milestoneTasks || []).filter(t => !t.done);
+
+    function taskListHTML(tasks, emptyKey) {
+      if (!tasks.length) return `<span class="dialog-section-value">${t(emptyKey)}</span>`;
+      return `<ul class="dialog-task-list">${tasks.map(t => `<li class="dialog-task-item">${t.label}</li>`).join('')}</ul>`;
+    }
 
     let linksHTML = '';
     if (item.pageUrl) linksHTML += `<a class="dialog-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>`;
-    if (item.repositoryUrl) linksHTML += `<a class="dialog-link" href="${item.repositoryUrl}" target="_blank" rel="noopener noreferrer">${t('repo')}</a>`;
+    if (item.repositoryUrl) linksHTML += `<a class="dialog-link" href="${item.repositoryUrl}" target="_blank" rel="noopener noreferrer">${t('repository')}</a>`;
     if (item.workspace && item.workspace !== '확인 필요' && item.workspace !== '—') {
       linksHTML += `<button type="button" class="dialog-link" id="dlg-copy-workspace" data-workspace="${item.workspace}">${t('copyWorkspace')}</button>`;
     }
 
-    title.textContent = item.name;
-    body.innerHTML = `
+    return `
       <div class="dialog-biznumber">${biz}</div>
       <div class="dialog-name">${item.name}</div>
       <div class="dialog-korean">${item.koreanName}</div>
@@ -612,6 +646,7 @@
         <span class="dialog-section-label">${t('milestone')}</span>
         <span class="dialog-section-value">${item.currentMilestone || t('progressUndefined')} ${progress ? `— ${progress.pct}% (${progress.done}/${progress.total})` : ''}</span>
       </div>
+      ${item.progressBasis ? `<div class="dialog-section"><span class="dialog-section-label">${t('progressBasis')}</span><span class="dialog-section-value">${item.progressBasis}</span></div>` : ''}
       <div class="dialog-section">
         <span class="dialog-section-label">${t('currentWork')}</span>
         <span class="dialog-section-value">${item.currentWork || '—'}</span>
@@ -620,10 +655,55 @@
         <span class="dialog-section-label">${t('nextAction')}</span>
         <span class="dialog-section-value">${item.nextAction || '—'}</span>
       </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('completedTasks')}</span>
+        ${taskListHTML(doneTasks, 'noCompletedTasks')}
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('remainingTasks')}</span>
+        ${taskListHTML(remainingTasks, 'noRemainingTasks')}
+      </div>
       ${item.blockers?.length ? `<div class="dialog-section"><span class="dialog-section-label">${t('blocks')}</span><span class="dialog-section-value">${item.blockers.join(', ')}</span></div>` : ''}
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('githubStatus')}</span>
+        <span class="dialog-section-value">${t('githubDisconnected')}</span>
+      </div>
+      <hr class="dialog-divider">
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('repository')}</span>
+        <span class="dialog-section-value">${item.repositoryLabel || '—'}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('workspace')}</span>
+        <span class="dialog-section-value">${item.workspace || '—'}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('page')}</span>
+        <span class="dialog-section-value">${item.pageUrl || t('notDeployed')}</span>
+      </div>
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('lastVerified')}</span>
+        <span class="dialog-section-value">${item.lastVerified || '—'}</span>
+      </div>
       <hr class="dialog-divider">
       <div class="dialog-links">${linksHTML}</div>
     `;
+  }
+
+  function openProjectDialog(projectId) {
+    const item = projects.find(p => p.id === projectId);
+    if (!item) return;
+    selectedProjectId = projectId;
+    lastFocused = document.activeElement;
+    const dialog = $('#project-dialog');
+    if (!dialog) return;
+
+    const body = $('#dialog-body');
+    const title = $('#dialog-title');
+    if (!body || !title) return;
+
+    title.textContent = item.name;
+    body.innerHTML = dialogContentHTML(item);
 
     // Add workspace copy handler
     const copyBtn = dialog.querySelector('#dlg-copy-workspace');

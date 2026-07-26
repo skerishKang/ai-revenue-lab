@@ -148,7 +148,11 @@ h1, h2, h3, p { margin: 0; }
 .view-container[hidden] { display: none; }
 
 /* ── Project Grid ── */
-.pd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.pd-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+@media (max-width: 1100px) {
+  .pd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 /* ── Project Card ── */
 .pd-card {
@@ -172,6 +176,7 @@ h1, h2, h3, p { margin: 0; }
 .pd-card-milestone { color: var(--muted); font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pd-card-milestone-undefined { font-style: italic; color: var(--quiet); }
 .pd-card-currentwork { color: var(--muted); font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pd-card-github-state { font: 9px/1.3 var(--mono); color: var(--quiet); letter-spacing: .04em; }
 .pd-card-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font: 10px/1.4 var(--mono); color: var(--quiet); }
 
 .pd-card-stage {
@@ -318,6 +323,8 @@ h1, h2, h3, p { margin: 0; }
 .dialog-section { display: grid; gap: 6px; }
 .dialog-section-label { color: var(--quiet); font: 600 9px/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
 .dialog-section-value { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.dialog-task-list { margin: 0; padding-left: 16px; list-style: disc; }
+.dialog-task-item { color: var(--muted); font-size: 12px; line-height: 1.6; }
 .dialog-divider { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
 .dialog-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .dialog-link {
