@@ -382,7 +382,11 @@ h1, h2, h3, p { margin: 0; }
 }
 
 @media (max-width: 540px) {
-  .topbar-title { font-size: 14px; }
+  .topbar-title { font-size: 14px; gap: 4px; }
+  .topbar { gap: 6px; padding-left: 8px; padding-right: 8px; }
+  .topbar-left { gap: 4px; }
+  .topbar-actions { gap: 4px; }
+  .count-badge { font-size: 9px; min-width: 18px; height: 18px; padding: 0 4px; }
   .pd-card { padding: 12px; }
 }
 

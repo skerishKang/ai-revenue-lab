@@ -410,13 +410,16 @@
   function updateHeaderCount() {
     const badge = $('#header-count');
     if (!badge) return;
+    const isMobile = window.innerWidth <= 820;
     const count = activeView === 'search'
       ? t('searchCount', { n: projects.length, m: filteredProjects().length })
       : activeView === 'work'
         ? `${t('workInProgress')} ${wipProjects().length}`
         : activeView === 'business'
           ? `${t('bizLabel')} ${businesses.length}`
-          : t('projectCount', { n: projects.length });
+          : isMobile
+            ? `${projects.length}${currentLang === 'ko' ? '개' : ''}`
+            : t('projectCount', { n: projects.length });
     badge.textContent = count;
   }
   const updateCounts = updateHeaderCount;
