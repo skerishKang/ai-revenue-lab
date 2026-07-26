@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ko" data-reduced-motion="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Business 10 나만의 팬 매거진 Phase 1 시각 UI 참고본">
+  <title>나만의 팬 매거진 — Phase 1 Visual Reference</title>
+  <link rel="stylesheet" href="./styles/tokens.css?v=fan-magazine-20260726-1">
+  <link rel="stylesheet" href="./styles/base.css?v=fan-magazine-20260726-1">
+  <link rel="stylesheet" href="./styles/layout.css?v=fan-magazine-20260726-1">
+  <link rel="stylesheet" href="./styles/components.css?v=fan-magazine-20260726-1">
+  <link rel="stylesheet" href="./styles/states/cover-feature.css?v=fan-magazine-20260726-1">
+  <link rel="stylesheet" href="./styles/states/archive-note.css?v=fan-magazine-20260726-1">
+  <link rel="stylesheet" href="./styles/states/mobile-reveal.css?v=fan-magazine-20260726-1">
+  <script src="./scripts/review-state.js?v=fan-magazine-20260726-1" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#review-stage">시각 상태로 바로가기</a>
+  <div class="review-shell" data-current-state="cover">
+    <header class="review-toolbar" aria-label="Phase 1 시각 검토 도구">
+      <div class="review-brand">
+        <strong>나만의 팬 매거진</strong>
+        <p class="review-note">UI_ONLY · fictional subject · reference-only</p>
+      </div>
+      <nav class="review-nav" aria-label="대표 시각 상태">
+        <button type="button" data-state="cover" aria-pressed="true">01 표지</button>
+        <button type="button" data-state="feature" aria-pressed="false">02 커버스토리</button>
+        <button type="button" data-state="trajectory" aria-pressed="false">03 작품의 궤적</button>
+        <button type="button" data-state="rediscovery" aria-pressed="false">04 다시 보기</button>
+        <button type="button" data-state="fan-note" aria-pressed="false">05 팬 노트</button>
+        <button type="button" data-state="mobile" aria-pressed="false">06 모바일</button>
+        <button type="button" data-state="reveal" aria-pressed="false">07 커버 리빌</button>
+      </nav>
+      <div class="review-stepper" aria-label="이전 또는 다음 상태">
+        <button type="button" data-step="previous" aria-label="이전 상태">←</button>
+        <button type="button" data-step="next" aria-label="다음 상태">→</button>
+      </div>
+    </header>
+
+    <main id="review-stage" class="review-stage" tabindex="-1">
+      <section class="state-panel cover-state is-active" data-state-panel="cover" aria-labelledby="cover-heading">
+        <div class="cover-art">
+          <img src="./assets/images/cover-portrait.svg?v=fan-magazine-20260726-1" alt="은빛 종이와 주홍빛 선으로 구성한 가상 싱어송라이터 서하린의 추상 초상">
+        </div>
+        <div class="cover-content">
+          <div class="cover-topline">
+            <span>Issue 01 · Personal Edition</span>
+            <span>2026. 07. 26</span>
+          </div>
+          <div class="cover-title-block">
+            <div class="masthead-lockup">
+              <span class="ko" id="cover-heading">팬 매거진</span>
+              <span class="en">Fan Magazine · edited for one reader</span>
+            </div>
+            <p class="cover-subject">서하린</p>
+          </div>
+          <aside class="cover-lines" aria-label="주요 커버라인">
+            <ol class="coverline-list">
+              <li>
+                <span class="num">01</span>
+                <span><strong>목소리 뒤에 남은 공간</strong><span>새로운 영화음악과 무대 연출을 함께 읽다</span></span>
+              </li>
+              <li>
+                <span class="num">02</span>
+                <span><strong>네 번의 전환점</strong><span>2014년의 첫 EP부터 2026년의 현재까지</span></span>
+              </li>
+              <li>
+                <span class="num">03</span>
+                <span><strong>다시 듣는 미세한 파도</strong><span>아홉 해가 지난 뒤 비로소 들리는 숨의 간격</span></span>
+              </li>
+            </ol>
+          </aside>
+          <div class="cover-footer">
+            <span>FICTIONAL SUBJECT · SYNTHETIC EDITORIAL MATERIAL</span>
+            <span>₩0 · NOT FOR SALE · REFERENCE ONLY</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="state-panel" data-state-panel="feature" aria-labelledby="feature-heading" hidden>
+        <div class="two-page-spread">
+          <article class="spread-page feature-left">
+            <header class="page-header">
+              <span class="masthead">팬 매거진</span>
+              <span class="issue-no">Issue 01</span>
+              <span class="date">2026. 07. 26</span>
+            </header>
+            <figure class="feature-visual">
+              <img src="./assets/images/cover-portrait.svg?v=fan-magazine-20260726-1" alt="추상적으로 표현한 가상 인물 서하린의 측면 초상">
+              <span class="image-label">Fictional portrait study</span>
+            </figure>
+            <figcaption class="folio">
+              <span>자료 범주 · 합성 커버 초상 / 가상 인터뷰 메모</span>
+              <span>08</span>
+            </figcaption>
+          </article>
+          <article class="spread-page feature-right">
+            <header class="page-header">
+              <span class="masthead">Cover Story</span>
+              <span class="issue-no">서하린</span>
+              <span class="date">09</span>
+            </header>
+            <div>
+              <p class="eyebrow">현재 특집 · 소리와 무대 사이</p>
+              <h1 class="feature-title" id="feature-heading">목소리 뒤에 남은 공간</h1>
+              <p class="feature-deck">노래를 만드는 사람에서 장면의 온도를 설계하는 사람으로. 서하린의 최근 작업은 더 적게 들려주고, 더 오래 남기는 쪽으로 움직인다.</p>
+            </div>
+            <blockquote class="pull-quote">“완성된 소리보다, 사라진 뒤의 공기를 더 오래 기억해요.”</blockquote>
+            <div class="feature-copy column-copy">
+              <p class="drop-cap">새 영화음악 <strong>여름의 뒷면</strong>에는 큰 후렴이 없다. 대신 발걸음, 천천히 닫히는 문, 멀어진 대화가 박자를 만든다. 서하린은 이번 작업을 “노래와 장면 사이에 놓인 빈 의자”라고 설명한다.</p>
+              <p>그 빈자리는 그의 작업을 오래 따라온 독자에게 낯설지 않다. 2017년 <strong>미세한 파도</strong>에서 시작된 절제는 2021년 무대 <strong>은빛 계단</strong>을 지나 이제 하나의 연출 언어가 되었다.</p>
+              <p>이 호는 현재의 결과만 소개하지 않는다. 초기 데모의 거친 숨, 공연장에서 남은 연필 자국, 반복해서 돌아보게 되는 장면을 한 지면 안에서 겹쳐 본다.</p>
+            </div>
+            <div class="feature-mini-visual">
+              <figure>
+                <img src="./assets/images/stage-still-life.svg?v=fan-magazine-20260726-1" alt="은빛 계단, 마이크, 악보를 구성한 가상 무대 정물">
+                <figcaption class="caption">무대 정물 연구 · 합성 SVG · 2026</figcaption>
+              </figure>
+              <p class="feature-mini-note">편집 메모 — 이번 특집은 ‘새 작품 홍보’가 아니라, 최근 작업을 통해 과거의 선택들이 어떻게 이어졌는지를 읽는 데 초점을 둔다.</p>
+            </div>
+            <footer class="source-line">SOURCE · fictional interview notes, synthetic work archive, repository-local original visuals</footer>
+          </article>
+        </div>
+      </section>
+
+      <section class="state-panel" data-state-panel="trajectory" aria-labelledby="trajectory-heading" hidden>
+        <article class="magazine-page trajectory-page">
+          <header class="page-header">
+            <span class="masthead">팬 매거진</span>
+            <span class="issue-no">Archive Index 01</span>
+            <span class="date">12–15</span>
+          </header>
+          <div class="trajectory-intro">
+            <div>
+              <p class="eyebrow">작품의 궤적 · Four fictional works</p>
+              <h1 id="trajectory-heading">네 번의 전환점</h1>
+            </div>
+            <p>장르를 바꾼 순간보다, 시선을 바꾼 순간을 따라간다. 한 작품이 다음 작품에 남긴 조용한 흔적을 연대와 편집 메모로 배열했다.</p>
+          </div>
+          <div class="trajectory-visual">
+            <figure>
+              <img src="./assets/images/trajectory-posters.svg?v=fan-magazine-20260726-1" alt="잔광, 미세한 파도, 은빛 계단, 여름의 뒷면을 표현한 네 개의 가상 포스터">
+              <figcaption class="caption">가상 작품 포스터 연대 · repository-local original · reference-only</figcaption>
+            </figure>
+            <div>
+              <div class="trajectory-index-title"><span>Chronology</span><span>2014—2026</span></div>
+              <ol class="timeline-index">
+                <li class="timeline-entry">
+                  <span class="timeline-year">2014</span>
+                  <div><h3>잔광</h3><p>작은 방에서 녹음한 첫 EP. 멜로디보다 숨과 잔향을 앞세운 출발점.</p></div>
+                  <p class="timeline-note">편집 메모 · 이후 모든 작업에 남는 ‘빈 공간’의 시작.</p>
+                </li>
+                <li class="timeline-entry">
+                  <span class="timeline-year">2017</span>
+                  <div><h3>미세한 파도</h3><p>소리를 겹치기보다 덜어내며, 개인적 서사를 하나의 풍경으로 바꾼 앨범.</p></div>
+                  <p class="timeline-note">편집 메모 · 이번 호의 ‘다시 보는 순간’으로 선정.</p>
+                </li>
+                <li class="timeline-entry">
+                  <span class="timeline-year">2021</span>
+                  <div><h3>은빛 계단</h3><p>노래와 조명, 이동 동선을 한 덩어리로 설계한 첫 무대 연출.</p></div>
+                  <p class="timeline-note">편집 메모 · 가수에서 장면 설계자로 확장된 시기.</p>
+                </li>
+                <li class="timeline-entry">
+                  <span class="timeline-year">2026</span>
+                  <div><h3>여름의 뒷면</h3><p>대사 사이의 침묵을 중심으로 만든 가상 영화음악 프로젝트.</p></div>
+                  <p class="timeline-note">편집 메모 · 과거의 절제가 현재의 서사 언어로 완성됨.</p>
+                </li>
+              </ol>
+            </div>
+          </div>
+          <footer class="folio"><span>ARCHIVE INDEX · fictional chronology, no popularity metrics</span><span>15</span></footer>
+        </article>
+      </section>
+
+      <section class="state-panel" data-state-panel="rediscovery" aria-labelledby="rediscovery-heading" hidden>
+        <article class="magazine-page rediscovery-page">
+          <header class="page-header">
+            <span class="masthead">팬 매거진</span>
+            <span class="issue-no">Rediscovery</span>
+            <span class="date">18–19</span>
+          </header>
+          <div class="rediscovery-grid">
+            <figure class="rediscovery-art">
+              <img src="./assets/images/archive-fragments.svg?v=fan-magazine-20260726-1" alt="필름 스트립, 데모 테이프, 연필 메모로 구성한 가상 아카이브 조각">
+              <span class="archive-stamp">Archive<br>2017<br>Revisited</span>
+              <figcaption class="caption">합성 아카이브 보드 · 가상 데모 테이프와 필름 조각 · 2017 / 2026 재편집</figcaption>
+            </figure>
+            <div class="rediscovery-copy">
+              <p class="eyebrow">다시 보는 순간 · 미세한 파도</p>
+              <h1 id="rediscovery-heading">그때는 듣지 못한 숨</h1>
+              <p class="feature-deck">2017년의 가상 앨범을 지금 다시 들으면, 노래보다 먼저 제작 과정의 망설임과 여백이 들린다.</p>
+              <div class="rediscovery-context">
+                <article><h2>당시의 맥락</h2><p>정교한 사운드가 유행하던 시기에 최소한의 악기와 긴 무음을 선택했다. 처음에는 ‘덜 완성된 음반’처럼 받아들여졌다.</p></article>
+                <article><h2>지금 다시 보는 이유</h2><p>최근 영화음악의 절제된 장면 감각이 이미 이 앨범의 데모에서 시작됐다는 사실이 선명해졌기 때문이다.</p></article>
+              </div>
+              <blockquote class="personal-line">“나는 멜로디보다, 다음 소리를 기다리던 그 두 초를 반복해서 듣는다.”</blockquote>
+              <p class="source-line">ARCHIVE SOURCE · fictional demo notes dated 2017. 09. 14 · synthetic material · reviewed 2026. 07. 26</p>
+              <footer class="folio"><span>PERSONAL REDISCOVERY · no recommendation score</span><span>19</span></footer>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="state-panel" data-state-panel="fan-note" aria-labelledby="fan-note-heading" hidden>
+        <article class="magazine-page fan-note-page">
+          <header class="page-header">
+            <span class="masthead">팬 매거진</span>
+            <span class="issue-no">Editor's Margin</span>
+            <span class="date">22–23</span>
+          </header>
+          <div class="fan-note-grid">
+            <figure class="fan-note-visual">
+              <img src="./assets/images/fan-collection.svg?v=fan-magazine-20260726-1" alt="가상 공연표, 연필, 카세트와 메모를 배열한 팬 수집물 정물">
+              <figcaption class="caption">개인 편집물 정물 · 합성 SVG · 공개 프로필이나 실제 팬 기록이 아닌 가상 자료</figcaption>
+            </figure>
+            <section class="fan-note-paper">
+              <p class="eyebrow">나의 팬 노트 · private editorial margin</p>
+              <h2 id="fan-note-heading">오래 좋아한다는 것은 더 자세히 보는 일</h2>
+              <p>처음 좋아하게 된 건 <strong>잔광</strong>의 마지막 곡 때문이었다. 노래가 끝났는데도 방 안의 소리가 한동안 그대로 남아 있는 것 같았다.</p>
+              <p>지금 가장 자주 돌아보는 시기는 <strong>은빛 계단</strong> 무대다. 서하린이 노래보다 조명과 이동을 먼저 설명하던 인터뷰를 읽고, 음악을 듣는 방식도 달라졌다.</p>
+              <p>이 호에 남겨두고 싶은 문장은 하나다. <em>“더 크게 말하지 않고도, 장면을 오래 붙잡을 수 있다.”</em></p>
+              <div class="note-facts">
+                <div class="note-fact"><span>좋아하게 된 계기</span><strong>2014년 EP의 마지막 42초</strong></div>
+                <div class="note-fact"><span>반복해서 보는 장면</span><strong>은빛 계단, 두 번째 암전</strong></div>
+                <div class="note-fact"><span>선호하는 시기</span><strong>2017–2021 · 절제가 무대로 확장된 때</strong></div>
+                <div class="note-fact"><span>기억할 문장</span><strong>사라진 뒤의 공기를 기억한다</strong></div>
+              </div>
+              <div class="note-signature"><span>한 독자를 위한 편집 메모</span><span>2026. 07. 26</span></div>
+            </section>
+          </div>
+          <footer class="folio"><span>PERSONAL NOTE · not a diary, comment, profile, or social post</span><span>23</span></footer>
+        </article>
+      </section>
+
+      <section class="state-panel mobile-state" data-state-panel="mobile" aria-labelledby="mobile-heading" hidden>
+        <div class="mobile-edition-frame">
+          <article class="mobile-cover">
+            <img src="./assets/images/cover-portrait.svg?v=fan-magazine-20260726-1" alt="모바일 커버용 가상 인물 서하린의 추상 초상">
+            <div class="mobile-cover-content">
+              <div class="mobile-issue-line"><span>Issue 01</span><span>2026. 07</span></div>
+              <h1 class="mobile-masthead" id="mobile-heading">팬<br>매거진</h1>
+              <p class="mobile-subject">서하린</p>
+              <p class="mobile-primary-line">목소리 뒤에 남은 공간 — 현재의 영화음악과 과거의 숨을 함께 읽다</p>
+              <div class="mobile-continuation"><span>커버스토리 · 08쪽부터</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="state-panel" data-state-panel="reveal" aria-labelledby="reveal-heading" hidden>
+        <div class="reveal-stage" data-reveal-stage>
+          <article class="reveal-cover">
+            <div class="reveal-cover-image">
+              <img src="./assets/images/cover-portrait.svg?v=fan-magazine-20260726-1" alt="커버 리빌에 사용되는 가상 서하린 추상 초상">
+            </div>
+            <div class="reveal-cover-copy">
+              <div class="masthead-lockup"><span class="ko">팬 매거진</span><span class="en">Issue 01 · 2026. 07</span></div>
+              <h2>서하린</h2>
+              <ol class="coverline-list">
+                <li><span class="num">01</span><span><strong>목소리 뒤에 남은 공간</strong><span>현재 특집</span></span></li>
+                <li><span class="num">02</span><span><strong>네 번의 전환점</strong><span>작품 연대</span></span></li>
+                <li><span class="num">03</span><span><strong>다시 듣는 미세한 파도</strong><span>아카이브</span></span></li>
+              </ol>
+              <p class="source-line">FICTIONAL SUBJECT · SYNTHETIC ISSUE</p>
+            </div>
+          </article>
+          <article class="reveal-feature">
+            <aside class="reveal-rail"><strong>팬 매거진</strong><span>Issue 01 · 08</span></aside>
+            <div class="reveal-image"><img src="./assets/images/cover-portrait.svg?v=fan-magazine-20260726-1" alt="펼침면으로 확장된 가상 서하린 추상 초상"></div>
+            <div class="reveal-copy">
+              <p class="eyebrow">Cover Story · 서하린</p>
+              <h1 id="reveal-heading">목소리 뒤에 남은 공간</h1>
+              <p class="feature-deck">표지의 세 커버라인은 현재 특집, 작품 연대, 아카이브 목차로 재배치된다. 제호와 호수는 화면에 남아 독자가 위치를 잃지 않는다.</p>
+              <blockquote class="pull-quote">“사라진 뒤의 공기를 더 오래 기억해요.”</blockquote>
+            </div>
+          </article>
+          <div class="reveal-controls">
+            <button class="motion-button" type="button" data-reveal-toggle aria-pressed="false">커버 리빌 재생</button>
+            <span class="reveal-status" data-reveal-status aria-live="polite">표지 상태 · 680ms</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">서하린을 상징하는 추상 커버 초상</title>
+  <desc id="desc">검은 배경 위 은빛 종이 조각과 주홍빛 선으로 만든 허구적 인물의 측면 실루엣</desc>
+  <rect width="900" height="1200" fill="#11100f"/>
+  <path d="M80 1010C185 820 152 525 305 274C390 134 555 77 718 92C660 192 654 306 718 430C786 562 811 713 748 865C674 1042 477 1140 80 1010Z" fill="#d6d2ca"/>
+  <path d="M265 967C357 884 365 791 338 696C310 598 321 498 393 424C465 349 541 342 641 381C574 429 555 486 587 554C626 638 674 706 648 816C615 954 469 1035 265 967Z" fill="#ebe7df"/>
+  <path d="M519 285C482 333 470 390 486 456C502 523 553 581 622 615C572 627 522 646 478 684C397 753 381 876 421 1026C280 981 206 857 222 704C236 559 302 452 373 359C419 299 469 276 519 285Z" fill="#171513"/>
+  <path d="M508 286C557 339 582 407 568 483C555 551 522 590 467 633" fill="none" stroke="#b93a2b" stroke-width="18" stroke-linecap="round"/>
+  <path d="M570 724C634 720 688 744 746 796" fill="none" stroke="#b93a2b" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="612" cy="468" r="9" fill="#f1ece2"/>
+  <path d="M108 170H427" stroke="#f1ece2" stroke-width="3"/>
+  <path d="M108 190H315" stroke="#b93a2b" stroke-width="11"/>
+</svg>

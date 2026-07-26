@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" role="img" aria-labelledby="title desc">
+  <title id="title">팬 노트 수집물 정물</title>
+  <desc id="desc">가상의 공연표, 연필, 접힌 종이, 은색 클립과 붉은 실을 배열한 수집물 이미지</desc>
+  <rect width="1000" height="900" fill="#ede8de"/>
+  <path d="M120 132H880V780H120Z" fill="#d1cdc5"/>
+  <g transform="translate(180 170) rotate(-4)">
+    <rect width="310" height="510" fill="#f7f2e9"/>
+    <text x="36" y="65" fill="#171513" font-family="Arial, sans-serif" font-size="19" letter-spacing="4">PERSONAL EDITOR NOTE</text>
+    <path d="M36 105H270M36 155H250M36 205H270M36 255H226M36 305H270M36 355H245" stroke="#716c65" stroke-width="6"/>
+    <path d="M45 435C120 392 180 402 256 452" fill="none" stroke="#b93a2b" stroke-width="9"/>
+  </g>
+  <g transform="translate(540 205) rotate(6)">
+    <path d="M0 0H270V150H0Z" fill="#171513"/>
+    <circle cx="52" cy="75" r="25" fill="#d9d4ca"/>
+    <circle cx="218" cy="75" r="25" fill="#d9d4ca"/>
+    <path d="M85 75H185" stroke="#b93a2b" stroke-width="8"/>
+    <text x="34" y="130" fill="#eee8de" font-family="Arial, sans-serif" font-size="16" letter-spacing="3">SILVER STAIRS</text>
+  </g>
+  <g transform="translate(565 430) rotate(-3)">
+    <rect width="250" height="170" fill="#b93a2b"/>
+    <path d="M30 45H220M30 82H170M30 119H205" stroke="#f4eee5" stroke-width="8"/>
+    <text x="30" y="150" fill="#f4eee5" font-family="Arial, sans-serif" font-size="16" letter-spacing="4">2021. 11. 06</text>
+  </g>
+  <path d="M110 760C360 675 640 815 900 700" fill="none" stroke="#b93a2b" stroke-width="10"/>
+  <path d="M760 120L405 760" stroke="#24211e" stroke-width="18"/>
+  <path d="M748 114L782 132L430 774L394 756Z" fill="#ddd8cf"/>
+  <path d="M402 758L430 774L398 808Z" fill="#24211e"/>
+  <circle cx="170" cy="120" r="30" fill="none" stroke="#8b8780" stroke-width="10"/>
+  <circle cx="210" cy="120" r="30" fill="none" stroke="#8b8780" stroke-width="10"/>
+</svg>

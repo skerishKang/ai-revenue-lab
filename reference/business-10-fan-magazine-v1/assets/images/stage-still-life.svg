@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">가상의 무대 정물</title>
+  <desc id="desc">은빛 계단과 붉은 조명, 마이크 스탠드, 악보 조각을 추상화한 무대 이미지</desc>
+  <rect width="1200" height="800" fill="#171513"/>
+  <rect x="0" y="560" width="1200" height="240" fill="#ddd8cf"/>
+  <path d="M0 560L1200 310V560Z" fill="#807d77" opacity=".55"/>
+  <path d="M846 105L1040 560H650Z" fill="#b93a2b" opacity=".9"/>
+  <circle cx="846" cy="105" r="50" fill="#f3ede3"/>
+  <path d="M353 155V584" stroke="#e8e2d8" stroke-width="12"/>
+  <path d="M301 155H405" stroke="#e8e2d8" stroke-width="28" stroke-linecap="round"/>
+  <path d="M353 580L287 700M353 580L420 700" stroke="#272421" stroke-width="13"/>
+  <g transform="translate(490 510) rotate(-7)">
+    <rect width="300" height="170" fill="#f0ebe1"/>
+    <path d="M32 46H256M32 78H210M32 110H260M32 142H170" stroke="#25221f" stroke-width="7"/>
+    <circle cx="250" cy="48" r="15" fill="#b93a2b"/>
+  </g>
+  <path d="M90 650H1130" stroke="#272421" stroke-width="3"/>
+  <text x="90" y="720" fill="#272421" font-family="Arial, sans-serif" font-size="26" letter-spacing="7">STAGE STUDY / FICTIONAL PERFORMANCE OBJECTS</text>
+</svg>
