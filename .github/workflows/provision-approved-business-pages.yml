@@ -52,6 +52,7 @@ jobs:
       PRODUCTION_BRANCH: ${{ inputs.production_branch }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      REPOSITORY_METADATA_FILE: ${{ runner.temp }}/pages-repository-metadata.json
 
     steps:
       - name: Require dispatch from the default branch
@@ -76,7 +77,7 @@ jobs:
           sparse-checkout: .github/scripts/validate_pages_provisioning.py
           sparse-checkout-cone-mode: false
 
-      - name: Validate inputs and GitHub approval authority
+      - name: Validate inputs and repository-owner approval authority
         env:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash
@@ -88,7 +89,8 @@ jobs:
             --source-directory "${SOURCE_DIRECTORY}" \
             --approved-sha "${APPROVED_SHA}" \
             --approval-pr "${APPROVAL_PR}" \
-            --production-branch "${PRODUCTION_BRANCH}"
+            --production-branch "${PRODUCTION_BRANCH}" \
+            --repository-metadata-output "${REPOSITORY_METADATA_FILE}"
 
       - name: Check out approved UI exact head
         uses: actions/checkout@v4
@@ -138,7 +140,7 @@ jobs:
           }
           jq -e '.success == true and (.result | type == "array")' "${response_file}" >/dev/null
 
-      - name: Ensure the exact dedicated Pages project exists
+      - name: Ensure the exact GitHub-integrated Pages project exists
         id: project
         shell: bash
         run: |
@@ -159,14 +161,21 @@ jobs:
 
           case "${status}" in
             200)
-              jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" \
-                '.success == true and .result.name == $name and .result.production_branch == $branch' \
-                "${response_file}" >/dev/null
+              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                --project-name "${PROJECT_NAME}" \
+                --source-directory "${SOURCE_DIRECTORY}" \
+                --production-branch "${PRODUCTION_BRANCH}" \
+                --response-file "${response_file}"
               echo "state=already-existed" >> "${GITHUB_OUTPUT}"
               ;;
             404)
-              jq -n --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" \
-                '{name: $name, production_branch: $branch}' > "${request_file}"
+              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-payload \
+                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                --project-name "${PROJECT_NAME}" \
+                --source-directory "${SOURCE_DIRECTORY}" \
+                --production-branch "${PRODUCTION_BRANCH}" \
+                --output "${request_file}"
               create_status="$({
                 curl --silent --show-error \
                   --request POST \
@@ -184,9 +193,12 @@ jobs:
                   exit 1
                   ;;
               esac
-              jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" \
-                '.success == true and .result.name == $name and .result.production_branch == $branch' \
-                "${response_file}" >/dev/null
+              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                --project-name "${PROJECT_NAME}" \
+                --source-directory "${SOURCE_DIRECTORY}" \
+                --production-branch "${PRODUCTION_BRANCH}" \
+                --response-file "${response_file}"
               echo "state=created" >> "${GITHUB_OUTPUT}"
               ;;
             *)
@@ -212,10 +224,10 @@ jobs:
             --commit-message "UI_APPROVED Business ${BUSINESS_ID} exact head" \
             --commit-dirty=false 2>&1 | tee "${output_file}"
 
-          sed -E $'s/\\x1B\\[[0-9;]*[A-Za-z]//g' "${output_file}" > "${clean_output}"
+          sed -E $'s/\x1B\[[0-9;]*[A-Za-z]//g' "${output_file}" > "${clean_output}"
           deployment_url="$({
             grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' "${clean_output}" || true
-          } | grep -E "(^https://${PROJECT_NAME}\\.pages\\.dev$|\\.${PROJECT_NAME}\\.pages\\.dev$)" | head -n 1 || true)"
+          } | grep -E "(^https://${PROJECT_NAME}\.pages\.dev$|\.${PROJECT_NAME}\.pages\.dev$)" | head -n 1 || true)"
           test -n "${deployment_url}" || {
             echo "Wrangler did not report a deployment URL for the exact project." >&2
             exit 1
@@ -242,9 +254,12 @@ jobs:
               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${project_url}"
           })"
           test "${project_status}" = "200"
-          jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" \
-            '.success == true and .result.name == $name and .result.production_branch == $branch' \
-            "${project_file}" >/dev/null
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+            --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+            --project-name "${PROJECT_NAME}" \
+            --source-directory "${SOURCE_DIRECTORY}" \
+            --production-branch "${PRODUCTION_BRANCH}" \
+            --response-file "${project_file}"
 
           deployments_url="${project_url}/deployments?per_page=20"
           found=false
@@ -316,7 +331,7 @@ jobs:
           echo "deployment_id=${deployment_id}" >> "${GITHUB_OUTPUT}"
           echo "commit_verification=${commit_verification}" >> "${GITHUB_OUTPUT}"
           echo "production_url=${expected_production_url}" >> "${GITHUB_OUTPUT}"
-          echo "result=project-and-public-bytes-verified" >> "${GITHUB_OUTPUT}"
+          echo "result=github-project-and-public-bytes-verified" >> "${GITHUB_OUTPUT}"
 
       - name: Publish provisioning summary
         env:
@@ -338,6 +353,8 @@ jobs:
             echo "- Source directory: \`${SOURCE_DIRECTORY}\`"
             echo "- Pages project: \`${PROJECT_NAME}\`"
             echo "- Project state: \`${PROJECT_STATE}\`"
+            echo "- Repository: \`${GITHUB_REPOSITORY}\`"
+            echo "- Production branch: \`${PRODUCTION_BRANCH}\`"
             echo "- Deployment ID: \`${DEPLOYMENT_ID}\`"
             echo "- Actual deployment URL: ${DEPLOYMENT_URL}"
             echo "- Expected production URL: ${PRODUCTION_URL}"
