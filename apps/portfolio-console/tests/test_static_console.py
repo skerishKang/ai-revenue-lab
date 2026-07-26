@@ -42,9 +42,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_registry_covers_one_through_fifteen(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
         explicit_numbers = {int(value) for value in re.findall(r"number:\s*(\d+)", script)}
-        self.assertTrue({1, 2, 3, 4, 5, 6, 13, 14, 15}.issubset(explicit_numbers))
-        self.assertIn("Array.from({ length: 6 }", script)
-        self.assertIn("index + 7", script)
+        self.assertTrue({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}.issubset(explicit_numbers))
 
     def test_registry_has_no_secret_like_literals(self) -> None:
         text = (ROOT / "businesses.js").read_text(encoding="utf-8").lower()
