@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+<title id="title">Bookshop Evening</title><desc id="desc">A synthetic editorial illustration of a small bookshop glowing at night.</desc>
+<rect width="1200" height="700" fill="#d7c9ad"/>
+<rect y="445" width="1200" height="255" fill="#625e51"/>
+<rect y="500" width="1200" height="18" fill="#35332d" opacity=".45"/>
+<circle cx="1015" cy="105" r="46" fill="#f8e7a5"/>
+<path d="M0 420L155 340 290 395 460 315 620 380 790 288 970 360 1200 295V0H0Z" fill="#1f6075" opacity=".22"/>
+<rect x="180" y="135" width="680" height="420" fill="#efe6d5" stroke="#171510" stroke-width="8"/>
+<rect x="220" y="190" width="255" height="270" fill="#203f49" stroke="#171510" stroke-width="6"/>
+<rect x="500" y="190" width="310" height="270" fill="#224a55" stroke="#171510" stroke-width="6"/>
+<rect x="244" y="214" width="207" height="222" fill="#f6d57c" opacity=".82"/>
+<rect x="525" y="214" width="260" height="222" fill="#f6d57c" opacity=".85"/>
+<path d="M250 395h190M250 345h190M250 296h190M533 395h245M533 345h245M533 296h245" stroke="#171510" stroke-width="7"/>
+<g fill="#d8492f"><rect x="265" y="364" width="36" height="30"/><rect x="320" y="312" width="42" height="31"/><rect x="370" y="264" width="48" height="30"/><rect x="546" y="363" width="52" height="31"/><rect x="618" y="312" width="40" height="31"/><rect x="695" y="264" width="65" height="30"/></g>
+<rect x="370" y="112" width="300" height="68" fill="#d8492f" stroke="#171510" stroke-width="6"/>
+<text x="520" y="155" text-anchor="middle" font-family="Georgia,serif" font-size="36" font-weight="700" fill="#f8f0df">NORTH WINDOW BOOKS</text>
+<rect x="117" y="495" width="820" height="22" fill="#2a2924"/>
+<rect x="900" y="347" width="138" height="170" fill="#f2ead9" stroke="#171510" stroke-width="7" transform="rotate(-4 969 432)"/>
+<text x="970" y="407" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#d8492f" transform="rotate(-4 970 407)">STAY</text>
+<text x="970" y="439" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#171510" transform="rotate(-4 970 439)">A LITTLE</text>
+<text x="970" y="469" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" fill="#171510" transform="rotate(-4 970 469)">LONGER</text>
+<g stroke="#171510" stroke-width="8" fill="none"><path d="M105 565h190l22 83"/><path d="M705 569h210l-25 79"/></g>
+<g fill="#171510"><circle cx="350" cy="515" r="31"/><rect x="325" y="545" width="55" height="105" rx="24"/><circle cx="439" cy="525" r="28"/><rect x="416" y="553" width="48" height="96" rx="22"/><circle cx="1064" cy="516" r="30"/><rect x="1039" y="544" width="50" height="106" rx="23"/></g>
+<path d="M0 640h1200" stroke="#f2ead9" stroke-width="3" stroke-dasharray="22 18" opacity=".55"/>
+</svg>

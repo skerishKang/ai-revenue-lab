@@ -1,0 +1,170 @@
+{
+  "validated_at": "2026-07-26 (Asia/Seoul)",
+  "browser": "Chromium headless via Playwright offline set_content harness",
+  "harness_note": "Source HTML/CSS/JS and local SVG bytes were loaded from the repository workspace and inlined because this execution environment blocks navigation to localhost and file URLs.",
+  "states": {
+    "cover": {
+      "shellState": "cover",
+      "activePanels": [
+        "cover"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    },
+    "reading": {
+      "shellState": "reading",
+      "activePanels": [
+        "reading"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    },
+    "vocabulary": {
+      "shellState": "vocabulary",
+      "activePanels": [
+        "vocabulary"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    },
+    "revision": {
+      "shellState": "revision",
+      "activePanels": [
+        "revision"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    },
+    "feedback": {
+      "shellState": "feedback",
+      "activePanels": [
+        "feedback"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    },
+    "mobile": {
+      "shellState": "mobile",
+      "activePanels": [
+        "mobile"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    },
+    "motion": {
+      "shellState": "motion",
+      "activePanels": [
+        "motion"
+      ],
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": 0,
+      "stateButtonPressed": "true"
+    }
+  },
+  "console_errors": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "runtime_requests": [],
+  "keyboard": {
+    "arrowRightState": "reading",
+    "focusedState": "reading"
+  },
+  "visible_focus": {
+    "outlineStyle": "solid",
+    "outlineWidth": "3px",
+    "outlineColor": "rgb(31, 96, 117)"
+  },
+  "motion": {
+    "expanded": true,
+    "ariaExpanded": "true",
+    "ariaBusy": "false",
+    "frameCaptureScrollBefore": 394,
+    "stableTestScrollBefore": 394,
+    "stableTestScrollAfter": 394
+  },
+  "reduced_motion": {
+    "dataReduced": "true",
+    "expanded": true,
+    "ariaExpanded": "true",
+    "railOpacity": "1",
+    "railClip": "inset(0px)",
+    "railTransition": "0s"
+  },
+  "static_checks": {
+    "line_counts": {
+      "MOTION_SPEC.md": 53,
+      "index.html": 309,
+      "REFERENCE_NOTES.md": 105,
+      "README.md": 70,
+      "IMAGE_SOURCES.md": 23,
+      "scripts/review-state.js": 105,
+      "styles/components.css": 214,
+      "styles/base.css": 166,
+      "styles/layout.css": 212,
+      "styles/tokens.css": 42,
+      "styles/states/vocabulary-revision.css": 166,
+      "styles/states/cover-reading.css": 154,
+      "styles/states/feedback-mobile-motion.css": 277,
+      "assets/images/print-fragment.svg": 13,
+      "assets/images/bookshop-evening.svg": 25,
+      "assets/images/books-sign.svg": 15,
+      "assets/images/type-poster.svg": 11,
+      "assets/images/neighborhood-route.svg": 16
+    },
+    "max_lines": 309,
+    "files_over_500": [],
+    "loaded_css_js_count": 8,
+    "loaded_css_js_without_version": [],
+    "stale_version_refs": [],
+    "missing_local_refs": [],
+    "local_svg_reference_count": 9,
+    "external_urls_in_runtime_html": [],
+    "localStorage_mentions": 0,
+    "cookie_mentions": 0
+  },
+  "mobile": {
+    "viewport": [
+      390,
+      844
+    ],
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": 0,
+    "shellState": "mobile",
+    "masthead": "Field\nNotes\nNo. 011\n2026.07.26\nB1 참고 수준",
+    "headline": "When a Bookshop Keeps the Street Awake",
+    "opening": "At six o’clock, the street used to empty quickly. Then a small bookshop left one lamp on beside the door.",
+    "annotation": "left one lamp on · 불을 하나 켜둔 채로 두었다. 장소가 사람에게 보내는 작은 신호에 주목합니다.",
+    "continuation": "CONTINUE READING · 아래로 이어짐"
+  },
+  "summary": {
+    "seven_states_present_and_switchable": true,
+    "desktop_horizontal_overflow_zero": true,
+    "mobile_horizontal_overflow_zero": true,
+    "console_errors_zero": true,
+    "page_errors_zero": true,
+    "failed_requests_zero": true,
+    "runtime_requests_zero": true,
+    "keyboard_state_navigation": true,
+    "visible_focus": true,
+    "margin_echo": true,
+    "reduced_motion_immediate": true,
+    "all_files_under_500": true,
+    "version_queries_clean": true,
+    "local_references_complete": true,
+    "external_runtime_urls_zero": true
+  }
+}
