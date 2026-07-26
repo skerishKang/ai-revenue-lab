@@ -4,6 +4,7 @@
 - Owner: Web CTO
 - Permanent tracking issue: #154
 - Phase policy: `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
+- Hosted-review runbook: `docs/operations/CLOUDFLARE_PAGES_GIT_CONNECTION_RUNBOOK.md`
 - Candidate backlog: `docs/portfolio/BUSINESS_CANDIDATE_BACKLOG.md`
 - Current mode: `UI_ONLY`
 - Applies to: every newly assigned or revived AI Revenue Lab Business
@@ -12,25 +13,27 @@
 
 AI Revenue Lab tests whether AI can create economically useful products through volume, speed, concurrency, real-time reaction, personalization, and measurable revenue evidence.
 
-For the current portfolio expansion period, new Businesses begin with **visual UI design only**. The first accepted milestone is a polished product identity and representative responsive screen system. A complete UX flow is a later phase. Authentication, persistence, APIs, databases, live model calls, billing, and production infrastructure are later still.
+New Businesses begin with **visual UI design only**. The first accepted milestone is a polished product identity and representative responsive screen system. A complete UX flow is a later phase. Authentication, persistence, APIs, databases, live model calls, billing, and product production infrastructure are later still.
 
 The mandatory sequence is:
 
 ```text
 Product framing
 → UI visual design
+→ hosted visual review when useful
 → UI approval
 → UX and interaction design
 → UX approval
 → backend authorization decision
 → backend implementation
+→ separately authorized product release
 ```
+
+Hosted visual review is evidence infrastructure inside the current phase. It is not a new phase and does not advance the gate.
 
 Issue #154 is the permanent open parent. Each phase uses a separate child issue. Completing one child does not close Issue #154.
 
 ## 2. Required design direction
-
-Every new Business UI must satisfy all of the following.
 
 ### 2.1 Research real products first
 
@@ -68,7 +71,7 @@ Prefer:
 - keyboard-compatible controls when controls are present;
 - `prefers-reduced-motion` support.
 
-Provide MP4, GIF, or equivalent evidence when static screenshots cannot prove the behavior.
+Provide MP4, GIF, or equivalent evidence when static screenshots cannot prove the behavior. When a correctly connected hosted-review site exists, verify the motion there as well.
 
 ### 2.4 Exclude generic AI visual language
 
@@ -103,6 +106,8 @@ candidate or proposed Business
 → product-boundary and numbering decision
 → visual reference dossier
 → Phase 1 UI reference
+→ correct GitHub branch and Draft PR
+→ dedicated hosted-review connection when useful
 → UI approval
 → separate Phase 2 UX issue
 → UX approval
@@ -133,9 +138,9 @@ After UI and UX approval, product implementation normally belongs under:
 apps/<stable-slug>/
 ```
 
-A reference workspace is not proof of canonical numbering, UX approval, authentication, persistence, deployment, production readiness, or live-model operation.
+A reference workspace or hosted URL is not proof of canonical numbering, UX approval, authentication, persistence, backend authorization, production readiness, or live-model operation.
 
-## 4. Phase 1 UI visual-state contract
+## 4. Phase 1 visual-state contract
 
 A first UI reference normally contains 4–7 representative visual states:
 
@@ -162,7 +167,9 @@ The following are out of scope for the UI phase:
 - final navigation semantics and information architecture;
 - comprehensive loading, empty, validation, error, recovery, and permission states;
 - real forms, durable input, personalization logic, or recommendations;
-- authentication, API, database, provider, crawling, payment, billing, or production deployment.
+- authentication, API, database, provider, crawling, payment, billing, or product production release.
+
+A dedicated static hosted-review connection is allowed and is not the prohibited product production release.
 
 The visual proposition must be understandable within 30–90 seconds.
 
@@ -182,11 +189,67 @@ Before implementation, the Web CTO records:
 - desktop and mobile visual hierarchy;
 - overlap and boundary with existing Businesses;
 - representative UI states;
-- explicit UX and backend non-goals.
+- explicit UX and backend non-goals;
+- intended hosted-review project name, repository, branch, and root directory when hosted review will be used.
 
-## 6. Model and role allocation
+## 6. Hosted UI review
 
-### Web CTO
+### 6.1 Default user inspection method
+
+When the user needs to judge a static UI and the artifact can be hosted safely, the default inspection method is a **dedicated, correctly connected browser site**. Large screenshots remain supporting evidence. They must not be the primary review method merely because they are already committed.
+
+### 6.2 Connection contract
+
+Follow `CLOUDFLARE_PAGES_GIT_CONNECTION_RUNBOOK.md` and record:
+
+- Pages project name;
+- GitHub repository;
+- exact branch;
+- exact SHA;
+- root directory;
+- build command;
+- output directory;
+- resulting URL;
+- access policy;
+- post-connection asset and identity checks.
+
+For a plain static reference:
+
+```text
+Build command: <empty>
+Build output directory: .
+```
+
+Do not introduce a build framework merely to obtain a Pages URL.
+
+### 6.3 Validity rules
+
+The hosted review is invalid when:
+
+- it uses another Business's Pages project;
+- the root points to another app or the repository root without approval;
+- the deployed commit differs from the expected exact SHA;
+- the visible identity belongs to another product;
+- required local assets fail;
+- the URL is described as product production without separate authorization.
+
+A Cloudflare success bot comment is not enough. Project identity and content must be verified.
+
+### 6.4 Phase effect
+
+Creating or updating a hosted-review connection does not:
+
+- merge the PR;
+- mark the PR Ready;
+- grant `UI_APPROVED`;
+- authorize UX or backend work;
+- release the product to production.
+
+Cloudflare's setting called `Production branch` is only the primary branch for that Pages project. It does not override portfolio governance.
+
+## 7. Model and role allocation
+
+### 7.1 Web CTO
 
 The Web CTO owns:
 
@@ -195,17 +258,18 @@ The Web CTO owns:
 - reference research and visual direction;
 - task decomposition and repository scope;
 - image-source and license review;
-- exact-head evidence review;
+- intended Pages project/repository/branch/root definition;
+- exact-head and hosted-identity evidence review;
 - `UI_NOT_READY`, `UI_CONDITIONALLY_READY`, or `UI_APPROVED` judgment;
 - creation of a UX issue only after UI approval.
 
-Worker reports are not proof without repository and evidence verification.
+Worker reports and deployment bot comments are not proof without repository, project-identity, and rendered-evidence verification.
 
-### Web implementation model
+### 7.2 Web implementation model
 
-Use the available high-volume Web development model after the UI contract is fixed. It may implement HTML, CSS, minimal JavaScript, synthetic visual fixtures, responsive composition, and focused visual checks. It must not silently redefine the product, design the final UX journey, change another Business, or begin backend work.
+Use the available high-volume Web development model after the UI contract is fixed. It may implement HTML, CSS, minimal JavaScript, synthetic visual fixtures, responsive composition, and focused visual checks. It must not silently redefine the product, design the final UX journey, change another Business, reuse another Business's hosting project, or begin backend work.
 
-### Local model and local provider
+### 7.3 Local model and local provider
 
 Use Local selectively for:
 
@@ -218,7 +282,18 @@ Use Local selectively for:
 
 Do not use Local to expand a UI issue into UX, APIs, persistence, or backend architecture.
 
-## 7. UI risk levels
+### 7.4 Cloudflare account operator
+
+The operator with Cloudflare control-plane access:
+
+- creates the dedicated Pages project;
+- connects the approved GitHub repository;
+- enters the branch, root, build, output, and access settings;
+- reports the resulting project and URL.
+
+A model without Cloudflare account tools must not claim it performed this account-side action. It must still provide the correct exact configuration without turning the task into a different deployment design.
+
+## 8. UI risk levels
 
 ### U0 — copy-only
 
@@ -250,11 +325,12 @@ Required:
 - desktop and mobile captures;
 - motion evidence when static captures are insufficient;
 - keyboard and reduced-motion checks for review controls;
-- Local browser validation when Web evidence is incomplete.
+- Local browser validation when Web evidence is incomplete;
+- hosted browser review when the user is expected to approve the visual direction from a site.
 
 U3 runtime work is prohibited inside a Phase 1 UI issue. It belongs to a later explicitly authorized backend issue.
 
-## 8. UI approval evidence
+## 9. UI approval evidence
 
 Each UI child issue requires:
 
@@ -270,12 +346,13 @@ Each UI child issue requires:
 - reduced-motion behavior;
 - focused visual or static contract checks where practical;
 - truthful description of synthetic and reference-only behavior;
+- hosted-review project/repository/branch/root/SHA verification when a URL is used;
 - explicit Web CTO visual verdict;
 - explicit user approval before `UI_APPROVED`.
 
-A successful build is not proof of visual quality. A clickable visual reference is not UX approval. A branch preview is not production.
+A successful build is not proof of visual quality. A clickable visual reference is not UX approval. A branch preview is not production. A hosted URL from the wrong project is not evidence.
 
-## 9. Reusable UI-only child issue template
+## 10. Reusable UI-only child issue template
 
 ```markdown
 ## Purpose
@@ -285,6 +362,7 @@ Build the first polished responsive visual UI reference for Business XX — <Pro
 - Permanent umbrella issue: #154
 - UI playbook: `docs/operations/NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
 - Phase gates: `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
+- Hosted review: `docs/operations/CLOUDFLARE_PAGES_GIT_CONNECTION_RUNBOOK.md`
 - Candidate backlog: `docs/portfolio/BUSINESS_CANDIDATE_BACKLOG.md`
 
 ## Current phase
@@ -326,6 +404,14 @@ Phase 1 — UI only
 - no generic AI visual language
 - coherent desktop and mobile system
 
+## Hosted-review target
+- Pages project: `ai-revenue-<stable-slug>`
+- repository: `skerishKang/ai-revenue-lab`
+- branch: `<feature branch>`
+- root: `reference/business-XX-<stable-slug>-v1`
+- build command: empty
+- output directory: `.`
+
 ## Permitted interaction
 Minimal state switching and motion preview only.
 
@@ -337,35 +423,38 @@ Minimal state switching and motion preview only.
 - authentication
 - API or database
 - live AI or crawling
-- billing or deployment
+- billing or product production release
 
 ## Acceptance evidence
 - exact head and scope
 - desktop/mobile captures
-- motion evidence
-- visual-state evidence
+- motion and visual-state evidence
 - image-source manifest
 - console and asset-path check
+- hosted project/repository/branch/root/SHA check
 - focused checks
 - CTO verdict and user visual approval
 ```
 
-## 10. Permanent umbrella issue rules
+## 11. Permanent umbrella issue rules
 
 Issue #154 remains open and is used to:
 
-- link this playbook, the phase-gate policy, and the candidate backlog;
+- link this playbook, the phase-gate policy, hosted-review runbook, and candidate backlog;
 - record the ordered UI queue;
-- track each Business as UI, UX, and backend separately;
+- track each Business as UI, UX, backend, and hosted review separately;
 - link UI-only, UX-only, and later backend child issues;
 - record accepted visual heads and later UX heads;
 - preserve deferred or rejected directions and reasons;
+- record wrong-project, wrong-root, and wrong-SHA hosting failures;
 - update the process when repeated failures or improvements are discovered.
 
 Only an explicit portfolio-governance replacement decision may close or supersede Issue #154.
 
-## 11. Initial execution order
+## 12. Initial execution order
 
-The first UI child is proposed Business 6 — World Feed. Its existing `apps/world-feed/` work is a technical and research baseline, not an approved visual product UI. The new work begins at Phase 1 UI and must not reuse the existence of backend-oriented code as proof of visual acceptance.
+The first UI child is proposed Business 6 — World Feed. Its existing `apps/world-feed/` work is a technical and research baseline, not an approved visual product UI. The Phase 1 reference belongs under `reference/business-06-world-feed-v1/**`.
+
+The intended review host is a dedicated `ai-revenue-world-feed` Pages project connected to the World Feed branch and reference root. A URL produced under `ai-revenue-personal-video-archive` is invalid World Feed evidence.
 
 After each `UI_APPROVED` result, the user and CTO may open a separate UX issue for that Business while the UI factory proceeds to the next Business. Backend work for newly introduced Businesses remains frozen until UX approval and a separate backend authorization decision.
