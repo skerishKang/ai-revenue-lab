@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="t d">
+<title id="t">밤 시장의 천막과 조명을 표현한 합성 일러스트</title><desc id="d">주황색 천막, 청록색 벽, 작은 전구와 진열대를 세로 구도로 묘사했다.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#163f3f"/><stop offset="1" stop-color="#0a2224"/></linearGradient><filter id="g"><feTurbulence baseFrequency=".6" numOctaves="2"/><feComponentTransfer><feFuncA type="table" tableValues="0 .12"/></feComponentTransfer></filter></defs>
+<rect width="900" height="1200" fill="url(#bg)"/><path d="M0 330h900v240H0z" fill="#d45735"/><path d="M0 330h900l-80 175H70Z" fill="#f2a36c"/>
+<g fill="#ffe2a9"><circle cx="125" cy="215" r="24"/><circle cx="310" cy="155" r="18"/><circle cx="515" cy="210" r="23"/><circle cx="720" cy="150" r="18"/><circle cx="830" cy="235" r="25"/></g>
+<path d="M75 585h750v395H75z" fill="#efe4cc"/><path d="M120 645h660v90H120z" fill="#1f2e2b"/><g fill="#d9653f"><rect x="130" y="770" width="110" height="150"/><rect x="275" y="750" width="120" height="170"/><rect x="430" y="785" width="105" height="135"/><rect x="575" y="755" width="125" height="165"/></g><g fill="#6c8870"><circle cx="185" cy="810" r="36"/><circle cx="338" cy="805" r="40"/><circle cx="488" cy="830" r="32"/><circle cx="642" cy="810" r="42"/></g>
+<path d="M0 1010h900v190H0z" fill="#0e1e1e"/><rect width="900" height="1200" filter="url(#g)" opacity=".5"/>
+</svg>
