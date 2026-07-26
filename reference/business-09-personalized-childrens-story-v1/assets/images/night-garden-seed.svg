@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" role="img" aria-labelledby="title desc">
+  <title id="title">밤 정원과 빛나는 씨앗</title>
+  <desc id="desc">작은 씨앗이 정원의 등불처럼 빛나는 합성 그림책 장면</desc>
+  <defs>
+    <filter id="grain"><feTurbulence baseFrequency="0.65" numOctaves="2" seed="21"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .14 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+    <radialGradient id="glow"><stop stop-color="#ffe6a1" stop-opacity="1"/><stop offset=".45" stop-color="#d5a33f" stop-opacity=".62"/><stop offset="1" stop-color="#d5a33f" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="900" height="760" fill="#182c3e"/>
+  <circle cx="696" cy="110" r="63" fill="#f4eedf" opacity=".78"/>
+  <g fill="#526b4f" filter="url(#grain)">
+    <path d="M0 502c84-94 151-120 248-59 63-106 170-119 264-39 87-111 225-85 388 4v352H0z"/>
+    <path d="M0 598c126-62 258-39 381 5 149 53 307 45 519-17v174H0z" fill="#314a42"/>
+  </g>
+  <g stroke="#9eb28f" stroke-width="10" stroke-linecap="round" fill="none">
+    <path d="M104 591c17-94 6-175-32-255"/><path d="M228 612c19-123 5-213-58-303"/><path d="M748 608c-6-118 23-213 88-286"/><path d="M623 618c9-107 37-192 91-256"/>
+  </g>
+  <g fill="#9eb28f">
+    <ellipse cx="72" cy="361" rx="38" ry="16" transform="rotate(32 72 361)"/><ellipse cx="102" cy="414" rx="42" ry="18" transform="rotate(-28 102 414)"/>
+    <ellipse cx="190" cy="352" rx="42" ry="18" transform="rotate(30 190 352)"/><ellipse cx="232" cy="428" rx="44" ry="19" transform="rotate(-24 232 428)"/>
+    <ellipse cx="766" cy="364" rx="43" ry="18" transform="rotate(-27 766 364)"/><ellipse cx="711" cy="424" rx="40" ry="17" transform="rotate(28 711 424)"/>
+  </g>
+  <circle cx="468" cy="505" r="168" fill="url(#glow)"/>
+  <path d="M449 512c-18-41 13-78 52-59 28 14 22 56-5 78-16 13-34 11-47-19z" fill="#e2b948" filter="url(#grain)"/>
+  <path d="M473 491c17-28 47-41 79-34" stroke="#f4eedf" stroke-width="4" fill="none"/>
+  <g transform="translate(333 390)">
+    <circle cx="54" cy="-24" r="31" fill="#9a6a45"/>
+    <path d="M25-32c12-38 63-37 76 1-25-13-56-10-76-1z" fill="#20333d"/>
+    <path d="M13 14h84v104H13z" rx="20" fill="#c94d32"/>
+    <path d="M18 112h29v72H2v-31h16zM63 112h28v72h44v-31H92l-1-41z" fill="#d5a33f"/>
+    <path d="M18 64l-77 63" stroke="#c94d32" stroke-width="22" stroke-linecap="round"/>
+  </g>
+  <g fill="#d5a33f" opacity=".9">
+    <circle cx="120" cy="132" r="4"/><circle cx="208" cy="88" r="5"/><circle cx="322" cy="146" r="3"/><circle cx="563" cy="89" r="4"/><circle cx="799" cy="188" r="5"/>
+  </g>
+</svg>
