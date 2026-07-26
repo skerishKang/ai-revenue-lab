@@ -1,0 +1,148 @@
+.story-spread {
+  display: grid;
+  grid-template-columns: 56% 12px 44%;
+  background: var(--paper);
+}
+
+.spread-page {
+  position: relative;
+  min-height: 720px;
+}
+
+.spread-art-page {
+  overflow: hidden;
+  background: var(--rain-deep);
+}
+
+.spread-art-page img {
+  width: 100%;
+  height: 100%;
+  min-height: 720px;
+  object-fit: cover;
+}
+
+.spread-art-page .page-number {
+  left: 28px;
+  color: var(--cream);
+}
+
+.spread-gutter {
+  position: relative;
+  z-index: 3;
+  background:
+    linear-gradient(90deg, rgba(27,42,53,0.18), rgba(255,255,255,0.7) 50%, rgba(27,42,53,0.1));
+}
+
+.spread-copy-page {
+  padding: 74px 62px 58px 56px;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(135deg, transparent 0 65%, rgba(213,163,63,0.13) 65% 66%, transparent 66%),
+    var(--paper-light);
+}
+
+.spread-kicker {
+  color: var(--accent-dark);
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.spread-copy-page h2,
+.parent-story-copy h2 {
+  margin-top: 20px;
+  font-family: var(--font-serif);
+  font-size: clamp(42px, 4vw, 64px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.story-copy {
+  margin-top: 38px;
+  display: grid;
+  gap: 18px;
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.95;
+  word-break: keep-all;
+}
+
+.margin-whisper {
+  max-width: 240px;
+  margin-top: auto;
+  padding-top: 16px;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.margin-whisper span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.12em;
+}
+
+.spread-copy-page .page-number {
+  right: 28px;
+}
+
+@media (max-width: 900px) {
+  .story-spread {
+    grid-template-columns: 52% 8px 48%;
+  }
+
+  .spread-copy-page {
+    padding-inline: 34px;
+  }
+
+  .story-copy {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 760px) {
+  .story-spread {
+    display: block;
+  }
+
+  .spread-gutter {
+    display: none;
+  }
+
+  .spread-art-page {
+    min-height: 46vh;
+  }
+
+  .spread-art-page img {
+    min-height: 46vh;
+  }
+
+  .spread-copy-page {
+    min-height: auto;
+    padding: 32px 24px 58px;
+  }
+
+  .spread-copy-page h2 {
+    font-size: 38px;
+  }
+
+  .story-copy {
+    margin-top: 24px;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .margin-whisper {
+    margin-top: 28px;
+  }
+}
