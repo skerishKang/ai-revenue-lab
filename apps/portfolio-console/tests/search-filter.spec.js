@@ -339,10 +339,10 @@ test.describe('Sidebar Search & Filter - Progress Sort', () => {
       return Array.from(document.querySelectorAll('.pd-card')).map(card => card.getAttribute('data-project-id'));
     });
     expect(ids).toEqual([
+      'portfolio-console',
       'lovebud',
       'living-learning',
       'personal-video-archive',
-      'portfolio-console',
       'living-travel',
       'personal-edition',
       'living-fiction',
@@ -366,10 +366,10 @@ test.describe('Sidebar Search & Filter - Progress Sort', () => {
       'ai-finder-bukgu',
       'personal-edition',
       'living-travel',
-      'portfolio-console',
       'lovebud',
       'living-learning',
       'personal-video-archive',
+      'portfolio-console',
       'lovetree-3',
       'korean-ai-platform',
       'love-matchmaking',
@@ -423,11 +423,11 @@ test.describe('Sidebar Search & Filter - Progress Sort', () => {
     expect(barWidth).toBe('50%');
   });
 
-  test('Portfolio Console shows 40% progress in card', async ({ page }) => {
+  test('Portfolio Console shows 60% progress in card', async ({ page }) => {
     const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 40%');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 60%');
     const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
-    expect(barWidth).toBe('40%');
+    expect(barWidth).toBe('60%');
   });
 });
 
@@ -488,9 +488,9 @@ test.describe('Sidebar Search & Filter - Regression', () => {
     await expect(noLinkCards).toHaveCount(4);
   });
 
-  test('Portfolio Console shows 40% progress', async ({ page }) => {
+  test('Portfolio Console shows 60% progress', async ({ page }) => {
     const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 40%');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 60%');
   });
 
   test('자세히 보기 button exists on all cards', async ({ page }) => {

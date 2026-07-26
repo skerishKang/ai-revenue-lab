@@ -30,8 +30,8 @@ window.ARL_PROJECTS = [
       {
         id: "pc-search-filter-left",
         label: "검색·필터 왼쪽 메뉴 이동",
-        done: false,
-        evidence: "미구현 — v2 redesign 범위"
+        done: true,
+        evidence: "PR #153 merged — 3fb95ea5f424f91b95851a778bffeb531cbc015d"
       },
       {
         id: "pc-wip-screen",
@@ -47,8 +47,8 @@ window.ARL_PROJECTS = [
       }
     ],
     progressNote: "Cloudflare Pages에 배포 완료. Cloudflare Access 인증 후 접근 가능.",
-    currentWork: "Issue #140 병합 완료 · Production 배포 검증 준비",
-    nextAction: "Portfolio Console 배포 및 Cloudflare Access 검증 후 Issue #140 종료",
+    currentWork: "Issue #152 검색·필터 사이드바 이동 병합 완료 · Production 배포 검증 준비",
+    nextAction: "Portfolio Console Production 배포 및 Cloudflare Access 검증 후 Issue #152 종료",
     blockers: [],
     futureRoadmap: [],
     lastVerified: "2026-07-26"
