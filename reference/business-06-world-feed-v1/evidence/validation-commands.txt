@@ -1,0 +1,4 @@
+node --check app.js: exit 0
+focused Python static contract check: exit 0
+Playwright Chromium visual evidence capture: exit 0
+HTTP local asset status check: exit 0
