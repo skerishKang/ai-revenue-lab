@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>개인 의미 지도 — Phase 1 Visual Reference</title>
+  <link rel="stylesheet" href="./styles/tokens.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/base.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/layout.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/components.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/states/overview.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/states/person-place.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/states/event-explanation.css?v=personal-meaning-map-20260726-1">
+  <link rel="stylesheet" href="./styles/states/mobile-ripple.css?v=personal-meaning-map-20260726-1">
+  <script src="./scripts/review-state.js?v=personal-meaning-map-20260726-1" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#review-main">시각 상태로 바로 이동</a>
+  <header class="site-header">
+    <div class="masthead">
+      <div>
+        <p class="kicker">Business 07 · Phase 1 · UI Only</p>
+        <h1>개인 의미 지도</h1>
+        <p class="masthead__english">Personal Meaning Map — an intimate atlas of lived significance</p>
+      </div>
+      <div class="masthead__meta">
+        <p class="synthetic-notice">합성 기록으로 만든 시각 참고본입니다.<br>실제 개인 정보·위치·관계는 포함하지 않습니다.</p>
+        <span class="date-stamp">ARCHIVE PROOF<br>2026.07.26</span>
+      </div>
+    </div>
+    <nav class="state-nav" aria-label="대표 시각 상태" role="tablist">
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="true"><span class="state-nav__number">01 / MAP</span><span class="state-nav__label">오늘의 의미 지도</span></button>
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="false" tabindex="-1"><span class="state-nav__number">02 / PERSON</span><span class="state-nav__label">사람의 궤적</span></button>
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="false" tabindex="-1"><span class="state-nav__number">03 / PLACE</span><span class="state-nav__label">장소의 층</span></button>
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="false" tabindex="-1"><span class="state-nav__number">04 / RELIC</span><span class="state-nav__label">사건과 물건</span></button>
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="false" tabindex="-1"><span class="state-nav__number">05 / WHY</span><span class="state-nav__label">왜 이어졌나요</span></button>
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="false" tabindex="-1"><span class="state-nav__number">06 / 390</span><span class="state-nav__label">모바일 구성</span></button>
+      <button class="state-nav__button" type="button" role="tab" data-review-state-button aria-selected="false" tabindex="-1"><span class="state-nav__number">07 / RIPPLE</span><span class="state-nav__label">의미 파동</span></button>
+    </nav>
+  </header>
+
+  <main id="review-main" class="review-main">
+    <section class="review-state" data-review-state="overview" aria-hidden="false">
+      <header class="state-heading">
+        <div><p class="kicker">01 · Today’s atlas sheet</p><h2>오늘의 의미 지도</h2></div>
+        <p class="state-heading__note">2026년 7월의 기록 조각 12개 가운데, 지금 가장 크게 남아 있는 군집을 한 장의 지도책 면처럼 편집했습니다.</p>
+      </header>
+      <div class="atlas-sheet overview-sheet" data-selection-group>
+        <span class="atlas-sheet__north" aria-hidden="true">N</span><span class="atlas-sheet__index">SHEET 07–A</span>
+        <div class="contour-field"><img src="./assets/images/topographic-field.svg" alt=""></div>
+        <div class="overview-dominant" aria-hidden="true"></div>
+        <div class="overview-title"><span class="archive-tab">CURRENT CLUSTER</span><h3>무등산 아래의<br>느린 여름</h3><p>집, 한 사람, 비가 오던 오후, 오래 쓴 찻잔이 같은 계절의 감각으로 모였습니다.</p></div>
+        <figure class="paper-fragment overview-house"><img src="./assets/images/rail-house.svg" alt="철길 옆 작은 집을 그린 합성 기록 이미지"><figcaption class="paper-fragment__caption">장소 04 · 남쪽 철길 옆 집<br><span class="coordinate">35°09′N · 기억 좌표</span></figcaption></figure>
+        <figure class="paper-fragment overview-cup"><img src="./assets/images/blue-cup.svg" alt="푸른 찻잔을 그린 합성 기록 이미지"><figcaption class="paper-fragment__caption">물건 02 · 푸른 찻잔</figcaption></figure>
+        <button class="map-label overview-label--person is-selected" type="button" data-select-item aria-pressed="true" data-selection-copy="서윤은 이 집을 떠올릴 때마다 말수가 줄고, 창문을 먼저 기억합니다."><span class="map-label__type">사람 / 01</span><span class="map-label__name">서윤</span><span class="map-label__detail">2021—지금</span></button>
+        <button class="map-label overview-label--place" type="button" data-select-item aria-pressed="false" data-selection-copy="남쪽 철길 옆 집은 주소보다 계절과 소리로 기억되는 장소입니다."><span class="map-label__type">장소 / 04</span><span class="map-label__name">철길 옆 집</span><span class="map-label__detail">여름의 중심</span></button>
+        <button class="map-label overview-label--event" type="button" data-select-item aria-pressed="false" data-selection-copy="비가 멈춘 오후는 찻잔과 편지, 서윤을 한 장면에 묶은 사건입니다."><span class="map-label__type">사건 / 03</span><span class="map-label__name">비가 멈춘 오후</span><span class="map-label__detail">2024.07.18</span></button>
+        <button class="map-label overview-label--object" type="button" data-select-item aria-pressed="false" data-selection-copy="푸른 찻잔은 여러 장소를 옮겨 다녔지만 같은 대화를 불러오는 물건입니다."><span class="map-label__type">물건 / 02</span><span class="map-label__name">푸른 찻잔</span><span class="map-label__detail">세 번의 이사</span></button>
+        <span class="map-rule overview-rule--one"></span><span class="map-rule overview-rule--two"></span><span class="map-rule overview-rule--three"></span>
+        <aside class="marginal-note overview-note">“중요했던 것은 집의 모양보다, 비 뒤에 들리던 기차 소리였다.” — 합성 기록 07/18</aside>
+        <aside class="explanation-drawer" data-explanation-drawer tabindex="-1"><h3>지금 선택한 조각</h3><p data-selected-copy>서윤은 이 집을 떠올릴 때마다 말수가 줄고, 창문을 먼저 기억합니다.</p></aside>
+      </div>
+      <footer class="atlas-footer"><div class="legend-row"><span class="legend-key legend-key--place">장소</span><span class="legend-key legend-key--person">사람</span><span class="legend-key legend-key--event">사건</span><span class="legend-key legend-key--object">물건</span></div><p class="coordinate">PROVENANCE · SYNTHETIC ARCHIVE / JUL 2026</p></footer>
+    </section>
+
+    <section class="review-state" data-review-state="person" aria-hidden="true" hidden>
+      <header class="state-heading"><div><p class="kicker">02 · A person through materials</p><h2>사람의 궤적</h2></div><p class="state-heading__note">연락처 정보 대신, 한 사람이 여러 장소·사건·물건에 남긴 흔적의 순서를 보여줍니다.</p></header>
+      <div class="atlas-sheet person-sheet">
+        <section class="person-portrait"><span class="archive-tab">PERSON 01</span><div class="person-portrait__mark" aria-hidden="true"></div><h3>서윤</h3><p>한 사람을 설명하는 것은 직함이나 연락처보다, 함께 지나온 장소와 반복해서 꺼내는 기억일 수 있습니다.</p><span class="coordinate">TRACE 2021—2026</span></section>
+        <section class="trajectory" aria-label="서윤의 의미 궤적">
+          <article class="trajectory-stop record-slip"><div class="record-slip__date">2021.05 · 장소</div><h3>정원 문 앞</h3><p>처음 오래 이야기한 곳. 닫힌 문보다 담장 너머의 나무를 기억함.</p></article>
+          <article class="trajectory-stop record-slip"><div class="record-slip__date">2022.11 · 물건</div><h3>접힌 노선표</h3><p>멀리 떠난 뒤에도 지갑 안쪽에서 여러 번 발견됨.</p></article>
+          <article class="trajectory-stop record-slip"><div class="record-slip__date">2024.07 · 사건</div><h3>비가 멈춘 오후</h3><p>푸른 찻잔과 짧은 편지가 같은 장면에 남은 날.</p></article>
+          <article class="trajectory-stop record-slip"><div class="record-slip__date">2026.02 · 기억</div><h3>창문을 먼저 말함</h3><p>집 이야기를 물었을 때 주소보다 창문 빛을 설명함.</p></article>
+        </section>
+        <aside class="person-materials"><figure class="paper-fragment"><img src="./assets/images/garden-gate.svg" alt="정원 문 합성 이미지"><figcaption class="paper-fragment__caption">장소 조각 · 정원 문</figcaption></figure><figure class="paper-fragment"><img src="./assets/images/letter-fragment.svg" alt="짧은 편지 합성 이미지"><figcaption class="paper-fragment__caption">기록 조각 · 접힌 편지</figcaption></figure><p class="marginal-note" style="position:relative;left:auto;top:auto;">한 사람은 중심 노드가 아니라, 시간 속에서 다른 재료에 남은 결입니다.</p></aside>
+        <span class="atlas-sheet__index">TRACE 01</span>
+      </div>
+    </section>
+
+    <section class="review-state" data-review-state="place" aria-hidden="true" hidden>
+      <header class="state-heading"><div><p class="kicker">03 · Place as accumulated meaning</p><h2>장소의 층</h2></div><p class="state-heading__note">한 장소를 지도 핀으로 고정하지 않고, 서로 다른 시기와 관계가 포개진 기록면으로 보여줍니다.</p></header>
+      <div class="atlas-sheet place-sheet">
+        <section class="place-map"><div class="contour-field"><img src="./assets/images/topographic-field.svg" alt=""></div><figure class="paper-fragment place-house"><img src="./assets/images/rail-house.svg" alt="철길 옆 집 합성 이미지"><figcaption class="paper-fragment__caption">채집 이미지 04 · 창문이 남쪽을 향한 집</figcaption></figure><div class="place-map__label"><span class="archive-tab">PLACE 04</span><h3>남쪽 철길 옆 집</h3><p>정확한 주소는 없습니다. 대신 기차 소리, 늦은 오후의 창문, 세 사람이 머문 시기가 겹쳐 있습니다.</p><span class="coordinate">MEMORY COORDINATE 35°09′N / 126°55′E</span></div></section>
+        <section class="place-layers"><h3>세 번 다르게 기억된 곳</h3><article class="place-layer"><span class="place-layer__date">2017—2019</span><h4>떠나기 전의 집</h4><p>가족의 물건이 많고 방마다 이름이 있던 시기. 장소의 의미는 ‘익숙함’에 가까웠습니다.</p></article><article class="place-layer"><span class="place-layer__date">2021.05</span><h4>서윤이 처음 온 날</h4><p>정원 문과 낮은 담장이 새로운 기준점이 되면서, 장소가 한 사람과 연결되기 시작했습니다.</p></article><article class="place-layer"><span class="place-layer__date">2024.07—지금</span><h4>비가 멈춘 뒤의 장면</h4><p>푸른 찻잔, 젖은 창문, 짧은 편지가 더해져 집보다 하나의 계절을 가리키게 되었습니다.</p></article><div class="record-slip"><div class="record-slip__date">MARGIN NOTE</div><p>같은 장소라도 관계와 시간이 바뀌면 다른 층으로 읽힙니다.</p></div></section>
+        <span class="atlas-sheet__index">LAYER 04</span>
+      </div>
+    </section>
+
+    <section class="review-state" data-review-state="event-object" aria-hidden="true" hidden>
+      <header class="state-heading"><div><p class="kicker">04 · Event and relic</p><h2>사건과 물건</h2></div><p class="state-heading__note">하나의 사건과 하나의 물건이 여러 사람과 기억을 어떻게 한 장면으로 묶는지 보여줍니다.</p></header>
+      <div class="atlas-sheet event-sheet">
+        <span class="event-axis"></span><figure class="paper-fragment event-rain"><img src="./assets/images/rain-window.svg" alt="비 내리는 창문 합성 이미지"><figcaption class="paper-fragment__caption">사건의 배경 · 젖은 창문</figcaption></figure><figure class="paper-fragment event-cup"><img src="./assets/images/blue-cup.svg" alt="푸른 찻잔 합성 이미지"><figcaption class="paper-fragment__caption">물건 02 · 푸른 찻잔</figcaption></figure>
+        <div class="event-core"><div class="event-core__diamond"><span>비가 멈춘<br>오후</span></div><p>2024.07.18 · 세 사람이 같은 집에 머문 마지막 날</p></div>
+        <article class="record-slip event-slip--left"><div class="record-slip__date">사람 · 서윤</div><h3>찻잔을 씻지 않음</h3><p>떠나기 전에 “이대로 두자”고 말한 짧은 행동이 물건의 의미를 바꿈.</p></article>
+        <article class="record-slip event-slip--right"><div class="record-slip__date">기억 · 민호</div><h3>기차 소리를 기록</h3><p>휴대전화 메모에 시간만 남겼고, 이후 집을 떠올리는 기준이 됨.</p></article>
+        <span class="atlas-sheet__index">EVENT 03</span>
+      </div>
+    </section>
+
+    <section class="review-state" data-review-state="explanation" aria-hidden="true" hidden>
+      <header class="state-heading"><div><p class="kicker">05 · Plain-language provenance</p><h2>왜 이어졌나요</h2></div><p class="state-heading__note">기술 점수 없이 날짜와 기록 조각을 근거로, 관계가 생긴 이유를 평범한 한국어로 설명합니다.</p></header>
+      <div class="atlas-sheet explanation-sheet">
+        <section class="evidence-board"><figure class="paper-fragment"><img src="./assets/images/blue-cup.svg" alt="푸른 찻잔 합성 이미지"><figcaption class="paper-fragment__caption">물건 02 · 푸른 찻잔</figcaption></figure><figure class="paper-fragment"><img src="./assets/images/rain-window.svg" alt="비 오는 창문 합성 이미지"><figcaption class="paper-fragment__caption">2024.07.18 · 비가 그친 뒤</figcaption></figure><figure class="paper-fragment"><img src="./assets/images/letter-fragment.svg" alt="편지 조각 합성 이미지"><figcaption class="paper-fragment__caption">기록 11 · “이대로 두자”</figcaption></figure><span class="map-rule evidence-board__rule-one"></span><span class="map-rule evidence-board__rule-two"></span></section>
+        <aside class="meaning-explanation"><span class="archive-tab">WHY THESE STAY TOGETHER</span><h3>푸른 찻잔과<br>서윤이 이어진 이유</h3><p class="meaning-explanation__lead">서윤이 떠나기 전 마지막으로 만진 물건이고, 이후 두 번의 다른 집에서도 같은 대화를 떠올리게 했기 때문입니다.</p><div class="meaning-reason"><strong>2024.07.18 · 같은 장면</strong><p>비가 멈춘 오후, 서윤은 찻잔을 씻지 말고 그대로 두자고 말했습니다.</p></div><div class="meaning-reason"><strong>2025.03 · 반복된 기억</strong><p>새 집에서 찻잔을 꺼냈을 때도 먼저 그날의 창문 이야기가 기록되었습니다.</p></div><div class="meaning-reason"><strong>2026.02 · 장소를 넘어 유지됨</strong><p>집은 바뀌었지만 찻잔이 같은 사람과 대화를 불러와 연결이 남았습니다.</p></div><button class="explanation-toggle" type="button" data-explanation-toggle aria-expanded="false">설명 조각 열기</button></aside>
+        <aside class="explanation-drawer" data-explanation-drawer tabindex="-1" hidden><h3>기록 조각</h3><p>“찻잔은 그냥 두자. 내일 아침에 보면 오늘이 오래 남을 것 같아.” — 합성 메모, 2024.07.18</p></aside>
+        <span class="atlas-sheet__index">WHY 02↔01</span>
+      </div>
+    </section>
+
+    <section class="review-state" data-review-state="mobile" aria-hidden="true" hidden>
+      <header class="state-heading"><div><p class="kicker">06 · Deliberate mobile composition</p><h2>모바일 390px</h2></div><p class="state-heading__note">데스크톱을 축소하지 않고, 첫 화면에서 우세한 군집과 핵심 관계 세 개가 바로 읽히도록 다시 편집했습니다.</p></header>
+      <div class="atlas-sheet mobile-stage"><div class="mobile-frame" aria-label="390픽셀 모바일 시각 구성"><div class="mobile-frame__bar"><span>개인 의미 지도</span><span>07 / 26</span></div><div class="mobile-frame__map"><div class="contour-field"><img src="./assets/images/topographic-field.svg" alt=""></div><div class="mobile-dominant"><h3>무등산 아래의<br>느린 여름</h3></div><figure class="paper-fragment mobile-house"><img src="./assets/images/rail-house.svg" alt="철길 옆 집 합성 이미지"></figure><button class="map-label mobile-person" type="button"><span class="map-label__type">사람 01</span><span class="map-label__name">서윤</span></button><button class="map-label mobile-event" type="button"><span class="map-label__type">사건 03</span><span class="map-label__name">비가 멈춘 오후</span></button><button class="map-label mobile-object" type="button"><span class="map-label__type">물건 02</span><span class="map-label__name">푸른 찻잔</span></button></div></div><aside class="mobile-stage__notes"><span class="archive-tab">MOBILE EDIT</span><h3>한 손 안의 지도책 면</h3><p>상태 메뉴를 화면 바깥으로 밀거나 데스크톱 좌표를 단순 축소하지 않았습니다. 우세한 군집은 상단 306px 안에, 사람·사건·물건의 연결은 첫 viewport 안에 남습니다.</p><div class="record-slip"><div class="record-slip__date">390 × 844 CHECK</div><p>가로 스크롤 없이 제목, 현재 군집, 집 이미지, 세 관계 표지가 순서대로 보이도록 설계했습니다.</p></div></aside></div>
+    </section>
+
+    <section class="review-state" data-review-state="ripple" aria-hidden="true" hidden>
+      <header class="state-heading"><div><p class="kicker">07 · Signature motion</p><h2>Meaning Ripple / 의미 파동</h2></div><p class="state-heading__note">선택한 물건에서 등고선이 퍼지고 관련 장소·사람·사건이 680ms 안에 차례로 또렷해집니다. 주변 맥락은 사라지지 않습니다.</p></header>
+      <div class="atlas-sheet ripple-sheet" data-ripple-sheet data-selection-group>
+        <div class="contour-field"><img src="./assets/images/topographic-field.svg" alt=""></div><span class="atlas-sheet__north" aria-hidden="true">N</span><button class="ripple-origin is-selected" type="button" data-select-item aria-pressed="true" data-selection-copy="푸른 찻잔을 중심으로 장소, 사람, 사건이 순서대로 드러납니다."><img src="./assets/images/blue-cup.svg" alt="푸른 찻잔 선택"></button><span class="ripple-ring ripple-ring--one"></span><span class="ripple-ring ripple-ring--two"></span><span class="ripple-ring ripple-ring--three"></span>
+        <article class="ripple-related ripple-related--place"><span class="micro-label">PLACE 04</span><h3>철길 옆 집</h3><p>찻잔이 처음 머문 장소</p></article><article class="ripple-related ripple-related--person"><span class="micro-label">PERSON 01</span><h3>서윤</h3><p>마지막으로 만진 사람</p></article><article class="ripple-related ripple-related--event"><span class="micro-label">EVENT 03</span><h3>비가 멈춘 오후</h3><p>물건의 의미가 바뀐 날</p></article><article class="ripple-related ripple-related--context"><span class="micro-label">CONTEXT</span><h3>두 번의 이사</h3><p>장소가 바뀌어도 남은 연결</p></article>
+        <button class="ripple-replay" type="button" data-ripple-replay>의미 파동 다시 보기</button><aside class="ripple-summary"><strong>선택으로 달라진 지도</strong><span data-selected-copy>푸른 찻잔을 중심으로 장소, 사람, 사건이 순서대로 드러납니다.</span></aside><span class="atlas-sheet__index">RIPPLE 680MS</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
