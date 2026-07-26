@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 300" role="img" aria-label="정원 문 합성 이미지">
+<rect width="460" height="300" fill="#d8cfba"/>
+<path d="M0 210c81-32 156-18 225-29s133-49 235-14v133H0z" fill="#74806c"/>
+<path d="M91 282V94h270v188" fill="none" stroke="#29312e" stroke-width="10"/>
+<path d="M111 282V120h230v162M226 120v162" fill="none" stroke="#a45f46" stroke-width="7"/>
+<path d="M111 166h230M111 224h230" stroke="#a45f46" stroke-width="5"/>
+<g fill="#56634f"><circle cx="51" cy="117" r="62"/><circle cx="402" cy="99" r="72"/><circle cx="374" cy="162" r="52"/></g>
+<path d="M33 52c93 32 166 14 249 6s115 5 152 29" fill="none" stroke="#65715a" stroke-width="5"/>
+<text x="26" y="280" font-family="monospace" font-size="12" fill="#f7f2e7">PLACE FRAGMENT / GARDEN GATE</text>
+</svg>
