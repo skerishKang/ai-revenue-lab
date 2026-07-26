@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 760" role="img" aria-labelledby="title desc">
+  <title id="title">장화에서 피어나는 이야기 층</title>
+  <desc id="desc">중앙의 노란 장화와 주변의 절제된 종이 레이어 배경</desc>
+  <defs>
+    <filter id="grain"><feTurbulence baseFrequency="0.7" numOctaves="2" seed="31"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .1 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+  </defs>
+  <rect width="760" height="760" fill="#d8e1da"/>
+  <path d="M0 552c166-87 301-60 401-20 127 51 237 48 359-8v236H0z" fill="#7ba6b8" opacity=".7" filter="url(#grain)"/>
+  <g opacity=".75" fill="#f4eedf">
+    <path d="M32 224c55-70 145-47 163 18 58-49 139-11 145 54H32z"/>
+    <path d="M461 142c50-62 126-41 146 15 47-42 116-7 120 49H461z"/>
+  </g>
+  <g transform="translate(270 274)" filter="url(#grain)">
+    <path d="M30 0h106v224c0 54-33 98-82 98H0v-87h32z" fill="#e0aa32"/>
+    <path d="M26 274h112v38H26z" fill="#9d6821"/>
+    <path d="M66 34c36 9 56 32 61 70" fill="none" stroke="#f4eedf" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+  </g>
+  <path d="M380 545c64-56 118-64 173-31" stroke="#c94d32" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="3 19"/>
+  <circle cx="578" cy="509" r="11" fill="#d5a33f"/>
+  <circle cx="622" cy="477" r="8" fill="#d5a33f"/>
+</svg>
