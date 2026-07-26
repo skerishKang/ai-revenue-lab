@@ -75,12 +75,21 @@ test.describe('Work In Progress Queue', () => {
     expect(activeIds).toEqual(expectedActiveOrder);
   });
 
-  test('Portfolio Console shows 60% progress', async ({ page }) => {
+  test('Portfolio Console shows 80% progress', async ({ page }) => {
     await page.click('[data-project-view="work"]');
     await page.waitForTimeout(200);
     const pcItem = page.locator('.work-item[data-project-id="portfolio-console"]');
-    await expect(pcItem).toContainText('60%');
+    await expect(pcItem).toContainText('80%');
     await expect(pcItem).toContainText('완료');
+  });
+
+  test('Portfolio Console work item shows exact Issue #157 state', async ({ page }) => {
+    await page.click('[data-project-view="work"]');
+    await page.waitForTimeout(200);
+    const pcItem = page.locator('.work-item[data-project-id="portfolio-console"]');
+    await expect(pcItem).toContainText('Issue #157 작업 중 화면 병합 완료');
+    await expect(pcItem).toContainText('Production 배포 검증 준비');
+    await expect(pcItem).toContainText('Issue #157 종료');
   });
 
   test('LoveBud shows 50% progress', async ({ page }) => {

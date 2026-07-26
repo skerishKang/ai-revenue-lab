@@ -423,11 +423,11 @@ test.describe('Sidebar Search & Filter - Progress Sort', () => {
     expect(barWidth).toBe('50%');
   });
 
-  test('Portfolio Console shows 60% progress in card', async ({ page }) => {
+  test('Portfolio Console shows 80% progress in card', async ({ page }) => {
     const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 60%');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 80%');
     const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
-    expect(barWidth).toBe('60%');
+    expect(barWidth).toBe('80%');
   });
 });
 
@@ -488,9 +488,9 @@ test.describe('Sidebar Search & Filter - Regression', () => {
     await expect(noLinkCards).toHaveCount(4);
   });
 
-  test('Portfolio Console shows 60% progress', async ({ page }) => {
+  test('Portfolio Console shows 80% progress', async ({ page }) => {
     const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 60%');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 80%');
   });
 
   test('자세히 보기 button exists on all cards', async ({ page }) => {

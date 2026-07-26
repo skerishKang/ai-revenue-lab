@@ -308,32 +308,56 @@ test.describe('Milestone Progress Tests', () => {
     expect(doneTasks).not.toContain('미구현');
   });
 
-  test('Portfolio Console currentWork shows Production 배포 검증 준비', async ({ page }) => {
+  test('Portfolio Console currentWork shows exact Issue #157 text', async ({ page }) => {
     await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-current')).toContainText('Production 배포 검증 준비');
+    await expect(page.locator('#pd-detail-current')).toHaveText('Issue #157 작업 중 화면 병합 완료 · Production 배포 검증 준비');
   });
 
-  test('Portfolio Console nextAction shows Cloudflare Access 검증', async ({ page }) => {
+  test('Portfolio Console nextAction shows exact Issue #157 text', async ({ page }) => {
     await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-next')).toContainText('Cloudflare Access 검증');
+    await expect(page.locator('#pd-detail-next')).toHaveText('Portfolio Console Production 배포 및 Cloudflare Access 검증 후 Issue #157 종료');
   });
 
-  test('Portfolio Console card shows exact 60% progress', async ({ page }) => {
+  test('Portfolio Console done tasks show PR #159 merged evidence', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
+    expect(doneTasks).toContain('PR #159 merged');
+    expect(doneTasks).toContain('447e8532');
+  });
+
+  test('Portfolio Console done tasks contain 작업 중 화면 without 미구현', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const doneTasks = await page.locator('#pd-detail-done-tasks').textContent();
+    expect(doneTasks).toContain('작업 중 화면');
+    expect(doneTasks).not.toContain('미구현');
+  });
+
+  test('Portfolio Console remaining tasks contain Business Registry and not 작업 중 화면', async ({ page }) => {
+    await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
+    await page.waitForTimeout(200);
+    const remainingTasks = await page.locator('#pd-detail-remaining-tasks').textContent();
+    expect(remainingTasks).not.toContain('작업 중 화면');
+    expect(remainingTasks).toContain('Business Registry');
+  });
+
+  test('Portfolio Console card shows exact 80% progress', async ({ page }) => {
     const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 60%');
-    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 40%');
+    await expect(card.locator('.pd-card-pct').first()).toHaveText('완료 80%');
+    await expect(card.locator('.pd-card-pct').nth(1)).toHaveText('남음 20%');
     const barWidth = await card.locator('.pd-card-bar i').evaluate(el => el.style.width);
-    expect(barWidth).toBe('60%');
+    expect(barWidth).toBe('80%');
   });
 
-  test('Portfolio Console detail shows 3/5 tasks', async ({ page }) => {
+  test('Portfolio Console detail shows 4/5 tasks', async ({ page }) => {
     await page.click('.pd-card[data-project-id="portfolio-console"] .pd-card-detail-btn');
     await page.waitForTimeout(200);
-    await expect(page.locator('#pd-detail-progress')).toContainText('3/5');
+    await expect(page.locator('#pd-detail-progress')).toContainText('4/5');
     const barWidth = await page.locator('#pd-detail-progress-bar').evaluate(el => el.style.width);
-    expect(barWidth).toBe('60%');
+    expect(barWidth).toBe('80%');
   });
 
   test('LoveBud card shows exact 50% progress', async ({ page }) => {

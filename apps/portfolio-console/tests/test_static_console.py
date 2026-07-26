@@ -283,7 +283,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
     def test_projects_js_unchanged_in_wip_pr(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
         self.assertIn("pc-wip-screen", script)
-        self.assertEqual(script.count("done: true"), 10)
+        self.assertEqual(script.count("done: true"), 11)
 
     def test_businesses_js_unchanged_in_wip_pr(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
@@ -355,6 +355,30 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         script = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn('$("#work-view-count").textContent = `${wipProjects.length}개`', script)
         self.assertIn("formatProjectUnitCount(wipProjects.length)", script)
+
+    def test_projects_pc_wip_screen_done(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        pc_start = script.index("pc-wip-screen")
+        pc_block = script[pc_start:pc_start + 200]
+        self.assertIn('done: true', pc_block)
+
+    def test_projects_pc_wip_screen_evidence_pr159(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        pc_start = script.index("pc-wip-screen")
+        pc_block = script[pc_start:pc_start + 300]
+        self.assertIn("PR #159 merged", pc_block)
+
+    def test_projects_pc_wip_screen_evidence_sha(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("447e85329e8e0ba3b3fd087f408d60f068099461", script)
+
+    def test_projects_portfolio_console_current_work_issue157(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("Issue #157 작업 중 화면 병합 완료", script)
+
+    def test_projects_portfolio_console_next_action_issue157(self) -> None:
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("Issue #157 종료", script)
 
 if __name__ == "__main__":
     unittest.main()
