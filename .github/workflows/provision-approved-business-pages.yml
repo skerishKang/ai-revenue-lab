@@ -1,0 +1,363 @@
+name: Provision approved Business Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      business_id:
+        description: Two-digit Business ID
+        required: true
+        type: string
+      project_name:
+        description: Dedicated Cloudflare Pages project name
+        required: true
+        type: string
+      source_directory:
+        description: Isolated Business reference directory
+        required: true
+        type: string
+      approved_sha:
+        description: UI_APPROVED full exact head SHA
+        required: true
+        type: string
+      approval_pr:
+        description: Draft approval PR number
+        required: true
+        type: string
+      production_branch:
+        description: Cloudflare Pages production branch
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+
+concurrency:
+  group: provision-approved-pages-${{ inputs.project_name }}
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    name: Provision approved Business ${{ inputs.business_id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BUSINESS_ID: ${{ inputs.business_id }}
+      PROJECT_NAME: ${{ inputs.project_name }}
+      SOURCE_DIRECTORY: ${{ inputs.source_directory }}
+      APPROVED_SHA: ${{ inputs.approved_sha }}
+      APPROVAL_PR: ${{ inputs.approval_pr }}
+      PRODUCTION_BRANCH: ${{ inputs.production_branch }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      REPOSITORY_METADATA_FILE: ${{ runner.temp }}/pages-repository-metadata.json
+
+    steps:
+      - name: Require dispatch from the default branch
+        env:
+          DISPATCH_REF: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${DISPATCH_REF}" = "${DEFAULT_BRANCH}" || {
+            echo "This provisioning workflow must be dispatched from the default branch." >&2
+            exit 1
+          }
+
+      - name: Check out trusted workflow authority
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .workflow-authority
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: .github/scripts/validate_pages_provisioning.py
+          sparse-checkout-cone-mode: false
+
+      - name: Validate inputs and repository-owner approval authority
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py authority \
+            --business-id "${BUSINESS_ID}" \
+            --project-name "${PROJECT_NAME}" \
+            --source-directory "${SOURCE_DIRECTORY}" \
+            --approved-sha "${APPROVED_SHA}" \
+            --approval-pr "${APPROVAL_PR}" \
+            --production-branch "${PRODUCTION_BRANCH}" \
+            --repository-metadata-output "${REPOSITORY_METADATA_FILE}"
+
+      - name: Check out approved UI exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.approved_sha }}
+          path: approved-source
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: ${{ inputs.source_directory }}
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact checkout and source isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py source \
+            --repository-root approved-source \
+            --source-directory "${SOURCE_DIRECTORY}" \
+            --approved-sha "${APPROVED_SHA}"
+
+      - name: Verify Cloudflare credentials and Pages API access
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || {
+            echo "CLOUDFLARE_API_TOKEN is not configured." >&2
+            exit 1
+          }
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || {
+            echo "CLOUDFLARE_ACCOUNT_ID is not configured." >&2
+            exit 1
+          }
+
+          response_file="$(mktemp)"
+          trap 'rm -f "${response_file}"' EXIT
+          status="$({
+            curl --silent --show-error \
+              --output "${response_file}" \
+              --write-out '%{http_code}' \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+          })"
+          test "${status}" = "200" || {
+            echo "Cloudflare Pages API access failed with HTTP ${status}." >&2
+            exit 1
+          }
+          jq -e '.success == true and (.result | type == "array")' "${response_file}" >/dev/null
+
+      - name: Ensure the exact GitHub-integrated Pages project exists
+        id: project
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="$(mktemp)"
+          request_file="$(mktemp)"
+          trap 'rm -f "${response_file}" "${request_file}"' EXIT
+          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+
+          status="$({
+            curl --silent --show-error \
+              --output "${response_file}" \
+              --write-out '%{http_code}' \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              "${project_url}"
+          })"
+
+          case "${status}" in
+            200)
+              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                --project-name "${PROJECT_NAME}" \
+                --source-directory "${SOURCE_DIRECTORY}" \
+                --production-branch "${PRODUCTION_BRANCH}" \
+                --response-file "${response_file}"
+              echo "state=already-existed" >> "${GITHUB_OUTPUT}"
+              ;;
+            404)
+              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-payload \
+                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                --project-name "${PROJECT_NAME}" \
+                --source-directory "${SOURCE_DIRECTORY}" \
+                --production-branch "${PRODUCTION_BRANCH}" \
+                --output "${request_file}"
+              create_status="$({
+                curl --silent --show-error \
+                  --request POST \
+                  --output "${response_file}" \
+                  --write-out '%{http_code}' \
+                  --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                  --header 'Content-Type: application/json' \
+                  --data-binary "@${request_file}" \
+                  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+              })"
+              case "${create_status}" in
+                200|201) ;;
+                *)
+                  echo "Cloudflare Pages project creation failed with HTTP ${create_status}." >&2
+                  exit 1
+                  ;;
+              esac
+              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                --project-name "${PROJECT_NAME}" \
+                --source-directory "${SOURCE_DIRECTORY}" \
+                --production-branch "${PRODUCTION_BRANCH}" \
+                --response-file "${response_file}"
+              echo "state=created" >> "${GITHUB_OUTPUT}"
+              ;;
+            *)
+              echo "Cloudflare Pages project lookup failed with HTTP ${status}." >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Deploy the approved exact head
+        id: deploy
+        working-directory: approved-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          output_file="$(mktemp)"
+          clean_output="$(mktemp)"
+          trap 'rm -f "${output_file}" "${clean_output}"' EXIT
+
+          npx --yes wrangler@4 pages deploy "${SOURCE_DIRECTORY}" \
+            --project-name "${PROJECT_NAME}" \
+            --branch "${PRODUCTION_BRANCH}" \
+            --commit-hash "${APPROVED_SHA}" \
+            --commit-message "UI_APPROVED Business ${BUSINESS_ID} exact head" \
+            --commit-dirty=false 2>&1 | tee "${output_file}"
+
+          sed -E $'s/\x1B\[[0-9;]*[A-Za-z]//g' "${output_file}" > "${clean_output}"
+          deployment_url="$({
+            grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' "${clean_output}" || true
+          } | grep -E "(^https://${PROJECT_NAME}\.pages\.dev$|\.${PROJECT_NAME}\.pages\.dev$)" | head -n 1 || true)"
+          test -n "${deployment_url}" || {
+            echo "Wrangler did not report a deployment URL for the exact project." >&2
+            exit 1
+          }
+          echo "url=${deployment_url}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify project, deployment metadata, and public bytes
+        id: verify
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          project_file="$(mktemp)"
+          deployments_file="$(mktemp)"
+          selected_file="$(mktemp)"
+          deployment_body="$(mktemp)"
+          production_body="$(mktemp)"
+          trap 'rm -f "${project_file}" "${deployments_file}" "${selected_file}" "${deployment_body}" "${production_body}"' EXIT
+
+          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+          project_status="$({
+            curl --silent --show-error --output "${project_file}" --write-out '%{http_code}' \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${project_url}"
+          })"
+          test "${project_status}" = "200"
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+            --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+            --project-name "${PROJECT_NAME}" \
+            --source-directory "${SOURCE_DIRECTORY}" \
+            --production-branch "${PRODUCTION_BRANCH}" \
+            --response-file "${project_file}"
+
+          deployments_url="${project_url}/deployments?per_page=20"
+          found=false
+          for attempt in $(seq 1 10); do
+            deployments_status="$({
+              curl --silent --show-error --output "${deployments_file}" --write-out '%{http_code}' \
+                --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${deployments_url}"
+            })"
+            test "${deployments_status}" = "200"
+            jq -e '.success == true and (.result | type == "array")' "${deployments_file}" >/dev/null
+            if jq -e --arg url "${DEPLOYMENT_URL}" \
+              '.result[] | select((.url // "") == $url)' "${deployments_file}" > "${selected_file}"; then
+              found=true
+              break
+            fi
+            sleep 3
+          done
+          test "${found}" = true || {
+            echo "The deployment API did not return the Wrangler deployment URL." >&2
+            exit 1
+          }
+
+          deployment_id="$(jq -r '.id // empty' "${selected_file}")"
+          test -n "${deployment_id}"
+          returned_sha="$(jq -r '.deployment_trigger.metadata.commit_hash // .source.config.commit_hash // empty' "${selected_file}")"
+          returned_branch="$(jq -r '.deployment_trigger.metadata.branch // .source.config.branch // empty' "${selected_file}")"
+
+          if test -n "${returned_sha}"; then
+            test "${returned_sha}" = "${APPROVED_SHA}" || {
+              echo "Cloudflare deployment commit hash does not match approved_sha." >&2
+              exit 1
+            }
+            commit_verification="verified"
+          else
+            commit_verification="unavailable-in-cloudflare-api"
+            echo "Cloudflare did not expose a deployment commit hash; byte verification remains authoritative." >&2
+          fi
+          if test -n "${returned_branch}"; then
+            test "${returned_branch}" = "${PRODUCTION_BRANCH}"
+          fi
+
+          expected_hash="$(sha256sum "approved-source/${SOURCE_DIRECTORY%/}/index.html" | awk '{print $1}')"
+          expected_production_url="https://${PROJECT_NAME}.pages.dev/"
+
+          fetch_and_compare() {
+            local url="$1"
+            local output="$2"
+            local status=""
+            for attempt in $(seq 1 10); do
+              status="$({
+                curl --location --silent --show-error --output "${output}" --write-out '%{http_code}' "${url}" || true
+              })"
+              if test "${status}" = "200"; then
+                local actual_hash
+                actual_hash="$(sha256sum "${output}" | awk '{print $1}')"
+                if test "${actual_hash}" = "${expected_hash}"; then
+                  return 0
+                fi
+              fi
+              sleep 3
+            done
+            echo "Public byte verification failed for ${url}." >&2
+            return 1
+          }
+
+          fetch_and_compare "${DEPLOYMENT_URL}/" "${deployment_body}"
+          fetch_and_compare "${expected_production_url}" "${production_body}"
+
+          echo "deployment_id=${deployment_id}" >> "${GITHUB_OUTPUT}"
+          echo "commit_verification=${commit_verification}" >> "${GITHUB_OUTPUT}"
+          echo "production_url=${expected_production_url}" >> "${GITHUB_OUTPUT}"
+          echo "result=github-project-and-public-bytes-verified" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish provisioning summary
+        env:
+          PROJECT_STATE: ${{ steps.project.outputs.state }}
+          DEPLOYMENT_ID: ${{ steps.verify.outputs.deployment_id }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+          PRODUCTION_URL: ${{ steps.verify.outputs.production_url }}
+          COMMIT_VERIFICATION: ${{ steps.verify.outputs.commit_verification }}
+          VERIFICATION_RESULT: ${{ steps.verify.outputs.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## Approved Business Pages provisioning"
+            echo
+            echo "- Business ID: \`${BUSINESS_ID}\`"
+            echo "- Approval PR: \`#${APPROVAL_PR}\`"
+            echo "- Approved exact SHA: \`${APPROVED_SHA}\`"
+            echo "- Source directory: \`${SOURCE_DIRECTORY}\`"
+            echo "- Pages project: \`${PROJECT_NAME}\`"
+            echo "- Project state: \`${PROJECT_STATE}\`"
+            echo "- Repository: \`${GITHUB_REPOSITORY}\`"
+            echo "- Production branch: \`${PRODUCTION_BRANCH}\`"
+            echo "- Deployment ID: \`${DEPLOYMENT_ID}\`"
+            echo "- Actual deployment URL: ${DEPLOYMENT_URL}"
+            echo "- Expected production URL: ${PRODUCTION_URL}"
+            echo "- Cloudflare commit metadata: \`${COMMIT_VERIFICATION}\`"
+            echo "- Verification: \`${VERIFICATION_RESULT}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
