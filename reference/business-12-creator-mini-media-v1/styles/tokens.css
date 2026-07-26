@@ -1,0 +1,31 @@
+@charset "UTF-8";
+
+:root {
+  --paper: #f2eadb;
+  --paper-deep: #e6d9c3;
+  --paper-light: #fbf6eb;
+  --ink: #181715;
+  --ink-soft: #4c4841;
+  --signal: #ef3b2d;
+  --proof: #1768a8;
+  --line: rgba(24, 23, 21, 0.32);
+  --line-soft: rgba(24, 23, 21, 0.15);
+  --shadow: 0 22px 55px rgba(35, 29, 20, 0.18);
+  --shadow-small: 0 10px 25px rgba(35, 29, 20, 0.14);
+  --sans: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --serif: Georgia, "Times New Roman", "Batang", serif;
+  --mono: "Courier New", Courier, monospace;
+  --page-max: 1440px;
+  --edge: clamp(18px, 3vw, 48px);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --radius-small: 4px;
+  --relay-duration: 165ms;
+  --relay-ease: cubic-bezier(.22, .78, .18, 1);
+}
