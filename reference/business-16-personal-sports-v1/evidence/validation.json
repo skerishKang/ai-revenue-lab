@@ -3,7 +3,7 @@
   "status": "UI_REVIEW_READY",
   "asset_version": "personal-sports-20260727-1",
   "checked_at": "2026-07-27T01:31:00Z",
-  "browser_mode": "Chromium in-memory rendering of exact repository HTML/CSS/JS/SVG because localhost navigation is blocked by the execution sandbox",
+  "browser_mode": "Chromium in-memory rendering of semantically identical implementation HTML with exact repository CSS, JavaScript and SVG sources because localhost navigation is blocked by the execution sandbox",
   "viewports": {
     "1440x1100": {"state_overflow": {"matchday": 0, "preview": 0, "watch": 0, "recap": 0, "player": 0, "season": 0, "mobile": 0}, "max_overflow": 0, "console_errors": [], "page_errors": [], "failed_requests": [], "external_runtime_requests": []},
     "768x1024": {"state_overflow": {"matchday": 0, "preview": 0, "watch": 0, "recap": 0, "player": 0, "season": 0, "mobile": 0}, "max_overflow": 0, "console_errors": [], "page_errors": [], "failed_requests": [], "external_runtime_requests": []},
@@ -25,7 +25,7 @@
   "truthfulness": {"required_label_present": true, "synthetic_teams": ["해람 시티", "북항 유나이티드"], "synthetic_player": "윤재호", "real_team_marks_used": false},
   "required_evidence": {"my-matchday-1440x1100.png": true, "match-preview-1440x1100.png": true, "match-recap-1440x1100.png": true, "player-lens-1440x1100.png": true, "mobile-matchday-390x844.png": true, "turning-point-sweep.gif": true, "reduced-motion-1440x1100.png": true},
   "git_diff_check": "pass",
-  "authored_files": {"IMAGE_SOURCES.md": 19, "MOTION_SPEC.md": 40, "README.md": 42, "REFERENCE_NOTES.md": 80, "app.js": 79, "assets/images/matchday-ticket.svg": 1, "assets/images/player-action.svg": 1, "assets/images/season-strip.svg": 1, "assets/images/stadium-night.svg": 1, "assets/images/tactical-field.svg": 1, "evidence/browser-check-commands.md": 10, "evidence/validation.json": 149, "index.html": 172, "styles/base.css": 72, "styles/match-preview-watch.css": 33, "styles/player-season-mobile.css": 17, "styles/recap.css": 13, "styles.css": 4},
+  "authored_files": {"IMAGE_SOURCES.md": 19, "MOTION_SPEC.md": 40, "README.md": 42, "REFERENCE_NOTES.md": 80, "app.js": 79, "assets/images/matchday-ticket.svg": 1, "assets/images/player-action.svg": 1, "assets/images/season-strip.svg": 1, "assets/images/stadium-night.svg": 1, "assets/images/tactical-field.svg": 1, "evidence/browser-check-commands.md": 10, "evidence/validation.json": 31, "index.html": 46, "styles/base.css": 72, "styles/match-preview-watch.css": 33, "styles/player-season-mobile.css": 17, "styles/recap.css": 13, "styles.css": 4},
   "files_over_500_physical_lines": [],
   "binary_evidence": {"generated": true, "committed": false, "delivery": "separate review artifacts linked in implementation report"}
 }
