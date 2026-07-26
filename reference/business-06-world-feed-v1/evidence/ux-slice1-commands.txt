@@ -1,0 +1,28 @@
+Business 6 · World Feed Phase 2 UX Slice 1 validation
+Exact starting base: 48807067a261d8f1ca3814b4b26758dd6947788a
+Branch: feat/business-06-world-feed-ux-165
+
+1. JavaScript syntax
+node --check scripts/navigation.js
+node --check scripts/feed-state.js
+node --check scripts/story-state.js
+node --check scripts/preference-state.js
+node --check scripts/ux-app.js
+Result: exit 0 for all files
+
+2. HTML and source contract
+Python html.parser parse of index.html
+Source-file physical line count scan
+Version query scan for world-feed-20260726-3
+Stale previous-version token scan
+localStorage and external runtime URL scan
+Result: exit 0; see ux-slice1-source-audit.json
+
+3. Chromium UX journey
+python /tmp/validate_world_feed_ux.py
+Viewport: 1440x900 and actual 390x844
+Reduced motion: Chromium context reduced_motion=reduce
+Result: exit 0; see ux-slice1-validation.json
+
+Browser note:
+Local HTTP navigation is blocked by the managed Chromium environment. Exact index/CSS/JS/SVG bytes were therefore inlined into about:blank for browser execution. Static local-path validation separately proved that every referenced repository asset exists. No external runtime request was allowed.
