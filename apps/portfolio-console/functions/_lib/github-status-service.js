@@ -45,7 +45,7 @@ function normalizeBusiness(mapping, repositoryData, paths) {
   const prData = prAlias ? repositoryData?.[prAlias] : null;
   let issue = normalizeIssue(issueData);
   let pullRequest = normalizePullRequest(prData);
-  let checks = { state: "unavailable", source: pullRequest ? "pr_head" : "none", total: 0, completed: 0 };
+  let checks = { state: "unavailable", source: pullRequest ? "pr_head_rollup" : "none", total: 0, completed: 0 };
 
   if (issueAlias && (!issueData || pathTouches(paths, issueAlias))) {
     if (!issueData) issue = null;
@@ -110,10 +110,23 @@ export function createGitHubStatusService({ client, cache, now = () => Date.now(
         draftPullRequests: Number(root.draftPullRequests?.issueCount || 0) },
       businesses: businessResults.map((result) => result.business), errors };
   }
+  async function storeFreshSnapshot(snapshot) {
+    let result;
+    try {
+      result = await cache.set(snapshot);
+    } catch {
+      result = { persisted: false, errorCode: "CACHE_WRITE_FAILED" };
+    }
+    if (result?.persisted !== false) return snapshot;
+    const degraded = { ...snapshot,
+      errors: [...(snapshot.errors || []), safeError("CACHE_WRITE_FAILED", "The latest GitHub snapshot could not be persisted.")] };
+    if (typeof cache.setMemory === "function") cache.setMemory(degraded);
+    return degraded;
+  }
   async function refreshSingleFlight() {
     const existing = refreshFlights.get(singleFlightKey);
     if (existing) return existing;
-    const flight = (async () => { const snapshot = await loadFresh(); await cache.set(snapshot); return snapshot; })();
+    const flight = (async () => storeFreshSnapshot(await loadFresh()))();
     refreshFlights.set(singleFlightKey, flight);
     try { return await flight; } finally { if (refreshFlights.get(singleFlightKey) === flight) refreshFlights.delete(singleFlightKey); }
   }
