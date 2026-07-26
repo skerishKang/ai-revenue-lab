@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t d">
+  <title id="t">해질녘 항구 도시를 단순화한 합성 일러스트</title>
+  <desc id="d">주홍빛 하늘과 청록색 물, 낮은 건물과 산책하는 인물을 편집 일러스트로 표현했다.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4b08b"/><stop offset=".58" stop-color="#e86842"/><stop offset="1" stop-color="#7e2e23"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4e817b"/><stop offset="1" stop-color="#173c3c"/></linearGradient>
+    <filter id="grain"><feTurbulence baseFrequency=".85" numOctaves="2" stitchTiles="stitch" type="fractalNoise"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .11"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="1600" height="620" fill="url(#sky)"/>
+  <circle cx="1190" cy="230" r="118" fill="#ffd79d" opacity=".88"/>
+  <path d="M0 510 170 420 290 465 420 380 610 470 780 390 950 500 1130 360 1330 465 1600 365V690H0Z" fill="#2b3330"/>
+  <g fill="#efe5d2"><rect x="80" y="455" width="140" height="180"/><rect x="240" y="500" width="190" height="135"/><rect x="455" y="435" width="120" height="200"/><rect x="595" y="490" width="210" height="145"/><rect x="835" y="455" width="165" height="180"/><rect x="1030" y="500" width="125" height="135"/><rect x="1180" y="430" width="230" height="205"/></g>
+  <g fill="#a74631"><rect x="110" y="480" width="28" height="72"/><rect x="274" y="525" width="40" height="65"/><rect x="492" y="468" width="34" height="82"/><rect x="634" y="515" width="52" height="72"/><rect x="872" y="486" width="42" height="71"/><rect x="1065" y="525" width="36" height="66"/><rect x="1230" y="465" width="56" height="90"/></g>
+  <rect y="635" width="1600" height="365" fill="url(#water)"/>
+  <path d="M0 780c260-75 390 45 660-10 270-55 430-70 940 5v225H0Z" fill="#0f2e2f" opacity=".75"/>
+  <g fill="none" stroke="#d5d9c0" stroke-width="9" opacity=".45"><path d="M95 735c150 28 285 28 430 0"/><path d="M860 810c210-45 400-38 645 2"/><path d="M330 900c155 18 270 15 410-7"/></g>
+  <g transform="translate(700 710)"><ellipse cx="50" cy="215" rx="120" ry="28" fill="#0d2324" opacity=".45"/><circle cx="28" cy="36" r="29" fill="#241d1a"/><path d="M5 65c40-22 82-10 105 17l-8 105-111-5z" fill="#e6633d"/><path d="m15 174-25 86M88 180l47 72" stroke="#211c19" stroke-width="18" stroke-linecap="round"/><path d="m16 94-72 48M95 103l82-34" stroke="#211c19" stroke-width="16" stroke-linecap="round"/></g>
+  <rect width="1600" height="1000" filter="url(#grain)" opacity=".58"/>
+</svg>
