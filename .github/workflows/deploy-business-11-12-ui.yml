@@ -1,0 +1,60 @@
+name: Deploy approved Business 11 and 12 UI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-business-11-12-ui.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-business-11-12-ui
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - business: "11"
+            project: ai-revenue-business-11-language-magazine
+            approved_sha: c438c4f6d84f8a02ae49dab27de80072b9f701ee
+            deploy_dir: reference/business-11-language-learning-magazine-v1
+          - business: "12"
+            project: ai-revenue-business-12-creator-mini-media
+            approved_sha: 1910ca2e0fdf2a2fdb036793f218495b2c5b5667
+            deploy_dir: reference/business-12-creator-mini-media-v1
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check out approved exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.approved_sha }}
+          persist-credentials: false
+
+      - name: Verify approved source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ matrix.approved_sha }}"
+          test -f "${{ matrix.deploy_dir }}/index.html"
+
+      - name: Ensure dedicated Pages project exists
+        shell: bash
+        run: |
+          if ! npx --yes wrangler@4 pages project list | grep -Fq "${{ matrix.project }}"; then
+            npx --yes wrangler@4 pages project create "${{ matrix.project }}" --production-branch main
+          fi
+
+      - name: Deploy approved static UI
+        shell: bash
+        run: |
+          npx --yes wrangler@4 pages deploy "${{ matrix.deploy_dir }}" --project-name "${{ matrix.project }}" --branch main --commit-hash "${{ matrix.approved_sha }}" --commit-dirty=false
