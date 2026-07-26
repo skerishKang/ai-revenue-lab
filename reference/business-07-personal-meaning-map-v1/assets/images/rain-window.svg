@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 340" role="img" aria-label="비 내리는 창문 합성 이미지">
+<rect width="520" height="340" fill="#879aa0"/>
+<rect x="47" y="36" width="426" height="268" fill="#b9c3bf" stroke="#2c3431" stroke-width="10"/>
+<path d="M260 38v266M49 170h424" stroke="#2c3431" stroke-width="8"/>
+<path d="M70 145l28-61M112 162l36-88M190 139l28-66M291 150l34-82M358 136l30-71M417 157l38-92M82 265l27-65M151 284l36-91M300 274l31-75M395 288l39-96" stroke="#edf0e7" stroke-opacity=".72" stroke-width="4"/>
+<path d="M50 262c93-27 136-2 210-15s134-34 212-12v69H50z" fill="#5f6f61"/>
+<circle cx="391" cy="93" r="33" fill="#c3b171" fill-opacity=".75"/>
+<text x="50" y="326" font-family="monospace" font-size="12" fill="#29312e">2024.07.18 / AFTER THE RAIN</text>
+</svg>
