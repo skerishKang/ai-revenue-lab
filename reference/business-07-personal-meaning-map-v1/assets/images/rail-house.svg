@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 350" role="img" aria-label="철길 옆 작은 집 합성 이미지">
+<rect width="520" height="350" fill="#d9d0bc"/>
+<rect y="220" width="520" height="130" fill="#89907a"/>
+<path d="M0 250C92 224 165 255 248 241s152-37 272-8v117H0z" fill="#727e68"/>
+<path d="M80 218L223 112l154 106v100H80z" fill="#e8dfcc" stroke="#28302d" stroke-width="3"/>
+<path d="M62 219L222 94l171 125" fill="none" stroke="#a45f46" stroke-width="8"/>
+<rect x="128" y="218" width="70" height="100" fill="#596f73" stroke="#28302d" stroke-width="3"/>
+<rect x="255" y="184" width="72" height="60" fill="#a9c0c0" stroke="#28302d" stroke-width="3"/>
+<path d="M291 184v60M255 214h72" stroke="#28302d" stroke-width="2"/>
+<path d="M0 301h520M0 316h520" stroke="#303733" stroke-width="4"/>
+<path d="M16 299l44 20m16-20l44 20m16-20l44 20m16-20l44 20m16-20l44 20m16-20l44 20m16-20l44 20m16-20l44 20" stroke="#c8b37a" stroke-width="5"/>
+<g fill="#47564b"><circle cx="420" cy="190" r="52"/><circle cx="455" cy="205" r="38"/><rect x="433" y="194" width="18" height="96"/></g>
+<path d="M34 48h132" stroke="#28302d" stroke-width="1"/><text x="35" y="39" font-family="serif" font-size="14" fill="#28302d">채집 이미지 04 · 여름</text>
+</svg>
