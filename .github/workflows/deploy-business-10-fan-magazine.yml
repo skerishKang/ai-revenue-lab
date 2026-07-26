@@ -1,0 +1,51 @@
+name: Deploy approved Business 10 UI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-business-10-fan-magazine.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-business-10-fan-magazine
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PROJECT_NAME: ai-revenue-business-10-fan-magazine
+      APPROVED_SHA: 5978cad38a937fc67c72abd203bb8865daf3acab
+      DEPLOY_DIR: reference/business-10-fan-magazine-v1
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check out approved exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.APPROVED_SHA }}
+          persist-credentials: false
+
+      - name: Verify approved source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$APPROVED_SHA"
+          test -f "$DEPLOY_DIR/index.html"
+
+      - name: Ensure dedicated Pages project exists
+        shell: bash
+        run: |
+          if ! npx --yes wrangler@4 pages project list | grep -Fq "$PROJECT_NAME"; then
+            npx --yes wrangler@4 pages project create "$PROJECT_NAME" --production-branch main
+          fi
+
+      - name: Deploy approved static UI
+        shell: bash
+        run: |
+          npx --yes wrangler@4 pages deploy "$DEPLOY_DIR" --project-name "$PROJECT_NAME" --branch main --commit-hash "$APPROVED_SHA" --commit-dirty=false
