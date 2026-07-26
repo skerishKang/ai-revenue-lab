@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Global AI Newsroom Phase 1 visual UI reference — synthetic verification atlas">
+  <meta name="robots" content="noindex,nofollow">
+  <title>글로벌 AI 뉴스룸 · 검증 아틀라스</title>
+  <link rel="stylesheet" href="./styles/tokens.css?v=global-ai-newsroom-20260727-1">
+  <link rel="stylesheet" href="./styles/base.css?v=global-ai-newsroom-20260727-1">
+  <link rel="stylesheet" href="./styles/layout.css?v=global-ai-newsroom-20260727-1">
+  <link rel="stylesheet" href="./styles/components.css?v=global-ai-newsroom-20260727-1">
+  <link rel="stylesheet" href="./styles/states.css?v=global-ai-newsroom-20260727-1">
+  <script src="./scripts/review-state.js?v=global-ai-newsroom-20260727-1" defer></script>
+</head>
+<body data-active-state="global">
+  <a class="skip-link" href="#visual-stage">시각 검토 화면으로 이동</a>
+  <main class="newsroom-shell">
+    <header class="masthead">
+      <div class="masthead__identity">
+        <span class="kicker">Proposed Business 15 · Verification Atlas</span>
+        <h1>글로벌 AI 뉴스룸</h1>
+        <p>근거와 불확실성이 함께 보이는 검토 가능한 뉴스 패키지</p>
+      </div>
+      <div class="masthead__status" aria-label="참고 화면 상태">
+        <span class="synthetic-flag">합성 시나리오 / Synthetic scenario</span>
+        <span>정적 검토 표본 · 수집 비활성</span>
+        <strong>Last review 09:42 KST</strong>
+      </div>
+    </header>
+
+    <nav class="review-nav" role="tablist" aria-label="시각 검토 상태">
+      <button type="button" role="tab" id="tab-global" aria-controls="state-global" aria-selected="true" tabindex="0" data-state-target="global"><span>01</span>글로벌 데스크</button>
+      <button type="button" role="tab" id="tab-signals" aria-controls="state-signals" aria-selected="false" tabindex="-1" data-state-target="signals"><span>02</span>신호 수집</button>
+      <button type="button" role="tab" id="tab-dossier" aria-controls="state-dossier" aria-selected="false" tabindex="-1" data-state-target="dossier"><span>03</span>스토리 도시에</button>
+      <button type="button" role="tab" id="tab-verification" aria-controls="state-verification" aria-selected="false" tabindex="-1" data-state-target="verification"><span>04</span>검증실</button>
+      <button type="button" role="tab" id="tab-edition" aria-controls="state-edition" aria-selected="false" tabindex="-1" data-state-target="edition"><span>05</span>발행 원고</button>
+      <button type="button" role="tab" id="tab-handoff" aria-controls="state-handoff" aria-selected="false" tabindex="-1" data-state-target="handoff"><span>06</span>교대 인계</button>
+      <button type="button" role="tab" id="tab-mobile" aria-controls="state-mobile" aria-selected="false" tabindex="-1" data-state-target="mobile"><span>07</span>모바일 390</button>
+      <button type="button" class="motion-control" aria-pressed="false" data-convergence-play>신호 합류 재생</button>
+    </nav>
+
+    <section class="visual-stage" id="visual-stage" aria-live="polite">
+      <article class="review-state" id="state-global" role="tabpanel" aria-labelledby="tab-global" tabindex="-1" data-review-state="global">
+        <div class="state-bar"><span>Global Desk / 글로벌 데스크</span><span>Desk clock 09:42 · review cycle 04</span></div>
+        <div class="global-grid convergence-scene">
+          <section class="atlas-panel" aria-label="가상 해안 지역 검증 지도">
+            <div class="atlas-caption"><span>FICTIONAL COASTAL ATLAS · PLATE 04</span><strong>해저 통신 회랑 장애</strong></div>
+            <img src="./assets/images/atlas-map.svg" alt="네린, 에어리스, 솔렌 세 가상 해안 지역과 해저 통신 경로, 사건 신호를 표시한 합성 지도">
+            <div class="map-legend" aria-label="지도 기호 설명">
+              <span><i class="legend-dot corroborated"></i>상호 확인</span>
+              <span><i class="legend-dot pending"></i>확인 대기</span>
+              <span><i class="legend-line conflict"></i>진술 충돌</span>
+            </div>
+          </section>
+
+          <aside class="desk-rail" aria-label="지역 데스크 기여">
+            <header><span>REGIONAL DESKS</span><strong>3 active / synthetic</strong></header>
+            <article class="desk-entry is-corroborating source-marker"><span class="desk-code">NRN</span><div><strong>네린 연안 데스크</strong><p>항만 예약 지연과 공공 안내 지연이 같은 시각대에 시작됨.</p></div><time>09:31</time></article>
+            <article class="desk-entry is-corroborating source-marker"><span class="desk-code">ARS</span><div><strong>에어리스 교통 데스크</strong><p>철도 예약망 간헐 장애. 현장 결제는 정상이라는 별도 확인.</p></div><time>09:28</time></article>
+            <article class="desk-entry is-conflicting source-marker"><span class="desk-code">SLN</span><div><strong>솔렌 공공서비스 데스크</strong><p>정부 발표는 “지역 내부 장애”라고 설명해 공동 원인과 충돌.</p></div><time>09:24</time></article>
+            <div class="desk-note">모든 항목은 가상 국가·합성 출처로 구성된 정적 검토 표본입니다.</div>
+          </aside>
+
+          <section class="lead-dossier evidence-paper" aria-label="선택된 주요 스토리 도시에">
+            <div class="dossier-meta"><span>LEAD DOSSIER · D-041</span><span class="status status--amber">부분 검증</span></div>
+            <h2>세 해안 지역의 서비스 장애가<br><em>하나의 해저 회랑</em>과 연결되는가</h2>
+            <p class="dossier-deck">항만·철도 예약·공공 서비스에서 비슷한 시각의 장애가 보고됐지만, 공식 설명은 서로 일치하지 않는다.</p>
+            <div class="fact-band">
+              <div><strong>4</strong><span>상호 확인된 사실</span></div>
+              <div><strong>2</strong><span>충돌 주장</span></div>
+              <div><strong>3</strong><span>정보 공백</span></div>
+            </div>
+            <div class="lead-lines" aria-label="신호 합류 상태">
+              <span class="evidence-strip evidence-strip--a">항만 공지 · confirmed</span>
+              <span class="evidence-strip evidence-strip--b">기반시설 분석 · corroborating</span>
+              <span class="evidence-strip evidence-strip--conflict">정부 발표 · conflicting</span>
+              <span class="chain-reveal" aria-hidden="true"></span>
+            </div>
+            <footer><span>책임 편집자 · 윤해원</span><span>다음 검토 10:00</span><strong class="human-seal">HUMAN REVIEWED</strong></footer>
+          </section>
+
+          <figure class="field-plate">
+            <img src="./assets/images/port-field.svg" alt="가상의 항만 통신실과 케이블 점검 현장을 표현한 합성 편집 일러스트">
+            <figcaption><strong>FIELD PLATE 02</strong> 가상 항만 통신실 · 합성 장면 · 08:55 기록</figcaption>
+          </figure>
+        </div>
+      </article>
+
+      <article class="review-state" id="state-signals" role="tabpanel" aria-labelledby="tab-signals" tabindex="-1" data-review-state="signals" hidden>
+        <div class="state-bar"><span>Signal Intake / 신호 수집</span><span>Static sample · no live ingestion</span></div>
+        <div class="signal-layout">
+          <section class="signal-ledger">
+            <header class="ledger-head"><div><span>SIGNAL LEDGER</span><h2>출처가 다른 신호를<br>하나의 사건군으로 묶는다</h2></div><p>중복·연관·충돌 관계는 편집 검토를 위한 정적 표본입니다.</p></header>
+            <div class="cluster-label"><strong>CLUSTER C-12</strong><span>“해안 서비스 지연” 관련 8건</span><span>마지막 표본 09:36</span></div>
+            <ol class="signal-list">
+              <li data-relation="corroborating"><span class="signal-index">S01</span><div><strong>네린 북항 공식 공지</strong><p>예약 확인 지연과 제한적 수기 처리 공지.</p><small>합성 출처 · official notice · 09:08 · 34분 전</small></div><span class="status status--green">확인</span><span class="relation">S03와 일치</span></li>
+              <li data-relation="corroborating"><span class="signal-index">S02</span><div><strong>현지 기자 field note</strong><p>항만 외부 대기열 증가, 통신 음영 구역은 확인하지 못함.</p><small>합성 출처 · field note · 09:13 · 29분 전</small></div><span class="status status--blue">교차 확인</span><span class="relation">S01 보강</span></li>
+              <li data-relation="corroborating"><span class="signal-index">S03</span><div><strong>기반시설 전문가 분석</strong><p>세 지역의 장애 시각은 공통 회랑 손상 가능성과 부합.</p><small>합성 출처 · expert assessment · 09:19 · 23분 전</small></div><span class="status status--green">근거 있음</span><span class="relation">S01·S04와 일치</span></li>
+              <li data-relation="corroborating"><span class="signal-index">S04</span><div><strong>지도 관찰 메모</strong><p>가상 회랑 구간에서 점검선 활동을 표시한 합성 관찰.</p><small>합성 출처 · map observation · 09:22 · 20분 전</small></div><span class="status status--blue">관찰</span><span class="relation">S03 보강</span></li>
+              <li data-relation="pending"><span class="signal-index">S05</span><div><strong>목격 영상 제보</strong><p>케이블 육양국 인근 경광등 영상. 촬영 시각·위치 미확인.</p><small>합성 출처 · eyewitness media · 09:27 · 15분 전</small></div><span class="status status--amber">검증 대기</span><span class="relation">위치 미확인</span></li>
+              <li data-relation="conflicting"><span class="signal-index">S06</span><div><strong>솔렌 정부 발표</strong><p>장애는 국내 교환기 문제이며 지역 간 연관성은 없다고 발표.</p><small>합성 출처 · official statement · 09:24 · 18분 전</small></div><span class="status status--red">충돌</span><span class="relation">S03와 충돌</span></li>
+              <li data-relation="context"><span class="signal-index">S07</span><div><strong>과거 사건 맥락</strong><p>유사 회랑 장애 당시 복구 순서와 공공 서비스 영향 기록.</p><small>합성 출처 · historical context · 08:50 · 52분 전</small></div><span class="status">맥락</span><span class="relation">직접 증거 아님</span></li>
+              <li data-relation="editor"><span class="signal-index">S08</span><div><strong>편집자 검증 메모</strong><p>공통 원인 단정 금지. 회랑 운영 주체의 점검 확인 필요.</p><small>합성 출처 · editor note · 09:36 · 6분 전</small></div><span class="status status--green">검토됨</span><span class="relation">다음 작업 지정</span></li>
+            </ol>
+          </section>
+          <aside class="contact-sheet-panel">
+            <img src="./assets/images/source-contact-sheet.svg" alt="합성 출처 유형과 검증 상태를 편집용 접촉 시트로 배열한 일러스트">
+            <div class="grouping-note"><strong>GROUPING NOTE</strong><p>S01과 S02는 같은 항만 사건을 설명하지만 출처 유형이 달라 중복 제거하지 않는다. S06은 충돌 증거로 별도 유지한다.</p></div>
+          </aside>
+        </div>
+      </article>
+
+      <article class="review-state" id="state-dossier" role="tabpanel" aria-labelledby="tab-dossier" tabindex="-1" data-review-state="dossier" hidden>
+        <div class="state-bar"><span>Story Dossier / 스토리 도시에</span><span>D-041 · revision 06 · human owned</span></div>
+        <div class="dossier-layout">
+          <section class="dossier-main evidence-paper">
+            <header class="dossier-header"><span class="synthetic-flag">합성 시나리오</span><span>D-041 / Infrastructure</span><span class="status status--amber">부분 검증</span></header>
+            <h2>가상의 해저 통신 회랑 장애가<br>세 해안 지역의 서비스에 미친 영향</h2>
+            <p class="dossier-summary">09:00 전후 세 가상 지역에서 항만 예약, 철도 발권, 공공 안내 시스템 장애가 보고됐다. 공통 원인은 아직 확정되지 않았다.</p>
+            <div class="dossier-columns">
+              <section><h3>확인된 사실 / Confirmed</h3><ul class="fact-list confirmed"><li>네린 북항은 예약 확인 지연을 공식 공지했다.</li><li>에어리스 철도 예약망에서 간헐 장애가 발생했다.</li><li>세 지역의 최초 보고 시각은 18분 범위에 모여 있다.</li><li>현장 결제와 핵심 안전 시스템은 정상이라는 별도 확인이 있다.</li></ul></section>
+              <section><h3>논쟁 중인 주장 / Disputed</h3><ul class="fact-list disputed"><li>공통 해저 회랑 손상이 단일 원인이라는 전문가 가설.</li><li>솔렌 정부의 “국내 교환기 단독 문제” 발표.</li></ul></section>
+              <section><h3>누락 정보 / Missing</h3><ul class="fact-list missing"><li>회랑 운영 주체의 점검 기록.</li><li>목격 영상의 원본 시각·위치 메타데이터.</li><li>세 지역 복구 시각의 독립 확인.</li></ul></section>
+            </div>
+            <figure class="route-figure"><img src="./assets/images/cable-route.svg" alt="세 가상 해안 지역과 해저 케이블 분기, 확인 및 충돌 지점을 나타낸 합성 경로도"><figcaption>합성 기반시설 경로도 · 실제 지리·기업·정부와 무관</figcaption></figure>
+          </section>
+          <aside class="dossier-side">
+            <section class="timeline-sheet"><h3>검증 타임라인</h3><ol><li><time>09:08</time><span>네린 북항 공지</span></li><li><time>09:13</time><span>현지 기자 현장 메모</span></li><li><time>09:19</time><span>공통 회랑 가설 제시</span></li><li><time>09:24</time><span>솔렌 발표가 가설과 충돌</span></li><li><time>09:36</time><span>편집자 단정 보류 메모</span></li><li><time>09:42</time><span>도시에 revision 06</span></li></ol></section>
+            <section class="source-chain"><h3>Source chain</h3><div><span>S01</span><i></i><span>S02</span><i></i><span>S03</span><i class="break"></i><span>S06</span></div><p>상호 확인 4 · 충돌 2 · 보류 3</p></section>
+            <section class="editor-note"><span>EDITOR NOTE 06</span><p>“장애가 연결돼 있다”는 문장은 현재 근거보다 강하다. 복구 순서와 운영 주체 확인 전에는 가능성으로만 쓴다.</p><strong>윤해원 · 09:36</strong></section>
+          </aside>
+        </div>
+      </article>
+
+      <article class="review-state" id="state-verification" role="tabpanel" aria-labelledby="tab-verification" tabindex="-1" data-review-state="verification" hidden>
+        <div class="state-bar"><span>Verification Room / 검증실</span><span>Claim V-07 · decision table</span></div>
+        <div class="verification-layout">
+          <header class="claim-header"><span>CLAIM UNDER REVIEW</span><h2>“세 지역의 장애는 하나의 해저 통신 회랑 손상에서 시작됐다.”</h2><p>현재 판정: <strong>가능성 있음, 확정 불가</strong> · 편집자 승인 전 원고에 단정형 사용 금지</p></header>
+          <section class="evidence-compare">
+            <div class="evidence-column evidence-column--support"><h3>일치하는 증거 <span>4</span></h3><article><strong>S01 · 항만 공식 공지</strong><p>공통 시각대의 예약 확인 지연.</p><small>직접성 중간 · 합성 출처</small></article><article><strong>S03 · 전문가 분석</strong><p>장애 범위가 회랑 분기 구조와 부합.</p><small>전문성 높음 · 독립 자료 필요</small></article><article><strong>S04 · 지도 관찰</strong><p>가상 회랑 구간의 점검선 활동.</p><small>정황 증거 · 원인 직접 확인 아님</small></article></div>
+            <div class="evidence-column evidence-column--conflict"><h3>충돌하는 증거 <span>2</span></h3><article><strong>S06 · 솔렌 정부 발표</strong><p>국내 교환기 단독 문제라고 설명.</p><small>공식성 높음 · 근거 자료 비공개</small></article><article><strong>S05 · 목격 영상</strong><p>위치와 촬영 시각이 확인되지 않아 회랑 가설과 연결 불가.</p><small>검증 대기 · 원본 필요</small></article></div>
+            <div class="evidence-column evidence-column--gaps"><h3>정보 공백 <span>3</span></h3><article><strong>운영 주체 점검 기록</strong><p>장애 구간과 복구 순서를 확인할 핵심 문서.</p></article><article><strong>독립 네트워크 관측</strong><p>세 지역의 경로 변화를 비교할 외부 관측.</p></article><article><strong>목격 영상 메타데이터</strong><p>촬영 시각·위치·원본 연속성.</p></article></div>
+          </section>
+          <section class="decision-bench">
+            <img src="./assets/images/verification-fragments.svg" alt="합성 증거 조각, 편집 표시, 검증 도장을 배열한 일러스트">
+            <div class="ai-note"><span>AI-assisted suggestion · 참고만</span><p>표현을 “공통 회랑 장애 가능성이 조사되고 있다”로 낮추고, 솔렌 발표의 반대 설명을 같은 문단에 병기할 것을 제안.</p></div>
+            <div class="human-decision"><span>HUMAN EDITOR DECISION</span><strong>조건부 승인</strong><p>단정형 제거 · 충돌 발표 병기 · 10:00 재검토</p><small>윤해원 · verification lead · 09:42</small></div>
+          </section>
+        </div>
+      </article>
+
+      <article class="review-state" id="state-edition" role="tabpanel" aria-labelledby="tab-edition" tabindex="-1" data-review-state="edition" hidden>
+        <div class="state-bar"><span>Edition Sheet / 발행 원고</span><span>Breaking brief · visual proof only</span></div>
+        <div class="edition-layout">
+          <article class="edition-sheet evidence-paper">
+            <header><div><span>GLOBAL INFRASTRUCTURE BRIEF</span><strong>BREAKING / 10:00 EDITION</strong></div><span class="synthetic-flag">합성 원고</span></header>
+            <h2>세 가상 해안 지역에서 동시다발 서비스 지연,<br>공통 해저 회랑 연관성은 조사 중</h2>
+            <p class="standfirst">항만·철도 예약·공공 안내 시스템의 장애 시각이 겹치지만, 하나의 원인으로 단정할 근거는 아직 충분하지 않다.</p>
+            <figure><img src="./assets/images/port-field.svg" alt="가상 항만의 통신 점검 현장을 표현한 합성 편집 일러스트"><figcaption>합성 현장 도판 · 실제 장소 또는 사건이 아님</figcaption></figure>
+            <div class="edition-copy">
+              <p><strong>확인된 사실.</strong> 네린 북항은 09:08 예약 확인 지연을 공지했고, 에어리스 철도 예약망도 비슷한 시각 간헐 장애를 기록했다. 핵심 안전 시스템과 현장 결제는 정상이라는 별도 확인이 있다.<sup>1–3</sup></p>
+              <p><strong>아직 확인되지 않은 부분.</strong> 기반시설 전문가는 세 지역이 공유하는 해저 회랑의 이상 가능성을 제시했지만 운영 주체의 점검 기록은 공개되지 않았다. 솔렌 정부는 국내 교환기 단독 문제라고 발표했다.<sup>4–6</sup></p>
+              <p><strong>다음 확인.</strong> 회랑 운영 기록, 복구 순서, 목격 영상 원본 메타데이터가 확보되기 전까지 공통 원인 표현은 가능성으로 제한한다.</p>
+            </div>
+            <footer><div><strong>불확실성 공개</strong><p>공통 원인 미확정 · 목격 영상 검증 대기 · 정부 설명 상충</p></div><div><strong>Source notes</strong><p>1–8 모두 합성 출처 · dossier D-041 · revision 06</p></div></footer>
+          </article>
+          <aside class="edition-margin"><span>EDITORIAL MARKS</span><div class="margin-note verified">VERIFIED FACTS<br><strong>4</strong></div><div class="margin-note pending">PENDING FACTS<br><strong>3</strong></div><div class="margin-note conflict">CONFLICTS<br><strong>2</strong></div><blockquote>“속도보다 먼저,<br>확인 범위를 쓴다.”</blockquote><img src="./assets/images/cable-route.svg" alt="합성 해저 회랑 경로의 축약 도식"></aside>
+        </div>
+      </article>
+
+      <article class="review-state" id="state-handoff" role="tabpanel" aria-labelledby="tab-handoff" tabindex="-1" data-review-state="handoff" hidden>
+        <div class="state-bar"><span>Shift Handoff / 교대 인계</span><span>Day desk → Evening desk · 10:00</span></div>
+        <div class="handoff-layout">
+          <section class="handoff-sheet evidence-paper">
+            <header><div><span>SHIFT NOTE / H-12</span><h2>도시에 D-041<br>다음 교대 인계</h2></div><div><strong>인계자</strong><span>윤해원 · 검증 데스크</span><strong>수신</strong><span>박도윤 · 저녁 데스크</span></div></header>
+            <div class="handoff-grid">
+              <section><h3>최근 변경</h3><ol><li><time>09:36</time><p>공통 원인 단정 문구 제거.</p></li><li><time>09:42</time><p>솔렌 정부 발표를 충돌 증거로 격상.</p></li><li><time>09:48</time><p>현장 결제 정상 범위를 확인된 사실에 추가.</p></li></ol></section>
+              <section><h3>해결되지 않은 위험</h3><ul><li>정부 발표의 근거 자료가 공개되지 않음.</li><li>목격 영상의 원본·위치 미확인.</li><li>복구 시각이 지역별로 다르게 보고됨.</li></ul></section>
+              <section><h3>다음 확인 대상</h3><ul class="checklist"><li><span>1</span>회랑 운영 주체 점검 기록 요청</li><li><span>2</span>목격 영상 원본 메타데이터 검토</li><li><span>3</span>에어리스 철도 복구 시각 재확인</li></ul></section>
+              <section><h3>담당 데스크</h3><dl><dt>네린 연안</dt><dd>김서우 · 10:20</dd><dt>기반시설</dt><dd>오민재 · 10:15</dd><dt>영상 검증</dt><dd>이하린 · 대기</dd><dt>저녁 책임</dt><dd>박도윤 · 18:00</dd></dl></section>
+            </div>
+            <footer><strong>NEXT SHIFT NOTE</strong><p>공통 회랑 가설을 유지하되, 독립 운영 기록이 들어오기 전에는 headline을 강화하지 않는다. 복구가 진행되면 영향 범위를 서비스별로 분리해 업데이트한다.</p><span>서명 · YHW / 09:58</span></footer>
+          </section>
+          <aside class="handoff-side"><img src="./assets/images/source-contact-sheet.svg" alt="다음 교대가 확인할 합성 출처와 담당을 배열한 접촉 시트"><div><span>OPEN LOOPS</span><strong>03</strong><p>운영 기록 · 영상 원본 · 복구 시각</p></div></aside>
+        </div>
+      </article>
+
+      <article class="review-state" id="state-mobile" role="tabpanel" aria-labelledby="tab-mobile" tabindex="-1" data-review-state="mobile" hidden>
+        <div class="state-bar"><span>Mobile 390px / 모바일 브리핑</span><span>Focused dossier composition</span></div>
+        <div class="mobile-preview-frame">
+          <section class="mobile-brief" aria-label="모바일 활성 도시에 브리핑">
+            <header><div><span>GLOBAL DESK · D-041</span><strong>09:42</strong></div><span class="synthetic-flag">합성 시나리오</span></header>
+            <h2>세 해안 지역의 장애,<br>공통 회랑 연관성 조사 중</h2>
+            <p>공식 설명이 엇갈려 단일 원인은 아직 확정되지 않았다.</p>
+            <figure><img src="./assets/images/atlas-map.svg" alt="활성 도시에 지역만 보여주는 합성 지도 발췌"><figcaption>가상 지역 3곳 · 상호 확인 4 · 충돌 2</figcaption></figure>
+            <section class="mobile-facts"><h3>확인된 사실</h3><ul><li>네린 북항 예약 확인 지연</li><li>에어리스 철도 예약망 간헐 장애</li><li>핵심 안전 시스템 정상</li></ul></section>
+            <section class="mobile-uncertainty"><h3>불확실성</h3><p>솔렌 정부는 국내 교환기 문제라고 발표. 회랑 운영 기록 미확보.</p></section>
+            <section class="mobile-change"><span>LATEST CHANGE · 09:42</span><p>공통 원인 단정 문구를 제거하고 충돌 발표를 같은 비중으로 반영.</p></section>
+            <footer><div><span>NEXT VERIFICATION</span><strong>운영 주체 점검 기록 확인</strong></div><span class="status status--green">Human reviewed</span></footer>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <footer class="site-footer">
+      <span>Phase 1 visual reference · UI_REVIEW_READY</span>
+      <span>Not live · no ingestion · no publishing · no backend</span>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,189 @@
+{
+  "generated_at": "2026-07-27",
+  "reference_version": "global-ai-newsroom-20260727-1",
+  "browser_execution_mode": "in-memory Chromium document assembled from exact authored HTML, CSS, JavaScript, and local SVG bytes",
+  "limitations": [
+    "The execution sandbox blocked direct localhost navigation with ERR_BLOCKED_BY_ADMINISTRATOR. Browser rendering therefore used an in-memory Chromium document; every referenced local path was separately verified before assembly."
+  ],
+  "summary": {
+    "seven_states_present": true,
+    "all_state_switches_correct": true,
+    "horizontal_overflow_zero": true,
+    "console_errors_zero": true,
+    "page_errors_zero": true,
+    "failed_requests_zero": true,
+    "external_runtime_requests_zero": true,
+    "failed_images_zero": true,
+    "version_queries_complete": true,
+    "stale_version_references_zero": true,
+    "keyboard_navigation_pass": true,
+    "visible_focus_pass": true,
+    "motion_scroll_stable": true,
+    "reduced_motion_equivalent": true,
+    "touch_targets_min_44": true,
+    "screenshots_nonblank": true,
+    "missing_local_paths_zero": true,
+    "external_runtime_references_zero": true,
+    "synthetic_truthfulness_pass": true
+  },
+  "viewports": {
+    "desktop": {
+      "viewport": "1440x1100",
+      "states_checked": [
+        "global",
+        "signals",
+        "dossier",
+        "verification",
+        "edition",
+        "handoff"
+      ],
+      "max_document_overflow_px": 0,
+      "max_body_overflow_px": 0,
+      "console_errors": 0,
+      "page_errors": 0,
+      "failed_requests": 0,
+      "external_requests": 0,
+      "failed_images": 0
+    },
+    "tablet": {
+      "viewport": "768x1024",
+      "states_checked": [
+        "global",
+        "signals",
+        "dossier",
+        "verification",
+        "edition",
+        "handoff",
+        "mobile"
+      ],
+      "max_document_overflow_px": 0,
+      "max_body_overflow_px": 0,
+      "console_errors": 0,
+      "page_errors": 0,
+      "failed_requests": 0,
+      "external_requests": 0,
+      "failed_images": 0
+    },
+    "mobile": {
+      "viewport": "390x844",
+      "states_checked": [
+        "global",
+        "signals",
+        "dossier",
+        "verification",
+        "edition",
+        "handoff",
+        "mobile"
+      ],
+      "max_document_overflow_px": 0,
+      "max_body_overflow_px": 0,
+      "console_errors": 0,
+      "page_errors": 0,
+      "failed_requests": 0,
+      "external_requests": 0,
+      "failed_images": 0,
+      "minimum_touch_target_height_px": 48
+    }
+  },
+  "keyboard": {
+    "focused_after_arrow": "signals",
+    "active_after_enter": "signals",
+    "focus_outline": {
+      "width": "3px",
+      "style": "solid",
+      "color": "rgb(130, 180, 237)"
+    },
+    "console_errors": [],
+    "page_errors": []
+  },
+  "motion": {
+    "desktop": {
+      "duration_spec_ms": 680,
+      "scroll_before": 120,
+      "scroll_after": 120,
+      "scene": true,
+      "pressed": "false",
+      "sealOpacity": "1"
+    },
+    "reduced": {
+      "prefersReduced": true,
+      "animationDuration": "1e-05s",
+      "transform": "matrix(1, 0, 0, 1, 69.6398, 0)",
+      "sealOpacity": "1",
+      "pressed": "false"
+    },
+    "capture": {
+      "duration_seconds": 1.88,
+      "filename": "signal-convergence.mp4"
+    }
+  },
+  "static": {
+    "required_state_count": 7,
+    "state_ids": [
+      "global",
+      "signals",
+      "dossier",
+      "verification",
+      "edition",
+      "handoff",
+      "mobile"
+    ],
+    "missing_local_paths": [],
+    "external_runtime_references": [],
+    "version_query_missing": [],
+    "stale_version_references": [],
+    "synthetic_label_present": true,
+    "non_live_language_present": true,
+    "all_image_paths_local": true
+  },
+  "screenshots": {
+    "edition-sheet-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 231776,
+      "nonuniform": true,
+      "sha256": "9c2e46a9f4daac14b47b58c38e524e13205250fc20af4d36f508b9aeaca86a77"
+    },
+    "global-desk-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 194327,
+      "nonuniform": true,
+      "sha256": "ad8632f65a386ac5567ffd0f1c334d37e099ec3238b6e7c5ad9c6d0c113448d7"
+    },
+    "mobile-dossier-390x844.png": {
+      "size": [390, 844],
+      "bytes": 76873,
+      "nonuniform": true,
+      "sha256": "5aaeb8a5e76aad52adbc1d566ef242b3e944a0c598a99febabb8c35a2d67aa7a"
+    },
+    "reduced-motion-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 194350,
+      "nonuniform": true,
+      "sha256": "a852c323ca98409b8bb613f9d9b3cd880955bc8fe1cf369ce4a5d4a6576c709f"
+    },
+    "shift-handoff-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 149542,
+      "nonuniform": true,
+      "sha256": "d65c1a1cb5f6e93d31db7e76fcfed199c930da5e91d1e9601534647251ca1a47"
+    },
+    "signal-intake-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 187281,
+      "nonuniform": true,
+      "sha256": "3daf23f79283b6fa7c5e204c659ed5629730ddc2e94efb2eab9cb4004599e79e"
+    },
+    "story-dossier-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 192231,
+      "nonuniform": true,
+      "sha256": "c68fe1c46a68cbcf6127af4bb17f13887f088508f3306f28849764276668249c"
+    },
+    "verification-room-1440x1100.png": {
+      "size": [1440, 1100],
+      "bytes": 175956,
+      "nonuniform": true,
+      "sha256": "6d9d17490666a2f3a181618d3a04c8b002504b5994a749ff8fa518809cc422d1"
+    }
+  }
+}
