@@ -1,0 +1,79 @@
+(() => {
+  'use strict';
+
+  const states = ['matchday', 'preview', 'watch', 'recap', 'player', 'season', 'mobile'];
+  const buttons = [...document.querySelectorAll('[data-state-target]')];
+  const panels = [...document.querySelectorAll('[data-state]')];
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let activeIndex = 0;
+
+  function setState(name, { focus = false, replaceUrl = true } = {}) {
+    const nextIndex = states.indexOf(name);
+    if (nextIndex < 0) return;
+    activeIndex = nextIndex;
+
+    panels.forEach((panel) => {
+      const active = panel.dataset.state === name;
+      panel.hidden = !active;
+      panel.classList.toggle('is-active', active);
+    });
+
+    buttons.forEach((button) => {
+      const active = button.dataset.stateTarget === name;
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+      if (active && focus) button.focus({ preventScroll: true });
+    });
+
+    document.body.dataset.reviewState = name;
+    if (replaceUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('state', name);
+      history.replaceState(null, '', url);
+    }
+  }
+
+  function replayTurningPoint() {
+    const recap = document.querySelector('[data-state="recap"]');
+    if (!recap) return;
+    recap.classList.remove('motion-running', 'motion-complete');
+    void recap.offsetWidth;
+    recap.classList.add(reducedMotion.matches ? 'motion-complete' : 'motion-running');
+    window.setTimeout(() => {
+      recap.classList.remove('motion-running');
+      recap.classList.add('motion-complete');
+    }, reducedMotion.matches ? 0 : 680);
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => setState(button.dataset.stateTarget));
+    button.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.key === 'Home') activeIndex = 0;
+      else if (event.key === 'End') activeIndex = states.length - 1;
+      else activeIndex = (activeIndex + (event.key === 'ArrowRight' ? 1 : -1) + states.length) % states.length;
+      setState(states[activeIndex], { focus: true });
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      activeIndex = (activeIndex + (event.key === 'ArrowRight' ? 1 : -1) + states.length) % states.length;
+      setState(states[activeIndex]);
+    }
+  });
+
+  document.querySelector('.motion-replay')?.addEventListener('click', replayTurningPoint);
+
+  const initial = new URLSearchParams(window.location.search).get('state');
+  setState(states.includes(initial) ? initial : states[0], { replaceUrl: false });
+  if (initial === 'recap' && new URLSearchParams(window.location.search).get('motion') === 'play') {
+    requestAnimationFrame(replayTurningPoint);
+  }
+
+  window.personalSportsReview = { setState, replayTurningPoint, states: [...states] };
+})();
