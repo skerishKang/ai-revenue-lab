@@ -29,7 +29,8 @@
     document.querySelectorAll("[data-apply-preference]").forEach((button) => {
       button.addEventListener("click", () => {
         app.store.setPreference("nearby");
-        announce("동네 소식 더 보기가 적용되었습니다. 피드 순서가 변경되었습니다.");
+        announce("동네 소식 더 보기가 적용되었습니다. 변경된 나의 피드로 이동합니다.");
+        app.navigation.navigate("feed");
       });
     });
     document.querySelectorAll("[data-undo-preference]").forEach((button) => {
@@ -43,7 +44,7 @@
       button.addEventListener("click", () => {
         app.store.resetAll();
         announce("필터와 선호를 모두 초기화했습니다.");
-        app.navigation.navigate("feed", { replace: false });
+        app.navigation.navigate("feed");
       });
     });
     document.querySelectorAll("[data-reset-filter]").forEach((button) => {
