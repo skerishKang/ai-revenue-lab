@@ -3,6 +3,7 @@
 - `UI_UX_BACKEND_PHASE_GATES.md` — mandatory sequence and approval gates: product framing → UI → UX → backend decision → backend implementation.
 - `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — reusable Phase 1 visual-UI policy for every new or revived Business.
 - `CLOUDFLARE_PAGES_GIT_CONNECTION_RUNBOOK.md` — separates Git state, Pages project connection, hosted review, and product production release.
+- `DOCUMENTATION_AUDIT_2026-07-26.md` — repository audit of GitHub, Pages, preview, staging, and production terminology.
 - `incidents/2026-07-26-cloudflare-pages-git-connection-confusion.md` — records the World Feed hosting-guidance failure and corrective actions.
 - `docs/portfolio/BUSINESS_CANDIDATE_BACKLOG.md` — idea-preservation backlog and proposed Business map.
 - Permanent open tracking issue: `#154 Portfolio UI Factory: permanent open queue for new Business reference demos`.
