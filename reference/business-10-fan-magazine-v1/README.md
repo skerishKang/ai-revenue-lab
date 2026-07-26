@@ -23,6 +23,16 @@ The entire issue uses one deterministic fictional subject:
 - Fictional body of work: `잔광`, `미세한 파도`, `은빛 계단`, `여름의 뒷면`
 - Rights boundary: no real face, name, photograph, logo, album jacket, performance still, team mark, or private fan record is used.
 
+## Focused correction v2 — Cover Reveal underlay
+
+The additive correction at PR #177 keeps all seven static compositions unchanged and only hardens the signature motion:
+
+- the complete feature spread is pre-rendered at `opacity: 1` beneath the cover;
+- the cover remains the upper layer and reveals the spread only through its 680ms `clip-path`;
+- no delayed feature opacity, z-index crossover, base-paper gap, or translucent ghost frame remains;
+- forward replay, button return, Escape return, second replay, and reduced-motion return are deterministic;
+- frame evidence covers 0, 80, 160, 240, 400, and 680ms in both directions.
+
 ## Review states
 
 1. `cover` — 이번 호 표지
@@ -64,7 +74,7 @@ Open `http://127.0.0.1:4173/#cover`.
 Every loaded CSS and JavaScript path uses:
 
 ```text
-fan-magazine-20260726-1
+fan-magazine-20260726-2
 ```
 
 Local SVG image references use the same deterministic token.
