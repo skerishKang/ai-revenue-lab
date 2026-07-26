@@ -29,7 +29,7 @@ class GitHubLiveStaticContractTests(unittest.TestCase):
 
     def test_browser_live_script_is_deterministically_versioned(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('src="./github-live-status.js?v=portfolio-github-live-20260727-1"', html)
+        self.assertIn('src="./github-live-status.js?v=portfolio-github-live-20260727-2"', html)
         self.assertNotIn("Date.now()", html)
 
     def test_csp_allows_same_origin_api_but_not_external_connect(self) -> None:
