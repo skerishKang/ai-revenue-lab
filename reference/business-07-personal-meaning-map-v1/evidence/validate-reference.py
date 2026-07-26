@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "personal-meaning-map-20260726-1"
+VERSION = "personal-meaning-map-20260726-2"
 SOURCE_SUFFIXES = {".html", ".css", ".js", ".md", ".py", ".svg", ".json", ".txt"}
 
 

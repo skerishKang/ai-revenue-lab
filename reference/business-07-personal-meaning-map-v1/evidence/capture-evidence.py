@@ -56,6 +56,8 @@ async def main() -> None:
             ('explanation', '1440-explanation.png'),
         ]:
             await prepare(page, state)
+            if state == 'explanation':
+                await page.locator('[data-review-state="explanation"] [data-explanation-toggle]').click()
             await page.screenshot(path=str(OUTPUT / filename), full_page=True)
 
         mobile_context = await browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=1)
@@ -65,6 +67,7 @@ async def main() -> None:
 
         await prepare(page, 'ripple')
         frames: list[Image.Image] = []
+        await page.locator('[data-review-state="ripple"] [data-select-item]').click()
         await page.evaluate('window.__PMM_REVIEW__.playRipple()')
         for delay in [0, 90, 100, 110, 120, 130, 150, 170]:
             if delay:
