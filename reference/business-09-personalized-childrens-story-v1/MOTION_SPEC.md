@@ -16,12 +16,13 @@ A familiar yellow rain boot remains anchored while layered paper clouds, a folde
 - Cloud layers: opacity + vertical travel, `0–520ms`
 - Paper sail: opacity + small rotation, `110–620ms`
 - Path dots: staggered opacity, `220–680ms`
-- Story text, chapter mark, and page position: no movement
+- Story text, chapter mark, page position, book surface, and fixed boot image: opacity `1`, no movement or transform
 
 ## Trigger
 
-- Entering state 7 begins the sequence once.
-- The `다시 피우기` review control restarts it.
+- Entering state 7 renders the complete Bloom book first and begins the layer sequence after two painted frames.
+- State 7 is excluded from the generic `state-enter` animation.
+- The `다시 피우기` review control restarts only `.bloom-layer` elements; the book, copy, fixed boot image, and page geometry remain unchanged.
 - The control is a review-only affordance, not accepted UX.
 
 ## Reduced motion
@@ -38,4 +39,5 @@ Under `prefers-reduced-motion: reduce`:
 - CSS transforms and opacity only.
 - No layout-affecting animation.
 - No runtime asset fetch.
-- No canvas, video library, external animation package, or requestAnimationFrame loop.
+- `requestAnimationFrame` is used only for one- or two-frame start scheduling, never as an animation loop.
+- No canvas, video library, external animation package, or continuous JavaScript animation.

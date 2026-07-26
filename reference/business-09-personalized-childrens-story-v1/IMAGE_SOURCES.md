@@ -8,7 +8,7 @@ All assets below are repository-local original SVG illustrations created for thi
 | `assets/images/cloud-islands-boat.svg` | N/A — repository-local original | AI Revenue Lab reference artifact | Original synthetic vector scene; no third-party asset embedded | 2026-07-26 | Story spread; transformed motif | `reference-only` |
 | `assets/images/night-garden-seed.svg` | N/A — repository-local original | AI Revenue Lab reference artifact | Original synthetic vector scene; no third-party asset embedded | 2026-07-26 | Parent note; branch direction B | `reference-only` |
 | `assets/images/paper-forest-library.svg` | N/A — repository-local original | AI Revenue Lab reference artifact | Original synthetic vector scene; no third-party asset embedded | 2026-07-26 | Branch direction A | `reference-only` |
-| `assets/images/boot-bloom-layers.svg` | N/A — repository-local original | AI Revenue Lab reference artifact | Original synthetic vector layers; no third-party asset embedded | 2026-07-26 | Story Bloom motion | `reference-only` |
+| `assets/images/boot-bloom-layers.svg` | N/A — repository-local original | AI Revenue Lab reference artifact | Original fixed boot-and-paper base; animated cloud, sail, and path remain CSS layers; no third-party asset embedded | 2026-07-26 | Story Bloom fixed base | `reference-only` |
 | `assets/images/mobile-cloud-path.svg` | N/A — repository-local original | AI Revenue Lab reference artifact | Original synthetic vector scene; no third-party asset embedded | 2026-07-26 | Mobile 390px edition | `reference-only` |
 
 ## Policy notes

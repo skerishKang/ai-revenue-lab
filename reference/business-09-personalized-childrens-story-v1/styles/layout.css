@@ -8,7 +8,15 @@
 
 .visual-state {
   width: min(1320px, 100%);
+}
+
+.visual-state:not([data-state="bloom"]) {
   animation: state-enter 340ms ease both;
+}
+
+.visual-state[data-state="bloom"] {
+  opacity: 1;
+  transform: none;
 }
 
 .book-surface {
@@ -105,7 +113,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .visual-state {
+  .visual-state:not([data-state="bloom"]) {
     animation: none;
   }
 }

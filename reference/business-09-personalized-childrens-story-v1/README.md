@@ -34,6 +34,14 @@ The interface uses asymmetric book spreads, paper-cut layers, gouache-like color
 
 The review rail and keyboard controls exist only to inspect these visual states. They are not accepted UX navigation.
 
+## Focused Story Bloom correction
+
+- Loaded CSS and JavaScript use `personalized-childrens-story-20260726-2`.
+- State 7 is excluded from the generic `state-enter` animation.
+- The complete Bloom book is painted before the 680ms signature sequence begins.
+- `다시 피우기` changes only `.bloom-layer` elements; the book, copy, fixed boot image, and page geometry remain stable.
+- Reduced motion switches directly to the final layer state.
+
 ## Review controls
 
 - Click a numbered state in the desktop review rail.

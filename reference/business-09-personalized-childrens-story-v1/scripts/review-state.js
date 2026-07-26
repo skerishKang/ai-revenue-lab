@@ -19,8 +19,10 @@
   const nextButton = document.getElementById('next-state');
   const replayButton = document.getElementById('replay-bloom');
   const bloomStage = document.getElementById('bloom-stage');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let activeIndex = 0;
+  let bloomFrameIds = [];
 
   function updatePositionLabels() {
     const label = `${activeIndex + 1} / ${stateNames.length}`;
@@ -28,17 +30,53 @@
     mobilePositionLabel.textContent = label;
   }
 
-  function replayBloom() {
+  function cancelBloomFrames() {
+    bloomFrameIds.forEach((frameId) => window.cancelAnimationFrame(frameId));
+    bloomFrameIds = [];
+  }
+
+  function resetBloomLayers() {
     if (!bloomStage) return;
+    cancelBloomFrames();
     bloomStage.dataset.bloomReady = 'false';
+  }
+
+  function startBloomAfterFrames(frameCount) {
+    if (!bloomStage) return;
+    if (reducedMotion.matches) {
+      cancelBloomFrames();
+      bloomStage.dataset.bloomReady = 'true';
+      return;
+    }
+
+    resetBloomLayers();
     void bloomStage.offsetWidth;
-    bloomStage.dataset.bloomReady = 'true';
+
+    const advance = (remaining) => {
+      const frameId = window.requestAnimationFrame(() => {
+        bloomFrameIds = bloomFrameIds.filter((id) => id !== frameId);
+        if (remaining > 1) {
+          advance(remaining - 1);
+        } else {
+          bloomStage.dataset.bloomReady = 'true';
+        }
+      });
+      bloomFrameIds.push(frameId);
+    };
+
+    advance(frameCount);
+  }
+
+  function replayBloom() {
+    startBloomAfterFrames(1);
   }
 
   function showState(nextIndex, shouldFocus = false) {
     const normalizedIndex = (nextIndex + stateNames.length) % stateNames.length;
     activeIndex = normalizedIndex;
     const activeName = stateNames[activeIndex];
+
+    if (activeName === 'bloom') resetBloomLayers();
 
     stateSections.forEach((section) => {
       const isActive = section.dataset.state === activeName;
@@ -61,7 +99,9 @@
     document.body.dataset.reviewState = activeName;
 
     if (activeName === 'bloom') {
-      window.setTimeout(replayBloom, 30);
+      startBloomAfterFrames(2);
+    } else {
+      resetBloomLayers();
     }
 
     window.dispatchEvent(new CustomEvent('review-state-change', {
