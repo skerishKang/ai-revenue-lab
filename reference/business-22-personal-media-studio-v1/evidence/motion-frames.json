@@ -1,0 +1,25 @@
+{
+  "before": {
+    "focus": "replay",
+    "x": 0,
+    "y": 0,
+    "h": 1100
+  },
+  "after": {
+    "focus": "replay",
+    "x": 0,
+    "y": 0,
+    "h": 1100,
+    "state": "complete",
+    "triggerY": 0
+  },
+  "passed": true,
+  "nominalDurationMs": 720,
+  "evidenceFrames": [
+    "motion-relay-frames.svg / panel motion-frame-00-before",
+    "motion-relay-frames.svg / panel motion-frame-01-annotation",
+    "motion-relay-frames.svg / panel motion-frame-02-article",
+    "motion-relay-frames.svg / panel motion-frame-03-formats",
+    "motion-relay-frames.svg / panel motion-frame-04-review"
+  ]
+}

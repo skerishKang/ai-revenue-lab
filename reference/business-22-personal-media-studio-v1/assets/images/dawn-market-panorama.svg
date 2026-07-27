@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">합성 새벽시장 전경 일러스트</title>
+  <desc id="desc">실제 장소나 인물을 재현하지 않은 저장소 로컬 원본 벡터 장면.</desc>
+  <rect width="1200" height="640" fill="#121719"/>
+  <rect y="385" width="1200" height="255" fill="#262a27"/>
+  <path d="M0 380h1200" stroke="#f1ead9" stroke-opacity=".35"/>
+  <g fill="#ec5b3f">
+    <circle cx="156" cy="152" r="46" opacity=".92"/>
+    <circle cx="1018" cy="194" r="23" opacity=".72"/>
+  </g>
+  <g fill="#d9c968" opacity=".82">
+    <rect x="80" y="314" width="210" height="20" rx="2"/>
+    <rect x="425" y="286" width="250" height="18" rx="2"/>
+    <rect x="808" y="324" width="284" height="22" rx="2"/>
+  </g>
+  <g stroke="#8aaec9" stroke-width="5" fill="none" opacity=".7">
+    <path d="M48 385 122 236h172l74 149"/>
+    <path d="M355 385 438 213h215l80 172"/>
+    <path d="M745 385 823 246h266l68 139"/>
+  </g>
+  <g fill="#eee4ce">
+    <path d="M109 385h205v-52H109z" opacity=".9"/>
+    <path d="M403 385h285v-81H403z" opacity=".88"/>
+    <path d="M788 385h342v-43H788z" opacity=".9"/>
+  </g>
+  <g fill="#15191a">
+    <circle cx="226" cy="377" r="24"/><path d="M204 408h43l18 95h-80z"/>
+    <circle cx="503" cy="365" r="22"/><path d="M479 394h48l9 99h-68z"/>
+    <circle cx="935" cy="374" r="25"/><path d="M910 405h50l21 104h-88z"/>
+    <circle cx="1040" cy="390" r="17"/><path d="M1022 412h37l14 77h-61z"/>
+  </g>
+  <g stroke="#ec5b3f" stroke-width="2" opacity=".65">
+    <path d="M76 544h292M402 536h330M774 552h347"/>
+  </g>
+  <g fill="#f1ead9" font-family="ui-monospace, monospace" font-size="18">
+    <text x="70" y="598">SYNTHETIC SCENE · 04:52</text>
+    <text x="926" y="598">SRC-VIS-01</text>
+  </g>
+</svg>

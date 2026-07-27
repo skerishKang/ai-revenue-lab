@@ -1,0 +1,96 @@
+{
+  "kind": "business-22-static-contract",
+  "passed": true,
+  "checks": [
+    {
+      "name": "exact seven states",
+      "passed": true,
+      "detail": "found=['adaptation', 'cover', 'mobile', 'sources', 'spine', 'suite', 'trace']"
+    },
+    {
+      "name": "state query token: cover",
+      "passed": true,
+      "detail": "cover present in state order"
+    },
+    {
+      "name": "state query token: sources",
+      "passed": true,
+      "detail": "sources present in state order"
+    },
+    {
+      "name": "state query token: spine",
+      "passed": true,
+      "detail": "spine present in state order"
+    },
+    {
+      "name": "state query token: suite",
+      "passed": true,
+      "detail": "suite present in state order"
+    },
+    {
+      "name": "state query token: adaptation",
+      "passed": true,
+      "detail": "adaptation present in state order"
+    },
+    {
+      "name": "state query token: trace",
+      "passed": true,
+      "detail": "trace present in state order"
+    },
+    {
+      "name": "state query token: mobile",
+      "passed": true,
+      "detail": "mobile present in state order"
+    },
+    {
+      "name": "all local asset paths exist",
+      "passed": true,
+      "detail": "missing=[]"
+    },
+    {
+      "name": "no runtime external URL",
+      "passed": true,
+      "detail": "external=[]"
+    },
+    {
+      "name": "keyboard tab pattern",
+      "passed": true,
+      "detail": "arrow/home/end handlers present"
+    },
+    {
+      "name": "visible focus style",
+      "passed": true,
+      "detail": "focus-visible outline declared"
+    },
+    {
+      "name": "reduced motion",
+      "passed": true,
+      "detail": "reduced motion media query present"
+    },
+    {
+      "name": "synthetic labels",
+      "passed": true,
+      "detail": "Korean labels=22"
+    },
+    {
+      "name": "UI_ONLY limitations",
+      "passed": true,
+      "detail": "phase limitation visible"
+    },
+    {
+      "name": "relay completion hook",
+      "passed": true,
+      "detail": "motion completion marker present"
+    },
+    {
+      "name": "focus preservation",
+      "passed": true,
+      "detail": "replay focus preservation present"
+    },
+    {
+      "name": "scroll preservation",
+      "passed": true,
+      "detail": "replay scroll preservation present"
+    }
+  ]
+}

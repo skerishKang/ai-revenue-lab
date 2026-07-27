@@ -1,0 +1,272 @@
+{
+  "kind": "business-22-browser-validation",
+  "baseUrl": "in-memory://business-22/index.html",
+  "browserEnvironment": "Chromium headless with fully inlined set_content; localhost and file navigation blocked by administrator policy",
+  "viewports": {
+    "1440x1100": [
+      {
+        "state": "cover",
+        "active": "cover",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1745,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "sources",
+        "active": "sources",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 3187,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "spine",
+        "active": "spine",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1279,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "suite",
+        "active": "suite",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 3323,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "adaptation",
+        "active": "adaptation",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1100,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "trace",
+        "active": "trace",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1133,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "mobile",
+        "active": "mobile",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 2066,
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      }
+    ],
+    "768x1024": [
+      {
+        "state": "sources",
+        "active": "sources",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 2237,
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      {
+        "state": "suite",
+        "active": "suite",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 2723,
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      {
+        "state": "adaptation",
+        "active": "adaptation",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1115,
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    ],
+    "390x844": [
+      {
+        "state": "cover",
+        "active": "cover",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1431,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      {
+        "state": "suite",
+        "active": "suite",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 2579,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      {
+        "state": "mobile",
+        "active": "mobile",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "scrollHeight": 1695,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "externalRequests": [],
+  "screenshots": [
+    "desktop-states-a-1440.svg",
+    "desktop-states-b-1440.svg",
+    "tablet-sources-768.svg",
+    "tablet-suite-768.svg",
+    "tablet-adaptation-768.svg",
+    "mobile-cover-390.svg",
+    "mobile-suite-390.svg",
+    "mobile-mobile-390.svg",
+    "motion-relay-frames.svg"
+  ],
+  "keyboard": {
+    "arrowRightState": "sources",
+    "arrowRightFocus": "tab-sources",
+    "endState": "mobile",
+    "homeState": "cover",
+    "passed": true
+  },
+  "motion": {
+    "before": {
+      "focus": "replay",
+      "x": 0,
+      "y": 0,
+      "h": 1100
+    },
+    "after": {
+      "focus": "replay",
+      "x": 0,
+      "y": 0,
+      "h": 1100,
+      "state": "complete",
+      "triggerY": 0
+    },
+    "passed": true,
+    "nominalDurationMs": 720,
+    "evidenceFrames": [
+      "motion-relay-frames.svg / panel motion-frame-00-before",
+      "motion-relay-frames.svg / panel motion-frame-01-annotation",
+      "motion-relay-frames.svg / panel motion-frame-02-article",
+      "motion-relay-frames.svg / panel motion-frame-03-formats",
+      "motion-relay-frames.svg / panel motion-frame-04-review"
+    ]
+  },
+  "reducedMotion": {
+    "allFinalStepsVisible": true,
+    "focus": "replay",
+    "passed": true
+  },
+  "capturePanels": {
+    "desktop-states-a-1440.svg": [
+      "desktop-cover-1440",
+      "desktop-sources-1440",
+      "desktop-spine-1440",
+      "desktop-suite-1440"
+    ],
+    "desktop-states-b-1440.svg": [
+      "desktop-adaptation-1440",
+      "desktop-trace-1440",
+      "desktop-mobile-1440"
+    ],
+    "tablet-sources-768.svg": [
+      "tablet-sources-768"
+    ],
+    "tablet-suite-768.svg": [
+      "tablet-suite-768"
+    ],
+    "tablet-adaptation-768.svg": [
+      "tablet-adaptation-768"
+    ],
+    "mobile-cover-390.svg": [
+      "mobile-cover-390"
+    ],
+    "mobile-suite-390.svg": [
+      "mobile-suite-390"
+    ],
+    "mobile-mobile-390.svg": [
+      "mobile-mobile-390"
+    ],
+    "motion-relay-frames.svg": [
+      "motion-frame-00-before",
+      "motion-frame-01-annotation",
+      "motion-frame-02-article",
+      "motion-frame-03-formats",
+      "motion-frame-04-review"
+    ]
+  },
+  "summary": {
+    "allQueriesResolve": true,
+    "zeroHorizontalOverflow": true,
+    "zeroBrokenImages": true,
+    "zeroConsoleErrors": true,
+    "zeroPageErrors": true,
+    "zeroFailedRequests": true,
+    "zeroExternalRequests": true,
+    "keyboardPassed": true,
+    "motionPassed": true,
+    "reducedMotionPassed": true
+  },
+  "passed": true
+}
