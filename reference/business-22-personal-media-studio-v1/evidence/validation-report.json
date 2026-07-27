@@ -10,7 +10,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1745,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -22,7 +21,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 3187,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -34,7 +32,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1279,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -46,7 +43,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 3323,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -58,7 +54,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1100,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -70,7 +65,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1133,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -82,7 +76,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 2066,
         "viewport": {
           "width": 1440,
           "height": 1100
@@ -96,7 +89,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 2237,
         "viewport": {
           "width": 768,
           "height": 1024
@@ -108,7 +100,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 2723,
         "viewport": {
           "width": 768,
           "height": 1024
@@ -120,7 +111,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1115,
         "viewport": {
           "width": 768,
           "height": 1024
@@ -134,7 +124,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1431,
         "viewport": {
           "width": 390,
           "height": 844
@@ -146,7 +135,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 2579,
         "viewport": {
           "width": 390,
           "height": 844
@@ -158,7 +146,6 @@
         "visible": true,
         "horizontalOverflow": 0,
         "brokenImages": [],
-        "scrollHeight": 1695,
         "viewport": {
           "width": 390,
           "height": 844
@@ -170,17 +157,6 @@
   "pageErrors": [],
   "failedRequests": [],
   "externalRequests": [],
-  "screenshots": [
-    "desktop-states-a-1440.svg",
-    "desktop-states-b-1440.svg",
-    "tablet-sources-768.svg",
-    "tablet-suite-768.svg",
-    "tablet-adaptation-768.svg",
-    "mobile-cover-390.svg",
-    "mobile-suite-390.svg",
-    "mobile-mobile-390.svg",
-    "motion-relay-frames.svg"
-  ],
   "keyboard": {
     "arrowRightState": "sources",
     "arrowRightFocus": "tab-sources",
@@ -192,69 +168,149 @@
     "before": {
       "focus": "replay",
       "x": 0,
-      "y": 0,
-      "h": 1100
+      "y": 20,
+      "h": 1140,
+      "state": "idle",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
+    "running": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "running",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": false
     },
     "after": {
       "focus": "replay",
       "x": 0,
-      "y": 0,
-      "h": 1100,
+      "y": 20,
+      "h": 1140,
       "state": "complete",
-      "triggerY": 0
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
     },
+    "computedTiming": {
+      "steps": [
+        {
+          "className": "master-annotation relay-step step-annotation",
+          "animationName": "relayReveal",
+          "delayMs": 80,
+          "durationMs": 120,
+          "endMs": 200
+        },
+        {
+          "className": "relay-rule relay-step step-rule",
+          "animationName": "relayRule",
+          "delayMs": 180,
+          "durationMs": 120,
+          "endMs": 300
+        },
+        {
+          "className": "adapt-output relay-step step-article",
+          "animationName": "relayReveal",
+          "delayMs": 280,
+          "durationMs": 120,
+          "endMs": 400
+        },
+        {
+          "className": "adapt-output relay-step step-audio",
+          "animationName": "relayReveal",
+          "delayMs": 380,
+          "durationMs": 120,
+          "endMs": 500
+        },
+        {
+          "className": "adapt-output relay-step step-video",
+          "animationName": "relayReveal",
+          "delayMs": 460,
+          "durationMs": 120,
+          "endMs": 580
+        },
+        {
+          "className": "adapt-output relay-step step-card",
+          "animationName": "relayReveal",
+          "delayMs": 540,
+          "durationMs": 120,
+          "endMs": 660
+        },
+        {
+          "className": "review-resolution relay-step step-review",
+          "animationName": "relayReview",
+          "delayMs": 620,
+          "durationMs": 120,
+          "endMs": 740
+        }
+      ],
+      "computedFinalEndMs": 740
+    },
+    "computedFinalEndMs": 740,
+    "timingRangePassed": true,
+    "runningStatePassed": true,
+    "completionStatePassed": true,
+    "focusScrollGeometryPassed": true,
+    "humanReviewVisible": true,
     "passed": true,
-    "nominalDurationMs": 720,
     "evidenceFrames": [
-      "motion-relay-frames.svg / panel motion-frame-00-before",
-      "motion-relay-frames.svg / panel motion-frame-01-annotation",
-      "motion-relay-frames.svg / panel motion-frame-02-article",
-      "motion-relay-frames.svg / panel motion-frame-03-formats",
-      "motion-relay-frames.svg / panel motion-frame-04-review"
+      "motion-relay-frames.svg / 00 before",
+      "motion-relay-frames.svg / 01 annotation",
+      "motion-relay-frames.svg / 02 article",
+      "motion-relay-frames.svg / 03 formats",
+      "motion-relay-frames.svg / 04 review"
     ]
   },
   "reducedMotion": {
+    "before": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "idle",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
+    "after": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "complete",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
     "allFinalStepsVisible": true,
+    "humanReviewVisible": true,
     "focus": "replay",
+    "state": "complete",
+    "geometryStable": true,
     "passed": true
-  },
-  "capturePanels": {
-    "desktop-states-a-1440.svg": [
-      "desktop-cover-1440",
-      "desktop-sources-1440",
-      "desktop-spine-1440",
-      "desktop-suite-1440"
-    ],
-    "desktop-states-b-1440.svg": [
-      "desktop-adaptation-1440",
-      "desktop-trace-1440",
-      "desktop-mobile-1440"
-    ],
-    "tablet-sources-768.svg": [
-      "tablet-sources-768"
-    ],
-    "tablet-suite-768.svg": [
-      "tablet-suite-768"
-    ],
-    "tablet-adaptation-768.svg": [
-      "tablet-adaptation-768"
-    ],
-    "mobile-cover-390.svg": [
-      "mobile-cover-390"
-    ],
-    "mobile-suite-390.svg": [
-      "mobile-suite-390"
-    ],
-    "mobile-mobile-390.svg": [
-      "mobile-mobile-390"
-    ],
-    "motion-relay-frames.svg": [
-      "motion-frame-00-before",
-      "motion-frame-01-annotation",
-      "motion-frame-02-article",
-      "motion-frame-03-formats",
-      "motion-frame-04-review"
-    ]
   },
   "summary": {
     "allQueriesResolve": true,
@@ -268,5 +324,6 @@
     "motionPassed": true,
     "reducedMotionPassed": true
   },
-  "passed": true
+  "passed": true,
+  "motionEvidence": "motion-relay-frames.svg"
 }

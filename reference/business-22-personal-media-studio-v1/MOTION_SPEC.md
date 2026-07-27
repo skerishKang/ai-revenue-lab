@@ -8,48 +8,64 @@ Source-to-Format Relay / 원본 맥락 릴레이
 
 ## Purpose
 
-Demonstrate that one fixed source fragment passes through a master-story decision into genuinely different medium treatments while omissions, rewrites and final human review remain visible.
+Keep one source fragment fixed while its master-story annotation and medium-specific article, audio, video and visual-card adaptations appear in sequence. Omission and rewrite notes remain visible, and the human-review mark resolves last.
 
-## Nominal timing
+## Timing contract
 
 ```text
-720ms visual sequence
-800ms completion marker
+computed final visual end: 740ms
+allowed range: 680–760ms
+completion mechanism: final .step-review animationend
 ```
 
-| Stage | Nominal start | Element | Treatment |
-|---|---:|---|---|
-| 1 | 0ms | selected source fragment | remains fixed; no geometry change |
-| 2 | 80ms | master-story annotation | opacity + 8px vertical transform + clip reveal |
-| 3 | 180ms | editorial rule | horizontal scale from fixed origin |
-| 4 | 280ms | article proof | opacity + transform + clip reveal |
-| 5 | 380ms | audio adaptation | opacity + transform + clip reveal |
-| 6 | 460ms | video adaptation | opacity + transform + clip reveal |
-| 7 | 540ms | visual-card adaptation | opacity + transform + clip reveal |
-| 8 | 640ms | human-review mark | opacity + restrained scale; ends by approximately 780ms |
+| Stage | Start | Duration | End | Element |
+|---|---:|---:|---:|---|
+| source | 0ms | fixed | — | selected source fragment |
+| annotation | 80ms | 120ms | 200ms | master-story annotation |
+| rule | 180ms | 120ms | 300ms | editorial rule |
+| article | 280ms | 120ms | 400ms | article proof |
+| audio | 380ms | 120ms | 500ms | audio adaptation |
+| video | 460ms | 120ms | 580ms | video adaptation |
+| visual card | 540ms | 120ms | 660ms | visual-card adaptation |
+| human review | 620ms | 120ms | **740ms** | final review mark |
+
+The UI label, CSS computed timing, JavaScript completion state and machine-readable evidence all use this 740ms contract.
+
+## State contract
+
+```text
+idle or complete
+→ running
+→ complete
+```
+
+`runRelay()` explicitly sets `data-motion-state="running"` before restarting the CSS animation. The previous completion listener is removed. The final `.step-review` `relayReview` animation emits `animationend`, which sets `data-motion-state="complete"`.
+
+No fixed completion `setTimeout` or duplicated JavaScript duration constant is used.
 
 ## Stability contract
 
 - the selected source remains in place;
-- no container height, width or grid track changes during replay;
-- no typewriter, page flip, particle, floating paper, parallax, node graph or AI glow;
-- the replay button remains focused after activation;
-- `window.scrollX` and `window.scrollY` are restored on the next animation frame and at completion;
-- URL state and page geometry do not change;
-- final omission/rewrite notes remain visible.
+- focus remains on the replay control;
+- scroll position remains unchanged;
+- document height and source geometry remain unchanged;
+- medium-specific omission and rewrite notes remain visible;
+- the human-review mark is visible in the final state.
 
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce`:
 
-- animation durations and delays collapse to effectively zero;
-- all relay elements render in the same final visible state;
-- the human-review mark remains present;
-- focus and scroll preservation behavior is unchanged.
+- every relay element is immediately visible;
+- the human-review mark is visible;
+- state becomes `complete` immediately;
+- replay focus, scroll and geometry remain unchanged.
 
 ## Implementation hooks
 
 - container: `[data-relay]`
 - running class: `.relay-running`
-- completion marker: `data-motion-state="complete"`
+- start state: `data-motion-state="running"`
+- final animation: `.step-review` / `relayReview`
+- final state: `data-motion-state="complete"`
 - replay control: `[data-action="replay"]`

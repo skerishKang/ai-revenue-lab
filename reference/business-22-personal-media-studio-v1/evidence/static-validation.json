@@ -1,5 +1,6 @@
 {
   "kind": "business-22-static-contract",
+  "computedFinalEndMs": 740.0,
   "passed": true,
   "checks": [
     {
@@ -53,6 +54,36 @@
       "detail": "external=[]"
     },
     {
+      "name": "computed final motion end",
+      "passed": true,
+      "detail": "computedFinalEndMs=740.0"
+    },
+    {
+      "name": "UI timing label",
+      "passed": true,
+      "detail": "displayed timing=740ms"
+    },
+    {
+      "name": "animationend completion",
+      "passed": true,
+      "detail": "final review animation drives completion"
+    },
+    {
+      "name": "no fixed completion timeout",
+      "passed": true,
+      "detail": "no fixed completion timer"
+    },
+    {
+      "name": "running state reset",
+      "passed": true,
+      "detail": "replay starts in running state"
+    },
+    {
+      "name": "complete state marker",
+      "passed": true,
+      "detail": "final state is complete"
+    },
+    {
       "name": "keyboard tab pattern",
       "passed": true,
       "detail": "arrow/home/end handlers present"
@@ -76,11 +107,6 @@
       "name": "UI_ONLY limitations",
       "passed": true,
       "detail": "phase limitation visible"
-    },
-    {
-      "name": "relay completion hook",
-      "passed": true,
-      "detail": "motion completion marker present"
     },
     {
       "name": "focus preservation",

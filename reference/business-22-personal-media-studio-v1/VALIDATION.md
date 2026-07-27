@@ -1,9 +1,10 @@
 # Validation — Business 22 Personal Media Studio Phase 1
 
-- Validation date: 2026-07-27
+- Validation date: 2026-07-28
 - Phase: `UI_ONLY`
 - Workspace: `reference/business-22-personal-media-studio-v1/`
 - Required viewports: 1440 × 1100, 768 × 1024, 390 × 844
+- Signature motion contract: 680–760ms
 
 ## Commands executed
 
@@ -12,14 +13,13 @@ cd reference/business-22-personal-media-studio-v1
 python3 tests/validate_static.py
 python3 tests/validate_browser.py
 
-cd ../../..
-git add reference/business-22-personal-media-studio-v1
+git diff --check
 git diff --cached --check
 ```
 
-## Static contract result
+## Static contract
 
-`python3 tests/validate_static.py` completed successfully and wrote:
+`python3 tests/validate_static.py` passed and regenerated:
 
 ```text
 evidence/static-validation.json
@@ -27,126 +27,125 @@ evidence/static-validation.json
 
 Verified:
 
-- exactly seven states: `cover`, `sources`, `spine`, `suite`, `adaptation`, `trace`, `mobile`;
-- every state token is available to the state router;
-- all referenced local assets exist;
-- no runtime external URL is present;
-- Arrow, Home and End handlers exist for the tab review pattern;
-- visible `:focus-visible` treatment exists;
-- `prefers-reduced-motion: reduce` is implemented;
-- synthetic labels and `UI_ONLY` limitations are visible;
-- relay completion, focus preservation and scroll preservation hooks exist.
+- exactly seven visual states;
+- every state query token exists;
+- all local asset paths exist;
+- no runtime external URL;
+- UI timing label is 740ms;
+- CSS final motion end is computed as 740ms;
+- final completion uses `.step-review` `animationend`;
+- no fixed completion `setTimeout remains;
+- replay explicitly enters `running` and finishes at `complete`;
+- keyboard tab controls, visible focus and reduced-motion rules remain present;
+- synthetic labels and UI_ONLY limitations remain visible.
 
 Result: `PASS`.
 
 ## Browser environment
 
-Browser checks used the installed headless Chromium executable:
-
 ```text
 /usr/bin/chromium
+headless Chromium
+fully inlined page.set_content harness
 ```
 
-This execution environment blocks both localhost HTTP navigation and direct `file://` navigation with `ERR_BLOCKED_BY_ADMINISTRATOR`. The validation therefore loaded the same repository-local HTML, CSS, JavaScript and SVG assets into Chromium using deterministic `page.set_content`, with the assets fully inlined. No product code was changed to accommodate this fallback.
+The execution environment blocks localhost and `file://` navigation. The validation script therefore inlines the repository-local HTML, CSS, JavaScript and SVG assets into Chromium. It records zero external runtime requests.
 
-This validates rendered layout, responsive composition, image resolution, state switching, keyboard controls, motion, focus, scroll stability and reduced-motion behavior. It does not independently prove that an HTTP server in this restricted environment can navigate to `?state=` URLs; query parsing is implemented in `app.js` and is covered by the static contract inspection.
+## Responsive validation
 
-## Browser result
+### 1440 × 1100
 
-`python3 tests/validate_browser.py` completed successfully and wrote:
+All seven states resolved:
 
 ```text
-evidence/validation-report.json
-evidence/motion-frames.json
+cover
+sources
+spine
+suite
+adaptation
+trace
+mobile
 ```
 
-### Desktop — 1440 × 1100
-
-All seven states rendered and are preserved as named panels in:
+### 768 × 1024
 
 ```text
-evidence/desktop-states-1440.svg
+sources
+suite
+adaptation
 ```
 
-Panels:
+### 390 × 844
 
 ```text
-desktop-cover-1440
-desktop-sources-1440
-desktop-spine-1440
-desktop-suite-1440
-desktop-adaptation-1440
-desktop-trace-1440
-desktop-mobile-1440
+cover
+suite
+mobile
 ```
 
-For every state:
-
-- active state matched the requested review state;
-- primary state surface was visible;
-- horizontal overflow: `0`;
-- broken images: `0`.
-
-### Tablet — 768 × 1024 and mobile — 390 × 844
-
-Tablet and mobile captures are preserved as named panels in:
+Across validated viewports:
 
 ```text
-evidence/responsive-captures.svg
+horizontal overflow: 0
+broken images: 0
+console errors: 0
+page errors: 0
+failed requests: 0
+external runtime requests: 0
 ```
 
-Panels:
+Keyboard review controls passed for ArrowRight, Home and End, including focus movement to the selected tab.
+
+## Computed motion timing
+
+The browser test reads `getComputedStyle()` for every relay step and calculates `animation-delay + animation-duration`.
+
+| Step | Delay | Duration | Computed end |
+|---|---:|---:|---:|
+| annotation | 80ms | 120ms | 200ms |
+| rule | 180ms | 120ms | 300ms |
+| article | 280ms | 120ms | 400ms |
+| audio | 380ms | 120ms | 500ms |
+| video | 460ms | 120ms | 580ms |
+| visual card | 540ms | 120ms | 660ms |
+| human review | 620ms | 120ms | **740ms** |
+
+Assertion:
 
 ```text
-tablet-sources-768
-tablet-suite-768
-tablet-adaptation-768
-mobile-cover-390
-mobile-suite-390
-mobile-mobile-390
+680 <= computedFinalEndMs <= 760
+680 <= 740 <= 760
+PASS
 ```
 
-For every checked state:
+The report no longer contains a manually assigned nominal duration.
 
-- horizontal overflow: `0`;
-- broken images: `0`;
-- no clipped primary composition or unreadable overlap was detected by deterministic checks and capture review;
-- the `mobile` state uses a dedicated vertical edition structure rather than a scaled proof wall.
+## Relay state and stability
 
-## Keyboard and focus
-
-The tab review pattern passed:
-
-- Arrow Right moved from `cover` to `sources`;
-- focus remained on the corresponding selected tab;
-- End moved to `mobile`;
-- Home returned to `cover`;
-- visible focus treatment is defined for review controls.
-
-Result: `PASS`.
-
-## Signature motion
-
-The `Source-to-Format Relay / 원본 맥락 릴레이` completed at the nominal duration of `720ms`.
-
-Deterministic frame evidence:
+Immediately after replay:
 
 ```text
-evidence/motion-relay-frames.svg
+data-motion-state == running
+PASS
 ```
 
-Named panels: `motion-frame-00-before`, `motion-frame-01-annotation`, `motion-frame-02-article`, `motion-frame-03-formats`, `motion-frame-04-review`.
+After the final review animation event:
 
-Verified:
+```text
+data-motion-state == complete
+PASS
+```
 
-- the selected source remains fixed;
-- the master-story annotation appears first;
-- article, audio, video and visual-card adaptations resolve in sequence;
-- omission and rewrite notes remain visible;
-- the human-review mark resolves last;
-- focus remains on the replay control;
-- document geometry remains unchanged;
-- scroll position remains stable within the browser rounding/timing tolerance recorded in the report.
+The following remained stable:
+
+```text
+focus: replay
+scrollX: 0
+scrollY: 20
+document height: 1140px
+source x/y/width/height: unchanged
+human-review mark: visible
+```
 
 Result: `PASS`.
 
@@ -154,31 +153,44 @@ Result: `PASS`.
 
 With `prefers-reduced-motion: reduce`:
 
-- all final relay information was immediately visible;
-- replay focus was preserved;
-- the final informational state was equivalent to the animated result.
+```text
+all relay steps immediately visible: PASS
+human-review mark visible: PASS
+state complete: PASS
+focus replay retained: PASS
+scroll unchanged: PASS
+document height unchanged: PASS
+source geometry unchanged: PASS
+```
 
-Result: `PASS`.
-
-## Runtime request and error summary
+## Evidence regenerated
 
 ```text
-console errors: 0
-page errors: 0
-failed requests: 0
-external requests: 0
-broken images: 0
-horizontal overflow: 0
+evidence/motion-relay-frames.svg
+evidence/motion-frames.json
+evidence/validation-report.json
+evidence/static-validation.json
 ```
 
-## Git whitespace check
+`validate_browser.py` also revalidated all required desktop, tablet and mobile states. Static viewport layout and source assets were not changed by this timing correction, so the existing viewport evidence files remain the visual baseline.
 
-```bash
-git diff --cached --check
+## Machine-readable summary
+
+`evidence/validation-report.json` reports:
+
+```text
+allQueriesResolve: true
+zeroHorizontalOverflow: true
+zeroBrokenImages: true
+zeroConsoleErrors: true
+zeroPageErrors: true
+zeroFailedRequests: true
+zeroExternalRequests: true
+keyboardPassed: true
+motionPassed: true
+reducedMotionPassed: true
 ```
 
-Result: `PASS`.
+## Phase limitation
 
-## Evidence limitation
-
-The repository does not contain a pre-existing project-level browser harness for this isolated static reference, and this environment disallows browser navigation to localhost and `file://` URLs. The in-memory Chromium fallback is reproducible from `tests/validate_browser.py`, but a later Web CTO review should still open the Draft PR exact head through a normal static server or deployment preview before any `UI_APPROVED` decision.
+This remains a static `UI_ONLY` visual reference. It does not implement upload, generation, recording, playback, editing, saving, export, publishing, authentication, persistence, API, database, backend or deployment.
