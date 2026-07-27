@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Proposed Business 26 Company Memory Phase 1 visual UI reference">
+  <meta name="robots" content="noindex,nofollow">
+  <title>회사 기억 · 새벽선 로보틱스 기억 아틀라스</title>
+  <link rel="stylesheet" href="styles.css?v=company-memory-20260728-1">
+</head>
+<body>
+  <a class="skip-link" href="#visual-stage">회사 기억 화면으로 건너뛰기</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="identity-lockup">
+        <div class="archive-mark" aria-hidden="true"><span>曙</span><small>26</small></div>
+        <div>
+          <p class="kicker">PROPOSED BUSINESS 26 · COMPANY MEMORY</p>
+          <h1>회사 기억 <span>Institutional Memory Atlas</span></h1>
+        </div>
+      </div>
+      <div class="archive-status">
+        <strong>PRIVATE SYNTHETIC ARCHIVE</strong>
+        <span>모든 회사·인물·자료는 합성입니다</span>
+      </div>
+    </header>
+
+    <nav class="review-nav" aria-label="시각 상태 검토">
+      <div class="nav-intro"><strong>VISUAL REVIEW FOLIOS</strong><span>상태 전환은 UI 검토용이며 UX 승인이 아닙니다.</span></div>
+      <div class="state-tabs" role="tablist" aria-label="회사 기억 시각 상태">
+        <button role="tab" aria-selected="true" data-state-target="cover"><b>01</b><span>표지</span></button>
+        <button role="tab" aria-selected="false" data-state-target="chronology"><b>02</b><span>연대기</span></button>
+        <button role="tab" aria-selected="false" data-state-target="thread"><b>03</b><span>실마리</span></button>
+        <button role="tab" aria-selected="false" data-state-target="lineage"><b>04</b><span>계보</span></button>
+        <button role="tab" aria-selected="false" data-state-target="witnesses"><b>05</b><span>증언</span></button>
+        <button role="tab" aria-selected="false" data-state-target="reconstruction"><b>06</b><span>복원</span></button>
+        <button role="tab" aria-selected="false" data-state-target="mobile"><b>07</b><span>모바일</span></button>
+      </div>
+    </nav>
+
+    <main id="visual-stage" class="visual-stage" tabindex="-1">
+      <section class="visual-state state-cover is-active" data-state="cover" aria-labelledby="cover-title">
+        <div class="cover-ledger" aria-hidden="true"><span>2018</span><i></i><span>2019</span><i></i><span>2021</span><i></i><span>2022</span><i></i><span>2024</span><i></i><span>2026</span></div>
+        <figure class="cover-scene">
+          <img src="assets/images/warehouse-scene.svg" alt="가상의 새벽선 로보틱스 창고 테스트 현장을 그린 합성 벡터 이미지">
+          <figcaption><span>FIELD RECORD · SYNTHETIC</span><strong>HARBOR 현장 실증, 2022년 4월</strong><small>SRC-PH-022 · 당시 작성된 기록</small></figcaption>
+        </figure>
+        <article class="cover-manifesto">
+          <p class="folio">FOLIO 01 · COMPANY ERA 2018—2026</p>
+          <div class="title-stack">
+            <span>새벽선 로보틱스</span>
+            <h2 id="cover-title">기억은 완성된 이야기가 아니라<br>증거가 남긴 불완전한 지도다.</h2>
+          </div>
+          <p class="cover-deck">창고 보조 로봇 HARBOR의 시작, 충돌, 중단, 그리고 2026년의 작은 후속 제품까지. 당시 자료와 뒤늦은 회고를 분리한 채 회사가 무엇을 배웠는지 추적합니다.</p>
+          <div class="era-index">
+            <div><span>ERA I</span><strong>2018–2020</strong><p>시제품과 초기 원칙</p></div>
+            <div><span>ERA II</span><strong>2021–2023</strong><p>외부 약속과 현장 충돌</p></div>
+            <div><span>ERA III</span><strong>2024–2026</strong><p>중단 이후의 계승</p></div>
+          </div>
+          <aside class="incomplete-note"><strong>ARCHIVE STATUS · 불완전</strong><span>확인된 사실 18 · 충돌 설명 3 · 누락 증거 2 · 후속 결과 4</span></aside>
+        </article>
+      </section>
+
+      <section class="visual-state state-chronology" data-state="chronology" aria-labelledby="chronology-title" hidden>
+        <header class="spread-header">
+          <div><p class="folio">FOLIO 02 · LAYERED CHRONOLOGY</p><h2 id="chronology-title">한 회사의 시간은 여러 줄로 동시에 흐른다</h2></div>
+          <p>제품, 사람, 계약, 기술, 사고, 회사의 언어가 같은 날짜에 서로 다른 압력을 만들었습니다.</p>
+        </header>
+        <div class="chronology-ruler"><span>2018</span><span>2019</span><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span></div>
+        <div class="chronology-bands" role="table" aria-label="새벽선 로보틱스 병렬 역사 밴드">
+          <div class="band" role="row"><strong role="rowheader">제품</strong><div class="track"><span class="event e2019 wide copper">HARBOR 시제품</span><span class="event e2021 cyan">첫 실증</span><span class="event e2024 red">프로그램 중단</span><span class="event e2026 green">MORNING-3 출시 문서</span></div></div>
+          <div class="band" role="row"><strong role="rowheader">사람과 역할</strong><div class="track"><span class="event e2018">창업팀 6명</span><span class="event e2022 wide redline">현장운영 책임자 신설</span><span class="event e2023">영업총괄 이탈</span><span class="event e2026">플랫폼팀 재편</span></div></div>
+          <div class="band" role="row"><strong role="rowheader">계약과 외부 약속</strong><div class="track"><span class="event e2021 wide copper">동해물류 1차 실증 계약</span><span class="event e2022">안전 조건 재협상</span><span class="event e2024 red">확대옵션 철회</span></div></div>
+          <div class="band" role="row"><strong role="rowheader">기술</strong><div class="track"><span class="event e2019 cyan">자율경로 v0</span><span class="event e2022 wide cyan">작업자 통제 우선 아키텍처</span><span class="event e2026 cyan">소형 모듈 계승</span></div></div>
+          <div class="band" role="row"><strong role="rowheader">사고와 복구</strong><div class="track"><span class="event e2022 red pulse">04.19 현장 접촉 사고</span><span class="event e2022 offset green">06.02 제한 운행 재개</span><span class="event e2023">사고 검토 종료</span></div></div>
+          <div class="band" role="row"><strong role="rowheader">회사의 언어와 원칙</strong><div class="track"><span class="event e2019 quote">“사람을 따라가는 로봇”</span><span class="event e2022 wide quote redline">“사람이 멈출 수 있는 자율성”</span><span class="event e2026 quote green">“작고 설명 가능한 자동화”</span></div></div>
+        </div>
+        <aside class="chronology-callout"><span>CAUSAL CROSSING 04</span><strong>2022년 사고는 기술 변경만이 아니라 역할·계약·회사의 언어를 동시에 바꾸었다.</strong><p>관련 실마리: HBR-022-0419</p></aside>
+      </section>
+
+      <section class="visual-state state-thread" data-state="thread" aria-labelledby="thread-title" hidden>
+        <header class="spread-header split">
+          <div><p class="folio">FOLIO 03 · COMPANY MEMORY THREAD</p><h2 id="thread-title">HBR-022-0419<br><span>현장 접촉 사고와 통제권 변경</span></h2></div>
+          <div class="status-key"><span class="status contemporary">당시 기록</span><span class="status recollection">나중 회고</span><span class="status verified">확인된 사실</span><span class="status inference">편집상 추론</span><span class="status conflict">충돌 설명</span><span class="status missing">누락 증거</span><span class="status consequence">이후 결과</span></div>
+        </header>
+        <div class="thread-layout">
+          <article class="event-anchor-panel">
+            <p>EVENT ANCHOR</p>
+            <time datetime="2022-04-19">2022.04.19 · 14:32</time>
+            <h3>시험 로봇 H-03이 작업자 운반 카트와 접촉</h3>
+            <div class="anchor-facts"><span>인명 피해 없음</span><span>운행 11분 중단</span><span>카트 프레임 손상</span></div>
+            <figure><img src="assets/images/warehouse-scene.svg" alt="가상의 창고 접촉 사고 직후 테스트 구역을 그린 합성 벡터 이미지"><figcaption>SRC-PH-022 · 현장 테스트 사진 · 당시 기록</figcaption></figure>
+          </article>
+          <div class="thread-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="thread-records">
+            <article class="record contemporary-record"><span class="record-id">SRC-ME-022-04</span><strong>사고 메모</strong><p>정지 요청과 로봇 감속 시작 사이에 약 1.4초 차이가 있었다고 기록.</p><em class="status contemporary">당시 기록</em></article>
+            <article class="record people-record"><span class="record-id">ROLE-OPS-07</span><strong>관련 사람</strong><p>현장운영 김하람 · 제어엔지니어 윤서후 · 영업 박민재</p><em class="status verified">확인된 사실</em></article>
+            <article class="record context-record"><span class="record-id">CTX-MTG-022-11</span><strong>결정 맥락</strong><p>실증 확대 일정이 6주 남아 있었고, 계약상 수동 정지 권한 정의가 불명확했다.</p><em class="status inference">편집상 추론</em></article>
+            <article class="record rejected-record"><span class="record-id">ALT-03</span><strong>폐기된 대안</strong><p>센서 추가만으로 기존 자율경로 구조를 유지하는 안. 일정은 빠르지만 현장 책임 주체가 불분명하다는 이유로 폐기.</p><em class="status contemporary">당시 기록</em></article>
+            <article class="record conflict-record"><span class="record-id">INT-ENG-026 / INT-SALES-026</span><strong>서로 충돌하는 설명</strong><p>엔지니어링은 “정지권 문제”를, 영업은 “운영 교육 부족”을 주원인으로 회고.</p><em class="status conflict">충돌 설명</em></article>
+            <article class="record result-record"><span class="record-id">OUT-026-M3</span><strong>나중의 영향</strong><p>2026년 MORNING-3는 작업자 통제권을 제품 원칙으로 채택하고, HARBOR의 경로 모듈 일부만 계승.</p><em class="status consequence">이후 결과</em></article>
+          </div>
+          <aside class="thread-margin">
+            <figure><img src="assets/images/incident-memo.svg" alt="가상의 2022년 사고 메모 합성 문서"><figcaption>사고 메모 · SRC-ME-022-04</figcaption></figure>
+            <div class="missing-slip"><span>MISSING EVIDENCE</span><strong>14:20–14:40 관제 영상</strong><p>보존 정책 변경 전 삭제됨. 어느 설명도 영상으로 최종 확인할 수 없음.</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-lineage" data-state="lineage" aria-labelledby="lineage-title" hidden>
+        <header class="spread-header">
+          <div><p class="folio">FOLIO 04 · ENGINEERING LINEAGE</p><h2 id="lineage-title">중단된 프로젝트에도 계승되는 설계 문법이 있다</h2></div>
+          <p>일반 노드 그래프 대신 도면 개정선, 부품 번호, 폐기 도장, 계승 주석으로 기술의 혈통을 읽습니다.</p>
+        </header>
+        <div class="lineage-board">
+          <figure class="blueprint-sheet"><img src="assets/images/blueprint-lineage.svg" alt="2019 시제품부터 2026 후속 제품까지의 합성 기술 계보 도면"><figcaption>DRAWING HBR-LIN-01 · SYNTHETIC ENGINEERING FOLIO</figcaption></figure>
+          <div class="revision-column">
+            <article><span>REV 00 · 2019</span><h3>HARBOR P-1</h3><p>단일 경로 계획, 작업자 추종, 물류 보조.</p><small>계승: 조향 모듈 / 폐기: 광역 자율경로</small></article>
+            <article><span>REV 07 · 2022</span><h3>Operator Override Architecture</h3><p>정지권 우선, 저속 구역, 명시적 인계.</p><small>계승: 통제 인터페이스 / 충돌: 제품 속도 목표</small></article>
+            <article class="paused"><span>ARCHIVE HOLD · 2024</span><h3>Project HARBOR 중단</h3><p>확장 계약 철회와 조직 비용 증가.</p><small>중단은 실패 판정이 아니라 계승 범위 재정의로 기록</small></article>
+            <article class="successor"><span>REV M3 · 2026</span><h3>MORNING-3</h3><p>소형 창고 구역용, 설명 가능한 제한 자동화.</p><small>HARBOR 계승 코드: 14% · 원칙 계승: 3개</small></article>
+          </div>
+          <aside class="lineage-note"><strong>LINEAGE JUDGMENT</strong><p>2026 제품은 HARBOR의 축소판이 아니라, 2022년 충돌에서 드러난 통제 원칙을 다른 규모에 적용한 후속 계열로 분류됩니다.</p><span class="status inference">편집상 추론</span></aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-witnesses" data-state="witnesses" aria-labelledby="witnesses-title" hidden>
+        <header class="spread-header">
+          <div><p class="folio">FOLIO 05 · WITNESSES & LATER RECOLLECTION</p><h2 id="witnesses-title">같은 사건을 알고 있었지만, 같은 방식으로 기억하지는 않았다</h2></div>
+          <p>당시 역할, 직접 지식, 2026년 회고, 일치점, 충돌점, 출처 상태를 분리합니다.</p>
+        </header>
+        <div class="witness-spread">
+          <figure class="witness-strip"><img src="assets/images/witness-strip.svg" alt="가상의 세 직원 실루엣을 그린 합성 벡터 이미지"><figcaption>FICTIONAL WITNESSES · 실제 인물과 무관</figcaption></figure>
+          <div class="witness-ledgers">
+            <article>
+              <header><span>W-01</span><h3>윤서후</h3><p>당시 제어엔지니어 → 2026 플랫폼 책임자</p></header>
+              <dl><div><dt>직접 알고 있던 내용</dt><dd>정지 신호 처리 지연과 경로 계획 모듈의 우선순위</dd></div><div><dt>나중 회고</dt><dd>“기술 문제가 아니라 누가 멈출 수 있는지의 문제였다.”</dd></div><div><dt>일치</dt><dd>감속 지연, 수동 정지 권한 불명확</dd></div><div><dt>충돌</dt><dd>운영 교육의 영향은 제한적이었다고 주장</dd></div></dl>
+              <span class="status recollection">나중 회고 · 녹취 확인</span>
+            </article>
+            <article>
+              <header><span>W-02</span><h3>김하람</h3><p>당시 현장운영 → 2026 안전운영 고문</p></header>
+              <dl><div><dt>직접 알고 있던 내용</dt><dd>작업 동선, 현장 교육, 중단 요청 절차</dd></div><div><dt>나중 회고</dt><dd>“로봇보다 사람들의 역할표가 더 늦게 바뀌었다.”</dd></div><div><dt>일치</dt><dd>정지 절차와 책임 분담이 불명확</dd></div><div><dt>충돌</dt><dd>기술팀이 현장 경고를 과소평가했다고 주장</dd></div></dl>
+              <span class="status verified">후대 회고 + 당시 서명 메모</span>
+            </article>
+            <article>
+              <header><span>W-03</span><h3>박민재</h3><p>당시 영업총괄 → 2023 퇴사, 2026 인터뷰</p></header>
+              <dl><div><dt>직접 알고 있던 내용</dt><dd>계약 일정, 고객 기대, 실증 확대 조건</dd></div><div><dt>나중 회고</dt><dd>“현장 교육이 충분했다면 일정은 지킬 수 있었다.”</dd></div><div><dt>일치</dt><dd>확대 계약 압력이 의사결정에 영향을 줌</dd></div><div><dt>충돌</dt><dd>주원인을 운영 교육 부족으로 설명</dd></div></dl>
+              <span class="status conflict">나중 회고 · 다른 설명과 충돌</span>
+            </article>
+          </div>
+          <aside class="agreement-ledger"><span>AGREEMENT 02</span><strong>정지권 정의가 불명확했다.</strong><span>CONFLICT 01</span><strong>기술 결함인가, 운영 교육 문제인가.</strong><span>UNRESOLVED</span><strong>관제 영상 누락으로 비율 판정 불가.</strong></aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-reconstruction" data-state="reconstruction" aria-labelledby="reconstruction-title" hidden>
+        <header class="spread-header compact">
+          <div><p class="folio">FOLIO 06 · MEMORY THREAD RECONSTRUCTION</p><h2 id="reconstruction-title">기억 실마리 복원</h2></div>
+          <button class="motion-replay" type="button" data-motion-replay>복원 순서 다시 보기</button>
+        </header>
+        <div class="reconstruction-stage is-complete" data-reconstruction data-motion-state="complete">
+          <div class="event-anchor-fixed" data-anchor>
+            <span>FIXED EVENT ANCHOR</span>
+            <time datetime="2022-04-19T14:32">2022.04.19 · 14:32</time>
+            <strong>H-03 / 현장 접촉 사고</strong>
+            <small>HBR-022-0419</small>
+          </div>
+          <div class="recon-grid">
+            <article class="recon-step source-slip step-1" data-motion-step="source-a"><span>SRC-ME-022-04</span><strong>사고 메모</strong><p>정지 요청 후 감속 시작까지 1.4초.</p><em class="status contemporary">당시 기록</em></article>
+            <article class="recon-step source-slip step-2" data-motion-step="source-b"><span>SRC-CT-021-11</span><strong>실증 계약 부속</strong><p>수동 정지 권한과 책임 주체 미정의.</p><em class="status verified">확인된 사실</em></article>
+            <article class="recon-step context-slip step-3" data-motion-step="context"><span>DECISION CONTEXT</span><strong>확대 일정 6주 전</strong><p>안전 변경과 계약 일정이 동시에 압박.</p><em class="status inference">편집상 추론</em></article>
+            <article class="recon-step recollection-slip step-4" data-motion-step="recollection"><span>INT-ENG-026</span><strong>2026년 엔지니어 회고</strong><p>“누가 멈출 수 있는지의 문제였다.”</p><em class="status recollection">나중 회고</em></article>
+            <article class="recon-step contradiction-slip step-5" data-motion-step="contradiction"><span>CONTRADICTION</span><strong>영업은 교육 부족을 주원인으로 설명</strong><p>모순은 삭제하지 않고 두 설명을 함께 보존.</p><em class="status conflict">충돌 설명</em></article>
+            <article class="recon-step consequence-slip step-6" data-motion-step="consequence"><span>OUT-026-M3</span><strong>2026 MORNING-3</strong><p>작업자 통제 우선 원칙이 후속 제품에 반영.</p><em class="status consequence">이후 결과</em></article>
+            <article class="recon-step missing-slip step-missing" data-motion-step="missing"><span>MISSING</span><strong>14:20–14:40 관제 영상</strong><p>삭제되어 어느 설명도 최종 확정 불가.</p><em class="status missing">누락 증거</em></article>
+          </div>
+          <div class="review-seal recon-step step-7" data-motion-step="human-review"><span>HUMAN REVIEW</span><strong>검토 완료</strong><p>사실 5 · 추론 2 · 충돌 1 · 누락 1</p><small>ARCHIVIST-REVIEW-026</small></div>
+          <div class="recon-rule" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="visual-state state-mobile" data-state="mobile" aria-labelledby="mobile-title" hidden>
+        <div class="phone-stage" aria-label="390픽셀 전용 회사 기억 구성">
+          <header><span>새벽선 로보틱스 · 2018–2026</span><strong>회사 기억</strong><small>PRIVATE · SYNTHETIC</small></header>
+          <div class="mobile-era"><span>ERA II</span><strong>2021—2023</strong><p>외부 약속과 현장 충돌</p></div>
+          <article class="mobile-thread">
+            <p>MEMORY THREAD · HBR-022-0419</p>
+            <time datetime="2022-04-19">2022.04.19</time>
+            <h2 id="mobile-title">HARBOR 현장 접촉 사고</h2>
+            <figure><img src="assets/images/warehouse-scene.svg" alt="가상의 새벽선 로보틱스 창고 테스트 장면"><figcaption>SRC-PH-022 · 당시 기록</figcaption></figure>
+            <div class="mobile-source"><span class="status verified">확인된 사실</span><p>정지 요청 이후 감속 시작까지 약 1.4초.</p></div>
+            <div class="mobile-source conflict-mobile"><span class="status conflict">충돌 설명</span><p>기술팀은 통제권 문제, 영업은 교육 부족을 주원인으로 회고.</p></div>
+            <div class="mobile-source missing-mobile"><span class="status missing">누락 증거</span><p>관제 영상 20분 구간이 보존되지 않음.</p></div>
+          </article>
+          <footer><span>이후 결과</span><strong>2026 MORNING-3에 작업자 통제 원칙 계승</strong><button type="button">증거 7건 보기</button></footer>
+        </div>
+      </section>
+    </main>
+
+    <footer class="global-footer"><span>새벽선 로보틱스, Project HARBOR, 모든 인물·자료·날짜는 합성입니다.</span><strong>UI_ONLY · NOT DEPLOYED · UI_REVIEW_READY</strong></footer>
+  </div>
+  <script src="app.js?v=company-memory-20260728-1"></script>
+</body>
+</html>
