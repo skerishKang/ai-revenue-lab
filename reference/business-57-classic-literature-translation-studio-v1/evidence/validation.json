@@ -1,0 +1,35 @@
+{
+  "business": 57,
+  "slug": "classic-literature-translation-studio",
+  "phase": "UI_ONLY",
+  "version": "classic-literature-translation-20260727-1",
+  "status": "AUTHORING_COMPLETE_BROWSER_VALIDATION_PENDING",
+  "verified": {
+    "remote_source_readback": true,
+    "seven_review_controls": true,
+    "seven_visual_state_markers": true,
+    "versioned_css_and_javascript": true,
+    "repository_local_asset_reference": true,
+    "public_domain_and_new_translation_disclosures": true,
+    "living_author_corpus_excluded": true,
+    "named_living_author_imitation_controls_absent": true,
+    "reduced_motion_css_present": true,
+    "keyboard_navigation_code_present": true
+  },
+  "not_yet_verified": {
+    "browser_rendering": true,
+    "desktop_1440x1100": true,
+    "tablet_768x1024": true,
+    "mobile_390x844": true,
+    "horizontal_overflow_zero": true,
+    "console_and_page_errors_zero": true,
+    "local_asset_request_success": true,
+    "translation_weave_geometry_stability": true,
+    "second_replay_equivalence": true,
+    "reduced_motion_browser_state": true,
+    "screenshots_and_motion_capture": true
+  },
+  "environment_limitation": "The available container could not resolve github.com, so the public branch could not be cloned into the container to execute the committed static validator or a browser run. GitHub connector readback confirmed the authored remote files. Independent local/browser validation remains required before UI_REVIEW_READY or UI_APPROVED.",
+  "deployment": "NOT_DEPLOYED",
+  "approval": "NOT_UI_APPROVED"
+}
