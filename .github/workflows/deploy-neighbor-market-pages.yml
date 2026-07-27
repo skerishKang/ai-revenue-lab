@@ -1,20 +1,23 @@
 name: Deploy Business 5 Neighbor Market to Cloudflare Pages
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/business-05-static-demo-106
+      - design/business-05-neighbor-market-v2-89
+    types:
+      - opened
+      - synchronize
+      - reopened
     paths:
       - reference/business-05-neighbor-market-v2/demo/**
       - .github/workflows/deploy-neighbor-market-pages.yml
-  workflow_dispatch:
 
 permissions:
   contents: read
   deployments: write
 
 concurrency:
-  group: deploy-neighbor-market-pages
+  group: deploy-neighbor-market-pages-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
@@ -25,12 +28,17 @@ env:
 jobs:
   deploy:
     name: Create project and deploy static demo
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'feat/business-05-static-demo-106'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
-      - name: Check out repository
+      - name: Check out exact PR head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -66,6 +74,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DEPLOY_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -73,7 +82,7 @@ jobs:
           npx --yes wrangler@4 pages deploy "$PAGES_DIRECTORY" \
             --project-name="$PROJECT_NAME" \
             --branch="$PRODUCTION_BRANCH" \
-            --commit-hash="$GITHUB_SHA" \
+            --commit-hash="$DEPLOY_SHA" \
             --commit-message="deploy Business 5 Neighbor Market demo"
 
       - name: Verify public deployment
