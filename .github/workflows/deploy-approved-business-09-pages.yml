@@ -1,0 +1,120 @@
+name: Deploy approved Business 9 UI to Cloudflare Pages
+
+on:
+  pull_request:
+    branches:
+      - ops/pages-approved-ui-deploy-base
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: deploy-approved-business-09-pages
+  cancel-in-progress: true
+
+env:
+  PROJECT_NAME: ai-revenue-personalized-childrens-story
+  PAGES_DIRECTORY: reference/business-09-personalized-childrens-story-v1
+  PRODUCTION_BRANCH: ops/deploy-business-09-approved-ui
+  APPROVED_SHA: ef53c4979df2707014d6a9f9ffb5df7387eb128b
+
+jobs:
+  deploy:
+    name: Create dedicated project and deploy approved UI
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'ops/deploy-business-09-approved-ui' &&
+      github.event.pull_request.head.sha == 'ef53c4979df2707014d6a9f9ffb5df7387eb128b'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out exact approved head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.APPROVED_SHA }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured" >&2; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured" >&2; exit 1; }
+          test "$(git rev-parse HEAD)" = "$APPROVED_SHA"
+          test -f "$PAGES_DIRECTORY/index.html"
+
+      - name: Create Cloudflare Pages project when missing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          endpoint="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+          status="$(curl --silent --show-error --output /tmp/project.json --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "$endpoint")"
+
+          if [ "$status" = "200" ]; then
+            jq -e --arg name "$PROJECT_NAME" '.success == true and .result.name == $name' /tmp/project.json >/dev/null
+            echo "Cloudflare Pages project already exists: $PROJECT_NAME"
+          elif [ "$status" = "404" ]; then
+            jq -e '.success == false and (.result == null or .result == {}) and (.errors | length > 0)' /tmp/project.json >/dev/null
+            create_status="$(curl --silent --show-error --output /tmp/create.json --write-out '%{http_code}' \
+              --request POST \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              --data "$(jq -nc --arg name "$PROJECT_NAME" --arg branch "$PRODUCTION_BRANCH" '{name:$name,production_branch:$branch}')" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects")"
+            test "$create_status" = "200"
+            jq -e --arg name "$PROJECT_NAME" '.success == true and .result.name == $name' /tmp/create.json >/dev/null
+            echo "Created Cloudflare Pages project: $PROJECT_NAME"
+          else
+            cat /tmp/project.json >&2
+            echo "Unexpected Cloudflare project lookup status: $status" >&2
+            exit 1
+          fi
+
+      - name: Deploy exact approved UI
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy "$PAGES_DIRECTORY" \
+            --project-name="$PROJECT_NAME" \
+            --branch="$PRODUCTION_BRANCH" \
+            --commit-hash="$APPROVED_SHA" \
+            --commit-message="deploy approved Business 9 visual UI"
+
+      - name: Verify public deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${PROJECT_NAME}.pages.dev/"
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error --location --output /tmp/business-09.html "$url"; then
+              grep -q "우리 아이 이야기" /tmp/business-09.html
+              grep -q "PHASE 1 · UI ONLY" /tmp/business-09.html
+              echo "Verified $url at approved source $APPROVED_SHA"
+              exit 0
+            fi
+            [ "$attempt" -lt 6 ] && sleep 5
+          done
+          echo "Deployment could not be verified at $url" >&2
+          exit 1
