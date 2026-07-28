@@ -36,8 +36,7 @@
   function replayTurningPoint() {
     const review = document.querySelector('[data-state="review"]');
     if (!review) return;
-    if (review.classList.contains('motion-complete') || review.classList.contains('motion-running')) return;
-
+    if (review.classList.contains('motion-running')) return;
     review.classList.remove('motion-complete', 'motion-running');
     void review.offsetWidth;
 
