@@ -40,7 +40,7 @@ Open `http://127.0.0.1:4173/`.
 All authored CSS and JavaScript references use:
 
 ```text
-global-ai-newsroom-20260727-1
+global-ai-newsroom-20260728-1
 ```
 
 ## Scope boundary

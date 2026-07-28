@@ -9,7 +9,11 @@
 .review-nav button { flex: 0 0 auto; min-height: 44px; padding: 9px 14px; border: 0; border-right: 1px solid #34404d; background: transparent; color: var(--muted); cursor: pointer; }
 .review-nav button span { margin-right: 7px; color: #5d6c7c; font-size: 10px; }
 .review-nav button[aria-selected="true"] { background: var(--paper); color: var(--ink); font-weight: 750; }
+.review-nav button:hover { background: rgb(255 255 255 / 0.06); }
+.review-nav button[aria-selected="true"]:hover { background: var(--paper); }
 .review-nav .motion-control { margin-left: auto; border: 1px solid #566575; color: var(--white); }
+.review-nav .motion-control:hover { background: #2a3849; border-color: #8aa0b5; }
+.review-nav .motion-control[aria-pressed="true"] { background: #2a3849; border-color: var(--green); color: #9fcfb0; }
 .visual-stage { min-height: 760px; }
 .review-state { min-height: 760px; }
 .state-bar { display: flex; justify-content: space-between; gap: 16px; padding: 9px 12px; border-top: 1px solid #34404d; border-bottom: 1px solid #34404d; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }

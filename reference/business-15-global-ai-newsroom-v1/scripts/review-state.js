@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const version = "global-ai-newsroom-20260727-1";
+  const version = "global-ai-newsroom-20260728-1";
   const tabs = Array.from(document.querySelectorAll("[data-state-target]"));
   const panels = Array.from(document.querySelectorAll("[data-review-state]"));
   const motionButton = document.querySelector("[data-convergence-play]");
@@ -70,13 +70,19 @@
   motionButton?.addEventListener("click", () => {
     const scene = document.querySelector(".convergence-scene");
     if (!scene) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const seal = scene.querySelector(".human-seal");
+    if (!seal) return;
+    if (motionButton.getAttribute("aria-pressed") === "true") return;
     setState("global");
     scene.classList.remove("is-converging");
     void scene.offsetWidth;
     scene.classList.add("is-converging");
     motionButton.setAttribute("aria-pressed", "true");
-    window.setTimeout(() => motionButton.setAttribute("aria-pressed", "false"), reduceMotion ? 0 : 680);
+    function onComplete() {
+      scene.classList.remove("is-converging");
+      motionButton.setAttribute("aria-pressed", "false");
+    }
+    seal.addEventListener("animationend", onComplete, { once: true });
   });
 
   window.addEventListener("popstate", () => setState(requestedState(), { updateUrl: false }));

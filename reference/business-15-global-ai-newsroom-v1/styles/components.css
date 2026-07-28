@@ -8,7 +8,8 @@
 .legend-dot.pending { background: var(--amber); }
 .legend-line { width: 17px; height: 3px; }
 .legend-line.conflict { background: repeating-linear-gradient(90deg, var(--red) 0 4px, transparent 4px 7px); }
-.desk-entry { display: grid; grid-template-columns: 42px 1fr auto; gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #34404d; }
+.desk-entry { display: grid; grid-template-columns: 42px 1fr auto; gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #34404d; transition: background .15s; }
+.desk-entry:hover { background: rgb(255 255 255 / 0.04); }
 .desk-entry .desk-code { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #5a6878; font-size: 10px; font-weight: 800; }
 .desk-entry strong { font-size: 13px; }
 .desk-entry p { margin: 3px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
