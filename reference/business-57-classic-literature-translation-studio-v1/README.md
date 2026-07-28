@@ -6,95 +6,93 @@
 UI_ONLY
 CONTRACT_DEMO
 PUBLIC_DOMAIN_AND_SYNTHETIC_FIXTURES_ONLY
-NOT_DEPLOYED
+UI_REVIEW_READY
 NOT_UI_APPROVED
+NOT_DEPLOYED_PENDING_UI_APPROVAL
 ```
 
 This workspace is the Phase 1 visual reference for **고전문학 번역실 / Classic Literature Translation Studio**.
 
-It demonstrates how one verified literary source may be reviewed as:
+Its primary edition is **Original-Fidelity Translation / 원전 보존 번역**. A separate modern-reading edition must disclose every material simplification, interpretation and loss.
 
-1. original-language source;
-2. original-fidelity Korean translation;
-3. modern-reading Korean translation;
-4. translation-decision ledger;
-5. poetry literal/poetic editions;
-6. a future contract bridge to an authorized personal writing voice.
+## Seven review states
 
-## Contract-demo purpose
+1. `library` — Translation library / 번역 서가
+2. `source-fidelity` — Source and original-fidelity spread / 원문·원전 보존본
+3. `comparison` — Original-fidelity versus modern-reading comparison / 두 번역판 비교
+4. `ledger` — Translation decision ledger / 번역 판단 기록
+5. `poetry` — Classical poetry edition / 고전시 번역판
+6. `mobile` — 390px-first mobile reading edition / 모바일 읽기
+7. `weave` — Translation Weave / 번역 결 엮기
 
-The reference is intended to explain a potential author, translator, publisher or estate collaboration. It is not a retail product, operational translator or trained author model.
+## Source and contract boundary
 
-Because the repository is public, it contains no:
+The public repository contains only:
 
-- living-author manuscript;
-- licensed private corpus;
-- contract terms;
-- model adapter or weights;
-- private prompt package;
-- customer data;
-- claim of author endorsement.
+- a short *Frankenstein* passage verified against Project Gutenberg eBook #41445, the 1818 edition;
+- a short *The Sick Rose* stanza with its textual source recorded;
+- Korean translations newly authored for this UI reference;
+- one repository-local original SVG.
 
-Future contracted material must remain in an isolated private environment and use the rights/consent controls defined by Business 58.
+It contains no protected modern Korean translation, living-author manuscript, licensed private corpus, model adapter, customer material, publishing approval or endorsement claim.
 
-## Fixtures
+See:
 
-### Novel
+- `RIGHTS_AND_SOURCES.md`
+- `IMAGE_SOURCES.md`
+- `REFERENCE_NOTES.md`
 
-- Mary Shelley, *Frankenstein* (1818)
-- short English excerpt used as a public-domain demonstration fixture;
-- Korean translations were newly authored for this UI reference;
-- no modern Korean translation was copied.
+## Interaction and accessibility
 
-### Poetry
+- seven named tab controls with tab/tabpanel semantics;
+- Left/Right Arrow movement while a state tab has focus;
+- visible keyboard focus;
+- source-language attributes on English passages;
+- text labels accompany every colour-coded review state;
+- mobile source reveal retains an accessible expanded state;
+- deterministic `Translation Weave` replay;
+- reduced-motion information equivalence.
 
-- William Blake, *The Sick Rose* (1794)
-- short original stanza used as a public-domain demonstration fixture;
-- Korean literal and poetic versions were newly authored for this UI reference.
+## Signature motion
 
-See `RIGHTS_AND_SOURCES.md` for the source and rights record.
+`Translation Weave` has a computed maximum end of `680ms`.
 
-## Seven states
+```text
+Completion: final animationend event
+Fixed timer: none
+Geometry shift: none
+Focus movement: none
+Scroll movement: none
+Replay 1 / replay 2 final state: equivalent
+Reduced-motion final information: equivalent
+```
 
-1. Translation library
-2. Source and original-fidelity spread
-3. Original-fidelity versus modern-reading comparison
-4. Translation decision ledger
-5. Poetry edition
-6. Mobile reading edition
-7. Translation Weave signature motion
-
-## Interaction
-
-- click the seven review tabs;
-- use Left/Right Arrow keys to move between states;
-- reveal the source sentence in the mobile state;
-- replay Translation Weave in the final state;
-- `prefers-reduced-motion: reduce` presents the completed weave without staged motion.
+See `MOTION_SPEC.md` and `evidence/browser-validation.json`.
 
 ## Technical boundary
 
-- plain HTML, CSS and minimal JavaScript;
-- repository-local SVG only;
-- no external font, framework, API or runtime request;
-- no upload, storage, generation, model call or persistence;
-- deterministic asset version: `classic-literature-translation-20260727-1`.
+- semantic HTML, responsive CSS and minimal JavaScript;
+- no gradients, external fonts, external runtime assets, framework, API or model call;
+- no upload, storage, persistence, authentication, billing or publishing;
+- deterministic asset version: `classic-literature-translation-20260728-2`.
 
-## Local review
+## Validation
 
-```bash
-cd reference/business-57-classic-literature-translation-studio-v1
-python -m http.server 8000
-```
-
-Then open `http://127.0.0.1:8000/` in a browser.
-
-Run the static validator:
+From this directory:
 
 ```bash
 python evidence/validate_static.py
+python evidence/validate_browser.py
 ```
+
+Repository-level whitespace check:
+
+```bash
+git diff --check
+```
+
+The browser validator uses installed Chromium, renders the actual HTML/CSS/JS bytes through an inline local harness because localhost navigation is blocked in the validation container, and records the harness mode in machine-readable evidence.
 
 ## Phase gate
 
-This reference must remain Draft and unmerged until Web CTO review and user visual approval. Deployment requires a separately recorded exact-head `UI_APPROVED` decision and separate deployment authorization.
+Keep PR #220 OPEN, Draft and unmerged. This implementation does not declare `UI_APPROVED`, start UX, authorize backend work or deploy. Static deployment requires a separate exact-head approval and deployment operation.
