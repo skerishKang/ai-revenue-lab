@@ -36,7 +36,9 @@
   function replayTurningPoint() {
     const review = document.querySelector('[data-state="review"]');
     if (!review) return;
-    review.classList.remove('motion-running', 'motion-complete');
+    if (review.classList.contains('motion-complete') || review.classList.contains('motion-running')) return;
+
+    review.classList.remove('motion-complete', 'motion-running');
     void review.offsetWidth;
 
     if (reducedMotion.matches) {
@@ -45,25 +47,28 @@
     }
 
     let sweepDone = false;
-    let guardTimer = null;
+    let safetyTimer = null;
 
     function onSweepComplete() {
       if (sweepDone) return;
       sweepDone = true;
-      if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
+      if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
       review.classList.remove('motion-running');
       review.classList.add('motion-complete');
+      const btn = document.querySelector('.motion-replay');
+      if (btn) btn.setAttribute('aria-pressed', 'false');
     }
 
     const noteEl = review.querySelector('.player-review-note');
     if (noteEl) {
       noteEl.addEventListener('animationend', onSweepComplete, { once: true });
-      noteEl.addEventListener('transitionend', onSweepComplete, { once: true });
     }
 
-    guardTimer = setTimeout(onSweepComplete, 800);
+    safetyTimer = setTimeout(() => { if (!sweepDone) onSweepComplete(); }, 2000);
 
     review.classList.add('motion-running');
+    const btn = document.querySelector('.motion-replay');
+    if (btn) btn.setAttribute('aria-pressed', 'true');
   }
 
   buttons.forEach((button) => {
@@ -92,7 +97,7 @@
 
   const initial = new URLSearchParams(window.location.search).get('state');
   setState(states.includes(initial) ? initial : states[0], { replaceUrl: false });
-  if ((initial === 'review' || initial === 'recap') && new URLSearchParams(window.location.search).get('motion') === 'play') {
+  if (initial === 'review' && new URLSearchParams(window.location.search).get('motion') === 'play') {
     requestAnimationFrame(replayTurningPoint);
   }
 

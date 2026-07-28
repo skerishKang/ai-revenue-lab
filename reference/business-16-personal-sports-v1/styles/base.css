@@ -15,7 +15,7 @@
   --display:"Arial Narrow","Roboto Condensed","Noto Sans KR",Arial,sans-serif;
   --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;
   --ease:cubic-bezier(.22,.78,.18,1);
-  --asset-version:"personal-sports-20260727-1";
+  --asset-version:"personal-sports-20260728-1";
 }
 *{box-sizing:border-box}
 html{background:var(--ink);scrollbar-gutter:stable}
