@@ -1,12 +1,10 @@
 name: One-shot relay Business 22 Pages
-run-name: Relay Business 22 Pages after run ${{ github.event.workflow_run.id }}
+run-name: Relay Business 22 Pages from owner command
 
 on:
-  workflow_run:
-    workflows:
-      - Provision approved Business Pages
+  issue_comment:
     types:
-      - completed
+      - created
 
 permissions:
   actions: write
@@ -15,7 +13,7 @@ permissions:
 
 jobs:
   relay:
-    if: github.event.workflow_run.id == 30223403324
+    if: github.event.issue.number == 224 && github.event.comment.user.login == github.repository_owner && github.event.comment.body == 'DEPLOY_BUSINESS_22_PAGES'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
