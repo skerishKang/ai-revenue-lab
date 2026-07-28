@@ -1,0 +1,148 @@
+name: One-shot active Business 22 Pages relay
+run-name: One-shot active Business 22 Pages relay
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 * * * *'
+
+permissions:
+  actions: write
+  contents: read
+  issues: write
+
+concurrency:
+  group: one-shot-business-22-pages-224
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check one-shot state
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          comments="$(curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "${API_URL}/repos/${REPOSITORY}/issues/224/comments?per_page=100")"
+          if jq -e '[.[] | select(.body | contains("BUSINESS_22_RELAY_DISPATCHED"))] | length > 0' <<<"${comments}" >/dev/null; then
+            echo 'run=false' >> "${GITHUB_OUTPUT}"
+          else
+            echo 'run=true' >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Record relay start
+        if: steps.guard.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -n --arg body 'BUSINESS_22_RELAY_STARTED
+
+The one-shot Actions relay is running and will dispatch the protected Business 22 Pages provisioning workflow.' '{body:$body}' > comment.json
+          curl --silent --show-error --fail \
+            --request POST \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            --data-binary @comment.json \
+            "${API_URL}/repos/${REPOSITORY}/issues/224/comments" >/dev/null
+
+      - name: Dispatch protected workflow
+        if: steps.guard.outputs.run == 'true'
+        id: dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          payload="$(jq -n \
+            --arg ref 'main' \
+            --arg business_id '22' \
+            --arg project_name 'ai-revenue-business-22-personal-media-studio' \
+            --arg source_directory 'reference/business-22-personal-media-studio-v1' \
+            --arg approved_sha 'e43da95f7e59d1800cd1f182c2c835ab9a59456b' \
+            --arg approval_pr '224' \
+            --arg production_branch 'main' \
+            '{ref:$ref,inputs:{business_id:$business_id,project_name:$project_name,source_directory:$source_directory,approved_sha:$approved_sha,approval_pr:$approval_pr,production_branch:$production_branch}}')"
+          status="$(curl --silent --show-error \
+            --request POST \
+            --output response.json \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            --data-binary "${payload}" \
+            "${API_URL}/repos/${REPOSITORY}/actions/workflows/provision-approved-business-pages.yml/dispatches")"
+          if test "${status}" != '204'; then
+            body="$(cat response.json)"
+            jq -n --arg body "BUSINESS_22_RELAY_FAILED\n\n- HTTP status: \`${status}\`\n- Response: \`${body}\`" '{body:$body}' > comment.json
+            curl --silent --show-error --fail \
+              --request POST \
+              --header "Authorization: Bearer ${GH_TOKEN}" \
+              --header 'Accept: application/vnd.github+json' \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              --data-binary @comment.json \
+              "${API_URL}/repos/${REPOSITORY}/issues/224/comments" >/dev/null
+            exit 1
+          fi
+          echo "started_at=${started_at}" >> "${GITHUB_OUTPUT}"
+
+      - name: Locate and record protected run
+        if: steps.guard.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+          STARTED_AT: ${{ steps.dispatch.outputs.started_at }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_json=''
+          for attempt in $(seq 1 60); do
+            payload="$(curl --silent --show-error --fail \
+              --header "Authorization: Bearer ${GH_TOKEN}" \
+              --header 'Accept: application/vnd.github+json' \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "${API_URL}/repos/${REPOSITORY}/actions/workflows/provision-approved-business-pages.yml/runs?event=workflow_dispatch&branch=main&per_page=30")"
+            run_json="$(jq -c --arg started "${STARTED_AT}" '[.workflow_runs[] | select(.event == "workflow_dispatch" and .head_branch == "main" and .created_at >= $started)] | sort_by(.created_at) | last // empty' <<<"${payload}")"
+            test -n "${run_json}" && break
+            sleep 3
+          done
+          test -n "${run_json}"
+          run_id="$(jq -r '.id' <<<"${run_json}")"
+          run_url="$(jq -r '.html_url' <<<"${run_json}")"
+          body="$(cat <<EOF
+          BUSINESS_22_RELAY_DISPATCHED
+
+          ## Business 22 protected Pages workflow created
+
+          - Run ID: \`${run_id}\`
+          - Run URL: ${run_url}
+          - Approved exact head: \`e43da95f7e59d1800cd1f182c2c835ab9a59456b\`
+          - Dedicated project: \`ai-revenue-business-22-personal-media-studio\`
+          EOF
+          )"
+          jq -n --arg body "${body}" '{body:$body}' > comment.json
+          curl --silent --show-error --fail \
+            --request POST \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            --data-binary @comment.json \
+            "${API_URL}/repos/${REPOSITORY}/issues/224/comments" >/dev/null
