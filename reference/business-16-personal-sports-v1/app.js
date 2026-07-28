@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const states = ['matchday', 'preview', 'watch', 'recap', 'player', 'season', 'mobile'];
+  const states = ['matchday', 'preview', 'notes', 'review', 'player', 'season', 'mobile'];
   const buttons = [...document.querySelectorAll('[data-state-target]')];
   const panels = [...document.querySelectorAll('[data-state]')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -34,15 +34,36 @@
   }
 
   function replayTurningPoint() {
-    const recap = document.querySelector('[data-state="recap"]');
-    if (!recap) return;
-    recap.classList.remove('motion-running', 'motion-complete');
-    void recap.offsetWidth;
-    recap.classList.add(reducedMotion.matches ? 'motion-complete' : 'motion-running');
-    window.setTimeout(() => {
-      recap.classList.remove('motion-running');
-      recap.classList.add('motion-complete');
-    }, reducedMotion.matches ? 0 : 680);
+    const review = document.querySelector('[data-state="review"]');
+    if (!review) return;
+    review.classList.remove('motion-running', 'motion-complete');
+    void review.offsetWidth;
+
+    if (reducedMotion.matches) {
+      review.classList.add('motion-complete');
+      return;
+    }
+
+    let sweepDone = false;
+    let guardTimer = null;
+
+    function onSweepComplete() {
+      if (sweepDone) return;
+      sweepDone = true;
+      if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
+      review.classList.remove('motion-running');
+      review.classList.add('motion-complete');
+    }
+
+    const noteEl = review.querySelector('.player-review-note');
+    if (noteEl) {
+      noteEl.addEventListener('animationend', onSweepComplete, { once: true });
+      noteEl.addEventListener('transitionend', onSweepComplete, { once: true });
+    }
+
+    guardTimer = setTimeout(onSweepComplete, 800);
+
+    review.classList.add('motion-running');
   }
 
   buttons.forEach((button) => {
@@ -71,7 +92,7 @@
 
   const initial = new URLSearchParams(window.location.search).get('state');
   setState(states.includes(initial) ? initial : states[0], { replaceUrl: false });
-  if (initial === 'recap' && new URLSearchParams(window.location.search).get('motion') === 'play') {
+  if ((initial === 'review' || initial === 'recap') && new URLSearchParams(window.location.search).get('motion') === 'play') {
     requestAnimationFrame(replayTurningPoint);
   }
 
