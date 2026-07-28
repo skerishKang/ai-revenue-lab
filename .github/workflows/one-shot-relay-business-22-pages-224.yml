@@ -1,23 +1,58 @@
 name: One-shot relay Business 22 Pages
-run-name: Relay Business 22 Pages from owner command
+run-name: Scheduled relay Business 22 Pages
 
 on:
-  issue_comment:
-    types:
-      - created
+  schedule:
+    - cron: '*/5 * * * *'
 
 permissions:
   actions: write
   contents: read
   issues: write
 
+concurrency:
+  group: one-shot-business-22-pages-224
+  cancel-in-progress: false
+
 jobs:
   relay:
-    if: github.event.issue.number == 224 && github.event.comment.user.login == github.repository_owner && github.event.comment.body == 'DEPLOY_BUSINESS_22_PAGES'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
+      - name: Verify owner approval, command, and one-shot state
+        id: preflight
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          comments="$(curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "${API_URL}/repos/${REPOSITORY}/issues/224/comments?per_page=100")"
+
+          jq -e '[.[] | select(
+            .user.login == "skerishKang" and
+            (.body | test("(?m)^UI_APPROVED$") ) and
+            (.body | contains("e43da95f7e59d1800cd1f182c2c835ab9a59456b"))
+          )] | length > 0' <<<"${comments}" >/dev/null
+
+          jq -e '[.[] | select(
+            .user.login == "skerishKang" and
+            .body == "DEPLOY_BUSINESS_22_PAGES"
+          )] | length > 0' <<<"${comments}" >/dev/null
+
+          if jq -e '[.[] | select(.body | contains("BUSINESS_22_RELAY_DISPATCHED"))] | length > 0' <<<"${comments}" >/dev/null; then
+            echo 'should_run=false' >> "${GITHUB_OUTPUT}"
+          else
+            echo 'should_run=true' >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: Dispatch protected Business 22 workflow
+        if: steps.preflight.outputs.should_run == 'true'
         id: dispatch
         env:
           GH_TOKEN: ${{ github.token }}
@@ -47,7 +82,7 @@ jobs:
             "${API_URL}/repos/${REPOSITORY}/actions/workflows/provision-approved-business-pages.yml/dispatches")"
           if test "${status}" != '204'; then
             body="$(cat response.json)"
-            jq -n --arg body "## Business 22 Pages relay dispatch failed\n\n- HTTP status: \`${status}\`\n- Response: \`${body}\`" '{body:$body}' > comment.json
+            jq -n --arg body "## Business 22 Pages scheduled relay failed\n\n- HTTP status: \`${status}\`\n- Response: \`${body}\`" '{body:$body}' > comment.json
             curl --silent --show-error --fail \
               --request POST \
               --header "Authorization: Bearer ${GH_TOKEN}" \
@@ -60,6 +95,7 @@ jobs:
           echo "started_at=${started_at}" >> "${GITHUB_OUTPUT}"
 
       - name: Locate dispatched run
+        if: steps.preflight.outputs.should_run == 'true'
         id: locate
         env:
           GH_TOKEN: ${{ github.token }}
@@ -84,7 +120,8 @@ jobs:
           echo "run_id=$(jq -r '.id' <<<"${run_json}")" >> "${GITHUB_OUTPUT}"
           echo "run_url=$(jq -r '.html_url' <<<"${run_json}")" >> "${GITHUB_OUTPUT}"
 
-      - name: Record created run
+      - name: Record one-shot marker and created run
+        if: steps.preflight.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           API_URL: ${{ github.api_url }}
@@ -95,6 +132,8 @@ jobs:
         run: |
           set -euo pipefail
           body="$(cat <<EOF
+          BUSINESS_22_RELAY_DISPATCHED
+
           ## Business 22 protected Pages workflow created
 
           - Run ID: \`${RUN_ID}\`
@@ -113,6 +152,7 @@ jobs:
             "${API_URL}/repos/${REPOSITORY}/issues/224/comments" >/dev/null
 
       - name: Wait for protected run
+        if: steps.preflight.outputs.should_run == 'true'
         id: wait
         env:
           GH_TOKEN: ${{ github.token }}
@@ -137,6 +177,7 @@ jobs:
           echo "conclusion=$(jq -r '.conclusion // empty' <<<"${run_json}")" >> "${GITHUB_OUTPUT}"
 
       - name: Publish final result
+        if: steps.preflight.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           API_URL: ${{ github.api_url }}
