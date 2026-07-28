@@ -1,0 +1,15 @@
+{
+  "status": "pass",
+  "states": [
+    "cover",
+    "meeting",
+    "rules",
+    "spending",
+    "election",
+    "complaint",
+    "mobile"
+  ],
+  "local_refs": 14,
+  "svg_assets": 11,
+  "errors": []
+}
