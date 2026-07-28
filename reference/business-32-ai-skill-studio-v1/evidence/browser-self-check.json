@@ -1,0 +1,42 @@
+{
+  "mode": "inline-exact-bytes-admin-fallback",
+  "viewports": {
+    "1440x1100": {
+      "cover": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "brief": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "guided-run": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "evidence": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "review": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "skill-card": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "mobile": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "runtime": {"console_errors": [],"page_errors": [],"failed_requests": [],"external_requests": []}
+    },
+    "768x1024": {
+      "cover": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "brief": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "guided-run": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "evidence": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "review": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "skill-card": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "mobile": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "runtime": {"console_errors": [],"page_errors": [],"failed_requests": [],"external_requests": []}
+    },
+    "390x844": {
+      "cover": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "brief": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "guided-run": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "evidence": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "review": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "skill-card": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "mobile": {"selected": true,"visible": true,"others_hidden": true,"roving": true,"overflow": 0,"clipping": 0,"overlap": 0,"assets_rendered": true},
+      "runtime": {"console_errors": [],"page_errors": [],"failed_requests": [],"external_requests": []}
+    }
+  },
+  "motion": {
+    "1440x1100": {"replays":[{"opacity":"1","transform":"matrix(0.99863, -0.052336, 0.052336, 0.99863, 0, 0)","state":"complete"},{"opacity":"1","transform":"matrix(0.99863, -0.052336, 0.052336, 0.99863, 0, 0)","state":"complete"}],"equal":true,"stable":true,"computed_end_ms":790,"keyboard":{"focus":"tab-brief","selected":"true","panel":true,"outlineWidth":"3px","outlineStyle":"solid"}},
+    "768x1024": {"replays":[{"opacity":"1","transform":"matrix(0.99863, -0.052336, 0.052336, 0.99863, 0, 0)","state":"complete"},{"opacity":"1","transform":"matrix(0.99863, -0.052336, 0.052336, 0.99863, 0, 0)","state":"complete"}],"equal":true,"stable":true,"computed_end_ms":790,"keyboard":{"focus":"tab-brief","selected":"true","panel":true,"outlineWidth":"3px","outlineStyle":"solid"}},
+    "390x844": {"replays":[{"opacity":"1","transform":"matrix(0.99863, -0.052336, 0.052336, 0.99863, 0, 0)","state":"complete"},{"opacity":"1","transform":"matrix(0.99863, -0.052336, 0.052336, 0.99863, 0, 0)","state":"complete"}],"equal":true,"stable":true,"computed_end_ms":790,"keyboard":{"focus":"tab-brief","selected":"true","panel":true,"outlineWidth":"3px","outlineStyle":"solid"}}
+  },
+  "errors": ["Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at localhost for all three viewport runs"],
+  "reduced_motion": {"state":"complete","missing_visible":true,"exception_visible":true}
+}
