@@ -2,69 +2,80 @@
 
 ## Purpose
 
-`Translation Weave / 번역 결 엮기` shows that a literary translation is built from traceable source choices rather than appearing as an unexplained model result.
+`Translation Weave / 번역 결 엮기` shows that a literary translation is assembled from traceable source choices rather than appearing as an unexplained result.
 
-## Duration
+## Measured timing contract
+
+The browser validator reads `animation-duration` and `animation-delay` from computed styles while `data-motion-state="running"` is active.
+
+| Layer | Duration | Delay | Computed end |
+|---|---:|---:|---:|
+| thread 1 | 480ms | 0ms | 480ms |
+| thread 2 | 480ms | 100ms | 580ms |
+| thread 3 | 480ms | 200ms | 680ms |
+| rendering 1 | 300ms | 180ms | 480ms |
+| rendering 2 | 300ms | 280ms | 580ms |
+| rendering 3 | 300ms | 380ms | 680ms |
 
 ```text
-Total intended signature duration: 680ms
+Computed maximum end: 680ms
+Completion authority: animationend from .rendering-3 / settle-rendering
+Fixed completion timeout: none
 ```
 
-Three source-to-rendering threads are staged with small delays. The final settled paragraph is already laid out before motion begins.
+## State machine
+
+```text
+complete
+→ running
+→ complete
+```
+
+- The complete state is the stable information state.
+- Replay briefly applies the running state after a forced style recalculation.
+- The final rendering layer's `animationend` event returns the board to complete.
+- Repeated replay reaches the same complete frame.
 
 ## Stable geometry contract
 
-The following must remain stable before, during and after replay:
+The following remain fixed before, during and after replay:
 
-- review state surface;
 - source fragment boxes;
 - chosen-rendering boxes;
-- final paragraph;
+- final translated paragraph;
 - review rail;
 - replay control;
+- document height;
 - focus position;
 - scroll position.
 
-No whole-state opacity or transform animation is allowed.
+No whole-state opacity, transform, layout, text-position or container-size animation is allowed.
 
 ## Animated properties
 
-Only these layers animate:
+Only these evidence layers animate:
 
 - SVG path `stroke-dashoffset` and opacity for `.thread`;
-- inset emphasis on `.rendering` boxes.
-
-The motion must not animate text position, container dimensions, page opacity or layout.
-
-## Replay
-
-The replay button:
-
-1. removes `.is-replaying`;
-2. forces style recalculation;
-3. re-adds `.is-replaying`;
-4. updates the live status text;
-5. removes the replay class after the staged sequence completes.
-
-Repeated playback must reach the same final frame.
+- inset proof emphasis for `.rendering` boxes.
 
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce`:
 
+- the board stays in `complete`;
 - paths are fully drawn immediately;
-- rendering emphasis is present immediately;
-- no staged animation is required;
-- the status text identifies the immediate completed state when replay is requested.
+- rendering emphasis is immediately present;
+- the same source, translation and annotation information remains visible;
+- replay keeps focus and scroll stable.
 
-## Validation assertions
+## Browser assertions
 
-A browser validator should confirm:
+`evidence/validate_browser.py` verifies:
 
-- the weave state is visible before replay;
-- source and final paragraph bounding boxes are unchanged;
-- thread dash offsets change during normal replay;
-- rendering boxes reach the same final emphasis on first and second replay;
-- reduced-motion mode begins and remains in the complete final state;
-- focus remains on the replay button after activation;
-- scroll position remains stable.
+- computed maximum end equals 680ms;
+- running and complete state transitions occur;
+- no `setTimeout` controls completion;
+- first and second replay final styles are identical;
+- normal and reduced-motion final styles are equivalent;
+- geometry, document height, focus and scroll remain stable;
+- deterministic motion frames and a GIF are generated from the validated runtime.
