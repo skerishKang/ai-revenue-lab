@@ -1,108 +1,108 @@
 # Reference Notes
 
+Research and verification date: `2026-07-28`
+
 ## Research objective
 
-Design a literary translation edition that makes source fidelity, modernization, uncertainty and editorial judgment visible without becoming a generic machine-translation interface.
+Design a Korean-first literary translation edition that makes source fidelity, modernization, ambiguity, repeated terms, cultural distance and human editorial judgment visible without becoming a generic machine-translator interface.
 
 ## Primary and official references
 
-### Korea Copyright Commission
+### Project Gutenberg — Frankenstein 1818 edition
 
-- Focus: Korean copyright duration, derivative works, translation and practical rights verification.
-- Adopted: work/edition/territory/date rights record; separate treatment of original and translation.
-- Rejected: assuming that an old source permits reuse of any modern Korean edition.
+- URL: `https://www.gutenberg.org/ebooks/41445`
+- Readback: `https://www.gutenberg.org/cache/epub/41445/pg41445-images.html`
+- Observed: eBook #41445 identifies the 1818 publication and states that its text was produced from a photo-reprint of the 1818 edition.
+- Adopted: exact edition label, chapter number, punctuation readback and bibliographic provenance.
+- Rejected: using the generic eBook #84 without resolving whether the UI passage belonged to the 1818 or 1831 edition.
+
+### Wikisource — The Sick Rose
+
+- URL: `https://en.wikisource.org/wiki/Songs_of_Innocence_and_of_Experience_(1826)/Songs_of_Experience/The_Sick_Rose`
+- Observed: the 1826-copy transcription preserves stanza and line structure and identifies the poem's 1794 publication context.
+- Adopted: explicit textual-source edition and line-break preservation.
+- Rejected: copying Blake's illuminated plate or a modern poem illustration.
+
+### Republic of Korea Copyright Act
+
+- URL: `https://www.law.go.kr/법령/저작권법`
+- Observed: current Article 39 records the general life-plus-70 term.
+- Adopted: work/author/edition/territory/date checkpoint and a caution that production use requires exact clearance.
+- Rejected: treating age alone as automatic permission for a modern Korean translation or a particular digitized edition.
 
 ### WIPO — Berne Convention
 
-- Focus: author control and exclusive translation/adaptation rights under the international framework.
-- Adopted: translation authorization as a first-class rights field; author/rightsholder contract boundary.
-- Rejected: treating translation as a purely technical format conversion.
+- URL: `https://www.wipo.int/wipolex/en/text/283698`
+- Observed: translations are protected derivative works without prejudice to the original, and protected-work authors hold the translation right during the term.
+- Adopted: original-work rights and translation rights as separate first-class records.
+- Rejected: presenting literary translation as a neutral technical conversion.
 
 ### U.S. Copyright Office — Copyright and Artificial Intelligence
 
-- Focus: AI training, copyrightability, disclosure and digital-replica policy analysis.
-- Adopted: transparent model/corpus disclosure, human editorial approval state and distinction between assistance and authorship.
-- Rejected: presenting raw generated output as a completed author-approved literary work.
+- URL: `https://www.copyright.gov/ai/`
+- Observed: the Office separates digital replicas, output copyrightability and generative-AI training in a multipart policy study.
+- Adopted: explicit model/corpus disclosure and human editorial state.
+- Rejected: implying that a generic AI-assistance label resolves corpus permission or authorship questions.
 
-## Editorial and product references
+## Editorial references and decisions
 
-### Parallel-text literary editions
+### Parallel-text and critical editions
 
 Adopted:
 
-- source and translation aligned at passage level;
+- passage-level source/translation alignment rather than token-by-token interlinear clutter;
 - separate folios and edition labels;
 - margin notes for consequential terms;
-- readable long-form measure rather than dense table cells.
+- alternatives and unresolved decisions kept visible;
+- source edition and textual provenance as part of the reading product.
 
 Rejected:
 
-- word-by-word interlinear layouts for the primary reading state;
-- spreadsheet-like red/green diff treatment;
-- forcing every source token into a visible one-to-one mapping.
-
-### Critical editions
-
-Adopted:
-
-- alternatives and unresolved decisions remain visible;
-- source edition and textual provenance are part of the product;
-- editorial apparatus is separated from the main reading flow.
-
-Rejected:
-
-- academic density that makes the reading edition inaccessible;
-- hiding uncertainty to create a false impression of one correct answer.
+- spreadsheet-like red/green code diffs;
+- forcing every source token into a one-to-one line;
+- hiding uncertainty to imply one mechanically correct answer.
 
 ### Publishing proofs and translator manuscripts
 
 Adopted:
 
-- fine rules, folio numbers, proofing symbols and restrained editorial accents;
-- decision ledger with human-review state;
-- paper-like surface and stable reading geometry.
+- fine rules, folios, proof marks, restrained oxblood and indigo annotations;
+- decision ledger with textual status labels as well as colour;
+- warm paper, deep ink and stable reading geometry;
+- readable paragraph measure and line height.
 
 Rejected:
 
-- generic SaaS cards and dashboard metrics;
-- chat bubbles and one-shot prompt/result hierarchy;
-- decorative manuscript imagery that obscures text.
+- dashboard metrics, chat bubbles, generic settings panels, glassmorphism, neon AI and rounded-card walls;
+- copied publisher trade dress, translator identities or existing Korean edition typography;
+- gradients and external font dependencies.
 
 ## Adjacent-product distinction
 
-### Google Translate / DeepL
+- **Google Translate / DeepL:** optimize fast general translation; Business 57 centers literary editions, provenance, ambiguity and reviewable decisions.
+- **Generic AI chat:** centers conversation and ephemeral output; Business 57 centers one durable source-accountable edition.
+- **Business 11 · Language Learning Magazine:** recurring learning publication; Business 57 is a literary translation edition where instruction is secondary.
+- **Business 3 · Living Fiction:** creates or branches stories; Business 57 must preserve and account for an existing source.
+- **Business 34 · AI Dubbing Studio:** localizes audiovisual speech; Business 57 is text-first and edition-oriented.
+- **Business 58 · Personal Writing Voice Studio:** may later supply a consented voice profile; it cannot replace the primary original-fidelity edition or imply a current contract.
 
-Those products prioritize fast general translation. Business 57 prioritizes literary editions, source provenance, ambiguity, parallel versions and reviewable decisions.
+## Content decisions checked against Issue #217
 
-### Generic AI chat
+- Meaningful ambiguity: `lifeless thing` → `생기 없는 것` / `죽은 몸` / `존재`.
+- Multiple alternatives: `dreary` and `instruments of life` each retain visible alternatives.
+- Historical term: `instruments of life` is annotated against 1818 natural-philosophy and galvanism context.
+- Repeated source root: `life → lifeless → being` is visibly tracked.
+- Deliberate difficulty: the fidelity edition retains long purpose syntax and `생명의 기구들`.
+- Modernization: the modern-reading edition splits the sentence and concretizes `thing` as `죽은 몸`.
+- Loss statement: narrator distance, abstraction and evasive rhythm are explicitly marked as weakened.
+- Poetry conflict: literal meaning and the sound/rhythm choice around `howling` are separated.
+- Disclosure: source, rights, newly authored Korean, disconnected model/corpus and human-review state are visible.
 
-Chat centers a conversation and ephemeral output. Business 57 centers one durable literary edition and its editorial apparatus.
-
-### Business 11 · Language Learning Magazine
-
-Business 11 produces a recurring learning publication. Business 57 produces a source-accountable literary translation; learning notes are optional, not the primary object.
-
-### Business 3 · Living Fiction
-
-Living Fiction creates or branches stories. Business 57 may not change plot, imagery or narrator intent without explicitly labelling a modernization or adaptation.
-
-### Business 34 · AI Dubbing Studio
-
-Dubbing localizes spoken audiovisual media. Business 57 is text-first and optimized for literary sentence, paragraph, stanza and edition review.
-
-### Business 58 · Personal Writing Voice Studio
-
-Business 58 supplies a consented personal writing voice. Business 57 may later use that voice only as a separately labelled contract edition; original-fidelity translation remains primary.
-
-## Visual decisions
+## Visual and motion decisions
 
 - Direction: `Parallel Literary Edition / 나란히 읽는 번역판`.
-- Base palette: warm paper, deep ink, oxblood annotations, restrained indigo secondary notes.
-- Typography: system serif for literary text; system sans for controls and evidence labels.
-- Primary hierarchy: source/fidelity spread.
-- Secondary hierarchy: modern-reading comparison, decision ledger and poetry edition.
-- Permanent disclosure: reference-only; no trained author model or actual contract claim.
-
-## Motion decision
-
-`Translation Weave` is a 680ms evidence-linking motion. It animates only connecting paths and settled emphasis, while source and translation geometry remain fixed. Reduced-motion mode renders the final linked state immediately.
+- Primary hero: source and original-fidelity spread.
+- Secondary surfaces: modern-reading comparison, decision ledger and poetry edition.
+- Signature: `Translation Weave` animates only SVG linking rules and rendering emphasis.
+- Computed maximum end: `680ms`, verified from actual computed duration plus delay.
+- Final state: normal replay and reduced-motion mode expose identical paths, emphasis and annotation information.
