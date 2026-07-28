@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   relay:
-    if: github.event.workflow_run.id == 30223403324 && github.event.workflow_run.run_attempt >= 2
+    if: github.event.workflow_run.id == 30223403324
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
