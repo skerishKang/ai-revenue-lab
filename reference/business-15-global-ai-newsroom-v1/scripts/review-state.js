@@ -72,17 +72,23 @@
     if (!scene) return;
     const seal = scene.querySelector(".human-seal");
     if (!seal) return;
-    if (motionButton.getAttribute("aria-pressed") === "true") return;
+    if (scene.classList.contains("motion-complete") || scene.classList.contains("is-converging")) return;
     setState("global");
-    scene.classList.remove("is-converging");
+    scene.classList.remove("motion-complete", "is-converging");
     void scene.offsetWidth;
     scene.classList.add("is-converging");
     motionButton.setAttribute("aria-pressed", "true");
     function onComplete() {
       scene.classList.remove("is-converging");
+      scene.classList.add("motion-complete");
       motionButton.setAttribute("aria-pressed", "false");
     }
-    seal.addEventListener("animationend", onComplete, { once: true });
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      seal.getAnimations().forEach(a => a.finish());
+      onComplete();
+    } else {
+      seal.addEventListener("animationend", onComplete, { once: true });
+    }
   });
 
   window.addEventListener("popstate", () => setState(requestedState(), { updateUrl: false }));

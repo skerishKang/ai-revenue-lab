@@ -39,10 +39,19 @@
 @keyframes holdConflict { 0%, 25% { opacity: .55; transform: translateX(0); } 55%, 100% { opacity: 1; transform: translateX(-4px); } }
 @keyframes revealChain { 0%, 34% { clip-path: inset(0 100% 0 0); } 76%, 100% { clip-path: inset(0 0 0 0); } }
 @keyframes humanSeal { 0%, 76% { opacity: 0; transform: scale(.96) rotate(-2deg); } 100% { opacity: 1; transform: scale(1) rotate(-2deg); } }
+.convergence-scene.motion-complete .source-marker { opacity: 1; transform: translateY(0); }
+.convergence-scene.motion-complete .evidence-strip--a { opacity: 1; transform: translateX(15%); }
+.convergence-scene.motion-complete .evidence-strip--b { opacity: 1; transform: translateX(8%); }
+.convergence-scene.motion-complete .evidence-strip--conflict { opacity: 1; transform: translateX(-4px); }
+.convergence-scene.motion-complete .chain-reveal { clip-path: inset(0); }
+.convergence-scene.motion-complete .human-seal { opacity: 1; transform: scale(1) rotate(-2deg); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
-  .convergence-scene.is-converging .evidence-strip { opacity: 1; transform: none; }
-  .convergence-scene.is-converging .chain-reveal { clip-path: inset(0); }
-  .convergence-scene.is-converging .human-seal { opacity: 1; transform: rotate(-2deg); }
+  .convergence-scene.is-converging .evidence-strip,
+  .convergence-scene.motion-complete .evidence-strip { opacity: 1; transform: none; }
+  .convergence-scene.is-converging .chain-reveal,
+  .convergence-scene.motion-complete .chain-reveal { clip-path: inset(0); }
+  .convergence-scene.is-converging .human-seal,
+  .convergence-scene.motion-complete .human-seal { opacity: 1; transform: rotate(-2deg); }
 }
