@@ -72,9 +72,9 @@
     if (!scene) return;
     const seal = scene.querySelector(".human-seal");
     if (!seal) return;
-    if (scene.classList.contains("motion-complete") || scene.classList.contains("is-converging")) return;
-    setState("global");
+    if (scene.classList.contains("is-converging")) return;
     scene.classList.remove("motion-complete", "is-converging");
+    setState("global");
     void scene.offsetWidth;
     scene.classList.add("is-converging");
     motionButton.setAttribute("aria-pressed", "true");
