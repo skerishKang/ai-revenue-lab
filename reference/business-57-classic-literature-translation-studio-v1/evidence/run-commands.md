@@ -1,4 +1,6 @@
-# Validation Commands
+# Validation Commands and Executed Environment
+
+Execution date: `2026-07-28`
 
 ## Static contract
 
@@ -7,74 +9,78 @@ cd reference/business-57-classic-literature-translation-studio-v1
 python evidence/validate_static.py
 ```
 
-Expected result:
+Expected and observed status:
 
 ```text
 STATIC_CONTRACT_PASS
 ```
 
-The script rewrites `evidence/validation.json` with the executed check results.
+The script generates `evidence/validation.json` from current implementation bytes.
 
-## Local server
+## Browser validation
 
 ```bash
 cd reference/business-57-classic-literature-translation-studio-v1
-python -m http.server 8000 --bind 127.0.0.1
+python evidence/validate_browser.py
 ```
 
-Open:
+Environment:
 
 ```text
-http://127.0.0.1:8000/
+Browser: /usr/bin/chromium
+Automation: Python Playwright
+Navigation mode: page.set_content inline local harness
+Reason: localhost and file:// navigation blocked by the container policy
+Runtime source: current index.html, styles/main.css, scripts/review.js, assets/rose-mark.svg
+External runtime requests: prohibited and asserted zero
 ```
 
-## Required browser review
-
-Review all seven states at:
+Required viewport matrix:
 
 ```text
 1440 × 1100
 768 × 1024
 390 × 844
-```
-
-Also emulate:
-
-```text
 prefers-reduced-motion: reduce
 ```
 
-## Browser assertions
-
-- seven state tabs switch the matching state;
-- Left/Right Arrow keys move between states and preserve visible focus;
-- no horizontal overflow at the three required viewports;
-- no console errors or page errors;
-- no external runtime requests;
-- `assets/rose-mark.svg` loads locally;
-- source reveal opens and closes on the mobile state;
-- Translation Weave changes only thread/emphasis layers;
-- source fragments, final paragraph, review rail and replay button geometry remain fixed;
-- first and second replay reach the same final frame;
-- reduced-motion mode shows the complete linked state immediately.
-
-## Evidence captures
-
-Suggested filenames:
+Generated machine-readable output:
 
 ```text
-desktop-1440-library.png
-desktop-1440-fidelity-spread.png
-desktop-1440-comparison.png
-desktop-1440-decision-ledger.png
-desktop-1440-poetry.png
-mobile-390-reading.png
-translation-weave-680ms.gif
-reduced-motion-weave-final.png
+evidence/browser-validation.json
 ```
 
-Record SHA-256 and byte size for each generated binary artifact. Do not commit private contract material or living-author corpus content with the evidence.
+Generated visual evidence:
 
-## Current environment note
+```text
+evidence/screenshots/desktop-1440-library.png
+evidence/screenshots/desktop-1440-source-fidelity.png
+evidence/screenshots/desktop-1440-comparison.png
+evidence/screenshots/desktop-1440-ledger.png
+evidence/screenshots/desktop-1440-poetry.png
+evidence/screenshots/desktop-1440-mobile.png
+evidence/screenshots/desktop-1440-weave.png
+evidence/screenshots/tablet-768-source-fidelity.png
+evidence/screenshots/mobile-390-reading.png
+evidence/screenshots/weave-before.png
+evidence/screenshots/weave-midpoint.png
+evidence/screenshots/weave-complete.png
+evidence/screenshots/reduced-motion-weave-final.png
+evidence/screenshots/translation-weave-680ms.gif
+```
 
-The authoring environment attempted to clone the public branch for execution, but its container could not resolve `github.com`. Therefore the committed static validator and browser checks must be run independently before the PR may claim `UI_REVIEW_READY`.
+## Git whitespace validation
+
+```bash
+git diff --check
+```
+
+## Evidence integrity
+
+```bash
+python evidence/build_manifest.py
+python -m zipfile -t <evidence-archive.zip>
+sha256sum <evidence-archive.zip>
+```
+
+Binary screenshots and GIF are kept in the private evidence archive rather than committed to the public source branch. `evidence/evidence-manifest.json` records filename, pixel size, byte size and SHA-256.
