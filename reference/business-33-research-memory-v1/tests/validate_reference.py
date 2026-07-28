@@ -1,0 +1,9 @@
+from pathlib import Path
+import json,re,sys
+ROOT=Path(__file__).resolve().parents[1]
+html=(ROOT/'index.html').read_text(encoding='utf-8');css=(ROOT/'styles/main.css').read_text(encoding='utf-8');js=(ROOT/'scripts/review.js').read_text(encoding='utf-8');manifest=(ROOT/'IMAGE_SOURCES.md').read_text(encoding='utf-8')
+states=['cover','question','literature','notes','equation','review','mobile']
+labels=['SYNTHETIC RESEARCH PROJECT','SOURCE RECORD — SYNTHETIC','SOURCE TEXT','RESEARCHER INTERPRETATION','CLAIM','SUPPORTING EVIDENCE','CONTRADICTION','UNRESOLVED QUESTION','EQUATION CONTEXT','REVIEWER OBJECTION — SYNTHETIC','REVISION','HUMAN-REVIEWED RESEARCH MEMORY','VISUAL REFERENCE ONLY','NO LIVE SEARCH, INGESTION, OR CITATION AUTHORITY']
+assets=sorted((ROOT/'assets/images').glob('*.svg'))
+checks={'exact_states':re.findall(r'data-state="([^"]+)"',html)==states,'exact_controls':re.findall(r'data-state-control="([^"]+)"',html)==states,'local_css_js':'styles/main.css' in html and 'scripts/review.js' in html,'assets_min_10':len(assets)>=10,'all_assets_documented':all(str(p.relative_to(ROOT)).replace('\\','/') in manifest for p in assets),'all_labels':all(x in html for x in labels),'reduced_motion':'prefers-reduced-motion' in css,'responsive':'max-width:620px' in css,'animationend':"addEventListener('animationend'" in js and 'memoryComplete' in js,'replay_reset':"classList.remove('is-running','is-complete')" in js,'no_timeout':'setTimeout' not in js,'no_external_runtime':not re.search(r'(src|href)=["\']https?://',html),'fixed_asset_version':'rm-v1-20260729' in html}
+status='PASS' if all(checks.values()) else 'FAIL';report={'status':status,'checks':checks,'state_count':len(states),'asset_count':len(assets)};(ROOT/'evidence/static-self-check.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print(json.dumps(report,ensure_ascii=False,indent=2));sys.exit(0 if status=='PASS' else 1)
