@@ -130,63 +130,107 @@ async function run() {
       };
     }, FAILING_LABEL);
 
-    // 3. Event track containment check at 1440px only (narrow viewports
-    //    naturally have events positioned near/at track edges — expected).
+    // 3. Event track containment check at ALL viewports
     const trackResults = [];
-    if (vp.width >= 1000) {
-      const tr = await page.evaluate(() => {
-        const results = [];
-        const tracks = document.querySelectorAll('.chronology-bands .track');
-        tracks.forEach((track, ti) => {
-          const trackRect = track.getBoundingClientRect();
-          const events = track.querySelectorAll('.event');
-          events.forEach((el) => {
-            const rect = el.getBoundingClientRect();
-            const text = el.textContent.trim().slice(0, 30);
-            const exceeds = rect.right > trackRect.right + 2 || rect.left < trackRect.left - 2;
-            if (exceeds) results.push({ track: ti, text, eventRight: rect.right, trackRight: trackRect.right });
-          });
+    const tr = await page.evaluate(() => {
+      const results = [];
+      const tracks = document.querySelectorAll('.chronology-bands .track');
+      tracks.forEach((track, ti) => {
+        const trackRect = track.getBoundingClientRect();
+        const events = track.querySelectorAll('.event');
+        events.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const text = el.textContent.trim().slice(0, 30);
+          const exceeds = rect.right > trackRect.right + 2 || rect.left < trackRect.left - 2;
+          if (exceeds) results.push({ track: ti, text, eventRight: rect.right, trackRight: trackRect.right });
         });
-        return results;
       });
-      trackResults.push(...tr);
-    }
+      return results;
+    });
+    trackResults.push(...tr);
 
-    // 4. Event collision check — at 1440px only (narrow viewports have
-    //    inherent overlap in a dense timeline band; this is a design
-    //    characteristic, not a text-containment defect).
+    // 4. Event collision check — at ALL viewports
     const collisionResults = [];
-    if (vp.width >= 1000) {
-      const cr = await page.evaluate(() => {
-        const collisions = [];
-        const tracks = document.querySelectorAll('.chronology-bands .track');
-        tracks.forEach((track) => {
-          const events = Array.from(track.querySelectorAll('.event'));
-          for (let i = 0; i < events.length; i++) {
-            for (let j = i + 1; j < events.length; j++) {
-              const a = events[i].getBoundingClientRect();
-              const b = events[j].getBoundingClientRect();
-              const textA = events[i].textContent.trim().slice(0, 30);
-              const textB = events[j].textContent.trim().slice(0, 30);
-              const hOverlap = a.right > b.left + 1 && b.right > a.left + 1;
-              const vOverlap = a.bottom > b.top + 1 && b.bottom > a.top + 1;
-              if (hOverlap && vOverlap) {
-                collisions.push({ a: textA, b: textB, aRect: { l: a.left, r: a.right }, bRect: { l: b.left, r: b.right } });
-              }
+    const cr = await page.evaluate(() => {
+      const collisions = [];
+      const tracks = document.querySelectorAll('.chronology-bands .track');
+      tracks.forEach((track) => {
+        const events = Array.from(track.querySelectorAll('.event'));
+        for (let i = 0; i < events.length; i++) {
+          for (let j = i + 1; j < events.length; j++) {
+            const a = events[i].getBoundingClientRect();
+            const b = events[j].getBoundingClientRect();
+            const textA = events[i].textContent.trim().slice(0, 30);
+            const textB = events[j].textContent.trim().slice(0, 30);
+            const hOverlap = a.right > b.left + 1 && b.right > a.left + 1;
+            const vOverlap = a.bottom > b.top + 1 && b.bottom > a.top + 1;
+            if (hOverlap && vOverlap) {
+              collisions.push({ a: textA, b: textB, aRect: { l: a.left, r: a.right }, bRect: { l: b.left, r: b.right } });
             }
           }
-        });
-        return collisions;
+        }
       });
-      collisionResults.push(...cr);
-    }
+      return collisions;
+    });
+    collisionResults.push(...cr);
+
+    // 5. Visible year context check
+    const yearResults = await page.evaluate(() => {
+      const events = document.querySelectorAll('.chronology-bands .event');
+      const missing = [];
+      events.forEach((el) => {
+        const timeEl = el.querySelector('time');
+        if (!timeEl) {
+          missing.push(el.textContent.trim().slice(0, 30));
+        }
+      });
+      return missing;
+    });
+
+    // 6. Same-year event pair check (04.19 현장 접촉 사고 and 06.02 제한 운행 재개)
+    const sameYearResults = await page.evaluate(() => {
+      const events = Array.from(document.querySelectorAll('.chronology-bands .event'));
+      const accident = events.find(e => e.textContent.includes('04.19 현장 접촉 사고'));
+      const resume = events.find(e => e.textContent.includes('06.02 제한 운행 재개'));
+      if (!accident || !resume) return { found: false };
+      const a = accident.getBoundingClientRect();
+      const b = resume.getBoundingClientRect();
+      const hOverlap = a.right > b.left + 1 && b.right > a.left + 1;
+      const vOverlap = a.bottom > b.top + 1 && b.bottom > a.top + 1;
+      return {
+        found: true,
+        collision: hOverlap && vOverlap,
+        aRect: { l: a.left, r: a.right, t: a.top, b: a.bottom },
+        bRect: { l: b.left, r: b.right, t: b.top, b: b.bottom },
+      };
+    });
+
+    // 7. Right-edge event check (2026 events)
+    const rightEdgeResults = await page.evaluate(() => {
+      const events = Array.from(document.querySelectorAll('.chronology-bands .event'));
+      const tracks = document.querySelectorAll('.chronology-bands .track');
+      const results = [];
+      events.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const track = el.closest('.track');
+        if (!track) return;
+        const trackRect = track.getBoundingClientRect();
+        const text = el.textContent.trim().slice(0, 30);
+        const exceeds = rect.right > trackRect.right + 2 || rect.left < trackRect.left - 2;
+        if (exceeds) results.push({ text, eventRight: rect.right, trackRight: trackRect.right });
+      });
+      return results;
+    });
 
     // Summary
     const textContained = eventResults.length === 0;
     const specificPass = specificResult?.found ? specificResult.textContained && specificResult.scrollFit : false;
     const trackContained = trackResults.length === 0;
     const noCollisions = collisionResults.length === 0;
-    const pass = textContained && specificPass && trackContained && noCollisions;
+    const yearContext = yearResults.length === 0;
+    const sameYearNoCollision = sameYearResults.found ? !sameYearResults.collision : false;
+    const rightEdgeContained = rightEdgeResults.length === 0;
+    const pass = textContained && specificPass && trackContained && noCollisions && yearContext && sameYearNoCollision && rightEdgeContained;
 
     console.log(`text containment:  ${textContained ? 'PASS' : 'FAIL'} (${eventResults.length} issues)`);
     console.log(`failing label:     ${specificPass ? 'PASS' : 'FAIL'}`);
@@ -197,6 +241,13 @@ async function run() {
     }
     console.log(`track containment: ${trackContained ? 'PASS' : 'FAIL'} (${trackResults.length} exceed)`);
     console.log(`collisions:        ${noCollisions ? 'PASS' : 'FAIL'} (${collisionResults.length} found)`);
+    console.log(`year context:      ${yearContext ? 'PASS' : 'FAIL'} (${yearResults.length} missing)`);
+    console.log(`same-year pair:    ${sameYearNoCollision ? 'PASS' : 'FAIL'}`);
+    if (sameYearResults.found && sameYearResults.collision) {
+      console.log(`  aRect: ${JSON.stringify(sameYearResults.aRect)}`);
+      console.log(`  bRect: ${JSON.stringify(sameYearResults.bRect)}`);
+    }
+    console.log(`right-edge events: ${rightEdgeContained ? 'PASS' : 'FAIL'} (${rightEdgeResults.length} exceed)`);
     console.log(`OVERALL:           ${pass ? 'PASS' : 'FAIL'}`);
 
     if (eventResults.length) {
