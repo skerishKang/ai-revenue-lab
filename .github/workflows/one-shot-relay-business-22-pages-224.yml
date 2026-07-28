@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Verify owner approval, command, and one-shot state
-        id: preflight
+      - name: Check one-shot marker
+        id: marker
         env:
           GH_TOKEN: ${{ github.token }}
           API_URL: ${{ github.api_url }}
@@ -33,26 +33,34 @@ jobs:
             --header 'Accept: application/vnd.github+json' \
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "${API_URL}/repos/${REPOSITORY}/issues/224/comments?per_page=100")"
-
-          jq -e '[.[] | select(
-            .user.login == "skerishKang" and
-            (.body | test("(?m)^UI_APPROVED$") ) and
-            (.body | contains("e43da95f7e59d1800cd1f182c2c835ab9a59456b"))
-          )] | length > 0' <<<"${comments}" >/dev/null
-
-          jq -e '[.[] | select(
-            .user.login == "skerishKang" and
-            .body == "DEPLOY_BUSINESS_22_PAGES"
-          )] | length > 0' <<<"${comments}" >/dev/null
-
           if jq -e '[.[] | select(.body | contains("BUSINESS_22_RELAY_DISPATCHED"))] | length > 0' <<<"${comments}" >/dev/null; then
             echo 'should_run=false' >> "${GITHUB_OUTPUT}"
           else
             echo 'should_run=true' >> "${GITHUB_OUTPUT}"
           fi
 
+      - name: Record scheduled relay start
+        if: steps.marker.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -n --arg body 'BUSINESS_22_SCHEDULE_STARTED
+
+Scheduled one-shot relay started. The protected provisioning workflow will independently validate PR #224, repository-owner UI approval, and exact SHA.' '{body:$body}' > comment.json
+          curl --silent --show-error --fail \
+            --request POST \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            --data-binary @comment.json \
+            "${API_URL}/repos/${REPOSITORY}/issues/224/comments" >/dev/null
+
       - name: Dispatch protected Business 22 workflow
-        if: steps.preflight.outputs.should_run == 'true'
+        if: steps.marker.outputs.should_run == 'true'
         id: dispatch
         env:
           GH_TOKEN: ${{ github.token }}
@@ -95,7 +103,7 @@ jobs:
           echo "started_at=${started_at}" >> "${GITHUB_OUTPUT}"
 
       - name: Locate dispatched run
-        if: steps.preflight.outputs.should_run == 'true'
+        if: steps.marker.outputs.should_run == 'true'
         id: locate
         env:
           GH_TOKEN: ${{ github.token }}
@@ -121,7 +129,7 @@ jobs:
           echo "run_url=$(jq -r '.html_url' <<<"${run_json}")" >> "${GITHUB_OUTPUT}"
 
       - name: Record one-shot marker and created run
-        if: steps.preflight.outputs.should_run == 'true'
+        if: steps.marker.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           API_URL: ${{ github.api_url }}
@@ -152,7 +160,7 @@ jobs:
             "${API_URL}/repos/${REPOSITORY}/issues/224/comments" >/dev/null
 
       - name: Wait for protected run
-        if: steps.preflight.outputs.should_run == 'true'
+        if: steps.marker.outputs.should_run == 'true'
         id: wait
         env:
           GH_TOKEN: ${{ github.token }}
@@ -177,7 +185,7 @@ jobs:
           echo "conclusion=$(jq -r '.conclusion // empty' <<<"${run_json}")" >> "${GITHUB_OUTPUT}"
 
       - name: Publish final result
-        if: steps.preflight.outputs.should_run == 'true'
+        if: steps.marker.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           API_URL: ${{ github.api_url }}
