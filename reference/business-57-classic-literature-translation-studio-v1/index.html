@@ -5,24 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Business 57 고전문학 번역실 Phase 1 계약 설명용 시각 데모">
   <title>고전문학 번역실 — Parallel Literary Edition</title>
-  <link rel="stylesheet" href="./styles/main.css?v=classic-literature-translation-20260727-1">
-  <script src="./scripts/review.js?v=classic-literature-translation-20260727-1" defer></script>
+  <link rel="stylesheet" href="./styles/main.css?v=classic-literature-translation-20260728-2">
+  <script src="./scripts/review.js?v=classic-literature-translation-20260728-2" defer></script>
 </head>
-<body>
+<body data-asset-version="classic-literature-translation-20260728-2">
   <header class="review-rail">
     <div class="brand-block">
       <p>BUSINESS 57 · UI ONLY</p>
       <strong>고전문학 번역실</strong>
       <span>Classic Literature Translation Studio</span>
     </div>
-    <nav class="state-tabs" aria-label="시각 상태 선택">
-      <button class="state-tab is-active" type="button" data-state-target="library" aria-current="page">01 번역 서가</button>
-      <button class="state-tab" type="button" data-state-target="fidelity">02 원문·보존본</button>
-      <button class="state-tab" type="button" data-state-target="comparison">03 두 판본 비교</button>
-      <button class="state-tab" type="button" data-state-target="ledger">04 판단 기록</button>
-      <button class="state-tab" type="button" data-state-target="poetry">05 고전시</button>
-      <button class="state-tab" type="button" data-state-target="mobile">06 모바일</button>
-      <button class="state-tab" type="button" data-state-target="weave">07 번역 결</button>
+    <nav class="state-tabs" aria-label="시각 상태 선택" role="tablist">
+      <button class="state-tab is-active" type="button" data-state-target="library" id="tab-library" role="tab" aria-controls="library-panel" aria-selected="true" tabindex="0" aria-current="page">01 번역 서가</button>
+      <button class="state-tab" type="button" data-state-target="source-fidelity" id="tab-source-fidelity" role="tab" aria-controls="source-fidelity-panel" aria-selected="false" tabindex="-1">02 원문·보존본</button>
+      <button class="state-tab" type="button" data-state-target="comparison" id="tab-comparison" role="tab" aria-controls="comparison-panel" aria-selected="false" tabindex="-1">03 두 판본 비교</button>
+      <button class="state-tab" type="button" data-state-target="ledger" id="tab-ledger" role="tab" aria-controls="ledger-panel" aria-selected="false" tabindex="-1">04 판단 기록</button>
+      <button class="state-tab" type="button" data-state-target="poetry" id="tab-poetry" role="tab" aria-controls="poetry-panel" aria-selected="false" tabindex="-1">05 고전시</button>
+      <button class="state-tab" type="button" data-state-target="mobile" id="tab-mobile" role="tab" aria-controls="mobile-panel" aria-selected="false" tabindex="-1">06 모바일</button>
+      <button class="state-tab" type="button" data-state-target="weave" id="tab-weave" role="tab" aria-controls="weave-panel" aria-selected="false" tabindex="-1">07 번역 결</button>
     </nav>
     <div class="rail-status">
       <span id="state-count">1 / 7</span>
@@ -31,7 +31,7 @@
   </header>
 
   <main class="stage" id="stage">
-    <section class="visual-state is-active" data-state="library" aria-labelledby="library-title">
+    <section class="visual-state is-active" data-state="library" id="library-panel" role="tabpanel" aria-labelledby="tab-library library-title">
       <div class="paper-frame library-frame">
         <header class="edition-header">
           <div>
@@ -88,11 +88,11 @@
       </div>
     </section>
 
-    <section class="visual-state" data-state="fidelity" aria-labelledby="fidelity-title" hidden>
+    <section class="visual-state" data-state="source-fidelity" id="source-fidelity-panel" role="tabpanel" aria-labelledby="tab-source-fidelity fidelity-title" hidden>
       <div class="paper-frame spread-frame">
         <header class="spread-title-row">
           <div>
-            <p class="kicker">FRANKENSTEIN · CHAPTER V · DEMO EXCERPT</p>
+            <p class="kicker">FRANKENSTEIN · 1818 EDITION · CHAPTER IV · DEMO EXCERPT</p>
             <h2 id="fidelity-title">원문과 원전 보존 번역</h2>
           </div>
           <div class="edition-chip">DEFAULT · 원전 보존</div>
@@ -101,7 +101,7 @@
         <div class="parallel-spread">
           <article class="source-page" lang="en">
             <div class="page-label">ORIGINAL TEXT</div>
-            <p class="source-passage"><mark data-link="link-1">It was on a dreary night of November</mark> that I beheld the accomplishment of my toils. With an anxiety that almost amounted to agony, <mark data-link="link-2">I collected the instruments of life around me</mark>, that I might infuse a spark of being into the lifeless thing that lay at my feet.</p>
+            <p class="source-passage"><mark data-link="link-1">It was on a dreary night of November,</mark> that I beheld the accomplishment of my toils. With an anxiety that almost amounted to agony, <mark data-link="link-2">I collected the instruments of life around me</mark>, that I might infuse a spark of being into the lifeless thing that lay at my feet.</p>
             <aside class="margin-note">
               <strong>dreary</strong>
               <span>단순한 ‘우울한’보다 음산하고 지친 날씨·정조를 함께 가짐.</span>
@@ -128,6 +128,25 @@
           </article>
         </div>
 
+        <div class="fidelity-apparatus" aria-label="원문 출처와 번역 검토 정보">
+          <aside class="motif-tracker">
+            <p class="page-label">REPEATED SOURCE ROOT</p>
+            <strong>life → lifeless → being</strong>
+            <span>‘생명’의 반복을 모두 같은 단어로 평탄화하지 않고, 생명·생기 없음·존재의 층위를 나누어 추적합니다.</span>
+          </aside>
+          <aside class="historical-note">
+            <p class="page-label">HISTORICAL TERM NOTE</p>
+            <strong>instruments of life</strong>
+            <span>1818년 자연철학과 갈바니즘의 실험 언어를 떠올리게 하는 표현입니다. ‘장비’로 단정하면 시대적 추상성이 약해집니다.</span>
+          </aside>
+          <dl class="provenance-strip">
+            <div><dt>원문 판본</dt><dd>Project Gutenberg #41445 · 1818 photo-reprint</dd></div>
+            <div><dt>한국어</dt><dd>이 UI를 위해 신규 작성 · 출판 번역 아님</dd></div>
+            <div><dt>모델·코퍼스</dt><dd>연결 없음 · 외부 학습 자료 사용 주장 없음</dd></div>
+            <div><dt>편집 검토</dt><dd>Human review pending · 3 / 5</dd></div>
+          </dl>
+        </div>
+
         <footer class="folio-footer">
           <span>Source edition and rights recorded in RIGHTS_AND_SOURCES.md</span>
           <span>08—09</span>
@@ -135,7 +154,7 @@
       </div>
     </section>
 
-    <section class="visual-state" data-state="comparison" aria-labelledby="comparison-title" hidden>
+    <section class="visual-state" data-state="comparison" id="comparison-panel" role="tabpanel" aria-labelledby="tab-comparison comparison-title" hidden>
       <div class="paper-frame comparison-frame">
         <header class="spread-title-row">
           <div>
@@ -183,7 +202,7 @@
       </div>
     </section>
 
-    <section class="visual-state" data-state="ledger" aria-labelledby="ledger-title" hidden>
+    <section class="visual-state" data-state="ledger" id="ledger-panel" role="tabpanel" aria-labelledby="tab-ledger ledger-title" hidden>
       <div class="paper-frame ledger-frame">
         <header class="spread-title-row">
           <div>
@@ -231,7 +250,7 @@
       </div>
     </section>
 
-    <section class="visual-state" data-state="poetry" aria-labelledby="poetry-title" hidden>
+    <section class="visual-state" data-state="poetry" id="poetry-panel" role="tabpanel" aria-labelledby="tab-poetry poetry-title" hidden>
       <div class="paper-frame poetry-frame">
         <header class="spread-title-row">
           <div>
@@ -244,7 +263,7 @@
         <div class="poetry-grid">
           <article class="poem-source" lang="en">
             <p class="page-label">ORIGINAL</p>
-            <blockquote>O Rose, thou art sick.<br>The invisible worm,<br>That flies in the night<br>In the howling storm:</blockquote>
+            <blockquote>O rose thou art sick.<br>The invisible worm,<br>That flies in the night<br>In the howling storm:</blockquote>
           </article>
           <article class="poem-literal">
             <p class="page-label">LITERAL RENDERING</p>
@@ -267,7 +286,7 @@
       </div>
     </section>
 
-    <section class="visual-state" data-state="mobile" aria-labelledby="mobile-title" hidden>
+    <section class="visual-state" data-state="mobile" id="mobile-panel" role="tabpanel" aria-labelledby="tab-mobile mobile-title" hidden>
       <div class="mobile-review-shell">
         <div class="phone-frame">
           <header class="phone-head">
@@ -275,7 +294,7 @@
           </header>
           <div class="phone-progress"><span></span></div>
           <article class="phone-reading">
-            <p class="kicker">FRANKENSTEIN · CH. V</p>
+            <p class="kicker">FRANKENSTEIN · 1818 · CH. IV</p>
             <h2 id="mobile-title">그것은 음산한<br>11월의 어느 밤이었다.</h2>
             <p>나는 마침내 내 노고가 완성된 모습을 바라보았다. 고통에 거의 맞닿은 불안 속에서, 나는 생명의 기구들을 내 둘레에 모아 놓았다.</p>
             <button type="button" class="source-reveal" aria-expanded="false">원문 한 문장 보기</button>
@@ -284,6 +303,12 @@
               <strong>번역 주석 01</strong>
               <p>‘dreary’는 날씨와 화자의 피로·불길함을 함께 남기기 위해 ‘음산한’으로 옮겼습니다.</p>
             </aside>
+            <dl class="phone-disclosure" aria-label="출처 권리 및 AI 보조 고지">
+              <div><dt>원문</dt><dd>1818 판본 · 권리 기록 확인</dd></div>
+              <div><dt>한국어</dt><dd>신규 작성 데모</dd></div>
+              <div><dt>AI 보조</dt><dd>실제 모델·외부 코퍼스 미연결</dd></div>
+              <div><dt>검토</dt><dd>사람 편집 검토 대기</dd></div>
+            </dl>
           </article>
           <footer class="phone-footer">
             <span>퍼블릭도메인 원문</span>
@@ -298,17 +323,17 @@
       </div>
     </section>
 
-    <section class="visual-state" data-state="weave" aria-labelledby="weave-title" hidden>
+    <section class="visual-state" data-state="weave" id="weave-panel" role="tabpanel" aria-labelledby="tab-weave weave-title" hidden>
       <div class="paper-frame weave-frame">
         <header class="spread-title-row">
           <div>
             <p class="kicker">SIGNATURE MOTION · 680MS</p>
             <h2 id="weave-title">Translation Weave · 번역 결 엮기</h2>
           </div>
-          <button type="button" id="replay-weave" class="replay-button">다시 엮기</button>
+          <button type="button" id="replay-weave" class="replay-button" aria-controls="weave-board">다시 엮기</button>
         </header>
 
-        <div class="weave-board" id="weave-board">
+        <div class="weave-board" id="weave-board" data-motion-state="complete" aria-describedby="weave-status">
           <article class="weave-source" lang="en">
             <p class="page-label">SOURCE FRAGMENTS</p>
             <span class="fragment fragment-1">dreary night</span>
@@ -343,7 +368,7 @@
   <footer class="global-disclosure">
     <strong>REFERENCE-ONLY</strong>
     <span>실제 번역 서비스·학습 모델·작가 계약이 아닙니다.</span>
-    <span>생존 작가 자료 없음 · 외부 런타임 요청 없음</span>
+    <span>퍼블릭도메인 원문 · 한국어 신규 작성 · 모델·외부 코퍼스 미연결 · 사람 편집 검토 대기</span>
   </footer>
 </body>
 </html>
