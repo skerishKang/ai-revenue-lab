@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "matrix": [
+    {"viewport":[1440,1100],"state":"cover","visible":1,"selected":"cover","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[1440,1100],"state":"procedure","visible":1,"selected":"procedure","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[1440,1100],"state":"citizen","visible":1,"selected":"citizen","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[1440,1100],"state":"staff","visible":1,"selected":"staff","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[1440,1100],"state":"evidence","visible":1,"selected":"evidence","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[1440,1100],"state":"improvement","visible":1,"selected":"improvement","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[1440,1100],"state":"mobile","visible":1,"selected":"mobile","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"cover","visible":1,"selected":"cover","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"procedure","visible":1,"selected":"procedure","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"citizen","visible":1,"selected":"citizen","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"staff","visible":1,"selected":"staff","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"evidence","visible":1,"selected":"evidence","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"improvement","visible":1,"selected":"improvement","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[768,1024],"state":"mobile","visible":1,"selected":"mobile","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"cover","visible":1,"selected":"cover","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"procedure","visible":1,"selected":"procedure","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"citizen","visible":1,"selected":"citizen","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"staff","visible":1,"selected":"staff","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"evidence","visible":1,"selected":"evidence","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"improvement","visible":1,"selected":"improvement","overflow":0,"broken":0,"labels_ok":true},
+    {"viewport":[390,844],"state":"mobile","visible":1,"selected":"mobile","overflow":0,"broken":0,"labels_ok":true}
+  ],
+  "console_errors": 0,
+  "page_errors": 0,
+  "failed_requests": 0,
+  "external_runtime_requests": 0,
+  "motion": {"delay_ms":640,"duration_ms":140,"computed_end_ms":780,"replay_equal":true,"focus_scroll_geometry_stable":true},
+  "reduced_motion": {"state":"complete","all":true}
+}

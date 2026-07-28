@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="공공절차 경험 데이터를 위한 합성 Phase 1 시각 참고본">
+  <title>공공절차 경험 데이터 · 절차 현장 지도</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<a class="skip-link" href="#review-stage">본문으로 이동</a>
+<header class="atlas-header">
+  <div class="brand-block">
+    <p class="eyebrow">BUSINESS 31 · UI_ONLY</p>
+    <h1>공공절차 경험 데이터</h1>
+    <p class="subtitle">Procedure Field Atlas · 절차 현장 지도</p>
+  </div>
+  <div class="disclosure-rack" aria-label="합성 데이터 고지">
+    <span>SYNTHETIC PUBLIC-PROCEDURE DATA</span>
+    <span>VISUAL REFERENCE ONLY</span>
+    <span>NO REAL CITIZEN OR STAFF RECORDS</span>
+    <span>NOT A GOVERNMENT PERFORMANCE ASSESSMENT</span>
+  </div>
+</header>
+<nav class="state-nav" aria-label="시각 상태 검토" role="tablist">
+  <button role="tab" data-state-control="cover" aria-selected="true">01 표지</button>
+  <button role="tab" data-state-control="procedure" aria-selected="false">02 공식 절차</button>
+  <button role="tab" data-state-control="citizen" aria-selected="false">03 시민 경험</button>
+  <button role="tab" data-state-control="staff" aria-selected="false">04 실무자 경험</button>
+  <button role="tab" data-state-control="evidence" aria-selected="false">05 현장 근거</button>
+  <button role="tab" data-state-control="improvement" aria-selected="false">06 개선 추적</button>
+  <button role="tab" data-state-control="mobile" aria-selected="false">07 모바일</button>
+</nav>
+<main id="review-stage" class="review-stage" tabindex="-1">
+  <section class="visual-state is-active" data-state="cover" role="tabpanel">
+    <div class="cover-grid">
+      <article class="atlas-cover paper-sheet">
+        <div class="index-mark">ATLAS 31 / HS-2026-Q3</div>
+        <img src="assets/images/atlas-cover.svg" alt="해솔시 합성 절차 현장 지도 표지">
+        <div class="cover-copy">
+          <p class="record-label official">OFFICIAL PROCEDURE</p>
+          <h2>보행보조기 대여 지원 신청 절차</h2>
+          <p>공식 절차와 시민·실무자의 실제 경험을 서로 섞지 않고, 차이와 병목을 증거 단위로 보존하는 합성 연구 원장.</p>
+        </div>
+      </article>
+      <aside class="field-register">
+        <dl>
+          <div><dt>Fictional municipality</dt><dd>해솔시 / Haesol City</dd></div>
+          <div><dt>Official route</dt><dd>6단계</dd></div>
+          <div><dt>Observed friction</dt><dd>첫 방문 서류 누락 → 재방문</dd></div>
+          <div><dt>Follow-up</dt><dd>6주 후 확인 · synthetic</dd></div>
+        </dl>
+        <div class="authority-key">
+          <span class="record-label official">OFFICIAL PROCEDURE</span>
+          <span class="record-label citizen">CITIZEN EXPERIENCE — SYNTHETIC</span>
+          <span class="record-label staff">STAFF EXPERIENCE — SYNTHETIC</span>
+          <span class="record-label evidence">FIELD EVIDENCE</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="visual-state" data-state="procedure" role="tabpanel" hidden>
+    <header class="state-heading"><p>절차 원장 / OFFICIAL ROUTE</p><h2>공식 절차는 여섯 단계로 기록한다</h2><span class="record-label official">OFFICIAL PROCEDURE</span></header>
+    <div class="procedure-layout">
+      <ol class="procedure-spine" aria-label="합성 공식 절차">
+        <li><b>01</b><span>안내 확인</span><small>준비물 명칭 제시</small></li>
+        <li><b>02</b><span>신청서 작성</span><small>합성 양식</small></li>
+        <li><b>03</b><span>필요서류 확인</span><small>거주 확인 서류</small></li>
+        <li><b>04</b><span>접수</span><small>원본 확인</small></li>
+        <li><b>05</b><span>담당 검토</span><small>예외 여부 확인</small></li>
+        <li><b>06</b><span>대여 일정 안내</span><small>일정 통지</small></li>
+      </ol>
+      <div class="procedure-artifacts">
+        <img src="assets/images/official-ledger.svg" alt="합성 공식 절차 원장">
+        <img src="assets/images/document-envelope.svg" alt="합성 필요서류 봉투">
+        <div class="authority-note"><strong>Authority boundary</strong><p>이 화면은 공식 절차의 시각 참고본이며 실제 제도·신청서·기관 안내가 아니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="visual-state" data-state="citizen" role="tabpanel" hidden>
+    <header class="state-heading"><p>EXPERIENCE CARD 01</p><h2>첫 방문의 재방문 경험</h2><span class="record-label citizen">CITIZEN EXPERIENCE — SYNTHETIC</span></header>
+    <div class="split-field citizen-field">
+      <article class="visit-slip paper-sheet">
+        <img src="assets/images/citizen-visit-slip.svg" alt="합성 시민 방문 기록표">
+        <dl class="event-facts">
+          <div><dt>기록된 행동</dt><dd>안내문 확인 후 신청 창구 방문</dd></div>
+          <div><dt>확인된 결과</dt><dd>거주 확인 서류 누락으로 접수 보류</dd></div>
+          <div><dt>후속 행동</dt><dd>발급처 확인 후 재방문</dd></div>
+        </dl>
+      </article>
+      <aside class="experience-boundary">
+        <div><span class="record-label evidence">FIELD EVIDENCE</span><p>방문 순서와 서류 누락은 합성 event slip에 기록됨.</p></div>
+        <div><span class="record-label inference">EDITORIAL INFERENCE</span><p>“서류 명칭과 발급처 설명이 연결되지 않았다”는 편집 해석이며 확정 사실이 아님.</p></div>
+        <div><span class="record-label unverified">UNVERIFIED</span><p>안내문을 어느 채널에서 보았는지는 확인되지 않음.</p></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="visual-state" data-state="staff" role="tabpanel" hidden>
+    <header class="state-heading"><p>FIELD NOTE 02</p><h2>공식 명칭과 현장 설명 사이</h2><span class="record-label staff">STAFF EXPERIENCE — SYNTHETIC</span></header>
+    <div class="staff-desk">
+      <img src="assets/images/staff-field-note.svg" alt="합성 실무자 현장 메모">
+      <article class="staff-observation">
+        <blockquote>“안내문에는 서류 이름이 있지만, 어디에서 발급받는지와 어떤 대체서류가 가능한지는 한 번에 설명되지 않습니다.”</blockquote>
+        <p class="record-label staff">STAFF EXPERIENCE — SYNTHETIC</p>
+        <div class="counterpoint"><span class="record-label unverified">UNVERIFIED</span><p>모든 방문자에게 동일한 혼란이 발생한다고 단정할 수 없음.</p></div>
+        <div class="constraint"><strong>현장 제약</strong><p>창구에서는 여러 절차를 동시에 안내하므로 상세 설명 시간이 제한된다는 합성 반론을 보존한다.</p></div>
+      </article>
+      <img src="assets/images/queue-marker.svg" alt="합성 대기시간 표식">
+    </div>
+  </section>
+
+  <section class="visual-state" data-state="evidence" role="tabpanel" hidden>
+    <header class="state-heading"><p>EVIDENCE ALIGNMENT</p><h2>공식 근거와 현장 기록을 나란히 둔다</h2><span class="record-label evidence">FIELD EVIDENCE</span></header>
+    <div class="evidence-table-wrap" tabindex="0" aria-label="근거 대조표">
+      <table class="evidence-table">
+        <caption>합성 절차 근거 대조표</caption>
+        <thead><tr><th>기록 단위</th><th>Authority</th><th>확인 내용</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td>공식 안내 원장 A-03</td><td>절차 기준</td><td>거주 확인 서류 명칭</td><td><span class="record-label official">OFFICIAL PROCEDURE</span></td></tr>
+          <tr><td>시민 방문표 C-01</td><td>경험 기록</td><td>첫 방문 접수 보류</td><td><span class="record-label citizen">CITIZEN EXPERIENCE — SYNTHETIC</span></td></tr>
+          <tr><td>실무자 메모 S-02</td><td>현장 관찰</td><td>발급처 설명 부족 가능성</td><td><span class="record-label staff">STAFF EXPERIENCE — SYNTHETIC</span></td></tr>
+          <tr><td>채널 확인 기록</td><td>미확인</td><td>사전 안내를 본 경로</td><td><span class="record-label missing">MISSING EVIDENCE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="evidence-sleeves">
+      <img src="assets/images/evidence-receipt.svg" alt="합성 현장 증거 영수증">
+      <img src="assets/images/transfer-arrows.svg" alt="합성 절차 이관 화살표 시트">
+      <img src="assets/images/contradiction-note.svg" alt="합성 모순 주석">
+      <div class="contradiction-box"><span class="record-label contradiction">CONTRADICTION</span><p>공식 안내는 서류 명칭이 충분하다고 보지만, 경험 기록은 발급처·대체서류 설명이 부족했다고 기록한다.</p></div>
+    </div>
+  </section>
+
+  <section class="visual-state" data-state="improvement" role="tabpanel" hidden>
+    <header class="state-heading motion-heading"><div><p>TRACE 06</p><h2>경험에서 개선 근거로</h2></div><button class="replay-button" data-motion-replay type="button">TRACE REPLAY</button></header>
+    <div class="trace-board" data-experience-trace data-motion-state="idle">
+      <div class="trace-layer official-step"><span class="record-label official">OFFICIAL PROCEDURE</span><p>필요서류 확인 단계</p></div>
+      <div class="trace-layer citizen-step"><span class="record-label citizen">CITIZEN EXPERIENCE — SYNTHETIC</span><p>거주 확인 서류 누락 → 재방문</p></div>
+      <div class="trace-layer staff-step"><span class="record-label staff">STAFF EXPERIENCE — SYNTHETIC</span><p>발급처 설명을 매번 구두 보완</p></div>
+      <div class="trace-layer evidence-step"><span class="record-label evidence">FIELD EVIDENCE</span><p>공식 안내 원장·방문표·현장 메모 정렬</p></div>
+      <div class="trace-layer uncertainty-step"><span class="record-label contradiction">CONTRADICTION</span><span class="record-label missing">MISSING EVIDENCE</span><span class="record-label unverified">UNVERIFIED</span></div>
+      <div class="trace-layer bottleneck-step"><strong>반복 병목</strong><p>서류 명칭과 발급처·대체서류가 분리됨</p></div>
+      <div class="trace-layer improvement-step"><span class="record-label hypothesis">IMPROVEMENT HYPOTHESIS</span><p>발급처·대체서류·예외를 한 장의 준비표로 통합</p><small>담당: 합성 서비스개선팀 · 6주 후 재방문률과 문의 유형 확인</small><img class="hypothesis-sheet-asset" src="assets/images/improvement-sheet.svg" alt="합성 개선 가설 시트"></div>
+      <div class="follow-up-seal" aria-live="polite"><img src="assets/images/follow-up-seal.svg" alt="사람 검토 후속 확인 합성 도장"><span>HUMAN-REVIEWED FOLLOW-UP</span></div>
+    </div>
+    <p class="motion-status" data-motion-status>검토 재생 대기</p>
+  </section>
+
+  <section class="visual-state mobile-state" data-state="mobile" role="tabpanel" hidden>
+    <div class="phone-briefing">
+      <div class="phone-top"><span>해솔시 · 합성 절차 브리핑</span><b>HS-31</b></div>
+      <h2>첫 방문 재방문 병목</h2>
+      <p class="record-label official">OFFICIAL PROCEDURE</p>
+      <ol><li>안내 확인</li><li>신청서 작성</li><li class="focus-step">필요서류 확인</li><li>접수</li></ol>
+      <div class="mobile-evidence"><span class="record-label citizen">CITIZEN EXPERIENCE — SYNTHETIC</span><p>거주 확인 서류 누락으로 재방문.</p></div>
+      <div class="mobile-evidence"><span class="record-label staff">STAFF EXPERIENCE — SYNTHETIC</span><p>발급처 설명을 현장에서 구두 보완.</p></div>
+      <div class="mobile-evidence"><span class="record-label missing">MISSING EVIDENCE</span><p>시민이 확인한 사전 안내 채널.</p></div>
+      <div class="mobile-hypothesis"><span class="record-label hypothesis">IMPROVEMENT HYPOTHESIS</span><p>발급처·대체서류·예외를 한 장으로 통합.</p></div>
+      <footer>6주 후 확인 · synthetic · NOT A GOVERNMENT ASSESSMENT</footer>
+    </div>
+  </section>
+</main>
+<footer class="page-footer"><span>해솔시와 모든 기록은 허구입니다.</span><span>Phase 1 visual review · no collection · no analytics claim</span></footer>
+<script src="scripts/review.js"></script>
+</body>
+</html>
