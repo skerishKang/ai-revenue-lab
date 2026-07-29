@@ -30,55 +30,65 @@ with sync_playwright() as p:
       viewport_name = f'{w}x{h}'
       page.set_viewport_size({'width':w,'height':h})
       for state in states:
-        page.evaluate("s=>window.__lafReview.activate(s)",state)
+        page.evaluate("s=>window.__saoReview.activate(s)",state)
         page.wait_for_timeout(20)
         metrics=page.evaluate("""s=>{const p=document.querySelector('[data-state="'+s+'"]');const r=p.getBoundingClientRect();return {hidden:p.hidden,docOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,panelOverflow:Math.max(0,p.scrollWidth-p.clientWidth),width:r.width,height:r.height,images:[...p.querySelectorAll('img')].every(i=>i.complete&&i.naturalWidth>0)}}""",state)
         rows.append({'viewport':viewport_name,'state':state,'pass':not metrics['hidden'] and metrics['docOverflow']<=0 and metrics['panelOverflow']<=0 and metrics['images'],'metrics':metrics})
         screenshots_captured.append(capture_screenshot(page, state, viewport_name))
-    page.evaluate("window.__lafReview.activate('cover')")
-    keyboard_passed = None
+    page.evaluate("window.__saoReview.activate('cover')")
+    keyboard_arrowright=None; keyboard_arrowleft=None; keyboard_home=None; keyboard_end=None; keyboard_all=None
     for w,h in [(1440,1100), (390,844)]:
       viewport_name = f'{w}x{h}'
       page.set_viewport_size({'width':w,'height':h})
       page.locator('#tab-cover').focus()
       page.keyboard.press('ArrowRight')
-      if keyboard_passed is None:
-        keyboard_passed = page.locator('#tab-schedule').get_attribute('aria-selected')=='true'
+      r=page.locator('#tab-schedule').get_attribute('aria-selected')=='true'
+      keyboard_arrowright = r if keyboard_arrowright is None else keyboard_arrowright and r
       screenshots_captured.append(capture_screenshot(page, 'keyboard-arrowright', viewport_name))
       page.keyboard.press('ArrowLeft')
+      r=page.locator('#tab-cover').get_attribute('aria-selected')=='true'
+      keyboard_arrowleft = r if keyboard_arrowleft is None else keyboard_arrowleft and r
       screenshots_captured.append(capture_screenshot(page, 'keyboard-arrowleft', viewport_name))
       page.keyboard.press('Home')
+      r=page.locator('#tab-cover').get_attribute('aria-selected')=='true'
+      keyboard_home = r if keyboard_home is None else keyboard_home and r
       screenshots_captured.append(capture_screenshot(page, 'keyboard-home', viewport_name))
       page.keyboard.press('End')
+      r=page.locator('#tab-mobile').get_attribute('aria-selected')=='true'
+      keyboard_end = r if keyboard_end is None else keyboard_end and r
       screenshots_captured.append(capture_screenshot(page, 'keyboard-end', viewport_name))
-    page.evaluate("window.__lafReview.activate('cover')")
-    page.evaluate("window.__lafReview.activate('decision')")
+    keyboard_all = keyboard_arrowright and keyboard_arrowleft and keyboard_home and keyboard_end
+    page.evaluate("window.__saoReview.activate('cover')")
+    page.evaluate("window.__saoReview.activate('decision')")
+    replay_equal=True
     for w,h in [(1440,1100), (390,844)]:
       viewport_name = f'{w}x{h}'
       page.set_viewport_size({'width':w,'height':h})
-      page.evaluate("window.__lafReview.activate('decision')")
+      page.evaluate("window.__saoReview.activate('decision')")
       page.locator('[data-motion-replay]').click()
-      page.wait_for_function("document.querySelector('[data-fleet-trace]').dataset.motionState==='complete'",timeout=2000)
+      page.wait_for_function("document.querySelector('[data-sao-trace]').dataset.motionState==='complete'",timeout=2000)
       screenshots_captured.append(capture_screenshot(page, 'decision-replay-1', viewport_name))
       first=page.evaluate("""()=>{const e=document.querySelector('[data-final-record]');const r=e.getBoundingClientRect();return {style:getComputedStyle(e).cssText,opacity:getComputedStyle(e).opacity,transform:getComputedStyle(e).transform,rect:[r.x,r.y,r.width,r.height],scroll:[scrollX,scrollY],active:document.activeElement?.outerHTML.slice(0,80)}}""")
       page.locator('[data-motion-replay]').click()
-      page.wait_for_function("document.querySelector('[data-fleet-trace]').dataset.motionState==='complete'",timeout=2000)
+      page.wait_for_function("document.querySelector('[data-sao-trace]').dataset.motionState==='complete'",timeout=2000)
       screenshots_captured.append(capture_screenshot(page, 'decision-replay-2', viewport_name))
       second=page.evaluate("""()=>{const e=document.querySelector('[data-final-record]');const r=e.getBoundingClientRect();return {style:getComputedStyle(e).cssText,opacity:getComputedStyle(e).opacity,transform:getComputedStyle(e).transform,rect:[r.x,r.y,r.width,r.height],scroll:[scrollX,scrollY],active:document.activeElement?.outerHTML.slice(0,80)}}""")
-      replay_equal=first==second
+      replay_equal = replay_equal and (first==second)
   with p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox']) as reduced_motion_browser:
+    reduced_complete=True
     for w,h in [(1440,1100), (390,844)]:
       viewport_name = f'{w}x{h}'
       reduced=reduced_motion_browser.new_page(viewport={'width':w,'height':h},reduced_motion='reduce')
       reduced.set_content(html,wait_until='load')
-      reduced.evaluate("window.__lafReview.activate('decision')")
+      reduced.evaluate("window.__saoReview.activate('decision')")
       reduced.locator('[data-motion-replay]').click()
-      reduced.wait_for_function("document.querySelector('[data-fleet-trace]').dataset.motionState==='complete'",timeout=2000)
+      reduced.wait_for_function("document.querySelector('[data-sao-trace]').dataset.motionState==='complete'",timeout=2000)
       screenshots_captured.append(capture_screenshot(reduced, 'decision-reduced', viewport_name))
-      reduced_complete=reduced.locator('[data-fleet-trace]').get_attribute('data-motion-state')=='complete'
+      r=reduced.locator('[data-sao-trace]').get_attribute('data-motion-state')=='complete'
+      reduced_complete = reduced_complete and r
       reduced.close()
   browser.close()
-result={'status':'PASS' if all(r['pass'] for r in rows) and keyboard_passed and replay_equal and reduced_complete and not errors else 'FAIL','matrix_pass':sum(r['pass'] for r in rows),'matrix_total':len(rows),'viewports':[f'{w}x{h}' for w,h in viewports],'states':states,'keyboard':keyboard_passed,'replay_equal':replay_equal,'reduced_motion_immediate':reduced_complete,'errors':errors,'rows':rows,'nominal_completion_ms':760,'external_runtime_requests':0,'note':'Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.','screenshots_captured':screenshots_captured}
+result={'status':'PASS' if all(r['pass'] for r in rows) and keyboard_all and replay_equal and reduced_complete and not errors else 'FAIL','matrix_pass':sum(r['pass'] for r in rows),'matrix_total':len(rows),'viewports':[f'{w}x{h}' for w,h in viewports],'states':states,'keyboard_arrowright':keyboard_arrowright,'keyboard_arrowleft':keyboard_arrowleft,'keyboard_home':keyboard_home,'keyboard_end':keyboard_end,'keyboard_all':keyboard_all,'replay_equal':replay_equal,'reduced_motion_immediate':reduced_complete,'errors':errors,'rows':rows,'nominal_completion_ms':780,'external_runtime_requests':'not_measured_page_set_content','note':'Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.','screenshots_captured':screenshots_captured}
 (ROOT/'evidence/browser-self-check.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps(result,ensure_ascii=False,indent=2))
 sys.exit(0 if result['status']=='PASS' else 1)

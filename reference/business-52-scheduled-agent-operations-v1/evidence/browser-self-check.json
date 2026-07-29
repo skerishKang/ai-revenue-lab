@@ -16,7 +16,11 @@
     "decision",
     "mobile"
   ],
-  "keyboard": true,
+  "keyboard_arrowright": true,
+  "keyboard_arrowleft": true,
+  "keyboard_home": true,
+  "keyboard_end": true,
+  "keyboard_all": true,
   "replay_equal": true,
   "reduced_motion_immediate": true,
   "errors": [],
@@ -147,7 +151,7 @@
         "docOverflow": 0,
         "panelOverflow": 0,
         "width": 724,
-        "height": 918.40625,
+        "height": 918.4061889648438,
         "images": true
       }
     },
@@ -251,7 +255,7 @@
         "docOverflow": 0,
         "panelOverflow": 0,
         "width": 366,
-        "height": 937.34375,
+        "height": 937.3436889648438,
         "images": true
       }
     },
@@ -295,8 +299,8 @@
       }
     }
   ],
-  "nominal_completion_ms": 760,
-  "external_runtime_requests": 0,
+  "nominal_completion_ms": 780,
+  "external_runtime_requests": "not_measured_page_set_content",
   "note": "Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.",
   "screenshots_captured": [
     "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-cover-1440x1100.png",

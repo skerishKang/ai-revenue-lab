@@ -35,7 +35,7 @@ checks={
 'persistent_8':all(x in HTML[HTML.index('data-persistent-boundaries'):] for x in persistent),
 'final_animationend':"animationend" in JS and "runbookComplete" in JS,
 'no_timeout_completion':'setTimeout' not in JS,
-'nominal_760':'nominalMotionMs:760' in JS and '660ms' in CSS and '120ms' in CSS,
+'nominal_780':'nominalMotionMs:780' in JS and '660ms' in CSS and '120ms' in CSS,
 'reduced_motion':'prefers-reduced-motion:reduce' in CSS and 'reduce.matches' in JS,
 'mobile_390':'390px' in HTML and 'width:min(390px,100%)' in CSS,
 'manifest_columns':all(x in (ROOT/'IMAGE_SOURCES.md').read_text() for x in ['Asset type','Role','Source / ownership','Licence basis','Creation date','Intended use'])
