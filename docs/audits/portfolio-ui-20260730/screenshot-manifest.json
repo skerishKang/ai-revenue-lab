@@ -1,6 +1,6 @@
 {
   "evidenceDirectory": "/mnt/data/portfolio-audit-work",
-  "screenshotCount": 9,
+  "screenshotCount": 17,
   "records": [
     {"businessId":9,"slug":"personalized-childrens-story","state":"story-bloom-final","viewport":"1440x900","filename":"desktop-1440-story-bloom-final.png","bytes":455039,"sha256":"17a1b912f4e6d01fb37598b8e7404fbaecf8e269101f2f30782ef4eb1122cd5e","source":"Google Drive exact-head evidence ZIP"},
     {"businessId":9,"slug":"personalized-childrens-story","state":"story-bloom-start","viewport":"1440x900","filename":"desktop-1440-story-bloom-start.png","bytes":469914,"sha256":"814979b4a77145455d1135ac17013bcf727dc8136f231968f51116d5fa0d0dfe","source":"Google Drive exact-head evidence ZIP"},
@@ -10,6 +10,14 @@
     {"businessId":11,"slug":"language-learning-magazine","state":"reading","viewport":"1440x2162","filename":"desktop-reading-1440.png","bytes":342947,"sha256":"1d6b1580f41168afb158cd93322e8a34b0be74329bb2b5aa78bb21491253487d","source":"Google Drive exact-head evidence ZIP"},
     {"businessId":11,"slug":"language-learning-magazine","state":"revision","viewport":"1440x1315","filename":"desktop-revision-1440.png","bytes":193681,"sha256":"62a87d335973048d5365f1e09baedd70728da0938ebcc7a86e51cd19355f5dfc","source":"Google Drive exact-head evidence ZIP"},
     {"businessId":11,"slug":"language-learning-magazine","state":"mobile","viewport":"390x844","filename":"mobile-390x844.png","bytes":64409,"sha256":"d6f33a5a7dda722510fce239147e544dd6f53d2d19b4a9dc371aa061b6953ae7","source":"Google Drive exact-head evidence ZIP"},
-    {"businessId":11,"slug":"language-learning-magazine","state":"reduced-motion","viewport":"1440x1000","filename":"reduced-motion.png","bytes":100952,"sha256":"c9846dfba8f498c52628608942eb44b239936d127e54d37307f8666c02546b99","source":"Google Drive exact-head evidence ZIP"}
+    {"businessId":11,"slug":"language-learning-magazine","state":"reduced-motion","viewport":"1440x1000","filename":"reduced-motion.png","bytes":100952,"sha256":"c9846dfba8f498c52628608942eb44b239936d127e54d37307f8666c02546b99","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":18,"slug":"personal-audio-channel","state":"today-edition","viewport":"1440x1100","filename":"today-edition-1440x1100.png","bytes":760918,"sha256":"b5994827f6b61d9a9b35ed1484fdb2e148dc8bae3b2e92d310561ee1fa263d92","source":"Google Drive exact-head evidence"},
+    {"businessId":18,"slug":"personal-audio-channel","state":"mobile-listening","viewport":"390x844","filename":"mobile-listening-390x844.png","bytes":137925,"sha256":"cc3269c7aafd0ec2f2c96ec2ee540939d999cb9cca1340ad56100f547193a0f7","source":"Google Drive exact-head evidence"},
+    {"businessId":19,"slug":"personal-memory-book","state":"book-cover","viewport":"1440x1100","filename":"book-cover-1440x1100.png","bytes":25001,"sha256":"e0237421c58cf7e444f0856d0e93ca1b7beb67973cbffb8d3a0c3b4a18dbac35","source":"Google Drive exact-head evidence"},
+    {"businessId":19,"slug":"personal-memory-book","state":"mobile-memory-page","viewport":"390x844","filename":"mobile-memory-page-390x844.png","bytes":6113,"sha256":"f0091eef276e47271839585598f2afe65c98a1b00cea3c72bc81bf637b2f55a3","source":"Google Drive exact-head evidence"},
+    {"businessId":20,"slug":"personal-memory-novel","state":"manuscript-cover","viewport":"1440x1100","filename":"manuscript-cover-1440x1100.png","bytes":183688,"sha256":"4beb2ed215bc6ef7f9071b5f078dfa37327d1390a21bf7420d9a33d31101997f","source":"Google Drive exact-head evidence"},
+    {"businessId":20,"slug":"personal-memory-novel","state":"mobile-scene","viewport":"390x844","filename":"mobile-scene-390x844.png","bytes":58501,"sha256":"045e702e3f7ba2bdf303c7210ad00b6a7138a151829393b03d725fe513d5fe15","source":"Google Drive exact-head evidence"},
+    {"businessId":21,"slug":"founder-strategy-letter","state":"weekly-letter","viewport":"1440x1100","filename":"weekly-letter-1440x1100.png","bytes":172184,"sha256":"a512c3f71543262af8686bdd33569db93258eece354e60450f0b41d5cefe7a12","source":"Google Drive exact-head evidence"},
+    {"businessId":21,"slug":"founder-strategy-letter","state":"mobile-founder-briefing","viewport":"390x844","filename":"mobile-founder-briefing-390x844.png","bytes":63257,"sha256":"ba4d2017f7adf0277f635ce619647e1b92a6e3bfed25581471a0ec15396ba8f8","source":"Google Drive exact-head evidence"}
   ]
 }
