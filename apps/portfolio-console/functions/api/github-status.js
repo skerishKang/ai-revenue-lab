@@ -19,6 +19,7 @@ import { RuntimeSnapshotCache } from "../_lib/cache.js";
 import { createGitHubStatusService } from "../_lib/github-status-service.js";
 import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError } from "../_lib/response.js";
 import { SCHEMA_VERSION } from "../_lib/business-fact-merger.js";
+import { buildIdentitySource } from "../../business-identity-data.js";
 
 const REQUIRED_BINDINGS = ["GITHUB_APP_ID", "GITHUB_APP_INSTALLATION_ID", "GITHUB_APP_PRIVATE_KEY_PKCS8"];
 
@@ -75,7 +76,8 @@ export async function handleGitHubStatusRequest({
         });
     const client = injectedClient || new GitHubClient({ authProvider, fetchImpl });
     const snapshotCache = cache || new RuntimeSnapshotCache({ kv: env.GITHUB_STATUS_SNAPSHOT_KV, now });
-    const result = await createGitHubStatusService({ client, cache: snapshotCache, now }).getStatus();
+    const identitySource = buildIdentitySource();
+    const result = await createGitHubStatusService({ client, cache: snapshotCache, now, identitySource }).getStatus();
     return jsonResponse(result.payload, {
       status: result.status,
       head: isHead,

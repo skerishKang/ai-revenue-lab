@@ -174,7 +174,17 @@
       <div class="dialog-links" data-github-live-section>${githubLink(issue?.url, `Issue #${issue?.number || ""}`)}${githubLink(pr?.url, `PR #${pr?.number || ""}`)}${githubLink(repository.url, labels.repository)}</div>`;
     body.appendChild(block);
   }
-  function decorate(globalObject) { decorateProjectCards(globalObject); decorateBusinessRows(globalObject); decorateBusinessDialog(globalObject); }
+  function decorate(globalObject) {
+    decorateProjectCards(globalObject);
+    decorateBusinessRows(globalObject);
+    decorateBusinessDialog(globalObject);
+    // Phase 2A decoration integration
+    var liveFacts = globalObject.window && globalObject.window.ARLLiveFacts;
+    if (liveFacts && state.payload) {
+      try { liveFacts.decorateDiscovery(state.payload, globalObject); } catch (_) {}
+      try { liveFacts.decorateVerdict(state.payload, null, globalObject); } catch (_) {}
+    }
+  }
   function scheduleDecorate(globalObject) {
     if (state.scheduled) return;
     state.scheduled = true;

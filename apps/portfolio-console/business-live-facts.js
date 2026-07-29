@@ -190,13 +190,4 @@
 
   /* ── Expose API ── */
   window.ARLLiveFacts = api;
-
-  /* ── Auto-decorate when payload is available ── */
-  var check = setInterval(function () {
-    var live = window.ARLGithubLive;
-    if (live && live._state && live._state.payload) {
-      api.decorateDiscovery(live._state.payload);
-      clearInterval(check);
-    }
-  }, 300);
 })();

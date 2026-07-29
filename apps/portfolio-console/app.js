@@ -53,6 +53,28 @@
       numberAsc: '번호 ↑',
       numberDesc: '번호 ↓',
       actionPriority: '우선순위',
+      authorityLabel: '번호 권한',
+      phaseLabel: '단계',
+      lifecycleLabel: '생애주기',
+      priorityLabel: '우선순위',
+      authCanonical: '정식',
+      authProposed: '제안 번호',
+      authCandidate: '후보',
+      authExisting: '기존 프로젝트',
+      authReserved: '예약',
+      authReconciliation: '번호 조정 필요',
+      phaseNotStarted: '미시작',
+      phaseInProgress: '진행 중',
+      phaseNotReady: '미완료',
+      phaseConditionallyReady: '조건부 승인',
+      phaseApproved: '승인',
+      phaseBlockedByUi: 'UI 승인 대기',
+      phaseFrozen: '동결',
+      phaseDecisionPending: '결정 대기',
+      phaseAuthorized: '승인됨',
+      phaseImplemented: '구현됨',
+      phaseNotApplicable: '해당 없음',
+      phaseDeferred: '연기',
       progressSort: '진행률',
       viewDetail: '자세히 보기',
       notDeployed: '미배포',
@@ -122,6 +144,28 @@
       numberAsc: 'NUMBER ↑',
       numberDesc: 'NUMBER ↓',
       actionPriority: 'PRIORITY',
+      authorityLabel: 'NUMBER AUTHORITY',
+      phaseLabel: 'PHASE',
+      lifecycleLabel: 'LIFECYCLE',
+      priorityLabel: 'PRIORITY',
+      authCanonical: 'CANONICAL',
+      authProposed: 'PROPOSED NUMBER',
+      authCandidate: 'CANDIDATE',
+      authExisting: 'EXISTING PROJECT',
+      authReserved: 'RESERVED',
+      authReconciliation: 'RECONCILIATION REQUIRED',
+      phaseNotStarted: 'NOT STARTED',
+      phaseInProgress: 'IN PROGRESS',
+      phaseNotReady: 'NOT READY',
+      phaseConditionallyReady: 'CONDITIONALLY READY',
+      phaseApproved: 'APPROVED',
+      phaseBlockedByUi: 'BLOCKED BY UI',
+      phaseFrozen: 'FROZEN',
+      phaseDecisionPending: 'DECISION PENDING',
+      phaseAuthorized: 'AUTHORIZED',
+      phaseImplemented: 'IMPLEMENTED',
+      phaseNotApplicable: 'NOT APPLICABLE',
+      phaseDeferred: 'DEFERRED',
       progressSort: 'PROGRESS',
       viewDetail: 'VIEW DETAIL',
       notDeployed: 'NOT DEPLOYED',
@@ -253,29 +297,68 @@
   // ── Language ──
   function setLanguage(lang) {
     currentLang = lang;
-    document.documentElement.lang = lang === 'en' ? 'en' : 'ko';
-    $$('.lang-btn').forEach(b => b.classList.toggle('is-active', b.dataset.lang === lang));
-    // Update nav labels
-    $$('.nav-label').forEach(el => {
-      const label = el.dataset[`label${lang === 'ko' ? 'Ko' : 'En'}`];
-      if (label) el.textContent = label;
+    document.documentElement.lang = lang === 'ko' ? 'ko' : 'en';
+    // Update data-label-ko / data-label-en elements
+    $$('[data-label-ko][data-label-en]').forEach(function(el) {
+      el.textContent = el.getAttribute('data-label-' + lang);
     });
-    // Update misc labels
-    const searchLabel = $('.search-label');
-    if (searchLabel) searchLabel.textContent = t('search');
-    $$('.filter-label').forEach(el => {
-      if (el.parentElement?.querySelector('#sf-stage-filter')) el.textContent = t('stage');
-      else if (el.parentElement?.querySelector('#sf-devmode-filter')) el.textContent = t('devMode');
-      else if (el.parentElement?.querySelector('#sf-sort-filter')) el.textContent = t('sort');
-    });
-    const searchInput = $('#sf-search-input');
-    if (searchInput) searchInput.placeholder = t('search');
-    const resetBtn = $('#sf-reset-filter');
-    if (resetBtn) resetBtn.textContent = t('reset');
-    const prefix = $('#header-prefix');
-    if (prefix) {
-      prefix.textContent = prefix.dataset[`prefix${lang === 'ko' ? 'Ko' : 'En'}`] || prefix.textContent;
+    // Update filter option text for business filters
+    var authFilter = $('#biz-auth-filter');
+    if (authFilter) {
+      var authOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'canonical': lang === 'ko' ? '정식' : 'CANONICAL',
+        'proposed-number': lang === 'ko' ? '제안 번호' : 'PROPOSED NUMBER',
+        'candidate': lang === 'ko' ? '후보' : 'CANDIDATE',
+        'existing-project': lang === 'ko' ? '기존 프로젝트' : 'EXISTING PROJECT',
+        'reserved': lang === 'ko' ? '예약' : 'RESERVED',
+        'number-reconciliation-required': lang === 'ko' ? '번호 조정 필요' : 'RECONCILIATION REQUIRED',
+      };
+      Array.from(authFilter.options).forEach(function(o) { if (authOpts[o.value]) o.textContent = authOpts[o.value]; });
     }
+    var uiFilter = $('#biz-ui-filter');
+    if (uiFilter) {
+      var uiOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'NOT_STARTED': lang === 'ko' ? '미시작' : 'NOT STARTED',
+        'IN_PROGRESS': lang === 'ko' ? '진행 중' : 'IN PROGRESS',
+        'UI_NOT_READY': lang === 'ko' ? '미완료' : 'NOT READY',
+        'UI_CONDITIONALLY_READY': lang === 'ko' ? '조건부 승인' : 'CONDITIONALLY READY',
+        'UI_APPROVED': lang === 'ko' ? '승인' : 'APPROVED',
+        'BLOCKED_BY_UI': lang === 'ko' ? 'UI 승인 대기' : 'BLOCKED BY UI',
+      };
+      Array.from(uiFilter.options).forEach(function(o) { if (uiOpts[o.value]) o.textContent = uiOpts[o.value]; });
+    }
+    var uxFilter = $('#biz-ux-filter');
+    if (uxFilter) {
+      var uxOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'NOT_STARTED': lang === 'ko' ? '미시작' : 'NOT STARTED',
+        'IN_PROGRESS': lang === 'ko' ? '진행 중' : 'IN PROGRESS',
+        'BLOCKED_BY_UI': lang === 'ko' ? 'UI 대기' : 'BLOCKED BY UI',
+        'UX_APPROVED': lang === 'ko' ? '승인' : 'APPROVED',
+      };
+      Array.from(uxFilter.options).forEach(function(o) { if (uxOpts[o.value]) o.textContent = uxOpts[o.value]; });
+    }
+    var beFilter = $('#biz-be-filter');
+    if (beFilter) {
+      var beOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'FROZEN': lang === 'ko' ? '동결' : 'FROZEN',
+        'DECISION_PENDING': lang === 'ko' ? '결정 대기' : 'DECISION PENDING',
+        'AUTHORIZED': lang === 'ko' ? '승인됨' : 'AUTHORIZED',
+        'IN_PROGRESS': lang === 'ko' ? '진행 중' : 'IN PROGRESS',
+        'IMPLEMENTED': lang === 'ko' ? '구현됨' : 'IMPLEMENTED',
+        'NOT_APPLICABLE': lang === 'ko' ? '해당 없음' : 'NOT APPLICABLE',
+        'DEFERRED': lang === 'ko' ? '연기' : 'DEFERRED',
+      };
+      Array.from(beFilter.options).forEach(function(o) { if (beOpts[o.value]) o.textContent = beOpts[o.value]; });
+    }
+    applyTranslations();
+    updateActiveView();
+  }
+
+  function applyTranslations() {
     const bizSearch = $('#biz-search-input');
     if (bizSearch) bizSearch.placeholder = t('bizSearch');
     // Update selects
@@ -597,9 +680,9 @@
           </div>
           <span class="biz-auth status-badge ${authCls}">${authorityLabel(b.numberAuthority)}</span>
           <div class="biz-phase-group" style="display:flex;gap:3px;flex-wrap:wrap">
-            <span class="biz-phase-badge ${uiCls}">${b.uiStatus || '—'}</span>
-            <span class="biz-phase-badge ${uxCls}">${b.uxStatus || '—'}</span>
-            <span class="biz-phase-badge ${beCls}">${b.backendStatus || '—'}</span>
+            <span class="biz-phase-badge ${uiCls}">${phaseStatusLabel(b.uiStatus)}</span>
+            <span class="biz-phase-badge ${uxCls}">${phaseStatusLabel(b.uxStatus)}</span>
+            <span class="biz-phase-badge ${beCls}">${phaseStatusLabel(b.backendStatus)}</span>
           </div>
         </div>
       `;
@@ -643,14 +726,35 @@
 
   function authorityLabel(a) {
     var labels = {
-      'canonical': 'CANONICAL',
-      'proposed-number': 'PROPOSED',
-      'candidate': 'CANDIDATE',
-      'existing-project': 'EXISTING',
-      'reserved': 'RESERVED',
-      'number-reconciliation-required': 'RECONCIL',
+      'canonical': t('authCanonical'),
+      'proposed-number': t('authProposed'),
+      'candidate': t('authCandidate'),
+      'existing-project': t('authExisting'),
+      'reserved': t('authReserved'),
+      'number-reconciliation-required': t('authReconciliation'),
     };
     return labels[a] || a;
+  }
+
+  function phaseStatusLabel(s) {
+    var labels = {
+      'NOT_STARTED': t('phaseNotStarted'),
+      'IN_PROGRESS': t('phaseInProgress'),
+      'UI_NOT_READY': t('phaseNotReady'),
+      'UX_NOT_READY': t('phaseNotReady'),
+      'UI_CONDITIONALLY_READY': t('phaseConditionallyReady'),
+      'UX_CONDITIONALLY_READY': t('phaseConditionallyReady'),
+      'BLOCKED_BY_UI': t('phaseBlockedByUi'),
+      'FROZEN': t('phaseFrozen'),
+      'DECISION_PENDING': t('phaseDecisionPending'),
+      'AUTHORIZED': t('phaseAuthorized'),
+      'IMPLEMENTED': t('phaseImplemented'),
+      'NOT_APPLICABLE': t('phaseNotApplicable'),
+      'DEFERRED': t('phaseDeferred'),
+      'UI_APPROVED': t('phaseApproved'),
+      'UX_APPROVED': t('phaseApproved'),
+    };
+    return labels[s] || s;
   }
 
   // ── Dialog ──
@@ -778,23 +882,23 @@
       <div class="dialog-korean">${biz.koreanTitle}</div>
       <hr class="dialog-divider">
       <div class="dialog-section">
-        <span class="dialog-section-label">NUMBER AUTHORITY</span>
+        <span class="dialog-section-label">${t('authorityLabel')}</span>
         <span class="dialog-section-value"><span class="status-badge ${authCls}">${authorityLabel(biz.numberAuthority)}</span></span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">PHASE</span>
+        <span class="dialog-section-label">${t('phaseLabel')}</span>
         <span class="dialog-section-value">
-          <span class="biz-phase-badge ${uiCls}">UI: ${biz.uiStatus || '—'}</span>
-          <span class="biz-phase-badge ${uxCls}">UX: ${biz.uxStatus || '—'}</span>
-          <span class="biz-phase-badge ${beCls}">BE: ${biz.backendStatus || '—'}</span>
+          <span class="biz-phase-badge ${uiCls}">UI: ${phaseStatusLabel(biz.uiStatus)}</span>
+          <span class="biz-phase-badge ${uxCls}">UX: ${phaseStatusLabel(biz.uxStatus)}</span>
+          <span class="biz-phase-badge ${beCls}">BE: ${phaseStatusLabel(biz.backendStatus)}</span>
         </span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">LIFECYCLE</span>
+        <span class="dialog-section-label">${t('lifecycleLabel')}</span>
         <span class="dialog-section-value">${biz.lifecycle || '—'}</span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">PRIORITY</span>
+        <span class="dialog-section-label">${t('priorityLabel')}</span>
         <span class="dialog-section-value">${biz.priority || '—'}</span>
       </div>
       <hr class="dialog-divider">
