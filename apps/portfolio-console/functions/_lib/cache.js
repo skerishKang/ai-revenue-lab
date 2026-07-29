@@ -3,7 +3,7 @@ const DEFAULT_EXPIRATION_TTL = 86400;
 const runtimeMemory = new Map();
 
 function validRecord(value) {
-  return value && value.schemaVersion === 1 && Number.isFinite(value.storedAtMs) && value.snapshot?.schemaVersion === 1;
+  return value && value.schemaVersion === 1 && Number.isFinite(value.storedAtMs) && (value.snapshot?.schemaVersion === 1 || value.snapshot?.schemaVersion === 2);
 }
 function snapshotRecord(snapshot, storedAtMs) {
   return { schemaVersion: 1, snapshot, storedAtMs };

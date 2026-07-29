@@ -77,17 +77,20 @@ test("20 concurrent forceRefresh calls exchange once", async () => {
   assert.deepEqual(new Set(values), new Set(["token-1"]));
 });
 test("fixed GraphQL query contains all mapped aliases and paginates every connection", () => {
-  assert.match(STATUS_QUERY, /query PortfolioGithubStatus/);
+  assert.match(STATUS_QUERY, /query PortfolioAutoSync/);
   assert.match(STATUS_QUERY, /issues\(first:\s*1,\s*states:\s*OPEN\)/);
   assert.match(STATUS_QUERY, /pullRequests\(first:\s*1,\s*states:\s*OPEN\)/);
   assert.match(STATUS_QUERY, /commits\(last:\s*1\)/);
   assert.match(STATUS_QUERY, /contexts\(first:\s*100\)/);
-  assert.match(STATUS_QUERY, /search\(query:\s*\$draftQuery,\s*type:\s*ISSUE,\s*first:\s*1\)/);
+  assert.match(STATUS_QUERY, /draftPullRequests: search\(query:/);
   assert.doesNotMatch(STATUS_QUERY, /issues\(states:\s*OPEN\)/);
   assert.doesNotMatch(STATUS_QUERY, /pullRequests\(states:\s*OPEN\)/);
   for (const mapping of BUSINESS_GITHUB_MAP) {
     if (mapping.issueNumber) assert.match(STATUS_QUERY, new RegExp(`issue${mapping.issueNumber}: issue\\(number: ${mapping.issueNumber}\\)`));
-    if (mapping.pullRequestNumber) assert.match(STATUS_QUERY, new RegExp(`pr${mapping.pullRequestNumber}: pullRequest\\(number: ${mapping.pullRequestNumber}\\)`));
+    const fallbacks = mapping.fallbackPrNumbers || {};
+    for (const phase of ["ui", "ux", "backend"]) {
+      if (fallbacks[phase]) assert.match(STATUS_QUERY, new RegExp(`fallbackPr${fallbacks[phase]}: pullRequest\\(number: ${fallbacks[phase]}\\)`));
+    }
   }
   assert.doesNotMatch(STATUS_QUERY, /\$repository|\$issue|\$pullRequest/);
 });

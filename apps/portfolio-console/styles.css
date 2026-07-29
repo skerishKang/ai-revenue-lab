@@ -246,7 +246,7 @@ h1, h2, h3, p { margin: 0; }
 .work-item-purpose { color: var(--text); font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .work-item-current { color: var(--muted); font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .work-item-actions { display: flex; gap: 6px; margin-top: 4px; }
-.work-item-btn { padding: 5px 11px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--muted); font: 600 9px/1 var(--mono); letter-spacing: .06em; cursor: pointer; transition: background .13s, color .13s; }
+.work-item-btn { padding: 5px 11px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--muted); font: 600 9px/1 var(--mono); letter-spacing: .06em; text-decoration: none; cursor: pointer; transition: background .13s, color .13s; }
 .work-item-btn:hover { background: var(--panel-hover); color: var(--text); }
 
 /* ── Business Index ── */
@@ -274,6 +274,8 @@ h1, h2, h3, p { margin: 0; }
 .biz-title-group { display: grid; gap: 2px; min-width: 0; }
 .biz-title { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .biz-korean { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.biz-live-discovery { font: 8px/1 var(--mono); color: var(--quiet); }
+.biz-phase-group { display: flex; gap: 3px; flex-wrap: wrap; }
 .biz-state { justify-self: center; }
 .biz-progress { font: 600 11px/1 var(--mono); color: var(--muted); text-align: right; }
 .biz-progress-bar { height: 4px; border-radius: 99px; background: var(--line); margin-top: 4px; overflow: hidden; }
@@ -352,7 +354,7 @@ h1, h2, h3, p { margin: 0; }
 
   .sidebar {
     position: fixed; top: 0; left: -280px; width: 260px; height: 100vh;
-    transition: left .25s ease; z-index: 101;
+    transition: left .25s ease; z-index: 103;
   }
   .sidebar.is-open { left: 0; }
   .drawer-close { display: block; }
