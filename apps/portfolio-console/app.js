@@ -4,6 +4,8 @@
   // ── Data ──
   const projects = Array.isArray(window.ARL_PROJECTS) ? window.ARL_PROJECTS : [];
   const businesses = Array.isArray(window.ARL_BUSINESSES) ? window.ARL_BUSINESSES : [];
+  // Summary module for generated counts (loaded after businesses.js)
+  const summary = window.ARL_SUMMARY;
 
   // ── DOM refs ──
   const $ = (sel) => document.querySelector(sel);
