@@ -8,6 +8,7 @@ import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
 import { createGitHubStatusService } from "../../functions/_lib/github-status-service.js";
 
 export { assert, webcrypto, BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY, MemorySnapshotCache };
+export { gqlPr, gqlSearchResult, rollup, gqlIssue };
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const NOW = Date.parse("2026-07-27T01:00:00Z");
 export const delay = (ms = 5) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -31,7 +32,7 @@ export const jsonResponse = (data, status = 200, headers = {}) => new Response(J
   status,
   headers: { "Content-Type": "application/json", ...headers }
 });
-export function rollup(state = "SUCCESS", { totalCount = 1, nodes = null } = {}) {
+function rollup(state = "SUCCESS", { totalCount = 1, nodes = null } = {}) {
   const defaultNode = state === "PENDING" || state === "EXPECTED"
     ? { __typename: "CheckRun", status: "IN_PROGRESS", conclusion: null }
     : state === "FAILURE" || state === "ERROR"
@@ -42,7 +43,7 @@ export function rollup(state = "SUCCESS", { totalCount = 1, nodes = null } = {})
 function gqlIssue(number) {
   return { number, title: `Issue ${number}`, state: "OPEN", updatedAt: "2026-07-27T00:00:00Z", url: `https://github.com/${GITHUB_REPOSITORY}/issues/${number}` };
 }
-export function gqlPr(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS" } = {}) {
+function gqlPr(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS" } = {}) {
   return {
     number,
     title: `PR ${number}`,
@@ -56,6 +57,23 @@ export function gqlPr(number, { state = "OPEN", isDraft = true, merged = false, 
     commits: { nodes: [{ commit: { statusCheckRollup: checkState === null ? null : rollup(checkState) } }] }
   };
 }
+function gqlSearchResult(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS" } = {}) {
+  return {
+    __typename: "PullRequest",
+    number,
+    title: `PR ${number}`,
+    state,
+    isDraft,
+    merged,
+    headRefOid: String(number).padStart(40, "a").slice(-40),
+    headRefName: `feat/business-${number}-ui`,
+    baseRefName: "main",
+    updatedAt: "2026-07-27T00:00:00Z",
+    url: `https://github.com/${GITHUB_REPOSITORY}/pull/${number}`,
+    body: `Refs #${number}`,
+    commits: { nodes: [{ commit: { statusCheckRollup: checkState === null ? null : rollup(checkState) } }] }
+  };
+}
 export function aggregatePayload({ errors = [], overrides = {} } = {}) {
   const repository = {
     nameWithOwner: GITHUB_REPOSITORY,
@@ -64,16 +82,35 @@ export function aggregatePayload({ errors = [], overrides = {} } = {}) {
     issues: { totalCount: 9 },
     pullRequests: { totalCount: 4 }
   };
+  const topLevel = {};
   for (const mapping of BUSINESS_GITHUB_MAP) {
     if (mapping.issueNumber) repository[`issue${mapping.issueNumber}`] = gqlIssue(mapping.issueNumber);
-    if (mapping.pullRequestNumber) {
-      repository[`pr${mapping.pullRequestNumber}`] = mapping.pullRequestNumber === 88
+    if (mapping.uiPhaseIssue && mapping.uiPhaseIssue !== mapping.issueNumber) {
+      repository[`issue${mapping.uiPhaseIssue}`] = gqlIssue(mapping.uiPhaseIssue);
+    }
+    if (mapping.fallbackPrNumber) {
+      repository[`fallbackPr${mapping.fallbackPrNumber}`] = mapping.fallbackPrNumber === 88
         ? gqlPr(88, { state: "MERGED", isDraft: false, merged: true })
-        : gqlPr(mapping.pullRequestNumber);
+        : gqlPr(mapping.fallbackPrNumber);
+    }
+    // PR search results at top level
+    const phaseIssues = new Set();
+    if (mapping.issueNumber) phaseIssues.add(mapping.issueNumber);
+    if (mapping.uiPhaseIssue) phaseIssues.add(mapping.uiPhaseIssue);
+    if (mapping.uxPhaseIssue) phaseIssues.add(mapping.uxPhaseIssue);
+    if (mapping.bePhaseIssue) phaseIssues.add(mapping.bePhaseIssue);
+    for (const pi of phaseIssues) {
+      if (pi && !topLevel[`prSearch${pi}`]) {
+        topLevel[`prSearch${pi}`] = {
+          issueCount: 1,
+          nodes: [gqlSearchResult(mapping.fallbackPrNumber || pi)]
+        };
+      }
     }
   }
   Object.assign(repository, overrides.repository || {});
-  return { data: { repository, draftPullRequests: { issueCount: 3 }, ...(overrides.root || {}) }, errors };
+  Object.assign(topLevel, overrides.topLevel || {});
+  return { data: { repository, draftPullRequests: { issueCount: 3 }, ...topLevel }, errors };
 }
 export function mockAggregateClient(payload = aggregatePayload(), { throwError = null, delayMs = 0, counter = null } = {}) {
   return {

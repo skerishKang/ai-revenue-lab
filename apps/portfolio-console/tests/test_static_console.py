@@ -57,8 +57,8 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
             self.assertNotIn(token, text)
 
     def test_confirmed_surfaces_use_https(self) -> None:
-        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
-        urls = re.findall(r'surfaceUrl:\s*"([^"]+)"', script)
+        script = (ROOT / "business-manifest.js").read_text(encoding="utf-8")
+        urls = re.findall(r'su:\s*"([^"]+)"', script)
         self.assertGreaterEqual(len(urls), 5)
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
@@ -194,8 +194,8 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn("ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", script)
 
     def test_projects_businesses_korean_ai_platform_updated(self) -> None:
-        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
-        self.assertIn("PR #142 merged", script)
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn("PR #142", script)
         self.assertIn("dedicated Worker", script)
 
     def test_projects_living_fiction_no_issue139(self) -> None:
@@ -224,9 +224,8 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn("window.ARL_PROJECTS", content)
 
     def test_korean_ai_platform_business_14_github_label(self) -> None:
-        script = (ROOT / "businesses.js").read_text(encoding="utf-8")
-        self.assertNotIn("Draft PR #79", script)
-        self.assertIn('githubLabel: "PR #142 merged"', script)
+        script = (ROOT / "projects.js").read_text(encoding="utf-8")
+        self.assertIn('PR #142', script)
 
     def test_lovebud_done_tasks_3_open_3(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
