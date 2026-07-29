@@ -12,9 +12,10 @@ This branch contains audit records only. No Business source, workflow, deploymen
 - Audit branch: `audit/portfolio-ui-system-review-20260730`
 - Branch base: `5563a866affbb467b290497b94965cd765087ec1`
 - Actual records: `58` including intentional Business 56 gap
-- Completed batch: `1` — Businesses 1–12
-- Fully scored Businesses: `1` (Business 11)
-- Limited visual evidence inspected: Businesses 9 and 10
+- Completed batches: `2` — Businesses 1–24
+- Fully scored Businesses: `5` — B11, B18, B19, B20, B21
+- Limited visual evidence inspected: B9 and B10
+- Screenshots inspected and hashed: `17`
 
 ## Execution limitation
 
@@ -24,13 +25,25 @@ The audit container has no external DNS resolution. Public Pages and GitHub URLs
 
 - `business-inventory.json` / `.csv` — normalized 58-record inventory
 - `INVENTORY.md` — readable authority table
-- `business-ui-scorecard.csv` — Batch 1 scoring state
+- `business-ui-scorecard.csv` — cumulative scoring state
 - `screenshot-manifest.json` — inspected screenshot hashes and provenance
 - `audit-progress.json` — resumable batch state
-- `BATCH_1_REPORT.md` — detailed Batch 1 findings
-- `businesses/business-11.md` — fully scored Business report
+- `BATCH_1_REPORT.md`, `BATCH_2_REPORT.md` — batch findings
+- `businesses/business-<ID>.md` — fully scored Business reports
 - `PORTFOLIO_DESIGN_CONSISTENCY.md` — partial sameness comparison
 - `PRIORITY_REMEDIATION_BACKLOG.md` — evidence-based partial backlog
+
+## Current grade counts
+
+```text
+A: 3
+B: 2
+C: 0
+D: 0
+NOT_SCORED: 19 completed-batch Businesses
+```
+
+These are partial evidence counts, not final portfolio totals.
 
 ## Guardrails
 
