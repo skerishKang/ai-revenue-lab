@@ -3,14 +3,6 @@
  *  One-time mapping cost: Business number → repository + phase Issue pointers.
  *  Contains NO volatile state (no Issue state, PR state, CI, SHA, updated-at).
  *
- *  Each entry identifies:
- *    repository          — GitHub repository
- *    issueNumber         — product-decision Issue (primary durable pointer)
- *    uiPhaseIssue        — Phase 1 UI Issue number (null if absent)
- *    uxPhaseIssue        — Phase 2 UX Issue number (null if absent)
- *    bePhaseIssue        — Phase 3 Backend Issue number (null if absent)
- *    fallbackPrNumber    — explicit PR pointer (only when auto-discovery impossible)
- *
  *  PR #193 original contract preserved:
  *    - fixed repository allowlist
  *    - assertAllowedRepository enforcement
@@ -20,18 +12,7 @@ export const GITHUB_REPOSITORY = "skerishKang/ai-revenue-lab";
 
 export const ALLOWED_REPOSITORIES = Object.freeze([GITHUB_REPOSITORY]);
 
-/**
- * @typedef {Object} BusinessGithubMapping
- * @property {number} number       - Business 1–55
- * @property {string} repository   - "skerishKang/ai-revenue-lab"
- * @property {number} issueNumber  - product-decision Issue number
- * @property {number|null} uiPhaseIssue   - Phase 1 UI Issue (null if absent)
- * @property {number|null} uxPhaseIssue   - Phase 2 UX Issue (null if absent)
- * @property {number|null} bePhaseIssue   - Phase 3 Backend Issue (null if absent)
- * @property {number|null} fallbackPrNumber - explicit PR pointer (auto-discovery fallback)
- */
-
-/** @type {readonly BusinessGithubMapping[]} */
+/** @type {readonly {number:number,repository:string|null,issueNumber:number|null,uiPhaseIssue:number|null,uxPhaseIssue:number|null,bePhaseIssue:number|null,fallbackPrNumber:number|null}[]} */
 export const BUSINESS_GITHUB_MAP = Object.freeze([
   // ── 1–4: CANONICAL  ──
   { number: 1,  repository: GITHUB_REPOSITORY, issueNumber: 108, uiPhaseIssue: 108, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 111 },
@@ -40,7 +21,7 @@ export const BUSINESS_GITHUB_MAP = Object.freeze([
   { number: 4,  repository: GITHUB_REPOSITORY, issueNumber: 37,  uiPhaseIssue: 37,  uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 94 },
   // ── 5–6  ──
   { number: 5,  repository: GITHUB_REPOSITORY, issueNumber: 99,  uiPhaseIssue: 99,  uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 109 },
-  { number: 6,  repository: GITHUB_REPOSITORY, issueNumber: 98,  uiPhaseIssue: 98,  uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
+  { number: 6,  repository: GITHUB_REPOSITORY, issueNumber: 98,  uiPhaseIssue: 155, uxPhaseIssue: 165, bePhaseIssue: null, fallbackPrNumber: null },
   // ── 7–12  ──
   { number: 7,  repository: GITHUB_REPOSITORY, issueNumber: 166, uiPhaseIssue: 166, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 174 },
   { number: 8,  repository: GITHUB_REPOSITORY, issueNumber: 168, uiPhaseIssue: 168, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 176 },
@@ -51,7 +32,7 @@ export const BUSINESS_GITHUB_MAP = Object.freeze([
   // ── 13–14: CANONICAL  ──
   { number: 13, repository: GITHUB_REPOSITORY, issueNumber: 76,  uiPhaseIssue: 76,  uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 78 },
   { number: 14, repository: GITHUB_REPOSITORY, issueNumber: 80,  uiPhaseIssue: 138, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: 142 },
-  // ── 15–22: product-decision + Phase 1 UI issues  ──
+  // ── 15–22  ──
   { number: 15, repository: GITHUB_REPOSITORY, issueNumber: 187, uiPhaseIssue: 188, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
   { number: 16, repository: GITHUB_REPOSITORY, issueNumber: 189, uiPhaseIssue: 190, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
   { number: 17, repository: GITHUB_REPOSITORY, issueNumber: 191, uiPhaseIssue: 192, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
@@ -64,7 +45,7 @@ export const BUSINESS_GITHUB_MAP = Object.freeze([
   { number: 23, repository: null, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
   { number: 24, repository: null, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
   { number: 25, repository: null, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
-  // ── 26–35: product-decision + Phase 1 UI issues  ──
+  // ── 26–35  ──
   { number: 26, repository: GITHUB_REPOSITORY, issueNumber: 226, uiPhaseIssue: 227, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
   { number: 27, repository: GITHUB_REPOSITORY, issueNumber: 230, uiPhaseIssue: 231, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
   { number: 28, repository: GITHUB_REPOSITORY, issueNumber: 234, uiPhaseIssue: 235, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
@@ -100,12 +81,12 @@ export const BUSINESS_GITHUB_MAP = Object.freeze([
   { number: 55, repository: null, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
 ]);
 
-/** Convenience: get mapping by Business number */
+/** Get mapping by Business number */
 export function getMappingByNumber(number) {
   return BUSINESS_GITHUB_MAP.find((m) => m.number === number) || null;
 }
 
-/** Convenience: get all mapped Business numbers */
+/** Get all mapped Business numbers */
 export function getMappedNumbers() {
   return BUSINESS_GITHUB_MAP.map((m) => m.number);
 }

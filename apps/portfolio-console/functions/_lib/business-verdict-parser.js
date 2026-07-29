@@ -1,6 +1,6 @@
-/*  business-verdict-parser.js  —  machine-readable phase verdict parser (Phase 2A)
+/*  business-verdict-parser.js  —  phase verdict parser with Business/phase binding (Phase 2A)
  *
- *  Parses structured HTML comment blocks from Issue/PR bodies:
+ *  Parses structured HTML comment blocks:
  *
  *    <!-- portfolio-verdict
  *    business: 15
@@ -9,23 +9,14 @@
  *    accepted_head: abcdef1234567890abcdef1234567890abcdef12
  *    -->
  *
- *  Rules:
- *    - Phase and verdict series must be compatible (ui → UI_*, ux → UX_*, backend → BACKEND_*)
- *    - accepted_head required for approval verdicts
- *    - Multiple conflicting verdicts → conflict status
- *    - Missing verdict → unverified
- *    - PR merge does not imply approval
- *    - Deployment does not imply release
+ *  Key changes:
+ *    - Binds verdicts to expectedBusinessNumber + expectedPhase
+ *    - Rejects blocks for other Businesses/phases
+ *    - Detects conflicts across verdict, accepted_head, and source
+ *    - PR merge/deployment never creates approval
  */
 
-/**
- * @typedef {Object} VerdictResult
- * @property {"verified"|"unverified"|"invalid"|"conflict"} status
- * @property {string|null} verdict  - e.g. "UI_APPROVED", "UX_NOT_READY", etc.
- * @property {string|null} acceptedHead - SHA of accepted head
- * @property {string|null} source - where the verdict was found: "issue_body" | "pr_body" | "static_fallback"
- * @property {string|null} [reason] - error reason for invalid/conflict
- */
+import { getMappingByNumber } from "./business-github-map.js";
 
 const VALID_VERDICTS = {
   ui: ["UI_NOT_READY", "UI_CONDITIONALLY_READY", "UI_APPROVED"],
@@ -34,122 +25,141 @@ const VALID_VERDICTS = {
 };
 
 const VERDICTS_REQUIRING_HEAD = new Set(["UI_APPROVED", "UX_APPROVED", "BACKEND_AUTHORIZED", "BACKEND_IMPLEMENTED"]);
-
 const SHA_HEX = /^[0-9a-f]{40}$/;
 
 /**
- * Parse a single verdict block from a string.
- * @param {string} text - Text containing <!-- portfolio-verdict ... --> block
- * @returns {VerdictResult|null}
+ * @typedef {Object} VerdictResult
+ * @property {"verified"|"unverified"|"invalid"|"conflict"} status
+ * @property {string|null} verdict
+ * @property {string|null} acceptedHead
+ * @property {string|null} source  - "issue_body" | "pr_body" | "static_fallback"
+ * @property {number|null} businessNumber
+ * @property {string|null} phase
+ * @property {string|null} reason
  */
-export function parseVerdictBlock(text) {
-  if (!text) return null;
+
+/**
+ * Parse verdict blocks from text and filter by expected Business/phase.
+ * Returns `null` when no matching block exists (not even invalid ones).
+ */
+function parseVerdictBlocks(text, expectedBusinessNumber, expectedPhase) {
+  if (!text) return [];
 
   const regex = /<!--\s*portfolio-verdict\s*([\s\S]*?)-->/g;
-  const matches = [];
+  const results = [];
   let match;
   while ((match = regex.exec(text)) !== null) {
-    matches.push(match[1]);
-  }
+    const block = match[1];
+    const businessNum = parseInt(block.match(/business:\s*(\d+)/)?.[1], 10);
+    const phase = block.match(/phase:\s*(ui|ux|backend)/)?.[1];
+    const verdict = block.match(/verdict:\s*(\S+)/)?.[1]?.trim() || null;
+    const acceptedHead = block.match(/accepted_head:\s*(\S+)/)?.[1]?.trim() || null;
 
-  if (matches.length === 0) return null;
+    // Skip blocks for other Businesses/phases
+    if (businessNum !== expectedBusinessNumber || phase !== expectedPhase) continue;
 
-  const results = [];
-
-  for (const block of matches) {
-    const businessMatch = block.match(/business:\s*(\d+)/);
-    const phaseMatch = block.match(/phase:\s*(ui|ux|backend)/);
-    const verdictMatch = block.match(/verdict:\s*(\S+)/);
-    const headMatch = block.match(/accepted_head:\s*(\S+)/);
-
-    const phase = phaseMatch ? phaseMatch[1] : null;
-    const verdict = verdictMatch ? verdictMatch[1].trim() : null;
-    const acceptedHead = headMatch ? headMatch[1].trim() : null;
-
-    if (!phase || !verdict) {
-      results.push({ status: "invalid", verdict: null, acceptedHead: null, source: null, reason: "INCOMPLETE_BLOCK" });
+    // Incomplete block
+    if (!businessNum || !phase || !verdict) {
+      results.push({ status: "invalid", verdict: null, acceptedHead: null, businessNumber: businessNum, phase, source: null, reason: "INCOMPLETE_BLOCK" });
       continue;
     }
 
-    // Phase/verdict compatibility check
+    // Phase/verdict compatibility
     const validForPhase = VALID_VERDICTS[phase];
     if (!validForPhase || !validForPhase.includes(verdict)) {
-      results.push({ status: "invalid", verdict, acceptedHead, source: null, reason: `INVALID_VERDICT_PHASE: phase=${phase} verdict=${verdict}` });
+      results.push({ status: "invalid", verdict, acceptedHead, businessNumber: businessNum, phase, source: null, reason: `INVALID_VERDICT_PHASE: phase=${phase} verdict=${verdict}` });
       continue;
     }
 
-    // accepted_head validation for approval verdicts
+    // accepted_head validation
     if (VERDICTS_REQUIRING_HEAD.has(verdict)) {
       if (!acceptedHead || !SHA_HEX.test(acceptedHead)) {
-        results.push({ status: "invalid", verdict, acceptedHead, source: null, reason: "MISSING_OR_INVALID_ACCEPTED_HEAD" });
+        results.push({ status: "invalid", verdict, acceptedHead, businessNumber: businessNum, phase, source: null, reason: "MISSING_OR_INVALID_ACCEPTED_HEAD" });
         continue;
       }
     }
 
-    results.push({ status: "verified", verdict, acceptedHead, source: null, reason: null });
+    results.push({ status: "verified", verdict, acceptedHead, businessNumber: businessNum, phase, source: null, reason: null });
   }
 
-  if (results.length === 0) return null;
-
-  // Multiple results → conflict if they differ
-  const uniqueVerdicts = new Set(results.filter((r) => r.status === "verified").map((r) => r.verdict));
-  if (uniqueVerdicts.size > 1) {
-    return { status: "conflict", verdict: null, acceptedHead: null, source: null, reason: "MULTIPLE_CONFLICTING_VERDICTS" };
-  }
-
-  const verified = results.find((r) => r.status === "verified");
-  if (verified) return verified;
-
-  // Return first invalid if no verified
-  return results[0];
+  return results;
 }
 
 /**
- * Resolve the phase verdict for a Business's phase.
- * Merges: parsed issue body → parsed PR body → static fallback.
+ * Resolve phase verdict from a pool of sources (issue body, PR body, static fallback).
+ * Filters by expected Business number and phase.
  *
- * @param {object} options
- * @param {object|null} options.issueData - Issue data from GitHub API
- * @param {object|null} options.prData - PR data from GitHub API
- * @param {string|null} options.staticFallback - Static fallback verdict (from manifest)
- * @returns {VerdictResult}
+ * Conflict rules:
+ *   - Same Business/phase, different verdicts → conflict
+ *   - Same verdict, different accepted_heads → conflict
+ *   - PR merge does not equal approval
  */
-export function resolvePhaseVerdict({ issueData, prData, staticFallback }) {
-  // 1. Try issue body
-  if (issueData?.body) {
-    const issueVerdict = parseVerdictBlock(issueData.body);
-    if (issueVerdict && (issueVerdict.status === "verified" || issueVerdict.status === "conflict")) {
-      return { ...issueVerdict, source: "issue_body" };
+export function resolvePhaseVerdictFromPool({
+  expectedBusinessNumber,
+  expectedPhase,
+  issueBody,
+  prBody,
+  staticFallback,
+}) {
+  const allBlocks = [];
+
+  // Parse issue body blocks
+  if (issueBody) {
+    allBlocks.push(...parseVerdictBlocks(issueBody, expectedBusinessNumber, expectedPhase).map((b) => ({ ...b, source: "issue_body" })));
+  }
+
+  // Parse PR body blocks
+  if (prBody) {
+    allBlocks.push(...parseVerdictBlocks(prBody, expectedBusinessNumber, expectedPhase).map((b) => ({ ...b, source: "pr_body" })));
+  }
+
+  // Separate into categories
+  const verified = allBlocks.filter((b) => b.status === "verified");
+  const invalid = allBlocks.filter((b) => b.status === "invalid");
+
+  // Different verdicts → conflict
+  const uniqueVerdicts = new Set(verified.map((b) => b.verdict));
+  if (uniqueVerdicts.size > 1) {
+    return { status: "conflict", verdict: null, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: null, reason: "MULTIPLE_CONFLICTING_VERDICTS" };
+  }
+
+  // Same verdict, different accepted_heads → conflict
+  if (verified.length >= 2) {
+    const heads = new Set(verified.map((b) => b.acceptedHead));
+    if (heads.size > 1) {
+      return { status: "conflict", verdict: verified[0].verdict, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: null, reason: "CONFLICTING_ACCEPTED_HEADS" };
     }
   }
 
-  // 2. Try PR body (PR may have the latest verdict)
-  if (prData?.body) {
-    const prVerdict = parseVerdictBlock(prData.body);
-    if (prVerdict && (prVerdict.status === "verified" || prVerdict.status === "conflict")) {
-      return { ...prVerdict, source: "pr_body" };
-    }
+  // Single verified verdict
+  if (verified.length === 1) {
+    return verified[0];
   }
 
-  // 3. Static fallback
+  // Static fallback (explicitly marked unverified)
   if (staticFallback) {
-    return { status: "unverified", verdict: staticFallback, acceptedHead: null, source: "static_fallback", reason: "STATIC_FALLBACK_NOT_MACHINE_VERIFIED" };
+    return { status: "unverified", verdict: staticFallback, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: "static_fallback", reason: "STATIC_FALLBACK_NOT_MACHINE_VERIFIED" };
   }
 
-  return { status: "unverified", verdict: null, acceptedHead: null, source: null, reason: "NO_VERDICT_FOUND" };
+  // Invalid blocks but no verified ones → diagnostics
+  if (invalid.length > 0) {
+    return { ...invalid[0], businessNumber: expectedBusinessNumber, phase: expectedPhase, source: invalid[0].source || null };
+  }
+
+  return { status: "unverified", verdict: null, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: null, reason: "NO_VERDICT_FOUND" };
 }
 
-/**
- * Check if a verdict represents an approved state.
- */
+/** Check if a verdict represents an approved state */
 export function isApprovedVerdict(verdict) {
   if (!verdict) return false;
   return verdict === "UI_APPROVED" || verdict === "UX_APPROVED" || verdict === "BACKEND_AUTHORIZED" || verdict === "BACKEND_IMPLEMENTED";
 }
 
-/**
- * Get all valid verdicts for a phase.
- */
+/** Get valid verdicts for a phase */
 export function getValidVerdicts(phase) {
   return VALID_VERDICTS[phase] || [];
 }
+
+// Backward compatibility export
+export const parseVerdictBlock = parseVerdictBlocks;
+export const resolvePhaseVerdict = resolvePhaseVerdictFromPool;
