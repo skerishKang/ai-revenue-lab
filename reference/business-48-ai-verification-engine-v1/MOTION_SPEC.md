@@ -19,7 +19,7 @@
 
 ## Completion authority
 
-The final `.approval-record` runs animation `briefComplete`. Its actual `animationend` event is the only completion authority. Application JavaScript contains no `setTimeout` completion fallback.
+The final `.approval-record` runs animation `briefComplete`. Its actual `animationend` event is the only normal-motion completion authority. Application JavaScript contains no `setTimeout` completion fallback.
 
 Computed nominal completion:
 
@@ -38,6 +38,17 @@ Computed nominal completion:
 - verification-board geometry stable;
 - reduced motion immediately reaches information-complete state.
 
-## Persistent information
+## Persistent verification-boundary register
 
-Failed/skipped/unavailable distinctions, stale evidence, residual condition, limited approval scope, no universal certification and deployment-not-authorized remain visible after completion.
+The final decision state and the dedicated 390px mobile brief retain all eight boundaries as visible text:
+
+1. `FAILED CHECK` — retained failed-check history, not the current validator verdict;
+2. `SKIPPED — NOT PASSED` — skipped evidence remains not passed;
+3. `UNAVAILABLE EVIDENCE` — unresolved and not equivalent to failed;
+4. `STALE EVIDENCE — DO NOT USE` — unusable for the current exact version;
+5. `RESIDUAL CONDITION`;
+6. `APPROVAL SCOPE LIMITED`;
+7. `NO UNIVERSAL CERTIFICATION`;
+8. `DEPLOYMENT NOT AUTHORIZED`.
+
+The register is outside the animated trace, so it remains visible after normal `briefComplete` completion and after reduced-motion immediate completion.

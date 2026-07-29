@@ -3,9 +3,13 @@
   "checks": {
     "states": true,
     "controls": true,
-    "assets": true,
+    "assets_exactly_10": true,
     "focal_assets": true,
     "labels": true,
+    "decision_boundary_register_8_of_8": true,
+    "mobile_boundary_register_8_of_8": true,
+    "semantic_distinctions": true,
+    "persistent_register_styled": true,
     "documented": true,
     "local_runtime": true,
     "version": true,
@@ -23,5 +27,15 @@
     "decision",
     "mobile"
   ],
-  "assets": 10
+  "assets": 10,
+  "persistent_boundaries": [
+    "FAILED CHECK",
+    "SKIPPED — NOT PASSED",
+    "UNAVAILABLE EVIDENCE",
+    "STALE EVIDENCE — DO NOT USE",
+    "RESIDUAL CONDITION",
+    "APPROVAL SCOPE LIMITED",
+    "NO UNIVERSAL CERTIFICATION",
+    "DEPLOYMENT NOT AUTHORIZED"
+  ]
 }

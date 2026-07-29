@@ -15,7 +15,8 @@ This is implementation evidence only. It is not independent `LOCAL_VALIDATION_PA
 - keyboard navigation and visible focus;
 - horizontal overflow 0;
 - Korean/English labels contained;
-- 8+ repository-local SVG assets render;
+- label overlap 0;
+- exactly 10 repository-local SVG assets render;
 - worker claim versus verified fact separated;
 - self-check versus independent check separated;
 - passed / failed / skipped / unavailable separated;
@@ -30,10 +31,9 @@ This is implementation evidence only. It is not independent `LOCAL_VALIDATION_PA
 - Replay 1/2 style, screenshot and geometry equality;
 - actual `briefComplete` animationend authority at 770ms;
 - focus, scroll and board geometry stable;
-- reduced-motion immediate completion.
+- reduced-motion immediate completion;
+- decision state: 8/8 retained boundaries visible after normal completion at all three viewports;
+- decision state: 8/8 retained boundaries visible after reduced-motion completion at all three viewports;
+- mobile state: 8/8 retained boundary meanings visible at 390×844.
 
 Browser results are written to `browser-self-check.json`; static results to `static-self-check.json`.
-
-## Capture evidence
-
-Seven browser captures were generated from the exact local bytes. The repository stores compressed SVG previews with embedded WebP thumbnails and original PNG SHA-256 values because the GitHub connector publishes text trees directly. The original PNG hashes also remain in `browser-self-check.json`.
