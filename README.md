@@ -72,6 +72,34 @@ See:
 - `docs/decisions/ADR-0002-product-workspaces.md`
 - `docs/portfolio/BUSINESS_REGISTRY.md`
 
+## Development operating policy
+
+Repository development follows a role-separated workflow:
+
+```text
+User request
+→ Web CTO work contract
+→ Web Developer implementation
+→ GitHub CI
+→ Local validation
+→ Web CTO final review
+→ User approval
+→ Merge
+→ Production verification
+```
+
+Canonical operating documents:
+
+- `AGENTS.md`
+- `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/WORKFLOW_STATUS_MODEL.md`
+- `docs/operations/EVIDENCE_REQUIREMENTS.md`
+- `docs/operations/templates/`
+
+The Web CTO defines exact scope and acceptance criteria and performs the final independent review. The Web Developer implements on a dedicated branch. The Local Validator tests the exact PR HEAD in the real environment and does not modify product source code unless separately authorized.
+
+CI is evidence, not final approval. Only the Web CTO assigns `READY`, `CONDITIONALLY_READY`, or `NOT_READY`, and `READY` still requires explicit user approval before merge or deployment.
+
 ## Verified product tracks
 
 - **Business 1 — Personal Edition** — conversations and life records edited into recurring letters, magazines, and books.
@@ -102,8 +130,11 @@ Personal Edition is the first planned portal integration target. Its current inv
 
 ## Operating model
 
-- Product vision, architecture, issue decomposition, acceptance criteria, documentation, and final review use the strongest available reasoning and review capability.
-- Free and high-volume models are the default implementation workforce once tasks are precisely specified.
+- Product vision, architecture, issue decomposition, acceptance criteria, and final review use the strongest available reasoning and review capability through the Web CTO role.
+- Precisely scoped implementation is performed by a separate Web Developer on a dedicated branch and Draft PR.
+- Local agents are independent environment validators by default, not the primary implementation workforce.
+- Every implementation and validation report identifies the exact base and tested HEAD SHA.
+- GitHub CI is required where configured but does not replace real-environment validation or CTO review.
 - Runtime content production should prefer replaceable free or low-cost models.
 - Strong paid models may be used for exceptional design, diagnosis, or final audit, but the project records where and why they were used.
 - Models remain replaceable through provider adapters rather than being embedded directly into product code.
@@ -115,10 +146,10 @@ Personal Edition is the first planned portal integration target. Its current inv
 - independent product workspace architecture is established;
 - shared-portal and isolated-product architecture is documented under Issue #83;
 - shared Firebase identity infrastructure exists for the portfolio;
-- portal implementation under `apps/portal/` is not yet authorized by this documentation alone;
-- Personal Edition is the first portal integration target;
-- Personal Video Archive is undergoing a Korean-first bilingual visual redesign in Draft PR #78;
-- Korean AI Platform private MVP is tracked through Issue #80 and Draft PR #79;
+- portal implementation under `apps/portal/` is not authorized by architecture documentation alone;
+- Personal Edition remains the first portal integration target;
+- current implementation and deployment status must be verified from the latest default-branch code, open Issues, Pull Requests, and deployment evidence rather than copied historical summaries;
+- the repository-wide role-separated development workflow is tracked by Issue #148 and the canonical `docs/operations/` policy set;
 - Business numbering is canonical only through `docs/portfolio/BUSINESS_REGISTRY.md`.
 
 ## Governance rule
