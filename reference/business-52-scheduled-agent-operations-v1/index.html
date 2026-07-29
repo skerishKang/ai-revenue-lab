@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Business 52 Scheduled Agent Operations Phase 1 synthetic visual reference">
+<title>예약형 AI 운영 · Scheduled Agent Operations</title>
+<link rel="stylesheet" href="styles/main.css?v=sao-v1-20260730">
+</head>
+<body>
+<a class="skip-link" href="#review-stage">운영 runbook 본문으로 이동</a>
+<header class="site-header">
+<div class="brand-lockup">
+<p class="kicker">BUSINESS 52 · UI_ONLY · SCHEDULED AGENT OPERATIONS</p>
+<h1>예약형 AI 운영</h1>
+<p class="subtitle">예약 설정에서 사람 승인 운영 runbook으로 — timezone, cadence, trigger, input, exception, notification 경계를 하나의 governed runbook으로 고정합니다.</p>
+</div>
+<div class="boundary-rack" aria-label="제품 경계">
+<span>SYNTHETIC SCHEDULED OPERATION</span>
+<span>VISUAL REFERENCE ONLY</span>
+<span>NO LIVE SCHEDULING, BACKGROUND EXECUTION, ACCOUNT ACCESS, OR NOTIFICATION</span>
+</div>
+</header>
+<nav class="state-nav" role="tablist" aria-label="Phase 1 시각 상태">
+<button id="tab-cover" role="tab" type="button" data-state-control="cover" aria-controls="panel-cover" aria-selected="true" tabindex="0">01 표지</button>
+<button id="tab-schedule" role="tab" type="button" data-state-control="schedule" aria-controls="panel-schedule" aria-selected="false" tabindex="-1">02 예약</button>
+<button id="tab-inputs" role="tab" type="button" data-state-control="inputs" aria-controls="panel-inputs" aria-selected="false" tabindex="-1">03 입력</button>
+<button id="tab-run" role="tab" type="button" data-state-control="run" aria-controls="panel-run" aria-selected="false" tabindex="-1">04 실행</button>
+<button id="tab-exceptions" role="tab" type="button" data-state-control="exceptions" aria-controls="panel-exceptions" aria-selected="false" tabindex="-1">05 예외</button>
+<button id="tab-decision" role="tab" type="button" data-state-control="decision" aria-controls="panel-decision" aria-selected="false" tabindex="-1">06 결정</button>
+<button id="tab-mobile" role="tab" type="button" data-state-control="mobile" aria-controls="panel-mobile" aria-selected="false" tabindex="-1">07 모바일</button>
+</nav>
+<main id="review-stage" class="review-stage" tabindex="-1">
+<section id="panel-cover" class="visual-state is-active" data-state="cover" role="tabpanel" aria-labelledby="tab-cover">
+<div class="cover-layout">
+<figure class="focal hero-art"><img src="assets/images/cover-timezone-dial.svg?v=sao-v1" alt="타임존 다이얼과 Maru Research Office 합성 운영 정보를 보여주는 예약형 AI 운영 표지"></figure>
+<article class="cover-copy">
+<span class="label">SYNTHETIC SCHEDULED OPERATION</span>
+<p class="folio">OPERATIONS CASE SAO-52 · MARU RESEARCH OFFICE — FICTIONAL</p>
+<h2>실행보다 먼저<br>운영 예약 경계를 고정합니다</h2>
+<p class="lead">하나의 합성 반복 운영 — supplier-risk digest — 을 timezone, cadence, authorized input, condition watch, bounded retry, exception ledger와 사람 승인 runbook으로 구성합니다. 실제 일정 등록이나 백그라운드 실행은 없습니다.</p>
+<dl class="ledger">
+<div><dt>PRIMARY RESULT</dt><dd>HUMAN-APPROVED SCHEDULED OPERATION RUNBOOK</dd></div>
+<div><dt>LIVE SCHEDULING</dt><dd>NONE</dd></div>
+<div><dt>현재 상태</dt><dd>RUNBOOK READY · NOT SCHEDULED</dd></div>
+</dl>
+<div class="warning-strip"><span>NO LIVE SCHEDULING</span><span>NOT EXECUTED</span></div>
+</article>
+</div>
+</section>
+<section id="panel-schedule" class="visual-state" data-state="schedule" role="tabpanel" aria-labelledby="tab-schedule" hidden>
+<header class="state-heading"><div><p>SCHEDULE BAY · PLATE 01</p><h2>운영 목적과 주인이 timezone·cadence·window·expiry를 결정합니다</h2></div><span class="index">NOT SCHEDULED</span></header>
+<div class="schedule-layout">
+<figure class="focal"><img src="assets/images/schedule-cadence-band.svg?v=sao-v1" alt="합성 주간 cadence timetable과 exact schedule flexible delivery window를 보여주는 예약 대시보드"></figure>
+<div class="schedule-stack">
+<article class="schedule-card"><span class="label">OPERATION OWNER</span><h3>Maru Research Office</h3><div><span>FICTIONAL ORGANIZATION</span><span>SYNTHETIC CONFIGURATION</span></div></article>
+<article class="schedule-card"><span class="label">EXACT SCHEDULE</span><h3>Weekday 08:00 KST</h3><p>Monday through Friday, Asia/Seoul timezone · TIMEZONE — SYNTHETIC CONFIGURATION</p></article>
+<article class="schedule-card"><span class="label">FLEXIBLE DELIVERY WINDOW</span><h3>Review queue by 08:20</h3><p>Late delivery is not a failure; window is recorded but not enforced in Phase 1</p></article>
+<article class="schedule-card stale"><span class="label">RECURRING CADENCE</span><h3>Daily · weekdays only</h3><p>Weekend and holiday skip — not a failure, not a pass</p><div><span>CONDITION WATCH</span><span>NOT A FAILURE</span></div></article>
+</div>
+</div>
+</section>
+<section id="panel-inputs" class="visual-state" data-state="inputs" role="tabpanel" aria-labelledby="tab-inputs" hidden>
+<header class="state-heading"><div><p>INPUT BOUNDARY · GATE 02</p><h2>허용된 입력과 금지된 입력을 data boundary로 분리합니다</h2></div><span class="index">PERMISSION NOT GRANTED</span></header>
+<div class="inputs-layout">
+<figure class="focal"><img src="assets/images/inputs-boundary-diagram.svg?v=sao-v1" alt="허용된 합성 입력과 금지된 외부 접근을 보여주는 입력 경계 다이어그램"></figure>
+<div class="input-stack">
+<article class="input-card auth"><span class="label">AUTHORIZED INPUT</span><h3>Synthetic supplier notices</h3><p>Repository-local synthetic fixture only; no live supplier connection</p></article>
+<article class="input-card auth"><span class="label">AUTHORIZED INPUT</span><h3>Synthetic internal review notes</h3><p>Manually prepared synthetic notes; no email or message integration</p></article>
+<article class="input-card auth"><span class="label">AUTHORIZED INPUT</span><h3>Idempotency key — synthetic</h3><p>IK-supplier-digest-20260803</p></article>
+<article class="input-card prohibited"><span class="label">PROHIBITED INPUT</span><h3>Live supplier accounts</h3><div><span>PERMISSION NOT GRANTED</span></div></article>
+<article class="input-card prohibited"><span class="label">PROHIBITED INPUT</span><h3>Email or message delivery</h3><div><span>PERMISSION NOT GRANTED</span></div></article>
+</div>
+</div>
+</section>
+<section id="panel-run" class="visual-state" data-state="run" role="tabpanel" aria-labelledby="tab-run" hidden>
+<header class="state-heading"><div><p>RUN TRACE · STRIP 03</p><h2>실행 기록은 evidence strip으로 planned·completed·failed·skipped·suppressed를 구분합니다</h2></div><span class="index">PLANNED RUN</span></header>
+<div class="run-layout">
+<figure class="focal"><img src="assets/images/run-evidence-strip.svg?v=sao-v1" alt="합성 실행 기록 evidence strip — planned completed failed skipped suppressed"></figure>
+<div class="run-stack">
+<article class="run-card"><span class="label">PLANNED RUN</span><h3>Run #4 · Thu 2026-07-31</h3><p>Queue ready · IDEMPOTENCY KEY — SYNTHETIC</p></article>
+<article class="run-card completed"><span class="label">COMPLETED RUN — SYNTHETIC HISTORY</span><h3>Run #3 · Wed 2026-07-30</h3><p>Digest composed · NOTIFICATION ELIGIBLE — NOT SENT</p></article>
+<article class="run-card failed"><span class="label">FAILED RUN</span><h3>Run #2 · Tue 2026-07-29</h3><p>Transient failure · retry allowance used</p></article>
+<article class="run-card skipped"><span class="label">SKIPPED — NOT PASSED</span><h3>Run #1 · Mon 2026-07-28</h3><p>Condition not met · not a failure</p></article>
+</div>
+</div>
+</section>
+<section id="panel-exceptions" class="visual-state" data-state="exceptions" role="tabpanel" aria-labelledby="tab-exceptions" hidden>
+<header class="state-heading"><div><p>EXCEPTION LEDGER · PLATE 04</p><h2>재시도·중복방지·stale evidence·pause·manual override를 exception ledger에 기록합니다</h2></div><span class="index">BOUNDED RETRY</span></header>
+<div class="exceptions-layout">
+<figure class="focal"><img src="assets/images/exceptions-retry-ledger.svg?v=sao-v1" alt="bounded retry duplicate prevention stale evidence pause manual override 원장"></figure>
+<div class="exception-stack">
+<article class="exception-card retry-badge"><span class="label">BOUNDED RETRY</span><h3>Retry allowance 1 / 1</h3><p>Same idempotency key only · duplicate run prohibited</p><div><span>RETRY PRESERVES IDENTITY</span></div></article>
+<article class="exception-card stale"><span class="label">STALE RUN EVIDENCE — DO NOT USE</span><h3>Run #2 evidence stale</h3><p>Transient failure evidence superseded; not valid for retry</p></article>
+<article class="exception-card skip"><span class="label">CONDITION NOT MET — NOT A FAILURE</span><h3>Run #1 skipped</h3><p>No material unresolved risk; suppressed notification</p></article>
+<article class="exception-card pause"><span class="label">PAUSE RECOMMENDED</span><h3>Recommended after 2nd failure</h3><p>PAUSE AUTHORITY — HUMAN ONLY · MANUAL OVERRIDE requires human authority</p></article>
+</div>
+</div>
+</section>
+<section id="panel-decision" class="visual-state" data-state="decision" role="tabpanel" aria-labelledby="tab-decision" hidden>
+<header class="state-heading decision-heading"><div><p>SCHEDULE-TO-APPROVED-OPERATION-RUNBOOK</p><h2>예약 설정에서 사람 승인 운영 runbook으로</h2></div><button class="replay" type="button" data-motion-replay>운영 runbook trace 다시 보기</button></header>
+<div class="sao-trace is-complete" data-fleet-trace data-motion-state="complete">
+<article class="trace-node n1"><span>OBJECTIVE + OWNER</span><p>Maru Research Office</p></article>
+<article class="trace-node n2"><span>TIMEZONE + CADENCE</span><p>Asia/Seoul · Mon—Fri</p></article>
+<article class="trace-node n3"><span>AUTHORIZED INPUTS</span><p>synthetic notices/notes</p></article>
+<article class="trace-node n4"><span>TRIGGER + CONDITION</span><p>time-based / material risk</p></article>
+<article class="trace-node n5"><span>PLANNED RUN + EVIDENCE</span><p>completed/failed/skipped</p></article>
+<article class="trace-node n6"><span>FAILURE / SKIP / SUPPRESS</span><p>distinctions retained</p></article>
+<article class="trace-node n7"><span>RETRY / PAUSE / OVERRIDE</span><p>human authority only</p></article>
+<div class="runbook-record" data-final-record>
+<img src="assets/images/decision-runbook-seal.svg?v=sao-v1" alt="사람 승인 운영 runbook 인장">
+<div><span>SEPARATE HUMAN AUTHORITY</span><strong>HUMAN-APPROVED SCHEDULED OPERATION RUNBOOK</strong><p>Maru Research Office · supplier-risk digest · not scheduled · not executed</p></div>
+</div>
+<p class="motion-status" data-motion-status aria-live="polite">HUMAN-APPROVED SCHEDULED OPERATION RUNBOOK · complete</p>
+</div>
+<aside class="persistent-register" data-persistent-boundaries aria-label="운영 runbook의 지속 경계">
+<h3>승인 후에도 남는 운영 경계</h3>
+<div class="boundary-grid">
+<p><strong>NOT SCHEDULED</strong><span>runbook ready only</span></p>
+<p><strong>NOT EXECUTED</strong><span>no live background work</span></p>
+<p><strong>CONDITION NOT MET</strong><span>not a failure</span></p>
+<p><strong>SKIPPED — NOT PASSED</strong><span>skip is not pass</span></p>
+<p><strong>NOTIFICATION SUPPRESSED</strong><span>eligible, not sent</span></p>
+<p><strong>DUPLICATE RUN PROHIBITED</strong><span>retry preserves key</span></p>
+<p><strong>PAUSE AUTHORITY — HUMAN ONLY</strong><span>no autonomous override</span></p>
+<p><strong>EXECUTION WITHHELD</strong><span>runbook is not activation</span></p>
+</div>
+</aside>
+</section>
+<section id="panel-mobile" class="visual-state" data-state="mobile" role="tabpanel" aria-labelledby="tab-mobile" hidden>
+<article class="mobile-brief" data-mobile-width="390px">
+<header><p>OPERATIONS BRIEF · 390PX</p><h2>Maru Research Office</h2><span>SYNTHETIC SCHEDULED OPERATION</span></header>
+<section><small>TIMEZONE</small><p>Asia/Seoul — synthetic configuration</p></section>
+<section><small>CADENCE</small><p>Weekdays 08:00 KST</p></section>
+<section><small>NEXT PLANNED RUN</small><p>Not scheduled · queue ready</p></section>
+<section><small>TRIGGER</small><p>Time-based · condition watch: material risk</p></section>
+<section><small>APPROVED INPUTS</small><p>Synthetic supplier notices + internal notes</p></section>
+<section><small>RETRY</small><p>1 bounded · duplicate prohibited</p></section>
+<section><small>NOTIFICATION</small><p>Eligible · not sent</p></section>
+<section class="mobile-stop"><small>EXECUTION</small><p>WITHHELD · NOT SCHEDULED</p></section>
+<footer><strong>HUMAN-APPROVED SCHEDULED OPERATION RUNBOOK</strong><span>VISUAL REFERENCE ONLY · NO LIVE SCHEDULING, BACKGROUND EXECUTION, ACCOUNT ACCESS, OR NOTIFICATION</span></footer>
+</article>
+</section>
+</main>
+<footer class="site-footer"><span>BUSINESS 52 · PHASE 1 VISUAL REFERENCE</span><span>NOT VALIDATED BY LOCAL · NOT DEPLOYED</span></footer>
+<script src="scripts/review.js?v=sao-v1-20260730"></script>
+</body>
+</html>
