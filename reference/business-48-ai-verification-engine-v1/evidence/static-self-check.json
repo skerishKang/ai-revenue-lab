@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "checks": {
+    "states": true,
+    "controls": true,
+    "assets": true,
+    "focal_assets": true,
+    "labels": true,
+    "documented": true,
+    "local_runtime": true,
+    "version": true,
+    "animationend": true,
+    "no_timeout": true,
+    "reduced_motion": true,
+    "no_live_capabilities": true
+  },
+  "states": [
+    "cover",
+    "submission",
+    "claims",
+    "checks",
+    "evidence",
+    "decision",
+    "mobile"
+  ],
+  "assets": 10
+}
