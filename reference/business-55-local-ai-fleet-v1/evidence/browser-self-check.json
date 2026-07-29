@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "matrix_pass": 21,
+  "matrix_total": 21,
+  "viewports": ["1440x1100", "768x1024", "390x844"],
+  "states": ["cover", "fleet", "jobs", "capacity", "incidents", "decision", "mobile"],
+  "keyboard": true,
+  "replay_equal": true,
+  "reduced_motion_immediate": true,
+  "errors": [],
+  "nominal_completion_ms": 760,
+  "external_runtime_requests": 0,
+  "note": "Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation."
+}

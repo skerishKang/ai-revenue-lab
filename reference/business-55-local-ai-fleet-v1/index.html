@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Business 55 Local AI Fleet Phase 1 synthetic visual reference">
+  <title>로컬 AI 플릿 · Local Model Engine Room</title>
+  <link rel="stylesheet" href="styles/main.css?v=laf-v1-20260730">
+</head>
+<body>
+<a class="skip-link" href="#review-stage">플릿 운영계획 본문으로 이동</a>
+<header class="site-header">
+  <div class="brand-lockup">
+    <p class="kicker">BUSINESS 55 · UI_ONLY · LOCAL MODEL ENGINE ROOM</p>
+    <h1>로컬 AI 플릿</h1>
+    <p class="subtitle">장치·모델·작업·용량·실패를 연결하기 전에 사람 승인 운영계획으로 고정합니다.</p>
+  </div>
+  <div class="boundary-rack" aria-label="제품 경계">
+    <span>SYNTHETIC LOCAL MODEL FLEET</span>
+    <span>VISUAL REFERENCE ONLY</span>
+    <span>NO LIVE HARDWARE, MODEL DOWNLOAD, INFERENCE, SSH, OR REMOTE CONTROL</span>
+  </div>
+</header>
+<nav class="state-nav" role="tablist" aria-label="Phase 1 시각 상태">
+  <button id="tab-cover" role="tab" type="button" data-state-control="cover" aria-controls="panel-cover" aria-selected="true" tabindex="0">01 표지</button>
+  <button id="tab-fleet" role="tab" type="button" data-state-control="fleet" aria-controls="panel-fleet" aria-selected="false" tabindex="-1">02 플릿</button>
+  <button id="tab-jobs" role="tab" type="button" data-state-control="jobs" aria-controls="panel-jobs" aria-selected="false" tabindex="-1">03 작업</button>
+  <button id="tab-capacity" role="tab" type="button" data-state-control="capacity" aria-controls="panel-capacity" aria-selected="false" tabindex="-1">04 용량</button>
+  <button id="tab-incidents" role="tab" type="button" data-state-control="incidents" aria-controls="panel-incidents" aria-selected="false" tabindex="-1">05 사고</button>
+  <button id="tab-decision" role="tab" type="button" data-state-control="decision" aria-controls="panel-decision" aria-selected="false" tabindex="-1">06 결정</button>
+  <button id="tab-mobile" role="tab" type="button" data-state-control="mobile" aria-controls="panel-mobile" aria-selected="false" tabindex="-1">07 모바일</button>
+</nav>
+<main id="review-stage" class="review-stage" tabindex="-1">
+  <section id="panel-cover" class="visual-state is-active" data-state="cover" role="tabpanel" aria-labelledby="tab-cover">
+    <div class="cover-layout">
+      <figure class="focal hero-art"><img src="assets/images/engine-room-cover.svg?v=laf-v1" alt="두 대의 합성 장치와 세 개의 합성 로컬 모델을 보여주는 로컬 모델 기관실"></figure>
+      <article class="cover-copy">
+        <span class="label">SYNTHETIC LOCAL MODEL FLEET</span>
+        <p class="folio">OPERATIONS CASE LF-55 · NARU APPLIED AI LAB — FICTIONAL</p>
+        <h2>실행보다 먼저<br>운영 경계를 잠급니다</h2>
+        <p class="lead">연결되지 않은 합성 장치와 모델을 대상으로 eligibility, 계획 작업, 추정 용량, 격리, 한 번의 제한 재시도와 사람 release authority를 한 장의 운영계획으로 정리합니다.</p>
+        <dl class="ledger">
+          <div><dt>PRIMARY RESULT</dt><dd>HUMAN-APPROVED LOCAL MODEL FLEET OPERATIONS PLAN</dd></div>
+          <div><dt>HARDWARE CONNECTION</dt><dd>NONE</dd></div>
+          <div><dt>현재 상태</dt><dd>FLEET ACTIVATION WITHHELD</dd></div>
+        </dl>
+        <div class="warning-strip"><span>NO AUTOMATIC SCALE-UP</span><span>JOB NOT EXECUTED</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="panel-fleet" class="visual-state" data-state="fleet" role="tabpanel" aria-labelledby="tab-fleet" hidden>
+    <header class="state-heading"><div><p>ENGINE INVENTORY · PLATE 01</p><h2>장치와 모델을 연결하기 전에 적합성을 분리합니다</h2></div><span class="index">2 DEVICES · 3 MODELS</span></header>
+    <div class="fleet-layout">
+      <figure class="focal"><img src="assets/images/fleet-engine-map.svg?v=laf-v1" alt="합성 장치와 합성 모델의 적합성과 상태를 보여주는 기관실 플릿 지도"></figure>
+      <div class="inventory-stack">
+        <article class="device-card online"><span class="label">DEVICE — FICTIONAL</span><h3>Pine Workstation 01</h3><p>WORKER STATUS · planning-ready evidence only</p><div><span>ELIGIBLE DEVICE</span><span>HEALTH UNKNOWN</span></div></article>
+        <article class="device-card unavailable"><span class="label">DEVICE — FICTIONAL</span><h3>Reed Mini Server 02</h3><p>실제 원격 연결이나 상태 조회 없이 unavailable fixture로 표시합니다.</p><div><span>WORKER UNAVAILABLE</span><span>INELIGIBLE DEVICE</span></div></article>
+        <article class="model-card"><span class="label">LOCAL MODEL — SYNTHETIC</span><h3>Pine 8B Korean</h3><p>한국어 요약 계획에만 eligibility가 제안됩니다.</p></article>
+        <article class="model-card quarantine"><span class="label">LOCAL MODEL — SYNTHETIC</span><h3>Reed Vision 4B</h3><p>CHECKSUM MISMATCH — SYNTHETIC</p><strong>MODEL QUARANTINED</strong></article>
+        <article class="model-card"><span class="label">LOCAL MODEL — SYNTHETIC</span><h3>Cedar Draft 7B</h3><p>문서 분류 계획 후보 · 실행되지 않음</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-jobs" class="visual-state" data-state="jobs" role="tabpanel" aria-labelledby="tab-jobs" hidden>
+    <header class="state-heading"><div><p>PLANNED QUEUE · TICKET 02</p><h2>작업은 실행 명령이 아니라 승인 전 배치계획입니다</h2></div><span class="index">QUEUE PLANNED ONLY</span></header>
+    <div class="jobs-layout">
+      <figure class="focal"><img src="assets/images/job-queue-board.svg?v=laf-v1" alt="세 개의 합성 계획 작업과 장치 배치 상태를 보여주는 작업 큐 보드"></figure>
+      <div class="ticket-stack">
+        <article class="job-ticket"><span class="label">PLANNED JOB</span><h3>J-101 · document classification</h3><p>Cedar Draft 7B → Pine Workstation 01</p><div><span>ELIGIBLE DEVICE</span><span>JOB NOT EXECUTED</span></div></article>
+        <article class="job-ticket"><span class="label">PLANNED JOB</span><h3>J-102 · Korean summary</h3><p>Pine 8B Korean → Pine Workstation 01</p><div><span>ELIGIBLE DEVICE</span><span>JOB NOT EXECUTED</span></div></article>
+        <article class="job-ticket hold"><span class="label">PLANNED JOB</span><h3>J-103 · image caption</h3><p>Reed Vision 4B → assignment withheld</p><div><span>MODEL QUARANTINED</span><span>JOB NOT EXECUTED</span></div></article>
+        <aside class="queue-rule"><img src="assets/images/no-duplicate-tag.svg?v=laf-v1" alt="중복 작업 금지 태그"><div><strong>DUPLICATE JOB PROHIBITED</strong><p>J-103의 retry는 같은 job identity를 유지하며 새 작업을 복제하지 않습니다.</p></div></aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-capacity" class="visual-state" data-state="capacity" role="tabpanel" aria-labelledby="tab-capacity" hidden>
+    <header class="state-heading"><div><p>ESTIMATE BAY · GAUGE 03</p><h2>용량·메모리·에너지는 실측이 아니라 계획 입력입니다</h2></div><span class="index">NOT A BENCHMARK</span></header>
+    <div class="capacity-layout">
+      <figure class="focal"><img src="assets/images/capacity-energy-board.svg?v=laf-v1" alt="실측이 아닌 합성 처리량 메모리 에너지 비용 추정 보드"></figure>
+      <div class="gauge-stack">
+        <article class="gauge-card"><span class="label">CAPACITY ESTIMATE</span><h3>Concurrent planned slots</h3><strong>1</strong><p>unavailable worker와 quarantine을 반영한 합성 계획값</p></article>
+        <article class="gauge-card"><span class="label">THROUGHPUT ESTIMATE — NOT MEASURED</span><h3>Document queue</h3><strong>6–9 / h</strong><p>실제 benchmark 또는 SLA가 아닙니다.</p></article>
+        <article class="gauge-card"><span class="label">MEMORY ESTIMATE</span><h3>Pine 8B Korean</h3><strong>9.5 GB</strong><p>합성 계획치 · hardware discovery 없음</p></article>
+        <article class="gauge-card"><span class="label">ENERGY/COST ESTIMATE — SYNTHETIC</span><h3>One planned shift</h3><strong>₩2,800</strong><p>실제 청구서·전력계 측정값이 아닙니다.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-incidents" class="visual-state" data-state="incidents" role="tabpanel" aria-labelledby="tab-incidents" hidden>
+    <header class="state-heading"><div><p>QUARANTINE BAY · INCIDENT 04</p><h2>실패는 숨기지 않고 격리·재시도·release 경계로 남깁니다</h2></div><span class="index">ONE BOUNDED RETRY</span></header>
+    <div class="incidents-layout">
+      <figure class="focal"><img src="assets/images/quarantine-retry-ledger.svg?v=laf-v1" alt="합성 실패 작업과 모델 격리 한 번의 제한 재시도 사람 release를 기록한 원장"></figure>
+      <div class="incident-stack">
+        <article class="incident fail"><span class="label">FAILED JOB — SYNTHETIC HISTORY</span><h3>J-103 · image caption</h3><p>Reed Vision 4B의 synthetic checksum mismatch 기록으로 실패 상태가 유지됩니다.</p></article>
+        <article class="incident quarantine"><span class="label">MODEL QUARANTINED</span><h3>Reed Vision 4B</h3><p>CHECKSUM MISMATCH — SYNTHETIC · usable 상태로 표시하지 않습니다.</p></article>
+        <article class="incident retry"><span class="label">BOUNDED RETRY</span><h3>Retry allowance 1 / 1</h3><p>같은 job identity에서만 계획되며 자동 반복 또는 duplicate 생성은 금지됩니다.</p></article>
+        <article class="incident authority"><span class="label">HUMAN RELEASE AUTHORITY</span><h3>Release withheld</h3><p>증거 검토 전에는 quarantine 해제·worker 재가동·fleet activation이 없습니다.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-decision" class="visual-state" data-state="decision" role="tabpanel" aria-labelledby="tab-decision" hidden>
+    <header class="state-heading decision-heading"><div><p>FLEET-INVENTORY-TO-APPROVED-OPERATIONS-PLAN</p><h2>재고에서 사람 승인 운영계획으로</h2></div><button class="replay" type="button" data-motion-replay>운영계획 trace 다시 보기</button></header>
+    <div class="fleet-trace is-complete" data-fleet-trace data-motion-state="complete">
+      <article class="trace-node n1"><span>DEVICES + MODELS</span><p>fictional / synthetic</p></article>
+      <article class="trace-node n2"><span>ELIGIBILITY</span><p>eligible / ineligible</p></article>
+      <article class="trace-node n3"><span>PLANNED JOBS</span><p>not executed</p></article>
+      <article class="trace-node n4"><span>CAPACITY ESTIMATES</span><p>not measured</p></article>
+      <article class="trace-node n5"><span>AVAILABILITY</span><p>one worker unavailable</p></article>
+      <article class="trace-node n6"><span>FAILURE + QUARANTINE</span><p>evidence retained</p></article>
+      <article class="trace-node n7"><span>BOUNDED RETRY</span><p>duplicate prohibited</p></article>
+      <article class="trace-node n8"><span>HUMAN RELEASE</span><p>activation withheld</p></article>
+      <div class="operations-plan-record" data-final-record>
+        <img src="assets/images/human-release-seal.svg?v=laf-v1" alt="플릿 실행을 허가하지 않는 사람 승인 운영계획 인장">
+        <div><span>SEPARATE HUMAN AUTHORITY</span><strong>HUMAN-APPROVED LOCAL MODEL FLEET OPERATIONS PLAN</strong><p>Pine worker only · J-101/J-102 planned · J-103 held · no activation</p></div>
+      </div>
+      <p class="motion-status" data-motion-status aria-live="polite">HUMAN-APPROVED LOCAL MODEL FLEET OPERATIONS PLAN · complete</p>
+    </div>
+    <aside class="persistent-register" data-persistent-boundaries aria-label="운영계획의 지속 경계">
+      <h3>승인 후에도 남는 운영 경계</h3>
+      <div class="boundary-grid">
+        <p><strong>MODEL QUARANTINED</strong><span>release evidence required</span></p>
+        <p><strong>WORKER UNAVAILABLE</strong><span>not a person-performance judgment</span></p>
+        <p><strong>JOB NOT EXECUTED</strong><span>planned queue only</span></p>
+        <p><strong>NO AUTOMATIC SCALE-UP</strong><span>no autonomous capacity action</span></p>
+        <p><strong>FLEET ACTIVATION WITHHELD</strong><span>plan is not activation</span></p>
+        <p><strong>DUPLICATE JOB PROHIBITED</strong><span>retry preserves identity</span></p>
+        <p><strong>HUMAN RELEASE AUTHORITY</strong><span>person approves any release</span></p>
+      </div>
+    </aside>
+  </section>
+
+  <section id="panel-mobile" class="visual-state" data-state="mobile" role="tabpanel" aria-labelledby="tab-mobile" hidden>
+    <article class="mobile-brief" data-mobile-width="390px">
+      <header><p>LOCAL FLEET BRIEF · 390PX</p><h2>Naru Applied AI Lab</h2><span>SYNTHETIC LOCAL MODEL FLEET</span></header>
+      <section><small>DEVICE — FICTIONAL</small><p>Pine Workstation 01 · planning-ready evidence only</p></section>
+      <section><small>WORKER UNAVAILABLE</small><p>Reed Mini Server 02 · no live connection</p></section>
+      <section><small>MODEL QUARANTINED</small><p>Reed Vision 4B · synthetic checksum mismatch</p></section>
+      <section><small>PLANNED JOB</small><p>J-101 / J-102 planned · J-103 held</p></section>
+      <section><small>CAPACITY ESTIMATE</small><p>1 planned slot · throughput not measured</p></section>
+      <section class="mobile-stop"><small>HUMAN RELEASE AUTHORITY</small><p>FLEET ACTIVATION WITHHELD</p></section>
+      <footer><strong>HUMAN-APPROVED LOCAL MODEL FLEET OPERATIONS PLAN</strong><span>JOB NOT EXECUTED · NO AUTOMATIC SCALE-UP</span></footer>
+    </article>
+  </section>
+</main>
+<footer class="site-footer"><span>BUSINESS 55 · PHASE 1 VISUAL REFERENCE</span><span>NOT VALIDATED BY LOCAL · NOT DEPLOYED</span></footer>
+<script src="scripts/review.js?v=laf-v1-20260730"></script>
+</body>
+</html>
