@@ -38,8 +38,14 @@ with sync_playwright() as p:
                 failures.append({'viewport':[w,h],'state':state,'info':info})
             combos.append({'viewport':[w,h],'state':state})
     page.set_viewport_size({'width':1440,'height':1100}); page.set_content(html)
+    at_relationship=page.evaluate('''()=>{const tabs=[...document.querySelectorAll('[role="tab"]')];const panels=[...document.querySelectorAll('[role="tabpanel"]')];const tabIds=tabs.map(t=>t.id);const panelIds=panels.map(p=>p.id);const linked=tabs.every(t=>{const panel=document.getElementById(t.getAttribute('aria-controls'));return t.id&&panel&&panel.getAttribute('aria-labelledby')===t.id});return {tabs:tabs.length,panels:panels.length,uniqueTabIds:new Set(tabIds).size===tabs.length,uniquePanelIds:new Set(panelIds).size===panels.length,linked}}''')
     first=page.locator('[data-state-control="cover"]'); first.focus(); page.keyboard.press('ArrowRight')
-    keyboard=page.locator('[data-state-control="catalog"]').get_attribute('aria-selected')=='true' and page.locator('[data-state-control="catalog"]').get_attribute('tabindex')=='0'
+    arrow_ok=page.locator('[data-state-control="catalog"]').get_attribute('aria-selected')=='true' and page.locator('[data-state-control="catalog"]').get_attribute('tabindex')=='0'
+    page.keyboard.press('End'); end_ok=page.locator('[data-state-control="mobile"]').get_attribute('aria-selected')=='true'
+    page.keyboard.press('Home'); home_ok=page.locator('[data-state-control="cover"]').get_attribute('aria-selected')=='true'
+    enter_tab=page.locator('[data-state-control="source"]'); enter_tab.focus(); page.keyboard.press('Enter'); enter_ok=enter_tab.get_attribute('aria-selected')=='true'
+    space_tab=page.locator('[data-state-control="quality"]'); space_tab.focus(); page.keyboard.press('Space'); space_ok=space_tab.get_attribute('aria-selected')=='true'
+    keyboard=arrow_ok and end_ok and home_ok and enter_ok and space_ok
     page.locator('[data-state-control="package"]').click(); replay=page.locator('[data-motion-replay]'); replay.focus(); page.evaluate('window.scrollTo(0,120)')
     def run_once():
         before=page.evaluate('''()=>{const e=document.querySelector('.connector-spec-seal');const r=e.getBoundingClientRect();return {focus:document.activeElement===document.querySelector('[data-motion-replay]'),scrollY,rect:[r.x,r.y,r.width,r.height]}}''')
@@ -63,8 +69,9 @@ with sync_playwright() as p:
     page.locator('[data-state-control="quality"]').click(); page.screenshot(path=str(root/'evidence/quality-1440.png'),full_page=True)
     page.locator('[data-state-control="package"]').click(); page.screenshot(path=str(root/'evidence/package-1440.png'),full_page=True)
     browser.close()
-result={'status':'PASS','combinations':len(combos),'failures':failures,'http_assets':http_results,'http_assets_all_200':all(v==200 for v in http_results.values()),'console_errors':console,'page_errors':page_errors,'external_runtime_requests':requests,'keyboard_navigation':keyboard,'motion':{'computed_end_ms':timing['end'],'animation_name':timing['name'],'replay_equal':replay_equal,'screenshot_equal':screenshot_equal,'focus_stable':focus_stable,'scroll_stable':scroll_stable,'geometry_stable':geometry_stable,'finals':[a1,a2]},'reduced_motion':reduced,'mobile':mobile,'harness':'exact local bytes inline for Chromium; separate localhost HTTP asset 200 check'}
-if failures or not result['http_assets_all_200'] or console or page_errors or requests or not keyboard or timing['name']!='connectorSpecComplete' or not (700<=timing['end']<=800) or not replay_equal or not screenshot_equal or not focus_stable or not scroll_stable or not geometry_stable or reduced['state']!='complete' or not reduced['visible'] or not mobile['required'] or mobile['right']>390.5:
+result={'status':'PASS','combinations':len(combos),'failures':failures,'http_assets':http_results,'http_assets_all_200':all(v==200 for v in http_results.values()),'console_errors':console,'page_errors':page_errors,'external_runtime_requests':requests,'at_relationship_7_7':at_relationship,'keyboard_navigation':{'pass':keyboard,'arrow':arrow_ok,'home':home_ok,'end':end_ok,'enter':enter_ok,'space':space_ok},'motion':{'computed_end_ms':timing['end'],'animation_name':timing['name'],'replay_equal':replay_equal,'screenshot_equal':screenshot_equal,'focus_stable':focus_stable,'scroll_stable':scroll_stable,'geometry_stable':geometry_stable,'finals':[a1,a2]},'reduced_motion':reduced,'mobile':mobile,'harness':'exact local bytes inline for Chromium; separate localhost HTTP asset 200 check'}
+at_ok=at_relationship['tabs']==7 and at_relationship['panels']==7 and at_relationship['uniqueTabIds'] and at_relationship['uniquePanelIds'] and at_relationship['linked']
+if failures or not result['http_assets_all_200'] or console or page_errors or requests or not at_ok or not keyboard or timing['name']!='connectorSpecComplete' or not (700<=timing['end']<=800) or not replay_equal or not screenshot_equal or not focus_stable or not scroll_stable or not geometry_stable or reduced['state']!='complete' or not reduced['visible'] or not mobile['required'] or mobile['right']>390.5:
     result['status']='FAIL'
 (root/'evidence/browser-self-check.json').write_text(json.dumps(result,indent=2,ensure_ascii=False))
 print(json.dumps(result,indent=2,ensure_ascii=False))
