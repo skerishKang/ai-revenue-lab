@@ -6,6 +6,8 @@ import json, re, sys
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_TEXT = [ROOT/'index.html', ROOT/'styles.css', ROOT/'app.js']
+EVIDENCE = ROOT/'evidence'
+EVIDENCE.mkdir(parents=True, exist_ok=True)
 
 class AssetParser(HTMLParser):
     def __init__(self):
@@ -53,6 +55,6 @@ report={
     'external_runtime_requests':0 if not any('external' in e or 'network' in e for e in errors) else None,
     'errors':errors,
 }
-(ROOT/'evidence/static-contract.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+(EVIDENCE/'static-contract.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(report,ensure_ascii=False,indent=2))
 sys.exit(1 if errors else 0)
