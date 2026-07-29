@@ -1,0 +1,13 @@
+businessId,business,auditTarget,visualScore,grade,hardBlockers,recommendedNextAction,evidenceConfidence,statusNote
+1,Personal Edition,PR #111 exact head 3f44ac725c1b946776ae41d3b25bc8c2d56df626,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+2,Living Travel,No verified audit surface,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+3,Living Fiction,No verified audit surface,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+4,Living Learning,https://ai-revenue-living-learning.pages.dev/,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+5,Neighbor Market,https://ai-revenue-neighbor-market.pages.dev/,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+6,World Feed,https://ai-revenue-world-feed.pages.dev/,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+7,Personal Meaning Map,https://ai-revenue-business-07-personal-meaning-map.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,"Approved/deployed authority exists, but no portable exact-head screenshot set was available to this audit."
+8,Family Newspaper,https://ai-revenue-business-08-family-newspaper.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,"Approved/deployed authority exists, but no portable exact-head screenshot set was available to this audit."
+9,Personalized Children’s Story,https://ai-revenue-personalized-childrens-story.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,MEDIUM-LOW,"Desktop Story Bloom motion evidence inspected; tablet/mobile and representative non-motion states missing."
+10,Fan Magazine,https://ai-revenue-business-10-fan-magazine.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,MEDIUM,"Desktop cover/reveal evidence inspected; tablet/mobile and remaining states missing."
+11,Language Learning Magazine,https://ai-revenue-business-11-language-magazine.pages.dev/,86,A,none observed in supplied evidence,MINOR_VISUAL_REFINEMENT,MEDIUM-HIGH,"Three desktop states, actual 390x844 mobile, motion and reduced-motion evidence inspected."
+12,Creator Mini-Media,https://ai-revenue-business-12-creator-mini-media.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,"Approved/deployed authority exists, but no portable exact-head screenshot set was available to this audit."
