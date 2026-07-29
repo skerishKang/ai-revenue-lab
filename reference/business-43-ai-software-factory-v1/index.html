@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Business 43 AI 소프트웨어 공장 Phase 1 합성 시각 참고본">
+  <title>AI 소프트웨어 공장 · Software Production Line Ledger</title>
+  <link rel="stylesheet" href="styles/main.css?v=asf-v1-20260729">
+</head>
+<body>
+  <a class="skip-link" href="#review-stage">본문으로 이동</a>
+  <header class="site-header">
+    <div class="identity">
+      <p class="kicker">BUSINESS 43 · UI_ONLY · LINE 043</p>
+      <h1>AI 소프트웨어 공장</h1>
+      <p class="subtitle">Software Production Line Ledger · 소프트웨어 생산라인 원장</p>
+    </div>
+    <div class="trust-rack" aria-label="합성 프로젝트와 비연결 고지">
+      <span>SYNTHETIC SOFTWARE PROJECT</span>
+      <span>VISUAL REFERENCE ONLY</span>
+      <span>NO LIVE REPOSITORY, CODE GENERATION, CI, MERGE, OR DEPLOYMENT CONNECTION</span>
+    </div>
+  </header>
+
+  <nav class="state-nav" role="tablist" aria-label="생산라인 시각 상태 검토">
+    <button role="tab" data-state-control="cover" aria-selected="true" tabindex="0"><b>01</b> 표지</button>
+    <button role="tab" data-state-control="requirement" aria-selected="false" tabindex="-1"><b>02</b> 요구</button>
+    <button role="tab" data-state-control="patch" aria-selected="false" tabindex="-1"><b>03</b> 패치</button>
+    <button role="tab" data-state-control="tests" aria-selected="false" tabindex="-1"><b>04</b> 시험</button>
+    <button role="tab" data-state-control="validation" aria-selected="false" tabindex="-1"><b>05</b> 검증</button>
+    <button role="tab" data-state-control="package" aria-selected="false" tabindex="-1"><b>06</b> 패키지</button>
+    <button role="tab" data-state-control="mobile" aria-selected="false" tabindex="-1"><b>07</b> 모바일</button>
+  </nav>
+
+  <main id="review-stage" class="review-stage" tabindex="-1">
+    <section class="visual-state is-active" data-state="cover" role="tabpanel">
+      <div class="cover-grid">
+        <figure class="hero-asset"><img src="assets/images/software-factory-cover.svg?v=asf-v1" alt="합성 소프트웨어 생산라인 원장 표지"></figure>
+        <article class="cover-copy">
+          <span class="authority">SYNTHETIC SOFTWARE PROJECT</span>
+          <p class="station-index">CURRENT STATION · 00 / INTAKE</p>
+          <h2>HUMAN-VERIFIED<br>SOFTWARE DELIVERY PACKAGE</h2>
+          <p class="project">Cedar Desk — fictional</p>
+          <p class="lead">하나의 요구사항을 범위·패치·시험·독립검증·Draft PR 패키지로 연결하되, 어떠한 live repository도 수정하지 않습니다.</p>
+          <dl class="identity-ledger">
+            <div><dt>Repository</dt><dd>cedar-desk/app — fictional</dd></div>
+            <div><dt>Package</dt><dd>Draft and unmerged — synthetic</dd></div>
+            <div><dt>Deployment</dt><dd>not performed</dd></div>
+          </dl>
+          <div class="boundary-strip"><span>NOT MERGED</span><span>DEPLOYMENT READINESS — NOT DEPLOYED</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="requirement" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>STATION 01 · SPECIFICATION</p><h2>요구사항과 범위를 먼저 잠근다</h2></div><span>REQ-043</span></header>
+      <div class="spec-layout">
+        <figure><img src="assets/images/requirement-spec-sheet.svg?v=asf-v1" alt="합성 요구사항 명세서"></figure>
+        <div class="spec-copy">
+          <article><span class="authority">REQUIREMENT</span><h3>접근 가능한 내보내기 필터</h3><p>합성 records table에 keyboard-accessible export filter와 empty-state explanation을 추가합니다.</p></article>
+          <article><span class="authority">ACCEPTANCE CRITERIA</span><ol><li>Tab 순서와 visible focus 유지</li><li>Enter/Space로 filter option 조작</li><li>empty state가 원인과 다음 행동 설명</li><li>기존 sorting contract 유지</li></ol></article>
+          <figure class="scope-card"><img src="assets/images/scope-boundary-card.svg?v=asf-v1" alt="합성 허용·금지 범위 카드"></figure>
+          <div class="scope-notes"><article><span class="authority">ALLOWED SCOPE</span><p>records-table 관련 4개 synthetic file만.</p></article><article><span class="authority danger">PROHIBITED SCOPE</span><p>API, database, account, analytics, merge, deployment.</p></article></div>
+          <aside><strong>Assumptions</strong><p>기존 table markup과 sort state는 유지된다고 가정합니다.</p><strong>Explicit non-goals</strong><p>새 export format, storage, telemetry, live data 연결은 포함하지 않습니다.</p></aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="patch" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>STATION 02 · PATCH FABRICATION</p><h2>생성 산출물과 검토 산출물을 분리한다</h2></div><span>PATCH-04</span></header>
+      <div class="patch-layout">
+        <figure class="patch-reel"><img src="assets/images/patch-plan-reel.svg?v=asf-v1" alt="합성 bounded patch plan reel"></figure>
+        <article class="patch-plan"><span class="authority">PATCH PLAN</span><h3>4-step bounded patch</h3><ol><li>filter group에 keyboard semantics 추가</li><li>empty-state explanatory copy 추가</li><li>200% zoom focus padding 보정</li><li>focused regression test 추가</li></ol></article>
+        <div class="patch-compare">
+          <article class="generated"><span class="authority danger">GENERATED PATCH — SYNTHETIC</span><h3>Machine draft / unreviewed</h3><p>초기 draft는 `aria-expanded` 상태 동기화를 빠뜨렸고, 200% zoom에서 focus ring이 잘렸습니다.</p><code>draft-ref: gen-043-a</code></article>
+          <article class="reviewed"><span class="authority reviewed-label">REVIEWED PATCH</span><h3>Human-reviewed synthetic patch</h3><p>상태 동기화와 padding 수정이 적용됐지만, independent validation과 human approval은 아직 별도입니다.</p><code>head: 7c4e2a1 — synthetic</code></article>
+        </div>
+        <figure class="manifest"><img src="assets/images/changed-file-manifest.svg?v=asf-v1" alt="합성 변경 파일 명세"></figure>
+        <aside class="exception-note"><span class="authority">CHANGED FILE MANIFEST</span><p>4개 synthetic file. Exception note: shared design token 변경은 금지돼 local component padding으로 해결했습니다.</p></aside>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="tests" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>STATION 03 · TEST RIG</p><h2>실패와 재실행 이력을 함께 보존한다</h2></div><span>18 CHECKS</span></header>
+      <div class="test-layout">
+        <figure class="test-rig"><img src="assets/images/test-rig-board.svg?v=asf-v1" alt="합성 테스트 장비 보드"></figure>
+        <article class="self-check"><span class="authority">IMPLEMENTATION SELF-CHECK</span><h3>18 focused checks</h3><p>keyboard 6, empty state 4, regression 5, accessibility 3. 구현자 기록이며 independent validation이 아닙니다.</p></article>
+        <figure class="failed-slip"><img src="assets/images/failed-check-slip.svg?v=asf-v1" alt="합성 실패 검사와 재실행 결과"></figure>
+        <div class="test-evidence">
+          <article><span class="authority">TEST EVIDENCE — SYNTHETIC</span><p>Run 1과 Run 2 모두 exact synthetic head `7c4e2a1`에 연결됩니다.</p></article>
+          <article class="failure"><span class="authority danger">FAILED CHECK</span><p>`keyboard_zoom_200_percent` — focus ring clipping 발견.</p></article>
+          <article class="rerun"><span class="authority rerun-label">RERUN RESULT</span><p>padding 수정 후 PASS. 최초 실패는 숨기지 않습니다.</p></article>
+          <article><strong>Coverage boundary</strong><p>API, database, integration, production browser와 deployment는 테스트하지 않았습니다.</p></article>
+          <article><strong>Hidden failures</strong><p>없음. 실패 1건과 rerun 1건을 모두 표시합니다.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="validation" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>STATION 04 · INDEPENDENT INSPECTION</p><h2>self-check와 독립 검증을 같은 권한으로 표시하지 않는다</h2></div><span>IV-043</span></header>
+      <div class="validation-layout">
+        <figure><img src="assets/images/independent-inspection-sheet.svg?v=asf-v1" alt="합성 독립 검증표"></figure>
+        <figure class="head-tag"><img src="assets/images/exact-head-tag.svg?v=asf-v1" alt="합성 exact head 확인 태그"></figure>
+        <div class="validation-copy">
+          <article><span class="authority">INDEPENDENT VALIDATION</span><h3>Mira Han — fictional validator</h3><p>구현자와 분리된 합성 역할. 21 viewport/state 조합과 product boundary를 재검토했습니다.</p></article>
+          <article><span class="authority exact-label">EXACT HEAD VERIFIED</span><p>`7c4e2a1` — synthetic head. 다른 head의 evidence는 적용하지 않습니다.</p></article>
+          <article><strong>Product-boundary check</strong><p>live repository, code generation, CI, merge, deployment 연결이 없음을 확인.</p></article>
+          <article class="unresolved"><span class="authority danger">UNRESOLVED CONDITION</span><p>tablet landscape의 긴 bilingual label wrapping은 최종 human visual review가 필요합니다.</p></article>
+          <article><strong>Authority separation</strong><p>Implementation self-check ≠ Independent validation ≠ Human approval.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="package" role="tabpanel" hidden>
+      <header class="state-heading split"><div><p>STATION 05 · DELIVERY PACKAGING</p><h2>요구사항에서 사람 검증 전달 패키지로</h2></div><button class="replay" type="button" data-motion-replay>Production trace 다시 보기</button></header>
+      <div class="delivery-line is-complete" data-delivery-line data-motion-state="complete">
+        <div class="line-rail" aria-hidden="true"></div>
+        <article class="station s1"><span>REQUIREMENT</span><p>keyboard export filter</p></article>
+        <article class="station s2"><span>ACCEPTANCE CRITERIA</span><p>4 bounded criteria</p></article>
+        <article class="station s3"><span>PATCH PLAN</span><p>4-file maximum</p></article>
+        <article class="station s4"><span>CHANGED FILES</span><p>4 — synthetic</p></article>
+        <article class="station s5"><span>IMPLEMENTATION SELF-CHECK</span><p>18 focused checks</p></article>
+        <article class="station s6 warning"><span>TEST EVIDENCE — SYNTHETIC</span><p>1 fail → rerun pass</p></article>
+        <article class="station s7"><span>INDEPENDENT VALIDATION</span><p>exact head verified</p></article>
+        <article class="station s8"><span>DRAFT PR PACKAGE</span><p>Draft / unmerged</p></article>
+        <article class="station s9 warning"><span>RELEASE CONSTRAINTS</span><p>human review required</p></article>
+        <div class="software-delivery-seal"><img src="assets/images/software-delivery-seal.svg?v=asf-v1" alt="사람 검증 소프트웨어 전달 패키지 도장"><strong>HUMAN-VERIFIED SOFTWARE DELIVERY PACKAGE</strong></div>
+        <p class="motion-status" data-motion-status aria-live="polite">HUMAN-VERIFIED SOFTWARE DELIVERY PACKAGE · complete</p>
+      </div>
+      <div class="package-bottom">
+        <figure class="crate"><img src="assets/images/delivery-package-crate.svg?v=asf-v1" alt="합성 Draft PR 전달 패키지 crate"></figure>
+        <div class="package-ledger">
+          <article><span class="authority">DRAFT PR PACKAGE</span><p>Requirement, reviewed patch, changed-file manifest, tests, validation, release notes.</p></article>
+          <article><strong>Release notes</strong><p>Keyboard-operable export filter와 explanatory empty state를 synthetic records table에 추가.</p></article>
+          <article><strong>Deployment-readiness evidence</strong><p>Static package is reviewable; production prerequisites and approval remain absent.</p></article>
+        </div>
+      </div>
+      <div class="persistent-boundaries" aria-label="완료 후에도 유지되는 경계">
+        <span>FAILED CHECK</span>
+        <span>UNRESOLVED CONDITION</span>
+        <span>NOT MERGED</span>
+        <span>DEPLOYMENT READINESS — NOT DEPLOYED</span>
+        <span>HUMAN REVIEW REQUIRED</span>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="mobile" role="tabpanel" hidden>
+      <div class="phone-brief">
+        <header><p>390PX PRODUCTION BRIEF</p><h2>Cedar Desk</h2><span>SYNTHETIC SOFTWARE PROJECT</span></header>
+        <section><small>REQUIREMENT</small><strong>Keyboard export filter + explanatory empty state</strong></section>
+        <section><small>CHANGED FILE MANIFEST</small><p>4 synthetic files · allowed scope only</p></section>
+        <section class="mobile-test"><small>TEST STATUS</small><p>18 focused checks · final 18 PASS</p><em>FAILED CHECK retained → RERUN RESULT PASS</em></section>
+        <section><small>INDEPENDENT VALIDATION</small><p>Mira Han — fictional · boundary checked</p></section>
+        <section><small>EXACT HEAD VERIFIED</small><code>7c4e2a1 — synthetic</code></section>
+        <section class="mobile-boundary"><b>NOT MERGED</b><b>DEPLOYMENT READINESS — NOT DEPLOYED</b></section>
+        <section><small>NEXT HUMAN ACTION</small><strong>Review unresolved tablet label wrapping before any approval.</strong></section>
+        <footer>HUMAN REVIEW REQUIRED · NO LIVE REPOSITORY CONNECTION</footer>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">ALL REPOSITORIES, SHAS, FILES, PATCHES, TESTS, ACTORS AND PR EVIDENCE ARE SYNTHETIC · VISUAL REFERENCE ONLY</footer>
+  <script src="scripts/review.js?v=asf-v1-20260729"></script>
+</body>
+</html>

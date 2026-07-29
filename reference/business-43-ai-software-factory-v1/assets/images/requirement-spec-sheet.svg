@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" role="img" aria-labelledby="t"><title id="t">합성 요구사항 명세서</title><defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#d6d0c4" stroke-width="1"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-opacity=".18"/></filter></defs><rect width="960" height="560" fill="#eae4d8"/><rect width="960" height="560" fill="url(#grid)" opacity=".7"/>
+<rect x="120" y="52" width="720" height="456" fill="#faf6ec" stroke="#22292b" stroke-width="3" filter="url(#shadow)"/>
+<rect x="120" y="52" width="720" height="64" fill="#24363a"/><text x="150" y="91" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">REQ-043 / REQUIREMENT SPECIFICATION</text>
+<text x="150" y="156" fill="#22292b" font-family="Arial,sans-serif" font-size="17" font-weight="700">Keyboard-accessible export filter</text><text x="150" y="184" fill="#435258" font-family="Arial,sans-serif" font-size="15">+ empty-state explanation for records table</text>
+<g stroke="#afa797"><path d="M150 220H810M150 274H810M150 328H810M150 382H810M150 436H810"/></g>
+<g font-family="Arial,sans-serif" font-size="13" fill="#586367"><text x="150" y="246">AC-01  Tab reaches export filter without trap</text><text x="150" y="300">AC-02  Enter/Space toggles options with visible focus</text><text x="150" y="354">AC-03  Empty state explains why no rows are visible</text><text x="150" y="408">AC-04  Existing table sorting remains unchanged</text></g>
+<rect x="650" y="448" width="160" height="34" fill="#d7b66c"/><text x="670" y="470" fill="#202729" font-family="Arial,sans-serif" font-size="13" font-weight="700">SYNTHETIC SPEC</text>
+</svg>
