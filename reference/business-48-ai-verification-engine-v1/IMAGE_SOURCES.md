@@ -1,18 +1,18 @@
 # Image sources
 
-All assets are original repository-local synthetic SVGs created for this Phase 1 reference.
+All assets are original repository-local synthetic SVGs created for this Phase 1 reference. No third-party runtime asset is used.
 
-| Repository path | Creator / rightsholder | Creation date | Licence basis | Synthetic | Intended state |
-|---|---|---|---|---|---|
-| `assets/images/verification-bench-cover.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | cover |
-| `assets/images/exact-version-calibration-plate.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | submission; focal exact version |
-| `assets/images/worker-claim-carbon-sheet.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | claims |
-| `assets/images/independent-check-rig.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | checks; focal independent checks |
-| `assets/images/evidence-version-match-tag.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | evidence; focal exact-version match |
-| `assets/images/residual-condition-envelope.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | evidence; focal residual condition |
-| `assets/images/human-approval-seal.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | decision |
-| `assets/images/acceptance-criteria-gauge.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | supporting asset |
-| `assets/images/stale-evidence-strike.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | supporting stale-evidence asset |
-| `assets/images/validator-verdict-slip.svg` | OpenAI for repository owner | 2026-07-29 | Original project work | yes | supporting verdict asset |
+| Path | Asset type | Role | Source / ownership | Licence basis | Creation / acquisition date | Intended use |
+|---|---|---|---|---|---|---|
+| `assets/images/verification-bench-cover.svg` | original synthetic SVG illustration | cover focal asset; product identity and authority separation | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `cover`; show the independent bench, exact submission and deployment boundary |
+| `assets/images/exact-version-calibration-plate.svg` | original synthetic SVG inspection plate | substantial focal asset for exact artifact version | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `submission`; bind the record to synthetic version `7d2e91a` |
+| `assets/images/worker-claim-carbon-sheet.svg` | original synthetic SVG document illustration | distinguish worker claim and implementation self-check | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `claims`; state that self-check is not independent validation |
+| `assets/images/independent-check-rig.svg` | original synthetic SVG inspection rig | substantial focal asset for independent checks | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `checks`; separate passed, failed, skipped and unavailable outcomes |
+| `assets/images/evidence-version-match-tag.svg` | original synthetic SVG evidence tag | substantial focal asset for evidence-to-version match | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `evidence`; show exact-version evidence identity |
+| `assets/images/residual-condition-envelope.svg` | original synthetic SVG evidence envelope | substantial focal asset for exception and residual risk | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `evidence`; preserve unavailable mobile assistive-technology evidence as a residual condition |
+| `assets/images/human-approval-seal.svg` | original synthetic SVG approval seal | separate human authority from validator verdict | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `decision`; mark limited human approval without implying certification |
+| `assets/images/acceptance-criteria-gauge.svg` | original synthetic SVG criteria plate | supporting acceptance-criteria inventory | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `submission`; display four bounded synthetic criteria |
+| `assets/images/stale-evidence-strike.svg` | original synthetic SVG evidence sheet | supporting stale-evidence rejection marker | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `evidence`; reject evidence from version `4ac19bf` |
+| `assets/images/validator-verdict-slip.svg` | original synthetic SVG verdict slip | supporting validator-authority record | OpenAI-created project work for repository owner | original project work; repository use authorized | 2026-07-29 | `decision`; show conditionally verified while explicitly excluding human approval |
 
-No external image, font, icon, logo, screenshot, media, CDN or runtime asset request is used.
+External images, fonts, icons, logos, screenshots, media, CDNs and runtime asset requests: **0**.
