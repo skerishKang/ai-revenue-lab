@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark light">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Portfolio Console</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=arb-v20260729-1">
   <script>
     (function() {
       var stored = localStorage.getItem('arl-portfolio-theme');
@@ -136,13 +136,52 @@
             <input id="biz-search-input" type="search" autocomplete="off" placeholder="번호, 제목 검색">
           </label>
           <label class="biz-filter-field">
-            <span class="biz-filter-label" data-label-ko="상태" data-label-en="STATE">상태</span>
-            <select id="biz-state-filter">
+            <span class="biz-filter-label" data-label-ko="번호 권한" data-label-en="NUMBER AUTHORITY">번호 권한</span>
+            <select id="biz-auth-filter">
               <option value="all">전체</option>
-              <option value="running">운영 중</option>
-              <option value="review">검토 / 개발</option>
-              <option value="planning">계획</option>
-              <option value="reserved">예약</option>
+              <option value="canonical">정식</option>
+              <option value="proposed-number">제안 번호</option>
+              <option value="candidate">후보</option>
+              <option value="existing-project">기존 프로젝트</option>
+              <option value="number-reconciliation-required">번호 조정 필요</option>
+            </select>
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="UI" data-label-en="UI">UI</span>
+            <select id="biz-ui-filter">
+              <option value="all">전체</option>
+              <option value="NOT_STARTED">미시작</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="UI_NOT_READY">미완료</option>
+              <option value="UI_CONDITIONALLY_READY">조건부 승인</option>
+              <option value="UI_APPROVED">승인됨</option>
+              <option value="NOT_APPLICABLE">해당 없음</option>
+            </select>
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="UX" data-label-en="UX">UX</span>
+            <select id="biz-ux-filter">
+              <option value="all">전체</option>
+              <option value="BLOCKED_BY_UI">UI 대기</option>
+              <option value="NOT_STARTED">미시작</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="UX_NOT_READY">미완료</option>
+              <option value="UX_CONDITIONALLY_READY">조건부 승인</option>
+              <option value="UX_APPROVED">승인됨</option>
+              <option value="NOT_APPLICABLE">해당 없음</option>
+            </select>
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="백엔드" data-label-en="BACKEND">백엔드</span>
+            <select id="biz-be-filter">
+              <option value="all">전체</option>
+              <option value="FROZEN">동결</option>
+              <option value="DECISION_PENDING">결정 대기</option>
+              <option value="DEFERRED">연기</option>
+              <option value="AUTHORIZED">승인됨</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="IMPLEMENTED">구현됨</option>
+              <option value="NOT_APPLICABLE">해당 없음</option>
             </select>
           </label>
           <label class="biz-sort-field">
@@ -150,8 +189,6 @@
             <select id="biz-sort">
               <option value="number-asc">번호 ↑</option>
               <option value="number-desc">번호 ↓</option>
-              <option value="priority">우선순위</option>
-              <option value="progress">진행률</option>
             </select>
           </label>
         </div>
@@ -190,9 +227,11 @@
   <!-- Drawer overlay for mobile -->
   <div class="drawer-overlay" id="drawer-overlay"></div>
 
-  <script src="./businesses.js"></script>
+  <script src="./businesses.js?v=arb-v20260729-1"></script>
+  <script src="./business-manifest.js?v=arb-v20260729-1"></script>
   <script src="./projects.js"></script>
-  <script src="./app.js"></script>
+  <script src="./app.js?v=arb-v20260729-1"></script>
   <script src="./github-live-status.js?v=portfolio-github-live-20260727-2"></script>
+  <script src="./business-live-facts.js?v=arb-v20260729-1"></script>
 </body>
 </html>

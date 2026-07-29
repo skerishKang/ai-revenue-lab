@@ -352,22 +352,11 @@
       sortF.options[1].textContent = t('sortProgressDesc');
       sortF.options[2].textContent = t('sortProgressAsc');
     }
-    // Business state filter
-    const bsF = $('#biz-state-filter');
-    if (bsF) {
-      bsF.options[0].textContent = t('allStates');
-      bsF.options[1].textContent = t('running');
-      bsF.options[2].textContent = t('reviewBuild');
-      bsF.options[3].textContent = t('planning');
-      bsF.options[4].textContent = t('reserved');
-    }
-    // Business sort
+    // Business sort (only 2 options: number-asc, number-desc)
     const bSort = $('#biz-sort');
     if (bSort) {
       bSort.options[0].textContent = t('numberAsc');
       bSort.options[1].textContent = t('numberDesc');
-      bSort.options[2].textContent = t('actionPriority');
-      bSort.options[3].textContent = t('progressSort');
     }
   }
 
@@ -565,18 +554,24 @@
   // ── Business view ──
   function filteredBusinesses() {
     const query = ($('#biz-search-input')?.value || '').trim().toLowerCase();
-    const state = $('#biz-state-filter')?.value || 'all';
+    const authority = $('#biz-auth-filter')?.value || 'all';
+    const uiFilter = $('#biz-ui-filter')?.value || 'all';
+    const uxFilter = $('#biz-ux-filter')?.value || 'all';
+    const beFilter = $('#biz-be-filter')?.value || 'all';
     const sort = $('#biz-sort')?.value || 'number-asc';
 
     let result = businesses.filter(b => {
       const haystack = `${b.number} ${pad(b.number)} ${b.title} ${b.koreanTitle} ${b.slug}`.toLowerCase();
-      return (!query || haystack.includes(query)) && (state === 'all' || b.state === state);
+      if (query && !haystack.includes(query)) return false;
+      if (authority !== 'all' && b.numberAuthority !== authority) return false;
+      if (uiFilter !== 'all' && b.uiStatus !== uiFilter) return false;
+      if (uxFilter !== 'all' && b.uxStatus !== uxFilter) return false;
+      if (beFilter !== 'all' && b.backendStatus !== beFilter) return false;
+      return true;
     });
 
     result = result.slice().sort((a, b) => {
       if (sort === 'number-desc') return b.number - a.number;
-      if (sort === 'priority') return (b.priority || 0) - (a.priority || 0) || a.number - b.number;
-      if (sort === 'progress') return (b.progress || 0) - (a.progress || 0) || a.number - b.number;
       return a.number - b.number;
     });
     return result;
@@ -588,19 +583,23 @@
     const visible = filteredBusinesses();
 
     list.innerHTML = visible.map(b => {
-      const reserved = b.state === 'reserved' ? ' is-reserved' : '';
-      const stateCls = `status-${b.state}`;
+      const authCls = 'biz-auth-' + (b.numberAuthority === 'proposed-number' ? 'proposed' : b.numberAuthority === 'existing-project' ? 'existing-project' : b.numberAuthority === 'number-reconciliation-required' ? 'reconciliation' : b.numberAuthority || 'candidate');
+      const uiCls = phaseBadgeClass(b.uiStatus, 'ui');
+      const uxCls = phaseBadgeClass(b.uxStatus, 'ux');
+      const beCls = phaseBadgeClass(b.backendStatus, 'be');
       return `
-        <div class="biz-item${reserved}" data-biz-number="${b.number}" tabindex="0">
+        <div class="biz-item" data-biz-number="${b.number}" tabindex="0">
           <span class="biz-number">${pad(b.number)}</span>
           <div class="biz-title-group">
             <span class="biz-title">${b.title}</span>
             <span class="biz-korean">${b.koreanTitle}</span>
+            <span data-live-discovery style="font:8px/1 var(--mono);color:var(--quiet)"></span>
           </div>
-          <span class="biz-state status-badge ${stateCls}">${stateLabel(b.state)}</span>
-          <div class="biz-progress">
-            <span>${b.progress}%</span>
-            <div class="biz-progress-bar"><i style="width:${b.progress}%"></i></div>
+          <span class="biz-auth status-badge ${authCls}">${authorityLabel(b.numberAuthority)}</span>
+          <div class="biz-phase-group" style="display:flex;gap:3px;flex-wrap:wrap">
+            <span class="biz-phase-badge ${uiCls}">${b.uiStatus || '—'}</span>
+            <span class="biz-phase-badge ${uxCls}">${b.uxStatus || '—'}</span>
+            <span class="biz-phase-badge ${beCls}">${b.backendStatus || '—'}</span>
           </div>
         </div>
       `;
@@ -624,6 +623,34 @@
 
     const headerBadge = $('#header-count');
     if (headerBadge) headerBadge.textContent = `${t('bizLabel')} ${visible.length}`;
+  }
+
+  function phaseBadgeClass(status, prefix) {
+    var s = String(status || '');
+    if (s === 'NOT_STARTED') return 'phase-ns';
+    if (s === 'IN_PROGRESS') return 'phase-ip';
+    if (s === (prefix === 'ui' ? 'UI_NOT_READY' : prefix === 'ux' ? 'UX_NOT_READY' : 'NOT_APPLICABLE') || s === (prefix === 'be' ? 'DEFERRED' : '') && prefix === 'be') return 'phase-nr';
+    if (s === 'UI_CONDITIONALLY_READY' || s === 'UX_CONDITIONALLY_READY') return 'phase-cr';
+    if (s === 'UI_APPROVED' || s === 'UX_APPROVED' || s === 'IMPLEMENTED') return 'phase-ap';
+    if (s === 'NOT_APPLICABLE') return 'phase-na';
+    if (s === 'BLOCKED_BY_UI') return 'phase-bu';
+    if (s === 'FROZEN') return 'phase-fr';
+    if (s === 'DECISION_PENDING') return 'phase-dp';
+    if (s === 'AUTHORIZED') return 'phase-au';
+    if (s === 'IN_PROGRESS' || s === 'DEFERRED') return 'phase-ip';
+    return 'phase-ns';
+  }
+
+  function authorityLabel(a) {
+    var labels = {
+      'canonical': 'CANONICAL',
+      'proposed-number': 'PROPOSED',
+      'candidate': 'CANDIDATE',
+      'existing-project': 'EXISTING',
+      'reserved': 'RESERVED',
+      'number-reconciliation-required': 'RECONCIL',
+    };
+    return labels[a] || a;
   }
 
   // ── Dialog ──
@@ -741,33 +768,40 @@
   }
 
   function businessDialogContentHTML(biz) {
-    const stateCls = `status-${biz.state}`;
+    const authCls = 'biz-auth-' + (biz.numberAuthority === 'proposed-number' ? 'proposed' : biz.numberAuthority === 'existing-project' ? 'existing-project' : biz.numberAuthority === 'number-reconciliation-required' ? 'reconciliation' : biz.numberAuthority || 'candidate');
+    const uiCls = phaseBadgeClass(biz.uiStatus, 'ui');
+    const uxCls = phaseBadgeClass(biz.uxStatus, 'ux');
+    const beCls = phaseBadgeClass(biz.backendStatus, 'be');
     return `
       <div class="dialog-biznumber">B${pad(biz.number)}</div>
       <div class="dialog-name">${biz.title}</div>
       <div class="dialog-korean">${biz.koreanTitle}</div>
       <hr class="dialog-divider">
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('statusLabel')}</span>
-        <span class="dialog-section-value"><span class="status-badge ${stateCls}">${stateLabel(biz.state)}</span></span>
+        <span class="dialog-section-label">NUMBER AUTHORITY</span>
+        <span class="dialog-section-value"><span class="status-badge ${authCls}">${authorityLabel(biz.numberAuthority)}</span></span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('progressLabel')}</span>
-        <span class="dialog-section-value">${biz.progress}%</span>
+        <span class="dialog-section-label">PHASE</span>
+        <span class="dialog-section-value">
+          <span class="biz-phase-badge ${uiCls}">UI: ${biz.uiStatus || '—'}</span>
+          <span class="biz-phase-badge ${uxCls}">UX: ${biz.uxStatus || '—'}</span>
+          <span class="biz-phase-badge ${beCls}">BE: ${biz.backendStatus || '—'}</span>
+        </span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('nextAction')}</span>
-        <span class="dialog-section-value">${biz.nextAction || '—'}</span>
+        <span class="dialog-section-label">LIFECYCLE</span>
+        <span class="dialog-section-value">${biz.lifecycle || '—'}</span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('lastVerified')}</span>
-        <span class="dialog-section-value">${biz.lastVerified || '—'}</span>
+        <span class="dialog-section-label">PRIORITY</span>
+        <span class="dialog-section-value">${biz.priority || '—'}</span>
       </div>
       <hr class="dialog-divider">
       <div class="dialog-links">
         ${biz.surfaceUrl ? `<a class="dialog-link" href="${biz.surfaceUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
-        ${biz.githubUrl ? `<a class="dialog-link" href="${biz.githubUrl}" target="_blank" rel="noopener noreferrer">GitHub</a>` : ''}
       </div>
+      <div data-verdict-block></div>
     `;
   }
 
@@ -890,9 +924,12 @@
 
     // Business filters
     const bizSearch = $('#biz-search-input');
-    const bizState = $('#biz-state-filter');
+    const bizAuth = $('#biz-auth-filter');
+    const bizUi = $('#biz-ui-filter');
+    const bizUx = $('#biz-ux-filter');
+    const bizBe = $('#biz-be-filter');
     const bizSort = $('#biz-sort');
-    [bizSearch, bizState, bizSort].forEach(el => {
+    [bizSearch, bizAuth, bizUi, bizUx, bizBe, bizSort].forEach(el => {
       if (!el) return;
       el.addEventListener(el.type === 'search' ? 'input' : 'change', () => {
         if (activeView === 'business') renderBusinessIndex();
