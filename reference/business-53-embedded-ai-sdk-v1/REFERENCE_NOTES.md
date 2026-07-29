@@ -2,87 +2,81 @@
 
 Research date: 2026-07-30
 
-The product is deliberately framed as an integration-fit and authority artifact, not as an API catalogue, chatbot builder or code playground.
+## Comparable and adjacent products
 
-## Comparable product references
+### 1. Vercel AI SDK
 
-### 1. Vercel AI SDK UI and tool calling
+- Reference: https://ai-sdk.dev/docs/introduction
+- Adopted: provider-independent concepts, structured outputs and clear separation between core capability and UI integration.
+- Rejected: documentation-site composition, code-first presentation and any implication that Business 53 publishes a usable package.
+- Decision: show a versioned integration contract without code samples or provider activation.
 
-- Sources: https://ai-sdk.dev/docs/ai-sdk-ui/overview and https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling
-- Adopted: separate UI integration concerns from model-side tool declarations; make tool inputs, outputs and approval boundaries inspectable.
-- Rejected: presenting a framework API reference, streaming playground or live provider connection.
-- Decision: the capability state shows a bounded cartridge with typed synthetic input/output, while the package retains `MODEL / PROVIDER — NOT SELECTED`.
+### 2. Microsoft Copilot Studio web/native integration
 
-### 2. CopilotKit provider, headless UI and host-controlled MCP apps
+- Reference: https://learn.microsoft.com/en-us/microsoft-copilot-studio/publication-integrate-web-or-native-app-m365-agents-sdk
+- Adopted: host application remains authoritative; integration requires explicit security, permissions and host-side decisions.
+- Rejected: chatbot canvas, connection strings, authentication setup and live channel publication.
+- Decision: make the insertion point and permission-not-granted state visible while keeping installation withheld.
 
-- Sources: https://docs.copilotkit.ai/reference/components/CopilotKit and https://docs.copilotkit.ai/guides/mcp-apps
-- Adopted: an embedded AI surface lives inside a host-controlled subtree and must respect host UX, permissions and workflow boundaries.
-- Rejected: a universal copilot overlay, autonomous action surface or copied CopilotKit chrome.
-- Decision: the host cutaway makes the proposed mount point subordinate to the unchanged host product.
+### 3. Google Genkit
 
-### 3. Cloudflare Agents SDK client integration
+- Reference: https://firebase.google.com/docs/genkit
+- Adopted: one bounded capability can be described through typed input, structured output and provider-independent application logic.
+- Rejected: full-stack framework claims, deployment flows and model-provider unification as a Business 53 responsibility.
+- Decision: visualize one small host capability contract, not a general AI application framework.
 
-- Sources: https://developers.cloudflare.com/agents/getting-started/adding-agents-to-existing-projects/ and https://developers.cloudflare.com/agents/api-reference/client-api/
-- Adopted: distinguish host/client integration, transport events and typed contracts from the runtime that may later execute them.
-- Rejected: WebSocket status, live agent state, durable storage or deployment claims.
-- Decision: event rails are documentation-only and callbacks remain synthetic history.
+### 4. Google Gen AI SDK
 
-### 4. shadcn registry
+- Reference: https://cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview
+- Adopted: version and host-compatibility metadata are part of integration readiness.
+- Rejected: API keys, credentials, endpoint selection and model migration.
+- Decision: version labels remain synthetic and compatibility remains limited rather than guaranteed.
 
-- Sources: https://ui.shadcn.com/docs/registry and https://ui.shadcn.com/docs/registry/getting-started
-- Adopted: package integration material as inspectable code/config artifacts rather than a sealed black box.
-- Rejected: install commands, package-manager affordances or a component marketplace.
-- Decision: the final artifact is an installation-readiness binder, explicitly `NOT INSTALLED`.
+### 5. Amazon Bedrock AgentCore Gateway
 
-## Editorial and design-system references
+- Reference: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html
+- Adopted: governed boundaries, request/response interception and policy outside the embedded capability.
+- Rejected: gateway topology, observability dashboard and model/tool routing.
+- Decision: express fail-closed behavior and host non-mutation without becoming Business 54 or a gateway product.
 
-### GitHub Primer
+## Editorial and information-design references
 
-- Sources: https://primer.style/product/components/ and https://primer.style/accessibility/foundations/accessibility-fundamentals/
-- Adopted: compact labels, strong information hierarchy, semantic composite controls and visible keyboard focus.
-- Rejected: GitHub branding, dark developer-console styling and repository-specific navigation.
+### IBM Design Language — 2x Grid
 
-### GOV.UK Design System
+- Reference: https://www.ibm.com/design/language/2x-grid/
+- Adopted: visible engineered grid, repeated measurements and strong spatial rhythm.
+- Rejected: IBM branding, logo, typeface dependency and direct visual imitation.
 
-- Sources: https://design-system.service.gov.uk/components/ and https://design-system.service.gov.uk/accessibility/
-- Adopted: explicit guidance and warnings around reusable components; accessible components do not remove the need for host-specific testing.
-- Rejected: government-service branding, page templates or portal composition.
+### IBM Design Language — Technical diagrams
 
-### Stripe Apps design guidance
+- Reference: https://www.ibm.com/design/language/infographics/technical-diagrams/design/
+- Adopted: concise nodes, explicit connectors, restrained color coding and diagram labels outside crowded shapes.
+- Rejected: library components or proprietary pictograms.
 
-- Sources: https://docs.stripe.com/stripe-apps/design and https://docs.stripe.com/stripe-apps/style
-- Adopted: an embedded application should respect host-provided components, design tokens and constrained surfaces.
-- Rejected: payments, commerce, Stripe shell patterns and proprietary visual identity.
+### IBM Design Language — Layout overview
 
-### IBM Carbon accessibility guidance
+- Reference: https://www.ibm.com/design/language/layout/overview/
+- Adopted: asymmetry balanced by rigorous alignment, visible scaffolding and engineered geometry.
+- Rejected: a generic enterprise dashboard shell.
 
-- Source: https://carbondesignsystem.com/guidelines/accessibility/developers/
-- Adopted: semantic structure, text alternatives, predictable behavior and accessibility review as an ongoing responsibility.
-- Rejected: enterprise dashboard density and Carbon component styling.
+### IBM Data Visualization principles
 
-## Visual decisions
+- Reference: https://www.ibm.com/design/language/data-visualization/overview/
+- Adopted: understandable, essential and contextual information with no gratuitous metrics.
+- Rejected: charts that imply measured runtime performance or production evidence.
 
-- Product metaphor: a physical fit bench where an unchanged host frame receives a proposed, removable capability cartridge.
-- Palette: graphite host frame, warm drafting paper, safety orange, inspection green and electric cyan measurement marks.
-- Typography: Korean-first editorial headlines, compact engineering labels and monospaced contract values.
-- Density: high-information workshop folios rather than generic cards.
-- Motion: `Host-Surface-to-Approved-Embed-Contract`, ending only on the final binder animation.
+## Final visual decisions
 
-## Product distinction
+- Product metaphor: an integration desk where a host blueprint, insertion slot, contract sheet, permission cut-line and release sign-off are physically reviewed.
+- Palette: blueprint navy, drafting paper, inspection orange, permission red, review brass and restrained mint for preserved host state.
+- Typography: system sans plus monospace for contracts and version labels; no remote fonts.
+- Density: document-dense but not dashboard-dense; labels remain readable within 30–90 seconds.
+- Mobile: a single 390px brief rather than shrinking the full desktop desk.
+- Motion: the capability crosses review stations but never crosses the permission/install boundary; the final seal appears only after the actual last animation.
 
-- Business 14 provides Korean-first model access and BYOK; Business 53 defines how a bounded capability fits inside an existing host.
-- Business 32 creates reusable organizational skills; Business 53 packages a host integration contract.
-- Business 48 owns reusable verification and approval mechanics; Business 53 records integration-specific authority and fallback boundaries.
-- Businesses 49 and 50 connect data sources; Business 53 accepts only an explicit host context envelope.
-- Business 51 distributes workflows; Business 53 is not a marketplace.
-- Business 54 selects models; Business 53 leaves model/provider selection outside the embed contract.
+## Product distinctions
 
-## Explicit rejections
-
-- generic API documentation or endpoint tables;
-- chatbot or copilot dashboard;
-- model-router topology;
-- app-builder canvas;
-- autonomous action state;
-- live installation, model call, credential, telemetry or storage implication;
-- copied product UI or third-party branding.
+- Business 14 owns model access; Business 53 keeps model/provider not connected.
+- Business 48 owns independent verification; Business 53 shows human release authority but performs no independent validation.
+- Business 50 owns private-data connection; Business 53 accepts only one selected synthetic notice and grants no permission.
+- Business 54 owns model routing; Business 53 has no provider selection or routing surface.

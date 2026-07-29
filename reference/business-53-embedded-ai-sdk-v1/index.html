@@ -2,155 +2,146 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Business 53 Embedded AI SDK synthetic Phase 1 visual reference">
-  <title>임베드 AI SDK · 기존 제품 AI 장착 설계실</title>
-  <link rel="stylesheet" href="styles/main.css?v=easdk-v1-20260730">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Business 53 Embedded AI SDK Phase 1 synthetic visual reference">
+  <title>임베드 AI SDK · Embedded Capability Integration Desk</title>
+  <link rel="stylesheet" href="styles/main.css?v=eai-v1-20260730">
 </head>
 <body>
   <a class="skip-link" href="#review-stage">본문으로 이동</a>
   <header class="site-header">
-    <div class="brand-copy">
-      <p class="eyebrow">BUSINESS 53 · UI_ONLY · EMBEDDED CAPABILITY FIT BENCH</p>
+    <div class="identity">
+      <p class="eyebrow">BUSINESS 53 · UI_ONLY · EMBEDDED CAPABILITY INTEGRATION DESK</p>
       <h1>임베드 AI SDK</h1>
-      <p class="subtitle">기존 제품은 그대로 두고, 필요한 AI 기능 하나만 경계·권한·실패 조건과 함께 장착 계약으로 설계합니다.</p>
+      <p class="subtitle">기존 시스템을 다시 만들지 않고, 한 기능의 입력·출력·권한·오류·버전 경계를 설치 전에 검토합니다.</p>
     </div>
-    <div class="header-boundaries" aria-label="제품 경계">
-      <span>SYNTHETIC HOST APPLICATION</span>
+    <div class="boundary-rack" aria-label="정적 시각 경계">
       <span>VISUAL REFERENCE ONLY</span>
-      <span>NO LIVE API, MODEL CALL, CREDENTIAL, STORAGE, TELEMETRY, OR HOST MUTATION</span>
+      <span>INSTALLATION NOT PERFORMED</span>
+      <span>NO LIVE HOST, SDK, MODEL, ACCOUNT, OR CREDENTIAL CONNECTION</span>
     </div>
   </header>
 
-  <nav class="state-tabs" role="tablist" aria-label="Phase 1 시각 상태">
-    <button id="tab-cover" role="tab" aria-controls="panel-cover" aria-selected="true" tabindex="0" data-state-control="cover"><b>01</b>표지</button>
-    <button id="tab-host" role="tab" aria-controls="panel-host" aria-selected="false" tabindex="-1" data-state-control="host"><b>02</b>호스트</button>
-    <button id="tab-capability" role="tab" aria-controls="panel-capability" aria-selected="false" tabindex="-1" data-state-control="capability"><b>03</b>기능</button>
-    <button id="tab-context" role="tab" aria-controls="panel-context" aria-selected="false" tabindex="-1" data-state-control="context"><b>04</b>컨텍스트</button>
-    <button id="tab-boundary" role="tab" aria-controls="panel-boundary" aria-selected="false" tabindex="-1" data-state-control="boundary"><b>05</b>경계</button>
-    <button id="tab-package" role="tab" aria-controls="panel-package" aria-selected="false" tabindex="-1" data-state-control="package"><b>06</b>계약 패키지</button>
-    <button id="tab-mobile" role="tab" aria-controls="panel-mobile" aria-selected="false" tabindex="-1" data-state-control="mobile"><b>07</b>모바일</button>
+  <nav class="state-nav" role="tablist" aria-label="임베드 통합 시각 상태">
+    <button id="tab-cover" role="tab" data-state-control="cover" aria-controls="panel-cover" aria-selected="true" tabindex="0"><b>01</b>표지</button>
+    <button id="tab-host" role="tab" data-state-control="host" aria-controls="panel-host" aria-selected="false" tabindex="-1"><b>02</b>호스트</button>
+    <button id="tab-contract" role="tab" data-state-control="contract" aria-controls="panel-contract" aria-selected="false" tabindex="-1"><b>03</b>계약</button>
+    <button id="tab-permissions" role="tab" data-state-control="permissions" aria-controls="panel-permissions" aria-selected="false" tabindex="-1"><b>04</b>권한</button>
+    <button id="tab-fallback" role="tab" data-state-control="fallback" aria-controls="panel-fallback" aria-selected="false" tabindex="-1"><b>05</b>Fallback</button>
+    <button id="tab-decision" role="tab" data-state-control="decision" aria-controls="panel-decision" aria-selected="false" tabindex="-1"><b>06</b>판정</button>
+    <button id="tab-mobile" role="tab" data-state-control="mobile" aria-controls="panel-mobile" aria-selected="false" tabindex="-1"><b>07</b>모바일</button>
   </nav>
 
   <main id="review-stage" class="review-stage" tabindex="-1">
-    <section id="panel-cover" class="visual-state is-active" role="tabpanel" aria-labelledby="tab-cover" data-state="cover">
-      <div class="cover-layout">
-        <figure class="hero-figure"><img src="assets/images/embedded-fit-bench-cover.svg?v=easdk-v1" alt="변경되지 않은 호스트와 아직 장착되지 않은 capability cartridge를 보여주는 기존 제품 AI 장착 설계실"></figure>
-        <article class="contract-intro">
-          <span class="label cyan">SYNTHETIC HOST APPLICATION</span>
-          <p class="station">FIT BENCH · 00</p>
-          <h2>HUMAN-APPROVED<br>EMBEDDED AI<br>INTEGRATION CONTRACT</h2>
-          <p class="lead">호스트를 재설계하지 않습니다. 장착 지점, 허용 기능, 명시적 컨텍스트, 이벤트, 권한, 실패와 되돌림을 먼저 계약합니다.</p>
-          <dl class="facts">
-            <div><dt>호스트</dt><dd>Naru Program Guide — synthetic</dd></div>
-            <div><dt>장착 상태</dt><dd>INSTALLATION READINESS — NOT INSTALLED</dd></div>
-            <div><dt>실행 상태</dt><dd>NOT EXECUTED</dd></div>
+    <section id="panel-cover" class="visual-state is-active" data-state="cover" role="tabpanel" aria-labelledby="tab-cover">
+      <div class="cover-grid">
+        <figure class="focal cover-art"><img src="assets/images/integration-desk-cover.svg?v=eai-v1" alt="호스트 도면과 삽입 슬롯을 검토하는 임베드 기능 통합 설계대"></figure>
+        <article class="cover-copy">
+          <span class="label primary">HOST PRODUCT — FICTIONAL</span>
+          <span class="label secondary">EMBEDDED CAPABILITY — SYNTHETIC</span>
+          <p class="station">DESK 00 · BEFORE INSTALLATION</p>
+          <h2>HUMAN-APPROVED<br>EMBEDDED AI<br>INTEGRATION SPEC</h2>
+          <p class="lead">Naru Service Portal의 구조를 보존한 채, 선택된 합성 공고 하나만 세 부분의 쉬운 안내 카드로 바꾸는 기능을 검토합니다.</p>
+          <dl class="fact-list">
+            <div><dt>호스트</dt><dd>Naru Service Portal 3.2 — fictional</dd></div>
+            <div><dt>SDK</dt><dd>0.9.0 — synthetic</dd></div>
+            <div><dt>현재 상태</dt><dd>INSTALLATION NOT PERFORMED</dd></div>
           </dl>
         </article>
       </div>
-      <div class="boundary-tape"><span>HOST PRODUCT — UNCHANGED</span><span>MOUNT POINT — PROPOSED</span><span>MODEL / PROVIDER — NOT SELECTED</span></div>
+      <div class="boundary-tape"><span>PERMISSION REQUIRED — NOT GRANTED</span><span>MODEL/PROVIDER — NOT CONNECTED</span><span>EXECUTION NOT PERFORMED</span></div>
     </section>
 
-    <section id="panel-host" class="visual-state" role="tabpanel" aria-labelledby="tab-host" data-state="host" hidden>
-      <header class="state-heading"><div><p>HOST FIT · 01</p><h2>호스트는 그대로, 장착면만 제안합니다</h2></div><span>HOST SURFACE</span></header>
+    <section id="panel-host" class="visual-state" data-state="host" role="tabpanel" aria-labelledby="tab-host" hidden>
+      <header class="state-heading"><div><p>HOST DESK · 01</p><h2>기능은 들어가도 호스트의 권한과 구조는 남는다</h2></div><span class="station-tag">EXISTING SYSTEM PRESERVED</span></header>
       <div class="host-layout">
-        <figure class="focal dark"><img src="assets/images/host-mount-cutaway.svg?v=easdk-v1" alt="Naru Program Guide 호스트와 제안된 program-detail side rail 장착 지점 단면도"></figure>
+        <figure class="focal blueprint"><img src="assets/images/host-product-blueprint.svg?v=eai-v1" alt="Naru Service Portal의 기존 구조와 호스트 권한을 보여주는 합성 청사진"></figure>
         <div class="host-ledger">
-          <article><span class="label green">HOST PRODUCT — UNCHANGED</span><h3>Naru Program Guide</h3><p>합성 기존 웹 애플리케이션. 본 참조는 정보구조, 화면 흐름이나 원래 기능을 바꾸지 않습니다.</p></article>
-          <figure><img src="assets/images/mount-point-plate.svg?v=easdk-v1" alt="program-detail side rail의 합성 측정판"></figure>
-          <div class="measure-grid">
-            <div><small>MOUNT POINT — PROPOSED</small><strong>program-detail side rail</strong></div>
-            <div><small>EMBED SURFACE — STATIC REFERENCE</small><strong>320px content-bound</strong></div>
-            <div><small>THEME ISOLATION</small><strong>host token bridge only</strong></div>
-            <div><small>ACCESSIBILITY INHERITANCE — REVIEW REQUIRED</small><strong>focus return + naming</strong></div>
-          </div>
+          <article><span class="label primary">HOST AUTHORITY</span><h3>Naru Civic Studio</h3><p>호스트 화면, 문서 선택, 사용자 권한과 release 결정은 fictional host owner가 유지합니다.</p></article>
+          <figure class="slot-plate"><img src="assets/images/insertion-slot-plate.svg?v=eai-v1" alt="호스트 구조를 침범하지 않는 제한된 삽입 슬롯"></figure>
+          <article class="boundary-card"><span>SDK INTEGRATION BOUNDARY</span><strong>Selected notice → assistance card slot</strong><small>기존 검색·목록·문서 저장 구조는 변경하지 않음</small></article>
+          <div class="preserve-list"><span>Host navigation preserved</span><span>Source document preserved</span><span>No host mutation</span></div>
         </div>
       </div>
     </section>
 
-    <section id="panel-capability" class="visual-state" role="tabpanel" aria-labelledby="tab-capability" data-state="capability" hidden>
-      <header class="state-heading"><div><p>CAPABILITY BAY · 02</p><h2>기능 하나를 허용하고, 나머지는 닫아둡니다</h2></div><span>MANIFEST</span></header>
-      <div class="capability-layout">
-        <figure class="focal dark"><img src="assets/images/capability-manifest-cartridge.svg?v=easdk-v1" alt="승인 기능과 금지 기능이 분리된 capability manifest cartridge"></figure>
-        <article class="manifest-ledger">
-          <span class="label cyan">CAPABILITY MANIFEST — SYNTHETIC</span>
-          <div class="manifest-section approved"><small>APPROVED CAPABILITY</small><h3>요건 설명 + 검토 체크리스트 초안</h3><p>선택된 합성 프로그램 요건을 설명하고 사람이 검토할 체크리스트만 만듭니다.</p></div>
-          <div class="io-grid">
-            <div><small>SOURCE DATA</small><code>program.title · dates · eligibility</code></div>
-            <div><small>DERIVED OUTPUT</small><code>explanation · checklist_draft</code></div>
-          </div>
-          <div class="manifest-section prohibited"><small>PROHIBITED CAPABILITY</small><p>신청 제출, 자격 변경, 계정 조회, 자동 저장, 다른 기록 접근.</p></div>
-          <p class="router-boundary">MODEL ROUTING — OUT OF SCOPE</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="panel-context" class="visual-state" role="tabpanel" aria-labelledby="tab-context" data-state="context" hidden>
-      <header class="state-heading"><div><p>CONTEXT ENVELOPE · 03</p><h2>호스트가 건넨 필드만 읽고, 화면 전체는 보지 않습니다</h2></div><span>DATA BOUNDARY</span></header>
-      <div class="context-layout">
-        <figure class="focal"><img src="assets/images/context-envelope-boundary.svg?v=easdk-v1" alt="명시적 호스트 컨텍스트와 수집 금지 영역을 분리한 envelope"></figure>
-        <div class="context-side">
-          <article class="explicit"><span>HOST CONTEXT — EXPLICITLY PROVIDED</span><h3>선택된 프로그램 네 필드</h3><p>제목, 일정, 자격 문구, 사용자가 직접 선택한 질문.</p></article>
-          <article class="prohibited"><span>NO DOM SCRAPING</span><h3>숨은 컨텍스트를 만들지 않음</h3><p>전체 페이지 DOM, 계정 프로필, 탐색 기록, 관련 없는 레코드, hidden field는 제외합니다.</p><strong>NO HIDDEN CONTEXT COLLECTION</strong></article>
-          <figure><img src="assets/images/source-derived-split.svg?v=easdk-v1" alt="source data와 derived output의 합성 분리 예시"></figure>
+    <section id="panel-contract" class="visual-state" data-state="contract" role="tabpanel" aria-labelledby="tab-contract" hidden>
+      <header class="state-heading"><div><p>CONTRACT TABLE · 02</p><h2>선택된 한 문서만 들어오고 세 부분만 나온다</h2></div><span class="station-tag">BOUNDED I/O</span></header>
+      <div class="contract-layout">
+        <div class="document-pair">
+          <figure><figcaption>INPUT CONTRACT · ACCEPTED INPUT</figcaption><img src="assets/images/notice-input-sheet.svg?v=eai-v1" alt="선택된 합성 공고 입력 문서"></figure>
+          <figure><figcaption>OUTPUT CONTRACT</figcaption><img src="assets/images/output-assistance-card.svg?v=eai-v1" alt="요약, 필요한 행동, 미해결 한계의 세 부분 안내 카드"></figure>
+        </div>
+        <div class="contract-ledger">
+          <figure class="contract-flow"><img src="assets/images/contract-flow.svg?v=eai-v1" alt="입력에서 출력까지의 제한된 합성 계약 흐름"></figure>
+          <div class="contract-row accepted"><span>ACCEPTED INPUT</span><strong>one selected repository-local synthetic notice</strong></div>
+          <div class="contract-row rejected"><span>REJECTED INPUT</span><strong>account history · unrelated records · entire portal index</strong></div>
+          <div class="io-grid"><article><span>INPUT CONTRACT</span><code>{ title, body, due_date }</code></article><article><span>OUTPUT CONTRACT</span><code>{ summary, action, limitation }</code></article></div>
+          <div class="version-strip"><span>SDK VERSION — SYNTHETIC</span><b>0.9.0</b><span>HOST COMPATIBILITY — LIMITED</span><b>Portal 3.2 only</b></div>
         </div>
       </div>
     </section>
 
-    <section id="panel-boundary" class="visual-state" role="tabpanel" aria-labelledby="tab-boundary" data-state="boundary" hidden>
-      <header class="state-heading"><div><p>HOST GATE · 04</p><h2>이벤트는 요청이고, 호스트 동작은 사람 확인 뒤입니다</h2></div><span>AUTHORITY RAIL</span></header>
-      <div class="boundary-layout">
-        <figure class="wide-rail"><img src="assets/images/event-contract-rail.svg?v=easdk-v1" alt="호스트 컨텍스트에서 사람 확인과 저장 요청까지의 합성 event rail"></figure>
-        <div class="boundary-columns">
-          <figure><img src="assets/images/permission-human-gate.svg?v=easdk-v1" alt="permission request와 human confirmation을 분리한 gate"></figure>
-          <figure><img src="assets/images/compatibility-fallback-board.svg?v=easdk-v1" alt="호환성 검토와 fail-closed fallback 보드"></figure>
-        </div>
-        <div class="boundary-ledger">
-          <span>EVENT CONTRACT — SYNTHETIC</span><span>CALLBACK HISTORY — SYNTHETIC</span><span>PERMISSION REQUEST — NOT GRANTED</span><span>HOST ACTION — HUMAN CONFIRMATION REQUIRED</span><span>ACTION ELIGIBLE — NOT EXECUTED</span><span>VERSION COMPATIBILITY — REVIEW REQUIRED</span><span>FAIL CLOSED</span><span>FALLBACK TO HOST UI</span>
+    <section id="panel-permissions" class="visual-state" data-state="permissions" role="tabpanel" aria-labelledby="tab-permissions" hidden>
+      <header class="state-heading"><div><p>PERMISSION CUT-LINE · 03</p><h2>읽을 수 있는 범위를 먼저 자르고, 허용 전에는 넘지 않는다</h2></div><span class="station-tag danger">NOT GRANTED</span></header>
+      <div class="permissions-layout">
+        <figure class="focal permission-art"><img src="assets/images/permission-cutline.svg?v=eai-v1" alt="선택 문서만 허용 후보로 두고 나머지 호스트 데이터를 차단하는 권한 절단선"></figure>
+        <div class="permission-ledger">
+          <article class="permission-state"><span>PERMISSION REQUIRED — NOT GRANTED</span><h3>selected-document read</h3><p>호스트가 선택한 문서 한 건을 읽는 권한만 후보로 기록되었습니다. 실제 grant는 없습니다.</p></article>
+          <article><span class="label primary">DATA MINIMIZATION</span><ul><li>selected notice only</li><li>no account profile</li><li>no browsing history</li><li>no unrelated repository records</li></ul></article>
+          <div class="boundary-check"><span>Cross boundary?</span><strong>NO</strong><small>permission absent → request withheld</small></div>
+          <p class="model-state">MODEL/PROVIDER — NOT CONNECTED</p>
         </div>
       </div>
     </section>
 
-    <section id="panel-package" class="visual-state" role="tabpanel" aria-labelledby="tab-package" data-state="package" hidden>
-      <header class="state-heading package-heading"><div><p>HOST-SURFACE-TO-APPROVED-EMBED-CONTRACT</p><h2>장착 가능성을 사람 승인 계약으로 묶습니다</h2></div><button class="replay" type="button" data-motion-replay>계약 조립 다시 보기</button></header>
-      <div class="embed-trace is-complete" data-embed-trace data-motion-state="complete">
-        <div class="trace-rail" aria-hidden="true"></div>
-        <article class="trace-node n1"><span>HOST IDENTITY</span><p>Naru Program Guide</p></article>
-        <article class="trace-node n2"><span>MOUNT POINT</span><p>proposed side rail</p></article>
-        <article class="trace-node n3"><span>CAPABILITY</span><p>explain + draft</p></article>
-        <article class="trace-node n4"><span>CONTEXT</span><p>explicit fields only</p></article>
-        <article class="trace-node n5"><span>EVENT CONTRACT</span><p>synthetic request rail</p></article>
-        <article class="trace-node n6"><span>HUMAN GATE</span><p>permission not granted</p></article>
-        <article class="trace-node n7"><span>FAIL CLOSED</span><p>fallback to host UI</p></article>
-        <article class="trace-node n8"><span>READINESS</span><p>not installed</p></article>
-        <div class="integration-contract-binder"><img src="assets/images/integration-contract-binder.svg?v=easdk-v1" alt="사람 승인 임베드 AI 통합 계약 바인더"><strong>HUMAN-APPROVED EMBEDDED AI INTEGRATION CONTRACT</strong></div>
-        <p class="motion-status" data-motion-status aria-live="polite">HUMAN-APPROVED EMBEDDED AI INTEGRATION CONTRACT · complete</p>
+    <section id="panel-fallback" class="visual-state" data-state="fallback" role="tabpanel" aria-labelledby="tab-fallback" hidden>
+      <header class="state-heading"><div><p>FAILURE BENCH · 04</p><h2>기능이 멈추면 호스트는 원래 문서를 그대로 보여준다</h2></div><span class="station-tag danger">FAIL CLOSED</span></header>
+      <div class="fallback-layout">
+        <figure class="focal"><img src="assets/images/fallback-release-board.svg?v=eai-v1" alt="timeout과 provider unavailable에서 host mutation 없이 release를 보류하는 검사 보드"></figure>
+        <div class="fallback-ledger">
+          <article class="fallback-card"><span>FAIL-CLOSED FALLBACK</span><h3>Original notice remains authoritative</h3><p>합성 assistance card가 생성되지 않아도 기존 공고 내용과 host layout은 유지됩니다.</p></article>
+          <article><span>TIMEOUT — NO HOST MUTATION</span><p>요청은 중단되고 빈 결과나 임의 요약을 저장하지 않습니다.</p></article>
+          <article><span>PROVIDER UNAVAILABLE</span><p>MODEL/PROVIDER — NOT CONNECTED 상태를 유지하고 연결 성공을 연출하지 않습니다.</p></article>
+          <article><span>BOUNDED ERROR</span><p>Integration unavailable · original notice available</p></article>
+          <div class="fallback-foot"><span>INSTALLATION NOT PERFORMED</span><span>EXECUTION NOT PERFORMED</span></div>
+        </div>
       </div>
-      <div class="package-meta">
-        <div><small>MODEL / PROVIDER — NOT SELECTED</small><strong>adapter boundary only</strong></div>
-        <div><small>CREDENTIAL — NOT PROVIDED</small><strong>no secret surface</strong></div>
-        <div><small>STORAGE — NOT CONNECTED</small><strong>host persistence absent</strong></div>
-        <div><small>TELEMETRY — OFF</small><strong>no event collection</strong></div>
-      </div>
-      <div class="persistent-boundaries"><span>HOST PRODUCT — UNCHANGED</span><span>NO DOM SCRAPING</span><span>PERMISSION REQUEST — NOT GRANTED</span><span>HOST ACTION — HUMAN CONFIRMATION REQUIRED</span><span>FAIL CLOSED</span><span>FALLBACK TO HOST UI</span><span>INSTALLATION READINESS — NOT INSTALLED</span><span>NO LIVE API, MODEL CALL, CREDENTIAL, STORAGE, TELEMETRY, OR HOST MUTATION</span></div>
     </section>
 
-    <section id="panel-mobile" class="visual-state" role="tabpanel" aria-labelledby="tab-mobile" data-state="mobile" hidden>
+    <section id="panel-decision" class="visual-state" data-state="decision" role="tabpanel" aria-labelledby="tab-decision" hidden>
+      <header class="state-heading split"><div><p>CAPABILITY-TO-EMBEDDED-INTEGRATION-SPEC</p><h2>설치가 아니라 검토 가능한 명세로 끝낸다</h2></div><button class="replay" type="button" data-motion-replay>검토선 다시 보기</button></header>
+      <div class="integration-line is-complete" data-integration-line data-motion-state="complete">
+        <div class="line-rail" aria-hidden="true"></div>
+        <article class="line-node n1"><span>HOST PRODUCT</span><p>Naru Service Portal</p></article>
+        <article class="line-node n2"><span>INSERTION POINT</span><p>assistance-card slot</p></article>
+        <article class="line-node n3"><span>I/O CONTRACT</span><p>one notice → three parts</p></article>
+        <article class="line-node n4 risk"><span>DATA + PERMISSION</span><p>required · not granted</p></article>
+        <article class="line-node n5"><span>COMPATIBILITY</span><p>limited to Portal 3.2</p></article>
+        <article class="line-node n6 risk"><span>FAIL-CLOSED</span><p>original notice preserved</p></article>
+        <article class="line-node n7"><span>HUMAN RELEASE AUTHORITY</span><p>release withheld</p></article>
+        <div class="integration-spec-seal"><img src="assets/images/integration-spec-seal.svg?v=eai-v1" alt="사람 검토 완료 임베드 AI 통합 명세 봉인"><strong>HUMAN-APPROVED EMBEDDED AI INTEGRATION SPEC</strong><small>spec approved for review · installation withheld</small></div>
+        <p class="motion-status" data-motion-status aria-live="polite">HUMAN-APPROVED EMBEDDED AI INTEGRATION SPEC · complete</p>
+      </div>
+      <div class="persistent-boundaries"><span>PERMISSION REQUIRED — NOT GRANTED</span><span>INSTALLATION NOT PERFORMED</span><span>EXECUTION NOT PERFORMED</span><span>MODEL/PROVIDER — NOT CONNECTED</span></div>
+      <div class="release-strip"><span>HUMAN RELEASE AUTHORITY</span><strong>RELEASE WITHHELD</strong><p>Permission, host acceptance and actual package review remain unresolved.</p></div>
+    </section>
+
+    <section id="panel-mobile" class="visual-state" data-state="mobile" role="tabpanel" aria-labelledby="tab-mobile" hidden>
       <div class="phone-brief">
-        <header><p>390PX EMBED CONTRACT BRIEF</p><h2>Naru Program Guide</h2><span>SYNTHETIC HOST APPLICATION</span></header>
-        <section><small>HOST PRODUCT — UNCHANGED</small><strong>existing synthetic program guide</strong></section>
-        <section><small>MOUNT POINT — PROPOSED</small><p>program-detail side rail</p></section>
-        <section><small>APPROVED CAPABILITY</small><p>요건 설명 + 체크리스트 초안</p></section>
-        <section><small>HOST CONTEXT — EXPLICITLY PROVIDED</small><p>title · dates · eligibility · selected question</p></section>
-        <section class="two"><div><small>PERMISSION</small><b>NOT GRANTED</b></div><div><small>VERSION</small><b>REVIEW REQUIRED</b></div></section>
-        <section><small>HOST ACTION — HUMAN CONFIRMATION REQUIRED</small><p>save checklist only after review</p></section>
-        <section><small>FAIL CLOSED</small><p>FALLBACK TO HOST UI</p></section>
-        <footer>INSTALLATION READINESS — NOT INSTALLED<br>NOT EXECUTED · TELEMETRY OFF</footer>
+        <header><p>390PX INTEGRATION BRIEF</p><h2>Naru Notice Assist</h2><span>EMBEDDED CAPABILITY — SYNTHETIC</span></header>
+        <section><small>HOST PRODUCT — FICTIONAL</small><strong>Naru Service Portal 3.2</strong></section>
+        <section><small>INPUT CONTRACT</small><p>one selected synthetic notice</p></section>
+        <section><small>OUTPUT CONTRACT</small><p>summary · required action · unresolved limitation</p></section>
+        <section class="row"><div><small>SDK VERSION</small><b>0.9.0</b></div><div><small>COMPATIBILITY</small><b>LIMITED</b></div></section>
+        <section class="warning"><small>PERMISSION REQUIRED — NOT GRANTED</small><p>selected-document read</p></section>
+        <section><small>FAIL-CLOSED FALLBACK</small><p>original notice remains</p></section>
+        <footer>INSTALLATION NOT PERFORMED<br>EXECUTION NOT PERFORMED<br>MODEL/PROVIDER — NOT CONNECTED</footer>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">ALL HOSTS, COMPONENTS, CONTEXT, EVENTS, VERSIONS AND EVIDENCE ARE SYNTHETIC · NO LIVE INSTALLATION OR HOST MUTATION</footer>
-  <script src="scripts/review.js?v=easdk-v1-20260730"></script>
+  <footer class="site-footer">ALL HOSTS, CAPABILITIES, VERSIONS, CONTRACTS, PERMISSIONS AND RELEASE DECISIONS ARE FICTIONAL OR SYNTHETIC</footer>
+  <script src="scripts/review.js?v=eai-v1-20260730"></script>
 </body>
 </html>

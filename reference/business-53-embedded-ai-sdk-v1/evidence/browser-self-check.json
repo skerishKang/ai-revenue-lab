@@ -1,69 +1,29 @@
 {
   "status": "PASS",
-  "declaration": "IMPLEMENTATION_BROWSER_SELF_CHECK_ONLY",
-  "harness": "localhost HTTP 200 readback plus exact local bytes inline in Chromium because loopback navigation is administratively blocked",
-  "matrix": {
-    "states": 7,
-    "viewports": 3,
-    "combinations": 21,
-    "sizes": [
-      [
-        1440,
-        1100
-      ],
-      [
-        768,
-        1024
-      ],
-      [
-        390,
-        844
-      ]
-    ]
-  },
+  "combinations": 21,
   "failures": [],
-  "http_results": {
-    "index.html": 200,
-    "styles/main.css": 200,
-    "scripts/review.js": 200,
-    "assets/images/capability-manifest-cartridge.svg": 200,
-    "assets/images/compatibility-fallback-board.svg": 200,
-    "assets/images/context-envelope-boundary.svg": 200,
-    "assets/images/embedded-fit-bench-cover.svg": 200,
-    "assets/images/event-contract-rail.svg": 200,
-    "assets/images/host-mount-cutaway.svg": 200,
-    "assets/images/integration-contract-binder.svg": 200,
-    "assets/images/mount-point-plate.svg": 200,
-    "assets/images/permission-human-gate.svg": 200,
-    "assets/images/source-derived-split.svg": 200
+  "http_files": {
+    "index.html": {"status": 200, "content_type": "text/html", "bytes": 13248, "sha256": "54092ca9fb7e5c9775a8af6f7409841461e5e741955bf7d12072c6d8f4bf6ec9"},
+    "styles/main.css": {"status": 200, "content_type": "text/css", "bytes": 14290, "sha256": "41d17aa347fd8306cc174ef7416d7143e1ac2caaeb8d981dcd8afe58cbf3560b"},
+    "scripts/review.js": {"status": 200, "content_type": "text/javascript", "bytes": 2842, "sha256": "97190bb2c642852a519fc5328544d047e224774a1843b8a7bbb331e77e363c31"},
+    "assets/images/contract-flow.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 1552},
+    "assets/images/fallback-release-board.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 2188},
+    "assets/images/host-product-blueprint.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 1799},
+    "assets/images/insertion-slot-plate.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 1029},
+    "assets/images/integration-desk-cover.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 1795},
+    "assets/images/integration-spec-seal.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 775},
+    "assets/images/notice-input-sheet.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 1294},
+    "assets/images/output-assistance-card.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 1607},
+    "assets/images/permission-cutline.svg": {"status": 200, "content_type": "image/svg+xml", "bytes": 2271}
   },
+  "http_all_200_nonempty": true,
   "console_errors": [],
   "page_errors": [],
-  "external_requests": [],
-  "keyboard": {
-    "arrow": true,
-    "end": true,
-    "home": true,
-    "enter": true,
-    "space": true
-  },
-  "motion": {
-    "animation_name": "embedContractComplete",
-    "computed_end_ms": 780,
-    "style_equal": true,
-    "screenshot_equal": true,
-    "geometry_equal": true,
-    "focus_stable": true,
-    "scroll_stable": true,
-    "completion_animations_running": 0
-  },
-  "reduced_motion": {
-    "state": "complete",
-    "visible": true
-  },
-  "mobile": {
-    "right": 378,
-    "bottom": 901.03125,
-    "required": true
-  }
+  "external_runtime_requests": [],
+  "keyboard": {"arrow": true, "home": true, "end": true, "enter": true, "space": true},
+  "motion": {"animation_name": "integrationSpecComplete", "computed_end_ms": 760, "actual_final_animationend": true, "replay_equal": true, "focus_stable": true, "scroll_stable": true, "geometry_stable": true},
+  "reduced_motion": {"state": "complete", "visible": true, "persistent": true},
+  "mobile": {"left": 12, "right": 378, "width": 366, "required": true},
+  "harness": "localhost HTTP byte/MIME check plus exact local HTML/CSS/JS/SVG bytes in network-free Chromium because loopback page navigation is blocked by this worker environment",
+  "gate": "IMPLEMENTATION_SELF_CHECK_ONLY"
 }
