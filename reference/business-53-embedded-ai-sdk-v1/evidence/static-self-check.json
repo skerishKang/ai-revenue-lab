@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "checks": {
+    "exact_states": true,
+    "exact_controls": true,
+    "reciprocal_at_7_of_7": true,
+    "asset_count_at_least_9": true,
+    "all_assets_documented": true,
+    "all_assets_referenced": true,
+    "required_labels": true,
+    "deterministic_token": true,
+    "no_external_runtime_urls": true,
+    "no_runtime_io": true,
+    "animationend_authority": true,
+    "no_fixed_timeout": true,
+    "timing_invariant": true,
+    "reduced_motion": true,
+    "roving_keyboard": true,
+    "no_forms_or_embed_runtime": true,
+    "line_limits": true
+  },
+  "states": [
+    "cover",
+    "host",
+    "capability",
+    "context",
+    "boundary",
+    "package",
+    "mobile"
+  ],
+  "controls": [
+    "cover",
+    "host",
+    "capability",
+    "context",
+    "boundary",
+    "package",
+    "mobile"
+  ],
+  "assets": 10,
+  "required_labels": 32,
+  "scope": "reference/business-53-embedded-ai-sdk-v1/**",
+  "declaration": "IMPLEMENTATION_SELF_CHECK_ONLY"
+}

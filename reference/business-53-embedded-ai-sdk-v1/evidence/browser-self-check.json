@@ -1,0 +1,69 @@
+{
+  "status": "PASS",
+  "declaration": "IMPLEMENTATION_BROWSER_SELF_CHECK_ONLY",
+  "harness": "localhost HTTP 200 readback plus exact local bytes inline in Chromium because loopback navigation is administratively blocked",
+  "matrix": {
+    "states": 7,
+    "viewports": 3,
+    "combinations": 21,
+    "sizes": [
+      [
+        1440,
+        1100
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "failures": [],
+  "http_results": {
+    "index.html": 200,
+    "styles/main.css": 200,
+    "scripts/review.js": 200,
+    "assets/images/capability-manifest-cartridge.svg": 200,
+    "assets/images/compatibility-fallback-board.svg": 200,
+    "assets/images/context-envelope-boundary.svg": 200,
+    "assets/images/embedded-fit-bench-cover.svg": 200,
+    "assets/images/event-contract-rail.svg": 200,
+    "assets/images/host-mount-cutaway.svg": 200,
+    "assets/images/integration-contract-binder.svg": 200,
+    "assets/images/mount-point-plate.svg": 200,
+    "assets/images/permission-human-gate.svg": 200,
+    "assets/images/source-derived-split.svg": 200
+  },
+  "console_errors": [],
+  "page_errors": [],
+  "external_requests": [],
+  "keyboard": {
+    "arrow": true,
+    "end": true,
+    "home": true,
+    "enter": true,
+    "space": true
+  },
+  "motion": {
+    "animation_name": "embedContractComplete",
+    "computed_end_ms": 780,
+    "style_equal": true,
+    "screenshot_equal": true,
+    "geometry_equal": true,
+    "focus_stable": true,
+    "scroll_stable": true,
+    "completion_animations_running": 0
+  },
+  "reduced_motion": {
+    "state": "complete",
+    "visible": true
+  },
+  "mobile": {
+    "right": 378,
+    "bottom": 901.03125,
+    "required": true
+  }
+}
