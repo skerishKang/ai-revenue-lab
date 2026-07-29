@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "asset_count": 12,
+  "local_references": [
+    "assets/images/not-connected-seal.svg",
+    "styles.css",
+    "app.js",
+    "assets/images/owner-authority-composite.svg",
+    "assets/images/mail-system-dossier.svg",
+    "assets/images/drive-system-dossier.svg",
+    "assets/images/ledger-system-dossier.svg",
+    "assets/images/scope-cutline-composite.svg",
+    "assets/images/not-connected-seal.svg",
+    "assets/images/field-mapping-sheet.svg",
+    "assets/images/revocation-record-composite.svg",
+    "assets/images/credential-boundary.svg",
+    "assets/images/retention-band.svg",
+    "assets/images/audit-evidence.svg",
+    "assets/images/incident-handoff.svg"
+  ],
+  "external_runtime_requests": 0,
+  "errors": []
+}
