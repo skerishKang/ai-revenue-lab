@@ -26,6 +26,7 @@ with sync_playwright() as p:
     page.on('console',lambda msg: errors.append('console:'+msg.text) if msg.type=='error' else None)
     page.on('pageerror',lambda err: errors.append('page:'+str(err)))
     page.set_content(html,wait_until='load')
+    scrollY_before=page.evaluate("scrollY")
     for w,h in viewports:
       viewport_name = f'{w}x{h}'
       page.set_viewport_size({'width':w,'height':h})
@@ -35,6 +36,8 @@ with sync_playwright() as p:
         metrics=page.evaluate("""s=>{const p=document.querySelector('[data-state="'+s+'"]');const r=p.getBoundingClientRect();return {hidden:p.hidden,docOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,panelOverflow:Math.max(0,p.scrollWidth-p.clientWidth),width:r.width,height:r.height,images:[...p.querySelectorAll('img')].every(i=>i.complete&&i.naturalWidth>0)}}""",state)
         rows.append({'viewport':viewport_name,'state':state,'pass':not metrics['hidden'] and metrics['docOverflow']<=0 and metrics['panelOverflow']<=0 and metrics['images'],'metrics':metrics})
         screenshots_captured.append(capture_screenshot(page, state, viewport_name))
+        if w==390:
+          rows[-1]['tab_visibility']=page.evaluate("""()=>{const tb=document.querySelector('.state-nav');const at=tb.querySelector('[aria-selected=\"true\"]');const tr=at.getBoundingClientRect();const lr=tb.getBoundingClientRect();return {tab_left:Math.round(tr.left),tab_right:Math.round(tr.right),list_left:Math.round(lr.left),list_right:Math.round(lr.right),left_visible:tr.left>=lr.left-0.5,right_visible:tr.right<=lr.right+0.5,scrollLeft:tb.scrollLeft}}""")
     page.evaluate("window.__saoReview.activate('cover')")
     keyboard_arrowright=None; keyboard_arrowleft=None; keyboard_home=None; keyboard_end=None; keyboard_all=None
     for w,h in [(1440,1100), (390,844)]:
@@ -74,6 +77,7 @@ with sync_playwright() as p:
       screenshots_captured.append(capture_screenshot(page, 'decision-replay-2', viewport_name))
       second=page.evaluate("""()=>{const e=document.querySelector('[data-final-record]');const r=e.getBoundingClientRect();return {style:getComputedStyle(e).cssText,opacity:getComputedStyle(e).opacity,transform:getComputedStyle(e).transform,rect:[r.x,r.y,r.width,r.height],scroll:[scrollX,scrollY],active:document.activeElement?.outerHTML.slice(0,80)}}""")
       replay_equal = replay_equal and (first==second)
+      scrollY_after=page.evaluate("scrollY")
   with p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox']) as reduced_motion_browser:
     reduced_complete=True
     for w,h in [(1440,1100), (390,844)]:
@@ -88,7 +92,10 @@ with sync_playwright() as p:
       reduced_complete = reduced_complete and r
       reduced.close()
   browser.close()
-result={'status':'PASS' if all(r['pass'] for r in rows) and keyboard_all and replay_equal and reduced_complete and not errors else 'FAIL','matrix_pass':sum(r['pass'] for r in rows),'matrix_total':len(rows),'viewports':[f'{w}x{h}' for w,h in viewports],'states':states,'keyboard_arrowright':keyboard_arrowright,'keyboard_arrowleft':keyboard_arrowleft,'keyboard_home':keyboard_home,'keyboard_end':keyboard_end,'keyboard_all':keyboard_all,'replay_equal':replay_equal,'reduced_motion_immediate':reduced_complete,'errors':errors,'rows':rows,'nominal_completion_ms':780,'external_runtime_requests':'not_measured_page_set_content','note':'Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.','screenshots_captured':screenshots_captured}
+  tab_vis_390=[r['tab_visibility'] for r in rows if r.get('tab_visibility')]
+  tab_vis_all_pass=all(v['left_visible'] and v['right_visible'] for v in tab_vis_390)
+  scrollY_invariant=scrollY_before==scrollY_after
+result={'status':'PASS' if all(r['pass'] for r in rows) and keyboard_all and replay_equal and reduced_complete and not errors and tab_vis_all_pass and scrollY_invariant else 'FAIL','matrix_pass':sum(r['pass'] for r in rows),'matrix_total':len(rows),'viewports':[f'{w}x{h}' for w,h in viewports],'states':states,'keyboard_arrowright':keyboard_arrowright,'keyboard_arrowleft':keyboard_arrowleft,'keyboard_home':keyboard_home,'keyboard_end':keyboard_end,'keyboard_all':keyboard_all,'replay_equal':replay_equal,'reduced_motion_immediate':reduced_complete,'errors':errors,'rows':rows,'tab_vis_390':tab_vis_390,'tab_vis_all_pass':tab_vis_all_pass,'scrollY_invariant':scrollY_invariant,'nominal_completion_ms':780,'external_runtime_requests':'not_measured_page_set_content','note':'Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.','screenshots_captured':screenshots_captured}
 (ROOT/'evidence/browser-self-check.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps(result,ensure_ascii=False,indent=2))
 sys.exit(0 if result['status']=='PASS' else 1)
