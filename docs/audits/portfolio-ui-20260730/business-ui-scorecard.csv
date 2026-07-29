@@ -11,3 +11,15 @@ businessId,business,auditTarget,visualScore,grade,hardBlockers,recommendedNextAc
 10,Fan Magazine,https://ai-revenue-business-10-fan-magazine.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,MEDIUM,"Desktop cover/reveal evidence inspected; tablet/mobile and remaining states missing."
 11,Language Learning Magazine,https://ai-revenue-business-11-language-magazine.pages.dev/,86,A,none observed in supplied evidence,MINOR_VISUAL_REFINEMENT,MEDIUM-HIGH,"Three desktop states, actual 390x844 mobile, motion and reduced-motion evidence inspected."
 12,Creator Mini-Media,https://ai-revenue-business-12-creator-mini-media.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,"Approved/deployed authority exists, but no portable exact-head screenshot set was available to this audit."
+13,Personal Video Archive,https://ai-revenue-personal-video-archive.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,
+14,Korean AI Platform,Worker application,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+15,Global AI Newsroom,https://ai-revenue-business-15-global-ai-newsroom.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,
+16,Personal Sports,https://ai-revenue-business-16-personal-sports.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,
+17,Local Shop Magazine,https://ai-revenue-business-17-local-shop-magazine.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,
+18,Personal Audio Channel,PR #203 exact head 4da83a879a861c8e80edd2d5f76ea4268de3d5ad,89,A,none observed,MINOR_VISUAL_REFINEMENT,HIGH,"Full exact-head desktop/tablet/mobile/motion/reduced-motion evidence reviewed."
+19,Personal Memory Book,PR #202 exact head 486a7226b8e5e230cfc3cceadab8ea4034d7bb6f,81,B,none observed,MINOR_VISUAL_REFINEMENT,HIGH,"Full exact-head desktop/tablet/mobile/reduced-motion evidence reviewed."
+20,Personal Memory Novel,PR #206 exact head 12ead3c03a7355fcc364648bf0a6169ee86153a1,92,A,none observed,NO_ACTION,HIGH,"Full exact-head desktop/tablet/mobile/motion/reduced-motion evidence reviewed."
+21,Founder Strategy Letter,PR #207 exact head e5e6ca6a5342da30b553697f96484c35a64b22c6,84,B,none observed,MINOR_VISUAL_REFINEMENT,HIGH,"Full exact-head desktop/tablet/mobile/motion/reduced-motion evidence reviewed."
+22,Personal Media Studio,https://ai-revenue-business-22-personal-media-studio.pages.dev/,,NOT_SCORED,,FRESH_VALIDATION_REQUIRED,LOW,
+23,LoveBud,separate repository,,NOT_SCORED,,NOT_AUDITABLE,LOW,
+24,LoveTree 3.0,separate repository,,NOT_SCORED,,NOT_AUDITABLE,LOW,
