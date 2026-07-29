@@ -12,6 +12,8 @@ assets=sorted((root/'assets/images').glob('*.svg'))
 checks={
 'exact_states':states==expected,
 'exact_controls':controls==expected,
+'at_roles':html.count('role="tab"')==7 and html.count('role="tabpanel"')==7,
+'at_relationship_setup':all(token in js for token in ['state-tab-${key}','state-panel-${key}',"setAttribute('aria-controls'","setAttribute('aria-labelledby'"]),
 'asset_count':len(assets)>=8,
 'all_assets_documented':all(a.name in (root/'IMAGE_SOURCES.md').read_text() for a in assets),
 'required_labels':all(x in html for x in labels),
