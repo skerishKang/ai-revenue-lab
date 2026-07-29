@@ -101,8 +101,8 @@
 .kit-register dt { font: 700 .68rem "Courier New", monospace; color: var(--rust); text-transform: uppercase; }
 .kit-register dd { margin: .3rem 0 0; line-height: 1.45; }
 .kit-register strong { color: var(--rust); }
-.mobile-stage { display: grid; place-items: center; min-height: 760px; padding: 1rem; background: repeating-linear-gradient(90deg, #dcd4c6 0 1px, transparent 1px 32px), #e8dfd0; border: 2px solid var(--line); }
-.mobile-brief { width: 390px; max-width: 100%; min-height: 700px; background: #fbf6ea; border: 3px solid var(--ink); box-shadow: 13px 16px 0 rgba(48,44,38,.18); }
+.mobile-stage { display: grid; place-items: center; width: 100%; min-width: 0; min-height: 760px; padding: 1rem; background: repeating-linear-gradient(90deg, #dcd4c6 0 1px, transparent 1px 32px), #e8dfd0; border: 2px solid var(--line); }
+.mobile-brief { width: 100%; max-width: 390px; min-width: 0; min-height: 700px; background: #fbf6ea; border: 3px solid var(--ink); box-shadow: 13px 16px 0 rgba(48,44,38,.18); }
 .mobile-brief header { padding: 1.2rem; background: var(--ink); color: #fffaf0; }
 .mobile-brief header p { margin: 0; font: 700 .64rem "Courier New", monospace; letter-spacing: .08em; }
 .mobile-brief header h2 { margin: .55rem 0 .7rem; font: 700 2rem/.95 Georgia, serif; }
@@ -112,7 +112,7 @@
 .mobile-brief section p { margin: 0; font-size: .82rem; line-height: 1.45; overflow-wrap: anywhere; }
 .mobile-brief .mobile-hold { background: #ead8d2; }
 .mobile-brief footer { display: flex; justify-content: space-between; gap: .75rem; padding: 1rem; color: #fffaf0; background: var(--rust); font: 700 .65rem "Courier New", monospace; }
-.mobile-note { width: 390px; max-width: 100%; margin-top: 1rem; padding: .8rem 1rem; border: 2px solid var(--line); background: #eee6d7; font: 700 .66rem/1.4 "Courier New", monospace; }
+.mobile-note { width: 100%; max-width: 390px; min-width: 0; margin-top: 1rem; padding: .8rem 1rem; border: 2px solid var(--line); background: #eee6d7; font: 700 .66rem/1.4 "Courier New", monospace; }
 .mobile-note p { margin: .35rem 0 0; }
 .site-footer { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; padding: 1rem clamp(1rem, 4vw, 4.5rem); border-top: 3px solid var(--line); background: var(--ink); color: #fffaf0; font: 700 .66rem/1.4 "Courier New", monospace; }
 .site-footer strong { color: #f2ad68; }
@@ -147,13 +147,10 @@
   *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0ms !important; scroll-behavior: auto !important; }
   .motion-foundry .motion-node, .motion-foundry .final-element { opacity: 1 !important; transform: none !important; }
 }
-.mobile-stage { overflow: hidden; }
-@media (max-width: 620px) {
-  .mobile-brief { box-shadow: none; width: 100%; }
-}
 .focal-cover img { object-fit: contain; background: #e7dece; }
 .mobile-brief section > * { min-width: 0; }
 @media (max-width: 620px) {
+  .mobile-brief { box-shadow: none; }
   .mobile-brief section { grid-template-columns: 78px minmax(0, 1fr); gap: .65rem; padding: .78rem .85rem; }
   .mobile-brief section p { font-size: .76rem; }
 }
