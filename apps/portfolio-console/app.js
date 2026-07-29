@@ -298,6 +298,10 @@
   function setLanguage(lang) {
     currentLang = lang;
     document.documentElement.lang = lang === 'ko' ? 'ko' : 'en';
+    // Reflect the active language on the toggle buttons
+    $$('.lang-btn').forEach(function(btn) {
+      btn.classList.toggle('is-active', btn.dataset.lang === document.documentElement.lang);
+    });
     // Update data-label-ko / data-label-en elements
     $$('[data-label-ko][data-label-en]').forEach(function(el) {
       el.textContent = el.getAttribute('data-label-' + lang);
@@ -622,7 +626,7 @@
           <span class="work-item-progress">${progress ? `— ${progress.pct}% (${progress.done}/${progress.total})` : ''}</span>
           <div class="work-item-actions">
             <button type="button" class="work-item-btn work-detail-btn" data-project-id="${item.id}">${t('viewDetail')}</button>
-            ${item.pageUrl ? `<a class="work-item-btn" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">${t('openService')}</a>` : ''}
+            ${item.pageUrl ? `<a class="work-item-btn" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
           </div>
         </div>
       `;
@@ -676,10 +680,10 @@
           <div class="biz-title-group">
             <span class="biz-title">${b.title}</span>
             <span class="biz-korean">${b.koreanTitle}</span>
-            <span data-live-discovery style="font:8px/1 var(--mono);color:var(--quiet)"></span>
+            <span class="biz-live-discovery" data-live-discovery></span>
           </div>
           <span class="biz-auth status-badge ${authCls}">${authorityLabel(b.numberAuthority)}</span>
-          <div class="biz-phase-group" style="display:flex;gap:3px;flex-wrap:wrap">
+          <div class="biz-phase-group">
             <span class="biz-phase-badge ${uiCls}">${phaseStatusLabel(b.uiStatus)}</span>
             <span class="biz-phase-badge ${uxCls}">${phaseStatusLabel(b.uxStatus)}</span>
             <span class="biz-phase-badge ${beCls}">${phaseStatusLabel(b.backendStatus)}</span>

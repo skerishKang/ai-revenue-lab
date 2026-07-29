@@ -1,7 +1,20 @@
 /*  business-fact-merger.js  —  Phase 2A fact merger
  *
  *  Merges static identity + live GitHub facts + phase verdicts.
- *  Unified alias contract: issue{N}, prSearch{N}, fallbackPr{N}
+ *  Unified alias contract: issue{N}, prSearchRefs{N}, prSearchRelated{N},
+ *  fallbackPr{N} (search pools are pre-merged by the service).
+ *
+ *  Canonical per-Business schema (schemaVersion 2):
+ *    productDecisionIssue            — normalized product-decision Issue|null
+ *    phaseIssues.{ui,ux,backend}     — normalized phase Issue|null (always 3 keys)
+ *    currentPullRequests.{ui,ux,backend} — normalized PR|null (always 3 keys,
+ *                                      checks embedded, discoveryMethod attached)
+ *    phaseDiscovery.{ui,ux,backend}  — {status, method, candidates, reason, truncated?}
+ *    phaseVerdicts.{ui,ux,backend}   — verdict result (always 3 keys when mapped)
+ *
+ *  PR normalization happens exactly once, at the GraphQL boundary, in
+ *  business-pr-discovery.js (normalizeRawPr). This module never reads raw
+ *  GraphQL PR field names.
  *
  *  Rules:
  *    - Static identity/authority never overwritten by live data
@@ -12,9 +25,12 @@
 
 import { resolvePhaseVerdictFromPool } from "./business-verdict-parser.js";
 import { discoverBusinessPrs } from "./business-pr-discovery.js";
-import { safeError } from "./response.js";
 
 const SCHEMA_VERSION = 2;
+
+const PHASE_ISSUE_KEYS = Object.freeze({ ui: "uiPhaseIssue", ux: "uxPhaseIssue", backend: "bePhaseIssue" });
+const STATIC_FALLBACK_KEYS = Object.freeze({ ui: "uiStatus", ux: "uxStatus", backend: "backendStatus" });
+const PHASES = Object.freeze(["ui", "ux", "backend"]);
 
 function normalizeIssue(issue) {
   if (!issue) return null;
@@ -28,53 +44,16 @@ function normalizeIssue(issue) {
   };
 }
 
-function normalizePullRequest(pr) {
-  if (!pr) return null;
-  return {
-    number: Number(pr.number),
-    title: String(pr.title || ""),
-    state: String(pr.state || "").toLowerCase(),
-    draft: Boolean(pr.isDraft),
-    merged: Boolean(pr.merged),
-    headSha: String(pr.headRefOid || ""),
-    headRef: String(pr.headRefName || ""),
-    baseRef: String(pr.baseRefName || ""),
-    updatedAt: String(pr.updatedAt || ""),
-    url: String(pr.url || ""),
+function discoverySummary(discovery) {
+  if (!discovery) return null;
+  const summary = {
+    status: discovery.status,
+    method: discovery.pullRequest?.discoveryMethod || null,
+    candidates: discovery.candidates || null,
+    reason: discovery.reason || null,
   };
-}
-
-function normalizeChecks(prData) {
-  if (!prData) return { state: "unavailable", source: "none", total: 0, completed: 0 };
-  const rollup = prData?.commits?.nodes?.[0]?.commit?.statusCheckRollup || null;
-  if (!rollup) return { state: "unavailable", source: "pr_head_rollup", total: 0, completed: 0 };
-  const contexts = Array.isArray(rollup?.contexts?.nodes) ? rollup.contexts.nodes : [];
-  const total = Number(rollup?.contexts?.totalCount) || contexts.length;
-  const aggregateState = String(rollup.state || "").toUpperCase();
-  const normalizedState = aggregateState === "SUCCESS" ? "pass"
-    : aggregateState === "FAILURE" || aggregateState === "ERROR" ? "fail"
-    : aggregateState === "PENDING" || aggregateState === "EXPECTED" ? "pending"
-    : "unavailable";
-  const terminalStates = new Set(["SUCCESS", "FAILURE", "ERROR"]);
-  let completed = 0;
-  for (const ctx of contexts) {
-    const tn = String(ctx?.__typename || "");
-    if (tn === "CheckRun" && String(ctx?.status || "").toUpperCase() === "COMPLETED") completed++;
-    else if (tn === "StatusContext" && terminalStates.has(String(ctx?.state || "").toUpperCase())) completed++;
-  }
-  const result = { state: normalizedState, source: "pr_head_rollup", total, completed };
-  if (total > contexts.length) result.truncated = true;
-  return result;
-}
-
-/**
- * Get the static fallback phase verdict from the identity source.
- * The identity source is the manifest object passed via API.
- */
-function getStaticFallback(mapping, identitySource) {
-  if (!identitySource) return null;
-  const biz = identitySource[mapping.number];
-  return biz || null;
+  if (discovery.truncated) summary.truncated = true;
+  return summary;
 }
 
 /**
@@ -86,16 +65,15 @@ export function mergeBusinessFacts({
   phaseIssueResults,
   fallbackPrNode,
   identitySource, // Map<number, {uiStatus, uxStatus, backendStatus}>
-  paths,
 }) {
   if (!mapping.repository) {
     return {
       number: mapping.number,
       connectionState: "unmapped",
       repository: null,
-      issue: null,
-      pullRequest: null,
-      checks: { state: "unavailable", source: "none", total: 0, completed: 0 },
+      productDecisionIssue: null,
+      phaseIssues: null,
+      currentPullRequests: null,
       phaseDiscovery: null,
       phaseVerdicts: null,
       activityAt: null,
@@ -103,78 +81,57 @@ export function mergeBusinessFacts({
     };
   }
 
-  // ── Normalize all Issues ──
+  // ── Normalize product-decision Issue ──
   const issueAlias = mapping.issueNumber ? `issue${mapping.issueNumber}` : null;
-  const issue = normalizeIssue(issueAlias ? repositoryData?.[issueAlias] : null);
+  const productDecisionIssue = normalizeIssue(issueAlias ? repositoryData?.[issueAlias] : null);
 
-  const phaseIssues = {};
-  const phaseFallbacks = {};
-  const staticBiz = (identitySource || {})[mapping.number] || {};
-
-  if (mapping.uiPhaseIssue) {
-    phaseIssues.ui = repositoryData?.[`issue${mapping.uiPhaseIssue}`] || null;
-    phaseFallbacks.ui = staticBiz.uiStatus || null;
-  }
-  if (mapping.uxPhaseIssue) {
-    phaseIssues.ux = repositoryData?.[`issue${mapping.uxPhaseIssue}`] || null;
-    phaseFallbacks.ux = staticBiz.uxStatus || null;
-  }
-  if (mapping.bePhaseIssue) {
-    phaseIssues.backend = repositoryData?.[`issue${mapping.bePhaseIssue}`] || null;
-    phaseFallbacks.backend = staticBiz.backendStatus || null;
+  // ── Raw + normalized phase Issues (raw bodies feed verdict parsing) ──
+  const rawPhaseIssues = { ui: null, ux: null, backend: null };
+  const phaseIssues = { ui: null, ux: null, backend: null };
+  for (const phase of PHASES) {
+    const issueNum = mapping[PHASE_ISSUE_KEYS[phase]];
+    if (!issueNum) continue;
+    rawPhaseIssues[phase] = repositoryData?.[`issue${issueNum}`] || null;
+    phaseIssues[phase] = normalizeIssue(rawPhaseIssues[phase]);
   }
 
-  // ── Auto-discover PRs for each phase ──
+  // ── Auto-discover normalized PRs for each phase ──
   const prDiscovery = discoverBusinessPrs({ mapping, phaseIssueResults, fallbackPrNode });
-
-  // Pick best PR
-  const discoveredPr = prDiscovery.ui?.pullRequest || prDiscovery.ux?.pullRequest || prDiscovery.backend?.pullRequest || null;
-
-  // Normalize checks
-  let checks = { state: "unavailable", source: "none", total: 0, completed: 0 };
-  let pullRequest = null;
-
-  if (discoveredPr) {
-    pullRequest = normalizePullRequest(discoveredPr);
-    checks = normalizeChecks(discoveredPr);
-  } else if (mapping.fallbackPrNumber) {
-    const fbAlias = `fallbackPr${mapping.fallbackPrNumber}`;
-    const fbData = repositoryData?.[fbAlias] || null;
-    if (fbData) {
-      pullRequest = normalizePullRequest(fbData);
-      checks = normalizeChecks(fbData);
-    }
-  }
+  const currentPullRequests = {
+    ui: prDiscovery.ui?.pullRequest || null,
+    ux: prDiscovery.ux?.pullRequest || null,
+    backend: prDiscovery.backend?.pullRequest || null,
+  };
 
   // ── Resolve phase verdicts with Business/phase binding ──
+  const staticBiz = (identitySource || {})[mapping.number] || {};
   const phaseVerdicts = {};
-  const phases = ["ui", "ux", "backend"];
-  for (const phase of phases) {
-    const phaseIssue = phaseIssues[phase];
-    const phaseIssueNumber = mapping[`${phase}PhaseIssue`];
-    if (!phaseIssueNumber) continue;
-
+  for (const phase of PHASES) {
     phaseVerdicts[phase] = resolvePhaseVerdictFromPool({
       expectedBusinessNumber: mapping.number,
       expectedPhase: phase,
-      issueBody: phaseIssue?.body || null,
-      prBody: pullRequest?.body || null,
-      staticFallback: phaseFallbacks[phase],
+      issueBody: rawPhaseIssues[phase]?.body || null,
+      prBody: currentPullRequests[phase]?.body || null,
+      staticFallback: staticBiz[STATIC_FALLBACK_KEYS[phase]] || null,
     });
   }
 
   // ── Determine connection state ──
   const diagnostics = [];
-  if (prDiscovery.ui?.status === "conflict") diagnostics.push("PR_DISCOVERY_CONFLICT");
-  if (prDiscovery.ui?.status === "unavailable" && mapping.uiPhaseIssue) diagnostics.push("PR_UNAVAILABLE");
-  if (!issue && mapping.issueNumber) diagnostics.push("ISSUE_UNAVAILABLE");
+  for (const phase of PHASES) {
+    if (prDiscovery[phase]?.status === "conflict") diagnostics.push("PR_DISCOVERY_CONFLICT");
+  }
+  if (!productDecisionIssue && mapping.issueNumber) diagnostics.push("ISSUE_UNAVAILABLE");
   const connectionState = diagnostics.length === 0 ? "connected" : "partial";
 
   // Activity timestamp
   const activityAt = (() => {
     const timestamps = [];
-    if (issue?.updatedAt) timestamps.push(new Date(issue.updatedAt).getTime());
-    if (pullRequest?.updatedAt) timestamps.push(new Date(pullRequest.updatedAt).getTime());
+    if (productDecisionIssue?.updatedAt) timestamps.push(new Date(productDecisionIssue.updatedAt).getTime());
+    for (const phase of PHASES) {
+      const updatedAt = currentPullRequests[phase]?.updatedAt;
+      if (updatedAt) timestamps.push(new Date(updatedAt).getTime());
+    }
     const valid = timestamps.filter(Number.isFinite);
     return valid.length ? new Date(Math.max(...valid)).toISOString() : null;
   })();
@@ -183,20 +140,15 @@ export function mergeBusinessFacts({
     number: mapping.number,
     connectionState,
     repository: mapping.repository,
-    productDecisionIssue: issue,
-    phaseIssues: Object.keys(phaseIssues).length ? {
-      ui: normalizeIssue(phaseIssues.ui),
-      ux: normalizeIssue(phaseIssues.ux),
-      backend: normalizeIssue(phaseIssues.backend),
-    } : null,
-    pullRequest,
-    checks,
+    productDecisionIssue,
+    phaseIssues,
+    currentPullRequests,
     phaseDiscovery: {
-      ui: prDiscovery.ui ? { status: prDiscovery.ui.status, method: prDiscovery.ui?.pullRequest?.discoveryMethod || null, candidates: prDiscovery.ui.candidates || null } : null,
-      ux: prDiscovery.ux ? { status: prDiscovery.ux.status, method: prDiscovery.ux?.pullRequest?.discoveryMethod || null, candidates: prDiscovery.ux.candidates || null } : null,
-      backend: prDiscovery.backend ? { status: prDiscovery.backend.status, method: prDiscovery.backend?.pullRequest?.discoveryMethod || null, candidates: prDiscovery.backend.candidates || null } : null,
+      ui: discoverySummary(prDiscovery.ui),
+      ux: discoverySummary(prDiscovery.ux),
+      backend: discoverySummary(prDiscovery.backend),
     },
-    phaseVerdicts: Object.keys(phaseVerdicts).length ? phaseVerdicts : null,
+    phaseVerdicts,
     activityAt,
     error: diagnostics.length ? { code: diagnostics[0], message: "Business GitHub facts are partially available." } : null,
   };

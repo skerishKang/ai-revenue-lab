@@ -35,6 +35,13 @@
       mapping_conflict: "매핑 충돌",
       verdict_unverified: "검증되지 않은 판정",
       stale: "오래된 정보",
+      /* verdict detail */
+      verdictTitle: "단계 판정",
+      sourceIssueBody: "출처: Issue 본문",
+      sourcePrBody: "출처: PR 본문",
+      sourceStaticFallback: "출처: 정적 권한(기계 미검증)",
+      headLabel: "승인 head",
+      noVerdict: "판정 없음",
     },
     en: {
       discovered: "DISCOVERED",
@@ -56,6 +63,12 @@
       mapping_conflict: "MAPPING CONFLICT",
       verdict_unverified: "UNVERIFIED VERDICT",
       stale: "STALE",
+      verdictTitle: "PHASE VERDICT",
+      sourceIssueBody: "SOURCE: ISSUE BODY",
+      sourcePrBody: "SOURCE: PR BODY",
+      sourceStaticFallback: "SOURCE: STATIC AUTHORITY (NOT MACHINE VERIFIED)",
+      headLabel: "ACCEPTED HEAD",
+      noVerdict: "NO VERDICT",
     },
   };
 
@@ -103,6 +116,79 @@
     return String(verdict);
   }
 
+  function escapeText(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  /* Localized leaf span: app.js setLanguage() updates these in place. */
+  function labelSpan(koKey, enKey) {
+    return '<span data-label-ko="' + escapeText(PHASE_LABELS.ko[koKey]) + '" data-label-en="' + escapeText(PHASE_LABELS.en[enKey || koKey]) + '">' + escapeText(l(koKey)) + '</span>';
+  }
+
+  function sourceSpan(source) {
+    if (source === "issue_body") return labelSpan("sourceIssueBody");
+    if (source === "pr_body") return labelSpan("sourcePrBody");
+    if (source === "static_fallback") return labelSpan("sourceStaticFallback");
+    return "";
+  }
+
+  function verdictRowHtml(phase, verdict) {
+    var parts = [];
+    if (!verdict) {
+      parts.push(labelSpan("noVerdict"));
+    } else {
+      parts.push(labelSpan(verdict.status === "verified" ? "verified" : verdict.status === "unverified" ? "unverified" : verdict.status === "conflict" ? "conflict" : "invalid"));
+      if (verdict.verdict) parts.push(escapeText(verdict.verdict));
+      if (verdict.acceptedHead) parts.push('<code title="' + escapeText(l("headLabel")) + '">' + escapeText(String(verdict.acceptedHead).slice(0, 12)) + "</code>");
+      var source = sourceSpan(verdict.source);
+      if (source) parts.push(source);
+      if (verdict.reason) parts.push("<code>" + escapeText(verdict.reason) + "</code>");
+    }
+    return '<div class="dialog-section" data-verdict-phase="' + escapeText(phase) + '">'
+      + '<span class="dialog-section-label">' + escapeText(phase.toUpperCase()) + "</span>"
+      + '<span class="dialog-section-value">' + parts.join(" · ") + "</span></div>";
+  }
+
+  /* ── Decorate business detail dialog with verdict info ──
+   * Signature-idempotent: re-renders when payload/language/staleness change,
+   * and replaces the empty [data-verdict-block] placeholder rendered by app.js
+   * instead of aborting on it.
+   */
+  function decorateVerdict(payload, dialogBody) {
+    if (!payload?.ok || !dialogBody) return;
+    var numEl = dialogBody.querySelector(".dialog-biznumber");
+    if (!numEl) return;
+    var num = Number((numEl.textContent || "").replace(/\D/g, ""));
+    var live = (payload.businesses || []).find(function (b) { return b.number === num; });
+    if (!live) return;
+
+    var verdicts = live.phaseVerdicts;
+    if (!verdicts) return;
+
+    var signature = [num, lang(), payload.syncedAt || "", payload.stale ? "1" : "0"].join("|");
+    var existing = dialogBody.querySelectorAll("[data-verdict-block]");
+    for (var e = 0; e < existing.length; e++) {
+      if (existing[e].dataset.verdictSignature === signature) return;
+      existing[e].remove();
+    }
+
+    var container = document.createElement("div");
+    container.dataset.verdictBlock = "true";
+    container.dataset.verdictSignature = signature;
+    container.className = "dialog-section";
+
+    var html = '<hr class="dialog-divider">';
+    html += '<span class="dialog-section-label" data-label-ko="' + escapeText(PHASE_LABELS.ko.verdictTitle) + '" data-label-en="' + escapeText(PHASE_LABELS.en.verdictTitle) + '">' + escapeText(l("verdictTitle")) + "</span>";
+    html += verdictRowHtml("ui", verdicts.ui);
+    html += verdictRowHtml("ux", verdicts.ux);
+    html += verdictRowHtml("backend", verdicts.backend);
+
+    container.innerHTML = html;
+    dialogBody.appendChild(container);
+  }
+
   function phaseLabel(state) {
     var s = String(state || "").toLowerCase();
     switch (s) {
@@ -137,54 +223,6 @@
         parts.push("UI:" + l("conflict"));
       }
       target.textContent = parts.length ? parts.join(" ") : "";
-    }
-  }
-
-  /* ── Decorate business detail dialog with verdict info ── */
-  function decorateVerdict(payload, dialogBody) {
-    if (!payload?.ok || !dialogBody) return;
-    var numEl = dialogBody.querySelector(".dialog-biznumber");
-    if (!numEl) return;
-    var num = Number((numEl.textContent || "").replace(/\D/g, ""));
-    var live = (payload.businesses || []).find(function (b) { return b.number === num; });
-    if (!live) return;
-
-    var verdictBlock = dialogBody.querySelector("[data-verdict-block]");
-    if (verdictBlock) {
-      // Already decorated
-      return;
-    }
-
-    var verdicts = live.phaseVerdicts;
-    if (!verdicts) return;
-
-    var container = document.createElement("div");
-    container.dataset.verdictBlock = "true";
-    container.className = "dialog-section";
-
-    var html = '<hr class="dialog-divider">';
-    html += '<span class="dialog-section-label" data-label-ko="단계 판정" data-label-en="PHASE VERDICT">PHASE VERDICT</span>';
-
-    if (verdicts.ui) {
-      html += '<div class="dialog-section"><span class="dialog-section-label">UI</span>';
-      html += '<span class="dialog-section-value">' + verdictLabel(verdicts.ui) + '</span></div>';
-    }
-    if (verdicts.ux) {
-      html += '<div class="dialog-section"><span class="dialog-section-label">UX</span>';
-      html += '<span class="dialog-section-value">' + verdictLabel(verdicts.ux) + '</span></div>';
-    }
-    if (verdicts.backend) {
-      html += '<div class="dialog-section"><span class="dialog-section-label">BACKEND</span>';
-      html += '<span class="dialog-section-value">' + verdictLabel(verdicts.backend) + '</span></div>';
-    }
-
-    container.innerHTML = html;
-    dialogBody.appendChild(container);
-
-    // Update language labels
-    var labels = container.querySelectorAll("[data-label-ko]");
-    for (var i = 0; i < labels.length; i++) {
-      labels[i].textContent = labels[i].dataset[lang() === "en" ? "labelEn" : "labelKo"];
     }
   }
 

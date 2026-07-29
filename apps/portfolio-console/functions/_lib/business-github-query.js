@@ -2,12 +2,18 @@
  *
  *  Builds a single bounded GraphQL query for 55 mapped Businesses.
  *  Unified alias contract:
- *    issue{N}       — product-decision Issue
- *    uiIssue{N}     — Phase 1 UI Issue (when different from product issue)
- *    uxIssue{N}     — Phase 2 UX Issue (when different)
- *    beIssue{N}     — Phase 3 Backend Issue (when different)
- *    prSearch{N}    — PR discovery search results for issue N
- *    fallbackPr{N}  — explicit fallback PR (with check rollup)
+ *    issue{N}           — product-decision Issue
+ *    uiIssue{N}         — Phase 1 UI Issue (when different from product issue)
+ *    uxIssue{N}         — Phase 2 UX Issue (when different)
+ *    beIssue{N}         — Phase 3 Backend Issue (when different)
+ *    prSearchRefs{N}    — bounded PR search for `"Refs #N"` (issue N)
+ *    prSearchRelated{N} — bounded PR search for `"Related to #N"` (issue N)
+ *    fallbackPr{N}      — explicit fallback PR (with check rollup)
+ *
+ *  Both PR search expressions are issued as bounded aliases inside the SAME
+ *  single GraphQL request (first: prSearchLimit each). The service merges and
+ *  de-duplicates the two pools by PR number; truncation is flagged when
+ *  issueCount exceeds the returned nodes.
  *
  *  PR #193 contract:
  *    - single-flight aggregation
@@ -42,10 +48,6 @@ export function buildStatusQuery(opts = {}) {
     if (m.bePhaseIssue) allIssueNumbers.add(m.bePhaseIssue);
   }
 
-  const issueSelection = `issue(number: __NUMBER__) {
-    number title state stateReason updatedAt url body
-  }`;
-
   const issueSelections = [...allIssueNumbers]
     .sort((a, b) => a - b)
     .map((n) => `  issue${n}: issue(number: ${n}) {
@@ -61,47 +63,44 @@ export function buildStatusQuery(opts = {}) {
     if (m.bePhaseIssue) phaseIssueNumbers.add(m.bePhaseIssue);
   }
 
-  // Build PR search selections with CI/check rollup
-  const searchQuery = (issueNum) => {
-    // Use Refs/Related to to narrow search: exact issue number reference
-    return `${SEARCH_PR_QUERY_PREFIX} "Refs #${issueNum}" "Related to #${issueNum}"`;
-  };
-
-  const prSearchSelections = [...phaseIssueNumbers]
-    .sort((a, b) => a - b)
-    .map((n) => `  prSearch${n}: search(
-    query: ${esc(`${SEARCH_PR_QUERY_PREFIX} "Refs #${n}"`)}
-    type: ISSUE
-    first: ${prSearchLimit}
-  ) {
-    issueCount
-    nodes {
-      ... on PullRequest {
-        number title state isDraft merged headRefOid headRefName baseRefName updatedAt url body
+  // PR field selection shared by search aliases and fallback PRs (with CI/check rollup)
+  const PR_FIELDS = `number title state isDraft merged headRefOid headRefName baseRefOid baseRefName updatedAt url body
         commits(last: 1) { nodes { commit { statusCheckRollup {
           state contexts(first: 100) { totalCount nodes {
             __typename
             ... on CheckRun { status conclusion name }
             ... on StatusContext { state context }
           } }
-        } } } }
+        } } } }`;
+
+  // Bounded dual search per phase Issue: "Refs #N" and "Related to #N".
+  // Both aliases live in the same single GraphQL request (request budget = 1).
+  const searchSelection = (alias, expression, indent) => `  ${alias}: search(
+    query: ${esc(`${SEARCH_PR_QUERY_PREFIX} ${expression}`)}
+    type: ISSUE
+    first: ${prSearchLimit}
+  ) {
+    issueCount
+    nodes {
+      ... on PullRequest {
+        ${PR_FIELDS}
       }
     }
-  }`)
+  }`;
+
+  const prSearchSelections = [...phaseIssueNumbers]
+    .sort((a, b) => a - b)
+    .map((n) => [
+      searchSelection(`prSearchRefs${n}`, `"Refs #${n}"`),
+      searchSelection(`prSearchRelated${n}`, `"Related to #${n}"`),
+    ].join("\n"))
     .join("\n");
 
   // Build fallback PR selections with CI/check rollup
   const fallbackPrSelections = mappedEntries
     .filter((m) => m.fallbackPrNumber)
     .map((m) => `  fallbackPr${m.fallbackPrNumber}: pullRequest(number: ${m.fallbackPrNumber}) {
-    number title state isDraft merged headRefOid headRefName baseRefName updatedAt url body
-    commits(last: 1) { nodes { commit { statusCheckRollup {
-      state contexts(first: 100) { totalCount nodes {
-        __typename
-        ... on CheckRun { status conclusion name }
-        ... on StatusContext { state context }
-      } }
-    } } } }
+    ${PR_FIELDS}
   }`)
     .join("\n");
 
@@ -155,6 +154,14 @@ export function getFallbackPrNumbers() {
     if (m.fallbackPrNumber) prs.add(m.fallbackPrNumber);
   }
   return [...prs].sort((a, b) => a - b);
+}
+
+/**
+ * GraphQL aliases carrying the bounded dual PR search for one phase Issue.
+ * Order matters: Refs results are merged before Related-to results.
+ */
+export function getPrSearchAliases(issueNum) {
+  return [`prSearchRefs${issueNum}`, `prSearchRelated${issueNum}`];
 }
 
 /** Request budget: cold=2 (token + GraphQL), cached token=1 (GraphQL only), worst case=4 (401 recovery) */

@@ -5,12 +5,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "business-manifest.js"
+IDENTITY_CORE = ROOT / "business-identity-core.js"
 
 
 class BusinessRegistryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.script = MANIFEST.read_text(encoding="utf-8")
+        cls.core_script = IDENTITY_CORE.read_text(encoding="utf-8")
 
     def business_block(self, number: int) -> str:
         match = re.search(
@@ -19,6 +21,11 @@ class BusinessRegistryTests(unittest.TestCase):
             re.DOTALL,
         )
         self.assertIsNotNone(match, f"Business {number} entry not found in manifest")
+        return match.group(0)
+
+    def core_block(self, number: int) -> str:
+        match = re.search(rf"\bn:\s*{number},(?P<body>[^}}]*)\}}", self.core_script)
+        self.assertIsNotNone(match, f"Business {number} entry not found in identity core")
         return match.group(0)
 
     def test_registry_has_exact_ordered_unique_numbers_one_through_fiftyfive(self) -> None:
@@ -48,9 +55,21 @@ class BusinessRegistryTests(unittest.TestCase):
             self.assertIn(f'k:"{korean_title}"', block)
 
     def test_business_nine_records_ui_approval(self) -> None:
+        core = self.core_block(9)
+        self.assertIn('ui:"UI_APPROVED"', core)
         block = self.business_block(9)
-        self.assertIn('ui:"UI_APPROVED"', block)
         self.assertIn('st:"review"', block)
+
+    def test_identity_core_covers_one_through_fiftyfive_in_order(self) -> None:
+        numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.core_script)]
+        self.assertEqual(numbers, list(range(1, 56)))
+
+    def test_manifest_defines_no_phase_status_literals_single_source(self) -> None:
+        for literal in ('ui:"', 'ux:"', 'be:"'):
+            self.assertNotIn(literal, self.script, f"manifest must not define phase status literal {literal}")
+        array_section = self.script.split("window.ARL_MANIFEST = [", 1)[1]
+        for value in ("UI_APPROVED", "BLOCKED_BY_UI", "IMPLEMENTED", "FROZEN", "DECISION_PENDING", "NOT_STARTED"):
+            self.assertNotIn(value, array_section, f"manifest entries must not hardcode phase status value {value}")
 
     def test_business_fifteen_exists_as_proposed(self) -> None:
         block = self.business_block(15)

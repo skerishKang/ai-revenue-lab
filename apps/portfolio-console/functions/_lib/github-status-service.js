@@ -10,6 +10,7 @@
 
 import { BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY } from "./business-github-map.js";
 import { GitHubApiError } from "./github-client.js";
+import { getPrSearchAliases } from "./business-github-query.js";
 import { mergeBusinessFacts, createMergedPayload, SCHEMA_VERSION } from "./business-fact-merger.js";
 import { safeError } from "./response.js";
 
@@ -46,15 +47,30 @@ export function createGitHubStatusService({
 
     const paths = errorPaths(aggregate.errors);
 
-    // Collect phase issue search results
+    // Collect phase issue search results: merge the bounded dual aliases
+    // (prSearchRefs{N} + prSearchRelated{N}), deduplicated by PR number.
+    // Refs candidates keep priority order; truncation is flagged when either
+    // alias reports more results than the bounded page returned.
     const phaseIssueResults = {};
     const mappedEntries = BUSINESS_GITHUB_MAP.filter((m) => m.repository === GITHUB_REPOSITORY);
     for (const m of mappedEntries) {
       for (const phase of ["uiPhaseIssue", "uxPhaseIssue", "bePhaseIssue"]) {
         const issueNum = m[phase];
-        if (issueNum && !phaseIssueResults[`prSearch${issueNum}`]) {
-          phaseIssueResults[`prSearch${issueNum}`] = root[`prSearch${issueNum}`] || { nodes: [] };
+        if (!issueNum || phaseIssueResults[`prSearch${issueNum}`]) continue;
+        const [refsAlias, relatedAlias] = getPrSearchAliases(issueNum);
+        const refsResult = root[refsAlias] || { nodes: [] };
+        const relatedResult = root[relatedAlias] || { nodes: [] };
+        const seen = new Set();
+        const nodes = [];
+        for (const node of [...(refsResult.nodes || []), ...(relatedResult.nodes || [])]) {
+          const prNumber = Number(node?.number);
+          if (!Number.isInteger(prNumber) || seen.has(prNumber)) continue;
+          seen.add(prNumber);
+          nodes.push(node);
         }
+        const truncated = Number(refsResult.issueCount || 0) > (refsResult.nodes || []).length
+          || Number(relatedResult.issueCount || 0) > (relatedResult.nodes || []).length;
+        phaseIssueResults[`prSearch${issueNum}`] = { nodes, truncated };
       }
     }
 
@@ -65,7 +81,6 @@ export function createGitHubStatusService({
       phaseIssueResults,
       fallbackPrNode: mapping.fallbackPrNumber ? repositoryData[`fallbackPr${mapping.fallbackPrNumber}`] : null,
       identitySource,
-      paths,
     }));
 
     // Collect diagnostics

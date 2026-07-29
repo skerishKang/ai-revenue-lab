@@ -13,7 +13,7 @@ class GitHubLiveStaticContractTests(unittest.TestCase):
         self.assertEqual(json.loads((ROOT / "_routes.json").read_text()), {"version": 1, "include": ["/api/*"], "exclude": []})
     def test_browser_live_script_is_deterministically_versioned(self):
         html = (ROOT / "index.html").read_text()
-        self.assertIn('src="./github-live-status.js?v=auto-sync-v20260729-2"', html)
+        self.assertIn('src="./github-live-status.js?v=auto-sync-v20260730-1"', html)
         self.assertNotIn("Date.now()", html)
     def test_csp_allows_only_same_origin_api(self):
         headers = (ROOT / "_headers").read_text()

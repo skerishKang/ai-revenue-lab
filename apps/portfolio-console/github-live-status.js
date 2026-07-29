@@ -16,14 +16,18 @@
       issueOpen: "Issue 열림", issueClosed: "Issue 닫힘", draftPr: "PR 초안", openPr: "PR 열림", closedPr: "PR 닫힘", merged: "병합됨",
       checksPass: "검사 통과", checksFail: "검사 실패", checksPending: "검사 중", checksUnavailable: "검사 없음",
       lastSync: "마지막 동기화", repository: "저장소", latestMain: "최신 main SHA", mappedIssue: "연결 Issue",
-      mappedPr: "연결 PR", prHead: "PR head SHA", lastActivity: "최근 GitHub 활동", githubStatus: "GitHub 상태", partial: "일부 정보 없음"
+      mappedPr: "연결 PR", prHead: "PR head SHA", lastActivity: "최근 GitHub 활동", githubStatus: "GitHub 상태", partial: "일부 정보 없음",
+      productIssue: "제품 결정 Issue", phaseIssue: "단계 Issue", phasePr: "단계 PR", phaseVerdict: "단계 판정",
+      discovery: "발견 방법", conflict: "충돌", unavailable: "사용 불가"
     },
     en: {
       synced: "SYNCED", syncPending: "SYNC PENDING", stale: "STALE", notConnected: "NOT CONNECTED", unmapped: "UNMAPPED",
       issueOpen: "ISSUE OPEN", issueClosed: "ISSUE CLOSED", draftPr: "DRAFT PR", openPr: "OPEN PR", closedPr: "CLOSED PR", merged: "MERGED",
       checksPass: "CHECKS PASS", checksFail: "CHECKS FAIL", checksPending: "CHECKS PENDING", checksUnavailable: "CHECKS UNAVAILABLE",
       lastSync: "LAST SYNC", repository: "REPOSITORY", latestMain: "LATEST MAIN SHA", mappedIssue: "MAPPED ISSUE",
-      mappedPr: "MAPPED PR", prHead: "PR HEAD SHA", lastActivity: "LAST GITHUB ACTIVITY", githubStatus: "GITHUB STATUS", partial: "PARTIAL DATA"
+      mappedPr: "MAPPED PR", prHead: "PR HEAD SHA", lastActivity: "LAST GITHUB ACTIVITY", githubStatus: "GITHUB STATUS", partial: "PARTIAL DATA",
+      productIssue: "PRODUCT DECISION ISSUE", phaseIssue: "PHASE ISSUE", phasePr: "PHASE PR", phaseVerdict: "PHASE VERDICT",
+      discovery: "DISCOVERY", conflict: "CONFLICT", unavailable: "UNAVAILABLE"
     }
   };
 
@@ -47,8 +51,26 @@
   function liveMapFromPayload(payload) {
     const result = new Map();
     if (!payload?.ok || !Array.isArray(payload.businesses)) return result;
-    for (const item of payload.businesses) if (Number.isInteger(item?.number)) result.set(item.number, item);
+    for (const item of payload.businesses) if (Number.isInteger(item?.number)) result.set(item.number, adaptLiveBusiness(item));
     return result;
+  }
+  /**
+   * SINGLE compatibility adapter between the canonical Phase 2A server schema
+   * and the UI-facing live object. The server emits productDecisionIssue,
+   * phaseIssues.{ui,ux,backend} and currentPullRequests.{ui,ux,backend};
+   * the UI consumes derived issue/pullRequest/checks primaries.
+   * Legacy schemaVersion-1 payloads (already carrying issue/pullRequest)
+   * pass through unchanged.
+   */
+  function adaptLiveBusiness(live) {
+    if (!live || typeof live !== "object") return live;
+    if (!("productDecisionIssue" in live) && !("currentPullRequests" in live)) return live;
+    const prs = live.currentPullRequests || {};
+    const issues = live.phaseIssues || {};
+    const pullRequest = prs.ui || prs.ux || prs.backend || null;
+    const issue = live.productDecisionIssue || issues.ui || issues.ux || issues.backend || null;
+    const checks = pullRequest?.checks || { state: "unavailable", source: "none", total: 0, completed: 0 };
+    return { ...live, issue, pullRequest, checks };
   }
   function mergeLiveByBusinessNumber(staticBusinesses, payload) {
     const map = liveMapFromPayload(payload);
@@ -137,6 +159,18 @@
     const url = safeGitHubUrl(value);
     return url ? `<a class="dialog-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>` : "";
   }
+  function issueValue(issue) {
+    return issue ? `${escapeHtml(issue.title)} · ${escapeHtml(issue.state)} #${issue.number}` : "—";
+  }
+  function prValue(pr, labels) {
+    return pr ? `${escapeHtml(pr.title)} · ${escapeHtml(pullRequestLabel(pr, labels))} #${pr.number} · ${escapeHtml(checkLabel(pr.checks, labels))}` : "—";
+  }
+  function discoveryValue(discovery, labels) {
+    if (!discovery) return "—";
+    if (discovery.status === "conflict") return `${labels.conflict}${discovery.reason ? ` (${escapeHtml(discovery.reason)})` : ""}`;
+    if (discovery.status === "unavailable") return labels.unavailable;
+    return discovery.method ? `${escapeHtml(discovery.method)}${discovery.truncated ? " · truncated" : ""}` : "—";
+  }
   function decorateBusinessDialog(globalObject) {
     const payload = state.payload;
     if (!payload?.ok) return;
@@ -156,8 +190,18 @@
     const repository = payload.repository || {};
     const issue = live.issue;
     const pr = live.pullRequest;
-    const issueValue = issue ? `${escapeHtml(issue.title)} · ${escapeHtml(issue.state)} #${issue.number}` : "—";
-    const prValue = pr ? `${escapeHtml(pr.title)} · ${escapeHtml(pullRequestLabel(pr, labels))} #${pr.number}` : "—";
+    const phaseIssues = live.phaseIssues || {};
+    const phasePrs = live.currentPullRequests || {};
+    const phaseDiscovery = live.phaseDiscovery || {};
+    const canonical = "currentPullRequests" in live;
+    const phaseRows = canonical ? ["ui", "ux", "backend"].map((phase) => {
+      const phaseIssue = phaseIssues[phase];
+      const phasePr = phasePrs[phase];
+      if (!phaseIssue && !phasePr && !phaseDiscovery[phase]) return "";
+      return sectionHtml(`${labels.phaseIssue} · ${phase.toUpperCase()}`, issueValue(phaseIssue))
+        + sectionHtml(`${labels.phasePr} · ${phase.toUpperCase()}`, prValue(phasePr, labels))
+        + sectionHtml(`${labels.discovery} · ${phase.toUpperCase()}`, discoveryValue(phaseDiscovery[phase], labels));
+    }).join("") : "";
     const block = globalObject.document.createElement("div");
     block.dataset.githubLiveBlock = "true";
     block.dataset.githubLiveSignature = signature;
@@ -166,23 +210,28 @@
       ${sectionHtml(labels.githubStatus, `${escapeHtml(summary.connection)} · ${escapeHtml(summary.checks)}`)}
       ${sectionHtml(labels.repository, escapeHtml(live.repository || repository.fullName || "—"))}
       ${sectionHtml(labels.latestMain, `<code>${escapeHtml(repository.latestSha || "—")}</code>`)}
-      ${sectionHtml(labels.mappedIssue, issueValue)}
-      ${sectionHtml(labels.mappedPr, prValue)}
+      ${sectionHtml(labels.productIssue, issueValue(live.productDecisionIssue || issue))}
+      ${phaseRows}
+      ${sectionHtml(labels.mappedIssue, issueValue(issue))}
+      ${sectionHtml(labels.mappedPr, prValue(pr, labels))}
       ${sectionHtml(labels.prHead, `<code>${escapeHtml(pr?.headSha || "—")}</code>`)}
       ${sectionHtml(labels.lastActivity, escapeHtml(formatDate(live.activityAt, language)))}
       ${sectionHtml(labels.lastSync, escapeHtml(formatDate(payload.syncedAt, language)))}
       <div class="dialog-links" data-github-live-section>${githubLink(issue?.url, `Issue #${issue?.number || ""}`)}${githubLink(pr?.url, `PR #${pr?.number || ""}`)}${githubLink(repository.url, labels.repository)}</div>`;
     body.appendChild(block);
+    const liveFacts = globalObject.window && globalObject.window.ARLLiveFacts;
+    if (liveFacts) {
+      try { liveFacts.decorateVerdict(payload, body, globalObject); } catch (_) {}
+    }
   }
   function decorate(globalObject) {
     decorateProjectCards(globalObject);
     decorateBusinessRows(globalObject);
     decorateBusinessDialog(globalObject);
-    // Phase 2A decoration integration
+    // Phase 2A row decoration integration
     var liveFacts = globalObject.window && globalObject.window.ARLLiveFacts;
     if (liveFacts && state.payload) {
       try { liveFacts.decorateDiscovery(state.payload, globalObject); } catch (_) {}
-      try { liveFacts.decorateVerdict(state.payload, null, globalObject); } catch (_) {}
     }
   }
   function scheduleDecorate(globalObject) {
@@ -216,5 +265,5 @@
     else start();
   }
 
-  return { ENDPOINT, labelsFor, liveMapFromPayload, mergeLiveByBusinessNumber, acceptPayload, liveSummary, staticStatePreserved, autoStart, _state: state };
+  return { ENDPOINT, labelsFor, liveMapFromPayload, adaptLiveBusiness, mergeLiveByBusinessNumber, acceptPayload, liveSummary, staticStatePreserved, autoStart, _state: state };
 });

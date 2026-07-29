@@ -314,10 +314,18 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn('<dialog id="project-dialog"', html)
         self.assertIn('<dialog id="business-dialog"', html)
 
-    def test_theme_inline_script_exists(self) -> None:
+    def test_theme_init_script_external(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn("arl-portfolio-theme", html)
-        self.assertIn("data-theme", html)
+        self.assertIn('src="./theme-init.js?v=auto-sync-v20260730-1"', html)
+        self.assertNotIn("arl-portfolio-theme", html)
+        script = (ROOT / "theme-init.js").read_text(encoding="utf-8")
+        self.assertIn("arl-portfolio-theme", script)
+        self.assertIn("data-theme", script)
+
+    def test_no_inline_scripts_under_csp(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("<script>", html)
+        self.assertNotIn("style=\"", html)
 
     def test_no_decorative_side_nav_in_html(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")

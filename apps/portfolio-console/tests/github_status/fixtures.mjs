@@ -6,6 +6,7 @@ import { BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY } from "../../functions/_lib/bus
 import { InstallationTokenProvider } from "../../functions/_lib/github-app-auth.js";
 import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
 import { createGitHubStatusService } from "../../functions/_lib/github-status-service.js";
+import { buildIdentitySource } from "../../business-identity-data.js";
 
 export { assert, webcrypto, BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY, MemorySnapshotCache };
 export { gqlPr, gqlSearchResult, rollup, gqlIssue };
@@ -40,10 +41,10 @@ function rollup(state = "SUCCESS", { totalCount = 1, nodes = null } = {}) {
       : { __typename: "CheckRun", status: "COMPLETED", conclusion: "SUCCESS" };
   return { state, contexts: { totalCount, nodes: nodes || [defaultNode] } };
 }
-function gqlIssue(number) {
-  return { number, title: `Issue ${number}`, state: "OPEN", updatedAt: "2026-07-27T00:00:00Z", url: `https://github.com/${GITHUB_REPOSITORY}/issues/${number}` };
+function gqlIssue(number, { body = "", state = "OPEN", stateReason = null } = {}) {
+  return { number, title: `Issue ${number}`, state, stateReason, body, updatedAt: "2026-07-27T00:00:00Z", url: `https://github.com/${GITHUB_REPOSITORY}/issues/${number}` };
 }
-function gqlPr(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS" } = {}) {
+function gqlPr(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS", body = "" } = {}) {
   return {
     number,
     title: `PR ${number}`,
@@ -51,13 +52,16 @@ function gqlPr(number, { state = "OPEN", isDraft = true, merged = false, checkSt
     isDraft,
     merged,
     headRefOid: String(number).padStart(40, "a").slice(-40),
+    headRefName: `feat/pr-${number}`,
+    baseRefOid: "b".repeat(40),
     baseRefName: "main",
     updatedAt: "2026-07-27T00:00:00Z",
     url: `https://github.com/${GITHUB_REPOSITORY}/pull/${number}`,
+    body,
     commits: { nodes: [{ commit: { statusCheckRollup: checkState === null ? null : rollup(checkState) } }] }
   };
 }
-function gqlSearchResult(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS" } = {}) {
+function gqlSearchResult(number, { state = "OPEN", isDraft = true, merged = false, checkState = "SUCCESS", body = null, headRefName = null } = {}) {
   return {
     __typename: "PullRequest",
     number,
@@ -66,11 +70,12 @@ function gqlSearchResult(number, { state = "OPEN", isDraft = true, merged = fals
     isDraft,
     merged,
     headRefOid: String(number).padStart(40, "a").slice(-40),
-    headRefName: `feat/business-${number}-ui`,
+    headRefName: headRefName || `feat/pr-${number}`,
+    baseRefOid: "b".repeat(40),
     baseRefName: "main",
     updatedAt: "2026-07-27T00:00:00Z",
     url: `https://github.com/${GITHUB_REPOSITORY}/pull/${number}`,
-    body: `Refs #${number}`,
+    body: body == null ? `Refs #${number}` : body,
     commits: { nodes: [{ commit: { statusCheckRollup: checkState === null ? null : rollup(checkState) } }] }
   };
 }
@@ -93,18 +98,22 @@ export function aggregatePayload({ errors = [], overrides = {} } = {}) {
         ? gqlPr(88, { state: "MERGED", isDraft: false, merged: true })
         : gqlPr(mapping.fallbackPrNumber);
     }
-    // PR search results at top level
+    // Bounded dual PR search aliases at top level (Refs pool carries the
+    // default candidate; Related-to pool is empty unless overridden).
     const phaseIssues = new Set();
-    if (mapping.issueNumber) phaseIssues.add(mapping.issueNumber);
     if (mapping.uiPhaseIssue) phaseIssues.add(mapping.uiPhaseIssue);
     if (mapping.uxPhaseIssue) phaseIssues.add(mapping.uxPhaseIssue);
     if (mapping.bePhaseIssue) phaseIssues.add(mapping.bePhaseIssue);
     for (const pi of phaseIssues) {
-      if (pi && !topLevel[`prSearch${pi}`]) {
-        topLevel[`prSearch${pi}`] = {
+      if (!pi) continue;
+      if (!topLevel[`prSearchRefs${pi}`]) {
+        topLevel[`prSearchRefs${pi}`] = {
           issueCount: 1,
-          nodes: [gqlSearchResult(mapping.fallbackPrNumber || pi)]
+          nodes: [gqlSearchResult(mapping.fallbackPrNumber || pi, { body: `Refs #${pi}`, headRefName: `feat/business-${mapping.number}-${pi}` })]
         };
+      }
+      if (!topLevel[`prSearchRelated${pi}`]) {
+        topLevel[`prSearchRelated${pi}`] = { issueCount: 0, nodes: [] };
       }
     }
   }
@@ -155,7 +164,8 @@ export function createProvider(privateKeyPem, fetchImpl, now = () => NOW) {
 export function serviceResult(client, {
   cache = new MemorySnapshotCache({ now: () => NOW }),
   now = () => NOW,
-  key = `test-${crypto.randomUUID()}`
+  key = `test-${crypto.randomUUID()}`,
+  identitySource = buildIdentitySource()
 } = {}) {
-  return createGitHubStatusService({ client, cache, now, singleFlightKey: key }).getStatus();
+  return createGitHubStatusService({ client, cache, now, singleFlightKey: key, identitySource }).getStatus();
 }
