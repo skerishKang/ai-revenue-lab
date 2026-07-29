@@ -43,10 +43,10 @@ test("phase objects always carry all three phase keys", async () => {
 
 test("unmapped Business (no repository) is deterministic", () => {
   const fact = mergeBusinessFacts({
-    mapping: { number: 91, repository: null, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumber: null },
+    mapping: { number: 91, repository: null, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: null, fallbackPrNumbers: null },
     repositoryData: null,
-    phaseIssueResults: {},
-    fallbackPrNode: null,
+    discoveryPools: {},
+    fallbackPrNodes: { ui: null, ux: null, backend: null },
     identitySource: {},
   });
   assert.equal(fact.connectionState, "unmapped");

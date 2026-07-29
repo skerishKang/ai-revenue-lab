@@ -87,7 +87,10 @@ test("fixed GraphQL query contains all mapped aliases and paginates every connec
   assert.doesNotMatch(STATUS_QUERY, /pullRequests\(states:\s*OPEN\)/);
   for (const mapping of BUSINESS_GITHUB_MAP) {
     if (mapping.issueNumber) assert.match(STATUS_QUERY, new RegExp(`issue${mapping.issueNumber}: issue\\(number: ${mapping.issueNumber}\\)`));
-    if (mapping.fallbackPrNumber) assert.match(STATUS_QUERY, new RegExp(`fallbackPr${mapping.fallbackPrNumber}: pullRequest\\(number: ${mapping.fallbackPrNumber}\\)`));
+    const fallbacks = mapping.fallbackPrNumbers || {};
+    for (const phase of ["ui", "ux", "backend"]) {
+      if (fallbacks[phase]) assert.match(STATUS_QUERY, new RegExp(`fallbackPr${fallbacks[phase]}: pullRequest\\(number: ${fallbacks[phase]}\\)`));
+    }
   }
   assert.doesNotMatch(STATUS_QUERY, /\$repository|\$issue|\$pullRequest/);
 });

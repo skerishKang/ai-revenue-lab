@@ -15,12 +15,24 @@
  *    2. "Refs #issueNumber" in PR body
  *    3. "Related to #issueNumber" in PR body
  *    4. branch/title convention matching (headRefName)
- *    5. static fallback PR pointer
+ *    5. static phase-scoped fallback PR pointer
  *
  *  Ambiguous matches → conflict (never guess).
  *  A static fallback pointer that disagrees with an automatic discovery is a
  *  conflict, not a silent override.
  *  PR merge does not imply phase approval.
+ *
+ *  Conservative truncation contract:
+ *    If ANY candidate pool contributing to a (Business, phase) pair is
+ *    truncated (issueCount > visible nodes), unseen candidates exist and
+ *    uniqueness cannot be proven. The result is always
+ *    `conflict` / DISCOVERY_POOL_TRUNCATED with `pullRequest: null` —
+ *    no visible match and no static fallback may be treated as
+ *    authoritative while a pool is unresolved.
+ *
+ *  Fallback pointers are phase-scoped: discoverBusinessPrs receives
+ *  `fallbackPrNodes: {ui, ux, backend}` and never passes a UI fallback
+ *  to UX or backend discovery.
  */
 
 function parseStructuredMarker(body) {
@@ -104,10 +116,8 @@ function conventionMatches(pr, businessNumber, phase, phaseIssueNumber) {
     || phaseRegex.test(pr.title || "") || phaseRegex.test(pr.headRef || "");
 }
 
-function discovered(pr, method, truncated) {
-  const result = { status: "discovered", pullRequest: { ...pr, discoveryMethod: method }, candidates: null, reason: null };
-  if (truncated) result.truncated = true;
-  return result;
+function discovered(pr, method) {
+  return { status: "discovered", pullRequest: { ...pr, discoveryMethod: method }, candidates: null, reason: null };
 }
 
 /**
@@ -116,9 +126,11 @@ function discovered(pr, method, truncated) {
  * @param {number} args.businessNumber
  * @param {number|null} args.phaseIssueNumber - phase Issue number to discover PR for
  * @param {"ui"|"ux"|"backend"} args.phase
- * @param {object[]|{nodes:object[],truncated?:boolean}} [args.searchResults] - merged raw PR nodes (Refs + Related to)
- * @param {object|null} [args.fallbackPrNode] - raw fallback PR node from fallbackPr{N}
- * @returns {{status:"discovered"|"unavailable"|"conflict", pullRequest:object|null, candidates?:number[]|null, reason?:string|null, truncated?:boolean}}
+ * @param {object[]|{nodes:object[],truncated?:boolean,truncatedPools?:string[]}} [args.searchResults]
+ *        merged raw PR nodes from all bounded candidate pools (marker, Refs,
+ *        Related-to, convention), deduped by PR number
+ * @param {object|null} [args.fallbackPrNode] - phase-scoped raw fallback PR node
+ * @returns {{status:"discovered"|"unavailable"|"conflict", pullRequest:object|null, candidates?:number[]|null, reason?:string|null, truncated?:boolean, truncatedPools?:string[]|null}}
  */
 export function discoverPr({
   businessNumber,
@@ -132,8 +144,21 @@ export function discoverPr({
   }
 
   const pool = Array.isArray(searchResults) ? { nodes: searchResults, truncated: false } : (searchResults || { nodes: [], truncated: false });
-  const truncated = Boolean(pool.truncated);
   const candidates = (pool.nodes || []).map(normalizeRawPr).filter(Boolean);
+
+  // ── 0. Conservative truncation gate ──
+  // A truncated pool proves unseen candidates exist. Neither a visible match
+  // nor a static fallback can be authoritative while the pool is unresolved.
+  if (pool.truncated) {
+    return {
+      status: "conflict",
+      pullRequest: null,
+      candidates: candidates.map((p) => p.number),
+      reason: "DISCOVERY_POOL_TRUNCATED",
+      truncated: true,
+      truncatedPools: Array.isArray(pool.truncatedPools) ? pool.truncatedPools : null,
+    };
+  }
 
   const conflict = (reason, matches) => ({ status: "conflict", pullRequest: null, candidates: matches.map((p) => p.number), reason });
 
@@ -142,31 +167,29 @@ export function discoverPr({
     const marker = parseStructuredMarker(pr.body);
     return marker && marker.businessNumber === businessNumber && marker.phase === phase;
   });
-  if (markerMatches.length === 1) return discovered(markerMatches[0], "marker", truncated);
+  if (markerMatches.length === 1) return discovered(markerMatches[0], "marker");
   if (markerMatches.length > 1) return conflict("MULTIPLE_MARKER_MATCHES", markerMatches);
 
   // ── 2. Refs #issueNumber match ──
   const refsMatches = candidates.filter((pr) => parseRefs(pr.body).includes(phaseIssueNumber));
-  if (refsMatches.length === 1) return discovered(refsMatches[0], "refs", truncated);
+  if (refsMatches.length === 1) return discovered(refsMatches[0], "refs");
   if (refsMatches.length > 1) return conflict("MULTIPLE_REFS_MATCHES", refsMatches);
 
   // ── 3. Related to #issueNumber match ──
   const relatedMatches = candidates.filter((pr) => parseRelatedTo(pr.body).includes(phaseIssueNumber));
-  if (relatedMatches.length === 1) return discovered(relatedMatches[0], "related_to", truncated);
+  if (relatedMatches.length === 1) return discovered(relatedMatches[0], "related_to");
   if (relatedMatches.length > 1) return conflict("MULTIPLE_RELATED_MATCHES", relatedMatches);
 
   // ── 4. Branch/title convention (headRefName) ──
   const branchMatches = candidates.filter((pr) => conventionMatches(pr, businessNumber, phase, phaseIssueNumber));
-  if (branchMatches.length === 1) return discovered(branchMatches[0], "branch", truncated);
+  if (branchMatches.length === 1) return discovered(branchMatches[0], "branch");
   if (branchMatches.length > 1) return conflict("MULTIPLE_BRANCH_MATCHES", branchMatches);
 
-  // ── 5. Static fallback PR pointer ──
+  // ── 5. Static phase-scoped fallback PR pointer (non-truncated pools only) ──
   const fallbackPr = normalizeRawPr(fallbackPrNode);
-  if (fallbackPr) return discovered(fallbackPr, "fallback", false);
+  if (fallbackPr) return discovered(fallbackPr, "fallback");
 
-  const unavailable = { status: "unavailable", pullRequest: null, candidates: null, reason: "NO_DISCOVERY_MATCH" };
-  if (truncated) unavailable.truncated = true;
-  return unavailable;
+  return { status: "unavailable", pullRequest: null, candidates: null, reason: "NO_DISCOVERY_MATCH" };
 }
 
 /**
@@ -189,9 +212,14 @@ export function reconcileWithFallback(discoveryResult, fallbackPrNode) {
 
 /**
  * Discover PRs for ALL phases of a single Business.
- * Each phase receives the Business's fallbackPrNode.
+ * @param {object} args
+ * @param {object} args.mapping - map entry (number, uiPhaseIssue, uxPhaseIssue, bePhaseIssue)
+ * @param {Object<string, {nodes:object[],truncated:boolean,truncatedPools:string[]}>} [args.discoveryPools]
+ *        merged candidate pools keyed by `${businessNumber}:${phase}`
+ * @param {{ui:object|null,ux:object|null,backend:object|null}} [args.fallbackPrNodes]
+ *        phase-scoped raw fallback PR nodes; a UI fallback never reaches UX/backend
  */
-export function discoverBusinessPrs({ mapping, phaseIssueResults, fallbackPrNode }) {
+export function discoverBusinessPrs({ mapping, discoveryPools, fallbackPrNodes }) {
   const result = { ui: null, ux: null, backend: null };
 
   const phases = [
@@ -202,15 +230,16 @@ export function discoverBusinessPrs({ mapping, phaseIssueResults, fallbackPrNode
 
   for (const { key, issueKey, phase } of phases) {
     const issueNum = mapping[issueKey];
-    const searchPool = issueNum ? (phaseIssueResults?.[`prSearch${issueNum}`] || { nodes: [], truncated: false }) : { nodes: [], truncated: false };
+    const searchPool = discoveryPools?.[`${mapping.number}:${phase}`] || { nodes: [], truncated: false };
+    const fallbackPrNode = fallbackPrNodes?.[phase] || null;
     const discovery = discoverPr({
       businessNumber: mapping.number,
       phaseIssueNumber: issueNum || null,
       phase,
       searchResults: searchPool,
-      fallbackPrNode: mapping.fallbackPrNumber ? fallbackPrNode : null,
+      fallbackPrNode,
     });
-    result[key] = reconcileWithFallback(discovery, mapping.fallbackPrNumber ? fallbackPrNode : null);
+    result[key] = reconcileWithFallback(discovery, fallbackPrNode);
   }
 
   return result;

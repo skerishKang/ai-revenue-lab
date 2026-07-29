@@ -2,14 +2,16 @@
  *
  *  Merges static identity + live GitHub facts + phase verdicts.
  *  Unified alias contract: issue{N}, prSearchRefs{N}, prSearchRelated{N},
- *  fallbackPr{N} (search pools are pre-merged by the service).
+ *  prSearchMarker{B}_{phase}, prSearchConvention{B}_{phase}, fallbackPr{N}
+ *  (candidate pools are pre-merged per (Business, phase) by the service).
  *
  *  Canonical per-Business schema (schemaVersion 2):
  *    productDecisionIssue            — normalized product-decision Issue|null
  *    phaseIssues.{ui,ux,backend}     — normalized phase Issue|null (always 3 keys)
  *    currentPullRequests.{ui,ux,backend} — normalized PR|null (always 3 keys,
  *                                      checks embedded, discoveryMethod attached)
- *    phaseDiscovery.{ui,ux,backend}  — {status, method, candidates, reason, truncated?}
+ *    phaseDiscovery.{ui,ux,backend}  — {status, method, candidates, reason,
+ *                                      truncated?, truncatedPools?}
  *    phaseVerdicts.{ui,ux,backend}   — verdict result (always 3 keys when mapped)
  *
  *  PR normalization happens exactly once, at the GraphQL boundary, in
@@ -53,6 +55,7 @@ function discoverySummary(discovery) {
     reason: discovery.reason || null,
   };
   if (discovery.truncated) summary.truncated = true;
+  if (Array.isArray(discovery.truncatedPools) && discovery.truncatedPools.length) summary.truncatedPools = discovery.truncatedPools;
   return summary;
 }
 
@@ -62,8 +65,8 @@ function discoverySummary(discovery) {
 export function mergeBusinessFacts({
   mapping,
   repositoryData,
-  phaseIssueResults,
-  fallbackPrNode,
+  discoveryPools,
+  fallbackPrNodes,
   identitySource, // Map<number, {uiStatus, uxStatus, backendStatus}>
 }) {
   if (!mapping.repository) {
@@ -96,7 +99,7 @@ export function mergeBusinessFacts({
   }
 
   // ── Auto-discover normalized PRs for each phase ──
-  const prDiscovery = discoverBusinessPrs({ mapping, phaseIssueResults, fallbackPrNode });
+  const prDiscovery = discoverBusinessPrs({ mapping, discoveryPools, fallbackPrNodes });
   const currentPullRequests = {
     ui: prDiscovery.ui?.pullRequest || null,
     ux: prDiscovery.ux?.pullRequest || null,

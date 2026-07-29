@@ -93,27 +93,40 @@ export function aggregatePayload({ errors = [], overrides = {} } = {}) {
     if (mapping.uiPhaseIssue && mapping.uiPhaseIssue !== mapping.issueNumber) {
       repository[`issue${mapping.uiPhaseIssue}`] = gqlIssue(mapping.uiPhaseIssue);
     }
-    if (mapping.fallbackPrNumber) {
-      repository[`fallbackPr${mapping.fallbackPrNumber}`] = mapping.fallbackPrNumber === 88
+    if (mapping.uxPhaseIssue) repository[`issue${mapping.uxPhaseIssue}`] = gqlIssue(mapping.uxPhaseIssue);
+    if (mapping.bePhaseIssue) repository[`issue${mapping.bePhaseIssue}`] = gqlIssue(mapping.bePhaseIssue);
+    const fallbackUi = mapping.fallbackPrNumbers?.ui || null;
+    if (fallbackUi) {
+      repository[`fallbackPr${fallbackUi}`] = fallbackUi === 88
         ? gqlPr(88, { state: "MERGED", isDraft: false, merged: true })
-        : gqlPr(mapping.fallbackPrNumber);
+        : gqlPr(fallbackUi);
     }
-    // Bounded dual PR search aliases at top level (Refs pool carries the
-    // default candidate; Related-to pool is empty unless overridden).
-    const phaseIssues = new Set();
-    if (mapping.uiPhaseIssue) phaseIssues.add(mapping.uiPhaseIssue);
-    if (mapping.uxPhaseIssue) phaseIssues.add(mapping.uxPhaseIssue);
-    if (mapping.bePhaseIssue) phaseIssues.add(mapping.bePhaseIssue);
-    for (const pi of phaseIssues) {
+    if (mapping.fallbackPrNumbers?.ux) repository[`fallbackPr${mapping.fallbackPrNumbers.ux}`] = gqlPr(mapping.fallbackPrNumbers.ux);
+    if (mapping.fallbackPrNumbers?.backend) repository[`fallbackPr${mapping.fallbackPrNumbers.backend}`] = gqlPr(mapping.fallbackPrNumbers.backend);
+    // Bounded candidate-pool aliases at top level. The Refs pool carries the
+    // default candidate; Related-to, marker and convention pools are empty
+    // unless overridden.
+    const phasePairs = [
+      ["ui", mapping.uiPhaseIssue],
+      ["ux", mapping.uxPhaseIssue],
+      ["backend", mapping.bePhaseIssue],
+    ];
+    for (const [phase, pi] of phasePairs) {
       if (!pi) continue;
       if (!topLevel[`prSearchRefs${pi}`]) {
         topLevel[`prSearchRefs${pi}`] = {
           issueCount: 1,
-          nodes: [gqlSearchResult(mapping.fallbackPrNumber || pi, { body: `Refs #${pi}`, headRefName: `feat/business-${mapping.number}-${pi}` })]
+          nodes: [gqlSearchResult(fallbackUi || pi, { body: `Refs #${pi}`, headRefName: `feat/business-${mapping.number}-${pi}` })]
         };
       }
       if (!topLevel[`prSearchRelated${pi}`]) {
         topLevel[`prSearchRelated${pi}`] = { issueCount: 0, nodes: [] };
+      }
+      if (!topLevel[`prSearchMarker${mapping.number}_${phase}`]) {
+        topLevel[`prSearchMarker${mapping.number}_${phase}`] = { issueCount: 0, nodes: [] };
+      }
+      if (!topLevel[`prSearchConvention${mapping.number}_${phase}`]) {
+        topLevel[`prSearchConvention${mapping.number}_${phase}`] = { issueCount: 0, nodes: [] };
       }
     }
   }

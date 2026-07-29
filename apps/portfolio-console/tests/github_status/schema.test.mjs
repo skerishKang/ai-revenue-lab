@@ -82,7 +82,7 @@ test("normalized PR objects expose no raw GraphQL field names anywhere", async (
   }
 });
 
-test("truncated search pool is flagged through the service", async () => {
+test("truncated search pool blocks authoritative discovery through the service", async () => {
   const payload = aggregatePayload({
     overrides: {
       topLevel: {
@@ -94,5 +94,7 @@ test("truncated search pool is flagged through the service", async () => {
   const result = await serviceResult(mockAggregateClient(payload));
   const b15 = result.payload.businesses.find((b) => b.number === 15);
   assert.equal(b15.phaseDiscovery.ui.truncated, true);
-  assert.equal(b15.phaseDiscovery.ui.status, "discovered");
+  assert.equal(b15.phaseDiscovery.ui.status, "conflict");
+  assert.equal(b15.phaseDiscovery.ui.reason, "DISCOVERY_POOL_TRUNCATED");
+  assert.equal(b15.currentPullRequests.ui, null, "no authoritative PR under truncation");
 });

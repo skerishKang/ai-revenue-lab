@@ -10,9 +10,11 @@
 
 import { BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY } from "./business-github-map.js";
 import { GitHubApiError } from "./github-client.js";
-import { getPrSearchAliases } from "./business-github-query.js";
+import { getDiscoveryPoolSpecs } from "./business-github-query.js";
 import { mergeBusinessFacts, createMergedPayload, SCHEMA_VERSION } from "./business-fact-merger.js";
 import { safeError } from "./response.js";
+
+const PHASES = Object.freeze(["ui", "ux", "backend"]);
 
 const refreshFlights = new Map();
 
@@ -47,41 +49,60 @@ export function createGitHubStatusService({
 
     const paths = errorPaths(aggregate.errors);
 
-    // Collect phase issue search results: merge the bounded dual aliases
-    // (prSearchRefs{N} + prSearchRelated{N}), deduplicated by PR number.
-    // Refs candidates keep priority order; truncation is flagged when either
-    // alias reports more results than the bounded page returned.
-    const phaseIssueResults = {};
+    // Build one merged candidate pool per (Business, phase) pair from the four
+    // bounded alias families (marker → refs → related → convention). Nodes are
+    // deduped by PR number in discovery-priority order; a pool is truncated
+    // when ANY contributing alias reports more results than its bounded page
+    // returned, and truncatedPools records which families are unresolved.
+    const aliasState = new Map();
+    const resolveAlias = (alias) => {
+      if (!aliasState.has(alias)) {
+        const result = root[alias] || { nodes: [] };
+        const nodes = Array.isArray(result.nodes) ? result.nodes : [];
+        aliasState.set(alias, { nodes, truncated: Number(result.issueCount || 0) > nodes.length });
+      }
+      return aliasState.get(alias);
+    };
+
+    const discoveryPools = {};
     const mappedEntries = BUSINESS_GITHUB_MAP.filter((m) => m.repository === GITHUB_REPOSITORY);
     for (const m of mappedEntries) {
-      for (const phase of ["uiPhaseIssue", "uxPhaseIssue", "bePhaseIssue"]) {
-        const issueNum = m[phase];
-        if (!issueNum || phaseIssueResults[`prSearch${issueNum}`]) continue;
-        const [refsAlias, relatedAlias] = getPrSearchAliases(issueNum);
-        const refsResult = root[refsAlias] || { nodes: [] };
-        const relatedResult = root[relatedAlias] || { nodes: [] };
+      for (const phase of PHASES) {
+        const specs = getDiscoveryPoolSpecs(m, phase);
+        if (!specs.length) continue;
         const seen = new Set();
         const nodes = [];
-        for (const node of [...(refsResult.nodes || []), ...(relatedResult.nodes || [])]) {
-          const prNumber = Number(node?.number);
-          if (!Number.isInteger(prNumber) || seen.has(prNumber)) continue;
-          seen.add(prNumber);
-          nodes.push(node);
+        const truncatedPools = [];
+        for (const spec of specs) {
+          const aliasResult = resolveAlias(spec.alias);
+          if (aliasResult.truncated) truncatedPools.push(spec.pool);
+          for (const node of aliasResult.nodes) {
+            const prNumber = Number(node?.number);
+            if (!Number.isInteger(prNumber) || seen.has(prNumber)) continue;
+            seen.add(prNumber);
+            nodes.push(node);
+          }
         }
-        const truncated = Number(refsResult.issueCount || 0) > (refsResult.nodes || []).length
-          || Number(relatedResult.issueCount || 0) > (relatedResult.nodes || []).length;
-        phaseIssueResults[`prSearch${issueNum}`] = { nodes, truncated };
+        discoveryPools[`${m.number}:${phase}`] = { nodes, truncated: truncatedPools.length > 0, truncatedPools };
       }
     }
 
-    // Merge facts for each mapped Business
-    const businessFacts = mappedEntries.map((mapping) => mergeBusinessFacts({
-      mapping,
-      repositoryData,
-      phaseIssueResults,
-      fallbackPrNode: mapping.fallbackPrNumber ? repositoryData[`fallbackPr${mapping.fallbackPrNumber}`] : null,
-      identitySource,
-    }));
+    // Merge facts for each mapped Business (phase-scoped fallback nodes)
+    const businessFacts = mappedEntries.map((mapping) => {
+      const nums = mapping.fallbackPrNumbers || {};
+      const fallbackPrNodes = {
+        ui: nums.ui ? (repositoryData[`fallbackPr${nums.ui}`] || null) : null,
+        ux: nums.ux ? (repositoryData[`fallbackPr${nums.ux}`] || null) : null,
+        backend: nums.backend ? (repositoryData[`fallbackPr${nums.backend}`] || null) : null,
+      };
+      return mergeBusinessFacts({
+        mapping,
+        repositoryData,
+        discoveryPools,
+        fallbackPrNodes,
+        identitySource,
+      });
+    });
 
     // Collect diagnostics
     const errors = [];
