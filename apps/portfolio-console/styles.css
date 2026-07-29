@@ -293,6 +293,33 @@ h1, h2, h3, p { margin: 0; }
 .status-planned { color: var(--purple); background: var(--purple-soft); }
 .status-paused { color: var(--quiet); background: rgba(104, 115, 132, .12); }
 
+/* ── Number-authority badges ── */
+.biz-auth-canonical { color: var(--green); background: var(--green-soft); }
+.biz-auth-proposed { color: var(--accent); background: var(--accent-soft); }
+.biz-auth-candidate { color: var(--purple); background: var(--purple-soft); }
+.biz-auth-existing-project { color: var(--amber); background: var(--amber-soft); }
+.biz-auth-reserved { color: var(--quiet); background: rgba(104, 115, 132, .12); }
+.biz-auth-reconciliation { color: var(--red); background: var(--red-soft); }
+
+/* ── Phase-state badges ── */
+.biz-phase-badge {
+  display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px;
+  font: 600 8px/1.2 var(--mono); letter-spacing: .03em;
+  white-space: nowrap;
+}
+.phase-ns { color: var(--quiet); background: rgba(104, 115, 132, .1); }
+.phase-ip { color: var(--accent); background: var(--accent-soft); }
+.phase-nr { color: var(--amber); background: var(--amber-soft); }
+.phase-cr { color: var(--purple); background: var(--purple-soft); }
+.phase-ap { color: var(--green); background: var(--green-soft); }
+.phase-na { color: var(--quiet); background: rgba(104, 115, 132, .08); }
+.phase-bu { color: var(--red); background: var(--red-soft); }
+.phase-fr { color: var(--quiet); background: rgba(104, 115, 132, .12); }
+.phase-dp { color: var(--amber); background: var(--amber-soft); }
+.phase-df { color: var(--purple); background: var(--purple-soft); }
+.phase-au { color: var(--accent); background: var(--accent-soft); }
+.phase-im { color: var(--green); background: var(--green-soft); }
+
 /* ── Dialog ── */
 .project-dialog {
   border: 1px solid var(--line-strong); border-radius: 12px; padding: 0;

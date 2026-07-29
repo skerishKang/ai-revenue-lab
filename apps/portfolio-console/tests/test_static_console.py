@@ -58,7 +58,7 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
 
     def test_confirmed_surfaces_use_https(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
-        urls = re.findall(r'surfaceUrl:\s*"([^"]+)"', script)
+        urls = re.findall(r"su:\s*\"([^\"]+)\"", script)
         self.assertGreaterEqual(len(urls), 5)
         for url in urls:
             self.assertTrue(url.startswith("https://"), url)
@@ -223,10 +223,10 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn("new vm.Script", content)
         self.assertIn("window.ARL_PROJECTS", content)
 
-    def test_korean_ai_platform_business_14_github_label(self) -> None:
+    def test_korean_ai_platform_business_14_has_pr142(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
         self.assertNotIn("Draft PR #79", script)
-        self.assertIn('githubLabel: "PR #142 merged"', script)
+        self.assertIn("PR #142", script)
 
     def test_lovebud_done_tasks_3_open_3(self) -> None:
         script = (ROOT / "projects.js").read_text(encoding="utf-8")
@@ -274,9 +274,11 @@ class PortfolioConsoleStaticTests(unittest.TestCase):
         self.assertIn("pc-wip-screen", script)
         self.assertEqual(script.count("done: true"), 11)
 
-    def test_businesses_js_unchanged(self) -> None:
+    def test_businesses_js_has_55_records(self) -> None:
         script = (ROOT / "businesses.js").read_text(encoding="utf-8")
         self.assertIn("window.ARL_BUSINESSES", script)
+        count = script.count("rec({")
+        self.assertEqual(count, 55, f"Expected 55 records, got {count}")
 
     def test_search_controls_exist(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")

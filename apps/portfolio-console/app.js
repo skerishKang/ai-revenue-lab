@@ -86,6 +86,45 @@
       noCompletedTasks: '완료된 작업 없음',
       noRemainingTasks: '남은 작업 없음',
       repository: '저장소',
+      // Business authority labels
+      numberAuthority: '번호 권한',
+      numAuthCanonical: '정식',
+      numAuthProposed: '제안 번호',
+      numAuthCandidate: '후보',
+      numAuthExistingProject: '기존 프로젝트',
+      numAuthReserved: '예약',
+      numAuthReconciliation: '번호 조정 필요',
+      // Phase state labels
+      uiStatus: 'UI',
+      uxStatus: 'UX',
+      backendStatus: '백엔드',
+      phaseNotStarted: '미시작',
+      phaseInProgress: '진행 중',
+      phaseBlockedByUI: 'UI 대기',
+      phaseNotReady: '미완료',
+      phaseConditionallyReady: '조건부 승인',
+      phaseApproved: '승인됨',
+      phaseNotApplicable: '해당 없음',
+      beFrozen: '동결',
+      beDecisionPending: '결정 대기',
+      beDeferred: '연기',
+      beAuthorized: '승인됨',
+      beInProgress: '진행 중',
+      beImplemented: '구현됨',
+      // Filter labels
+      filterNumberAuthority: '번호 권한',
+      filterUi: 'UI 상태',
+      filterUx: 'UX 상태',
+      filterBackend: '백엔드 상태',
+      // Detail labels
+      productDecisionIssue: '제품 결정',
+      currentIssue: '현재 이슈',
+      currentPr: '현재 PR',
+      knownLimitation: '알려진 제한',
+      surfaceUrl: '표면 URL',
+      deploymentInfo: '배포 정보',
+      releaseState: '릴리스 상태',
+      notApplicable: '—',
     },
     en: {
       topbar: 'Business Operations',
@@ -155,6 +194,45 @@
       noCompletedTasks: 'NO COMPLETED TASKS',
       noRemainingTasks: 'NO REMAINING TASKS',
       repository: 'REPOSITORY',
+      // Business authority labels
+      numberAuthority: 'NUMBER AUTHORITY',
+      numAuthCanonical: 'CANONICAL',
+      numAuthProposed: 'PROPOSED',
+      numAuthCandidate: 'CANDIDATE',
+      numAuthExistingProject: 'EXISTING PROJECT',
+      numAuthReserved: 'RESERVED',
+      numAuthReconciliation: 'RECONCILIATION',
+      // Phase state labels
+      uiStatus: 'UI',
+      uxStatus: 'UX',
+      backendStatus: 'BACKEND',
+      phaseNotStarted: 'NOT STARTED',
+      phaseInProgress: 'IN PROGRESS',
+      phaseBlockedByUI: 'BLOCKED BY UI',
+      phaseNotReady: 'NOT READY',
+      phaseConditionallyReady: 'CONDITIONALLY READY',
+      phaseApproved: 'APPROVED',
+      phaseNotApplicable: 'N/A',
+      beFrozen: 'FROZEN',
+      beDecisionPending: 'DECISION PENDING',
+      beDeferred: 'DEFERRED',
+      beAuthorized: 'AUTHORIZED',
+      beInProgress: 'IN PROGRESS',
+      beImplemented: 'IMPLEMENTED',
+      // Filter labels
+      filterNumberAuthority: 'NUMBER AUTHORITY',
+      filterUi: 'UI STATUS',
+      filterUx: 'UX STATUS',
+      filterBackend: 'BACKEND STATUS',
+      // Detail labels
+      productDecisionIssue: 'PRODUCT DECISION',
+      currentIssue: 'CURRENT ISSUE',
+      currentPr: 'CURRENT PR',
+      knownLimitation: 'KNOWN LIMITATION',
+      surfaceUrl: 'SURFACE URL',
+      deploymentInfo: 'DEPLOYMENT',
+      releaseState: 'RELEASE STATE',
+      notApplicable: '—',
     }
   };
 
@@ -193,6 +271,72 @@
     reserved: { ko: '예약', en: 'RESERVED' }
   };
   function stateLabel(s) { return stateL[s]?.[currentLang] || s; }
+
+  // ── Number-authority labels ──
+  const authL = {
+    canonical: { ko: '정식', en: 'CANONICAL' },
+    'proposed-number': { ko: '제안 번호', en: 'PROPOSED' },
+    candidate: { ko: '후보', en: 'CANDIDATE' },
+    'existing-project': { ko: '기존 프로젝트', en: 'EXISTING PROJECT' },
+    reserved: { ko: '예약', en: 'RESERVED' },
+    'number-reconciliation-required': { ko: '번호 조정 필요', en: 'RECONCILIATION' }
+  };
+  function authLabel(a) { return authL[a]?.[currentLang] || a; }
+  function authClass(a) {
+    var m = { canonical: 'auth-canonical', 'proposed-number': 'auth-proposed', candidate: 'auth-candidate', 'existing-project': 'auth-existing-project', reserved: 'auth-reserved', 'number-reconciliation-required': 'auth-reconciliation' };
+    return m[a] || '';
+  }
+
+  // ── Phase state labels ──
+  function uiLabel(s) {
+    var m = {
+      NOT_STARTED: t('phaseNotStarted'),
+      IN_PROGRESS: t('phaseInProgress'),
+      UI_NOT_READY: t('phaseNotReady'),
+      UI_CONDITIONALLY_READY: t('phaseConditionallyReady'),
+      UI_APPROVED: t('phaseApproved'),
+      NOT_APPLICABLE: t('phaseNotApplicable')
+    };
+    return m[s] || s;
+  }
+  function uxLabel(s) {
+    var m = {
+      BLOCKED_BY_UI: t('phaseBlockedByUI'),
+      NOT_STARTED: t('phaseNotStarted'),
+      IN_PROGRESS: t('phaseInProgress'),
+      UX_NOT_READY: t('phaseNotReady'),
+      UX_CONDITIONALLY_READY: t('phaseConditionallyReady'),
+      UX_APPROVED: t('phaseApproved'),
+      NOT_APPLICABLE: t('phaseNotApplicable')
+    };
+    return m[s] || s;
+  }
+  function beLabel(s) {
+    var m = {
+      FROZEN: t('beFrozen'),
+      DECISION_PENDING: t('beDecisionPending'),
+      DEFERRED: t('beDeferred'),
+      AUTHORIZED: t('beAuthorized'),
+      IN_PROGRESS: t('beInProgress'),
+      IMPLEMENTED: t('beImplemented'),
+      NOT_APPLICABLE: t('phaseNotApplicable')
+    };
+    return m[s] || s;
+  }
+
+  // ── Phase badge classes ──
+  function uiClass(s) {
+    var m = { NOT_STARTED: 'phase-ns', IN_PROGRESS: 'phase-ip', UI_NOT_READY: 'phase-nr', UI_CONDITIONALLY_READY: 'phase-cr', UI_APPROVED: 'phase-ap', NOT_APPLICABLE: 'phase-na' };
+    return m[s] || '';
+  }
+  function uxClass(s) {
+    var m = { BLOCKED_BY_UI: 'phase-bu', NOT_STARTED: 'phase-ns', IN_PROGRESS: 'phase-ip', UX_NOT_READY: 'phase-nr', UX_CONDITIONALLY_READY: 'phase-cr', UX_APPROVED: 'phase-ap', NOT_APPLICABLE: 'phase-na' };
+    return m[s] || '';
+  }
+  function beClass(s) {
+    var m = { FROZEN: 'phase-fr', DECISION_PENDING: 'phase-dp', DEFERRED: 'phase-df', AUTHORIZED: 'phase-au', IN_PROGRESS: 'phase-ip', IMPLEMENTED: 'phase-im', NOT_APPLICABLE: 'phase-na' };
+    return m[s] || '';
+  }
 
   // ── Progress helper ──
   function computeProgress(tasks) {
@@ -255,12 +399,10 @@
     currentLang = lang;
     document.documentElement.lang = lang === 'en' ? 'en' : 'ko';
     $$('.lang-btn').forEach(b => b.classList.toggle('is-active', b.dataset.lang === lang));
-    // Update nav labels
     $$('.nav-label').forEach(el => {
       const label = el.dataset[`label${lang === 'ko' ? 'Ko' : 'En'}`];
       if (label) el.textContent = label;
     });
-    // Update misc labels
     const searchLabel = $('.search-label');
     if (searchLabel) searchLabel.textContent = t('search');
     $$('.filter-label').forEach(el => {
@@ -278,15 +420,13 @@
     }
     const bizSearch = $('#biz-search-input');
     if (bizSearch) bizSearch.placeholder = t('bizSearch');
-    // Update selects
     updateSelectLabels();
-    // Re-render
     renderProjects();
     renderWorkView();
     renderBusinessIndex();
     updateActiveView();
     updateHeaderCount();
-    // Re-render open dialog without closing
+    // Re-render open dialog
     const projectDialog = $('#project-dialog');
     if (projectDialog?.open && selectedProjectId) {
       const item = projects.find(p => p.id === selectedProjectId);
@@ -308,7 +448,6 @@
         }
       }
     }
-    // Re-render open business dialog without closing
     const businessDialog = $('#business-dialog');
     if (businessDialog?.open && selectedBusinessNumber != null) {
       const biz = businesses.find(b => b.number === selectedBusinessNumber);
@@ -321,6 +460,10 @@
         }
       }
     }
+  }
+
+  function updateBizLabel(elId, lang) {
+    // Intentionally no-op for dynamic labels
   }
 
   function updateSelectLabels() {
@@ -352,22 +495,58 @@
       sortF.options[1].textContent = t('sortProgressDesc');
       sortF.options[2].textContent = t('sortProgressAsc');
     }
-    // Business state filter
-    const bsF = $('#biz-state-filter');
-    if (bsF) {
-      bsF.options[0].textContent = t('allStates');
-      bsF.options[1].textContent = t('running');
-      bsF.options[2].textContent = t('reviewBuild');
-      bsF.options[3].textContent = t('planning');
-      bsF.options[4].textContent = t('reserved');
+    // Business authority filter
+    const baF = $('#biz-auth-filter');
+    if (baF) {
+      baF.options[0].textContent = t('all');
+      baF.options[1].textContent = authLabel('canonical');
+      baF.options[2].textContent = authLabel('proposed-number');
+      baF.options[3].textContent = authLabel('candidate');
+      baF.options[4].textContent = authLabel('existing-project');
+      baF.options[5].textContent = authLabel('reserved');
+      baF.options[6].textContent = authLabel('number-reconciliation-required');
+    }
+    // UI filter
+    const uiF = $('#biz-ui-filter');
+    if (uiF) {
+      uiF.options[0].textContent = t('all');
+      uiF.options[1].textContent = uiLabel('NOT_STARTED');
+      uiF.options[2].textContent = uiLabel('IN_PROGRESS');
+      uiF.options[3].textContent = uiLabel('UI_NOT_READY');
+      uiF.options[4].textContent = uiLabel('UI_CONDITIONALLY_READY');
+      uiF.options[5].textContent = uiLabel('UI_APPROVED');
+      uiF.options[6].textContent = uiLabel('NOT_APPLICABLE');
+    }
+    // UX filter
+    const uxF = $('#biz-ux-filter');
+    if (uxF) {
+      uxF.options[0].textContent = t('all');
+      uxF.options[1].textContent = uxLabel('BLOCKED_BY_UI');
+      uxF.options[2].textContent = uxLabel('NOT_STARTED');
+      uxF.options[3].textContent = uxLabel('IN_PROGRESS');
+      uxF.options[4].textContent = uxLabel('UX_NOT_READY');
+      uxF.options[5].textContent = uxLabel('UX_CONDITIONALLY_READY');
+      uxF.options[6].textContent = uxLabel('UX_APPROVED');
+      uxF.options[7].textContent = uxLabel('NOT_APPLICABLE');
+    }
+    // Backend filter
+    const beF = $('#biz-be-filter');
+    if (beF) {
+      beF.options[0].textContent = t('all');
+      beF.options[1].textContent = beLabel('FROZEN');
+      beF.options[2].textContent = beLabel('DECISION_PENDING');
+      beF.options[3].textContent = beLabel('DEFERRED');
+      beF.options[4].textContent = beLabel('AUTHORIZED');
+      beF.options[5].textContent = beLabel('IN_PROGRESS');
+      beF.options[6].textContent = beLabel('IMPLEMENTED');
+      beF.options[7].textContent = beLabel('NOT_APPLICABLE');
     }
     // Business sort
     const bSort = $('#biz-sort');
     if (bSort) {
       bSort.options[0].textContent = t('numberAsc');
       bSort.options[1].textContent = t('numberDesc');
-      bSort.options[2].textContent = t('actionPriority');
-      bSort.options[3].textContent = t('progressSort');
+      bSort.options[2].textContent = t('numberAsc');
     }
   }
 
@@ -375,17 +554,14 @@
   function switchView(view) {
     if (!views.includes(view)) return;
     activeView = view;
-    // Hide all views
     views.forEach(v => {
       const el = $(`#view-${v}`);
       if (el) el.hidden = v !== view;
     });
-    // Clear search grid when leaving search view
     if (view !== 'search') {
       const searchGrid = $('#search-grid');
       if (searchGrid) searchGrid.innerHTML = '';
     }
-    // Update nav buttons
     $$('.view-nav-item').forEach(btn => {
       const isActive = btn.dataset.view === view;
       btn.classList.toggle('is-active', isActive);
@@ -565,18 +741,24 @@
   // ── Business view ──
   function filteredBusinesses() {
     const query = ($('#biz-search-input')?.value || '').trim().toLowerCase();
-    const state = $('#biz-state-filter')?.value || 'all';
+    const authFilter = $('#biz-auth-filter')?.value || 'all';
+    const uiFilter = $('#biz-ui-filter')?.value || 'all';
+    const uxFilter = $('#biz-ux-filter')?.value || 'all';
+    const beFilter = $('#biz-be-filter')?.value || 'all';
     const sort = $('#biz-sort')?.value || 'number-asc';
 
     let result = businesses.filter(b => {
       const haystack = `${b.number} ${pad(b.number)} ${b.title} ${b.koreanTitle} ${b.slug}`.toLowerCase();
-      return (!query || haystack.includes(query)) && (state === 'all' || b.state === state);
+      if (query && !haystack.includes(query)) return false;
+      if (authFilter !== 'all' && b.numberAuthority !== authFilter) return false;
+      if (uiFilter !== 'all' && b.uiStatus !== uiFilter) return false;
+      if (uxFilter !== 'all' && b.uxStatus !== uxFilter) return false;
+      if (beFilter !== 'all' && b.backendStatus !== beFilter) return false;
+      return true;
     });
 
     result = result.slice().sort((a, b) => {
       if (sort === 'number-desc') return b.number - a.number;
-      if (sort === 'priority') return (b.priority || 0) - (a.priority || 0) || a.number - b.number;
-      if (sort === 'progress') return (b.progress || 0) - (a.progress || 0) || a.number - b.number;
       return a.number - b.number;
     });
     return result;
@@ -588,20 +770,23 @@
     const visible = filteredBusinesses();
 
     list.innerHTML = visible.map(b => {
-      const reserved = b.state === 'reserved' ? ' is-reserved' : '';
-      const stateCls = `status-${b.state}`;
+      const isReserved = b.numberAuthority === 'reserved';
+      const reservedCls = isReserved ? ' is-reserved' : '';
+      const authCls = `biz-auth-${authClass(b.numberAuthority)}`;
+      const uiCls = uiClass(b.uiStatus);
+      const uxCls = uxClass(b.uxStatus);
+      const beCls = beClass(b.backendStatus);
       return `
-        <div class="biz-item${reserved}" data-biz-number="${b.number}" tabindex="0">
+        <div class="biz-item${reservedCls}" data-biz-number="${b.number}" tabindex="0">
           <span class="biz-number">${pad(b.number)}</span>
           <div class="biz-title-group">
             <span class="biz-title">${b.title}</span>
             <span class="biz-korean">${b.koreanTitle}</span>
           </div>
-          <span class="biz-state status-badge ${stateCls}">${stateLabel(b.state)}</span>
-          <div class="biz-progress">
-            <span>${b.progress}%</span>
-            <div class="biz-progress-bar"><i style="width:${b.progress}%"></i></div>
-          </div>
+          <span class="biz-auth status-badge ${authCls}">${authLabel(b.numberAuthority)}</span>
+          <span class="biz-phase-badge ui-badge ${uiCls}" title="${t('uiStatus')}: ${b.uiStatus}">UI ${uiLabel(b.uiStatus)}</span>
+          <span class="biz-phase-badge ux-badge ${uxCls}" title="${t('uxStatus')}: ${b.uxStatus}">UX ${uxLabel(b.uxStatus)}</span>
+          <span class="biz-phase-badge be-badge ${beCls}" title="${t('backendStatus')}: ${b.backendStatus}">BE ${beLabel(b.backendStatus)}</span>
         </div>
       `;
     }).join('');
@@ -623,7 +808,7 @@
     });
 
     const headerBadge = $('#header-count');
-    if (headerBadge) headerBadge.textContent = `${t('bizLabel')} ${visible.length}`;
+    if (headerBadge) headerBadge.textContent = `${t('bizLabel')} ${visible.length} / ${businesses.length}`;
   }
 
   // ── Dialog ──
@@ -644,7 +829,7 @@
     let linksHTML = '';
     if (item.pageUrl) linksHTML += `<a class="dialog-link" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>`;
     if (item.repositoryUrl) linksHTML += `<a class="dialog-link" href="${item.repositoryUrl}" target="_blank" rel="noopener noreferrer">${t('repository')}</a>`;
-    if (item.workspace && item.workspace !== '확인 필요' && item.workspace !== '—') {
+    if (item.workspace && item.workspace !== '확인 필요' && item.workspace !== '—' && item.workspace !== null) {
       linksHTML += `<button type="button" class="dialog-link" id="dlg-copy-workspace" data-workspace="${item.workspace}">${t('copyWorkspace')}</button>`;
     }
 
@@ -724,7 +909,6 @@
     title.textContent = item.name;
     body.innerHTML = dialogContentHTML(item);
 
-    // Add workspace copy handler
     const copyBtn = dialog.querySelector('#dlg-copy-workspace');
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
@@ -741,37 +925,68 @@
   }
 
   function businessDialogContentHTML(biz) {
-    const stateCls = `status-${biz.state}`;
+    const authCls = `biz-auth-${authClass(biz.numberAuthority)}`;
+    const uiCls = uiClass(biz.uiStatus);
+    const uxCls = uxClass(biz.uxStatus);
+    const beCls = beClass(biz.backendStatus);
+
+    let linksHTML = '';
+    if (biz.surfaceUrl) {
+      linksHTML += `<a class="dialog-link" href="${biz.surfaceUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>`;
+    }
+    if (biz.githubUrl) {
+      linksHTML += `<a class="dialog-link" href="${biz.githubUrl}" target="_blank" rel="noopener noreferrer">GitHub</a>`;
+    }
+    if (biz.issueUrl) {
+      linksHTML += `<a class="dialog-link" href="${biz.issueUrl}" target="_blank" rel="noopener noreferrer">${t('currentIssue')}</a>`;
+    }
+
     return `
       <div class="dialog-biznumber">B${pad(biz.number)}</div>
       <div class="dialog-name">${biz.title}</div>
       <div class="dialog-korean">${biz.koreanTitle}</div>
+      <div class="dialog-purpose">${biz.slug} · <span class="status-badge ${authCls}">${authLabel(biz.numberAuthority)}</span></div>
       <hr class="dialog-divider">
+
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('statusLabel')}</span>
-        <span class="dialog-section-value"><span class="status-badge ${stateCls}">${stateLabel(biz.state)}</span></span>
+        <span class="dialog-section-label">${t('numberAuthority')}</span>
+        <span class="dialog-section-value"><span class="status-badge ${authCls}">${authLabel(biz.numberAuthority)}</span> · ${biz.lifecycle || ''}</span>
+      </div>
+
+      <div class="dialog-section">
+        <span class="dialog-section-label">${t('uiStatus')}</span>
+        <span class="dialog-section-value"><span class="biz-phase-badge ${uiCls}">${uiLabel(biz.uiStatus)}</span></span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('progressLabel')}</span>
-        <span class="dialog-section-value">${biz.progress}%</span>
+        <span class="dialog-section-label">${t('uxStatus')}</span>
+        <span class="dialog-section-value"><span class="biz-phase-badge ${uxCls}">${uxLabel(biz.uxStatus)}</span></span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('nextAction')}</span>
-        <span class="dialog-section-value">${biz.nextAction || '—'}</span>
+        <span class="dialog-section-label">${t('backendStatus')}</span>
+        <span class="dialog-section-value"><span class="biz-phase-badge ${beCls}">${beLabel(biz.backendStatus)}</span></span>
       </div>
-      <div class="dialog-section">
-        <span class="dialog-section-label">${t('lastVerified')}</span>
-        <span class="dialog-section-value">${biz.lastVerified || '—'}</span>
-      </div>
+
+      ${biz.surfaceUrl ? `<div class="dialog-section"><span class="dialog-section-label">${t('surfaceUrl')}</span><span class="dialog-section-value">${biz.surfaceUrl}</span></div>` : ''}
+      ${biz.deployment ? `<div class="dialog-section"><span class="dialog-section-label">${t('deploymentInfo')}</span><span class="dialog-section-value">${biz.deployment}</span></div>` : ''}
+      ${biz.releaseState ? `<div class="dialog-section"><span class="dialog-section-label">${t('releaseState')}</span><span class="dialog-section-value">${biz.releaseState}</span></div>` : ''}
+      ${biz.workspace ? `<div class="dialog-section"><span class="dialog-section-label">${t('workspace')}</span><span class="dialog-section-value">${biz.workspace}</span></div>` : ''}
+
+      ${biz.productDecisionIssue ? `<div class="dialog-section"><span class="dialog-section-label">${t('productDecisionIssue')}</span><span class="dialog-section-value">Issue #${biz.productDecisionIssue}</span></div>` : ''}
+      ${biz.currentIssue && biz.currentIssue !== biz.productDecisionIssue ? `<div class="dialog-section"><span class="dialog-section-label">${t('currentIssue')}</span><span class="dialog-section-value">Issue #${biz.currentIssue}</span></div>` : ''}
+      ${biz.currentPr ? `<div class="dialog-section"><span class="dialog-section-label">${t('currentPr')}</span><span class="dialog-section-value">PR #${biz.currentPr}</span></div>` : ''}
+
+      ${biz.currentAction ? `<div class="dialog-section"><span class="dialog-section-label">${t('currentWork')}</span><span class="dialog-section-value">${biz.currentAction}</span></div>` : ''}
+      ${biz.nextAction ? `<div class="dialog-section"><span class="dialog-section-label">${t('nextAction')}</span><span class="dialog-section-value">${biz.nextAction}</span></div>` : ''}
+      ${biz.knownLimitation ? `<div class="dialog-section"><span class="dialog-section-label">${t('knownLimitation')}</span><span class="dialog-section-value">${biz.knownLimitation}</span></div>` : ''}
+      ${biz.sources ? `<div class="dialog-section"><span class="dialog-section-label">${t('lastVerified')}</span><span class="dialog-section-value">${biz.lastVerified || ''} · ${biz.sources}</span></div>` : ''}
+
       <hr class="dialog-divider">
-      <div class="dialog-links">
-        ${biz.surfaceUrl ? `<a class="dialog-link" href="${biz.surfaceUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
-        ${biz.githubUrl ? `<a class="dialog-link" href="${biz.githubUrl}" target="_blank" rel="noopener noreferrer">GitHub</a>` : ''}
-      </div>
+      <div class="dialog-links">${linksHTML}</div>
     `;
   }
 
   function openBusinessDialog(biz) {
+    if (!biz) return;
     lastFocused = document.activeElement;
     selectedBusinessNumber = biz.number;
     const dialog = $('#business-dialog');
@@ -793,7 +1008,6 @@
     if (!dialog || !dialog.open) return;
     dialog.close();
     document.body.style.overflow = '';
-    // Restore focus
     if (lastFocused && lastFocused.focus) {
       setTimeout(() => lastFocused.focus(), 50);
     }
@@ -816,10 +1030,7 @@
 
   // ── Init ──
   function init() {
-    // Theme
     initTheme();
-
-    // Language
     setLanguage('ko');
 
     // View navigation
@@ -854,7 +1065,6 @@
     }
     setupDialog('project-dialog', 'dialog-close-btn');
     setupDialog('business-dialog', 'biz-dialog-close-btn');
-    // Reset selected business on dialog close
     const bizDialog = $('#business-dialog');
     if (bizDialog) {
       bizDialog.addEventListener('close', () => {
@@ -890,9 +1100,12 @@
 
     // Business filters
     const bizSearch = $('#biz-search-input');
-    const bizState = $('#biz-state-filter');
+    const bizAuth = $('#biz-auth-filter');
+    const bizUi = $('#biz-ui-filter');
+    const bizUx = $('#biz-ux-filter');
+    const bizBe = $('#biz-be-filter');
     const bizSort = $('#biz-sort');
-    [bizSearch, bizState, bizSort].forEach(el => {
+    [bizSearch, bizAuth, bizUi, bizUx, bizBe, bizSort].forEach(el => {
       if (!el) return;
       el.addEventListener(el.type === 'search' ? 'input' : 'change', () => {
         if (activeView === 'business') renderBusinessIndex();
