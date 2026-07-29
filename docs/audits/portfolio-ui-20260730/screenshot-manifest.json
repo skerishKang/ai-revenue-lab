@@ -1,0 +1,15 @@
+{
+  "evidenceDirectory": "/mnt/data/portfolio-audit-work",
+  "screenshotCount": 9,
+  "records": [
+    {"businessId":9,"slug":"personalized-childrens-story","state":"story-bloom-final","viewport":"1440x900","filename":"desktop-1440-story-bloom-final.png","bytes":455039,"sha256":"17a1b912f4e6d01fb37598b8e7404fbaecf8e269101f2f30782ef4eb1122cd5e","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":9,"slug":"personalized-childrens-story","state":"story-bloom-start","viewport":"1440x900","filename":"desktop-1440-story-bloom-start.png","bytes":469914,"sha256":"814979b4a77145455d1135ac17013bcf727dc8136f231968f51116d5fa0d0dfe","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":10,"slug":"fan-magazine","state":"cover-reveal-complete","viewport":"1440x900","filename":"reveal-1-complete.png","bytes":104319,"sha256":"5456d818f28607b591d568670b25dc4d9e33a95f4b152e5887fd270dc5ac9642","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":10,"slug":"fan-magazine","state":"cover-return-complete","viewport":"1440x900","filename":"return-1-complete.png","bytes":84320,"sha256":"7a86d5528ed96f6ebd7fdaa1c3d3e1e7bd55bfda108931de5995f530e820dade","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":11,"slug":"language-learning-magazine","state":"cover","viewport":"1440x1539","filename":"desktop-cover-1440.png","bytes":162067,"sha256":"1c669d1b2c6c94f68b35e85adf08e48e12b37470479e8c3665b1a2c8f2e40d1d","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":11,"slug":"language-learning-magazine","state":"reading","viewport":"1440x2162","filename":"desktop-reading-1440.png","bytes":342947,"sha256":"1d6b1580f41168afb158cd93322e8a34b0be74329bb2b5aa78bb21491253487d","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":11,"slug":"language-learning-magazine","state":"revision","viewport":"1440x1315","filename":"desktop-revision-1440.png","bytes":193681,"sha256":"62a87d335973048d5365f1e09baedd70728da0938ebcc7a86e51cd19355f5dfc","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":11,"slug":"language-learning-magazine","state":"mobile","viewport":"390x844","filename":"mobile-390x844.png","bytes":64409,"sha256":"d6f33a5a7dda722510fce239147e544dd6f53d2d19b4a9dc371aa061b6953ae7","source":"Google Drive exact-head evidence ZIP"},
+    {"businessId":11,"slug":"language-learning-magazine","state":"reduced-motion","viewport":"1440x1000","filename":"reduced-motion.png","bytes":100952,"sha256":"c9846dfba8f498c52628608942eb44b239936d127e54d37307f8666c02546b99","source":"Google Drive exact-head evidence ZIP"}
+  ]
+}
