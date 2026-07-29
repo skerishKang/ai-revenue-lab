@@ -2,33 +2,49 @@
 
 ## Scope
 
-Current evidence-based comparison covers Businesses 9, 10 and 11 only. A portfolio-wide sameness conclusion is not yet authorized.
+Evidence-based comparison currently covers fully scored Businesses 11, 18, 19, 20 and 21, plus limited evidence for Businesses 9 and 10. A portfolio-wide sameness conclusion is not yet authorized.
 
-## Current comparison
+## Shared factory grammar
 
-### Business 9 vs Business 10
+Recurring patterns:
 
-- Both use a persistent seven-state top rail and a large two-part editorial stage.
-- Business 9 uses dark navy framing, warm paper and soft geometric story illustration.
-- Business 10 uses black exhibition framing, cream editorial paper, oxblood marks and reversible cover mechanics.
-- The shell pattern is shared, but focal art direction and product metaphor remain distinct.
+- numbered seven-state rail or tab strip;
+- compact uppercase phase/synthetic metadata;
+- warm off-white paper against one dark framing colour;
+- original geometric SVG illustration;
+- document-like two-column or split-stage composition;
+- one deterministic signature-motion evidence panel;
+- dedicated 390px state rather than simple scaling.
 
-### Business 10 vs Business 11
+These patterns create coherence but also a future over-templateization risk.
 
-- Both use numbered top navigation and publication language.
-- Business 10 is an exhibition-like fan issue with extreme display typography.
-- Business 11 is a restrained field magazine with long-form reading columns and margin learning notes.
-- They are not visually duplicated, though repeated numbered-tab placement is becoming a portfolio convention.
+## Distinction evidence
 
-### Business 9 vs Business 11
+- **B9**: child-story stage and bloom motion; limited evidence only.
+- **B10**: dark exhibition/fan-publication cover reveal; limited evidence only.
+- **B11**: bilingual field magazine with long-form reading and margin learning notes.
+- **B18**: listening letter, audio artwork, progress and chapters.
+- **B19**: documentary memory album with certainty/provenance markers.
+- **B20**: cinematic manuscript, fact/fiction marks and author proof.
+- **B21**: confidential strategic correspondence with evidence and decision tension.
 
-- Both use warm paper and editorial illustration.
-- Business 9 centers a child-specific animated story object.
-- Business 11 centers reading, annotation and bilingual editorial structure.
-- Shared paper/illustration vocabulary does not currently collapse product identity.
+The central artifact and information hierarchy remain materially different in the five fully scored products.
 
-## Preliminary system finding
+## Highest sameness risk
 
-`SHARED_SYSTEM_BUT_DISTINCT` for the three inspected Businesses.
+B18–B21 were produced in a tightly related editorial family. B19 has the weakest focal-asset specificity: its muted album and geometric photograph treatment could be mistaken for a colour variation of the same factory system. B20 demonstrates the best escape from the template through a strong cinematic scene and explicit authorial-control grammar.
 
-The repeated seven-state rail, small uppercase metadata and deterministic signature-motion panel are recognizable factory patterns. They are acceptable while the focal composition, typography and primary result differ. Later batches must test whether this becomes `OVER_TEMPLATEIZED` across Businesses 15–54.
+## Current classification
+
+- B11: `DISTINCT_PRODUCT_IDENTITY`
+- B18: `SHARED_SYSTEM_BUT_DISTINCT`
+- B19: `SHARED_SYSTEM_BUT_DISTINCT` — monitor sameness risk
+- B20: `DISTINCT_PRODUCT_IDENTITY`
+- B21: `SHARED_SYSTEM_BUT_DISTINCT`
+- B9/B10: `INSUFFICIENT_EVIDENCE` for final classification
+
+## Preliminary portfolio finding
+
+`SHARED_SYSTEM_BUT_DISTINCT`
+
+The system has not yet crossed into `OVER_TEMPLATEIZED` among the scored products. Batch 3–5 must specifically test whether operational and infrastructure Businesses reuse the same tab/document/diagram shell without sufficient product-specific composition.
