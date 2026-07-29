@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "states": [
+    "cover",
+    "brief",
+    "structure",
+    "variants",
+    "quality",
+    "kit",
+    "mobile"
+  ],
+  "state_count": 7,
+  "asset_count": 10,
+  "substantial_focal_count": 4,
+  "required_labels": 17,
+  "external_runtime_requests": 0,
+  "errors": [],
+  "independent_local_validation": false
+}
