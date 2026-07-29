@@ -89,7 +89,10 @@ function parseVerdictBlocks(text, expectedBusinessNumber, expectedPhase) {
  * Resolve phase verdict from a pool of sources (issue body, PR body, static fallback).
  * Filters by expected Business number and phase.
  *
- * Conflict rules:
+ * Dedupe + conflict rules:
+ *   - Verified blocks are deduped by the stable signature
+ *     `businessNumber|phase|verdict|acceptedHead`; the same block copied into
+ *     Issue and PR bodies resolves once, with source `issue_body+pr_body`.
  *   - Same Business/phase, different verdicts → conflict
  *   - Same verdict, different accepted_heads → conflict
  *   - PR merge does not equal approval
@@ -117,23 +120,41 @@ export function resolvePhaseVerdictFromPool({
   const verified = allBlocks.filter((b) => b.status === "verified");
   const invalid = allBlocks.filter((b) => b.status === "invalid");
 
+  // Dedupe verified blocks by stable signature (business|phase|verdict|head).
+  // Identical blocks across sources collapse into one verdict; the merged
+  // source set is reported as `issue_body+pr_body` when both bodies agree.
+  const bySignature = new Map();
+  for (const block of verified) {
+    const signature = `${block.businessNumber}|${block.phase}|${block.verdict}|${block.acceptedHead || ""}`;
+    const existing = bySignature.get(signature);
+    if (!existing) bySignature.set(signature, { block, sources: [block.source] });
+    else if (!existing.sources.includes(block.source)) existing.sources.push(block.source);
+  }
+  const uniqueVerified = [...bySignature.values()];
+
+  const sourceLabel = (sources) => {
+    const unique = [...new Set(sources)].sort();
+    return unique.length > 1 ? "issue_body+pr_body" : (unique[0] || null);
+  };
+
   // Different verdicts → conflict
-  const uniqueVerdicts = new Set(verified.map((b) => b.verdict));
+  const uniqueVerdicts = new Set(uniqueVerified.map((u) => u.block.verdict));
   if (uniqueVerdicts.size > 1) {
     return { status: "conflict", verdict: null, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: null, reason: "MULTIPLE_CONFLICTING_VERDICTS" };
   }
 
   // Same verdict, different accepted_heads → conflict
-  if (verified.length >= 2) {
-    const heads = new Set(verified.map((b) => b.acceptedHead));
+  if (uniqueVerified.length >= 2) {
+    const heads = new Set(uniqueVerified.map((u) => u.block.acceptedHead));
     if (heads.size > 1) {
-      return { status: "conflict", verdict: verified[0].verdict, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: null, reason: "CONFLICTING_ACCEPTED_HEADS" };
+      return { status: "conflict", verdict: uniqueVerified[0].block.verdict, acceptedHead: null, businessNumber: expectedBusinessNumber, phase: expectedPhase, source: null, reason: "CONFLICTING_ACCEPTED_HEADS" };
     }
   }
 
-  // Single verified verdict
-  if (verified.length === 1) {
-    return verified[0];
+  // Single consistent verdict signature (possibly confirmed by both sources)
+  if (uniqueVerified.length === 1) {
+    const { block, sources } = uniqueVerified[0];
+    return { ...block, source: sourceLabel(sources) };
   }
 
   // Static fallback (explicitly marked unverified)

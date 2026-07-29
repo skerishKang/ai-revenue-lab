@@ -194,15 +194,105 @@ test("service end-to-end: conflicting issue/PR verdicts surface as conflict", as
 });
 
 test("P0-6 regression: backend verdict resolves through the bePhaseIssue key map", () => {
-  const mapping = { number: 90, repository: GITHUB_REPOSITORY, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: 999, fallbackPrNumber: null };
+  const mapping = { number: 90, repository: GITHUB_REPOSITORY, issueNumber: null, uiPhaseIssue: null, uxPhaseIssue: null, bePhaseIssue: 999, fallbackPrNumbers: null };
   const repositoryData = { issue999: gqlIssue(999, { body: verdictBlock({ business: 90, phase: "backend", verdict: "BACKEND_IMPLEMENTED", head: HEAD_A }) }) };
-  const phaseIssueResults = { prSearch999: { nodes: [gqlSearchResult(999, { body: "Refs #999" })], truncated: false } };
-  const fact = mergeBusinessFacts({ mapping, repositoryData, phaseIssueResults, fallbackPrNode: null, identitySource: {} });
+  const discoveryPools = { "90:backend": { nodes: [gqlSearchResult(999, { body: "Refs #999" })], truncated: false, truncatedPools: [] } };
+  const fact = mergeBusinessFacts({ mapping, repositoryData, discoveryPools, fallbackPrNodes: { ui: null, ux: null, backend: null }, identitySource: {} });
   assert.equal(fact.phaseDiscovery.backend.status, "discovered");
   assert.equal(fact.phaseDiscovery.backend.method, "refs");
   assert.equal(fact.phaseVerdicts.backend.status, "verified");
   assert.equal(fact.phaseVerdicts.backend.verdict, "BACKEND_IMPLEMENTED");
   assert.equal(fact.phaseVerdicts.backend.source, "issue_body");
+});
+
+// ── Verdict signature dedupe: (businessNumber, phase, verdict, acceptedHead) ──
+
+test("dedupe: same verdict + same head in Issue and PR → verified once (issue_body+pr_body)", () => {
+  const block = verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A });
+  const result = resolvePhaseVerdictFromPool({
+    expectedBusinessNumber: 15, expectedPhase: "ui",
+    issueBody: block, prBody: block, staticFallback: null,
+  });
+  assert.equal(result.status, "verified");
+  assert.equal(result.verdict, "UI_APPROVED");
+  assert.equal(result.acceptedHead, HEAD_A);
+  assert.equal(result.source, "issue_body+pr_body");
+});
+
+test("dedupe: same verdict + different head → conflict", () => {
+  const result = resolvePhaseVerdictFromPool({
+    expectedBusinessNumber: 15, expectedPhase: "ui",
+    issueBody: verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A }),
+    prBody: verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_B }),
+    staticFallback: null,
+  });
+  assert.equal(result.status, "conflict");
+  assert.equal(result.reason, "CONFLICTING_ACCEPTED_HEADS");
+});
+
+test("dedupe: different verdict across sources → conflict", () => {
+  const result = resolvePhaseVerdictFromPool({
+    expectedBusinessNumber: 15, expectedPhase: "ui",
+    issueBody: verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A }),
+    prBody: verdictBlock({ business: 15, phase: "ui", verdict: "UI_NOT_READY" }),
+    staticFallback: null,
+  });
+  assert.equal(result.status, "conflict");
+  assert.equal(result.reason, "MULTIPLE_CONFLICTING_VERDICTS");
+});
+
+test("dedupe: identical duplicate blocks in one source → verified once (issue_body)", () => {
+  const block = verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A });
+  const result = resolvePhaseVerdictFromPool({
+    expectedBusinessNumber: 15, expectedPhase: "ui",
+    issueBody: `${block}\n\n${block}`, prBody: null, staticFallback: null,
+  });
+  assert.equal(result.status, "verified");
+  assert.equal(result.source, "issue_body");
+  assert.equal(result.acceptedHead, HEAD_A);
+});
+
+test("dedupe: wrong-Business duplicate block is ignored", () => {
+  const result = resolvePhaseVerdictFromPool({
+    expectedBusinessNumber: 15, expectedPhase: "ui",
+    issueBody: verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A }),
+    prBody: verdictBlock({ business: 16, phase: "ui", verdict: "UI_NOT_READY" }),
+    staticFallback: null,
+  });
+  assert.equal(result.status, "verified");
+  assert.equal(result.verdict, "UI_APPROVED");
+  assert.equal(result.source, "issue_body");
+});
+
+test("dedupe: wrong-phase duplicate block is ignored", () => {
+  const result = resolvePhaseVerdictFromPool({
+    expectedBusinessNumber: 15, expectedPhase: "ui",
+    issueBody: verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A }),
+    prBody: verdictBlock({ business: 15, phase: "ux", verdict: "UX_NOT_READY" }),
+    staticFallback: null,
+  });
+  assert.equal(result.status, "verified");
+  assert.equal(result.verdict, "UI_APPROVED");
+  assert.equal(result.source, "issue_body");
+});
+
+test("service end-to-end: identical verdict block in Issue and PR bodies verifies once", async () => {
+  const block = verdictBlock({ business: 15, phase: "ui", verdict: "UI_APPROVED", head: HEAD_A });
+  const payload = aggregatePayload({
+    overrides: {
+      repository: { issue188: gqlIssue(188, { body: block }) },
+      topLevel: {
+        prSearchRefs188: { issueCount: 1, nodes: [gqlSearchResult(403, { body: `Refs #188\n${block}` })] },
+        prSearchRelated188: { issueCount: 0, nodes: [] },
+      },
+    },
+  });
+  const result = await serviceResult(mockAggregateClient(payload));
+  const verdict = result.payload.businesses.find((b) => b.number === 15).phaseVerdicts.ui;
+  assert.equal(verdict.status, "verified");
+  assert.equal(verdict.verdict, "UI_APPROVED");
+  assert.equal(verdict.acceptedHead, HEAD_A);
+  assert.equal(verdict.source, "issue_body+pr_body");
 });
 
 test("merged PR with no verdict block never verifies (static fallback only)", async () => {
