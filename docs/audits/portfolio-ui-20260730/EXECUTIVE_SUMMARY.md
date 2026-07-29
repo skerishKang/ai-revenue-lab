@@ -6,27 +6,41 @@
 - Intentional gap: Business `56`
 - UI contract but no implementation: Business `52`
 - Backlog-only UI implementation gap: Business `55`
-- Multiple approved/deployed static references identified, but fresh public-browser readback is pending due execution-network constraints.
+- Classified deployed/auditable authority: `32`
+- Multiple approved/deployed references remain pending fresh public-browser readback due execution-network constraints.
 
-## Batch 1 result
+## Completed audit batches
 
-- Completed IDs: `1–12`
-- Fully visually scored: `1`
-- Limited visual evidence reviewed: `2`
-- Not scored because evidence/access was insufficient: `9`
-- Current A: `1`
-- Current B/C/D: `0`
+- Completed IDs: `1–24`
+- Completed batches: `2`
+- Fully visually scored: `5`
+- Limited visual evidence reviewed without grade: `2`
+- Not scored because evidence/access was insufficient: `17`
+- Current A: `3`
+- Current B: `2`
+- Current C/D: `0`
+- Screenshot files inspected and hashed: `17`
 
-These counts are not portfolio totals. They are only the completed, sufficiently evidenced subset.
+These counts are not final portfolio totals. They cover only the sufficiently evidenced subset.
 
 ## Strongest current evidence
 
-Business 11 demonstrates a distinct editorial product identity, credible long-form reading composition and a purpose-built mobile edition. It scores `86 / A` with minor refinement recommended.
+- Business 20 · Personal Memory Novel — `92 / A`
+- Business 18 · Personal Audio Channel — `89 / A`
+- Business 11 · Language Learning Magazine — `86 / A`
+- Business 21 · Founder Strategy Letter — `84 / B`
+- Business 19 · Personal Memory Book — `81 / B`
+
+## Portfolio finding so far
+
+The UI factory has a recognizable shared grammar: seven-state rails, warm paper, compact uppercase metadata, synthetic-data disclosures and deterministic signature motion. In the five fully scored products, this remains `SHARED_SYSTEM_BUT_DISTINCT` rather than visual duplication because the central product object changes materially.
+
+The highest sameness risk is not colour alone. It is repeated top navigation, small metadata, geometric SVG illustration and split-document composition. Later batches must determine whether Businesses 26–54 overuse this structure.
 
 ## Main risk surfaced
 
-The dominant audit risk is not yet proven low visual quality; it is **non-portable evidence and inaccessible live audit surfaces**. Several Businesses have authoritative approval/deployment records but no complete exact-head screenshot set available to this independent audit session.
+The dominant audit risk is **non-portable evidence and inaccessible live audit surfaces**. Historical approval/deployment records do not replace a current independent visual readback. This audit leaves such Businesses unscored rather than manufacturing a PASS.
 
 ## Next action
 
-Continue Batch 2 with Businesses `13–24`, prioritizing Drive evidence folders and authenticated/existing-product boundaries. Do not create remediation Issues until enough Businesses have been visually compared.
+Continue Batch 3 with Businesses `25–36`. Do not create remediation Issues until enough products have produced evidence-based P0/P1 findings.
