@@ -8,7 +8,9 @@ capture base:
 http://127.0.0.1:8788/
 
 final evidence-only commit:
-(filled by the follow-up evidence-only commit that records this SHA)
+47961fb0c0ba49abf712ad2bd998da387af86d24
+(this SHA was recorded by the follow-up evidence-only commit, since a
+commit cannot contain its own SHA)
 
 server:          npx wrangler pages dev . --port 8788 (credential-less)
 API state:       GET /api/github-status -> 503 CONFIGURATION_MISSING,
