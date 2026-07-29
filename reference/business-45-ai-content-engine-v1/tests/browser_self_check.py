@@ -39,16 +39,29 @@ async def main():
                   const tabs=[...document.querySelectorAll('[data-state-control]')];
                   const selected=tabs.filter(x=>x.getAttribute('aria-selected')==='true');
                   const visible=panels.filter(x=>!x.hidden);
+                  const active=visible[0];
                   const overflow=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)-innerWidth;
                   const clipped=[...document.querySelectorAll('.visual-state:not([hidden]) h1,.visual-state:not([hidden]) h2,.visual-state:not([hidden]) h3,.visual-state:not([hidden]) p,.visual-state:not([hidden]) span,.visual-state:not([hidden]) dd')].filter(el=>{
                     const s=getComputedStyle(el); if(s.display==='none'||s.visibility==='hidden')return false;
                     return el.scrollWidth>el.clientWidth+3 && s.whiteSpace==='nowrap';
                   }).length;
-                  return {selected:selected.length,visible:visible.length,key:selected[0]?.dataset.stateControl,tab0:tabs.filter(x=>x.tabIndex===0).length,overflow,clipped};
+                  const viewportClipped=active?[active,...active.querySelectorAll('*')].filter(el=>{
+                    const s=getComputedStyle(el); if(s.display==='none'||s.visibility==='hidden')return false;
+                    const r=el.getBoundingClientRect();
+                    return r.left < -0.5 || r.right > innerWidth + 0.5;
+                  }).length:0;
+                  const mobileBrief=active?.querySelector('.mobile-brief');
+                  const mobileStage=active?.querySelector('.mobile-stage');
+                  const mobileBriefOverflow=mobileBrief?Math.max(0,mobileBrief.scrollWidth-mobileBrief.clientWidth):0;
+                  const mobileStageOverflow=mobileStage?Math.max(0,mobileStage.scrollWidth-mobileStage.clientWidth):0;
+                  return {selected:selected.length,visible:visible.length,key:selected[0]?.dataset.stateControl,tab0:tabs.filter(x=>x.tabIndex===0).length,overflow,clipped,viewportClipped,mobileBriefOverflow,mobileStageOverflow};
                 }''')
                 if data['selected']!=1 or data['visible']!=1 or data['key']!=state or data['tab0']!=1: errors.append(f'state sync {width}x{height} {state}: {data}')
                 if data['overflow']>0: errors.append(f'overflow {width}x{height} {state}: {data["overflow"]}')
                 if data['clipped']>0: errors.append(f'text clipping {width}x{height} {state}: {data["clipped"]}')
+                if data['viewportClipped']>0: errors.append(f'viewport clipping {width}x{height} {state}: {data["viewportClipped"]}')
+                if width==390 and state=='mobile' and (data['mobileBriefOverflow']>0 or data['mobileStageOverflow']>0):
+                    errors.append(f'mobile container overflow {width}x{height}: brief={data["mobileBriefOverflow"]}, stage={data["mobileStageOverflow"]}')
                 combos.append({'viewport':f'{width}x{height}','state':state,**data})
                 if width==1440 and state=='cover':
                     await page.screenshot(path='/tmp/ace-cover-1440x1100.jpg',full_page=False,type='jpeg',quality=82)
