@@ -4,4 +4,5 @@ test-results/
 __pycache__/
 *.pyc
 playwright-report/
-tests/evidence/
+tests/evidence/*
+!tests/evidence/issue285/

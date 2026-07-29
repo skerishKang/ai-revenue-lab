@@ -1,0 +1,29 @@
+Issue #285 / PR #296 Phase 2A browser evidence — exact-head record
+==================================================================
+
+exact head:      2aaba8a720c9116251d7f60094b428fe6ea54add
+branch:          feat/portfolio-console-auto-business-sync-285
+base URL:        http://127.0.0.1:8788/
+server:          npx wrangler pages dev . --port 8788 (credential-less)
+API state:       GET /api/github-status -> 503 CONFIGURATION_MISSING
+                 (expected: no GitHub App credentials in this environment;
+                  counted as expectedNoise, not an app error)
+
+viewports:       desktop 1440x1000, mobile 390x844
+business rows:   55 (both viewports)
+assertions:      console errors 0, page errors 0, CSP violations 0,
+                 favicon 404 0, horizontal overflow false,
+                 mobile drawer open -> nav click -> view change ->
+                 auto-close asserted, Business 15 dialog open/close
+                 asserted (failure not swallowed), language switch
+                 ko -> en asserted, Business 15 and 39-43 identity
+                 rows asserted present
+failed assets:   none except the two expected 503 /api/github-status
+                 responses (one per viewport)
+
+capture command: EVIDENCE_BASE=http://127.0.0.1:8788/ node tests/issue285-browser-evidence.mjs
+result:          PASS desktop-1440x1000, PASS mobile-390x844
+
+Sanitization: screenshots were captured against the local console with
+no credentials configured; they contain no tokens, cookies, emails, or
+personal data. No Cloudflare Pages Preview was used.
