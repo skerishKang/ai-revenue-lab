@@ -5,6 +5,19 @@
   const line = document.querySelector('[data-connector-line]');
   const seal = document.querySelector('.connector-spec-seal');
   const status = document.querySelector('[data-motion-status]');
+  const panelsByKey = new Map(states.map((panel) => [panel.dataset.state, panel]));
+
+  controls.forEach((button) => {
+    const key = button.dataset.stateControl;
+    const panel = panelsByKey.get(key);
+    if (!panel) return;
+    const tabId = `state-tab-${key}`;
+    const panelId = `state-panel-${key}`;
+    button.id = tabId;
+    button.setAttribute('aria-controls', panelId);
+    panel.id = panelId;
+    panel.setAttribute('aria-labelledby', tabId);
+  });
 
   function selectState(key, focus = false) {
     controls.forEach((button) => {
