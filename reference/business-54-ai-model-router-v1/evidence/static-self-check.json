@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "checks": {
+    "exact_states": true,
+    "exact_controls": true,
+    "tab_panel_count": true,
+    "unique_ids": true,
+    "reciprocal_aria": true,
+    "required_labels": true,
+    "persistent_decision_mobile": true,
+    "forbidden_absent": true,
+    "assets_at_least_8": true,
+    "assets_documented": true,
+    "focal_assets": true,
+    "asset_manifest_columns": true,
+    "research_comparables": true,
+    "research_editorial": true,
+    "local_runtime": true,
+    "deterministic_version": true,
+    "animationend": true,
+    "no_timeout": true,
+    "motion_760": true,
+    "reduced_motion": true,
+    "no_live_capabilities": true
+  },
+  "states": ["cover", "task", "candidates", "policy", "fallback", "decision", "mobile"],
+  "assets": 10,
+  "matrix_contract": 21,
+  "viewports": [[1440,1100],[768,1024],[390,844]],
+  "independent_validation": false
+}

@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "harness": "inline exact local bytes implementation self-check",
+  "independent_validation": false,
+  "combinations": 21,
+  "failures": [],
+  "console_page_errors": [],
+  "failed_requests": [],
+  "external_runtime_requests": 0,
+  "keyboard_navigation": true,
+  "motion": {
+    "computed_end_ms": 760,
+    "animation_name": "routingPolicyComplete",
+    "animationend_events": 2,
+    "replay_equal": true,
+    "focus_stable": true,
+    "scroll_stable": true,
+    "geometry_stable": true
+  },
+  "normal_boundaries": {"count": 9, "exact": true, "visible": true},
+  "reduced_motion": [
+    {"viewport":[1440,1100],"complete":true,"boundaries":{"count":9,"exact":true,"visible":true}},
+    {"viewport":[768,1024],"complete":true,"boundaries":{"count":9,"exact":true,"visible":true}},
+    {"viewport":[390,844],"complete":true,"boundaries":{"count":9,"exact":true,"visible":true}}
+  ],
+  "mobile_boundaries": {"count": 9, "exact": true, "visible": true},
+  "screenshots": {
+    "cover-1440x1100.png": "8048fb1a408510652d83a272a646eb27199b8d7579a5c32cc187c70c35790cc7",
+    "task-1440x1100.png": "34a270e6775f426482d11f68c68ca472e4013a4428b58969bb41c59b0f84c6b3",
+    "candidates-1440x1100.png": "2e18b4d7e9ea8fe972e2bc9a25002f08a731aa69cf7533e4ad083f34740ec3ec",
+    "policy-1440x1100.png": "829d8acd5e0d995a56a5982417d216fecca76c4cf7eac2be12721c5a803f21c0",
+    "fallback-1440x1100.png": "33a8b92edfd1d449701b0b68ed4964ce84335776e0195e312afc33f53319a36c",
+    "decision-1440x1100.png": "2a1b202fea7fa598f74126bd6b370137a34b490b8ac69ec6997ee41bf230389a",
+    "mobile-390x844.png": "3a46cb8de70e8cf14e8865817b71b5cd04cb047f4859307756ab5f025427c5b9"
+  }
+}
