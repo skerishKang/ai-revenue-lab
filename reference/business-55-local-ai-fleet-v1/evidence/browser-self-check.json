@@ -2,13 +2,337 @@
   "status": "PASS",
   "matrix_pass": 21,
   "matrix_total": 21,
-  "viewports": ["1440x1100", "768x1024", "390x844"],
-  "states": ["cover", "fleet", "jobs", "capacity", "incidents", "decision", "mobile"],
+  "viewports": [
+    "1440x1100",
+    "768x1024",
+    "390x844"
+  ],
+  "states": [
+    "cover",
+    "fleet",
+    "jobs",
+    "capacity",
+    "incidents",
+    "decision",
+    "mobile"
+  ],
   "keyboard": true,
   "replay_equal": true,
   "reduced_motion_immediate": true,
   "errors": [],
+  "rows": [
+    {
+      "viewport": "1440x1100",
+      "state": "cover",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 610,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "fleet",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 865.921875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "jobs",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 713.296875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "capacity",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 645.359375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "incidents",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 723.859375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "decision",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 805.359375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "mobile",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 742.125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "cover",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 1052.984375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "fleet",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 1363.546875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "jobs",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 1210.921875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "capacity",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 1052.96875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "incidents",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 1217.3125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "decision",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 1242.03125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "mobile",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 742.125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "cover",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1033.640625,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "fleet",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1252.5625,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "jobs",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1080,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "capacity",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1492.625,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "incidents",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1337.5625,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "decision",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 2225.03125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "mobile",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 798.515625,
+        "images": true
+      }
+    }
+  ],
   "nominal_completion_ms": 760,
   "external_runtime_requests": 0,
-  "note": "Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation."
+  "note": "Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.",
+  "screenshots_captured": [
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-cover-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-fleet-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-jobs-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-capacity-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-incidents-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-mobile-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-cover-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-fleet-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-jobs-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-capacity-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-incidents-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-mobile-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-cover-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-fleet-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-jobs-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-capacity-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-incidents-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-mobile-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-arrowright-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-arrowleft-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-home-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-end-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-arrowright-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-arrowleft-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-home-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-keyboard-end-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-replay-1-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-replay-2-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-replay-1-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-replay-2-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-reduced-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-55-local-ai-fleet-v1/screenshots/business-55-decision-reduced-390x844.png"
+  ]
 }

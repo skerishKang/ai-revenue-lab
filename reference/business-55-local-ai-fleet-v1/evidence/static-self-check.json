@@ -21,6 +21,14 @@
     "manifest_columns": true
   },
   "missing": [],
-  "states": ["cover", "fleet", "jobs", "capacity", "incidents", "decision", "mobile"],
+  "states": [
+    "cover",
+    "fleet",
+    "jobs",
+    "capacity",
+    "incidents",
+    "decision",
+    "mobile"
+  ],
   "asset_count": 10
 }
