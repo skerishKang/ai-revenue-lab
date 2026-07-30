@@ -125,19 +125,22 @@ Only `UI_APPROVED` authorizes a separate UX child issue.
 
 After approval, the accepted UI becomes the visual baseline. Material changes to typography, color, image direction, layout grammar, or signature motion must be documented rather than silently introduced during UX work.
 
-### 3.4 Optional Phase 1 UI deployment after approval
+### 3.4 Phase 1 UI deployment after approval
 
-A Business with `UI_APPROVED` may be deployed as a static Phase 1 visual reference only when the user separately and explicitly authorizes that deployment.
+`UI_APPROVED` does not authorize merge or deployment. Deployment requires separate user authorization.
 
-The deployment authorization must state the intended mode and target. Preview versus publicly accessible production, Git integration versus direct upload, project naming, branch or exact commit, and domain use are deployment-specific decisions. None is implied by `UI_APPROVED` alone.
+When the user separately authorizes deployment, the default target is the dedicated Business Production project. Preview is used only when a Business-specific issue explicitly requires it (see `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` Section 13).
 
 An approved Phase 1 UI deployment:
 
 - publishes only the already accepted static UI reference and its repository-local assets;
+- uses a Business-specific dedicated Cloudflare Pages project;
 - does not authorize source changes, a new commit, branch movement, PR Ready status, merge, or issue closure unless separately requested;
 - does not convert review controls or synthetic states into accepted UX;
 - does not authorize authentication, persistence, APIs, databases, live AI, analytics, billing, or other backend work;
-- must report the deployed branch or exact commit and preserve the approved visual head;
+- must report the deployed exact commit SHA and preserve the approved visual head;
+- must record rollback baseline deployment ID before deploying;
+- must execute immediate Production smoke acceptance after deploying;
 - must be recorded as deployment evidence separately from UI, UX, and backend gate status.
 
 A deployment is not proof of UX approval, backend authorization, production readiness, or product completion.
@@ -236,7 +239,7 @@ Only after authorization may work include:
 - crawling or current-data ingestion;
 - persistence and audit history;
 - billing and payments;
-- staging and production deployment.
+- authorized runtime and Production deployment, with optional staging only when explicitly required.
 
 Backend work must preserve the approved UI and UX contracts. It must not redesign the product as an incidental consequence of implementation.
 

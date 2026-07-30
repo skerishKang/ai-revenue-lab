@@ -27,6 +27,8 @@ Product framing
 → backend implementation
 ```
 
+Deployment default: dedicated Production project. Preview is used only when a Business-specific issue explicitly requires it (see `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`).
+
 Issue #154 is the permanent open parent. Each phase uses a separate child issue. Completing one child does not close Issue #154.
 
 ## 2. Required design direction
@@ -277,21 +279,20 @@ Each UI child issue requires:
 
 A successful build is not proof of visual quality. A clickable visual reference is not UX approval. A branch preview is not production.
 
-### 8.1 Optional deployment of an approved static UI
+### 8.1 Deployment of an approved static UI
 
-`UI_APPROVED` does not itself authorize deployment. After UI approval, the user may separately authorize publication of the exact accepted static reference for browser review or public presentation.
+`UI_APPROVED` does not itself authorize merge or deployment. After UI approval, the user may separately authorize deployment. The default target is the dedicated Business Production project. Preview is used only when a Business-specific issue explicitly requires it.
 
 Before execution, record:
 
 - deployment purpose and visibility;
-- Preview or publicly accessible Production mode;
-- Git integration or direct upload;
-- Cloudflare project name and whether the project is Business-specific;
-- source branch or exact commit;
+- Cloudflare project name (must be Business-specific);
+- source exact commit SHA;
 - root directory, build command, and output directory;
-- whether a custom domain is in scope.
+- rollback baseline deployment ID;
+- smoke acceptance checks to run after deployment.
 
-Unless separately authorized, deployment must not modify source files, create commits, move the branch head, mark a PR ready, merge a PR, close an issue, start UX, or start backend work. The deployment report must include the actual URL, deployed commit, asset and console checks, and confirmation that GitHub gate states remain unchanged.
+Unless separately authorized, deployment must not modify source files, create commits, move the branch head, mark a PR ready, merge a PR, close an issue, start UX, or start backend work. The deployment report must include the actual URL, deployed exact SHA, asset and console checks, rollback authority, smoke acceptance results, and confirmation that GitHub gate states remain unchanged.
 
 ## 9. Reusable UI-only child issue template
 
@@ -355,7 +356,9 @@ Minimal state switching and motion preview only.
 - authentication
 - API or database
 - live AI or crawling
-- billing or deployment
+- billing
+
+Deployment is not automatically included. When separately authorized, the default target is dedicated Production (`DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`).
 
 ## Acceptance evidence
 - exact head and scope
