@@ -31,3 +31,9 @@ and can also be dispatched manually. It performs read-only checks:
 
 - Private operations repository: `skerishKang/ai-revenue-operations`
 - Incident record: `incidents/2026-07-31-cloudflare-pages-credential-401.md`
+
+## [Security] In-process isolation for Cloudflare token verification
+
+To prevent mock bypasses caused by subprocesses during testing, `urllib.request` has been patched in-process. This ensures that the test runner strictly isolates Cloudflare API token checks and accurately handles simulated network boundaries.
+
+All references to `wrangler pages deploy` have been removed or replaced with `TODO: wait for official deploy` to strictly prevent mutations.
