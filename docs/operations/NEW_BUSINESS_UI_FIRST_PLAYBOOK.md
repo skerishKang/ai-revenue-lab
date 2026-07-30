@@ -264,23 +264,26 @@ A successful build is not proof of visual quality. A clickable reference is not 
 
 `UI_APPROVED` does not automatically authorize merge or deployment.
 
-When the user separately authorizes publication, the default is direct deployment of the validated accepted `main` SHA to the dedicated Business Production project.
+When the user separately authorizes publication, merge the accepted expected head to the configured Production branch and allow the existing Git integration to deploy automatically.
 
-Preview is optional and used only when the issue records a concrete reason or the user explicitly asks for it.
+Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. An operator may not create an exception merely by recording a reason in an issue.
 
-Before Production publication:
+Before the authorized merge:
 
 - verify the accepted exact head and latest `main`;
 - verify the dedicated project, root, branch, and hostname;
-- record the current known-good rollback authority;
+- record the last known-good Production source and configuration as recovery evidence;
 - identify required desktop, mobile, asset, console, and TLS checks.
 
-After publication:
+After the automatic Production deployment completes:
 
 - verify the actual deployed SHA or bytes;
 - run immediate Production smoke and visual acceptance;
-- retain or rollback;
+- retain the deployment or merge a reviewed fix/revert PR on a source failure;
+- restore configuration separately only when configuration itself caused the failure;
 - record deployment evidence separately from UI, UX, backend, and business verdicts.
+
+Do not ask the owner to choose Wrangler, API deployment, Dashboard retry, Preview, or staging as an alternate mechanism when the Git-triggered deployment is queued or failed.
 
 Publication must not start UX, backend, authentication, persistence, live AI, analytics, billing, or unrelated source work.
 
@@ -340,7 +343,7 @@ Minimal state switching and motion preview only.
 - live AI or crawling
 - billing or runtime deployment
 
-A later separately authorized publication follows the direct-Production and rollback policy.
+A later separately authorized publication follows the Git-connected automatic deployment policy in `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. For Git-connected Pages, merging the approved PR to the configured Production branch is the deployment action. Preview or staging requires a new explicit owner decision or an already approved Business-specific exception.
 
 ## Acceptance evidence
 - exact head and scope
@@ -371,4 +374,4 @@ Only an explicit portfolio-governance replacement decision may close or supersed
 
 The UI factory should increase the rate at which distinct product ideas become reviewable and, after authorization, operational.
 
-Do not let repetitive reporting, optional Preview infrastructure, or manual status copying consume more effort than the product work they are meant to support.
+Do not let repetitive reporting, unapproved Preview infrastructure, or manual status copying consume more effort than the product work they are meant to support.

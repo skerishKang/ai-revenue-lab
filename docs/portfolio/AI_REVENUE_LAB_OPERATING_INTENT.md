@@ -64,12 +64,14 @@ clear product decision
 → smallest useful scope
 → AI implementation and independent validation
 → exact-head approval
-→ merge to main
-→ dedicated Production deployment
+→ merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
 → immediate Production acceptance
-→ retain or rollback
+→ retain or merge a reviewed fix/revert PR
 → record product and business evidence
 ```
+
+For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic deployment. They do not create a second deployment manually.
 
 The system should reduce owner effort and repeated manual checking. A process that repeatedly asks the owner to copy status, click configuration screens, or re-audit facts that can be obtained through an authenticated API is operating incorrectly.
 
@@ -89,27 +91,32 @@ Within an explicitly authorized scope, operators should proceed without repeated
 
 ## 6. Deployment doctrine
 
-After explicit deployment authorization, the default is direct deployment of the validated `main` SHA to the dedicated Business Production project.
+For Git-connected Cloudflare Pages projects, approved merge to the configured Production branch is the only normal deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
 
 ```text
-validated main
-→ Production
-→ smoke and acceptance checks
-→ keep or rollback
+validated source
+→ exact-head approval
+→ approved merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
+→ Production smoke and acceptance
+→ retain or merge a reviewed fix/revert PR
 ```
 
-Preview or staging is optional and must have a concrete reason, such as:
+Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception, for example:
 
 - destructive migration rehearsal;
 - billing or payment risk;
 - high-risk authorization changes;
 - regulated or compliance-sensitive review;
-- an external reviewer who must not access Production;
-- an explicit owner request.
+- an external reviewer who must not access Production.
 
-Preview infrastructure failure must not become a general blocker when Production has a safe direct-deploy and rollback path.
+An operator may not create a Preview or staging exception merely by opening or editing an issue. The owner decision or pre-existing approved Business contract must be explicit.
 
-Before Production changes, record the known-good rollback authority. Roll back immediately when a critical availability, authorization, data-integrity, credential-leakage, or runtime gate fails.
+Preview infrastructure failure must not become a general blocker when Production has a safe automatic-deployment and reviewed fix/revert path.
+
+A queued or failed automatic deployment does not authorize another deployment method. Operators observe the platform state and report it. Source recovery uses a reviewed fix or revert PR merged to the Production branch, followed by automatic deployment.
+
+Before the authorized merge, record the last known-good Production source and configuration as recovery evidence. After a critical availability, authorization, data-integrity, credential-leakage, or runtime failure, merge a reviewed fix/revert PR and allow the Git integration to deploy it automatically. Configuration may be restored separately only when configuration itself caused the failure.
 
 ## 7. Portfolio Console intent
 
@@ -166,7 +173,9 @@ The Console is successful when it reduces operating work and shortens the time f
 
 ## 9. Owner interaction standard
 
-Operators must prefer authenticated API or CLI execution over repeated owner Dashboard actions.
+Operators must prefer authenticated API or CLI execution for **read-only inspection and explicitly authorized configuration**, not for creating a deployment.
+
+On Git-connected Pages projects, APIs and CLI must not be used to create, retry, promote, or directly upload a deployment. Only a new explicit owner decision may authorize an exact exception.
 
 Before requesting an owner-only action:
 
