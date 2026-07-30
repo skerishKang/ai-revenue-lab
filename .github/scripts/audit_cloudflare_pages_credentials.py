@@ -40,8 +40,12 @@ def request_json(path: str, token: str) -> tuple[int, object]:
     req.add_header("Accept", "application/json")
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
-            body = resp.read()
-            return resp.status, json.loads(body.decode("utf-8"))
+            try:
+                body = resp.read()
+                data = json.loads(body.decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                data = {}
+            return resp.status, data
     except urllib.error.HTTPError as exc:
         try:
             body = exc.read()
@@ -70,20 +74,21 @@ def fetch_production_status(url: str) -> int:
 
 def validate_project_contract(project: dict) -> list[str]:
     failures = []
-    
+    expected_owner, expected_repo = EXPECTED_REPOSITORY.split("/")
+
     if project.get("name") != B37_PROJECT:
         failures.append("contract: wrong project.name")
     if project.get("production_branch") != EXPECTED_BRANCH:
         failures.append("contract: wrong top-level production branch")
-        
+
     source = project.get("source")
     if not isinstance(source, dict) or source.get("type") != "github":
         failures.append("contract: source.type null/direct-upload rejected")
     else:
         config = source.get("config", {})
-        if config.get("owner") != "skerishKang":
+        if config.get("owner") != expected_owner:
             failures.append("contract: wrong source owner rejected")
-        if config.get("repo_name") != "ai-revenue-lab":
+        if config.get("repo_name") != expected_repo:
             failures.append("contract: wrong repo_name rejected")
         if config.get("production_branch") != EXPECTED_BRANCH:
             failures.append("contract: wrong source production branch rejected")
@@ -93,7 +98,7 @@ def validate_project_contract(project: dict) -> list[str]:
             failures.append("contract: Preview enabled rejected")
         if config.get("pr_comments_enabled") is not False:
             failures.append("contract: PR comments enabled rejected")
-            
+
     build_config = project.get("build_config") or {}
     if build_config.get("root_dir") != "reference/business-37-ai-safe-route-v1":
         failures.append("contract: wrong root directory rejected")
@@ -101,7 +106,7 @@ def validate_project_contract(project: dict) -> list[str]:
         failures.append("contract: wrong destination directory rejected")
     if build_config.get("build_command") != "":
         failures.append("contract: non-empty build command rejected")
-        
+
     return failures
 
 
@@ -160,7 +165,7 @@ def run_audit(token: str, account_id: str) -> list[str]:
 def main() -> int:
     token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
     account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
-    
+
     failures = run_audit(token, account_id)
     if failures:
         for f in failures:
