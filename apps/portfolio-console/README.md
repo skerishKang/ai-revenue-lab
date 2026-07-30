@@ -229,9 +229,10 @@ node --check functions/_lib/business-github-map.js
 node --check functions/_lib/business-github-query.js
 node --check functions/_lib/business-pr-discovery.js
 node --check functions/_lib/business-verdict-parser.js
-node --check functions/_lib/cache.js
 node --check businesses.js
 node --check app.js
+node --check github-live-status.js
+node --check business-live-facts.js
 
 # Unit tests (Node)
 node tests/test_github_status.mjs

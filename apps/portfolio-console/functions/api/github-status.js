@@ -17,7 +17,7 @@ import { InstallationTokenProvider } from "../_lib/github-app-auth.js";
 import { GitHubClient } from "../_lib/github-client.js";
 import { RuntimeSnapshotCache } from "../_lib/cache.js";
 import { createGitHubStatusService } from "../_lib/github-status-service.js";
-import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError } from "../_lib/response.js";
+import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError, validDiagnosticCode } from "../_lib/response.js";
 import { SCHEMA_VERSION } from "../_lib/business-fact-merger.js";
 import { buildIdentitySource } from "../../business-identity-data.js";
 
@@ -80,8 +80,11 @@ export async function handleGitHubStatusRequest({
     const result = await createGitHubStatusService({ client, cache: snapshotCache, now, identitySource }).getStatus();
     const headers = { "X-Portfolio-Cache": result.cacheState };
     if (result.cacheState === "stale" && result.payload.errors?.length) {
-      const lastDiagnostic = [...result.payload.errors].reverse().find((e) => e.diagnosticCode);
-      if (lastDiagnostic) headers["X-Portfolio-Diagnostic-Code"] = lastDiagnostic.diagnosticCode;
+      const lastErr = [...result.payload.errors].reverse().find((e) => e.diagnosticCode);
+      if (lastErr) {
+        const validated = validDiagnosticCode(lastErr.diagnosticCode);
+        if (validated) headers["X-Portfolio-Diagnostic-Code"] = validated;
+      }
     }
     return jsonResponse(result.payload, {
       status: result.status,

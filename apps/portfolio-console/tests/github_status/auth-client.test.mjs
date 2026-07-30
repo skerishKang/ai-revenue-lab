@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createGitHubAppJwt } from "../../functions/_lib/github-app-auth.js";
 import { GitHubClient, GitHubApiError, STATUS_QUERY, normalizeStatusCheckRollup } from "../../functions/_lib/github-client.js";
-import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
+import { MemorySnapshotCache, RuntimeSnapshotCache } from "../../functions/_lib/cache.js";
+import { validDiagnosticCode } from "../../functions/_lib/response.js";
 import { assertAllowedRepository } from "../../functions/_lib/business-github-map.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
 import {
@@ -337,4 +338,72 @@ test("end-to-end diagnostic leakage: no raw GitHub body, App ID, installation ID
   for (const s of ["app-secret", "install-secret", "nope"]) {
     assert.equal(t2.includes(s), false, `no ${s} in 401 exchange response`);
   }
+});
+test("RuntimeSnapshotCache KV read failure produces CACHE_READ_FAILED (production path)", async () => {
+  const throwingKv = {
+    async get() { throw new Error("KV backend unreachable"); },
+    async put() {},
+  };
+  const env = envWithCredentials({ GITHUB_STATUS_SNAPSHOT_KV: throwingKv });
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env, now: () => NOW,
+  });
+  assert.equal(response.status, 502);
+  const body = await response.json();
+  assert.equal(body.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(body.error.diagnosticCode, "CACHE_READ_FAILED");
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CACHE_READ_FAILED");
+  assert.equal(JSON.stringify(body).includes("KV"), false, "raw KV binding name not leaked");
+  assert.equal(JSON.stringify(body).includes("Error"), false, "no raw Error class name");
+  assert.equal(JSON.stringify(body).includes("unreachable"), false, "raw KV error message not leaked");
+});
+test("RuntimeSnapshotCache KV read failure on HEAD has header but no body", async () => {
+  const throwingKv = {
+    async get() { throw new Error("fail"); },
+    async put() {},
+  };
+  const env = envWithCredentials({ GITHUB_STATUS_SNAPSHOT_KV: throwingKv });
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status", { method: "HEAD" }), env, now: () => NOW,
+  });
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CACHE_READ_FAILED");
+  assert.equal(await response.text(), "");
+});
+test("validDiagnosticCode rejects arbitrary string, newlines, and raw messages", async () => {
+  assert.equal(validDiagnosticCode("GITHUB_GRAPHQL_RATE_LIMITED"), "GITHUB_GRAPHQL_RATE_LIMITED");
+  assert.equal(validDiagnosticCode("UNKNOWN_INTERNAL"), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode("random"), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode(""), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode("INSTALLATION_TOKEN_EXCHANGE_FAILED\n"), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode("INSTALLATION_TOKEN_EXCHANGE_FAILED\r\n"), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode(null), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode(undefined), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode(123), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode("Bad credentials"), "UNKNOWN_INTERNAL");
+  assert.equal(validDiagnosticCode("<html>error</html>"), "UNKNOWN_INTERNAL");
+});
+test("multiple stale errors select last diagnostic code deterministically (last wins)", async () => {
+  const snapshot = {
+    ok: true, schemaVersion: 1, syncedAt: "old", stale: false, businesses: [{ number: 15 }],
+    errors: [{ code: "UPSTREAM_RATE_LIMITED", diagnosticCode: "GITHUB_GRAPHQL_RATE_LIMITED" }],
+  };
+  const cache = new MemorySnapshotCache({ now: () => NOW - 181_000 });
+  await cache.set(snapshot);
+  cache.now = () => NOW;
+  const error = new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }), { cache, key: "multi-error-last-wins" });
+  assert.equal(result.cacheState, "stale");
+  assert.equal(result.payload.errors.length, 2, "snapshot error + new error");
+  assert.equal(result.payload.errors[0].diagnosticCode, "GITHUB_GRAPHQL_RATE_LIMITED", "first error preserved");
+  assert.equal(result.payload.errors[1].diagnosticCode, "GITHUB_GRAPHQL_AUTH_FAILED", "last is the new error");
+  // handler must propagate the last diagnostic
+  const env = envWithCredentials();
+  const handlerResponse = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"),
+    env, now: () => NOW,
+    cache, client: mockAggregateClient(null, { throwError: error }),
+  });
+  assert.equal(handlerResponse.status, 200);
+  assert.equal(handlerResponse.headers.get("X-Portfolio-Diagnostic-Code"), "GITHUB_GRAPHQL_AUTH_FAILED", "last diagnostic wins");
 });
