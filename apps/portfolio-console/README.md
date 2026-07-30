@@ -212,6 +212,22 @@ UNKNOWN_INTERNAL
 - The `diagnosticCode` is never a raw upstream message, HTTP response body, JWT, token, App/installation ID, or private key.
 - If a Git-connected automatic deployment fails, **do not work around it with a manual deployment** — fix the source PR and let the automatic deployment retry.
 
+## Function contract marker
+
+Every `/api/github-status` response includes:
+
+```text
+X-Portfolio-Function-Contract: github-status-diagnostics-v1
+```
+
+This is a fixed literal identifying the deployed Pages Functions bundle contract family.
+
+- It is not a commit SHA, deployment ID, or secret.
+- It does not indicate GitHub sync success, credential health, or Business record completeness.
+- It does not indicate Production acceptance passage.
+- It exists to confirm which Functions contract a live deployment is serving after a Git-connected automatic deployment.
+- It must not be used as justification for manual deployment, retry, or Preview promotion.
+
 ## Validation
 
 ```bash
