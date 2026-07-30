@@ -36,3 +36,4 @@ List known risks, assumptions, and remaining work.
 - [ ] Model/provider configuration remains replaceable where applicable.
 - [ ] Documentation was updated when behavior or decisions changed.
 - [ ] Exact changed files and validation evidence are included.
+- [ ] Deployment target and rollback authority are recorded when applicable (see `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`).
