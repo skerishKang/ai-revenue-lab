@@ -136,7 +136,7 @@ test("rollup aggregate pending is authoritative", () => {
   assert.equal(checks.total, 145);
   assert.equal(checks.truncated, true);
 });
-test("cold refresh issues one token exchange plus the bounded GraphQL plan and maps 40 Businesses", async () => {
+test("cold refresh issues one token exchange plus the bounded GraphQL plan and maps 55 Businesses", async () => {
   const budget = getRequestBudget();
   let requests = 0;
   const full = aggregatePayload();
@@ -149,7 +149,7 @@ test("cold refresh issues one token exchange plus the bounded GraphQL plan and m
   const result = await serviceResult(new GitHubClient({ authProvider, fetchImpl }));
   assert.equal(result.status, 200);
   assert.equal(result.payload.ok, true);
-  assert.equal(result.payload.businesses.length, 40);
+  assert.equal(result.payload.businesses.length, BUSINESS_GITHUB_MAP.length);
   assert.equal(requests, budget.cold);
 });
 test("cached installation token makes cold status refresh skip the token exchange", async () => {

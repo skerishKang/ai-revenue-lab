@@ -11,6 +11,7 @@ import { handleGitHubStatusRequest } from "../../functions/api/github-status.js"
 import {
   NOW, aggregatePayload, jsonResponse, delay, routeGraphqlResponse, batchedGraphqlFetchImpl,
   serviceResult, mockAggregateClient, envWithCredentials, webcrypto, generatePrivateKeyPem,
+  BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY,
 } from "./fixtures.mjs";
 
 const stubAuth = () => ({ async getToken() { return "t"; }, invalidate() {} });
@@ -62,7 +63,7 @@ test("bounded concurrency: in-flight GraphQL operations never exceed the limit",
   assert.ok(maxInFlight >= 2, `batches ran concurrently (observed ${maxInFlight})`);
 });
 
-test("all batches succeeding yields the 40 mapped Business facts via the real client", async () => {
+test("all batches succeeding yields all 55 authority records via the real client", async () => {
   const full = aggregatePayload();
   const counter = { count: 0 };
   const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl: batchedGraphqlFetchImpl(full, { counter }) });
@@ -73,8 +74,8 @@ test("all batches succeeding yields the 40 mapped Business facts via the real cl
   assert.equal(result.payload.ok, true);
   assert.equal(result.payload.stale, false);
   assert.equal(result.payload.schemaVersion, 2);
-  assert.equal(result.payload.businesses.length, 40);
-  assert.equal(result.payload.businesses.filter((b) => b.repository).length, 40);
+  assert.equal(result.payload.businesses.length, BUSINESS_GITHUB_MAP.length);
+  assert.equal(result.payload.businesses.filter((b) => b.repository).length, BUSINESS_GITHUB_MAP.filter((m) => m.repository === GITHUB_REPOSITORY).length);
 });
 
 test("merge is deterministic: two runs produce identical data and Business order", async () => {
@@ -286,7 +287,7 @@ test("an expected null issue alias (data+error) is a handled data state, not a p
   assert.equal(result.status, 200);
   assert.equal(result.payload.ok, true);
   assert.equal(result.payload.stale, false);
-  assert.equal(result.payload.businesses.length, 40);
+  assert.equal(result.payload.businesses.length, BUSINESS_GITHUB_MAP.length);
   assert.ok(!(result.payload.errors || []).some((e) => e.diagnosticCode === "GITHUB_GRAPHQL_PARTIAL_RESPONSE"), "no partial-response diagnostic for an expected null alias");
 });
 
@@ -350,4 +351,87 @@ test("a 401 on the refreshed token fails as GITHUB_GRAPHQL_AUTH_FAILED with no s
   const client = new GitHubClient({ authProvider, fetchImpl });
   await assert.rejects(() => client.getStatusAggregation(), (error) => error.code === "GITHUB_GRAPHQL_AUTH_FAILED");
   assert.equal(tokenExchanges, 2, "initial + one refresh, never a second refresh");
+});
+
+const UNMAPPED_NUMBERS = [23, 24, 25, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55];
+
+test("focused regression: all 55 authority records — connected 40, unmapped 15, safe shape, cache round-trip", async () => {
+  const full = aggregatePayload();
+
+  // 1. Fresh load through real client + service
+  const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl: batchedGraphqlFetchImpl(full) });
+  const aggregate = await client.getStatusAggregation();
+  const result = await serviceResult({ getStatusAggregation: async () => aggregate }, { key: "55-regression" });
+  assert.equal(result.status, 200);
+  assert.equal(result.payload.ok, true);
+
+  // 1. businesses.length === 55
+  assert.equal(result.payload.businesses.length, BUSINESS_GITHUB_MAP.length, "total 55");
+
+  // 2. businesses.map(b => b.number) === [1, 2, ..., 55]
+  const numbers = result.payload.businesses.map((b) => b.number);
+  assert.deepEqual(numbers, [...Array(55).keys()].map((i) => i + 1), "deterministic order 1–55, no gaps, no duplicates");
+
+  // 3. connected count === 40
+  const connected = result.payload.businesses.filter((b) => b.repository);
+  assert.equal(connected.length, BUSINESS_GITHUB_MAP.filter((m) => m.repository === GITHUB_REPOSITORY).length, "connected 40");
+
+  // 4. unmapped count === 15
+  const unmapped = result.payload.businesses.filter((b) => b.connectionState === "unmapped");
+  assert.equal(unmapped.length, UNMAPPED_NUMBERS.length, "unmapped 15");
+
+  // 5. unmapped numbers === exact list
+  assert.deepEqual(unmapped.map((b) => b.number), UNMAPPED_NUMBERS, "unmapped numbers match");
+
+  // 6. All unmapped records have the safe null shape
+  for (const b of unmapped) {
+    assert.equal(b.connectionState, "unmapped", `B${b.number} connectionState`);
+    assert.equal(b.repository, null, `B${b.number} repository`);
+    assert.equal(b.productDecisionIssue, null, `B${b.number} productDecisionIssue`);
+    assert.equal(b.phaseIssues, null, `B${b.number} phaseIssues`);
+    assert.equal(b.currentPullRequests, null, `B${b.number} currentPullRequests`);
+    assert.equal(b.phaseDiscovery, null, `B${b.number} phaseDiscovery`);
+    assert.equal(b.phaseVerdicts, null, `B${b.number} phaseVerdicts`);
+    assert.equal(b.activityAt, null, `B${b.number} activityAt`);
+    assert.equal(b.error, null, `B${b.number} error`);
+  }
+
+  // 7. No fabricated GitHub facts in unmapped records
+  for (const b of unmapped) {
+    assert.equal(b.phaseDiscovery, null, `B${b.number} no discovery`);
+    assert.equal(b.phaseVerdicts, null, `B${b.number} no verdicts`);
+    assert.equal(b.repository, null, `B${b.number} no repo`);
+  }
+
+  // 8. Cache round-trip preserves all 55 records and exact number order
+  const cache = new MemorySnapshotCache({ now: () => NOW });
+  await cache.set(result.payload);
+  // Read from cache (within fresh TTL)
+  const cached = await cache.get();
+  assert.ok(cached, "snapshot cached");
+  assert.equal(cached.snapshot.businesses.length, 55, "cached 55");
+  const cachedNums = cached.snapshot.businesses.map((b) => b.number);
+  assert.deepEqual(cachedNums, [...Array(55).keys()].map((i) => i + 1), "cached order 1–55");
+
+  // Stale fallback: force stale cache by jumping past freshTtl + staleTtl check
+  const staleCache = new MemorySnapshotCache({ now: () => NOW - 200_000 });
+  await staleCache.set(result.payload);
+  staleCache.now = () => NOW;  // now TTL is expired but within stale window
+  const staleResponse = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"),
+    env: envWithCredentials(), now: () => NOW, cache: staleCache,
+    client: mockAggregateClient(null, { throwError: new GitHubApiError("GITHUB_GRAPHQL_TIMEOUT", 504) }),
+  });
+  assert.equal(staleResponse.status, 200);
+  const staleBody = await staleResponse.json();
+  assert.equal(staleBody.businesses.length, 55, "stale fallback 55");
+  assert.deepEqual(staleBody.businesses.map((b) => b.number), [...Array(55).keys()].map((i) => i + 1), "stale order 1–55");
+
+  // 9. Request budget verification (pinned values)
+  const budget = getRequestBudget();
+  assert.equal(budget.cold, 9, "cold 9");
+  assert.equal(budget.cachedToken, 8, "cachedToken 8");
+  assert.equal(budget.worstCase, 18, "worstCase 18");
+  assert.equal(budget.maxGraphqlRequests, 8, "maxGraphqlRequests 8");
+  assert.equal(budget.maxTokenExchanges, 2, "maxTokenExchanges 2");
 });
