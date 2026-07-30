@@ -1695,8 +1695,8 @@ legend {
   height: auto;
 }
 
-/* Edition Cover */
-.edition-cover {
+/* Edition Cover Mini (adaptation page thumbnail) */
+.edition-cover-mini {
   display: inline-block;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -1704,7 +1704,7 @@ legend {
   background: var(--surface);
   margin: 1rem 0;
 }
-.edition-cover img {
+.edition-cover-mini img {
   display: block;
   width: 120px;
   height: auto;

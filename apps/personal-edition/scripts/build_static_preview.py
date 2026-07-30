@@ -393,9 +393,8 @@ def main() -> None:
 
     _write_page(
         env, "intro.html",
-        {},
-        "/preview/intro",
-        "preview/intro/index.html",
+        {"is_preview": True},
+        "/preview/intro", "preview/intro/index.html",
     )
 
     _write_page(
@@ -432,6 +431,29 @@ def main() -> None:
         },
         "/admin/review/modal-preview-edition/evidence",
         "admin/review/modal-preview-edition/evidence/index.html",
+    )
+
+    _write_page(
+        env, "admin_publish_decision.html",
+        {
+            "edition": edition_pending,
+            "content": content,
+            "participant": participant,
+        },
+        "/admin/review/modal-preview-edition/publish",
+        "admin/review/modal-preview-edition/publish/index.html",
+    )
+
+    _write_page(
+        env, "admin_feedback_continuity.html",
+        {
+            "participant": participant,
+            "feedbacks_with_editions": make_feedbacks_with_editions(
+                participant, edition_published, feedbacks[0]
+            ),
+        },
+        "/admin/participants/modal-preview-user/feedback",
+        "admin/participants/modal-preview-user/feedback/index.html",
     )
 
     _write_page(

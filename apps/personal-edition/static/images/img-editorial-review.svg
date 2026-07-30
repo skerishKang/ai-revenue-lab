@@ -16,5 +16,18 @@
 <circle cx="100" cy="280" r="8"/>
 <circle cx="100" cy="320" r="8"/>
 </g>
-<text x="300" y="420" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="16" fill="#24231f">연필선 · 교정 표시 · 순서 조정</text>
+<g stroke="#8c302d" stroke-width="1.5" fill="none" opacity="0.2">
+<path d="M140 120 Q200 115 260 120 T380 120"/>
+<path d="M140 160 Q220 155 300 158 T420 160"/>
+<path d="M140 200 Q210 195 280 198 T400 200"/>
+<path d="M140 280 Q200 275 270 278 T390 280"/>
+<path d="M140 320 Q210 315 290 318 T410 320"/>
+</g>
+<g fill="#8c302d" opacity="0.06">
+<rect x="160" y="115" width="60" height="4" rx="2"/>
+<rect x="180" y="155" width="80" height="4" rx="2"/>
+<rect x="170" y="195" width="50" height="4" rx="2"/>
+<rect x="160" y="275" width="70" height="4" rx="2"/>
+<rect x="190" y="315" width="55" height="4" rx="2"/>
+</g>
 </svg>

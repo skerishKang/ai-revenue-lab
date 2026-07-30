@@ -22,6 +22,15 @@ No external photos, no AI-generated imagery, no copyrighted content.
 - Minimal path data
 - Readable text, logos, watermarks excluded
 
+## SVG text removal (Web CTO CHANGES REQUIRED resolution)
+
+All five SVGs had embedded `<text>` elements removed on 2026-07-30 as part of
+PR #111 CHANGES REQUIRED resolution. Decorative compositions now use purely
+geometric shapes (rect, circle, path, line) — no readable Korean/English text,
+no logos, no watermarks. Semantic descriptions are provided via HTML `alt`
+attributes (empty `alt=""` for decorative, descriptive Korean `alt` for
+informative images) in the calling templates.
+
 ## Placement
 
 1. Hero: intro page, participant published home

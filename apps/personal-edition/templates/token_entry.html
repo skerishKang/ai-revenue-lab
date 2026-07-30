@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}접속 — Personal Edition{% endblock %}
 {% block content %}
+{% set _base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id) if participant is defined else '/p/access' %}
 <div class="access-page">
   <div class="access-content animate-slide-up">
     <h1 class="access-brand">Personal Edition</h1>
@@ -33,6 +34,13 @@
       </div>
       <button type="submit" class="btn btn-primary">비공개 편집실 입장</button>
     </form>
+
+    {% if is_preview %}
+    <div class="preview-journey-nav">
+      <p class="preview-journey-hint">미리보기에서는 실제 인증 없이 다음 단계로 이동합니다.</p>
+      <a href="/preview/participant/empty/" class="btn btn-primary">다음: 기록 단계로 →</a>
+    </div>
+    {% endif %}
   </div>
 
   <div class="access-image animate-fade-in">

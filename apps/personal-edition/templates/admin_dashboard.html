@@ -93,6 +93,9 @@
               <a href="{{ item.status_info.recommended_action_url }}" class="btn btn-sm btn-primary">
                 이동
               </a>
+              <a href="/admin/participants/{{ item.participant.id }}/" class="btn btn-sm btn-secondary">
+                상세
+              </a>
             </td>
           </tr>
           {% endfor %}

@@ -12,5 +12,20 @@
 <rect x="220" y="300" width="180" height="60" rx="4"/>
 <rect x="430" y="330" width="140" height="40" rx="4"/>
 </g>
-<text x="300" y="420" text-anchor="middle" font-family="ui-serif,Georgia,Cambria,serif" font-size="16" fill="#24231f">대화 · 메모 · 전사 · 사진 메모</text>
+<g stroke="#203c32" stroke-width="1" fill="none" opacity="0.15">
+<line x1="70" y1="70" x2="150" y2="110"/>
+<line x1="220" y1="95" x2="280" y2="125"/>
+<line x1="350" y1="80" x2="430" y2="130"/>
+</g>
+<g fill="#203c32" opacity="0.04">
+<rect x="75" y="65" width="30" height="10" rx="2"/>
+<rect x="230" y="90" width="20" height="8" rx="2"/>
+<rect x="360" y="75" width="25" height="10" rx="2"/>
+<rect x="75" y="215" width="40" height="8" rx="2"/>
+<rect x="270" y="195" width="35" height="8" rx="2"/>
+<rect x="440" y="225" width="30" height="8" rx="2"/>
+<rect x="75" y="335" width="35" height="8" rx="2"/>
+<rect x="240" y="315" width="40" height="8" rx="2"/>
+<rect x="450" y="345" width="30" height="8" rx="2"/>
+</g>
 </svg>

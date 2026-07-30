@@ -58,6 +58,11 @@
     <div class="state-actions">
       <a href="{{ _base }}/input" class="btn btn-secondary">추가 기록하기</a>
     </div>
+    {% if is_preview %}
+    <div class="preview-journey-nav">
+      <a href="/preview/participant/editing/" class="btn btn-primary">다음: 편집 검토 단계로 →</a>
+    </div>
+    {% endif %}
   </div>
 
   {% elif workflow_stage == 'reviewing' %}
@@ -70,6 +75,11 @@
     <div class="state-actions">
       <a href="{{ _base }}/input" class="btn btn-secondary">추가 기록하기</a>
     </div>
+    {% if is_preview %}
+    <div class="preview-journey-nav">
+      <a href="/preview/participant/published/" class="btn btn-primary">다음: 발행 단계로 →</a>
+    </div>
+    {% endif %}
   </div>
 
   {% elif workflow_stage == 'published' %}

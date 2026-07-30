@@ -5,19 +5,22 @@
   <h1>콘텐츠 검토</h1>
 
   <section class="content-review-header">
-    <h2>{{ edition.edition_number }}호 — {{ edition.title }}</h2>
-    <p class="edition-meta">주제: {{ edition.theme }} · 작성일: {{ edition.created_at }}</p>
+    <h2>{{ edition.edition_number }}호 — {{ edition.rendered_title }}</h2>
+    <p class="edition-meta">게재 준비일: {{ edition.drafted_at }} · 상태: {{ edition.publication_state }}</p>
   </section>
 
   <section class="content-review-body">
     <div class="editorial-grid">
       <div class="main">
-        <h3>본문</h3>
+        <h3>{{ content.publication_title }} — {{ content.edition_title }}</h3>
+        <p class="edition-deck">{{ content.deck }}</p>
         <div class="content-body">
           {% for section in content.sections %}
           <div class="content-section">
             <h4>{{ section.title }}</h4>
-            <p>{{ section.body }}</p>
+            {% for para in section.paragraphs %}
+            <p>{{ para }}</p>
+            {% endfor %}
           </div>
           {% endfor %}
         </div>
@@ -32,7 +35,7 @@
         <h4>피드백</h4>
         <ul>
           {% for fb in feedbacks %}
-          <li>{{ fb.direction }}: {{ fb.free_text|truncate(80) }}</li>
+          <li>{% if fb.direction is string %}{{ fb.direction }}{% else %}{{ fb.direction | join(", ") }}{% endif %}: {{ fb.free_text|truncate(80) }}</li>
           {% endfor %}
         </ul>
       </div>
@@ -41,6 +44,7 @@
 
   <section class="content-review-actions">
     <a href="/admin/review/modal-preview-edition/evidence/" class="btn btn-secondary">생성 증거</a>
+    <a href="/admin/review/modal-preview-edition/publish/" class="btn btn-primary">게재 결정</a>
     <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
   </section>
 </div>
