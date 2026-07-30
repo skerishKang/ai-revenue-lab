@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.db
+*.sqlite
+*.sqlite3
+*.egg-info/
+build/
+node_modules/
+.dev.vars
+.venv-workers/
+python_modules/
+src/vendor/
+pylock.toml

@@ -132,8 +132,36 @@ class Settings(BaseSettings):
 
     ai_provider: str = "mock"
     ai_model: str = "mock-living-fiction-v1"
+    ai_api_key: str = ""
+    ai_base_url: str = ""
     prompt_version: str = "living-fiction-v1"
     max_retries: int = 2
+
+    def validate_ai_provider(self) -> None:
+        provider = (self.ai_provider or "").strip().lower()
+        if provider == "mock":
+            return
+        if provider not in ("opencode_go", "openai_compat"):
+            raise ValueError(
+                f"LF_AI_PROVIDER must be 'mock', 'opencode_go', "
+                f"or 'openai_compat'; got '{provider}'"
+            )
+        if not self.ai_api_key:
+            raise ValueError(
+                "LF_AI_API_KEY is required when LF_AI_PROVIDER "
+                "is not 'mock'"
+            )
+        if not self.ai_model:
+            raise ValueError(
+                "LF_AI_MODEL is required when LF_AI_PROVIDER "
+                "is not 'mock'"
+            )
+        if provider == "openai_compat":
+            if not self.ai_base_url or not self.ai_base_url.strip():
+                raise ValueError(
+                    "LF_AI_BASE_URL is required when LF_AI_PROVIDER "
+                    "is 'openai_compat'"
+                )
 
     # Phase 2 web security settings — no fallback defaults.
     admin_secret: str = ""

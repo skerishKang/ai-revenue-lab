@@ -1,0 +1,8 @@
+import "./github_status/auth-client.test.mjs";
+import "./github_status/service-cache.test.mjs";
+import "./github_status/discovery.test.mjs";
+import "./github_status/schema.test.mjs";
+import "./github_status/verdict.test.mjs";
+import "./github_status/merger-contract.test.mjs";
+import "./github_status/identity-source.test.mjs";
+import "./test_github_ui.mjs";

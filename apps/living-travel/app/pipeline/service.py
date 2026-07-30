@@ -139,11 +139,14 @@ def _redact_sensitive(text: str) -> str:
 
 
 class GenerationService:
-    MAX_RETRIES = 3
-
     def __init__(self, conn: sqlite3.Connection, provider: AIProvider) -> None:
         self.conn = conn
         self.provider = provider
+
+    @property
+    def _attempts_per_task(self) -> int:
+        """Return the provider's attempt limit for each task."""
+        return getattr(self.provider, "attempt_limit", 3)
 
     # ------------------------------------------------------------------
     # Public API
@@ -449,7 +452,7 @@ class GenerationService:
             source_summaries=source_items,
         )
 
-        for attempt in range(self.MAX_RETRIES):
+        for attempt in range(self._attempts_per_task):
             request_id = f"{edition_id}_plan_{attempt}"
             result = self.provider.generate_structured(
                 task_name="editorial_plan",
@@ -466,9 +469,9 @@ class GenerationService:
                 plan_errors = validate_plan(plan)
                 if not plan_errors:
                     return plan
-            if attempt == self.MAX_RETRIES - 1:
+            if attempt == self._attempts_per_task - 1:
                 raise PipelineError(
-                    f"Plan generation failed after {self.MAX_RETRIES} attempts"
+                    f"Plan generation failed after {self._attempts_per_task} attempts"
                 )
 
         raise PipelineError("Plan generation exhausted retries")
@@ -492,7 +495,7 @@ class GenerationService:
             prior_edition_summary=prior_edition_summary,
         )
 
-        for attempt in range(self.MAX_RETRIES):
+        for attempt in range(self._attempts_per_task):
             request_id = f"{edition_id}_draft_{attempt}"
             result = self.provider.generate_structured(
                 task_name="edition_draft",
@@ -509,9 +512,9 @@ class GenerationService:
                 draft_errors = validate_draft_against_plan(content, plan)
                 if not draft_errors:
                     return content
-            if attempt == self.MAX_RETRIES - 1:
+            if attempt == self._attempts_per_task - 1:
                 raise PipelineError(
-                    f"Draft generation failed after {self.MAX_RETRIES} attempts"
+                    f"Draft generation failed after {self._attempts_per_task} attempts"
                 )
 
         raise PipelineError("Draft generation exhausted retries")

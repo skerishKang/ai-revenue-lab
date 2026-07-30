@@ -1,0 +1,72 @@
+name: Deploy approved Business 7 and 8 UI references
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/deploy-approved-business-07-08.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-approved-business-07-08
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Business ${{ matrix.business }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - business: "07"
+            approved_sha: a2f0e292a0718b6b83867ae840c8f3d1bd0afaea
+            directory: reference/business-07-personal-meaning-map-v1
+            project: ai-revenue-business-07-personal-meaning-map
+          - business: "08"
+            approved_sha: 972a2cbd2da4af2054e1f8e0746671aec21fbf78
+            directory: reference/business-08-family-newspaper-v1
+            project: ai-revenue-business-08-family-newspaper
+    steps:
+      - name: Check out approved exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.approved_sha }}
+          persist-credentials: false
+
+      - name: Verify approved source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ matrix.approved_sha }}"
+          test -f "${{ matrix.directory }}/index.html"
+
+      - name: Ensure dedicated Pages project exists
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT_NAME: ${{ matrix.project }}
+        run: |
+          status="$(curl --silent --show-error --output /tmp/pages-project.json --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}")"
+          if [ "${status}" = "404" ]; then
+            npx --yes wrangler@4 pages project create "${PROJECT_NAME}" --production-branch main
+          elif [ "${status}" != "200" ]; then
+            echo "Cloudflare Pages project lookup failed with HTTP ${status}."
+            exit 1
+          fi
+
+      - name: Deploy approved exact head
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@4 pages deploy "${{ matrix.directory }}" \
+            --project-name "${{ matrix.project }}" \
+            --branch main \
+            --commit-hash "${{ matrix.approved_sha }}"

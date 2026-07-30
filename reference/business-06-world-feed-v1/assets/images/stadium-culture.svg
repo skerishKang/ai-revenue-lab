@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+<title id="t">지역 경기장 응원 문화를 표현한 합성 일러스트</title><desc id="d">초록 관중석, 붉은 깃발, 둥근 경기장을 추상적인 형태로 표현했다.</desc>
+<defs><linearGradient id="field" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4c7767"/><stop offset="1" stop-color="#173f3d"/></linearGradient><filter id="g"><feTurbulence baseFrequency=".82" numOctaves="2"/><feComponentTransfer><feFuncA type="table" tableValues="0 .11"/></feComponentTransfer></filter></defs>
+<rect width="1200" height="800" fill="#e6dcc6"/><ellipse cx="600" cy="470" rx="510" ry="260" fill="#292a26"/><ellipse cx="600" cy="470" rx="410" ry="185" fill="#d4b475"/><ellipse cx="600" cy="470" rx="320" ry="130" fill="url(#field)"/>
+<g fill="#c65337"><path d="M150 170h180l-40 170-140-40Z"/><path d="M930 155h165l-20 180-145-55Z"/><path d="M480 95h190l-35 170-155-50Z"/></g><g fill="#f3c66d"><circle cx="180" cy="360" r="16"/><circle cx="235" cy="395" r="15"/><circle cx="300" cy="360" r="13"/><circle cx="900" cy="372" r="14"/><circle cx="960" cy="410" r="16"/><circle cx="1020" cy="365" r="13"/></g><rect width="1200" height="800" filter="url(#g)"/>
+</svg>
