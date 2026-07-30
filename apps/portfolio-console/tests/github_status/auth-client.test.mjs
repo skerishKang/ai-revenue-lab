@@ -1,14 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createGitHubAppJwt } from "../../functions/_lib/github-app-auth.js";
-import { GitHubClient, GitHubApiError, STATUS_QUERY, normalizeStatusCheckRollup } from "../../functions/_lib/github-client.js";
+import { GitHubClient, GitHubApiError, normalizeStatusCheckRollup } from "../../functions/_lib/github-client.js";
 import { MemorySnapshotCache, RuntimeSnapshotCache } from "../../functions/_lib/cache.js";
 import { validDiagnosticCode } from "../../functions/_lib/response.js";
 import { assertAllowedRepository } from "../../functions/_lib/business-github-map.js";
+import {
+  buildCoreQuery, buildDiscoveryAliasSelections, buildDiscoveryBatchQuery,
+  partitionDiscoverySelections, getBatchPlan, getRequestBudget, GRAPHQL_BATCH_SIZE,
+} from "../../functions/_lib/business-github-query.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
 import {
   BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY, NOW, aggregatePayload, createProvider, decodeJwtPart,
-  delay, envWithCredentials, generatePrivateKeyPem, jsonResponse, mockAggregateClient, rollup, serviceResult, webcrypto
+  delay, envWithCredentials, generatePrivateKeyPem, jsonResponse, mockAggregateClient, rollup, serviceResult, webcrypto,
+  batchedGraphqlFetchImpl, routeGraphqlResponse,
 } from "./fixtures.mjs";
 
 let privateKeyPem;
@@ -78,23 +83,38 @@ test("20 concurrent forceRefresh calls exchange once", async () => {
   assert.equal(exchanges, 1);
   assert.deepEqual(new Set(values), new Set(["token-1"]));
 });
-test("fixed GraphQL query contains all mapped aliases and paginates every connection", () => {
-  assert.match(STATUS_QUERY, /query PortfolioAutoSync/);
-  assert.match(STATUS_QUERY, /issues\(first:\s*1,\s*states:\s*OPEN\)/);
-  assert.match(STATUS_QUERY, /pullRequests\(first:\s*1,\s*states:\s*OPEN\)/);
-  assert.match(STATUS_QUERY, /commits\(last:\s*1\)/);
-  assert.match(STATUS_QUERY, /contexts\(first:\s*100\)/);
-  assert.match(STATUS_QUERY, /draftPullRequests: search\(query:/);
-  assert.doesNotMatch(STATUS_QUERY, /issues\(states:\s*OPEN\)/);
-  assert.doesNotMatch(STATUS_QUERY, /pullRequests\(states:\s*OPEN\)/);
+test("batched GraphQL contract: core carries identity/issues/fallbacks only", () => {
+  const core = buildCoreQuery();
+  assert.match(core, /query PortfolioAutoSyncCore\(\$owner: String!, \$name: String!\)/);
+  assert.match(core, /repository\(owner: \$owner, name: \$name\)/);
+  assert.match(core, /issues\(first:\s*1,\s*states:\s*OPEN\)/);
+  assert.match(core, /pullRequests\(first:\s*1,\s*states:\s*OPEN\)/);
+  assert.match(core, /commits\(last:\s*1\)/);
+  assert.match(core, /contexts\(first:\s*100\)/);
+  assert.match(core, /draftPullRequests: search\(query:/);
   for (const mapping of BUSINESS_GITHUB_MAP) {
-    if (mapping.issueNumber) assert.match(STATUS_QUERY, new RegExp(`issue${mapping.issueNumber}: issue\\(number: ${mapping.issueNumber}\\)`));
+    if (mapping.issueNumber) assert.match(core, new RegExp(`issue${mapping.issueNumber}: issue\\(number: ${mapping.issueNumber}\\)`));
     const fallbacks = mapping.fallbackPrNumbers || {};
     for (const phase of ["ui", "ux", "backend"]) {
-      if (fallbacks[phase]) assert.match(STATUS_QUERY, new RegExp(`fallbackPr${fallbacks[phase]}: pullRequest\\(number: ${fallbacks[phase]}\\)`));
+      if (fallbacks[phase]) assert.match(core, new RegExp(`fallbackPr${fallbacks[phase]}: pullRequest\\(number: ${fallbacks[phase]}\\)`));
     }
   }
-  assert.doesNotMatch(STATUS_QUERY, /\$repository|\$issue|\$pullRequest/);
+  assert.doesNotMatch(core, /prSearchRefs\d+: search\(/);
+  assert.doesNotMatch(core, /prSearchRelated\d+: search\(/);
+  assert.doesNotMatch(core, /prSearchMarker\d+_\w+: search\(/);
+  assert.doesNotMatch(core, /prSearchConvention\d+_\w+: search\(/);
+});
+test("batched GraphQL contract: discovery aliases split into bounded deterministic batches", () => {
+  const selections = buildDiscoveryAliasSelections();
+  const batches = partitionDiscoverySelections(selections, GRAPHQL_BATCH_SIZE);
+  assert.ok(batches.length > 1, "discovery is split across multiple operations");
+  for (let i = 0; i < batches.length; i += 1) {
+    assert.ok(batches[i].length <= GRAPHQL_BATCH_SIZE, `batch ${i} bounded by GRAPHQL_BATCH_SIZE`);
+    const query = buildDiscoveryBatchQuery(batches[i], i);
+    assert.doesNotMatch(query, /repository\(owner:/, "discovery batch carries no repository block");
+    assert.equal((query.match(/: search\(/g) || []).length, batches[i].length, "batch emits exactly its aliases");
+  }
+  assert.equal(batches.reduce((sum, b) => sum + b.length, 0), selections.length, "every discovery alias batched exactly once");
 });
 test("repository allowlist remains fixed", () => {
   assert.equal(assertAllowedRepository(GITHUB_REPOSITORY), GITHUB_REPOSITORY);
@@ -116,46 +136,54 @@ test("rollup aggregate pending is authoritative", () => {
   assert.equal(checks.total, 145);
   assert.equal(checks.truncated, true);
 });
-test("normal cold refresh uses exactly token exchange plus GraphQL", async () => {
+test("cold refresh issues one token exchange plus the bounded GraphQL plan and maps 40 Businesses", async () => {
+  const budget = getRequestBudget();
   let requests = 0;
-  const fetchImpl = async (url) => {
+  const full = aggregatePayload();
+  const fetchImpl = async (url, init) => {
     requests += 1;
     if (url.includes("access_tokens")) return jsonResponse({ token: "t1", expires_at: new Date(NOW + 120_000).toISOString() });
-    assert.equal(url, "https://api.github.com/graphql");
-    return jsonResponse(aggregatePayload());
+    return jsonResponse(routeGraphqlResponse(full, init));
   };
   const authProvider = createProvider(privateKeyPem, fetchImpl);
   const result = await serviceResult(new GitHubClient({ authProvider, fetchImpl }));
   assert.equal(result.status, 200);
-  assert.equal(requests, 2);
+  assert.equal(result.payload.ok, true);
+  assert.equal(result.payload.businesses.length, 40);
+  assert.equal(requests, budget.cold);
 });
-test("cached installation token makes cold status refresh one external request", async () => {
+test("cached installation token makes cold status refresh skip the token exchange", async () => {
+  const budget = getRequestBudget();
   let requests = 0;
-  const fetchImpl = async (url) => {
+  const full = aggregatePayload();
+  const fetchImpl = async (url, init) => {
     requests += 1;
     if (url.includes("access_tokens")) return jsonResponse({ token: "cached", expires_at: new Date(NOW + 120_000).toISOString() });
-    return jsonResponse(aggregatePayload());
+    return jsonResponse(routeGraphqlResponse(full, init));
   };
   const authProvider = createProvider(privateKeyPem, fetchImpl);
   await authProvider.getToken();
   requests = 0;
   const result = await serviceResult(new GitHubClient({ authProvider, fetchImpl }));
   assert.equal(result.status, 200);
-  assert.equal(requests, 1);
+  assert.equal(requests, budget.cachedToken);
 });
-test("401 recovery has fixed request ceiling four", async () => {
-  let requests = 0; let graphql = 0;
-  const fetchImpl = async (url) => {
-    requests += 1;
-    if (url.includes("access_tokens")) return jsonResponse({ token: `t${requests}`, expires_at: new Date(NOW + 120_000).toISOString() });
-    graphql += 1;
-    return graphql === 1 ? jsonResponse({}, 401) : jsonResponse(aggregatePayload());
+test("401 recovery refreshes the installation token at most once", async () => {
+  const budget = getRequestBudget();
+  let tokenExchanges = 0; let graphqlCalls = 0;
+  const full = aggregatePayload();
+  const fetchImpl = async (url, init) => {
+    if (url.includes("access_tokens")) { tokenExchanges += 1; return jsonResponse({ token: `t${tokenExchanges}`, expires_at: new Date(NOW + 120_000).toISOString() }); }
+    graphqlCalls += 1;
+    if (graphqlCalls === 1) return jsonResponse({}, 401);
+    return jsonResponse(routeGraphqlResponse(full, init));
   };
   const authProvider = createProvider(privateKeyPem, fetchImpl);
   const result = await serviceResult(new GitHubClient({ authProvider, fetchImpl }));
   assert.equal(result.status, 200);
-  assert.equal(requests, 4);
-  assert.ok(requests <= 4);
+  assert.equal(tokenExchanges, budget.maxTokenExchanges, "initial exchange + exactly one 401 refresh");
+  assert.equal(tokenExchanges, 2);
+  assert.equal(graphqlCalls, budget.cachedToken + 1, "one failed attempt then the full bounded plan");
 });
 test("403 is rate limited and never retried", async () => {
   let calls = 0;

@@ -8,4 +8,6 @@ import "./github_status/identity-source.test.mjs";
 import "./github_status/contract-marker.test.mjs";
 import "./github_status/runtime-stage-classification.test.mjs";
 import "./github_status/runtime-fetch-binding.test.mjs";
+import "./github_status/outbound-deadline.test.mjs";
+import "./github_status/graphql-batching.test.mjs";
 import "./test_github_ui.mjs";
