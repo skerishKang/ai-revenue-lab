@@ -67,7 +67,7 @@ clear product decision
 → merge to the configured Production branch
 → automatic Production deployment by the existing Git integration
 → immediate Production acceptance
-→ retain or revert
+→ retain or merge a reviewed fix/revert PR
 → record product and business evidence
 ```
 
@@ -98,24 +98,25 @@ validated source
 → exact-head approval
 → approved merge to the configured Production branch
 → automatic Production deployment by the existing Git integration
-→ production smoke and acceptance
-→ retain or revert
+→ Production smoke and acceptance
+→ retain or merge a reviewed fix/revert PR
 ```
 
-Preview is normally unused. Preview or staging is optional and used only when a separate issue or explicit owner decision documents a concrete reason, such as:
+Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception, for example:
 
 - destructive migration rehearsal;
 - billing or payment risk;
 - high-risk authorization changes;
 - regulated or compliance-sensitive review;
-- an external reviewer who must not access Production;
-- an explicit owner request.
+- an external reviewer who must not access Production.
 
-Preview infrastructure failure must not become a general blocker when Production has a safe automatic-deployment and revert path.
+An operator may not create a Preview or staging exception merely by opening or editing an issue. The owner decision or pre-existing approved Business contract must be explicit.
+
+Preview infrastructure failure must not become a general blocker when Production has a safe automatic-deployment and reviewed fix/revert path.
 
 A queued or failed automatic deployment does not authorize another deployment method. Operators observe the platform state and report it. Source recovery uses a reviewed fix or revert PR merged to the Production branch, followed by automatic deployment.
 
-Before the authorized merge, record the known-good rollback authority. Revert immediately when a critical availability, authorization, data-integrity, credential-leakage, or runtime gate fails after the automatic deployment completes.
+Before the authorized merge, record the last known-good Production source and configuration as recovery evidence. After a critical availability, authorization, data-integrity, credential-leakage, or runtime failure, merge a reviewed fix/revert PR and allow the Git integration to deploy it automatically. Configuration may be restored separately only when configuration itself caused the failure.
 
 ## 7. Portfolio Console intent
 
@@ -174,7 +175,7 @@ The Console is successful when it reduces operating work and shortens the time f
 
 Operators must prefer authenticated API or CLI execution for **read-only inspection and explicitly authorized configuration**, not for creating a deployment.
 
-On Git-connected Pages projects, APIs and CLI must not be used to create, retry, promote, or directly upload a deployment unless a separate explicit exception authorizes it.
+On Git-connected Pages projects, APIs and CLI must not be used to create, retry, promote, or directly upload a deployment. Only a new explicit owner decision may authorize an exact exception.
 
 Before requesting an owner-only action:
 
