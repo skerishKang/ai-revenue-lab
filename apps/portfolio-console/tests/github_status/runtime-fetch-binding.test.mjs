@@ -6,7 +6,7 @@ import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
 import {
   NOW, BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY, aggregatePayload, createProvider, envWithCredentials,
-  generatePrivateKeyPem, jsonResponse, webcrypto
+  generatePrivateKeyPem, jsonResponse, webcrypto, routeGraphqlResponse
 } from "./fixtures.mjs";
 
 const MAPPED_BUSINESS_COUNT = BUSINESS_GITHUB_MAP.filter((m) => m.repository === GITHUB_REPOSITORY).length;
@@ -78,9 +78,10 @@ test("receiver-strict runtime fetch succeeds through InstallationTokenProvider",
 });
 
 test("receiver-strict runtime fetch succeeds through GitHubClient", async () => {
-  const strict = receiverStrictFetch(async (url) => {
+  const full = aggregatePayload();
+  const strict = receiverStrictFetch(async (url, init) => {
     if (url.includes("access_tokens")) return tokenOk();
-    return jsonResponse(aggregatePayload());
+    return jsonResponse(routeGraphqlResponse(full, init));
   });
   const authProvider = createProvider(privateKeyPem, strict);
   const client = new GitHubClient({ authProvider, fetchImpl: strict });
@@ -89,9 +90,10 @@ test("receiver-strict runtime fetch succeeds through GitHubClient", async () => 
 });
 
 test("receiver-strict runtime fetch end-to-end returns 200 with all mapped businesses", async () => {
-  const strict = receiverStrictFetch(async (url) => {
+  const full = aggregatePayload();
+  const strict = receiverStrictFetch(async (url, init) => {
     if (url.includes("access_tokens")) return tokenOk();
-    return jsonResponse(aggregatePayload());
+    return jsonResponse(routeGraphqlResponse(full, init));
   });
   const response = await handleGitHubStatusRequest({
     request: new Request("https://x/api/github-status"),
