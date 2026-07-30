@@ -5,6 +5,7 @@ import { InstallationTokenProvider } from "../../functions/_lib/github-app-auth.
 import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
 import {
   getBatchPlan, getRequestBudget, GRAPHQL_BATCH_SIZE, GRAPHQL_BATCH_CONCURRENCY, buildDiscoveryAliasSelections,
+  getAllIssueNumbers, getFallbackPrNumbers,
 } from "../../functions/_lib/business-github-query.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
 import {
@@ -181,4 +182,172 @@ test("a batch timeout is not retried (fetch for that operation happens once)", a
   const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl, timeouts: { graphqlRequestMs: 20, graphqlBodyMs: 20, installationTokenRequestMs: 20, installationTokenBodyMs: 20, totalSyncMs: 300, handlerBackstopMs: 600 } });
   await assert.rejects(() => client.getStatusAggregation(), (error) => error.code === "GITHUB_GRAPHQL_TIMEOUT");
   for (const count of perQueryCalls.values()) assert.equal(count, 1, "no operation retried");
+});
+
+const LEAK_CANARY = "raw-upstream-message-must-not-leak";
+
+function coreUnexpectedErrorFetch(full) {
+  return async (url, init) => {
+    if (String(url).includes("access_tokens")) return jsonResponse({ token: "t", expires_at: new Date(NOW + 120_000).toISOString() });
+    const query = JSON.parse(init.body).query || "";
+    if (query.includes("repository(owner:")) {
+      const core = routeGraphqlResponse(full, init);
+      // data + a genuine (non null-alias) error ⇒ incomplete refresh.
+      core.errors = [{ path: ["repository", "nameWithOwner"], type: "FORBIDDEN", message: LEAK_CANARY }];
+      return jsonResponse(core);
+    }
+    return jsonResponse(routeGraphqlResponse(full, init));
+  };
+}
+
+function discoveryErrorFetch(full) {
+  let discoverySeen = -1;
+  return async (url, init) => {
+    if (String(url).includes("access_tokens")) return jsonResponse({ token: "t", expires_at: new Date(NOW + 120_000).toISOString() });
+    const query = JSON.parse(init.body).query || "";
+    if (query.includes("repository(owner:")) return jsonResponse(routeGraphqlResponse(full, init));
+    discoverySeen += 1;
+    const resp = routeGraphqlResponse(full, init);
+    if (discoverySeen === 1) {
+      const alias = Object.keys(resp.data)[0];
+      resp.errors = [{ path: [alias], type: "FORBIDDEN", message: LEAK_CANARY }];
+    }
+    return jsonResponse(resp);
+  };
+}
+
+test("core data+errors (unexpected) is an incomplete refresh: GITHUB_GRAPHQL_PARTIAL_RESPONSE", async () => {
+  const full = aggregatePayload();
+  const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl: coreUnexpectedErrorFetch(full) });
+  await assert.rejects(() => client.getStatusAggregation(), (error) => error instanceof GitHubApiError && error.code === "GITHUB_GRAPHQL_PARTIAL_RESPONSE" && error.status === 502);
+});
+
+test("discovery data+errors is an incomplete refresh: GITHUB_GRAPHQL_PARTIAL_RESPONSE", async () => {
+  const full = aggregatePayload();
+  const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl: discoveryErrorFetch(full) });
+  await assert.rejects(() => client.getStatusAggregation(), (error) => error.code === "GITHUB_GRAPHQL_PARTIAL_RESPONSE");
+});
+
+test("partial response with stale cache returns stale 200 with diagnostic parity and no raw message", async () => {
+  const full = aggregatePayload();
+  const snapshot = { ok: true, schemaVersion: 1, syncedAt: "old", stale: false, businesses: [{ number: 15 }] };
+  const cache = new MemorySnapshotCache({ now: () => NOW - 181_000 });
+  await cache.set(snapshot);
+  cache.now = () => NOW;
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"),
+    env: envWithCredentials(), now: () => NOW, cache,
+    client: new GitHubClient({ authProvider: stubAuth(), fetchImpl: coreUnexpectedErrorFetch(full) }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("X-Portfolio-Cache"), "stale");
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "GITHUB_GRAPHQL_PARTIAL_RESPONSE");
+  const text = await response.text();
+  assert.ok(!text.includes(LEAK_CANARY), "raw GraphQL message is not reflected");
+  const body = JSON.parse(text);
+  assert.equal(body.stale, true);
+  assert.equal(body.errors.at(-1).diagnosticCode, "GITHUB_GRAPHQL_PARTIAL_RESPONSE");
+});
+
+test("partial response without cache returns a normalized 502 with body/header diagnostic parity", async () => {
+  const full = aggregatePayload();
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"),
+    env: envWithCredentials(), now: () => NOW, cache: new MemorySnapshotCache({ now: () => NOW }),
+    client: new GitHubClient({ authProvider: stubAuth(), fetchImpl: coreUnexpectedErrorFetch(full) }),
+  });
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "GITHUB_GRAPHQL_PARTIAL_RESPONSE");
+  const text = await response.text();
+  assert.ok(!text.includes(LEAK_CANARY), "raw GraphQL message is not reflected");
+  const body = JSON.parse(text);
+  assert.equal(body.error.diagnosticCode, "GITHUB_GRAPHQL_PARTIAL_RESPONSE");
+  assert.equal(body.schemaVersion, 2);
+});
+
+test("an expected null issue alias (data+error) is a handled data state, not a partial response", async () => {
+  const full = aggregatePayload();
+  const nullIssue = getAllIssueNumbers()[0];
+  const fetchImpl = async (url, init) => {
+    if (String(url).includes("access_tokens")) return jsonResponse({ token: "t", expires_at: new Date(NOW + 120_000).toISOString() });
+    const query = JSON.parse(init.body).query || "";
+    if (query.includes("repository(owner:")) {
+      const core = routeGraphqlResponse(full, init);
+      core.data.repository[`issue${nullIssue}`] = null;
+      core.errors = [{ path: ["repository", `issue${nullIssue}`], type: "NOT_FOUND", message: "redacted" }];
+      return jsonResponse(core);
+    }
+    return jsonResponse(routeGraphqlResponse(full, init));
+  };
+  const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl });
+  const aggregate = await client.getStatusAggregation();
+  assert.equal(aggregate.data.repository[`issue${nullIssue}`], null, "null alias preserved, not treated as partial");
+  const result = await serviceResult({ getStatusAggregation: async () => aggregate }, { key: "expected-null-alias" });
+  assert.equal(result.status, 200);
+  assert.equal(result.payload.ok, true);
+  assert.equal(result.payload.stale, false);
+  assert.equal(result.payload.businesses.length, 40);
+  assert.ok(!(result.payload.errors || []).some((e) => e.diagnosticCode === "GITHUB_GRAPHQL_PARTIAL_RESPONSE"), "no partial-response diagnostic for an expected null alias");
+});
+
+test("a null alias value without any GraphQL error is handled gracefully", async () => {
+  const full = aggregatePayload();
+  const fb = getFallbackPrNumbers()[0];
+  const fetchImpl = async (url, init) => {
+    if (String(url).includes("access_tokens")) return jsonResponse({ token: "t", expires_at: new Date(NOW + 120_000).toISOString() });
+    const query = JSON.parse(init.body).query || "";
+    if (query.includes("repository(owner:")) {
+      const core = routeGraphqlResponse(full, init);
+      core.data.repository[`fallbackPr${fb}`] = null;
+      return jsonResponse(core);
+    }
+    return jsonResponse(routeGraphqlResponse(full, init));
+  };
+  const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl });
+  const aggregate = await client.getStatusAggregation();
+  assert.equal(aggregate.data.repository[`fallbackPr${fb}`], null);
+  assert.equal(aggregate.errors.length, 0, "a clean null value surfaces no error");
+  const result = await serviceResult({ getStatusAggregation: async () => aggregate }, { key: "null-value-no-error" });
+  assert.equal(result.status, 200);
+  assert.equal(result.payload.ok, true);
+});
+
+test("a late old-token 401 arriving after the shared refresh still retries once with the new token", async () => {
+  const full = aggregatePayload();
+  let tokenExchanges = 0;
+  const fetchImpl = async (url, init) => {
+    if (url.includes("access_tokens")) { tokenExchanges += 1; await delay(10); return jsonResponse({ token: `t${tokenExchanges}`, expires_at: new Date(NOW + 120_000).toISOString() }); }
+    const auth = init.headers.Authorization || "";
+    const query = JSON.parse(init.body).query || "";
+    if (query.includes("repository(owner:")) return jsonResponse(routeGraphqlResponse(full, init));
+    // batch A (Discovery0) 401s quickly on the old token and triggers the shared
+    // refresh; batch B (Discovery1) 401s LATE on the old token, after the refresh
+    // has completed, and must still retry once with the refreshed token.
+    if (auth.includes("t1") && query.includes("PortfolioAutoSyncDiscovery0")) { await delay(5); return jsonResponse({}, 401); }
+    if (auth.includes("t1") && query.includes("PortfolioAutoSyncDiscovery1")) { await delay(60); return jsonResponse({}, 401); }
+    return jsonResponse(routeGraphqlResponse(full, init));
+  };
+  const pem = await generatePrivateKeyPem();
+  const authProvider = new InstallationTokenProvider({ appId: "123", installationId: "456", privateKeyPkcs8: pem, cryptoImpl: webcrypto, now: () => NOW, fetchImpl });
+  const client = new GitHubClient({ authProvider, fetchImpl });
+  const result = await client.getStatusAggregation();
+  assert.ok(result.data.repository, "late 401 recovered with the refreshed token");
+  assert.equal(Object.keys(result.data).filter((k) => k.startsWith("prSearch")).length, buildDiscoveryAliasSelections().length, "all discovery aliases merged (batch B recovered)");
+  assert.equal(tokenExchanges, 2, "initial exchange + exactly one shared refresh (no second refresh)");
+});
+
+test("a 401 on the refreshed token fails as GITHUB_GRAPHQL_AUTH_FAILED with no second refresh", async () => {
+  const full = aggregatePayload();
+  let tokenExchanges = 0;
+  const fetchImpl = async (url, init) => {
+    if (url.includes("access_tokens")) { tokenExchanges += 1; await delay(5); return jsonResponse({ token: `t${tokenExchanges}`, expires_at: new Date(NOW + 120_000).toISOString() }); }
+    const query = JSON.parse(init.body).query || "";
+    if (query.includes("repository(owner:")) return jsonResponse({}, 401);
+    return jsonResponse(routeGraphqlResponse(full, init));
+  };
+  const pem = await generatePrivateKeyPem();
+  const authProvider = new InstallationTokenProvider({ appId: "123", installationId: "456", privateKeyPkcs8: pem, cryptoImpl: webcrypto, now: () => NOW, fetchImpl });
+  const client = new GitHubClient({ authProvider, fetchImpl });
+  await assert.rejects(() => client.getStatusAggregation(), (error) => error.code === "GITHUB_GRAPHQL_AUTH_FAILED");
+  assert.equal(tokenExchanges, 2, "initial + one refresh, never a second refresh");
 });

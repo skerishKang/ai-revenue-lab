@@ -13,9 +13,14 @@
  *    - at most ONE 401 token refresh per full refresh
  *    - no per-batch retry loop; a timeout/transport/5xx failure aborts the refresh
  *    - any failed or partial batch ⇒ no fresh payload (throw ⇒ stale/normalized)
+ *    - any UNEXPECTED GraphQL error ⇒ GITHUB_GRAPHQL_PARTIAL_RESPONSE (no fresh
+ *      payload); expected null issue/fallback aliases are a handled data state
  *    - duplicate or missing discovery alias ⇒ fail safe (no fresh payload)
  *    - merged `data` preserves the existing logical GraphQL shape
  *    - HTTP 504 ⇒ GITHUB_GRAPHQL_TIMEOUT; other non-OK ⇒ safe request-failure
+ *    - at most ONE 401 refresh per refresh; a late old-token 401 still retries
+ *      once with the current (refreshed) token; a 401 on the refreshed token ⇒
+ *      GITHUB_GRAPHQL_AUTH_FAILED (never a second refresh)
  */
 
 import { GITHUB_REPOSITORY, assertAllowedRepository } from "./business-github-map.js";
@@ -65,6 +70,20 @@ function safeGraphQLErrors(errors) {
 
 function graphQlRateLimited(errors) {
   return Array.isArray(errors) && errors.some((error) => /rate.?limit|abuse|secondary/i.test(String(error?.message || "")));
+}
+
+/* An "expected" GraphQL error is GitHub's way of reporting that a probed Issue
+ * or fallback PR does not exist: the error path ends on a null `issueN` or
+ * `fallbackPrN` alias. The service/merger already treats that alias as null, so
+ * this is a COMPLETE refresh with an optional field absent — not a partial
+ * response. Any other error means the operation is genuinely incomplete and must
+ * fail safe (never reported as a fresh payload). */
+function isExpectedNullAliasError(error, data) {
+  const path = Array.isArray(error?.path) ? error.path : [];
+  const last = path[path.length - 1];
+  if (typeof last !== "string" || !/^(issue|fallbackPr)\d+$/.test(last)) return false;
+  const container = path[0] === "repository" ? data?.repository : data;
+  return container != null && container[last] === null;
 }
 
 export function normalizeStatusCheckRollup(rollup) {
@@ -196,8 +215,18 @@ export class GitHubClient {
       throw new GitHubApiError("GRAPHQL_DATA_UNAVAILABLE", 502);
     }
 
+    // Fail safe on any UNEXPECTED GraphQL error: a response carrying data plus a
+    // real error is incomplete and must never be reported as fresh. Expected null
+    // issue/fallback aliases (a handled "does not exist" data state) are kept and
+    // surfaced safely; raw messages are never propagated.
+    const rawErrors = Array.isArray(payload.errors) ? payload.errors : [];
+    if (rawErrors.some((error) => !isExpectedNullAliasError(error, payload.data))) {
+      if (logStage) logStage("graphql", "error", startedAt);
+      throw new GitHubApiError("GITHUB_GRAPHQL_PARTIAL_RESPONSE", 502);
+    }
+
     if (logStage) logStage("graphql", "success", startedAt);
-    return { data: payload.data, errors: safeGraphQLErrors(payload.errors) };
+    return { data: payload.data, errors: safeGraphQLErrors(rawErrors) };
   }
 
   /* Run the discovery batches with bounded concurrency: exactly `concurrency`
@@ -246,29 +275,31 @@ export class GitHubClient {
     const [owner, name] = repository.split("/");
 
     // Shared 401-refresh coordinator: at most ONE token refresh per full refresh.
-    // Concurrent 401s share the single in-flight exchange; any 401 observed after
-    // the refresh has completed fails fast instead of refreshing again.
-    const refresh = { done: false, promise: null };
-    const refreshOnce = async () => {
-      if (refresh.done) return false;
+    // The single in-flight exchange is created lazily and shared by every 401.
+    // There is intentionally NO "already done" short-circuit: a late 401 from an
+    // operation that used the old token (returning after the refresh completed)
+    // must still retry once with the current refreshed token, not fail fast.
+    const refresh = { promise: null };
+    const refreshOnce = () => {
       if (!refresh.promise) {
         refresh.promise = (async () => {
           this.authProvider.invalidate();
           await this.authProvider.getToken({ forceRefresh: true });
-          refresh.done = true;
         })();
       }
-      await refresh.promise;
-      return true;
+      return refresh.promise;
     };
 
-    // One operation with a single 401 retry gated by refreshOnce (no retry loop).
+    // One operation with a single 401 retry (no retry loop). The retry always
+    // reads the CURRENT token, so a late old-token 401 arriving after the shared
+    // refresh completed gets exactly one retry with the refreshed token. A 401 on
+    // the refreshed token fails as GITHUB_GRAPHQL_AUTH_FAILED; a second refresh is
+    // never triggered (refreshOnce reuses the existing promise).
     const runOperation = async (query, variables) => {
       let token = await this.authProvider.getToken();
       let result = await this.#sendOperation(query, variables, token);
       if (result.unauthorized) {
-        const didRefresh = await refreshOnce();
-        if (!didRefresh) throw new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);
+        await refreshOnce();
         token = await this.authProvider.getToken();
         result = await this.#sendOperation(query, variables, token);
         if (result.unauthorized) throw new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);

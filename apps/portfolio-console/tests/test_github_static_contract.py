@@ -71,6 +71,10 @@ class GitHubLiveStaticContractTests(unittest.TestCase):
         # HTTP 504 is classified explicitly as a GraphQL timeout; other 5xx keep request-failure.
         self.assertIn('response.status === 504', client)
         self.assertIn('GITHUB_GRAPHQL_TIMEOUT', client)
+        # data + unexpected GraphQL errors is an incomplete refresh (fail safe, no raw message).
+        self.assertIn('GITHUB_GRAPHQL_PARTIAL_RESPONSE', client)
+        self.assertIn('isExpectedNullAliasError', client)
+        self.assertIn('GITHUB_GRAPHQL_PARTIAL_RESPONSE', (FUNCTIONS / "_lib" / "response.js").read_text())
     def test_no_pat_or_write_github_methods(self):
         source = "\n".join(path.read_text() for path in FUNCTIONS.rglob("*.js")).lower()
         self.assertNotIn("personal access token", source)
