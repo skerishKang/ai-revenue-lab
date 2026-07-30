@@ -144,6 +144,32 @@ export function mockAggregateClient(payload = aggregatePayload(), { throwError =
     }
   };
 }
+/* Route a mocked GraphQL HTTP response by the operation in init.body.query:
+ * the core operation receives {repository, draftPullRequests}; each discovery
+ * batch receives exactly the search aliases it requested. This mirrors the real
+ * batched contract so GitHubClient-level tests exercise the merge faithfully. */
+export function routeGraphqlResponse(fullPayload, init) {
+  const data = fullPayload.data;
+  const query = JSON.parse(init.body).query || "";
+  if (query.includes("repository(owner:")) {
+    return { data: { repository: data.repository, draftPullRequests: data.draftPullRequests }, errors: fullPayload.errors || [] };
+  }
+  const slice = {};
+  for (const match of query.matchAll(/^\s*([A-Za-z]\w*): search\(/gm)) {
+    if (match[1] in data) slice[match[1]] = data[match[1]];
+  }
+  return { data: slice, errors: [] };
+}
+export function batchedGraphqlFetchImpl(fullPayload = aggregatePayload(), { counter = null, tokenExchanges = null } = {}) {
+  return async (url, init) => {
+    if (String(url).includes("access_tokens")) {
+      if (tokenExchanges) tokenExchanges.count += 1;
+      return jsonResponse({ token: "t", expires_at: new Date(NOW + 120_000).toISOString() });
+    }
+    if (counter) counter.count += 1;
+    return jsonResponse(routeGraphqlResponse(fullPayload, init));
+  };
+}
 export function envWithCredentials(extra = {}) {
   return {
     GITHUB_APP_ID: "app-secret",

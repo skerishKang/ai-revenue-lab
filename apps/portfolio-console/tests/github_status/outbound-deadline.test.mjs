@@ -12,7 +12,7 @@ import {
 } from "../../functions/_lib/outbound-deadline.js";
 import {
   NOW, webcrypto, generatePrivateKeyPem, jsonResponse, aggregatePayload,
-  envWithCredentials, mockAggregateClient, serviceResult,
+  envWithCredentials, mockAggregateClient, serviceResult, batchedGraphqlFetchImpl,
 } from "./fixtures.mjs";
 
 const FAST = Object.freeze({
@@ -135,7 +135,7 @@ test("token timeout clears every timer it creates", async () => {
 });
 test("graphql success clears every timer it creates", async () => {
   const timers = trackingTimers();
-  const client = graphqlClient(async () => jsonResponse(aggregatePayload()), { timers });
+  const client = graphqlClient(batchedGraphqlFetchImpl(), { timers });
   await client.getStatusAggregation();
   assert.deepEqual(new Set(timers.set), new Set(timers.cleared));
 });
