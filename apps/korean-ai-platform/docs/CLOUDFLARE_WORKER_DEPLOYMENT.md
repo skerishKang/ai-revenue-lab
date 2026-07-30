@@ -82,10 +82,12 @@ Connect in Cloudflare Dashboard → Workers & Pages → `ai-revenue-korean-ai-pl
 |-------|-------|
 | Worker name | `ai-revenue-korean-ai-platform` |
 | GitHub repository | `skerishKang/ai-revenue-lab` |
-| Production branch | `ops/business-14-dedicated-cloudflare-worker-138` |
+| Cloudflare Production branch | `ops/business-14-dedicated-cloudflare-worker-138` |
 | Root directory | `apps/korean-ai-platform` |
 | Build command | *(leave empty)* |
 | Deploy command | `bash ./deploy.sh` |
+
+`Production branch` is Cloudflare control-plane terminology. It does not itself grant portfolio release authority. Deployment authorization, exact-head validation, and rollback preparation follow `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
 
 ## Environment Variables
 

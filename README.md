@@ -8,12 +8,20 @@ AI Revenue Lab is a private product and research repository for proving a specif
 
 Industrial production made one product cheap enough for millions of people. AI-native production can make millions of different editions, one for each person.
 
-The project therefore focuses on four capabilities:
+The project therefore focuses on six capabilities:
 
 1. **Volume** — produce information and content at a scale that human teams cannot economically sustain.
 2. **Speed** — react to events and user feedback within minutes or hours.
-3. **Personalization** — turn common source material into a different edition for each user.
-4. **Revenue evidence** — measure whether AI-produced outputs create traffic, subscriptions, purchases, or other direct revenue.
+3. **Concurrency** — coordinate multiple implementation, research, validation, and operations workers in parallel.
+4. **Real-time reaction** — let current events, operating state, and user feedback change the next output quickly.
+5. **Personalization** — turn common source material into a different product edition for each user.
+6. **Revenue evidence** — measure whether AI-produced outputs create traffic, subscriptions, purchases, or other direct or attributable revenue.
+
+The canonical portfolio intent is documented in:
+
+- `docs/portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+
+The repository is successful only when product hypotheses move toward working services, user behavior, operating cost, and business evidence. More files, screens, agents, or deployments are not success by themselves.
 
 ## Portfolio product direction
 
@@ -47,6 +55,14 @@ Canonical portal documents:
 
 The future user-facing portal belongs in `apps/portal/`. Reusable code belongs in `platform/` only after at least two implemented products prove the same stable requirement and a separate architecture decision approves extraction.
 
+## Portfolio Console direction
+
+`apps/portfolio-console/` is the private owner and operator control tower. It is not the user-facing Portal.
+
+The Console combines deliberate Business authority with automatically synchronized operational facts so the owner can determine what exists, what is deployed, what is being built, what is blocked, and what should happen next without repeatedly re-auditing every repository by hand.
+
+Automation supplies Issue, PR, SHA, CI, deployment, health, and synchronization facts. Humans retain product priority, phase approval, and business judgment.
+
 ## Repository model
 
 This repository is the portfolio-level workspace. Each revenue experiment has an independent product directory under `apps/`.
@@ -71,6 +87,30 @@ See:
 - `apps/README.md`
 - `docs/decisions/ADR-0002-product-workspaces.md`
 - `docs/portfolio/BUSINESS_REGISTRY.md`
+
+## Default execution loop
+
+After a product decision fixes scope and acceptance, the default operating loop is:
+
+```text
+smallest useful scope
+→ AI implementation
+→ independent validation
+→ exact-head approval
+→ merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
+→ immediate Production acceptance
+→ retain or merge a reviewed fix/revert PR
+→ record product and business evidence
+```
+
+UI, UX, backend, deployment, and business verdicts remain separate so one type of evidence is not misrepresented as another. These gates control scope and risk; they are not intended to create ceremony or delay an authorized deployment.
+
+For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
+
+Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. Before the authorized merge, record the last known-good Production source and configuration plus the required smoke checks.
+
+Routine inspection and authorized configuration should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. APIs and CLI must not be used to create, retry, promote, or directly upload a deployment on Git-connected Pages projects. Owner action is reserved for product, risk, and genuinely owner-only decisions.
 
 ## Verified product tracks
 
@@ -107,8 +147,10 @@ Personal Edition is the first planned portal integration target. Its current inv
 - Runtime content production should prefer replaceable free or low-cost models.
 - Strong paid models may be used for exceptional design, diagnosis, or final audit, but the project records where and why they were used.
 - Models remain replaceable through provider adapters rather than being embedded directly into product code.
-- Each Business is reviewed and released independently.
-- The portal does not weaken product-local authorization, privacy, or test gates.
+- Each Business is reviewed, deployed, measured, and continued or stopped independently.
+- The Portal does not weaken product-local authorization, privacy, or test gates.
+- The Console must reduce manual operating work rather than become another reporting burden.
+- Platform-specific Preview failures do not block the normal Git-connected automatic Production path. Operators must not create Preview or another deployment mechanism without new explicit owner authority.
 
 ## Current portfolio status
 
@@ -119,6 +161,7 @@ Personal Edition is the first planned portal integration target. Its current inv
 - Personal Edition is the first portal integration target;
 - Personal Video Archive is undergoing a Korean-first bilingual visual redesign in Draft PR #78;
 - Korean AI Platform private MVP is tracked through Issue #80 and Draft PR #79;
+- Portfolio Console has a merged Business 1–55 static-authority and automatic GitHub-fact mapping foundation; live Production activation remains separately authorized and verified;
 - Business numbering is canonical only through `docs/portfolio/BUSINESS_REGISTRY.md`.
 
 ## Governance rule
