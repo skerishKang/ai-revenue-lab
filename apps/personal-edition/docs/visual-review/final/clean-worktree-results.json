@@ -20,5 +20,6 @@
     "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0\nrootdir: /mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition\nconfigfile: pyproject.toml\nplugins: asyncio-1.4.0, anyio-4.13.0\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 49 items\n\ntests/test_static_preview.py ........................................... [ 87%]\n......                                                                   [100%]\n\n============================== 49 passed in 5.50s ==============================\n",
     "stderr": ""
   },
-  "parentSha": "1382e65a5c57b55855a867a4549b7221f5a68df9"
+  "parentSha": "1382e65a5c57b55855a867a4549b7221f5a68df9",
+  "finalEvidenceHead": "63211fed6c3ea2b08de752546c62b8c2fb72bbde"
 }
