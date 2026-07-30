@@ -171,7 +171,13 @@ export function createGitHubStatusService({
 
   return {
     async getStatus() {
-      const cached = await cache.get();
+      let cached;
+      try { cached = await cache.get(); } catch {
+        return {
+          payload: { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError("UPSTREAM_UNAVAILABLE", "GitHub data is temporarily unavailable.", "CACHE_READ_FAILED"), businesses: [] },
+          status: 502, cacheState: "unavailable",
+        };
+      }
       const ageMs = cached ? now() - cached.storedAtMs : Number.POSITIVE_INFINITY;
       if (cached && ageMs <= freshTtlSeconds * 1000) return { payload: { ...cached.snapshot, stale: false }, status: 200, cacheState: "fresh" };
       try {

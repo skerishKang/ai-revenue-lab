@@ -215,9 +215,36 @@ UNKNOWN_INTERNAL
 ## Validation
 
 ```bash
+cd apps/portfolio-console
+
+# Syntax checks
+node --check functions/api/github-status.js
+node --check functions/_lib/github-app-auth.js
+node --check functions/_lib/github-client.js
+node --check functions/_lib/github-status-service.js
+node --check functions/_lib/response.js
+node --check functions/_lib/cache.js
+node --check functions/_lib/business-fact-merger.js
+node --check functions/_lib/business-github-map.js
+node --check functions/_lib/business-github-query.js
+node --check functions/_lib/business-pr-discovery.js
+node --check functions/_lib/business-verdict-parser.js
+node --check functions/_lib/cache.js
 node --check businesses.js
 node --check app.js
-python -m unittest discover -s tests -v
+
+# Unit tests (Node)
+node tests/test_github_status.mjs
+
+# Unit tests (Python)
+python3 -m unittest discover -s tests -p "test_*.py" -v
+
+# Validators
+node tests/validate_projects.js
+node --input-type=module -e "import('./tests/test_github_ui.mjs')"
+
+# Whitespace check
+git diff --check
 ```
 
 Required behavioral boundaries include:

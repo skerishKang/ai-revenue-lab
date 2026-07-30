@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createGitHubAppJwt } from "../../functions/_lib/github-app-auth.js";
-import { GitHubClient, STATUS_QUERY, normalizeStatusCheckRollup } from "../../functions/_lib/github-client.js";
+import { GitHubClient, GitHubApiError, STATUS_QUERY, normalizeStatusCheckRollup } from "../../functions/_lib/github-client.js";
 import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
 import { assertAllowedRepository } from "../../functions/_lib/business-github-map.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
@@ -211,4 +211,130 @@ test("successful response omits diagnostic header and has no diagnosticCode in b
   const body = await response.json();
   assert.equal(body.error, undefined);
   assert.equal(body.ok, true);
+});
+test("cache read failure returns CACHE_READ_FAILED diagnostic with header", async () => {
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env: envWithCredentials(), now: () => NOW,
+    cache: { async get() { throw new Error("KV cache error"); }, async set() { return { persisted: true, errorCode: null }; }, setMemory() {} },
+  });
+  assert.equal(response.status, 502);
+  const body = await response.json();
+  assert.equal(body.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(body.error.diagnosticCode, "CACHE_READ_FAILED");
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CACHE_READ_FAILED");
+  assert.equal(JSON.stringify(body).includes("KV"), false);
+  assert.equal(JSON.stringify(body).includes("Error"), false, "no raw error class in body");
+});
+test("cache read failure on HEAD returns CACHE_READ_FAILED header without body", async () => {
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status", { method: "HEAD" }), env: envWithCredentials(), now: () => NOW,
+    cache: { async get() { throw new Error("fail"); }, async set() { return { persisted: true, errorCode: null }; }, setMemory() {} },
+  });
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CACHE_READ_FAILED");
+  assert.equal(await response.text(), "");
+});
+test("stale GET response propagates diagnostic header from errors array", async () => {
+  const snapshot = { ok: true, schemaVersion: 1, syncedAt: "old", stale: false, businesses: [{ number: 15 }] };
+  const cache = new MemorySnapshotCache({ now: () => NOW - 181_000 });
+  await cache.set(snapshot);
+  cache.now = () => NOW;
+  const error = new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }), { cache, key: "stale-header" });
+  assert.equal(result.cacheState, "stale");
+  assert.equal(result.payload.stale, true);
+  const lastErr = result.payload.errors.at(-1);
+  assert.equal(lastErr.diagnosticCode, "GITHUB_GRAPHQL_AUTH_FAILED");
+  // verify handler adds the header via the handler (via handleGitHubStatusRequest)
+  const env = envWithCredentials();
+  const handlerResponse = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"),
+    env, now: () => NOW,
+    cache, client: mockAggregateClient(null, { throwError: error }),
+  });
+  assert.equal(handlerResponse.status, 200);
+  assert.equal(handlerResponse.headers.get("X-Portfolio-Cache"), "stale");
+  assert.equal(handlerResponse.headers.get("X-Portfolio-Diagnostic-Code"), "GITHUB_GRAPHQL_AUTH_FAILED");
+  const handlerBody = await handlerResponse.json();
+  assert.equal(handlerBody.stale, true);
+  assert.equal(handlerBody.errors.at(-1).diagnosticCode, "GITHUB_GRAPHQL_AUTH_FAILED");
+});
+test("stale HEAD returns diagnostic header without body", async () => {
+  const snapshot = { ok: true, schemaVersion: 1, syncedAt: "old", stale: false, businesses: [{ number: 15 }] };
+  const cache = new MemorySnapshotCache({ now: () => NOW - 181_000 });
+  await cache.set(snapshot);
+  cache.now = () => NOW;
+  const error = new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);
+  const env = envWithCredentials();
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status", { method: "HEAD" }),
+    env, now: () => NOW,
+    cache, client: mockAggregateClient(null, { throwError: error }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("X-Portfolio-Cache"), "stale");
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "GITHUB_GRAPHQL_AUTH_FAILED");
+  assert.equal(await response.text(), "");
+});
+test("invalid PKCS8 private key end-to-end produces PRIVATE_KEY_INVALID", async () => {
+  const env = envWithCredentials({ GITHUB_APP_PRIVATE_KEY_PKCS8: "not-a-valid-key" });
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env, now: () => NOW,
+    cache: new MemorySnapshotCache({ now: () => NOW }),
+  });
+  assert.equal(response.status, 502);
+  const body = await response.json();
+  assert.equal(body.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(body.error.diagnosticCode, "PRIVATE_KEY_INVALID");
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "PRIVATE_KEY_INVALID");
+  assert.equal(JSON.stringify(body).includes("not-a-valid-key"), false, "raw key not leaked");
+});
+test("installation token exchange 401 end-to-end produces INSTALLATION_TOKEN_EXCHANGE_FAILED", async () => {
+  let tokenExchangeAttempts = 0;
+  const fetchImpl = async (url) => {
+    if (url.includes("access_tokens")) {
+      tokenExchangeAttempts += 1;
+      return new Response('{"message":"Bad credentials"}', { status: 401, headers: { "Content-Type": "application/json" } });
+    }
+    return new Response('{}', { status: 200 });
+  };
+  const env = envWithCredentials({ GITHUB_APP_PRIVATE_KEY_PKCS8: privateKeyPem });
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env, now: () => NOW,
+    cache: new MemorySnapshotCache({ now: () => NOW }),
+    fetchImpl, cryptoImpl: webcrypto,
+  });
+  assert.equal(response.status, 502);
+  const body = await response.json();
+  assert.equal(body.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(body.error.diagnosticCode, "INSTALLATION_TOKEN_EXCHANGE_FAILED");
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "INSTALLATION_TOKEN_EXCHANGE_FAILED");
+  assert.equal(tokenExchangeAttempts, 1);
+  assert.equal(JSON.stringify(body).includes("Bad credentials"), false, "raw GitHub response not leaked");
+});
+test("end-to-end diagnostic leakage: no raw GitHub body, App ID, installation ID, key, JWT, or token in response", async () => {
+  // Invalid key path — verify no App ID or installation ID leak
+  const env = envWithCredentials({ GITHUB_APP_PRIVATE_KEY_PKCS8: "bad" });
+  const r1 = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env, now: () => NOW,
+    cache: new MemorySnapshotCache({ now: () => NOW }),
+  });
+  const t1 = JSON.stringify(await r1.json());
+  for (const s of ["app-secret", "install-secret", "bad"]) {
+    assert.equal(t1.includes(s), false, `secret ${s} not leaked via invalid key path`);
+  }
+  // 401 exchange path
+  let calls = 0;
+  const fetchImpl = async (url) => {
+    if (url.includes("access_tokens")) { calls += 1; return new Response('{"message":"nope"}', { status: 401, headers: { "Content-Type": "application/json" } }); }
+    return new Response('{}', { status: 200 });
+  };
+  const r2 = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env: envWithCredentials({ GITHUB_APP_PRIVATE_KEY_PKCS8: privateKeyPem }),
+    now: () => NOW, cache: new MemorySnapshotCache({ now: () => NOW }), fetchImpl, cryptoImpl: webcrypto,
+  });
+  const t2 = JSON.stringify(await r2.json());
+  for (const s of ["app-secret", "install-secret", "nope"]) {
+    assert.equal(t2.includes(s), false, `no ${s} in 401 exchange response`);
+  }
 });

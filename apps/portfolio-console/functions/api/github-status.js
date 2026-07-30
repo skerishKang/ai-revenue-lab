@@ -78,10 +78,15 @@ export async function handleGitHubStatusRequest({
     const snapshotCache = cache || new RuntimeSnapshotCache({ kv: env.GITHUB_STATUS_SNAPSHOT_KV, now });
     const identitySource = buildIdentitySource();
     const result = await createGitHubStatusService({ client, cache: snapshotCache, now, identitySource }).getStatus();
+    const headers = { "X-Portfolio-Cache": result.cacheState };
+    if (result.cacheState === "stale" && result.payload.errors?.length) {
+      const lastDiagnostic = [...result.payload.errors].reverse().find((e) => e.diagnosticCode);
+      if (lastDiagnostic) headers["X-Portfolio-Diagnostic-Code"] = lastDiagnostic.diagnosticCode;
+    }
     return jsonResponse(result.payload, {
       status: result.status,
       head: isHead,
-      headers: { "X-Portfolio-Cache": result.cacheState },
+      headers,
     });
   } catch {
     return jsonResponse(failure("INTERNAL_ERROR", "GitHub live synchronization could not be completed.", "UNKNOWN_INTERNAL"), { status: 500, head: isHead });
