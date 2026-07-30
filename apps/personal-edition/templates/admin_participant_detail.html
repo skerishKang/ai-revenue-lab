@@ -211,12 +211,18 @@
     {% endif %}
   </section>
 
-  <section class="section detail-actions-section">
-    <h2>작업 흐름</h2>
-    <div class="state-actions">
-      <a href="/admin/participants/modal-preview-user/feedback/" class="btn btn-secondary">피드백 연속성 확인</a>
-      <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
-    </div>
-  </section>
-</div>
+   <section class="section detail-actions-section">
+     <h2>작업 흐름</h2>
+     <div class="state-actions">
+       <a href="/admin/participants/modal-preview-user/feedback/" class="btn btn-secondary">피드백 연속성 확인</a>
+       <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
+     </div>
+
+     {% if is_preview %}
+     <div class="preview-journey-nav">
+       <a href="/admin/review/modal-preview-edition/" class="btn btn-primary">다음: AI 초안 검토 →</a>
+     </div>
+     {% endif %}
+   </section>
+ </div>
 {% endblock %}

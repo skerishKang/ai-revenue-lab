@@ -14,8 +14,8 @@
   {% if editions %}
   <div class="history-list">
     {% for edition in editions %}
-    <a href="{{ _base }}/editions/{{ edition.edition_number }}"
-       class="history-item">
+     <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}"
+        class="history-item">
       <div class="history-thumb">
         {% if edition.edition_number == 1 %}
         <img src="/static/images/edition-cover-shift.webp" alt="" width="1122" height="1402" loading="lazy">
@@ -37,8 +37,14 @@
     </a>
     {% endfor %}
   </div>
-  {% else %}
-  <p class="empty-state">아직 발행된 에디션이 없습니다.</p>
-  {% endif %}
-</div>
-{% endblock %}
+   {% else %}
+   <p class="empty-state">아직 발행된 에디션이 없습니다.</p>
+   {% endif %}
+
+   {% if is_preview %}
+   <div class="preview-journey-nav">
+     <a href="/preview/participant/published/" class="btn btn-secondary">← 발행 단계로</a>
+   </div>
+   {% endif %}
+ </div>
+ {% endblock %}

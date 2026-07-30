@@ -13,8 +13,8 @@
   <div class="alert alert-error" role="alert">{{ error }}</div>
   {% endif %}
 
-  <form method="post"
-        action="{{ _base }}/editions/{{ edition.edition_number }}/feedback"
+       <form method="post"
+              action="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback"
         class="feedback-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
@@ -62,7 +62,7 @@
     {% if is_preview %}
     <div class="preview-journey-nav">
       <p class="preview-journey-hint">미리보기에서는 피드백이 실제 전송되지 않습니다.</p>
-      <a href="/preview/participant/editions/{{ edition.edition_number }}/feedback/thanks" class="btn btn-primary">다음: 피드백 완료 →</a>
+       <a href="/preview/participant/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-primary">다음: 피드백 완료 →</a>
     </div>
     {% endif %}
   </form>

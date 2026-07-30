@@ -72,9 +72,9 @@
   </footer>
 
   <nav class="edition-actions">
-    {% if not has_given_feedback %}
-    <a href="{{ _base }}/editions/{{ edition.edition_number }}/feedback"
-       class="btn btn-primary">피드백 보내기</a>
+{% if not has_given_feedback %}
+     <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback"
+        class="btn btn-primary">피드백 보내기</a>
     {% else %}
     <p class="feedback-submitted">이미 피드백을 제출했습니다.</p>
     {% endif %}

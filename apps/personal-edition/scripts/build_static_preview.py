@@ -57,6 +57,18 @@ form input[type="submit"] {
   opacity: 0.5;
   cursor: not-allowed;
 }
+.preview-journey-nav {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed #d4b106;
+  border-radius: 8px;
+  background: #fffbeb;
+}
+.preview-journey-nav .preview-journey-hint {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.85rem;
+  color: #92400e;
+}
 """
 
 _HEADERS_CONTENT = """\
@@ -345,8 +357,8 @@ def main() -> None:
             "has_given_feedback": False,
             "next_edition_number": None,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}",
-        f"preview/participant/editions/{edition_published.edition_number}/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}",
+        f"preview/participant/editions/{edition_published.edition_uid}/index.html",
     )
 
     _write_page(
@@ -357,8 +369,8 @@ def main() -> None:
             "content": content,
             "error": None,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}/feedback",
-        f"preview/participant/editions/{edition_published.edition_number}/feedback/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}/feedback",
+        f"preview/participant/editions/{edition_published.edition_uid}/feedback/index.html",
     )
 
     _write_page(
@@ -366,9 +378,10 @@ def main() -> None:
         {
             "participant": participant,
             "edition_number": edition_published.edition_number,
+            "edition_id": edition_published.edition_uid,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}/feedback/thanks",
-        f"preview/participant/editions/{edition_published.edition_number}/feedback/thanks/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}/feedback/thanks",
+        f"preview/participant/editions/{edition_published.edition_uid}/feedback/thanks/index.html",
     )
 
     _write_page(
@@ -415,8 +428,8 @@ def main() -> None:
             "edition": edition_published,
             "content": content,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}/adaptation",
-        f"preview/participant/editions/{edition_published.edition_number}/adaptation/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}/adaptation",
+        f"preview/participant/editions/{edition_published.edition_uid}/adaptation/index.html",
     )
 
     _write_page(

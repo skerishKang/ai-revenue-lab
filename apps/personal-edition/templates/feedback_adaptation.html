@@ -47,7 +47,7 @@
   </section>
 
   <section class="adaptation-nav">
-    <a href="{{ _base }}/editions/{{ edition.edition_number }}/feedback/thanks" class="btn btn-secondary">← 감사 페이지로</a>
+     <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-secondary">감사 페이지로</a>
     <a href="{{ _base }}/history" class="btn btn-secondary">지난 에디션 보기</a>
   </section>
 </div>

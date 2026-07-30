@@ -95,8 +95,8 @@
     </div>
     {% endif %}
 
-    <a href="{{ _base }}/editions/{{ published_editions[0].edition_number }}"
-       class="latest-edition">
+     <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}"
+        class="latest-edition">
       <div class="latest-edition-cover">
         {% if published_editions[0].edition_number == 1 %}
         <img src="/static/images/edition-cover-shift.webp" alt="에디션 커버"
@@ -121,8 +121,8 @@
 
     <div class="state-actions">
       {% if not has_feedback_on_latest %}
-      <a href="{{ _base }}/editions/{{ published_editions[0].edition_number }}/feedback"
-         class="btn btn-primary">피드백 보내기</a>
+       <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}/feedback"
+          class="btn btn-primary">피드백 보내기</a>
       {% endif %}
       <a href="{{ _base }}/input" class="btn btn-secondary">새 기록 남기기</a>
     </div>
@@ -137,7 +137,7 @@
     <div class="state-actions">
       <a href="{{ _base }}/input" class="btn btn-primary">새 기록 남기기</a>
       {% if published_editions %}
-      <a href="{{ _base }}/editions/{{ published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>
+       <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>
       {% endif %}
     </div>
   </div>
@@ -149,8 +149,8 @@
     <h2>지난 에디션</h2>
     <div class="past-edition-list">
       {% for edition in published_editions[1:] %}
-      <a href="{{ _base }}/editions/{{ edition.edition_number }}"
-         class="past-edition-item">
+       <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}"
+          class="past-edition-item">
         <span class="past-edition-num">#{{ edition.edition_number }}</span>
         <span class="past-edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
         <span class="past-edition-date">

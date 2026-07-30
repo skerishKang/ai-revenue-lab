@@ -234,6 +234,63 @@ class TestEditionCoverContract:
         assert "edition-cover-mini" in content
 
 
+class TestEditionIdIssueSeparation:
+    """Fixture id (slug) and display issue number (호수) must be separate."""
+
+    def test_fixture_has_separate_display_number(self):
+        from preview_fixtures.data import make_edition, EDITION_ID
+
+        edition = make_edition()
+        assert edition.edition_number == 1, "display edition_number should be 1"
+        assert edition.edition_uid == EDITION_ID, "edition_uid is the URL slug"
+        assert edition.id == EDITION_ID
+        assert edition.edition_number != edition.id
+
+    def test_display_uses_issue_number_not_slug(self):
+        # 제1호 is displayed on the edition-read page.
+        ed = (OUTPUT_DIR / "preview/participant/editions/modal-preview-edition/index.html").read_text(encoding="utf-8")
+        assert "제1호" in ed, "edition read should display 제1호"
+        assert "제modal-preview-edition호" not in ed
+        # #1 is displayed on the queue (operator list) page and participant history.
+        queue = (OUTPUT_DIR / "admin/index.html").read_text(encoding="utf-8")
+        assert "#1" in queue, "operator queue should display #1"
+        assert "#modal-preview-edition" not in queue
+        hist = (OUTPUT_DIR / "preview/participant/history/index.html").read_text(encoding="utf-8")
+        assert "#1" in hist, "participant history should display #1"
+        assert "#modal-preview-edition" not in hist
+        # Slug never used as a 호수 display anywhere.
+        for html_file in _all_html_files():
+            c = html_file.read_text(encoding="utf-8")
+            assert "제modal-preview-edition호" not in c, (
+                f"slug displayed as 호수 in {html_file.relative_to(OUTPUT_DIR)}"
+            )
+
+    def test_displayed_badges_are_numeric_everywhere(self):
+        for html_file in _all_html_files():
+            content = html_file.read_text(encoding="utf-8")
+            # A displayed badge wraps the edition ref with whitespace/tag, not a /
+            assert "제modal-preview-edition호" not in content, (
+                f"호수 slug displayed in {html_file.relative_to(OUTPUT_DIR)}"
+            )
+            # Display badge forms (#N, 제N호) must be numeric, i.e. no slug badge.
+            assert ">#modal-preview-edition<" not in content
+            assert "/#modal-preview-edition" not in content
+
+    def test_urls_and_output_paths_use_slug(self):
+        # URL and output path must keep using edition.id (the slug).
+        assert (OUTPUT_DIR / "preview/participant/editions/modal-preview-edition/index.html").exists()
+        path = OUTPUT_DIR / "preview/participant/editions/modal-preview-edition/index.html"
+        content = path.read_text(encoding="utf-8")
+        # Link targets under that page use the slug URL prefix.
+        assert "/preview/participant/editions/modal-preview-edition/feedback" in content
+
+    def test_url_paths_use_slug_rooted_at_preview(self):
+        path = OUTPUT_DIR / "preview/participant/editions/modal-preview-edition/index.html"
+        assert path.exists()
+        feedback = OUTPUT_DIR / "preview/participant/editions/modal-preview-edition/feedback/index.html"
+        assert feedback.exists()
+
+
 class TestFeedbackAdaptation:
     def test_adaptation_shows_exact_feedback(self):
         path = OUTPUT_DIR / "preview/participant/editions/modal-preview-edition/adaptation/index.html"
