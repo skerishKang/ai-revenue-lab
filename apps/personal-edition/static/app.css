@@ -1353,6 +1353,70 @@ legend {
   color: var(--muted);
 }
 
+@media (max-width: 480px) {
+  .queue-table,
+  .queue-table thead,
+  .queue-table tbody,
+  .queue-table tr,
+  .queue-table td {
+    display: block;
+    width: 100%;
+  }
+  .queue-table thead {
+    display: none;
+  }
+  .queue-table tr {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    padding: .5rem 0;
+  }
+  .queue-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: .625rem 1rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  .queue-table td:last-child {
+    border-bottom: none;
+  }
+  .queue-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--muted);
+    text-align: left;
+    flex-shrink: 0;
+    min-width: 100px;
+  }
+  .queue-table .cell-participant {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .queue-table .cell-participant::before {
+    margin-bottom: .25rem;
+  }
+  .queue-table .cell-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .queue-table .cell-cta .btn {
+    width: 100%;
+    margin-bottom: .5rem;
+  }
+  .queue-table .cell-cta .btn:last-child {
+    margin-bottom: 0;
+  }
+}
+
 /* Collapsible Tech Info */
 .tech-info-details {
   background: var(--surface);
