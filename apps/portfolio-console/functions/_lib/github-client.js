@@ -14,6 +14,7 @@
 import { GITHUB_REPOSITORY, BUSINESS_GITHUB_MAP, assertAllowedRepository } from "./business-github-map.js";
 import { buildStatusQuery, getRequestBudget } from "./business-github-query.js";
 import { safeError } from "./response.js";
+import { bindFetchImpl } from "./runtime-fetch.js";
 
 /* Re-export STATUS_QUERY for test backward compatibility (PR #193 contract) */
 export const STATUS_QUERY = buildStatusQuery({ prSearchLimit: 10 });
@@ -87,7 +88,7 @@ export function normalizeStatusCheckRollup(rollup) {
 export class GitHubClient {
   constructor({ authProvider, fetchImpl = fetch }) {
     this.authProvider = authProvider;
-    this.fetchImpl = fetchImpl;
+    this.fetchImpl = bindFetchImpl(fetchImpl);
   }
 
   async graphql(repository, { retryAuth = true } = {}) {

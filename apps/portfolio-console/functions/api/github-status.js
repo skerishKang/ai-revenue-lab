@@ -18,6 +18,7 @@ import { GitHubClient } from "../_lib/github-client.js";
 import { RuntimeSnapshotCache } from "../_lib/cache.js";
 import { createGitHubStatusService } from "../_lib/github-status-service.js";
 import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError, validDiagnosticCode } from "../_lib/response.js";
+import { bindFetchImpl } from "../_lib/runtime-fetch.js";
 import { SCHEMA_VERSION } from "../_lib/business-fact-merger.js";
 import { buildIdentitySource } from "../../business-identity-data.js";
 
@@ -64,17 +65,18 @@ export async function handleGitHubStatusRequest({
   }
 
   try {
+    const boundFetch = bindFetchImpl(fetchImpl);
     const authProvider = injectedClient
       ? null
       : new InstallationTokenProvider({
           appId: env.GITHUB_APP_ID,
           installationId: env.GITHUB_APP_INSTALLATION_ID,
           privateKeyPkcs8: env.GITHUB_APP_PRIVATE_KEY_PKCS8,
-          fetchImpl,
+          fetchImpl: boundFetch,
           now,
           cryptoImpl,
         });
-    const client = injectedClient || new GitHubClient({ authProvider, fetchImpl });
+    const client = injectedClient || new GitHubClient({ authProvider, fetchImpl: boundFetch });
     const snapshotCache = cache || new RuntimeSnapshotCache({ kv: env.GITHUB_STATUS_SNAPSHOT_KV, now });
     const identitySource = buildIdentitySource();
     const result = await createGitHubStatusService({ client, cache: snapshotCache, now, identitySource }).getStatus();
