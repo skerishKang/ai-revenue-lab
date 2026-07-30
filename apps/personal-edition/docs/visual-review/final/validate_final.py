@@ -373,6 +373,7 @@ def main() -> int:
         "totalRequests": len(network),
         "uniquePaths": len({r["path"] for r in network.values()}),
         "http200": sum(1 for r in network.values() if r["status"] == 200),
+        "http301": sum(1 for r in network.values() if r["status"] == 301),
         "http4xx": sum(1 for r in network.values() if r["status"] and 400 <= r["status"] < 500),
         "http5xx": sum(1 for r in network.values() if r["status"] and r["status"] >= 500),
         "requestfailed": sum(1 for r in network.values() if r["requestFailed"]),
