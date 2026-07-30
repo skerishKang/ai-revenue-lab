@@ -11,6 +11,7 @@ import { handleGitHubStatusRequest } from "../../functions/api/github-status.js"
 import {
   NOW, aggregatePayload, jsonResponse, delay, routeGraphqlResponse, batchedGraphqlFetchImpl,
   serviceResult, mockAggregateClient, envWithCredentials, webcrypto, generatePrivateKeyPem,
+  BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY,
 } from "./fixtures.mjs";
 
 const stubAuth = () => ({ async getToken() { return "t"; }, invalidate() {} });
@@ -62,7 +63,7 @@ test("bounded concurrency: in-flight GraphQL operations never exceed the limit",
   assert.ok(maxInFlight >= 2, `batches ran concurrently (observed ${maxInFlight})`);
 });
 
-test("all batches succeeding yields the 40 mapped Business facts via the real client", async () => {
+test("all batches succeeding yields all 55 authority records via the real client", async () => {
   const full = aggregatePayload();
   const counter = { count: 0 };
   const client = new GitHubClient({ authProvider: stubAuth(), fetchImpl: batchedGraphqlFetchImpl(full, { counter }) });
@@ -73,8 +74,8 @@ test("all batches succeeding yields the 40 mapped Business facts via the real cl
   assert.equal(result.payload.ok, true);
   assert.equal(result.payload.stale, false);
   assert.equal(result.payload.schemaVersion, 2);
-  assert.equal(result.payload.businesses.length, 40);
-  assert.equal(result.payload.businesses.filter((b) => b.repository).length, 40);
+  assert.equal(result.payload.businesses.length, BUSINESS_GITHUB_MAP.length);
+  assert.equal(result.payload.businesses.filter((b) => b.repository).length, BUSINESS_GITHUB_MAP.filter((m) => m.repository === GITHUB_REPOSITORY).length);
 });
 
 test("merge is deterministic: two runs produce identical data and Business order", async () => {
@@ -286,7 +287,7 @@ test("an expected null issue alias (data+error) is a handled data state, not a p
   assert.equal(result.status, 200);
   assert.equal(result.payload.ok, true);
   assert.equal(result.payload.stale, false);
-  assert.equal(result.payload.businesses.length, 40);
+  assert.equal(result.payload.businesses.length, BUSINESS_GITHUB_MAP.length);
   assert.ok(!(result.payload.errors || []).some((e) => e.diagnosticCode === "GITHUB_GRAPHQL_PARTIAL_RESPONSE"), "no partial-response diagnostic for an expected null alias");
 });
 

@@ -131,8 +131,9 @@ export function createGitHubStatusService({
       }
     }
 
-    // Merge facts for each mapped Business (phase-scoped fallback nodes)
-    const businessFacts = mappedEntries.map((mapping) => {
+    // Merge facts for all 55 authority records (mergeBusinessFacts returns the
+    // safe unmapped shape for entries with repository === null).
+    const businessFacts = BUSINESS_GITHUB_MAP.map((mapping) => {
       const nums = mapping.fallbackPrNumbers || {};
       const fallbackPrNodes = {
         ui: nums.ui ? (repositoryData[`fallbackPr${nums.ui}`] || null) : null,

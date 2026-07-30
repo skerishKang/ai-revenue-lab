@@ -105,7 +105,11 @@ test("receiver-strict runtime fetch end-to-end returns 200 with all mapped busin
   assert.equal(body.ok, true);
   assert.equal(body.schemaVersion, 2);
   assert.equal(body.stale, false);
-  assert.equal(body.businesses.length, MAPPED_BUSINESS_COUNT);
+  assert.equal(body.businesses.length, BUSINESS_GITHUB_MAP.length);
+  const connected = body.businesses.filter((b) => b.repository).length;
+  const unmapped = body.businesses.filter((b) => b.connectionState === "unmapped").length;
+  assert.equal(connected, MAPPED_BUSINESS_COUNT);
+  assert.equal(unmapped, BUSINESS_GITHUB_MAP.length - MAPPED_BUSINESS_COUNT);
   assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), null);
 });
 
