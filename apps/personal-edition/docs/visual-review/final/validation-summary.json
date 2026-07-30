@@ -3,9 +3,9 @@
   "pr": 111,
   "helperBranch": "work/business-01-final-0730",
   "targetRemoteBranch": "feat/personal-edition-final-demo-visual-108",
-  "sourceValidationSha": "1bcec97872cd9d51443bec897db02ad1e8980718",
-  "headSha": "1bcec97872cd9d51443bec897db02ad1e8980718",
-  "timestamp": "2026-07-30T06:20:02.610026+00:00",
+  "sourceValidationSha": "0b3d281ab0ea9b26c2490a5a4ae6c7d4fc614815",
+  "headSha": "0b3d281ab0ea9b26c2490a5a4ae6c7d4fc614815",
+  "timestamp": "2026-07-30T06:25:04.397313+00:00",
   "validationType": "independent-clean-worktree-playwright",
   "screens": 8,
   "viewports": [
@@ -35,6 +35,7 @@
     "totalRequests": 38,
     "uniquePaths": 38,
     "http200": 32,
+    "http301": 6,
     "http4xx": 0,
     "http5xx": 0,
     "requestfailed": 0,
@@ -97,5 +98,6 @@
   "wrongHoSuDisplayCount": 0,
   "accessibilityRuns": 13,
   "status": "pass",
-  "errors": []
+  "errors": [],
+  "parentSha": "1382e65a5c57b55855a867a4549b7221f5a68df9"
 }

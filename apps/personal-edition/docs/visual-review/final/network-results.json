@@ -85,18 +85,6 @@
       "bytes": 3855
     },
     {
-      "url": "http://localhost:8791/static/images/private-library-hero.webp",
-      "path": "/static/images/private-library-hero.webp",
-      "method": "GET",
-      "status": 200,
-      "contentType": "image/webp",
-      "resourceType": "image",
-      "external": false,
-      "requestFailed": false,
-      "sha256": "9b997768d1bbd6a9eebc99b81784e314af89f1e4092fa4b19babc0a232e3be3f",
-      "bytes": 73270
-    },
-    {
       "url": "http://localhost:8791/static/images/edition-cover-shift.webp",
       "path": "/static/images/edition-cover-shift.webp",
       "method": "GET",
@@ -107,6 +95,18 @@
       "requestFailed": false,
       "sha256": "bbdfb8ab0d91b539d873f65fc70dd3216599b4c0153d464cbf95f526f07e28a3",
       "bytes": 74406
+    },
+    {
+      "url": "http://localhost:8791/static/images/private-library-hero.webp",
+      "path": "/static/images/private-library-hero.webp",
+      "method": "GET",
+      "status": 200,
+      "contentType": "image/webp",
+      "resourceType": "image",
+      "external": false,
+      "requestFailed": false,
+      "sha256": "9b997768d1bbd6a9eebc99b81784e314af89f1e4092fa4b19babc0a232e3be3f",
+      "bytes": 73270
     },
     {
       "url": "http://localhost:8791/preview/participant/editions/modal-preview-edition/",
@@ -461,6 +461,7 @@
     "totalRequests": 38,
     "uniquePaths": 38,
     "http200": 32,
+    "http301": 6,
     "http4xx": 0,
     "http5xx": 0,
     "requestfailed": 0,
