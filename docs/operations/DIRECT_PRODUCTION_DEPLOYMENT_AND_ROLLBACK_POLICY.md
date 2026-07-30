@@ -1,241 +1,243 @@
 # Direct Production Deployment and Rollback Policy
 
 - Status: portfolio operating policy
-- Authority: #326
-- Supersedes: Preview-first deployment model (all prior versions)
-- Applies to: all AI Revenue Lab Cloudflare Pages projects and Workers that serve authorized Production traffic
+- Owner: Web CTO
+- Authority: Issue #326
+- Intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
 
 ## 1. Purpose
 
-Define the default deployment model for every AI Revenue Lab Business: deploy verified `main` directly to a dedicated Production environment, run immediate acceptance checks, and roll back on critical failure.
+This policy keeps AI Revenue Lab deployment aligned with its operating intent: move validated product work into real operation quickly, verify it in the actual environment, and recover immediately when a critical gate fails.
 
-Preview is optional and may be used only when a Business-specific issue explicitly requires it (Section 13).
+Deployment policy must not turn optional infrastructure into a universal blocker or require repeated owner work that authenticated automation can perform.
 
-## 2. Scope
+## 2. Default flow
 
-- Cloudflare Pages projects connected to this repository
-- Cloudflare Workers that serve Production traffic
-- Deployment authorization, execution, acceptance, and rollback
-- Environment variables, encrypted secrets, KV namespace bindings
-- Production Access boundaries
-
-This policy does not cover:
-
-- Phase approval (UI, UX, backend — see `UI_UX_BACKEND_PHASE_GATES.md`)
-- Source validation or testing (see the applicable playbook)
-- Incident response unrelated to deployment
-
-## 3. Terminology
-
-| Term | Definition |
-|---|---|
-| Production | The environment serving the canonical public domain for a Business |
-| Preview | An ephemeral Cloudflare deployment on a hash-based hostname (<hash>.<project>.pages.dev) |
-| Smoke acceptance | Immediate post-deployment verification of critical Production behavior |
-| Rollback authority | The known-good Production deployment ID and configuration that will be restored on failure |
-| Exact head | The specific Git SHA that was reviewed, approved, and deployed |
-| Dedicated project | A Cloudflare Pages or Worker project scoped to exactly one Business |
-
-## 4. Default deployment model
+After explicit deployment authorization, the default flow is:
 
 ```text
 validated source
-→ approved exact-head merge
-→ direct Production deployment
-→ Production acceptance
-→ keep or rollback
+→ exact-head approval
+→ approved merge to main
+→ dedicated Production deployment
+→ immediate Production smoke and acceptance
+→ retain or rollback
 ```
 
-Preview is not part of this flow. A platform defect in Preview must not block direct Production deployment when a safe rollback path exists.
+Preview or staging is not a mandatory predecessor to Production.
 
-## 5. Deployment authorization boundary
+## 3. Authorization boundary
 
-- `UI_APPROVED` does not authorize merge or deployment
-- `UX_APPROVED` does not authorize merge or deployment
-- Deployment requires separate user authorization
-- When the user authorizes deployment, the default target is the dedicated Business Production project
-- Deployment does not imply UI, UX, backend, or product approval
-- A green deployment under the wrong Cloudflare project is invalid evidence
+Deployment authorization remains separate from UI, UX, backend, and business verdicts.
 
-## 6. Exact-head validation
+- `UI_APPROVED` does not automatically authorize merge or deployment.
+- A merged PR does not automatically prove a UI, UX, backend, or business verdict.
+- A successful deployment does not prove product quality, user value, or revenue.
+- Once the owner explicitly authorizes deployment for the accepted scope, operators should proceed through the documented gates without repeated minor approval questions.
 
-Before Production deployment, verify:
+## 4. Dedicated project rule
 
-- `origin/main` is current and matches the expected SHA
-- The deployed source is byte-equivalent to the approved exact head
-- No new commits were silently introduced
-- Scope and changed files match what was reviewed
+Each Business uses its own approved Cloudflare Pages project, Worker, or equivalent deployment target.
 
-## 7. Merge contract
+Before deployment, verify:
+
+- repository;
+- Business and workspace;
+- project or Worker name;
+- root directory;
+- Production branch;
+- exact source SHA;
+- domain or service hostname;
+- Access and authorization boundary when applicable.
+
+A green deployment under an unrelated project is invalid evidence.
+
+## 5. Exact-head and merge contract
 
 When a PR is involved:
 
-- Use expected-head-fixed merge (not squash or rebase that rewrites history)
-- The merged SHA must match the reviewed exact head
-- The PR must not be marked Ready or merged until deployment authorization is confirmed
+- verify the latest `origin/main`;
+- verify the PR exact head and changed files;
+- require the applicable tests and authoritative CI;
+- merge only the reviewed expected head;
+- deploy the resulting exact `main` SHA;
+- do not create empty commits merely to trigger deployment;
+- do not silently deploy older reviewed bytes after `main` has changed.
 
-## 8. Dedicated Cloudflare project ownership
+Direct upload is permitted only when explicitly authorized and the deployed bytes are tied to an exact source SHA.
 
-Every Production-bearing Business uses its own dedicated project:
+## 6. Risk levels
+
+### D0 — documentation only
+
+- no deployment required;
+- validate scope, links, and formatting.
+
+### D1 — static UI, copy, and local assets
+
+- focused source and browser validation;
+- exact-head verification;
+- Production static and responsive smoke;
+- known-good rollback deployment recorded.
+
+### D2 — frontend runtime or read-only API consumer
+
+- deterministic tests;
+- browser and network validation;
+- API method and schema checks where applicable;
+- Production smoke;
+- deployment rollback prepared.
+
+### D3 — backend, secrets, cache, authentication, or persistence
+
+- full deterministic and runtime tests;
+- secret and authorization boundary verification;
+- deployment and configuration rollback prepared;
+- security and leakage checks;
+- controlled failure-path verification where safe.
+
+### D4 — migration, billing, destructive data, or irreversible external action
+
+- separate owner authorization;
+- recovery or rollback rehearsal;
+- Preview or staging may be explicitly required;
+- destructive-operation and data-integrity review.
+
+Risk level determines the evidence required. It does not automatically require Preview for D0–D3.
+
+## 7. Production rollback authority
+
+Before changing Production, record the current known-good state:
+
+- deployment or version ID;
+- exact source SHA when available;
+- active hostname;
+- Access or authentication behavior;
+- environment variable and secret names;
+- binding names;
+- database or migration state when applicable;
+- root and critical-route health.
+
+This record is the rollback authority.
+
+Do not add new Production secrets, bindings, migrations, or destructive behavior without knowing how to restore or remove them.
+
+## 8. Immediate Production acceptance
+
+After deployment, verify the relevant subset of:
+
+- TLS and hostname validity;
+- intended Access or authentication boundary;
+- root and critical-route HTTP behavior;
+- exact deployed source or asset identity;
+- required static assets;
+- API methods, headers, and schemas;
+- desktop and mobile critical journeys;
+- console, page, CSP, and network failures;
+- secret, token, identity, and infrastructure-detail leakage;
+- persistence, cache, stale fallback, or destructive behavior.
+
+Production acceptance should begin immediately after the deployment completes.
+
+## 9. Mandatory rollback triggers
+
+Rollback immediately when a critical failure occurs, including:
+
+- root or critical route unavailable;
+- TLS or hostname invalid;
+- Access or authentication bypass;
+- authorized users locked out of a critical path without a safe recovery;
+- repeated required API 5xx;
+- invalid response schema or materially incorrect facts;
+- credential, token, private identity, or secret leakage;
+- broken static shell or critical runtime;
+- unusable primary desktop or mobile journey;
+- data corruption or uncontrolled destructive behavior.
+
+Do not wait for a new owner approval to execute a prepared rollback for a critical failure.
+
+Rollback must restore the prior known-good deployment and remove or restore newly introduced failed configuration.
+
+## 10. Optional Preview and staging
+
+Preview or staging is used only when it serves a concrete purpose, such as:
+
+- destructive migration rehearsal;
+- payment or billing verification;
+- high-risk authentication or authorization changes;
+- regulated or compliance-sensitive review;
+- an external stakeholder who must not access Production;
+- an explicit owner request;
+- a Business-specific contract that documents why Production-first is unsafe.
+
+Preview secrets, KV bindings, Access applications, branches, and automatic builds should not be created by default.
+
+A Preview-only platform defect should be recorded and escalated separately. It must not block an authorized Production deployment when the source is validated and a safe rollback path exists.
+
+## 11. API and CLI first
+
+Operators must prefer authenticated connectors, API, or CLI automation over repeated owner Dashboard work.
+
+Before asking the owner to click a control:
+
+1. verify that the scoped API or connector cannot perform the operation;
+2. inspect the actual current UI or authoritative API contract;
+3. use the exact current permission, menu, and button names;
+4. group owner-only actions into one bounded request;
+5. never request passwords, OTPs, cookies, private keys, or tokens in chat.
+
+Short-lived, least-privilege tokens are preferred. Secret values must not be echoed, logged, committed, or included in evidence.
+
+## 12. Automatic deployment behavior
+
+A Git-connected platform may automatically deploy after a merge or push to `main`.
+
+This technical behavior does not create authorization. The merge and deployment must already be approved for the relevant scope.
+
+Once approved, direct `main` to Production deployment is the normal behavior and should not be artificially delayed by an optional Preview gate.
+
+## 13. Evidence
+
+Every Production deployment report should record:
+
+- repository and Business;
+- exact `main` SHA;
+- project or Worker name;
+- Production URL;
+- previous and new deployment IDs;
+- rollback authority;
+- tests and CI;
+- smoke and acceptance results;
+- secret and binding names without values;
+- rollback required: yes or no;
+- final disposition.
+
+Useful dispositions include:
 
 ```text
-Cloudflare Pages project: ai-revenue-<business-stable-slug>
-Repository: skerishKang/ai-revenue-lab
-Production branch: main
-Root directory: apps/<product>/ or reference/<business>/ as applicable
+PRODUCTION_DEPLOYMENT_VERIFIED
+PRODUCTION_DEPLOYMENT_ROLLED_BACK
+PRODUCTION_ACTIVATION_BLOCKED_<reason>
+PREVIEW_OPTIONAL_NOT_USED
+PREVIEW_REQUIRED_<documented reason>
 ```
 
-- Never deploy to another Business's project
-- Never reuse an unrelated project
-- Never deploy a project that does not match the Business identity
+## 14. Portfolio Console rule
 
-## 9. Production secrets and bindings
+Portfolio Console uses project `ai-revenue-portfolio-console` with Production branch `main`.
 
-Production secrets and KV bindings are configured only through an authorized Production activation issue.
+Its hash-based Pages Preview TLS defect is tracked in Issue #324. That defect is not a Production blocker.
 
-- Use `"type":"secret_text"` for encrypted secrets
-- Do not create default Preview secrets, KV, or Access applications
-- Record secret names (not values) and KV namespace title in deployment evidence
-- Never echo, log, screenshot, or commit secret values
+Portfolio Console Production activation must:
 
-## 10. Production smoke acceptance
+- use the validated exact `main` SHA;
+- preserve Cloudflare Access;
+- add GitHub App secrets and KV bindings only through authorized activation work;
+- verify live API, cache, stale fallback, desktop, mobile, and leakage boundaries in Production;
+- roll back deployment and configuration on critical failure.
 
-Immediately after deployment, verify the applicable subset:
+## 15. Relationship to phase gates
 
-- TLS and certificate validity
-- Access/auth boundary (unauthenticated redirected, authenticated allowed)
-- Root and critical route HTTP status (200, not 5xx)
-- Exact deployed SHA matches the approved source
-- No credential, token, email, or internal path leakage
-- Required API endpoints return correct schema and status codes
-- Cache and stale-fallback behavior when applicable
-- Static assets load without 404 or 5xx
-- Console errors: 0, CSP violations: 0
-- Business-critical desktop and mobile flows
+UI, UX, and backend gates define what work is authorized. This policy defines how an authorized deployment is executed and recovered.
 
-## 11. Rollback preparation
-
-Before every Production change:
-
-1. Record the current Production deployment ID
-2. Record the current Production configuration (secrets, KV, Access)
-3. Store the rollback baseline outside the deployment session
-
-Rollback authority must be verifiable without the deployment session that created it.
-
-## 12. Mandatory rollback triggers
-
-Rollback immediately (no additional user approval required) when:
-
-| Trigger | Evidence |
-|---|---|
-| Root or critical route returns 5xx or is unreachable | curl HTTP status |
-| Access/auth bypass or lockout | Unauthenticated access succeeds, or authenticated access fails |
-| Repeated required API 5xx | Three consecutive failures |
-| Invalid response schema or materially incorrect data | Schema validation failure |
-| Credential or secret leakage | Token, key, email, or internal path in public response |
-| Broken runtime or static shell | Page fails to render or critical JS/CSS missing |
-| Unusable critical desktop or mobile flow | Primary user journey broken |
-
-Rollback procedure:
-
-1. Restore the prior deployment using `POST /deployments/{id}/rollback` or equivalent API
-2. Remove any new secrets or KV bindings introduced as part of the failed deployment
-3. Verify restored deployment passes smoke acceptance
-4. Record rollback execution evidence
-
-## 13. Optional Preview exceptions
-
-Preview is optional, not prohibited. Use Preview only when a Business-specific issue explicitly requires it, for example:
-
-- Destructive database or migration rehearsal
-- External stakeholder review that must not touch Production
-- High-risk auth or billing change
-- Regulatory or compliance requirement
-- User explicitly requests a Preview URL
-
-When Preview is used:
-
-- Create Preview secrets, KV, and Access only for the duration of the Preview phase
-- Remove Preview bindings before Production activation
-- Record the Preview scope and cleanup in the issue
-
-Do not spend extended time repairing Preview-only infrastructure when Production has a safe direct-deploy and rollback path. Escalate platform defects separately.
-
-## 14. Preview/platform blocker handling
-
-If Preview is unavailable or defective:
-
-1. Record the platform defect in a separate issue
-2. Do not treat Preview failure as a Production blocker
-3. If the defect is platform-wide (not Business-specific), proceed with direct Production deployment
-
-Exception: if the issue explicitly requires Preview (Section 13), the Preview blocker must be resolved before proceeding. If the blocker cannot be resolved, the user must re-authorize the deployment path.
-
-## 15. API/CLI-first owner interaction
-
-- Prefer authenticated API/CLI operations over repeated owner Dashboard clicks
-- Ask for owner action only when the platform genuinely requires a one-time browser-authenticated operation
-- Never invent Dashboard controls, API permission names, or menu labels
-- Before instructing the owner, inspect the actual current UI/API or authoritative documentation
-- Do not repeatedly ask the user to perform configuration that the scoped API token can perform
-- Batch owner-only actions into one request when possible
-- Never request passwords, OTPs, tokens, cookies, or private keys in chat
-- Use scoped short-lived tokens when available
-- Report sensitive material as presence only (exists / does not exist), never the value
-
-## 16. Evidence requirements
-
-Every Production deployment must record:
-
-- Exact deployed source SHA
-- Production deployment ID and URL
-- Smoke acceptance results (pass/fail per applicable check)
-- Rollback baseline deployment ID
-- Rollback execution status (not needed / executed / failed)
-
-Evidence must not include:
-
-- Secret values, tokens, or private keys
-- Account IDs, email addresses, or personal data
-- Access cookies or session tokens
-
-## 17. Disposition vocabulary
-
-| Status | Meaning |
-|---|---|
-| `DIRECT_PRODUCTION_POLICY_DOCUMENTED` | Canonical policy exists and reflects owner decision |
-| `PREVIEW_OPTIONAL_NOT_REQUIRED` | Preview is no longer a mandatory gate |
-| `ROLLBACK_FIRST_OPERATIONS_ACTIVE` | Rollback baseline recorded before every deployment |
-| `PRODUCTION_ACCEPTANCE_PASSED` | Smoke acceptance verified after deployment |
-| `PRODUCTION_ACCEPTANCE_FAILED` | Smoke acceptance failed; rollback executed |
-| `BLOCKED_PREVIEW_TLS_HANDSHAKE` | Preview TLS defect recorded as platform issue |
-
-## 18. Business-specific exceptions
-
-### Portfolio Console (Business — Operations)
-
-```text
-Project: ai-revenue-portfolio-console
-Production branch: main
-Default: direct main → Production
-Preview: not required
-Hash Preview TLS defect: #324 — not a Production blocker
-Production secrets/KV: configured through authorized Production activation
-```
-
-### Other Businesses
-
-Each Business may have its own deployment constraints recorded in its workspace documentation. Where this policy conflicts with a Business-specific document, this policy takes precedence unless the Business explicitly records an exception approved by the owner.
-
-## 19. Risk matrix
-
-| Level | Description | Required gates |
-|---|---|---|
-| D0 | Documentation only, no deploy | Source validation |
-| D1 | Static UI/content deployment | Source validation, exact head, Production smoke, rollback ready |
-| D2 | Frontend runtime / API consumer | D1 + deterministic tests, browser tests, exact API contract |
-| D3 | Backend / secrets / cache / auth | D2 + full tests, secret boundary, rollback deployment + config, security checks, destructive-operation review |
-| D4 | Migration / billing / destructive data | D3 + Preview/staging may become explicitly required, separate owner authorization, recovery rehearsal |
-
-Preview is a default candidate only at D4 and when explicitly required (Section 13).
+A phase document must not imply that Preview is mandatory unless it links to an explicit D4 or Business-specific exception.
