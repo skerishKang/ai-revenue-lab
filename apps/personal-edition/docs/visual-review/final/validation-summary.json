@@ -1,0 +1,100 @@
+{
+  "business": "Business 1 - Personal Edition",
+  "pr": 111,
+  "helperBranch": "work/business-01-final-0730",
+  "targetRemoteBranch": "feat/personal-edition-final-demo-visual-108",
+  "headSha": "d2456ddee2075d57cfc86d9320110eb5f7e26fef",
+  "timestamp": "2026-07-30T05:30:57.292704+00:00",
+  "validationType": "independent-clean-worktree-playwright",
+  "screens": 8,
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "screenshots": 24,
+  "screenshotSha256": 24,
+  "participantTransitions": 11,
+  "participantPass": 11,
+  "operatorTransitions": 7,
+  "operatorPass": 7,
+  "networkSummary": {
+    "totalRequests": 38,
+    "uniquePaths": 38,
+    "http200": 32,
+    "http4xx": 0,
+    "http5xx": 0,
+    "requestfailed": 0,
+    "externalRequests": 0,
+    "hashedResources": 38
+  },
+  "svgResults": [
+    {
+      "file": "img-hero-transformation.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "4c516f33d85f7e415ae6804f1bc105841bd1fcb2d3627f9d223e40e3ef6a1477",
+      "textElementCount": 0,
+      "naturalWidth": 267,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-source-fragments.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "5ca26015705c31dc0c661d13f660bd69b208eb53f5fa96d82f1afecc0669baa5",
+      "textElementCount": 0,
+      "naturalWidth": 200,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-editorial-review.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "4a61a5d94fbe5b4c645a36497430509b62ec56f4050880cca9a19436b87880fb",
+      "textElementCount": 0,
+      "naturalWidth": 200,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-edition-cover.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "6dfe02ab67d71573a28da193ef10f0df6c71ab6d09ddcbd7ed9812e4f712a35e",
+      "textElementCount": 0,
+      "naturalWidth": 113,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-archive-grid.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "e9a88c7e61214707b6aeb97ae9e29b5eeffc6f30a429e9b6cfb8c87e2846d7a3",
+      "textElementCount": 0,
+      "naturalWidth": 150,
+      "naturalHeight": 150,
+      "rendered": true
+    }
+  ],
+  "svgAllValid": true,
+  "wrongHoSuDisplayCount": 0,
+  "accessibilityRuns": 13,
+  "status": "pass",
+  "errors": []
+}

@@ -855,6 +855,20 @@ legend {
   font-size: 1.375rem;
   margin-bottom: 1rem;
 }
+.history-archive-figure {
+  width: 100%;
+  margin: 0 0 1.25rem 0;
+  overflow: hidden;
+}
+.history-archive-figure img {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  display: block;
+}
+@media (max-width: 600px) {
+  .history-archive-figure img { max-width: 100%; }
+}
 .history-list {
   display: flex;
   flex-direction: column;

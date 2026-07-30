@@ -1,0 +1,86 @@
+{
+  "svg": [
+    {
+      "file": "img-hero-transformation.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "4c516f33d85f7e415ae6804f1bc105841bd1fcb2d3627f9d223e40e3ef6a1477",
+      "textElementCount": 0,
+      "naturalWidth": 267,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-source-fragments.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "5ca26015705c31dc0c661d13f660bd69b208eb53f5fa96d82f1afecc0669baa5",
+      "textElementCount": 0,
+      "naturalWidth": 200,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-editorial-review.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "4a61a5d94fbe5b4c645a36497430509b62ec56f4050880cca9a19436b87880fb",
+      "textElementCount": 0,
+      "naturalWidth": 200,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-edition-cover.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "6dfe02ab67d71573a28da193ef10f0df6c71ab6d09ddcbd7ed9812e4f712a35e",
+      "textElementCount": 0,
+      "naturalWidth": 113,
+      "naturalHeight": 150,
+      "rendered": true
+    },
+    {
+      "file": "img-archive-grid.svg",
+      "httpStatus": 200,
+      "contentType": "image/svg+xml",
+      "sha256": "e9a88c7e61214707b6aeb97ae9e29b5eeffc6f30a429e9b6cfb8c87e2846d7a3",
+      "textElementCount": 0,
+      "naturalWidth": 150,
+      "naturalHeight": 150,
+      "rendered": true
+    }
+  ],
+  "rendered": {
+    "http://localhost:8791/static/images/img-hero-transformation.svg": {
+      "src": "http://localhost:8791/static/images/img-hero-transformation.svg",
+      "naturalWidth": 267,
+      "naturalHeight": 150,
+      "complete": true
+    },
+    "http://localhost:8791/static/images/img-source-fragments.svg": {
+      "src": "http://localhost:8791/static/images/img-source-fragments.svg",
+      "naturalWidth": 200,
+      "naturalHeight": 150,
+      "complete": true
+    },
+    "http://localhost:8791/static/images/img-editorial-review.svg": {
+      "src": "http://localhost:8791/static/images/img-editorial-review.svg",
+      "naturalWidth": 200,
+      "naturalHeight": 150,
+      "complete": true
+    },
+    "http://localhost:8791/static/images/img-edition-cover.svg": {
+      "src": "http://localhost:8791/static/images/img-edition-cover.svg",
+      "naturalWidth": 113,
+      "naturalHeight": 150,
+      "complete": true
+    },
+    "http://localhost:8791/static/images/img-archive-grid.svg": {
+      "src": "http://localhost:8791/static/images/img-archive-grid.svg",
+      "naturalWidth": 150,
+      "naturalHeight": 150,
+      "complete": true
+    }
+  }
+}

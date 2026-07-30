@@ -1,0 +1,186 @@
+{
+  "participant": [
+    {
+      "step": 1,
+      "screen": "intro",
+      "fromUrl": "/preview/intro/",
+      "clickedSelector": "a.btn-primary",
+      "toUrl": "/preview/participant/access/",
+      "expectedUrl": "/preview/participant/access/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 2,
+      "screen": "access",
+      "fromUrl": "/preview/participant/access/",
+      "clickedSelector": "a[href='/preview/participant/empty/']",
+      "toUrl": "/preview/participant/empty/",
+      "expectedUrl": "/preview/participant/empty/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 3,
+      "screen": "empty",
+      "fromUrl": "/preview/participant/empty/",
+      "clickedSelector": "a[href$='/input']",
+      "toUrl": "/preview/participant/input/",
+      "expectedUrl": "/preview/participant/input/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 4,
+      "screen": "input",
+      "fromUrl": "/preview/participant/input/",
+      "clickedSelector": "a[href$='/input-received/']",
+      "toUrl": "/preview/participant/input-received/",
+      "expectedUrl": "/preview/participant/input-received/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 5,
+      "screen": "input-received",
+      "fromUrl": "/preview/participant/input-received/",
+      "clickedSelector": "a[href$='/editing/']",
+      "toUrl": "/preview/participant/editing/",
+      "expectedUrl": "/preview/participant/editing/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 6,
+      "screen": "editing",
+      "fromUrl": "/preview/participant/editing/",
+      "clickedSelector": "a[href$='/published/']",
+      "toUrl": "/preview/participant/published/",
+      "expectedUrl": "/preview/participant/published/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 7,
+      "screen": "published",
+      "fromUrl": "/preview/participant/published/",
+      "clickedSelector": "a.latest-edition",
+      "toUrl": "/preview/participant/editions/modal-preview-edition/",
+      "expectedUrl": "/preview/participant/editions/modal-preview-edition/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 8,
+      "screen": "edition-read",
+      "fromUrl": "/preview/participant/editions/modal-preview-edition/",
+      "clickedSelector": "a[href$='/feedback'], a[href$='/feedback/']",
+      "toUrl": "/preview/participant/editions/modal-preview-edition/feedback/",
+      "expectedUrl": "/preview/participant/editions/modal-preview-edition/feedback/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 9,
+      "screen": "feedback",
+      "fromUrl": "/preview/participant/editions/modal-preview-edition/feedback/",
+      "clickedSelector": "a[href$='/feedback/thanks'], a[href$='/feedback/thanks/']",
+      "toUrl": "/preview/participant/editions/modal-preview-edition/feedback/thanks/",
+      "expectedUrl": "/preview/participant/editions/modal-preview-edition/feedback/thanks/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 10,
+      "screen": "confirmation",
+      "fromUrl": "/preview/participant/editions/modal-preview-edition/feedback/thanks/",
+      "clickedSelector": "a[href$='/adaptation']",
+      "toUrl": "/preview/participant/editions/modal-preview-edition/adaptation/",
+      "expectedUrl": "/preview/participant/editions/modal-preview-edition/adaptation/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 11,
+      "screen": "adaptation",
+      "fromUrl": "/preview/participant/editions/modal-preview-edition/adaptation/",
+      "clickedSelector": "a[href$='/history']",
+      "toUrl": "/preview/participant/history/",
+      "expectedUrl": "/preview/participant/history/",
+      "status": "pass",
+      "pass": true
+    }
+  ],
+  "operator": [
+    {
+      "step": 1,
+      "screen": "admin-access",
+      "fromUrl": "/admin/access/",
+      "clickedSelector": "a[href='/admin/']",
+      "toUrl": "/admin/",
+      "expectedUrl": "/admin/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 2,
+      "screen": "admin-dashboard",
+      "fromUrl": "/admin/",
+      "clickedSelector": "a[href='/admin/participants/modal-preview-user/']",
+      "toUrl": "/admin/participants/modal-preview-user/",
+      "expectedUrl": "/admin/participants/modal-preview-user/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 3,
+      "screen": "participant-detail",
+      "fromUrl": "/admin/participants/modal-preview-user/",
+      "clickedSelector": "a[href='/admin/review/modal-preview-edition/']",
+      "toUrl": "/admin/review/modal-preview-edition/",
+      "expectedUrl": "/admin/review/modal-preview-edition/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 4,
+      "screen": "review",
+      "fromUrl": "/admin/review/modal-preview-edition/",
+      "clickedSelector": "a[href='/admin/review/modal-preview-edition/evidence/']",
+      "toUrl": "/admin/review/modal-preview-edition/evidence/",
+      "expectedUrl": "/admin/review/modal-preview-edition/evidence/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 5,
+      "screen": "evidence",
+      "fromUrl": "/admin/review/modal-preview-edition/evidence/",
+      "clickedSelector": "a[href='/admin/review/modal-preview-edition/content/']",
+      "toUrl": "/admin/review/modal-preview-edition/content/",
+      "expectedUrl": "/admin/review/modal-preview-edition/content/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 6,
+      "screen": "content",
+      "fromUrl": "/admin/review/modal-preview-edition/content/",
+      "clickedSelector": "a[href='/admin/review/modal-preview-edition/publish/']",
+      "toUrl": "/admin/review/modal-preview-edition/publish/",
+      "expectedUrl": "/admin/review/modal-preview-edition/publish/",
+      "status": "pass",
+      "pass": true
+    },
+    {
+      "step": 7,
+      "screen": "publish",
+      "fromUrl": "/admin/review/modal-preview-edition/publish/",
+      "clickedSelector": "a[href='/admin/participants/modal-preview-user/feedback/']",
+      "toUrl": "/admin/participants/modal-preview-user/feedback/",
+      "expectedUrl": "/admin/participants/modal-preview-user/feedback/",
+      "status": "pass",
+      "pass": true
+    }
+  ]
+}

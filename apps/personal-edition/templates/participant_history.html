@@ -9,9 +9,13 @@
          width="1536" height="1024">
   </div>
 
-  <h1 class="history-title">에디션 기록</h1>
+   <h1 class="history-title">에디션 기록</h1>
 
-  {% if editions %}
+   <figure class="history-archive-figure">
+     <img src="/static/images/img-archive-grid.svg" alt="" aria-hidden="true" loading="lazy">
+   </figure>
+
+   {% if editions %}
   <div class="history-list">
     {% for edition in editions %}
      <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}"

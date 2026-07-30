@@ -1,0 +1,8 @@
+{
+  "cleanWorktree": true,
+  "helperBranch": "work/business-01-final-0730",
+  "headSha": "d2456ddee2075d57cfc86d9320110eb5f7e26fef",
+  "dist": "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition/dist-preview",
+  "fullRepoPytest": "1274 passed, 47 skipped",
+  "staticPreviewTests": "49 passed"
+}
