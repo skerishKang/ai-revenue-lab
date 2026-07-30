@@ -98,17 +98,22 @@ export class GitHubClient {
     // Build the Phase 2A query dynamically
     const query = buildStatusQuery({ prSearchLimit: 10 });
 
-    const response = await this.fetchImpl(GRAPHQL_URL, {
-      method: "POST",
-      headers: {
-        Accept: ACCEPT,
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "X-GitHub-Api-Version": API_VERSION,
-        "User-Agent": USER_AGENT,
-      },
-      body: JSON.stringify({ query, variables: { owner, name } }),
-    });
+    let response;
+    try {
+      response = await this.fetchImpl(GRAPHQL_URL, {
+        method: "POST",
+        headers: {
+          Accept: ACCEPT,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "X-GitHub-Api-Version": API_VERSION,
+          "User-Agent": USER_AGENT,
+        },
+        body: JSON.stringify({ query, variables: { owner, name } }),
+      });
+    } catch {
+      throw new GitHubApiError("GITHUB_GRAPHQL_TRANSPORT_FAILED", 502);
+    }
 
     if (response.status === 401 && retryAuth) {
       this.authProvider.invalidate();
