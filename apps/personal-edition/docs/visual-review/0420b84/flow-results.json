@@ -1,0 +1,12 @@
+[
+  {
+    "flow": "participant",
+    "pass": true,
+    "note": "All 12 pages rendered"
+  },
+  {
+    "flow": "operator",
+    "pass": true,
+    "note": "All 8 pages rendered"
+  }
+]
