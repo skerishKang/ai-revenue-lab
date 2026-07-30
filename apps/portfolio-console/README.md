@@ -111,17 +111,18 @@ Production branch:
 main
 ```
 
-Preview is optional and is not a prerequisite for Production. The hash-based Pages Preview TLS defect tracked in Issue #324 is a platform incident, not a blocker for an authorized automatic-Production path.
+Preview and staging are disabled for this project. They may be introduced only by a new explicit owner decision. Issue #324 records a historical Pages Preview TLS incident and does not authorize new Preview work.
 
 ### Prohibited for this project
 
 - Wrangler/direct upload;
 - API-created deployment or retry;
 - Dashboard retry;
-- Preview deployment or promotion;
+- Preview creation, deployment, or promotion;
 - staging substitute;
 - empty trigger commit;
-- cancellation or replacement of a Git-triggered deployment.
+- cancellation or replacement of a Git-triggered deployment;
+- asking the owner to choose an alternate deployment mechanism.
 
 ### When the queue is stuck
 
@@ -132,16 +133,20 @@ LAST_KNOWN_GOOD_PRODUCTION_UNCHANGED
 NO_MANUAL_DEPLOYMENT_ALLOWED
 ```
 
+The operator stops after recording this state. A stuck queue does not authorize another deployment path.
+
 ### Before adding Production secrets or bindings
 
 - verify the exact `main` SHA;
-- record the current known-good Production deployment and configuration;
-- prepare configuration rollback;
+- record the current Production source and configuration as recovery evidence;
+- prepare exact configuration restoration steps when configuration changes are authorized;
 - confirm the existing Cloudflare Access boundary.
 
 ### Source recovery
 
-For source failure, a reviewed fix or revert PR is merged to `main`. The Git integration deploys the fix or revert automatically. Do not restore a previous state through a manual deployment operation.
+For source failure, a reviewed fix or revert PR is merged to `main`. The Git integration deploys the fix or revert automatically. Do not restore a previous source state through a manual deployment operation.
+
+Configuration restoration is permitted only when configuration itself caused the failure; it must not create, retry, promote, or replace a source deployment.
 
 ## Security boundary
 
@@ -164,7 +169,7 @@ The Console is successful when it reduces manual checking and shortens the time 
 
 ## Run locally
 
-From the repository root, use the committed test and local-runtime contracts under this workspace. A simple static server can inspect the authority layer, while Pages Functions or Wrangler are required to exercise `/api/github-status`.
+From the repository root, use the committed test and local-runtime contracts under this workspace. A simple static server can inspect the authority layer, while Pages Functions or Wrangler are required to exercise `/api/github-status` locally. Local Wrangler use does not authorize a Production upload.
 
 Static inspection:
 
@@ -206,6 +211,7 @@ Required behavioral boundaries include:
 - Issue #163 — live read-only GitHub status architecture
 - Issue #285 — automatic Business Issue, PR, CI, and phase mapping
 - PR #296 — merged Business 1–55 mapping and discovery foundation
-- Issue #323 — authorized live Production activation and verification
-- Issue #324 — non-blocking Pages hash-Preview TLS platform incident
-- Issue #326 — direct Production and rollback operating policy
+- Issue #323 — automatic Production deployment observation and live verification only
+- Issue #324 — historical Pages Preview TLS platform incident; no Preview authority
+- Issue #326 — Git-connected automatic Production and reviewed fix/revert operating policy
+- Issue #329 — removal of manual-deployment and Preview ambiguity
