@@ -2,11 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createGitHubAppJwt } from "../../functions/_lib/github-app-auth.js";
 import { GitHubClient, STATUS_QUERY, normalizeStatusCheckRollup } from "../../functions/_lib/github-client.js";
+import { MemorySnapshotCache } from "../../functions/_lib/cache.js";
 import { assertAllowedRepository } from "../../functions/_lib/business-github-map.js";
 import { handleGitHubStatusRequest } from "../../functions/api/github-status.js";
 import {
   BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY, NOW, aggregatePayload, createProvider, decodeJwtPart,
-  delay, envWithCredentials, generatePrivateKeyPem, jsonResponse, rollup, serviceResult, webcrypto
+  delay, envWithCredentials, generatePrivateKeyPem, jsonResponse, mockAggregateClient, rollup, serviceResult, webcrypto
 } from "./fixtures.mjs";
 
 let privateKeyPem;
@@ -168,4 +169,46 @@ test("429 is rate limited and never retried", async () => {
   const client = new GitHubClient({ authProvider, fetchImpl: async () => { calls += 1; return jsonResponse({}, 429, { "X-RateLimit-Remaining": "0", "X-RateLimit-Reset": "123" }); } });
   await assert.rejects(() => client.getStatusAggregation(), (error) => error.code === "UPSTREAM_RATE_LIMITED");
   assert.equal(calls, 1);
+});
+test("persistent GraphQL 401 after token refresh becomes GITHUB_GRAPHQL_AUTH_FAILED", async () => {
+  let tokenExchanges = 0;
+  const fetchImpl = async (url) => {
+    if (url.includes("access_tokens")) { tokenExchanges += 1; return jsonResponse({ token: `t${tokenExchanges}`, expires_at: new Date(NOW + 120_000).toISOString() }); }
+    return jsonResponse({}, 401);
+  };
+  const authProvider = createProvider(privateKeyPem, fetchImpl);
+  const client = new GitHubClient({ authProvider, fetchImpl });
+  await assert.rejects(() => client.getStatusAggregation(), (error) => error.code === "GITHUB_GRAPHQL_AUTH_FAILED");
+  assert.equal(tokenExchanges, 2);
+});
+test("missing credentials has diagnostic header and diagnosticCode", async () => {
+  const response = await handleGitHubStatusRequest({ request: new Request("https://x/api/github-status"), env: { GITHUB_APP_ID: "partial" } });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CONFIGURATION_MISSING");
+  const body = await response.json();
+  assert.equal(body.error.diagnosticCode, "CONFIGURATION_MISSING");
+});
+test("missing KV cache has diagnostic header and diagnosticCode", async () => {
+  const response = await handleGitHubStatusRequest({ request: new Request("https://x/api/github-status"), env: envWithCredentials() });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CACHE_CONFIGURATION_MISSING");
+  const body = await response.json();
+  assert.equal(body.error.diagnosticCode, "CACHE_CONFIGURATION_MISSING");
+});
+test("HEAD returns diagnostic header without body", async () => {
+  const response = await handleGitHubStatusRequest({ request: new Request("https://x/api/github-status", { method: "HEAD" }), env: { GITHUB_APP_ID: "x" } });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), "CONFIGURATION_MISSING");
+  assert.equal(await response.text(), "");
+});
+test("successful response omits diagnostic header and has no diagnosticCode in body", async () => {
+  const cache = new MemorySnapshotCache({ now: () => NOW });
+  const response = await handleGitHubStatusRequest({
+    request: new Request("https://x/api/github-status"), env: envWithCredentials(), client: mockAggregateClient(), cache, now: () => NOW
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("X-Portfolio-Diagnostic-Code"), null);
+  const body = await response.json();
+  assert.equal(body.error, undefined);
+  assert.equal(body.ok, true);
 });

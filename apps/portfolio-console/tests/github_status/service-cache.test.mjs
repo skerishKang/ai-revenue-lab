@@ -149,3 +149,61 @@ test("KV failure does not prevent successful status response", async () => {
   assert.equal(JSON.stringify(first.payload).includes("same-key write rate limited"), false);
   assert.equal(putCalls, 1);
 });
+test("GITHUB_GRAPHQL_RESPONSE_INVALID produces diagnosticCode in service result", async () => {
+  const error = new GitHubApiError("GITHUB_RESPONSE_INVALID", 502);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }));
+  assert.equal(result.status, 502);
+  assert.equal(result.payload.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(result.payload.error.diagnosticCode, "GITHUB_GRAPHQL_RESPONSE_INVALID");
+});
+test("GRAPHQL_DATA_UNAVAILABLE produces diagnosticCode in service result", async () => {
+  const error = new GitHubApiError("GRAPHQL_DATA_UNAVAILABLE", 502);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }));
+  assert.equal(result.status, 502);
+  assert.equal(result.payload.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(result.payload.error.diagnosticCode, "GITHUB_GRAPHQL_DATA_UNAVAILABLE");
+});
+test("UPSTREAM_RATE_LIMITED produces diagnosticCode and 503 in service result", async () => {
+  const error = new GitHubApiError("UPSTREAM_RATE_LIMITED", 429);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }));
+  assert.equal(result.status, 503);
+  assert.equal(result.payload.error.code, "UPSTREAM_RATE_LIMITED");
+  assert.equal(result.payload.error.diagnosticCode, "GITHUB_GRAPHQL_RATE_LIMITED");
+});
+test("GITHUB_GRAPHQL_AUTH_FAILED produces diagnosticCode in service result", async () => {
+  const error = new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }));
+  assert.equal(result.status, 502);
+  assert.equal(result.payload.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(result.payload.error.diagnosticCode, "GITHUB_GRAPHQL_AUTH_FAILED");
+});
+test("unknown error produces UNKNOWN_INTERNAL diagnosticCode in service result", async () => {
+  const result = await serviceResult(mockAggregateClient(null, { throwError: new Error("unexpected") }));
+  assert.equal(result.status, 502);
+  assert.equal(result.payload.error.code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(result.payload.error.diagnosticCode, "UNKNOWN_INTERNAL");
+});
+test("diagnosticCode leaks no secret or raw upstream body", async () => {
+  for (const error of [
+    new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401),
+    new GitHubApiError("UPSTREAM_RATE_LIMITED", 429),
+    new GitHubApiError("GITHUB_RESPONSE_INVALID", 502),
+    new Error("raw <html>error</html>"),
+  ]) {
+    const result = await serviceResult(mockAggregateClient(null, { throwError: error }));
+    const text = JSON.stringify(result.payload);
+    assert.equal(text.includes("<html>"), false, `no html leakage for ${error.code || error.constructor.name}`);
+    assert.equal(text.includes("PRIVATE_KEY"), false, `no key reference leaked for ${error.code || error.constructor.name}`);
+  }
+});
+test("diagnosticCode propagates to stale cache error entry", async () => {
+  const snapshot = { ok: true, schemaVersion: 1, syncedAt: "old", stale: false, businesses: [{ number: 15 }] };
+  const cache = new MemorySnapshotCache({ now: () => NOW - 181_000 });
+  await cache.set(snapshot); cache.now = () => NOW;
+  const error = new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", 401);
+  const result = await serviceResult(mockAggregateClient(null, { throwError: error }), { cache, key: "stale-diag" });
+  assert.equal(result.cacheState, "stale");
+  assert.equal(result.payload.stale, true);
+  assert.equal(result.payload.errors.at(-1).code, "UPSTREAM_UNAVAILABLE");
+  assert.equal(result.payload.errors.at(-1).diagnosticCode, "GITHUB_GRAPHQL_AUTH_FAILED");
+});

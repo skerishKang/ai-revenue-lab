@@ -31,8 +31,8 @@ function hasSnapshotCache(env) {
   return Boolean(env?.GITHUB_STATUS_SNAPSHOT_KV?.get && env?.GITHUB_STATUS_SNAPSHOT_KV?.put);
 }
 
-function failure(code, message) {
-  return { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, message), businesses: [] };
+function failure(code, message, diagnosticCode) {
+  return { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, message, diagnosticCode), businesses: [] };
 }
 
 export async function handleGitHubStatusRequest({
@@ -84,7 +84,7 @@ export async function handleGitHubStatusRequest({
       headers: { "X-Portfolio-Cache": result.cacheState },
     });
   } catch {
-    return jsonResponse(failure("INTERNAL_ERROR", "GitHub live synchronization could not be completed."), { status: 500, head: isHead });
+    return jsonResponse(failure("INTERNAL_ERROR", "GitHub live synchronization could not be completed.", "UNKNOWN_INTERNAL"), { status: 500, head: isHead });
   }
 }
 

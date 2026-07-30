@@ -10,6 +10,7 @@
 
 import { BUSINESS_GITHUB_MAP, GITHUB_REPOSITORY } from "./business-github-map.js";
 import { GitHubApiError } from "./github-client.js";
+import { GitHubAuthError } from "./github-app-auth.js";
 import { getDiscoveryPoolSpecs } from "./business-github-query.js";
 import { mergeBusinessFacts, createMergedPayload, SCHEMA_VERSION } from "./business-fact-merger.js";
 import { safeError } from "./response.js";
@@ -18,6 +19,38 @@ const PHASES = Object.freeze(["ui", "ux", "backend"]);
 
 const refreshFlights = new Map();
 
+const DIAGNOSTIC_CODE = Object.freeze({
+  CONFIGURATION_MISSING: "CONFIGURATION_MISSING",
+  CACHE_CONFIGURATION_MISSING: "CACHE_CONFIGURATION_MISSING",
+  CRYPTO_UNAVAILABLE: "CRYPTO_UNAVAILABLE",
+  PRIVATE_KEY_INVALID: "PRIVATE_KEY_INVALID",
+  JWT_SIGNING_FAILED: "JWT_SIGNING_FAILED",
+  INSTALLATION_TOKEN_EXCHANGE_FAILED: "INSTALLATION_TOKEN_EXCHANGE_FAILED",
+  INSTALLATION_TOKEN_RESPONSE_INVALID: "INSTALLATION_TOKEN_RESPONSE_INVALID",
+  GITHUB_GRAPHQL_AUTH_FAILED: "GITHUB_GRAPHQL_AUTH_FAILED",
+  GITHUB_GRAPHQL_RATE_LIMITED: "GITHUB_GRAPHQL_RATE_LIMITED",
+  GITHUB_GRAPHQL_REQUEST_FAILED: "GITHUB_GRAPHQL_REQUEST_FAILED",
+  GITHUB_GRAPHQL_RESPONSE_INVALID: "GITHUB_GRAPHQL_RESPONSE_INVALID",
+  GITHUB_GRAPHQL_DATA_UNAVAILABLE: "GITHUB_GRAPHQL_DATA_UNAVAILABLE",
+  CACHE_READ_FAILED: "CACHE_READ_FAILED",
+  UNKNOWN_INTERNAL: "UNKNOWN_INTERNAL",
+});
+
+const API_CODE_TO_DIAGNOSTIC = Object.freeze({
+  GITHUB_REQUEST_FAILED: DIAGNOSTIC_CODE.GITHUB_GRAPHQL_REQUEST_FAILED,
+  GITHUB_RESPONSE_INVALID: DIAGNOSTIC_CODE.GITHUB_GRAPHQL_RESPONSE_INVALID,
+  GRAPHQL_DATA_UNAVAILABLE: DIAGNOSTIC_CODE.GITHUB_GRAPHQL_DATA_UNAVAILABLE,
+  UPSTREAM_RATE_LIMITED: DIAGNOSTIC_CODE.GITHUB_GRAPHQL_RATE_LIMITED,
+  GITHUB_GRAPHQL_AUTH_FAILED: DIAGNOSTIC_CODE.GITHUB_GRAPHQL_AUTH_FAILED,
+});
+
+function resolveDiagnosticCode(error) {
+  if (!error || typeof error !== "object") return DIAGNOSTIC_CODE.UNKNOWN_INTERNAL;
+  if (error instanceof GitHubAuthError) return DIAGNOSTIC_CODE[error.code] || DIAGNOSTIC_CODE.UNKNOWN_INTERNAL;
+  if (error instanceof GitHubApiError) return API_CODE_TO_DIAGNOSTIC[error.code] || DIAGNOSTIC_CODE.UNKNOWN_INTERNAL;
+  return DIAGNOSTIC_CODE.UNKNOWN_INTERNAL;
+}
+
 function errorPaths(errors) {
   return (errors || []).map((e) => (Array.isArray(e.path) ? e.path.map(String) : []));
 }
@@ -25,14 +58,15 @@ function errorPaths(errors) {
 function upstreamErrorResult(error, cached, ageMs, staleTtlSeconds) {
   const rateLimited = error instanceof GitHubApiError && error.code === "UPSTREAM_RATE_LIMITED";
   const code = rateLimited ? "UPSTREAM_RATE_LIMITED" : "UPSTREAM_UNAVAILABLE";
+  const diagnostic = resolveDiagnosticCode(error);
   if (cached && ageMs <= staleTtlSeconds * 1000) {
     return {
-      payload: { ...cached.snapshot, ok: true, stale: true, errors: [...(cached.snapshot.errors || []), safeError(code, rateLimited ? "GitHub rate limits prevented refresh; showing the last successful snapshot." : "GitHub data could not be refreshed; showing the last successful snapshot.")] },
+      payload: { ...cached.snapshot, ok: true, stale: true, errors: [...(cached.snapshot.errors || []), safeError(code, rateLimited ? "GitHub rate limits prevented refresh; showing the last successful snapshot." : "GitHub data could not be refreshed; showing the last successful snapshot.", diagnostic)] },
       status: 200, cacheState: "stale",
     };
   }
   return {
-    payload: { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, rateLimited ? "GitHub rate limits are temporarily preventing synchronization." : "GitHub data is temporarily unavailable."), businesses: [] },
+    payload: { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, rateLimited ? "GitHub rate limits are temporarily preventing synchronization." : "GitHub data is temporarily unavailable.", diagnostic), businesses: [] },
     status: rateLimited ? 503 : 502, cacheState: "unavailable",
   };
 }
