@@ -74,6 +74,10 @@ def fetch_production_status(url: str) -> int:
 
 def validate_project_contract(project: dict) -> list[str]:
     failures = []
+    
+    if not isinstance(project, dict):
+        return ["contract: project payload is not an object"]
+        
     expected_owner, expected_repo = EXPECTED_REPOSITORY.split("/")
 
     if project.get("name") != B37_PROJECT:
@@ -86,26 +90,35 @@ def validate_project_contract(project: dict) -> list[str]:
         failures.append("contract: source.type null/direct-upload rejected")
     else:
         config = source.get("config", {})
-        if config.get("owner") != expected_owner:
-            failures.append("contract: wrong source owner rejected")
-        if config.get("repo_name") != expected_repo:
-            failures.append("contract: wrong repo_name rejected")
-        if config.get("production_branch") != EXPECTED_BRANCH:
-            failures.append("contract: wrong source production branch rejected")
-        if config.get("production_deployments_enabled") is not True:
-            failures.append("contract: production_deployments_enabled false rejected")
-        if config.get("preview_deployment_setting") != "none":
-            failures.append("contract: Preview enabled rejected")
-        if config.get("pr_comments_enabled") is not False:
-            failures.append("contract: PR comments enabled rejected")
+        if not isinstance(config, dict):
+            failures.append("contract: source config is not an object")
+        else:
+            if config.get("owner") != expected_owner:
+                failures.append("contract: wrong source owner rejected")
+            if config.get("repo_name") != expected_repo:
+                failures.append("contract: wrong repo_name rejected")
+            if config.get("production_branch") != EXPECTED_BRANCH:
+                failures.append("contract: wrong source production branch rejected")
+            if config.get("production_deployments_enabled") is not True:
+                failures.append("contract: production_deployments_enabled false rejected")
+            if config.get("preview_deployment_setting") != "none":
+                failures.append("contract: Preview enabled rejected")
+            if config.get("pr_comments_enabled") is not False:
+                failures.append("contract: PR comments enabled rejected")
 
-    build_config = project.get("build_config") or {}
-    if build_config.get("root_dir") != "reference/business-37-ai-safe-route-v1":
-        failures.append("contract: wrong root directory rejected")
-    if build_config.get("destination_dir") != ".":
-        failures.append("contract: wrong destination directory rejected")
-    if build_config.get("build_command") != "":
-        failures.append("contract: non-empty build command rejected")
+    build_config = project.get("build_config")
+    if build_config is None:
+        build_config = {}
+        
+    if not isinstance(build_config, dict):
+        failures.append("contract: build_config is not an object")
+    else:
+        if build_config.get("root_dir") != "reference/business-37-ai-safe-route-v1":
+            failures.append("contract: wrong root directory rejected")
+        if build_config.get("destination_dir") != ".":
+            failures.append("contract: wrong destination directory rejected")
+        if build_config.get("build_command") != "":
+            failures.append("contract: non-empty build command rejected")
 
     return failures
 

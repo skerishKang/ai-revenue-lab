@@ -354,6 +354,108 @@ class TestAuditCloudflarePagesCredentials(unittest.TestCase):
                     self.assertEqual(code, 1)
                     self.assertIn("contract: wrong project.name", stderr.getvalue())
 
+    def test_project_payload_is_list(self):
+        def fake_urlopen(req, timeout=None):
+            if f"/projects/{audit_mod.B37_PROJECT}" in req.full_url:
+                import json
+                return _FakeResponse(200, json.dumps({"success": True, "result": []}).encode("utf-8"))
+            return self._mock_success()(req, timeout)
+
+        with mock.patch.dict(os.environ, self.valid_env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=fake_urlopen):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = audit_mod.main()
+                    self.assertEqual(code, 1)
+                    self.assertIn("contract: project payload is not an object", stderr.getvalue())
+
+    def test_project_payload_is_string(self):
+        def fake_urlopen(req, timeout=None):
+            if f"/projects/{audit_mod.B37_PROJECT}" in req.full_url:
+                import json
+                return _FakeResponse(200, json.dumps({"success": True, "result": "mystring"}).encode("utf-8"))
+            return self._mock_success()(req, timeout)
+
+        with mock.patch.dict(os.environ, self.valid_env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=fake_urlopen):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = audit_mod.main()
+                    self.assertEqual(code, 1)
+                    self.assertIn("contract: project payload is not an object", stderr.getvalue())
+
+    def test_source_config_is_list(self):
+        self.valid_project["source"]["config"] = []
+        with mock.patch.dict(os.environ, self.valid_env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=self._mock_success()):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = audit_mod.main()
+                    self.assertEqual(code, 1)
+                    self.assertIn("contract: source config is not an object", stderr.getvalue())
+
+    def test_build_config_is_list(self):
+        self.valid_project["build_config"] = []
+        with mock.patch.dict(os.environ, self.valid_env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=self._mock_success()):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = audit_mod.main()
+                    self.assertEqual(code, 1)
+                    self.assertIn("contract: build_config is not an object", stderr.getvalue())
+
+    def test_http_200_non_utf8_body(self):
+        def fake_urlopen(req, timeout=None):
+            return _FakeResponse(200, b'\xff\xfe\xfd')
+
+        with mock.patch.dict(os.environ, self.valid_env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=fake_urlopen):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = audit_mod.main()
+                    self.assertEqual(code, 1)
+                    self.assertIn("token verification FAIL", stderr.getvalue())
+
+    def test_all_requests_are_get_and_paths_verified(self):
+        methods = []
+        urls = []
+        def fake_urlopen(req, timeout=None):
+            methods.append(req.method)
+            urls.append(req.full_url)
+            return self._mock_success()(req, timeout)
+
+        with mock.patch.dict(os.environ, self.valid_env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=fake_urlopen):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = audit_mod.main()
+                    self.assertEqual(code, 0)
+                    for m in methods:
+                        self.assertEqual(m, "GET")
+                    
+                    self.assertIn("https://api.cloudflare.com/client/v4/user/tokens/verify", urls)
+                    self.assertIn(f"https://api.cloudflare.com/client/v4/accounts/{audit_mod.EXPECTED_ACCOUNT_ID}/pages/projects", urls)
+                    self.assertIn(f"https://api.cloudflare.com/client/v4/accounts/{audit_mod.EXPECTED_ACCOUNT_ID}/pages/projects/{audit_mod.B37_PROJECT}", urls)
+                    self.assertIn(audit_mod.B37_URL, urls)
+
+    def test_no_sensitive_info_in_output2(self):
+        env = self.valid_env.copy()
+        env["CLOUDFLARE_API_TOKEN"] = "SUPER_SECRET_TOKEN_VALUE"
+        env["CLOUDFLARE_ACCOUNT_ID"] = "MY_ACCOUNT_ID_SECRET"
+        with mock.patch.dict(os.environ, env, clear=True):
+            with mock.patch.object(audit_mod.urllib.request, "urlopen", side_effect=self._mock_success()):
+                stdout, stderr = StringIO(), StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    audit_mod.main()
+                    out = stdout.getvalue() + stderr.getvalue()
+                    self.assertNotIn("SUPER_SECRET_TOKEN_VALUE", out)
+                    self.assertNotIn("MY_ACCOUNT_ID_SECRET", out)
+                    self.assertNotIn("Authorization", out)
+                    self.assertNotIn("Bearer", out)
+                    self.assertNotIn("fingerprint", out.lower())
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
