@@ -13,6 +13,18 @@
       "bytes": 3590
     },
     {
+      "url": "http://localhost:8791/static/app.css?v=pe-ui51-20260722-3",
+      "path": "/static/app.css?v=pe-ui51-20260722-3",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/css",
+      "resourceType": "stylesheet",
+      "external": false,
+      "requestFailed": false,
+      "sha256": "aaf16d9608f366a2299782d2ca62ee0b44e21576710718cf776ddb3e81333863",
+      "bytes": 40264
+    },
+    {
       "url": "http://localhost:8791/static/images/img-source-fragments.svg",
       "path": "/static/images/img-source-fragments.svg",
       "method": "GET",
@@ -37,16 +49,16 @@
       "bytes": 1102
     },
     {
-      "url": "http://localhost:8791/static/app.css?v=pe-ui51-20260722-3",
-      "path": "/static/app.css?v=pe-ui51-20260722-3",
+      "url": "http://localhost:8791/static/images/img-editorial-review.svg",
+      "path": "/static/images/img-editorial-review.svg",
       "method": "GET",
       "status": 200,
-      "contentType": "text/css",
-      "resourceType": "stylesheet",
+      "contentType": "image/svg+xml",
+      "resourceType": "image",
       "external": false,
       "requestFailed": false,
-      "sha256": "aaf16d9608f366a2299782d2ca62ee0b44e21576710718cf776ddb3e81333863",
-      "bytes": 40264
+      "sha256": "4a61a5d94fbe5b4c645a36497430509b62ec56f4050880cca9a19436b87880fb",
+      "bytes": 1336
     },
     {
       "url": "http://localhost:8791/static/images/img-edition-cover.svg",
@@ -61,18 +73,6 @@
       "bytes": 941
     },
     {
-      "url": "http://localhost:8791/static/images/img-editorial-review.svg",
-      "path": "/static/images/img-editorial-review.svg",
-      "method": "GET",
-      "status": 200,
-      "contentType": "image/svg+xml",
-      "resourceType": "image",
-      "external": false,
-      "requestFailed": false,
-      "sha256": "4a61a5d94fbe5b4c645a36497430509b62ec56f4050880cca9a19436b87880fb",
-      "bytes": 1336
-    },
-    {
       "url": "http://localhost:8791/preview/participant/published/",
       "path": "/preview/participant/published/",
       "method": "GET",
@@ -85,18 +85,6 @@
       "bytes": 3855
     },
     {
-      "url": "http://localhost:8791/static/images/edition-cover-shift.webp",
-      "path": "/static/images/edition-cover-shift.webp",
-      "method": "GET",
-      "status": 200,
-      "contentType": "image/webp",
-      "resourceType": "image",
-      "external": false,
-      "requestFailed": false,
-      "sha256": "bbdfb8ab0d91b539d873f65fc70dd3216599b4c0153d464cbf95f526f07e28a3",
-      "bytes": 74406
-    },
-    {
       "url": "http://localhost:8791/static/images/private-library-hero.webp",
       "path": "/static/images/private-library-hero.webp",
       "method": "GET",
@@ -107,6 +95,18 @@
       "requestFailed": false,
       "sha256": "9b997768d1bbd6a9eebc99b81784e314af89f1e4092fa4b19babc0a232e3be3f",
       "bytes": 73270
+    },
+    {
+      "url": "http://localhost:8791/static/images/edition-cover-shift.webp",
+      "path": "/static/images/edition-cover-shift.webp",
+      "method": "GET",
+      "status": 200,
+      "contentType": "image/webp",
+      "resourceType": "image",
+      "external": false,
+      "requestFailed": false,
+      "sha256": "bbdfb8ab0d91b539d873f65fc70dd3216599b4c0153d464cbf95f526f07e28a3",
+      "bytes": 74406
     },
     {
       "url": "http://localhost:8791/preview/participant/editions/modal-preview-edition/",

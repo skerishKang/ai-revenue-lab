@@ -3,8 +3,9 @@
   "pr": 111,
   "helperBranch": "work/business-01-final-0730",
   "targetRemoteBranch": "feat/personal-edition-final-demo-visual-108",
-  "headSha": "d2456ddee2075d57cfc86d9320110eb5f7e26fef",
-  "timestamp": "2026-07-30T05:30:57.292704+00:00",
+  "sourceValidationSha": "1bcec97872cd9d51443bec897db02ad1e8980718",
+  "headSha": "1bcec97872cd9d51443bec897db02ad1e8980718",
+  "timestamp": "2026-07-30T06:20:02.610026+00:00",
   "validationType": "independent-clean-worktree-playwright",
   "screens": 8,
   "viewports": [

@@ -1,23 +1,42 @@
-{
-  "sourceValidationSha": "1bcec97872cd9d51443bec897db02ad1e8980718",
-  "helperBranch": "work/business-01-final-0730",
-  "headSha": "1bcec97872cd9d51443bec897db02ad1e8980718",
-  "dist": "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition/dist-preview",
-  "startGitStatus": "",
-  "endGitStatus": "",
-  "startClean": true,
-  "endClean": true,
-  "cleanWorktree": true,
-  "fullRepoPytest": {
-    "command": "pytest",
+[
+  {
+    "command": "git status --porcelain",
+    "startedAt": "2026-07-30T06:18:14.419881+00:00",
+    "endedAt": "2026-07-30T06:18:15.810336+00:00",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": "git diff --check",
+    "startedAt": "2026-07-30T06:18:15.810374+00:00",
+    "endedAt": "2026-07-30T06:18:17.015525+00:00",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": "/usr/bin/python3 -m pytest",
+    "startedAt": "2026-07-30T06:18:17.015545+00:00",
+    "endedAt": "2026-07-30T06:19:06.079124+00:00",
     "exitCode": 0,
     "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0\nrootdir: /mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition\nconfigfile: pyproject.toml\ntestpaths: tests\nplugins: asyncio-1.4.0, anyio-4.13.0\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 1321 items\n\ntests/integration/test_benchmark.py .....................                [  1%]\ntests/integration/test_cli.py ..........                                 [  2%]\ntests/integration/test_database.py ..................................... [  5%]\n..........                                                               [  5%]\ntests/integration/test_edition_repository.py ........................... [  7%]\n................................                                         [ 10%]\ntests/integration/test_feedback_repository.py .......................    [ 12%]\ntests/integration/test_generation_pipeline.py .......................... [ 14%]\n..................                                                       [ 15%]\ntests/integration/test_generation_request_repository.py ................ [ 16%]\n.............................                                            [ 18%]\ntests/integration/test_generation_run_repository.py .................... [ 20%]\n.                                                                        [ 20%]\ntests/integration/test_health.py ....                                    [ 20%]\ntests/integration/test_input_repository.py .......................       [ 22%]\ntests/integration/test_migrate_database_cli.py .................         [ 23%]\ntests/integration/test_migration_upgrade.py .......                      [ 24%]\ntests/integration/test_participant_repository.py ....................... [ 26%]\n............                                                             [ 26%]\ntests/integration/test_participant_uiux.py ............................. [ 29%]\n...............................................                          [ 32%]\ntests/integration/test_pg_migrations.py ................................ [ 35%]\n.....sssssssssssssssssssss........................................ss     [ 40%]\ntests/integration/test_pg_repositories.py ssssssssssssssssssssssss       [ 42%]\ntests/integration/test_pilot_ops.py .............                        [ 43%]\ntests/integration/test_privacy.py .............                          [ 44%]\ntests/integration/test_privacy_phase5.py ...........                     [ 44%]\ntests/integration/test_repair_benchmark.py ................              [ 46%]\ntests/integration/test_web_workflow.py ................................. [ 48%]\n........................................................................ [ 54%]\n...............................                                          [ 56%]\ntests/test_static_preview.py ........................................... [ 59%]\n......                                                                   [ 60%]\ntests/unit/test_db_backend.py .......................................... [ 63%]\n............................                                             [ 65%]\ntests/unit/test_db_runtime.py .......................................... [ 68%]\n..................................................                       [ 72%]\ntests/unit/test_domain_models.py ......................................  [ 75%]\ntests/unit/test_error_normalization.py ...............                   [ 76%]\ntests/unit/test_external_provider.py ................................... [ 79%]\n..................................................                       [ 82%]\ntests/unit/test_factory.py ..............                                [ 83%]\ntests/unit/test_grounding.py .......................                     [ 85%]\ntests/unit/test_markup.py .....................                          [ 87%]\ntests/unit/test_mock_provider.py .........                               [ 87%]\ntests/unit/test_participant_routing.py ............................      [ 90%]\ntests/unit/test_participant_runtime_repository.py ...................... [ 91%]\n...........                                                              [ 92%]\ntests/unit/test_security.py .................                            [ 93%]\ntests/unit/test_segmentation.py ......................................   [ 96%]\ntests/unit/test_validators.py .......................................... [ 99%]\n..                                                                       [100%]\n\n=============================== warnings summary ===============================\napp/factory.py:126: 1 warning\ntests/integration/test_participant_uiux.py: 72 warnings\ntests/integration/test_web_workflow.py: 120 warnings\ntests/unit/test_factory.py: 8 warnings\ntests/unit/test_participant_routing.py: 20 warnings\n  /mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition/app/factory.py:126: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"startup\")\n\n../../../../../../../../../usr/local/lib/python3.12/dist-packages/fastapi/applications.py:4495: 1 warning\ntests/integration/test_participant_uiux.py: 72 warnings\ntests/integration/test_web_workflow.py: 120 warnings\ntests/unit/test_factory.py: 8 warnings\ntests/unit/test_participant_routing.py: 20 warnings\n  /usr/local/lib/python3.12/dist-packages/fastapi/applications.py:4495: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    return self.router.on_event(event_type)\n\ntests/integration/test_participant_uiux.py: 52 warnings\ntests/integration/test_web_workflow.py: 121 warnings\ntests/unit/test_participant_routing.py: 19 warnings\n  /usr/local/lib/python3.12/dist-packages/starlette/testclient.py:451: DeprecationWarning: Setting per-request cookies=<...> is being deprecated, because the expected behaviour on cookie persistence is ambiguous. Set cookies directly on the client instance instead.\n    return super().request(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=============== 1274 passed, 47 skipped, 634 warnings in 44.14s ================\n",
     "stderr": ""
   },
-  "staticPreviewTests": {
-    "command": "pytest tests/test_static_preview.py",
+  {
+    "command": "/usr/bin/python3 -m scripts.build_static_preview",
+    "startedAt": "2026-07-30T06:19:06.079150+00:00",
+    "endedAt": "2026-07-30T06:19:06.892050+00:00",
+    "exitCode": 0,
+    "stdout": "Static preview built at /mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition/dist-preview\n",
+    "stderr": ""
+  },
+  {
+    "command": "/usr/bin/python3 -m pytest tests/test_static_preview.py",
+    "startedAt": "2026-07-30T06:19:06.892067+00:00",
+    "endedAt": "2026-07-30T06:19:12.172286+00:00",
     "exitCode": 0,
     "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0\nrootdir: /mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b1-final/apps/personal-edition\nconfigfile: pyproject.toml\nplugins: asyncio-1.4.0, anyio-4.13.0\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 49 items\n\ntests/test_static_preview.py ........................................... [ 87%]\n......                                                                   [100%]\n\n============================== 49 passed in 4.97s ==============================\n",
     "stderr": ""
   }
-}
+]
