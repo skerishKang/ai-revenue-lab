@@ -14,6 +14,7 @@ import { GitHubAuthError } from "./github-app-auth.js";
 import { getDiscoveryPoolSpecs } from "./business-github-query.js";
 import { mergeBusinessFacts, createMergedPayload, SCHEMA_VERSION } from "./business-fact-merger.js";
 import { safeError, validDiagnosticCode } from "./response.js";
+import { OUTBOUND_DEADLINES, OutboundTimeoutError, createDeadlineRunner } from "./outbound-deadline.js";
 
 const PHASES = Object.freeze(["ui", "ux", "backend"]);
 
@@ -28,6 +29,7 @@ const API_CODE_TO_DIAGNOSTIC = Object.freeze({
   UPSTREAM_RATE_LIMITED: "GITHUB_GRAPHQL_RATE_LIMITED",
   GITHUB_GRAPHQL_AUTH_FAILED: "GITHUB_GRAPHQL_AUTH_FAILED",
   GITHUB_GRAPHQL_TRANSPORT_FAILED: "GITHUB_GRAPHQL_TRANSPORT_FAILED",
+  GITHUB_GRAPHQL_TIMEOUT: "GITHUB_GRAPHQL_TIMEOUT",
   GITHUB_DATA_PROCESSING_FAILED: "GITHUB_DATA_PROCESSING_FAILED",
 });
 
@@ -36,12 +38,19 @@ const AUTH_ERROR_TO_DIAGNOSTIC = Object.freeze({
   PRIVATE_KEY_INVALID: "PRIVATE_KEY_INVALID",
   JWT_SIGNING_FAILED: "JWT_SIGNING_FAILED",
   INSTALLATION_TOKEN_REQUEST_FAILED: "INSTALLATION_TOKEN_REQUEST_FAILED",
+  INSTALLATION_TOKEN_TIMEOUT: "INSTALLATION_TOKEN_TIMEOUT",
   INSTALLATION_TOKEN_EXCHANGE_FAILED: "INSTALLATION_TOKEN_EXCHANGE_FAILED",
   INSTALLATION_TOKEN_RESPONSE_INVALID: "INSTALLATION_TOKEN_RESPONSE_INVALID",
 });
 
+function timeoutStageToDiagnostic(stage) {
+  if (typeof stage === "string" && stage.startsWith("installation-token")) return "INSTALLATION_TOKEN_TIMEOUT";
+  return "GITHUB_GRAPHQL_TIMEOUT";
+}
+
 function resolveDiagnosticCode(error) {
   if (!error || typeof error !== "object") return UNKNOWN_INTERNAL;
+  if (error instanceof OutboundTimeoutError) return validDiagnosticCode(timeoutStageToDiagnostic(error.stage));
   if (error instanceof GitHubAuthError) return validDiagnosticCode(AUTH_ERROR_TO_DIAGNOSTIC[error.code] || UNKNOWN_INTERNAL);
   if (error instanceof GitHubApiError) return validDiagnosticCode(API_CODE_TO_DIAGNOSTIC[error.code] || UNKNOWN_INTERNAL);
   return UNKNOWN_INTERNAL;
@@ -71,7 +80,9 @@ function upstreamErrorResult(error, cached, ageMs, staleTtlSeconds) {
 export function createGitHubStatusService({
   client, cache, now = () => Date.now(), freshTtlSeconds = 180, staleTtlSeconds = 86400, singleFlightKey = GITHUB_REPOSITORY,
   identitySource = null,  // Map<number, {uiStatus, uxStatus, backendStatus}>
+  timeouts = OUTBOUND_DEADLINES, timers,
 }) {
+  const deadlines = createDeadlineRunner(timers);
   async function loadFresh() {
     const aggregate = await client.getStatusAggregation(GITHUB_REPOSITORY);
     try {
@@ -183,7 +194,7 @@ export function createGitHubStatusService({
       const ageMs = cached ? now() - cached.storedAtMs : Number.POSITIVE_INFINITY;
       if (cached && ageMs <= freshTtlSeconds * 1000) return { payload: { ...cached.snapshot, stale: false }, status: 200, cacheState: "fresh" };
       try {
-        const snapshot = await refreshSingleFlight();
+        const snapshot = await deadlines.runWithDeadline(refreshSingleFlight(), timeouts.totalSyncMs, "sync");
         return { payload: snapshot, status: 200, cacheState: "miss" };
       } catch (error) { return upstreamErrorResult(error, cached, ageMs, staleTtlSeconds); }
     },

@@ -19,6 +19,7 @@ import { RuntimeSnapshotCache } from "../_lib/cache.js";
 import { createGitHubStatusService } from "../_lib/github-status-service.js";
 import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError, validDiagnosticCode } from "../_lib/response.js";
 import { bindFetchImpl } from "../_lib/runtime-fetch.js";
+import { OUTBOUND_DEADLINES, OutboundTimeoutError, createDeadlineRunner, createStageLogger } from "../_lib/outbound-deadline.js";
 import { SCHEMA_VERSION } from "../_lib/business-fact-merger.js";
 import { buildIdentitySource } from "../../business-identity-data.js";
 
@@ -44,6 +45,10 @@ export async function handleGitHubStatusRequest({
   now = () => Date.now(),
   cryptoImpl = globalThis.crypto,
   client: injectedClient = null,
+  timeouts = OUTBOUND_DEADLINES,
+  timers,
+  AbortControllerImpl = AbortController,
+  stageLogger,
 }) {
   const method = String(request.method || "GET").toUpperCase();
   const isHead = method === "HEAD";
@@ -64,6 +69,9 @@ export async function handleGitHubStatusRequest({
     return jsonResponse(cacheConfigurationMissingPayload(), { status: 503, head: isHead });
   }
 
+  const logStage = stageLogger || createStageLogger(undefined, now);
+  const deadlines = createDeadlineRunner(timers);
+
   try {
     const boundFetch = bindFetchImpl(fetchImpl);
     const authProvider = injectedClient
@@ -75,11 +83,16 @@ export async function handleGitHubStatusRequest({
           fetchImpl: boundFetch,
           now,
           cryptoImpl,
+          timeouts,
+          timers,
+          AbortControllerImpl,
+          stageLogger: logStage,
         });
-    const client = injectedClient || new GitHubClient({ authProvider, fetchImpl: boundFetch });
+    const client = injectedClient || new GitHubClient({ authProvider, fetchImpl: boundFetch, timeouts, timers, AbortControllerImpl, stageLogger: logStage });
     const snapshotCache = cache || new RuntimeSnapshotCache({ kv: env.GITHUB_STATUS_SNAPSHOT_KV, now });
     const identitySource = buildIdentitySource();
-    const result = await createGitHubStatusService({ client, cache: snapshotCache, now, identitySource }).getStatus();
+    const service = createGitHubStatusService({ client, cache: snapshotCache, now, identitySource, timeouts, timers });
+    const result = await deadlines.runWithDeadline(service.getStatus(), timeouts.handlerBackstopMs, "handler");
     const headers = { "X-Portfolio-Cache": result.cacheState };
     if (result.cacheState === "stale" && result.payload.errors?.length) {
       const lastErr = [...result.payload.errors].reverse().find((e) => e.diagnosticCode);
@@ -93,7 +106,10 @@ export async function handleGitHubStatusRequest({
       head: isHead,
       headers,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof OutboundTimeoutError) {
+      return jsonResponse(failure("UPSTREAM_UNAVAILABLE", "GitHub synchronization exceeded its time budget.", "GITHUB_GRAPHQL_TIMEOUT"), { status: 504, head: isHead });
+    }
     return jsonResponse(failure("INTERNAL_ERROR", "GitHub live synchronization could not be completed.", "UNKNOWN_INTERNAL"), { status: 500, head: isHead });
   }
 }

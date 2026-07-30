@@ -1,4 +1,5 @@
 import { bindFetchImpl } from "./runtime-fetch.js";
+import { OUTBOUND_DEADLINES, OutboundTimeoutError, createDeadlineRunner } from "./outbound-deadline.js";
 
 const API_VERSION = "2026-03-10";
 const ACCEPT = "application/vnd.github+json";
@@ -43,33 +44,60 @@ export async function createGitHubAppJwt({ appId, privateKeyPkcs8, nowSeconds, c
   }
 }
 export class InstallationTokenProvider {
-  constructor({ appId, installationId, privateKeyPkcs8, fetchImpl = fetch, now = () => Date.now(), cryptoImpl = globalThis.crypto }) {
+  constructor({ appId, installationId, privateKeyPkcs8, fetchImpl = fetch, now = () => Date.now(), cryptoImpl = globalThis.crypto,
+    timeouts = OUTBOUND_DEADLINES, timers, AbortControllerImpl = AbortController, stageLogger = null }) {
     this.appId = appId; this.installationId = installationId; this.privateKeyPkcs8 = privateKeyPkcs8;
     this.fetchImpl = bindFetchImpl(fetchImpl); this.now = now; this.cryptoImpl = cryptoImpl; this.cached = null; this.inFlight = null;
+    this.timeouts = timeouts; this.deadlines = createDeadlineRunner(timers); this.AbortControllerImpl = AbortControllerImpl; this.stageLogger = stageLogger;
   }
   invalidate() { this.cached = null; }
   async exchange() {
-    const nowMs = this.now();
+    const startedAt = this.now();
+    const logStage = this.stageLogger;
+    const nowMs = startedAt;
     const jwt = await createGitHubAppJwt({ appId: this.appId, privateKeyPkcs8: this.privateKeyPkcs8,
       nowSeconds: Math.floor(nowMs / 1000), cryptoImpl: this.cryptoImpl });
     let response;
     try {
-      response = await this.fetchImpl(
+      response = await this.deadlines.fetchWithDeadline(
+        this.fetchImpl,
         `https://api.github.com/app/installations/${encodeURIComponent(String(this.installationId))}/access_tokens`,
         { method: "POST", headers: { Accept: ACCEPT, Authorization: `Bearer ${jwt}`,
-          "X-GitHub-Api-Version": API_VERSION, "User-Agent": USER_AGENT } }
+          "X-GitHub-Api-Version": API_VERSION, "User-Agent": USER_AGENT } },
+        this.timeouts.installationTokenRequestMs,
+        "installation-token-request",
+        this.AbortControllerImpl
       );
-    } catch {
+    } catch (error) {
+      if (error instanceof OutboundTimeoutError) {
+        if (logStage) logStage("installation-token", "timeout", startedAt);
+        throw new GitHubAuthError("INSTALLATION_TOKEN_TIMEOUT", "GitHub App authentication failed.");
+      }
+      if (logStage) logStage("installation-token", "error", startedAt);
       throw new GitHubAuthError("INSTALLATION_TOKEN_REQUEST_FAILED", "GitHub App authentication failed.");
     }
-    if (!response.ok) throw new GitHubAuthError("INSTALLATION_TOKEN_EXCHANGE_FAILED", "GitHub App authentication failed.");
+    if (!response.ok) {
+      if (logStage) logStage("installation-token", "error", startedAt);
+      throw new GitHubAuthError("INSTALLATION_TOKEN_EXCHANGE_FAILED", "GitHub App authentication failed.");
+    }
     let data;
-    try { data = await response.json(); } catch { throw new GitHubAuthError("INSTALLATION_TOKEN_RESPONSE_INVALID", "GitHub App authentication failed."); }
+    try {
+      data = await this.deadlines.readJsonWithDeadline(response, this.timeouts.installationTokenBodyMs, "installation-token-body");
+    } catch (error) {
+      if (error instanceof OutboundTimeoutError) {
+        if (logStage) logStage("installation-token", "timeout", startedAt);
+        throw new GitHubAuthError("INSTALLATION_TOKEN_TIMEOUT", "GitHub App authentication failed.");
+      }
+      if (logStage) logStage("installation-token", "error", startedAt);
+      throw new GitHubAuthError("INSTALLATION_TOKEN_RESPONSE_INVALID", "GitHub App authentication failed.");
+    }
     const expiresAtMs = Date.parse(data?.expires_at || "");
     if (typeof data?.token !== "string" || !data.token || !Number.isFinite(expiresAtMs)) {
+      if (logStage) logStage("installation-token", "error", startedAt);
       throw new GitHubAuthError("INSTALLATION_TOKEN_RESPONSE_INVALID", "GitHub App authentication failed.");
     }
     this.cached = { token: data.token, expiresAtMs };
+    if (logStage) logStage("installation-token", "success", startedAt);
     return data.token;
   }
   getToken({ forceRefresh = false } = {}) {
