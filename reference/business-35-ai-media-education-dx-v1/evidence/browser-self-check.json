@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "combinations": 21,
+  "failures": [],
+  "errors": [],
+  "external_runtime_requests": 0,
+  "keyboard_navigation": true,
+  "motion": {
+    "computed_end_ms": 780,
+    "replay_equal": true,
+    "focus_scroll_geometry_stable": true
+  },
+  "reduced_motion": true,
+  "harness": "inline exact local bytes; localhost blocked by environment"
+}

@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "checks": {
+    "exact_states": true,
+    "exact_controls": true,
+    "assets": true,
+    "manifest": true,
+    "labels": true,
+    "local_runtime": true,
+    "version": true,
+    "responsive": true,
+    "reduced": true,
+    "animationend": true,
+    "reset": true,
+    "no_timeout": true,
+    "evidence_boundary": true,
+    "capability_boundary": true,
+    "adoption_boundary": true
+  },
+  "asset_count": 11,
+  "states": [
+    "cover",
+    "diagnostic",
+    "curriculum",
+    "workshop",
+    "workflow",
+    "pilot",
+    "mobile"
+  ]
+}
