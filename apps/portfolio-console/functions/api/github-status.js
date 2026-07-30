@@ -17,7 +17,7 @@ import { InstallationTokenProvider } from "../_lib/github-app-auth.js";
 import { GitHubClient } from "../_lib/github-client.js";
 import { RuntimeSnapshotCache } from "../_lib/cache.js";
 import { createGitHubStatusService } from "../_lib/github-status-service.js";
-import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError } from "../_lib/response.js";
+import { configurationMissingPayload, cacheConfigurationMissingPayload, jsonResponse, safeError, validDiagnosticCode } from "../_lib/response.js";
 import { SCHEMA_VERSION } from "../_lib/business-fact-merger.js";
 import { buildIdentitySource } from "../../business-identity-data.js";
 
@@ -31,8 +31,8 @@ function hasSnapshotCache(env) {
   return Boolean(env?.GITHUB_STATUS_SNAPSHOT_KV?.get && env?.GITHUB_STATUS_SNAPSHOT_KV?.put);
 }
 
-function failure(code, message) {
-  return { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, message), businesses: [] };
+function failure(code, message, diagnosticCode) {
+  return { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, message, diagnosticCode), businesses: [] };
 }
 
 export async function handleGitHubStatusRequest({
@@ -78,13 +78,21 @@ export async function handleGitHubStatusRequest({
     const snapshotCache = cache || new RuntimeSnapshotCache({ kv: env.GITHUB_STATUS_SNAPSHOT_KV, now });
     const identitySource = buildIdentitySource();
     const result = await createGitHubStatusService({ client, cache: snapshotCache, now, identitySource }).getStatus();
+    const headers = { "X-Portfolio-Cache": result.cacheState };
+    if (result.cacheState === "stale" && result.payload.errors?.length) {
+      const lastErr = [...result.payload.errors].reverse().find((e) => e.diagnosticCode);
+      if (lastErr) {
+        const validated = validDiagnosticCode(lastErr.diagnosticCode);
+        if (validated) headers["X-Portfolio-Diagnostic-Code"] = validated;
+      }
+    }
     return jsonResponse(result.payload, {
       status: result.status,
       head: isHead,
-      headers: { "X-Portfolio-Cache": result.cacheState },
+      headers,
     });
   } catch {
-    return jsonResponse(failure("INTERNAL_ERROR", "GitHub live synchronization could not be completed."), { status: 500, head: isHead });
+    return jsonResponse(failure("INTERNAL_ERROR", "GitHub live synchronization could not be completed.", "UNKNOWN_INTERNAL"), { status: 500, head: isHead });
   }
 }
 

@@ -180,18 +180,72 @@ python -m http.server 4173
 
 Open `http://127.0.0.1:4173`.
 
+## GitHub live sync diagnostic contract
+
+The `/api/github-status` endpoint returns a safe, generalized `error.code` for public consumption (e.g. `UPSTREAM_UNAVAILABLE`, `UPSTREAM_RATE_LIMITED`, `CONFIGURATION_MISSING`).
+
+When a failure occurs, the response MAY include an additional `error.diagnosticCode` field and a matching `X-Portfolio-Diagnostic-Code` response header. This is a fixed, limited enum — never a raw upstream error, secret, or response body.
+
+### Allowed diagnostic codes
+
+```
+CONFIGURATION_MISSING
+CACHE_CONFIGURATION_MISSING
+CRYPTO_UNAVAILABLE
+PRIVATE_KEY_INVALID
+JWT_SIGNING_FAILED
+INSTALLATION_TOKEN_EXCHANGE_FAILED
+INSTALLATION_TOKEN_RESPONSE_INVALID
+GITHUB_GRAPHQL_AUTH_FAILED
+GITHUB_GRAPHQL_RATE_LIMITED
+GITHUB_GRAPHQL_REQUEST_FAILED
+GITHUB_GRAPHQL_RESPONSE_INVALID
+GITHUB_GRAPHQL_DATA_UNAVAILABLE
+CACHE_READ_FAILED
+UNKNOWN_INTERNAL
+```
+
+### Rules
+
+- Public `error.code` continues to be safely normalized — do not rely on `diagnosticCode` for client logic.
+- `diagnosticCode` is an **internal operator aid** for distinguishing authentication-failure stages without exposing secrets or generating new App keys.
+- The `diagnosticCode` is never a raw upstream message, HTTP response body, JWT, token, App/installation ID, or private key.
+- If a Git-connected automatic deployment fails, **do not work around it with a manual deployment** — fix the source PR and let the automatic deployment retry.
+
 ## Validation
 
-Run the committed tests and validators from `apps/portfolio-console`:
-
 ```bash
-node tests/test_github_status.mjs
-python -m unittest discover -s tests -p "test_*.py"
-node tests/validate_projects.js
+cd apps/portfolio-console
+
+# Syntax checks
+node --check functions/api/github-status.js
+node --check functions/_lib/github-app-auth.js
+node --check functions/_lib/github-client.js
+node --check functions/_lib/github-status-service.js
+node --check functions/_lib/response.js
+node --check functions/_lib/cache.js
+node --check functions/_lib/business-fact-merger.js
+node --check functions/_lib/business-github-map.js
+node --check functions/_lib/business-github-query.js
+node --check functions/_lib/business-pr-discovery.js
+node --check functions/_lib/business-verdict-parser.js
+node --check businesses.js
 node --check app.js
 node --check github-live-status.js
 node --check business-live-facts.js
-node --check functions/api/github-status.js
+
+# Unit tests (Node)
+node tests/test_github_status.mjs
+
+# Unit tests (Python)
+python3 -m unittest discover -s tests -p "test_*.py" -v
+
+# Validators
+node tests/validate_projects.js
+node --input-type=module -e "import('./tests/test_github_ui.mjs')"
+
+# Whitespace check
+git diff --check
 ```
 
 Required behavioral boundaries include:

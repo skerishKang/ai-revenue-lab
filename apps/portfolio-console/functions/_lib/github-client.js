@@ -116,6 +116,10 @@ export class GitHubClient {
       return this.graphql(repository, { retryAuth: false });
     }
 
+    if (response.status === 401) {
+      throw new GitHubApiError("GITHUB_GRAPHQL_AUTH_FAILED", response.status);
+    }
+
     if (isRateLimitedResponse(response)) {
       throw new GitHubApiError(
         "UPSTREAM_RATE_LIMITED",

@@ -23,12 +23,10 @@ export class RuntimeSnapshotCache {
     const memory = this.memoryStore.get(SNAPSHOT_KEY);
     if (validRecord(memory)) return memory;
     if (!this.kv?.get) return null;
-    try {
-      const value = await this.kv.get(SNAPSHOT_KEY, { type: "json", cacheTtl: 30 });
-      if (!validRecord(value)) return null;
-      this.memoryStore.set(SNAPSHOT_KEY, value);
-      return value;
-    } catch { return null; }
+    const value = await this.kv.get(SNAPSHOT_KEY, { type: "json", cacheTtl: 30 });
+    if (!validRecord(value)) return null;
+    this.memoryStore.set(SNAPSHOT_KEY, value);
+    return value;
   }
   setMemory(snapshot) {
     const value = snapshotRecord(snapshot, this.now());
