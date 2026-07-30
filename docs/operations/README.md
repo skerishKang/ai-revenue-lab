@@ -4,7 +4,7 @@
 - `UI_UX_BACKEND_PHASE_GATES.md` — mandatory scope and approval separation: product framing → UI → UX → backend decision → backend implementation.
 - `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — reusable Phase 1 visual-UI policy for every new or revived Business.
 - `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — default direct-Production execution, smoke acceptance, optional Preview exceptions, and rollback.
-- `docs/portfolio/BUSINESS_CANDIDATE_BACKLOG.md` — idea-preservation backlog and proposed Business map.
+- `../portfolio/BUSINESS_CANDIDATE_BACKLOG.md` — idea-preservation backlog and proposed Business map.
 - Permanent open tracking issue: `#154 Portfolio UI Factory: permanent open queue for new Business reference demos`.
 
 ## Current portfolio mode
