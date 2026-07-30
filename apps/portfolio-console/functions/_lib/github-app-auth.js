@@ -50,11 +50,16 @@ export class InstallationTokenProvider {
     const nowMs = this.now();
     const jwt = await createGitHubAppJwt({ appId: this.appId, privateKeyPkcs8: this.privateKeyPkcs8,
       nowSeconds: Math.floor(nowMs / 1000), cryptoImpl: this.cryptoImpl });
-    const response = await this.fetchImpl(
-      `https://api.github.com/app/installations/${encodeURIComponent(String(this.installationId))}/access_tokens`,
-      { method: "POST", headers: { Accept: ACCEPT, Authorization: `Bearer ${jwt}`,
-        "X-GitHub-Api-Version": API_VERSION, "User-Agent": USER_AGENT } }
-    );
+    let response;
+    try {
+      response = await this.fetchImpl(
+        `https://api.github.com/app/installations/${encodeURIComponent(String(this.installationId))}/access_tokens`,
+        { method: "POST", headers: { Accept: ACCEPT, Authorization: `Bearer ${jwt}`,
+          "X-GitHub-Api-Version": API_VERSION, "User-Agent": USER_AGENT } }
+      );
+    } catch {
+      throw new GitHubAuthError("INSTALLATION_TOKEN_REQUEST_FAILED", "GitHub App authentication failed.");
+    }
     if (!response.ok) throw new GitHubAuthError("INSTALLATION_TOKEN_EXCHANGE_FAILED", "GitHub App authentication failed.");
     let data;
     try { data = await response.json(); } catch { throw new GitHubAuthError("INSTALLATION_TOKEN_RESPONSE_INVALID", "GitHub App authentication failed."); }

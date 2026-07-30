@@ -27,12 +27,15 @@ const API_CODE_TO_DIAGNOSTIC = Object.freeze({
   GRAPHQL_DATA_UNAVAILABLE: "GITHUB_GRAPHQL_DATA_UNAVAILABLE",
   UPSTREAM_RATE_LIMITED: "GITHUB_GRAPHQL_RATE_LIMITED",
   GITHUB_GRAPHQL_AUTH_FAILED: "GITHUB_GRAPHQL_AUTH_FAILED",
+  GITHUB_GRAPHQL_TRANSPORT_FAILED: "GITHUB_GRAPHQL_TRANSPORT_FAILED",
+  GITHUB_DATA_PROCESSING_FAILED: "GITHUB_DATA_PROCESSING_FAILED",
 });
 
 const AUTH_ERROR_TO_DIAGNOSTIC = Object.freeze({
   CRYPTO_UNAVAILABLE: "CRYPTO_UNAVAILABLE",
   PRIVATE_KEY_INVALID: "PRIVATE_KEY_INVALID",
   JWT_SIGNING_FAILED: "JWT_SIGNING_FAILED",
+  INSTALLATION_TOKEN_REQUEST_FAILED: "INSTALLATION_TOKEN_REQUEST_FAILED",
   INSTALLATION_TOKEN_EXCHANGE_FAILED: "INSTALLATION_TOKEN_EXCHANGE_FAILED",
   INSTALLATION_TOKEN_RESPONSE_INVALID: "INSTALLATION_TOKEN_RESPONSE_INVALID",
 });
@@ -58,6 +61,7 @@ function upstreamErrorResult(error, cached, ageMs, staleTtlSeconds) {
       status: 200, cacheState: "stale",
     };
   }
+  console.log(JSON.stringify({ event: "portfolio_github_sync_failed", diagnosticCode: diagnostic }));
   return {
     payload: { ok: false, schemaVersion: SCHEMA_VERSION, syncedAt: null, stale: false, error: safeError(code, rateLimited ? "GitHub rate limits are temporarily preventing synchronization." : "GitHub data is temporarily unavailable.", diagnostic), businesses: [] },
     status: rateLimited ? 503 : 502, cacheState: "unavailable",
@@ -70,6 +74,7 @@ export function createGitHubStatusService({
 }) {
   async function loadFresh() {
     const aggregate = await client.getStatusAggregation(GITHUB_REPOSITORY);
+    try {
     const root = aggregate?.data || {};
     const repositoryData = root.repository;
     if (!repositoryData) throw new GitHubApiError("GRAPHQL_DATA_UNAVAILABLE", 502);
@@ -143,6 +148,10 @@ export function createGitHubStatusService({
     const merged = createMergedPayload({ businessFacts, repositoryData, syncedAt: new Date(now()).toISOString(), stale: false });
     merged.errors = errors;
     return merged;
+    } catch (error) {
+      if (error instanceof GitHubAuthError || error instanceof GitHubApiError) throw error;
+      throw new GitHubApiError("GITHUB_DATA_PROCESSING_FAILED", 502);
+    }
   }
 
   async function storeFreshSnapshot(snapshot) {
