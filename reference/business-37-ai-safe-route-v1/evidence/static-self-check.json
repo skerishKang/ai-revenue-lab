@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "checks": {
+    "states": true,
+    "controls": true,
+    "assets": true,
+    "labels": true,
+    "local_runtime": true,
+    "reduced_motion": true,
+    "animationend": true,
+    "no_timeout": true,
+    "version": true,
+    "documented": true
+  },
+  "states": [
+    "cover",
+    "context",
+    "routes",
+    "evidence",
+    "constraints",
+    "handoff",
+    "mobile"
+  ],
+  "assets": 11
+}
