@@ -64,12 +64,14 @@ clear product decision
 → smallest useful scope
 → AI implementation and independent validation
 → exact-head approval
-→ merge to main
-→ dedicated Production deployment
+→ merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
 → immediate Production acceptance
-→ retain or rollback
+→ retain or revert
 → record product and business evidence
 ```
+
+For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic deployment. They do not create a second deployment manually.
 
 The system should reduce owner effort and repeated manual checking. A process that repeatedly asks the owner to copy status, click configuration screens, or re-audit facts that can be obtained through an authenticated API is operating incorrectly.
 
@@ -89,16 +91,18 @@ Within an explicitly authorized scope, operators should proceed without repeated
 
 ## 6. Deployment doctrine
 
-After explicit deployment authorization, the default is direct deployment of the validated `main` SHA to the dedicated Business Production project.
+For Git-connected Cloudflare Pages projects, approved merge to the configured Production branch is the only normal deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
 
 ```text
-validated main
-→ Production
-→ smoke and acceptance checks
-→ keep or rollback
+validated source
+→ exact-head approval
+→ approved merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
+→ production smoke and acceptance
+→ retain or revert
 ```
 
-Preview or staging is optional and must have a concrete reason, such as:
+Preview is normally unused. Preview or staging is optional and used only when a separate issue or explicit owner decision documents a concrete reason, such as:
 
 - destructive migration rehearsal;
 - billing or payment risk;
@@ -107,9 +111,11 @@ Preview or staging is optional and must have a concrete reason, such as:
 - an external reviewer who must not access Production;
 - an explicit owner request.
 
-Preview infrastructure failure must not become a general blocker when Production has a safe direct-deploy and rollback path.
+Preview infrastructure failure must not become a general blocker when Production has a safe automatic-deployment and revert path.
 
-Before Production changes, record the known-good rollback authority. Roll back immediately when a critical availability, authorization, data-integrity, credential-leakage, or runtime gate fails.
+A queued or failed automatic deployment does not authorize another deployment method. Operators observe the platform state and report it. Source recovery uses a reviewed fix or revert PR merged to the Production branch, followed by automatic deployment.
+
+Before the authorized merge, record the known-good rollback authority. Revert immediately when a critical availability, authorization, data-integrity, credential-leakage, or runtime gate fails after the automatic deployment completes.
 
 ## 7. Portfolio Console intent
 
@@ -166,7 +172,9 @@ The Console is successful when it reduces operating work and shortens the time f
 
 ## 9. Owner interaction standard
 
-Operators must prefer authenticated API or CLI execution over repeated owner Dashboard actions.
+Operators must prefer authenticated API or CLI execution for **read-only inspection and explicitly authorized configuration**, not for creating a deployment.
+
+On Git-connected Pages projects, APIs and CLI must not be used to create, retry, promote, or directly upload a deployment unless a separate explicit exception authorizes it.
 
 Before requesting an owner-only action:
 

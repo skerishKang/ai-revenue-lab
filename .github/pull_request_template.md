@@ -37,3 +37,9 @@ List known risks, assumptions, and remaining work.
 - [ ] Documentation was updated when behavior or decisions changed.
 - [ ] Exact changed files and validation evidence are included.
 - [ ] Deployment target and rollback authority are recorded when applicable (see `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`).
+
+### Deployment (when applicable)
+
+- [ ] Git-connected project: the approved merge is the deployment action; no manual deployment was created.
+- [ ] Automatic Production deployment ID/status and resulting main SHA are recorded.
+- [ ] Preview/manual deployment exception: none, or explicit owner authority linked.

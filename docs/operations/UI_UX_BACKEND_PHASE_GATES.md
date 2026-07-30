@@ -142,27 +142,27 @@ Only `UI_APPROVED` authorizes a separate UX child issue.
 
 After approval, the accepted UI becomes the visual baseline. Material changes to typography, color, image direction, layout grammar, or signature motion must be documented rather than silently introduced during UX work.
 
-### 3.6 Optional deployment of an approved Phase 1 UI
+### 3.6 Publication of an approved Phase 1 UI
 
 `UI_APPROVED` does not itself authorize merge or deployment. The user must separately authorize publication of the accepted static UI.
 
-After that explicit authorization, the default deployment target is the Business-specific Production project using the validated exact `main` SHA. Preview is optional and used only when the issue records a concrete reason or the user explicitly requests it.
+After that separate authorization, merge the accepted expected head to the configured Production branch. The existing Git integration performs the Production deployment automatically. Preview is optional and used only when the issue records a concrete reason or the user explicitly requests it.
 
-Before Production deployment:
+Before the authorized merge:
 
 - verify the latest source and accepted exact head;
 - verify the dedicated project, root, branch, and hostname;
 - record the current known-good rollback deployment;
 - determine the required static and responsive smoke checks.
 
-After deployment:
+After the automatic Production deployment completes:
 
 - verify the actual deployed SHA or bytes;
 - verify TLS, required assets, desktop, mobile, console, and overflow;
-- retain the deployment when accepted or immediately rollback on a critical failure;
+- retain the deployment when accepted or immediately revert via a reviewed fix/revert PR;
 - record deployment evidence separately from UI, UX, backend, and business verdicts.
 
-An approved Phase 1 UI deployment:
+An approved Phase 1 UI publication:
 
 - publishes only the already accepted static UI reference and its repository-local assets;
 - does not authorize unreviewed source changes, a new feature commit, PR Ready status, UX work, or backend work;
@@ -266,11 +266,11 @@ Only after authorization may work include:
 - crawling or current-data ingestion;
 - persistence and audit history;
 - billing and payments;
-- authorized runtime and Production deployment, with optional Preview or staging only when a concrete risk or review requirement is documented.
+- authorized runtime and Production deployment via the Git-connected automatic deployment path, with optional Preview or staging only when a concrete risk or review requirement is documented.
 
 Backend work must preserve the approved UI and UX contracts. It must not redesign the product as an incidental consequence of implementation.
 
-Runtime deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+Runtime deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. For Git-connected Pages, merge to the configured Production branch is the deployment action — operators do not manually create a deployment.
 
 ## 7. Current portfolio freeze
 

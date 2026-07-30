@@ -97,6 +97,8 @@ Repository access is allowlisted. Browser query parameters must not select arbit
 
 ## Deployment policy
 
+For `ai-revenue-portfolio-console`, merging an approved PR to `main` is the deployment action. Cloudflare's existing Git connection automatically creates the Production deployment. Operators only observe and verify it.
+
 Project:
 
 ```text
@@ -109,18 +111,37 @@ Production branch:
 main
 ```
 
-After explicit deployment authorization, the default is direct deployment of the validated `main` SHA to the dedicated Production project, followed by immediate Production smoke and acceptance checks.
+Preview is optional and is not a prerequisite for Production. The hash-based Pages Preview TLS defect tracked in Issue #324 is a platform incident, not a blocker for an authorized automatic-Production path.
 
-Preview is optional and is not a prerequisite for Production. The hash-based Pages Preview TLS defect tracked in Issue #324 is a platform incident, not a blocker for an authorized direct-Production path with rollback authority.
+### Prohibited for this project
 
-Before adding Production secrets or bindings:
+- Wrangler/direct upload;
+- API-created deployment or retry;
+- Dashboard retry;
+- Preview deployment or promotion;
+- staging substitute;
+- empty trigger commit;
+- cancellation or replacement of a Git-triggered deployment.
+
+### When the queue is stuck
+
+```text
+BLOCKED_CLOUDFLARE_PRODUCTION_BUILD_QUEUE
+AUTOMATIC_MAIN_DEPLOYMENT_PENDING
+LAST_KNOWN_GOOD_PRODUCTION_UNCHANGED
+NO_MANUAL_DEPLOYMENT_ALLOWED
+```
+
+### Before adding Production secrets or bindings
 
 - verify the exact `main` SHA;
 - record the current known-good Production deployment and configuration;
-- prepare deployment and configuration rollback;
+- prepare configuration rollback;
 - confirm the existing Cloudflare Access boundary.
 
-On critical Production failure, restore the known-good deployment and remove newly introduced failed secrets or bindings.
+### Source recovery
+
+For source failure, a reviewed fix or revert PR is merged to `main`. The Git integration deploys the fix or revert automatically. Do not restore a previous state through a manual deployment operation.
 
 ## Security boundary
 

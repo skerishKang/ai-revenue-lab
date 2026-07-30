@@ -264,23 +264,25 @@ A successful build is not proof of visual quality. A clickable reference is not 
 
 `UI_APPROVED` does not automatically authorize merge or deployment.
 
-When the user separately authorizes publication, the default is direct deployment of the validated accepted `main` SHA to the dedicated Business Production project.
+When the user separately authorizes publication, merge the accepted expected head to the configured Production branch and allow the existing Git integration to deploy automatically.
 
 Preview is optional and used only when the issue records a concrete reason or the user explicitly asks for it.
 
-Before Production publication:
+Before the authorized merge:
 
 - verify the accepted exact head and latest `main`;
 - verify the dedicated project, root, branch, and hostname;
 - record the current known-good rollback authority;
 - identify required desktop, mobile, asset, console, and TLS checks.
 
-After publication:
+After the automatic Production deployment completes:
 
 - verify the actual deployed SHA or bytes;
 - run immediate Production smoke and visual acceptance;
-- retain or rollback;
+- retain or revert;
 - record deployment evidence separately from UI, UX, backend, and business verdicts.
+
+Do not ask the owner to choose Wrangler, API deployment, Dashboard retry, Preview, or staging as an alternate mechanism when the Git-triggered deployment is queued or failed.
 
 Publication must not start UX, backend, authentication, persistence, live AI, analytics, billing, or unrelated source work.
 
@@ -340,7 +342,7 @@ Minimal state switching and motion preview only.
 - live AI or crawling
 - billing or runtime deployment
 
-A later separately authorized publication follows the direct-Production and rollback policy.
+A later separately authorized publication follows the Git-connected automatic deployment policy in `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. For Git-connected Pages, merging the approved PR to the configured Production branch is the deployment action.
 
 ## Acceptance evidence
 - exact head and scope

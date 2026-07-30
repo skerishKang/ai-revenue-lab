@@ -97,18 +97,18 @@ smallest useful scope
 → AI implementation
 → independent validation
 → exact-head approval
-→ merge to main
-→ dedicated Production deployment
+→ merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
 → immediate Production acceptance
-→ retain or rollback
+→ retain or revert
 → record product and business evidence
 ```
 
 UI, UX, backend, deployment, and business verdicts remain separate so one type of evidence is not misrepresented as another. These gates control scope and risk; they are not intended to create ceremony or delay an authorized deployment.
 
-After explicit deployment authorization, validated `main` is deployed directly to the dedicated Production project by default. Preview or staging is optional and used only for a concrete risk or review requirement. Every Production change must have a known-good rollback authority and immediate smoke checks.
+For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually. Preview or staging is optional and used only for a concrete risk or review requirement. Every Production change must have a known-good rollback authority and immediate smoke checks.
 
-Routine execution should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. Owner action is reserved for product, risk, and genuinely owner-only decisions.
+Routine inspection and authorized configuration should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. APIs and CLI must not be used to create, retry, promote, or directly upload a deployment on Git-connected Pages projects. Owner action is reserved for product, risk, and genuinely owner-only decisions.
 
 ## Verified product tracks
 
