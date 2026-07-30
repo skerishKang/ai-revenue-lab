@@ -172,7 +172,7 @@ def main() -> int:
     cmd_results.append(run_command(["git", "status", "--porcelain"]))
     cmd_results.append(run_command(["git", "diff", "--check"]))
     cmd_results.append(run_command(
-        [sys.executable, "-m", "pytest"], cwd=REPO_ROOT, timeout=600
+        [sys.executable, "-m", "pytest"], cwd=BASE, timeout=600
     ))
     cmd_results.append(run_command(
         [sys.executable, "-m", "scripts.build_static_preview"],
