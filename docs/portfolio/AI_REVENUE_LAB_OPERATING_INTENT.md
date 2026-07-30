@@ -2,7 +2,7 @@
 
 - Status: canonical portfolio intent
 - Owner: AI Revenue Lab portfolio governance
-- Related: `README.md`, Issue #154, Issue #326
+- Related: `../../README.md`, Issue #154, Issue #326
 
 ## 1. Why this repository exists
 
