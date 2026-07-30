@@ -22,6 +22,7 @@ DIST = BASE / "dist-preview"
 OUT = Path(__file__).resolve().parent
 SHOTS = OUT / "screenshots"
 SCRIPT = Path(__file__).resolve()
+REPO_ROOT = BASE.parent.parent
 
 PORT = 8791
 BASE_URL = f"http://localhost:{PORT}"
@@ -77,6 +78,30 @@ def sha256_file(p: Path) -> str:
         for chunk in iter(lambda: f.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def run_command(cmd: list[str], cwd: Path | None = None, timeout: int = 300) -> dict:
+    started_at = datetime.now(timezone.utc).isoformat()
+    try:
+        r = subprocess.run(
+            cmd, capture_output=True, text=True, cwd=str(cwd or REPO_ROOT), timeout=timeout
+        )
+        exit_code = r.returncode
+        stdout = r.stdout
+        stderr = r.stderr
+    except subprocess.TimeoutExpired as e:
+        exit_code = -1
+        stdout = e.stdout or ""
+        stderr = e.stderr or ""
+    ended_at = datetime.now(timezone.utc).isoformat()
+    return {
+        "command": " ".join(cmd),
+        "startedAt": started_at,
+        "endedAt": ended_at,
+        "exitCode": exit_code,
+        "stdout": stdout,
+        "stderr": stderr,
+    }
 
 
 def norm(url: str) -> str:
@@ -135,8 +160,36 @@ def main() -> int:
     SHOTS.mkdir(parents=True, exist_ok=True)
 
     head_sha = subprocess.run(
-        ["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=str(BASE.parent.parent)
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=str(REPO_ROOT)
     ).stdout.strip()
+
+    start_status = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(REPO_ROOT)
+    ).stdout
+    start_clean = len(start_status.strip()) == 0
+
+    cmd_results = []
+    cmd_results.append(run_command(["git", "status", "--porcelain"]))
+    cmd_results.append(run_command(["git", "diff", "--check"]))
+    cmd_results.append(run_command(
+        [sys.executable, "-m", "pytest"], cwd=REPO_ROOT, timeout=600
+    ))
+    cmd_results.append(run_command(
+        [sys.executable, "-m", "scripts.build_static_preview"],
+        cwd=BASE, timeout=120
+    ))
+    cmd_results.append(run_command(
+        [sys.executable, "-m", "pytest", "tests/test_static_preview.py"],
+        cwd=BASE, timeout=120
+    ))
+
+    end_status = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(REPO_ROOT)
+    ).stdout
+    end_clean = len(end_status.strip()) == 0
+
+    full_repo_pytest = cmd_results[2]
+    static_preview_tests = cmd_results[4]
 
     server = subprocess.Popen(
         [sys.executable, "-m", "http.server", str(PORT), "--directory", str(DIST)],
@@ -387,6 +440,7 @@ def main() -> int:
         "pr": 111,
         "helperBranch": "work/business-01-final-0730",
         "targetRemoteBranch": "feat/personal-edition-final-demo-visual-108",
+        "sourceValidationSha": head_sha,
         "headSha": head_sha,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "validationType": "independent-clean-worktree-playwright",
@@ -413,18 +467,37 @@ def main() -> int:
     (OUT / "accessibility-results.json").write_text(json.dumps(accessibility, indent=2, ensure_ascii=False), encoding="utf-8")
     (OUT / "screenshot-manifest.json").write_text(json.dumps({"screenshots": shots_manifest, "total": len(shots_manifest)}, indent=2, ensure_ascii=False), encoding="utf-8")
     (OUT / "asset-results.json").write_text(json.dumps({"svg": svg_results, "rendered": svg_render}, indent=2, ensure_ascii=False), encoding="utf-8")
-    (OUT / "clean-worktree-results.json").write_text(json.dumps({
-        "cleanWorktree": True,
+    (OUT / "command-results.json").write_text(json.dumps(cmd_results, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    clean_worktree = {
+        "sourceValidationSha": head_sha,
         "helperBranch": "work/business-01-final-0730",
         "headSha": head_sha,
         "dist": str(DIST),
-        "fullRepoPytest": "1274 passed, 47 skipped",
-        "staticPreviewTests": "49 passed",
-    }, indent=2), encoding="utf-8")
+        "startGitStatus": start_status,
+        "endGitStatus": end_status,
+        "startClean": start_clean,
+        "endClean": end_clean,
+        "cleanWorktree": end_clean,
+        "fullRepoPytest": {
+            "command": "pytest",
+            "exitCode": full_repo_pytest["exitCode"],
+            "stdout": full_repo_pytest["stdout"],
+            "stderr": full_repo_pytest["stderr"],
+        },
+        "staticPreviewTests": {
+            "command": "pytest tests/test_static_preview.py",
+            "exitCode": static_preview_tests["exitCode"],
+            "stdout": static_preview_tests["stdout"],
+            "stderr": static_preview_tests["stderr"],
+        },
+    }
+    (OUT / "clean-worktree-results.json").write_text(json.dumps(clean_worktree, indent=2, ensure_ascii=False), encoding="utf-8")
 
     report = [
         "# Business 1 - Personal Edition - Final Validation Report",
         "",
+        f"- SOURCE_VALIDATION_SHA: `{head_sha}`",
         f"- HEAD: `{head_sha}`",
         f"- Generated: {summary_obj['timestamp']}",
         f"- Overall: {'PASS' if not errors else 'FAIL'}",
