@@ -35,7 +35,7 @@ permissions:
   issues: read
 
 concurrency:
-  group: provision-approved-pages-${{ inputs.project_name }}
+  group: provision-approved-business-pages-${{ inputs.project_name }}
   cancel-in-progress: false
 
 jobs:
@@ -133,11 +133,13 @@ jobs:
           trap 'rm -f "${response_file}"' EXIT
           status="$({
             curl --silent --show-error \
+              --connect-timeout 15 \
+              --max-time 60 \
               --output "${response_file}" \
               --write-out '%{http_code}' \
               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
               --header 'Content-Type: application/json' \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=1"
           })"
           test "${status}" = "200" || {
             echo "Cloudflare Pages API access failed with HTTP ${status}." >&2
@@ -157,6 +159,8 @@ jobs:
 
           status="$({
             curl --silent --show-error \
+              --connect-timeout 15 \
+              --max-time 60 \
               --output "${response_file}" \
               --write-out '%{http_code}' \
               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
@@ -164,8 +168,15 @@ jobs:
               "${project_url}"
           })"
 
-          case "${status}" in
-            200)
+          lookup_state="$(
+            python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-lookup \
+              --status "${status}" \
+              --response-file "${response_file}" \
+            | head -n 1
+          )"
+
+          case "${lookup_state}" in
+            exists)
               python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
                 --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
                 --project-name "${PROJECT_NAME}" \
@@ -174,7 +185,7 @@ jobs:
                 --response-file "${response_file}"
               echo "state=already-existed" >> "${GITHUB_OUTPUT}"
               ;;
-            404)
+            missing)
               python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-payload \
                 --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
                 --project-name "${PROJECT_NAME}" \
@@ -183,6 +194,8 @@ jobs:
                 --output "${request_file}"
               create_status="$({
                 curl --silent --show-error \
+                  --connect-timeout 15 \
+                  --max-time 60 \
                   --request POST \
                   --output "${response_file}" \
                   --write-out '%{http_code}' \
@@ -207,7 +220,7 @@ jobs:
               echo "state=created" >> "${GITHUB_OUTPUT}"
               ;;
             *)
-              echo "Cloudflare Pages project lookup failed with HTTP ${status}." >&2
+              echo "Cloudflare project lookup validator returned an unexpected state." >&2
               exit 1
               ;;
           esac
@@ -249,16 +262,19 @@ jobs:
           project_file="$(mktemp)"
           deployments_file="$(mktemp)"
           selected_file="$(mktemp)"
-          deployment_body="$(mktemp)"
-          production_body="$(mktemp)"
-          trap 'rm -f "${project_file}" "${deployments_file}" "${selected_file}" "${deployment_body}" "${production_body}"' EXIT
+          deployment_metadata="$(mktemp)"
+          trap 'rm -f "${project_file}" "${deployments_file}" "${selected_file}" "${deployment_metadata}"' EXIT
 
           project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
           project_status="$({
-            curl --silent --show-error --output "${project_file}" --write-out '%{http_code}' \
+            curl --silent --show-error --connect-timeout 15 --max-time 60 \
+              --output "${project_file}" --write-out '%{http_code}' \
               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${project_url}"
           })"
-          test "${project_status}" = "200"
+          test "${project_status}" = "200" || {
+            echo "Cloudflare project verification failed with HTTP ${project_status}." >&2
+            exit 1
+          }
           python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
             --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
             --project-name "${PROJECT_NAME}" \
@@ -270,10 +286,14 @@ jobs:
           found=false
           for attempt in $(seq 1 10); do
             deployments_status="$({
-              curl --silent --show-error --output "${deployments_file}" --write-out '%{http_code}' \
+              curl --silent --show-error --connect-timeout 15 --max-time 60 \
+                --output "${deployments_file}" --write-out '%{http_code}' \
                 --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${deployments_url}"
             })"
-            test "${deployments_status}" = "200"
+            test "${deployments_status}" = "200" || {
+              echo "Cloudflare deployment lookup failed with HTTP ${deployments_status}." >&2
+              exit 1
+            }
             jq -e '.success == true and (.result | type == "array")' "${deployments_file}" >/dev/null
             if jq -e --arg url "${DEPLOYMENT_URL}" \
               '.result[] | select((.url // "") == $url)' "${deployments_file}" > "${selected_file}"; then
@@ -287,82 +307,74 @@ jobs:
             exit 1
           }
 
-          deployment_id="$(jq -r '.id // empty' "${selected_file}")"
-          test -n "${deployment_id}"
-          returned_sha="$(jq -r '.deployment_trigger.metadata.commit_hash // .source.config.commit_hash // empty' "${selected_file}")"
-          returned_branch="$(jq -r '.deployment_trigger.metadata.branch // .source.config.branch // empty' "${selected_file}")"
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-deployment \
+            --response-file "${selected_file}" \
+            --project-name "${PROJECT_NAME}" \
+            --approved-sha "${APPROVED_SHA}" \
+            --production-branch "${PRODUCTION_BRANCH}" \
+            --deployment-url "${DEPLOYMENT_URL}" \
+            --output "${deployment_metadata}"
 
-          if test -n "${returned_sha}"; then
-            test "${returned_sha}" = "${APPROVED_SHA}" || {
-              echo "Cloudflare deployment commit hash does not match approved_sha." >&2
-              exit 1
-            }
-            commit_verification="verified"
-          else
-            commit_verification="unavailable-in-cloudflare-api"
-            echo "Cloudflare did not expose a deployment commit hash; byte verification remains authoritative." >&2
-          fi
-          if test -n "${returned_branch}"; then
-            test "${returned_branch}" = "${PRODUCTION_BRANCH}"
-          fi
-
-          expected_hash="$(sha256sum "approved-source/${SOURCE_DIRECTORY%/}/index.html" | awk '{print $1}')"
+          expected_file="approved-source/${SOURCE_DIRECTORY%/}/index.html"
           expected_production_url="https://${PROJECT_NAME}.pages.dev/"
 
-          fetch_and_compare() {
-            local url="$1"
-            local output="$2"
-            local status=""
-            for attempt in $(seq 1 10); do
-              status="$({
-                curl --location --silent --show-error --output "${output}" --write-out '%{http_code}' "${url}" || true
-              })"
-              if test "${status}" = "200"; then
-                local actual_hash
-                actual_hash="$(sha256sum "${output}" | awk '{print $1}')"
-                if test "${actual_hash}" = "${expected_hash}"; then
-                  return 0
-                fi
-              fi
-              sleep 3
-            done
-            echo "Public byte verification failed for ${url}." >&2
-            return 1
-          }
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py verify-public-url \
+            --url "${DEPLOYMENT_URL}/" \
+            --expected-file "${expected_file}" \
+            --deadline 300
 
-          fetch_and_compare "${DEPLOYMENT_URL}/" "${deployment_body}"
-          fetch_and_compare "${expected_production_url}" "${production_body}"
+          python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py verify-public-url \
+            --url "${expected_production_url}" \
+            --expected-file "${expected_file}" \
+            --deadline 300
 
+          deployment_id="$(jq -r '.deployment_id' "${deployment_metadata}")"
+          commit_verification="$(jq -r '.commit_verification' "${deployment_metadata}")"
+          deployment_status="$(jq -r '.deployment_status' "${deployment_metadata}")"
           echo "deployment_id=${deployment_id}" >> "${GITHUB_OUTPUT}"
           echo "commit_verification=${commit_verification}" >> "${GITHUB_OUTPUT}"
+          echo "deployment_status=${deployment_status}" >> "${GITHUB_OUTPUT}"
           echo "production_url=${expected_production_url}" >> "${GITHUB_OUTPUT}"
-          echo "result=github-project-and-public-bytes-verified" >> "${GITHUB_OUTPUT}"
+          echo "result=github-project-deployment-and-public-bytes-verified" >> "${GITHUB_OUTPUT}"
 
       - name: Publish provisioning summary
+        if: ${{ always() }}
         env:
+          JOB_STATUS: ${{ job.status }}
           PROJECT_STATE: ${{ steps.project.outputs.state }}
           DEPLOYMENT_ID: ${{ steps.verify.outputs.deployment_id }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
           PRODUCTION_URL: ${{ steps.verify.outputs.production_url }}
+          DEPLOYMENT_STATUS: ${{ steps.verify.outputs.deployment_status }}
           COMMIT_VERIFICATION: ${{ steps.verify.outputs.commit_verification }}
           VERIFICATION_RESULT: ${{ steps.verify.outputs.result }}
         shell: bash
         run: |
           set -euo pipefail
+          safe_value() {
+            local value="$1"
+            value="$(printf '%s' "${value}" | tr -cd 'A-Za-z0-9._/#:-')"
+            if test -z "${value}"; then
+              value="not-returned"
+            fi
+            printf '%s' "${value:0:240}"
+          }
           {
             echo "## Approved Business Pages provisioning"
             echo
-            echo "- Business ID: \`${BUSINESS_ID}\`"
-            echo "- Approval PR: \`#${APPROVAL_PR}\`"
-            echo "- Approved exact SHA: \`${APPROVED_SHA}\`"
-            echo "- Source directory: \`${SOURCE_DIRECTORY}\`"
-            echo "- Pages project: \`${PROJECT_NAME}\`"
-            echo "- Project state: \`${PROJECT_STATE}\`"
-            echo "- Repository: \`${GITHUB_REPOSITORY}\`"
-            echo "- Production branch: \`${PRODUCTION_BRANCH}\`"
-            echo "- Deployment ID: \`${DEPLOYMENT_ID}\`"
-            echo "- Actual deployment URL: ${DEPLOYMENT_URL}"
-            echo "- Expected production URL: ${PRODUCTION_URL}"
-            echo "- Cloudflare commit metadata: \`${COMMIT_VERIFICATION}\`"
-            echo "- Verification: \`${VERIFICATION_RESULT}\`"
+            echo "- Job status: \`$(safe_value "${JOB_STATUS}")\`"
+            echo "- Business ID: \`$(safe_value "${BUSINESS_ID}")\`"
+            echo "- Approval PR: \`#$(safe_value "${APPROVAL_PR}")\`"
+            echo "- Approved exact SHA: \`$(safe_value "${APPROVED_SHA}")\`"
+            echo "- Source directory: \`$(safe_value "${SOURCE_DIRECTORY}")\`"
+            echo "- Pages project: \`$(safe_value "${PROJECT_NAME}")\`"
+            echo "- Project state: \`$(safe_value "${PROJECT_STATE}")\`"
+            echo "- Repository: \`$(safe_value "${GITHUB_REPOSITORY}")\`"
+            echo "- Production branch: \`$(safe_value "${PRODUCTION_BRANCH}")\`"
+            echo "- Deployment ID: \`$(safe_value "${DEPLOYMENT_ID}")\`"
+            echo "- Actual deployment URL: $(safe_value "${DEPLOYMENT_URL}")"
+            echo "- Expected production URL: $(safe_value "${PRODUCTION_URL}")"
+            echo "- Deployment status: \`$(safe_value "${DEPLOYMENT_STATUS}")\`"
+            echo "- Cloudflare commit metadata: \`$(safe_value "${COMMIT_VERIFICATION}")\`"
+            echo "- Verification: \`$(safe_value "${VERIFICATION_RESULT}")\`"
           } >> "${GITHUB_STEP_SUMMARY}"
