@@ -97,18 +97,20 @@ smallest useful scope
 → AI implementation
 → independent validation
 → exact-head approval
-→ merge to main
-→ dedicated Production deployment
+→ merge to the configured Production branch
+→ automatic Production deployment by the existing Git integration
 → immediate Production acceptance
-→ retain or rollback
+→ retain or merge a reviewed fix/revert PR
 → record product and business evidence
 ```
 
 UI, UX, backend, deployment, and business verdicts remain separate so one type of evidence is not misrepresented as another. These gates control scope and risk; they are not intended to create ceremony or delay an authorized deployment.
 
-After explicit deployment authorization, validated `main` is deployed directly to the dedicated Production project by default. Preview or staging is optional and used only for a concrete risk or review requirement. Every Production change must have a known-good rollback authority and immediate smoke checks.
+For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
 
-Routine execution should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. Owner action is reserved for product, risk, and genuinely owner-only decisions.
+Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. Before the authorized merge, record the last known-good Production source and configuration plus the required smoke checks.
+
+Routine inspection and authorized configuration should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. APIs and CLI must not be used to create, retry, promote, or directly upload a deployment on Git-connected Pages projects. Owner action is reserved for product, risk, and genuinely owner-only decisions.
 
 ## Verified product tracks
 
@@ -148,7 +150,7 @@ Personal Edition is the first planned portal integration target. Its current inv
 - Each Business is reviewed, deployed, measured, and continued or stopped independently.
 - The Portal does not weaken product-local authorization, privacy, or test gates.
 - The Console must reduce manual operating work rather than become another reporting burden.
-- Platform-specific Preview failures do not block an authorized Production path when exact-head validation and rollback are available.
+- Platform-specific Preview failures do not block the normal Git-connected automatic Production path. Operators must not create Preview or another deployment mechanism without new explicit owner authority.
 
 ## Current portfolio status
 

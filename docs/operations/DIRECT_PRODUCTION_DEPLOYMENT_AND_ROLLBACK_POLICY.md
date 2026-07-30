@@ -1,4 +1,4 @@
-# Direct Production Deployment and Rollback Policy
+# Git-Connected Automatic Production and Recovery Policy
 
 - Status: portfolio operating policy
 - Owner: Web CTO
@@ -7,9 +7,9 @@
 
 ## 1. Purpose
 
-This policy keeps AI Revenue Lab deployment aligned with its operating intent: move validated product work into real operation quickly, verify it in the actual environment, and recover immediately when a critical gate fails.
+This policy keeps AI Revenue Lab deployment aligned with its operating intent: move validated product work into real operation quickly, verify it in the actual environment, and recover through reviewed source changes when a critical gate fails.
 
-Deployment policy must not turn optional infrastructure into a universal blocker or require repeated owner work.
+Deployment policy must not turn unapproved infrastructure into a blocker or require repeated owner work.
 
 For Git-connected Cloudflare Pages projects, **merging an approved PR to the configured Production branch is the deployment action**. Operators observe and verify the resulting automatic deployment. They do not create a second deployment manually.
 
@@ -23,18 +23,20 @@ validated source
 → approved merge to main
 → Git-connected automatic Production deployment
 → immediate Production smoke and acceptance
-→ retain or revert
+→ retain or merge a reviewed fix/revert PR
 ```
 
-Preview or staging is not a mandatory predecessor to Production.
+Preview and staging are disabled by default.
 
-For a Git-connected project, the following are prohibited unless a separate owner decision explicitly authorizes an exception:
+For a Git-connected project, the following are prohibited unless a new explicit owner decision authorizes the exact exception:
 
 - `wrangler pages deploy` or another direct upload;
 - API-created deployment or retry;
 - Dashboard deployment retry;
 - empty or unrelated commit used only to trigger deployment;
-- manual promotion of a Preview deployment.
+- Preview creation, deployment, or promotion;
+- staging-project substitution;
+- cancellation and replacement of a Git-triggered deployment.
 
 A queued or failed automatic deployment is a platform/deployment-pipeline state to observe and report. It is not permission to create another deployment path.
 
@@ -75,9 +77,9 @@ When a PR is involved:
 - record the resulting exact `main` SHA separately from the reviewed PR head;
 - allow the configured Git integration to deploy that resulting `main` SHA automatically;
 - do not create empty commits merely to trigger deployment;
-- do not create an API, Wrangler, Dashboard, or Preview deployment as a substitute for the Git-connected automatic deployment.
+- do not create an API, Wrangler, Dashboard, Preview, or staging deployment as a substitute for the Git-connected automatic deployment.
 
-Direct upload or an API-created deployment is permitted only under a separate issue or owner decision that explicitly suspends the Git-connected automatic-deployment rule and explains why.
+Direct upload, API-created deployment, Preview, or staging is permitted only when a **new explicit owner decision** suspends the Git-connected automatic-deployment rule for the exact named operation and explains why. Opening or editing an issue does not create that authority by itself.
 
 ## 6. Risk levels
 
@@ -93,7 +95,7 @@ Direct upload or an API-created deployment is permitted only under a separate is
 - exact-head verification;
 - automatic Production deployment after merge;
 - Production static and responsive smoke;
-- revert authority prepared.
+- last known-good Production source recorded.
 
 ### D2 — frontend runtime or read-only API consumer
 
@@ -102,14 +104,14 @@ Direct upload or an API-created deployment is permitted only under a separate is
 - API method and schema checks where applicable;
 - automatic Production deployment after merge;
 - Production smoke;
-- revert authority prepared.
+- last known-good Production source recorded.
 
 ### D3 — backend, secrets, cache, authentication, or persistence
 
 - full deterministic and runtime tests;
 - secret and authorization boundary verification;
 - Production configuration prepared before the merge that should activate it whenever practicable;
-- configuration recovery and source revert prepared;
+- exact configuration restoration steps and reviewed source fix/revert path prepared;
 - security and leakage checks;
 - controlled failure-path verification where safe.
 
@@ -117,12 +119,12 @@ Direct upload or an API-created deployment is permitted only under a separate is
 
 - separate owner authorization;
 - recovery rehearsal;
-- Preview or staging may be explicitly required;
+- Preview or staging only when a new explicit owner decision or an already approved Business-specific contract requires it;
 - destructive-operation and data-integrity review.
 
-Risk level determines evidence. It does not authorize manual deployment for a Git-connected project.
+Risk level determines evidence. It does not authorize Preview, staging, or manual deployment for a Git-connected project.
 
-## 7. Recovery authority
+## 7. Recovery evidence
 
 Before an approved merge that can change Production, record the current known-good state:
 
@@ -134,9 +136,9 @@ Before an approved merge that can change Production, record the current known-go
 - database or migration state when applicable;
 - root and critical-route health.
 
-For source failures, the normal recovery is an expected-head-reviewed **revert PR merged to `main`**, followed by Git-connected automatic deployment of that revert.
+For source failures, the normal recovery is an expected-head-reviewed **fix or revert PR merged to `main`**, followed by Git-connected automatic deployment.
 
-Configuration restoration may be performed through the relevant control plane when required, but it must not be confused with creating a new source deployment.
+Configuration restoration may be performed through the relevant control plane when configuration itself caused the failure, but it must not create, retry, promote, or replace a source deployment.
 
 ## 8. Automatic Production acceptance
 
@@ -160,15 +162,16 @@ Do not call a merge "deployed" until the automatic Production deployment is conf
 When the automatic deployment is queued, stuck, or failed before Production changes:
 
 - do not create another deployment;
-- do not use Wrangler, API deployment creation, Dashboard retry, or an empty commit;
+- do not use Wrangler, API deployment creation, Dashboard retry, Preview, staging, or an empty commit;
+- do not cancel and replace the Git-triggered deployment;
 - report the exact Cloudflare deployment state;
 - leave the last known-good Production serving;
 - resume verification only after the automatic deployment succeeds.
 
 When a newly deployed source causes a critical Production failure:
 
-- prepare and merge an expected-head-reviewed revert PR;
-- allow the Git-connected integration to deploy the revert automatically;
+- prepare and merge an expected-head-reviewed fix or revert PR;
+- allow the Git-connected integration to deploy it automatically;
 - restore configuration separately when the failed change introduced configuration mutations;
 - verify the known-good Production state is restored.
 
@@ -184,19 +187,24 @@ Critical failures include:
 - unusable primary desktop or mobile journey;
 - data corruption or uncontrolled destructive behavior.
 
-## 10. Optional Preview and staging
+## 10. Preview and staging are disabled by default
 
-Preview or staging is used only for a concrete documented purpose, such as:
+Preview or staging is not an operator option. It may be introduced only by:
+
+1. a new explicit owner decision authorizing the exact named exception; or
+2. an already approved Business-specific contract that explicitly requires it.
+
+Examples that may justify an owner decision include:
 
 - destructive migration rehearsal;
 - payment or billing verification;
 - high-risk authentication or authorization changes;
 - regulated or compliance-sensitive review;
-- an external stakeholder who must not access Production;
-- an explicit owner request;
-- a Business-specific contract explaining why Production-first is unsafe.
+- an external stakeholder who must not access Production.
 
-Preview secrets, KV bindings, Access applications, branches, and builds are not created by default.
+An operator may not create Preview authority merely by documenting a purpose, opening an issue, or encountering a stuck automatic deployment.
+
+Without explicit authority, do not create Preview secrets, KV bindings, Access applications, branches, builds, deployments, URLs, or evidence packages.
 
 A Preview-only platform defect must not block the normal Git-connected `main` → Production path.
 
@@ -211,7 +219,7 @@ Operators may use them to:
 - verify Access and runtime facts;
 - collect sanitized evidence.
 
-Operators must not use them to create, retry, promote, or directly upload a deployment unless a separate explicit exception authorizes it.
+Operators must not use them to create, retry, promote, or directly upload a deployment. Only a new explicit owner decision may authorize the exact exception.
 
 Before asking the owner to click a control:
 
@@ -220,6 +228,8 @@ Before asking the owner to click a control:
 3. use exact current names;
 4. group owner-only actions;
 5. never request passwords, OTPs, cookies, private keys, or tokens in chat.
+
+Never ask the owner to choose an alternate deployment mechanism when the Git-triggered automatic deployment is queued, stuck, or failed.
 
 ## 12. Evidence
 
@@ -231,11 +241,11 @@ Every Production report should record:
 - Git-connected project and Production branch;
 - automatic deployment ID and status;
 - Production URL;
-- previous known-good deployment;
+- previous known-good Production source and configuration;
 - tests and CI;
 - Production smoke and acceptance results;
 - secret and binding names without values;
-- revert required: yes or no;
+- fix/revert PR required: yes or no;
 - final disposition.
 
 Useful dispositions include:
@@ -244,27 +254,27 @@ Useful dispositions include:
 AUTOMATIC_PRODUCTION_DEPLOYMENT_VERIFIED
 AUTOMATIC_PRODUCTION_DEPLOYMENT_PENDING
 BLOCKED_CLOUDFLARE_PRODUCTION_BUILD_QUEUE
-PRODUCTION_REVERT_MERGED_AND_VERIFIED
-PREVIEW_OPTIONAL_NOT_USED
+PRODUCTION_FIX_OR_REVERT_MERGED_AND_VERIFIED
+PREVIEW_DISABLED_NOT_USED
 ```
 
 ## 13. Portfolio Console rule
 
 Portfolio Console uses project `ai-revenue-portfolio-console` with Production branch `main`.
 
-Its Preview TLS defect is tracked in Issue #324 and is not a Production blocker.
+Its Preview TLS defect is tracked in Issue #324 as historical platform evidence and grants no Preview authority.
 
 Portfolio Console operation must:
 
 - merge reviewed source to `main` and allow the Git integration to deploy automatically;
-- never use Wrangler direct upload, API deployment creation, Dashboard retry, or Preview promotion without a new explicit owner decision;
+- never use Wrangler direct upload, API deployment creation, Dashboard retry, Preview, or staging without a new explicit owner decision;
 - preserve Cloudflare Access;
 - manage GitHub App secrets and KV bindings as configuration only;
 - verify live API, cache, stale fallback, desktop, mobile, and leakage boundaries after the automatic deployment succeeds;
-- use a reviewed revert PR for source rollback.
+- use a reviewed fix or revert PR for source recovery.
 
 ## 14. Relationship to phase gates
 
 UI, UX, and backend gates define what work is authorized. This policy defines how an authorized merge reaches Production through the existing Git integration and how failures are recovered.
 
-A phase document must not imply that Preview or manual deployment is mandatory unless it links to an explicit exception.
+A phase document must not imply that Preview, staging, or manual deployment is available unless it links to a new explicit owner decision or an already approved Business-specific exception.
