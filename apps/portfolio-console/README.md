@@ -35,6 +35,8 @@ Do not add credentials, API keys, private hostnames, user data, database URLs, o
 
 The page has no application authentication. If deployed, place the Cloudflare Pages project behind **Cloudflare Access** or an equivalent private access gate.
 
+Default: direct `main` → Production. Preview is not required. The Production deployment and rollback policy is defined in `../../docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
 The included `_headers` file disables caching, framing, forms, external connections, and permission-gated browser capabilities.
 
 ## Validation

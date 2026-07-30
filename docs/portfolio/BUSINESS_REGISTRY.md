@@ -108,6 +108,8 @@ A future portal implementation uses a separate user-specific access state:
 - `maintenance`
 - `suspended`
 
+See `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` for the canonical Production deployment and rollback policy. Preview is not required as a deployment gate.
+
 A Business may be `private_preview` while one user is `available` and another is `invite_required`.
 
 ## 8. Identity and deployment registry rules
