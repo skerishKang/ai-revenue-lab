@@ -2,16 +2,22 @@
 
 Serves apps/personal-edition/dist-preview over a local HTTP server and drives a
 real headless Chromium via Playwright. Produces evidence JSON + 24 exact-viewport
-screenshots + VALIDATION_REPORT.md under docs/visual-review/final/.
+screenshots + VALIDATION_REPORT.md + ZIP under --output-dir (must be an absolute
+path outside the repository).
+
+Usage:
+    python validate_final.py --output-dir /tmp/business-01-validation-<sha>
 """
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import subprocess
 import sys
 import time
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -19,10 +25,11 @@ from playwright.sync_api import sync_playwright
 
 BASE = Path(__file__).resolve().parents[3]  # apps/personal-edition
 DIST = BASE / "dist-preview"
-OUT = Path(__file__).resolve().parent
-SHOTS = OUT / "screenshots"
-SCRIPT = Path(__file__).resolve()
 REPO_ROOT = BASE.parent.parent
+
+# Set in main() from --output-dir
+OUT: Path
+SHOTS: Path
 
 PORT = 8791
 BASE_URL = f"http://localhost:{PORT}"
@@ -156,12 +163,41 @@ A11Y_JS = """() => {
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output-dir", required=True, type=Path,
+        help="Absolute path outside the repository for evidence output",
+    )
+    args = parser.parse_args()
+
+    output_dir = args.output_dir.resolve()
+
+    if not output_dir.is_absolute():
+        print("validation failed: --output-dir must be an absolute path", file=sys.stderr)
+        return 1
+
+    try:
+        output_dir.relative_to(REPO_ROOT)
+        print(
+            "validation failed: --output-dir must be outside the repository",
+            file=sys.stderr,
+        )
+        return 1
+    except ValueError:
+        pass
+
+    global OUT, SHOTS
+    OUT = output_dir
+    SHOTS = OUT / "screenshots"
+
     OUT.mkdir(parents=True, exist_ok=True)
     SHOTS.mkdir(parents=True, exist_ok=True)
 
     head_sha = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=str(REPO_ROOT)
     ).stdout.strip()
+
+    validation_run_id = head_sha
 
     start_status = subprocess.run(
         ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(REPO_ROOT)
@@ -441,8 +477,9 @@ def main() -> int:
         "pr": 111,
         "helperBranch": "work/business-01-final-0730",
         "targetRemoteBranch": "feat/personal-edition-final-demo-visual-108",
-        "sourceValidationSha": head_sha,
-        "headSha": head_sha,
+        "validatedSourceSha": head_sha,
+        "validationRunId": validation_run_id,
+        "observedGitHead": head_sha,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "validationType": "independent-clean-worktree-playwright",
         "screens": len(SCREENS),
@@ -471,9 +508,10 @@ def main() -> int:
     (OUT / "command-results.json").write_text(json.dumps(cmd_results, indent=2, ensure_ascii=False), encoding="utf-8")
 
     clean_worktree = {
-        "sourceValidationSha": head_sha,
+        "validatedSourceSha": head_sha,
+        "validationRunId": validation_run_id,
+        "observedGitHead": head_sha,
         "helperBranch": "work/business-01-final-0730",
-        "headSha": head_sha,
         "dist": str(DIST),
         "startGitStatus": start_status,
         "endGitStatus": end_status,
@@ -498,8 +536,9 @@ def main() -> int:
     report = [
         "# Business 1 - Personal Edition - Final Validation Report",
         "",
-        f"- SOURCE_VALIDATION_SHA: `{head_sha}`",
-        f"- HEAD: `{head_sha}`",
+        f"- VALIDATED_SOURCE_SHA: `{head_sha}`",
+        f"- VALIDATION_RUN_ID: `{validation_run_id}`",
+        f"- OBSERVED_GIT_HEAD: `{head_sha}`",
         f"- Generated: {summary_obj['timestamp']}",
         f"- Overall: {'PASS' if not errors else 'FAIL'}",
         "",
@@ -523,9 +562,22 @@ def main() -> int:
     report += [f"- {e}" for e in errors] if errors else ["None", ""]
     (OUT / "VALIDATION_REPORT.md").write_text("\n".join(report), encoding="utf-8")
 
+    # ===== ZIP (outside the repository) =====
+    zip_name = f"business-01-independent-validation-{head_sha[:7]}.zip"
+    zip_path = OUT.parent / zip_name
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for f in sorted(OUT.iterdir()):
+            if f.name == zip_path.name:
+                continue
+            if f.is_file():
+                zf.write(f, f.name)
+        for f in sorted(SHOTS.iterdir()):
+            zf.write(f, f"screenshots/{f.name}")
+
     print(json.dumps({k: v for k, v in summary_obj.items() if k not in ("svgResults", "errors", "networkSummary")}, indent=2, ensure_ascii=False))
     print("network:", json.dumps(summary_net))
     print("errors:", errors)
+    print(f"ZIP created at: {zip_path}")
     return 0 if not errors else 1
 
 
