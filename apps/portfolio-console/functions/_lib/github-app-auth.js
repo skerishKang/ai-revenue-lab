@@ -1,3 +1,5 @@
+import { bindFetchImpl } from "./runtime-fetch.js";
+
 const API_VERSION = "2026-03-10";
 const ACCEPT = "application/vnd.github+json";
 const USER_AGENT = "ai-revenue-portfolio-console";
@@ -43,7 +45,7 @@ export async function createGitHubAppJwt({ appId, privateKeyPkcs8, nowSeconds, c
 export class InstallationTokenProvider {
   constructor({ appId, installationId, privateKeyPkcs8, fetchImpl = fetch, now = () => Date.now(), cryptoImpl = globalThis.crypto }) {
     this.appId = appId; this.installationId = installationId; this.privateKeyPkcs8 = privateKeyPkcs8;
-    this.fetchImpl = fetchImpl; this.now = now; this.cryptoImpl = cryptoImpl; this.cached = null; this.inFlight = null;
+    this.fetchImpl = bindFetchImpl(fetchImpl); this.now = now; this.cryptoImpl = cryptoImpl; this.cached = null; this.inFlight = null;
   }
   invalidate() { this.cached = null; }
   async exchange() {
