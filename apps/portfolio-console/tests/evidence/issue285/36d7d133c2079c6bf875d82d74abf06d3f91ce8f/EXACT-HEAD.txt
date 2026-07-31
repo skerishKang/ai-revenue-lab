@@ -1,0 +1,36 @@
+Issue #285 / PR #296 Phase 2A browser evidence — exact-head record
+==================================================================
+
+validated source/harness head:
+36d7d133c2079c6bf875d82d74abf06d3f91ce8f
+
+capture base:
+http://127.0.0.1:8788/
+
+final evidence-only commit:
+47961fb0c0ba49abf712ad2bd998da387af86d24
+(this SHA was recorded by the follow-up evidence-only commit, since a
+commit cannot contain its own SHA)
+
+server:          npx wrangler pages dev . --port 8788 (credential-less)
+API state:       GET /api/github-status -> 503 CONFIGURATION_MISSING,
+                 schemaVersion 2 (expected: no GitHub App credentials in
+                 this environment). Exactly one such 503 per viewport is
+                 the only allowed network failure (expectedNoise).
+
+viewports:       desktop 1440x1000, mobile 390x844
+business rows:   55 (both viewports)
+results:         PASS desktop-1440x1000, PASS mobile-390x844
+                 real console errors 0, page errors 0, CSP violations 0,
+                 favicon 404 0, horizontal overflow false
+assertions:      mobile drawer open -> nav click -> view change ->
+                 auto-close asserted; Business 15 dialog open/close
+                 asserted (failure not swallowed); ko -> en active state
+                 asserted; Business 15 and 39-43 identity rows asserted
+
+capture command: EVIDENCE_BASE=http://127.0.0.1:8788/ node tests/issue285-browser-evidence.mjs
+harness exit:    0
+
+Sanitization: screenshots were captured against the local console with
+no credentials configured; they contain no tokens, cookies, emails, or
+personal data. No Cloudflare Pages Preview was used.

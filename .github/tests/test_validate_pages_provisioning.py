@@ -14,6 +14,8 @@ SPEC.loader.exec_module(validator)
 
 SHA = "4da83a879a861c8e80edd2d5f76ea4268de3d5ad"
 OTHER_SHA = "12ead3c03a7355fcc364648bf0a6169ee86153a1"
+SHA_37 = "1e5beecaea878611d27384dfb0ba86ff7c6d98a1"
+MERGE_SHA_37 = "0142c41b1f159e532fd87c3b036b793271e60979"
 OWNER_LOGIN = "skerishKang"
 REPOSITORY = "skerishKang/ai-revenue-lab"
 REPOSITORY_METADATA = {
@@ -220,17 +222,101 @@ class ApprovalAuthorityTests(unittest.TestCase):
                 self.pr_payload(head={"sha": OTHER_SHA}), REPOSITORY, SHA
             )
 
-    def test_rejects_ready_or_merged_pr(self) -> None:
+    def test_accepts_open_draft_unmerged_pr(self) -> None:
+        validator.verify_pr_payload(self.pr_payload(), REPOSITORY, SHA)
+
+    def test_accepts_closed_merged_pr_with_valid_merge_sha(self) -> None:
+        validator.verify_pr_payload(
+            self.pr_payload(
+                state="closed", draft=False, merged=True, merge_commit_sha=MERGE_SHA_37
+            ),
+            REPOSITORY,
+            SHA,
+        )
+
+    def test_accepts_business_37_post_merge(self) -> None:
+        validator.verify_pr_payload(
+            self.pr_payload(
+                head={"sha": SHA_37},
+                state="closed",
+                draft=False,
+                merged=True,
+                merge_commit_sha=MERGE_SHA_37,
+            ),
+            REPOSITORY,
+            SHA_37,
+        )
+
+    def test_rejects_closed_unmerged_pr(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(state="closed", draft=False, merged=False), REPOSITORY, SHA
+            )
+
+    def test_rejects_closed_draft_merged_pr(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(state="closed", draft=True, merged=True), REPOSITORY, SHA
+            )
+
+    def test_rejects_open_ready_pr(self) -> None:
         with self.assertRaises(validator.ValidationError):
             validator.verify_pr_payload(
                 self.pr_payload(draft=False), REPOSITORY, SHA
             )
+
+    def test_rejects_open_pr_with_merged_true(self) -> None:
         with self.assertRaises(validator.ValidationError):
             validator.verify_pr_payload(
-                self.pr_payload(merged=True, state="closed"), REPOSITORY, SHA
+                self.pr_payload(merged=True), REPOSITORY, SHA
             )
 
-    def test_rejects_wrong_repository(self) -> None:
+    def test_rejects_merged_pr_missing_merge_commit_sha(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(state="closed", draft=False, merged=True),
+                REPOSITORY,
+                SHA,
+            )
+
+    def test_rejects_merged_pr_with_null_merge_commit_sha(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(
+                    state="closed", draft=False, merged=True, merge_commit_sha=None
+                ),
+                REPOSITORY,
+                SHA,
+            )
+
+    def test_rejects_merged_pr_with_short_merge_commit_sha(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(
+                    state="closed", draft=False, merged=True, merge_commit_sha="0142c41"
+                ),
+                REPOSITORY,
+                SHA,
+            )
+
+    def test_rejects_merged_pr_with_uppercase_merge_commit_sha(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(
+                    state="closed", draft=False, merged=True,
+                    merge_commit_sha=MERGE_SHA_37.upper(),
+                ),
+                REPOSITORY,
+                SHA,
+            )
+
+    def test_rejects_different_pr_sha_remains_rejected(self) -> None:
+        with self.assertRaises(validator.ValidationError):
+            validator.verify_pr_payload(
+                self.pr_payload(head={"sha": OTHER_SHA}), REPOSITORY, SHA
+            )
+
+    def test_rejects_wrong_repository_remains_rejected(self) -> None:
         with self.assertRaises(validator.ValidationError):
             validator.verify_pr_payload(
                 self.pr_payload(base={"repo": {"full_name": "other/repo"}}),

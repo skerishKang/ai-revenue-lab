@@ -53,6 +53,28 @@
       numberAsc: '번호 ↑',
       numberDesc: '번호 ↓',
       actionPriority: '우선순위',
+      authorityLabel: '번호 권한',
+      phaseLabel: '단계',
+      lifecycleLabel: '생애주기',
+      priorityLabel: '우선순위',
+      authCanonical: '정식',
+      authProposed: '제안 번호',
+      authCandidate: '후보',
+      authExisting: '기존 프로젝트',
+      authReserved: '예약',
+      authReconciliation: '번호 조정 필요',
+      phaseNotStarted: '미시작',
+      phaseInProgress: '진행 중',
+      phaseNotReady: '미완료',
+      phaseConditionallyReady: '조건부 승인',
+      phaseApproved: '승인',
+      phaseBlockedByUi: 'UI 승인 대기',
+      phaseFrozen: '동결',
+      phaseDecisionPending: '결정 대기',
+      phaseAuthorized: '승인됨',
+      phaseImplemented: '구현됨',
+      phaseNotApplicable: '해당 없음',
+      phaseDeferred: '연기',
       progressSort: '진행률',
       viewDetail: '자세히 보기',
       notDeployed: '미배포',
@@ -122,6 +144,28 @@
       numberAsc: 'NUMBER ↑',
       numberDesc: 'NUMBER ↓',
       actionPriority: 'PRIORITY',
+      authorityLabel: 'NUMBER AUTHORITY',
+      phaseLabel: 'PHASE',
+      lifecycleLabel: 'LIFECYCLE',
+      priorityLabel: 'PRIORITY',
+      authCanonical: 'CANONICAL',
+      authProposed: 'PROPOSED NUMBER',
+      authCandidate: 'CANDIDATE',
+      authExisting: 'EXISTING PROJECT',
+      authReserved: 'RESERVED',
+      authReconciliation: 'RECONCILIATION REQUIRED',
+      phaseNotStarted: 'NOT STARTED',
+      phaseInProgress: 'IN PROGRESS',
+      phaseNotReady: 'NOT READY',
+      phaseConditionallyReady: 'CONDITIONALLY READY',
+      phaseApproved: 'APPROVED',
+      phaseBlockedByUi: 'BLOCKED BY UI',
+      phaseFrozen: 'FROZEN',
+      phaseDecisionPending: 'DECISION PENDING',
+      phaseAuthorized: 'AUTHORIZED',
+      phaseImplemented: 'IMPLEMENTED',
+      phaseNotApplicable: 'NOT APPLICABLE',
+      phaseDeferred: 'DEFERRED',
       progressSort: 'PROGRESS',
       viewDetail: 'VIEW DETAIL',
       notDeployed: 'NOT DEPLOYED',
@@ -253,29 +297,72 @@
   // ── Language ──
   function setLanguage(lang) {
     currentLang = lang;
-    document.documentElement.lang = lang === 'en' ? 'en' : 'ko';
-    $$('.lang-btn').forEach(b => b.classList.toggle('is-active', b.dataset.lang === lang));
-    // Update nav labels
-    $$('.nav-label').forEach(el => {
-      const label = el.dataset[`label${lang === 'ko' ? 'Ko' : 'En'}`];
-      if (label) el.textContent = label;
+    document.documentElement.lang = lang === 'ko' ? 'ko' : 'en';
+    // Reflect the active language on the toggle buttons
+    $$('.lang-btn').forEach(function(btn) {
+      btn.classList.toggle('is-active', btn.dataset.lang === document.documentElement.lang);
     });
-    // Update misc labels
-    const searchLabel = $('.search-label');
-    if (searchLabel) searchLabel.textContent = t('search');
-    $$('.filter-label').forEach(el => {
-      if (el.parentElement?.querySelector('#sf-stage-filter')) el.textContent = t('stage');
-      else if (el.parentElement?.querySelector('#sf-devmode-filter')) el.textContent = t('devMode');
-      else if (el.parentElement?.querySelector('#sf-sort-filter')) el.textContent = t('sort');
+    // Update data-label-ko / data-label-en elements
+    $$('[data-label-ko][data-label-en]').forEach(function(el) {
+      el.textContent = el.getAttribute('data-label-' + lang);
     });
-    const searchInput = $('#sf-search-input');
-    if (searchInput) searchInput.placeholder = t('search');
-    const resetBtn = $('#sf-reset-filter');
-    if (resetBtn) resetBtn.textContent = t('reset');
-    const prefix = $('#header-prefix');
-    if (prefix) {
-      prefix.textContent = prefix.dataset[`prefix${lang === 'ko' ? 'Ko' : 'En'}`] || prefix.textContent;
+    // Update filter option text for business filters
+    var authFilter = $('#biz-auth-filter');
+    if (authFilter) {
+      var authOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'canonical': lang === 'ko' ? '정식' : 'CANONICAL',
+        'proposed-number': lang === 'ko' ? '제안 번호' : 'PROPOSED NUMBER',
+        'candidate': lang === 'ko' ? '후보' : 'CANDIDATE',
+        'existing-project': lang === 'ko' ? '기존 프로젝트' : 'EXISTING PROJECT',
+        'reserved': lang === 'ko' ? '예약' : 'RESERVED',
+        'number-reconciliation-required': lang === 'ko' ? '번호 조정 필요' : 'RECONCILIATION REQUIRED',
+      };
+      Array.from(authFilter.options).forEach(function(o) { if (authOpts[o.value]) o.textContent = authOpts[o.value]; });
     }
+    var uiFilter = $('#biz-ui-filter');
+    if (uiFilter) {
+      var uiOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'NOT_STARTED': lang === 'ko' ? '미시작' : 'NOT STARTED',
+        'IN_PROGRESS': lang === 'ko' ? '진행 중' : 'IN PROGRESS',
+        'UI_NOT_READY': lang === 'ko' ? '미완료' : 'NOT READY',
+        'UI_CONDITIONALLY_READY': lang === 'ko' ? '조건부 승인' : 'CONDITIONALLY READY',
+        'UI_APPROVED': lang === 'ko' ? '승인' : 'APPROVED',
+        'BLOCKED_BY_UI': lang === 'ko' ? 'UI 승인 대기' : 'BLOCKED BY UI',
+      };
+      Array.from(uiFilter.options).forEach(function(o) { if (uiOpts[o.value]) o.textContent = uiOpts[o.value]; });
+    }
+    var uxFilter = $('#biz-ux-filter');
+    if (uxFilter) {
+      var uxOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'NOT_STARTED': lang === 'ko' ? '미시작' : 'NOT STARTED',
+        'IN_PROGRESS': lang === 'ko' ? '진행 중' : 'IN PROGRESS',
+        'BLOCKED_BY_UI': lang === 'ko' ? 'UI 대기' : 'BLOCKED BY UI',
+        'UX_APPROVED': lang === 'ko' ? '승인' : 'APPROVED',
+      };
+      Array.from(uxFilter.options).forEach(function(o) { if (uxOpts[o.value]) o.textContent = uxOpts[o.value]; });
+    }
+    var beFilter = $('#biz-be-filter');
+    if (beFilter) {
+      var beOpts = {
+        'all': lang === 'ko' ? '전체' : 'ALL',
+        'FROZEN': lang === 'ko' ? '동결' : 'FROZEN',
+        'DECISION_PENDING': lang === 'ko' ? '결정 대기' : 'DECISION PENDING',
+        'AUTHORIZED': lang === 'ko' ? '승인됨' : 'AUTHORIZED',
+        'IN_PROGRESS': lang === 'ko' ? '진행 중' : 'IN PROGRESS',
+        'IMPLEMENTED': lang === 'ko' ? '구현됨' : 'IMPLEMENTED',
+        'NOT_APPLICABLE': lang === 'ko' ? '해당 없음' : 'NOT APPLICABLE',
+        'DEFERRED': lang === 'ko' ? '연기' : 'DEFERRED',
+      };
+      Array.from(beFilter.options).forEach(function(o) { if (beOpts[o.value]) o.textContent = beOpts[o.value]; });
+    }
+    applyTranslations();
+    updateActiveView();
+  }
+
+  function applyTranslations() {
     const bizSearch = $('#biz-search-input');
     if (bizSearch) bizSearch.placeholder = t('bizSearch');
     // Update selects
@@ -352,22 +439,11 @@
       sortF.options[1].textContent = t('sortProgressDesc');
       sortF.options[2].textContent = t('sortProgressAsc');
     }
-    // Business state filter
-    const bsF = $('#biz-state-filter');
-    if (bsF) {
-      bsF.options[0].textContent = t('allStates');
-      bsF.options[1].textContent = t('running');
-      bsF.options[2].textContent = t('reviewBuild');
-      bsF.options[3].textContent = t('planning');
-      bsF.options[4].textContent = t('reserved');
-    }
-    // Business sort
+    // Business sort (only 2 options: number-asc, number-desc)
     const bSort = $('#biz-sort');
     if (bSort) {
       bSort.options[0].textContent = t('numberAsc');
       bSort.options[1].textContent = t('numberDesc');
-      bSort.options[2].textContent = t('actionPriority');
-      bSort.options[3].textContent = t('progressSort');
     }
   }
 
@@ -550,7 +626,7 @@
           <span class="work-item-progress">${progress ? `— ${progress.pct}% (${progress.done}/${progress.total})` : ''}</span>
           <div class="work-item-actions">
             <button type="button" class="work-item-btn work-detail-btn" data-project-id="${item.id}">${t('viewDetail')}</button>
-            ${item.pageUrl ? `<a class="work-item-btn" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">${t('openService')}</a>` : ''}
+            ${item.pageUrl ? `<a class="work-item-btn" href="${item.pageUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
           </div>
         </div>
       `;
@@ -565,18 +641,24 @@
   // ── Business view ──
   function filteredBusinesses() {
     const query = ($('#biz-search-input')?.value || '').trim().toLowerCase();
-    const state = $('#biz-state-filter')?.value || 'all';
+    const authority = $('#biz-auth-filter')?.value || 'all';
+    const uiFilter = $('#biz-ui-filter')?.value || 'all';
+    const uxFilter = $('#biz-ux-filter')?.value || 'all';
+    const beFilter = $('#biz-be-filter')?.value || 'all';
     const sort = $('#biz-sort')?.value || 'number-asc';
 
     let result = businesses.filter(b => {
       const haystack = `${b.number} ${pad(b.number)} ${b.title} ${b.koreanTitle} ${b.slug}`.toLowerCase();
-      return (!query || haystack.includes(query)) && (state === 'all' || b.state === state);
+      if (query && !haystack.includes(query)) return false;
+      if (authority !== 'all' && b.numberAuthority !== authority) return false;
+      if (uiFilter !== 'all' && b.uiStatus !== uiFilter) return false;
+      if (uxFilter !== 'all' && b.uxStatus !== uxFilter) return false;
+      if (beFilter !== 'all' && b.backendStatus !== beFilter) return false;
+      return true;
     });
 
     result = result.slice().sort((a, b) => {
       if (sort === 'number-desc') return b.number - a.number;
-      if (sort === 'priority') return (b.priority || 0) - (a.priority || 0) || a.number - b.number;
-      if (sort === 'progress') return (b.progress || 0) - (a.progress || 0) || a.number - b.number;
       return a.number - b.number;
     });
     return result;
@@ -588,19 +670,23 @@
     const visible = filteredBusinesses();
 
     list.innerHTML = visible.map(b => {
-      const reserved = b.state === 'reserved' ? ' is-reserved' : '';
-      const stateCls = `status-${b.state}`;
+      const authCls = 'biz-auth-' + (b.numberAuthority === 'proposed-number' ? 'proposed' : b.numberAuthority === 'existing-project' ? 'existing-project' : b.numberAuthority === 'number-reconciliation-required' ? 'reconciliation' : b.numberAuthority || 'candidate');
+      const uiCls = phaseBadgeClass(b.uiStatus, 'ui');
+      const uxCls = phaseBadgeClass(b.uxStatus, 'ux');
+      const beCls = phaseBadgeClass(b.backendStatus, 'be');
       return `
-        <div class="biz-item${reserved}" data-biz-number="${b.number}" tabindex="0">
+        <div class="biz-item" data-biz-number="${b.number}" tabindex="0">
           <span class="biz-number">${pad(b.number)}</span>
           <div class="biz-title-group">
             <span class="biz-title">${b.title}</span>
             <span class="biz-korean">${b.koreanTitle}</span>
+            <span class="biz-live-discovery" data-live-discovery></span>
           </div>
-          <span class="biz-state status-badge ${stateCls}">${stateLabel(b.state)}</span>
-          <div class="biz-progress">
-            <span>${b.progress}%</span>
-            <div class="biz-progress-bar"><i style="width:${b.progress}%"></i></div>
+          <span class="biz-auth status-badge ${authCls}">${authorityLabel(b.numberAuthority)}</span>
+          <div class="biz-phase-group">
+            <span class="biz-phase-badge ${uiCls}">${phaseStatusLabel(b.uiStatus)}</span>
+            <span class="biz-phase-badge ${uxCls}">${phaseStatusLabel(b.uxStatus)}</span>
+            <span class="biz-phase-badge ${beCls}">${phaseStatusLabel(b.backendStatus)}</span>
           </div>
         </div>
       `;
@@ -624,6 +710,55 @@
 
     const headerBadge = $('#header-count');
     if (headerBadge) headerBadge.textContent = `${t('bizLabel')} ${visible.length}`;
+  }
+
+  function phaseBadgeClass(status, prefix) {
+    var s = String(status || '');
+    if (s === 'NOT_STARTED') return 'phase-ns';
+    if (s === 'IN_PROGRESS') return 'phase-ip';
+    if (s === (prefix === 'ui' ? 'UI_NOT_READY' : prefix === 'ux' ? 'UX_NOT_READY' : 'NOT_APPLICABLE') || s === (prefix === 'be' ? 'DEFERRED' : '') && prefix === 'be') return 'phase-nr';
+    if (s === 'UI_CONDITIONALLY_READY' || s === 'UX_CONDITIONALLY_READY') return 'phase-cr';
+    if (s === 'UI_APPROVED' || s === 'UX_APPROVED' || s === 'IMPLEMENTED') return 'phase-ap';
+    if (s === 'NOT_APPLICABLE') return 'phase-na';
+    if (s === 'BLOCKED_BY_UI') return 'phase-bu';
+    if (s === 'FROZEN') return 'phase-fr';
+    if (s === 'DECISION_PENDING') return 'phase-dp';
+    if (s === 'AUTHORIZED') return 'phase-au';
+    if (s === 'IN_PROGRESS' || s === 'DEFERRED') return 'phase-ip';
+    return 'phase-ns';
+  }
+
+  function authorityLabel(a) {
+    var labels = {
+      'canonical': t('authCanonical'),
+      'proposed-number': t('authProposed'),
+      'candidate': t('authCandidate'),
+      'existing-project': t('authExisting'),
+      'reserved': t('authReserved'),
+      'number-reconciliation-required': t('authReconciliation'),
+    };
+    return labels[a] || a;
+  }
+
+  function phaseStatusLabel(s) {
+    var labels = {
+      'NOT_STARTED': t('phaseNotStarted'),
+      'IN_PROGRESS': t('phaseInProgress'),
+      'UI_NOT_READY': t('phaseNotReady'),
+      'UX_NOT_READY': t('phaseNotReady'),
+      'UI_CONDITIONALLY_READY': t('phaseConditionallyReady'),
+      'UX_CONDITIONALLY_READY': t('phaseConditionallyReady'),
+      'BLOCKED_BY_UI': t('phaseBlockedByUi'),
+      'FROZEN': t('phaseFrozen'),
+      'DECISION_PENDING': t('phaseDecisionPending'),
+      'AUTHORIZED': t('phaseAuthorized'),
+      'IMPLEMENTED': t('phaseImplemented'),
+      'NOT_APPLICABLE': t('phaseNotApplicable'),
+      'DEFERRED': t('phaseDeferred'),
+      'UI_APPROVED': t('phaseApproved'),
+      'UX_APPROVED': t('phaseApproved'),
+    };
+    return labels[s] || s;
   }
 
   // ── Dialog ──
@@ -741,33 +876,40 @@
   }
 
   function businessDialogContentHTML(biz) {
-    const stateCls = `status-${biz.state}`;
+    const authCls = 'biz-auth-' + (biz.numberAuthority === 'proposed-number' ? 'proposed' : biz.numberAuthority === 'existing-project' ? 'existing-project' : biz.numberAuthority === 'number-reconciliation-required' ? 'reconciliation' : biz.numberAuthority || 'candidate');
+    const uiCls = phaseBadgeClass(biz.uiStatus, 'ui');
+    const uxCls = phaseBadgeClass(biz.uxStatus, 'ux');
+    const beCls = phaseBadgeClass(biz.backendStatus, 'be');
     return `
       <div class="dialog-biznumber">B${pad(biz.number)}</div>
       <div class="dialog-name">${biz.title}</div>
       <div class="dialog-korean">${biz.koreanTitle}</div>
       <hr class="dialog-divider">
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('statusLabel')}</span>
-        <span class="dialog-section-value"><span class="status-badge ${stateCls}">${stateLabel(biz.state)}</span></span>
+        <span class="dialog-section-label">${t('authorityLabel')}</span>
+        <span class="dialog-section-value"><span class="status-badge ${authCls}">${authorityLabel(biz.numberAuthority)}</span></span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('progressLabel')}</span>
-        <span class="dialog-section-value">${biz.progress}%</span>
+        <span class="dialog-section-label">${t('phaseLabel')}</span>
+        <span class="dialog-section-value">
+          <span class="biz-phase-badge ${uiCls}">UI: ${phaseStatusLabel(biz.uiStatus)}</span>
+          <span class="biz-phase-badge ${uxCls}">UX: ${phaseStatusLabel(biz.uxStatus)}</span>
+          <span class="biz-phase-badge ${beCls}">BE: ${phaseStatusLabel(biz.backendStatus)}</span>
+        </span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('nextAction')}</span>
-        <span class="dialog-section-value">${biz.nextAction || '—'}</span>
+        <span class="dialog-section-label">${t('lifecycleLabel')}</span>
+        <span class="dialog-section-value">${biz.lifecycle || '—'}</span>
       </div>
       <div class="dialog-section">
-        <span class="dialog-section-label">${t('lastVerified')}</span>
-        <span class="dialog-section-value">${biz.lastVerified || '—'}</span>
+        <span class="dialog-section-label">${t('priorityLabel')}</span>
+        <span class="dialog-section-value">${biz.priority || '—'}</span>
       </div>
       <hr class="dialog-divider">
       <div class="dialog-links">
         ${biz.surfaceUrl ? `<a class="dialog-link" href="${biz.surfaceUrl}" target="_blank" rel="noopener noreferrer">${t('openService')}</a>` : ''}
-        ${biz.githubUrl ? `<a class="dialog-link" href="${biz.githubUrl}" target="_blank" rel="noopener noreferrer">GitHub</a>` : ''}
       </div>
+      <div data-verdict-block></div>
     `;
   }
 
@@ -890,9 +1032,12 @@
 
     // Business filters
     const bizSearch = $('#biz-search-input');
-    const bizState = $('#biz-state-filter');
+    const bizAuth = $('#biz-auth-filter');
+    const bizUi = $('#biz-ui-filter');
+    const bizUx = $('#biz-ux-filter');
+    const bizBe = $('#biz-be-filter');
     const bizSort = $('#biz-sort');
-    [bizSearch, bizState, bizSort].forEach(el => {
+    [bizSearch, bizAuth, bizUi, bizUx, bizBe, bizSort].forEach(el => {
       if (!el) return;
       el.addEventListener(el.type === 'search' ? 'input' : 'change', () => {
         if (activeView === 'business') renderBusinessIndex();
