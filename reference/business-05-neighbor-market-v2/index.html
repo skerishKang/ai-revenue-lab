@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Business 5 우리단지 이웃가게 — 방림명지로드힐 주민 생활 마켓 정적 레퍼런스">
+  <title>우리단지 이웃가게 · 방림명지로드힐</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <style>
+    :root {
+      --brand:#ff6547;
+      --brand-strong:#ef5134;
+      --brand-soft:#fff0eb;
+      --ink:#171a19;
+      --muted:#686e6b;
+      --line:#e7e8e6;
+      --surface:#ffffff;
+      --canvas:#f7f7f5;
+      --green:#23634f;
+      --green-soft:#e7f3ee;
+      --yellow:#ffefb8;
+      --blue-soft:#eaf2ff;
+      --shadow:0 12px 32px rgba(23,26,25,.08);
+      --shadow-soft:0 4px 18px rgba(23,26,25,.06);
+      --radius:18px;
+      --max:1160px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--canvas);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.014em}
+    button,input,select,textarea{font:inherit;color:inherit}
+    button,a{tap-highlight-color:transparent;-webkit-tap-highlight-color:transparent}
+    a{text-decoration:none;color:inherit}
+    img{display:block;width:100%}
+    svg{display:block}
+    .global-strip{height:34px;background:#171a19;color:#e9ecea;font-size:12px}
+    .global-strip .inner{height:100%;max-width:var(--max);margin:auto;padding:0 24px;display:flex;align-items:center;gap:14px}
+    .global-strip strong{font-size:12px;letter-spacing:.01em}
+    .global-strip .divider{width:1px;height:12px;background:#444946}
+    .global-strip .subtle{color:#abb2ae}
+    .global-strip .spacer{flex:1}
+    .preview-pill{color:#fff;background:#343936;border:1px solid #4a504c;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:700}
+    .app-header{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    .header-inner{max-width:var(--max);height:72px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:22px}
+    .brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+    .brand-mark{width:38px;height:38px;border-radius:12px;background:var(--brand);display:grid;place-items:center;color:#fff;box-shadow:0 7px 18px rgba(255,101,71,.25)}
+    .brand-mark svg{width:22px;height:22px}
+    .brand-copy small{display:block;color:var(--brand);font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:1px}
+    .brand-copy b{font-size:17px;letter-spacing:-.04em}
+    .desktop-nav{display:flex;align-items:center;gap:3px;margin-left:16px}
+    .nav-link{border:0;background:transparent;padding:10px 12px;border-radius:10px;color:#525855;font-weight:650;cursor:pointer}
+    .nav-link:hover,.nav-link.active{background:#f1f2f0;color:var(--ink)}
+    .header-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .icon-btn,.text-btn,.primary-btn,.outline-btn{border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:750}
+    .icon-btn{width:42px;height:42px;border-radius:50%;background:#f2f3f1}
+    .icon-btn svg{width:20px;height:20px}
+    .text-btn{height:42px;padding:0 14px;border-radius:11px;background:#f2f3f1}
+    .primary-btn{min-height:46px;padding:0 18px;border-radius:12px;background:var(--brand);color:#fff;box-shadow:0 8px 18px rgba(255,101,71,.2)}
+    .primary-btn:hover{background:var(--brand-strong)}
+    .outline-btn{min-height:44px;padding:0 16px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+    main{min-height:calc(100vh - 106px)}
+    .page{display:none;animation:fade .18s ease}
+    .page.active{display:block}
+    @keyframes fade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .wrap{max-width:var(--max);margin:auto;padding:0 24px}
+    .location-row{display:flex;align-items:center;gap:10px;padding:23px 0 14px}
+    .location-button{border:0;background:transparent;padding:0;display:flex;align-items:center;gap:7px;font-size:19px;font-weight:850;cursor:pointer;letter-spacing:-.04em}
+    .location-button svg{width:18px;height:18px}
+    .location-meta{font-size:12px;color:var(--muted);margin-left:4px}
+    .hero{position:relative;min-height:252px;border-radius:24px;overflow:hidden;background:#222;margin-bottom:18px;box-shadow:var(--shadow-soft)}
+    .hero img{position:absolute;inset:0;height:100%;object-fit:cover;filter:saturate(.86)}
+    .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,19,17,.78) 0%,rgba(15,19,17,.55) 47%,rgba(15,19,17,.1) 100%)}
+    .hero-copy{position:relative;z-index:2;color:#fff;padding:38px 40px;max-width:610px}
+    .hero-kicker{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:750;color:#eef3f0;margin-bottom:15px}
+    .hero-kicker i{width:7px;height:7px;background:#82d0a8;border-radius:50%;box-shadow:0 0 0 5px rgba(130,208,168,.16)}
+    .hero h1{font-size:40px;line-height:1.15;margin:0 0 12px;letter-spacing:-.055em}
+    .hero p{margin:0 0 19px;color:#e3e8e5;font-size:15px;line-height:1.65}
+    .hero-facts{display:flex;gap:8px;flex-wrap:wrap}
+    .hero-facts span{font-size:11px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(8px);border-radius:999px;padding:6px 9px}
+    .photo-note{position:absolute;z-index:3;right:13px;bottom:11px;color:rgba(255,255,255,.78);font-size:10px;background:rgba(0,0,0,.28);padding:5px 7px;border-radius:7px}
+    .search-panel{display:grid;grid-template-columns:1fr 178px 52px;gap:9px;background:#fff;border:1px solid var(--line);border-radius:17px;padding:9px;box-shadow:var(--shadow)}
+    .search-box{height:52px;display:flex;align-items:center;gap:10px;padding:0 15px;background:#f5f6f4;border-radius:12px}
+    .search-box svg{width:20px;height:20px;color:#555b58}
+    .search-box input{width:100%;border:0;outline:0;background:transparent;font-size:15px;font-weight:550}
+    .search-box input::placeholder{color:#929793}
+    .select-wrap{position:relative}
+    .select-wrap select{appearance:none;width:100%;height:52px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 38px 0 14px;font-weight:700;outline:none}
+    .select-wrap svg{pointer-events:none;position:absolute;right:13px;top:17px;width:18px;height:18px;color:#747a76}
+    .search-submit{width:52px;height:52px;border:0;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;cursor:pointer}
+    .search-submit svg{width:21px;height:21px}
+    .section{padding:34px 0 8px}
+    .section-head{display:flex;align-items:end;gap:16px;margin-bottom:16px}
+    .section-head h2{font-size:23px;letter-spacing:-.045em;margin:0 0 3px}
+    .section-head p{font-size:13px;color:var(--muted);margin:0}
+    .section-head .more{margin-left:auto;border:0;background:transparent;color:#6d736f;font-size:13px;font-weight:700;cursor:pointer}
+    .category-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
+    .category{border:0;background:transparent;padding:0;cursor:pointer;text-align:center}
+    .category-icon{aspect-ratio:1;border-radius:20px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;transition:.18s;box-shadow:0 2px 8px rgba(23,26,25,.025)}
+    .category:hover .category-icon,.category.active .category-icon{transform:translateY(-2px);border-color:#ffc7ba;background:var(--brand-soft)}
+    .category-icon svg{width:27px;height:27px;stroke-width:1.75}
+    .category span{display:block;margin-top:8px;font-size:12px;font-weight:700;color:#444946;white-space:nowrap}
+    .benefit-strip{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}
+    .benefit-banner{position:relative;min-height:166px;border-radius:19px;overflow:hidden;background:#202624;color:#fff;cursor:pointer}
+    .benefit-banner img{position:absolute;inset:0;height:100%;object-fit:cover}
+    .benefit-banner:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(17,21,19,.83),rgba(17,21,19,.18))}
+    .benefit-content{position:relative;z-index:2;padding:25px 27px;max-width:390px}
+    .benefit-content small{font-size:11px;font-weight:800;color:#ffe5dd}
+    .benefit-content h3{font-size:22px;line-height:1.3;letter-spacing:-.045em;margin:8px 0 8px}
+    .benefit-content p{font-size:12px;color:#e1e5e3;margin:0}
+    .benefit-banner.light{color:#1f2421;background:var(--yellow)}
+    .benefit-banner.light:after{background:linear-gradient(90deg,rgba(255,239,184,.97),rgba(255,239,184,.52))}
+    .benefit-banner.light .benefit-content small{color:#a05700}
+    .benefit-banner.light .benefit-content p{color:#665b3e}
+    .shop-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .filter-chip{height:36px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:0 12px;cursor:pointer;font-size:12px;font-weight:720;color:#555b58}
+    .filter-chip.active{border-color:#222;background:#222;color:#fff}
+    .result-count{margin-left:auto;font-size:12px;color:var(--muted)}
+    .shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+    .shop-card{display:grid;grid-template-columns:168px 1fr;min-height:168px;background:#fff;border:1px solid var(--line);border-radius:17px;overflow:hidden;cursor:pointer;transition:.18s;box-shadow:0 2px 8px rgba(23,26,25,.025)}
+    .shop-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-soft);border-color:#d8dad7}
+    .shop-photo{position:relative;overflow:hidden;background:#eceeeb}
+    .shop-photo img{height:100%;object-fit:cover;transition:.28s}
+    .shop-card:hover .shop-photo img{transform:scale(1.025)}
+    .photo-badge{position:absolute;left:9px;top:9px;background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.7);border-radius:8px;padding:5px 7px;font-size:10px;font-weight:850;color:var(--green);box-shadow:0 3px 10px rgba(0,0,0,.1)}
+    .shop-copy{padding:15px 16px 14px;min-width:0;display:flex;flex-direction:column}
+    .shop-top{display:flex;gap:8px;align-items:start}
+    .shop-title{font-size:17px;font-weight:850;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .heart{margin-left:auto;border:0;background:transparent;padding:0;color:#9a9f9c;cursor:pointer}
+    .heart.active{color:var(--brand)}
+    .heart svg{width:20px;height:20px}
+    .shop-meta{display:flex;gap:6px;align-items:center;color:#737975;font-size:11px;margin:5px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .status{color:var(--green);font-weight:800}
+    .shop-summary{font-size:13px;color:#3f4542;margin:0 0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .price-line{font-size:12px;color:#505652;margin-bottom:7px}
+    .price-line b{font-size:14px;color:#202421;margin-right:4px}
+    .benefit-line{margin-top:auto;padding-top:8px;border-top:1px solid #f0f1ef;color:var(--brand-strong);font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .availability-row{display:flex;gap:7px;margin-top:9px}
+    .tiny-tag{font-size:10px;color:#59605c;background:#f2f3f1;border-radius:6px;padding:4px 6px;font-weight:700}
+    .empty-state{display:none;background:#fff;border:1px solid var(--line);border-radius:18px;padding:54px 20px;text-align:center}
+    .empty-state.show{display:block}
+    .empty-state svg{width:45px;height:45px;margin:0 auto 12px;color:#a1a6a3}
+    .empty-state h3{font-size:18px;margin:0 0 7px}
+    .empty-state p{font-size:13px;color:var(--muted);margin:0}
+    .page-title{padding:30px 0 20px}
+    .page-title .crumb{font-size:12px;color:var(--muted);margin-bottom:12px}
+    .page-title h1{font-size:32px;letter-spacing:-.055em;margin:0 0 9px}
+    .page-title p{font-size:14px;color:var(--muted);margin:0;line-height:1.65}
+    .detail-layout{display:grid;grid-template-columns:minmax(0,1.35fr) 360px;gap:18px;padding-bottom:60px}
+    .detail-main,.detail-side>section{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden}
+    .gallery{display:grid;grid-template-columns:1.3fr .7fr;gap:3px;height:390px;background:#ddd}
+    .gallery-main,.gallery-side{overflow:hidden}
+    .gallery img{height:100%;object-fit:cover}
+    .gallery-side{display:grid;grid-template-rows:1fr 1fr;gap:3px}
+    .detail-body{padding:27px 29px 34px}
+    .detail-badge-row{display:flex;gap:6px;flex-wrap:wrap}
+    .trust-badge{font-size:10px;font-weight:800;border-radius:7px;padding:5px 7px;background:var(--green-soft);color:var(--green)}
+    .trust-badge.benefit{background:var(--brand-soft);color:var(--brand-strong)}
+    .detail-title-line{display:flex;gap:15px;align-items:start;margin:12px 0 8px}
+    .detail-title-line h1{font-size:29px;letter-spacing:-.05em;margin:0}
+    .detail-title-line .heart{margin-top:4px}
+    .detail-sub{font-size:13px;color:var(--muted);margin:0 0 18px}
+    .detail-stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:26px}
+    .detail-stats div{padding:13px;text-align:center;border-right:1px solid var(--line)}
+    .detail-stats div:last-child{border-right:0}
+    .detail-stats b{display:block;font-size:13px;margin-bottom:3px}
+    .detail-stats span{font-size:10px;color:var(--muted)}
+    .content-section{padding:24px 0;border-top:1px solid var(--line)}
+    .content-section h2{font-size:19px;letter-spacing:-.04em;margin:0 0 14px}
+    .content-section p{font-size:14px;color:#4f5551;line-height:1.75;margin:0}
+    .menu-list{display:grid;gap:11px}
+    .menu-item{display:grid;grid-template-columns:1fr 92px;gap:14px;padding:12px 0;border-bottom:1px solid #f0f1ef}
+    .menu-item:last-child{border-bottom:0}
+    .menu-item h3{font-size:14px;margin:0 0 5px}
+    .menu-item p{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 6px}
+    .menu-item b{font-size:13px}
+    .menu-item img{height:78px;object-fit:cover;border-radius:11px}
+    .detail-side{display:flex;flex-direction:column;gap:12px}
+    .detail-side>section{padding:21px}
+    .benefit-box{background:#fff8e5!important;border-color:#f5e7b7!important}
+    .benefit-box small{font-size:10px;color:#9a6a00;font-weight:850}
+    .benefit-box h2{font-size:20px;line-height:1.35;letter-spacing:-.04em;margin:8px 0 7px}
+    .benefit-box p{font-size:12px;color:#6e6245;line-height:1.55;margin:0 0 16px}
+    .action-stack{display:grid;gap:8px}
+    .action-stack button{width:100%}
+    .info-list{display:grid;gap:13px;margin:0}
+    .info-row{display:grid;grid-template-columns:80px 1fr;gap:10px;font-size:12px}
+    .info-row dt{color:var(--muted)}
+    .info-row dd{margin:0;font-weight:650}
+    .notice-card{background:#f3f6f4!important}
+    .notice-card h3{font-size:15px;margin:0 0 8px}
+    .notice-card p{font-size:11px;line-height:1.6;color:#646b67;margin:0}
+    .benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;padding-bottom:50px}
+    .benefit-card{background:#fff;border:1px solid var(--line);border-radius:17px;overflow:hidden;cursor:pointer}
+    .benefit-card img{height:160px;object-fit:cover}
+    .benefit-card .copy{padding:16px}
+    .benefit-card small{font-size:10px;color:var(--brand-strong);font-weight:850}
+    .benefit-card h3{font-size:17px;margin:6px 0 7px;letter-spacing:-.04em}
+    .benefit-card p{font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 11px}
+    .benefit-card b{font-size:13px;color:#3e433f}
+    .form-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;padding-bottom:58px}
+    .steps,.form-card,.my-card,.qa-card{background:#fff;border:1px solid var(--line);border-radius:20px}
+    .steps{padding:21px;height:max-content;position:sticky;top:92px}
+    .steps h3{font-size:16px;margin:0 0 16px}
+    .step{display:flex;gap:10px;padding:13px 0;border-top:1px solid #f0f1ef;color:#7a807c;font-size:13px}
+    .step:first-of-type{border-top:0}
+    .step i{width:25px;height:25px;border-radius:50%;background:#f0f2f0;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:800}
+    .step.active{color:var(--ink);font-weight:800}
+    .step.active i{background:var(--brand);color:#fff}
+    .form-card{padding:28px}
+    .form-card h2{font-size:25px;letter-spacing:-.05em;margin:0 0 8px}
+    .form-card>p{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 24px}
+    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+    .field{display:grid;gap:7px}
+    .field.full{grid-column:1/-1}
+    .field label{font-size:12px;font-weight:800}
+    .field input,.field select,.field textarea{width:100%;border:1px solid #dfe1de;background:#fff;border-radius:11px;padding:13px 14px;outline:none}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(255,101,71,.11)}
+    .field textarea{min-height:110px;resize:vertical}
+    .field small{font-size:10px;color:var(--muted)}
+    .form-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+    .my-layout{display:grid;grid-template-columns:300px 1fr;gap:16px;padding-bottom:55px}
+    .my-card{padding:23px}
+    .profile-row{display:flex;align-items:center;gap:12px}
+    .avatar{width:48px;height:48px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:850}
+    .profile-row h3{font-size:17px;margin:0 0 3px}
+    .profile-row p{font-size:11px;color:var(--muted);margin:0}
+    .my-stat{display:grid;grid-template-columns:1fr 1fr;margin-top:19px;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+    .my-stat div{text-align:center;padding:13px;border-right:1px solid var(--line)}
+    .my-stat div:last-child{border-right:0}
+    .my-stat b{display:block;font-size:16px}
+    .my-stat span{font-size:10px;color:var(--muted)}
+    .qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:55px}
+    .qa-card{padding:20px;cursor:pointer}
+    .qa-card small{font-size:10px;color:var(--brand);font-weight:850}
+    .qa-card h3{font-size:16px;margin:7px 0 6px}
+    .qa-card p{font-size:11px;color:var(--muted);line-height:1.5;margin:0}
+    .qa-card code{display:block;margin-top:12px;font-size:10px;color:var(--green);background:var(--green-soft);padding:6px 8px;border-radius:7px;width:max-content}
+    .footer{margin-top:45px;background:#fff;border-top:1px solid var(--line)}
+    .footer-inner{max-width:var(--max);margin:auto;padding:28px 24px 98px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px;color:#676d69;font-size:11px;line-height:1.65}
+    .footer strong{display:block;color:var(--ink);font-size:13px;margin-bottom:7px}
+    .footer a{display:block;margin:4px 0}
+    .mobile-tabs{display:none}
+    .mobile-detail-actions{display:none}
+    .toast{position:fixed;z-index:200;left:50%;bottom:28px;transform:translate(-50%,18px);background:#202421;color:#fff;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:650;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;max-width:calc(100% - 32px);text-align:center}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:920px){
+      .desktop-nav{display:none}.header-inner{height:64px}.brand-copy small{display:none}.header-actions .text-btn{display:none}
+      .category-grid{grid-template-columns:repeat(4,1fr);row-gap:18px}.benefit-strip{grid-template-columns:1fr 1fr}.shop-card{grid-template-columns:145px 1fr}.detail-layout{grid-template-columns:1fr}.detail-side{display:grid;grid-template-columns:1fr 1fr}.form-layout,.my-layout{grid-template-columns:1fr}.steps{position:static}.benefit-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:640px){
+      :root{--canvas:#fff}.global-strip{height:28px}.global-strip .inner{padding:0 15px}.global-strip .subtle,.global-strip .divider{display:none}.preview-pill{margin-left:auto}.app-header{top:0}.header-inner{height:56px;padding:0 15px}.brand-mark{width:34px;height:34px;border-radius:11px}.brand-copy b{font-size:15px}.header-actions .primary-btn{display:none}.icon-btn{width:36px;height:36px}.wrap{padding:0 15px}main{padding-bottom:70px}.location-row{padding:17px 0 12px}.location-button{font-size:18px}.location-meta{display:none}
+      .hero{min-height:174px;border-radius:0;margin:0 -15px 13px;box-shadow:none}.hero-copy{padding:24px 20px;max-width:330px}.hero-kicker{font-size:10px;margin-bottom:9px}.hero h1{font-size:27px;margin-bottom:7px}.hero p{font-size:11px;line-height:1.5;margin-bottom:12px}.hero-facts span{font-size:9px;padding:4px 6px}.photo-note{font-size:8px;right:8px;bottom:7px}
+      .search-panel{grid-template-columns:1fr 48px;border:0;padding:0;box-shadow:none;border-radius:0}.search-box{height:48px;border:1px solid var(--line);background:#f5f6f4}.select-wrap{display:none}.search-submit{width:48px;height:48px}.section{padding-top:28px}.section-head{margin-bottom:13px}.section-head h2{font-size:20px}.section-head p{font-size:11px}.category-grid{grid-template-columns:repeat(4,1fr);gap:14px 9px}.category-icon{border-radius:17px}.category span{font-size:11px;margin-top:6px}.benefit-strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin-right:-15px;padding-right:15px;gap:9px;scrollbar-width:none}.benefit-strip::-webkit-scrollbar{display:none}.benefit-banner{min-width:86%;min-height:145px;scroll-snap-align:start}.benefit-content{padding:21px}.benefit-content h3{font-size:19px}.shop-toolbar{overflow-x:auto;flex-wrap:nowrap;margin-right:-15px;padding-right:15px;scrollbar-width:none}.shop-toolbar::-webkit-scrollbar{display:none}.result-count{display:none}.shop-grid{grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}.shop-card{grid-template-columns:112px 1fr;min-height:142px;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none}.shop-card:hover{transform:none;box-shadow:none}.shop-photo{margin:14px 0;border-radius:13px;height:112px}.photo-badge{font-size:8px;left:7px;top:7px}.shop-copy{padding:15px 0 13px 13px}.shop-title{font-size:16px}.shop-meta{font-size:10px;margin:4px 0 6px}.shop-summary{font-size:12px;margin-bottom:7px}.price-line{font-size:11px;margin-bottom:5px}.price-line b{font-size:13px}.benefit-line{font-size:10px;padding-top:6px}.availability-row{display:none}
+      .page-title{padding:23px 0 16px}.page-title h1{font-size:27px}.page-title p{font-size:12px}.detail-layout{padding-bottom:92px}.gallery{height:285px;margin:0 -15px;border-radius:0}.detail-main,.detail-side>section{border-radius:0;border-left:0;border-right:0}.detail-body{padding:22px 0 26px}.detail-title-line h1{font-size:26px}.detail-stats{margin-bottom:20px}.detail-side{display:block}.detail-side>section{margin:10px -15px 0;padding:20px 15px}.detail-side .action-stack{display:none}.menu-item{grid-template-columns:1fr 82px}.menu-item img{height:70px}.benefit-grid{grid-template-columns:1fr;gap:0}.benefit-card{border-radius:0;border-left:0;border-right:0;border-bottom:0;display:grid;grid-template-columns:124px 1fr}.benefit-card img{height:100%;min-height:144px}.benefit-card .copy{padding:15px}.form-card,.steps,.my-card,.qa-card{border-radius:0;border-left:0;border-right:0}.form-layout{margin:0 -15px;gap:10px}.steps{padding:18px 15px}.step{display:none}.step.active{display:flex}.form-card{padding:23px 15px}.field-grid{grid-template-columns:1fr}.my-layout{margin:0 -15px}.qa-grid{grid-template-columns:1fr;gap:8px}.qa-card{margin:0 -15px;padding:18px 15px}.footer{display:none}
+      .mobile-tabs{position:fixed;z-index:120;left:0;right:0;bottom:0;height:66px;padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.98);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 -8px 24px rgba(23,26,25,.06)}.mobile-tab{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#777d79;font-size:9px;font-weight:700}.mobile-tab svg{width:20px;height:20px}.mobile-tab.active{color:var(--brand)}
+      .mobile-detail-actions{position:fixed;z-index:130;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));display:none;grid-template-columns:48px 1fr 1.4fr;gap:7px}.mobile-detail-actions.show{display:grid}.mobile-detail-actions button{min-height:48px;border-radius:12px}.mobile-detail-actions .heart{border:1px solid var(--line);display:grid;place-items:center;background:#fff}.toast{bottom:82px}
+    }
+  </style>
+</head>
+<body>
+  <div class="global-strip">
+    <div class="inner">
+      <strong>AI Revenue Lab</strong><span class="divider"></span><span class="subtle">Business 5 · 주민 생활 마켓</span><span class="spacer"></span><span class="preview-pill">정적 미리보기 · 전송 안 됨</span>
+    </div>
+  </div>
+  <header class="app-header">
+    <div class="header-inner">
+      <button class="brand" data-route="home" aria-label="우리단지 이웃가게 홈" style="border:0;background:transparent;padding:0;cursor:pointer">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9 20v-5h6v5"/></svg></span>
+        <span class="brand-copy"><small>BUSINESS 5</small><b>우리단지 이웃가게</b></span>
+      </button>
+      <nav class="desktop-nav" aria-label="주요 메뉴">
+        <button class="nav-link active" data-route="home">홈</button>
+        <button class="nav-link" data-route="explore">카테고리</button>
+        <button class="nav-link" data-route="benefits">단지 혜택</button>
+        <button class="nav-link" data-route="register">가게 등록</button>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" data-route="explore" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <button class="text-btn preview-action">로그인</button>
+        <button class="primary-btn" data-route="register">내 가게 등록</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page active" data-page="home">
+      <div class="wrap">
+        <div class="location-row">
+          <button class="location-button preview-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>방림명지로드힐<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 10 4 4 4-4"/></svg></button>
+          <span class="location-meta">광주 남구 대남대로85번길 3 · 192세대</span>
+        </div>
+        <section class="hero" aria-label="기준 단지 소개">
+          <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1800&q=86" alt="현대적인 공동주택 참고 이미지">
+          <div class="hero-copy">
+            <span class="hero-kicker"><i></i>방림명지로드힐 주민 생활 마켓</span>
+            <h1>우리 단지에서<br>필요한 일을 더 가깝게</h1>
+            <p>주민이 운영하거나 입주민 혜택을 제공하는 가게와 서비스를 빠르게 찾아보세요.</p>
+            <div class="hero-facts"><span>192세대</span><span>2개 동</span><span>2015년 사용승인</span></div>
+          </div>
+          <span class="photo-note">참고 이미지 · 실제 단지 사진 교체 전</span>
+        </section>
+        <section class="search-panel" aria-label="이웃가게 검색">
+          <label class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="home-search" type="search" placeholder="반찬, 에어컨 청소, 수학, 세무를 검색해 보세요"></label>
+          <label class="select-wrap"><select id="home-category" aria-label="카테고리 선택"><option value="all">전체 카테고리</option><option value="food">음식·반찬</option><option value="cafe">카페·디저트</option><option value="repair">집수리·청소</option><option value="learning">교육·과외</option><option value="beauty">뷰티·건강</option><option value="pet">반려생활</option><option value="professional">전문서비스</option><option value="hobby">취미·클래스</option></select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 10 4 4 4-4"/></svg></label>
+          <button class="search-submit" id="home-search-submit" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2>무엇이 필요하세요?</h2><p>생활 목적에 맞춰 빠르게 찾기</p></div></div>
+          <div class="category-grid" id="category-grid"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2>방림명지로드힐 주민 혜택</h2><p>적용 조건이 분명한 혜택만 모았어요</p></div><button class="more" data-route="benefits">전체 보기 ›</button></div>
+          <div class="benefit-strip">
+            <article class="benefit-banner" data-route="detail">
+              <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=84" alt="여러 가지 반찬이 담긴 식탁">
+              <div class="benefit-content"><small>입주민 첫 이용 혜택</small><h3>오늘의 반찬상<br>첫 주문 10% 할인</h3><p>금요일 오후 3시 전 예약 · 예시 혜택</p></div>
+            </article>
+            <article class="benefit-banner light preview-action">
+              <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1000&q=82" alt="집 청소 서비스를 제공하는 모습">
+              <div class="benefit-content"><small>이웃 공동신청</small><h3>같은 날 2가구 신청 시<br>출장비 무료</h3><p>맑은집 홈케어 · 합성 예시</p></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2>지금 이용 가능한 이웃가게</h2><p>영업·예약 상태도 한눈에 확인하세요</p></div><button class="more" data-route="explore">더 보기 ›</button></div>
+          <div class="shop-toolbar"><button class="filter-chip active" data-filter="all">전체</button><button class="filter-chip" data-filter="open">지금 가능</button><button class="filter-chip" data-filter="resident">입주민 운영</button><button class="filter-chip" data-filter="benefit">단지 혜택</button><span class="result-count" id="home-result-count"></span></div>
+          <div class="shop-grid" id="home-shop-grid"></div>
+          <div class="empty-state" id="home-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><h3>검색 결과가 없어요</h3><p>다른 서비스명이나 카테고리로 다시 찾아보세요.</p></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2>새로 등록된 이웃가게</h2><p>최근 검토를 마친 예시 프로필</p></div></div>
+          <div class="shop-grid" id="new-shop-grid"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="page" data-page="explore">
+      <div class="wrap">
+        <header class="page-title"><div class="crumb">홈 / 카테고리</div><h1>방림명지로드힐 이웃가게</h1><p>주문, 예약, 견적, 상담처럼 업종에 맞는 이용 방식까지 비교하세요.</p></header>
+        <section class="search-panel"><label class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="explore-search" type="search" placeholder="필요한 서비스나 가게를 검색하세요"></label><label class="select-wrap"><select id="explore-category"><option value="all">전체 카테고리</option><option value="food">음식·반찬</option><option value="cafe">카페·디저트</option><option value="repair">집수리·청소</option><option value="learning">교육·과외</option><option value="beauty">뷰티·건강</option><option value="pet">반려생활</option><option value="professional">전문서비스</option><option value="hobby">취미·클래스</option></select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 10 4 4 4-4"/></svg></label><button class="search-submit" id="explore-search-submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></section>
+        <section class="section"><div class="shop-toolbar"><button class="filter-chip active" data-explore-filter="all">추천순</button><button class="filter-chip" data-explore-filter="open">지금 가능</button><button class="filter-chip" data-explore-filter="resident">입주민 운영</button><button class="filter-chip" data-explore-filter="benefit">혜택 있음</button><button class="filter-chip preview-action">가까운 순</button><span class="result-count" id="explore-result-count"></span></div><div class="shop-grid" id="explore-shop-grid"></div><div class="empty-state" id="explore-empty"><h3>해당하는 이웃가게가 없어요</h3><p>필터를 줄이거나 다른 검색어를 입력해 보세요.</p></div></section>
+      </div>
+    </section>
+
+    <section class="page" data-page="detail">
+      <div class="wrap">
+        <header class="page-title"><div class="crumb"><button class="more" data-route="explore">카테고리</button> / 음식·반찬</div></header>
+        <div class="detail-layout">
+          <article class="detail-main">
+            <div class="gallery"><div class="gallery-main"><img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1400&q=86" alt="여러 반찬과 음식"></div><div class="gallery-side"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=84" alt="식탁 위 음식"><img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=84" alt="채소와 반찬 준비"></div></div>
+            <div class="detail-body">
+              <div class="detail-badge-row"><span class="trust-badge">입주민 운영 확인</span><span class="trust-badge">정보 검토 완료</span><span class="trust-badge benefit">단지 혜택</span></div>
+              <div class="detail-title-line"><h1>오늘의 반찬상</h1><button class="heart favorite-button" aria-label="관심가게 저장"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button></div>
+              <p class="detail-sub">집밥 반찬 · 예약 주문 · 방림명지로드힐 인근 수령</p>
+              <div class="detail-stats"><div><b class="status">오늘 주문 가능</b><span>오후 3시 마감</span></div><div><b>예약·포장</b><span>이용 방식</span></div><div><b>최근 확인</b><span>예시 기준일</span></div></div>
+              <section class="content-section"><h2>대표 메뉴</h2><div class="menu-list"><div class="menu-item"><div><h3>오늘의 반찬 4종</h3><p>제철 나물, 볶음, 조림 등 구성은 매일 달라져요.</p><b>18,000원 · 예시</b></div><img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=500&q=82" alt="반찬 세트"></div><div class="menu-item"><div><h3>국 + 반찬 세트</h3><p>2인 기준 국 한 가지와 반찬 네 가지</p><b>24,000원 · 예시</b></div><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=82" alt="국과 반찬"></div><div class="menu-item"><div><h3>소규모 행사 도시락</h3><p>10개 이상 구성과 수령 시간을 별도 상담해요.</p><b>견적 상담</b></div><img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=500&q=82" alt="도시락 준비"></div></div></section>
+              <section class="content-section"><h2>가게 소개</h2><p>예약 수량에 맞춰 국과 반찬, 도시락을 준비하는 합성 예시 가게입니다. 실제 운영 단계에서는 가게 운영자가 직접 메뉴와 주문 마감 시간을 갱신하고, 마지막 확인 날짜를 공개합니다.</p></section>
+              <section class="content-section"><h2>최근 소식</h2><p><b>이번 주 금요일 수령 안내</b><br>오후 3시까지 예약한 주문은 관리동 인근 지정 장소에서 오후 5시 30분부터 수령하는 예시 흐름입니다.</p></section>
+            </div>
+          </article>
+          <aside class="detail-side">
+            <section class="benefit-box"><small>방림명지로드힐 입주민 혜택</small><h2>첫 주문 결제금액<br>10% 할인</h2><p>예시 혜택 · 1회 한정 · 다른 혜택과 중복 불가</p><div class="action-stack"><button class="primary-btn preview-action">주문 문의하기</button><button class="outline-btn preview-action">전화 문의</button></div></section>
+            <section><h3 style="font-size:16px;margin:0 0 15px">이용 정보</h3><dl class="info-list"><div class="info-row"><dt>운영 방식</dt><dd>예약 주문·포장</dd></div><div class="info-row"><dt>이용 지역</dt><dd>방림명지로드힐 인근</dd></div><div class="info-row"><dt>주문 마감</dt><dd>화–금 오후 3시 · 예시</dd></div><div class="info-row"><dt>연락 방식</dt><dd>채팅 또는 전화 · 후속 구현</dd></div></dl></section>
+            <section class="notice-card"><h3>검증 배지는 품질 보증이 아니에요</h3><p>입주민 운영 확인은 정해진 절차를 통과했다는 의미입니다. 동·호수와 검증 서류는 공개하지 않습니다.</p></section>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-page="benefits">
+      <div class="wrap"><header class="page-title"><div class="crumb">홈 / 단지 혜택</div><h1>방림명지로드힐 주민 혜택</h1><p>과장된 할인 문구보다 대상, 기간, 제외 조건을 먼저 확인할 수 있게 설계했습니다.</p></header><div class="benefit-grid" id="benefit-grid"></div></div>
+    </section>
+
+    <section class="page" data-page="register">
+      <div class="wrap"><header class="page-title"><div class="crumb">홈 / 가게 등록</div><h1>우리 단지에 내 가게 알리기</h1><p>거주 확인 자료와 공개 프로필을 분리하고, 운영자 검토 후 최소 정보만 게시합니다.</p></header><div class="form-layout"><aside class="steps"><h3>등록 단계</h3><div class="step active"><i>1</i><span>운영 유형</span></div><div class="step"><i>2</i><span>가게·서비스 정보</span></div><div class="step"><i>3</i><span>주민 혜택</span></div><div class="step"><i>4</i><span>공개 범위 확인</span></div></aside><form class="form-card" onsubmit="return false"><h2>가게 기본 정보를 알려주세요</h2><p>지금은 입력 UI를 검토하는 정적 미리보기이며 내용은 저장되지 않습니다.</p><div class="field-grid"><div class="field"><label for="owner-type">운영 유형</label><select id="owner-type"><option>입주민이 직접 운영</option><option>입주민 가족이 운영</option><option>인근 업체 · 단지 혜택 제공</option></select></div><div class="field"><label for="field-category">생활 분야</label><select id="field-category"><option>음식·반찬</option><option>카페·디저트</option><option>집수리·청소</option><option>교육·과외</option><option>뷰티·건강</option><option>반려생활</option><option>전문서비스</option><option>취미·클래스</option></select></div><div class="field full"><label for="business-name">가게 또는 서비스 이름</label><input id="business-name" placeholder="예: 오늘의 반찬상"></div><div class="field full"><label for="one-line">한 줄 소개</label><input id="one-line" placeholder="예: 매일 아침 만드는 집밥 반찬"><small>추상적인 홍보 문구보다 실제 제공하는 일을 적습니다.</small></div><div class="field full"><label for="description">상세 소개</label><textarea id="description" placeholder="운영 방식, 대표 서비스, 예약 방법을 적어주세요."></textarea></div><div class="field"><label for="cta-type">주요 이용 방식</label><select id="cta-type"><option>주문</option><option>예약</option><option>견적 문의</option><option>상담</option><option>방문</option><option>포장</option></select></div><div class="field"><label for="benefit">입주민 혜택</label><input id="benefit" placeholder="예: 첫 주문 10% 할인"></div></div><div class="form-foot"><button class="outline-btn preview-action">임시 저장</button><button class="primary-btn preview-action">다음 단계</button></div></form></div></div>
+    </section>
+
+    <section class="page" data-page="my">
+      <div class="wrap"><header class="page-title"><div class="crumb">마이</div><h1>관심가게와 이용 내역</h1><p>계정 기능이 연결되면 단골 소식, 혜택 저장, 문의 내역을 여기서 관리합니다.</p></header><div class="my-layout"><aside class="my-card"><div class="profile-row"><div class="avatar">주민</div><div><h3>방림명지로드힐 주민</h3><p>계정·동/호수 비공개 미리보기</p></div></div><div class="my-stat"><div><b>2</b><span>관심가게</span></div><div><b>3</b><span>저장 혜택</span></div></div></aside><section><div class="section-head"><div><h2>관심가게</h2><p>예시 저장 상태</p></div></div><div class="shop-grid" id="favorite-grid"></div></section></div></div>
+    </section>
+
+    <section class="page" data-page="qa">
+      <div class="wrap"><header class="page-title"><div class="crumb">검수용</div><h1>Reference preview states</h1><p>제품 홈과 분리된 기준 화면·상태 인덱스입니다.</p></header><div class="qa-grid"><article class="qa-card" data-route="home"><small>HOME</small><h3>아파트 로컬 홈</h3><p>위치, 검색, 카테고리, 혜택, 가게 목록</p><code>#home</code></article><article class="qa-card" data-route="explore"><small>DISCOVERY</small><h3>가게 탐색</h3><p>검색·필터·카테고리 결과</p><code>#explore</code></article><article class="qa-card" data-route="detail"><small>DETAIL</small><h3>가게 상세</h3><p>메뉴, 혜택, 검증, 업종별 CTA</p><code>#detail</code></article><article class="qa-card" data-route="benefits"><small>BENEFITS</small><h3>주민 혜택</h3><p>혜택 조건 중심 카드</p><code>#benefits</code></article><article class="qa-card" data-route="register"><small>OWNER</small><h3>가게 등록</h3><p>검증 전 정적 폼 흐름</p><code>#register</code></article><article class="qa-card" id="qa-empty"><small>EMPTY</small><h3>검색 결과 없음</h3><p>클릭하면 빈 검색 상태를 재현합니다.</p><code>empty-search</code></article></div></div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="footer-inner"><div><strong>우리단지 이웃가게</strong>방림명지로드힐을 기준으로 만든 Business 5 정적 레퍼런스입니다.<br>가게, 가격, 혜택, 영업 상태는 모두 합성 예시입니다.</div><div><strong>공개 기준</strong><a href="#qa">미리보기 상태</a><a class="preview-action" href="#">정보 정정 요청</a><a class="preview-action" href="#">가게 신고</a></div><div><strong>개인정보</strong>동·호수, 주민 명부, 검증 서류, 대표자 개인 신상은 공개하지 않습니다.</div></div></footer>
+
+  <nav class="mobile-tabs" aria-label="모바일 메뉴"><button class="mobile-tab active" data-route="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/></svg><span>홈</span></button><button class="mobile-tab" data-route="explore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>카테고리</span></button><button class="mobile-tab" data-route="benefits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v8H4v-8"/><path d="M2 7h20v5H2z"/><path d="M12 7v13"/><path d="M12 7H7.5a2.5 2.5 0 1 1 2.1-3.8L12 7Zm0 0h4.5a2.5 2.5 0 1 0-2.1-3.8L12 7Z"/></svg><span>혜택</span></button><button class="mobile-tab" data-route="my"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg><span>찜</span></button><button class="mobile-tab" data-route="my"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>마이</span></button></nav>
+  <div class="mobile-detail-actions" id="mobile-detail-actions"><button class="heart favorite-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button><button class="outline-btn preview-action">전화</button><button class="primary-btn preview-action">주문 문의</button></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const categories=[
+      {id:'food',label:'음식·반찬',icon:'<path d="M4 10h16a8 8 0 0 1-16 0Z"/><path d="M7 5c0 1 1 1 1 2S7 8 7 9M12 4c0 1 1 1 1 2s-1 1-1 2M17 5c0 1 1 1 1 2s-1 1-1 2"/>'},
+      {id:'cafe',label:'카페·디저트',icon:'<path d="M4 7h12v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4Z"/><path d="M16 9h2a3 3 0 0 1 0 6h-2M6 3v2M10 3v2M14 3v2"/>'},
+      {id:'repair',label:'집수리·청소',icon:'<path d="m14.7 6.3 3-3a4 4 0 0 1-5 5l-7.4 7.4a2 2 0 0 0 3 3l7.4-7.4a4 4 0 0 1 5-5l-3 3"/>'},
+      {id:'learning',label:'교육·과외',icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>'},
+      {id:'beauty',label:'뷰티·건강',icon:'<path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/>'},
+      {id:'pet',label:'반려생활',icon:'<path d="M11 18c-2.5 2.5-7 1-7-2.5 0-2 2-3.5 4-3.5 1.5 0 2.5.8 4 2.5 1.5-1.7 2.5-2.5 4-2.5 2 0 4 1.5 4 3.5 0 3.5-4.5 5-7 2.5Z"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="11" cy="5" r="2"/>'},
+      {id:'professional',label:'전문서비스',icon:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V4h8v3M3 12h18"/>'},
+      {id:'hobby',label:'취미·클래스',icon:'<path d="M12 3 9.5 8.5 4 11l5.5 2.5L12 19l2.5-5.5L20 11l-5.5-2.5Z"/>'}
+    ];
+    const shops=[
+      {id:'banchan',name:'오늘의 반찬상',category:'food',categoryLabel:'음식·반찬',resident:true,verified:true,benefit:'입주민 첫 주문 10% 할인',open:true,status:'오늘 주문 가능',mode:'예약·포장',summary:'매일 아침 준비하는 집밥 반찬과 도시락',price:'반찬 4종',priceValue:'18,000원',image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=84',tags:['오후 3시 마감','금요일 수령']},
+      {id:'cafe',name:'모퉁이 커피',category:'cafe',categoryLabel:'카페·디저트',resident:false,verified:true,benefit:'아메리카노 1천원 할인',open:true,status:'영업 중',mode:'방문·포장',summary:'산책길에 들르는 작은 로스터리 카페',price:'아메리카노',priceValue:'4,000원',image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=84',tags:['도보 3분','포장 가능']},
+      {id:'clean',name:'맑은집 홈케어',category:'repair',categoryLabel:'집수리·청소',resident:true,verified:true,benefit:'같은 날 2가구 출장비 무료',open:true,status:'오늘 상담 가능',mode:'견적 문의',summary:'에어컨·창호·욕실 생활 청소와 소수리',price:'방문 견적',priceValue:'무료',image:'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=84',tags:['공동 신청','예약제']},
+      {id:'math',name:'차분한 수학',category:'learning',categoryLabel:'교육·과외',resident:true,verified:true,benefit:'입주민 진단 상담 무료',open:false,status:'다음 주 상담',mode:'상담·수업',summary:'초등·중등 소수정예 개념 수학',price:'주 2회',priceValue:'상담 후 안내',image:'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=84',tags:['소수정예','학습 리포트']},
+      {id:'hair',name:'온결 헤어룸',category:'beauty',categoryLabel:'뷰티·건강',resident:true,verified:true,benefit:'평일 커트 5천원 할인',open:true,status:'오늘 예약 1자리',mode:'예약',summary:'한 시간에 한 고객만 받는 1인 헤어룸',price:'여성 커트',priceValue:'35,000원',image:'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=900&q=84',tags:['1인샵','예약제']},
+      {id:'pet',name:'포근펫 케어',category:'pet',categoryLabel:'반려생활',resident:false,verified:true,benefit:'첫 방문 돌봄 20분 추가',open:true,status:'오늘 문의 가능',mode:'예약·상담',summary:'산책, 방문 돌봄, 기초 미용 서비스',price:'방문 돌봄',priceValue:'25,000원부터',image:'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=900&q=84',tags:['방문 돌봄','소형견']},
+      {id:'tax',name:'단정 세무회계',category:'professional',categoryLabel:'전문서비스',resident:true,verified:true,benefit:'입주민 첫 상담 30분 무료',open:false,status:'평일 상담',mode:'상담',summary:'자영업자를 위한 기장·세무 일정 정리',price:'첫 상담',priceValue:'무료',image:'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=84',tags:['예약 상담','자영업자']},
+      {id:'flower',name:'작은정원 플라워',category:'hobby',categoryLabel:'취미·클래스',resident:false,verified:true,benefit:'입주민 포장 업그레이드',open:true,status:'오늘 픽업 가능',mode:'예약·픽업',summary:'꽃다발, 반려식물, 소규모 원데이 클래스',price:'미니 꽃다발',priceValue:'25,000원',image:'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=900&q=84',tags:['당일 픽업','예약제']},
+      {id:'photo',name:'집앞 사진관',category:'hobby',categoryLabel:'취미·클래스',resident:true,verified:true,benefit:'입주민 보정본 2장 추가',open:false,status:'주말 예약 가능',mode:'촬영 예약',summary:'가족, 반려동물, 프로필 자연광 촬영',price:'프로필 촬영',priceValue:'60,000원부터',image:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=84',tags:['주말 촬영','자연광']},
+      {id:'move',name:'바른숨 움직임',category:'beauty',categoryLabel:'뷰티·건강',resident:true,verified:true,benefit:'입주민 자세 체크 무료',open:true,status:'오늘 체험 가능',mode:'수업 예약',summary:'소규모 스트레칭과 일상 움직임 수업',price:'1회 체험',priceValue:'15,000원',image:'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=900&q=84',tags:['4인 수업','체험 가능']}
+    ];
+    const benefits=shops.filter(s=>s.benefit).slice(0,6);
+    const favorites=new Set(['banchan','clean']);
+    const icons={heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>'};
+    const categoryGrid=document.getElementById('category-grid');
+    categoryGrid.innerHTML=categories.map(c=>`<button class="category" data-category="${c.id}"><span class="category-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${c.icon}</svg></span><span>${c.label}</span></button>`).join('');
+    function card(s){return `<article class="shop-card" data-shop="${s.id}" data-route="${s.id==='banchan'?'detail':'preview'}"><div class="shop-photo"><img loading="lazy" src="${s.image}" alt="${s.name} 예시 사진"><span class="photo-badge">${s.resident?'입주민 운영':'정보 검토'}</span></div><div class="shop-copy"><div class="shop-top"><div class="shop-title">${s.name}</div><button class="heart ${favorites.has(s.id)?'active':''}" data-favorite="${s.id}" aria-label="관심가게">${icons.heart}</button></div><div class="shop-meta"><span class="status">${s.status}</span><span>·</span><span>${s.categoryLabel}</span><span>·</span><span>${s.mode}</span></div><p class="shop-summary">${s.summary}</p><div class="price-line"><b>${s.priceValue}</b>${s.price}</div><div class="benefit-line">혜택 · ${s.benefit}</div><div class="availability-row">${s.tags.map(t=>`<span class="tiny-tag">${t}</span>`).join('')}</div></div></article>`}
+    function render(target,list){document.getElementById(target).innerHTML=list.map(card).join('')}
+    render('home-shop-grid',shops.slice(0,6));render('new-shop-grid',shops.slice(6,10));render('explore-shop-grid',shops);render('favorite-grid',shops.filter(s=>favorites.has(s.id)));
+    document.getElementById('benefit-grid').innerHTML=benefits.map(s=>`<article class="benefit-card" data-route="${s.id==='banchan'?'detail':'preview'}"><img loading="lazy" src="${s.image}" alt="${s.name} 예시 사진"><div class="copy"><small>${s.resident?'입주민 운영':'인근 제휴'} · ${s.categoryLabel}</small><h3>${s.benefit}</h3><p>${s.name} · ${s.summary}</p><b>${s.status} · ${s.mode}</b></div></article>`).join('');
+    let route='home',homeFilter='all',exploreFilter='all';
+    const toast=document.getElementById('toast');let toastTimer;
+    function showToast(message='미리보기에서는 주문, 문의, 로그인 정보가 전송되거나 저장되지 않습니다.'){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}
+    function setRoute(next){if(next==='preview'){showToast();return}route=next;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===next));document.querySelectorAll('.nav-link,.mobile-tab').forEach(b=>b.classList.toggle('active',b.dataset.route===next||(next==='detail'&&b.dataset.route==='explore')));document.getElementById('mobile-detail-actions').classList.toggle('show',next==='detail');window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'','#'+next)}
+    document.addEventListener('click',e=>{const routeEl=e.target.closest('[data-route]');if(routeEl){e.preventDefault();setRoute(routeEl.dataset.route)}const preview=e.target.closest('.preview-action');if(preview){e.preventDefault();showToast()}const fav=e.target.closest('[data-favorite],.favorite-button');if(fav){e.preventDefault();e.stopPropagation();const id=fav.dataset.favorite||'banchan';favorites.has(id)?favorites.delete(id):favorites.add(id);document.querySelectorAll(`[data-favorite="${id}"],.favorite-button`).forEach(b=>b.classList.toggle('active',favorites.has(id)));render('favorite-grid',shops.filter(s=>favorites.has(s.id)));showToast(favorites.has(id)?'관심가게에 저장한 예시 상태입니다. 실제 계정에는 저장되지 않습니다.':'관심가게에서 해제한 예시 상태입니다.')}});
+    function match(s,q,category,filter){const text=`${s.name} ${s.categoryLabel} ${s.summary} ${s.benefit} ${s.mode}`.toLowerCase();return(!q||text.includes(q.toLowerCase()))&&(category==='all'||s.category===category)&&(filter==='all'||(filter==='open'&&s.open)||(filter==='resident'&&s.resident)||(filter==='benefit'&&!!s.benefit))}
+    function filterHome(){const q=document.getElementById('home-search').value.trim(),cat=document.getElementById('home-category').value;const list=shops.filter(s=>match(s,q,cat,homeFilter));render('home-shop-grid',list);document.getElementById('home-result-count').textContent=`${list.length}개`;document.getElementById('home-empty').classList.toggle('show',list.length===0)}
+    function filterExplore(){const q=document.getElementById('explore-search').value.trim(),cat=document.getElementById('explore-category').value;const list=shops.filter(s=>match(s,q,cat,exploreFilter));render('explore-shop-grid',list);document.getElementById('explore-result-count').textContent=`${list.length}개`;document.getElementById('explore-empty').classList.toggle('show',list.length===0)}
+    document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');homeFilter=b.dataset.filter;filterHome()}));
+    document.querySelectorAll('[data-explore-filter]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-explore-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');exploreFilter=b.dataset.exploreFilter;filterExplore()}));
+    document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('explore-category').value=b.dataset.category;setRoute('explore');filterExplore()}));
+    ['home-search','home-category'].forEach(id=>document.getElementById(id).addEventListener(id.includes('search')?'input':'change',filterHome));
+    ['explore-search','explore-category'].forEach(id=>document.getElementById(id).addEventListener(id.includes('search')?'input':'change',filterExplore));
+    document.getElementById('home-search-submit').addEventListener('click',()=>{filterHome();document.querySelector('[data-page="home"] .shop-grid').scrollIntoView({behavior:'smooth',block:'start'})});
+    document.getElementById('explore-search-submit').addEventListener('click',filterExplore);
+    document.getElementById('qa-empty').addEventListener('click',()=>{setRoute('explore');document.getElementById('explore-search').value='존재하지 않는 검색어';filterExplore()});
+    const initial=location.hash.replace('#','');if(['home','explore','detail','benefits','register','my','qa'].includes(initial))setRoute(initial);filterHome();filterExplore();
+  </script>
+</body>
+</html>
