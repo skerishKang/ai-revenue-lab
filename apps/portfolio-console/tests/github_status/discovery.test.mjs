@@ -1,73 +1,74 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildStatusQuery, getPrSearchAliases, getPhaseIssueNumbers, getQueryBudget, getFallbackPrNumbers } from "../../functions/_lib/business-github-query.js";
+import {
+  buildCoreQuery, buildDiscoveryAliasSelections, buildDiscoveryBatchQuery, partitionDiscoverySelections,
+  getBatchPlan, getPrSearchAliases, getPhaseIssueNumbers, getQueryBudget, getFallbackPrNumbers, GRAPHQL_BATCH_SIZE,
+} from "../../functions/_lib/business-github-query.js";
 import { discoverPr, discoverBusinessPrs, reconcileWithFallback, normalizeRawPr } from "../../functions/_lib/business-pr-discovery.js";
 import { aggregatePayload, gqlSearchResult, gqlPr, mockAggregateClient, serviceResult, BUSINESS_GITHUB_MAP } from "./fixtures.mjs";
 
-test("query builder emits bounded Refs/Related-to aliases in one request", () => {
-  const query = buildStatusQuery({ prSearchLimit: 7 });
+test("discovery selections emit bounded Refs/Related-to aliases per phase Issue", () => {
+  const selections = buildDiscoveryAliasSelections({ prSearchLimit: 7 });
+  const byAlias = Object.fromEntries(selections.map((s) => [s.alias, s.selection]));
   for (const n of getPhaseIssueNumbers()) {
-    assert.ok(query.includes(`prSearchRefs${n}: search(`), `Refs alias for ${n}`);
-    assert.ok(query.includes(`prSearchRelated${n}: search(`), `Related alias for ${n}`);
-    assert.ok(query.includes(`\\"Refs #${n}\\"`), `Refs expression for ${n}`);
-    assert.ok(query.includes(`\\"Related to #${n}\\"`), `Related-to expression for ${n}`);
+    assert.ok(byAlias[`prSearchRefs${n}`], `Refs alias for ${n}`);
+    assert.ok(byAlias[`prSearchRelated${n}`], `Related alias for ${n}`);
+    assert.ok(byAlias[`prSearchRefs${n}`].includes(`\\"Refs #${n}\\"`), `Refs expression for ${n}`);
+    assert.ok(byAlias[`prSearchRelated${n}`].includes(`\\"Related to #${n}\\"`), `Related-to expression for ${n}`);
+    assert.ok(byAlias[`prSearchRefs${n}`].includes("first: 7"), "Refs bounded by prSearchLimit");
+    assert.ok(byAlias[`prSearchRelated${n}`].includes("first: 7"), "Related-to bounded by prSearchLimit");
   }
-  const firstLimits = query.match(/first: 7/g) || [];
-  assert.ok(firstLimits.length >= getPhaseIssueNumbers().length * 2, "both aliases are bounded by prSearchLimit");
-  assert.equal(query.split("query PortfolioAutoSync").length, 2, "exactly one GraphQL operation");
-  assert.ok(query.includes("draftPullRequests: search(query:"), "draft count search preserved");
 });
 
-test("query builder emits bounded marker and convention aliases per Business/phase pair", () => {
-  const query = buildStatusQuery({ prPrecisionLimit: 4 });
+test("discovery selections emit bounded marker and convention aliases per Business/phase pair", () => {
+  const selections = buildDiscoveryAliasSelections({ prPrecisionLimit: 4 });
+  const byAlias = Object.fromEntries(selections.map((s) => [s.alias, s.selection]));
   const mapped = BUSINESS_GITHUB_MAP.filter((m) => m.repository);
-  let pairs = 0;
   for (const m of mapped) {
-    const phaseIssues = [["ui", m.uiPhaseIssue], ["ux", m.uxPhaseIssue], ["backend", m.bePhaseIssue]];
-    for (const [phase, issueNum] of phaseIssues) {
+    for (const [phase, issueNum] of [["ui", m.uiPhaseIssue], ["ux", m.uxPhaseIssue], ["backend", m.bePhaseIssue]]) {
       if (!issueNum) continue;
-      pairs += 1;
-      assert.ok(query.includes(`prSearchMarker${m.number}_${phase}: search(`), `marker alias for B${m.number} ${phase}`);
-      assert.ok(query.includes(`prSearchConvention${m.number}_${phase}: search(`), `convention alias for B${m.number} ${phase}`);
+      assert.ok(byAlias[`prSearchMarker${m.number}_${phase}`], `marker alias for B${m.number} ${phase}`);
+      assert.ok(byAlias[`prSearchConvention${m.number}_${phase}`], `convention alias for B${m.number} ${phase}`);
+      assert.ok(byAlias[`prSearchMarker${m.number}_${phase}`].includes("first: 4"), "marker bounded by prPrecisionLimit");
     }
   }
-  // Marker queries bind BOTH business and phase phrases (AND)
-  assert.ok(query.includes(`\\"business: 15\\" \\"phase: ui\\"`), "marker query restricts business and phase");
-  // Convention queries use the phase-suffixed head qualifier: business-1's
-  // qualifier `head:business-1-ui` cannot recall branch `feat/business-11-ui`
-  // because the latter does not contain the phase-suffixed substring.
-  assert.ok(query.includes(`head:business-1-ui`), "B1 convention qualifier is phase-suffixed");
-  assert.ok(query.includes(`head:business-11-ui`), "B11 convention qualifier is distinct");
-  assert.ok(!query.includes(`head:business-1\\"`) && !query.match(/head:business-1[^\d-]/), "no unsuffixed business-1 head qualifier");
-  const precisionLimits = query.match(/first: 4/g) || [];
-  assert.equal(precisionLimits.length, pairs * 2, "every marker/convention alias is explicitly bounded");
-  assert.equal(query.split("query PortfolioAutoSync").length, 2, "still exactly one GraphQL operation");
+  assert.ok(byAlias["prSearchMarker15_ui"].includes(`\\"business: 15\\" \\"phase: ui\\"`), "marker restricts business and phase");
+  assert.ok(byAlias["prSearchConvention1_ui"].includes("head:business-1-ui"), "B1 convention qualifier phase-suffixed");
+  assert.ok(!byAlias["prSearchConvention1_ui"].match(/head:business-1[^\d-]/), "no unsuffixed business-1 head qualifier");
+  assert.ok(byAlias["prSearchConvention11_ui"].includes("head:business-11-ui"), "B11 convention qualifier distinct");
 });
 
-test("query budget is statically bounded and verified", () => {
+test("batched request budget is statically bounded and verified", () => {
   const budget = getQueryBudget();
-  assert.equal(budget.graphqlRequests, 1, "single GraphQL operation");
-  const query = buildStatusQuery();
-  const searchAliases = (query.match(/: search\(/g) || []).length;
-  assert.equal(searchAliases, budget.searchAliases, "budget matches emitted search aliases");
+  const plan = getBatchPlan();
+  assert.equal(budget.coreRequests, 1, "exactly one core operation");
+  assert.equal(budget.maxGraphqlRequests, 1 + budget.discoveryBatchCount, "core + discovery batches");
+  assert.equal(budget.maxGraphqlRequests, plan.maxGraphqlRequests, "budget and plan agree");
+  assert.equal(budget.batchSize, GRAPHQL_BATCH_SIZE, "budget pins the batch size");
+  assert.ok(budget.discoveryBatchCount > 1, "discovery split across multiple operations");
+  const selections = buildDiscoveryAliasSelections();
+  assert.equal(budget.discoverySearchAliases, selections.length, "budget matches emitted discovery aliases");
   assert.ok(budget.searchAliases <= 200, `search alias count bounded (got ${budget.searchAliases})`);
   assert.ok(budget.searchNodeBudget <= 1300, `search node budget bounded (got ${budget.searchNodeBudget})`);
   assert.ok(budget.issueAliases <= 100, `issue alias count bounded (got ${budget.issueAliases})`);
   assert.ok(budget.fallbackAliases <= 20, `fallback alias count bounded (got ${budget.fallbackAliases})`);
-  const firstLimits = (query.replace(/contexts\(first: 100\)/g, "").match(/first: (\d+)/g) || []).map((s) => Number(s.split(": ")[1]));
-  assert.ok(firstLimits.every((n) => n <= 10), "every search alias carries an explicit first limit <= 10");
+  for (const s of selections) {
+    const limits = (s.selection.replace(/contexts\(first: 100\)/g, "").match(/first: (\d+)/g) || [])
+      .map((x) => Number(x.split(": ")[1]));
+    assert.ok(limits.length > 0 && limits.every((n) => n <= 10), `alias ${s.alias} search bounded`);
+  }
 });
 
 test("getPrSearchAliases keeps Refs before Related-to", () => {
   assert.deepEqual(getPrSearchAliases(108), ["prSearchRefs108", "prSearchRelated108"]);
 });
 
-test("phase-scoped fallback aliases are deduped across phases", () => {
+test("phase-scoped fallback aliases are deduped across phases in the core operation", () => {
   const numbers = getFallbackPrNumbers();
   assert.deepEqual(numbers, [...new Set(numbers)].sort((a, b) => a - b));
-  const query = buildStatusQuery();
+  const core = buildCoreQuery();
   for (const n of numbers) {
-    assert.equal((query.match(new RegExp(`fallbackPr${n}: pullRequest`, "g")) || []).length, 1, `fallbackPr${n} emitted once`);
+    assert.equal((core.match(new RegExp(`fallbackPr${n}: pullRequest`, "g")) || []).length, 1, `fallbackPr${n} emitted once`);
   }
 });
 

@@ -118,12 +118,25 @@ def verify_pr_payload(payload: dict[str, Any], repository: str, approved_sha: st
         raise ValidationError("approval PR does not belong to the current repository")
     if head_sha != approved_sha:
         raise ValidationError("approval PR head SHA does not match approved_sha")
-    if payload.get("state") != "open":
-        raise ValidationError("approval PR must remain open")
-    if payload.get("draft") is not True:
-        raise ValidationError("approval PR must remain Draft")
-    if payload.get("merged") is not False:
-        raise ValidationError("approval PR must remain unmerged")
+
+    state = payload.get("state")
+    draft = payload.get("draft")
+    merged = payload.get("merged")
+
+    if state == "open" and draft is True and merged is False:
+        return
+
+    if state == "closed" and draft is False and merged is True:
+        merge_commit_sha = payload.get("merge_commit_sha")
+        if not merge_commit_sha:
+            raise ValidationError("merged PR must have a merge_commit_sha")
+        if not isinstance(merge_commit_sha, str) or not SHA_RE.fullmatch(merge_commit_sha):
+            raise ValidationError(
+                "merge_commit_sha must be a full lowercase 40-character hexadecimal SHA"
+            )
+        return
+
+    raise ValidationError("approval PR must be either open+Draft+unmerged or closed+merged")
 
 
 def comment_authorizes(body: str, approved_sha: str) -> bool:

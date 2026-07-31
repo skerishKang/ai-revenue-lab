@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "states": [
+    "cover",
+    "situation",
+    "signals",
+    "options",
+    "support",
+    "handoff",
+    "mobile"
+  ],
+  "svg_assets": 12,
+  "required_labels": 19,
+  "external_runtime_requests_declared": 0,
+  "errors": []
+}

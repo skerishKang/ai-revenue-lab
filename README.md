@@ -78,7 +78,18 @@ apps/
 └─ korean-ai-platform/        # Business 14
 ```
 
-Business 5–12 remain reserved or unresolved until an explicit registry decision assigns them. Workspace existence does not by itself assign a Business number.
+Business 5 is assigned to Neighbor Market.
+Business 6–12 remain reserved or unresolved until an explicit registry decision assigns them. Workspace existence does not by itself assign a Business number.
+
+### Business 5 — Neighbor Market (assigned, not yet created)
+
+Business 5 is canonically assigned to **Neighbor Market / 우리단지 이웃가게**.
+
+- Planned workspace: `apps/neighbor-market/`
+- The workspace has not yet been created.
+- Current lifecycle: `concept`
+- Portal integration: not implemented
+- Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
 
 Product-specific code, tests, configuration, migrations, scripts, fixtures, and private data boundaries remain inside the corresponding workspace. Shared code is extracted only after demonstrated reuse.
 
@@ -118,6 +129,7 @@ Routine inspection and authorized configuration should use authenticated APIs, c
 - **Business 2 — Living Travel** — adaptive travel letters shaped by a traveler's feedback and situation.
 - **Business 3 — Living Fiction** — shared canon with optional reader-responsive private narrative branches.
 - **Business 4 — Living Learning** — recurring short personalized learning experiences.
+- **Business 5 — Neighbor Market** — residents discover and support resident-operated businesses and services, prioritizing current-apartment and nearby-apartment relationships before general neighborhood businesses. Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
 - **Business 13 — Personal Video Archive** — user-controlled video topic feeds combined with private viewing reflections, plans, ratings, tags, and records.
 - **Business 14 — Korean AI Platform** — governed AI execution with worker, validator, and human approval stages.
 
