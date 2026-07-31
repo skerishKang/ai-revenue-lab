@@ -1,0 +1,18 @@
+from pathlib import Path
+import json,re,hashlib
+from playwright.sync_api import sync_playwright
+R=Path(__file__).resolve().parents[1];E=R/'evidence';E.mkdir(exist_ok=True);h=(R/'index.html').read_text();c=(R/'styles.css').read_text();j=(R/'app.js').read_text();h=re.sub(r'<link rel="stylesheet"[^>]+>','',h).replace('</head>',f'<style>{c}</style></head>').replace('<script src="app.js?v=personal-writing-voice-20260728-1"></script>',f'<script>{j}</script>');states=['intake','evidence','profile','translation','generation','contract','trace'];out={'captures':[],'console':[],'page_errors':[],'requests':[],'failures':[]}
+with sync_playwright() as p:
+ b=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox']);page=b.new_page();page.on('console',lambda m:out['console'].append(m.text) if m.type=='error' else None);page.on('pageerror',lambda e:out['page_errors'].append(str(e)));page.on('request',lambda r:out['requests'].append(r.url))
+ for w,hh in [(1440,1100),(768,1024),(390,844)]:
+  page.set_viewport_size({'width':w,'height':hh});page.set_content(h)
+  for s in states:
+   page.evaluate('s=>window.__voiceStudio.setState(s)',s);page.wait_for_timeout(700 if s=='trace' else 0);out['captures'].append({'state':s,'viewport':[w,hh],'overflow':page.evaluate('document.documentElement.scrollWidth-document.documentElement.clientWidth')})
+ page.set_viewport_size({'width':1440,'height':1100});page.set_content(h);page.evaluate("window.__voiceStudio.setState('trace')");page.locator('[data-replay]').focus();before={'scroll':page.evaluate('scrollY'),'rect':page.locator('[data-trace]').bounding_box()};page.evaluate('window.__voiceStudio.run()');running=page.locator('[data-trace]').get_attribute('data-motion-state');timing=page.evaluate("()=>[...document.querySelectorAll('.trace.running .t,.trace.running mark,.trace.running [data-review]')].map(e=>{const s=getComputedStyle(e),d=parseFloat(s.animationDelay)*1000,u=parseFloat(s.animationDuration)*1000;return {delay:d,duration:u,end:d+u}})");page.wait_for_timeout(700);after={'scroll':page.evaluate('scrollY'),'rect':page.locator('[data-trace]').bounding_box(),'focus':page.evaluate("document.activeElement===document.querySelector('[data-replay]')"),'state':page.locator('[data-trace]').get_attribute('data-motion-state')};out['motion']={'running':running,'computed':timing,'final_end_ms':max(x['end'] for x in timing),'before':before,'after':after};page.emulate_media(reduced_motion='reduce');page.set_content(h);page.evaluate("window.__voiceStudio.setState('trace')");out['reduced']=page.locator('[data-trace]').get_attribute('data-motion-state');b.close()
+out['requests']=[u for u in out['requests'] if not u.startswith('data:')]
+if any(x['overflow'] for x in out['captures']):out['failures'].append('overflow')
+if out['console'] or out['page_errors'] or out['requests']:out['failures'].append('runtime')
+if out['motion']['final_end_ms']!=680 or out['motion']['running']!='running' or out['motion']['after']['state']!='complete':out['failures'].append('motion')
+if out['motion']['before']['scroll']!=out['motion']['after']['scroll'] or out['motion']['before']['rect']!=out['motion']['after']['rect'] or not out['motion']['after']['focus']:out['failures'].append('stability')
+if out['reduced']!='complete':out['failures'].append('reduced')
+out['status']='pass' if not out['failures'] else 'fail';(E/'browser-validation.json').write_text(json.dumps(out,ensure_ascii=False,indent=2));print(json.dumps(out,ensure_ascii=False,indent=2));raise SystemExit(1 if out['failures'] else 0)
