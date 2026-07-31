@@ -23,7 +23,13 @@ Canonical references:
 | `personal-video-archive` | 13 | Incubation MVP; bilingual redesign and portal shell in Draft PR #78 | Users will return to user-controlled topic feeds when video discovery is cleaner and watched videos become durable private reflections and plans. | Global portal shell code and visual review accepted in Draft PR #78 at head 989d0056605e091a2fa842e49dc92f29aed68fbb; PR #78 remains unmerged pending latest-main integration and final merge review. Actual portal production integration is not completed by the PR #78 merge alone. |
 | `korean-ai-platform` | 14 | Private governed-execution console MVP in Draft PR #79 | Users can trust AI execution more when worker, validator, and human approval stages expose evidence, cost, and data-processing context. | Authentication and portal integration are not implemented. |
 
-Business 5–12 are reserved or unresolved. Do not assign them from folder order, issue order, conversation order, or product ranking.
+## Assigned but not yet created workspaces
+
+| Workspace | Canonical Business number | Current state | Primary product hypothesis | Portal state |
+|---|---:|---|---|---|
+| `neighbor-market` | 5 | concept; workspace not yet created | Residents will discover and support resident-operated work when current-apartment and nearby-apartment relationships are prioritized before general neighborhood businesses. | Not implemented. |
+
+Business 5 is assigned but its workspace is not yet created. Business 6–12 remain reserved or unresolved. Do not assign them from folder order, issue order, conversation order, or product ranking.
 
 `docs/portfolio/BUSINESS_REGISTRY.md` is the sole canonical number-to-product source after Issue #83 is merged.
 
