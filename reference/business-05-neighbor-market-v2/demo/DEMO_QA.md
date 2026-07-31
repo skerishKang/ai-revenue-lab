@@ -9,6 +9,7 @@
 | Resident | Listing detail | `detail` |
 | Resident | Benefits | `benefits` |
 | Resident | Saved and requests | `saved` |
+| Resident | Unavailable/suspended listing | `detail` (단비 세탁소, id 10) |
 | Owner | Registration | `owner-register` |
 | Owner | Public preview | `owner-preview` |
 | Owner | Dashboard/status | `owner-dashboard` |
@@ -21,6 +22,7 @@
 - [ ] Search applies on Enter and search button click.
 - [ ] Relationship filters preserve current → neighbor → local order.
 - [ ] Empty search state is reachable.
+- [ ] Unavailable/suspended listing shows a clear text state, a disabled primary action, and an explicit demo notice.
 - [ ] Every listing card opens detail.
 - [ ] Favorite toggles and appears in Saved.
 - [ ] Request modal creates an in-memory request record.
@@ -48,6 +50,7 @@ Capture at minimum:
 
 - resident home;
 - resident detail;
+- suspended listing state;
 - saved/request state;
 - owner registration;
 - owner dashboard;
