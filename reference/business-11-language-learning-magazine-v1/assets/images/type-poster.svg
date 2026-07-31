@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 520" role="img" aria-labelledby="title desc">
+<title id="title">Expression Poster</title><desc id="desc">A synthetic typography poster connecting linger, pause and gather.</desc>
+<rect width="700" height="520" fill="#d8492f"/>
+<text x="46" y="128" font-family="Georgia,serif" font-size="104" font-weight="700" fill="#f2ead9">linger</text>
+<path d="M48 147h480" stroke="#171510" stroke-width="14"/>
+<text x="220" y="259" font-family="Arial,sans-serif" font-size="82" font-weight="800" fill="#171510">PAUSE</text>
+<text x="52" y="380" font-family="Georgia,serif" font-size="112" font-style="italic" fill="#f2ead9">gather</text>
+<text x="58" y="454" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#171510">STAY A LITTLE LONGER</text>
+<circle cx="615" cy="120" r="45" fill="#1f6075"/>
+<text x="615" y="128" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="700" fill="#f2ead9">011</text>
+</svg>
