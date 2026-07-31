@@ -12,7 +12,12 @@
    *  serverStaleRefreshBudgetMs (6000) when upstream is slow; the client deadline
    *  must stay above that budget plus a network margin so a stale snapshot is never
    *  lost to an early abort. The two bundles cannot share a module, so the contract
-   *  is fixed here, in outbound-deadline.js, and by regression tests on both sides. */
+   *  is fixed here, in outbound-deadline.js, and by regression tests on both sides.
+   *
+   *  REQUEST_TIMEOUT_MS is enforced per fetch attempt by a dedicated attempt
+   *  AbortController + timer inside requestOnce (see below). A hanging fetch is
+   *  aborted after REQUEST_TIMEOUT_MS so retry/backoff can proceed; the timeout
+   *  aborts ONLY the attempt, never the whole load, so the next attempt still runs. */
   const REQUEST_TIMEOUT_MS = 12000;
   const RETRY_DELAYS_MS = Object.freeze([800, 2400]); // backoff before retry #1 and #2
   const MAX_ATTEMPTS = RETRY_DELAYS_MS.length + 1; // initial request + 2 retries = 3
@@ -292,15 +297,42 @@
       if (signal && signal.addEventListener) signal.addEventListener("abort", onAbort, { once: true });
     });
   }
-  async function requestOnce(globalObject, signal) {
+  /*  One fetch attempt with its own enforced deadline.
+   *
+   *  Two cancellation scopes are kept separate:
+   *    - loadSignal  — aborts the WHOLE load (manual retry or teardown). When it
+   *                    fires we return { kind: "aborted" } and stop retrying.
+   *    - attemptController — aborts THIS fetch only when REQUEST_TIMEOUT_MS elapses.
+   *                    A timeout returns { kind: "retryable", reason: "timeout" }
+   *                    and never touches loadSignal, so the next attempt can run.
+   *
+   *  A hanging fetch (never settles) is aborted by the attempt timer, so the load
+   *  can never wedge forever in "loading" with a permanent in-flight request. The
+   *  timeout timer and the loadSignal listener are both removed in every exit path. */
+  async function requestOnce(globalObject, loadSignal) {
+    if (loadSignal && loadSignal.aborted) return { kind: "aborted" };
+    const attemptController = new globalObject.AbortController();
+    let timedOut = false;
+    let timer = null;
+    const abortAttempt = () => { try { attemptController.abort(); } catch { /* ignore */ } };
+    const clearAttempt = () => {
+      if (timer != null) { globalObject.clearTimeout(timer); timer = null; }
+      if (loadSignal && loadSignal.removeEventListener) { try { loadSignal.removeEventListener("abort", abortAttempt); } catch { /* ignore */ } }
+    };
+    if (loadSignal && loadSignal.addEventListener) loadSignal.addEventListener("abort", abortAttempt, { once: true });
+    timer = globalObject.setTimeout(() => { timedOut = true; abortAttempt(); }, REQUEST_TIMEOUT_MS);
     let response;
     try {
-      response = await globalObject.fetch(ENDPOINT, { method: "GET", credentials: "same-origin", headers: { Accept: "application/json" }, signal });
+      response = await globalObject.fetch(ENDPOINT, { method: "GET", credentials: "same-origin", headers: { Accept: "application/json" }, signal: attemptController.signal });
     } catch {
-      return signal && signal.aborted ? { kind: "aborted" } : { kind: "retryable" };
+      clearAttempt();
+      if (loadSignal && loadSignal.aborted) return { kind: "aborted" };
+      return timedOut ? { kind: "retryable", reason: "timeout" } : { kind: "retryable", reason: "network" };
     }
     let payload = null;
     try { payload = await response.json(); } catch { payload = null; }
+    clearAttempt();
+    if (loadSignal && loadSignal.aborted) return { kind: "aborted" };
     const verdict = classify(response.status, payload);
     if (verdict.kind === "ok") return { kind: "ok", payload, stale: verdict.stale };
     return verdict;

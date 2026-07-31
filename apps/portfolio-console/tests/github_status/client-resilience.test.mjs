@@ -82,6 +82,39 @@ function mockFetch(sequence) {
   return impl;
 }
 
+function makeAbortError() {
+  const error = new Error("The operation was aborted.");
+  error.name = "AbortError";
+  return error;
+}
+
+// A fetch mock that can genuinely HANG: a "hang" step returns a promise that stays
+// pending until its init.signal aborts, then rejects with an AbortError — exactly
+// like a real stalled network request. Response-descriptor steps resolve at once.
+// Every signal is recorded so tests can assert which attempts were really aborted.
+// This exercises the real per-attempt REQUEST_TIMEOUT_MS, unlike mockFetch (whose
+// throws are immediate network errors, not timeouts).
+function scriptedFetch(script) {
+  const calls = { count: 0, signals: [] };
+  const impl = (url, init) => {
+    const i = calls.count++;
+    const signal = init && init.signal;
+    calls.signals.push(signal);
+    const step = typeof script === "function" ? script(i) : script[Math.min(i, script.length - 1)];
+    return new Promise((resolve, reject) => {
+      if (signal) {
+        if (signal.aborted) { reject(makeAbortError()); return; }
+        signal.addEventListener("abort", () => reject(makeAbortError()), { once: true });
+      }
+      if (step === "hang") return; // pending forever unless aborted
+      if (step && step.throw) { reject(new Error(step.throw)); return; }
+      resolve({ status: (step && step.status) ?? 200, json: async () => ((step && step.body) ?? null) });
+    });
+  };
+  impl.calls = calls;
+  return impl;
+}
+
 function resetState() {
   const s = mod._state;
   s.payload = null; s.loading = false; s.started = false; s.observer = null; s.scheduled = false;
@@ -311,4 +344,191 @@ test("DOM: renders a Korean stale banner that flags possibly-outdated data", asy
   assert.equal(statusEl.dataset.status, "stale");
   const span = statusEl.children.find((c) => c.className === "github-live-status-text");
   assert.ok(span.textContent.includes("최신 정보가 아닐 수 있음"));
+});
+
+// ── Focused fake-DOM status-banner checks (UI contract for Issue #345) ────────
+// These verify ONLY the status banner contract with a fake DOM: localized
+// loading/stale/unavailable text, an accessible retry button, an in-flow element
+// with no full-screen overlay, and that a live failure never deletes the static
+// Business data. Full-browser/visual verification is deferred to Production.
+
+test("DOM: renders loading status text in Korean and English", async () => {
+  for (const [lang, expected] of [["ko", "GitHub 동기화 중"], ["en", "Syncing GitHub"]]) {
+    resetState();
+    const clock = makeClock();
+    const statusEl = new FakeEl("div");
+    const doc = stubDoc({ documentElement: { lang }, querySelector: (sel) => (sel === "#github-live-status" ? statusEl : null) });
+    const fetchImpl = scriptedFetch(["hang"]); // hold the attempt in "loading"
+    const g = makeGlobal({ fetchImpl, clock, doc });
+    mod.load(g, { reason: "startup" });
+    await clock.tick(0);
+    assert.equal(mod._state.status, "loading");
+    assert.equal(statusEl.dataset.status, "loading");
+    const span = statusEl.children.find((c) => c.className === "github-live-status-text");
+    assert.ok(span, "loading text span created");
+    assert.ok(span.textContent.includes(expected), `${lang} loading text`);
+    mod.teardown(g);
+  }
+});
+
+test("DOM: renders unavailable status text in Korean and English", async () => {
+  for (const [lang, expected] of [["ko", "GitHub live 정보를 잠시 불러올 수 없음"], ["en", "GitHub live data temporarily unavailable"]]) {
+    resetState();
+    const clock = makeClock();
+    const statusEl = new FakeEl("div");
+    const doc = stubDoc({ documentElement: { lang }, querySelector: (sel) => (sel === "#github-live-status" ? statusEl : null) });
+    const fetchImpl = mockFetch([{ status: 502, body: { ok: false, error: { code: "UPSTREAM_UNAVAILABLE" }, businesses: [] } }]);
+    const g = makeGlobal({ fetchImpl, clock, doc });
+    const p = mod.load(g, { reason: "startup" });
+    await clock.tick(800); await clock.tick(2400); await p;
+    assert.equal(mod._state.status, "unavailable");
+    const span = statusEl.children.find((c) => c.className === "github-live-status-text");
+    assert.ok(span, "unavailable text span created");
+    assert.ok(span.textContent.includes(expected), `${lang} unavailable text`);
+  }
+});
+
+test("DOM: creates an in-flow status element (role/aria-live) with no overlay when none exists", async () => {
+  resetState();
+  const clock = makeClock();
+  const view = new FakeEl("section"); view.id = "view-business";
+  const doc = stubDoc({ documentElement: { lang: "ko" }, querySelector: (sel) => {
+    if (sel === "#view-business") return view;
+    if (sel === "#github-live-status") return view.children.find((c) => c.id === "github-live-status") || null;
+    return null;
+  }});
+  const fetchImpl = mockFetch([{ status: 200, body: OK(3) }]);
+  const g = makeGlobal({ fetchImpl, clock, doc });
+  await mod.load(g, { reason: "startup" });
+  const node = view.children.find((c) => c.id === "github-live-status");
+  assert.ok(node, "status element created inside #view-business (normal document flow)");
+  assert.equal(node.className, "github-live-status", "plain banner class, no overlay/fixed/mask class");
+  assert.equal(node.attrs.role, "status");
+  assert.equal(node.attrs["aria-live"], "polite");
+  assert.ok(view.children.every((c) => !/overlay|backdrop|mask|fullscreen|full-screen/i.test(c.className || "")), "no overlay element created");
+});
+
+test("DOM: a live failure never removes the static Business data from the view", async () => {
+  resetState();
+  const clock = makeClock();
+  const businessRow = new FakeEl("div"); businessRow.className = "business-row"; businessRow.textContent = "Business 15 · static";
+  const view = new FakeEl("section"); view.id = "view-business"; view.children = [businessRow];
+  const doc = stubDoc({ documentElement: { lang: "ko" }, querySelector: (sel) => {
+    if (sel === "#view-business") return view;
+    if (sel === "#github-live-status") return view.children.find((c) => c.id === "github-live-status") || null;
+    return null;
+  }});
+  const fetchImpl = mockFetch([{ status: 502, body: { ok: false, error: { code: "UPSTREAM_UNAVAILABLE" }, businesses: [] } }]);
+  const g = makeGlobal({ fetchImpl, clock, doc });
+  const p = mod.load(g, { reason: "startup" });
+  await clock.tick(800); await clock.tick(2400); await p;
+  assert.equal(mod._state.status, "unavailable", "live layer failed");
+  assert.ok(view.children.includes(businessRow), "static business row still present");
+  assert.equal(businessRow.textContent, "Business 15 · static", "static business content untouched");
+  assert.ok(view.children.find((c) => c.id === "github-live-status"), "status banner added alongside static data");
+});
+
+// ── Real hanging-fetch timeout tests (Blocking Defect A) ─────────────────────
+// These use scriptedFetch, whose "hang" step never settles until its signal is
+// aborted, so they prove REQUEST_TIMEOUT_MS is enforced by a real per-attempt
+// abort — not by an immediately-throwing network-error mock.
+
+test("A. a hanging first attempt is aborted at REQUEST_TIMEOUT_MS, then retry succeeds", async () => {
+  resetState();
+  const clock = makeClock();
+  const fetchImpl = scriptedFetch(["hang", { status: 200, body: OK(7) }]);
+  const g = makeGlobal({ fetchImpl, clock });
+  const p = mod.load(g, { reason: "startup" });
+  await clock.tick(mod.REQUEST_TIMEOUT_MS); // first attempt reaches its deadline
+  assert.equal(fetchImpl.calls.signals[0].aborted, true, "first attempt aborted exactly at the deadline");
+  assert.equal(fetchImpl.calls.count, 1, "no second fetch before the backoff elapses");
+  await clock.tick(mod.RETRY_DELAYS_MS[0]); // backoff, then the second attempt runs
+  await p;
+  assert.equal(mod._state.status, "fresh");
+  assert.equal(mod._state.payload.businesses[0].number, 7);
+  assert.equal(fetchImpl.calls.count, 2);
+  assert.equal(clock.activeTimers(), 0, "no timer leak after a real timeout + retry");
+});
+
+test("B. three hanging attempts exhaust MAX_ATTEMPTS and settle unavailable with no leak", async () => {
+  resetState();
+  const clock = makeClock();
+  const fetchImpl = scriptedFetch(["hang"]);
+  const g = makeGlobal({ fetchImpl, clock });
+  const p = mod.load(g, { reason: "startup" });
+  for (let attempt = 0; attempt < mod.MAX_ATTEMPTS; attempt++) {
+    await clock.tick(mod.REQUEST_TIMEOUT_MS); // this attempt times out
+    if (attempt < mod.MAX_ATTEMPTS - 1) await clock.tick(mod.RETRY_DELAYS_MS[attempt]); // stepped backoff
+  }
+  await p;
+  assert.equal(mod._state.status, "unavailable");
+  assert.equal(mod._state.payload, null);
+  assert.equal(fetchImpl.calls.count, mod.MAX_ATTEMPTS, "exactly MAX_ATTEMPTS fetches, no infinite loop");
+  assert.equal(mod._state.inFlight, null, "in-flight cleared");
+  assert.equal(mod._state.controller, null, "controller cleared");
+  assert.equal(clock.activeTimers(), 0, "no timer leak");
+  assert.equal(fetchImpl.calls.signals.every((s) => s.aborted), true, "every hanging fetch was aborted");
+});
+
+test("C. a manual retry aborts a hanging attempt and the new load wins without clobber", async () => {
+  resetState();
+  const clock = makeClock();
+  const fetchImpl = scriptedFetch(["hang", { status: 200, body: OK(11) }]);
+  const g = makeGlobal({ fetchImpl, clock });
+  const first = mod.load(g, { reason: "startup" });
+  await clock.tick(0); // let attempt 0 start and hang
+  assert.equal(fetchImpl.calls.count, 1);
+  const second = mod.load(g, { reason: "manual" }); // aborts the first load's controller
+  await clock.tick(0);
+  await second;
+  assert.notEqual(first, second, "manual retry starts a brand-new flight");
+  assert.equal(fetchImpl.calls.signals[0].aborted, true, "previous hanging attempt aborted immediately");
+  assert.equal(mod._state.status, "fresh");
+  assert.equal(mod._state.payload.businesses[0].number, 11, "new load state is authoritative");
+});
+
+test("D. focus recovery restores fresh after hanging attempts exhaust to unavailable", async () => {
+  resetState();
+  const clock = makeClock();
+  const fetchImpl = scriptedFetch(["hang", "hang", "hang", { status: 200, body: OK(13) }]);
+  const g = makeGlobal({ fetchImpl, clock });
+  const p = mod.load(g, { reason: "startup" });
+  for (let attempt = 0; attempt < mod.MAX_ATTEMPTS; attempt++) {
+    await clock.tick(mod.REQUEST_TIMEOUT_MS);
+    if (attempt < mod.MAX_ATTEMPTS - 1) await clock.tick(mod.RETRY_DELAYS_MS[attempt]);
+  }
+  await p;
+  assert.equal(mod._state.status, "unavailable");
+  await clock.tick(mod.RECOVERY_DEDUP_MS + 1);
+  mod.recover(g); // focus/visibility recovery
+  await clock.tick(0);
+  assert.equal(mod._state.status, "fresh");
+  assert.equal(mod._state.payload.businesses[0].number, 13);
+  assert.equal(fetchImpl.calls.count, mod.MAX_ATTEMPTS + 1);
+});
+
+test("E. teardown aborts a hanging attempt, clears timers/listeners, and stops mutations", async () => {
+  resetState();
+  const clock = makeClock();
+  const removed = { vis: 0, focus: 0 };
+  const doc = stubDoc({ removeEventListener: (type) => { if (type === "visibilitychange") removed.vis += 1; } });
+  const fetchImpl = scriptedFetch(["hang"]);
+  const g = makeGlobal({ fetchImpl, clock, doc });
+  g.window = { addEventListener: () => {}, removeEventListener: (type) => { if (type === "focus") removed.focus += 1; } };
+  mod.autoStart(g); // startup load; attempt 0 hangs
+  await clock.tick(0);
+  assert.equal(fetchImpl.calls.count, 1);
+  mod.teardown(g);
+  await clock.tick(0); // let the abort propagate and clear the attempt timer
+  assert.equal(fetchImpl.calls.signals[0].aborted, true, "in-flight attempt aborted by teardown");
+  assert.equal(clock.activeTimers(), 0, "timeout/backoff timers cleared");
+  assert.equal(removed.vis, 1);
+  assert.equal(removed.focus, 1);
+  assert.equal(mod._state.observer, null);
+  assert.equal(mod._state.started, false);
+  assert.equal(mod._state.controller, null);
+  const statusAfterTeardown = mod._state.status;
+  await clock.tick(mod.REQUEST_TIMEOUT_MS * 3); // nothing scheduled should fire
+  assert.equal(mod._state.status, statusAfterTeardown, "no further state mutation after teardown");
+  assert.equal(clock.activeTimers(), 0);
 });
