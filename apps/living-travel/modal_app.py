@@ -43,10 +43,9 @@ image = (
         "psycopg[binary]>=3.2,<4",
         "firebase-admin>=6.5",
     )
-    # Application package + migration SQL (sibling layout matches app.db discovery).
+    .env({"PYTHONPATH": "/root/lt"})
     .add_local_dir(str(_HERE / "app"), remote_path="/root/lt/app")
     .add_local_dir(str(_HERE / "migrations"), remote_path="/root/lt/migrations")
-    .env({"PYTHONPATH": "/root/lt"})
 )
 
 app = modal.App(APP_NAME, image=image)

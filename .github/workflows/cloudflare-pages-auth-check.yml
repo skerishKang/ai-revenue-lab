@@ -1,0 +1,63 @@
+name: Cloudflare Pages auth check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages-auth-check
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify Pages API access
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Confirm required secrets are configured
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || {
+            echo "CLOUDFLARE_API_TOKEN is not configured."
+            exit 1
+          }
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || {
+            echo "CLOUDFLARE_ACCOUNT_ID is not configured."
+            exit 1
+          }
+
+      - name: Verify Cloudflare Pages API access
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="$(mktemp)"
+          trap 'rm -f "${response_file}"' EXIT
+
+          status_code="$({
+            curl \
+              --silent \
+              --show-error \
+              --output "${response_file}" \
+              --write-out '%{http_code}' \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+          })"
+
+          if [[ "${status_code}" != "200" ]]; then
+            echo "Cloudflare Pages API access failed with HTTP ${status_code}."
+            exit 1
+          fi
+
+          if ! jq -e '.success == true and (.result | type == "array")' "${response_file}" >/dev/null; then
+            echo "Cloudflare returned an unexpected Pages API response."
+            exit 1
+          fi
+
+          echo "Cloudflare Pages API access verified."

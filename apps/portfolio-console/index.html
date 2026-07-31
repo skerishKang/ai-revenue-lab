@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Portfolio Console</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=auto-sync-v20260730-1">
+  <link rel="stylesheet" href="./styles.css?v=auto-sync-v20260730-1">
+  <script src="./theme-init.js?v=auto-sync-v20260730-1"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="관리 콘솔 탐색">
+      <div class="sidebar-header">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">ARL</div>
+          <div>
+            <strong>Portfolio Console</strong>
+          </div>
+        </div>
+        <button type="button" class="drawer-close" id="drawer-close" aria-label="메뉴 닫기">×</button>
+      </div>
+
+      <nav class="view-nav" aria-label="콘솔 메뉴">
+        <button class="view-nav-item is-active" type="button" data-view="projects" aria-current="page">
+          <span aria-hidden="true">□</span>
+          <span class="nav-label" data-label-ko="프로젝트 현황" data-label-en="PROJECT STATUS">프로젝트 현황</span>
+        </button>
+        <button class="view-nav-item" type="button" data-view="search">
+          <span aria-hidden="true">🔍</span>
+          <span class="nav-label" data-label-ko="검색·필터" data-label-en="SEARCH & FILTER">검색·필터</span>
+        </button>
+        <button class="view-nav-item" type="button" data-view="work">
+          <span aria-hidden="true">⚙</span>
+          <span class="nav-label" data-label-ko="작업 중" data-label-en="IN PROGRESS">작업 중</span>
+        </button>
+        <button class="view-nav-item" type="button" data-view="business">
+          <span aria-hidden="true">▦</span>
+          <span class="nav-label" data-label-ko="비즈니스 번호표" data-label-en="BUSINESS INDEX" id="sidebar-range">비즈니스 번호표</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Panel -->
+    <main class="main-panel">
+      <!-- Top Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기">☰</button>
+          <h1 id="topbar-title" class="topbar-title"><span id="header-prefix" data-prefix-ko="내 비즈니스 관리" data-prefix-en="Business Operations">내 비즈니스 관리</span> <span id="header-count" class="count-badge">13</span></h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="lang-toggle" role="group" aria-label="언어 선택">
+            <button type="button" class="lang-btn is-active" data-lang="ko" id="lang-ko">한국어</button>
+            <span class="lang-divider" aria-hidden="true">|</span>
+            <button type="button" class="lang-btn" data-lang="en" id="lang-en">EN</button>
+          </div>
+          <button type="button" class="theme-toggle" id="theme-toggle" aria-label="테마 전환">🌙</button>
+        </div>
+      </header>
+
+      <!-- View: Projects -->
+      <section class="view-container" id="view-projects" aria-label="프로젝트 현황">
+        <div class="pd-grid" id="pd-grid"></div>
+      </section>
+
+      <!-- View: Search & Filter -->
+      <section class="view-container" id="view-search" hidden aria-label="검색·필터">
+        <div class="search-panel">
+          <div class="search-fields">
+            <label class="search-field">          <span class="search-label" data-label-ko="검색" data-label-en="SEARCH">검색</span>
+                <input id="sf-search-input" type="search" autocomplete="off" placeholder="이름, 저장소, 목적, 현재 작업 검색">
+            </label>
+            <div class="filter-row">
+              <label class="filter-field">
+                <span class="filter-label" data-label-ko="단계" data-label-en="STAGE">단계</span>
+                <select id="sf-stage-filter">
+                  <option value="all">전체</option>
+                  <option value="live">운영 중</option>
+                  <option value="building">개발 중</option>
+                  <option value="review">검토 중</option>
+                  <option value="planned">계획</option>
+                  <option value="paused">일시 중지</option>
+                </select>
+              </label>
+              <label class="filter-field">
+                <span class="filter-label" data-label-ko="개발 모드" data-label-en="DEV MODE">개발 모드</span>
+                <select id="sf-devmode-filter">
+                  <option value="all">전체</option>
+                  <option value="not-started">시작 전</option>
+                  <option value="active-development">개발 중</option>
+                  <option value="needs-improvement">개선 필요</option>
+                  <option value="maintenance">유지보수</option>
+                  <option value="complete">완료</option>
+                  <option value="paused">일시 중지</option>
+                </select>
+              </label>
+              <label class="filter-field">
+                <span class="filter-label" data-label-ko="정렬" data-label-en="SORT">정렬</span>
+                <select id="sf-sort-filter">
+                  <option value="default">기본순</option>
+                  <option value="progress-desc">진행률 높은 순</option>
+                  <option value="progress-asc">진행률 낮은 순</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" class="reset-btn" id="sf-reset-filter">초기화</button>
+          </div>
+          <div class="search-results" id="search-results">
+            <div class="pd-grid" id="search-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Work In Progress -->
+      <section class="view-container" id="view-work" hidden aria-label="작업 중">
+        <div class="work-summary" id="work-summary">
+          <span class="work-summary-text" id="work-summary-text">작업 중 10 · 보완/검토 4 · 계속 개발 6</span>
+        </div>
+        <div class="work-queue" id="work-queue"></div>
+      </section>
+
+      <!-- View: Business Index -->
+      <section class="view-container" id="view-business" hidden aria-label="비즈니스 번호표">
+        <div class="business-controls">
+          <label class="biz-search-field">
+            <span class="biz-search-label" data-label-ko="검색" data-label-en="SEARCH">검색</span>
+            <input id="biz-search-input" type="search" autocomplete="off" placeholder="번호, 제목 검색">
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="번호 권한" data-label-en="NUMBER AUTHORITY">번호 권한</span>
+            <select id="biz-auth-filter">
+              <option value="all">전체</option>
+              <option value="canonical">정식</option>
+              <option value="proposed-number">제안 번호</option>
+              <option value="candidate">후보</option>
+              <option value="existing-project">기존 프로젝트</option>
+              <option value="number-reconciliation-required">번호 조정 필요</option>
+            </select>
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="UI" data-label-en="UI">UI</span>
+            <select id="biz-ui-filter">
+              <option value="all">전체</option>
+              <option value="NOT_STARTED">미시작</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="UI_NOT_READY">미완료</option>
+              <option value="UI_CONDITIONALLY_READY">조건부 승인</option>
+              <option value="UI_APPROVED">승인됨</option>
+              <option value="NOT_APPLICABLE">해당 없음</option>
+            </select>
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="UX" data-label-en="UX">UX</span>
+            <select id="biz-ux-filter">
+              <option value="all">전체</option>
+              <option value="BLOCKED_BY_UI">UI 대기</option>
+              <option value="NOT_STARTED">미시작</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="UX_NOT_READY">미완료</option>
+              <option value="UX_CONDITIONALLY_READY">조건부 승인</option>
+              <option value="UX_APPROVED">승인됨</option>
+              <option value="NOT_APPLICABLE">해당 없음</option>
+            </select>
+          </label>
+          <label class="biz-filter-field">
+            <span class="biz-filter-label" data-label-ko="백엔드" data-label-en="BACKEND">백엔드</span>
+            <select id="biz-be-filter">
+              <option value="all">전체</option>
+              <option value="FROZEN">동결</option>
+              <option value="DECISION_PENDING">결정 대기</option>
+              <option value="DEFERRED">연기</option>
+              <option value="AUTHORIZED">승인됨</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="IMPLEMENTED">구현됨</option>
+              <option value="NOT_APPLICABLE">해당 없음</option>
+            </select>
+          </label>
+          <label class="biz-sort-field">
+            <span class="biz-sort-label" data-label-ko="정렬" data-label-en="SORT">정렬</span>
+            <select id="biz-sort">
+              <option value="number-asc">번호 ↑</option>
+              <option value="number-desc">번호 ↓</option>
+            </select>
+          </label>
+        </div>
+        <div class="biz-list" id="biz-list"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <span>Static private console · no authentication</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Project Detail Dialog -->
+  <dialog id="project-dialog" class="project-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-scroll">
+      <div class="dialog-header">
+        <h2 id="dialog-title" class="dialog-title">프로젝트 상세</h2>
+        <button type="button" class="dialog-close-btn" id="dialog-close-btn" aria-label="닫기">×</button>
+      </div>
+      <div class="dialog-body" id="dialog-body"></div>
+    </div>
+  </dialog>
+
+  <!-- Business Detail Dialog -->
+  <dialog id="business-dialog" class="project-dialog" aria-labelledby="biz-dialog-title">
+    <div class="dialog-scroll">
+      <div class="dialog-header">
+        <h2 id="biz-dialog-title" class="dialog-title">비즈니스 상세</h2>
+        <button type="button" class="dialog-close-btn" id="biz-dialog-close-btn" aria-label="닫기">×</button>
+      </div>
+      <div class="dialog-body" id="biz-dialog-body"></div>
+    </div>
+  </dialog>
+
+  <!-- Drawer overlay for mobile -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <script src="./business-identity-core.js?v=auto-sync-v20260730-1"></script>
+  <script src="./business-manifest.js?v=auto-sync-v20260730-1"></script>
+  <script src="./businesses.js?v=auto-sync-v20260730-1"></script>
+  <script src="./projects.js"></script>
+  <script src="./app.js?v=auto-sync-v20260730-1"></script>
+  <script src="./github-live-status.js?v=auto-sync-v20260730-1"></script>
+  <script src="./business-live-facts.js?v=auto-sync-v20260730-1"></script>
+</body>
+</html>

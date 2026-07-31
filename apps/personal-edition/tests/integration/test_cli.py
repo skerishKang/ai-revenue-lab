@@ -7,6 +7,7 @@ import pytest
 
 from app.config import Settings
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 from app import participant_repository as repo
 
 
@@ -117,7 +118,7 @@ class TestDeleteParticipant:
     def test_delete_success(self, initialized_db, venv_python):
         conn = get_connection(initialized_db)
         repo.create_participant(
-            conn,
+        SqliteRuntimeConnection(conn),
             participant_id="del-p1",
             display_name="To Delete",
         )
@@ -152,7 +153,7 @@ class TestDeleteParticipant:
     def test_delete_revokes_token(self, initialized_db, venv_python):
         conn = get_connection(initialized_db)
         prov = repo.create_participant(
-            conn,
+        SqliteRuntimeConnection(conn),
             participant_id="del-tok",
             display_name="Token Delete",
         )
@@ -181,7 +182,7 @@ class TestInspectRecords:
     def test_inspect_text_output(self, initialized_db, venv_python):
         conn = get_connection(initialized_db)
         repo.create_participant(
-            conn,
+        SqliteRuntimeConnection(conn),
             participant_id="ins-p1",
             display_name="Inspect Me",
         )
@@ -204,7 +205,7 @@ class TestInspectRecords:
     def test_inspect_json_output(self, initialized_db, venv_python):
         conn = get_connection(initialized_db)
         repo.create_participant(
-            conn,
+        SqliteRuntimeConnection(conn),
             participant_id="ins-p2",
             display_name="JSON Inspect",
         )

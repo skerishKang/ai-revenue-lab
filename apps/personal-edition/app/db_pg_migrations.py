@@ -75,6 +75,15 @@ class PgMigrationError(RuntimeError):
         super().__init__(f"pg migration {version}: {message}")
 
 
+class MigrationParseError(RuntimeError):
+    """Raised when migration SQL contains malformed syntax.
+
+    Unterminated comments, strings, or dollar quotes are detected and
+    rejected with a fixed safe error message.  The original content
+    (position, snippet) is NOT included in the message for safety.
+    """
+
+
 def _is_pg_migration(name: str) -> bool:
     return name.endswith(".sql") and _PG_MIGRATION_RE.match(name) is not None
 
@@ -189,6 +198,252 @@ def _has_non_comment_content(text: str) -> bool:
     return bool(text.strip())
 
 
+_DOLLAR_TAG_RE = re.compile(r"\$([A-Za-z_]\w*)?\$")
+
+
+def _neutralize_sql(content: str) -> str:
+    """Replace comments and string literals with inert placeholders.
+
+    Ensures :data:`_CREATE_TABLE_RE` only matches real DDL, not text that
+    appears inside comments or string literals.
+
+    Handles:
+    - Line comments: ``-- ...``
+    - Block comments: ``/* ... */`` including nested ``/* /* */ */``
+    - Single-quoted strings: ``'...'`` with ``''`` escape
+    - E-strings: ``E'...'`` / ``e'...'`` with ``\\'`` and ``''`` escapes
+      (the ``E`` prefix must not be part of a larger identifier)
+    - Dollar-quoted strings: ``$$...$$`` or ``$tag$...$tag$``
+
+    Raises :class:`MigrationParseError` if any construct is unterminated
+    (reaches EOF before the closing delimiter).
+    """
+    out: list[str] = []
+    i = 0
+    n = len(content)
+
+    while i < n:
+        c = content[i]
+
+        if c == "-" and i + 1 < n and content[i + 1] == "-":
+            while i < n and content[i] != "\n":
+                i += 1
+            out.append(" ")
+            continue
+
+        if c == "/" and i + 1 < n and content[i + 1] == "*":
+            depth = 1
+            i += 2
+            while i < n and depth > 0:
+                if content[i] == "/" and i + 1 < n and content[i + 1] == "*":
+                    depth += 1
+                    i += 2
+                elif content[i] == "*" and i + 1 < n and content[i + 1] == "/":
+                    depth -= 1
+                    i += 2
+                else:
+                    i += 1
+            if depth > 0:
+                raise MigrationParseError(
+                    "unterminated block comment"
+                )
+            out.append(" ")
+            continue
+
+        if c in ("E", "e") and i + 1 < n and content[i + 1] == "'":
+            if i == 0 or not (content[i - 1].isalnum() or content[i - 1] == "_"):
+                i += 2
+                found_close = False
+                while i < n:
+                    if content[i] == "\\":
+                        i += 2
+                    elif content[i] == "'" and i + 1 < n and content[i + 1] == "'":
+                        i += 2
+                    elif content[i] == "'":
+                        i += 1
+                        found_close = True
+                        break
+                    else:
+                        i += 1
+                if not found_close:
+                    raise MigrationParseError(
+                        "unterminated E-string literal"
+                    )
+                out.append("''")
+                continue
+
+        if c == "$":
+            m = _DOLLAR_TAG_RE.match(content, i)
+            if m:
+                tag = m.group(0)
+                i += len(tag)
+                end = content.find(tag, i)
+                if end == -1:
+                    raise MigrationParseError(
+                        "unterminated dollar-quoted string"
+                    )
+                i = end + len(tag)
+                out.append("''")
+                continue
+
+        if c == "'":
+            i += 1
+            found_close = False
+            while i < n:
+                if content[i] == "'" and i + 1 < n and content[i + 1] == "'":
+                    i += 2
+                elif content[i] == "'":
+                    i += 1
+                    found_close = True
+                    break
+                else:
+                    i += 1
+            if not found_close:
+                raise MigrationParseError(
+                    "unterminated single-quoted string literal"
+                )
+            out.append("''")
+            continue
+
+        out.append(c)
+        i += 1
+
+    return "".join(out)
+
+
+_CREATE_TABLE_RE = re.compile(
+    r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?"
+    r"(?:\"?[\w]+\"?\.)?"  # optional schema qualifier
+    r"\"?([\w]+)\"?",       # table name
+    re.IGNORECASE,
+)
+
+
+def _extract_created_tables(content: str) -> set[str]:
+    """Return the set of table names created by a migration's SQL.
+
+    Purely textual (read-only) — used by :func:`verify_pg_schema` to know
+    which tables an applied migration declares, without executing any DDL.
+    Handles optional ``IF NOT EXISTS``, an optional schema qualifier, and
+    optional double-quoted identifiers.
+
+    Comments (line, block, nested) and string literals (single-quoted,
+    E-quoted, dollar-quoted) are neutralised before matching so that
+    ``CREATE TABLE`` appearing inside them is never detected.
+    """
+    return {m.group(1) for m in _CREATE_TABLE_RE.finditer(_neutralize_sql(content))}
+
+
+def _validate_migration_sql(content: str) -> None:
+    """Validate migration SQL before any database writes.
+
+    Raises :class:`MigrationParseError` if the SQL contains:
+    - Unterminated block/nested comments, string literals, E-strings,
+      or dollar-quoted strings (via :func:`_neutralize_sql`).
+    - Dollar-quoted strings (``$$...$$``, ``$tag$...$tag$``) or nested
+      block comments, which :func:`_split_statements` does not understand.
+
+    The message is a fixed safe string; the original content is never
+    interpolated.
+    """
+    _neutralize_sql(content)
+
+    if "$" in content:
+        if _DOLLAR_TAG_RE.search(content) is not None:
+            raise MigrationParseError(
+                "migration SQL contains dollar-quoted strings "
+                "not supported by statement splitter"
+            )
+
+    _check_block_comment_nesting(content)
+
+
+def _check_block_comment_nesting(sql: str) -> None:
+    """Raise :class:`MigrationParseError` if the SQL contains
+    actual nested block comments (depth >= 2).
+
+    Properly ignores ``/*`` and ``*/`` markers that appear inside
+    string literals, E-strings, double-quoted identifiers, or
+    line comments, avoiding false positives.
+    """
+    i = 0
+    n = len(sql)
+    depth = 0
+    while i < n:
+        ch = sql[i]
+        nxt = sql[i + 1] if i + 1 < n else ""
+
+        if depth > 0:
+            if ch == "/" and nxt == "*":
+                depth += 1
+                if depth >= 2:
+                    raise MigrationParseError(
+                        "migration SQL contains nested block comments "
+                        "not supported by statement splitter"
+                    )
+                i += 2
+            elif ch == "*" and nxt == "/":
+                depth -= 1
+                i += 2
+            elif ch == "\n":
+                i += 1
+            else:
+                i += 1
+            continue
+
+        if ch == "-" and nxt == "-":
+            while i < n and sql[i] != "\n":
+                i += 1
+            continue
+
+        if ch == "/" and nxt == "*":
+            depth = 1
+            i += 2
+            continue
+
+        if ch == "'":
+            i += 1
+            while i < n:
+                if sql[i] == "\\":
+                    i += 2
+                elif sql[i] == "'" and i + 1 < n and sql[i + 1] == "'":
+                    i += 2
+                elif sql[i] == "'":
+                    i += 1
+                    break
+                else:
+                    i += 1
+            continue
+
+        if ch in ("E", "e") and nxt == "'" and (
+            i == 0 or not (sql[i - 1].isalnum() or sql[i - 1] == "_")
+        ):
+            i += 2
+            while i < n:
+                if sql[i] == "\\":
+                    i += 2
+                elif sql[i] == "'" and i + 1 < n and sql[i + 1] == "'":
+                    i += 2
+                elif sql[i] == "'":
+                    i += 1
+                    break
+                else:
+                    i += 1
+            continue
+
+        if ch == '"':
+            i += 1
+            while i < n and sql[i] != '"':
+                if sql[i] == '"' and i + 1 < n and sql[i + 1] == '"':
+                    i += 2
+                else:
+                    i += 1
+            i += 1
+            continue
+
+        i += 1
+
+
 def _ensure_migrations_table(conn: Connection[DictRow]) -> None:
     """Create the schema_migrations table if it does not exist."""
     conn.execute(
@@ -238,9 +493,15 @@ def _get_current_search_path(conn: Connection[DictRow]) -> str:
 
     This is used ONLY for restoring the original setting on exit — never
     for computing the effective target schema.
+
+    The result column is aliased (``AS search_path``) so the value can be
+    read by name from a ``dict_row`` connection; positional ``row[0]``
+    access is not available on dict rows.
     """
     row = conn.execute("SHOW search_path").fetchone()
-    val = row[0] if row else ""
+    if not row:
+        return ""
+    val = row["search_path"] if "search_path" in row.keys() else list(row.values())[0]
     return str(val) if val else ""
 
 
@@ -252,11 +513,14 @@ def _get_current_schema(conn: Connection[DictRow]) -> str:
     ``current_schema()`` avoids incorrectly treating the literal ``$user``
     token as the target schema.
 
+    The result is aliased (``AS schema``) and read by name so the lookup
+    works on a ``dict_row`` connection.
+
     Raises :class:`PgMigrationError` if the result is NULL, failing closed
     rather than guessing.
     """
-    row = conn.execute("SELECT current_schema()").fetchone()
-    val = row[0] if row else None
+    row = conn.execute("SELECT current_schema() AS schema").fetchone()
+    val = row["schema"] if row else None
     if not val:
         raise PgMigrationError(
             "unknown",
@@ -271,6 +535,7 @@ def _check_schema_drift(
     version: str,
     content: str,
     is_applied: bool,
+    migration_prefix: list[tuple[str, str]] | None = None,
 ) -> None:
     """Run migration in a temporary schema to detect partial applies or drift.
 
@@ -279,18 +544,30 @@ def _check_schema_drift(
     hardcoded ``public``.  The original ``search_path`` is captured on entry
     and restored exactly on exit.  The temporary drift schema uses a random
     suffix to avoid collisions across concurrent runs.
+
+    ``migration_prefix`` is the ordered list of (version, content) for all
+    migrations that precede ``version`` in canonical order.  These are applied
+    first in the temp schema so that FK dependencies from earlier migrations
+    are satisfied when the current migration is validated.
     """
-    # Capture the real target schema and search_path BEFORE any drift work.
     original_search_path = _get_current_search_path(conn)
     target_schema = _get_current_schema(conn)
 
-    # Unique temp schema name to avoid concurrent-run collisions.
     temp_schema = f"drift_check_{uuid.uuid4().hex}"
 
     conn.execute("SAVEPOINT migration_drift_check")
     try:
         conn.execute(f'CREATE SCHEMA "{temp_schema}"')
         conn.execute(f'SET LOCAL search_path TO "{temp_schema}"')
+
+        prefix_tables: set[str] = set()
+        if migration_prefix:
+            for _prefix_version, prefix_content in migration_prefix:
+                for stmt in _split_statements(prefix_content):
+                    conn.execute(stmt)
+            prefix_tables = get_pg_schema_tables(conn, temp_schema)
+            if "schema_migrations" in prefix_tables:
+                prefix_tables.remove("schema_migrations")
 
         for stmt in _split_statements(content):
             conn.execute(stmt)
@@ -299,10 +576,12 @@ def _check_schema_drift(
         if "schema_migrations" in expected_tables:
             expected_tables.remove("schema_migrations")
 
+        current_tables = expected_tables - prefix_tables
+
         target_tables = get_pg_schema_tables(conn, target_schema)
 
         if not is_applied:
-            overlap = expected_tables.intersection(target_tables)
+            overlap = current_tables.intersection(target_tables)
             if overlap:
                 raise PgMigrationError(
                     version,
@@ -310,7 +589,7 @@ def _check_schema_drift(
                     category="partial_schema",
                 )
         else:
-            missing_tables = expected_tables - target_tables
+            missing_tables = current_tables - target_tables
             if missing_tables:
                 raise PgMigrationError(
                     version,
@@ -318,7 +597,7 @@ def _check_schema_drift(
                     category="schema_drift",
                 )
 
-            for table in expected_tables:
+            for table in current_tables:
                 exp_cols = get_pg_schema_columns(conn, table, temp_schema)
                 pub_cols = get_pg_schema_columns(conn, table, target_schema)
                 if exp_cols != pub_cols:
@@ -366,8 +645,8 @@ def _check_schema_drift(
 
         exp_indexes = get_pg_schema_indexes(conn, temp_schema)
         pub_indexes = get_pg_schema_indexes(conn, target_schema)
-        exp_idx = {(idx, tbl) for idx, tbl in exp_indexes if tbl in expected_tables}
-        pub_idx = {(idx, tbl) for idx, tbl in pub_indexes if tbl in expected_tables}
+        exp_idx = {(idx, tbl) for idx, tbl in exp_indexes if tbl in current_tables}
+        pub_idx = {(idx, tbl) for idx, tbl in pub_indexes if tbl in current_tables}
 
         if not is_applied:
             overlap_idx = exp_idx.intersection(pub_idx)
@@ -422,20 +701,28 @@ def apply_pg_migrations(
     PgMigrationError
         If a migration fails, if an already-applied migration's content
         has changed, or if a partial migration is detected.
+    MigrationParseError
+        If any pending migration's SQL contains malformed or unsupported
+        constructs before any database writes begin.
     """
+    migrations = _discover_migrations(migrations_dir)
+
+    for m in migrations:
+        content, _ = _read_migration(m)
+        _validate_migration_sql(content)
+
     _ensure_migrations_table(conn)
     conn.commit()
 
     applied = _get_applied(conn)
-    migrations = _discover_migrations(migrations_dir)
 
-    # Check for duplicate versions is now handled in _discover_migrations
-    
     applied_versions: list[str] = []
 
-    for m in migrations:
+    for idx, m in enumerate(migrations):
         version = m.name
         content, checksum = _read_migration(m)
+
+        prefix = [(mv.name, _read_migration(mv)[0]) for mv in migrations[:idx]]
 
         if version in applied:
             if applied[version] != checksum:
@@ -444,17 +731,17 @@ def apply_pg_migrations(
                     _safe_message("checksum_mismatch"),
                     category="checksum_mismatch",
                 )
-            # Integrity drift check
-            _check_schema_drift(conn, version, content, is_applied=True)
+            _check_schema_drift(
+                conn, version, content, is_applied=True, migration_prefix=prefix
+            )
             continue
 
-        # Unrecorded: partial detection
-        _check_schema_drift(conn, version, content, is_applied=False)
-
-        # Read content fresh for execution
-        statements = _split_statements(content)
-
         try:
+            _check_schema_drift(
+                conn, version, content, is_applied=False, migration_prefix=prefix
+            )
+
+            statements = _split_statements(content)
             for stmt in statements:
                 conn.execute(stmt)
             conn.execute(
@@ -464,6 +751,9 @@ def apply_pg_migrations(
             )
             conn.commit()
             applied_versions.append(version)
+        except PgMigrationError:
+            conn.rollback()
+            raise
         except Exception as exc:
             conn.rollback()
             raise PgMigrationError(
@@ -641,3 +931,133 @@ def get_pg_check_constraints(
         (schema, table_name),
     ).fetchall()
     return [f"{row['conname']}: {row['definition']}" for row in rows]
+
+
+def verify_pg_schema(
+    conn: Connection[DictRow],
+    migrations_dir: str,
+    *,
+    redact_url: str = "",
+) -> dict[str, Any]:
+    """Read-only schema verification for application startup.
+
+    This function does NOT apply migrations and does NOT create any
+    objects (no ``CREATE SCHEMA``, no DDL).  It only reads
+    ``information_schema`` / ``pg_catalog`` and the ``schema_migrations``
+    table, so it is safe to run with the Neon runtime role which has no
+    migration/owner privileges.
+
+    Verification performed (all read-only, fail-closed):
+
+    1. The effective schema resolves to a non-NULL value.
+    2. The ``schema_migrations`` table exists.
+    3. Every recorded migration version exists in the migration directory
+       (unknown recorded versions are rejected).
+    4. Every recorded migration checksum matches the migration file.
+    5. No pending migrations exist (all discovered migrations applied).
+    6. The tables the migrations declare (``CREATE TABLE``) actually exist
+       in the effective schema (partial schema / drift is rejected).
+
+    This is the Neon production contract: application startup performs
+    read-only schema/version/checksum verification only.  Explicit
+    migration CLI is the only path that applies migrations.
+
+    All result columns are aliased and read by name so the queries work on
+    a ``dict_row`` connection (positional ``row[0]`` is unavailable there).
+
+    Parameters
+    ----------
+    conn:
+        An open psycopg Connection (read-only operations only).
+    migrations_dir:
+        Path to the directory containing ``pg_*.sql`` migration files.
+    redact_url:
+        Optional redacted URL for error messages (never the raw URL).
+
+    Returns
+    -------
+    dict[str, Any]
+        Verification result with keys:
+        - ``applied_count``: number of applied migrations
+        - ``pending_count``: number of pending migrations (always 0 on success)
+        - ``versions``: list of applied version names
+        - ``schema``: the effective schema that was verified
+
+    Raises
+    ------
+    PgMigrationError
+        If the effective schema is NULL, the ``schema_migrations`` table is
+        missing, a recorded version is unknown, a checksum mismatches, there
+        are pending migrations, or declared tables are missing (drift).
+    """
+    effective_schema = _get_current_schema(conn)
+
+    row = conn.execute(
+        """
+        SELECT EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = current_schema()
+            AND table_name = 'schema_migrations'
+        ) AS exists
+        """
+    ).fetchone()
+    if not row or not row["exists"]:
+        raise PgMigrationError(
+            "startup",
+            "schema_migrations table not found: run migration CLI first",
+            category="discovery",
+        )
+
+    applied = _get_applied(conn)
+    migrations = _discover_migrations(migrations_dir)
+    known_versions = {m.name for m in migrations}
+
+    for m in migrations:
+        content, _ = _read_migration(m)
+        _validate_migration_sql(content)
+
+    unknown = sorted(set(applied) - known_versions)
+    if unknown:
+        raise PgMigrationError(
+            "startup",
+            f"recorded migrations not found in migration directory: {unknown}",
+            category="schema_drift",
+        )
+
+    expected_tables: set[str] = set()
+    for m in migrations:
+        version = m.name
+        content, checksum = _read_migration(m)
+        if version in applied and applied[version] != checksum:
+            raise PgMigrationError(
+                version,
+                _safe_message("checksum_mismatch"),
+                category="checksum_mismatch",
+            )
+        expected_tables |= _extract_created_tables(content)
+
+    pending = [m.name for m in migrations if m.name not in applied]
+    if pending:
+        raise PgMigrationError(
+            "startup",
+            f"pending migrations detected: {pending}. Run migration CLI first.",
+            category="discovery",
+        )
+
+    expected_tables.discard("schema_migrations")
+    if expected_tables:
+        actual_tables = get_pg_schema_tables(conn, effective_schema)
+        missing = expected_tables - actual_tables
+        if missing:
+            raise PgMigrationError(
+                "startup",
+                f"schema drift detected: missing tables: {sorted(missing)}",
+                category="schema_drift",
+            )
+
+    return {
+        "applied_count": len(applied),
+        "pending_count": 0,
+        "versions": sorted(applied.keys()),
+        "schema": effective_schema,
+    }

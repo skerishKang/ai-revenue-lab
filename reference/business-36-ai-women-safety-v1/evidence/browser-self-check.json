@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "browser_mode": [
+    "inline-fallback-localhost-blocked"
+  ],
+  "localhost_blocked": true,
+  "independent_local_validation": false,
+  "combinations": 21,
+  "viewports": [
+    "1440x1100",
+    "768x1024",
+    "390x844"
+  ],
+  "states": [
+    "cover",
+    "situation",
+    "signals",
+    "options",
+    "support",
+    "handoff",
+    "mobile"
+  ],
+  "svg_assets_rendered": 12,
+  "console_errors": [],
+  "page_errors": [],
+  "external_runtime_requests": [],
+  "errors": []
+}

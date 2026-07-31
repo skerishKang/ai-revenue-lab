@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 760" role="img" aria-labelledby="t d">
+<title id="t">동네 소극장 외관을 표현한 합성 일러스트</title><desc id="d">코럴색 극장 정면, 노란 간판과 줄지어 선 관객을 도형으로 표현했다.</desc>
+<defs><filter id="g"><feTurbulence baseFrequency=".72" numOctaves="2"/><feComponentTransfer><feFuncA type="table" tableValues="0 .1"/></feComponentTransfer></filter></defs>
+<rect width="1100" height="760" fill="#b7c5b1"/><rect x="120" y="95" width="860" height="555" fill="#b74631"/><rect x="210" y="170" width="680" height="115" fill="#f2d38f"/><rect x="265" y="205" width="570" height="30" fill="#252522"/><g fill="#20221f"><rect x="220" y="340" width="240" height="310"/><rect x="640" y="340" width="240" height="310"/></g><rect x="485" y="338" width="130" height="312" fill="#e4b467"/>
+<g><circle cx="240" cy="660" r="34" fill="#33231f"/><rect x="215" y="690" width="52" height="70" fill="#dd6a45"/><circle cx="340" cy="675" r="30" fill="#2c2522"/><rect x="318" y="704" width="44" height="56" fill="#496b67"/><circle cx="752" cy="670" r="30" fill="#2c2522"/><rect x="730" y="700" width="44" height="60" fill="#d2b37d"/></g><rect width="1100" height="760" filter="url(#g)"/>
+</svg>
