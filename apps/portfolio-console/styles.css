@@ -250,6 +250,31 @@ h1, h2, h3, p { margin: 0; }
 .work-item-btn:hover { background: var(--panel-hover); color: var(--text); }
 
 /* ── Business Index ── */
+.github-live-status {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; max-width: 100%;
+  margin-bottom: 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--panel); color: var(--muted); font: 500 11px/1.4 var(--sans);
+}
+.github-live-status:empty { display: none; }
+.github-live-status-text { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.github-live-status-text::before { font: 600 11px/1 var(--mono); }
+.github-live-status[data-status="fresh"] { color: var(--green); }
+.github-live-status[data-status="fresh"] .github-live-status-text::before { content: "✓"; }
+.github-live-status[data-status="stale"] { color: var(--amber); }
+.github-live-status[data-status="stale"] .github-live-status-text::before { content: "△"; }
+.github-live-status[data-status="loading"], .github-live-status[data-status="retrying"] { color: var(--muted); }
+.github-live-status[data-status="loading"] .github-live-status-text::before,
+.github-live-status[data-status="retrying"] .github-live-status-text::before { content: "↻"; color: var(--accent); }
+.github-live-status[data-status="unavailable"] { color: var(--red); }
+.github-live-status[data-status="unavailable"] .github-live-status-text::before { content: "✕"; }
+.github-live-status-retry {
+  min-height: 26px; padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 6px;
+  background: var(--panel-raised); color: var(--text); font: 600 10px/1 var(--mono);
+  text-transform: uppercase; letter-spacing: .06em; cursor: pointer;
+}
+.github-live-status-retry:hover { border-color: var(--accent); }
+.github-live-status-retry:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 .business-controls {
   display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
   padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel);

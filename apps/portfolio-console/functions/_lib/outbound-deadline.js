@@ -18,8 +18,36 @@ export const OUTBOUND_DEADLINES = Object.freeze({
   installationTokenBodyMs: 5000,
   graphqlRequestMs: 12000,
   graphqlBodyMs: 6000,
+  // Foreground refresh budget used ONLY when a valid last-good snapshot already
+  // exists. If a refresh does not finish within this budget the stale snapshot is
+  // returned immediately so the browser never waits on a slow upstream. Must stay
+  // below the client request deadline minus the network margin (see TIMEOUT_CONTRACT).
+  staleRefreshBudgetMs: 6000,
+  // Full refresh budget used when NO usable snapshot exists (cold start). The
+  // client may time out and retry on this path; there is no snapshot to serve fast.
   totalSyncMs: 24000,
   handlerBackstopMs: 28000,
+});
+
+/*  Timeout contract (Issue #345).
+ *
+ *  These values are mirrored by the browser client (github-live-status.js
+ *  REQUEST_TIMEOUT_MS). The client and the Pages Functions bundle cannot share a
+ *  module, so the contract is fixed here, in the client comment, and by the
+ *  regression test `timeout contract keeps the client deadline above the server
+ *  foreground budget`. The invariants are:
+ *
+ *    1. staleRefreshBudgetMs + networkMarginMs <= clientRequestDeadlineMs
+ *       (a stale snapshot is always served before the client gives up)
+ *    2. handlerBackstopMs >= totalSyncMs
+ *       (the handler backstop never fires before the cold-start sync budget)
+ */
+export const TIMEOUT_CONTRACT = Object.freeze({
+  serverStaleRefreshBudgetMs: OUTBOUND_DEADLINES.staleRefreshBudgetMs,
+  serverTotalSyncMs: OUTBOUND_DEADLINES.totalSyncMs,
+  handlerBackstopMs: OUTBOUND_DEADLINES.handlerBackstopMs,
+  clientRequestDeadlineMs: 12000,
+  networkMarginMs: 2000,
 });
 
 const defaultTimers = Object.freeze({

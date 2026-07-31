@@ -195,6 +195,20 @@ export function createGitHubStatusService({
       }
       const ageMs = cached ? now() - cached.storedAtMs : Number.POSITIVE_INFINITY;
       if (cached && ageMs <= freshTtlSeconds * 1000) return { payload: { ...cached.snapshot, stale: false }, status: 200, cacheState: "fresh" };
+      // A valid last-good snapshot exists but is past the fresh TTL. Refresh in the
+      // foreground only up to the stale-refresh budget; if the upstream is slow or
+      // fails, serve the stale snapshot immediately so the response always lands
+      // inside the client request deadline (Issue #345). The abandoned single-flight
+      // refresh keeps running (bounded by the per-operation GraphQL deadlines) and
+      // updates the cache on success, so the next request can return fresh data.
+      if (cached && ageMs <= staleTtlSeconds * 1000) {
+        try {
+          const snapshot = await deadlines.runWithDeadline(refreshSingleFlight(), timeouts.staleRefreshBudgetMs, "stale-refresh");
+          return { payload: snapshot, status: 200, cacheState: "miss" };
+        } catch (error) { return upstreamErrorResult(error, cached, ageMs, staleTtlSeconds); }
+      }
+      // No usable snapshot (cold start or snapshot expired): full bounded refresh,
+      // returning fresh data or a normalized safe failure the client can retry.
       try {
         const snapshot = await deadlines.runWithDeadline(refreshSingleFlight(), timeouts.totalSyncMs, "sync");
         return { payload: snapshot, status: 200, cacheState: "miss" };
