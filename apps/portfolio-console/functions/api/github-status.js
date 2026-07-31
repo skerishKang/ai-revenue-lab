@@ -49,6 +49,7 @@ export async function handleGitHubStatusRequest({
   timers,
   AbortControllerImpl = AbortController,
   stageLogger,
+  registerBackgroundTask = () => {},
 }) {
   const method = String(request.method || "GET").toUpperCase();
   const isHead = method === "HEAD";
@@ -91,7 +92,7 @@ export async function handleGitHubStatusRequest({
     const client = injectedClient || new GitHubClient({ authProvider, fetchImpl: boundFetch, timeouts, timers, AbortControllerImpl, stageLogger: logStage });
     const snapshotCache = cache || new RuntimeSnapshotCache({ kv: env.GITHUB_STATUS_SNAPSHOT_KV, now });
     const identitySource = buildIdentitySource();
-    const service = createGitHubStatusService({ client, cache: snapshotCache, now, identitySource, timeouts, timers });
+    const service = createGitHubStatusService({ client, cache: snapshotCache, now, identitySource, timeouts, timers, registerBackgroundTask });
     const result = await deadlines.runWithDeadline(service.getStatus(), timeouts.handlerBackstopMs, "handler");
     const headers = { "X-Portfolio-Cache": result.cacheState };
     if (result.cacheState === "stale" && result.payload.errors?.length) {
@@ -115,5 +116,12 @@ export async function handleGitHubStatusRequest({
 }
 
 export async function onRequest(context) {
-  return handleGitHubStatusRequest({ request: context.request, env: context.env });
+  // Register timed-out stale refreshes with the Pages runtime so they survive the
+  // response. The arrow keeps `context` as the receiver (no destructured binding)
+  // and is a safe no-op if this runtime exposes no waitUntil. (Issue #345, Defect B.)
+  return handleGitHubStatusRequest({
+    request: context.request,
+    env: context.env,
+    registerBackgroundTask: (promise) => { if (typeof context.waitUntil === "function") context.waitUntil(promise); },
+  });
 }

@@ -20,6 +20,12 @@ const PHASES = Object.freeze(["ui", "ux", "backend"]);
 
 const refreshFlights = new Map();
 
+// Single-flight promises that have already been handed to the background-task
+// registrar. Keyed by the flight promise identity so concurrent stale callers
+// (which all share one flight) register the continuation exactly once. A WeakSet
+// lets the entry be collected once the flight settles. (Issue #345, Defect B.)
+const backgroundContinuations = new WeakSet();
+
 const UNKNOWN_INTERNAL = "UNKNOWN_INTERNAL";
 
 const API_CODE_TO_DIAGNOSTIC = Object.freeze({
@@ -82,8 +88,21 @@ export function createGitHubStatusService({
   client, cache, now = () => Date.now(), freshTtlSeconds = 180, staleTtlSeconds = 86400, singleFlightKey = GITHUB_REPOSITORY,
   identitySource = null,  // Map<number, {uiStatus, uxStatus, backendStatus}>
   timeouts = OUTBOUND_DEADLINES, timers,
+  registerBackgroundTask = () => {},  // (promise) => context.waitUntil(promise) on Pages; no-op in tests/local
 }) {
   const deadlines = createDeadlineRunner(timers);
+  // Keep a timed-out stale refresh alive AFTER the response is sent so it can still
+  // refresh the cache for the next request. The flight already stores the snapshot
+  // on success (see refreshSingleFlight), so awaiting it to completion is enough.
+  // Registered at most once per flight (concurrent stale callers share one flight)
+  // and only on the timeout path. The guarded promise never rejects outward and the
+  // registrar call is wrapped so a registrar failure can never break the response or
+  // leak anything sensitive. (Issue #345, Defect B.)
+  function continueRefreshInBackground(flight) {
+    if (backgroundContinuations.has(flight)) return;
+    backgroundContinuations.add(flight);
+    try { registerBackgroundTask(flight.then(() => {}, () => {})); } catch { /* registrar failure must not affect the response */ }
+  }
   async function loadFresh() {
     const aggregate = await client.getStatusAggregation(GITHUB_REPOSITORY);
     try {
@@ -176,12 +195,17 @@ export function createGitHubStatusService({
     return degraded;
   }
 
-  async function refreshSingleFlight() {
+  function refreshSingleFlight() {
     const existing = refreshFlights.get(singleFlightKey);
     if (existing) return existing;
     const flight = (async () => storeFreshSnapshot(await loadFresh()))();
+    const cleanup = () => { if (refreshFlights.get(singleFlightKey) === flight) refreshFlights.delete(singleFlightKey); };
     refreshFlights.set(singleFlightKey, flight);
-    try { return await flight; } finally { if (refreshFlights.get(singleFlightKey) === flight) refreshFlights.delete(singleFlightKey); }
+    // Return the SHARED inner flight (not a per-call wrapper) so every concurrent
+    // caller — and the background-continuation dedup — keys on one promise identity.
+    // The cleanup chain handles both outcomes and never yields an unhandled rejection.
+    flight.then(cleanup, cleanup);
+    return flight;
   }
 
   return {
@@ -195,6 +219,25 @@ export function createGitHubStatusService({
       }
       const ageMs = cached ? now() - cached.storedAtMs : Number.POSITIVE_INFINITY;
       if (cached && ageMs <= freshTtlSeconds * 1000) return { payload: { ...cached.snapshot, stale: false }, status: 200, cacheState: "fresh" };
+      // A valid last-good snapshot exists but is past the fresh TTL. Refresh in the
+      // foreground only up to the stale-refresh budget; if the upstream is slow or
+      // fails, serve the stale snapshot immediately so the response always lands
+      // inside the client request deadline (Issue #345). On a budget TIMEOUT the
+      // still-running single-flight refresh is handed to the background registrar
+      // (context.waitUntil on Pages) so it completes and updates the cache; the next
+      // request can then return fresh data.
+      if (cached && ageMs <= staleTtlSeconds * 1000) {
+        const flight = refreshSingleFlight();
+        try {
+          const snapshot = await deadlines.runWithDeadline(flight, timeouts.staleRefreshBudgetMs, "stale-refresh");
+          return { payload: snapshot, status: 200, cacheState: "miss" };
+        } catch (error) {
+          if (error instanceof OutboundTimeoutError) continueRefreshInBackground(flight);
+          return upstreamErrorResult(error, cached, ageMs, staleTtlSeconds);
+        }
+      }
+      // No usable snapshot (cold start or snapshot expired): full bounded refresh,
+      // returning fresh data or a normalized safe failure the client can retry.
       try {
         const snapshot = await deadlines.runWithDeadline(refreshSingleFlight(), timeouts.totalSyncMs, "sync");
         return { payload: snapshot, status: 200, cacheState: "miss" };
