@@ -18,6 +18,14 @@ class Settings(BaseSettings):
     firebase_project_id: str = ""
     allowed_origins: str = ""
 
+    # AI provider configuration
+    ai_provider: str = "mock"
+    ai_base_url: str = ""
+    ai_api_key: str = ""
+    ai_model: str = ""
+    ai_timeout_seconds: int = 30
+    ai_cost_class: str = "free"
+
     model_config = {"env_prefix": "LT_", "env_file": ".env", "extra": "ignore"}
 
     def model_post_init(self, __context) -> None:
@@ -159,9 +167,137 @@ class Settings(BaseSettings):
                 "LT_ALLOWED_ORIGINS must not be empty in staging/production."
             )
 
+        # ------------------------------------------------------------------
+        # AI provider validation
+        # ------------------------------------------------------------------
+        from urllib.parse import urlsplit as _ai_urlsplit
+
+        _VALID_PROVIDERS = {"mock", "openai_compatible"}
+        _VALID_COST_CLASSES = {"free", "paid", "local", "unknown"}
+
+        if self.ai_provider not in _VALID_PROVIDERS:
+            raise ValueError(
+                f"LT_AI_PROVIDER must be one of: {', '.join(sorted(_VALID_PROVIDERS))}. "
+                f"Got: '{self.ai_provider}'"
+            )
+
+        if self.ai_cost_class not in _VALID_COST_CLASSES:
+            raise ValueError(
+                f"LT_AI_COST_CLASS must be one of: {', '.join(sorted(_VALID_COST_CLASSES))}. "
+                f"Got: '{self.ai_cost_class}'"
+            )
+
+        if not (1 <= self.ai_timeout_seconds <= 120):
+            raise ValueError(
+                "LT_AI_TIMEOUT_SECONDS must be between 1 and 120."
+            )
+
+        if self.ai_provider == "openai_compatible":
+            _missing: list[str] = []
+            if not self.ai_base_url:
+                _missing.append("LT_AI_BASE_URL")
+            if not self.ai_api_key:
+                _missing.append("LT_AI_API_KEY")
+            if not self.ai_model:
+                _missing.append("LT_AI_MODEL")
+            if _missing:
+                raise ValueError(
+                    "LT_AI_PROVIDER=openai_compatible requires: "
+                    + ", ".join(_missing)
+                )
+
+            # Validate base URL
+            _parts = _ai_urlsplit(self.ai_base_url)
+            if _parts.scheme not in ("http", "https"):
+                raise ValueError(
+                    "LT_AI_BASE_URL must use http:// or https:// scheme."
+                )
+            if not _parts.hostname:
+                raise ValueError(
+                    "LT_AI_BASE_URL must include a hostname."
+                )
+            if _parts.username is not None or _parts.password is not None:
+                raise ValueError(
+                    "LT_AI_BASE_URL must not contain userinfo."
+                )
+            if _parts.query:
+                raise ValueError(
+                    "LT_AI_BASE_URL must not contain a query string."
+                )
+            if _parts.fragment:
+                raise ValueError(
+                    "LT_AI_BASE_URL must not contain a fragment."
+                )
+            try:
+                _port = _parts.port
+            except ValueError as _exc:
+                raise ValueError(
+                    "LT_AI_BASE_URL must not contain an invalid port."
+                ) from _exc
+            if _port is not None and not (1 <= _port <= 65535):
+                raise ValueError(
+                    "LT_AI_BASE_URL must not contain a valid port (1-65535)."
+                )
+
+            if self.environment in ("staging", "production"):
+                if _parts.scheme != "https":
+                    raise ValueError(
+                        "LT_AI_BASE_URL must use https:// in staging/production."
+                    )
+                import ipaddress as _ipaddress
+                _host = (_parts.hostname or "").lower()
+                _localhost_names = {"localhost", "localhost.localdomain", "::1"}
+                if _host in _localhost_names:
+                    raise ValueError(
+                        "LT_AI_BASE_URL must not point to a localhost, loopback, "
+                        "or private network address in staging/production."
+                    )
+                try:
+                    _ip = _ipaddress.ip_address(_host)
+                except ValueError:
+                    _ip = None
+                if _ip is not None and not _ip.is_global:
+                    raise ValueError(
+                        "LT_AI_BASE_URL must not point to a localhost, loopback, "
+                        "or private network address in staging/production."
+                    )
+            elif self.environment in ("testing", "development") and _parts.scheme == "http":
+                # testing and development allow HTTP for localhost/loopback only
+                import ipaddress as _ipaddress
+                _host = (_parts.hostname or "").lower()
+                if _host not in ("localhost", "127.0.0.1", "::1", "localhost.localdomain"):
+                    raise ValueError(
+                        "HTTP LT_AI_BASE_URL in testing/development is only allowed "
+                        "for localhost or loopback addresses."
+                    )
+
     @property
     def allowed_origin_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+
+    @property
+    def ai_chat_completions_url(self) -> str:
+        """Normalize base URL and append /v1/chat/completions safely."""
+        from urllib.parse import urlsplit, urlunsplit
+
+        parts = urlsplit(self.ai_base_url.rstrip("/"))
+        path = parts.path.rstrip("/")
+
+        if path.endswith("/chat/completions"):
+            final_path = path
+        elif path.endswith("/v1"):
+            final_path = path + "/chat/completions"
+        else:
+            final_path = path + "/v1/chat/completions"
+
+        return urlunsplit((
+            parts.scheme,
+            parts.netloc,
+            final_path,
+            "",
+            "",
+        ))
+
 
     @property
     def effective_migration_url(self) -> str:

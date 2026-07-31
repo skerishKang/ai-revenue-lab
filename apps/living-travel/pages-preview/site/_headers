@@ -5,6 +5,18 @@
   X-Frame-Options: DENY
   Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
 
+# Interactive demo pages require inline scripts for clickable flow.
+# Core preview/invariant tests validate that /demo/ pages opt in only to
+# 'unsafe-inline' and still enforce 'unsafe-eval'-free, no external origins.
+/demo/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
+
+# Operator review/queue pages use inline scripts for interactive buttons.
+/operator/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
+
 # Connected staging surface only. The global /* CSP (script-src 'none';
 # connect-src 'none') is detached here so the staging pages can load the pinned
 # Firebase modular SDK from gstatic and call the isolated Modal staging API.
@@ -14,4 +26,4 @@
 # staging API origin (must match API_BASE in staging/assets/config.js).
 /staging/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self'; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://ai-revenue-lab-identity.firebaseapp.com https://ai-revenue-living-travel-staging--web.modal.run; frame-src https://ai-revenue-lab-identity.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self'; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://ai-revenue-lab-identity.firebaseapp.com https://padiemipu--ai-revenue-living-travel-staging-web.modal.run; frame-src https://ai-revenue-lab-identity.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'

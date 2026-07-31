@@ -20,6 +20,19 @@ from app.factory import create_app
 from app.security import reset_login_rate_limiter
 
 
+@pytest.fixture(autouse=True)
+def _ensure_operator_secret():
+    """Ensure LT_OPERATOR_SECRET is always present for unit tests.
+
+    The ``app`` fixture pops it on teardown; this autouse fixture restores
+    it before every test so that Settings validation does not fail on the
+    operator-secret check when running the full suite.
+    """
+    os.environ.setdefault("LT_OPERATOR_SECRET", "test-secret-12345")
+    yield
+    os.environ.setdefault("LT_OPERATOR_SECRET", "test-secret-12345")
+
+
 @pytest.fixture()
 def temp_db(tmp_path: Path) -> Generator[sqlite3.Connection, None, None]:
     db_path = str(tmp_path / "test.db")

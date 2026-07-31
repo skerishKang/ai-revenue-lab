@@ -19,18 +19,18 @@ export const FIREBASE_SDK_VERSION = "12.16.0";
 // staging placeholders that must be replaced with the real PUBLIC web config
 // from the Firebase console before live verification.
 export const FIREBASE_CONFIG = {
-  apiKey: "STAGING_PUBLIC_WEB_API_KEY",
+  apiKey: "AIzaSyCiHMN8g11Fahz8bU8DGPW2Rva_rULeOlU",
   authDomain: "ai-revenue-lab-identity.firebaseapp.com",
   projectId: "ai-revenue-lab-identity",
-  storageBucket: "ai-revenue-lab-identity.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:0000000000000000000000",
+  storageBucket: "ai-revenue-lab-identity.firebasestorage.app",
+  messagingSenderId: "864728700692",
+  appId: "1:864728700692:web:01dc5a0fffb78bf4801401",
 };
 
 // Exact origin of the isolated Modal staging API (app ai-revenue-living-travel
 // -staging, function "web"). Must be an exact origin (no wildcard) and must
 // match the /staging/* CSP connect-src in _headers.
-export const API_BASE = "https://ai-revenue-living-travel-staging--web.modal.run";
+export const API_BASE = "https://padiemipu--ai-revenue-living-travel-staging-web.modal.run";
 
 // API path prefix served by the FastAPI factory.
 export const API_PREFIX = "/api/v1";

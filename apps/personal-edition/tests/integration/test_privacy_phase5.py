@@ -173,10 +173,11 @@ class TestPilotOpsNoSensitiveData:
             record_operation,
         )
         from app.db import apply_migrations, get_connection
+        from app.db_runtime import SqliteRuntimeConnection
 
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
-        _create_pilot_table(conn)
+        _create_pilot_table(SqliteRuntimeConnection(conn))
         record = PaymentEvidenceRecord(
             participant_id="p1",
             amount=4900.0,
@@ -185,7 +186,7 @@ class TestPilotOpsNoSensitiveData:
             payment_date="2025-01-01",
             internal_reference="ref-001",
         )
-        record_operation(conn, record)
+        record_operation(SqliteRuntimeConnection(conn), record)
         import json as json_mod
         rows = conn.execute("SELECT payload FROM pilot_ops_records").fetchall()
         for row in rows:

@@ -43,7 +43,7 @@ Secrets, database URLs, Firebase service-account material, API keys, private hos
 | 2 | `living-travel` | Living Travel / 리빙 트래블 | `apps/living-travel/` | Implemented private MVP; production foundation and pre-staging security contracts merged | Shared Firebase identity; Living Travel owns traveler/operator mapping and data access. | Not yet integrated; no portal implementation in Issue #74 | Issues #32, #43, #69, #74, #86 |
 | 3 | `living-fiction` | Living Fiction / 리빙 픽션 | `apps/living-fiction/` | Implemented private reader/editorial MVP; production infrastructure open | Product-local invite, reader, and editorial authorization; shared identity integration not yet accepted as a completed portal flow. | Not yet integrated | Issues #34, #55, #75, #77 |
 | 4 | `living-learning` | Living Learning / 리빙 러닝 | `apps/living-learning/` | Isolated adaptive-learning MVP and static adaptive UI preview | Current product-local/synthetic access contract; portfolio identity integration not yet implemented. | Not yet integrated | Issue #37 and current Business 4 project direction |
-| 5 | `reserved-05` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
+| 5 | `neighbor-market` | Neighbor Market / 우리단지 이웃가게 | `apps/neighbor-market/` — planned, not yet created | concept | Shared Firebase authentication may be used later; Neighbor Market owns resident verification, listing eligibility, operator/moderator/admin roles, and product records | Not implemented | Issues #89 and #99; approved reference commit `89add370b78e5f7567a2acb44e53a45f07680372` |
 | 6 | `reserved-06` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
 | 7 | `reserved-07` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
 | 8 | `reserved-08` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
@@ -108,6 +108,10 @@ A future portal implementation uses a separate user-specific access state:
 - `maintenance`
 - `suspended`
 
+See `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` for the canonical Production deployment and rollback policy. Cloudflare deployment Preview is not required as a deployment gate.
+
+Lifecycle `private_preview` (Section 6) is a product maturity phase, distinct from Cloudflare deployment Preview.
+
 A Business may be `private_preview` while one user is `available` and another is `invite_required`.
 
 ## 8. Identity and deployment registry rules
@@ -156,10 +160,11 @@ Business 1  Personal Edition
 Business 2  Living Travel
 Business 3  Living Fiction
 Business 4  Living Learning
+Business 5  Neighbor Market
 Business 13 Personal Video Archive
 Business 14 Korean AI Platform
 ```
 
-Business 5–12 are deliberately reserved in this version. World Feed remains unnumbered pending a separate decision.
+Business 1–5 are assigned as verified mappings. Business 6–12 remain reserved. Business 13–14 remain assigned. World Feed remains unnumbered / number_reconciliation_required.
 
 This is preferable to preserving contradictory historic tables or inventing assignments without evidence.

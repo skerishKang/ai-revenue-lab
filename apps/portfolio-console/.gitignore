@@ -1,0 +1,8 @@
+node_modules/
+test-results/
+.wrangler/
+__pycache__/
+*.pyc
+playwright-report/
+tests/evidence/*
+!tests/evidence/issue285/

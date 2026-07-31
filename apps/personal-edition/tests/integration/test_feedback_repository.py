@@ -9,11 +9,12 @@ from app import edition_repository as ed_repo
 from app import feedback_repository as fb_repo
 from app import participant_repository as repo
 from app.db import apply_migrations, get_connection
+from app.db_runtime import SqliteRuntimeConnection
 
 
 def _setup_participant(conn, pid="p1"):
     repo.create_participant(
-        conn,
+        SqliteRuntimeConnection(conn),
         participant_id=pid,
         display_name="Test User",
         preferred_language="ko",
@@ -22,7 +23,7 @@ def _setup_participant(conn, pid="p1"):
 
 def _setup_edition(conn, pid="p1", ed_num=1):
     return ed_repo.create_edition(
-        conn, participant_id=pid, edition_number=ed_num
+        SqliteRuntimeConnection(conn), participant_id=pid, edition_number=ed_num
     )
 
 
@@ -39,7 +40,7 @@ class TestFeedbackCreate:
         ed = _setup_edition(conn)
 
         result = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
@@ -60,7 +61,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="missing",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,
@@ -74,7 +75,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id="nonexistent",
                 direction_choices=_VALID_DIR,
@@ -90,7 +91,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p2",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,
@@ -105,7 +106,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices="",
@@ -120,7 +121,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices="not-json",
@@ -135,7 +136,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices='"shorter"',
@@ -150,7 +151,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices=json.dumps(["invalid_direction"]),
@@ -165,7 +166,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices="[]",
@@ -181,7 +182,7 @@ class TestFeedbackCreate:
         conn.execute("BEGIN")
         with pytest.raises(repo.RepositoryTransactionError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,
@@ -195,7 +196,7 @@ class TestFeedbackCreate:
         ed = _setup_edition(conn)
 
         result = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
@@ -212,7 +213,7 @@ class TestFeedbackCreate:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,
@@ -229,7 +230,7 @@ class TestFeedbackLookup:
         ed = _setup_edition(conn)
 
         created = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
@@ -252,13 +253,13 @@ class TestFeedbackLookup:
         ed = _setup_edition(conn)
 
         fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
         )
         fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR_2,
@@ -277,12 +278,12 @@ class TestFeedbackMarkApplied:
         ed = _setup_edition(conn)
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
         )
-        updated = fb_repo.mark_feedback_applied(conn, fb.id)
+        updated = fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb.id)
         assert updated is not None
         assert updated.applied_to_next_edition == 1
         conn.close()
@@ -294,13 +295,13 @@ class TestFeedbackMarkApplied:
         ed = _setup_edition(conn)
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
         )
-        fb_repo.mark_feedback_applied(conn, fb.id)
-        result = fb_repo.mark_feedback_applied(conn, fb.id)
+        fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb.id)
+        result = fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), fb.id)
         assert result is None
         conn.close()
 
@@ -313,19 +314,19 @@ class TestFeedbackDelete:
         ed = _setup_edition(conn)
 
         fb = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
         )
-        assert fb_repo.delete_feedback(conn, fb.id) is True
+        assert fb_repo.delete_feedback(SqliteRuntimeConnection(conn), fb.id) is True
         assert fb_repo.get_feedback_by_id(conn, fb.id) is None
         conn.close()
 
     def test_delete_feedback_returns_false_for_missing(self):
         conn = get_connection(":memory:")
         apply_migrations(conn, "migrations")
-        assert fb_repo.delete_feedback(conn, "nope") is False
+        assert fb_repo.delete_feedback(SqliteRuntimeConnection(conn), "nope") is False
         conn.close()
 
 
@@ -339,13 +340,13 @@ class TestFeedbackFilePersistence:
             ed = _setup_edition(conn)
 
             created = fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,
                 free_text="More details please",
             )
-            fb_repo.mark_feedback_applied(conn, created.id)
+            fb_repo.mark_feedback_applied(SqliteRuntimeConnection(conn), created.id)
             conn.close()
 
             conn2 = get_connection(db_path)
@@ -365,7 +366,7 @@ class TestFeedbackTimestampValidation:
         ed = _setup_edition(conn)
 
         result = fb_repo.create_feedback(
-            conn,
+            SqliteRuntimeConnection(conn),
             participant_id="p1",
             edition_id=ed.id,
             direction_choices=_VALID_DIR,
@@ -382,7 +383,7 @@ class TestFeedbackTimestampValidation:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,
@@ -398,7 +399,7 @@ class TestFeedbackTimestampValidation:
 
         with pytest.raises(fb_repo.FeedbackValidationError):
             fb_repo.create_feedback(
-                conn,
+                SqliteRuntimeConnection(conn),
                 participant_id="p1",
                 edition_id=ed.id,
                 direction_choices=_VALID_DIR,

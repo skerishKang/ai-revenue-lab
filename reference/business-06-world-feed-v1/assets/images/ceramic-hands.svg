@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+<title id="t">도자기를 빚는 손을 표현한 합성 일러스트</title><desc id="d">종이색 배경 위에 테라코타 점토와 두 손을 단순한 도형으로 구성했다.</desc>
+<defs><radialGradient id="clay"><stop stop-color="#ef9c6b"/><stop offset="1" stop-color="#9d412d"/></radialGradient><filter id="g"><feTurbulence baseFrequency=".75" numOctaves="3"/><feComponentTransfer><feFuncA type="table" tableValues="0 .1"/></feComponentTransfer></filter></defs>
+<rect width="1200" height="800" fill="#efe3ca"/><ellipse cx="600" cy="630" rx="420" ry="70" fill="#6e4a39" opacity=".24"/><path d="M405 620c20-265 85-388 195-388s175 123 195 388c-105 66-285 66-390 0Z" fill="url(#clay)"/><ellipse cx="600" cy="232" rx="195" ry="55" fill="#7f3528"/><ellipse cx="600" cy="235" rx="146" ry="30" fill="#cb6845"/>
+<path d="M0 275c205 3 345 91 470 228l-55 120C280 535 152 503 0 514Z" fill="#d8a27e"/><path d="M1200 260c-210 12-344 100-470 246l59 114c136-89 267-117 411-103Z" fill="#cf9873"/>
+<path d="M420 470c55 12 103 46 132 95M780 470c-55 12-103 46-132 95" stroke="#6c3e34" stroke-width="17" fill="none" stroke-linecap="round"/><rect width="1200" height="800" filter="url(#g)"/>
+</svg>

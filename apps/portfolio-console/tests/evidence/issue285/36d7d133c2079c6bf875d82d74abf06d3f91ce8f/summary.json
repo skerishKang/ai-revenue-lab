@@ -1,0 +1,33 @@
+{
+  "gitSha": "36d7d133c2079c6bf875d82d74abf06d3f91ce8f",
+  "capturedAt": "2026-07-29T21:49:18.838Z",
+  "base": "http://127.0.0.1:8788/",
+  "results": [
+    {
+      "viewport": "desktop-1440x1000",
+      "rows": 55,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "pageErrors": [],
+      "overflow": false,
+      "failedUrls": [
+        "503 http://127.0.0.1:8788/api/github-status"
+      ],
+      "cspViolations": []
+    },
+    {
+      "viewport": "mobile-390x844",
+      "rows": 55,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "pageErrors": [],
+      "overflow": false,
+      "failedUrls": [
+        "503 http://127.0.0.1:8788/api/github-status"
+      ],
+      "cspViolations": []
+    }
+  ]
+}

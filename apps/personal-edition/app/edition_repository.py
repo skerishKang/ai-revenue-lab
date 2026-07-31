@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import json
 import re
-import sqlite3
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from app.feedback_repository import (
     FeedbackValidationError,
@@ -11,7 +13,11 @@ from app.feedback_repository import (
     _FEEDBACK_COLS,
     _FEEDBACK_SELECT,
 )
+from app.generation_request_repository import GenerationRequestOwnershipError
 from app.participant_repository import RepositoryTransactionError, _now_utc_iso
+
+if TYPE_CHECKING:
+    from app.db_runtime import RuntimeConnection
 
 _UTC_ISO_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
@@ -132,7 +138,7 @@ def _validate_json_field(value: str | None, field_name: str) -> None:
         ) from exc
 
 
-def _row_to_record(row: sqlite3.Row) -> EditionRecord:
+def _row_to_record(row: Any) -> EditionRecord:
     return EditionRecord(
         id=row["id"],
         participant_id=row["participant_id"],
@@ -155,17 +161,38 @@ def _is_editable(gen_status: str, pub_state: str) -> bool:
     return gen_status == "pending_review" and pub_state == "pending"
 
 
+def _next_edition_number_locked(conn: RuntimeConnection, participant_id: str) -> int:
+    """Compute the next edition number inside a participant-locked transaction.
+
+    Must be called AFTER the participant row has been locked (``SELECT ...
+    FOR UPDATE`` on PostgreSQL / ``BEGIN IMMEDIATE`` on SQLite) so that the
+    number assignment is atomic with the subsequent insert.  Computing the
+    number outside the locked transaction allows two concurrent requests to
+    derive the same ``edition_number`` and race on the unique
+    ``(participant_id, edition_number)`` constraint.
+    """
+    row = conn.execute(
+        "SELECT COALESCE(MAX(edition_number), 0) + 1 AS next_number "
+        "FROM editions WHERE participant_id = ?",
+        (participant_id,),
+    ).fetchone()
+    return int(row["next_number"])
+
+
 def create_edition(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
-    edition_number: int,
+    edition_number: int | None = None,
     prior_edition_id: str | None = None,
     input_id: str | None = None,
     structured_content: str | None = None,
     rendered_title: str | None = None,
 ) -> EditionRecord:
-    _validate_edition(participant_id, edition_number)
+    if not isinstance(participant_id, str) or not participant_id.strip():
+        raise EditionValidationError("participant_id must be a non-empty string")
+    if edition_number is not None:
+        _validate_edition(participant_id, edition_number)
     _validate_json_field(structured_content, "structured_content")
 
     if conn.in_transaction:
@@ -176,10 +203,11 @@ def create_edition(
     participant_id = participant_id.strip()
     now = _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         participant = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
             (participant_id,),
         ).fetchone()
         if not participant:
@@ -187,6 +215,9 @@ def create_edition(
             raise EditionValidationError(
                 "participant does not exist or is not active"
             )
+
+        if edition_number is None:
+            edition_number = _next_edition_number_locked(conn, participant_id)
 
         existing = conn.execute(
             "SELECT 1 FROM editions "
@@ -289,7 +320,7 @@ def create_edition(
 
 
 def get_edition_by_id(
-    conn: sqlite3.Connection, edition_id: str
+    conn: RuntimeConnection, edition_id: str
 ) -> EditionRecord | None:
     row = conn.execute(
         f"SELECT {_EDITION_SELECT} FROM editions WHERE id = ?",
@@ -299,7 +330,7 @@ def get_edition_by_id(
 
 
 def get_editions_by_participant(
-    conn: sqlite3.Connection, participant_id: str
+    conn: RuntimeConnection, participant_id: str
 ) -> list[EditionRecord]:
     rows = conn.execute(
         f"SELECT {_EDITION_SELECT} FROM editions "
@@ -310,7 +341,7 @@ def get_editions_by_participant(
 
 
 def update_edition_publication(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     edition_id: str,
     new_publication_state: str,
 ) -> EditionRecord | None:
@@ -324,11 +355,12 @@ def update_edition_publication(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         current = conn.execute(
             "SELECT publication_state, generation_status, "
-            "structured_content FROM editions WHERE id = ?",
+            "structured_content FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -398,7 +430,7 @@ def update_edition_publication(
 
 
 def update_edition_generation_status(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     edition_id: str,
     new_generation_status: str,
 ) -> EditionRecord | None:
@@ -413,11 +445,12 @@ def update_edition_generation_status(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         current = conn.execute(
             "SELECT generation_status, publication_state "
-            "FROM editions WHERE id = ?",
+            "FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -459,7 +492,7 @@ def update_edition_generation_status(
 
 
 def update_edition_content(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     edition_id: str,
     *,
     structured_content: str | None = None,
@@ -473,11 +506,12 @@ def update_edition_content(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         existing = conn.execute(
             "SELECT generation_status, publication_state "
-            "FROM editions WHERE id = ?",
+            "FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if existing is None:
@@ -530,16 +564,17 @@ def update_edition_content(
         raise
 
 
-def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
+def delete_edition(conn: RuntimeConnection, edition_id: str) -> bool:
     if conn.in_transaction:
         raise RepositoryTransactionError(
             "repository write requires an idle connection"
         )
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         current = conn.execute(
-            "SELECT publication_state FROM editions WHERE id = ?",
+            "SELECT publication_state FROM editions WHERE id = ?"
+            + conn.row_lock_suffix,
             (edition_id,),
         ).fetchone()
         if current is None:
@@ -569,17 +604,20 @@ def delete_edition(conn: sqlite3.Connection, edition_id: str) -> bool:
 
 
 def create_edition_with_feedback_applied(
-    conn: sqlite3.Connection,
+    conn: RuntimeConnection,
     *,
     participant_id: str,
-    edition_number: int,
+    edition_number: int | None = None,
     prior_edition_id: str | None = None,
     input_id: str | None = None,
     structured_content: str | None = None,
     rendered_title: str | None = None,
     feedback_id: str | None = None,
 ) -> EditionRecord:
-    _validate_edition(participant_id, edition_number)
+    if not isinstance(participant_id, str) or not participant_id.strip():
+        raise EditionValidationError("participant_id must be a non-empty string")
+    if edition_number is not None:
+        _validate_edition(participant_id, edition_number)
     _validate_json_field(structured_content, "structured_content")
 
     if conn.in_transaction:
@@ -590,10 +628,11 @@ def create_edition_with_feedback_applied(
     participant_id = participant_id.strip()
     now = _now_utc_iso()
 
-    conn.execute("BEGIN IMMEDIATE")
+    conn.begin_write()
     try:
         participant = conn.execute(
-            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'",
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
             (participant_id,),
         ).fetchone()
         if not participant:
@@ -601,6 +640,9 @@ def create_edition_with_feedback_applied(
             raise EditionValidationError(
                 "participant does not exist or is not active"
             )
+
+        if edition_number is None:
+            edition_number = _next_edition_number_locked(conn, participant_id)
 
         existing = conn.execute(
             "SELECT 1 FROM editions "
@@ -732,6 +774,256 @@ def create_edition_with_feedback_applied(
         EditionValidationError,
         EditionStateConflict,
         FeedbackValidationError,
+        RepositoryTransactionError,
+    ):
+        raise
+    except Exception:
+        if conn.in_transaction:
+            conn.rollback()
+        raise
+
+
+def finalize_edition_for_request(
+    conn: RuntimeConnection,
+    *,
+    participant_id: str,
+    idempotency_key: str,
+    claim_token: str,
+    structured_content: str,
+    rendered_title: str,
+    prior_edition_id: str | None = None,
+    input_id: str,
+    feedback_id: str | None = None,
+) -> EditionRecord:
+    """Atomically create an edition, optionally apply feedback, and complete
+    the generation request in a single write transaction.
+
+    Crash safety: if the process dies mid-transaction, neither the edition
+    nor the request completion is persisted.  The claim lease will expire
+    and the request can be reclaimed for a fresh attempt.
+
+    Ownership revalidation: the generation_request row is locked
+    (``SELECT ... FOR UPDATE`` on PostgreSQL) and its stored
+    ``participant_id``, ``input_id``, ``status``, ``claim_token``, and
+    ``edition_id`` are all verified before any edition work begins.  The
+    DB-stored ``participant_id`` and ``input_id`` are used as the
+    authoritative values for the edition insert.
+
+    Lease policy: the ``claim_token`` is the authoritative capability check.
+    If the token matches, finalization proceeds regardless of whether the
+    lease has expired — the lease is a crash-recovery hint, not a hard
+    deadline.  A mismatched or absent token always causes rejection.
+    """
+    if not isinstance(participant_id, str) or not participant_id.strip():
+        raise EditionValidationError(
+            "participant_id must be a non-empty string"
+        )
+    if not isinstance(input_id, str) or not input_id.strip():
+        raise EditionValidationError(
+            "input_id must be a non-empty string"
+        )
+    _validate_json_field(structured_content, "structured_content")
+
+    if conn.in_transaction:
+        raise RepositoryTransactionError(
+            "repository write requires an idle connection"
+        )
+
+    participant_id = participant_id.strip()
+    input_id = input_id.strip()
+    now = _now_utc_iso()
+
+    conn.begin_write()
+    try:
+        req = conn.execute(
+            "SELECT id, participant_id, input_id, status, claim_token, "
+            "edition_id FROM generation_requests "
+            "WHERE idempotency_key = ?"
+            + conn.row_lock_suffix,
+            (idempotency_key,),
+        ).fetchone()
+
+        if req is None:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        if (
+            req["participant_id"] != participant_id
+            or req["input_id"] != input_id
+        ):
+            conn.rollback()
+            raise GenerationRequestOwnershipError(
+                "generation request belongs to a different participant "
+                "or input"
+            )
+
+        if req["status"] != "claimed":
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        if req["edition_id"] is not None:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        if req["claim_token"] is None or req["claim_token"] != claim_token:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request is not in a completable claimed state"
+            )
+
+        db_participant_id = req["participant_id"]
+        db_input_id = req["input_id"]
+
+        participant = conn.execute(
+            "SELECT 1 FROM participants WHERE id = ? AND status = 'active'"
+            + conn.row_lock_suffix,
+            (db_participant_id,),
+        ).fetchone()
+        if not participant:
+            conn.rollback()
+            raise EditionValidationError(
+                "participant does not exist or is not active"
+            )
+
+        edition_number = _next_edition_number_locked(conn, db_participant_id)
+
+        if prior_edition_id is not None:
+            prior = conn.execute(
+                "SELECT participant_id FROM editions WHERE id = ?",
+                (prior_edition_id,),
+            ).fetchone()
+            if not prior:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id references a non-existent edition"
+                )
+            if prior["participant_id"] != db_participant_id:
+                conn.rollback()
+                raise EditionValidationError(
+                    "prior_edition_id must belong to the same participant"
+                )
+
+        inp = conn.execute(
+            "SELECT participant_id, deleted_at FROM inputs WHERE id = ?",
+            (db_input_id,),
+        ).fetchone()
+        if not inp:
+            conn.rollback()
+            raise EditionValidationError(
+                "input_id references a non-existent input"
+            )
+        if inp["participant_id"] != db_participant_id:
+            conn.rollback()
+            raise EditionValidationError(
+                "input_id must belong to the same participant"
+            )
+        if inp["deleted_at"] is not None:
+            conn.rollback()
+            raise EditionValidationError(
+                "input_id references a deleted input"
+            )
+
+        if feedback_id is not None:
+            fb = conn.execute(
+                f"SELECT {_FEEDBACK_SELECT} FROM feedback WHERE id = ?",
+                (feedback_id,),
+            ).fetchone()
+            if not fb:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback_id references a non-existent feedback record"
+                )
+            if fb["participant_id"] != db_participant_id:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback must belong to the same participant"
+                )
+            if fb["edition_id"] != prior_edition_id:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback must be for the prior edition"
+                )
+            if fb["applied_to_next_edition"] != 0:
+                conn.rollback()
+                raise FeedbackValidationError(
+                    "feedback has already been applied"
+                )
+
+        edition_id = str(uuid.uuid4())
+
+        cursor = conn.execute(
+            "INSERT INTO editions "
+            "(id, participant_id, edition_number, prior_edition_id, "
+            "input_id, generation_status, structured_content, "
+            "rendered_title, publication_state, drafted_at) "
+            "VALUES (?, ?, ?, ?, ?, 'pending_review', ?, ?, 'pending', ?)",
+            (
+                edition_id,
+                db_participant_id,
+                edition_number,
+                prior_edition_id,
+                db_input_id,
+                structured_content,
+                rendered_title,
+                now,
+            ),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            raise RuntimeError("failed to insert edition record")
+
+        if feedback_id is not None:
+            cursor = conn.execute(
+                "UPDATE feedback SET applied_to_next_edition = 1 "
+                "WHERE id = ? AND applied_to_next_edition = 0",
+                (feedback_id,),
+            )
+            if cursor.rowcount != 1:
+                conn.rollback()
+                raise RuntimeError("failed to mark feedback as applied")
+
+        cursor = conn.execute(
+            "UPDATE generation_requests "
+            "SET edition_id = ?, status = 'completed', completed_at = ?, "
+            "updated_at = ?, claim_token = NULL, lease_expires_at = NULL "
+            "WHERE idempotency_key = ? AND status = 'claimed' "
+            "AND COALESCE(claim_token, '') = ?",
+            (edition_id, now, now, idempotency_key, claim_token),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            raise EditionStateConflict(
+                "generation request completion failed"
+            )
+
+        conn.commit()
+        return EditionRecord(
+            id=edition_id,
+            participant_id=db_participant_id,
+            edition_number=edition_number,
+            prior_edition_id=prior_edition_id,
+            input_id=db_input_id,
+            generation_status="pending_review",
+            structured_content=structured_content,
+            rendered_title=rendered_title,
+            drafted_at=now,
+            reviewed_at=None,
+            published_at=None,
+            human_correction_minutes=None,
+            reviewer_notes=None,
+            publication_state="pending",
+        )
+    except (
+        EditionValidationError,
+        EditionStateConflict,
+        FeedbackValidationError,
+        GenerationRequestOwnershipError,
         RepositoryTransactionError,
     ):
         raise

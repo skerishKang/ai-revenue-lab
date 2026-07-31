@@ -9,6 +9,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
@@ -22,6 +23,10 @@ const provider = new GoogleAuthProvider();
 
 export function signInWithGoogle() {
   return signInWithPopup(auth, provider);
+}
+
+export function signInWithEmail(email, password) {
+  return signInWithEmailAndPassword(auth, email, password);
 }
 
 export function signOutUser() {
