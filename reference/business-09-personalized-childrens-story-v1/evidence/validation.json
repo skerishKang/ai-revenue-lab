@@ -1,0 +1,290 @@
+{
+  "artifact": "Business 9 focused Story Bloom correction",
+  "validated_at": "2026-07-26",
+  "signature_sequence_ms": 680,
+  "static_checks": {
+    "version_token": "personalized-childrens-story-20260726-2",
+    "resolved_local_assets": [
+      "./assets/images/boot-bloom-layers.svg",
+      "./assets/images/cloud-islands-boat.svg",
+      "./assets/images/mobile-cloud-path.svg",
+      "./assets/images/night-garden-seed.svg",
+      "./assets/images/paper-forest-library.svg",
+      "./assets/images/rain-alley-boots.svg",
+      "./scripts/review-state.js?v=personalized-childrens-story-20260726-2",
+      "./styles/base.css?v=personalized-childrens-story-20260726-2",
+      "./styles/components.css?v=personalized-childrens-story-20260726-2",
+      "./styles/layout.css?v=personalized-childrens-story-20260726-2",
+      "./styles/states/cover.css?v=personalized-childrens-story-20260726-2",
+      "./styles/states/parent-mobile-bloom.css?v=personalized-childrens-story-20260726-2",
+      "./styles/states/spread.css?v=personalized-childrens-story-20260726-2",
+      "./styles/states/transform-branch.css?v=personalized-childrens-story-20260726-2",
+      "./styles/tokens.css?v=personalized-childrens-story-20260726-2"
+    ],
+    "missing_local_assets": [],
+    "unversioned_css_js": [],
+    "stale_v1_loading_refs": [],
+    "files_over_500_lines": [],
+    "line_counts": {
+      "IMAGE_SOURCES.md": 19,
+      "MOTION_SPEC.md": 43,
+      "README.md": 68,
+      "REFERENCE_NOTES.md": 94,
+      "assets/images/boot-bloom-layers.svg": 15,
+      "assets/images/cloud-islands-boat.svg": 32,
+      "assets/images/mobile-cloud-path.svg": 23,
+      "assets/images/night-garden-seed.svg": 35,
+      "assets/images/paper-forest-library.svg": 32,
+      "assets/images/rain-alley-boots.svg": 36,
+      "evidence/capture-bloom-evidence.py": 98,
+      "evidence/run-commands.md": 75,
+      "evidence/validate-browser.py": 177,
+      "evidence/validation.json": 484,
+      "index.html": 210,
+      "scripts/review-state.js": 157,
+      "styles/base.css": 64,
+      "styles/components.css": 198,
+      "styles/layout.css": 119,
+      "styles/states/cover.css": 181,
+      "styles/states/parent-mobile-bloom.css": 374,
+      "styles/states/spread.css": 148,
+      "styles/states/transform-branch.css": 220,
+      "styles/tokens.css": 24
+    }
+  },
+  "desktop": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "reduced_motion": false,
+    "state_count": 7,
+    "tab_count": 7,
+    "keyboard_next_state": "spread",
+    "visible_focus": true,
+    "horizontal_overflow_px": 0,
+    "ready_before_replay": "true",
+    "actual_second_replay_button_click": true,
+    "assertions": {
+      "entry_state_is_bloom": true,
+      "generic_state_enter_absent": true,
+      "entry_book_copy_base_opacity_one": true,
+      "before_replay_active_state_is_bloom": true,
+      "before_replay_book_opacity_one": true,
+      "book_copy_base_and_geometry_stable": true,
+      "only_bloom_layers_show_motion_change": true,
+      "second_replay_reaches_final_state": true,
+      "reduced_motion_immediate_final": null
+    },
+    "errors": {
+      "console": [],
+      "page": [],
+      "failed_requests": [],
+      "external_runtime_requests": [],
+      "broken_images": []
+    },
+    "representative_layer_timeline": {
+      "before": {
+        "opacity": "1",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "animation": "bloom-cloud",
+        "rect": [
+          744.53,
+          303.39,
+          190,
+          72
+        ]
+      },
+      "early": {
+        "opacity": "0.108002",
+        "transform": "matrix(1, 0, 0, 1, 0, 19.624)",
+        "animation": "bloom-cloud",
+        "rect": [
+          744.53,
+          323.01,
+          190,
+          72
+        ]
+      },
+      "middle": {
+        "opacity": "0.958998",
+        "transform": "matrix(1, 0, 0, 1, 0, 0.902049)",
+        "animation": "bloom-cloud",
+        "rect": [
+          744.53,
+          304.29,
+          190,
+          72
+        ]
+      },
+      "final": {
+        "opacity": "1",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "animation": "bloom-cloud",
+        "rect": [
+          744.53,
+          303.39,
+          190,
+          72
+        ]
+      }
+    }
+  },
+  "mobile": {
+    "viewport": [
+      390,
+      844
+    ],
+    "reduced_motion": false,
+    "state_count": 7,
+    "tab_count": 7,
+    "keyboard_next_state": "spread",
+    "visible_focus": true,
+    "horizontal_overflow_px": 0,
+    "ready_before_replay": "true",
+    "actual_second_replay_button_click": true,
+    "assertions": {
+      "entry_state_is_bloom": true,
+      "generic_state_enter_absent": true,
+      "entry_book_copy_base_opacity_one": true,
+      "before_replay_active_state_is_bloom": true,
+      "before_replay_book_opacity_one": true,
+      "book_copy_base_and_geometry_stable": true,
+      "only_bloom_layers_show_motion_change": true,
+      "second_replay_reaches_final_state": true,
+      "reduced_motion_immediate_final": null
+    },
+    "errors": {
+      "console": [],
+      "page": [],
+      "failed_requests": [],
+      "external_runtime_requests": [],
+      "broken_images": []
+    },
+    "representative_layer_timeline": {
+      "before": {
+        "opacity": "1",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "animation": "bloom-cloud",
+        "rect": [
+          74.22,
+          524.48,
+          190,
+          72
+        ]
+      },
+      "early": {
+        "opacity": "0",
+        "transform": "matrix(1, 0, 0, 1, 0, 22)",
+        "animation": "bloom-cloud",
+        "rect": [
+          74.22,
+          546.48,
+          190,
+          72
+        ]
+      },
+      "middle": {
+        "opacity": "0.966591",
+        "transform": "matrix(1, 0, 0, 1, 0, 0.734992)",
+        "animation": "bloom-cloud",
+        "rect": [
+          74.22,
+          525.22,
+          190,
+          72
+        ]
+      },
+      "final": {
+        "opacity": "1",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "animation": "bloom-cloud",
+        "rect": [
+          74.22,
+          524.48,
+          190,
+          72
+        ]
+      }
+    }
+  },
+  "reduced_motion": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "reduced_motion": true,
+    "state_count": 7,
+    "tab_count": 7,
+    "keyboard_next_state": "spread",
+    "visible_focus": true,
+    "horizontal_overflow_px": 0,
+    "ready_before_replay": "true",
+    "actual_second_replay_button_click": true,
+    "assertions": {
+      "entry_state_is_bloom": true,
+      "generic_state_enter_absent": true,
+      "entry_book_copy_base_opacity_one": true,
+      "before_replay_active_state_is_bloom": true,
+      "before_replay_book_opacity_one": true,
+      "book_copy_base_and_geometry_stable": true,
+      "only_bloom_layers_show_motion_change": true,
+      "second_replay_reaches_final_state": true,
+      "reduced_motion_immediate_final": true
+    },
+    "errors": {
+      "console": [],
+      "page": [],
+      "failed_requests": [],
+      "external_runtime_requests": [],
+      "broken_images": []
+    },
+    "representative_layer_timeline": {
+      "before": {
+        "opacity": "1",
+        "transform": "none",
+        "animation": "none",
+        "rect": [
+          744.53,
+          303.39,
+          190,
+          72
+        ]
+      },
+      "early": {
+        "opacity": "1",
+        "transform": "none",
+        "animation": "none",
+        "rect": [
+          744.53,
+          303.39,
+          190,
+          72
+        ]
+      },
+      "middle": {
+        "opacity": "1",
+        "transform": "none",
+        "animation": "none",
+        "rect": [
+          744.53,
+          303.39,
+          190,
+          72
+        ]
+      },
+      "final": {
+        "opacity": "1",
+        "transform": "none",
+        "animation": "none",
+        "rect": [
+          744.53,
+          303.39,
+          190,
+          72
+        ]
+      }
+    }
+  },
+  "all_required_checks_passed": true
+}

@@ -1,0 +1,181 @@
+.cover-book {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.65), transparent 44%),
+    var(--paper-light);
+}
+
+.cover-copy {
+  position: relative;
+  z-index: 2;
+  padding: 46px 24px 44px 58px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cover-copy .eyebrow {
+  margin-top: 74px;
+}
+
+.cover-copy h1 {
+  margin-top: 18px;
+  font-family: var(--font-serif);
+  font-size: clamp(54px, 6vw, 92px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+}
+
+.cover-copy h1 em {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.68em;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+.cover-deck {
+  max-width: 420px;
+  margin-top: 28px;
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.cover-copy .inspiration-note {
+  max-width: 320px;
+  margin-top: auto;
+}
+
+.cover-figure {
+  position: relative;
+  min-height: 720px;
+  overflow: hidden;
+  background: var(--rain);
+}
+
+.cover-figure::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0 auto 0 0;
+  width: 74px;
+  background: linear-gradient(90deg, rgba(27,42,53,0.18), transparent);
+  pointer-events: none;
+}
+
+.cover-figure img {
+  width: 100%;
+  height: 100%;
+  min-height: 720px;
+  object-fit: cover;
+}
+
+.cover-figure figcaption {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  padding: 8px 10px;
+  color: var(--cream);
+  background: rgba(24, 44, 62, 0.82);
+  font-family: var(--font-serif);
+  font-size: 11px;
+}
+
+.cover-folio {
+  position: absolute;
+  left: 20px;
+  bottom: 18px;
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-size: 10px;
+  writing-mode: vertical-rl;
+}
+
+@media (max-width: 900px) {
+  .cover-book {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cover-copy {
+    padding-left: 36px;
+  }
+
+  .cover-copy .eyebrow {
+    margin-top: 44px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cover-book {
+    min-height: calc(100vh - 100px);
+    display: block;
+    background: var(--paper-light);
+  }
+
+  .cover-figure {
+    position: absolute;
+    inset: 0;
+    min-height: 100%;
+  }
+
+  .cover-figure img {
+    min-height: 100%;
+  }
+
+  .cover-figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(24,44,62,0.12) 0%, rgba(24,44,62,0.16) 35%, rgba(24,44,62,0.88) 88%);
+  }
+
+  .cover-copy {
+    position: relative;
+    z-index: 4;
+    min-height: calc(100vh - 100px);
+    padding: 22px 20px 30px;
+    color: var(--cream);
+  }
+
+  .cover-copy .book-mark,
+  .cover-copy .eyebrow,
+  .cover-copy .cover-deck,
+  .cover-copy .inspiration-note {
+    color: inherit;
+  }
+
+  .cover-copy .eyebrow {
+    margin-top: auto;
+  }
+
+  .cover-copy h1 {
+    margin-top: 12px;
+    font-size: 48px;
+  }
+
+  .cover-deck {
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .cover-copy .inspiration-note {
+    margin-top: 22px;
+    border-color: var(--ochre);
+  }
+
+  .cover-copy .inspiration-note span,
+  .cover-copy .inspiration-note p,
+  .cover-copy .inspiration-note time {
+    color: inherit;
+  }
+
+  .cover-figure figcaption,
+  .cover-folio {
+    display: none;
+  }
+}
