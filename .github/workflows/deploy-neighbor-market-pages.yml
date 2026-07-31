@@ -3,7 +3,7 @@ name: Deploy Business 5 Neighbor Market to Cloudflare Pages
 on:
   pull_request:
     branches:
-      - design/business-05-neighbor-market-v2-89
+      - main
     types:
       - opened
       - synchronize
