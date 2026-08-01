@@ -129,6 +129,10 @@ def main():
     check("offer disclaimer does not overlap panel", lambda: assert_offer_disclaimer_clear())
 
     check("quote workbook has all 8 sheets", lambda: assert_xlsx_sheets())
+    check("quote formulas reference only existing sheets", lambda: assert_quote_formula_references())
+    check("quote B9 formula is valid", lambda: assert_quote_b9())
+    check("quote boundary scenarios evaluate correctly", lambda: assert_quote_scenarios())
+    check("quote helper columns hidden and print area set", lambda: assert_quote_layout())
 
     check("rendered PNGs match every pdf page", lambda: assert_png_parity())
 
@@ -239,6 +243,97 @@ def assert_worksheet_questions():
 def assert_xlsx_sheets():
     wb = load_workbook(path("Business32_Pilot_Quote_Template.xlsx"), data_only=False)
     assert wb.sheetnames == XLSX_SHEETS, "unexpected sheets: %s" % wb.sheetnames
+
+
+def _quote_lookup(ws_quote):
+    table = {}
+    for row in range(4, 7):
+        offer = ws_quote.cell(row=row, column=7).value
+        lower = ws_quote.cell(row=row, column=8).value
+        upper = ws_quote.cell(row=row, column=9).value
+        table[offer] = (lower, upper)
+    return table
+
+
+def _quote_verdict(price, offer, table):
+    if offer not in table:
+        return "#N/A"
+    lower, upper = table[offer]
+    if lower <= price <= upper:
+        return "가설 범위 내"
+    return "⚠ 범위 밖 가격 — 가설 범위를 확인하세요"
+
+
+def _sheet_refs(formula):
+    refs = []
+    for m in re.finditer(r"'([^']+)'!", formula):
+        refs.append(m.group(1))
+    stripped = re.sub(r"'[^']+'!", "!", formula)
+    for m in re.finditer(r"([A-Za-z가-힣0-9_ .·\-]+)!", stripped):
+        ref = m.group(1).strip()
+        if ref:
+            refs.append(ref)
+    return refs
+
+
+def assert_quote_formula_references():
+    wb = load_workbook(path("Business32_Pilot_Quote_Template.xlsx"), data_only=False)
+    names = set(wb.sheetnames)
+    bad = []
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for cell in row:
+                if not (isinstance(cell.value, str) and cell.value.startswith("=")):
+                    continue
+                for ref in _sheet_refs(cell.value):
+                    if ref not in names:
+                        bad.append((ws.title, cell.coordinate, ref))
+    assert not bad, "broken sheet references in formulas: %s" % bad
+
+
+def assert_quote_b9():
+    wb = load_workbook(path("Business32_Pilot_Quote_Template.xlsx"), data_only=False)
+    ws = wb["견적"]
+    f9 = ws["B9"].value
+    assert isinstance(f9, str) and f9.startswith("="), "quote B9 is not a formula"
+    assert "'Offer 선택'!$B$4" in f9, "quote B9 missing 'Offer 선택' reference"
+    assert "Offer!" not in f9, "quote B9 still references nonexistent Offer! sheet"
+    table = _quote_lookup(ws)
+    offer = wb["Offer 선택"]["B4"].value
+    price = ws["B4"].value
+    assert offer == "B" and price == 5000000, "unexpected default Offer/price: %r %r" % (offer, price)
+    verdict = _quote_verdict(price, offer, table)
+    assert verdict == "가설 범위 내", "quote B9 default verdict %r" % verdict
+
+
+def assert_quote_scenarios():
+    wb = load_workbook(path("Business32_Pilot_Quote_Template.xlsx"), data_only=False)
+    table = _quote_lookup(wb["견적"])
+    warning = "⚠ 범위 밖 가격 — 가설 범위를 확인하세요"
+    cases = [
+        ("A", 3000000, "가설 범위 내"),
+        ("A", 5000000, "가설 범위 내"),
+        ("B", 5000000, "가설 범위 내"),
+        ("B", 8000000, "가설 범위 내"),
+        ("C", 12000000, "가설 범위 내"),
+        ("C", 20000000, "가설 범위 내"),
+        ("A", 2500000, warning),
+        ("B", 8500000, warning),
+        ("C", 21000000, warning),
+    ]
+    for offer, price, expected in cases:
+        got = _quote_verdict(price, offer, table)
+        assert got == expected, "scenario Offer=%s price=%d expected %r got %r" % (offer, price, expected, got)
+
+
+def assert_quote_layout():
+    wb = load_workbook(path("Business32_Pilot_Quote_Template.xlsx"), data_only=False)
+    ws = wb["견적"]
+    for col in "GHI":
+        assert ws.column_dimensions[col].hidden, "quote helper column %s not hidden" % col
+    pa = (ws.print_area or "").replace("$", "").replace("'", "")
+    assert "A1:C9" in pa, "quote print area %r != A1:C9" % ws.print_area
+    assert len(wb.sheetnames) == 8, "quote workbook sheets %d != 8" % len(wb.sheetnames)
 
 
 def assert_png_parity():

@@ -116,8 +116,9 @@ python3 validation/validate_customer_package.py
 2페이지 Q8~Q13 + 반복 헤더), 스킬 카드 2~3페이지, 렌더 PNG가 모든 PDF 페이지와
 일치, PPTX 좌표(페이지 경계 초과 0, footer 겹침 0), PPTX 텍스트 맞춤(예상 텍스트
 높이 ≤ shape 높이 - margin), Slide 6·7 산출물 박스 내부 표시·하단 설명 겹침 0,
-외부 런타임 0, 실제 고객·기관 데이터 0, backend·SaaS·자동승인 주장 0, 가격 가설
-표시, 사람 검토 문구 필수.
+견적 수식 시트 참조 유효(B9 = 'Offer 선택'!$B$4, Offer! 참조 0), 가격 범위
+시뮬레이션, G:I 숨김·인쇄영역 A1:C9, 외부 런타임 0, 실제 고객·기관 데이터 0,
+backend·SaaS·자동승인 주장 0, 가격 가설 표시, 사람 검토 문구 필수.
 
 ## 금지
 

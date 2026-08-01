@@ -166,8 +166,8 @@ for i, (a, b, c) in enumerate(quote_rows, start=4):
         ws_quote.cell(row=i, column=2, value=b)
     ws_quote.cell(row=i, column=3, value=c)
 ws_quote["B4"] = 5000000
-ws_quote["B9"] = ("=IF(AND(B4>=VLOOKUP(Offer!$B$4,$G$4:$I$6,2,FALSE),"
-                  "B4<=VLOOKUP(Offer!$B$4,$G$4:$I$6,3,FALSE)),"
+ws_quote["B9"] = ("=IF(AND(B4>=VLOOKUP('Offer 선택'!$B$4,$G$4:$I$6,2,FALSE),"
+                  "B4<=VLOOKUP('Offer 선택'!$B$4,$G$4:$I$6,3,FALSE)),"
                   "\"가설 범위 내\",\"⚠ 범위 밖 가격 — 가설 범위를 확인하세요\")")
 ws_quote["G4"] = "A"
 ws_quote["H4"] = 3000000
@@ -178,11 +178,14 @@ ws_quote["I5"] = 8000000
 ws_quote["G6"] = "C"
 ws_quote["H6"] = 12000000
 ws_quote["I6"] = 20000000
-ws_quote.cell(row=9, column=1, value="계약 자동 확정 없음")
+ws_quote.cell(row=9, column=1, value="가격 범위 판정")
 ws_quote["B9"].fill = PatternFill("solid", fgColor=YELLOW)
 ws_quote.column_dimensions["A"].width = 16
 ws_quote.column_dimensions["B"].width = 18
 ws_quote.column_dimensions["C"].width = 44
+for col in ("G", "H", "I"):
+    ws_quote.column_dimensions[col].hidden = True
+ws_quote.print_area = "A1:C9"
 
 ws_assume = wb.create_sheet("가정·제외사항")
 title(ws_assume, "가정·제외사항")
