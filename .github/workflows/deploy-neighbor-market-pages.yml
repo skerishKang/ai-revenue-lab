@@ -1,0 +1,125 @@
+name: Deploy Business 5 Neighbor Market to Cloudflare Pages
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - reference/business-05-neighbor-market-v2/demo/**
+      - .github/workflows/deploy-neighbor-market-pages.yml
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: deploy-neighbor-market-pages-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  PROJECT_NAME: ai-revenue-neighbor-market
+  PAGES_DIRECTORY: reference/business-05-neighbor-market-v2/demo
+  PRODUCTION_BRANCH: feat/business-05-static-demo-106
+
+jobs:
+  deploy:
+    name: Create project and deploy static demo
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'feat/business-05-static-demo-106'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify deployment credentials are configured
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured" >&2; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured" >&2; exit 1; }
+
+      - name: Create Cloudflare Pages project when missing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          api_base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+          get_code="$(curl --silent --show-error \
+            --output /tmp/pages-project-get.json \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${api_base}/${PROJECT_NAME}")"
+
+          if [[ "$get_code" == "200" ]]; then
+            jq -e '.success == true' /tmp/pages-project-get.json >/dev/null
+            echo "Cloudflare Pages project already exists: $PROJECT_NAME"
+          elif [[ "$get_code" == "404" ]]; then
+            create_code="$(curl --silent --show-error \
+              --output /tmp/pages-project-create.json \
+              --write-out '%{http_code}' \
+              --request POST \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              --data "$(jq -cn --arg name "$PROJECT_NAME" --arg branch "$PRODUCTION_BRANCH" '{name: $name, production_branch: $branch}')" \
+              "$api_base")"
+            jq . /tmp/pages-project-create.json
+            [[ "$create_code" == "200" || "$create_code" == "201" ]]
+            jq -e '.success == true' /tmp/pages-project-create.json >/dev/null
+            echo "Created Cloudflare Pages project: $PROJECT_NAME"
+          else
+            echo "Cloudflare project lookup failed with HTTP $get_code" >&2
+            jq . /tmp/pages-project-get.json >&2 || cat /tmp/pages-project-get.json >&2
+            exit 1
+          fi
+
+      - name: Deploy Neighbor Market demo
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DEPLOY_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$PAGES_DIRECTORY/index.html"
+          npx --yes wrangler@4 pages deploy "$PAGES_DIRECTORY" \
+            --project-name="$PROJECT_NAME" \
+            --branch="$PRODUCTION_BRANCH" \
+            --commit-hash="$DEPLOY_SHA" \
+            --commit-message="deploy Business 5 Neighbor Market demo"
+
+      - name: Verify public deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${PROJECT_NAME}.pages.dev/"
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error --location \
+              --retry 2 --retry-delay 2 \
+              --output /tmp/neighbor-market.html "$url"; then
+              grep -q "우리단지 이웃가게" /tmp/neighbor-market.html
+              echo "Verified $url"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Deployment could not be verified at $url" >&2
+          exit 1
