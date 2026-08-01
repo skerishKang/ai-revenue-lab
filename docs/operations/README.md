@@ -6,7 +6,7 @@
 - `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md` — screen-level benchmarking, imagery, typography, composition, motion, and investor/customer visual-quality gates.
 - `BACKEND_MVP_OPERATING_POLICY.md` — backend modes, vertical slices, service-led pilots, data, providers, observability, testing, cost, and hardening.
 - `PORTFOLIO_PRODUCT_QUALITY_AUDIT.md` — portfolio-wide A/B/C/D audit and Visual Upgrade v2 / Product Upgrade v2 program.
-- `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected automatic Production execution, acceptance, and reviewed recovery.
+- `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — approved exact-head demo deployments, canonical Production deployments, acceptance, and recovery.
 - `../portfolio/BUSINESS_CANDIDATE_BACKLOG.md` — idea-preservation backlog and proposed Business map.
 - Permanent portfolio tracking issue: `#154`.
 
@@ -108,17 +108,34 @@ COMMERCIAL_HARDENING
 
 Build backend behavior when it is necessary to prove the product. Keep it bounded to the primary evidence journey and stage-appropriate risk.
 
-## Deployment default
+## Deployment lanes
 
-Deployment remains governed by `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
+### Approved exact-head demo
+
+Use for investor demos, competitive demos, and reviewable MVP candidates without merging the source:
 
 ```text
-explicit authorization
-→ reviewed exact head
-→ approved merge to the configured Production branch
+reviewed Draft PR exact head
+→ explicit owner approval for the SHA and target
+→ approved GitHub Actions workflow
+→ dedicated Business project
+→ public-byte and visual/journey verification
+→ PR remains Draft and unmerged
+```
+
+### Canonical Production
+
+Use when the source is accepted as the operating repository version:
+
+```text
+reviewed exact head
+→ explicit merge and Production authorization
+→ merge to the configured Production branch
 → automatic Git-connected deployment
 → real-environment acceptance
-→ retain or merge a reviewed fix/revert PR
+→ reviewed fix/revert recovery
 ```
 
 Deployment proves environment state. It does not by itself prove product quality, investor readiness, or business value.
