@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "checks": {
+    "exact_states": true,
+    "exact_controls": true,
+    "asset_count": true,
+    "all_assets_documented": true,
+    "required_labels": true,
+    "asset_token": true,
+    "local_runtime": true,
+    "animationend": true,
+    "no_fixed_timeout": true,
+    "reduced_motion": true,
+    "roving": true,
+    "failure_boundaries": true
+  },
+  "states": [
+    "cover",
+    "catalog",
+    "source",
+    "schema",
+    "quality",
+    "package",
+    "mobile"
+  ],
+  "controls": [
+    "cover",
+    "catalog",
+    "source",
+    "schema",
+    "quality",
+    "package",
+    "mobile"
+  ],
+  "assets": 9,
+  "labels": 25
+}
