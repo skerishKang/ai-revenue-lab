@@ -1,10 +1,13 @@
 # Business 35 · AI Media Education & DX — Customer-Facing Master Package
 
 ```
-CUSTOMER-FACING MASTER
-FINAL IDENTITY REQUIRED
-LEGAL REVIEW REQUIRED
-NOT YET SENT
+FINAL_IDENTITY_DECIDED
+PROVIDER: 파디엠
+CONTRACTING_ENTITY: 파디엠
+BUSINESS_DETAILS_VERIFICATION_PENDING
+LEGAL_REVIEW_REQUIRED
+PRICE_HYPOTHESIS_ONLY
+DO_NOT_SEND
 ```
 
 Repository-local visual master package for Business 35 customer consultations. Produced from the validated sales-kit source (`feat/business-35-sales-kit`, exact head `8ae294d865fd10f9b23ff1388c5a4e79fb440b18`). This is **not** a customer submission.
@@ -38,16 +41,19 @@ AI 도구 사용이 개인별로 분산
 
 ## Provider identity
 
-The final provider entity/brand is not decided. No arbitrary company/brand/personal name is inserted. The neutral identity is used:
+Customer-facing provider is decided:
 
 ```text
-Business 35 · AI Media Education & DX · AI 업무전환 프로그램
+제공 및 계약 주체: 파디엠 (영문 필요 시 PADIEM)
+서비스: Business 35 · AI Media Education & DX · AI 업무전환 프로그램
 ```
 
-Provider areas show:
+`AI Revenue Lab`은 포트폴리오·내부 프로젝트 브랜드이며 고객-facing 계약 주체로 표시하지 않는다. 공식 로고 파일이 확인될 때까지 로고·심벌·워드마크는 만들지 않고 텍스트로만 표시한다.
+
+사업자등록번호·대표자·주소·연락처·계좌는 미확인 상태이며, 발송 전 공식 정보 입력이 필요하다:
 
 ```text
-제안 제공자 정보는 발송 전 최종 확정
+BUSINESS_DETAILS_VERIFICATION_PENDING
 ```
 
 Bracket placeholders appear only in the small customization areas of the cover and footer, not in the middle of customer screens.
@@ -118,9 +124,12 @@ PDF pages are rendered to images under `rendered/` for review; text overflow, cl
 ## Status
 
 ```text
-CUSTOMER_FACING_MASTER_REVIEW_READY
-FINAL_IDENTITY_REQUIRED
+FINAL_IDENTITY_DECIDED
+PROVIDER: 파디엠
+CONTRACTING_ENTITY: 파디엠
+BUSINESS_DETAILS_VERIFICATION_PENDING
 LEGAL_REVIEW_REQUIRED
+PRICE_HYPOTHESIS_ONLY
 DO_NOT_SEND
 DO_NOT_MERGE
 ```

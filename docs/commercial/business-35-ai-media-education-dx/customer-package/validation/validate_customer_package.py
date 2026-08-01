@@ -169,6 +169,31 @@ def main() -> int:
         hit = [m for m in internal_markers if m in txt]
         check(not hit, f"no internal English status markers in {f} (found {hit or 'none'})", problems)
 
+    # Padiem identity: unresolved provider phrases absent, Padiem present
+    for f in ["Business35_Master_Proposal_10p.pdf", "Business35_OnePage_Offer.pdf",
+              "Business35_Diagnostic_Questionnaire.pdf"]:
+        txt = pdf_text(f)
+        check("제공자 정보 최종 확정 필요" not in txt,
+              f"no unresolved-provider phrase in {f}", problems)
+        check("제공자 정보는 발송 전 최종 확정" not in txt,
+              f"no provider-pending phrase in {f}", problems)
+    check("파디엠" in pdf_text("Business35_Master_Proposal_10p.pdf"),
+          "proposal shows provider 파디엠", problems)
+    check("파디엠" in pdf_text("Business35_OnePage_Offer.pdf"),
+          "one-page shows provider 파디엠", problems)
+    check("파디엠" in pdf_text("Business35_Diagnostic_Questionnaire.pdf"),
+          "questionnaire shows provider 파디엠", problems)
+    # Quote workbook provider
+    try:
+        from openpyxl import load_workbook
+        wbq = load_workbook(str(ROOT / "Business35_Pilot_Quote_Template.xlsx"))
+        qtext = "".join(str(c.value or "") for ws in wbq.worksheets for row in ws.iter_rows() for c in row)
+        check("파디엠" in qtext, "quote workbook shows provider 파디엠", problems)
+        check("사업자등록번호" not in qtext or "발송 전 공식 사업자 정보 입력 필요" in qtext,
+              "quote workbook has no invented business number", problems)
+    except Exception as e:
+        check(False, f"quote provider check ran ({e})", problems)
+
     # Cross-file pricing naming: B1 / B2 present in proposal and one-page
     prop_txt = pdf_text("Business35_Master_Proposal_10p.pdf")
     onepage_txt = pdf_text("Business35_OnePage_Offer.pdf")
@@ -289,15 +314,11 @@ def main() -> int:
         for shp in s.shapes:
             if shp.has_text_frame and shp.top is not None and shp.top > 6400000:  # footer zone
                 footer_text += shp.text_frame.text
-        if idx == 1:
-            ok = "DRAFT" in footer_text and "법률 검토" in footer_text
-        elif idx == 10:  # last page: provider-confirmation footer allowed
-            ok = "제공자 정보" in footer_text
-        else:
-            ok = "DRAFT" in footer_text
+        # Padiem identity footer on all slides (파디엠 or PADIEM), plus DRAFT
+        ok = ("파디엠" in footer_text or "PADIEM" in footer_text) and "DRAFT" in footer_text
         if not ok:
             footer_ok = False
-    check(footer_ok, "Korean status footer present on all proposal slides", problems)
+    check(footer_ok, "Padiem+DRAFT footer present on all proposal slides", problems)
 
     # Validator does not replace visual QA
     if vqa.is_file():

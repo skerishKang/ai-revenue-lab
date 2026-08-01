@@ -1,10 +1,13 @@
 # SOURCE_MAPPING — Business 35 Customer-Facing Master Package
 
 ```
-CUSTOMER-FACING MASTER
-FINAL IDENTITY REQUIRED
-LEGAL REVIEW REQUIRED
-NOT YET SENT
+FINAL_IDENTITY_DECIDED
+PROVIDER: 파디엠
+CONTRACTING_ENTITY: 파디엠
+BUSINESS_DETAILS_VERIFICATION_PENDING
+LEGAL_REVIEW_REQUIRED
+PRICE_HYPOTHESIS_ONLY
+DO_NOT_SEND
 ```
 
 Maps every customer-facing output to the validated sales-kit authority sources. No claim outside these sources is added.

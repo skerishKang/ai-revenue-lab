@@ -45,8 +45,9 @@ def build():
     ws.column_dimensions["B"].width = 90
     rows = [
         ("Business 35 · 견적 검토 템플릿", ""),
-        ("CUSTOMER-FACING MASTER · FINAL IDENTITY REQUIRED · LEGAL REVIEW REQUIRED · NOT YET SENT", ""),
-        ("제안 제공자 정보는 발송 전 최종 확정", ""),
+        ("공급자: 파디엠", ""),
+        ("제공 및 계약 주체: 파디엠", ""),
+        ("견적 발행 주체: 파디엠", ""),
         ("", ""),
         ("사용 방법", "각 Offer sheet에 금액(원, VAT 별도)과 인원·기간을 입력합니다."),
         ("계산", "공급가액 / VAT(10%) / 합계가 자동 계산됩니다. 지급 단계(착수금 50%·잔금 50%)를 확인합니다."),
@@ -55,6 +56,7 @@ def build():
         ("상태", "견적 검토 템플릿 — 계약 확정 문서가 아닙니다."),
         ("가격 정책", "시장 검증 전 자사 가격 가설 · 범위와 인원·기간에 따라 최종 견적 · VAT 조건은 최종 견적서에서 확정"),
         ("", ""),
+        ("주의", "발송 전 공식 사업자 정보 입력 필요 (사업자등록번호·대표자·주소·연락처·계좌)."),
         ("주의", "본 템플릿은 고객에게 발송 전 최종 승인과 전문 법률·계약 검토가 필요합니다."),
     ]
     for i, (a, b) in enumerate(rows, start=1):
@@ -172,6 +174,11 @@ def build():
     ws.column_dimensions["B"].width = 45
     set_cell(ws, 1, 1, "Approval", bold=True, size=14, fill=LIGHT)
     fields = [
+        ("제공 및 계약 주체", "파디엠"),
+        ("공급자", "파디엠"),
+        ("사업자등록번호", "발송 전 공식 사업자 정보 입력 필요"),
+        ("대표자·주소·연락처", "발송 전 공식 사업자 정보 입력 필요"),
+        ("입금 계좌 (은행명·예금주)", "발송 전 공식 사업자 정보 입력 필요"),
         ("견적 준비자", "[이름/직책]"),
         ("견적 승인자 (제공자)", "[이름/직책]"),
         ("고객 승인자", "[직책]"),
@@ -182,6 +189,8 @@ def build():
     for i, (a, b) in enumerate(fields, start=3):
         set_cell(ws, i, 1, a, bold=True, fill=LIGHT)
         set_cell(ws, i, 2, b, color="333333")
+    note = set_cell(ws, 15, 1, "안내: 사업자등록번호·대표자·주소·연락처·계좌 정보는 발송 전 공식 확인 후 입력합니다.", size=9, color="555A60")
+    ws.merge_cells("A15:B15")
 
     wb.save(OUT)
     print(f"saved {OUT}")

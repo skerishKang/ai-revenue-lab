@@ -74,6 +74,13 @@ def build():
     r2.font.size = Pt(16)
     r2.font.color.rgb = RGBColor(0xC9, 0xD6, 0xE3)
     r2.font.name = "Malgun Gothic"
+    p3 = tf.add_paragraph()
+    r3 = p3.add_run()
+    r3.text = "제공: 파디엠"
+    r3.font.size = Pt(13)
+    r3.font.bold = True
+    r3.font.color.rgb = RGBColor(0xC9, 0xD6, 0xE3)
+    r3.font.name = "Malgun Gothic"
 
     # Value proposition
     tb = slide.shapes.add_textbox(Inches(0.55), Inches(1.5), Inches(12.2), Inches(0.6))
@@ -135,7 +142,7 @@ def build():
     foot = slide.shapes.add_textbox(Inches(0.55), Inches(6.45), Inches(12.2), Inches(0.85))
     ftf = foot.text_frame
     ftf.word_wrap = True
-    para(ftf, "DRAFT · 제공자 정보 최종 확정 필요", size=9, color=GRAY, first=True)
+    para(ftf, "파디엠 · DRAFT", size=9, color=GRAY, first=True)
     para(ftf, "가격은 시장 검증 전 가설이며 범위·인원·기간에 따라 달라질 수 있습니다.",
          size=9, color=GRAY)
 

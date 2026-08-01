@@ -96,11 +96,16 @@ def choice(doc, num, question, options):
 
 def page_header(doc, title, page_no):
     ph = doc.add_paragraph()
-    pr = ph.add_run(title + "   ")
-    pr.font.size = Pt(12)
+    pr = ph.add_run("파디엠 · AI 업무전환 진단 질문지   ")
+    pr.font.size = Pt(10)
     pr.font.bold = True
     pr.font.color.rgb = NAVY
     pr.font.name = "Malgun Gothic"
+    pt = ph.add_run(title + "   ")
+    pt.font.size = Pt(12)
+    pt.font.bold = True
+    pt.font.color.rgb = NAVY
+    pt.font.name = "Malgun Gothic"
     prr = ph.add_run(f"[ {page_no} / 3 ]")
     prr.font.size = Pt(9)
     prr.font.color.rgb = GRAY

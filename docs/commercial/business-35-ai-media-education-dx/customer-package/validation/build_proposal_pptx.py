@@ -28,10 +28,10 @@ SOFT = RGBColor(0xD5, 0xDE, 0xE8)
 
 SW, SH = Inches(13.333), Inches(7.5)
 
-FOOTER_COVER = "DRAFT · 제공자 정보 및 법률 검토 필요"
-FOOTER_INNER = "DRAFT"
-FOOTER_LAST = "제공자 정보 최종 확정 필요"
-PROVIDER = "제안 제공자 정보는 발송 전 최종 확정"
+FOOTER_COVER = "파디엠 · DRAFT"
+FOOTER_INNER = "파디엠 · DRAFT"
+FOOTER_LAST = "파디엠 · DRAFT"
+PROVIDER = "파디엠"
 
 TOTAL_SLIDES = 10
 
@@ -118,7 +118,7 @@ def add_slide(prs, title, footer_mode="inner", slide_no=None, headline=None):
     if footer_mode == "cover":
         fr.text = FOOTER_COVER
     elif footer_mode == "last":
-        fr.text = FOOTER_LAST + "  ·  " + PROVIDER
+        fr.text = FOOTER_LAST
     else:
         fr.text = FOOTER_INNER
     fr.font.size = Pt(11)
@@ -247,6 +247,7 @@ def build():
     tf = add_body_box(s, Inches(0.7), BODY_Y, Inches(11.9), Inches(4.2))
     para(tf, "지역 문화·교육·미디어 조직을 위한 진단·실습·워크플로 재설계·파일럿 프로그램",
          size=18, bold=True, color=NAVY, first=True)
+    para(tf, "제공: 파디엠", size=14, bold=True, color=BLUE, space_before=12)
     para(tf, "대상: 지역 문화기관 · 교육기관 · 협회·단체 · 미디어·콘텐츠 기관",
          size=15, color=GRAY, space_before=12)
     para(tf, "대표 진입 상품: 상품 A · 진단 워크숍 (초기형 300만~500만원)",
@@ -255,7 +256,7 @@ def build():
          size=13, color=GRAY, space_before=16)
     add_notes(
         s,
-        "표지에서 제품명·핵심 제안 한 문장·대상 고객군·대표 진입 상품·DRAFT 상태만 보여준다.",
+        "표지에서 제품명·핵심 제안 한 문장·제공자(파디엠)·대상 고객군·대표 진입 상품·DRAFT 상태만 보여준다.",
         "조직에서 가장 시간이 오래 걸리는 콘텐츠 업무는 무엇인가요?",
         "가격을 확정 가격처럼 말하지 않는다. 성과·정부지원금을 보장하지 않는다."
     )
@@ -766,11 +767,16 @@ def build():
         r3.font.size = Pt(11)
         r3.font.color.rgb = SOFT
         r3.font.name = "Malgun Gothic"
-    tf = add_body_box(s, Inches(0.7), Inches(4.9), Inches(11.9), Inches(1.6))
+    tf = add_body_box(s, Inches(0.7), Inches(4.9), Inches(11.9), Inches(1.8))
     para(tf, "첫 상담에서 계약을 압박하지 않으며, 정부지원금 확정을 말하지 않습니다.",
          size=14, color=GRAY, first=True)
     para(tf, "조직별 사용정책·검토체계, 개인정보·저작권·조달, 전문 법률·계약 검토가 필요합니다.",
          size=14, color=GRAY, space_before=8)
+    para(tf, "제공 및 계약 주체: 파디엠", size=14, bold=True, color=NAVY, space_before=12)
+    para(tf, "가격은 시장 검증 전 가설이며 범위·인원·기간에 따라 달라질 수 있습니다.",
+         size=12, color=GRAY, space_before=6)
+    para(tf, "전문 법률·계약 검토 후 최종 확정됩니다.",
+         size=12, color=GRAY, space_before=4)
     add_notes(
         s,
         "다음 단계를 명확히 제시하고, 첫 상담에서는 계약 압박이나 정부지원금 확정 발언을 하지 않는다.",

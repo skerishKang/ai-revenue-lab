@@ -1,10 +1,16 @@
 # Business 35 · 30분 고객 상담 스크립트
 
 ```
-CUSTOMER-FACING MASTER
-FINAL IDENTITY REQUIRED
+운영용 내부 문서
 LEGAL REVIEW REQUIRED
 NOT YET SENT
+FINAL_IDENTITY_DECIDED · PROVIDER: 파디엠
+```
+
+## 상담자 자기소개
+
+```text
+안녕하세요. 파디엠에서 AI 업무전환 프로그램을 담당하고 있습니다.
 ```
 
 첫 상담에서는 계약을 압박하거나 정부지원금 확정을 말하지 않는다. 가격은 시장 검증 전 가설로만 표현한다.

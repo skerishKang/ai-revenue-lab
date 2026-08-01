@@ -1,10 +1,13 @@
 # CUSTOMIZATION_CHECKLIST — Business 35 Customer-Facing Master Package
 
 ```
-CUSTOMER-FACING MASTER
-FINAL IDENTITY REQUIRED
-LEGAL REVIEW REQUIRED
-NOT YET SENT
+FINAL_IDENTITY_DECIDED
+PROVIDER: 파디엠
+CONTRACTING_ENTITY: 파디엠
+BUSINESS_DETAILS_VERIFICATION_PENDING
+LEGAL_REVIEW_REQUIRED
+PRICE_HYPOTHESIS_ONLY
+DO_NOT_SEND
 ```
 
 Before any customer submission, confirm every item below. This checklist is internal; it is not a customer document.
@@ -12,9 +15,11 @@ Before any customer submission, confirm every item below. This checklist is inte
 ## Identity
 
 ```text
-[ ] 최종 제공 법인·브랜드명 확정 (예: Business 35 운영 법인/사업자)
-[ ] cover/footer의 "[제안 제공자 정보는 발송 전 최종 확정]" 영역 교체
-[ ] 실제 연락처·담당자명·로고 확정
+[x] 최종 제공자 정체성 확정 — 파디엠
+[ ] 사업자등록번호 확인
+[ ] 대표자·주소·연락처 확인
+[ ] 입금 계좌 확인
+[ ] 공식 로고·심벌·워드마크 확정 (없으면 텍스트 표시 유지)
 [ ] 제공자 정보가 슬라이드 중앙에 반복 배치되지 않았는지 확인
 ```
 
