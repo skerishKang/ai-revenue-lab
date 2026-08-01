@@ -3,25 +3,38 @@
   "contract": {
     "issue": 351,
     "pr": 352,
-    "repair": "PREMATURE_DISCLOSURE_FIXED · REDACTION_RETURNS_TO_DISCLOSURE_REVIEW · MANUAL_DISCLOSURE_APPROVAL_ENFORCED · FINAL_PUBLICATION_CONFIRMATION_ENFORCED · DYNAMIC_AUDIT_ACTOR_RECORDED · LIFECYCLE_PUBLIC_SURFACE_TESTS_ADDED"
+    "repair": "RESIDENT_INTERNAL_TAB_BYPASS_FIXED · RAW_GOVERNANCE_OBJECTS_PRIVATE · ROLE_GATED_INTERNAL_TABS_ENFORCED · PROJECTION_REVIEW_PROVENANCE_RECORDED · PROJECTION_PUBLICATION_PROVENANCE_RECORDED"
   },
-  "disclosure": {
+  "resident_boundary": {
+    "currentTab": "ledger forced for 일반 주민",
+    "internal_tabs": "rulebook/documents/history disabled + reason text for 일반 주민",
+    "render_gate": "renderRuleTabs() re-checks role; resident renders panelResidentView() only",
+    "reason": "일반 주민은 Disclosure 검토를 거쳐 게시된 공개 projection만 열람할 수 있습니다."
+  },
+  "tab_roles": {
+    "ledger": "all roles",
+    "rulebook": "대표회의 관리자, 동대표·위원, 관리사무소, 감사, 외부 검토자",
+    "documents": "대표회의 관리자, 관리사무소, 감사, 외부 검토자",
+    "history": "대표회의 관리자, 동대표·위원, 관리사무소, 감사, 외부 검토자"
+  },
+  "raw_objects": {
     "default": "private",
-    "meeting_notice": "public from notice-published (Gate 1)",
-    "postpone_notice": "public only in cancelled",
-    "final_package": "public only after disclosure approval + final publication",
-    "projection": "id/publicTitle/publicSummary/disclosureState/sourceObjectId/reviewedBy/publishedBy/publishedVersion",
-    "raw_leak": "none (roster/discussion/owner/raw doc/audit excluded)"
+    "rules": "private",
+    "agenda": "private",
+    "dissent": "private",
+    "resolution": "private"
   },
-  "redaction_return_path": "redaction-required → confirmRedaction → disclosure-review → approvePublic → public-notice-ready → publishPublicNotice → public-notice-published",
-  "approval_gates": "approvePublic requires manualConfirm + 외부 검토자 + redactions complete + package items",
-  "publish_gates": "publishPublicNotice requires disclosureApproved + manualConfirm + 대표회의 관리자",
-  "audit": "every Version+AuditEvent records version/from/to/action/actor/role/sequence",
+  "projection_provenance": {
+    "schema": "id/publicTitle/publicSummary/disclosureState/sourceObjectId/reviewedBy/reviewedVersion/publishedBy/publishedVersion",
+    "approvePublic": "stamps reviewedBy + reviewedVersion on every approved projection",
+    "publishPublicNotice": "stamps publishedBy + publishedVersion; blocks when review provenance missing",
+    "notice": "Gate 1 stamps full provenance (reviewedBy/reviewedVersion/publishedBy/publishedVersion)"
+  },
   "runner": "node tests/state-machine.test.js",
   "environment": "Node, no browser/Playwright/CDP/WebBridge",
   "checks": {
-    "total": 25,
-    "passed": 25,
+    "total": 34,
+    "passed": 34,
     "failed": 0
   },
   "results": [
@@ -49,7 +62,16 @@
     "external runtime dependency 0",
     "JavaScript syntax",
     "allowed-scope check",
-    "git diff --check clean"
+    "git diff --check clean",
+    "raw governance objects default private",
+    "projection review provenance recorded after approvePublic",
+    "projection publication provenance recorded after publish",
+    "publish blocked when review provenance missing",
+    "notice projections carry full provenance schema",
+    "resident tab boundary enforced (app.js source)",
+    "internal tabs exclude 일반 주민",
+    "resident role switch resets currentTab",
+    "resident screen HTML leaks no raw governance data"
   ],
   "browser_verification": "DEFERRED",
   "backend": "FROZEN",

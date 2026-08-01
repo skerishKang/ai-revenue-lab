@@ -41,6 +41,20 @@
     recover: ROLES.slice()
   };
 
+  var TAB_ROLES = {
+    ledger: ROLES.slice(),
+    rulebook: ["대표회의 관리자", "동대표·위원", "관리사무소", "감사", "외부 검토자"],
+    documents: ["대표회의 관리자", "관리사무소", "감사", "외부 검토자"],
+    history: ["대표회의 관리자", "동대표·위원", "관리사무소", "감사", "외부 검토자"]
+  };
+
+  var RESIDENT_REASON = "일반 주민은 Disclosure 검토를 거쳐 게시된 공개 projection만 열람할 수 있습니다.";
+
+  function tabAllowed(role, tab) {
+    var list = TAB_ROLES[tab];
+    return !!(list && list.indexOf(role) !== -1);
+  }
+
   var machine = SM.createMachine(fixture);
   var currentRole = "대표회의 관리자";
   var currentTab = "ledger";
@@ -362,10 +376,31 @@
   }
 
   function renderRuleTabs() {
-    var map = { ledger: "원장", rulebook: "규약·근거", documents: "문서·증거", history: "변경·공개 이력" };
+    var isResident = currentRole === "일반 주민";
+    if (isResident) {
+      currentTab = "ledger";
+    }
+    // role re-check: any internal tab not allowed for the current role falls back to ledger
+    if (!tabAllowed(currentRole, currentTab)) {
+      currentTab = "ledger";
+    }
     document.querySelectorAll("[data-rule-tab]").forEach(function (btn) {
-      btn.setAttribute("aria-selected", String(btn.dataset.ruleTab === currentTab));
+      var t = btn.dataset.ruleTab;
+      var allowed = tabAllowed(currentRole, t);
+      btn.disabled = !allowed;
+      btn.setAttribute("aria-disabled", String(!allowed));
+      btn.setAttribute("aria-selected", String(t === currentTab));
     });
+    var tabNote = $("tab-note");
+    if (tabNote) {
+      tabNote.hidden = !isResident;
+      tabNote.textContent = RESIDENT_REASON;
+    }
+    if (isResident) {
+      // 일반 주민은 어떤 탭을 선택해도 공개 projection 화면 외의 자료를 볼 수 없다
+      panel.innerHTML = panelResidentView();
+      return;
+    }
     if (currentTab === "rulebook") {
       panel.innerHTML = '<div class="panel"><h3>규약·근거 (rulebook)</h3>' +
         fixture.rules.map(function (r) { return objectRow(r.title, r.disclosure, r.excerpt); }).join("") +
@@ -432,12 +467,17 @@
     var role = btn.getAttribute("data-role");
     if (role) {
       currentRole = role;
+      if (currentRole === "일반 주민") {
+        currentTab = "ledger";
+      }
       render();
       announce("역할 전환: " + role);
       return;
     }
     var tab = btn.getAttribute("data-rule-tab");
     if (tab) {
+      // role gate: disabled/unauthorized internal tabs never change the view
+      if (btn.disabled || !tabAllowed(currentRole, tab)) return;
       currentTab = tab;
       render();
       return;

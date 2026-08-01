@@ -118,6 +118,7 @@
       disclosureState: "public",
       sourceObjectId: "meeting-notice",
       reviewedBy: machine.data.notice.reviewedBy || null,
+      reviewedVersion: machine.data.notice.reviewedVersion || null,
       publishedBy: machine.data.notice.publishedBy || null,
       publishedVersion: machine.data.notice.publishedVersion || null
     };
@@ -131,6 +132,7 @@
       disclosureState: "public",
       sourceObjectId: "postponed-notice",
       reviewedBy: machine.data.postponedNotice.reviewedBy || null,
+      reviewedVersion: machine.data.postponedNotice.reviewedVersion || null,
       publishedBy: machine.data.postponedNotice.publishedBy || null,
       publishedVersion: machine.data.postponedNotice.publishedVersion || null
     };
@@ -146,7 +148,7 @@
       publicSummary: "규약 근거: " + a.ruleRef,
       disclosureState: "public",
       sourceObjectId: id,
-      reviewedBy: null, publishedBy: null, publishedVersion: null
+      reviewedBy: null, reviewedVersion: null, publishedBy: null, publishedVersion: null
     };
   }
 
@@ -157,7 +159,7 @@
       publicSummary: machine.data.resolution.text,
       disclosureState: "public",
       sourceObjectId: "resolution",
-      reviewedBy: null, publishedBy: null, publishedVersion: null
+      reviewedBy: null, reviewedVersion: null, publishedBy: null, publishedVersion: null
     };
   }
 
@@ -168,7 +170,7 @@
       publicSummary: machine.data.dissent.text,
       disclosureState: "public",
       sourceObjectId: machine.data.dissent.agenda,
-      reviewedBy: null, publishedBy: null, publishedVersion: null
+      reviewedBy: null, reviewedVersion: null, publishedBy: null, publishedVersion: null
     };
   }
 
@@ -179,7 +181,7 @@
       publicSummary: "출석 " + machine.data.attendanceCount + " / 기준 " + machine.data.threshold + " · 수동 확인",
       disclosureState: "public",
       sourceObjectId: "quorum",
-      reviewedBy: null, publishedBy: null, publishedVersion: null
+      reviewedBy: null, reviewedVersion: null, publishedBy: null, publishedVersion: null
     };
   }
 
@@ -193,7 +195,7 @@
       publicSummary: summary || "후속조치 없음",
       disclosureState: "public",
       sourceObjectId: "action-summary",
-      reviewedBy: null, publishedBy: null, publishedVersion: null
+      reviewedBy: null, reviewedVersion: null, publishedBy: null, publishedVersion: null
     };
   }
 
@@ -206,7 +208,7 @@
       publicSummary: doc.redacted.text,
       disclosureState: "redacted",
       sourceObjectId: doc.id,
-      reviewedBy: null, publishedBy: null, publishedVersion: null
+      reviewedBy: null, reviewedVersion: null, publishedBy: null, publishedVersion: null
     };
   }
 
@@ -250,6 +252,10 @@
       throw new Error("disclosure: package items missing");
     }
     var projs = buildApprovedProjections(machine);
+    projs.forEach(function (p) {
+      p.reviewedBy = machine._ctx.actor;
+      p.reviewedVersion = machine._tick + 1;
+    });
     machine.data.disclosureApproved = true;
     machine.data.reviewedBy = machine._ctx.actor;
     machine.data.reviewedVersion = machine._tick + 1;
@@ -266,10 +272,19 @@
     if (machine._ctx.role !== "대표회의 관리자") {
       throw new Error("publish: requires 대표회의 관리자 role");
     }
+    var projs = machine.data.approvedProjections || [];
+    if (!projs.length) {
+      throw new Error("publish: no approved projections to publish");
+    }
+    for (var i = 0; i < projs.length; i++) {
+      if (!projs[i].reviewedBy || !projs[i].reviewedVersion) {
+        throw new Error("publish: review provenance missing (reviewedBy/reviewedVersion required)");
+      }
+    }
     machine.data.published = true;
     machine.data.publishedBy = machine._ctx.actor;
     machine.data.publishedVersion = machine._tick + 1;
-    (machine.data.approvedProjections || []).forEach(function (p) {
+    projs.forEach(function (p) {
       p.publishedBy = machine._ctx.actor;
       p.publishedVersion = machine.data.publishedVersion;
     });
@@ -290,6 +305,7 @@
       disclosure: "public",
       published: true,
       reviewedBy: machine._ctx.actor,
+      reviewedVersion: machine._tick + 1,
       publishedBy: machine._ctx.actor,
       publishedVersion: machine._tick + 1
     };
@@ -303,6 +319,7 @@
       disclosure: "public",
       published: true,
       reviewedBy: machine._ctx.actor,
+      reviewedVersion: machine._tick + 1,
       publishedBy: machine._ctx.actor,
       publishedVersion: machine._tick + 1
     };

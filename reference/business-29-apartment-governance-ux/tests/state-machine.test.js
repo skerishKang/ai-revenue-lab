@@ -410,9 +410,120 @@ check("git diff --check clean", function () {
   assert.strictEqual(wd, "", "whitespace errors in working tree:\n" + wd);
 });
 
+/* 26. raw governance objects default private */
+check("raw governance objects default private", function () {
+  assert.strictEqual(fixture.rules[0].disclosure, "private", "rule disclosure private");
+  fixture.agenda.forEach(function (a) { assert.strictEqual(a.disclosure, "private", "agenda private: " + a.id); });
+  assert.strictEqual(fixture.dissent.disclosure, "private", "dissent private");
+  assert.strictEqual(fixture.resolution.disclosure, "private", "resolution private");
+  var json = JSON.parse(fs.readFileSync(path.join(workspace, "data", "fixture.json"), "utf8"));
+  assert.strictEqual(json.rules[0].disclosure, "private");
+  assert.strictEqual(json.resolution.disclosure, "private");
+  // raw private objects still do not appear on the public surface
+  var m = SM.createMachineAt(fixture, "public-notice-published");
+  var ids = m.publicSurface().map(function (p) { return p.id; });
+  assert.ok(ids.indexOf("meeting-notice") !== -1, "notice projection public");
+  assert.ok(ids.indexOf("agenda-agenda-1") !== -1, "agenda approved projection public");
+  assert.ok(ids.indexOf("resolution") !== -1, "resolution approved projection public");
+});
+
+/* 27. projection review provenance recorded by approvePublic */
+check("projection review provenance recorded after approvePublic", function () {
+  var m = SM.createMachineAt(fixture, "public-notice-ready");
+  assert.ok(m.data.approvedProjections.length > 0, "approved projections exist");
+  m.data.approvedProjections.forEach(function (p) {
+    assert.ok(p.reviewedBy, "reviewedBy present: " + p.id);
+    assert.ok(p.reviewedVersion, "reviewedVersion present: " + p.id);
+  });
+  assert.ok(m.data.reviewedBy && m.data.reviewedVersion, "approval review recorded");
+});
+
+/* 28. projection publication provenance recorded by publishPublicNotice */
+check("projection publication provenance recorded after publish", function () {
+  var m = SM.createMachineAt(fixture, "public-notice-published");
+  m.publicSurface().forEach(function (p) {
+    assert.ok(p.publishedBy, "publishedBy present: " + p.id);
+    assert.ok(p.publishedVersion, "publishedVersion present: " + p.id);
+    assert.ok(p.reviewedBy && p.reviewedVersion, "review provenance retained: " + p.id);
+  });
+  assert.ok(m.data.publishedBy && m.data.publishedVersion, "publication recorded");
+});
+
+/* 29. publish blocked when review provenance missing */
+check("publish blocked when review provenance missing", function () {
+  var m = SM.createMachineAt(fixture, "public-notice-ready");
+  m.data.approvedProjections[0].reviewedBy = null;
+  assert.throws(function () {
+    m.apply("publishPublicNotice", { manualConfirm: true }, { actor: "회장(합성)", role: "대표회의 관리자" });
+  }, "review provenance required before publish");
+  m.data.approvedProjections[0].reviewedBy = "검토자(합성)";
+  assert.strictEqual(m.apply("publishPublicNotice", { manualConfirm: true }, { actor: "회장(합성)", role: "대표회의 관리자" }), "public-notice-published");
+});
+
+/* 30. notice and postponed notice carry full provenance schema */
+check("notice projections carry full provenance schema", function () {
+  var mn = SM.createMachineAt(fixture, "notice-published");
+  var n = mn.publicSurface()[0];
+  ["publicTitle", "publicSummary", "disclosureState", "sourceObjectId", "reviewedBy", "reviewedVersion", "publishedBy", "publishedVersion"].forEach(function (k) {
+    assert.ok(n[k] !== undefined, "meeting notice field: " + k);
+  });
+  var mc = SM.createMachineAt(fixture, "cancelled");
+  var p = mc.publicSurface()[0];
+  ["publicTitle", "publicSummary", "disclosureState", "sourceObjectId", "reviewedBy", "reviewedVersion", "publishedBy", "publishedVersion"].forEach(function (k) {
+    assert.ok(p[k] !== undefined, "postponed notice field: " + k);
+  });
+});
+
+/* 31. resident tab boundary enforced in app.js source */
+check("resident tab boundary enforced (app.js source)", function () {
+  var app = fs.readFileSync(path.join(workspace, "scripts", "app.js"), "utf8");
+  assert.ok(app.indexOf('currentRole === "일반 주민"') !== -1, "resident check present");
+  assert.ok(app.indexOf('currentTab = "ledger"') !== -1, "currentTab reset to ledger present");
+  assert.ok(app.indexOf("panelResidentView()") !== -1, "resident view used");
+  assert.ok(app.indexOf("tabAllowed(currentRole, currentTab)") !== -1, "renderRuleTabs role re-check");
+  assert.ok(app.indexOf("tabAllowed(currentRole, tab)") !== -1, "tab click role guard");
+  assert.ok(app.indexOf("btn.disabled = !allowed") !== -1, "tabs disabled for unauthorized roles");
+  assert.ok(app.indexOf("일반 주민은 Disclosure 검토를 거쳐 게시된 공개 projection만 열람할 수 있습니다.") !== -1, "resident reason text");
+});
+
+/* 32. internal tabs exclude 일반 주민 (app.js source) */
+check("internal tabs exclude 일반 주민", function () {
+  var app = fs.readFileSync(path.join(workspace, "scripts", "app.js"), "utf8");
+  assert.ok(app.indexOf('rulebook: ["대표회의 관리자", "동대표·위원", "관리사무소", "감사", "외부 검토자"]') !== -1, "rulebook role list excludes resident");
+  assert.ok(app.indexOf('documents: ["대표회의 관리자", "관리사무소", "감사", "외부 검토자"]') !== -1, "documents role list excludes resident");
+  assert.ok(app.indexOf('history: ["대표회의 관리자", "동대표·위원", "관리사무소", "감사", "외부 검토자"]') !== -1, "history role list excludes resident");
+  var html = fs.readFileSync(path.join(workspace, "index.html"), "utf8");
+  assert.ok(html.indexOf('id="tab-note"') !== -1, "tab reason note element present");
+});
+
+/* 33. resident role switch resets currentTab (app.js source) */
+check("resident role switch resets currentTab", function () {
+  var app = fs.readFileSync(path.join(workspace, "scripts", "app.js"), "utf8");
+  var reset = app.indexOf('if (currentRole === "일반 주민") {');
+  assert.ok(reset !== -1, "resident branch present");
+  assert.ok(app.indexOf('currentTab = "ledger";', reset) !== -1, "reset to ledger inside resident branch");
+});
+
+/* 34. resident screen HTML leaks no raw governance information */
+check("resident screen HTML leaks no raw governance data", function () {
+  function residentHtml(m) {
+    return m.publicSurface().map(function (o) {
+      return "<li><strong>" + (o.publicTitle || o.id) + "</strong> " + (o.disclosureState || "public") + "<small>" + (o.publicSummary || "") + "</small></li>";
+    }).join("");
+  }
+  var m = SM.createMachineAt(fixture, "public-notice-published");
+  var h = residentHtml(m);
+  assert.strictEqual(h.indexOf("재적 대표의 3분의 1"), -1, "raw rule excerpt leaked");
+  assert.strictEqual(h.indexOf("redaction 대상 문서"), -1, "private document note leaked");
+  assert.strictEqual(h.indexOf("동대표 갑"), -1, "attendance roster leaked");
+  assert.strictEqual(h.indexOf("정비 견적을 관리사무소가"), -1, "private discussion leaked");
+  assert.strictEqual(h.indexOf("owner"), -1, "ActionItem owner leaked");
+  assert.strictEqual(h.indexOf("state_change"), -1, "audit internals leaked");
+});
+
 console.log("");
 if (failures.length) {
   console.log(failures.length + " check(s) failed.");
   process.exit(1);
 }
-console.log("All 25 Business 29 Phase 2 UX repair checks passed.");
+console.log("All 34 Business 29 Phase 2 UX final boundary repair checks passed.");

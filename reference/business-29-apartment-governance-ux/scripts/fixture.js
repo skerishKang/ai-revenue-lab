@@ -30,12 +30,12 @@
         id: "rule-1",
         title: "관리규약 제N조(회의 성립) — 합성 예시 조항",
         excerpt: "대표회의는 재적 대표의 3분의 1 이상 출석으로 성립한다. (합성 예시 — 법적 효력 없음)",
-        disclosure: "public"
+        disclosure: "private"
       }
     ],
     agenda: [
-      { id: "agenda-1", title: "합성 안건 1: 공용부 정비 계획 논의", ruleRef: "rule-1", disclosure: "public" },
-      { id: "agenda-2", title: "합성 안건 2: 관리규약 개정 준비", ruleRef: "rule-1", disclosure: "public" }
+      { id: "agenda-1", title: "합성 안건 1: 공용부 정비 계획 논의", ruleRef: "rule-1", disclosure: "private" },
+      { id: "agenda-2", title: "합성 안건 2: 관리규약 개정 준비", ruleRef: "rule-1", disclosure: "private" }
     ],
     attendance: {
       initialCount: 8,
@@ -58,12 +58,12 @@
       agenda: "agenda-1",
       member: "동대표 갑(합성)",
       text: "정비 범위가 과해 예산 낭비 우려가 있어 이견을 표시한다. (합성)",
-      disclosure: "public",
+      disclosure: "private",
       retained: true
     },
     resolution: {
       text: "공용부 정비 계획을 합성 절차에 따라 다음 회의에서 재논의하기로 한다. (합성 의결 — 법적 효력 없음)",
-      disclosure: "public"
+      disclosure: "private"
     },
     actions: [
       {

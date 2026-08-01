@@ -16,7 +16,7 @@
       "id": "rule-1",
       "title": "관리규약 제N조(회의 성립) — 합성 예시 조항",
       "excerpt": "대표회의는 재적 대표의 3분의 1 이상 출석으로 성립한다. (합성 예시 — 법적 효력 없음)",
-      "disclosure": "public"
+      "disclosure": "private"
     }
   ],
   "agenda": [
@@ -24,20 +24,29 @@
       "id": "agenda-1",
       "title": "합성 안건 1: 공용부 정비 계획 논의",
       "ruleRef": "rule-1",
-      "disclosure": "public"
+      "disclosure": "private"
     },
     {
       "id": "agenda-2",
       "title": "합성 안건 2: 관리규약 개정 준비",
       "ruleRef": "rule-1",
-      "disclosure": "public"
+      "disclosure": "private"
     }
   ],
   "attendance": {
     "initialCount": 8,
     "supplementedCount": 11,
     "threshold": 10,
-    "roster": ["동대표 갑(합성)", "동대표 을(합성)", "동대표 병(합성)", "동대표 정(합성)", "동대표 무(합성)", "동대표 기(합성)", "동대표 경(합성)", "동대표 신(합성)"],
+    "roster": [
+      "동대표 갑(합성)",
+      "동대표 을(합성)",
+      "동대표 병(합성)",
+      "동대표 정(합성)",
+      "동대표 무(합성)",
+      "동대표 기(합성)",
+      "동대표 경(합성)",
+      "동대표 신(합성)"
+    ],
     "disclosure": "private",
     "note": "출석 명단은 비공개(roster). 집계만 redacted로 공개 가능."
   },
@@ -54,12 +63,12 @@
     "agenda": "agenda-1",
     "member": "동대표 갑(합성)",
     "text": "정비 범위가 과해 예산 낭비 우려가 있어 이견을 표시한다. (합성)",
-    "disclosure": "public",
+    "disclosure": "private",
     "retained": true
   },
   "resolution": {
     "text": "공용부 정비 계획을 합성 절차에 따라 다음 회의에서 재논의하기로 한다. (합성 의결 — 법적 효력 없음)",
-    "disclosure": "public"
+    "disclosure": "private"
   },
   "actions": [
     {
@@ -83,7 +92,13 @@
     }
   ],
   "disclosurePackage": {
-    "items": ["notice", "resolution", "agenda-1", "agenda-2", "doc-1"],
+    "items": [
+      "notice",
+      "resolution",
+      "agenda-1",
+      "agenda-2",
+      "doc-1"
+    ],
     "note": "공개 패키지는 사람 검토(disclosure-review) 후에만 공개 가능"
   },
   "fault": {
