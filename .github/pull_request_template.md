@@ -6,6 +6,13 @@
 - Product stage: `COMPETITIVE_DEMO / INVESTOR_DEMO / MVP_VERTICAL_SLICE / SERVICE_LED_PILOT / RUNTIME_PILOT / COMMERCIAL_HARDENING`
 - Primary product promise:
 
+## Owner expertise boundary
+
+- [ ] Work follows `docs/operations/OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`.
+- [ ] The owner is treated as a multidisciplinary expert in law, public administration, police studies and policing practice, computer science and software development, Korean institutional and field practice, product, and business.
+- [ ] Risk notes are concrete and material; generic legal, administrative, privacy, security, or software lectures were not used as substitutes for execution.
+- [ ] Any disagreement with the owner is specific, evidence-backed, and includes a stronger alternative.
+
 ## Scope
 
 - In scope:
