@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "states": [
+    "cover",
+    "procedure",
+    "citizen",
+    "staff",
+    "evidence",
+    "improvement",
+    "mobile"
+  ],
+  "controls": [
+    "cover",
+    "procedure",
+    "citizen",
+    "staff",
+    "evidence",
+    "improvement",
+    "mobile"
+  ],
+  "assets": 11,
+  "external_runtime": 0,
+  "notices": 4,
+  "labels": 10,
+  "animationend_authority": true,
+  "fixed_timeout": false
+}
