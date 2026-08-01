@@ -1,0 +1,200 @@
+{
+  "status": "PASS",
+  "combinations": 21,
+  "failures": [],
+  "console_page_errors": [],
+  "failed_requests": [],
+  "external_runtime_requests": 0,
+  "keyboard_navigation": true,
+  "motion": {
+    "computed_end_ms": 770,
+    "animation_name": "briefComplete",
+    "animationend_events": 2,
+    "style_geometry_equal": true,
+    "screenshot_equal": true,
+    "focus_stable": true,
+    "scroll_stable": true,
+    "board_geometry_stable": true,
+    "finals": [
+      {
+        "opacity": "1",
+        "transform": "none",
+        "shadow": "none",
+        "x": 726,
+        "y": 582,
+        "w": 628,
+        "h": 129
+      },
+      {
+        "opacity": "1",
+        "transform": "none",
+        "shadow": "none",
+        "x": 726,
+        "y": 582,
+        "w": 628,
+        "h": 129
+      }
+    ]
+  },
+  "boundary_persistence": {
+    "normal": [
+      {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0,
+        "viewport": [1440, 1100]
+      },
+      {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0,
+        "viewport": [768, 1024]
+      },
+      {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0,
+        "viewport": [390, 844]
+      }
+    ],
+    "reduced": [
+      {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0,
+        "viewport": [1440, 1100],
+        "immediate_complete": true
+      },
+      {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0,
+        "viewport": [768, 1024],
+        "immediate_complete": true
+      },
+      {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0,
+        "viewport": [390, 844],
+        "immediate_complete": true
+      }
+    ],
+    "mobile": {
+      "normal": {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0
+      },
+      "reduced": {
+        "labels": [
+          "FAILED CHECK",
+          "SKIPPED — NOT PASSED",
+          "UNAVAILABLE EVIDENCE",
+          "STALE EVIDENCE — DO NOT USE",
+          "RESIDUAL CONDITION",
+          "APPROVAL SCOPE LIMITED",
+          "NO UNIVERSAL CERTIFICATION",
+          "DEPLOYMENT NOT AUTHORIZED"
+        ],
+        "count": 8,
+        "exact": true,
+        "visible": true,
+        "overlaps": 0
+      }
+    }
+  },
+  "boundary_persistence_8_of_8": true,
+  "localhost": {
+    "attempted": true,
+    "success": false,
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:8765/index.html\nCall log:\n  - navigating to \"http://127.0.0.1:8765/index.html\", waiting until \"networkidle\"\n"
+  },
+  "harness": "inline exact local bytes fallback",
+  "screenshots": {
+    "cover-1440x1100.png": "3e257075a281802777c67982fe41d47ebcc2cddb9f795ef38f5b76017689ef8b",
+    "submission-1440x1100.png": "8f23a87aef97ed141e393f9b7851e83c1a2d6064b3234cb5d3efccd567802a26",
+    "claims-1440x1100.png": "26b6afe3ff11903070ffc4b0cc07c153b0d7c812f42f5ffdbd0afa0d0dcabb49",
+    "checks-1440x1100.png": "842e7e21ffce20f328d632f890c446a63d773202fef6ebfcc64174d812fdb5b1",
+    "evidence-1440x1100.png": "fb1abc26758a93d8bec386869a555816e65954e7974bf4e2c45198e778f7a675",
+    "decision-1440x1100.png": "39f89b1975692ff5624a19b1bffaacf240ad88ce8244bbc2a673f0fa7f003180",
+    "mobile-390x844.png": "92a302e1e65e3041d5c5dcae4e5c11f0653d740df931d089788af67e05488fb6"
+  }
+}
