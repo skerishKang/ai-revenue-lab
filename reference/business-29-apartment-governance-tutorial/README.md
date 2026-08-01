@@ -1,25 +1,31 @@
-# Business 29 — 공동주택 운영 단계별 가이드 (비식별 합성 튜토리얼)
+# Business 29 — 방림명지로드힐 우리단지 운영실 (단계별 운영 가이드)
 
-Guided tutorial — de-identified synthetic, visual demo only.
+Guided tutorial — **실제 단지 적용형 시연** for 방림명지로드힐아파트.
 
 ## What this is
 
-A step-by-step visual tutorial of apartment-community operation problem types,
-**fully de-identified**. It is a synthetic visual guide, not real data, not a
-legal tool, and not a product backend.
+A step-by-step visual guide connecting the apartment complex's meeting, notice,
+quorum, opinions, resolution, disclosure and audit records so residents can
+understand the operation. It is a **방림명지로드힐 운영 데모**.
 
 ```text
-synthetic only       — 모든 단지명·인물·날짜·금액·사건·소송·고소·CCTV·투표 결과는 합성
-visual demo only     — no backend, database, authentication, or deployment
-no legal judgement   — 판정을 내리지 않으며 안내 표현만 사용
-guide vocabulary     — 확인 필요 · 자료 부족 · 절차 보완 필요 · 공개 보류 · 전문 검토 필요 · 기록 유지
+방림명지로드힐 운영 데모   — real-complex identity applied (with user authorization)
+실제 단지 적용형 시연       — visual demo for resident/council review
+개인정보 포함 자료는 공개 전 검토·가림처리
+회의·공개·의결은 담당자 확인 후 확정
+전자투표·계약·결제 기능은 현재 데모 범위 아님
+데모 예시 / 작성 예시 / 검토 전 초안  — 데모용 문서·예시 값은 실제 확정 자료가 아님
 ```
 
-## Fixture
+## Identity (authorized)
 
 ```text
-Community:  솔빛마루 2단지 (합성) · 420세대
-Roles:      합성 관리자 · 동대표 · 선관위원 · 관리사무소 · 외부 검토자 · 일반 주민
+Apartment:  방림명지로드힐아파트 (Bangnim Myeongji Roadhill Apartment)
+Region:     광주광역시 남구
+Buildings:  101동 · 102동
+Households: 192세대
+Council:    제5기 입주자대표회의
+Chair:      회장 김경애
 ```
 
 ## Chapters (7)
@@ -41,6 +47,19 @@ Roles:      합성 관리자 · 동대표 · 선관위원 · 관리사무소 · 
 주민 공개 보류 · 기한초과 후속조치
 ```
 
+Roles used: 입주자대표회의 회장 · 동대표 · 감사 · 선거관리위원장 · 관리소장 ·
+관리사무소 담당자 · 일반 주민 · 외부 검토자.
+
+## Boundary
+
+```text
+no legal judgement      — 판정을 내리지 않으며 안내 표현만 사용
+no real voting          — 전자투표 구현 없음 (데모 범위 아님)
+no contract/payment     — 계약·결제 구현 없음 (데모 범위 아님)
+no backend/db/auth      — static HTML/CSS/JS only
+no real litigation data — 소송·고소·CCTV·투표 결과 데이터 사용하지 않음
+```
+
 ## Run
 
 ```bash
@@ -52,12 +71,4 @@ node reference/business-29-apartment-governance-tutorial/tests/validate_tutorial
 NODE_PATH=<playwright node_modules> node reference/business-29-apartment-governance-tutorial/tests/browser_check.js
 ```
 
-Browser validation result: **PASS** (desktop 1440x900 · tablet 768x1024 · mobile 390x844 —
-0 console errors · 0 page errors · 0 failed requests · 0 external network requests).
-
 Evidence: `evidence/browser-check.json`, `evidence/self-check.json`
-
-## Boundary
-
-No backend, database, authentication, deployment, real data, real voting, legal
-judgement, CCTV, or real litigation material. Static HTML/CSS/JS only, all local.

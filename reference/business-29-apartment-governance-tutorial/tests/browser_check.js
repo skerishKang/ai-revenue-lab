@@ -95,12 +95,32 @@ function serve(port) {
     await page.locator("#chapter-tabs button").nth(0).click();
 
     var title = await page.title();
+    var layout = await page.evaluate(function () {
+      var textOverflows = [];
+      document.querySelectorAll("h1, h2, h3, p, b, span, li, small, dt, dd, figcaption, blockquote").forEach(function (el) {
+        if (el.scrollWidth > el.clientWidth + 2 && el.clientWidth > 0) {
+          textOverflows.push({ tag: el.tagName, text: (el.textContent || "").slice(0, 50), scrollW: el.scrollWidth, clientW: el.clientWidth });
+        }
+      });
+      return {
+        horizontal_overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+        text_overflow_elements: textOverflows.slice(0, 5),
+        chapter_count: document.querySelectorAll("#chapter-tabs button").length,
+        scenario_count: document.querySelectorAll("#scenario option").length,
+      };
+    });
     var ok =
       r.status() === 200 &&
       consoleErrors.length === 0 &&
       pageErrors.length === 0 &&
       failedRequests.length === 0 &&
-      externalRequests.length === 0;
+      externalRequests.length === 0 &&
+      !layout.horizontal_overflow &&
+      layout.text_overflow_elements.length === 0 &&
+      layout.chapter_count === 7 &&
+      layout.scenario_count === 7;
 
     var res = {
       viewport: vp.name,
@@ -111,6 +131,10 @@ function serve(port) {
       pageErrors: pageErrors,
       failedRequests: failedRequests,
       externalRequests: externalRequests,
+      horizontal_overflow: layout.horizontal_overflow,
+      text_overflow_elements: layout.text_overflow_elements,
+      chapter_count: layout.chapter_count,
+      scenario_count: layout.scenario_count,
       pass: ok,
     };
     results.push(res);
@@ -121,6 +145,10 @@ function serve(port) {
       " pageErrors=" + pageErrors.length +
       " failed=" + failedRequests.length +
       " external=" + externalRequests.length +
+      " overflow=" + layout.horizontal_overflow +
+      " textOverflow=" + layout.text_overflow_elements.length +
+      " chapters=" + layout.chapter_count +
+      " scenarios=" + layout.scenario_count +
       " => " + (ok ? "PASS" : "FAIL")
     );
     await page.close();

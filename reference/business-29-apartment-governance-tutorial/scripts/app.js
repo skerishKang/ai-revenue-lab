@@ -1,6 +1,7 @@
-/*  app.js  —  guided tutorial controller (de-identified synthetic)
+/*  app.js  —  guided tutorial controller (방림명지로드힐 운영 데모)
  *
- *  Renders the 7 chapters and 7 scenarios. Status vocabulary is limited to
+ *  Renders the 7 chapters and 7 scenarios for the 방림명지로드힐 real-complex
+ *  demo. 데모용 예시 값은 데모 예시로 표시합니다. Status vocabulary uses only
  *  non-judgemental phrases: 확인 필요 / 자료 부족 / 절차 보완 필요 / 공개 보류 /
  *  전문 검토 필요 / 기록 유지.
  */
@@ -65,7 +66,7 @@
     data.chapters.forEach(function (c) { if (c.id === currentChapter) chapter = c; });
     if (!chapter) return;
     chapterTitle.textContent = chapter.no + ". " + chapter.title;
-    chapterFolio.textContent = "챕터 " + chapter.no + " / 7 · 합성 가이드";
+    chapterFolio.textContent = "챕터 " + chapter.no + " / 7 · 방림명지로드힐 운영 데모";
     var steps = chapter.steps.map(function (s, i) {
       return '<div class="step-card"><span class="no">STEP ' + (i + 1) + "</span>" +
         "<h3>" + escapeHtml(s.title) + "</h3><p>" + escapeHtml(s.text) + "</p></div>";
@@ -79,10 +80,12 @@
       }).join("") +
       "</div>" +
       '<div class="steps">' + steps + "</div>" +
-      '<div class="guide-note"><h4>가이드 노트</h4><p>' + escapeHtml(chapter.guide) + "</p></div>" +
+      '<div class="guide-note"><h4>가이드 노트 <span class="demo-tag">데모 예시</span></h4><p>' + escapeHtml(chapter.guide) + "</p></div>" +
       (scenario
         ? '<div class="scenario-card"><h4>시나리오 · ' + escapeHtml(scenario.title) + "</h4>" +
-          "<p>" + escapeHtml(scenario.text) + "</p>" + statusChip(scenario.status) + "</div>"
+          "<p>" + escapeHtml(scenario.text) + "</p>" +
+          (scenario.demo ? '<span class="demo-tag">데모 예시</span> ' : "") +
+          statusChip(scenario.status) + "</div>"
         : "");
     statusEl.hidden = !scenario;
     if (scenario) {

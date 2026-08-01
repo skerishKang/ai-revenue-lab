@@ -78,18 +78,34 @@ check("required guide expressions present", function () {
   });
 });
 
-/* 4. synthetic-only boundary */
-check("synthetic-only boundary (no real identity hints)", function () {
-  assert.strictEqual(data.meta.community, "솔빛마루 2단지 (합성)");
-  assert.strictEqual(data.meta.households, 420);
-  assert.strictEqual(data.meta.synthetic, true);
+/* 4. real apartment identity applied */
+check("real apartment identity applied", function () {
   var content = shipContent();
-  ["솔빛마루 2단지", "420"].forEach(function (t) {
-    assert.ok(content.indexOf(t) !== -1, "synthetic fixture marker missing: " + t);
+  assert.strictEqual(data.meta.community, "방림명지로드힐아파트");
+  assert.strictEqual(data.meta.communityEn, "Bangnim Myeongji Roadhill Apartment");
+  assert.strictEqual(data.meta.households, 192);
+  assert.strictEqual(data.meta.buildings, "101동 · 102동");
+  assert.strictEqual(data.meta.council, "제5기 입주자대표회의");
+  assert.strictEqual(data.meta.chair, "회장 김경애");
+  ["방림명지로드힐", "192세대", "101동", "102동", "김경애", "제5기 입주자대표회의", "광주광역시 남구"].forEach(function (t) {
+    assert.ok(content.indexOf(t) !== -1, "required identity text missing: " + t);
   });
-  ["(합성)", "합성"].forEach(function (t) {
-    assert.ok(content.indexOf(t) !== -1, "synthetic label missing: " + t);
+  assert.ok(content.indexOf("데모 예시") !== -1, "demo example markers present");
+});
+
+/* 5. no synthetic apartment identity remains */
+check("no synthetic apartment identity remains", function () {
+  var forbidden = [
+    "솔빛마루", "Solbit", "420", "fictional community", "가상 단지", "합성 단지",
+    "synthetic apartment identity", "all community details are synthetic",
+    "SYNTHETIC APARTMENT RECORDS",
+  ];
+  var content = shipContent();
+  forbidden.forEach(function (t) {
+    assert.strictEqual(content.indexOf(t), -1, "forbidden identity reference present: " + t);
   });
+  assert.ok(content.indexOf("방림명지로드힐 운영 데모") !== -1, "demo boundary phrase present");
+  assert.ok(content.indexOf("실제 단지 적용형 시연") !== -1, "real-complex demo phrase present");
 });
 
 /* 5. data.js mirrors data.json */
@@ -166,4 +182,4 @@ if (failures.length) {
   console.log(failures.length + " check(s) failed.");
   process.exit(1);
 }
-console.log("All 11 Business 29 guided tutorial checks passed.");
+console.log("All 12 Business 29 방림명지로드힐 guided tutorial checks passed.");

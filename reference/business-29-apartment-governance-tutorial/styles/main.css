@@ -65,6 +65,9 @@ body {
 .scenario-card p { margin: 0 0 10px; line-height: 1.65; }
 .scenario-card .status { margin-right: 6px; }
 
+.demo-tag { display: inline-block; padding: 3px 7px; border: 1px dashed var(--brass); color: var(--brass); font-size: 10px; font-weight: 800; letter-spacing: .05em; margin-right: 6px; vertical-align: middle; }
+.guide-note h4 .demo-tag { color: var(--muted); border-color: var(--line); }
+
 .ledger-strip { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0; }
 .ledger-strip span { border: 1px solid var(--ink); padding: 5px 8px; font-size: 11px; }
 
@@ -74,6 +77,7 @@ footer { display: flex; justify-content: space-between; gap: 20px; border-top: 3
   .masthead { flex-direction: column; }
   .synthetic-note { text-align: left; max-width: none; }
   .tut-nav { align-items: flex-start; flex-direction: column; }
+  .chapter-tabs { max-width: 100%; }
   .scenario-select { margin-left: 0; width: 100%; }
   .steps { grid-template-columns: 1fr; }
 }
