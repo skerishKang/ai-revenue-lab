@@ -1,0 +1,40 @@
+{
+  "browser": "chromium headless (Playwright)",
+  "run_at": "2026-08-01T08:57:09.912Z",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "size": "1440x900",
+      "httpStatus": 200,
+      "title": "공동주택 운영 단계별 가이드 — 합성 튜토리얼",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "externalRequests": [],
+      "pass": true
+    },
+    {
+      "viewport": "tablet",
+      "size": "768x1024",
+      "httpStatus": 200,
+      "title": "공동주택 운영 단계별 가이드 — 합성 튜토리얼",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "externalRequests": [],
+      "pass": true
+    },
+    {
+      "viewport": "mobile",
+      "size": "390x844",
+      "httpStatus": 200,
+      "title": "공동주택 운영 단계별 가이드 — 합성 튜토리얼",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "externalRequests": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}
