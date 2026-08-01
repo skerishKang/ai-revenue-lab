@@ -22,12 +22,14 @@ The former portfolio-wide `UI_ONLY` default is superseded.
 For each Business, choose the strongest reversible evidence stage required by the current business question:
 
 ```text
+PRODUCT_FRAMED
 COMPETITIVE_DEMO
 INVESTOR_DEMO
 MVP_VERTICAL_SLICE
 SERVICE_LED_PILOT
 RUNTIME_PILOT
 COMMERCIAL_HARDENING
+OPERATING_PRODUCT
 ```
 
 A media product may begin with an image-led investor demo. A verification or data product may require a live frontend/backend vertical slice. A consulting product may use a service-led pilot. The evidence goal determines scope.

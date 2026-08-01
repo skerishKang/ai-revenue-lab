@@ -117,11 +117,29 @@ smallest useful scope
 
 UI, UX, backend, deployment, and business verdicts remain separate so one type of evidence is not misrepresented as another. These gates control scope and risk; they are not intended to create ceremony or delay an authorized deployment.
 
-For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
+Deployment follows `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. Two controlled lanes exist:
 
-Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. Before the authorized merge, record the last known-good Production source and configuration plus the required smoke checks.
+```text
+Lane A — APPROVED_EXACT_HEAD_DEMO
+reviewed Draft PR exact head
+→ explicit owner approval for the SHA and target
+→ approved GitHub Actions workflow
+→ dedicated Business project
+→ public-byte and visual/journey verification
+→ source PR remains Draft and unmerged
 
-Routine inspection and authorized configuration should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. APIs and CLI must not be used to create, retry, promote, or directly upload a deployment on Git-connected Pages projects. Owner action is reserved for product, risk, and genuinely owner-only decisions.
+Lane B — CANONICAL_PRODUCTION
+reviewed exact head
+→ explicit merge and Production authorization
+→ merge to the configured Production branch
+→ automatic Git-connected deployment
+→ real-environment acceptance
+→ reviewed fix/revert recovery
+```
+
+Operators observe and verify the automatic Production deployment for the canonical lane; they do not create a second deployment manually. No deployment of any kind occurs without an explicit owner decision authorizing the exact head and target.
+
+Routine inspection and authorized configuration should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. APIs and CLI must not be used to create, retry, promote, or directly upload a deployment on Git-connected Pages projects outside the approved deployment workflow. Owner action is reserved for product, risk, and genuinely owner-only decisions.
 
 ## Verified product tracks
 

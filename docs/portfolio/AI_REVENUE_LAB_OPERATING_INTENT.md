@@ -186,7 +186,7 @@ Governance exists to make this loop faster and more truthful, not smaller.
 
 Deployment follows `../operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
 
-For Git-connected Cloudflare Pages projects, an approved merge to the configured Production branch is the normal deployment action. Operators observe and verify the automatic deployment and recover through reviewed source changes.
+For Git-connected Cloudflare Pages projects, an approved merge to the configured Production branch is the Canonical Production lane. For demos that must be reviewed before merge (investor/competitive demos, reviewable MVP candidates), the approved exact-head demo lane deploys a reviewed Draft PR exact head to a dedicated project after explicit owner approval. Both lanes are defined in the deployment policy linked above.
 
 Deployment evidence remains distinct from product-quality and business evidence.
 

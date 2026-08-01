@@ -4,7 +4,7 @@
 - Owner: AI Revenue Lab portfolio governance
 - Permanent UI execution issue: #154
 - Phase policy: `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
-- Current portfolio mode: `UI_ONLY`
+- Current portfolio mode: `MVP_AND_VISUAL_UPGRADE`
 - Canonical numbering authority: `docs/portfolio/BUSINESS_REGISTRY.md`
 
 ## 1. Purpose
@@ -15,19 +15,20 @@ The backlog exists so ideas are not lost in conversation history or merged away 
 
 This document does **not** silently assign canonical numbers. A candidate becomes canonical only after the registry procedure is completed: explicit issue, duplicate/conflict review, product boundary, workspace decision, reviewed registry update, and supporting documentation.
 
-New candidates follow the portfolio phase gates:
+New candidates follow the current portfolio evidence stages (`docs/operations/UI_UX_BACKEND_PHASE_GATES.md`):
 
 ```text
-product framing
-→ UI visual design
-→ UI approval
-→ UX design
-→ UX approval
-→ backend authorization decision
-→ backend implementation
+PRODUCT_FRAMED
+COMPETITIVE_DEMO
+INVESTOR_DEMO
+MVP_VERTICAL_SLICE
+SERVICE_LED_PILOT
+RUNTIME_PILOT
+COMMERCIAL_HARDENING
+OPERATING_PRODUCT
 ```
 
-During `UI_ONLY` mode, the backlog authorizes visual-reference planning only. It does not authorize UX or backend implementation.
+Under the current `MVP_AND_VISUAL_UPGRADE` portfolio mode, each Business chooses the strongest reversible evidence stage its business question requires — a competitive demo, investor demo, MVP vertical slice, service-led pilot, runtime pilot, or operating product. Visual-reference planning is one possible stage, not the portfolio default.
 
 ## 2. Status vocabulary
 
