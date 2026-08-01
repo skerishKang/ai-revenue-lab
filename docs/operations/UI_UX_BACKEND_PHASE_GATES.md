@@ -4,6 +4,7 @@
 - Owner: Web CTO under owner authority
 - Permanent tracking issue: #154
 - Canonical intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+- Owner/operator contract: `OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`
 - Visual policy: `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md`
 - Backend policy: `BACKEND_MVP_OPERATING_POLICY.md`
 - Deployment policy: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
@@ -36,6 +37,8 @@ Examples:
 
 The gate system exists to prevent false claims and uncontrolled irreversible actions. It must not reduce a product to a weak static mockup.
 
+The owner must be treated as a multidisciplinary expert across law, public administration, police studies and policing practice, computer science and software development, Korean institutional and field practice, product, and business. Gates must not be used to replace that professional judgment with generic AI supervision.
+
 Within an authorized stage:
 
 - implement the complete bounded story;
@@ -43,9 +46,11 @@ Within an authorized stage:
 - simulate missing runtime behavior when appropriate;
 - build live backend behavior when it is essential to the evidence goal;
 - proceed without repeated minor approval questions;
-- preserve reversibility and truthful evidence.
+- preserve reversibility and truthful evidence;
+- raise only concrete material risks and unresolved decisions;
+- challenge the owner only through a specific, evidence-backed counterargument with a stronger alternative.
 
-Do not use phase boundaries as a reason to omit the feature, image, interaction, or result that makes the product understandable.
+Do not use phase boundaries, generic legal cautions, or theoretical risks as a reason to omit the feature, image, interaction, or result that makes the product understandable.
 
 ## 3. Stage 0 — Product framing
 
@@ -231,6 +236,8 @@ Do not:
 
 When a risk is manageable, mitigate it. Do not automatically remove the feature or weaken the entire design.
 
+For legal, administrative, policing, public-sector, privacy, and software matters, operators must apply `OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`: presume owner expertise, avoid boilerplate advice, distinguish law from field practice, and escalate only the concrete residual decision.
+
 ## 10. Publication and deployment
 
 Demo publication, MVP deployment, and pilot exposure require explicit owner authorization for the exact target.
@@ -290,7 +297,8 @@ The following former portfolio defaults are superseded:
 - backend frozen until a complete UX matrix is approved;
 - static local assets as the preferred answer for every visual category;
 - risk avoidance through feature and expression reduction;
-- technical validation as sufficient proof of UI quality.
+- technical validation as sufficient proof of UI quality;
+- operator behavior that treats the owner as a supervised novice rather than a multidisciplinary expert.
 
 The new default is:
 
