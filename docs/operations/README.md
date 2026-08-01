@@ -7,6 +7,7 @@
 - `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md` — screen-level benchmarking, imagery, typography, composition, motion, and investor/customer visual-quality gates.
 - `BACKEND_MVP_OPERATING_POLICY.md` — backend modes, vertical slices, service-led pilots, data, providers, observability, testing, cost, and hardening.
 - `PORTFOLIO_PRODUCT_QUALITY_AUDIT.md` — portfolio-wide A/B/C/D audit and Visual Upgrade v2 / Product Upgrade v2 program.
+- `POLICY_CONSISTENCY_AUDIT.md` — repository policy audit plus the required external GitHub governance control-plane check.
 - `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — approved exact-head demo deployments, canonical Production deployments, acceptance, and recovery.
 - `../portfolio/BUSINESS_CANDIDATE_BACKLOG.md` — idea-preservation backlog and proposed Business map.
 - Permanent portfolio tracking issue: `#154`.
@@ -173,6 +174,19 @@ clean local checkout
 ```
 
 Direct connector edits remain appropriate for bounded changes. Do not force partial line-by-line remote editing when a local multi-file refactor is safer and clearer.
+
+## External governance control plane
+
+Repository-file validation is necessary but not sufficient because permanent GitHub Issues and PR bodies also direct workers.
+
+Before declaring portfolio governance fully aligned, verify through authenticated GitHub inspection that:
+
+- Issue #154 reflects `MVP_AND_VISUAL_UPGRADE` and does not present `UI_ONLY`, mandatory UI→UX→backend, or backend frozen as current policy;
+- Issue #366 remains the active portfolio product-quality audit and renewal program;
+- PR #365 or its merged replacement is the authoritative policy source;
+- historical issue comments and Business-specific records are not mistaken for current portfolio defaults.
+
+See `POLICY_CONSISTENCY_AUDIT.md`.
 
 ## Portfolio tracking
 
