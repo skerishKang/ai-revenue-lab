@@ -8,8 +8,8 @@ The user's G-drive (`/mnt/g`) was searched for real 방림명지로드힐 아파
 user-provided complex images. **No usable photograph was found.** The only related
 files located were litigation/audit PDFs (소송·감사 자료), which are confidential
 real-person materials and were **not** used. The demo therefore keeps a **neutral
-building diagram** and does not create a concrete fictional apartment appearance,
-other fictional complex name, or fictional logo.
+building diagram** and does not create a made-up complex appearance, another
+complex name, or a logo.
 
 | Local path | Source URL / basis | Creator/rightsholder | Licence / creation basis | Creation date | Intended state | Status |
 |---|---|---|---|---|---|---|
