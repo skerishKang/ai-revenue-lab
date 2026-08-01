@@ -22,9 +22,6 @@ WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 
 SW, SH = Inches(13.333), Inches(7.5)
 
-STATUS_FULL = "CUSTOMER-FACING MASTER · FINAL IDENTITY REQUIRED · LEGAL REVIEW REQUIRED · NOT YET SENT"
-PROVIDER = "제안 제공자 정보는 발송 전 최종 확정"
-
 
 def para(tf, text, size=14, bold=False, color=GRAY, first=False, align=None, space_before=None):
     p = tf.paragraphs[0] if first and not tf.paragraphs[0].runs else tf.add_paragraph()
@@ -117,11 +114,12 @@ def build():
     rtf.margin_right = Inches(0.2)
     rtf.margin_top = Inches(0.12)
     para(rtf, "상품 A · 진단 워크숍", size=13, bold=True, color=BLUE, first=True)
-    para(rtf, "• 1~2일 · 초기 제안 300만~500만원", size=11, color=GRAY)
+    para(rtf, "• 1~2일 · 초기형 300만~500만원 · 확장형 500만~800만원", size=11, color=GRAY)
     para(rtf, "• 현재 흐름 진단 · 후보 선정 · 위험 분리", size=11, color=GRAY)
-    para(rtf, "상품 B · 6주 파일럿", size=13, bold=True, color=BLUE, space_before=6)
-    para(rtf, "• 디자인 파트너 1,000만~1,500만원", size=11, color=GRAY)
-    para(rtf, "• 표준 6주 파일럿 1,500만~2,500만원", size=11, color=GRAY)
+    para(rtf, "상품 B1 · 디자인 파트너 파일럿", size=13, bold=True, color=BLUE, space_before=6)
+    para(rtf, "• 6주 · 1팀 · 1업무 · 1,000만~1,500만원", size=11, color=GRAY)
+    para(rtf, "상품 B2 · 표준 6주 파일럿", size=13, bold=True, color=BLUE, space_before=4)
+    para(rtf, "• 6주 · 1,500만~2,500만원", size=11, color=GRAY)
     para(rtf, "• 기준선·교육·재설계·파일럿·성과·플레이북", size=11, color=GRAY)
     para(rtf, "상품 C · 운영 자문 · 월 300만~600만원", size=13, bold=True, color=BLUE, space_before=6)
 
@@ -133,13 +131,12 @@ def build():
     para(ntf, "30분 사전 상담 → 대상 업무 1개 선정 → 진단 워크숍 범위 확정 → 견적·일정 승인",
          size=12, color=GRAY, space_before=4)
 
-    # Footer (readable size, no overlap)
+    # Footer (customer review copy only, no internal English markers)
     foot = slide.shapes.add_textbox(Inches(0.55), Inches(6.45), Inches(12.2), Inches(0.85))
     ftf = foot.text_frame
     ftf.word_wrap = True
-    para(ftf, STATUS_FULL, size=9, color=GRAY, first=True)
-    para(ftf, "제공자 정보 최종 확정 필요 · " + PROVIDER, size=9, color=GRAY)
-    para(ftf, "가격은 시장 검증 전 자사 가격 가설 · 범위와 인원·기간에 따라 최종 견적 · VAT는 최종 견적서에서 확정",
+    para(ftf, "DRAFT · 제공자 정보 최종 확정 필요", size=9, color=GRAY, first=True)
+    para(ftf, "가격은 시장 검증 전 가설이며 범위·인원·기간에 따라 달라질 수 있습니다.",
          size=9, color=GRAY)
 
     notes = slide.notes_slide.notes_text_frame

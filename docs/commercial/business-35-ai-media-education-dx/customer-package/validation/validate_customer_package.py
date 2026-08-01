@@ -161,6 +161,23 @@ def main() -> int:
             or "주장이 아닙니" in txt or "주장이\n아닙니다" in txt)
         check(has_revenue_disclaimer, f"no revenue claim in {f}", problems)
 
+    # No internal English status markers in customer-facing outputs
+    for f in ["Business35_Master_Proposal_10p.pdf", "Business35_OnePage_Offer.pdf",
+              "Business35_Diagnostic_Questionnaire.pdf"]:
+        txt = pdf_text(f)
+        internal_markers = ["CUSTOMER-FACING", "FINAL IDENTITY", "NOT YET SENT", "DRAFT MASTER"]
+        hit = [m for m in internal_markers if m in txt]
+        check(not hit, f"no internal English status markers in {f} (found {hit or 'none'})", problems)
+
+    # Cross-file pricing naming: B1 / B2 present in proposal and one-page
+    prop_txt = pdf_text("Business35_Master_Proposal_10p.pdf")
+    onepage_txt = pdf_text("Business35_OnePage_Offer.pdf")
+    check("B1" in prop_txt and "B2" in prop_txt, "proposal uses B1/B2 pricing naming", problems)
+    check("B1" in onepage_txt and "B2" in onepage_txt, "one-page uses B1/B2 pricing naming", problems)
+    # No duplicate bare "상품 B" without subcode in price context (B must appear as B1/B2)
+    bare_b = re.findall(r"상품\s+B\s*[·—:]", prop_txt + onepage_txt)
+    check(not bare_b, f"no bare 商品 B without B1/B2 in price context (found {len(bare_b)})", problems)
+
     # PPTX geometry: no shape extends beyond slide bounds
     try:
         from pptx import Presentation
@@ -236,6 +253,21 @@ def main() -> int:
         vqa_text = vqa.read_text(encoding="utf-8")
         missing = [p.name for p in pngs if p.name not in vqa_text]
         check(not missing, f"every rendered filename listed in VISUAL_QA.md (missing: {missing[:5] or 'none'})", problems)
+
+    # Spreadsheet: Offer B1/B2 split present, correct sheet set
+    try:
+        from openpyxl import load_workbook
+        wb = load_workbook(str(ROOT / "Business35_Pilot_Quote_Template.xlsx"), data_only=False)
+        sheets = wb.sheetnames
+        expected = ["Instructions", "Customer Scope", "Offer A", "Offer B1", "Offer B2",
+                    "Offer C", "Optional Items", "Assumptions", "Approval"]
+        check(sheets == expected, f"quote template sheets match A/B1/B2/C set (found {sheets})", problems)
+        # range-warning conditional formatting on B4 of each Offer sheet
+        cf_ok = all(any("B4" in str(cf.sqref) for cf in wb[s].conditional_formatting)
+                    for s in ["Offer A", "Offer B1", "Offer B2", "Offer C"])
+        check(cf_ok, "quote Offer sheets have B4 range-warning conditional formatting", problems)
+    except Exception as e:
+        check(False, f"spreadsheet validation ran ({e})", problems)
 
     # BLOCKER 0 / MAJOR 0 declarations
     check("BLOCKER: 0" in vqa_text or "BLOCKER 0" in vqa_text or "blocker_count: 0" in vqa_text,

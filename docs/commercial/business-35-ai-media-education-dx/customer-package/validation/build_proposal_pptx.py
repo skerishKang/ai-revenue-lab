@@ -240,25 +240,22 @@ def add_card(slide, x, y, w, h, title, body_lines, title_color=NAVY, body_size=1
 def build():
     prs = new_deck()
 
-    # ---- Slide 1 · 표지·핵심 제안 ----
+    # ---- Slide 1 · 표지 ----
     s = add_slide(prs, "Business 35 · AI Media Education & DX",
                   footer_mode="cover", slide_no=1,
-                  headline="AI 업무전환 프로그램 — 교육에서 끝나지 않고 실제 업무 변화까지 연결합니다.")
+                  headline="AI 교육에서 실제 업무전환까지")
     tf = add_body_box(s, Inches(0.7), BODY_Y, Inches(11.9), Inches(4.2))
-    para(tf, "지역 문화·교육·협회·단체·미디어 기관을 위한 고객용 제안서입니다.",
-         size=16, color=GRAY, first=True)
-    para(tf, "무엇을 제공하나요?", size=20, bold=True, color=NAVY, space_before=14)
-    para(tf, "현재 업무 진단 → 직무 교육 → 실제 실습 → 워크플로 재설계 → 제한 파일럿 → 성과 측정 → 운영 플레이북",
-         size=16, color=GRAY)
-    para(tf, "누구를 위한 것인가요?", size=20, bold=True, color=NAVY, space_before=14)
-    para(tf, "홍보·교육·콘텐츠 제작을 수작업으로 하고, AI를 개인 단위로만 쓰고 있는 조직",
-         size=16, color=GRAY)
-    para(tf, "진입 상품은 무엇인가요?", size=20, bold=True, color=NAVY, space_before=14)
-    para(tf, "상품 A · 진단 워크숍 (초기 제안 300만~500만원) → 상품 B · 6주 디자인 파트너 파일럿",
-         size=16, color=GRAY)
+    para(tf, "지역 문화·교육·미디어 조직을 위한 진단·실습·워크플로 재설계·파일럿 프로그램",
+         size=18, bold=True, color=NAVY, first=True)
+    para(tf, "대상: 지역 문화기관 · 교육기관 · 협회·단체 · 미디어·콘텐츠 기관",
+         size=15, color=GRAY, space_before=12)
+    para(tf, "대표 진입 상품: 상품 A · 진단 워크숍 (초기형 300만~500만원)",
+         size=15, color=GRAY, space_before=12)
+    para(tf, "상세 내용은 이어지는 페이지에서 확인하실 수 있습니다.",
+         size=13, color=GRAY, space_before=16)
     add_notes(
         s,
-        "표지에서 핵심 제안(무엇을·누구를·진입 상품)을 한 번에 설명한다.",
+        "표지에서 제품명·핵심 제안 한 문장·대상 고객군·대표 진입 상품·DRAFT 상태만 보여준다.",
         "조직에서 가장 시간이 오래 걸리는 콘텐츠 업무는 무엇인가요?",
         "가격을 확정 가격처럼 말하지 않는다. 성과·정부지원금을 보장하지 않는다."
     )
@@ -356,6 +353,15 @@ def build():
     for i, (label, num) in enumerate(steps):
         x = start_x + (box_w + gap) * i
         add_step_box(s, x, y, box_w, h, num, label)
+        # connecting arrow between steps
+        if i < len(steps) - 1:
+            arrow_x = x + box_w + Inches(0.01)
+            arrow = s.shapes.add_shape(13, arrow_x, y + Inches(0.55), Inches(0.14), Inches(0.5))
+            arrow.fill.solid()
+            arrow.fill.fore_color.rgb = ACCENT
+            arrow.line.fill.background()
+            arrow.shadow.inherit = False
+            arrow.rotation = 0
     add_notes(
         s,
         "7단계 업무전환 구조를 설명하고, 결과물이 사람이 승인한 운영 플레이북임을 강조한다.",
@@ -424,21 +430,29 @@ def build():
     dr.font.bold = True
     dr.font.color.rgb = WHITE
     dr.font.name = "Malgun Gothic"
-    prc = s.shapes.add_shape(5, Inches(0.7), Inches(3.6), Inches(2.9), Inches(1.3))
+    prc = s.shapes.add_shape(5, Inches(0.7), Inches(3.6), Inches(2.9), Inches(1.6))
     prc.fill.solid()
     prc.fill.fore_color.rgb = ACCENT
     prc.line.fill.background()
     prc.shadow.inherit = False
     ptf2 = prc.text_frame
     ptf2.vertical_anchor = MSO_ANCHOR.MIDDLE
+    ptf2.word_wrap = True
     pp = ptf2.paragraphs[0]
     pp.alignment = PP_ALIGN.CENTER
     prr = pp.add_run()
-    prr.text = "초기 제안 300만~500만원"
-    prr.font.size = Pt(16)
+    prr.text = "초기형 300만~500만원"
+    prr.font.size = Pt(15)
     prr.font.bold = True
     prr.font.color.rgb = WHITE
     prr.font.name = "Malgun Gothic"
+    pp2 = ptf2.add_paragraph()
+    pp2.alignment = PP_ALIGN.CENTER
+    prr2 = pp2.add_run()
+    prr2.text = "확장형 500만~800만원"
+    prr2.font.size = Pt(13)
+    prr2.font.color.rgb = RGBColor(0xFF, 0xE8, 0xC8)
+    prr2.font.name = "Malgun Gothic"
     out = s.shapes.add_shape(1, Inches(3.95), BODY_Y, Inches(8.65), Inches(2.8))
     out.fill.solid()
     out.fill.fore_color.rgb = WHITE
@@ -481,8 +495,8 @@ def build():
     )
     add_page_number(prs, s, 6)
 
-    # ---- Slide 7 · 상품 B + 6주 구조 ----
-    s = add_slide(prs, "7. 상품 B — 6주 디자인 파트너 파일럿", slide_no=7,
+    # ---- Slide 7 · 상품 B1 + 6주 구조 ----
+    s = add_slide(prs, "7. 상품 B1 — 6주 디자인 파트너 파일럿", slide_no=7,
                   headline="작게 실행하고, 측정하고, 운영 기준을 남깁니다.")
     sc = s.shapes.add_shape(5, Inches(0.7), BODY_Y, Inches(2.9), Inches(1.3))
     sc.fill.solid()
@@ -499,21 +513,29 @@ def build():
     srr.font.bold = True
     srr.font.color.rgb = WHITE
     srr.font.name = "Malgun Gothic"
-    prc6 = s.shapes.add_shape(5, Inches(0.7), Inches(3.6), Inches(2.9), Inches(1.3))
+    prc6 = s.shapes.add_shape(5, Inches(0.7), Inches(3.6), Inches(2.9), Inches(1.5))
     prc6.fill.solid()
     prc6.fill.fore_color.rgb = ACCENT
     prc6.line.fill.background()
     prc6.shadow.inherit = False
     ptf6 = prc6.text_frame
     ptf6.vertical_anchor = MSO_ANCHOR.MIDDLE
+    ptf6.word_wrap = True
     pp6 = ptf6.paragraphs[0]
     pp6.alignment = PP_ALIGN.CENTER
     prr6 = pp6.add_run()
     prr6.text = "1,000만~1,500만원"
-    prr6.font.size = Pt(18)
+    prr6.font.size = Pt(17)
     prr6.font.bold = True
     prr6.font.color.rgb = WHITE
     prr6.font.name = "Malgun Gothic"
+    pp6b = ptf6.add_paragraph()
+    pp6b.alignment = PP_ALIGN.CENTER
+    prr6b = pp6b.add_run()
+    prr6b.text = "상품 B1 · 디자인 파트너"
+    prr6b.font.size = Pt(11)
+    prr6b.font.color.rgb = RGBColor(0xFF, 0xE8, 0xC8)
+    prr6b.font.name = "Malgun Gothic"
     out6 = s.shapes.add_shape(1, Inches(3.95), BODY_Y, Inches(8.65), Inches(2.8))
     out6.fill.solid()
     out6.fill.fore_color.rgb = WHITE
@@ -547,14 +569,19 @@ def build():
         orr6c.font.name = "Malgun Gothic"
     # 6-week timeline row
     rows = [
-        ("W0", "계약·범위"), ("W1", "진단·기준선"), ("W2", "교육·실습"),
-        ("W3", "재설계"), ("W4", "제한 파일럿"), ("W5", "측정·보완"), ("W6", "결과·플레이북"),
+        ("W0", "계약·범위", "범위 확정"),
+        ("W1", "진단·기준선", "기준선 측정"),
+        ("W2", "교육·실습", "역량 확인"),
+        ("W3", "재설계", "검토 gate"),
+        ("W4", "제한 파일럿", "실행 결과"),
+        ("W5", "측정·보완", "중간 보고"),
+        ("W6", "결과·플레이북", "플레이북 승인"),
     ]
     tl_y = Inches(5.1)
-    tl_h = Inches(0.75)
+    tl_h = Inches(0.95)
     tl_w = Inches(1.62)
     tl_gap = Inches(0.12)
-    for i, (label, desc) in enumerate(rows):
+    for i, (label, desc, result) in enumerate(rows):
         tx = Inches(0.7) + (tl_w + tl_gap) * i
         box = s.shapes.add_shape(5, tx, tl_y, tl_w, tl_h)
         box.fill.solid()
@@ -564,6 +591,8 @@ def build():
         btf = box.text_frame
         btf.word_wrap = True
         btf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        btf.margin_left = Inches(0.04)
+        btf.margin_right = Inches(0.04)
         bp = btf.paragraphs[0]
         bp.alignment = PP_ALIGN.CENTER
         br = bp.add_run()
@@ -572,8 +601,23 @@ def build():
         br.font.bold = True
         br.font.color.rgb = WHITE
         br.font.name = "Malgun Gothic"
-    tf6 = add_body_box(s, Inches(0.7), Inches(6.0), Inches(11.9), Inches(0.9))
-    para(tf6, "가격은 시장 검증 전 자사 가격 가설입니다. 6주 상세 일정은 별도 수행계획서(04)에 있습니다.",
+        bp2 = btf.add_paragraph()
+        bp2.alignment = PP_ALIGN.CENTER
+        br2 = bp2.add_run()
+        br2.text = "▸ " + result
+        br2.font.size = Pt(10)
+        br2.font.color.rgb = RGBColor(0xE8, 0xEE, 0xF5)
+        br2.font.name = "Malgun Gothic"
+        # connecting timeline line between weeks
+        if i < len(rows) - 1:
+            line_x = tx + tl_w + Inches(0.01)
+            line = s.shapes.add_shape(1, line_x, tl_y + Inches(0.42), Inches(0.1), Inches(0.1))
+            line.fill.solid()
+            line.fill.fore_color.rgb = ACCENT
+            line.line.fill.background()
+            line.shadow.inherit = False
+    tf6 = add_body_box(s, Inches(0.7), Inches(6.25), Inches(11.9), Inches(0.7))
+    para(tf6, "가격은 시장 검증 전 가설입니다. 6주 상세 일정은 별도 수행계획서(04)에 있습니다.",
          size=13, color=GRAY, first=True)
     add_notes(
         s,
@@ -622,9 +666,9 @@ def build():
     s = add_slide(prs, "9. 가격 가설", slide_no=9,
                   headline="시장 검증 전 자사 가격 가설이며 범위 확인 후 최종 견적을 제시합니다.")
     price_cards = [
-        ("상품 A", "진단 워크숍", "300만~800만원", "초기 제안 300만~500만원"),
-        ("상품 B", "디자인 파트너", "1,000만~1,500만원", "6주 파일럿"),
-        ("상품 B", "표준 파일럿", "1,500만~2,500만원", "6주 파일럿"),
+        ("상품 A", "진단 워크숍", "초기형 300만~500만원", "확장형 500만~800만원"),
+        ("상품 B1", "디자인 파트너", "1,000만~1,500만원", "6주 파일럿"),
+        ("상품 B2", "표준 파일럿", "1,500만~2,500만원", "6주 파일럿"),
         ("상품 C", "운영 자문", "월 300만~600만원", "월 단위"),
     ]
     for i, (prod, name, price, note) in enumerate(price_cards):
