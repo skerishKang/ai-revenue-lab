@@ -1,0 +1,53 @@
+{
+  "steps": [
+    {
+      "step": "source-a",
+      "delay": 60,
+      "duration": 160,
+      "end": 220
+    },
+    {
+      "step": "source-b",
+      "delay": 100,
+      "duration": 150,
+      "end": 250
+    },
+    {
+      "step": "context",
+      "delay": 180,
+      "duration": 150,
+      "end": 330
+    },
+    {
+      "step": "recollection",
+      "delay": 300,
+      "duration": 160,
+      "end": 460
+    },
+    {
+      "step": "contradiction",
+      "delay": 420,
+      "duration": 120,
+      "end": 540
+    },
+    {
+      "step": "consequence",
+      "delay": 500,
+      "duration": 140,
+      "end": 640
+    },
+    {
+      "step": "missing",
+      "delay": 430,
+      "duration": 120,
+      "end": 550
+    },
+    {
+      "step": "human-review",
+      "delay": 590,
+      "duration": 130,
+      "end": 720
+    }
+  ],
+  "finalEnd": 720
+}

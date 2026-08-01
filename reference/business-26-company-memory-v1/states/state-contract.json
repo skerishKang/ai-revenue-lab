@@ -1,0 +1,15 @@
+{
+  "version": "company-memory-20260728-1",
+  "states": [
+    "cover",
+    "chronology",
+    "thread",
+    "lineage",
+    "witnesses",
+    "reconstruction",
+    "mobile"
+  ],
+  "phase": "UI_ONLY",
+  "synthetic": true,
+  "deployment": "NOT_AUTHORIZED"
+}
