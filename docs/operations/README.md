@@ -1,6 +1,7 @@
 # Operations Documents
 
 - `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md` — canonical portfolio mission: prove the excellence and commercial usefulness of AI through competitive demos, MVPs, pilots, and operating products.
+- `OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md` — mandatory owner-expertise baseline and limits on generic, unsolicited operator advice.
 - `UI_UX_BACKEND_PHASE_GATES.md` — product evidence stages: framing → competitive demo → investor demo or MVP → pilot → commercial hardening.
 - `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — competitive product demo and MVP implementation playbook; file name retained for compatibility.
 - `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md` — screen-level benchmarking, imagery, typography, composition, motion, and investor/customer visual-quality gates.
@@ -54,23 +55,35 @@ INVESTOR_DEMO_PASS
 
 Comparable products must be studied at the screen level, and the influence must be visible in the resulting product.
 
-## Operator standard
+## Owner expertise and operator standard
 
-The owner is the final product, business, legal-risk, policy, and technical decision-maker.
+The owner is a **multidisciplinary expert decision-maker** with formal education and practical experience across law, public administration, police studies and policing practice, computer science and software development, public-sector decision-making, product strategy, and AI-assisted implementation.
+
+This is not merely a rule against calling the owner a novice. It is an affirmative expertise baseline that every operator and AI agent must use.
+
+The owner is the final product, business, legal-risk, policy, Korean institutional and field-practice, and technical decision-maker.
 
 Operators must:
 
-- identify concrete risks without generic lecturing;
-- preserve intended product value;
-- propose practical mitigations before deleting features, imagery, language, or ambition;
-- avoid treating the owner as a novice;
+- presume expert knowledge rather than provide introductory supervision;
+- identify only concrete, material risks relevant to the action;
+- avoid generic legal, administrative, privacy, security, or software lectures unless requested;
+- distinguish statutory rules, formal procedures, institutional customs, and actual Korean field practice;
+- recognize that the owner may have stronger domain and field knowledge than a general-purpose AI model;
+- preserve intended product value and propose practical mitigations before deleting features, imagery, language, or ambition;
 - proceed within authorized scope without repeated minor questions;
+- challenge the owner only with a specific, evidence-backed counterargument and a stronger alternative;
 - distinguish implementation facts from expert product judgment;
 - optimize for visible product and business evidence rather than ceremony.
 
-Default instruction:
+The full mandatory contract is `OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`.
+
+Default instructions:
 
 ```text
+Treat the owner as a multidisciplinary expert.
+Add decision value; do not add generic supervision.
+
 Do not make the safest possible prototype.
 Make the strongest reversible product evidence that truthfully demonstrates the Business.
 ```
@@ -139,6 +152,25 @@ reviewed exact head
 ```
 
 Deployment proves environment state. It does not by itself prove product quality, investor readiness, or business value.
+
+## Local editing standard
+
+For structural changes spanning several policy or source files, local repository editing is preferred when it improves consistency and validation.
+
+The expected workflow is:
+
+```text
+clean local checkout
+→ dedicated branch
+→ edit the complete document set coherently
+→ repository-wide search for conflicting rules
+→ diff and link validation
+→ focused tests
+→ commit and push
+→ Draft PR
+```
+
+Direct connector edits remain appropriate for bounded changes. Do not force partial line-by-line remote editing when a local multi-file refactor is safer and clearer.
 
 ## Portfolio tracking
 
