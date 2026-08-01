@@ -33,7 +33,7 @@
     proceedToDisclosure: ["대표회의 관리자"],
     requestRedaction: ["대표회의 관리자", "외부 검토자"],
     confirmRedaction: ["대표회의 관리자", "외부 검토자"],
-    approvePublic: ["대표회의 관리자", "외부 검토자"],
+    approvePublic: ["외부 검토자"],
     publishPublicNotice: ["대표회의 관리자"],
     viewHistory: ROLES.slice(),
     completeMeeting: ["대표회의 관리자"],
@@ -241,22 +241,24 @@
     var items = fixture.disclosurePackage.items.map(function (id) {
       return "<li>" + escapeHtml(id) + "</li>";
     }).join("");
-    var doc = fixture.documents[0];
-    var docRow = objectRow(doc.title, doc.disclosure, doc.redacted ? "redacted 복사본 확인됨" : "공개 전 redaction 필요");
+    var doc = machine.data.documents[0];
+    var docRow = objectRow(doc.title, doc.disclosure, doc.redacted ? "redacted 복사본 확인됨: " + doc.redacted.text : "공개 전 redaction 필요");
     return '<div class="panel"><h3>공개 대상 검토 (disclosure-review)</h3>' +
-      "<p>공개 패키지는 사람 검토 후에만 공개됩니다.</p>" +
+      "<p>공개 패키지는 외부 검토자의 사람 검토 승인 후에만 다음 단계로 진행됩니다.</p>" +
       "<ul>" + items + "</ul>" +
       "<p><strong>문서:</strong></p><ul>" + docRow + "</ul>" +
+      '<div class="form-row"><label class="full"><input id="disclosure-confirm" type="checkbox"> 외부 검토자 사람 검토 확인 (공개 패키지 검토 완료)</label></div>' +
       '<div class="actions">' +
       actionButton("requestRedaction", "redaction 필요로 보냄", { ghost: true }) +
-      actionButton("approvePublic", "공개 승인(사람 검토 완료)") +
+      actionButton("approvePublic", "공개 승인(검토 확인)") +
       "</div></div>";
   }
 
   function panelRedactionRequired() {
     var doc = machine.data.documents[0];
     return '<div class="quorum-card"><h4>redaction 필요 (redaction-required)</h4>' +
-      "<p>비공개 원본 <strong>" + escapeHtml(doc.title) + "</strong>은 주민 화면에 노출될 수 없습니다. 공개용 redacted 복사본을 만드십시오.</p></div>" +
+      "<p>비공개 원본 <strong>" + escapeHtml(doc.title) + "</strong>은 주민 화면에 노출될 수 없습니다. 공개용 redacted 복사본을 만드십시오.</p>" +
+      "<p class='deny-note'>redacted 복사본 확인 후 공개 검토(disclosure-review)로 돌아갑니다 — 이것은 공개 패키지 승인이 아닙니다.</p></div>" +
       '<div class="form-row"><label class="full">redacted 복사본 내용' +
       '<textarea id="redacted-text" rows="3">[비공개 내용 마스킹] 예산 총액만 공개 (합성)</textarea></label></div>' +
       '<div class="actions">' + actionButton("confirmRedaction", "redacted 복사본 확인") + "</div></div>";
@@ -268,6 +270,7 @@
     return '<div class="notice-paper"><h4>주민 공개 공고 (최종 확인)</h4>' +
       "<p>합성 의결 결과 · 정족수 확인 완료 · 이견 보존 기록</p>" +
       "<p>첨부(redacted): " + escapeHtml(redactedTxt) + "</p></div>" +
+      '<div class="form-row"><label class="full"><input id="publish-confirm" type="checkbox"> 대표회의 관리자 최종 게시 확인</label></div>' +
       '<div class="actions">' + actionButton("publishPublicNotice", "공개 게시") + "</div>";
   }
 
@@ -282,12 +285,15 @@
 
   function panelVersionHistory() {
     var rows = machine.events.map(function (e) {
-      return "<tr><td>v" + e.version + "</td><td>" + escapeHtml(e.from) + "</td><td>" + escapeHtml(e.action) + "</td><td>" + escapeHtml(e.to) + "</td><td>" + escapeHtml(e.audit.actor) + "</td><td>" + escapeHtml(e.at) + "</td></tr>";
+      return "<tr><td>v" + e.version + "</td><td>" + escapeHtml(e.from) + "</td><td>" + escapeHtml(e.action) + "</td><td>" + escapeHtml(e.to) + "</td><td>" + escapeHtml(e.role) + "</td><td>" + escapeHtml(e.actor) + "</td><td>" + escapeHtml(e.at) + "</td></tr>";
     }).join("");
-    var publicDocs = machine.publicObjects().map(function (o) { return "<li>" + escapeHtml(o.title || o.id || "객체") + " " + disclosureChip(o.disclosure) + "</li>"; }).join("");
+    var publicDocs = machine.publicSurface().map(function (o) {
+      return "<li><strong>" + escapeHtml(o.publicTitle || o.id) + "</strong> " + disclosureChip(o.disclosureState || "public") +
+        "<small>" + escapeHtml(o.publicSummary || "") + (o.publishedBy ? " · 게시: " + escapeHtml(o.publishedBy) + " v" + o.publishedVersion : " · 미게시") + "</small></li>";
+    }).join("");
     return '<div class="panel"><h3>변경·공개 이력 (version-history)</h3>' +
-      "<p><strong>공개 표면(public surface):</strong></p><ul>" + (publicDocs || "<li class='empty-note'>공개 객체 없음</li>") + "</ul>" +
-      '<div class="audit-table-wrap"><table class="audit-table"><thead><tr><th>버전</th><th>이전 상태</th><th>액션</th><th>이후 상태</th><th>역할</th><th>시퀀스</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      "<p><strong>공개 표면(public projections):</strong></p><ul>" + (publicDocs || "<li class='empty-note'>공개 projection 없음</li>") + "</ul>" +
+      '<div class="audit-table-wrap"><table class="audit-table"><thead><tr><th>버전</th><th>이전 상태</th><th>액션</th><th>이후 상태</th><th>역할</th><th>행위자</th><th>시퀀스</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
       '<div class="actions">' + actionButton("completeMeeting", "회의 완료") + "</div></div>";
   }
 
@@ -342,13 +348,14 @@
   }
 
   function panelResidentView() {
-    var pub = machine.publicObjects();
+    var pub = machine.publicSurface();
     var list = pub.map(function (o) {
-      return "<li><strong>" + escapeHtml(o.title || o.id || "객체") + "</strong> " + disclosureChip(o.disclosure) +
-        (o.redacted && o.redacted.text ? "<small>" + escapeHtml(o.redacted.text) + "</small>" : "") + "</li>";
+      return "<li><strong>" + escapeHtml(o.publicTitle || o.id) + "</strong> " + disclosureChip(o.disclosureState || "public") +
+        "<small>" + escapeHtml(o.publicSummary || "") +
+        (o.publishedBy ? " · 게시: " + escapeHtml(o.publishedBy) + " v" + o.publishedVersion : " · 아직 게시 안 됨") + "</small></li>";
     }).join("");
     return '<div class="panel"><h3>주민 공개 공고 (일반 주민 열람)</h3>' +
-      "<p>주민은 공개 객체만 볼 수 있습니다. 비공개 원본은 표시되지 않습니다.</p>" +
+      "<p>주민은 현재 회의 단계에서 실제 공개된 projection만 볼 수 있습니다. 비공개 원본은 표시되지 않습니다.</p>" +
       "<ul>" + (list || "<li class='empty-note'>아직 공개된 자료가 없습니다.</li>") + "</ul>" +
       '<div class="actions"><button type="button" class="action-btn" disabled>공개 자료 열람</button>' +
       '<p class="deny-note">일반 주민은 공개 자료만 열람할 수 있습니다.</p></div></div>';
@@ -385,7 +392,7 @@
   function runAction(action, payload) {
     try {
       var prev = machine.state;
-      var next = machine.apply(action, payload);
+      var next = machine.apply(action, payload, { actor: currentRole + "(합성)", role: currentRole });
       render();
       announce("상태 전환: " + stateLabel(prev) + " → " + stateLabel(next));
     } catch (err) {
@@ -412,6 +419,12 @@
       }
       if (action === "confirmRedaction") {
         payload.redactedText = $("redacted-text").value;
+      }
+      if (action === "approvePublic") {
+        payload.manualConfirm = $("disclosure-confirm").checked;
+      }
+      if (action === "publishPublicNotice") {
+        payload.manualConfirm = $("publish-confirm").checked;
       }
       runAction(action, payload);
       return;
