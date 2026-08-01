@@ -109,7 +109,8 @@
       .join('');
     return (
       '<section class="evidence-drawer-content" aria-label="증거 패널">' +
-      '<header class="section-head"><div><span>SOURCE EVIDENCE</span><h2 data-focus-key="drawer-heading" tabindex="-1">세 견적을 같은 원장 위에서 비교합니다.</h2></div><p>SYNTHETIC · UNVERIFIED MATERIAL</p></header>' +
+      '<header class="section-head"><div><span>SOURCE EVIDENCE</span><h2 id="evidence-drawer-title" data-focus-key="drawer-heading" tabindex="-1">세 견적을 같은 원장 위에서 비교합니다.</h2></div><p>SYNTHETIC · UNVERIFIED MATERIAL</p></header>' +
+      '<button type="button" class="bench-btn ghost" data-action="toggle-evidence" data-focus-key="drawer-close">증거 패널 닫기</button>' +
       '<div class="quote-rack">' + quotes + '</div>' +
       '<div class="evidence-bottom">' + img('comparison-ledger.svg', '합성 비교 원장') +
       '<div class="flag-stack">' + missing + conflicts + defaults + '</div></div>' +
@@ -307,7 +308,7 @@
       extra +
       '<div class="run-actions-row">' +
       actionsBar(actions) +
-      '<button type="button" class="bench-btn ghost" data-action="toggle-evidence" data-focus-key="primary">증거 열기</button>' +
+      '<button type="button" class="bench-btn ghost" data-action="toggle-evidence" data-focus-key="primary" aria-controls="evidence-drawer" aria-expanded="false">증거 열기</button>' +
       '</div>' +
       exceptionFlags(machine) +
       '</section>'

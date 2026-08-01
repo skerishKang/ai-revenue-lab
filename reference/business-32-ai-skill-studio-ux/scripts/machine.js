@@ -67,8 +67,30 @@
 
   const REVIEWER_ONLY_ACTIONS = ['approve-review', 'reject-review', 'approve'];
 
+  const OPERATOR_ONLY_ACTIONS = [
+    'select-task',
+    'check-inputs',
+    'supplement',
+    'begin-run',
+    'complete-step',
+    'next-step',
+    'request-supplement',
+    'resolve-conflict',
+    'stop-run',
+    'resume-run',
+    'resume-confirm',
+    'request-review',
+    'apply-correction',
+    're-run',
+    'save-skill',
+    'complete'
+  ];
+
   const SELF_REVIEW_BLOCK_MESSAGE =
     '업무 실행자는 자신의 결과를 검토하거나 승인할 수 없습니다. 합성 운영 책임자에게 인계하십시오.';
+
+  const REVIEWER_CANNOT_EXECUTE_MESSAGE =
+    '검토자는 업무 실행·수정·저장을 대신할 수 없습니다. 실행자에게 반환하십시오.';
 
   function roleName(role) {
     return ROLE_NAMES[role] || role;
@@ -78,12 +100,12 @@
     return ctx.activeRole === 'reviewer';
   }
 
-  function recordHandoff(ctx, state, action) {
+  function recordHandoff(ctx, entry) {
     ctx.roleHistory.push({
-      from: ctx.activeRole === 'reviewer' ? 'reviewer' : 'operator',
-      to: ctx.activeRole === 'reviewer' ? 'operator' : 'reviewer',
-      action: action,
-      state: state
+      from: entry.from,
+      to: entry.to,
+      action: entry.action,
+      state: entry.state
     });
   }
 
@@ -97,6 +119,29 @@
         next: '검토자에게 인계합니다.'
       })
     };
+  }
+
+  function rejectOperatorOnly(state) {
+    return {
+      to: 'validation-error',
+      previous: state,
+      feedback: fb({
+        failure: REVIEWER_CANNOT_EXECUTE_MESSAGE,
+        retry: '실행자에게 반환한 뒤 다시 시도합니다.',
+        next: '실행자에게 반환합니다.'
+      })
+    };
+  }
+
+  function roleGuardFailure(machine, action) {
+    const role = machine.context.activeRole;
+    if (REVIEWER_ONLY_ACTIONS.indexOf(action) !== -1 && role !== 'reviewer') {
+      return rejectRole(machine.state);
+    }
+    if (OPERATOR_ONLY_ACTIONS.indexOf(action) !== -1 && role !== 'operator') {
+      return rejectOperatorOnly(machine.state);
+    }
+    return null;
   }
 
   function makeContext(scenario, fixture) {
@@ -500,8 +545,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'reviewer';
-        recordHandoff(ctx, state, 'handoff-to-reviewer');
+        recordHandoff(ctx, { from: previousRole, to: 'reviewer', action: 'handoff-to-reviewer', state: state });
         return {
           to: 'draft-result',
           feedback: fb({
@@ -522,8 +568,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'operator';
-        recordHandoff(ctx, state, 'handoff-to-operator');
+        recordHandoff(ctx, { from: previousRole, to: 'operator', action: 'handoff-to-operator', state: state });
         return {
           to: 'draft-result',
           feedback: fb({
@@ -546,8 +593,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'reviewer';
-        recordHandoff(ctx, state, 'handoff-to-reviewer');
+        recordHandoff(ctx, { from: previousRole, to: 'reviewer', action: 'handoff-to-reviewer', state: state });
         return {
           to: 'review-requested',
           feedback: fb({
@@ -568,8 +616,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'operator';
-        recordHandoff(ctx, state, 'handoff-to-operator');
+        recordHandoff(ctx, { from: previousRole, to: 'operator', action: 'handoff-to-operator', state: state });
         return {
           to: 'review-requested',
           feedback: fb({
@@ -610,8 +659,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'operator';
-        recordHandoff(ctx, state, 'handoff-to-operator');
+        recordHandoff(ctx, { from: previousRole, to: 'operator', action: 'handoff-to-operator', state: state });
         return {
           to: 'correction-required',
           feedback: fb({
@@ -647,8 +697,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'reviewer';
-        recordHandoff(ctx, state, 'handoff-to-reviewer');
+        recordHandoff(ctx, { from: previousRole, to: 'reviewer', action: 'handoff-to-reviewer', state: state });
         return {
           to: 'review-requested',
           feedback: fb({
@@ -691,8 +742,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'operator';
-        recordHandoff(ctx, state, 'handoff-to-operator');
+        recordHandoff(ctx, { from: previousRole, to: 'operator', action: 'handoff-to-operator', state: state });
         return {
           to: 'revised',
           feedback: fb({
@@ -715,8 +767,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'reviewer';
-        recordHandoff(ctx, state, 'handoff-to-reviewer');
+        recordHandoff(ctx, { from: previousRole, to: 'reviewer', action: 'handoff-to-reviewer', state: state });
         return {
           to: 'approval-pending',
           feedback: fb({
@@ -737,8 +790,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'operator';
-        recordHandoff(ctx, state, 'handoff-to-operator');
+        recordHandoff(ctx, { from: previousRole, to: 'operator', action: 'handoff-to-operator', state: state });
         return {
           to: 'approval-pending',
           feedback: fb({
@@ -783,8 +837,9 @@
             })
           };
         }
+        const previousRole = ctx.activeRole;
         ctx.activeRole = 'operator';
-        recordHandoff(ctx, state, 'handoff-to-operator');
+        recordHandoff(ctx, { from: previousRole, to: 'operator', action: 'handoff-to-operator', state: state });
         return {
           to: 'approved',
           feedback: fb({
@@ -876,6 +931,19 @@
         'B32Machine: invalid transition ' + machine.state + ' + ' + action + ' (forbidden)'
       );
     }
+    const guardResult = roleGuardFailure(machine, action);
+    if (guardResult) {
+      const guarded = {
+        state: guardResult.to,
+        scenario: machine.scenario,
+        context: machine.context,
+        feedback: guardResult.feedback || fb({}),
+        previous: guardResult.previous || null,
+        fixture: machine.fixture
+      };
+      if (guardResult.previous) guarded.context.previous = guardResult.previous;
+      return guarded;
+    }
     const result = table[action](machine.context, payload || {}, machine.fixture, machine.state);
     const next = {
       state: result.to,
@@ -897,8 +965,12 @@
   function actionAllowed(machine, action) {
     const table = RULES[machine.state];
     if (!table || !table[action]) return false;
+    const role = machine.context.activeRole;
     if (REVIEWER_ONLY_ACTIONS.indexOf(action) !== -1) {
-      return machine.context.activeRole === 'reviewer';
+      return role === 'reviewer';
+    }
+    if (OPERATOR_ONLY_ACTIONS.indexOf(action) !== -1) {
+      return role === 'operator';
     }
     return true;
   }
@@ -923,6 +995,10 @@
     ROLE_NAMES: ROLE_NAMES,
     roleName: roleName,
     REVIEWER_ONLY_ACTIONS: REVIEWER_ONLY_ACTIONS,
+    OPERATOR_ONLY_ACTIONS: OPERATOR_ONLY_ACTIONS,
+    SELF_REVIEW_BLOCK_MESSAGE: SELF_REVIEW_BLOCK_MESSAGE,
+    REVIEWER_CANNOT_EXECUTE_MESSAGE: REVIEWER_CANNOT_EXECUTE_MESSAGE,
+    roleGuardFailure: roleGuardFailure,
     createMachine: createMachine,
     transition: transition,
     canTransition: canTransition,

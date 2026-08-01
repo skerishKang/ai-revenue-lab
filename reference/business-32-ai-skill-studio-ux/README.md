@@ -89,6 +89,33 @@ at the state-machine level; an operator attempting them transitions to
 합성 운영 책임자에게 인계하십시오.
 ```
 
+Execution actions are operator-only and blocked for the reviewer role:
+
+```text
+select-task, check-inputs, supplement, begin-run, complete-step, next-step,
+request-supplement, resolve-conflict, stop-run, resume-run, resume-confirm,
+request-review, apply-correction, re-run, save-skill, complete
+```
+
+A reviewer attempting any of them transitions to `validation-error` with:
+
+```text
+검토자는 업무 실행·수정·저장을 대신할 수 없습니다. 실행자에게 반환하십시오.
+```
+
+`approved → save-skill` requires `activeRole === operator`, human approval, and
+an unsaved skill. The normal flow is reviewer final approval → `handoff-to-operator`
+→ operator `save-skill`.
+
+Role history entries use explicit directions:
+
+```text
+recordHandoff(ctx, { from: previousRole, to: nextRole, action, state })
+```
+
+with invariants `from !== to`, `roleHistory[n].to === activeRole`, and
+`roleHistory[i-1].to === roleHistory[i].from`.
+
 Skill save is possible for the operator role but remains blocked until human
 approval. Role restrictions are enforced in `scripts/machine.js`, not by UI
 disabled states alone.
@@ -101,11 +128,17 @@ contract using `data-focus-key` / `data-focus-target` markers:
 ```text
 일반 상태 전환:   새 상태의 heading(data-focus-key="view-heading")
 validation-error: error-summary
-drawer open:      drawer-heading
-drawer close:     증거 열기 버튼 복귀
+drawer open:      drawer-heading 또는 닫기 버튼
+drawer close:     증거 열기 버튼 복귀 (opener)
 role handoff:     role-banner 또는 첫 허용 action
 retry/return:     이전 focus key 복원
 ```
+
+The evidence drawer has an explicit in-drawer close button
+(`data-action="toggle-evidence" data-focus-key="drawer-close"`). The opener
+carries `aria-expanded` / `aria-controls="evidence-drawer"`; the drawer is
+`role="dialog"` with `aria-labelledby`. `Escape` closes the drawer and returns
+focus to the opener. Drawer buttons are included in the roving-focus collection.
 
 ## Trust and authority boundaries
 

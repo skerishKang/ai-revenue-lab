@@ -79,12 +79,41 @@
   }
 
   function collectFocusables() {
-    focusables = Array.prototype.slice.call(
+    const viewButtons = Array.prototype.slice.call(
       viewEl.querySelectorAll('button[data-action], button[data-scenario]')
     );
+    const drawerButtons = drawerEl
+      ? Array.prototype.slice.call(drawerEl.querySelectorAll('button[data-action]'))
+      : [];
+    focusables = viewButtons.concat(drawerButtons);
     focusables.forEach(function (el, index) {
       el.tabIndex = index === 0 ? 0 : -1;
     });
+  }
+
+  function syncDrawerAria() {
+    const opener = viewEl ? viewEl.querySelector('[data-action="toggle-evidence"]') : null;
+    if (opener) opener.setAttribute('aria-expanded', String(store.evidenceOpen));
+  }
+
+  function openDrawer() {
+    store.evidenceOpen = true;
+    if (drawerEl) drawerEl.hidden = false;
+    renderDrawer();
+    collectFocusables();
+    syncDrawerAria();
+    announce('증거 패널이 열렸습니다. SOURCE EVIDENCE');
+    applyFocus(machine, { drawerOpened: true });
+  }
+
+  function closeDrawer() {
+    if (!store.evidenceOpen) return;
+    store.evidenceOpen = false;
+    if (drawerEl) drawerEl.hidden = true;
+    renderDrawer();
+    collectFocusables();
+    syncDrawerAria();
+    applyFocus(machine, { drawerClosed: true });
   }
 
   function focusElement(el) {
@@ -128,11 +157,12 @@
   function render(meta) {
     if (!viewEl || !machine) return;
     viewEl.innerHTML = Templates.render(machine);
+    renderDrawer();
     collectFocusables();
     updateTrustLabels(machine.state);
     updateMemoryNote();
     renderFeedback(machine.feedback);
-    renderDrawer();
+    syncDrawerAria();
     applyFocus(machine, meta || {});
   }
 
@@ -167,20 +197,16 @@
     const action = button.dataset.action;
     if (!action) return;
     if (action === 'toggle-evidence') {
-      const wasOpen = store.evidenceOpen;
-      store.evidenceOpen = !wasOpen;
-      if (drawerEl) drawerEl.hidden = !store.evidenceOpen;
-      renderDrawer();
       if (store.evidenceOpen) {
-        announce('증거 패널이 열렸습니다. SOURCE EVIDENCE');
-        applyFocus(machine, { drawerOpened: true });
+        closeDrawer();
       } else {
-        applyFocus(machine, { drawerClosed: true });
+        openDrawer();
       }
       return;
     }
     if (action === 'load-tasks') {
-      machine = Machine.createMachine(Fixture, 'standard');
+      transition('load-tasks');
+      return;
     }
     const payload = {};
     if (button.dataset.inputId) payload.inputId = button.dataset.inputId;
@@ -203,6 +229,10 @@
   }
 
   function handleKeydown(event) {
+    if (event.key === 'Escape' && store.evidenceOpen) {
+      closeDrawer();
+      return;
+    }
     const index = focusables.indexOf(document.activeElement);
     if (index === -1) return;
     if (event.key === 'Enter' || event.key === ' ') {
