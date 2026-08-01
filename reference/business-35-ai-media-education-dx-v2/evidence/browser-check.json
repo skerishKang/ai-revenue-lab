@@ -1,0 +1,69 @@
+{
+  "results": [
+    {
+      "viewport": "desktop",
+      "http": 200,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "failed": 0,
+      "external": 0,
+      "overflow": false,
+      "diagnostic": true,
+      "conversion": true,
+      "deliverable": true,
+      "workflowMotion": true
+    },
+    {
+      "viewport": "tablet",
+      "http": 200,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "failed": 0,
+      "external": 0,
+      "overflow": false,
+      "diagnostic": true,
+      "conversion": true,
+      "deliverable": true,
+      "workflowMotion": true
+    },
+    {
+      "viewport": "mobile",
+      "http": 200,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "failed": 0,
+      "external": 0,
+      "overflow": false,
+      "diagnostic": true,
+      "conversion": true,
+      "deliverable": true,
+      "workflowMotion": true
+    }
+  ],
+  "captures": [
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-home.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-diagnostic.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-case.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-workflow.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-offers.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-deliverables.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/desktop-conversion.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-home.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-diagnostic.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-case.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-workflow.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-offers.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-deliverables.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/tablet-conversion.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-home.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-diagnostic.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-case.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-workflow.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-offers.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-deliverables.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-conversion.png"
+  ],
+  "keyboardFirstFocus": "A",
+  "backForward": "#case",
+  "reducedMotionFinal": "HUMAN-APPROVED AI MEDIA OPERATING SYSTEM"
+}
