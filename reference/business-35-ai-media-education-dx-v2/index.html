@@ -14,6 +14,13 @@
 <header class="site-nav" data-nav>
   <div class="nav-inner">
     <a class="wordmark" href="#hero" data-nav-link>파디엠<span>PADIEM</span></a>
+    <nav class="mobile-rail" aria-label="모바일 섹션">
+      <a href="#diagnostic" data-nav-link>진단</a>
+      <a href="#case" data-nav-link>사례</a>
+      <a href="#workflow" data-nav-link>업무전환</a>
+      <a href="#offers" data-nav-link>프로그램</a>
+      <a href="#deliverables" data-nav-link>산출물</a>
+    </nav>
     <nav class="nav-links" aria-label="주요 섹션">
       <a href="#thesis" data-nav-link>접근</a>
       <a href="#diagnostic" data-nav-link>진단</a>
@@ -49,7 +56,7 @@
         <div><dt>진입 상품</dt><dd>진단 워크숍 · 300만–500만원</dd></div>
         <div><dt>대표 파일럿</dt><dd>표준 6주 · 1,500만–2,500만원</dd></div>
       </dl>
-      <p class="price-note">가격은 시장 검증 전 가설입니다. 실제 견적은 범위 확인 후 별도 승인을 거칩니다.</p>
+      <p class="price-note" data-price-disclosure>페이지에 표시된 모든 가격은 시장 검증 전 가설입니다. 실제 견적은 범위 확인 후 별도 승인을 거칩니다.</p>
     </div>
   </section>
 
@@ -79,6 +86,7 @@
     </div>
     <div class="diag-layout">
       <form class="diag-form" id="diag-form" aria-label="조직 진단">
+        <fieldset class="diag-group"><legend>조직 · 업무</legend>
         <label>조직 유형
           <select name="org" data-diag>
             <option value="culture">지역 문화기관</option>
@@ -106,6 +114,8 @@
             <option value="approval">승인·의사결정</option>
             <option value="publish">게시·홍보</option>
           </select></label>
+        </fieldset>
+        <fieldset class="diag-group"><legend>AI · 거버넌스</legend>
         <label>AI 사용 수준
           <select name="ai" data-diag>
             <option value="none">거의 사용 안 함</option>
@@ -118,6 +128,7 @@
             <option value="manual">전부 수동 검토</option>
             <option value="hybrid">일부 자동화</option>
           </select></label>
+        </fieldset>
         <button type="button" class="btn btn--primary" data-diag-run>진단 결과 보기</button>
       </form>
       <div class="diag-result" id="diag-result" aria-live="polite">
@@ -130,20 +141,20 @@
   <section class="case" id="case" data-state="case" aria-labelledby="case-title">
     <div class="section-head">
       <p class="eyebrow">사례 · 합성 사례(가상 기관)</p>
-      <h2 id="case-title">4일 걸리던 공고 한 건이<br>2.4일로 바뀐 파일럿.</h2>
+      <h2 id="case-title">4.2일 걸리던 공고 한 건이<br>2.4일로 바뀐 파일럿.</h2>
     </div>
     <div class="case-body">
-      <figure class="case-visual"><img src="assets/images/workshop-meeting.jpg" alt="워크숍 장면(합성 사례 이미지)"><figcaption>Haedam Culture Foundation · 6주 파일럿(합성 사례)</figcaption></figure>
+      <figure class="case-visual"><img src="assets/images/workshop-meeting.jpg" alt="미디어 기관 워크숍·협업 회의 장면"><figcaption>Haedam Culture Foundation · 6주 파일럿</figcaption></figure>
       <div class="case-copy">
         <dl>
           <div><dt>조직 상황</dt><dd>문화기획팀 4명, 기관 공고·보도자료·행사 콘텐츠를 수작업 생산</dd></div>
-          <div><dt>기존 4일 흐름</dt><dd>기획 0.5 → 초안 1.5 → 검토 1.0 → 재작업 0.8 → 승인 0.2</dd></div>
+          <div><dt>기존 4.2일 흐름</dt><dd>기획 0.5 → 초안 1.5 → 검토 1.0 → 재작업 0.8 → 승인 0.4</dd></div>
           <div><dt>병목</dt><dd>초안·재작업이 소요의 60% — 검토 반복 구조</dd></div>
           <div><dt>6주 파일럿</dt><dd>공고 초안 1건 → AI-assisted 초안 + 근거 확인 + 사람 검토 + 승인 → 게시</dd></div>
           <div><dt>새 2.4일 흐름</dt><dd>brief 0.2 → AI 초안 0.4 → 근거 확인 0.4 → 사람 검토 0.8 → 승인·게시 0.6</dd></div>
           <div><dt>사람 검토</dt><dd>담당자 확인 2회, 부서장 승인 1회 — 자동 게시 없음</dd></div>
         </dl>
-        <p class="case-note">합성 사례입니다. 실측 데이터와 운영 결정은 파일럿 KPI와 운영 playbook 산출물에 기록됩니다.</p>
+        <p class="case-note">수치와 운영 결정은 데모 시나리오 기준입니다. 실제 파일럿은 기준선 측정부터 파일럿 KPI·운영 playbook 산출물로 기록됩니다.</p>
       </div>
     </div>
   </section>
@@ -239,7 +250,6 @@
         <p class="offer-price">월 300만–600만원</p>
       </article>
     </div>
-    <p class="price-note">가격은 시장 검증 전 가설이며, 실제 견적은 범위 확인 후 별도 승인을 거칩니다.</p>
   </section>
 
   <!-- 7. Deliverable gallery -->
@@ -249,12 +259,12 @@
       <h2 id="del-title">교육이 아니라<br>남는 산출물.</h2>
     </div>
     <div class="del-grid">
-      <article class="del" tabindex="0" data-del="map"><h3>업무진단 맵</h3><div class="mockup mockup--map"><span>기획 0.5</span><span class="hot">초안 1.5</span><span>검토 1.0</span><span class="hot">재작업 0.8</span><span>승인 0.2</span></div></article>
-      <article class="del" tabindex="0" data-del="policy"><h3>AI 사용정책</h3><div class="mockup mockup--policy"><p>허용 업무 · 금지 업무 · 사람 검토 기준</p><ul><li>공개 콘텐츠 초안 지원</li><li>개인정보 포함 자료 미입력</li><li>자동 게시 금지</li></ul></div></article>
-      <article class="del" tabindex="0" data-del="training"><h3>역할별 교육 모듈</h3><div class="mockup mockup--training"><p>기획자 · 제작자 · 검토자 · 관리자</p><span class="chip">프롬프트 카드</span><span class="chip">검토 체크리스트</span></div></article>
-      <article class="del" tabindex="0" data-del="blueprint"><h3>워크플로 청사진</h3><div class="mockup mockup--blueprint"><p>brief → AI 초안 → 근거 확인 → 사람 검토 → 승인</p><span class="gate">HUMAN GATE</span></div></article>
-      <article class="del" tabindex="0" data-del="kpi"><h3>파일럿 KPI</h3><div class="mockup mockup--kpi"><p>제작 시간 4.2일 → 2.4일</p><p>검토 반복 3회 → 1.5회</p><p>사람 검토 통과율 100%</p></div></article>
-      <article class="del" tabindex="0" data-del="playbook"><h3>운영 playbook</h3><div class="mockup mockup--playbook"><p>담당자 · 기한 · 승인 경로 · 예외 처리</p><p class="seal">HUMAN-APPROVED</p></div></article>
+      <article class="del" tabindex="0" role="button" aria-expanded="false" aria-controls="del-detail" data-del="map"><h3>업무진단 맵</h3><div class="mockup mockup--map"><span>기획 0.5</span><span class="hot">초안 1.5</span><span>검토 1.0</span><span class="hot">재작업 0.8</span><span>승인 0.4</span></div></article>
+      <article class="del" tabindex="0" role="button" aria-expanded="false" aria-controls="del-detail" data-del="policy"><h3>AI 사용정책</h3><div class="mockup mockup--policy"><p>허용 업무 · 금지 업무 · 사람 검토 기준</p><ul><li>공개 콘텐츠 초안 지원</li><li>개인정보 포함 자료 미입력</li><li>자동 게시 금지</li></ul></div></article>
+      <article class="del" tabindex="0" role="button" aria-expanded="false" aria-controls="del-detail" data-del="training"><h3>역할별 교육 모듈</h3><div class="mockup mockup--training"><p>기획자 · 제작자 · 검토자 · 관리자</p><span class="chip">프롬프트 카드</span><span class="chip">검토 체크리스트</span></div></article>
+      <article class="del" tabindex="0" role="button" aria-expanded="false" aria-controls="del-detail" data-del="blueprint"><h3>워크플로 청사진</h3><div class="mockup mockup--blueprint"><p>brief → AI 초안 → 근거 확인 → 사람 검토 → 승인</p><span class="gate">HUMAN GATE</span></div></article>
+      <article class="del" tabindex="0" role="button" aria-expanded="false" aria-controls="del-detail" data-del="kpi"><h3>파일럿 KPI</h3><div class="mockup mockup--kpi"><p>제작 시간 4.2일 → 2.4일</p><p>검토 반복 3회 → 1.5회</p><p>사람 검토 통과율 100%</p></div></article>
+      <article class="del" tabindex="0" role="button" aria-expanded="false" aria-controls="del-detail" data-del="playbook"><h3>운영 playbook</h3><div class="mockup mockup--playbook"><p>담당자 · 기한 · 승인 경로 · 예외 처리</p><p class="seal">HUMAN-APPROVED</p></div></article>
     </div>
     <div class="del-detail" id="del-detail" aria-live="polite"><p class="empty">산출물을 선택하면 상세를 표시합니다.</p></div>
   </section>

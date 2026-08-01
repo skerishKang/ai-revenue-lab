@@ -8,10 +8,16 @@
       "failed": 0,
       "external": 0,
       "overflow": false,
-      "diagnostic": true,
+      "wfNotStartedBeforeEntry": true,
+      "diagNoRenderOnChange": true,
+      "diagRenderOnRun": true,
+      "deliverableAria": "true",
       "conversion": true,
-      "deliverable": true,
-      "workflowMotion": true
+      "navActive": true,
+      "wfRunOnceAfterEntry": true,
+      "transformOpacityBefore": 0,
+      "transformOpacityAfter": 1,
+      "replayOk": true
     },
     {
       "viewport": "tablet",
@@ -21,10 +27,16 @@
       "failed": 0,
       "external": 0,
       "overflow": false,
-      "diagnostic": true,
+      "wfNotStartedBeforeEntry": true,
+      "diagNoRenderOnChange": true,
+      "diagRenderOnRun": true,
+      "deliverableAria": "true",
       "conversion": true,
-      "deliverable": true,
-      "workflowMotion": true
+      "navActive": true,
+      "wfRunOnceAfterEntry": true,
+      "transformOpacityBefore": 0,
+      "transformOpacityAfter": 1,
+      "replayOk": true
     },
     {
       "viewport": "mobile",
@@ -34,10 +46,16 @@
       "failed": 0,
       "external": 0,
       "overflow": false,
-      "diagnostic": true,
+      "wfNotStartedBeforeEntry": true,
+      "diagNoRenderOnChange": true,
+      "diagRenderOnRun": true,
+      "deliverableAria": "true",
       "conversion": true,
-      "deliverable": true,
-      "workflowMotion": true
+      "navActive": true,
+      "wfRunOnceAfterEntry": true,
+      "transformOpacityBefore": 0,
+      "transformOpacityAfter": 1,
+      "replayOk": true
     }
   ],
   "captures": [
@@ -61,9 +79,17 @@
     "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-workflow.png",
     "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-offers.png",
     "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-deliverables.png",
-    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-conversion.png"
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/mobile-conversion.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/workflow-before.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/workflow-mid.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/workflow-final.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab-b35-v2/reference/business-35-ai-media-education-dx-v2/evidence/workflow-reduced-motion-final.png"
   ],
-  "keyboardFirstFocus": "A",
-  "backForward": "#case",
-  "reducedMotionFinal": "HUMAN-APPROVED AI MEDIA OPERATING SYSTEM"
+  "reducedMotionSeal": "HUMAN-APPROVED AI MEDIA OPERATING SYSTEM",
+  "mobileRail": {
+    "visible": true,
+    "scrollableWhenNeeded": false,
+    "keyboardReachable": true
+  },
+  "mobileOverflow": false
 }

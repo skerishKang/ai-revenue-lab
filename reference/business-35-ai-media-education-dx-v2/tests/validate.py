@@ -67,6 +67,38 @@ css = text("styles/main.css")
 check("mobile media query", "@media (max-width: 760px)" in css or "@media (max-width: 1024px)" in css)
 check("reduced motion", "prefers-reduced-motion" in css)
 
+
+# --- Correction-round static checks ---
+# C1 KPI canonicalization
+check("KPI canonical 4.2일", "4.2일" in RT)
+check("KPI canonical 2.4일", "2.4일" in RT)
+check("KPI canonical 43%", "43%" in RT)
+check("no stale 4일/4.0일/승인 0.2", "4일 걸리" not in RT and "기존 4일" not in RT and "4.0일" not in RT and "승인 0.2" not in RT)
+# before breakdown sums to 4.2: 0.5+1.5+1.0+0.8+0.4
+check("before breakdown = 4.2", "기획 0.5 → 초안 1.5 → 검토 1.0 → 재작업 0.8 → 승인 0.4" in RT)
+check("after breakdown = 2.4", "brief 0.2 → AI 초안 0.4 → 근거 확인 0.4 → 사람 검토 0.8 → 승인·게시 0.6" in RT)
+
+# C2 disclosure counts (visible occurrences)
+synthetic_count = html.count("합성 사례")
+check("synthetic visible disclosure exactly 1", synthetic_count == 1, f"count={synthetic_count}")
+price_count = html.count("가격 가설") + html.count("가격은 시장 검증 전")
+check("price-hypothesis visible disclosure exactly 1", price_count == 1, f"count={price_count}")
+check("common price notice present", "모든 가격은 시장 검증 전 가설" in RT)
+
+# C6 nav active CSS
+check("nav active CSS present", "is-active" in css and "aria-current" in text("scripts/app.js"))
+
+# C7 mobile section rail
+check("mobile section rail present", "mobile-rail" in css and "mobile-rail" in html)
+check("mobile rail horizontal scroll CSS", "overflow-x: auto" in css and "scrollbar-width: thin" in css)
+
+# C9 explicit diagnostic run intent
+check("diagnostic run button present", "data-diag-run" in html)
+check("diagnostic group legend present", "diag-group" in html)
+
+# C10 semantic deliverable controls
+check("deliverable role=button + aria", 'role="button" aria-expanded="false" aria-controls="del-detail"' in html)
+
 print(json.dumps({"status": "pass" if not errors else "fail", "checks_total": len(checks),
                   "checks_passed": sum(1 for _, ok in checks if ok), "checks_failed": len(errors),
                   "errors": errors}, ensure_ascii=False, indent=2))
