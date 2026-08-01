@@ -5,7 +5,7 @@ html=(ROOT/'index.html').read_text(encoding='utf-8')
 css=(ROOT/'styles/main.css').read_text(encoding='utf-8')
 js=(ROOT/'scripts/review.js').read_text(encoding='utf-8')
 states=['cover','meeting','rules','spending','election','complaint','mobile']
-notices=['SYNTHETIC APARTMENT RECORDS','VISUAL REFERENCE ONLY','NOT LEGAL ADVICE','NO REAL VOTING, PAYMENT, CONTRACT, OR SUBMISSION']
+notices=['방림명지로드힐 운영 데모','VISUAL REFERENCE ONLY','NOT LEGAL ADVICE','전자투표·계약·결제 기능은 현재 데모 범위 아님']
 record_states=['PUBLIC NOTICE','COMMITTEE WORKING RECORD','PRIVATE / REDACTED','RULE BASIS','PROPOSED SPENDING','APPROVED SPENDING','DISSENT / OBJECTION','UNRESOLVED COMPLAINT','RESOLVED FOLLOW-UP','HUMAN-REVIEWED PUBLICATION']
 errors=[]
 required=['index.html','styles/main.css','scripts/review.js','README.md','REFERENCE_NOTES.md','IMAGE_SOURCES.md','MOTION_SPEC.md']
@@ -21,6 +21,14 @@ for token in notices+record_states:
 runtime_text='\n'.join([html,css,js])
 for token in ['http://','https://','//cdn','@import','fetch(','XMLHttpRequest','WebSocket']:
     if token in runtime_text: errors.append('external/runtime token '+token)
+identity_forbidden=['솔빛마루','Solbit','fictional community','가상 단지','합성 단지','synthetic apartment identity','all community details are synthetic','SYNTHETIC APARTMENT RECORDS']
+for token in identity_forbidden:
+    if token in runtime_text: errors.append('forbidden identity reference '+token)
+identity_required=['방림명지로드힐','192세대','101동','102동','김경애','제5기 입주자대표회의']
+for token in identity_required:
+    if token not in html: errors.append('missing identity '+token)
+if '420' in runtime_text: errors.append('forbidden households 420')
+if '데모 예시' not in html: errors.append('missing demo example marker')
 refs=re.findall(r'(?:src|href)="([^"?#]+)',html)
 for ref in refs:
     if ref.startswith('#'): continue
