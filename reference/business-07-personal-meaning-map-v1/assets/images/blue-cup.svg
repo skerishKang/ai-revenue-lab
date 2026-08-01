@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="푸른 찻잔 합성 이미지">
+<rect width="360" height="300" fill="#e8dfcc"/>
+<ellipse cx="175" cy="250" rx="118" ry="22" fill="#cfc2aa"/>
+<path d="M82 92h178l-18 127c-5 32-32 45-71 45s-67-14-72-45z" fill="#688791" stroke="#29312e" stroke-width="4"/>
+<path d="M250 118c72-14 78 91 11 98" fill="none" stroke="#29312e" stroke-width="18"/>
+<path d="M251 133c42-6 44 57 8 65" fill="none" stroke="#e8dfcc" stroke-width="9"/>
+<ellipse cx="171" cy="93" rx="89" ry="22" fill="#9fb2b6" stroke="#29312e" stroke-width="4"/>
+<ellipse cx="171" cy="94" rx="69" ry="13" fill="#3f433b"/>
+<path d="M137 50c-18-25 12-32-4-52M183 55c-19-28 15-35 0-58M220 54c-17-24 12-30 0-49" fill="none" stroke="#6d7268" stroke-opacity=".6" stroke-width="3"/>
+<text x="26" y="278" font-family="monospace" font-size="12" fill="#4b534e">OBJECT 02 / SYNTHETIC RELIC</text>
+</svg>

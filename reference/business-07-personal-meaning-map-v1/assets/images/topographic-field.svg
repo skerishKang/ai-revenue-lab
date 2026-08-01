@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-label="합성 등고선 무늬">
+<rect width="900" height="650" fill="#f7f2e7"/>
+<g fill="none" stroke="#4e6d72" stroke-opacity=".34" stroke-width="1.25">
+<path d="M-30 130C90 25 205 38 286 112s181 86 264 22 190-61 380 48"/>
+<path d="M-42 170C82 62 197 70 275 139s174 86 260 30 202-51 392 55"/>
+<path d="M-25 214C77 112 188 105 272 172s168 92 255 43 213-40 389 49"/>
+<path d="M-5 263C85 168 190 158 275 214s158 98 246 58 219-29 375 37"/>
+<path d="M44 313C120 233 207 218 284 257s144 91 228 66 210-11 330 29"/>
+<path d="M92 364C157 302 225 284 294 312s126 79 207 68 184 5 278 32"/>
+<path d="M154 416C204 371 258 356 311 374s103 59 171 59 151 20 217 42"/>
+<path d="M225 470C264 440 304 431 344 442s76 41 129 50 115 27 157 46"/>
+</g>
+<g fill="none" stroke="#a45f46" stroke-opacity=".23" stroke-width="1">
+<path d="M81 568C181 503 268 526 348 566s171 63 284 17 188-49 282-21"/>
+<path d="M22 605C145 537 251 558 338 601s185 68 304 20 190-45 272-11"/>
+</g>
+<g fill="#252c29" fill-opacity=".34" font-family="monospace" font-size="10">
+<text x="42" y="55">35°09′N</text><text x="758" y="608">126°55′E</text><text x="503" y="92">+ 142m</text><text x="420" y="535">archive contour / synthetic</text>
+</g>
+</svg>

@@ -1,0 +1,115 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 4%, rgba(255,255,255,.34), transparent 27%),
+    linear-gradient(90deg, rgba(74,56,35,.025) 1px, transparent 1px),
+    var(--paper);
+  background-size: auto, 7px 7px, auto;
+  color: var(--ink);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--clay);
+  outline-offset: 4px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 500;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 8px;
+  left: 8px;
+  transform: translateY(-160%);
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--paper-light);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.synthetic-notice {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.kicker,
+.coordinate,
+.index-code,
+.date-stamp,
+.micro-label {
+  font-family: var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.kicker {
+  margin-bottom: 8px;
+  color: var(--clay);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.coordinate,
+.micro-label {
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

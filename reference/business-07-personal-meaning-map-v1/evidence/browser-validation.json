@@ -1,0 +1,204 @@
+{
+  "validation_method": "Playwright Chromium page.set_content with exact local HTML/CSS/JS and repository SVG bytes inlined; direct URL navigation was blocked by the execution environment administrator policy",
+  "version": "personal-meaning-map-20260726-2",
+  "states": {
+    "overview": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "overview",
+        "visibleStates": 1,
+        "focusableControls": 12
+      }
+    },
+    "person": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "person",
+        "visibleStates": 1,
+        "focusableControls": 7
+      }
+    },
+    "place": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "place",
+        "visibleStates": 1,
+        "focusableControls": 7
+      }
+    },
+    "event-object": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "event-object",
+        "visibleStates": 1,
+        "focusableControls": 7
+      }
+    },
+    "explanation": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "explanation",
+        "visibleStates": 1,
+        "focusableControls": 8
+      }
+    },
+    "mobile": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "mobile",
+        "visibleStates": 1,
+        "focusableControls": 10
+      }
+    },
+    "ripple": {
+      "state_found": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontal_overflow": 0,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "stateCount": 7,
+        "activeState": "ripple",
+        "visibleStates": 1,
+        "focusableControls": 9
+      }
+    }
+  },
+  "mobile": {
+    "state_found": true,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "horizontal_overflow": 0,
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "stateCount": 7,
+      "activeState": "mobile",
+      "visibleStates": 1,
+      "focusableControls": 10
+    }
+  },
+  "explanation_drawer": {
+    "before": {
+      "drawerHidden": true,
+      "expanded": "false"
+    },
+    "opened": {
+      "drawerHidden": false,
+      "drawerVisible": true,
+      "expanded": "true",
+      "focusIsDrawer": true,
+      "focusHiddenAncestor": false,
+      "drawerInsideActiveState": true
+    },
+    "closed": {
+      "drawerHidden": true,
+      "expanded": "false",
+      "focusIsToggle": true,
+      "focusHiddenAncestor": false
+    },
+    "after_state_change": {
+      "drawerHidden": true,
+      "expanded": "false",
+      "explanationStateHidden": true,
+      "focusHiddenAncestor": false,
+      "focusedStateButton": true
+    },
+    "pass": true
+  },
+  "selection_isolation": {
+    "initial": {
+      "overview": "서윤은 이 집을 떠올릴 때마다 말수가 줄고, 창문을 먼저 기억합니다.",
+      "ripple": "중심 물건을 선택하면 관련 장소, 사람, 사건이 차례로 드러납니다."
+    },
+    "after_overview_selection": {
+      "overview": "남쪽 철길 옆 집은 주소보다 계절과 소리로 기억되는 장소입니다.",
+      "ripple": "중심 물건을 선택하면 관련 장소, 사람, 사건이 차례로 드러납니다."
+    },
+    "before_ripple_selection": {
+      "overview": "남쪽 철길 옆 집은 주소보다 계절과 소리로 기억되는 장소입니다.",
+      "ripple": "중심 물건을 선택하면 관련 장소, 사람, 사건이 차례로 드러납니다."
+    },
+    "after_ripple_selection": {
+      "overview": "남쪽 철길 옆 집은 주소보다 계절과 소리로 기억되는 장소입니다.",
+      "ripple": "푸른 찻잔을 중심으로 장소, 사람, 사건이 순서대로 드러납니다.",
+      "copyNodesDistinct": true
+    },
+    "pass": true
+  },
+  "keyboard": {
+    "home": "overview",
+    "arrow_right": "person",
+    "focus_visible": {
+      "tag": "BUTTON",
+      "outlineStyle": "solid",
+      "outlineWidth": "3px"
+    },
+    "pass": true
+  },
+  "reduced_motion": {
+    "query": true,
+    "mode": "reduced",
+    "active": "ripple",
+    "visibleRings": 0
+  },
+  "motion_duration": "680ms",
+  "console_errors": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "runtime_requests": [],
+  "pass": true
+}
