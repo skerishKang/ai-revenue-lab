@@ -29,6 +29,8 @@ for token in identity_required:
     if token not in html: errors.append('missing identity '+token)
 if '420' in runtime_text: errors.append('forbidden households 420')
 if '데모 예시' not in html: errors.append('missing demo example marker')
+for token in ['의결 authority','authority는','투표 authority','공\n개','운\n영실','가이\n드']:
+    if token in html: errors.append('forbidden mixed-English/word-split token '+repr(token))
 refs=re.findall(r'(?:src|href)="([^"?#]+)',html)
 for ref in refs:
     if ref.startswith('#'): continue

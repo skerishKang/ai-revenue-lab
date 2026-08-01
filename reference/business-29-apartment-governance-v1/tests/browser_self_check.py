@@ -39,7 +39,34 @@ with sync_playwright() as p:
             selected=page.locator(f'[data-state-target="{state}"]').get_attribute('aria-selected')=='true'
             broken=page.evaluate("[...document.images].filter(i=>!i.complete||i.naturalWidth===0).length")
             labels_readable=page.evaluate("""() => [...document.querySelectorAll('[data-state]:not([hidden]) .status')].every(e => {const r=e.getBoundingClientRect(); return r.width>20 && r.height>10 && r.left>=-1 && r.right<=innerWidth+1})""")
-            result['captures'].append({'state':state,'viewport':[w,h],'overflow':overflow,'visible':visible,'selected':selected,'broken':broken,'labels_readable':labels_readable})
+            word_split=[]
+            if state=='cover':
+                for sel,words in [['#cover-title',['방림명지로드힐','결정은','후속','공개']],['.identity h1',['방림명지로드힐','우리단지','운영실']]]:
+                    word_split += page.evaluate("""(pairs) => {
+                      const out = [];
+                      for (const [sel, word] of pairs) {
+                        const el = document.querySelector(sel);
+                        if (!el) { out.push({sel, word, error:'missing element'}); continue; }
+                        const idx = el.textContent.indexOf(word);
+                        if (idx < 0) { out.push({sel, word, error:'word not found'}); continue; }
+                        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+                        let n, acc = 0, found = null;
+                        while ((n = walker.nextNode())) {
+                          const len = n.textContent.length;
+                          if (idx >= acc && idx < acc + len) { found = {node: n, offset: idx - acc}; break; }
+                          acc += len;
+                        }
+                        if (!found) { out.push({sel, word, error:'text node not found'}); continue; }
+                        const range = document.createRange();
+                        range.setStart(found.node, found.offset);
+                        range.setEnd(found.node, found.offset + word.length);
+                        const rects = range.getClientRects();
+                        const tops = new Set([...rects].map(r => Math.round(r.top)));
+                        out.push({sel, word, rects: rects.length, split: tops.size > 1});
+                      }
+                      return out;
+                    }""", [[sel, w] for w in words])
+            result['captures'].append({'state':state,'viewport':[w,h],'overflow':overflow,'visible':visible,'selected':selected,'broken':broken,'labels_readable':labels_readable,'word_split':word_split})
     page.set_viewport_size({'width':1440,'height':1100})
     page.emulate_media(reduced_motion='no-preference')
     page.set_content(DOC,wait_until='load')
@@ -75,6 +102,7 @@ scroll_stable=scroll_before==scroll_after1==scroll_after2
 failures=[]
 for c in result['captures']:
     if c['overflow']!=0 or not c['visible'] or not c['selected'] or c['broken']!=0 or not c['labels_readable']: failures.append(c)
+    if any(x.get('split') for x in c.get('word_split',[])): failures.append({'state':c['state'],'viewport':c['viewport'],'word_split':c.get('word_split')})
 if result['console_errors'] or result['page_errors'] or result['runtime_requests']: failures.append('runtime')
 if not (focus_stable and scroll_stable and geometry_stable and replay_equivalent and reduced_complete and reduced_visible and keyboard and 680<=end_ms<=780): failures.append('interaction')
 result['motion']={'computed':timing,'computed_end_ms':end_ms,'focus_stable':focus_stable,'scroll_stable':scroll_stable,'geometry_stable':geometry_stable,'replay_equivalent':replay_equivalent,'reduced_complete':reduced_complete,'reduced_visible':reduced_visible,'keyboard':keyboard,'geometry_before':geometry_before,'geometry_after1':geometry_after1,'geometry_after2':geometry_after2}

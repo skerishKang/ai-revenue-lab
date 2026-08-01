@@ -11,7 +11,51 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": [
+        {
+          "sel": "#cover-title",
+          "word": "방림명지로드힐",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "결정은",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "후속",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "공개",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "방림명지로드힐",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "우리단지",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "운영실",
+          "rects": 1,
+          "split": false
+        }
+      ]
     },
     {
       "state": "meeting",
@@ -23,7 +67,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "rules",
@@ -35,7 +80,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "spending",
@@ -47,7 +93,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "election",
@@ -59,7 +106,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "complaint",
@@ -71,7 +119,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "mobile",
@@ -83,7 +132,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "cover",
@@ -95,7 +145,51 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": [
+        {
+          "sel": "#cover-title",
+          "word": "방림명지로드힐",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "결정은",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "후속",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "공개",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "방림명지로드힐",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "우리단지",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "운영실",
+          "rects": 1,
+          "split": false
+        }
+      ]
     },
     {
       "state": "meeting",
@@ -107,7 +201,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "rules",
@@ -119,7 +214,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "spending",
@@ -131,7 +227,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "election",
@@ -143,7 +240,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "complaint",
@@ -155,7 +253,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "mobile",
@@ -167,7 +266,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "cover",
@@ -179,7 +279,51 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": [
+        {
+          "sel": "#cover-title",
+          "word": "방림명지로드힐",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "결정은",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "후속",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": "#cover-title",
+          "word": "공개",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "방림명지로드힐",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "우리단지",
+          "rects": 1,
+          "split": false
+        },
+        {
+          "sel": ".identity h1",
+          "word": "운영실",
+          "rects": 1,
+          "split": false
+        }
+      ]
     },
     {
       "state": "meeting",
@@ -191,7 +335,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "rules",
@@ -203,7 +348,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "spending",
@@ -215,7 +361,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "election",
@@ -227,7 +374,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "complaint",
@@ -239,7 +387,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     },
     {
       "state": "mobile",
@@ -251,7 +400,8 @@
       "visible": true,
       "selected": true,
       "broken": 0,
-      "labels_readable": true
+      "labels_readable": true,
+      "word_split": []
     }
   ],
   "console_errors": [],
@@ -274,31 +424,31 @@
     "keyboard": true,
     "geometry_before": [
       38,
-      448.34375,
+      443.9375,
       1364,
       490,
       948.328125,
-      812.34375,
+      807.9375,
       432.65625,
       105
     ],
     "geometry_after1": [
       38,
-      448.34375,
+      443.9375,
       1364,
       490,
       948.328125,
-      812.34375,
+      807.9375,
       432.65625,
       105
     ],
     "geometry_after2": [
       38,
-      448.34375,
+      443.9375,
       1364,
       490,
       948.328125,
-      812.34375,
+      807.9375,
       432.65625,
       105
     ]
