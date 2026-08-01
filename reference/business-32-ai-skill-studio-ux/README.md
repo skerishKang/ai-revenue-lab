@@ -137,8 +137,20 @@ retry/return:     이전 focus key 복원
 The evidence drawer has an explicit in-drawer close button
 (`data-action="toggle-evidence" data-focus-key="drawer-close"`). The opener
 carries `aria-expanded` / `aria-controls="evidence-drawer"`; the drawer is
-`role="dialog"` with `aria-labelledby`. `Escape` closes the drawer and returns
-focus to the opener. Drawer buttons are included in the roving-focus collection.
+`role="dialog" aria-modal="true"` with `aria-labelledby`. `Escape` closes the
+drawer and returns focus to the opener.
+
+Roving-focus scope is isolated by drawer state:
+
+```text
+drawer closed: focusables = viewButtons only (drawer content cleared, 0 drawer controls)
+drawer open:   focusables = drawerButtons only; view buttons leave the tab order
+               (tabIndex = -1); close button is the first drawer button (tabIndex = 0);
+               initial focus targets data-focus-key="drawer-close"
+```
+
+While the drawer is open, keyboard focus never moves into the body actions, and
+while it is closed the hidden drawer controls are never reachable.
 
 ## Trust and authority boundaries
 

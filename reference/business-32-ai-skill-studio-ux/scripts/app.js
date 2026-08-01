@@ -85,8 +85,14 @@
     const drawerButtons = drawerEl
       ? Array.prototype.slice.call(drawerEl.querySelectorAll('button[data-action]'))
       : [];
-    focusables = viewButtons.concat(drawerButtons);
-    focusables.forEach(function (el, index) {
+    const list = store.evidenceOpen ? drawerButtons : viewButtons;
+    if (store.evidenceOpen) {
+      viewButtons.forEach(function (el) {
+        el.tabIndex = -1;
+      });
+    }
+    focusables = list;
+    list.forEach(function (el, index) {
       el.tabIndex = index === 0 ? 0 : -1;
     });
   }
@@ -109,8 +115,10 @@
   function closeDrawer() {
     if (!store.evidenceOpen) return;
     store.evidenceOpen = false;
-    if (drawerEl) drawerEl.hidden = true;
-    renderDrawer();
+    if (drawerEl) {
+      drawerEl.hidden = true;
+      drawerEl.innerHTML = '';
+    }
     collectFocusables();
     syncDrawerAria();
     applyFocus(machine, { drawerClosed: true });
@@ -132,7 +140,8 @@
     if (meta.validationError) {
       target = view.querySelector('[data-focus-key="error-summary"]');
     } else if (meta.drawerOpened) {
-      target = drawerEl.querySelector('[data-focus-key="drawer-heading"]');
+      target = drawerEl.querySelector('[data-focus-key="drawer-close"]');
+      if (!target) target = drawerEl.querySelector('[data-focus-key="drawer-heading"]');
     } else if (meta.drawerClosed) {
       target = view.querySelector('[data-action="toggle-evidence"]');
     } else if (meta.roleChanged) {
@@ -142,6 +151,9 @@
       target = focus.lastKey
         ? view.querySelector('[data-focus-key="' + focus.lastKey + '"]')
         : null;
+    }
+    if (!target && store.evidenceOpen) {
+      target = drawerEl.querySelector('[data-focus-key="drawer-close"]');
     }
     if (!target) target = view.querySelector('[data-focus-key="view-heading"]');
     if (!target) target = view.querySelector('[data-action]');

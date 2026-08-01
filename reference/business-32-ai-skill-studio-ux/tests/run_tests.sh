@@ -27,6 +27,9 @@ node tests/template_machine_test.js || fail=1
 step "final repair test (role history, boundaries, drawer, app wiring)"
 node tests/final_repair_test.js || fail=1
 
+step "focus scope test (drawer focus isolation, modal contract)"
+node tests/focus_scope_test.js || fail=1
+
 step "javascript syntax (node --check)"
 for f in scripts/*.js; do
   node --check "$f" || fail=1
