@@ -117,6 +117,12 @@ def main():
     check("skill card pptx is 2-3 slides", lambda: assert_slides("Business32_Verified_Skill_Card_Sample.pptx", None, min_pages=2, max_pages=3))
 
     check("discovery worksheet has 13 questions", lambda: assert_worksheet_questions())
+    check("worksheet checkbox only on check-type question", lambda: assert_worksheet_checkboxes())
+    check("worksheet is exactly 2 pages with repeated header", lambda: assert_worksheet_pages())
+    check("worksheet splits Q1-7/Q8-13 across pages", lambda: assert_worksheet_split())
+
+    check("pptx shapes stay within page bounds", lambda: assert_pptx_bounds())
+    check("footer does not overlap content", lambda: assert_footer_overlap())
 
     check("quote workbook has all 8 sheets", lambda: assert_xlsx_sheets())
 
@@ -221,7 +227,7 @@ def assert_worksheet_questions():
     doc = Document(path("Business32_Skill_Discovery_Worksheet.docx"))
     count = 0
     for p in doc.paragraphs:
-        if re.match(r"^☐ Q\d+\.", p.text):
+        if re.match(r"^(☐ )?Q\d+\.", p.text):
             count += 1
     assert count == 13, "expected 13 questions, got %d" % count
 
@@ -299,6 +305,136 @@ def assert_scope():
         return
     for line in out.splitlines():
         assert line.startswith(allowed), "out-of-scope path: " + line
+
+
+def assert_worksheet_checkboxes():
+    doc = Document(path("Business32_Skill_Discovery_Worksheet.docx"))
+    descriptive = 0
+    checkable = 0
+    for p in doc.paragraphs:
+        m = re.match(r"^(☐ )?Q(\d+)\.", p.text)
+        if not m:
+            continue
+        if m.group(1):
+            checkable += 1
+            assert m.group(2) == "12", "checkbox on unexpected question Q%s" % m.group(2)
+        else:
+            descriptive += 1
+    assert checkable == 1, "expected 1 checkbox question, got %d" % checkable
+    assert descriptive == 12, "expected 12 descriptive questions, got %d" % descriptive
+
+
+def assert_worksheet_pages():
+    reader = PdfReader(path("Business32_Skill_Discovery_Worksheet.pdf"))
+    assert len(reader.pages) == 2, "worksheet pdf pages %d != 2" % len(reader.pages)
+    p1 = reader.pages[0].extract_text() or ""
+    p2 = reader.pages[1].extract_text() or ""
+    n1, n2 = normalize(p1), normalize(p2)
+    assert "Business32·AISkillStudio" in n1, "worksheet page 1 missing header"
+    assert "Business32·AISkillStudio" in n2, "worksheet page 2 missing repeated header"
+    assert "SkillDiscoveryWorksheet" in n2, "worksheet page 2 missing repeated title"
+    assert "페이지1/2" in n1, "worksheet page 1 missing page number"
+    assert "페이지2/2" in n2, "worksheet page 2 missing page number"
+    assert len(n2.strip()) > 300, "worksheet page 2 is excessively blank"
+
+
+def assert_worksheet_split():
+    reader = PdfReader(path("Business32_Skill_Discovery_Worksheet.pdf"))
+    p1 = reader.pages[0].extract_text() or ""
+    p2 = reader.pages[1].extract_text() or ""
+    for i in range(1, 8):
+        assert "Q%d." % i in p1, "Q%d missing on page 1" % i
+        assert "Q%d." % i not in p2, "Q%d unexpectedly on page 2" % i
+    for i in range(8, 14):
+        assert "Q%d." % i in p2, "Q%d missing on page 2" % i
+        assert "Q%d." % i not in p1, "Q%d unexpectedly on page 1" % i
+
+
+EMU_PER_INCH = 914400
+FOOTER_KEYWORDS = ("DRAFT", "제공자 정보")
+FOOTER_REGION_IN = 6.5
+PPTX_FILES = [
+    "Business32_Master_Proposal_10p.pptx",
+    "Business32_OnePage_Offer_Source.pptx",
+    "Business32_Verified_Skill_Card_Sample.pptx",
+]
+
+
+def _shape_text(shape):
+    try:
+        return shape.text_frame.text or ""
+    except Exception:
+        return ""
+
+
+def _is_footer(shape):
+    if shape.top is None or shape.height is None:
+        return False
+    top_in = shape.top / EMU_PER_INCH
+    bottom_in = (shape.top + shape.height) / EMU_PER_INCH
+    if not (top_in >= FOOTER_REGION_IN or bottom_in >= 7.0):
+        return False
+    text = _shape_text(shape)
+    return any(k in text for k in FOOTER_KEYWORDS)
+
+
+def _is_edge_bar(shape, sw, sh):
+    if None in (shape.left, shape.top, shape.width, shape.height):
+        return False
+    l_in = shape.left / EMU_PER_INCH
+    w_in = shape.width / EMU_PER_INCH
+    t_in = shape.top / EMU_PER_INCH
+    h_in = shape.height / EMU_PER_INCH
+    sw_in = sw / EMU_PER_INCH
+    sh_in = sh / EMU_PER_INCH
+    if w_in < sw_in - 0.05:
+        return False
+    return t_in <= 0.05 or (t_in + h_in) >= sh_in - 0.05
+
+
+def _shape_box(shape):
+    return (shape.left, shape.top, shape.left + shape.width, shape.top + shape.height)
+
+
+def _rects_overlap(a, b):
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+def assert_pptx_bounds():
+    tol = 1000
+    for rel in PPTX_FILES:
+        prs = Presentation(path(rel))
+        sw, sh = prs.slide_width, prs.slide_height
+        for idx, slide in enumerate(prs.slides, start=1):
+            for shape in slide.shapes:
+                vals = (shape.left, shape.top, shape.width, shape.height)
+                if any(v is None for v in vals):
+                    continue
+                left, top, width, height = vals
+                assert left >= -tol, "%s slide %d shape left %d < 0" % (rel, idx, left)
+                assert top >= -tol, "%s slide %d shape top %d < 0" % (rel, idx, top)
+                assert left + width <= sw + tol, (
+                    "%s slide %d shape right overflow %d > %d" % (rel, idx, left + width, sw))
+                assert top + height <= sh + tol, (
+                    "%s slide %d shape bottom overflow %d > %d" % (rel, idx, top + height, sh))
+
+
+def assert_footer_overlap():
+    for rel in PPTX_FILES:
+        prs = Presentation(path(rel))
+        sw, sh = prs.slide_width, prs.slide_height
+        for idx, slide in enumerate(prs.slides, start=1):
+            shapes = list(slide.shapes)
+            for f in [s for s in shapes if _is_footer(s)]:
+                fb = _shape_box(f)
+                for other in shapes:
+                    if other is f or _is_footer(other) or _is_edge_bar(other, sw, sh):
+                        continue
+                    if other.width == sw and other.height == sh:
+                        continue
+                    if _rects_overlap(fb, _shape_box(other)):
+                        raise AssertionError(
+                            "%s slide %d footer overlaps shape: %s" % (rel, idx, _shape_text(other)[:40]))
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ CUSTOMIZATION_CHECKLIST.md
 VISUAL_QA.md
 Business32_Master_Proposal_10p.pptx / .pdf     — 10페이지 마스터 제안서
 Business32_OnePage_Offer_Source.pptx / Business32_OnePage_Offer.pdf — 1페이지 원페이지 오퍼
-Business32_Skill_Discovery_Worksheet.docx / .pdf — 업무 발견 워크시트(3페이지 이하)
+Business32_Skill_Discovery_Worksheet.docx / .pdf — 업무 발견 워크시트(2페이지 · Q1~Q7 / Q8~Q13)
 Business32_Verified_Skill_Card_Sample.pptx / .pdf — 검증된 스킬 카드 샘플(2~3페이지)
 Business32_Pilot_Quote_Template.xlsx           — 견적 템플릿(8시트)
 Business32_Customer_Meeting_Script.md          — 고객 상담 대본
@@ -100,6 +100,7 @@ Skill Blueprint Workshop
 CUSTOMER_PACKAGE_STRUCTURALLY_VALIDATED
 SERVICE_LED_FRONTEND_PILOT
 PRICE_HYPOTHESIS_ONLY
+PIXEL_REPAIR_IMPLEMENTED
 PIXEL_VISUAL_QA_PENDING
 FINAL_IDENTITY_REQUIRED
 DO_NOT_SEND
@@ -111,9 +112,11 @@ DO_NOT_SEND
 python3 validation/validate_customer_package.py
 ```
 
-검증 항목: 제안서 10페이지, 원페이지 1페이지, 워크시트 3페이지 이하, 스킬 카드
-2~3페이지, 렌더 PNG가 모든 PDF 페이지와 일치, 외부 런타임 0, 실제 고객·기관
-데이터 0, backend·SaaS·자동승인 주장 0, 가격 가설 표시, 사람 검토 문구 필수.
+검증 항목: 제안서 10페이지, 원페이지 1페이지, 워크시트 2페이지(1페이지 Q1~Q7,
+2페이지 Q8~Q13 + 반복 헤더), 스킬 카드 2~3페이지, 렌더 PNG가 모든 PDF 페이지와
+일치, PPTX 좌표(페이지 경계 초과 0, footer 겹침 0), 외부 런타임 0, 실제
+고객·기관 데이터 0, backend·SaaS·자동승인 주장 0, 가격 가설 표시, 사람 검토 문구
+필수.
 
 ## 금지
 

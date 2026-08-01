@@ -32,16 +32,21 @@ def sample_ribbon(s):
 def card_fields(s, title, fields, top=1.35, cols=2):
     tb = s.shapes.add_textbox(Inches(0.6), Inches(top), Inches(12.1), Inches(0.4))
     set_run(tb.text_frame.paragraphs[0].add_run(), title, size=16, bold=True, color=GREEN)
-    col_w = Inches(6.0)
     for i, (name, value) in enumerate(fields):
         col = i % cols
         row = i // cols
         left = Inches(0.6 + col * 6.25)
-        box_top = Inches(top + 0.45 + row * 0.55)
-        nb = s.shapes.add_textbox(left, box_top, Inches(2.1), Inches(0.4))
+        box_top = Inches(top + 0.45 + row * 0.6)
+        nb = s.shapes.add_textbox(left, box_top, Inches(2.2), Inches(0.4))
         set_run(nb.text_frame.paragraphs[0].add_run(), name, size=11, bold=True, color=INK)
-        vb = s.shapes.add_textbox(left + Inches(2.2), box_top, Inches(3.8), Inches(0.5))
-        set_run(vb.text_frame.paragraphs[0].add_run(), value, size=10, color=GRAY)
+        vb = s.shapes.add_textbox(left + Inches(2.35), box_top, Inches(3.8), Inches(0.5))
+        set_run(vb.text_frame.paragraphs[0].add_run(), value, size=11, color=BODY_STRONG)
+
+
+def footer_above_ribbon(s, kind):
+    box = s.shapes.add_textbox(Inches(0.6), Inches(6.6), Inches(12.1), Inches(0.3))
+    text = {"internal": FOOTER_INTERNAL, "last": FOOTER_LAST}[kind]
+    set_run(box.text_frame.paragraphs[0].add_run(), text, size=10, color=GRAY)
 
 
 def page1():
@@ -73,7 +78,7 @@ def page1():
         ("승인 기준(approval record)", "담당 책임자 최종 승인"),
     ], top=4.2)
     sample_ribbon(s)
-    add_footer(s, "internal", prs)
+    footer_above_ribbon(s, "internal")
 
 
 def page2():
@@ -89,9 +94,9 @@ def page2():
         ("출력 형식", "안내문 원고(문서·이메일·SNS 초안)"),
         ("버전(version)", "1.0 (합성)"),
     ], top=1.35)
-    rb = s.shapes.add_textbox(Inches(0.6), Inches(4.6), Inches(12.1), Inches(0.4))
+    rb = s.shapes.add_textbox(Inches(0.6), Inches(3.7), Inches(12.1), Inches(0.4))
     set_run(rb.text_frame.paragraphs[0].add_run(), "다음 검토일(next review date): 2026-11-01 (합성)", size=14, bold=True, color=ORANGE)
-    box = s.shapes.add_textbox(Inches(0.6), Inches(5.2), Inches(12.1), Inches(1.6))
+    box = s.shapes.add_textbox(Inches(0.6), Inches(4.4), Inches(12.1), Inches(1.7))
     tf = box.text_frame
     tf.word_wrap = True
     set_run(tf.paragraphs[0].add_run(),
@@ -99,7 +104,7 @@ def page2():
             "사람 검토와 승인 없이는 어떤 결과도 확정되지 않습니다. "
             "AI가 자동 승인하지 않습니다.", size=13, color=INK)
     sample_ribbon(s)
-    add_footer(s, "last", prs)
+    footer_above_ribbon(s, "last")
 
 
 page1()

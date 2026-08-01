@@ -15,7 +15,7 @@ MAJOR_ZERO:           NOT DECLARED
 ```text
 제안서 페이지 수:   10
 원페이지 페이지 수:  1
-워크시트 페이지 수:  3 이하
+워크시트 페이지 수:  2 (1페이지 Q1~Q7, 2페이지 Q8~Q13)
 스킬 카드 페이지 수: 2~3
 렌더 PNG:           PDF 모든 페이지와 일치 (파일 존재 검증)
 외부 런타임:         0
@@ -24,6 +24,35 @@ backend·SaaS·자동승인 주장: 0
 가격 가설 표시 누락: 0
 사람 검토 문구 누락:  0
 ```
+
+## 좌표 검증 (수행됨)
+
+Web CTO 픽셀 검토 결과(`PIXEL_VISUAL_QA_FAILED / BLOCKER_FOUND`)에 따라
+생성 스크립트를 수정하고, PPTX 객체 좌표를 검증하는 validator를 추가했습니다.
+
+```text
+모든 PPTX shape:
+  left >= 0, top >= 0
+  left + width  <= 슬라이드 폭
+  top + height  <= 슬라이드 높이
+
+footer와 본문 객체 겹침 검사:
+  Slide 5 page-boundary overflow: 0
+  Slide 5 footer overlap:         0
+  One-page page-boundary overflow: 0
+  One-page footer overlap:        0
+
+Worksheet:
+  페이지 수:           2
+  반복 헤더:           2/2 페이지
+  문항 분배:           1페이지 Q1~Q7, 2페이지 Q8~Q13
+  체크박스:            체크형 문항(Q12 빈도)만 사용
+  과도한 빈 페이지:     0
+```
+
+Slide 5는 3열×4행 카드의 세로 간격·높이를 축소해 전체 12개 카드가
+슬라이드 안전영역 안에 들어가며, footer와 겹치지 않습니다. One-page는
+footer를 파란 하단선과 분리하고 마지막 박스와의 간격을 확보했습니다.
 
 ## 렌더 목록
 
