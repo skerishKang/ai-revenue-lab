@@ -40,10 +40,11 @@ PDF 페이지별 PNG 렌더 목록입니다. `pdftoppm -png -r 96`로 생성했�
 ## 상태
 
 ```text
-PIXEL_REPAIR_IMPLEMENTED — 잘림·footer 겹침을 스크립트로 수정하고
-좌표 validator 추가. 픽셀 단위 최종 재검토는 대기.
-PIXEL_VISUAL_QA_PENDING — 구조·좌표 검증은 완료, 픽셀 검토는 대기
+PIXEL_REPAIR_IMPLEMENTED — 잘림·footer 겹침·Slide6/7 산출물 overflow를
+스크립트로 수정하고 좌표·텍스트 맞춤 validator 추가.
+PIXEL_VISUAL_QA_PENDING — 구조·좌표·텍스트 맞춤 검증은 완료, 픽셀 검토는 대기
 ```
 
 시각 검토는 이미지를 볼 수 있는 검토자가 확인합니다. PNG는 파일 존재·페이지 수
-일치와 함께 PPTX 좌표(페이지 경계 초과 0, footer 겹침 0)를 검증합니다.
+일치와 함께 PPTX 좌표(페이지 경계 초과 0, footer 겹침 0)와 텍스트 맞춤(예상
+텍스트 높이 ≤ shape 높이 - margin)을 검증합니다.

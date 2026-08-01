@@ -7,6 +7,7 @@ data, no backend/SaaS/auto-approval claims, price-hypothesis presence, human
 review wording, and that only the customer-package scope changed.
 """
 import glob
+import math
 import os
 import re
 import subprocess
@@ -123,6 +124,9 @@ def main():
 
     check("pptx shapes stay within page bounds", lambda: assert_pptx_bounds())
     check("footer does not overlap content", lambda: assert_footer_overlap())
+    check("pptx text fits inside every shape", lambda: assert_text_fit())
+    check("offer deliverable text stays inside panel", lambda: assert_offer_deliverables_fit())
+    check("offer disclaimer does not overlap panel", lambda: assert_offer_disclaimer_clear())
 
     check("quote workbook has all 8 sheets", lambda: assert_xlsx_sheets())
 
@@ -435,6 +439,98 @@ def assert_footer_overlap():
                     if _rects_overlap(fb, _shape_box(other)):
                         raise AssertionError(
                             "%s slide %d footer overlaps shape: %s" % (rel, idx, _shape_text(other)[:40]))
+
+
+def _char_width(ch):
+    if ord(ch) >= 0x2E80:
+        return 1.0
+    if ch in "‘’'\"()[]{}·":
+        return 0.3
+    return 0.55
+
+
+def _estimate_text_height(text, usable_width_in, font_pt):
+    per_line = max(usable_width_in * 72.0 / font_pt, 0.1)
+    lines = 0
+    for para in text.split("\n"):
+        chars = sum(_char_width(c) for c in para)
+        lines += max(1, math.ceil(chars / per_line))
+    return lines * font_pt / 72.0 * 1.3
+
+
+def _text_fits(shape):
+    tf = shape.text_frame
+    text = tf.text or ""
+    if not text.strip() or shape.width is None or shape.height is None:
+        return True
+    width_in = shape.width / EMU_PER_INCH
+    height_in = shape.height / EMU_PER_INCH
+    usable_w = width_in - tf.margin_left / EMU_PER_INCH - tf.margin_right / EMU_PER_INCH
+    usable_h = height_in - tf.margin_top / EMU_PER_INCH - tf.margin_bottom / EMU_PER_INCH
+    if usable_h <= 0:
+        return True
+    est = 0.0
+    for p in tf.paragraphs:
+        if not p.runs:
+            continue
+        font_pt = max((r.font.size.pt if r.font.size else 12) for r in p.runs)
+        if tf.word_wrap and usable_w > 0.05:
+            est += _estimate_text_height(p.text, usable_w, font_pt)
+        else:
+            est += font_pt / 72.0 * 1.3
+    return est <= usable_h + 0.03
+
+
+def assert_text_fit():
+    for rel in PPTX_FILES:
+        prs = Presentation(path(rel))
+        for idx, slide in enumerate(prs.slides, start=1):
+            for shape in slide.shapes:
+                if not shape.has_text_frame:
+                    continue
+                assert _text_fits(shape), "%s slide %d text overflows shape: %s" % (
+                    rel, idx, _shape_text(shape)[:40])
+
+
+def _offer_panel_bounds():
+    return tuple(v * EMU_PER_INCH for v in (0.7, 2.35, 6.6, 5.95))
+
+
+def assert_offer_deliverables_fit():
+    prs = Presentation(path("Business32_Master_Proposal_10p.pptx"))
+    p_left, p_top, p_right, p_bottom = _offer_panel_bounds()
+    tol = 0.05 * EMU_PER_INCH
+    for slide_idx in (6, 7):
+        slide = list(prs.slides)[slide_idx - 1]
+        items = []
+        for shape in slide.shapes:
+            if shape.top is None or shape.left is None or shape.width is None:
+                continue
+            if not (p_left - tol <= shape.left < p_right
+                    and p_top - tol <= shape.top < p_bottom):
+                continue
+            if not _shape_text(shape).startswith("• "):
+                continue
+            items.append((shape, _shape_text(shape)))
+        assert len(items) == 9, "slide %d deliverable items %d != 9" % (slide_idx, len(items))
+        for shape, text in items:
+            assert shape.top + shape.height <= p_bottom + 0.02 * EMU_PER_INCH, (
+                "slide %d deliverable '%s' bottom %.3f exceeds panel" % (
+                    slide_idx, text, (shape.top + shape.height) / EMU_PER_INCH))
+            assert _text_fits(shape), "slide %d deliverable text overflows shape: %s" % (slide_idx, text)
+
+
+def assert_offer_disclaimer_clear():
+    prs = Presentation(path("Business32_Master_Proposal_10p.pptx"))
+    _p_left, _p_top, _p_right, p_bottom = _offer_panel_bounds()
+    for slide_idx in (6, 7, 8):
+        slide = list(prs.slides)[slide_idx - 1]
+        for shape in slide.shapes:
+            if "모든 실행은 합성 데이터 기반" not in _shape_text(shape):
+                continue
+            assert shape.top >= p_bottom + 0.05 * EMU_PER_INCH, (
+                "slide %d disclaimer top %.3f overlaps panel bottom %.3f" % (
+                    slide_idx, shape.top / EMU_PER_INCH, p_bottom / EMU_PER_INCH))
 
 
 if __name__ == "__main__":

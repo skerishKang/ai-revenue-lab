@@ -159,10 +159,19 @@ def offer_block(page_no, title, period, scope, price, deliverables, prs, last=Fa
     rect(s, Inches(0.7), Inches(2.35), Inches(5.9), Inches(3.6), PAPER, line_color=BLUE)
     dl = s.shapes.add_textbox(Inches(0.95), Inches(2.5), Inches(5.4), Inches(0.4))
     set_run(dl.text_frame.paragraphs[0].add_run(), "산출물", size=15, bold=True, color=INK)
-    for i, item in enumerate(deliverables):
-        top = Inches(3.0 + i * 0.46)
-        ib = s.shapes.add_textbox(Inches(0.95), top, Inches(5.4), Inches(0.4))
-        set_run(ib.text_frame.paragraphs[0].add_run(), "• " + item, size=12, color=INK)
+    if len(deliverables) > 6:
+        for i, item in enumerate(deliverables):
+            col = i // 5
+            row = i % 5
+            left = Inches(0.95 + col * 2.9)
+            top = Inches(3.0 + row * 0.55)
+            ib = s.shapes.add_textbox(left, top, Inches(2.7), Inches(0.5))
+            set_run(ib.text_frame.paragraphs[0].add_run(), "• " + item, size=12, color=INK)
+    else:
+        for i, item in enumerate(deliverables):
+            top = Inches(3.0 + i * 0.46)
+            ib = s.shapes.add_textbox(Inches(0.95), top, Inches(5.4), Inches(0.4))
+            set_run(ib.text_frame.paragraphs[0].add_run(), "• " + item, size=12, color=INK)
     rect(s, Inches(6.85), Inches(2.35), Inches(5.8), Inches(3.6), PAPER, line_color=GREEN)
     fb = s.shapes.add_textbox(Inches(7.1), Inches(2.5), Inches(5.3), Inches(0.4))
     set_run(fb.text_frame.paragraphs[0].add_run(), "실행 흐름", size=15, bold=True, color=INK)

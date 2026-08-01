@@ -54,6 +54,30 @@ Slide 5는 3열×4행 카드의 세로 간격·높이를 축소해 전체 12개 
 슬라이드 안전영역 안에 들어가며, footer와 겹치지 않습니다. One-page는
 footer를 파란 하단선과 분리하고 마지막 박스와의 간격을 확보했습니다.
 
+## 텍스트 맞춤 검증 (2차 수리)
+
+Slide 6·7에서 산출물 9개가 왼쪽 박스 아래로 넘치는 blocker가 확인되어,
+산출물 목록을 2열 배치로 수정했습니다(Slide 8은 기존 단일 열 구조 유지).
+
+```text
+Slide 6 deliverable text overflow: 0  (산출물 9개 전부 박스 내부)
+Slide 6 disclaimer overlap:       0
+Slide 7 deliverable text overflow: 0
+Slide 7 disclaimer overlap:       0
+footer 겹침:                       0
+```
+
+모든 PPTX 텍스트 shape에 대해 텍스트 맞춤 검사를 추가했습니다.
+
+```text
+예상 텍스트 높이 = (줄 수 × 글자 크기 × 줄 간격)
+예상 텍스트 높이 <= shape 높이 - 위쪽 margin - 아래쪽 margin
+```
+
+검사 항목: 텍스트 줄 수 · 글자 크기 · line spacing · 내부 margin ·
+shape usable height · 예상 text height. 산출물 shape은 별도 assertion으로
+박스 내부 표시와 하단 설명 문구 겹침을 확인합니다.
+
 ## 렌더 목록
 
 `rendered/` 아래 PDF 페이지별 PNG와 매니페스트(`rendered/manifest.md`)가
