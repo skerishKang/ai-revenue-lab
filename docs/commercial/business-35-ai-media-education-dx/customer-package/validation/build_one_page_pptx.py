@@ -20,7 +20,7 @@ WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 
 SW, SH = Inches(13.333), Inches(7.5)
 
-STATUS = "CUSTOMER-FACING MASTER · FINAL IDENTITY REQUIRED · LEGAL REVIEW REQUIRED · NOT YET SENT"
+STATUS_FULL = "CUSTOMER-FACING MASTER · FINAL IDENTITY REQUIRED · LEGAL REVIEW REQUIRED · NOT YET SENT"
 PROVIDER = "제안 제공자 정보는 발송 전 최종 확정"
 
 
@@ -115,7 +115,8 @@ def build():
     foot = slide.shapes.add_textbox(Inches(0.55), Inches(6.85), Inches(12.2), Inches(0.5))
     ftf = foot.text_frame
     ftf.word_wrap = True
-    para(ftf, STATUS + "  ·  " + PROVIDER, size=9, color=GRAY, first=True)
+    para(ftf, STATUS_FULL, size=10, color=GRAY, first=True)
+    para(ftf, "제공자 정보 최종 확정 필요 · " + PROVIDER, size=10, color=GRAY)
     para(ftf, "가격은 시장 검증 전 자사 가격 가설 · 범위와 인원·기간에 따라 최종 견적 · VAT는 최종 견적서에서 확정", size=9, color=GRAY)
 
     notes = slide.notes_slide.notes_text_frame

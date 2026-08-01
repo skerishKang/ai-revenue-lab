@@ -63,7 +63,7 @@ def build():
         "제안 제공자 정보는 발송 전 최종 확정\n"
         "실제 개인정보나 내부자료를 기입하도록 요구하지 않습니다."
     )
-    sr.font.size = Pt(9)
+    sr.font.size = Pt(10)
     sr.font.color.rgb = GRAY
     sr.font.name = "Malgun Gothic"
 

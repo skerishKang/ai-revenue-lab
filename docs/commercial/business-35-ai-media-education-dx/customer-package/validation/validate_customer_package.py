@@ -166,6 +166,57 @@ def main() -> int:
     for n in range(1, 11):
         check(f"Slide {n} " in sm or f"Slide {n}→" in sm, f"SOURCE_MAPPING covers Slide {n}", problems)
 
+    # ---- Visual QA integration ----
+    vqa = (ROOT / "VISUAL_QA.md")
+    check(vqa.is_file(), "VISUAL_QA.md exists", problems)
+    if vqa.is_file():
+        vqa_text = vqa.read_text(encoding="utf-8")
+        for name in ["Business35_Master_Proposal_10p", "Business35_OnePage_Offer",
+                     "Business35_Diagnostic_Questionnaire"]:
+            check(name in vqa_text, f"VISUAL_QA.md references {name}", problems)
+        check("BLOCKER" in vqa_text or "blocker" in vqa_text,
+              "VISUAL_QA.md records blocker status", problems)
+        check("MAJOR" in vqa_text or "major" in vqa_text,
+              "VISUAL_QA.md records major status", problems)
+
+    # Rendered file count and per-file listing in VISUAL_QA.md
+    rendered = (ROOT / "rendered")
+    pngs = sorted(rendered.glob("*.png"))
+    check(len(pngs) >= 15, f"rendered PNG count >= 15 (found {len(pngs)})", problems)
+    if vqa.is_file():
+        vqa_text = vqa.read_text(encoding="utf-8")
+        missing = [p.name for p in pngs if p.name not in vqa_text]
+        check(not missing, f"every rendered filename listed in VISUAL_QA.md (missing: {missing[:5] or 'none'})", problems)
+
+    # BLOCKER 0 / MAJOR 0 declarations
+    check("BLOCKER: 0" in vqa_text or "BLOCKER 0" in vqa_text or "blocker_count: 0" in vqa_text,
+          "VISUAL_QA.md declares BLOCKER count 0", problems)
+    check("MAJOR: 0" in vqa_text or "MAJOR 0" in vqa_text or "major_count: 0" in vqa_text,
+          "VISUAL_QA.md declares MAJOR count 0", problems)
+
+    # Proposal slide count 10 and speaker notes 10
+    from pptx import Presentation
+    prs = Presentation(str(ROOT / "Business35_Master_Proposal_10p.pptx"))
+    check(len(prs.slides._sldIdLst) == 10, "proposal slide count == 10", problems)
+    notes_count = sum(1 for s in prs.slides if s.has_notes_slide)
+    check(notes_count == 10, f"speaker notes on all 10 slides (found {notes_count})", problems)
+
+    # Korean status footer present on every slide
+    footer_ok = True
+    for idx, s in enumerate(prs.slides, start=1):
+        footer_text = ""
+        for shp in s.shapes:
+            if shp.has_text_frame and shp.top is not None and shp.top > 6400000:  # footer zone
+                footer_text += shp.text_frame.text
+        if not footer_text or ("DRAFT MASTER" not in footer_text and "CUSTOMER-FACING MASTER" not in footer_text):
+            footer_ok = False
+    check(footer_ok, "Korean status footer present on all proposal slides", problems)
+
+    # Validator does not replace visual QA
+    if vqa.is_file():
+        check("validator" in vqa_text.lower() and "대신" in vqa_text,
+              "VISUAL_QA.md notes validator does not replace visual QA", problems)
+
     print()
     if problems:
         print(f"FAILED: {len(problems)} problem(s):")

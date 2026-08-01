@@ -21,7 +21,9 @@ WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 
 SW, SH = Inches(13.333), Inches(7.5)
 
-STATUS = "CUSTOMER-FACING MASTER · FINAL IDENTITY REQUIRED · LEGAL REVIEW REQUIRED · NOT YET SENT"
+STATUS_FULL = "CUSTOMER-FACING MASTER · FINAL IDENTITY REQUIRED · LEGAL REVIEW REQUIRED · NOT YET SENT"
+STATUS_INNER = "DRAFT MASTER · LEGAL REVIEW REQUIRED"
+STATUS_LAST = "제공자 정보 최종 확정 필요 · DRAFT MASTER · LEGAL REVIEW REQUIRED"
 PROVIDER = "제안 제공자 정보는 발송 전 최종 확정"
 
 TOTAL_SLIDES = 10
@@ -34,7 +36,7 @@ def new_deck():
     return prs
 
 
-def add_slide(prs, title):
+def add_slide(prs, title, footer_mode="inner"):
     layout = prs.slide_layouts[6]  # blank
     slide = prs.slides.add_slide(layout)
     # Background
@@ -63,13 +65,20 @@ def add_slide(prs, title):
     r.font.color.rgb = WHITE
     r.font.name = "Malgun Gothic"
     # Footer
-    footer = slide.shapes.add_textbox(Inches(0.55), Inches(7.05), Inches(9.5), Inches(0.35))
+    footer = slide.shapes.add_textbox(Inches(0.55), Inches(7.05), Inches(11.7), Inches(0.35))
     ftf = footer.text_frame
     ftf.word_wrap = True
     fp = ftf.paragraphs[0]
     fr = fp.add_run()
-    fr.text = STATUS + "  ·  " + PROVIDER
-    fr.font.size = Pt(9)
+    if footer_mode == "cover":
+        fr.text = STATUS_FULL
+        fr.font.size = Pt(11)
+    elif footer_mode == "last":
+        fr.text = STATUS_LAST + "  ·  " + PROVIDER
+        fr.font.size = Pt(11)
+    else:
+        fr.text = STATUS_INNER
+        fr.font.size = Pt(11)
     fr.font.color.rgb = GRAY
     fr.font.name = "Malgun Gothic"
     return slide
@@ -157,7 +166,7 @@ def build():
     prs = new_deck()
 
     # ---- Slide 1 ----
-    s = add_slide(prs, "1. 현재 문제")
+    s = add_slide(prs, "1. 현재 문제", footer_mode="cover")
     tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(5.2))
     para(tf, "콘텐츠 제작·검토가 수작업", size=20, bold=True, color=NAVY, first=True)
     para(tf, "홍보물·안내문·뉴스레터를 만드는 데 여러 단계의 수동 검토가 걸립니다.", size=16)
@@ -407,7 +416,7 @@ def build():
     add_page_number(prs, s, 9)
 
     # ---- Slide 10 ----
-    s = add_slide(prs, "10. 다음 단계")
+    s = add_slide(prs, "10. 다음 단계", footer_mode="last")
     steps10 = [
         ("1", "30분 사전 상담"),
         ("2", "대상 업무 1개 선정"),
