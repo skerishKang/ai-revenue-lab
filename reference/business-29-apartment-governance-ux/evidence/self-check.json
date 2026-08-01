@@ -1,0 +1,45 @@
+{
+  "workspace": "reference/business-29-apartment-governance-ux",
+  "contract": {
+    "issue": 351,
+    "correction_comment": "QUORUM_STATE_SEMANTICS_CORRECTION (#351 comment)",
+    "states_required": 24,
+    "states_implemented": 24,
+    "quorum": "manual confirm required; quorum-incomplete blocks discussion/resolution; supplement->recheck path",
+    "disclosure": "default private; redaction before public; manual disclosure review gate"
+  },
+  "runner": "node tests/state-machine.test.js",
+  "environment": "Node, no browser/Playwright/CDP/WebBridge",
+  "checks": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "results": [
+    "24-state contract coverage",
+    "정상 전체 journey (empty → completed)",
+    "quorum incomplete block (no discussion/resolution)",
+    "quorum supplement and recheck",
+    "dissent retention through resolution",
+    "private object excluded from public surface",
+    "redaction required before public",
+    "manual disclosure review gate",
+    "overdue ActionItem surfaced",
+    "system-error → retry preserves state",
+    "cancelled and completed terminal behavior",
+    "Version + AuditEvent generation",
+    "fixture.js mirrors data/fixture.json",
+    "keyboard contract markers",
+    "required authority labels (Phase 1 grammar preserved)",
+    "390px CSS contract markers",
+    "external runtime dependency 0",
+    "JavaScript syntax",
+    "allowed-scope check (only reference/business-29-apartment-governance-ux/ changed)",
+    "git diff --check clean"
+  ],
+  "browser_verification": "DEFERRED",
+  "backend": "FROZEN",
+  "external_runtime_requests": 0,
+  "synthetic_data_only": true,
+  "recorded_at": "2026-08-01"
+}
