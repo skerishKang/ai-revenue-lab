@@ -1,0 +1,15 @@
+{
+  "validated_source_head": "373776bd1a4f43eee92f7b5cbfafae4cdb6492fe",
+  "status": "PASS",
+  "mode": "fresh detached git worktree + localhost Chromium",
+  "matrix": {"passed": 21, "total": 21},
+  "at_relationship": {"passed": 7, "total": 7},
+  "keyboard": "PASS",
+  "assets": {"passed": 12, "total": 12, "http_decode_render": "PASS"},
+  "boundaries": {"scope_authority": "PASS", "secret_value_exposure": 0, "prohibited_implication": 0},
+  "motion": {"actual_final_ms": [779, 781], "range_pass": true, "completion_authority": "final node animationend", "fixed_timeout": false, "replay_equal": true, "focus_stable": true, "scroll_stable": true, "animation_zero_after_completion": true},
+  "reduced_motion": {"immediate_complete": true, "elapsed_ms": 0},
+  "mobile_390": {"containment": "PASS", "overflow_px": 0},
+  "network": {"console": 0, "page": 0, "failed": 0, "external": 0},
+  "visual_quality": "PASS"
+}
