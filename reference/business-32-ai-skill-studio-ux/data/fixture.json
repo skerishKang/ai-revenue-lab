@@ -1,0 +1,197 @@
+{
+  "assetVersion": "b32-ux-static-v1",
+  "organization": {
+    "name": "Nori Works",
+    "fictional": true,
+    "notice": "모든 조직·사람·공급업체·견적·가격·계약·검토 기록은 합성입니다."
+  },
+  "task": {
+    "id": "b32-001",
+    "title": "세 개의 합성 공급업체 견적서 비교 및 구매 추천 메모 작성",
+    "reviewer": {
+      "role": "합성 운영 책임자",
+      "fictional": true
+    },
+    "scope": [
+      "동일 품목·동일 수량의 합성 견적 3건만 비교한다.",
+      "가격·납기·보증·반품 조건을 같은 기준으로 비교한다.",
+      "추천 메모는 근거, 미확인 항목, 예외를 한 페이지에 담는다."
+    ],
+    "prohibited": [
+      "누락 조건을 유리하게 추정하지 않는다.",
+      "최저가라는 이유만으로 추천하지 않는다.",
+      "실제 구매 추천으로 주장하지 않는다.",
+      "실제 파일 업로드·모델 호출·조직 연결을 하지 않는다."
+    ],
+    "requiredInputs": [
+      {
+        "id": "quote-a",
+        "label": "합성 견적 A",
+        "confirmed": true
+      },
+      {
+        "id": "quote-b",
+        "label": "합성 견적 B",
+        "confirmed": true
+      },
+      {
+        "id": "quote-c",
+        "label": "합성 견적 C",
+        "confirmed": true
+      },
+      {
+        "id": "criteria",
+        "label": "비교 기준(가격·납기·보증·반품)",
+        "confirmed": false
+      }
+    ],
+    "successCriteria": [
+      "추천, 근거, 예외, 미확인 항목이 한 페이지에 존재한다.",
+      "사람 검토와 최종 승인 기록이 남는다.",
+      "재사용 가능한 조직 스킬 카드가 생성된다."
+    ]
+  },
+  "steps": [
+    {
+      "id": "s1",
+      "number": 1,
+      "title": "견적 범위 정규화",
+      "kind": "HUMAN ACTION",
+      "detail": "품목·수량 확인",
+      "result": "세 견적이 동일 품목·동일 수량임을 확인함"
+    },
+    {
+      "id": "s2",
+      "number": 2,
+      "title": "비교 필드 추출",
+      "kind": "AI-ASSISTED STEP",
+      "detail": "가격·납기·보증 추출",
+      "result": "총액·납기·보증 필드를 원장에 연결함"
+    },
+    {
+      "id": "s3",
+      "number": 3,
+      "title": "근거 연결",
+      "kind": "AI-ASSISTED STEP",
+      "detail": "출처 행과 비교표 연결",
+      "result": "각 견적 행을 출처 근거와 연결함"
+    },
+    {
+      "id": "s4",
+      "number": 4,
+      "title": "추천 메모 초안 작성",
+      "kind": "AI-ASSISTED STEP",
+      "detail": "확정 표현 금지 · DRAFT RESULT",
+      "result": "근거 기반 초안을 생성함(확정 아님)"
+    },
+    {
+      "id": "s5",
+      "number": 5,
+      "title": "검토와 기술화",
+      "kind": "HUMAN ACTION",
+      "detail": "수정·승인·버전",
+      "result": "사람 검토·승인 후 스킬 버전이 형성됨"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "A",
+      "name": "합성 공급업체 견적 A",
+      "total": 12800000,
+      "deliveryDays": 10,
+      "warrantyMonths": 18,
+      "returnPolicy": "표준 반품 14일",
+      "source": "supplier-quote-a.svg"
+    },
+    {
+      "id": "B",
+      "name": "합성 공급업체 견적 B",
+      "total": 11900000,
+      "deliveryDays": 21,
+      "warrantyMonths": null,
+      "returnPolicy": null,
+      "source": "supplier-quote-b.svg"
+    },
+    {
+      "id": "C",
+      "name": "합성 공급업체 견적 C",
+      "total": 12650000,
+      "deliveryDays": 7,
+      "warrantyMonths": 24,
+      "returnPolicy": "표준 반품 14일",
+      "source": "supplier-quote-c.svg"
+    }
+  ],
+  "scenarios": {
+    "standard": {
+      "benchEmpty": false,
+      "bootFailure": false,
+      "missingStep": "s2",
+      "missingEvidence": {
+        "label": "MISSING EVIDENCE",
+        "supplier": "B",
+        "field": "보증기간·반품 조건",
+        "text": "견적 B의 보증기간과 반품 조건이 없습니다. 최저가라는 이유만으로 추천할 수 없습니다. 미확인 항목은 완료 뒤에도 남습니다."
+      },
+      "supplement": {
+        "note": "견적 B 보충: 보증기간 미기재, 재견적 요청 예정으로 기록",
+        "status": "미해결 예외로 유지"
+      },
+      "conflictStep": "s3",
+      "conflict": {
+        "label": "CONFLICTING EVIDENCE",
+        "text": "견적 B는 총액이 가장 낮지만 납기 21일·보증 미기재로 비교 기준을 충족하지 못합니다. 최저가를 자동 최선으로 판정할 수 없습니다.",
+        "resolution": "사람 판단 필요"
+      },
+      "conflictDecision": {
+        "candidate": "C",
+        "reason": "납기 7일·보증 24개월로 우수하나 총비용 최종 확인이 필요하다."
+      }
+    },
+    "emptyBench": {
+      "benchEmpty": true,
+      "bootFailure": false
+    },
+    "fault": {
+      "benchEmpty": false,
+      "bootFailure": true
+    }
+  },
+  "draft": {
+    "initial": {
+      "title": "구매 추천 메모 초안",
+      "rejected": "최저가 견적 B 추천",
+      "rejectedReason": "보증·반품 조건이 누락되어 비교 기준을 충족하지 못함.",
+      "corrected": "견적 C 조건부 추천",
+      "correctedReason": "납기와 보증은 우수하지만 총비용을 최종 확인해야 함.",
+      "status": "DRAFT RESULT"
+    }
+  },
+  "reviewerActions": {
+    "reject": "REVIEW CORRECTION",
+    "approve": "HUMAN-APPROVED",
+    "beforeApproval": "NOT YET APPROVED"
+  },
+  "exceptions": [
+    {
+      "id": "ex-1",
+      "label": "MISSING EVIDENCE",
+      "text": "견적 B 보증기간·반품 조건 미확인"
+    },
+    {
+      "id": "ex-2",
+      "label": "EXCEPTION",
+      "text": "긴급 납기 요구가 생기면 비교 규칙 재검토"
+    }
+  ],
+  "skill": {
+    "name": "구매 견적 비교 및 추천 메모 작성",
+    "version": "1.0",
+    "owner": "합성 운영 책임자",
+    "reviewDate": "2026-08-01",
+    "nextReview": "2026-11-01",
+    "allowedUse": "합성 업무 실습에만 사용",
+    "prohibitedUse": "실제 구매 추천·실제 조직 연결에 사용 금지",
+    "authority": "VERIFIED ORGANIZATIONAL AI SKILL"
+  }
+}
