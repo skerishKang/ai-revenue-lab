@@ -30,8 +30,7 @@ def set_cell(ws, row, col, value, bold=False, size=11, color=None, fill=None, al
     if fill:
         c.fill = PatternFill("solid", fgColor=fill)
     c.border = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
-    if align:
-        c.alignment = Alignment(horizontal=align, vertical="center", wrap_text=wrap)
+    c.alignment = Alignment(horizontal=align or "left", vertical="center", wrap_text=wrap)
     return c
 
 
@@ -52,7 +51,7 @@ def build():
         ("사용 방법", "각 Offer sheet에 금액(원, VAT 별도)과 인원·기간을 입력합니다."),
         ("계산", "공급가액 / VAT(10%) / 합계가 자동 계산됩니다. 지급 단계(착수금 50%·잔금 50%)를 확인합니다."),
         ("경고", "표준 가격 범위를 벗어나는 금액을 입력하면 해당 셀에 경고가 표시됩니다."),
-        ("표준 가격", "A 진단 워크숍 초기형 300만–500만원 · A 확장형 500만–800만원 · B1 디자인 파트너 1,000만–1,500만원 · B2 표준 1,500만–2,500만원 · C 운영 자문 월 300만–600만원"),
+        ("표준 가격", "A 초기형 300만–500만원 · A 확장형 500만–800만원\nB1 1,000만–1,500만원 · B2 1,500만–2,500만원 · C 월 300만–600만원"),
         ("상태", "견적 검토 템플릿 — 계약 확정 문서가 아닙니다."),
         ("가격 정책", "시장 검증 전 자사 가격 가설 · 범위와 인원·기간에 따라 최종 견적 · VAT 조건은 최종 견적서에서 확정"),
         ("", ""),
@@ -62,6 +61,8 @@ def build():
     for i, (a, b) in enumerate(rows, start=1):
         set_cell(ws, i, 1, a, bold=i in (1,), fill=LIGHT if i > 4 else None)
         set_cell(ws, i, 2, b, size=10, color="333333" if b else None, fill=LIGHT if i > 4 else None, wrap=True)
+    # B9 (표준 가격): two lines, tall enough to show all prices
+    ws.row_dimensions[9].height = 34
 
     # ---- Customer Scope ----
     ws = wb.create_sheet("Customer Scope")
@@ -184,11 +185,13 @@ def build():
         ("고객 승인자", "[직책]"),
         ("승인일", "[YYYY-MM-DD]"),
         ("상태", "견적 검토 중 (계약 확정 아님)"),
-        ("법률·계약 검토", "REQUIRED — DRAFT · PROFESSIONAL LEGAL REVIEW REQUIRED"),
+        ("법률·계약 검토", "전문 법률·계약 검토 필요 — 최종 발송 전 확인"),
     ]
     for i, (a, b) in enumerate(fields, start=3):
         set_cell(ws, i, 1, a, bold=True, fill=LIGHT)
-        set_cell(ws, i, 2, b, color="333333")
+        set_cell(ws, i, 2, b, color="333333", wrap=True)
+    # B13 (법률·계약 검토): full Korean phrase visible, no right clipping
+    ws.row_dimensions[13].height = 32
     note = set_cell(ws, 15, 1, "안내: 사업자등록번호·대표자·주소·연락처·계좌 정보는 발송 전 공식 확인 후 입력합니다.", size=9, color="555A60")
     ws.merge_cells("A15:B15")
 

@@ -291,8 +291,48 @@ def main() -> int:
         cf_ok = all(any("B4" in str(cf.sqref) for cf in wb[s].conditional_formatting)
                     for s in ["Offer A", "Offer B1", "Offer B2", "Offer C"])
         check(cf_ok, "quote Offer sheets have B4 range-warning conditional formatting", problems)
+
+        # Instructions!B9: full price text present, wrap on, tall row
+        instr = wb["Instructions"]
+        b9 = instr["B9"]
+        b9_text = str(b9.value or "")
+        for token in ["300만–500만원", "500만–800만원", "1,000만–1,500만원", "1,500만–2,500만원", "월 300만–600만원"]:
+            check(token in b9_text, f"Instructions B9 shows price {token}", problems)
+        check(bool(b9.alignment) and b9.alignment.wrap_text,
+              "Instructions B9 wrap text enabled", problems)
+        row9_h = instr.row_dimensions[9].height or 0
+        check(row9_h >= 25, f"Instructions B9 row height enlarged (got {row9_h})", problems)
+
+        # Approval!B13: Korean legal-review wording, wrap on, tall row, no English marker
+        appr = wb["Approval"]
+        b13 = appr["B13"]
+        b13_text = str(b13.value or "")
+        check(b13_text == "전문 법률·계약 검토 필요 — 최종 발송 전 확인",
+              "Approval B13 uses Korean legal-review wording", problems)
+        check(bool(b13.alignment) and b13.alignment.wrap_text,
+              "Approval B13 wrap text enabled", problems)
+        row13_h = appr.row_dimensions[13].height or 0
+        check(row13_h >= 25, f"Approval B13 row height enlarged (got {row13_h})", problems)
+        check("REQUIRED" not in b13_text and "PROFESSIONAL LEGAL REVIEW" not in b13_text,
+              "Approval B13 has no English legal marker", problems)
+
+        # No internal English status markers anywhere in the workbook text
+        all_text = " ".join(str(c.value or "") for ws in wb.worksheets
+                            for row in ws.iter_rows() for c in row)
+        for marker in ["FINAL IDENTITY", "LEGAL REVIEW REQUIRED", "PROFESSIONAL LEGAL REVIEW",
+                       "NOT YET SENT", "CUSTOMER-FACING"]:
+            check(marker not in all_text, f"quote workbook has no '{marker}' marker", problems)
     except Exception as e:
         check(False, f"spreadsheet validation ran ({e})", problems)
+
+    # XLSX rendered sheets (spreadsheet renderer output) present
+    xr = ROOT / "xlsx-rendered"
+    expected_xr = ["instructions", "customer-scope", "offer-a", "offer-b1", "offer-b2",
+                   "offer-c", "optional-items", "assumptions", "approval"]
+    for name in expected_xr:
+        check((xr / f"{name}.png").is_file(), f"xlsx-rendered PNG exists: {name}.png", problems)
+    check(len(list(xr.glob("*.png"))) >= 9,
+          f"xlsx-rendered PNG count >= 9 (found {len(list(xr.glob('*.png')))})", problems)
 
     # BLOCKER 0 / MAJOR 0 declarations
     check("BLOCKER: 0" in vqa_text or "BLOCKER 0" in vqa_text or "blocker_count: 0" in vqa_text,
