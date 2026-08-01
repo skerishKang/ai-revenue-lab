@@ -80,7 +80,11 @@ def make_edition(
     return SimpleNamespace(
         id=EDITION_ID,
         participant_id=PARTICIPANT_ID,
-        edition_number=EDITION_ID,
+        # Display 호수 (issue number) shown to the participant.
+        edition_number=1,
+        # URL/output-path slug identity (kept separate from the display 호수
+        # so the on-screen issue number is "제1호"/"#1", never the slug).
+        edition_uid=EDITION_ID,
         rendered_title="속도에서 개인화로",
         generation_status=generation_status,
         publication_state=publication_state,

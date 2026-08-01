@@ -57,6 +57,18 @@ form input[type="submit"] {
   opacity: 0.5;
   cursor: not-allowed;
 }
+.preview-journey-nav {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed #d4b106;
+  border-radius: 8px;
+  background: #fffbeb;
+}
+.preview-journey-nav .preview-journey-hint {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.85rem;
+  color: #92400e;
+}
 """
 
 _HEADERS_CONTENT = """\
@@ -345,8 +357,8 @@ def main() -> None:
             "has_given_feedback": False,
             "next_edition_number": None,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}",
-        f"preview/participant/editions/{edition_published.edition_number}/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}",
+        f"preview/participant/editions/{edition_published.edition_uid}/index.html",
     )
 
     _write_page(
@@ -357,8 +369,8 @@ def main() -> None:
             "content": content,
             "error": None,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}/feedback",
-        f"preview/participant/editions/{edition_published.edition_number}/feedback/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}/feedback",
+        f"preview/participant/editions/{edition_published.edition_uid}/feedback/index.html",
     )
 
     _write_page(
@@ -366,9 +378,10 @@ def main() -> None:
         {
             "participant": participant,
             "edition_number": edition_published.edition_number,
+            "edition_id": edition_published.edition_uid,
         },
-        f"/preview/participant/editions/{edition_published.edition_number}/feedback/thanks",
-        f"preview/participant/editions/{edition_published.edition_number}/feedback/thanks/index.html",
+        f"/preview/participant/editions/{edition_published.edition_uid}/feedback/thanks",
+        f"preview/participant/editions/{edition_published.edition_uid}/feedback/thanks/index.html",
     )
 
     _write_page(
@@ -389,6 +402,84 @@ def main() -> None:
         },
         "/preview/participant/not-found",
         "preview/participant/not-found/index.html",
+    )
+
+    _write_page(
+        env, "intro.html",
+        {"is_preview": True},
+        "/preview/intro", "preview/intro/index.html",
+    )
+
+    _write_page(
+        env, "transformation.html",
+        {
+            "participant": participant,
+            "edition": edition_published,
+            "content": content,
+        },
+        "/preview/participant/transformation",
+        "preview/participant/transformation/index.html",
+    )
+
+    _write_page(
+        env, "feedback_adaptation.html",
+        {
+            "participant": participant,
+            "edition": edition_published,
+            "content": content,
+        },
+        f"/preview/participant/editions/{edition_published.edition_uid}/adaptation",
+        f"preview/participant/editions/{edition_published.edition_uid}/adaptation/index.html",
+    )
+
+    _write_page(
+        env, "admin_evidence.html",
+        {
+            "edition": edition_pending,
+            "content": content,
+            "participant": participant,
+            "runs": runs,
+            "provider_name": "mock",
+            "model_name": "mock-personal-edition-v1",
+        },
+        "/admin/review/modal-preview-edition/evidence",
+        "admin/review/modal-preview-edition/evidence/index.html",
+    )
+
+    _write_page(
+        env, "admin_publish_decision.html",
+        {
+            "edition": edition_pending,
+            "content": content,
+            "participant": participant,
+        },
+        "/admin/review/modal-preview-edition/publish",
+        "admin/review/modal-preview-edition/publish/index.html",
+    )
+
+    _write_page(
+        env, "admin_feedback_continuity.html",
+        {
+            "participant": participant,
+            "feedbacks_with_editions": make_feedbacks_with_editions(
+                participant, edition_published, feedbacks[0]
+            ),
+        },
+        "/admin/participants/modal-preview-user/feedback",
+        "admin/participants/modal-preview-user/feedback/index.html",
+    )
+
+    _write_page(
+        env, "admin_content_review.html",
+        {
+            "edition": edition_pending,
+            "content": content,
+            "participant": participant,
+            "input_count": len(inputs),
+            "feedbacks": feedbacks,
+        },
+        "/admin/review/modal-preview-edition/content",
+        "admin/review/modal-preview-edition/content/index.html",
     )
 
     _copy_static()

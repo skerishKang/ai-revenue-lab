@@ -40,6 +40,13 @@
     <button type="submit" class="btn btn-primary">편집을 위해 기록 맡기기</button>
   </form>
 
+  {% if is_preview %}
+  <div class="preview-journey-nav">
+    <p class="preview-journey-hint">미리보기에서는 기록이 실제 전송되지 않습니다.</p>
+    <a href="/preview/participant/input-received/" class="btn btn-primary">다음: 기록 접수 확인 →</a>
+  </div>
+  {% endif %}
+
   <div class="input-visual">
     <img src="/static/images/editorial-process-layers.webp"
          alt="편집 과정 안내"

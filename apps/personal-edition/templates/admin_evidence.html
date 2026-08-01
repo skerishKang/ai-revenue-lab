@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Evidence — Personal Edition{% endblock %}
+{% block content %}
+<div class="evidence-page">
+  <h1>생성 증거</h1>
+
+  <section class="evidence-summary">
+    <h2>{{ edition.edition_number }}호 생성 기록</h2>
+    <p>AI 초안 생성에 사용된 모델과 설정을 확인합니다.</p>
+  </section>
+
+  <section class="evidence-detail">
+    <div class="editorial-grid">
+      <div class="main">
+        <h3>Generation runs</h3>
+        {% for run in runs %}
+        <div class="run-card">
+          <div class="run-header">
+            <span class="run-type">{{ run.task_type }}</span>
+            <span class="run-model">{{ run.advertised_model }}</span>
+          </div>
+          <div class="run-meta">
+            <span>시작: {{ run.started_at }}</span>
+            {% if run.completed_at %}<span>완료: {{ run.completed_at }}</span>{% endif %}
+            {% if run.latency_seconds %}<span>소요: {{ run.latency_seconds }}초</span>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="sidebar">
+        <h4>Provider</h4>
+        <p>{{ provider_name }} ({{ model_name }})</p>
+        <p><small>실제 호출 없이 시뮬레이션된 결과입니다.</small></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="evidence-nav">
+    <a href="/admin/review/modal-preview-edition/content/" class="btn btn-secondary">콘텐츠 검토로 이동</a>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+[
+  {
+    "check": "consoleErrors",
+    "pass": true
+  },
+  {
+    "check": "pageErrors",
+    "pass": true
+  },
+  {
+    "check": "externalRequests",
+    "pass": true
+  },
+  {
+    "check": "httpErrors4xx5xx",
+    "pass": true
+  }
+]

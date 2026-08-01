@@ -1,0 +1,15 @@
+[
+  {
+    "check": "keyboardFocusVisible",
+    "pass": true,
+    "details": {
+      "total": 2,
+      "focusVisible": 2
+    }
+  },
+  {
+    "check": "reducedMotion",
+    "pass": true,
+    "note": "prefers-reduced-motion: true"
+  }
+]

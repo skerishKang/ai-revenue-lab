@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}피드백 연속성 — Personal Edition 관리자{% endblock %}
+{% block content %}
+<div class="feedback-continuity-page">
+  <header class="feedback-header">
+    <a href="/admin/review/modal-preview-edition/publish/" class="back-link">← 게재 결정으로 돌아가기</a>
+    <h1>피드백 연속성</h1>
+    <p class="feedback-meta">{{ participant.display_name }}님의 피드백 기록</p>
+  </header>
+
+  <section class="continuity-timeline">
+    {% for fb in feedbacks_with_editions %}
+    <div class="continuity-card">
+      <div class="continuity-edition-badge">에디션 #{{ fb.edition.edition_number }}</div>
+      <div class="continuity-body">
+        <h3>{{ fb.edition.rendered_title }}</h3>
+        <p class="continuity-date">{{ fb.edition.drafted_at[:10] if fb.edition.drafted_at else '' }}</p>
+        <div class="continuity-feedback">
+          <strong>피드백:</strong>
+          <span>
+            {% for dir in fb.direction %}{{ dir }}{% if not loop.last %}, {% endif %}{% endfor %}
+          </span>
+          <p>"{{ fb.record.free_text }}"</p>
+        </div>
+        <div class="continuity-status">
+          {% if fb.edition.applied_feedback %}
+          <span class="badge badge-success">피드백 반영됨</span>
+          {% else %}
+          <span class="badge badge-neutral">미반영</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="continuity-empty">
+      <p>아직 피드백 기록이 없습니다.</p>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="continuity-actions">
+    <a href="/admin/participants/modal-preview-user/" class="btn btn-secondary">참여자 컨텍스트로</a>
+    <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
+  </section>
+</div>
+{% endblock %}

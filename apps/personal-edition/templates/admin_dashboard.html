@@ -55,23 +55,23 @@
         <tbody>
           {% for item in queue_items %}
           <tr>
-            <td class="cell-participant">
+            <td class="cell-participant" data-label="참여자">
               <strong>{{ item.participant.display_name }}</strong>
               <div class="sub-text"><code>{{ item.participant.id }}</code></div>
             </td>
-            <td>
+            <td data-label="현재 상태">
               <span class="status-badge {{ item.status_info.status_class }}">
                 {{ item.status_info.status_label }}
               </span>
             </td>
-            <td>
+            <td data-label="마지막 입력 시각">
               {% if item.latest_input %}
               {{ item.latest_input.submitted_at[:16] }}
               {% else %}
               <span class="muted-text">-</span>
               {% endif %}
             </td>
-            <td>
+            <td data-label="최근 에디션">
               {% if item.latest_edition %}
               <span class="edition-num-tag">#{{ item.latest_edition.edition_number }}</span>
               {{ item.latest_edition.rendered_title or '제목 없음' }}
@@ -79,19 +79,22 @@
               <span class="muted-text">-</span>
               {% endif %}
             </td>
-            <td>
+            <td data-label="피드백">
               {% if item.has_feedback %}
               <span class="badge badge-feedback">피드백 도착</span>
               {% else %}
               <span class="muted-text">-</span>
               {% endif %}
             </td>
-            <td class="cell-action-hint">
+            <td class="cell-action-hint" data-label="다음 권장 작업">
               {{ item.status_info.recommended_action }}
             </td>
-            <td class="cell-cta">
+            <td class="cell-cta" data-label="작업">
               <a href="{{ item.status_info.recommended_action_url }}" class="btn btn-sm btn-primary">
                 이동
+              </a>
+              <a href="/admin/participants/{{ item.participant.id }}/" class="btn btn-sm btn-secondary">
+                상세
               </a>
             </td>
           </tr>

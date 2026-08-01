@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-hidden="true">
+<rect width="800" height="450" fill="#f4f0e8"/>
+<g fill="#203c32" opacity="0.1">
+<circle cx="200" cy="200" r="60"/>
+<circle cx="300" cy="150" r="40"/>
+<circle cx="400" cy="220" r="50"/>
+<circle cx="500" cy="180" r="35"/>
+<circle cx="600" cy="240" r="55"/>
+</g>
+<g stroke="#203c32" stroke-width="2" fill="none">
+<path d="M100 380 Q200 340 300 360 T500 350"/>
+<path d="M100 400 Q200 370 300 380 T500 375"/>
+<path d="M150 420 Q300 390 450 400 T600 390"/>
+</g>
+<g stroke="#203c32" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="4 4">
+<path d="M300 300 Q350 280 400 310 T500 290"/>
+<path d="M350 320 Q400 300 450 330 T550 310"/>
+</g>
+<g fill="#203c32" opacity="0.06">
+<rect x="120" y="40" width="90" height="30" rx="4"/>
+<rect x="250" y="50" width="70" height="25" rx="4"/>
+<rect x="400" y="35" width="110" height="35" rx="4"/>
+<rect x="550" y="45" width="80" height="25" rx="4"/>
+<rect x="160" y="80" width="200" height="4" rx="2"/>
+<rect x="300" y="90" width="150" height="4" rx="2"/>
+</g>
+</svg>

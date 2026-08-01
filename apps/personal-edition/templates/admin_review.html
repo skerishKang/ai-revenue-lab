@@ -345,5 +345,20 @@
       </div>
     </details>
   </section>
-</div>
+
+   <section class="section review-actions-section">
+     <h2>검토 흐름</h2>
+     <div class="state-actions">
+       <a href="/admin/review/modal-preview-edition/content/" class="btn btn-primary">콘텐츠 검토 →</a>
+       <a href="/admin/review/modal-preview-edition/evidence/" class="btn btn-secondary">생성 증거</a>
+       <a href="/admin/review/modal-preview-edition/publish/" class="btn btn-secondary">게재 결정</a>
+     </div>
+
+     {% if is_preview %}
+     <div class="preview-journey-nav">
+       <a href="/admin/participants/modal-preview-user/" class="btn btn-secondary">← 참여자 컨텍스트로</a>
+     </div>
+     {% endif %}
+   </section>
+ </div>
 {% endblock %}

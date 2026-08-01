@@ -1,0 +1,221 @@
+{
+  "screenshots": [
+    {
+      "screen": "intro",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/intro-desktop.png",
+      "sha256": "51c6a867ee03a5946f1fe6ee551e7f4518e86cc753411d6d8ba888ceee619cf3",
+      "fullPage": false
+    },
+    {
+      "screen": "participant-published",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/participant-published-desktop.png",
+      "sha256": "cc5a4efd9077ec7c95856aecfa02b9d6709dbb385c1a4fcabee08b827c88e7a3",
+      "fullPage": false
+    },
+    {
+      "screen": "edition-read",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/edition-read-desktop.png",
+      "sha256": "4eeba3b203d84595482ad6ee709fd4b64c2456de607ab92ed9759cd5f48faf08",
+      "fullPage": false
+    },
+    {
+      "screen": "feedback-adaptation",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/feedback-adaptation-desktop.png",
+      "sha256": "d305b059bb0ba75f05e682515e42d7c8f55397218e18e97df926ea2455fc9e10",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-queue",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/operator-queue-desktop.png",
+      "sha256": "4e240d186701362ef6f3c6d8779faf3dcf9088772361a2eb88d1a05d051737ae",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-participant-context",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/operator-participant-context-desktop.png",
+      "sha256": "1f818ec7081ed3c97f6661ff08a0266d8768a122d8e50794e832b759f0803317",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-content-review",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/operator-content-review-desktop.png",
+      "sha256": "22eefc39af761bb6659f52a7e736ca4df687425e28514df0b3bd84bfb63a8ed6",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-publish-decision",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1100,
+      "file": "screenshots/operator-publish-decision-desktop.png",
+      "sha256": "f216084c7440b71e87bdecbef2af17968b37bb95c8ed1b60e1317733c4ac7f1b",
+      "fullPage": false
+    },
+    {
+      "screen": "intro",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/intro-tablet.png",
+      "sha256": "1c5e90cef9c3ff41fe2018a5539090e2c70e39b04570fe5e7b9cca9aa3e1cd63",
+      "fullPage": false
+    },
+    {
+      "screen": "participant-published",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/participant-published-tablet.png",
+      "sha256": "82e3d1878491c81d789ef5a452b07c09337c26c517c0ae00fb82ee07ebc3b5ea",
+      "fullPage": false
+    },
+    {
+      "screen": "edition-read",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/edition-read-tablet.png",
+      "sha256": "d2204de926451ef895963f32007b3d8442f7eb041d59a6186a488f5482d3b329",
+      "fullPage": false
+    },
+    {
+      "screen": "feedback-adaptation",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/feedback-adaptation-tablet.png",
+      "sha256": "e3dc4255e0cf4a0b03e3b927adb3e49bb809e2ff078637a4ee31b4e97a3bc66f",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-queue",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/operator-queue-tablet.png",
+      "sha256": "696db6f2e142a0b82fa9fdeb807088db0198157e784aa8eda2b8ed73eef83157",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-participant-context",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/operator-participant-context-tablet.png",
+      "sha256": "e15ba98a733a95f2b79a3623364d331b2fbfaabea73d0e957bfadea74904ee87",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-content-review",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/operator-content-review-tablet.png",
+      "sha256": "a64a647d39979ad93f7e87f8af48b71b7a75ba5cedd3444ab4441e8b06cfd7bc",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-publish-decision",
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "screenshots/operator-publish-decision-tablet.png",
+      "sha256": "05d64562e462648d718d73d4cdcaf903586d79176b24743df28d6a59935f67e6",
+      "fullPage": false
+    },
+    {
+      "screen": "intro",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/intro-mobile.png",
+      "sha256": "153046e59040fb05a8af1fe18359fc0427c8cd3e8bb1facd8db8e79880c73468",
+      "fullPage": false
+    },
+    {
+      "screen": "participant-published",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/participant-published-mobile.png",
+      "sha256": "b06dfa41d9a30257c5b6967b60584dfcc33a0069e3fdb4392d2ea21d42faa7f1",
+      "fullPage": false
+    },
+    {
+      "screen": "edition-read",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/edition-read-mobile.png",
+      "sha256": "185585329295e144e31a011aea87fb024bd950149aa947bbb80e34bc59a6340c",
+      "fullPage": false
+    },
+    {
+      "screen": "feedback-adaptation",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/feedback-adaptation-mobile.png",
+      "sha256": "cb0f02486d0f039976fffe24091aec09566ba8ea12cebe3c9541bbc9d806dc4e",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-queue",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/operator-queue-mobile.png",
+      "sha256": "201cc7fdc13de07cf7fed3a859f74158bc23f24ffe92b9d6730171161b08b94d",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-participant-context",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/operator-participant-context-mobile.png",
+      "sha256": "338031d30ad7b3d0a0325d6571a50874ab137248a82022a12e426fa2d1bf09df",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-content-review",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/operator-content-review-mobile.png",
+      "sha256": "a66f16a9d7b001ed4e9c7e40599f51322cd690822c2e5d155042564f4631c9f8",
+      "fullPage": false
+    },
+    {
+      "screen": "operator-publish-decision",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "screenshots/operator-publish-decision-mobile.png",
+      "sha256": "6b0e66cbfcc327421d521d9a509ba73e2f6fa7e70f72b46e8f544c941a226b58",
+      "fullPage": false
+    }
+  ],
+  "total": 24
+}
