@@ -123,6 +123,17 @@ check("external runtime dependency 0", function () {
   });
 });
 
+/* 6b. no word-split source patterns / mixed English */
+check("no word-split source patterns or mixed English", function () {
+  var content = shipContent();
+  ["의결 authority", "authority는", "공\n개", "운\n영실", "가이\n드"].forEach(function (t) {
+    assert.strictEqual(content.indexOf(t), -1, "forbidden pattern present: " + JSON.stringify(t));
+  });
+  assert.ok(content.indexOf("가이드") !== -1, "가이드 present as a whole word");
+  assert.ok(content.indexOf("운영실") !== -1, "운영실 present as a whole word");
+  assert.ok(content.indexOf("공개") !== -1, "공개 present as a whole word");
+});
+
 /* 7. JavaScript syntax */
 check("JavaScript syntax", function () {
   ["scripts/tutorial-data.js", "scripts/app.js"].forEach(function (f) {
@@ -182,4 +193,4 @@ if (failures.length) {
   console.log(failures.length + " check(s) failed.");
   process.exit(1);
 }
-console.log("All 12 Business 29 방림명지로드힐 guided tutorial checks passed.");
+console.log("All 13 Business 29 방림명지로드힐 guided tutorial checks passed.");

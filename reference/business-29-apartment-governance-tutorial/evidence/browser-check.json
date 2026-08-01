@@ -1,6 +1,6 @@
 {
   "browser": "chromium headless (Playwright)",
-  "run_at": "2026-08-01T09:37:19.921Z",
+  "run_at": "2026-08-01T10:12:26.312Z",
   "viewports": [
     {
       "viewport": "desktop",
@@ -15,6 +15,7 @@
       "text_overflow_elements": [],
       "chapter_count": 7,
       "scenario_count": 7,
+      "word_splits": [],
       "pass": true
     },
     {
@@ -30,6 +31,7 @@
       "text_overflow_elements": [],
       "chapter_count": 7,
       "scenario_count": 7,
+      "word_splits": [],
       "pass": true
     },
     {
@@ -45,6 +47,7 @@
       "text_overflow_elements": [],
       "chapter_count": 7,
       "scenario_count": 7,
+      "word_splits": [],
       "pass": true
     }
   ],

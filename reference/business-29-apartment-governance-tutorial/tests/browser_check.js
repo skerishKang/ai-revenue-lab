@@ -102,6 +102,36 @@ function serve(port) {
           textOverflows.push({ tag: el.tagName, text: (el.textContent || "").slice(0, 50), scrollW: el.scrollWidth, clientW: el.clientWidth });
         }
       });
+      function checkWord(sel, word) {
+        var el = document.querySelector(sel);
+        if (!el) return { sel: sel, word: word, error: "missing element" };
+        var idx = el.textContent.indexOf(word);
+        if (idx < 0) return { sel: sel, word: word, error: "word not found" };
+        var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        var n, acc = 0, found = null;
+        while ((n = walker.nextNode())) {
+          var len = n.textContent.length;
+          if (idx >= acc && idx < acc + len) { found = { node: n, offset: idx - acc }; break; }
+          acc += len;
+        }
+        if (!found) return { sel: sel, word: word, error: "text node not found" };
+        var range = document.createRange();
+        range.setStart(found.node, found.offset);
+        range.setEnd(found.node, found.offset + word.length);
+        var rects = range.getClientRects();
+        var tops = {};
+        for (var i = 0; i < rects.length; i++) tops[Math.round(rects[i].top)] = true;
+        return { sel: sel, word: word, rects: rects.length, split: Object.keys(tops).length > 1 };
+      }
+      var pairs = [
+        [".identity-copy h1", "방림명지로드힐"],
+        [".identity-copy h1", "우리단지"],
+        [".identity-copy h1", "운영실"],
+        [".identity-copy .subtitle", "단계별"],
+        [".identity-copy .subtitle", "운영"],
+        [".identity-copy .subtitle", "가이드"],
+        ["#chapter-title", "공개"]
+      ];
       return {
         horizontal_overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
         scrollWidth: document.documentElement.scrollWidth,
@@ -109,8 +139,10 @@ function serve(port) {
         text_overflow_elements: textOverflows.slice(0, 5),
         chapter_count: document.querySelectorAll("#chapter-tabs button").length,
         scenario_count: document.querySelectorAll("#scenario option").length,
+        word_splits: pairs.map(function (p) { return checkWord(p[0], p[1]); })
       };
     });
+    var wordSplits = layout.word_splits.filter(function (w) { return w.split; });
     var ok =
       r.status() === 200 &&
       consoleErrors.length === 0 &&
@@ -120,7 +152,8 @@ function serve(port) {
       !layout.horizontal_overflow &&
       layout.text_overflow_elements.length === 0 &&
       layout.chapter_count === 7 &&
-      layout.scenario_count === 7;
+      layout.scenario_count === 7 &&
+      wordSplits.length === 0;
 
     var res = {
       viewport: vp.name,
@@ -135,6 +168,7 @@ function serve(port) {
       text_overflow_elements: layout.text_overflow_elements,
       chapter_count: layout.chapter_count,
       scenario_count: layout.scenario_count,
+      word_splits: wordSplits,
       pass: ok,
     };
     results.push(res);
@@ -149,6 +183,7 @@ function serve(port) {
       " textOverflow=" + layout.text_overflow_elements.length +
       " chapters=" + layout.chapter_count +
       " scenarios=" + layout.scenario_count +
+      " wordSplits=" + wordSplits.length +
       " => " + (ok ? "PASS" : "FAIL")
     );
     await page.close();

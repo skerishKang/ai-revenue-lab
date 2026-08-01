@@ -20,13 +20,14 @@ body {
 .skip-link:focus { top: 12px; }
 .shell { max-width: 1580px; margin: auto; min-height: 100vh; }
 
-.masthead { display: flex; justify-content: space-between; gap: 30px; padding: 28px 38px 20px; border-bottom: 3px solid var(--ink); background: rgba(248,243,232,.92); }
-.identity { display: flex; align-items: center; gap: 18px; }
+h1, h2, h3, p, li, small, figcaption { word-break: keep-all; overflow-wrap: normal; }
+.masthead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 22px 28px; padding: 28px 38px 20px; border-bottom: 3px solid var(--ink); background: rgba(248,243,232,.92); }
 .ledger-no { display: grid; place-items: center; width: 64px; height: 64px; border: 3px double var(--ink); font: 700 25px Georgia, serif; }
-.identity p { margin: 0 0 6px; font-size: 12px; letter-spacing: .16em; font-weight: 800; }
-.identity h1 { margin: 0; font: 700 clamp(24px,3vw,40px) Georgia,"Nanum Myeongjo",serif; }
-.identity h1 span { font: 500 15px system-ui; margin-left: 10px; color: var(--muted); }
-.synthetic-note { max-width: 460px; font-size: 11px; line-height: 1.6; color: var(--muted); text-align: right; }
+.identity-copy { min-width: 0; }
+.identity-copy .eyebrow { margin: 0 0 6px; font-size: 12px; letter-spacing: .16em; font-weight: 800; }
+.identity-copy h1 { margin: 0; font: 700 clamp(24px, 2.6vw, 40px)/1.2 Georgia,"Nanum Myeongjo",serif; }
+.identity-copy .subtitle { margin: 8px 0 0; font: 500 15px system-ui; color: var(--muted); }
+.synthetic-note { min-width: 0; max-width: 400px; font-size: 11px; line-height: 1.6; color: var(--muted); text-align: right; }
 
 .tut-nav { position: sticky; top: 0; z-index: 30; background: rgba(238,231,216,.97); border-bottom: 1px solid var(--ink); display: flex; align-items: center; gap: 18px; padding: 10px 38px; flex-wrap: wrap; }
 .chapter-tabs { display: flex; gap: 4px; overflow: auto; padding: 3px; }
@@ -74,8 +75,8 @@ body {
 footer { display: flex; justify-content: space-between; gap: 20px; border-top: 3px solid var(--ink); padding: 20px 38px; font-size: 11px; background: var(--paper2); }
 
 @media(max-width: 900px) {
-  .masthead { flex-direction: column; }
-  .synthetic-note { text-align: left; max-width: none; }
+  .masthead { grid-template-columns: auto minmax(0, 1fr); }
+  .synthetic-note { grid-column: 1 / -1; text-align: left; max-width: none; }
   .tut-nav { align-items: flex-start; flex-direction: column; }
   .chapter-tabs { max-width: 100%; }
   .scenario-select { margin-left: 0; width: 100%; }
@@ -84,8 +85,10 @@ footer { display: flex; justify-content: space-between; gap: 20px; border-top: 3
 @media(max-width: 520px) {
   body { background: var(--paper); }
   .masthead, .review-stage { padding-left: 16px; padding-right: 16px; }
+  .masthead { gap: 14px 16px; padding-top: 18px; }
   .ledger-no { width: 50px; height: 50px; }
-  .identity h1 span { display: block; margin: 4px 0 0; }
+  .identity-copy h1 { font-size: 24px; line-height: 1.25; }
+  .identity-copy .subtitle { font-size: 13px; line-height: 1.5; }
   .chapter-tabs { width: 100%; }
   .section-head { flex-direction: column; align-items: flex-start; }
   .section-head h2 { font-size: 30px; }
@@ -95,6 +98,7 @@ footer { display: flex; justify-content: space-between; gap: 20px; border-top: 3
 /* 390px contract marker */
 @media(max-width: 390px) {
   .masthead, .review-stage { padding-left: 12px; padding-right: 12px; }
+  .identity-copy h1 { font-size: 22px; }
   .chapter-tabs button { padding: 8px 10px; }
   .step-card h3 { font-size: 19px; }
   .guide-note, .scenario-card { padding: 14px; }
