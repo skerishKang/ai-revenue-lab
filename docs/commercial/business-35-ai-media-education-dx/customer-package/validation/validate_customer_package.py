@@ -47,13 +47,14 @@ FORBIDDEN_PHRASES = [
 # "성과 보장" is only allowed in negation/context like "성과 보장을 의미하지 않습니다"
 UNSOURCED_NUMBERS = ["48.8%", "28.7%", "60.8%"]
 
-EXPECTED_PRICE_TOKENS = [
-    "300 만 ~500 만원",
-    "300 만– 800 만원",
-    "1,000 만 ~1,500 만원",
-    "1,000 만– 1,500 만원",
-    "1,500 만– 2,500 만원",
-    "월 300 만– 600 만원",
+# Standard price ranges. PDF extraction splits "만" from "원" (e.g. "300 만 ~500 만원"),
+# so we match on the numeric bounds rather than exact tokens.
+PRICE_RANGE_BOUNDS = [
+    (300, 800),      # A 표준
+    (300, 500),      # A 초기 제안
+    (1000, 1500),    # B 디자인 파트너
+    (1500, 2500),    # B 표준
+    (300, 600),      # C 월
 ]
 
 
@@ -126,11 +127,15 @@ def main() -> int:
         for num in UNSOURCED_NUMBERS:
             check(num not in txt, f"unsourced number absent in {f}: {num}", problems)
 
-    # Price consistency (PDF text tokens)
+    # Price consistency: each standard range bound pair must appear in the PDF text
     for f in ["Business35_Master_Proposal_10p.pdf", "Business35_OnePage_Offer.pdf"]:
         txt = pdf_text(f)
-        found = [t for t in EXPECTED_PRICE_TOKENS if t in txt]
-        check(len(found) >= 2, f"price tokens found in {f}: {len(found)}", problems)
+        txt_norm = txt.replace(",", "").replace("\u00a0", " ")
+        found = 0
+        for lo, hi in PRICE_RANGE_BOUNDS:
+            if str(lo) in txt_norm and str(hi) in txt_norm:
+                found += 1
+        check(found >= 4, f"price ranges found in {f}: {found}/5", problems)
 
     # No real customer names / performance claims
     for f in ["Business35_Master_Proposal_10p.pdf", "Business35_OnePage_Offer.pdf",

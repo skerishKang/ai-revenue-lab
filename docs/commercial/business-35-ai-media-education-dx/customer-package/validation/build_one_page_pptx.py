@@ -75,34 +75,48 @@ def build():
     r2.font.name = "Malgun Gothic"
 
     # Value proposition
-    tb = slide.shapes.add_textbox(Inches(0.55), Inches(1.6), Inches(12.2), Inches(1.0))
+    tb = slide.shapes.add_textbox(Inches(0.55), Inches(1.6), Inches(12.2), Inches(0.75))
     vtf = tb.text_frame
     vtf.word_wrap = True
     para(vtf, "교육에서 끝나지 않고, 실제 업무 진단·실습·워크플로 재설계·파일럿·측정·운영 플레이북까지 연결합니다.",
          size=16, bold=True, color=NAVY, first=True)
 
-    # Problem
-    tb = slide.shapes.add_textbox(Inches(0.55), Inches(2.55), Inches(12.2), Inches(1.1))
-    ptf = tb.text_frame
-    ptf.word_wrap = True
-    para(ptf, "고객의 현재 문제", size=14, bold=True, color=BLUE, first=True)
-    para(ptf, "홍보·교육·콘텐츠 제작 수작업 · AI 사용 개인 단위 · 검토·승인 기준 부재 · 개인정보·저작권·사람 검토 위험", size=13, color=GRAY)
+    # Left column: problem + 7-step method
+    left = slide.shapes.add_shape(1, Inches(0.55), Inches(2.4), Inches(6.0), Inches(3.4))
+    left.fill.solid()
+    left.fill.fore_color.rgb = WHITE
+    left.line.color.rgb = BLUE
+    left.line.width = Pt(1)
+    left.shadow.inherit = False
+    ltf = left.text_frame
+    ltf.word_wrap = True
+    ltf.margin_left = Inches(0.2)
+    ltf.margin_top = Inches(0.15)
+    para(ltf, "고객의 현재 문제", size=14, bold=True, color=BLUE, first=True)
+    for item in ["수작업 콘텐츠 제작", "개인별 AI 사용", "검토·승인 기준 부재", "개인정보·저작권 위험"]:
+        para(ltf, "• " + item, size=12, color=GRAY)
+    para(ltf, "Business 35 방식", size=14, bold=True, color=BLUE)
+    for item in ["진단 → 직무 교육", "실제 업무 실습", "워크플로 재설계", "제한 파일럿", "성과 측정 · 운영 플레이북"]:
+        para(ltf, "• " + item, size=12, color=NAVY)
 
-    # 7 steps
-    tb = slide.shapes.add_textbox(Inches(0.55), Inches(3.6), Inches(12.2), Inches(0.9))
-    stf = tb.text_frame
-    stf.word_wrap = True
-    para(stf, "7단계 방식", size=14, bold=True, color=BLUE, first=True)
-    para(stf, "진단 → 직무 교육 → 실제 실습 → 워크플로 재설계 → 제한 파일럿 → 성과 측정 → 운영 플레이북", size=13, color=NAVY)
-
-    # Products
-    tb = slide.shapes.add_textbox(Inches(0.55), Inches(4.45), Inches(12.2), Inches(1.15))
-    prf = tb.text_frame
-    prf.word_wrap = True
-    para(prf, "상품 A / B / C", size=14, bold=True, color=BLUE, first=True)
-    para(prf, "A 진단 워크숍 300만–800만원 (초기 300만–500만원)", size=13, color=GRAY)
-    para(prf, "B 디자인 파트너 파일럿 1,000만–1,500만원 · B 표준 6주 파일럿 1,500만–2,500만원", size=13, color=GRAY)
-    para(prf, "C 조직 운영 자문 월 300만–600만원", size=13, color=GRAY)
+    # Right column: products A / B / C
+    right = slide.shapes.add_shape(1, Inches(6.75), Inches(2.4), Inches(6.0), Inches(3.4))
+    right.fill.solid()
+    right.fill.fore_color.rgb = WHITE
+    right.line.color.rgb = BLUE
+    right.line.width = Pt(1)
+    right.shadow.inherit = False
+    rtf = right.text_frame
+    rtf.word_wrap = True
+    rtf.margin_left = Inches(0.2)
+    rtf.margin_top = Inches(0.15)
+    para(rtf, "상품 A · 진단 워크숍", size=14, bold=True, color=BLUE, first=True)
+    for item in ["1~2일 · 초기 제안 300만~500만원", "현재 흐름 진단 · 후보 선정 · 위험 분리", "직무별 실습 · 경영진 결과 보고"]:
+        para(rtf, "• " + item, size=12, color=GRAY)
+    para(rtf, "상품 B · 6주 파일럿", size=14, bold=True, color=BLUE)
+    for item in ["1개 팀 · 1개 업무 · 디자인 파트너 1,000만~1,500만원", "표준 6주 파일럿 1,500만~2,500만원", "기준선 · 교육 · 재설계 · 파일럿 · 성과·위험 보고 · 플레이북"]:
+        para(rtf, "• " + item, size=12, color=GRAY)
+    para(rtf, "상품 C · 운영 자문 · 월 300만~600만원", size=14, bold=True, color=BLUE)
 
     # Next steps
     tb = slide.shapes.add_textbox(Inches(0.55), Inches(5.75), Inches(12.2), Inches(0.9))

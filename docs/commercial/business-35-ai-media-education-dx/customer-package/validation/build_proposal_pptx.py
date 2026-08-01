@@ -36,7 +36,7 @@ def new_deck():
     return prs
 
 
-def add_slide(prs, title, footer_mode="inner"):
+def add_slide(prs, title, footer_mode="inner", slide_no=None, headline=None):
     layout = prs.slide_layouts[6]  # blank
     slide = prs.slides.add_slide(layout)
     # Background
@@ -64,6 +64,42 @@ def add_slide(prs, title, footer_mode="inner"):
     r.font.bold = True
     r.font.color.rgb = WHITE
     r.font.name = "Malgun Gothic"
+    # Slide number badge (01..10)
+    if slide_no is not None:
+        badge = slide.shapes.add_shape(5, Inches(12.05), Inches(0.28), Inches(0.95), Inches(0.6))
+        badge.fill.solid()
+        badge.fill.fore_color.rgb = ACCENT
+        badge.line.fill.background()
+        badge.shadow.inherit = False
+        btf = badge.text_frame
+        btf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        bp = btf.paragraphs[0]
+        bp.alignment = PP_ALIGN.CENTER
+        br = bp.add_run()
+        br.text = f"{slide_no:02d}"
+        br.font.size = Pt(18)
+        br.font.bold = True
+        br.font.color.rgb = WHITE
+        br.font.name = "Malgun Gothic"
+    # Headline (one-line summary under the title band)
+    if headline:
+        hb = slide.shapes.add_shape(1, Inches(0.7), Inches(1.3), Inches(11.9), Inches(0.62))
+        hb.fill.solid()
+        hb.fill.fore_color.rgb = RGBColor(0xE3, 0xE9, 0xF0)
+        hb.line.color.rgb = BLUE
+        hb.line.width = Pt(0.75)
+        hb.shadow.inherit = False
+        htf = hb.text_frame
+        htf.word_wrap = True
+        htf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        htf.margin_left = Inches(0.2)
+        hp = htf.paragraphs[0]
+        hr = hp.add_run()
+        hr.text = headline
+        hr.font.size = Pt(15)
+        hr.font.bold = True
+        hr.font.color.rgb = NAVY
+        hr.font.name = "Malgun Gothic"
     # Footer
     footer = slide.shapes.add_textbox(Inches(0.55), Inches(7.05), Inches(11.7), Inches(0.35))
     ftf = footer.text_frame
@@ -166,16 +202,50 @@ def build():
     prs = new_deck()
 
     # ---- Slide 1 ----
-    s = add_slide(prs, "1. 현재 문제", footer_mode="cover")
-    tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(5.2))
-    para(tf, "콘텐츠 제작·검토가 수작업", size=20, bold=True, color=NAVY, first=True)
-    para(tf, "홍보물·안내문·뉴스레터를 만드는 데 여러 단계의 수동 검토가 걸립니다.", size=16)
-    para(tf, "", size=8)
-    para(tf, "AI 사용이 개인 단위", size=20, bold=True, color=NAVY)
-    para(tf, "조직원마다 개인적으로 AI 도구를 쓰지만, 조직 차원의 기준은 없습니다.", size=16)
-    para(tf, "", size=8)
-    para(tf, "조직 기준 부재", size=20, bold=True, color=NAVY)
-    para(tf, "검토·승인 기준, 사용정책, 금지 업무 규칙이 없어 위험이 커집니다.", size=16)
+    s = add_slide(prs, "1. 현재 문제", footer_mode="cover", slide_no=1,
+                  headline="콘텐츠 제작은 늘었지만 조직의 기준과 검토체계는 따라오지 못합니다.")
+    cards1 = [
+        ("A", "수작업 제작", "홍보물·안내문·뉴스레터 초안이 개인 경험과 수동 검토에 의존합니다."),
+        ("B", "개인별 AI 사용", "조직원마다 개인적으로 AI를 쓰지만 조직 차원의 기준은 없습니다."),
+        ("C", "검토 기준 부재", "검토·승인 기준, 사용정책, 금지 업무 규칙이 없어 위험이 커집니다."),
+    ]
+    for i, (badge, card_title, body) in enumerate(cards1):
+        cx = Inches(0.7) + Inches(4.1) * i
+        card = s.shapes.add_shape(5, cx, Inches(2.0), Inches(3.85), Inches(3.2))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        card.line.color.rgb = BLUE
+        card.line.width = Pt(1)
+        card.shadow.inherit = False
+        ctf = card.text_frame
+        ctf.word_wrap = True
+        ctf.margin_left = Inches(0.2)
+        ctf.margin_right = Inches(0.2)
+        ctf.margin_top = Inches(0.25)
+        cp = ctf.paragraphs[0]
+        cp.alignment = PP_ALIGN.CENTER
+        cr = cp.add_run()
+        cr.text = badge
+        cr.font.size = Pt(26)
+        cr.font.bold = True
+        cr.font.color.rgb = ACCENT
+        cr.font.name = "Malgun Gothic"
+        cp2 = ctf.add_paragraph()
+        cp2.alignment = PP_ALIGN.CENTER
+        cr2 = cp2.add_run()
+        cr2.text = card_title
+        cr2.font.size = Pt(19)
+        cr2.font.bold = True
+        cr2.font.color.rgb = NAVY
+        cr2.font.name = "Malgun Gothic"
+        cp3 = ctf.add_paragraph()
+        cp3.space_before = Pt(10)
+        cp3.alignment = PP_ALIGN.CENTER
+        cr3 = cp3.add_run()
+        cr3.text = body
+        cr3.font.size = Pt(14)
+        cr3.font.color.rgb = GRAY
+        cr3.font.name = "Malgun Gothic"
     add_notes(
         s,
         "고객 조직의 콘텐츠 제작이 수작업에 의존하고, AI는 개인 단위로만 쓰이며, 검토·승인 기준이 없다는 점을 공감하며 설명한다.",
@@ -185,7 +255,8 @@ def build():
     add_page_number(prs, s, 1)
 
     # ---- Slide 2 ----
-    s = add_slide(prs, "2. 일반 AI 교육의 한계")
+    s = add_slide(prs, "2. 일반 AI 교육의 한계", slide_no=2,
+                  headline="교육 수료와 실제 업무 전환은 다릅니다.")
     tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(5.2))
     para(tf, "강의를 들어도 실제 업무가 바뀌지 않음", size=20, bold=True, color=NAVY, first=True)
     para(tf, "지식 전달은 되지만, 조직의 실제 업무 흐름과 연결되지 않으면 변화가 일어나지 않습니다.", size=16)
@@ -201,7 +272,8 @@ def build():
     add_page_number(prs, s, 2)
 
     # ---- Slide 3 ----
-    s = add_slide(prs, "3. Business 35 방식 — AI 업무전환 프로그램")
+    s = add_slide(prs, "3. Business 35 방식 — AI 업무전환 프로그램", slide_no=3,
+                  headline="진단에서 운영 플레이북까지 이어지는 7단계 업무전환 구조입니다.")
     tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(2.6))
     para(tf, "교육에서 끝나지 않고, 실제 업무 진단·실습·재설계·파일럿·측정·플레이북까지 연결합니다.", size=17, bold=True, color=NAVY, first=True)
     steps = [
@@ -225,7 +297,8 @@ def build():
     add_page_number(prs, s, 3)
 
     # ---- Slide 4 ----
-    s = add_slide(prs, "4. 대상 업무 — 합성 예시")
+    s = add_slide(prs, "4. 대상 업무 — 합성 예시", slide_no=4,
+                  headline="지역 문화·교육·미디어 조직에서 시작하기 쉬운 업무입니다.")
     tf = add_body_box(s, Inches(0.7), Inches(1.45), Inches(11.9), Inches(5.2))
     para(tf, "지역 문화·교육·미디어 조직에서 자주 등장하는 대상 업무의 합성 예시입니다.", size=16, color=GRAY, first=True)
     items = [
@@ -266,13 +339,74 @@ def build():
     add_page_number(prs, s, 4)
 
     # ---- Slide 5 ----
-    s = add_slide(prs, "5. 상품 A — AI 업무전환 진단 워크숍")
-    tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(5.2))
-    para(tf, "1~2일", size=20, bold=True, color=NAVY, first=True)
-    para(tf, "업무 현황 인터뷰, AI 적용 후보 선정, 위험업무 제외, 직무별 실습, 경영진 결과 보고", size=16)
-    para(tf, "", size=8)
-    para(tf, "초기 제안 300만~500만원", size=22, bold=True, color=ACCENT)
-    para(tf, "가격은 시장 검증 전 자사 가격 가설입니다. 범위와 인원·기간에 따라 최종 견적이 달라집니다.", size=14, color=GRAY)
+    s = add_slide(prs, "5. 상품 A — AI 업무전환 진단 워크숍", slide_no=5,
+                  headline="짧고 낮은 진입장벽으로 고객의 첫 결정을 만듭니다.")
+    # Duration card
+    dur = s.shapes.add_shape(5, Inches(0.7), Inches(2.1), Inches(2.9), Inches(1.3))
+    dur.fill.solid()
+    dur.fill.fore_color.rgb = BLUE
+    dur.line.fill.background()
+    dur.shadow.inherit = False
+    dtf = dur.text_frame
+    dtf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    dp = dtf.paragraphs[0]
+    dp.alignment = PP_ALIGN.CENTER
+    dr = dp.add_run()
+    dr.text = "1~2일 워크숍"
+    dr.font.size = Pt(18)
+    dr.font.bold = True
+    dr.font.color.rgb = WHITE
+    dr.font.name = "Malgun Gothic"
+    # Price card
+    prc = s.shapes.add_shape(5, Inches(0.7), Inches(3.6), Inches(2.9), Inches(1.3))
+    prc.fill.solid()
+    prc.fill.fore_color.rgb = ACCENT
+    prc.line.fill.background()
+    prc.shadow.inherit = False
+    ptf2 = prc.text_frame
+    ptf2.vertical_anchor = MSO_ANCHOR.MIDDLE
+    pp = ptf2.paragraphs[0]
+    pp.alignment = PP_ALIGN.CENTER
+    prr = pp.add_run()
+    prr.text = "초기 제안 300만~500만원"
+    prr.font.size = Pt(16)
+    prr.font.bold = True
+    prr.font.color.rgb = WHITE
+    prr.font.name = "Malgun Gothic"
+    # Outputs card
+    out = s.shapes.add_shape(1, Inches(3.95), Inches(2.1), Inches(8.65), Inches(2.8))
+    out.fill.solid()
+    out.fill.fore_color.rgb = WHITE
+    out.line.color.rgb = BLUE
+    out.line.width = Pt(1)
+    out.shadow.inherit = False
+    otf = out.text_frame
+    otf.word_wrap = True
+    otf.margin_left = Inches(0.25)
+    otf.margin_top = Inches(0.2)
+    op = otf.paragraphs[0]
+    orr = op.add_run()
+    orr.text = "주요 산출물"
+    orr.font.size = Pt(17)
+    orr.font.bold = True
+    orr.font.color.rgb = NAVY
+    orr.font.name = "Malgun Gothic"
+    outputs = [
+        "현재 업무 흐름 진단",
+        "AI 적용 후보 업무 1~3개 선정",
+        "위험·금지 업무 분리",
+        "직무별 실습 결과",
+        "경영진 결과 보고",
+    ]
+    for o in outputs:
+        op2 = otf.add_paragraph()
+        orr2 = op2.add_run()
+        orr2.text = "•  " + o
+        orr2.font.size = Pt(15)
+        orr2.font.color.rgb = GRAY
+        orr2.font.name = "Malgun Gothic"
+    para_tf = add_body_box(s, Inches(0.7), Inches(5.2), Inches(11.9), Inches(1.4))
+    para(para_tf, "가격은 시장 검증 전 자사 가격 가설입니다. 범위와 인원·기간에 따라 최종 견적이 달라집니다.", size=14, color=GRAY, first=True)
     add_notes(
         s,
         "진단 워크숍은 변화의 출발점이며, 고객 조직이 무엇을 바꿀지 함께 찾는 자리라고 설명한다.",
@@ -282,13 +416,74 @@ def build():
     add_page_number(prs, s, 5)
 
     # ---- Slide 6 ----
-    s = add_slide(prs, "6. 상품 B — 6주 디자인 파트너 파일럿")
-    tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(5.2))
-    para(tf, "6주 · 1개 팀 · 1개 핵심 업무", size=20, bold=True, color=NAVY, first=True)
-    para(tf, "기준선 측정 → 직무별 교육 → 실제 실습 → 워크플로 재설계 → 제한 파일럿 → 성과·위험 보고 → 운영 플레이북", size=16)
-    para(tf, "", size=8)
-    para(tf, "1,000만~1,500만원", size=22, bold=True, color=ACCENT)
-    para(tf, "가격은 시장 검증 전 자사 가격 가설입니다. 범위와 인원·기간에 따라 최종 견적이 달라집니다.", size=14, color=GRAY)
+    s = add_slide(prs, "6. 상품 B — 6주 디자인 파트너 파일럿", slide_no=6,
+                  headline="작게 실행하고, 측정하고, 운영 기준을 남깁니다.")
+    # Scope card
+    sc = s.shapes.add_shape(5, Inches(0.7), Inches(2.1), Inches(2.9), Inches(1.3))
+    sc.fill.solid()
+    sc.fill.fore_color.rgb = BLUE
+    sc.line.fill.background()
+    sc.shadow.inherit = False
+    stf = sc.text_frame
+    stf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    sp = stf.paragraphs[0]
+    sp.alignment = PP_ALIGN.CENTER
+    srr = sp.add_run()
+    srr.text = "6주 · 1팀 · 1핵심 업무"
+    srr.font.size = Pt(17)
+    srr.font.bold = True
+    srr.font.color.rgb = WHITE
+    srr.font.name = "Malgun Gothic"
+    # Price card
+    prc6 = s.shapes.add_shape(5, Inches(0.7), Inches(3.6), Inches(2.9), Inches(1.3))
+    prc6.fill.solid()
+    prc6.fill.fore_color.rgb = ACCENT
+    prc6.line.fill.background()
+    prc6.shadow.inherit = False
+    ptf6 = prc6.text_frame
+    ptf6.vertical_anchor = MSO_ANCHOR.MIDDLE
+    pp6 = ptf6.paragraphs[0]
+    pp6.alignment = PP_ALIGN.CENTER
+    prr6 = pp6.add_run()
+    prr6.text = "1,000만~1,500만원"
+    prr6.font.size = Pt(18)
+    prr6.font.bold = True
+    prr6.font.color.rgb = WHITE
+    prr6.font.name = "Malgun Gothic"
+    # Outputs card
+    out6 = s.shapes.add_shape(1, Inches(3.95), Inches(2.1), Inches(8.65), Inches(2.8))
+    out6.fill.solid()
+    out6.fill.fore_color.rgb = WHITE
+    out6.line.color.rgb = BLUE
+    out6.line.width = Pt(1)
+    out6.shadow.inherit = False
+    otf6 = out6.text_frame
+    otf6.word_wrap = True
+    otf6.margin_left = Inches(0.25)
+    otf6.margin_top = Inches(0.2)
+    op6 = otf6.paragraphs[0]
+    orr6b = op6.add_run()
+    orr6b.text = "파일럿 진행 흐름"
+    orr6b.font.size = Pt(17)
+    orr6b.font.bold = True
+    orr6b.font.color.rgb = NAVY
+    orr6b.font.name = "Malgun Gothic"
+    flow6 = [
+        "기준선 측정",
+        "직무별 교육 · 실제 실습",
+        "워크플로 재설계 · 사람 검토 gate",
+        "제한 파일럿 실행",
+        "성과·위험 보고서 · 운영 플레이북",
+    ]
+    for o in flow6:
+        op6b = otf6.add_paragraph()
+        orr6c = op6b.add_run()
+        orr6c.text = "•  " + o
+        orr6c.font.size = Pt(15)
+        orr6c.font.color.rgb = GRAY
+        orr6c.font.name = "Malgun Gothic"
+    para_tf6 = add_body_box(s, Inches(0.7), Inches(5.2), Inches(11.9), Inches(1.4))
+    para(para_tf6, "가격은 시장 검증 전 자사 가격 가설입니다. 범위와 인원·기간에 따라 최종 견적이 달라집니다.", size=14, color=GRAY, first=True)
     add_notes(
         s,
         "파일럿은 1팀·1핵심 업무로 제한되어 위험을 낮추고, 측정 가능한 결과를 만든다고 설명한다.",
@@ -298,7 +493,8 @@ def build():
     add_page_number(prs, s, 6)
 
     # ---- Slide 7 ----
-    s = add_slide(prs, "7. 6주 수행 구조")
+    s = add_slide(prs, "7. 6주 수행 구조", slide_no=7,
+                  headline="계약 전 범위 확정부터 결과 보고까지 단계별로 진행합니다.")
     rows = [
         ("Week 0", "계약·범위"), ("Week 1", "진단·기준선"), ("Week 2", "교육·실습"),
         ("Week 3", "재설계"), ("Week 4", "제한 파일럿"), ("Week 5", "측정·보완"),
@@ -347,7 +543,8 @@ def build():
     add_page_number(prs, s, 7)
 
     # ---- Slide 8 ----
-    s = add_slide(prs, "8. KPI와 위험관리")
+    s = add_slide(prs, "8. KPI와 위험관리", slide_no=8,
+                  headline="속도만 보지 않고 품질·채택·거버넌스를 함께 봅니다.")
     tf = add_body_box(s, Inches(0.7), Inches(1.45), Inches(11.9), Inches(5.2))
     para(tf, "KPI 예시", size=20, bold=True, color=NAVY, first=True)
     kpis = ["초안 작성시간", "검토 회차", "수정 반려율", "승인 소요시간", "참여자 task completion", "위험 사례 수"]
@@ -379,34 +576,59 @@ def build():
     add_page_number(prs, s, 8)
 
     # ---- Slide 9 ----
-    s = add_slide(prs, "9. 가격 가설")
-    tf = add_body_box(s, Inches(0.7), Inches(1.5), Inches(11.9), Inches(5.2))
-    price_lines = [
-        "A 진단 워크숍           300만–800만원  (초기 제안 300만–500만원)",
-        "B 디자인 파트너 파일럿    1,000만–1,500만원",
-        "B 표준 6주 파일럿         1,500만–2,500만원",
-        "C 조직 운영 자문          월 300만–600만원",
+    s = add_slide(prs, "9. 가격 가설", slide_no=9,
+                  headline="시장 검증 전 자사 가격 가설이며 범위 확인 후 최종 견적을 제시합니다.")
+    price_cards = [
+        ("상품 A", "진단 워크숍", "300만~800만원", "초기 제안 300만~500만원"),
+        ("상품 B", "디자인 파트너", "1,000만~1,500만원", "6주 파일럿"),
+        ("상품 B", "표준 파일럿", "1,500만~2,500만원", "6주 파일럿"),
+        ("상품 C", "운영 자문", "월 300만~600만원", "월 단위"),
     ]
-    for i, line in enumerate(price_lines):
-        box = s.shapes.add_shape(1, Inches(0.7), Inches(1.9) + Inches(0.75) * i, Inches(11.9), Inches(0.6))
-        box.fill.solid()
-        box.fill.fore_color.rgb = WHITE
-        box.line.color.rgb = BLUE
-        box.line.width = Pt(0.75)
-        box.shadow.inherit = False
-        btf = box.text_frame
-        btf.vertical_anchor = MSO_ANCHOR.MIDDLE
-        btf.margin_left = Inches(0.2)
-        bp = btf.paragraphs[0]
-        br = bp.add_run()
-        br.text = line
-        br.font.size = Pt(17)
-        br.font.color.rgb = NAVY
-        br.font.name = "Malgun Gothic"
-    para(tf, "", size=6)
-    para(tf, "시장 검증 전 자사 가격 가설", size=15, bold=True, color=ACCENT)
-    para(tf, "범위·인원·기간에 따라 최종 견적", size=15, bold=True, color=ACCENT)
-    para(tf, "VAT 조건은 최종 견적서에서 확정", size=15, bold=True, color=ACCENT)
+    for i, (prod, name, price, note) in enumerate(price_cards):
+        cx = Inches(0.7) + Inches(3.1) * i
+        card = s.shapes.add_shape(5, cx, Inches(1.9), Inches(2.85), Inches(2.6))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        card.line.color.rgb = BLUE
+        card.line.width = Pt(1.25)
+        card.shadow.inherit = False
+        ctf = card.text_frame
+        ctf.word_wrap = True
+        ctf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        cp = ctf.paragraphs[0]
+        cp.alignment = PP_ALIGN.CENTER
+        cr = cp.add_run()
+        cr.text = prod
+        cr.font.size = Pt(13)
+        cr.font.bold = True
+        cr.font.color.rgb = BLUE
+        cr.font.name = "Malgun Gothic"
+        cp2 = ctf.add_paragraph()
+        cp2.alignment = PP_ALIGN.CENTER
+        cr2 = cp2.add_run()
+        cr2.text = name
+        cr2.font.size = Pt(17)
+        cr2.font.bold = True
+        cr2.font.color.rgb = NAVY
+        cr2.font.name = "Malgun Gothic"
+        cp3 = ctf.add_paragraph()
+        cp3.alignment = PP_ALIGN.CENTER
+        cr3 = cp3.add_run()
+        cr3.text = price
+        cr3.font.size = Pt(17)
+        cr3.font.bold = True
+        cr3.font.color.rgb = ACCENT
+        cr3.font.name = "Malgun Gothic"
+        cp4 = ctf.add_paragraph()
+        cp4.alignment = PP_ALIGN.CENTER
+        cr4 = cp4.add_run()
+        cr4.text = note
+        cr4.font.size = Pt(11)
+        cr4.font.color.rgb = GRAY
+        cr4.font.name = "Malgun Gothic"
+    tf = add_body_box(s, Inches(0.7), Inches(4.9), Inches(11.9), Inches(1.6))
+    para(tf, "시장 검증 전 자사 가격 가설", size=15, bold=True, color=ACCENT, first=True)
+    para(tf, "범위·인원·기간에 따라 최종 견적 · VAT 조건은 최종 견적서에서 확정", size=15, bold=True, color=ACCENT)
     add_notes(
         s,
         "가격은 가설이며 범위·인원·기간에 따라 달라진다고 명확히 한다. VAT는 최종 견적서에서 확정된다고 말한다.",
@@ -416,15 +638,16 @@ def build():
     add_page_number(prs, s, 9)
 
     # ---- Slide 10 ----
-    s = add_slide(prs, "10. 다음 단계", footer_mode="last")
+    s = add_slide(prs, "10. 다음 단계", footer_mode="last", slide_no=10,
+                  headline="30분 상담에서 대상 업무 하나를 정하고, 워크숍 범위를 확정합니다.")
     steps10 = [
-        ("1", "30분 사전 상담"),
-        ("2", "대상 업무 1개 선정"),
-        ("3", "진단 워크숍 범위 확정"),
-        ("4", "견적·일정 승인"),
+        ("1", "30분 사전 상담", "현재 업무 흐름과 위험 확인"),
+        ("2", "대상 업무 1개 선정", "홍보·교육·콘텐츠 중 하나"),
+        ("3", "진단 워크숍 범위 확정", "참여자·일정·자료 범위"),
+        ("4", "견적·일정 승인", "가격 가설 기반 최종 견적"),
     ]
-    for i, (num, label) in enumerate(steps10):
-        box = s.shapes.add_shape(5, Inches(0.7) + Inches(3.1) * i, Inches(2.4), Inches(2.7), Inches(2.2))
+    for i, (num, label, desc) in enumerate(steps10):
+        box = s.shapes.add_shape(5, Inches(0.7) + Inches(3.1) * i, Inches(2.4), Inches(2.7), Inches(2.4))
         box.fill.solid()
         box.fill.fore_color.rgb = BLUE
         box.line.color.rgb = NAVY
@@ -445,8 +668,16 @@ def build():
         r2 = p2.add_run()
         r2.text = label
         r2.font.size = Pt(15)
+        r2.font.bold = True
         r2.font.color.rgb = WHITE
         r2.font.name = "Malgun Gothic"
+        p3 = btf.add_paragraph()
+        p3.alignment = PP_ALIGN.CENTER
+        r3 = p3.add_run()
+        r3.text = desc
+        r3.font.size = Pt(11)
+        r3.font.color.rgb = RGBColor(0xD5, 0xDE, 0xE8)
+        r3.font.name = "Malgun Gothic"
     tf = add_body_box(s, Inches(0.7), Inches(5.0), Inches(11.9), Inches(1.5))
     para(tf, "첫 상담에서 계약을 압박하지 않으며, 정부지원금 확정을 말하지 않습니다.", size=14, color=GRAY, first=True)
     para(tf, "조직별 사용정책·검토체계, 개인정보·저작권·조달, 전문 법률·계약 검토가 필요합니다.", size=14, color=GRAY)
