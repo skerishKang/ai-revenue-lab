@@ -2,203 +2,214 @@
 
 - Status: canonical portfolio intent
 - Owner: AI Revenue Lab portfolio governance
-- Related: `../../README.md`, Issue #154, Issue #326
+- Related: `../../README.md`, Issue #154
 
 ## 1. Why this repository exists
 
-AI Revenue Lab exists to test a business hypothesis, not merely to accumulate prototypes:
+AI Revenue Lab exists to demonstrate the practical excellence of AI by turning many distinct ideas into convincing products, investor demos, MVPs, pilots, and measurable businesses.
 
-> Abundant AI production can create personalized digital products that are economically impractical for human teams to produce, and those products can generate measurable direct or attributable revenue.
+The governing hypothesis is:
 
-The repository is therefore both a product portfolio and an operating laboratory.
+> AI can let a small owner-led organization produce, personalize, operate, and improve digital products at a scale, speed, and quality that would normally require much larger teams.
 
-Its work must move toward real evidence:
+The repository is not a school exercise, a collection of safe mockups, or a documentation factory. It is a product and commercialization laboratory.
+
+The normal evidence path is:
 
 ```text
-product hypothesis
-→ bounded product implementation
-→ working deployed service
-→ user behavior and operating-cost evidence
-→ revenue or attributable-value evidence
-→ continue, revise, pause, or stop
+product thesis
+→ competitive product demo
+→ convincing end-to-end MVP
+→ working runtime or service-led pilot
+→ user, cost, and revenue evidence
+→ continue, redesign, commercialize, or stop
 ```
 
-A larger number of files, screens, prompts, agents, or deployments is not success by itself.
+A larger number of files, cards, checklists, warnings, or deployments is not success. A Business succeeds when customers, investors, or operators can understand its value, believe it can work, and see evidence that it is worth expanding.
 
-## 2. Capabilities under test
+## 2. Portfolio quality standard
+
+Every Business should aim for all five qualities:
+
+1. **Desirability** — the product looks valuable and professionally made.
+2. **Clarity** — its user, problem, and result are immediately understandable.
+3. **Differentiation** — the product has a recognizable visual and functional identity.
+4. **Credibility** — the demo or MVP behaves like a real product, not a classroom prototype.
+5. **Commercial evidence** — the next step toward use, pilot, sale, investment, or revenue is explicit.
+
+Technical correctness is necessary but not sufficient. Passing tests, avoiding overflow, and documenting sources establish a floor. They do not establish market quality.
+
+## 3. Capabilities under test
 
 The portfolio tests whether AI changes the production economics of software and digital media through:
 
-1. **Volume** — more useful outputs than a human team can economically sustain.
-2. **Speed** — shorter time from decision to working product and from feedback to the next result.
-3. **Concurrency** — multiple implementation, research, validation, and operations workers acting in parallel under clear contracts.
-4. **Real-time reaction** — current events, operational state, and user feedback changing the next output quickly.
-5. **Personalization** — the product itself or its next edition changes for each user, not merely the ranking of a fixed catalog.
-6. **Revenue evidence** — cost, engagement, conversion, purchase, subscription, or other attributable business value is measured honestly.
+- **Volume** — many useful products and outputs can be produced economically.
+- **Speed** — decisions become polished product evidence quickly.
+- **Concurrency** — research, design, implementation, validation, and operations run in parallel.
+- **Real-time reaction** — current information and feedback change the next result quickly.
+- **Personalization** — the product or output changes meaningfully for each user.
+- **Cross-domain integration** — legal, administrative, public-sector, media, and technical knowledge become product capability.
+- **Revenue evidence** — cost, engagement, conversion, pilot demand, purchase, subscription, or attributable value is measured honestly.
 
-## 3. Portfolio structure
+## 4. Owner authority and operator conduct
 
-AI Revenue Lab is one portfolio experience containing independently operated Businesses.
+The owner is the final product, business, legal-risk, policy, and technical decision-maker.
+
+Operators and AI agents must:
+
+- present material risks accurately and briefly;
+- distinguish facts, uncertainty, and recommendations;
+- propose lawful and practical mitigations before deleting product value;
+- avoid treating the owner as a novice who requires repeated generic warnings;
+- avoid shrinking features, imagery, language, or ambition merely because a theoretical risk exists;
+- execute an authorized direction without repeated minor approval questions;
+- escalate only when a concrete blocker, irreversible action, or genuinely unresolved owner decision exists.
+
+Risk management is not product minimization.
+
+The default sequence is:
+
+```text
+identify the concrete risk
+→ preserve the intended product value
+→ choose a mitigation, license, disclosure, access boundary, or reversible implementation
+→ ask for an owner decision only when materially necessary
+```
+
+## 5. Competitive ambition
+
+Comparable products are not researched only for documentation. They are used to establish the minimum acceptable market standard.
+
+Each Business must:
+
+- identify direct competitors and adjacent category leaders;
+- analyze actual screens, journeys, content density, imagery, typography, motion, and mobile behavior;
+- reproduce useful interaction and product patterns at prototype speed when legally and technically appropriate;
+- combine and improve those patterns into an original product identity;
+- compare the resulting demo against the references side by side;
+- explain how the result meets or exceeds the chosen benchmark.
+
+Blind copying of protected brand identity, proprietary illustration, or verbatim copy is not the goal. Aggressive benchmarking, pattern-level reconstruction, and measurable visual improvement are required.
+
+## 6. Product stages
+
+Businesses do not all need the same sequence. Use the smallest stage that produces meaningful commercial evidence.
+
+```text
+PRODUCT_FRAMED
+COMPETITIVE_DEMO
+INVESTOR_DEMO
+MVP_VERTICAL_SLICE
+SERVICE_LED_PILOT
+RUNTIME_PILOT
+COMMERCIAL_HARDENING
+OPERATING_PRODUCT
+```
+
+A Business may move directly from framing to an MVP vertical slice when backend or live behavior is central to the value proposition. It may begin with an image-led investor demo when visual desirability is the main uncertainty. Phase labels must serve evidence, not ceremony.
+
+## 7. Demo and MVP truthfulness
+
+A demo may use synthetic data, simulated AI results, staged journeys, generated media, and deterministic interactions. It should still present the complete product idea with confidence.
+
+Truthfulness is preserved through repository evidence, test fixtures, review notes, and concise disclosures. It must not be implemented as repeated warning labels that visually degrade every screen.
+
+Use clear distinctions such as:
+
+- synthetic fixture;
+- simulated result;
+- live runtime;
+- persisted data;
+- service-led operation;
+- customer-validated evidence.
+
+Do not hide limitations, but do not make limitations the dominant product experience.
+
+## 8. Portfolio structure
+
+AI Revenue Lab is one portfolio containing independently operated Businesses.
 
 Each Business owns its:
 
-- product boundary and user promise;
-- code and tests;
-- private-data boundary;
-- product-local identity and authorization;
-- database and retention contract;
+- product thesis and target user;
+- competitive benchmark;
+- visual and interaction identity;
+- code, tests, and evidence;
+- private-data and authorization boundary;
+- database, retention, and runtime contract when applicable;
 - deployment and secrets;
-- operating evidence;
-- business decision to continue, revise, pause, or stop.
+- pilot and commercial evidence;
+- continue, redesign, pause, or stop decision.
 
-The future user-facing Portal provides shared identity, catalog, account, and launch behavior. It does not merge every Business into one database, one administrator role, or one generic interface.
+Shared code is extracted after products prove a stable common requirement. Premature abstraction must not reduce product speed or distinctiveness.
 
-Shared code is extracted only after implemented products prove a stable common requirement. Premature abstraction must not slow independent product experiments.
-
-## 4. Execution principle
+## 9. Execution principle
 
 The default execution loop is:
 
 ```text
 clear product decision
-→ smallest useful scope
-→ AI implementation and independent validation
+→ benchmark the market
+→ choose the evidence stage
+→ build the strongest bounded product slice
+→ independent technical and visual review
 → exact-head approval
-→ merge to the configured Production branch
-→ automatic Production deployment by the existing Git integration
-→ immediate Production acceptance
-→ retain or merge a reviewed fix/revert PR
-→ record product and business evidence
+→ authorized publication or runtime deployment
+→ immediate real-environment acceptance
+→ user, investor, cost, and revenue evidence
 ```
 
-For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic deployment. They do not create a second deployment manually.
+Governance exists to make this loop faster and more truthful, not smaller.
 
-The system should reduce owner effort and repeated manual checking. A process that repeatedly asks the owner to copy status, click configuration screens, or re-audit facts that can be obtained through an authenticated API is operating incorrectly.
+## 10. Deployment doctrine
 
-## 5. Purpose of governance and phase gates
+Deployment follows `../operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
 
-Governance exists to keep experiments truthful and bounded. It is not intended to maximize ceremony or delay deployment.
+For Git-connected Cloudflare Pages projects, an approved merge to the configured Production branch is the normal deployment action. Operators observe and verify the automatic deployment and recover through reviewed source changes.
 
-UI, UX, backend, deployment, and business approval remain separate because one type of evidence must not be misrepresented as another:
+Deployment evidence remains distinct from product-quality and business evidence.
 
-- a polished UI is not a complete user journey;
-- a complete UX is not backend authorization;
-- a merged PR is not a human product verdict;
-- a deployment is not proof of product quality or revenue;
-- an authenticated account is not authorization for every Business.
+## 11. Portfolio Console intent
 
-Within an explicitly authorized scope, operators should proceed without repeated minor approval questions.
+Portfolio Console is the owner and operator control tower. It should make the following visible with minimal manual work:
 
-## 6. Deployment doctrine
+- Business thesis and target market;
+- current product stage;
+- competitive benchmark and visual-quality verdict;
+- authoritative Issue, PR, exact SHA, CI, and deployment state;
+- live service health;
+- user, cost, pilot, and revenue evidence;
+- the next highest-value action.
 
-For Git-connected Cloudflare Pages projects, approved merge to the configured Production branch is the only normal deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
+The Console must not stop at software-delivery metadata. It should expose whether each Business is becoming more convincing, more usable, and more commercially valuable.
+
+## 12. Portfolio-wide visual renewal
+
+All existing Businesses are subject to a portfolio product-quality audit.
+
+Each is classified as:
 
 ```text
-validated source
-→ exact-head approval
-→ approved merge to the configured Production branch
-→ automatic Production deployment by the existing Git integration
-→ Production smoke and acceptance
-→ retain or merge a reviewed fix/revert PR
+A — market-ready visual and product quality
+B — sound product structure; major visual upgrade required
+C — information architecture and visual system both require redesign
+D — product thesis or category position requires reconsideration
 ```
 
-Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception, for example:
+Existing backend and functional work should be preserved when sound. Visual renewal must not become an excuse to discard proven functionality, but proven functionality must not excuse weak presentation.
 
-- destructive migration rehearsal;
-- billing or payment risk;
-- high-risk authorization changes;
-- regulated or compliance-sensitive review;
-- an external reviewer who must not access Production.
+## 13. Evidence and business decisions
 
-An operator may not create a Preview or staging exception merely by opening or editing an issue. The owner decision or pre-existing approved Business contract must be explicit.
+Every Business should progressively record:
 
-Preview infrastructure failure must not become a general blocker when Production has a safe automatic-deployment and reviewed fix/revert path.
-
-A queued or failed automatic deployment does not authorize another deployment method. Operators observe the platform state and report it. Source recovery uses a reviewed fix or revert PR merged to the Production branch, followed by automatic deployment.
-
-Before the authorized merge, record the last known-good Production source and configuration as recovery evidence. After a critical availability, authorization, data-integrity, credential-leakage, or runtime failure, merge a reviewed fix/revert PR and allow the Git integration to deploy it automatically. Configuration may be restored separately only when configuration itself caused the failure.
-
-## 7. Portfolio Console intent
-
-Portfolio Console is the private owner and operator control tower for AI Revenue Lab. It is not the user-facing Portal and not merely a Business-number directory.
-
-Its purpose is to let the owner determine, with minimal manual investigation:
-
-- what Businesses exist and what each one promises;
-- what is actually deployed and reachable;
-- what is being built or reviewed now;
-- what Issue, PR, exact SHA, CI result, and phase verdict are authoritative;
-- what is blocked;
-- what action should happen next;
-- what products are producing engagement, cost, and revenue evidence.
-
-The Console must combine two different kinds of information:
-
-### Deliberate authority
-
-Changed only through reviewed decisions:
-
-- Business number and identity;
-- product boundary;
-- portfolio priority;
-- human UI, UX, backend, deployment, and business verdicts.
-
-### Automatically synchronized facts
-
-Updated from approved read-only sources without manual copying:
-
-- Issue and PR state;
-- exact head and default-branch SHA;
-- Draft and merge state;
-- CI and check result;
-- deployment and service health facts when connected;
-- synchronization time, stale state, and source errors.
-
-The Console must not invent product completion, priority, or approval from raw GitHub counts. Automation supplies facts; humans retain business judgment.
-
-## 8. Console operating standard
-
-A correct Console implementation should:
-
-- render useful static authority data immediately;
-- merge live facts when available;
-- remain usable when GitHub or another source is unavailable;
-- use bounded server-side caching rather than repeated browser calls;
-- keep credentials and private infrastructure details outside browser responses;
-- avoid periodic manual edits for volatile Issue, PR, CI, and SHA facts;
-- point directly to the evidence needed for the next decision;
-- eventually include cost, engagement, deployment, and revenue evidence rather than stopping at software-delivery metadata.
-
-The Console is successful when it reduces operating work and shortens the time from portfolio fact to owner decision.
-
-## 9. Owner interaction standard
-
-Operators must prefer authenticated API or CLI execution for **read-only inspection and explicitly authorized configuration**, not for creating a deployment.
-
-On Git-connected Pages projects, APIs and CLI must not be used to create, retry, promote, or directly upload a deployment. Only a new explicit owner decision may authorize an exact exception.
-
-Before requesting an owner-only action:
-
-1. verify that the API or existing connector cannot perform it;
-2. inspect the actual current interface or authoritative contract;
-3. group required actions into one bounded request;
-4. never invent menu, button, or permission names;
-5. never ask the owner to paste passwords, OTPs, cookies, private keys, or tokens into chat.
-
-The owner should make product and risk decisions. The system should handle routine execution.
-
-## 10. Evidence and business decisions
-
-Every implemented Business should progressively record:
-
-- cash infrastructure cost;
-- paid AI cost;
-- free or local model usage;
-- human work time;
-- generated outputs;
+- implementation and infrastructure cost;
+- paid and local model usage;
+- human review time;
+- benchmark products and comparative verdict;
+- generated outputs and product-quality evidence;
 - deployment and reliability evidence;
-- user engagement;
-- direct or attributable revenue;
-- the next continue, revise, pause, or stop decision.
+- user or stakeholder response;
+- pilot demand, conversion, and revenue evidence;
+- the next continue, redesign, commercialize, pause, or stop decision.
 
-The final purpose is not to prove that a particular model, framework, or deployment platform is best. It is to determine whether abundant AI production can create valuable products that would not otherwise be economically viable.
+The final purpose is to show what excellent AI-assisted product creation can achieve and to identify which Businesses deserve investment and commercialization.
