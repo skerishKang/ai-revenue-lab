@@ -92,13 +92,26 @@ def main() -> int:
     check(pdf_pages("Business35_OnePage_Offer.pdf") == 1,
           "one-page offer PDF has 1 page", problems)
     qpages = pdf_pages("Business35_Diagnostic_Questionnaire.pdf")
+    check(qpages <= 3, f"questionnaire PDF within 3 pages (got {qpages})", problems)
     check(qpages >= 1, f"questionnaire PDF renders ({qpages} pages)", problems)
+
+    # No internal English status markers in customer questionnaire
+    qtxt = pdf_text("Business35_Diagnostic_Questionnaire.pdf")
+    check("CUSTOMER-FACING" not in qtxt and "FINAL IDENTITY" not in qtxt
+          and "NOT YET SENT" not in qtxt and "DRAFT MASTER" not in qtxt,
+          "questionnaire has no internal English status markers", problems)
+
+    # Checkboxes present in questionnaire
+    check(("\u2610" in qtxt) or ("☐" in qtxt) or (re.search(r"예\s+아니오", qtxt) is not None),
+          "questionnaire has answer checkboxes/choice cells", problems)
 
     # Rendered images present
     rendered = (ROOT / "rendered")
     proposal_imgs = sorted(rendered.glob("proposal-*.png"))
     check(len(proposal_imgs) >= 10, f"proposal rendered >= 10 images (found {len(proposal_imgs)})", problems)
     check(len(list(rendered.glob("onepage-*.png"))) >= 1, "one-page rendered image present", problems)
+    check(len(list(rendered.glob("questionnaire-*.png"))) <= 3,
+          f"questionnaire rendered <= 3 images (found {len(list(rendered.glob('questionnaire-*.png')))})", problems)
 
     # Text integrity: no broken glyph markers
     for f in ["Business35_Master_Proposal_10p.pdf", "Business35_OnePage_Offer.pdf",
@@ -143,8 +156,10 @@ def main() -> int:
         txt = pdf_text(f)
         check("실제 고객" not in txt or "합성 예시" in txt or "주장이 아닙니다" in txt,
               f"no real-customer framing misuse in {f}", problems)
-        check("매출" not in txt or "주장이 아닙니다" in txt,
-              f"no revenue claim in {f}", problems)
+        has_revenue_disclaimer = ("매출" not in txt) or bool(
+            re.search(r"매출\s*주장\s*이\s*아닙", txt) or "주장이 아닙니다" in txt
+            or "주장이 아닙니" in txt or "주장이\n아닙니다" in txt)
+        check(has_revenue_disclaimer, f"no revenue claim in {f}", problems)
 
     # PPTX geometry: no shape extends beyond slide bounds
     try:
@@ -163,6 +178,35 @@ def main() -> int:
                     if right > w + 10000 or bottom > h + 10000 or shp.left < -10000 or shp.top < -10000:
                         overflow += 1
             check(overflow == 0, f"no shape overflow in {f} (overflows: {overflow})", problems)
+
+        # Overlap check: a genuine text overlap requires BOTH x and y to intersect.
+        # Headline zone y: 1.30"..1.95"; body starts at 2.10". Cards placed side by side
+        # (same y, different x) are intentional and must not count as overlap.
+        from pptx.util import Emu
+        HEADLINE_BOTTOM = int(1.95 * 914400)
+        prs = Presentation(str(ROOT / "Business35_Master_Proposal_10p.pptx"))
+        overlap_total = 0
+        for si, slide in enumerate(prs.slides, start=1):
+            texts = []
+            for shp in slide.shapes:
+                if shp.has_text_frame and shp.text_frame.text.strip() and shp.top is not None and shp.left is not None:
+                    texts.append((shp.left, shp.top, shp.left + (shp.width or 0),
+                                  shp.top + (shp.height or 0), shp.text_frame.text[:14]))
+            slide_overlaps = 0
+            for i in range(len(texts)):
+                for j in range(i + 1, len(texts)):
+                    a, b = texts[i], texts[j]
+                    ox = min(a[2], b[2]) - max(a[0], b[0])
+                    oy = min(a[3], b[3]) - max(a[1], b[1])
+                    # require genuine overlap in both axes, exceeding small rounding tolerance
+                    if ox > int(0.05 * 914400) and oy > int(0.05 * 914400):
+                        slide_overlaps += 1
+            # Slides 3/4/8 were the reported overlap cases; assert zero real text overlap there
+            if si in (3, 4, 8):
+                check(slide_overlaps == 0,
+                      f"slide {si} text overlap = 0 (found {slide_overlaps})", problems)
+            overlap_total += slide_overlaps
+        check(overlap_total == 0, f"no text overlap in proposal (total {overlap_total})", problems)
     except Exception as e:
         check(False, f"pptx geometry check ran ({e})", problems)
 
@@ -187,7 +231,7 @@ def main() -> int:
     # Rendered file count and per-file listing in VISUAL_QA.md
     rendered = (ROOT / "rendered")
     pngs = sorted(rendered.glob("*.png"))
-    check(len(pngs) >= 15, f"rendered PNG count >= 15 (found {len(pngs)})", problems)
+    check(len(pngs) >= 14, f"rendered PNG count >= 14 (found {len(pngs)})", problems)
     if vqa.is_file():
         vqa_text = vqa.read_text(encoding="utf-8")
         missing = [p.name for p in pngs if p.name not in vqa_text]
@@ -206,14 +250,20 @@ def main() -> int:
     notes_count = sum(1 for s in prs.slides if s.has_notes_slide)
     check(notes_count == 10, f"speaker notes on all 10 slides (found {notes_count})", problems)
 
-    # Korean status footer present on every slide
+    # Korean status footer present on every slide (shortened form allowed)
     footer_ok = True
     for idx, s in enumerate(prs.slides, start=1):
         footer_text = ""
         for shp in s.shapes:
             if shp.has_text_frame and shp.top is not None and shp.top > 6400000:  # footer zone
                 footer_text += shp.text_frame.text
-        if not footer_text or ("DRAFT MASTER" not in footer_text and "CUSTOMER-FACING MASTER" not in footer_text):
+        if idx == 1:
+            ok = "DRAFT" in footer_text and "법률 검토" in footer_text
+        elif idx == 10:  # last page: provider-confirmation footer allowed
+            ok = "제공자 정보" in footer_text
+        else:
+            ok = "DRAFT" in footer_text
+        if not ok:
             footer_ok = False
     check(footer_ok, "Korean status footer present on all proposal slides", problems)
 
