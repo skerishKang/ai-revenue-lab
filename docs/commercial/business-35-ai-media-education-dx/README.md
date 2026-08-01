@@ -78,6 +78,27 @@ VAT 별도 여부는 최종 견적 시 명시
 python3 docs/commercial/business-35-ai-media-education-dx/tests/validate_sales_package.py
 ```
 
+### Validator scope
+
+```text
+Validator verifies:
+repository structure
+source status declarations
+customer-document source linkage
+forbidden claims
+price consistency
+required legal-review labels
+
+Validator does not independently prove:
+external URL availability
+source authenticity
+legal interpretation
+market validity
+customer suitability
+```
+
+`ALL CHECKS PASSED` does not mean every external fact has been independently verified at runtime.
+
 ## Non-actions
 
 No customer outreach, email, proposal submission, real customer names, pricing negotiation, contract signing, claimed legal review, PPTX/Canva final design, UI/UX/backend change, Cloudflare change, PR Ready, merge, or Issue closure.
