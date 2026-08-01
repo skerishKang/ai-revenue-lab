@@ -8,16 +8,25 @@
       "failed": 0,
       "external": 0,
       "overflow": false,
-      "wfNotStartedBeforeEntry": true,
+      "workflowTopNotStarted": true,
+      "workflowEdgeDidNotStart": true,
+      "workflowBoardTriggered": true,
+      "replayPolicy": "restartable",
+      "replayClicksAccepted": 3,
+      "replayTimestamps": [
+        1785600834606,
+        1785600834727,
+        1785600834847
+      ],
+      "staleGenerationMutations": 0,
+      "finalSealCount": 1,
+      "transformOpacityBefore": 0,
+      "transformOpacityAfter": 1,
       "diagNoRenderOnChange": true,
       "diagRenderOnRun": true,
       "deliverableAria": "true",
       "conversion": true,
-      "navActive": true,
-      "wfRunOnceAfterEntry": true,
-      "transformOpacityBefore": 0,
-      "transformOpacityAfter": 1,
-      "replayOk": true
+      "navActive": true
     },
     {
       "viewport": "tablet",
@@ -27,16 +36,25 @@
       "failed": 0,
       "external": 0,
       "overflow": false,
-      "wfNotStartedBeforeEntry": true,
+      "workflowTopNotStarted": true,
+      "workflowEdgeDidNotStart": true,
+      "workflowBoardTriggered": true,
+      "replayPolicy": "restartable",
+      "replayClicksAccepted": 3,
+      "replayTimestamps": [
+        1785600852559,
+        1785600852680,
+        1785600852800
+      ],
+      "staleGenerationMutations": 0,
+      "finalSealCount": 1,
+      "transformOpacityBefore": 0,
+      "transformOpacityAfter": 1,
       "diagNoRenderOnChange": true,
       "diagRenderOnRun": true,
       "deliverableAria": "true",
       "conversion": true,
-      "navActive": true,
-      "wfRunOnceAfterEntry": true,
-      "transformOpacityBefore": 0,
-      "transformOpacityAfter": 1,
-      "replayOk": true
+      "navActive": true
     },
     {
       "viewport": "mobile",
@@ -46,16 +64,25 @@
       "failed": 0,
       "external": 0,
       "overflow": false,
-      "wfNotStartedBeforeEntry": true,
+      "workflowTopNotStarted": true,
+      "workflowEdgeDidNotStart": true,
+      "workflowBoardTriggered": true,
+      "replayPolicy": "restartable",
+      "replayClicksAccepted": 3,
+      "replayTimestamps": [
+        1785600873771,
+        1785600873892,
+        1785600874012
+      ],
+      "staleGenerationMutations": 0,
+      "finalSealCount": 1,
+      "transformOpacityBefore": 0,
+      "transformOpacityAfter": 1,
       "diagNoRenderOnChange": true,
       "diagRenderOnRun": true,
       "deliverableAria": "true",
       "conversion": true,
-      "navActive": true,
-      "wfRunOnceAfterEntry": true,
-      "transformOpacityBefore": 0,
-      "transformOpacityAfter": 1,
-      "replayOk": true
+      "navActive": true
     }
   ],
   "captures": [

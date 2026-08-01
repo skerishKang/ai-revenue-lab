@@ -66,8 +66,9 @@
     });
   });
 
-  /* ---------- signature workflow motion (viewport-triggered, timer-safe) ---------- */
+  /* ---------- signature workflow motion (board-triggered, restartable replay) ---------- */
   var wfBoard = $("[data-wf-board]");
+  var wfSection = $("#workflow");
   var wfRunBtn = $("[data-wf-run]");
   var wfGen = 0;
   var wfTimers = [];
@@ -82,7 +83,6 @@
   }
   var mark = function (sel, cls) { var el = $(sel, wfBoard); if (el) el.classList.add(cls); };
   function finalWf() {
-    // 다섯 정보를 최종 상태로 한 번에 표시 (reduced-motion fallback)
     mark('[data-wf-step="b2"]', "is-hot"); mark('[data-wf-step="b4"]', "is-hot");
     $$("[data-wf-transform] span", wfBoard).forEach(function (sp) { sp.classList.add("is-on"); });
     mark('[data-wf-step="a2"]', "is-ai"); mark('[data-wf-step="a3"]', "is-ai");
@@ -91,6 +91,7 @@
     var seal = $("[data-wf-seal]", wfBoard);
     if (seal) seal.textContent = "HUMAN-APPROVED AI MEDIA OPERATING SYSTEM";
   }
+  // Restartable replay: 매 클릭이 이전 timer 전부 취소 + generation 증가 후 처음부터 재생
   function playWf() {
     resetWf();
     clearWfTimers();
@@ -99,69 +100,69 @@
     var at = function (ms, fn) {
       wfTimers.push(setTimeout(function () { if (gen !== wfGen) return; fn(); }, ms));
     };
-    // 1. 병목 표시
     at(200, function () { mark('[data-wf-step="b2"]', "is-hot"); mark('[data-wf-step="b4"]', "is-hot"); });
-    // 2. 교육 개입
     at(900, function () { var sp = $$("[data-wf-transform] span", wfBoard)[0]; if (sp) sp.classList.add("is-on"); });
-    // 3. AI-assisted 단계 연결
     at(1700, function () {
       mark('[data-wf-step="a2"]', "is-ai"); mark('[data-wf-step="a3"]', "is-ai");
       var sp = $$("[data-wf-transform] span", wfBoard)[2]; if (sp) sp.classList.add("is-on");
     });
-    // 4. 사람 검토 gate
     at(2500, function () {
       mark('[data-wf-step="a4"]', "is-review"); mark('[data-wf-step="a5"]', "is-review");
       var sp = $$("[data-wf-transform] span", wfBoard)[1]; if (sp) sp.classList.add("is-on");
     });
-    // 5. 승인된 운영 체계
     at(3300, finalWf);
   }
-
-  // Replay button: deterministic replay anytime (버튼은 재생 중 잠시 disabled + 상태 설명)
-  var replayLabel = "변환 다시 보기";
+  // replay button — restartable (lock 없음), 상태 설명 유지
+  var wfStatus = $("#wf-status") || null;
+  if (!wfStatus) { wfStatus = document.createElement("span"); wfStatus.id = "wf-status"; wfStatus.className = "wf-status"; wfBoard.parentNode.insertBefore(wfStatus, wfBoard); }
+  wfStatus.textContent = "업무전환 준비됨 — 재생은 다시 보기 버튼으로 언제든 재시작할 수 있습니다.";
   wfRunBtn.addEventListener("click", function () {
-    wfRunBtn.disabled = true;
-    wfRunBtn.setAttribute("aria-describedby", "wf-status");
-    var status = $("#wf-status") || document.createElement("span");
-    if (!status.id) { status.id = "wf-status"; status.className = "wf-status"; wfBoard.parentNode.insertBefore(status, wfBoard); }
-    status.textContent = "업무전환 재생 중…";
+    wfStatus.textContent = "업무전환 재생 시작…";
     playWf();
     var g = wfGen;
-    var enable = function () { if (g === wfGen) { wfRunBtn.disabled = false; if (status) status.textContent = "업무전환 최종 상태"; } };
-    setTimeout(enable, reduced ? 50 : 3400);
+    setTimeout(function () { if (g === wfGen && !reduced) wfStatus.textContent = "업무전환 최종 상태 — HUMAN-APPROVED AI MEDIA OPERATING SYSTEM"; }, 3350);
   });
 
-  // viewport trigger: workflow가 35% 이상 진입 시 첫 방문 한 번 자동 실행
-  var wfSection = $("#workflow");
+  // viewport trigger: [data-wf-board]가 의미 있게 보일 때 첫 1회
+  function shouldTrigger(entry) {
+    var ratio = entry.intersectionRatio || 0;
+    if (ratio >= 0.35) return true;
+    var rect = entry.boundingClientRect;
+    var vh = window.innerHeight;
+    var vis = entry.intersectionRect ? entry.intersectionRect.height : 0;
+    if (rect.height >= vh) {
+      // tall board fallback: 의미 있는 가시 픽셀 + 보드 상단 ≤ 70% + 보드 하단 ≥ 20%
+      return entry.isIntersecting && vis >= 80 && rect.top <= vh * 0.7 && rect.bottom >= vh * 0.2;
+    }
+    return false;
+  }
   function triggerOnVisible() {
     if (wfPlayed) return;
     wfPlayed = true;
     playWf();
   }
-  if ("IntersectionObserver" in window && !reduced) {
-    // threshold 0.35 진입 기준 + 섹션이 뷰포트보다 클 경우(모바일/태블릿) 첫 가시 진입 시 트리거
+  if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        var ratio = en.intersectionRatio || 0;
-        var tall = en.boundingClientRect.height >= window.innerHeight;
-        if (en.isIntersecting && (ratio >= 0.35 || tall) && !wfPlayed) { triggerOnVisible(); io.disconnect(); }
+        if (shouldTrigger(en) && !wfPlayed) { triggerOnVisible(); io.disconnect(); }
       });
     }, { threshold: [0, 0.1, 0.35] });
-    io.observe(wfSection);
-  } else if (reduced) {
-    triggerOnVisible(); // reduced motion: 즉시 최종 정보
+    io.observe(wfBoard);
   } else {
-    // IO 미지원 fallback: 섹션이 보이는 시점에 안전하게 최종 정보
+    // IO 미지원 fallback: 보드가 의미 있게 보이는 시점(스크롤)에 한 번
     var onScroll = function () {
-      var r = wfSection.getBoundingClientRect();
-      if (r.top < window.innerHeight * 0.65 && !wfPlayed) { triggerOnVisible(); window.removeEventListener("scroll", onScroll); }
+      var r = wfBoard.getBoundingClientRect();
+      var vh = window.innerHeight;
+      if (r.top <= vh * 0.7 && r.bottom >= vh * 0.2 && !wfPlayed) { triggerOnVisible(); window.removeEventListener("scroll", onScroll); }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
   }
-  // #workflow deep link 진입 → 표시 직후 실행
-  if (location.hash === "#workflow") triggerOnVisible();
-  window.addEventListener("hashchange", function () { if (location.hash === "#workflow") triggerOnVisible(); });
+  // #workflow deep link: 보드가 배치된 뒤 실행
+  if (location.hash === "#workflow") setTimeout(triggerOnVisible, 0);
+  window.addEventListener("hashchange", function () { if (location.hash === "#workflow") setTimeout(triggerOnVisible, 0); });
+  // test hook
+  window.__wfGen = function () { return wfGen; };
 
   /* ---------- deliverable gallery (semantic controls) ---------- */
   var delDetail = $("#del-detail");

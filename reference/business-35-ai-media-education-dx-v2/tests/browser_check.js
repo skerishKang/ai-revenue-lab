@@ -87,36 +87,54 @@ var STATES = ["home", "diagnostic", "case", "workflow", "offers", "deliverables"
     var navOk = navTop.active === true && navTop.current === "location" && nav.active === true &&
       nav.current === "location" && nav.color !== "rgb(216, 208, 192)";
 
-    // C3: workflow runs once after viewport entry (scroll into view)
+    // E1: workflow section edge만 가시 -> motion 미시작 (board 미의미)
     await page.goto(base, { waitUntil: "load" });
     await page.waitForSelector("#hero-title");
-    await page.evaluate("document.documentElement.style.scrollBehavior='auto'; document.getElementById('workflow').scrollIntoView({block:'center'});");
-    await sleep(700);
-    var wfEnter = await page.evaluate("document.querySelector('[data-wf-step=\"b2\"]').classList.contains('is-hot')");
+    await page.evaluate("document.documentElement.style.scrollBehavior='auto'; window.scrollTo(0, document.getElementById('workflow').offsetTop - window.innerHeight + 60);");
+    await sleep(600);
+    var edgeNotStarted = await page.evaluate("!document.querySelector('[data-wf-step=\"b2\"]').classList.contains('is-hot') && document.querySelector('[data-wf-seal]').textContent === 'HUMAN-APPROVED OS'");
 
-    // C5: transform opacity change (hidden -> on)
+    // E2: board가 의미 있게 가시 -> motion 시작
+    await page.evaluate("document.querySelector('[data-wf-board]').scrollIntoView({block:'center'});");
+    await sleep(700);
+    var boardTriggered = await page.evaluate("document.querySelector('[data-wf-step=\"b2\"]').classList.contains('is-hot')");
+
+    // E5: transform opacity change (hidden -> on)
     var opacityBefore = await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-wf-transform] span')).opacity)");
     await sleep(3200);
     var opacityAfter = await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-wf-transform] span')).opacity)");
-    var sealFinal = await page.evaluate("document.querySelector('[data-wf-seal]').textContent");
 
-    // C4: rapid replay 3x — final state correct, no orphans
+    // D+E3: restartable replay — 실제 중첩 호출(evaluate, 0/120/240ms) + generation 증가
     var errsBefore = pageErrors.length;
-    for (var k = 0; k < 3; k++) { await page.click("[data-wf-run]"); await sleep(120); }
-    await sleep(3400);
-    var replaySeal = await page.evaluate("document.querySelector('[data-wf-seal]').textContent");
-    var replayOk = replaySeal.indexOf("HUMAN-APPROVED AI MEDIA") === 0 && pageErrors.length === errsBefore && !wfBefore;
+    var t0 = Date.now();
+    var replay = await page.evaluate("new Promise(function(resolve){ var b=document.querySelector('[data-wf-run]'); var g0=window.__wfGen(); var ts=[]; b.click(); ts.push(Date.now()); setTimeout(function(){ b.click(); ts.push(Date.now()); setTimeout(function(){ b.click(); ts.push(Date.now()); resolve({ g0: g0, clicks: 3, ts: ts }); }, 120); }, 120); })");
+    await sleep(3600);
+    var genAfter = await page.evaluate("window.__wfGen()");
+    var finalState = await page.evaluate("(function(){ var seal=document.querySelector('[data-wf-seal]'); return { seal: seal.textContent, hotB2: document.querySelector('[data-wf-step=\"b2\"]').classList.contains('is-hot'), hotB4: document.querySelector('[data-wf-step=\"b4\"]').classList.contains('is-hot'), ai: document.querySelectorAll('[data-wf-step].is-ai').length, review: document.querySelectorAll('[data-wf-step].is-review').length, done: document.querySelectorAll('[data-wf-step].is-done').length, spansOn: document.querySelectorAll('[data-wf-transform] span.is-on').length }; })()");
+    var snap1 = await page.evaluate("document.querySelector('[data-wf-seal]').textContent + '|' + document.querySelectorAll('[data-wf-step].is-ai').length + '|' + document.querySelectorAll('[data-wf-step].is-review').length");
+    await sleep(1200);
+    var snap2 = await page.evaluate("document.querySelector('[data-wf-seal]').textContent + '|' + document.querySelectorAll('[data-wf-step].is-ai').length + '|' + document.querySelectorAll('[data-wf-step].is-review').length");
+    var staleGenerationMutations = snap1 !== snap2 ? 1 : 0;
+    var finalSealCount = finalState.seal.indexOf("HUMAN-APPROVED AI MEDIA") === 0 ? 1 : 0;
+    var replayOk = genAfter === replay.g0 + 3 && staleGenerationMutations === 0 && finalSealCount === 1 &&
+      finalState.ai === 2 && finalState.review === 2 && finalState.done === 2 && finalState.spansOn === 3 &&
+      pageErrors.length === errsBefore;
 
     var res = { viewport: vp.name, http: r.status(), consoleErrors: consoleErrors.length, pageErrors: pageErrors.length,
       failed: failed.length, external: external.length, overflow: overflow,
-      wfNotStartedBeforeEntry: !wfBefore, diagNoRenderOnChange: diagNoRender, diagRenderOnRun: diagRender,
-      deliverableAria: delAria, conversion: convOk, navActive: navOk, wfRunOnceAfterEntry: wfEnter,
-      transformOpacityBefore: opacityBefore, transformOpacityAfter: opacityAfter, replayOk: replayOk };
+      workflowTopNotStarted: !wfBefore, workflowEdgeDidNotStart: edgeNotStarted, workflowBoardTriggered: boardTriggered,
+      replayPolicy: "restartable", replayClicksAccepted: 3, replayTimestamps: replay.ts,
+      staleGenerationMutations: staleGenerationMutations, finalSealCount: finalSealCount,
+      transformOpacityBefore: opacityBefore, transformOpacityAfter: opacityAfter,
+      diagNoRenderOnChange: diagNoRender, diagRenderOnRun: diagRender, deliverableAria: delAria,
+      conversion: convOk, navActive: navOk };
     report.results.push(res);
     var good = ok(res.http === 200 && res.consoleErrors === 0 && res.pageErrors === 0 && res.failed === 0 &&
-      res.external === 0 && !res.overflow && res.wfNotStartedBeforeEntry && res.diagNoRenderOnChange &&
-      res.diagRenderOnRun && res.deliverableAria === "true" && res.conversion && res.navActive && res.wfRunOnceAfterEntry &&
-      res.transformOpacityBefore === 0 && res.transformOpacityAfter === 1 && res.replayOk);
+      res.external === 0 && !res.overflow && res.workflowTopNotStarted && res.workflowEdgeDidNotStart &&
+      res.workflowBoardTriggered && res.replayPolicy === "restartable" && res.replayClicksAccepted === 3 &&
+      res.staleGenerationMutations === 0 && res.finalSealCount === 1 &&
+      res.transformOpacityBefore === 0 && res.transformOpacityAfter === 1 &&
+      res.diagNoRenderOnChange && res.diagRenderOnRun && res.deliverableAria === "true" && res.conversion && res.navActive);
     console.log("[" + vp.name + "] " + JSON.stringify(res) + " " + (good ? "OK" : "FAIL"));
 
     // captures: 7 states at this viewport (new head)
