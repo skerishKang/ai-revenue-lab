@@ -1,325 +1,307 @@
-# UI → UX → Backend Phase Gates
+# Product Demo → MVP → Pilot → Commercialization Gates
 
 - Status: portfolio operating policy
-- Owner: Web CTO
+- Owner: Web CTO under owner authority
 - Permanent tracking issue: #154
-- Current portfolio mode: `UI_ONLY`
-- Applies to: every new or revived AI Revenue Lab Business unless a separate approved issue explicitly states otherwise
-- Portfolio intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+- Canonical intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+- Owner/operator contract: `OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`
+- Visual policy: `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md`
+- Backend policy: `BACKEND_MVP_OPERATING_POLICY.md`
 - Deployment policy: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 
 ## 1. Decision
 
-For the current portfolio expansion period, AI Revenue Lab builds and reviews new Businesses in this strict order:
+AI Revenue Lab no longer uses `UI_ONLY` as the portfolio-wide default.
+
+The portfolio builds the smallest convincing product stage that can answer the current business question:
 
 ```text
-Phase 0 — product framing
-→ Phase 1 — UI visual design
-→ UI approval gate
-→ Phase 2 — UX and interaction design
-→ UX approval gate
-→ Phase 3 — backend authorization decision
-→ Phase 4 — backend and runtime implementation
+product framing
+→ competitive product demo
+→ investor demo or MVP vertical slice
+→ service-led or runtime pilot
+→ commercial hardening
+→ operating product
 ```
 
-A later phase must not begin merely because a worker has capacity or because the technology is easy to add. Each phase begins only after the previous gate is explicitly accepted.
+These are evidence stages, not mandatory sequential ceremonies. A Business may skip or combine stages when the value proposition requires it.
 
-The current default is **Phase 1 UI work only**. New Business work must not expand into UX or backend scope unless the user and Web CTO authorize the next phase for that specific Business.
+Examples:
 
-### 1.1 Purpose of the gates
+- a media or travel Business may begin with an image-led investor demo;
+- a verification engine may require a working frontend/backend vertical slice immediately;
+- a consulting or education Business may begin with a service-led pilot using strong documents and a convincing demo;
+- a marketplace may need realistic catalog, search, checkout simulation, and seller workflow before a real payment backend.
 
-These gates prevent scope, evidence, privacy, and authorization confusion. They do not exist to maximize ceremony or slow an authorized experiment.
+## 2. Governing principle
 
-The gates preserve truthful distinctions:
+The gate system exists to prevent false claims and uncontrolled irreversible actions. It must not reduce a product to a weak static mockup.
 
-- a polished UI is not an accepted end-to-end UX;
-- an accepted UX is not backend authorization;
-- a merged PR is not a human phase verdict;
-- a deployment is not product completion or revenue evidence.
+The owner must be treated as a multidisciplinary expert across law, public administration, police studies and policing practice, computer science and software development, Korean institutional and field practice, product, and business. Gates must not be used to replace that professional judgment with generic AI supervision.
 
-Within an explicitly authorized phase and deployment scope, operators should proceed without repeated minor approval questions. Deployment execution follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+Within an authorized stage:
 
-## 2. Phase 0 — Product framing
+- implement the complete bounded story;
+- use realistic synthetic content and high-quality assets;
+- simulate missing runtime behavior when appropriate;
+- build live backend behavior when it is essential to the evidence goal;
+- proceed without repeated minor approval questions;
+- preserve reversibility and truthful evidence;
+- raise only concrete material risks and unresolved decisions;
+- challenge the owner only through a specific, evidence-backed counterargument with a stronger alternative.
 
-Phase 0 is intentionally small. It exists only to prevent a beautiful interface from representing an undefined or duplicate product.
+Do not use phase boundaries, generic legal cautions, or theoretical risks as a reason to omit the feature, image, interaction, or result that makes the product understandable.
+
+## 3. Stage 0 — Product framing
 
 Required:
 
-- proposed or canonical Business number;
-- stable slug and Korean/English name;
+- Business number, slug, and name;
+- target customer and primary use moment;
 - one-sentence product promise;
-- target user and primary use moment;
-- primary visual result or artifact;
-- overlap and boundary with existing Businesses;
-- explicit UI-only non-goals.
+- primary result or transformation;
+- direct competitors and adjacent leaders;
+- differentiation thesis;
+- evidence stage to build next;
+- explicit non-goals for that bounded stage.
 
-Phase 0 does not authorize application architecture, databases, authentication, providers, deployment, or final UX flows.
+Framing should be brief. It is not permission to spend more effort on governance than on the product.
 
-## 3. Phase 1 — UI visual design
+## 4. Stage 1 — Competitive product demo
 
-### 3.1 Goal
+### 4.1 Goal
 
-Produce a visually convincing product identity and representative screen system before optimizing task flow or implementing runtime behavior.
+Create a product experience that a customer or investor can understand and desire.
 
-UI answers:
+The demo should answer:
 
-- What does this product look and feel like?
-- What is the visual hierarchy?
-- What imagery, typography, color, spacing, density, and composition define it?
-- What makes it look like this product rather than a generic AI service?
-- What signature motion communicates the concept?
-- Does the product remain coherent on desktop and mobile?
+- What does the product do?
+- Who is it for?
+- What is the impressive moment?
+- Why is it better or different?
+- What would the complete product feel like?
+- What evidence should be built next?
 
-### 3.2 Required UI scope
+### 4.2 Normal scope
 
-Normally create 4–7 representative visual states, such as:
+Use the states and interactions necessary to tell the product story. Four to seven states remain a useful default, not a hard ceiling.
 
-- landing or home;
-- primary feed, workspace, publication, map, story, or dashboard;
-- item or result detail;
-- personalization, evidence, transformation, or comparison state;
-- collection, archive, or secondary surface when visually central;
-- mobile composition;
-- one signature-motion state.
+A demo may include:
 
-The exact states vary by Business. They are selected to prove the visual system, not to simulate every use case.
+- image-led landing and editorial compositions;
+- realistic feed, workspace, document, map, story, or dashboard surfaces;
+- search, filtering, comparison, generation, transformation, and review simulation;
+- deterministic AI-result fixtures;
+- upload and processing simulation;
+- version, approval, history, and collaboration simulation;
+- mobile behavior;
+- product-specific motion;
+- service-led operator steps hidden behind the demo surface.
 
-### 3.3 Permitted interaction
+### 4.3 Quality gate
 
-Minimal interaction is permitted only to review visual composition and motion:
+A competitive demo passes only when:
 
-- next/previous state;
-- tab or view switching;
-- opening and closing a visual panel;
-- hover, focus, scroll, or reveal behavior;
-- deterministic motion preview;
-- switching between desktop-like visual states in a static prototype.
+- reference research is visible in the result, not only documented;
+- the visual system is at least credible beside the selected market references;
+- imagery, typography, spacing, composition, content, and motion are professionally resolved;
+- the product does not look like a generic template, school project, card wall, or AI-generated placeholder;
+- the main value proposition can be demonstrated in under three minutes;
+- desktop and mobile evidence are complete;
+- console, asset, overflow, and accessibility blockers are absent;
+- the exact head receives independent technical and visual review;
+- the owner explicitly approves the direction.
 
-These interactions do **not** constitute UX approval. A visually clickable reference is still a Phase 1 UI artifact.
-
-### 3.4 Prohibited UI-phase expansion
-
-Do not implement or finalize:
-
-- complete onboarding or end-to-end task journeys;
-- final information architecture or navigation semantics;
-- comprehensive loading, empty, validation, error, recovery, and permission states;
-- real forms or durable user input;
-- real personalization or recommendation logic;
-- authentication or authorization;
-- API contracts or network calls;
-- databases or persistence;
-- live AI providers or model routing;
-- crawling or live-data ingestion;
-- payments, billing, notifications, or runtime backend deployment.
-
-Synthetic content and static local assets are the default.
-
-A separately authorized publication of an already accepted static UI is governed by Section 3.6 and does not expand the UI issue into UX or backend work.
-
-### 3.5 UI approval gate
-
-Phase 1 passes only when all of the following are accepted:
-
-- reference research is documented;
-- imagery is repository-local and source-documented;
-- Korean-first product copy is credible;
-- desktop and mobile visual evidence is complete;
-- signature motion is reviewable;
-- the product avoids generic AI-generated visual language;
-- major states share one coherent visual system;
-- no obvious overflow, broken asset, console error, or inaccessible primary visual control remains;
-- the Web CTO reviews the exact head;
-- the user explicitly approves the visual direction.
-
-Approval status vocabulary:
-
-- `UI_NOT_READY`
-- `UI_CONDITIONALLY_READY`
-- `UI_APPROVED`
-
-Only `UI_APPROVED` authorizes a separate UX child issue.
-
-After approval, the accepted UI becomes the visual baseline. Material changes to typography, color, image direction, layout grammar, or signature motion must be documented rather than silently introduced during UX work.
-
-### 3.6 Publication of an approved Phase 1 UI
-
-`UI_APPROVED` does not itself authorize merge or deployment. The user must separately authorize publication of the accepted static UI.
-
-After that separate authorization, merge the accepted expected head to the configured Production branch. The existing Git integration performs the Production deployment automatically.
-
-Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. An operator may not create an exception merely by adding a reason to an issue.
-
-Before the authorized merge:
-
-- verify the latest source and accepted exact head;
-- verify the dedicated project, root, branch, and hostname;
-- record the last known-good Production source and configuration as recovery evidence;
-- determine the required static and responsive smoke checks.
-
-After the automatic Production deployment completes:
-
-- verify the actual deployed SHA or bytes;
-- verify TLS, required assets, desktop, mobile, console, and overflow;
-- retain the deployment when accepted or merge a reviewed fix/revert PR on a critical source failure;
-- restore configuration separately only when configuration itself caused the failure;
-- record deployment evidence separately from UI, UX, backend, and business verdicts.
-
-An approved Phase 1 UI publication:
-
-- publishes only the already accepted static UI reference and its repository-local assets;
-- does not authorize unreviewed source changes, a new feature commit, PR Ready status, UX work, or backend work;
-- does not convert review controls or synthetic states into accepted UX;
-- does not authorize authentication, persistence, APIs, databases, live AI, analytics, billing, or other backend work;
-- must report the exact deployed source and preserve the accepted visual baseline.
-
-A deployment is not proof of UX approval, backend authorization, product completion, or revenue evidence.
-
-## 4. Phase 2 — UX and interaction design
-
-### 4.1 Entry condition
-
-Phase 2 may begin only after the same Business has `UI_APPROVED` evidence.
-
-### 4.2 Goal
-
-Turn the accepted visual system into an understandable, efficient, accessible, and complete user experience using synthetic data and frontend-only behavior.
-
-UX answers:
-
-- What does the user do first?
-- What is the shortest successful path?
-- How does navigation preserve context?
-- What happens during loading, emptiness, errors, recovery, and completion?
-- What feedback follows each action?
-- What information is shown now versus progressively disclosed?
-- Can the main task be completed with keyboard and mobile input?
-
-### 4.3 Required UX scope
-
-Depending on the Business:
-
-- information architecture;
-- primary and secondary journeys;
-- navigation and back behavior;
-- form and selection behavior;
-- loading, empty, validation, error, retry, and completion states;
-- progressive disclosure;
-- accessibility semantics and keyboard behavior;
-- mobile interaction behavior;
-- synthetic feedback and personalization loop;
-- usability evidence for the main journey.
-
-Use static fixtures, browser memory, and deterministic mock behavior. UX work still does not require a backend.
-
-### 4.4 UX approval gate
-
-Phase 2 passes only when:
-
-- the primary journey is complete and understandable;
-- all required states are inventoried and represented;
-- navigation and interaction semantics are consistent;
-- keyboard and mobile behavior are verified;
-- critical error and recovery paths are present;
-- the accepted UI visual baseline is preserved or approved changes are documented;
-- the Web CTO reviews the exact head;
-- the user explicitly approves the experience.
-
-Approval status vocabulary:
-
-- `UX_NOT_READY`
-- `UX_CONDITIONALLY_READY`
-- `UX_APPROVED`
-
-Only `UX_APPROVED` permits a backend authorization decision.
-
-## 5. Phase 3 — Backend authorization decision
-
-Phase 3 is a decision gate, not automatic implementation.
-
-After UX approval, the Web CTO prepares a short backend decision that answers:
-
-- Does this Business need a backend for the next evidence goal?
-- What is the smallest required backend slice?
-- Which data must persist?
-- Is authentication required now?
-- Is a live AI provider required now?
-- Can the next business test still use static or local-only behavior?
-- What privacy, security, cost, and operational risks are introduced?
-- Which Web and Local models should implement and validate it?
-
-Possible decisions:
-
-- `BACKEND_DEFERRED`
-- `FRONTEND_ONLY_PILOT`
-- `LOCAL_RUNTIME_ONLY`
-- `BACKEND_AUTHORIZED`
-
-No backend implementation issue is opened until the user explicitly approves `BACKEND_AUTHORIZED` or another narrowly defined runtime decision.
-
-## 6. Phase 4 — Backend and runtime implementation
-
-Only after authorization may work include:
-
-- authentication and product-local authorization;
-- APIs and server-side validation;
-- databases and migrations;
-- uploads and private records;
-- live AI providers and model routing;
-- crawling or current-data ingestion;
-- persistence and audit history;
-- billing and payments;
-- authorized runtime and Production deployment via the Git-connected automatic deployment path.
-
-Preview or staging may be used only under a new explicit owner decision or an already approved Business-specific contract that names the exception.
-
-Backend work must preserve the approved UI and UX contracts. It must not redesign the product as an incidental consequence of implementation.
-
-Runtime deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. For Git-connected Pages, merge to the configured Production branch is the deployment action — operators do not manually create a deployment.
-
-## 7. Current portfolio freeze
-
-Until this policy is explicitly changed:
-
-- new Business work is limited to Phase 0 and Phase 1;
-- UI issues are processed one by one or in controlled parallel batches;
-- a Business that receives `UI_APPROVED` may move to a separate UX issue;
-- backend work for newly introduced Businesses remains frozen;
-- separately authorized publication of accepted UI or existing runtime work may continue under the deployment policy;
-- existing production or backend maintenance may continue only through already authorized product-specific issues;
-- the permanent Issue #154 remains open and records each Business phase and gate result.
-
-## 8. Issue structure
-
-Use separate issues for separate gates:
+Status vocabulary:
 
 ```text
-Product/number decision issue
-UI-only issue
-UX-only issue after UI approval
-Backend decision issue after UX approval
-Backend implementation issues only after authorization
-Automatic Production observation/verification issue when not already included in an authorized implementation issue
+DEMO_NOT_READY
+DEMO_CONDITIONALLY_READY
+DEMO_APPROVED
+INVESTOR_DEMO_READY
 ```
 
-Do not create one issue titled “UI/UX/MVP” that mixes visual design, interaction design, databases, authentication, deployment, and business acceptance.
+`INVESTOR_DEMO_READY` requires the product story, visual quality, and key interaction to be strong enough for an external investor presentation.
 
-## 9. Phase evidence in Issue #154
+## 5. Stage 2 — MVP vertical slice
 
-Record each Business in the permanent queue using this format:
+### 5.1 Goal
+
+Turn the strongest demo story into a usable bounded journey.
+
+An MVP vertical slice may include frontend, backend, persistence, AI providers, or service-led operation. The architecture is chosen by the evidence goal, not by a blanket backend freeze.
+
+### 5.2 Required contract
+
+Define:
+
+- one primary user and one primary success path;
+- the minimum live versus simulated behavior;
+- data and persistence boundary;
+- authentication requirement, if any;
+- model/provider requirement, if any;
+- service-led manual steps, if any;
+- failure and recovery behavior;
+- measurable success event;
+- operating-cost ceiling;
+- demo-data and privacy boundary.
+
+### 5.3 MVP quality gate
+
+The MVP passes when:
+
+- the primary journey completes end to end;
+- the key product promise is experienced, not merely described;
+- simulated and live behavior are documented truthfully;
+- major loading, failure, retry, and completion states exist;
+- visual quality from the approved demo is preserved or improved;
+- mobile and keyboard behavior are usable where relevant;
+- backend contracts and observability are sufficient for the pilot;
+- the exact head receives independent review;
+- the owner approves the pilot or external use.
+
+Status vocabulary:
+
+```text
+MVP_NOT_READY
+MVP_CONDITIONALLY_READY
+MVP_APPROVED
+PILOT_READY
+```
+
+## 6. Stage 3 — Service-led or runtime pilot
+
+A pilot may be:
+
+- **service-led** — the product surface is real while an operator performs bounded manual or AI-assisted work behind it;
+- **runtime** — the product performs the core flow through live systems;
+- **hybrid** — selected steps are automated and selected steps are operated manually.
+
+Manual work is not failure when it is intentionally used to validate customer demand before automation.
+
+Pilot requirements:
+
+- named customer segment;
+- bounded offer and price hypothesis;
+- defined deliverables and response time;
+- privacy and data-handling boundary;
+- success, failure, and learning metrics;
+- explicit operator workload;
+- cost and revenue evidence;
+- follow-up commercialization decision.
+
+## 7. Stage 4 — Commercial hardening
+
+Only after a Business earns evidence should work expand into broader production requirements:
+
+- durable authentication and authorization;
+- multi-tenant data isolation;
+- migrations and retention;
+- security review;
+- billing and payments;
+- provider redundancy and cost controls;
+- accessibility and localization completeness;
+- operational support, audit, and incident handling;
+- scalable deployment and recovery.
+
+Do not burden an early demo with every commercial requirement. Do not carry unacknowledged demo shortcuts into commercial operation.
+
+## 8. Competitive and visual evidence
+
+Every demo or MVP issue must include:
+
+- three to five direct or adjacent product references;
+- two to four high-quality visual or interaction references when relevant;
+- a reference board containing actual screen evidence or precise screen-level notes;
+- adopted patterns and rejected patterns;
+- a side-by-side comparison of the result and benchmark;
+- image and media source records;
+- desktop and mobile captures;
+- motion or video evidence when relevant;
+- a written market-quality verdict.
+
+See `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md`.
+
+## 9. Risk and truthfulness
+
+Use realistic data and strong product claims within the chosen demo fiction. Keep truth through evidence rather than excessive visual warnings.
+
+Do not:
+
+- present synthetic transactions as real revenue;
+- present staged AI output as a live provider result without disclosure;
+- expose private data or secrets;
+- perform irreversible external actions without authorization;
+- copy protected brand identity or proprietary assets into a public product.
+
+When a risk is manageable, mitigate it. Do not automatically remove the feature or weaken the entire design.
+
+For legal, administrative, policing, public-sector, privacy, and software matters, operators must apply `OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`: presume owner expertise, avoid boilerplate advice, distinguish law from field practice, and escalate only the concrete residual decision.
+
+## 10. Publication and deployment
+
+Demo publication, MVP deployment, and pilot exposure require explicit owner authorization for the exact target.
+
+Execution follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
+Publication does not freeze the product forever. Material visual or functional upgrades are expected, but they require a new exact-head review and a clear comparison against the current deployed baseline.
+
+## 11. Existing Business upgrade rule
+
+All existing Businesses are re-audited under the new standard.
+
+Classification:
+
+```text
+A — externally credible; targeted refinement only
+B — sound structure; major visual upgrade required
+C — product journey and visual system require redesign
+D — product thesis or market position requires reconsideration
+```
+
+For B and C Businesses:
+
+- preserve valid backend and domain logic;
+- open a dedicated `Visual Upgrade v2` or `Product Upgrade v2` issue;
+- create a new branch and Draft PR;
+- benchmark current market leaders again;
+- produce before/after evidence;
+- do not silently mutate the previously approved head.
+
+## 12. Portfolio tracking
+
+Issue #154 remains the portfolio queue, but it tracks product evidence rather than only UI status.
+
+Use:
 
 ```text
 Business XX — <Product>
-Product status: proposed / canonical
-UI: NOT_STARTED / IN_PROGRESS / UI_NOT_READY / UI_CONDITIONALLY_READY / UI_APPROVED
-UX: BLOCKED_BY_UI / NOT_STARTED / IN_PROGRESS / UX_NOT_READY / UX_CONDITIONALLY_READY / UX_APPROVED
-Backend: FROZEN / DECISION_PENDING / DEFERRED / AUTHORIZED / IN_PROGRESS
-Deployment: NOT_AUTHORIZED / AUTHORIZED / AUTOMATIC_PENDING / PRODUCTION_VERIFIED / REVERTED / BLOCKED
-Current child issue: #...
-Accepted visual head: <SHA or none>
-Accepted UX head: <SHA or none>
-Deployed Production head: <SHA or none>
-Next action: ...
+Product thesis: DECIDED / REVIEW_REQUIRED
+Current stage: FRAMED / COMPETITIVE_DEMO / INVESTOR_DEMO / MVP / PILOT / COMMERCIAL
+Visual quality: NOT_AUDITED / A / B / C / D
+Demo: NOT_STARTED / IN_PROGRESS / APPROVED / INVESTOR_READY
+MVP: NOT_STARTED / IN_PROGRESS / APPROVED / PILOT_READY
+Backend: NOT_NEEDED / SIMULATED / SERVICE_LED / LIVE_SLICE / HARDENING
+Deployment: NOT_AUTHORIZED / AUTHORIZED / PRODUCTION_VERIFIED / BLOCKED
+Commercial evidence: NONE / INTEREST / PILOT / REVENUE
+Authoritative head: <SHA or none>
+Next highest-value action: ...
 ```
 
-This keeps visual approval, experience approval, runtime implementation, deployment, and business evidence from being confused.
+## 13. Superseded defaults
+
+The following former portfolio defaults are superseded:
+
+- `UI_ONLY` for every new Business;
+- mandatory UI → UX → backend sequencing regardless of evidence need;
+- backend frozen until a complete UX matrix is approved;
+- static local assets as the preferred answer for every visual category;
+- risk avoidance through feature and expression reduction;
+- technical validation as sufficient proof of UI quality;
+- operator behavior that treats the owner as a supervised novice rather than a multidisciplinary expert.
+
+The new default is:
+
+```text
+BUILD THE STRONGEST REVERSIBLE PRODUCT EVIDENCE FOR THE CURRENT BUSINESS QUESTION
+```

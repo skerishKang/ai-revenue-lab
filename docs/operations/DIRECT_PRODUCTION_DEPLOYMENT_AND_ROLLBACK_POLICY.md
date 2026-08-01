@@ -1,280 +1,273 @@
-# Git-Connected Automatic Production and Recovery Policy
+# Demo and Production Deployment and Recovery Policy
 
 - Status: portfolio operating policy
-- Owner: Web CTO
-- Authority: Issue #326
+- Owner: Web CTO under owner authority
 - Intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
 
 ## 1. Purpose
 
-This policy keeps AI Revenue Lab deployment aligned with its operating intent: move validated product work into real operation quickly, verify it in the actual environment, and recover through reviewed source changes when a critical gate fails.
-
-Deployment policy must not turn unapproved infrastructure into a blocker or require repeated owner work.
-
-For Git-connected Cloudflare Pages projects, **merging an approved PR to the configured Production branch is the deployment action**. Operators observe and verify the resulting automatic deployment. They do not create a second deployment manually.
-
-## 2. Default flow
-
-After explicit merge and Production authorization, the default flow is:
+AI Revenue Lab uses two controlled deployment lanes because an investor/customer demo and a canonical operating product have different source-authority needs.
 
 ```text
-validated source
-→ exact-head approval
-→ approved merge to main
-→ Git-connected automatic Production deployment
-→ immediate Production smoke and acceptance
+Lane A — APPROVED_EXACT_HEAD_DEMO
+Lane B — CANONICAL_PRODUCTION
+```
+
+Both lanes require explicit owner authorization, exact-source verification, dedicated targets, and real-environment acceptance.
+
+## 2. Lane A — approved exact-head demo deployment
+
+Use this lane for:
+
+- competitive product demos;
+- investor demos;
+- bounded MVP demonstrations;
+- UI or product-upgrade candidates that must be reviewed live before merge;
+- dedicated Business demo sites.
+
+The source may remain on an OPEN Draft PR.
+
+Required execution:
+
+```text
+reviewed PR exact head
+→ explicit owner deployment approval for that SHA and target
+→ approved repository GitHub Actions workflow
+→ exact SHA checkout and source isolation
+→ dedicated Pages project or equivalent demo target
+→ deployment metadata and public-byte verification
+→ desktop/mobile/journey acceptance
+```
+
+The standard workflow may provision or replace a dedicated Business Pages project when its own authority gates pass.
+
+Lane A does not authorize:
+
+- PR Ready;
+- merge;
+- Issue closure;
+- unrelated project mutation;
+- backend expansion outside the approved scope;
+- direct Dashboard, Wrangler, or ad hoc API deployment.
+
+## 3. Lane B — canonical Production
+
+Use this lane when the accepted product source should become the repository's canonical operating version.
+
+For a Git-connected project:
+
+```text
+reviewed exact head
+→ explicit merge and Production authorization
+→ merge to the configured Production branch
+→ automatic Git-connected Production deployment
+→ Production acceptance
 → retain or merge a reviewed fix/revert PR
 ```
 
-Preview and staging are disabled by default.
+Operators observe and verify the automatic deployment. They do not create a second source deployment manually.
 
-For a Git-connected project, the following are prohibited unless a new explicit owner decision authorizes the exact exception:
+## 4. Choosing the lane
 
-- `wrangler pages deploy` or another direct upload;
-- API-created deployment or retry;
-- Dashboard deployment retry;
-- empty or unrelated commit used only to trigger deployment;
-- Preview creation, deployment, or promotion;
-- staging-project substitution;
-- cancellation and replacement of a Git-triggered deployment.
+Choose Lane A when the main purpose is external review, demonstration, or comparison before canonical integration.
 
-A queued or failed automatic deployment is a platform/deployment-pipeline state to observe and report. It is not permission to create another deployment path.
+Choose Lane B when:
 
-## 3. Authorization boundary
+- the source is accepted as canonical;
+- the product is intended to operate from the Production branch;
+- repository integration is part of the decision;
+- later source recovery should occur through normal reviewed mainline changes.
 
-Deployment authorization remains separate from UI, UX, backend, and business verdicts.
+A successful Lane A deployment does not imply merge approval. A successful Lane B deployment does not imply business success.
 
-- `UI_APPROVED` does not automatically authorize merge or Production exposure.
-- A merged PR does not automatically prove a UI, UX, backend, or business verdict.
-- A successful automatic deployment does not prove product quality, user value, or revenue.
-- Once the owner authorizes the accepted PR to merge, the Git-connected automatic Production deployment requires no second deployment approval or manual deployment action.
+## 5. Common authorization boundary
 
-## 4. Dedicated project rule
+Deployment authorization remains separate from product, visual, MVP, backend, and commercial verdicts.
 
-Each Business uses its own approved Cloudflare Pages project, Worker, or equivalent target.
+Before either lane, verify:
 
-Before merge, verify:
+- repository and Business;
+- source workspace;
+- exact approved SHA;
+- target project and hostname;
+- deployment lane;
+- relevant tests and review verdicts;
+- current known-good target state;
+- rollback or redeploy source;
+- authentication and data boundary when applicable.
 
-- repository;
-- Business and workspace;
-- project or Worker name;
-- root directory;
-- Production branch;
-- reviewed PR exact head;
-- Production hostname;
-- Access and authorization boundary when applicable.
+## 6. Dedicated target rule
+
+Each Business uses its own approved target unless an explicit portfolio decision says otherwise.
 
 A green deployment under an unrelated project is invalid evidence.
 
-## 5. Exact-head and merge contract
+Automatic previews created by unrelated Git integrations are not valid Business deployment evidence.
 
-When a PR is involved:
+## 7. Prohibited deployment methods
 
-- verify the latest `origin/main`;
-- verify the PR exact head and changed files;
-- require the applicable tests and authoritative CI;
-- merge only the reviewed expected head;
-- record the resulting exact `main` SHA separately from the reviewed PR head;
-- allow the configured Git integration to deploy that resulting `main` SHA automatically;
-- do not create empty commits merely to trigger deployment;
-- do not create an API, Wrangler, Dashboard, Preview, or staging deployment as a substitute for the Git-connected automatic deployment.
+Unless the owner explicitly authorizes the exact exception, do not use:
 
-Direct upload, API-created deployment, Preview, or staging is permitted only when a **new explicit owner decision** suspends the Git-connected automatic-deployment rule for the exact named operation and explains why. Opening or editing an issue does not create that authority by itself.
+- `wrangler pages deploy` or direct upload;
+- Dashboard retry or manual upload;
+- ad hoc API-created deployment;
+- empty commits used only as triggers;
+- unrelated Preview or staging substitution;
+- promotion from an unreviewed environment;
+- cancellation and replacement of an authoritative deployment with another path.
 
-## 6. Risk levels
+Lane A's approved GitHub Actions workflow is not an ad hoc manual deployment. It is the controlled exact-head demo lane.
 
-### D0 — documentation only
+## 8. Risk levels
 
-- no runtime deployment work required;
-- a documentation merge may still trigger the platform's configured automatic build, but operators do not create or retry it manually;
-- validate scope, links, and formatting.
+### D0 — documentation
 
-### D1 — static UI, copy, and local assets
+Validate links, scope, and rendering. Deployment is normally unnecessary.
 
-- focused source and browser validation;
-- exact-head verification;
-- automatic Production deployment after merge;
-- Production static and responsive smoke;
-- last known-good Production source recorded.
+### D1 — static demo or local assets
 
-### D2 — frontend runtime or read-only API consumer
+- exact-head review;
+- desktop/mobile browser checks;
+- asset and console checks;
+- Lane A or Lane B according to the source-authority decision.
+
+### D2 — frontend runtime or read-only API
 
 - deterministic tests;
-- browser and network validation;
-- API method and schema checks where applicable;
-- automatic Production deployment after merge;
-- Production smoke;
-- last known-good Production source recorded.
+- network and schema checks;
+- critical journey acceptance;
+- known-good source recorded.
 
-### D3 — backend, secrets, cache, authentication, or persistence
+### D3 — backend, secrets, auth, or persistence
 
-- full deterministic and runtime tests;
-- secret and authorization boundary verification;
-- Production configuration prepared before the merge that should activate it whenever practicable;
-- exact configuration restoration steps and reviewed source fix/revert path prepared;
-- security and leakage checks;
-- controlled failure-path verification where safe.
+- runtime and failure tests;
+- secret and authorization review;
+- data-integrity checks;
+- configuration and recovery evidence;
+- primary journey acceptance.
 
-### D4 — migration, billing, destructive data, or irreversible external action
+### D4 — migration, billing, destructive data, or irreversible action
 
 - separate owner authorization;
 - recovery rehearsal;
-- Preview or staging only when a new explicit owner decision or an already approved Business-specific contract requires it;
+- Preview or staging only when the approved Business contract requires it;
 - destructive-operation and data-integrity review.
 
-Risk level determines evidence. It does not authorize Preview, staging, or manual deployment for a Git-connected project.
+## 9. Lane A evidence
 
-## 7. Recovery evidence
+Record:
 
-Before an approved merge that can change Production, record the current known-good state:
+- reviewed PR and exact head;
+- owner approval authority;
+- workflow file and run ID;
+- workflow conclusion;
+- dedicated project name;
+- deployment ID and URL;
+- exact deployed source or public-byte hash;
+- desktop and mobile evidence;
+- console, network, and overflow results;
+- unrelated project mutation audit;
+- PR Draft/unmerged state;
+- redeploy source if rollback is required.
 
-- current Production deployment or version ID;
-- exact deployed source SHA when available;
-- active hostname;
-- Access or authentication behavior;
-- environment-variable, secret, and binding names;
-- database or migration state when applicable;
-- root and critical-route health.
+Useful disposition:
 
-For source failures, the normal recovery is an expected-head-reviewed **fix or revert PR merged to `main`**, followed by Git-connected automatic deployment.
+```text
+APPROVED_EXACT_HEAD_DEMO_DEPLOYED
+PUBLIC_BYTES_VERIFIED
+PRODUCTION_VISUAL_VERIFIED
+PR_OPEN_DRAFT_UNMERGED
+```
 
-Configuration restoration may be performed through the relevant control plane when configuration itself caused the failure, but it must not create, retry, promote, or replace a source deployment.
+## 10. Lane B evidence
 
-## 8. Automatic Production acceptance
+Record:
 
-After the Git-connected automatic deployment completes, verify the relevant subset of:
-
-- deployment source SHA and status;
-- TLS and hostname validity;
-- intended Access or authentication boundary;
-- root and critical-route HTTP behavior;
-- required static assets;
-- API methods, headers, and schemas;
-- desktop and mobile critical journeys;
-- console, page, CSP, and network failures;
-- secret, token, identity, and infrastructure-detail leakage;
-- persistence, cache, stale fallback, or destructive behavior.
-
-Do not call a merge "deployed" until the automatic Production deployment is confirmed.
-
-## 9. Failure handling
-
-When the automatic deployment is queued, stuck, or failed before Production changes:
-
-- do not create another deployment;
-- do not use Wrangler, API deployment creation, Dashboard retry, Preview, staging, or an empty commit;
-- do not cancel and replace the Git-triggered deployment;
-- report the exact Cloudflare deployment state;
-- leave the last known-good Production serving;
-- resume verification only after the automatic deployment succeeds.
-
-When a newly deployed source causes a critical Production failure:
-
-- prepare and merge an expected-head-reviewed fix or revert PR;
-- allow the Git-connected integration to deploy it automatically;
-- restore configuration separately when the failed change introduced configuration mutations;
-- verify the known-good Production state is restored.
-
-Critical failures include:
-
-- root or critical route unavailable;
-- TLS or hostname invalid;
-- Access or authentication bypass;
-- repeated required API 5xx;
-- invalid response schema or materially incorrect facts;
-- credential, token, private identity, or secret leakage;
-- broken static shell or critical runtime;
-- unusable primary desktop or mobile journey;
-- data corruption or uncontrolled destructive behavior.
-
-## 10. Preview and staging are disabled by default
-
-Preview or staging is not an operator option. It may be introduced only by:
-
-1. a new explicit owner decision authorizing the exact named exception; or
-2. an already approved Business-specific contract that explicitly requires it.
-
-Examples that may justify an owner decision include:
-
-- destructive migration rehearsal;
-- payment or billing verification;
-- high-risk authentication or authorization changes;
-- regulated or compliance-sensitive review;
-- an external stakeholder who must not access Production.
-
-An operator may not create Preview authority merely by documenting a purpose, opening an issue, or encountering a stuck automatic deployment.
-
-Without explicit authority, do not create Preview secrets, KV bindings, Access applications, branches, builds, deployments, URLs, or evidence packages.
-
-A Preview-only platform defect must not block the normal Git-connected `main` → Production path.
-
-## 11. API, CLI, and owner interaction
-
-API, CLI, and connectors are preferred for **read-only inspection and authorized configuration management**, not for creating an extra deployment on a Git-connected Pages project.
-
-Operators may use them to:
-
-- inspect project configuration and deployment state;
-- manage explicitly authorized secrets or bindings;
-- verify Access and runtime facts;
-- collect sanitized evidence.
-
-Operators must not use them to create, retry, promote, or directly upload a deployment. Only a new explicit owner decision may authorize the exact exception.
-
-Before asking the owner to click a control:
-
-1. verify the action is actually required;
-2. inspect the current UI or authoritative API contract;
-3. use exact current names;
-4. group owner-only actions;
-5. never request passwords, OTPs, cookies, private keys, or tokens in chat.
-
-Never ask the owner to choose an alternate deployment mechanism when the Git-triggered automatic deployment is queued, stuck, or failed.
-
-## 12. Evidence
-
-Every Production report should record:
-
-- repository and Business;
 - reviewed PR head;
-- resulting exact `main` SHA;
+- resulting canonical branch SHA;
 - Git-connected project and Production branch;
 - automatic deployment ID and status;
 - Production URL;
-- previous known-good Production source and configuration;
+- previous known-good source and configuration;
 - tests and CI;
-- Production smoke and acceptance results;
-- secret and binding names without values;
-- fix/revert PR required: yes or no;
+- primary-journey Production acceptance;
+- fix/revert requirement;
 - final disposition.
 
-Useful dispositions include:
+Useful disposition:
 
 ```text
-AUTOMATIC_PRODUCTION_DEPLOYMENT_VERIFIED
-AUTOMATIC_PRODUCTION_DEPLOYMENT_PENDING
-BLOCKED_CLOUDFLARE_PRODUCTION_BUILD_QUEUE
-PRODUCTION_FIX_OR_REVERT_MERGED_AND_VERIFIED
-PREVIEW_DISABLED_NOT_USED
+CANONICAL_PRODUCTION_DEPLOYMENT_VERIFIED
 ```
 
-## 13. Portfolio Console rule
+## 11. Acceptance
 
-Portfolio Console uses project `ai-revenue-portfolio-console` with Production branch `main`.
+Verify the relevant subset of:
 
-Its Preview TLS defect is tracked in Issue #324 as historical platform evidence and grants no Preview authority.
+- source SHA or byte identity;
+- TLS and hostname;
+- root and critical routes;
+- intended authentication boundary;
+- required assets;
+- API methods, headers, and schemas;
+- desktop and mobile product journeys;
+- console, page, CSP, and network failures;
+- secret and private-data leakage;
+- persistence, cache, and fallback behavior;
+- product identity and benchmark-critical visual elements.
 
-Portfolio Console operation must:
+Root HTTP 200 alone is not acceptance.
 
-- merge reviewed source to `main` and allow the Git integration to deploy automatically;
-- never use Wrangler direct upload, API deployment creation, Dashboard retry, Preview, or staging without a new explicit owner decision;
-- preserve Cloudflare Access;
-- manage GitHub App secrets and KV bindings as configuration only;
-- verify live API, cache, stale fallback, desktop, mobile, and leakage boundaries after the automatic deployment succeeds;
-- use a reviewed fix or revert PR for source recovery.
+## 12. Recovery
 
-## 14. Relationship to phase gates
+### Lane A
 
-UI, UX, and backend gates define what work is authorized. This policy defines how an authorized merge reaches Production through the existing Git integration and how failures are recovered.
+A broken demo is recovered by deploying a previously reviewed known-good exact head or an independently reviewed repair head through the approved workflow.
 
-A phase document must not imply that Preview, staging, or manual deployment is available unless it links to a new explicit owner decision or an already approved Business-specific exception.
+Do not merge merely to recover a demo.
+
+### Lane B
+
+A source failure is recovered through an expected-head-reviewed fix or revert PR merged to the Production branch, followed by automatic Git-connected deployment.
+
+Configuration restoration may occur separately when configuration itself caused the failure.
+
+## 13. Preview and staging
+
+Preview and staging are not portfolio defaults.
+
+Use them only when explicitly required for:
+
+- destructive migration rehearsal;
+- payment or billing verification;
+- high-risk auth changes;
+- regulated review;
+- an external reviewer who must not access the selected demo or Production target.
+
+A platform defect in Preview must not block an authorized Lane A dedicated demo or Lane B Production path.
+
+## 14. API, CLI, and owner interaction
+
+Connectors, API, and CLI are preferred for inspection, evidence collection, and explicitly authorized configuration.
+
+Do not ask the owner to perform routine checks that authenticated tools can perform.
+
+Before requesting an owner-only action:
+
+1. verify it is genuinely required;
+2. inspect the authoritative contract;
+3. use exact names;
+4. group the actions;
+5. never request passwords, OTPs, cookies, private keys, or tokens in chat.
+
+## 15. Relationship to product stages
+
+The product-stage policy determines what is being built. This policy determines how the reviewed source is exposed.
+
+```text
+competitive or investor demo → normally Lane A
+MVP candidate review → Lane A or Lane B
+accepted operating product → normally Lane B
+```
+
+The owner may choose the lane based on the Business evidence goal.

@@ -1,377 +1,343 @@
-# New Business UI-First Playbook
+# Competitive Product Demo and MVP Playbook
 
 - Status: portfolio operating policy
-- Owner: Web CTO
-- Permanent tracking issue: #154
-- Phase policy: `UI_UX_BACKEND_PHASE_GATES.md`
+- Owner: Web CTO under owner authority
+- File name retained for link compatibility
+- Canonical intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+- Stage policy: `UI_UX_BACKEND_PHASE_GATES.md`
+- Visual policy: `COMPETITIVE_REFERENCE_AND_VISUAL_QUALITY_POLICY.md`
+- Backend policy: `BACKEND_MVP_OPERATING_POLICY.md`
 - Deployment policy: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
-- Portfolio intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
-- Candidate backlog: `../portfolio/BUSINESS_CANDIDATE_BACKLOG.md`
-- Current mode: `UI_ONLY`
-- Applies to: every newly assigned or revived AI Revenue Lab Business
 
 ## 1. Purpose
 
-AI Revenue Lab tests whether abundant AI production can create economically useful products through volume, speed, concurrency, real-time reaction, personalization, and measurable business evidence.
+This playbook turns new and existing Business ideas into commercially credible product evidence.
 
-New Businesses begin with visual UI because a clear product identity is the fastest way to test whether an idea is distinct, understandable, and worth expanding. UI-first is a scope-control method, not an instruction to maximize prototypes or delay authorized deployment.
+The target is not a safe visual reference. The target is the strongest reversible demo, MVP, or pilot that can prove the next business question.
 
-The default sequence is:
+A successful result should make a customer or investor think:
 
-```text
-product framing
-→ UI visual design
-→ UI approval
-→ optional separately authorized publication
-→ UX design
-→ UX approval
-→ backend decision
-→ backend implementation
-→ Production evidence
-```
+- the product solves a real problem;
+- the team understands the category;
+- the design is professionally competitive;
+- the core experience can work;
+- the product is worth trying, funding, or buying.
 
-Each phase uses a separate authority. Completing one child issue does not close Issue #154.
+## 2. Select the evidence goal first
 
-## 2. Product framing before UI
-
-Before implementation, establish:
-
-- proposed or canonical Business number;
-- stable slug and Korean/English name;
-- one-sentence product promise;
-- target user and primary use moment;
-- primary result or artifact;
-- boundary and overlap with existing Businesses;
-- explicit UI-only non-goals.
-
-Do not create a production workspace solely because an idea appeared in conversation. Preserve unresolved ideas in the candidate backlog until the product and numbering decision is explicit.
-
-## 3. Required design direction
-
-### 3.1 Research real products
-
-Before designing:
-
-- inspect 3–5 direct or indirect comparable products;
-- inspect 2–4 strong editorial, award, or interaction references;
-- analyze image treatment, typography, composition, density, motion, and mobile adaptation separately;
-- combine patterns from multiple references rather than cloning one product;
-- record adoption decisions and rejection reasons.
-
-Third-party screens, brand assets, copy, layouts, or illustrations must not be copied without permission.
-
-### 3.2 Use image-led composition where relevant
-
-When visual storytelling is central:
-
-- acquire suitable images before implementation;
-- store approved assets inside the repository;
-- prohibit runtime hotlinking;
-- record source, owner or creator when available, license or usage basis, acquisition date, and intended use in `IMAGE_SOURCES.md`;
-- distinguish reference-only assets from Production-approved assets.
-
-### 3.3 Define one signature motion
-
-Each Business should have one product-specific motion that communicates its concept.
-
-Prefer:
-
-- CSS transforms, opacity, masks, clipping, and restrained state-driven JavaScript;
-- motion that supports hierarchy or transformation;
-- mobile-safe performance;
-- keyboard-compatible controls;
-- `prefers-reduced-motion` support.
-
-Provide video or equivalent evidence when screenshots cannot prove the behavior.
-
-### 3.4 Exclude generic AI visual language
-
-Do not default to:
-
-- purple-blue gradient heroes;
-- decorative robots, brains, sparkles, or meaningless AI icons;
-- identical rounded glass cards across every product;
-- decorative dashboards with fake metrics;
-- empty claims such as “revolutionize with AI”;
-- developer-fixture copy;
-- unrelated stock imagery.
-
-Use product-specific editorial, document, map, story, media, timeline, spatial, or operational metaphors instead.
-
-### 3.5 Korean-first language
-
-Unless a Business-specific decision states otherwise:
-
-- Korean is the original and default product language;
-- English is secondary when implemented;
-- missing translations fall back to Korean;
-- synthetic copy must read like a credible product state;
-- developer terminology stays out of ordinary user-facing screens.
-
-## 4. Workspace and source boundary
-
-Default UI reference workspace:
+Before implementation, choose one primary evidence goal:
 
 ```text
-reference/business-XX-<stable-slug>-v1/
-├─ README.md
-├─ REFERENCE_NOTES.md
-├─ IMAGE_SOURCES.md
-├─ MOTION_SPEC.md
-├─ index.html
-├─ styles.css
-├─ app.js
-└─ assets/images/
+VISUAL_DESIRABILITY
+INVESTOR_STORY
+USER_JOURNEY
+TECHNICAL_FEASIBILITY
+CUSTOMER_PILOT
+REVENUE_TEST
 ```
 
-`app.js` may contain only the state switching needed to inspect composition and motion. It must not be presented as accepted UX behavior.
-
-After UI and UX approval, product implementation normally belongs under:
+Then choose the smallest suitable product stage:
 
 ```text
-apps/<stable-slug>/
+COMPETITIVE_DEMO
+INVESTOR_DEMO
+MVP_VERTICAL_SLICE
+SERVICE_LED_PILOT
+RUNTIME_PILOT
 ```
 
-A reference workspace is not proof of canonical numbering, UX approval, backend authorization, production readiness, or live-model operation.
+Do not default to a static UI when the product's value depends on live behavior. Do not build a full backend when a strong simulated journey can answer the question faster.
 
-## 5. Phase 1 visual-state contract
+## 3. Product framing
 
-A first UI reference normally contains 4–7 representative states:
+Record:
 
-1. identity-rich landing or home;
-2. primary feed, workspace, publication, map, story, or dashboard;
-3. representative item, result, or detail view;
-4. personalization, evidence, transformation, or comparison view;
-5. archive or secondary surface only when visually central;
-6. mobile composition;
-7. signature-motion state.
-
-The purpose is to prove the visual system, not the full journey.
-
-Minimal controls are allowed only for review:
-
-- previous/next state;
-- view or tab switching;
-- panel open/close;
-- hover, focus, scroll, reveal, and motion demonstration.
-
-Out of scope inside the UI implementation issue:
-
-- complete onboarding and end-to-end journeys;
-- final navigation semantics and information architecture;
-- full loading, empty, validation, error, recovery, and permission matrices;
-- real forms, durable input, personalization logic, or recommendation logic;
-- authentication, API, database, provider, crawling, payment, or billing;
-- backend or runtime deployment.
-
-A separately authorized publication of an already accepted static UI is allowed under Section 9.
-
-## 6. Required reference dossier
-
-Before implementation, record:
-
+- Business number, name, and stable slug;
+- target customer;
+- painful use moment;
 - product promise;
-- target user and primary use moment;
-- direct and indirect reference products;
-- editorial or award references;
-- patterns to adopt and reject;
-- chosen visual metaphor;
-- typography and density direction;
-- image plan and source constraints;
-- signature motion;
-- desktop and mobile hierarchy;
-- overlap and boundary with existing Businesses;
-- representative UI states;
-- explicit UX and backend non-goals.
+- primary impressive result;
+- existing alternatives;
+- differentiation thesis;
+- selected evidence goal and stage;
+- bounded non-goals.
 
-## 7. Model and role allocation
+The product promise should describe the user's changed outcome, not the implementation technology.
 
-### Web CTO
+## 4. Competitive research
 
-Owns:
+### 4.1 Required reference set
 
-- product-number and boundary verification;
-- duplicate and overlap review;
-- reference research and visual direction;
-- task scope and repository boundary;
-- image-source and license review;
-- exact-head evidence review;
-- `UI_NOT_READY`, `UI_CONDITIONALLY_READY`, or `UI_APPROVED` judgment;
-- creation of a UX issue only after UI approval.
+Normally inspect:
 
-Worker reports are not proof without repository and evidence verification.
+- three to five direct or adjacent products;
+- two to four category-leading visual, editorial, interaction, game, media, or industrial references;
+- one best-in-class mobile reference when mobile matters.
 
-### Web implementation model
+### 4.2 Screen-level analysis
 
-Implements the fixed UI contract: HTML, CSS, minimal JavaScript, synthetic visual fixtures, responsive composition, and focused checks.
+For each useful reference, analyze actual screens or precise screen evidence:
 
-It may not silently redefine the product, design the final UX journey, change another Business, or begin backend work.
+- entry and hero composition;
+- image and video treatment;
+- information hierarchy;
+- type scale and density;
+- navigation and progressive disclosure;
+- signature interaction;
+- trust and social-proof treatment;
+- data and content realism;
+- mobile adaptation;
+- what makes the product feel paid, mature, or investable.
 
-### Local model and local provider
+### 4.3 Reconstruct and improve
 
-Use selectively for:
+Pattern-level reconstruction is encouraged for rapid learning and prototyping.
 
-- repetitive asset preparation and path normalization;
-- synthetic fixtures without private user data;
-- local browser rendering and responsive checks;
-- overflow, motion, reduced-motion, console, network, and asset-path validation.
+Use it to understand:
 
-Do not use Local to expand a UI issue into UX, persistence, or backend architecture.
+- layout proportions;
+- interaction timing;
+- content rhythm;
+- component behavior;
+- conversion structure;
+- product storytelling.
 
-Routine repository, GitHub, and Cloudflare facts should be obtained through authenticated tools instead of asking the owner to copy them manually.
+The final product must combine and improve patterns into an original identity. Do not publish copied brand marks, proprietary illustrations, or verbatim copy without permission.
 
-## 8. UI risk levels and evidence
+## 5. Reference dossier
 
-### U0 — copy-only
+Each substantial demo or MVP requires:
 
-- focused source inspection;
-- no unrelated changes;
-- browser check when wrapping or layout may change.
-
-### U1 — tokens and imagery
-
-- focused capture of affected states;
-- accessibility contrast review when relevant;
-- updated image-source documentation.
-
-### U2 — layout, responsive composition, and motion
-
-- desktop and mobile captures;
-- motion evidence when screenshots are insufficient;
-- keyboard and reduced-motion checks;
-- local browser validation when remote evidence is incomplete.
-
-U3 runtime work is prohibited inside a Phase 1 UI issue and belongs to a separately authorized later phase.
-
-Every UI child issue requires the applicable evidence:
-
-- exact branch and head;
-- changed paths and scope confirmation;
-- desktop and approximately 390px mobile evidence;
-- signature-motion evidence when relevant;
-- every required visual state;
-- `IMAGE_SOURCES.md` with no undocumented hotlinks;
-- no console errors or failed local assets in reviewed states;
-- keyboard-operable review controls;
-- reduced-motion behavior;
-- truthful description of synthetic behavior;
-- Web CTO visual verdict;
-- explicit user approval before `UI_APPROVED`.
-
-A successful build is not proof of visual quality. A clickable reference is not UX approval. Deployment is a separate authority.
-
-## 9. Publication after UI approval
-
-`UI_APPROVED` does not automatically authorize merge or deployment.
-
-When the user separately authorizes publication, merge the accepted expected head to the configured Production branch and allow the existing Git integration to deploy automatically.
-
-Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. An operator may not create an exception merely by recording a reason in an issue.
-
-Before the authorized merge:
-
-- verify the accepted exact head and latest `main`;
-- verify the dedicated project, root, branch, and hostname;
-- record the last known-good Production source and configuration as recovery evidence;
-- identify required desktop, mobile, asset, console, and TLS checks.
-
-After the automatic Production deployment completes:
-
-- verify the actual deployed SHA or bytes;
-- run immediate Production smoke and visual acceptance;
-- retain the deployment or merge a reviewed fix/revert PR on a source failure;
-- restore configuration separately only when configuration itself caused the failure;
-- record deployment evidence separately from UI, UX, backend, and business verdicts.
-
-Do not ask the owner to choose Wrangler, API deployment, Dashboard retry, Preview, or staging as an alternate mechanism when the Git-triggered deployment is queued or failed.
-
-Publication must not start UX, backend, authentication, persistence, live AI, analytics, billing, or unrelated source work.
-
-See `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
-
-## 10. Reusable UI-only child issue template
-
-```markdown
-## Purpose
-Build the first polished responsive visual UI reference for Business XX — <Product>.
-
-## Parent authority
-- Issue #154
-- `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
-- `docs/operations/NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
-- `docs/portfolio/BUSINESS_CANDIDATE_BACKLOG.md`
-
-## Current phase
-Phase 1 — UI only
-
-## Product promise
-> <one sentence>
-
-## Workspace
-`reference/business-XX-<stable-slug>-v1/**`
-
-## Required research
-- 3–5 comparable products
-- 2–4 editorial or award references
-- adoption and rejection analysis
-
-## Required visual states
-- landing/home
-- primary product surface
-- representative detail/result
-- personalization/evidence/transformation
-- mobile composition
-- signature motion
-
-## Visual requirements
-- image-led composition where relevant
-- product-specific signature motion
-- Korean-first copy
-- no generic AI visual language
-- coherent desktop and mobile system
-
-## Permitted interaction
-Minimal state switching and motion preview only.
-
-## Explicit non-goals
-- complete UX journey
-- final navigation semantics
-- complete loading/error/state matrix
-- real forms or persistence
-- authentication
-- API or database
-- live AI or crawling
-- billing or runtime deployment
-
-A later separately authorized publication follows the Git-connected automatic deployment policy in `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. For Git-connected Pages, merging the approved PR to the configured Production branch is the deployment action. Preview or staging requires a new explicit owner decision or an already approved Business-specific exception.
-
-## Acceptance evidence
-- exact head and scope
-- desktop/mobile captures
-- motion evidence
-- visual-state evidence
-- image-source manifest
-- console and asset-path check
-- focused checks
-- CTO verdict and user visual approval
+```text
+REFERENCE_BOARD.md
+REFERENCE_NOTES.md
+IMAGE_SOURCES.md
+MOTION_SPEC.md when applicable
 ```
 
-## 11. Permanent umbrella issue
+`REFERENCE_BOARD.md` must map reference screens to product decisions. A list of company names is insufficient.
 
-Issue #154 remains open and is used to:
+The dossier should show:
 
-- link the playbook, phase policy, operating intent, deployment policy, and candidate backlog;
-- record the ordered UI queue;
-- track UI, UX, backend, deployment, and business evidence separately;
-- link child issues;
-- record accepted visual and UX heads;
-- preserve deferred or rejected directions and reasons;
-- improve the process when repeated failures are discovered.
+- the benchmark screen or exact URL and capture date;
+- the pattern being studied;
+- where it appears in the new product;
+- how the result differs or improves;
+- what was rejected and why.
 
-Only an explicit portfolio-governance replacement decision may close or supersede Issue #154.
+## 6. Visual direction
 
-## 12. Execution priority
+### 6.1 Image and media use
 
-The UI factory should increase the rate at which distinct product ideas become reviewable and, after authorization, operational.
+Use the strongest suitable source in this order:
 
-Do not let repetitive reporting, unapproved Preview infrastructure, or manual status copying consume more effort than the product work they are meant to support.
+1. owner-provided or product-owned media;
+2. licensed commercial or open media;
+3. high-quality generated photography, illustration, 3D, or motion;
+4. commissioned repository-local artwork;
+5. diagrams and simple SVGs as supporting information graphics.
+
+Simple diagrams must not become the default substitute for meaningful visual storytelling.
+
+For image-relevant Businesses, at least two major states should normally be genuinely image-led: imagery controls the composition rather than appearing as a small decoration.
+
+### 6.2 Product-specific systems
+
+Choose a visual system appropriate to the category:
+
+- editorial and image-rich for media, travel, family, memory, fan, fashion, creator, and commerce products;
+- spatial and geographic for location products;
+- precise operational systems for verification, connectors, consoles, and workflow engines;
+- human and evidence-rich for education, health, public service, and professional services;
+- cinematic or immersive for entertainment and story products.
+
+Do not force every Business into the same rounded-card dashboard.
+
+### 6.3 Typography and content
+
+Use Korean-first product writing unless the Business requires another language.
+
+Customer-facing content must be credible, concrete, and category-specific. Replace fixture labels and generic AI claims with believable product states, examples, names, dates, results, and decisions.
+
+### 6.4 Motion
+
+Use motion to communicate product meaning, not merely decoration.
+
+Possible roles:
+
+- transformation;
+- before/after comparison;
+- generation or assembly;
+- spatial navigation;
+- evidence accumulation;
+- approval and versioning;
+- storytelling and reveal.
+
+Motion should be smooth, reviewable, reduced-motion compatible, and visually competitive.
+
+## 7. Demo behavior
+
+A competitive demo may simulate substantial functionality:
+
+- search and filtering;
+- uploads and processing;
+- AI generation and revision;
+- recommendation and personalization;
+- approval and collaboration;
+- history and version comparison;
+- maps, timelines, feeds, and dashboards;
+- checkout, booking, or application flows;
+- notifications and status changes.
+
+Simulation should be deterministic enough to review and rich enough to explain the complete product possibility.
+
+Repository evidence should identify simulated behavior. The interface should not be covered in repetitive warnings.
+
+## 8. MVP behavior
+
+When the evidence goal requires real behavior, build a vertical slice following `BACKEND_MVP_OPERATING_POLICY.md`.
+
+Prefer one excellent complete journey over many incomplete features.
+
+A vertical slice should include the necessary combination of:
+
+- frontend;
+- API or backend function;
+- persistence;
+- AI provider or deterministic fallback;
+- authentication when essential;
+- observability;
+- realistic seed data;
+- recovery and failure behavior.
+
+Service-led manual operation may replace automation when it provides faster customer evidence.
+
+## 9. Review standard
+
+Technical review and visual review are separate.
+
+### Technical floor
+
+- intended states and journeys work;
+- assets load;
+- console and page errors are absent;
+- responsive behavior is usable;
+- accessibility blockers are absent;
+- secrets and private data are not exposed;
+- tests and source scope are truthful.
+
+### Market-quality review
+
+- the product can sit beside its references without embarrassment;
+- the main screen has a strong focal point;
+- images and content feel intentional and premium;
+- type hierarchy and spacing are mature;
+- the interface does not look generic, childish, or fixture-driven;
+- mobile is designed, not merely compressed;
+- the signature interaction is memorable;
+- the business value can be presented in under three minutes;
+- the result has a credible reason to exist beyond the benchmark products.
+
+Status:
+
+```text
+TECHNICAL_UI_PASS
+VISUAL_QUALITY_PASS
+MARKET_REFERENCE_PASS
+INVESTOR_DEMO_PASS
+```
+
+Do not declare `VISUAL_QUALITY_PASS` solely because there is no overflow or because local SVGs exist.
+
+## 10. Independent review
+
+The implementation worker may not approve its own visual result.
+
+Independent review should compare:
+
+- exact head;
+- reference board;
+- desktop and mobile evidence;
+- motion evidence;
+- current deployed or previous baseline;
+- benchmark screenshots;
+- product promise and commercial goal.
+
+The reviewer must identify both blockers and missed opportunities.
+
+## 11. Existing Business upgrades
+
+For each existing Business:
+
+1. inspect the current deployed or authoritative visual head;
+2. score it using `PORTFOLIO_PRODUCT_QUALITY_AUDIT.md`;
+3. classify A, B, C, or D;
+4. preserve valid backend and domain logic;
+5. open `Visual Upgrade v2` for B or `Product Upgrade v2` for C;
+6. create new references and before/after evidence;
+7. deploy only after exact-head approval.
+
+The first upgrade wave should prioritize Businesses with:
+
+- real backend or strong functionality but weak presentation;
+- near-term customer or investor relevance;
+- strong image or storytelling potential;
+- existing deployment and easy before/after comparison.
+
+## 12. Risk treatment
+
+The owner is the final risk decision-maker.
+
+Operators should report material risks once, with concrete options. They must not repeatedly teach generic law, policy, or security concepts, or silently weaken the product.
+
+Use:
+
+```text
+risk
+→ evidence
+→ practical mitigation
+→ residual risk
+→ owner decision when necessary
+```
+
+Examples of mitigation include licensing, generated substitutes, redaction, access control, synthetic data, reversible demo mode, feature flags, and explicit runtime boundaries.
+
+## 13. Default workspace
+
+A demo or visual-upgrade workspace may use:
+
+```text
+reference/business-XX-<slug>-v2/
+```
+
+An MVP implementation normally belongs under:
+
+```text
+apps/<slug>/
+```
+
+Do not force a reference workspace when the evidence goal requires an application vertical slice.
+
+## 14. Completion report
+
+Every completion report should include:
+
+- evidence goal and stage;
+- benchmark products;
+- exact branch and head;
+- changed paths;
+- product story and main journey;
+- live versus simulated behavior;
+- visual and media sources;
+- desktop, mobile, and motion evidence;
+- technical checks;
+- competitive comparison verdict;
+- owner decision required, if any;
+- next commercial evidence step.
+
+## 15. Default instruction
+
+```text
+Do not make the safest possible prototype.
+Make the strongest reversible product evidence that truthfully demonstrates the Business.
+```

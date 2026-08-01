@@ -111,7 +111,7 @@ Production branch:
 main
 ```
 
-Preview and staging are disabled for this project. They may be introduced only by a new explicit owner decision. Issue #324 records a historical Pages Preview TLS incident and does not authorize new Preview work.
+Preview and staging are disabled by default for this project. They may be introduced only by a new explicit owner decision. Issue #324 records a historical Pages Preview TLS incident and does not authorize new Preview work. This project's default lane is Canonical Production (`docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`); an approved exact-head demo deployment for this project requires a separate explicit owner decision.
 
 ### Prohibited for this project
 
