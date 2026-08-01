@@ -1,34 +1,269 @@
 {
   "status": "pass",
   "captures": [
-    {"state":"cover","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"meeting","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"rules","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"spending","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"election","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"complaint","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"mobile","viewport":[1440,1100],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"cover","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"meeting","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"rules","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"spending","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"election","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"complaint","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"mobile","viewport":[768,1024],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"cover","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"meeting","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"rules","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"spending","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"election","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"complaint","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true},
-    {"state":"mobile","viewport":[390,844],"overflow":0,"visible":true,"selected":true,"broken":0,"labels_readable":true}
+    {
+      "state": "cover",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "meeting",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "rules",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "spending",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "election",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "complaint",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "mobile",
+      "viewport": [
+        1440,
+        1100
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "cover",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "meeting",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "rules",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "spending",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "election",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "complaint",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "mobile",
+      "viewport": [
+        768,
+        1024
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "cover",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "meeting",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "rules",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "spending",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "election",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "complaint",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    },
+    {
+      "state": "mobile",
+      "viewport": [
+        390,
+        844
+      ],
+      "overflow": 0,
+      "visible": true,
+      "selected": true,
+      "broken": 0,
+      "labels_readable": true
+    }
   ],
   "console_errors": [],
   "page_errors": [],
   "runtime_requests": [],
   "errors": [],
   "motion": {
-    "computed": {"delay":"0.61s","duration":"0.15s","name":"publicNoticeComplete"},
+    "computed": {
+      "delay": "0.61s",
+      "duration": "0.15s",
+      "name": "publicNoticeComplete"
+    },
     "computed_end_ms": 760.0,
     "focus_stable": true,
     "scroll_stable": true,
@@ -37,8 +272,35 @@
     "reduced_complete": true,
     "reduced_visible": true,
     "keyboard": true,
-    "geometry_before": [38,393.34375,1364,490,948.328125,757.34375,432.65625,105],
-    "geometry_after1": [38,393.34375,1364,490,948.328125,757.34375,432.65625,105],
-    "geometry_after2": [38,393.34375,1364,490,948.328125,757.34375,432.65625,105]
+    "geometry_before": [
+      38,
+      448.34375,
+      1364,
+      490,
+      948.328125,
+      812.34375,
+      432.65625,
+      105
+    ],
+    "geometry_after1": [
+      38,
+      448.34375,
+      1364,
+      490,
+      948.328125,
+      812.34375,
+      432.65625,
+      105
+    ],
+    "geometry_after2": [
+      38,
+      448.34375,
+      1364,
+      490,
+      948.328125,
+      812.34375,
+      432.65625,
+      105
+    ]
   }
 }
