@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>회의·결정 기록실 — Decision Archive</title>
+  <link rel="stylesheet" href="styles/main.css?v=decision-archive-20260728-1">
+</head>
+<body>
+  <a class="skip-link" href="#review-stage">본문으로 건너뛰기</a>
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">PROPOSED BUSINESS 28 · UI ONLY</p>
+      <h1>회의·결정 기록실</h1>
+      <p class="subtitle">Decision Archive · 무엇을 왜 결정했는가를 오래 남기는 결정 원장실</p>
+    </div>
+    <div class="archive-mark" aria-label="합성 시각 참고본">
+      <span>파도식탁 연구소</span>
+      <strong>기록철 07–14</strong>
+      <small>모든 자료·인물·수치·발언은 합성입니다.</small>
+    </div>
+  </header>
+
+  <nav class="state-nav" aria-label="시각 상태 검토" role="tablist">
+    <button role="tab" aria-selected="true" aria-controls="state-cover" id="tab-cover" data-state="cover" tabindex="0">01 표지</button>
+    <button role="tab" aria-selected="false" aria-controls="state-index" id="tab-index" data-state="index" tabindex="-1">02 색인</button>
+    <button role="tab" aria-selected="false" aria-controls="state-dossier" id="tab-dossier" data-state="dossier" tabindex="-1">03 기록철</button>
+    <button role="tab" aria-selected="false" aria-controls="state-rationale" id="tab-rationale" data-state="rationale" tabindex="-1">04 이유 사슬</button>
+    <button role="tab" aria-selected="false" aria-controls="state-dissent" id="tab-dissent" data-state="dissent" tabindex="-1">05 반대·불확실성</button>
+    <button role="tab" aria-selected="false" aria-controls="state-followup" id="tab-followup" data-state="followup" tabindex="-1">06 후속 증거</button>
+    <button role="tab" aria-selected="false" aria-controls="state-mobile" id="tab-mobile" data-state="mobile" tabindex="-1">07 모바일</button>
+  </nav>
+
+  <main id="review-stage" class="review-stage" data-current-state="cover">
+    <section class="state is-active cover-state" id="state-cover" data-state-key="cover" role="tabpanel" aria-labelledby="tab-cover">
+      <div class="folio-cover">
+        <img src="assets/images/archive-folio-cover.svg" alt="결정 기록철을 형상화한 합성 표지">
+        <div class="cover-copy">
+          <p class="folio-code">DECISION DOSSIER · 2026–07–14</p>
+          <h2>9월 저온배송 시범사업을<br>예정대로 시작할 것인가,<br>6주 연기할 것인가</h2>
+          <div class="cover-decision">
+            <span>사람이 검토한 결정</span>
+            <strong>제한 지역에서 3주 파일럿 후 전국 확대 여부 재검토</strong>
+          </div>
+          <p class="synthetic-note">파도식탁 연구소와 윤서진은 fictional fixture입니다. 실제 조직·회의·서명·수치가 아닙니다.</p>
+        </div>
+      </div>
+      <aside class="cover-spine">
+        <p>보존 항목</p>
+        <ol><li>선택지</li><li>채택·기각 이유</li><li>반대 의견</li><li>미확인 가정</li><li>담당자·기한</li><li>재검토 조건</li></ol>
+      </aside>
+    </section>
+
+    <section class="state index-state" id="state-index" data-state-key="index" role="tabpanel" aria-labelledby="tab-index" hidden>
+      <div class="index-ledger">
+        <header><p>DECISION INDEX / 2026</p><h2>결정 색인</h2><span>파도식탁 연구소 · 합성 기록</span></header>
+        <div class="index-row index-head"><span>번호</span><span>결정</span><span>상태</span><span>담당</span><span>재검토</span></div>
+        <div class="index-row current"><span>D–014</span><strong>저온배송 시범사업 시작 방식</strong><span class="status human">사람 검토 완료</span><span>윤서진*</span><span>파손률 1.8% 초과</span></div>
+        <div class="index-row"><span>D–013</span><strong>상자 완충재 규격 유지</strong><span class="status amended">수정됨</span><span>운영 셀*</span><span>8월 22일</span></div>
+        <div class="index-row"><span>D–012</span><strong>저녁 배송 시간대 실험</strong><span class="status missing">증거 대기</span><span>고객연구 셀*</span><span>응답 30건</span></div>
+        <div class="ledger-foot"><span>* 모든 조직·인물·결정은 합성</span><span>색인은 결과가 아니라 결정의 맥락으로 이동하는 입구입니다.</span></div>
+      </div>
+      <img class="agenda-art" src="assets/images/agenda-sheet.svg" alt="합성 회의 의제표">
+    </section>
+
+    <section class="state dossier-state" id="state-dossier" data-state-key="dossier" role="tabpanel" aria-labelledby="tab-dossier" hidden>
+      <div class="dossier-grid">
+        <article class="decision-lead">
+          <p class="section-number">D–014 · DECISION DOSSIER</p>
+          <h2>제한 지역 3주 파일럿을 먼저 시작한다</h2>
+          <p class="lead-summary">예정된 9월 일정은 유지하되, 전국 확대는 자동 승인하지 않는다. 세 지역에서 냉장 유지와 파손률을 확인한 뒤 사람의 재검토를 거친다.</p>
+          <dl><div><dt>회의일</dt><dd>2026.07.14 — synthetic</dd></div><div><dt>결정권자</dt><dd>운영위원회 — fictional</dd></div><div><dt>담당자</dt><dd>윤서진 — fictional</dd></div><div><dt>기한</dt><dd>2026.09.28 — synthetic</dd></div></dl>
+        </article>
+        <figure class="meeting-scene"><img src="assets/images/meeting-table-scene.svg" alt="합성 회의 테이블과 기록 쪽지"><figcaption>회의 녹취가 아니라 결정에 필요한 흔적만 편집한 합성 장면</figcaption></figure>
+        <div class="option-strip"><img src="assets/images/option-slips.svg" alt="세 개의 합성 선택지 쪽지"></div>
+        <aside class="dossier-margin"><p>재검토 조건</p><strong>파손률 1.8% 초과<br>또는 냉장 유지 실패 3건 이상</strong><span>자동 판정 아님 · 사람이 다시 검토</span></aside>
+      </div>
+    </section>
+
+    <section class="state rationale-state" id="state-rationale" data-state-key="rationale" role="tabpanel" aria-labelledby="tab-rationale" hidden>
+      <header class="rationale-header">
+        <div><p>REASON CHAIN LOCK</p><h2>이유 사슬 잠금</h2><span>채택·기각·불확실성을 함께 보존하는 모션 검토 상태</span></div>
+        <button class="replay-button" id="replay-reason" type="button">이유 사슬 다시 보기</button>
+      </header>
+      <div class="reason-chain complete" id="reason-chain" data-motion-state="complete" aria-live="polite">
+        <div class="chain-options">
+          <article class="option option-a"><span>A</span><h3>전국 동시 시작</h3><p>일정은 지키지만 실패 범위가 넓다.</p></article>
+          <article class="option option-b selected"><span>B</span><h3>제한 지역 3주 파일럿</h3><p>채택 · 일정과 검증을 함께 보존한다.</p></article>
+          <article class="option option-c"><span>C</span><h3>6주 전면 연기</h3><p>위험은 줄지만 계절 수요를 놓친다.</p></article>
+        </div>
+        <div class="reason-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="chain-reasons">
+          <div class="reason accepted"><b>채택 이유</b><span>세 지역의 실제 냉장 유지 증거를 먼저 확보</span></div>
+          <div class="reason rejected"><b>기각 이유</b><span>전국 동시 시작은 파손 대응 범위가 과도함</span></div>
+          <div class="reason rejected"><b>기각 이유</b><span>6주 전면 연기는 늦여름 수요 관찰 기회를 상실</span></div>
+        </div>
+        <div class="assumption unsealed"><b>미확인 가정 · 봉인되지 않음</b><span>야간 배송에서 냉장 유지율이 주간과 동일할 것</span></div>
+        <div class="dissent-margin"><b>반대 의견 여백</b><p>“세 지역도 많다. 한 지역에서 포장 사양부터 확인해야 한다.” — 합성 운영 반대 의견</p></div>
+        <div class="accountability"><span><b>담당</b> 윤서진*</span><span><b>기한</b> 2026.09.28*</span></div>
+        <div class="revisit-trigger"><b>재검토 조건</b><span>파손률 1.8% 초과 또는 냉장 유지 실패 3건 이상</span></div>
+        <div class="decision-seal" id="decision-seal"><img src="assets/images/decision-seal.svg" alt="사람 검토 완료를 뜻하는 합성 결정 도장"><span>HUMAN REVIEWED</span></div>
+      </div>
+      <p class="motion-status" id="motion-status">상태: complete</p>
+    </section>
+
+    <section class="state dissent-state" id="state-dissent" data-state-key="dissent" role="tabpanel" aria-labelledby="tab-dissent" hidden>
+      <div class="dissent-layout">
+        <article class="minority-page"><p>MINORITY VIEW / MARGIN 04</p><h2>합의되지 않은 것을 지우지 않는다</h2><blockquote>“전국 확대 전에는 배송 품질보다 포장 공정의 편차를 먼저 줄여야 한다.”</blockquote><span>합성 발언 · 실제 인터뷰 아님</span></article>
+        <img src="assets/images/dissent-note.svg" alt="합성 반대 의견 메모">
+        <div class="uncertainty-list"><h3>미확인 가정</h3><ul><li><span>U–01</span>야간 배송 냉장 유지율</li><li><span>U–02</span>완충재 교체 시 파손률 변화</li><li><span>U–03</span>세 지역 주문 분포의 대표성</li></ul><p>미확인 항목은 완료 도장과 별개로 계속 노출됩니다.</p></div>
+        <div class="distinction-key"><span class="accepted-key">채택</span><span class="rejected-key">기각</span><span class="uncertain-key">불확실</span><span class="dissent-key">반대</span><span class="amended-key">수정</span></div>
+      </div>
+    </section>
+
+    <section class="state followup-state" id="state-followup" data-state-key="followup" role="tabpanel" aria-labelledby="tab-followup" hidden>
+      <div class="followup-grid">
+        <header><p>FOLLOW-UP EVIDENCE / D–014</p><h2>결정 이후의 증거와 수정 이력</h2></header>
+        <img class="receipt" src="assets/images/evidence-receipt.svg" alt="합성 후속 증거 영수증">
+        <img class="stamp" src="assets/images/owner-deadline-stamp.svg" alt="합성 담당자와 기한 도장">
+        <article class="outcome-note"><span>3주차 결과 · synthetic</span><h3>파손률 1.4%</h3><p>냉장 유지 실패 2건. 재검토 조건에는 도달하지 않았으나 야간 배송 구간을 별도 관찰하기로 함.</p></article>
+        <img class="revisit" src="assets/images/revisit-calendar-slip.svg" alt="합성 재검토 일정표">
+        <div class="amendment"><span>AMENDMENT 01</span><strong>전국 확대 전, 야간 배송 1주 추가 관찰</strong><small>2026.09.29 · 사람이 검토한 합성 수정 기록</small></div>
+      </div>
+    </section>
+
+    <section class="state mobile-state" id="state-mobile" data-state-key="mobile" role="tabpanel" aria-labelledby="tab-mobile" hidden>
+      <div class="mobile-shell">
+        <header><span>D–014</span><strong>결정 브리핑</strong><small>합성 시각 참고본</small></header>
+        <section><p>결정</p><h2>제한 지역에서 3주 파일럿 후 전국 확대 여부 재검토</h2></section>
+        <section class="mobile-why"><p>왜</p><ul><li>일정은 유지</li><li>실패 범위는 제한</li><li>전국 확대는 자동 승인하지 않음</li></ul></section>
+        <section class="mobile-dissent"><p>반대·미확인</p><strong>한 지역부터 시작해야 한다는 반대 의견 유지</strong><span>야간 배송 냉장 유지율은 미확인</span></section>
+        <section class="mobile-owner"><p>담당·재검토</p><strong>윤서진* · 2026.09.28*</strong><span>파손률 1.8% 초과 또는 냉장 실패 3건 이상</span></section>
+        <footer>* 모든 조직·인물·날짜·수치는 합성</footer>
+      </div>
+      <img class="mobile-folio" src="assets/images/archive-folio-cover.svg" alt="합성 기록철 표지 축소 요소">
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Phase 1 visual reference · 실제 입력, 저장, AI 판단, 검색, 알림, 연동, 분석 기능 없음</p>
+    <p>Decision Archive는 법률·감사·인사 평가 도구가 아닙니다.</p>
+  </footer>
+  <script src="scripts/review.js?v=decision-archive-20260728-1"></script>
+</body>
+</html>

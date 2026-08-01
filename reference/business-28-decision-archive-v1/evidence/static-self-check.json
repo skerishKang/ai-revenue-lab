@@ -1,0 +1,25 @@
+{
+  "kind": "implementation-static-self-check",
+  "independent_local_validation": false,
+  "result": "PASS",
+  "checks": [
+    "exact_seven_state_keys",
+    "exact_seven_controls",
+    "local_css_js",
+    "no_external_runtime",
+    "all_assets_exist",
+    "all_assets_documented",
+    "asset_count_at_least_8",
+    "synthetic_disclosure",
+    "responsive_rules",
+    "reduced_motion",
+    "animationend_authority",
+    "replay_reset",
+    "no_fixed_timeout",
+    "visible_dissent_assumption_rejected",
+    "javascript_syntax",
+    "git_diff_check"
+  ],
+  "original_svg_assets": 10,
+  "documented_runtime_asset_references": 9
+}

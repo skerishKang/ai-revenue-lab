@@ -1,0 +1,63 @@
+{
+  "kind": "implementation-browser-self-check",
+  "independent_local_validation": false,
+  "navigation_mode": "inline-exact-bytes-admin-fallback",
+  "http_readback": {
+    "index.html": 200,
+    "styles/main.css": 200,
+    "scripts/review.js": 200,
+    "assets/images/decision-seal.svg": 200
+  },
+  "viewports": {
+    "1440x1100": {
+      "states": {
+        "cover": {"overflow": 0, "hidden": false, "clipped": 0, "active": "cover"},
+        "index": {"overflow": 0, "hidden": false, "clipped": 0, "active": "index"},
+        "dossier": {"overflow": 0, "hidden": false, "clipped": 0, "active": "dossier"},
+        "rationale": {"overflow": 0, "hidden": false, "clipped": 0, "active": "rationale"},
+        "dissent": {"overflow": 0, "hidden": false, "clipped": 0, "active": "dissent"},
+        "followup": {"overflow": 0, "hidden": false, "clipped": 0, "active": "followup"},
+        "mobile": {"overflow": 0, "hidden": false, "clipped": 0, "active": "mobile"}
+      },
+      "errors": [], "failed_requests": [], "external_requests": [], "keyboard": true,
+      "focus_outline": {"width": "3px", "style": "solid", "color": "rgb(11, 95, 255)"}
+    },
+    "768x1024": {
+      "states": {
+        "cover": {"overflow": 0, "hidden": false, "clipped": 0, "active": "cover"},
+        "index": {"overflow": 0, "hidden": false, "clipped": 0, "active": "index"},
+        "dossier": {"overflow": 0, "hidden": false, "clipped": 0, "active": "dossier"},
+        "rationale": {"overflow": 0, "hidden": false, "clipped": 0, "active": "rationale"},
+        "dissent": {"overflow": 0, "hidden": false, "clipped": 0, "active": "dissent"},
+        "followup": {"overflow": 0, "hidden": false, "clipped": 0, "active": "followup"},
+        "mobile": {"overflow": 0, "hidden": false, "clipped": 0, "active": "mobile"}
+      },
+      "errors": [], "failed_requests": [], "external_requests": [], "keyboard": true,
+      "focus_outline": {"width": "3px", "style": "solid", "color": "rgb(11, 95, 255)"}
+    },
+    "390x844": {
+      "states": {
+        "cover": {"overflow": 0, "hidden": false, "clipped": 0, "active": "cover"},
+        "index": {"overflow": 0, "hidden": false, "clipped": 0, "active": "index"},
+        "dossier": {"overflow": 0, "hidden": false, "clipped": 0, "active": "dossier"},
+        "rationale": {"overflow": 0, "hidden": false, "clipped": 0, "active": "rationale"},
+        "dissent": {"overflow": 0, "hidden": false, "clipped": 0, "active": "dissent"},
+        "followup": {"overflow": 0, "hidden": false, "clipped": 0, "active": "followup"},
+        "mobile": {"overflow": 0, "hidden": false, "clipped": 0, "active": "mobile"}
+      },
+      "errors": [], "failed_requests": [], "external_requests": [], "keyboard": true,
+      "focus_outline": {"width": "3px", "style": "solid", "color": "rgb(11, 95, 255)"}
+    }
+  },
+  "motion": {
+    "replay_1_start": "running",
+    "replay_2_start": "running",
+    "computed_seal_duration": "0.1s",
+    "computed_seal_delay": "0.65s",
+    "computed_final_end": "0.75s",
+    "final_equivalent": true,
+    "final_state": "complete",
+    "completion_authority": "decision-seal animationend: reasonSeal"
+  },
+  "reduced_motion": {"state": "complete", "seal_opacity": "1", "overflow": 0}
+}
