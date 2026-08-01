@@ -106,8 +106,38 @@ def main():
     check("optimistic approval prohibition present", lambda: (
         require_present(contract, "optimistic approval", "optimistic approval clause"),
         require_present(contract, "optimistic skill save", "optimistic skill save clause"),
+        require_present(contract, "optimistic version confirmation", "optimistic version confirmation clause"),
         require_present(contract, "server response", "server-authority clause"),
     ))
+
+    check("backend success row has no browser-memory save wording", lambda: (
+        assert_row_absent(contract, "draft save success", "브라우저 메모리"),
+        assert_not_present(contract, "초안 저장 완료(브라우저 메모리)"),
+    ))
+
+    check("skill-saved never combined with audit event delayed", lambda: (
+        assert_audit_row_not_skill_saved(contract),
+        require_present(contract, "skill-save-pending", "skill-save-pending state"),
+        require_present(contract, "skill-save-failed", "skill-save-failed state"),
+    ))
+
+    check("offline boundary present with blocked authority actions", lambda: (
+        require_present(contract, "OFFLINE · NOT SYNCED", "offline banner"),
+        require_present(contract, "로컬 변경사항은 서버에 저장되지 않았습니다.", "offline message"),
+        require_present(contract, "role handoff 완료", "offline handoff block"),
+        require_present(contract, "review approval", "offline review block"),
+        require_present(contract, "final approval", "offline approval block"),
+        require_present(contract, "skill save 완료", "offline skill-save block"),
+    ))
+
+    check("stale-version auto overwrite is blocked", lambda: (
+        require_present(contract, "자동 저장 덮어쓰기 금지", "stale overwrite block"),
+        require_present(contract, "재적용 또는 폐기 선택", "stale resolution choice"),
+        require_present(contract, "local base version", "local base version display"),
+        require_present(contract, "server current version", "server current version display"),
+    ))
+
+    check("mixed-role states have role-qualified actions", lambda: assert_mixed_role_qualified(matrix))
 
     spec = read("06-analytics-event-spec.md")
     check("PII forbidden fields present", lambda: (
@@ -138,6 +168,64 @@ def main():
 
 def assert_exists(rel):
     assert os.path.isfile(os.path.join(WORKSPACE, rel)), "missing file: " + rel
+
+
+def assert_not_present(text, needle):
+    assert needle not in text, "forbidden phrase present: " + needle
+
+
+def table_rows(text):
+    return [line for line in text.splitlines() if line.lstrip().startswith("|")]
+
+
+def assert_row_absent(text, row_marker, needle):
+    for row in table_rows(text):
+        if row_marker in row:
+            assert needle not in row, "forbidden combination in row (%s + %s): %s" % (row_marker, needle, row)
+
+
+def assert_audit_row_not_skill_saved(text):
+    for row in table_rows(text):
+        if "audit event delayed" not in row:
+            continue
+        cells = [c.strip() for c in row.split("|")]
+        ui_state = cells[2] if len(cells) > 2 else ""
+        assert ui_state != "skill-saved", (
+            "audit event delayed row must not use skill-saved as UI state: " + row
+        )
+
+
+MIXED_ROLE_STATES = [
+    "draft-result",
+    "review-requested",
+    "correction-required",
+    "revised",
+    "approval-pending",
+    "approved",
+]
+
+
+def assert_mixed_role_qualified(matrix):
+    rows = table_rows(matrix)
+    seen = set()
+    for row in rows:
+        cells = [c.strip() for c in row.split("|")]
+        if len(cells) < 5:
+            continue
+        state = cells[1]
+        if state not in MIXED_ROLE_STATES:
+            continue
+        seen.add(state)
+        allowed = cells[4]
+        for action in allowed.split(","):
+            action = action.strip()
+            if not action or action in ("—", "…", ""):
+                continue
+            assert "[operator]" in action or "[reviewer]" in action, (
+                "action without role qualifier in %s: %s" % (state, action)
+            )
+    for state in MIXED_ROLE_STATES:
+        assert state in seen, "mixed-role state row missing: " + state
 
 
 def assert_states(matrix):
