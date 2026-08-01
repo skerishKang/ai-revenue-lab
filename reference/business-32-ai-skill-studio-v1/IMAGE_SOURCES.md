@@ -1,0 +1,17 @@
+# Image Sources
+
+All assets are original repository-local SVGs created for this synthetic Phase 1 reference.
+
+| Repository path | Creator/rightsholder | Licence basis | Creation date | Intended state | Synthetic status |
+|---|---|---|---|---|---|
+| `assets/images/training-bench-cover.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | cover | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/task-brief-sheet.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | brief | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/supplier-quote-a.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | evidence | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/supplier-quote-b.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | evidence | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/supplier-quote-c.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | evidence | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/comparison-ledger.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | evidence | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/evidence-clip.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | evidence | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/exception-flag.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | guided-run / review / skill-card | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/review-correction.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | review | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/skill-card.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | skill-card | Fully synthetic; no real company, person, supplier, quotation, contract or logo |
+| `assets/images/verified-skill-seal.svg` | OpenAI implementation worker for `skerishKang/ai-revenue-lab` | Original work created for this repository; no third-party asset incorporated | 2026-07-29 | skill-card | Fully synthetic; no real company, person, supplier, quotation, contract or logo |

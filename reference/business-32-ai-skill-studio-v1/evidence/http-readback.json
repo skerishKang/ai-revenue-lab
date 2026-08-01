@@ -1,0 +1,19 @@
+{
+  "result": "HTTP_READBACK_PASS",
+  "files": {
+    "index.html": {"status": 200,"bytes": 9567},
+    "styles/main.css": {"status": 200,"bytes": 11399},
+    "scripts/review.js": {"status": 200,"bytes": 2737},
+    "assets/images/comparison-ledger.svg": {"status": 200,"bytes": 1662},
+    "assets/images/evidence-clip.svg": {"status": 200,"bytes": 1588},
+    "assets/images/exception-flag.svg": {"status": 200,"bytes": 1206},
+    "assets/images/review-correction.svg": {"status": 200,"bytes": 1622},
+    "assets/images/skill-card.svg": {"status": 200,"bytes": 1408},
+    "assets/images/supplier-quote-a.svg": {"status": 200,"bytes": 1698},
+    "assets/images/supplier-quote-b.svg": {"status": 200,"bytes": 1703},
+    "assets/images/supplier-quote-c.svg": {"status": 200,"bytes": 1697},
+    "assets/images/task-brief-sheet.svg": {"status": 200,"bytes": 1492},
+    "assets/images/training-bench-cover.svg": {"status": 200,"bytes": 1985},
+    "assets/images/verified-skill-seal.svg": {"status": 200,"bytes": 747}
+  }
+}
