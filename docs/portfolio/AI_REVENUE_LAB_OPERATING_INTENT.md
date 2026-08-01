@@ -3,6 +3,7 @@
 - Status: canonical portfolio intent
 - Owner: AI Revenue Lab portfolio governance
 - Related: `../../README.md`, Issue #154
+- Owner/operator contract: `../operations/OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`
 
 ## 1. Why this repository exists
 
@@ -51,30 +52,50 @@ The portfolio tests whether AI changes the production economics of software and 
 - **Cross-domain integration** — legal, administrative, public-sector, media, and technical knowledge become product capability.
 - **Revenue evidence** — cost, engagement, conversion, pilot demand, purchase, subscription, or attributable value is measured honestly.
 
-## 4. Owner authority and operator conduct
+## 4. Owner expertise, authority, and operator conduct
 
-The owner is the final product, business, legal-risk, policy, and technical decision-maker.
+The owner is a **multidisciplinary expert decision-maker**, not merely a non-novice stakeholder.
+
+For portfolio operations, agents must recognize the owner's formal education and practical experience across:
+
+- law;
+- public administration;
+- police studies and policing practice;
+- computer science and software development;
+- Korean public-sector, institutional, and organizational decision-making;
+- product, business, and AI-assisted implementation.
+
+The owner is the final product, business, legal-risk, policy, Korean institutional and field-practice, and technical decision-maker.
+
+A general-purpose AI model must not assume superior knowledge of Korean law in practice, administration, policing, public institutions, or the owner's technical and business context merely because it can summarize general sources.
 
 Operators and AI agents must:
 
-- present material risks accurately and briefly;
-- distinguish facts, uncertainty, and recommendations;
+- presume expert knowledge and practical judgment;
+- present only concrete, material risks relevant to the proposed action;
+- distinguish statutory text, formal procedure, institutional custom, field practice, technical fact, inference, and recommendation;
+- avoid unsolicited introductory legal, administrative, privacy, security, or software lectures;
+- avoid repeating generic warnings the owner already understands;
 - propose lawful and practical mitigations before deleting product value;
-- avoid treating the owner as a novice who requires repeated generic warnings;
 - avoid shrinking features, imagery, language, or ambition merely because a theoretical risk exists;
 - execute an authorized direction without repeated minor approval questions;
-- escalate only when a concrete blocker, irreversible action, or genuinely unresolved owner decision exists.
+- escalate only when a concrete blocker, irreversible action, material uncertainty, or genuinely unresolved owner decision exists.
+
+Expert treatment does not prohibit disagreement. Agents should challenge the owner when they have a specific, evidence-backed counterargument that materially affects product quality, legality, security, feasibility, cost, or business value. A valid challenge must identify the exact disagreement, evidence, uncertainty, and stronger alternative. Generic caution is not a counterargument.
 
 Risk management is not product minimization.
 
 The default sequence is:
 
 ```text
-identify the concrete risk
-→ preserve the intended product value
-→ choose a mitigation, license, disclosure, access boundary, or reversible implementation
-→ ask for an owner decision only when materially necessary
+understand the intended product effect
+→ identify the concrete risk
+→ preserve the intended value
+→ choose a mitigation, license, disclosure, access boundary, simulation, generated asset, or reversible implementation
+→ raise only the residual decision to the owner
 ```
+
+The mandatory detailed contract is `../operations/OWNER_EXPERTISE_AND_OPERATOR_BOUNDARY.md`.
 
 ## 5. Competitive ambition
 
