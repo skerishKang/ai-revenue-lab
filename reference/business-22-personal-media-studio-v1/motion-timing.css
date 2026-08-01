@@ -1,0 +1,4 @@
+/* Canonical Source-to-Format Relay timing contract: final visual end 740ms. */
+.adaptation-relay.relay-running .step-review {
+  animation: relayReview 120ms 620ms both;
+}

@@ -1,0 +1,112 @@
+{
+  "before": {
+    "focus": "replay",
+    "x": 0,
+    "y": 20,
+    "h": 1140,
+    "state": "idle",
+    "source": {
+      "x": 337.59375,
+      "y": 204.4375,
+      "width": 359.375,
+      "height": 720
+    },
+    "reviewVisible": true
+  },
+  "running": {
+    "focus": "replay",
+    "x": 0,
+    "y": 20,
+    "h": 1140,
+    "state": "running",
+    "source": {
+      "x": 337.59375,
+      "y": 204.4375,
+      "width": 359.375,
+      "height": 720
+    },
+    "reviewVisible": false
+  },
+  "after": {
+    "focus": "replay",
+    "x": 0,
+    "y": 20,
+    "h": 1140,
+    "state": "complete",
+    "source": {
+      "x": 337.59375,
+      "y": 204.4375,
+      "width": 359.375,
+      "height": 720
+    },
+    "reviewVisible": true
+  },
+  "computedTiming": {
+    "steps": [
+      {
+        "className": "master-annotation relay-step step-annotation",
+        "animationName": "relayReveal",
+        "delayMs": 80,
+        "durationMs": 120,
+        "endMs": 200
+      },
+      {
+        "className": "relay-rule relay-step step-rule",
+        "animationName": "relayRule",
+        "delayMs": 180,
+        "durationMs": 120,
+        "endMs": 300
+      },
+      {
+        "className": "adapt-output relay-step step-article",
+        "animationName": "relayReveal",
+        "delayMs": 280,
+        "durationMs": 120,
+        "endMs": 400
+      },
+      {
+        "className": "adapt-output relay-step step-audio",
+        "animationName": "relayReveal",
+        "delayMs": 380,
+        "durationMs": 120,
+        "endMs": 500
+      },
+      {
+        "className": "adapt-output relay-step step-video",
+        "animationName": "relayReveal",
+        "delayMs": 460,
+        "durationMs": 120,
+        "endMs": 580
+      },
+      {
+        "className": "adapt-output relay-step step-card",
+        "animationName": "relayReveal",
+        "delayMs": 540,
+        "durationMs": 120,
+        "endMs": 660
+      },
+      {
+        "className": "review-resolution relay-step step-review",
+        "animationName": "relayReview",
+        "delayMs": 620,
+        "durationMs": 120,
+        "endMs": 740
+      }
+    ],
+    "computedFinalEndMs": 740
+  },
+  "computedFinalEndMs": 740,
+  "timingRangePassed": true,
+  "runningStatePassed": true,
+  "completionStatePassed": true,
+  "focusScrollGeometryPassed": true,
+  "humanReviewVisible": true,
+  "passed": true,
+  "evidenceFrames": [
+    "motion-relay-frames.svg / 00 before",
+    "motion-relay-frames.svg / 01 annotation",
+    "motion-relay-frames.svg / 02 article",
+    "motion-relay-frames.svg / 03 formats",
+    "motion-relay-frames.svg / 04 review"
+  ]
+}
