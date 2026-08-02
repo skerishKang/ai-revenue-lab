@@ -115,6 +115,7 @@ def run_desktop(p: Any) -> dict:
     _check("preset chips", lambda: page.locator(".preset-chip").count() >= 4)
     _check("start js loaded", lambda: page.evaluate("window.Business14Start !== undefined"))
     _check("legacy workspace preserved", lambda: page.locator("#ws_chat").count() > 0)
+    _check("mobile nav hidden on desktop", lambda: page.evaluate("getComputedStyle(document.querySelector('.mobile-nav')).display === 'none'"))
 
     # Mock chat via UI
     page.locator("#start_prompt").fill("한국어로 세 문장으로 설명해줘")
@@ -172,6 +173,9 @@ def run_mobile(p: Any) -> dict:
     _check("start prompt mobile", lambda: page.locator("#start_prompt").count() > 0)
     _check("start send mobile", lambda: page.locator("#start_send").count() > 0)
     _check("mock label mobile", lambda: "모의 응답" in page.locator(".mode-badge").inner_text())
+    _check("mobile bottom nav visible", lambda: page.evaluate("getComputedStyle(document.querySelector('.mobile-nav')).display === 'flex'"))
+    _check("mobile nav has 5 links", lambda: page.locator(".mobile-nav .mobile-nav-link").count() == 5)
+    _check("mobile nav start active", lambda: page.locator(".mobile-nav .mobile-nav-link.active").count() >= 1)
 
     # Mobile overflow check
     sw = page.evaluate("document.documentElement.scrollWidth")
