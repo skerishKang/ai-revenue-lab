@@ -1,15 +1,21 @@
 # Image Sources
 
-V3 초기 구현은 Business 35 V2 저장소에 이미 반입·기록된 repository-local 사진 자산 중 다음을 재사용한다.
+All V3 runtime images are repository-local. No external image hotlink is used at runtime.
 
-- `hero-studio.jpg`
-- `video-production.jpg`
-- `workshop-meeting.jpg`
-- `review-desk.jpg`
-- `creative-collab.jpg`
-- `strategy-map.jpg`
-- `workspace-laptop.jpg`
+The initial V3 implementation reuses seven photographs already imported and documented in the Business 35 V2 workspace. The source URLs and licence basis are retained below.
 
-원본 라이선스와 출처는 V2의 `IMAGE_SOURCES.md`를 계승한다. V3 병합 전 해당 파일의 라이선스 상태와 재사용 허용 범위를 다시 검증해야 한다.
+| V3 file | Original source | Licence basis |
+|---|---|---|
+| `assets/images/hero-studio.jpg` | Unsplash · photo-1522071820081-009f0129c71c | Unsplash License |
+| `assets/images/workshop-meeting.jpg` | Unsplash · photo-1552664730-d307ca884978 | Unsplash License |
+| `assets/images/creative-collab.jpg` | Pexels · photo 3184405 | Pexels License |
+| `assets/images/review-desk.jpg` | Pexels · photo 3183197 | Pexels License |
+| `assets/images/strategy-map.jpg` | Pexels · photo 3184360 | Pexels License |
+| `assets/images/video-production.jpg` | Pexels · photo 7567443 | Pexels License |
+| `assets/images/workspace-laptop.jpg` | Pexels · photo 1181686 | Pexels License |
 
-V3의 다음 시각 개선에서는 한국 기관·미디어 제작 환경을 반영한 자체 촬영 또는 생성 이미지 세트를 우선한다.
+Original copyrights remain with the respective photographers. These files were downloaded into the repository for the Business 35 demo; no external CDN or hotlink is required.
+
+## V3 art-direction limitation
+
+These photographs establish the image-led V3 structure but remain general stock photography. Before canonical Production approval, V3 should be reviewed for whether a more coherent Korea-specific institutional media-production set is required. Suitable replacements may be commissioned, owner-produced, licensed, or generated, while preserving the same scene contracts and accessibility text.
