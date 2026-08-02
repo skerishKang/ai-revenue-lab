@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ee">
+  <title>모델 연결판 · Business 14</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" type="button" data-view-link="start" aria-label="시작 화면으로 이동">
+        <span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong>모델 연결판</strong><small>Business 14</small></span>
+      </button>
+
+      <nav class="desktop-nav" aria-label="주요 메뉴">
+        <button class="nav-link is-active" type="button" data-view-link="start">시작</button>
+        <button class="nav-link" type="button" data-view-link="models">모델·가격</button>
+        <button class="nav-link" type="button" data-view-link="plans">요금제</button>
+        <button class="nav-link" type="button" data-view-link="usage">사용량</button>
+        <button class="nav-link" type="button" data-view-link="developer">개발자</button>
+      </nav>
+
+      <div class="top-actions">
+        <div class="mode-switch" role="group" aria-label="화면 난이도">
+          <button class="is-active" type="button" data-mode="easy">간편</button>
+          <button type="button" data-mode="developer">개발자</button>
+        </div>
+        <button class="balance-button" type="button" id="open-credit-drawer">
+          <span>잔액</span><strong>₩3,840</strong>
+        </button>
+        <button class="avatar" type="button" aria-label="계정 메뉴">RK</button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="view is-active" data-view="start" aria-labelledby="start-title">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="status-line"><span class="status-dot"></span> 개인용 베타 · 데모 가격</div>
+            <h1 id="start-title">모델을 몰라도 됩니다.<br>하려는 일과 예산만 알려주세요.</h1>
+            <p class="hero-lead">한국어로 목적을 적으면 가격, 속도, 처리 위치를 비교해 맞는 모델 경로를 보여드립니다. 익숙해지면 직접 모델과 Provider를 고를 수 있습니다.</p>
+
+            <div class="prompt-card">
+              <label for="task-input">무엇을 하려나요?</label>
+              <textarea id="task-input" rows="4">긴 한국어 계약서를 핵심 쟁점별로 요약하고, 확인이 필요한 조항을 표시해줘.</textarea>
+              <div class="prompt-presets" aria-label="작업 예시">
+                <button class="is-active" type="button" data-preset="document">문서 요약</button>
+                <button type="button" data-preset="code">코드 수정</button>
+                <button type="button" data-preset="batch">대량 분류</button>
+                <button type="button" data-preset="private">비공개 작업</button>
+              </div>
+            </div>
+
+            <div class="simple-options">
+              <fieldset>
+                <legend>가장 중요한 기준</legend>
+                <label><input type="radio" name="priority" value="balanced" checked><span>알아서 균형</span></label>
+                <label><input type="radio" name="priority" value="quality"><span>결과 품질</span></label>
+                <label><input type="radio" name="priority" value="cost"><span>비용 절약</span></label>
+                <label><input type="radio" name="priority" value="local"><span>국내·내 PC 우선</span></label>
+              </fieldset>
+            </div>
+
+            <details class="advanced-options" id="advanced-options">
+              <summary>고급 조건 직접 설정</summary>
+              <div class="advanced-grid">
+                <label>최대 예상 비용<select id="max-cost"><option value="100">요청당 ₩100</option><option value="500">요청당 ₩500</option><option value="2000">요청당 ₩2,000</option></select></label>
+                <label>외부 전송<select><option>필요하면 허용</option><option>국내만 허용</option><option>로컬만 허용</option></select></label>
+                <label>응답 속도<select><option>보통</option><option>빠르게</option><option>기다려도 품질 우선</option></select></label>
+              </div>
+            </details>
+
+            <div class="hero-actions">
+              <button class="primary-button" id="preview-route" type="button">추천 경로와 비용 보기 <span aria-hidden="true">→</span></button>
+              <button class="ghost-button" type="button" data-view-link="models">가격부터 비교</button>
+            </div>
+          </div>
+
+          <aside class="route-panel" aria-labelledby="route-panel-title">
+            <div class="panel-topline">
+              <div><span class="kicker">예상 경로</span><h2 id="route-panel-title">이번 요청에 맞는 선택</h2></div>
+              <span class="evidence-badge">데모 계산</span>
+            </div>
+
+            <div class="route-flow" id="route-flow" data-state="ready">
+              <div class="flow-node request-node"><span>1</span><div><strong>한국어 계약서 요약</strong><small>긴 문서 · 정확도 우선</small></div></div>
+              <div class="flow-line" aria-hidden="true"></div>
+              <div class="candidate-list">
+                <button class="candidate is-selected" type="button" data-candidate="gemini"><span class="candidate-mark">G</span><span><strong>Gemini 3.1 Pro</strong><small>예상 ₩36 · 외부</small></span><span class="candidate-tag">추천</span></button>
+                <button class="candidate" type="button" data-candidate="grok"><span class="candidate-mark">X</span><span><strong>Grok 4.5</strong><small>예상 ₩24 · 외부</small></span><span class="candidate-tag muted">저렴</span></button>
+                <button class="candidate" type="button" data-candidate="clova"><span class="candidate-mark">N</span><span><strong>HyperCLOVA X</strong><small>가격 미공개 · 국내</small></span><span class="candidate-tag muted">키 필요</span></button>
+              </div>
+              <div class="flow-line" aria-hidden="true"></div>
+              <div class="flow-node result-node"><span>3</span><div><strong id="selected-model">Gemini 3.1 Pro</strong><small id="selected-reason">긴 한국어 문서와 정확도 기준</small></div></div>
+            </div>
+
+            <div class="cost-preview" id="cost-preview">
+              <div><span>이번 요청 예상</span><strong id="request-estimate">약 ₩36</strong></div>
+              <div><span>입력 8,000 · 출력 1,500 tokens</span><button type="button" data-view-link="models">계산 근거</button></div>
+              <div class="cost-range"><i style="width:36%"></i></div>
+              <p>실제 비용은 입력 길이와 모델이 생성한 출력량에 따라 달라집니다.</p>
+            </div>
+
+            <button class="run-button" id="run-demo" type="button">이 경로로 데모 실행</button>
+            <div class="demo-result" id="demo-result" hidden>
+              <div><span class="success-dot"></span><strong>응답 준비 완료</strong><small>실제 Provider 호출 없음</small></div>
+              <p>이 계약서는 자동 갱신, 손해배상 범위, 해지 통보 기한을 우선 확인해야 합니다. 특히 제12조는 상대방의 책임 한도를 넓게 제한하고 있습니다.</p>
+            </div>
+          </aside>
+        </div>
+
+        <section class="onboarding-strip" aria-labelledby="onboarding-title">
+          <div><span class="kicker">처음이라면</span><h2 id="onboarding-title">API 키를 몰라도 첫 요청부터 시작하세요.</h2><p>무료 크레딧으로 시험하고, 필요할 때만 충전하거나 내 Provider 키를 연결합니다.</p></div>
+          <ol>
+            <li><span>1</span><strong>목적 입력</strong><small>모델 이름 없이 시작</small></li>
+            <li><span>2</span><strong>가격 확인</strong><small>원화 예상 비용</small></li>
+            <li><span>3</span><strong>한 번에 연결</strong><small>웹·API·TUI 공용</small></li>
+          </ol>
+        </section>
+      </section>
+
+      <section class="view" data-view="models" aria-labelledby="models-title">
+        <div class="page-heading split-heading">
+          <div><span class="kicker">모델·가격</span><h1 id="models-title">가격과 성능을 같은 단위로 비교하세요.</h1><p>원화는 보기 편한 환산값이며, 결제 전 Provider 원가와 플랫폼 수수료를 분리해서 보여줍니다.</p></div>
+          <div class="price-snapshot"><span>가격 스냅샷</span><strong>2026-08-02</strong><small>예시 환율 $1 = ₩1,380</small></div>
+        </div>
+
+        <div class="model-controls">
+          <label class="search-field"><span aria-hidden="true">⌕</span><input id="model-search" type="search" placeholder="모델, 회사, 용도 검색"></label>
+          <div class="chip-row" id="model-filters">
+            <button class="is-active" type="button" data-filter="all">전체</button>
+            <button type="button" data-filter="premium">고성능</button>
+            <button type="button" data-filter="value">가성비</button>
+            <button type="button" data-filter="domestic">국내</button>
+            <button type="button" data-filter="local">로컬</button>
+          </div>
+          <button class="compare-button" id="open-compare" type="button" disabled>비교 <span id="compare-count">0</span></button>
+        </div>
+
+        <div class="price-explainer">
+          <div><strong>입력 가격</strong><span>AI에 보내는 글·파일을 읽는 비용</span></div>
+          <div><strong>출력 가격</strong><span>AI가 답변을 생성하는 비용</span></div>
+          <div><strong>1M tokens</strong><span>한글 약 70만~100만 자 수준의 과금 단위</span></div>
+          <button type="button" id="open-calculator">내 요청으로 계산</button>
+        </div>
+
+        <div class="model-table-wrap">
+          <div class="model-table-head" aria-hidden="true"><span></span><span>모델</span><span>추천 용도</span><span>입력 / 1M</span><span>출력 / 1M</span><span>예상 요청</span><span>가격 근거</span><span></span></div>
+          <div class="model-table" id="model-table">
+            <article class="model-price-row" data-tags="premium external" data-model="gpt" data-input="5" data-output="30">
+              <label class="compare-check"><input type="checkbox" data-compare="GPT-5.5"><span></span></label>
+              <div class="model-name"><span class="model-logo">O</span><div><strong>GPT-5.5</strong><small>OpenAI · 외부</small></div></div>
+              <div class="use-case"><strong>복잡한 에이전트·코딩</strong><small>1M context</small></div>
+              <div class="unit-price"><strong>₩6,900</strong><small>$5.00</small></div>
+              <div class="unit-price"><strong>₩41,400</strong><small>$30.00</small></div>
+              <div class="request-price"><strong>약 ₩103</strong><small>8K in · 1.5K out</small></div>
+              <div class="source-state verified"><strong>공식 확인</strong><small>OpenAI · 2026-04</small></div>
+              <button class="row-detail" type="button" data-detail="GPT-5.5">상세</button>
+            </article>
+
+            <article class="model-price-row" data-tags="premium value external" data-model="gemini" data-input="2" data-output="12">
+              <label class="compare-check"><input type="checkbox" data-compare="Gemini 3.1 Pro"><span></span></label>
+              <div class="model-name"><span class="model-logo">G</span><div><strong>Gemini 3.1 Pro</strong><small>Google · 외부 · Preview</small></div></div>
+              <div class="use-case"><strong>긴 문서·멀티모달</strong><small>200K 이하 단가</small></div>
+              <div class="unit-price"><strong>₩2,760</strong><small>$2.00</small></div>
+              <div class="unit-price"><strong>₩16,560</strong><small>$12.00</small></div>
+              <div class="request-price"><strong>약 ₩47</strong><small>8K in · 1.5K out</small></div>
+              <div class="source-state verified"><strong>공식 확인</strong><small>Google · 2026-06</small></div>
+              <button class="row-detail" type="button" data-detail="Gemini 3.1 Pro">상세</button>
+            </article>
+
+            <article class="model-price-row" data-tags="value external" data-model="grok" data-input="2" data-output="6">
+              <label class="compare-check"><input type="checkbox" data-compare="Grok 4.5"><span></span></label>
+              <div class="model-name"><span class="model-logo">X</span><div><strong>Grok 4.5</strong><small>xAI · OpenRouter 경로</small></div></div>
+              <div class="use-case"><strong>코딩·일반 지식 작업</strong><small>500K context</small></div>
+              <div class="unit-price"><strong>₩2,760</strong><small>$2.00</small></div>
+              <div class="unit-price"><strong>₩8,280</strong><small>$6.00</small></div>
+              <div class="request-price"><strong>약 ₩35</strong><small>8K in · 1.5K out</small></div>
+              <div class="source-state catalog"><strong>카탈로그 확인</strong><small>OpenRouter · 2026-08</small></div>
+              <button class="row-detail" type="button" data-detail="Grok 4.5">상세</button>
+            </article>
+
+            <article class="model-price-row" data-tags="domestic" data-model="clova" data-input="0" data-output="0">
+              <label class="compare-check"><input type="checkbox" data-compare="HyperCLOVA X"><span></span></label>
+              <div class="model-name"><span class="model-logo">N</span><div><strong>HyperCLOVA X</strong><small>NAVER Cloud · 국내</small></div></div>
+              <div class="use-case"><strong>한국어 문서·서비스</strong><small>모델별 상이</small></div>
+              <div class="unit-price unknown"><strong>가격 미공개</strong><small>상품별 확인</small></div>
+              <div class="unit-price unknown"><strong>가격 미공개</strong><small>상품별 확인</small></div>
+              <div class="request-price unknown"><strong>계산 불가</strong><small>단가 연결 필요</small></div>
+              <div class="source-state unknown"><strong>과금 방식 확인</strong><small>토큰 종량제 · 세부 단가 미연결</small></div>
+              <button class="row-detail" type="button" data-detail="HyperCLOVA X">상세</button>
+            </article>
+
+            <article class="model-price-row" data-tags="value local" data-model="qwen" data-input="0" data-output="0">
+              <label class="compare-check"><input type="checkbox" data-compare="Qwen Coder Local"><span></span></label>
+              <div class="model-name"><span class="model-logo">Q</span><div><strong>Qwen Coder Local</strong><small>내 PC · 로컬</small></div></div>
+              <div class="use-case"><strong>반복 코드 수정·비공개 작업</strong><small>장비 성능에 따라 다름</small></div>
+              <div class="unit-price free"><strong>API ₩0</strong><small>전기·장비 제외</small></div>
+              <div class="unit-price free"><strong>API ₩0</strong><small>전기·장비 제외</small></div>
+              <div class="request-price free"><strong>API ₩0</strong><small>로컬 계산</small></div>
+              <div class="source-state configured"><strong>사용자 설정</strong><small>내 장비 기준</small></div>
+              <button class="row-detail" type="button" data-detail="Qwen Coder Local">상세</button>
+            </article>
+          </div>
+        </div>
+        <div class="empty-state" id="model-empty" hidden>검색 조건에 맞는 모델이 없습니다.</div>
+
+        <section class="calculator-panel" id="calculator-panel" aria-labelledby="calculator-title">
+          <div class="calculator-copy"><span class="kicker">비용 계산기</span><h2 id="calculator-title">내 요청 기준으로 얼마나 드는지 계산</h2><p>아래 값은 모델 단가와 예시 환율을 이용한 예상치입니다. 실제 청구 금액은 Provider 사용량을 따릅니다.</p></div>
+          <div class="calculator-controls">
+            <label>모델<select id="calc-model"><option value="gemini">Gemini 3.1 Pro</option><option value="gpt">GPT-5.5</option><option value="grok">Grok 4.5</option></select></label>
+            <label>입력 tokens<input id="input-tokens" type="number" min="0" step="100" value="8000"></label>
+            <label>출력 tokens<input id="output-tokens" type="number" min="0" step="100" value="1500"></label>
+            <label>플랫폼 수수료<select id="platform-fee"><option value="5">5% 예시</option><option value="0">BYOK 0% 예시</option></select></label>
+          </div>
+          <div class="calculator-result">
+            <div><span>Provider 원가</span><strong id="provider-cost">₩47</strong></div>
+            <div><span>플랫폼 수수료</span><strong id="fee-cost">₩2</strong></div>
+            <div class="total-cost"><span>예상 결제</span><strong id="total-cost">₩49</strong></div>
+            <small>부가세·환율·추가 도구 비용은 데모 계산에서 제외</small>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" data-view="plans" aria-labelledby="plans-title">
+        <div class="page-heading centered-heading"><span class="kicker">요금제</span><h1 id="plans-title">사용량은 종량제, 편의 기능은 선택 구독.</h1><p>모델 호출을 무제한처럼 포장하지 않습니다. 필요한 만큼 충전하고, 구독은 기록·라우팅·로컬 연결 같은 기능을 강화합니다.</p></div>
+
+        <div class="plan-rail">
+          <article class="plan-card">
+            <div><span class="plan-label">시작</span><h2>Free</h2><p>처음 시험하는 개인 사용자</p></div>
+            <div class="plan-price"><strong>₩0</strong><span>/월</span><small>카드 없이 시작</small></div>
+            <ul><li>매월 프로모션 크레딧 ₩3,000 예시</li><li>선정 무료·저비용 모델</li><li>API 키 1개</li><li>7일 활동 기록</li></ul>
+            <button class="secondary-button full" type="button" data-plan="Free">무료로 시작</button>
+          </article>
+
+          <article class="plan-card is-featured">
+            <div><span class="plan-label">기본 권장</span><h2>Pay as you go</h2><p>필요한 만큼 충전하는 개인 개발자</p></div>
+            <div class="plan-price"><strong>월 구독 없음</strong><small>모델 원가 + 투명한 수수료</small></div>
+            <ul><li>전체 모델 카탈로그</li><li>원화 선불 크레딧</li><li>자동 라우팅·fallback</li><li>예산 상한·잔액 알림</li><li>BYOK 연결</li></ul>
+            <button class="primary-button full" type="button" id="plan-topup">크레딧 충전</button>
+          </article>
+
+          <article class="plan-card">
+            <div><span class="plan-label">선택 구독</span><h2>Personal Plus</h2><p>매일 쓰는 고급 개인 사용자</p></div>
+            <div class="plan-price"><strong>₩12,900</strong><span>/월 · 콘셉트</span><small>가격 확정 전 제품 증거</small></div>
+            <ul><li>월 모델 크레딧 일부 포함</li><li>90일 활동·비용 기록</li><li>고급 라우팅 정책</li><li>로컬 모델 연결</li><li>향후 Business 54 TUI 혜택</li></ul>
+            <button class="secondary-button full" type="button" data-plan="Personal Plus">출시 알림 받기</button>
+          </article>
+        </div>
+
+        <div class="not-unlimited"><strong>중요</strong><p>Personal Plus도 모델 사용량은 무제한이 아닙니다. 포함 크레딧을 넘으면 사용한 만큼 차감됩니다.</p></div>
+
+        <section class="plan-matrix" aria-labelledby="matrix-title">
+          <div class="matrix-title"><span class="kicker">비교</span><h2 id="matrix-title">내게 필요한 방식만 고르기</h2></div>
+          <div class="matrix-row matrix-head"><span>기능</span><strong>Free</strong><strong>PAYG</strong><strong>Plus</strong></div>
+          <div class="matrix-row"><span>모델 사용</span><span>무료·선정 모델</span><span>전체 카탈로그</span><span>전체 카탈로그</span></div>
+          <div class="matrix-row"><span>결제</span><span>월 무료 크레딧</span><span>선불 종량제</span><span>구독 + 종량제</span></div>
+          <div class="matrix-row"><span>BYOK</span><span>—</span><span>가능</span><span>가능</span></div>
+          <div class="matrix-row"><span>자동 라우팅</span><span>기본</span><span>기본</span><span>고급 정책</span></div>
+          <div class="matrix-row"><span>활동 기록</span><span>7일</span><span>30일</span><span>90일</span></div>
+          <div class="matrix-row"><span>로컬 모델</span><span>—</span><span>직접 설정</span><span>간편 연결</span></div>
+        </section>
+      </section>
+
+      <section class="view" data-view="usage" aria-labelledby="usage-title">
+        <div class="page-heading split-heading">
+          <div><span class="kicker">사용량</span><h1 id="usage-title">쓴 금액과 남은 예산을 한눈에.</h1><p>요청별 모델 원가, 플랫폼 수수료, fallback 여부를 분리해서 확인합니다.</p></div>
+          <button class="primary-button" type="button" id="usage-topup">크레딧 충전</button>
+        </div>
+
+        <div class="wallet-grid">
+          <article class="wallet-card main-wallet"><span>현재 크레딧</span><strong>₩3,840</strong><small>프로모션 ₩1,200 포함</small><div class="wallet-actions"><button type="button" id="wallet-topup">충전</button><button type="button">자동 충전 설정</button></div></article>
+          <article class="wallet-card"><span>이번 달 사용</span><strong>₩6,160</strong><small>모델 원가 ₩5,870 · 수수료 ₩290</small></article>
+          <article class="wallet-card"><span>월 예산</span><strong id="budget-display">₩20,000</strong><small>31% 사용</small><div class="budget-progress"><i id="budget-progress" style="width:31%"></i></div></article>
+        </div>
+
+        <div class="budget-setting">
+          <div><strong>예산을 넘기기 전에 멈추기</strong><p>월 사용액이 상한에 도달하면 새 요청을 차단합니다.</p></div>
+          <label>월 상한<input id="budget-range" type="range" min="10000" max="100000" step="5000" value="20000"></label>
+          <button class="secondary-button" type="button" id="save-budget">저장</button>
+        </div>
+
+        <div class="usage-list">
+          <div class="usage-list-head"><span>최근 요청</span><button type="button">CSV 내보내기</button></div>
+          <article><span class="request-status success"></span><div><strong>계약서 핵심 조항 요약</strong><small>오늘 13:40 · Gemini 3.1 Pro</small></div><div><strong>₩49</strong><small>원가 ₩47 + 수수료 ₩2</small></div><span>성공</span></article>
+          <article><span class="request-status success"></span><div><strong>로그인 오류 수정 계획</strong><small>오늘 11:08 · Grok 4.5</small></div><div><strong>₩37</strong><small>원가 ₩35 + 수수료 ₩2</small></div><span>성공</span></article>
+          <article><span class="request-status local"></span><div><strong>비공개 저장소 테스트 분류</strong><small>어제 22:19 · Qwen Local</small></div><div><strong>API ₩0</strong><small>전기·장비 제외</small></div><span>로컬</span></article>
+          <article><span class="request-status blocked"></span><div><strong>외부 모델 금지 문서 분석</strong><small>어제 18:04 · NO SAFE ROUTE</small></div><div><strong>₩0</strong><small>호출 전 차단</small></div><span>차단</span></article>
+        </div>
+      </section>
+
+      <section class="view developer-view" data-view="developer" aria-labelledby="developer-title">
+        <div class="developer-hero">
+          <div><span class="kicker">개발자 모드</span><h1 id="developer-title">기존 SDK는 그대로, base URL만 연결.</h1><p>간편 화면에서 숨긴 Provider, BYOK, 라우팅, 비용 메타데이터를 여기서 직접 제어합니다.</p></div>
+          <div class="endpoint-box"><span>OpenAI-compatible endpoint</span><code>https://api.business14.kr/v1</code><button type="button" data-copy="https://api.business14.kr/v1">복사</button></div>
+        </div>
+
+        <div class="developer-grid">
+          <section class="code-panel">
+            <div class="code-tabs"><button class="is-active" type="button" data-code="python">Python</button><button type="button" data-code="typescript">TypeScript</button><button type="button" data-code="curl">cURL</button></div>
+            <pre id="code-sample"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.business14.kr/v1",
+    api_key=os.environ["BUSINESS14_API_KEY"]
+)
+
+response = client.chat.completions.create(
+    model="b14/auto",
+    messages=[{"role": "user", "content": task}],
+    extra_body={"business14": {
+        "optimize_for": "balanced",
+        "budget_krw": 500,
+        "route_scope": "domestic_preferred"
+    }}
+)</code></pre>
+            <button class="copy-code" type="button" id="copy-code">전체 복사</button>
+          </section>
+
+          <aside class="developer-settings">
+            <article><div><strong>Provider 키</strong><small>OpenAI · Google · xAI · NAVER</small></div><button type="button">2개 연결</button></article>
+            <article><div><strong>Business 14 API 키</strong><small>개인 프로젝트용 키 1개</small></div><button type="button">키 관리</button></article>
+            <article><div><strong>라우팅 정책</strong><small>균형 · 국내 우선 · 외부 fallback</small></div><button type="button">편집</button></article>
+            <article><div><strong>비용 메타데이터</strong><small>Provider 원가·수수료·최종 금액</small></div><button type="button">응답 형식</button></article>
+          </aside>
+        </div>
+
+        <section class="developer-details">
+          <details open><summary>BYOK가 무엇인가요?</summary><p>사용자가 각 Provider에서 발급받은 API 키를 Business 14에 연결하는 방식입니다. 모델 비용은 Provider에 직접 청구되고, 플랫폼 기능 비용은 별도 정책을 따릅니다.</p></details>
+          <details><summary>fallback은 언제 발생하나요?</summary><p>선택한 경로가 일시적으로 실패하고 사용자가 외부 대체 경로를 허용한 경우에만 다음 Provider를 시도합니다.</p></details>
+          <details><summary>가격은 어떻게 계산하나요?</summary><p>응답의 입력·출력 token 사용량과 검증된 모델 단가를 곱하고, 플랫폼 수수료와 추가 도구 비용을 분리해 기록합니다.</p></details>
+        </section>
+      </section>
+    </main>
+
+    <nav class="mobile-nav" aria-label="모바일 메뉴">
+      <button class="is-active" type="button" data-view-link="start"><span>⌂</span>시작</button>
+      <button type="button" data-view-link="models"><span>≡</span>모델</button>
+      <button type="button" data-view-link="plans"><span>₩</span>요금제</button>
+      <button type="button" data-view-link="usage"><span>◔</span>사용량</button>
+      <button type="button" data-view-link="developer"><span>&lt;/&gt;</span>개발자</button>
+    </nav>
+  </div>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="credit-drawer" id="credit-drawer" aria-hidden="true" aria-labelledby="credit-title">
+    <div class="drawer-head"><div><span class="kicker">크레딧</span><h2 id="credit-title">충전할 금액 선택</h2></div><button type="button" id="close-credit" aria-label="닫기">×</button></div>
+    <div class="balance-summary"><span>현재 잔액</span><strong>₩3,840</strong><small>실제 결제 기능이 없는 데모입니다.</small></div>
+    <div class="credit-options">
+      <button type="button" data-credit="10000"><strong>₩10,000</strong><small>가볍게 시작</small></button>
+      <button class="is-selected" type="button" data-credit="30000"><strong>₩30,000</strong><small>개인 권장</small></button>
+      <button type="button" data-credit="50000"><strong>₩50,000</strong><small>자주 사용</small></button>
+    </div>
+    <div class="fee-breakdown"><div><span>모델 사용 크레딧</span><strong>₩30,000</strong></div><div><span>충전 수수료 예시 5%</span><strong>₩1,500</strong></div><div><span>결제 예정</span><strong>₩31,500</strong></div></div>
+    <button class="primary-button full" type="button" id="demo-payment">결제 데모 계속</button>
+    <p class="drawer-note">실제 상용 수수료와 구독 가격은 확정 전입니다.</p>
+  </aside>
+
+  <dialog id="compare-dialog" class="compare-dialog">
+    <form method="dialog">
+      <div class="drawer-head"><div><span class="kicker">모델 비교</span><h2>선택한 모델 한눈에 보기</h2></div><button value="close" aria-label="닫기">×</button></div>
+      <div id="compare-content" class="compare-content"></div>
+      <button class="secondary-button full" value="close">닫기</button>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
