@@ -17,6 +17,25 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+  function applyPricingTruthCorrections() {
+    const geminiCandidate = $('[data-candidate="gemini"] small');
+    const grokCandidate = $('[data-candidate="grok"] small');
+    if (geminiCandidate) geminiCandidate.textContent = '예상 ₩49 · 외부';
+    if (grokCandidate) grokCandidate.textContent = '예상 ₩37 · 외부';
+    $('#request-estimate').textContent = '약 ₩49';
+    const costBar = $('.cost-range i');
+    if (costBar) costBar.style.width = '49%';
+    const tokenHelp = $('.price-explainer div:nth-child(3) span');
+    if (tokenHelp) tokenHelp.textContent = '모델 사용량을 비교하는 공통 과금 단위';
+    const gptRow = $('[data-model="gpt"]');
+    if (gptRow) {
+      $('.request-price strong', gptRow).textContent = '약 ₩117';
+      $('.source-state small', gptRow).textContent = 'OpenAI · 2026-08-02';
+    }
+    const geminiRow = $('[data-model="gemini"]');
+    if (geminiRow) $('.source-state small', geminiRow).textContent = 'Google · 2026-08-02';
+  }
+
   function showToast(message) {
     const toast = $('#toast');
     toast.textContent = message;
@@ -30,6 +49,8 @@
     $$('.view').forEach((section) => section.classList.toggle('is-active', section.dataset.view === view));
     $$('[data-view-link]').forEach((button) => button.classList.toggle('is-active', button.dataset.viewLink === view));
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    const heading = $(`[data-view="${view}"] h1`);
+    if (heading) requestAnimationFrame(() => heading.focus?.({ preventScroll: true }));
   }
 
   function setMode(mode) {
@@ -60,8 +81,8 @@
     state.selectedCandidate = candidate;
     $$('.candidate').forEach((button) => button.classList.toggle('is-selected', button.dataset.candidate === candidate));
     const mapping = {
-      gemini: ['Gemini 3.1 Pro', '긴 한국어 문서와 정확도 기준', '약 ₩36'],
-      grok: ['Grok 4.5', '비용을 줄이면서 일반 작업 수행', '약 ₩24'],
+      gemini: ['Gemini 3.1 Pro', '긴 한국어 문서와 정확도 기준', '약 ₩49'],
+      grok: ['Grok 4.5', '비용을 줄이면서 일반 작업 수행', '약 ₩37'],
       clova: ['HyperCLOVA X', '국내 처리 선호 · 단가 확인 필요', '가격 확인 필요'],
     };
     $('#selected-model').textContent = mapping[candidate][0];
@@ -247,6 +268,7 @@
     }
   });
 
+  applyPricingTruthCorrections();
   document.body.dataset.uiMode = state.mode;
   calculateCost();
   updateBudget();
