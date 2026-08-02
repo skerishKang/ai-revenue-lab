@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Business 54 · 한국형 AI 코드 에이전트</title>
+  <link rel="stylesheet" href="styles/main.css?v=1">
+</head>
+<body data-step="0">
+  <a class="skip-link" href="#agent-workspace">작업 화면으로 건너뛰기</a>
+
+  <header class="appbar">
+    <div class="brand-block">
+      <span class="brand-mark" aria-hidden="true">54</span>
+      <div>
+        <strong>한국형 AI 코드 에이전트</strong>
+        <span>PERSONAL AGENT WORKBENCH · SYNTHETIC DEMO</span>
+      </div>
+    </div>
+
+    <div class="mode-switch" role="group" aria-label="에이전트 모드">
+      <button type="button" class="mode-button is-active" data-mode="plan" aria-pressed="true">계획</button>
+      <button type="button" class="mode-button" data-mode="build" aria-pressed="false">수정</button>
+      <button type="button" class="mode-button" data-mode="review" aria-pressed="false">검토</button>
+    </div>
+
+    <div class="app-actions">
+      <span class="connection"><i aria-hidden="true"></i> Business 14 연결</span>
+      <button type="button" class="quiet-button" data-replay>처음부터</button>
+    </div>
+  </header>
+
+  <nav class="mobile-panel-nav" aria-label="모바일 작업 패널">
+    <button type="button" data-mobile-view="repo" aria-pressed="false">저장소</button>
+    <button type="button" data-mobile-view="work" class="is-active" aria-pressed="true">작업</button>
+    <button type="button" data-mobile-view="route" aria-pressed="false">모델 경로</button>
+  </nav>
+
+  <main class="shell" id="agent-workspace">
+    <aside class="panel repo-panel" data-panel="repo" aria-labelledby="repo-title">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">SYNTHETIC REPOSITORY</span>
+          <h2 id="repo-title">seonbi-notes</h2>
+        </div>
+        <span class="branch-chip">main</span>
+      </div>
+
+      <div class="repo-summary">
+        <span>JavaScript</span>
+        <span>8 tests</span>
+        <span>로컬 작업</span>
+      </div>
+
+      <nav class="file-tree" aria-label="합성 저장소 파일">
+        <button type="button" class="file-row is-selected" data-file="save">
+          <span aria-hidden="true">JS</span>
+          <strong>src/save-note.js</strong>
+          <small>수정 후보</small>
+        </button>
+        <button type="button" class="file-row" data-file="test">
+          <span aria-hidden="true">T</span>
+          <strong>tests/save-note.test.js</strong>
+          <small>검증</small>
+        </button>
+        <button type="button" class="file-row" data-file="view">
+          <span aria-hidden="true">H</span>
+          <strong>src/note-view.html</strong>
+          <small>읽기 전용</small>
+        </button>
+        <button type="button" class="file-row" data-file="package">
+          <span aria-hidden="true">{ }</span>
+          <strong>package.json</strong>
+          <small>명령 확인</small>
+        </button>
+      </nav>
+
+      <section class="permission-card" aria-labelledby="permission-title">
+        <div class="section-label" id="permission-title">이번 작업 권한</div>
+        <dl>
+          <div><dt>읽기</dt><dd class="allowed">허용</dd></div>
+          <div><dt>파일 쓰기</dt><dd>미리보기만</dd></div>
+          <div><dt>명령 실행</dt><dd>합성 테스트</dd></div>
+          <div><dt>네트워크</dt><dd class="denied">차단</dd></div>
+          <div><dt>Push · Merge</dt><dd class="denied">차단</dd></div>
+        </dl>
+      </section>
+    </aside>
+
+    <section class="panel work-panel is-mobile-active" data-panel="work" aria-labelledby="task-title">
+      <div class="task-composer">
+        <div class="task-meta">
+          <span class="eyebrow">KOREAN TASK</span>
+          <span class="task-id">TASK-54-001</span>
+        </div>
+        <label for="task-input" id="task-title">무엇을 고칠까요?</label>
+        <textarea id="task-input" rows="3">저장 버튼을 누른 뒤 성공 메시지가 두 번 표시되는 오류를 수정해줘. 기존 테스트는 유지하고, 수정 후 diff와 테스트 결과를 보여줘.</textarea>
+        <div class="composer-actions">
+          <span>실제 저장소나 모델을 호출하지 않는 검토용 시나리오입니다.</span>
+          <button type="button" class="primary-button" data-start>작업 시작</button>
+        </div>
+      </div>
+
+      <section class="run-board" aria-labelledby="run-title">
+        <header class="run-header">
+          <div>
+            <span class="eyebrow">AGENT RUN</span>
+            <h2 id="run-title" data-run-title>시작할 준비가 되었습니다</h2>
+          </div>
+          <div class="run-status" aria-live="polite" aria-atomic="true">
+            <strong data-step-count>0 / 8</strong>
+            <span data-run-status>사용자 입력 대기</span>
+          </div>
+        </header>
+
+        <ol class="timeline" aria-label="작업 진행 단계">
+          <li data-timeline-step="1"><span>01</span><div><strong>저장소 탐색</strong><small>관련 파일과 이벤트 흐름 확인</small></div></li>
+          <li data-timeline-step="2"><span>02</span><div><strong>수정 계획</strong><small>변경 범위와 검증 방법 제안</small></div></li>
+          <li data-timeline-step="3"><span>03</span><div><strong>모델 경로</strong><small>Business 14가 Plan·Build 경로 결정</small></div></li>
+          <li data-timeline-step="4"><span>04</span><div><strong>수정 미리보기</strong><small>허용된 파일의 bounded patch</small></div></li>
+          <li data-timeline-step="5"><span>05</span><div><strong>테스트 실패</strong><small>중복 이벤트 회귀 확인</small></div></li>
+          <li data-timeline-step="6"><span>06</span><div><strong>교정</strong><small>중복 dispatch 제거</small></div></li>
+          <li data-timeline-step="7"><span>07</span><div><strong>테스트 통과</strong><small>8개 테스트 전체 통과</small></div></li>
+          <li data-timeline-step="8"><span>08</span><div><strong>최종 검토</strong><small>diff·근거·사용자 결정</small></div></li>
+        </ol>
+
+        <div class="workbench-tabs" role="tablist" aria-label="작업 증거">
+          <button type="button" role="tab" aria-selected="true" aria-controls="panel-plan" id="tab-plan" data-evidence-tab="plan">계획</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-diff" id="tab-diff" data-evidence-tab="diff">Diff</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="panel-test" id="tab-test" data-evidence-tab="test">테스트</button>
+        </div>
+
+        <div class="evidence-stage">
+          <section role="tabpanel" id="panel-plan" aria-labelledby="tab-plan" data-evidence-panel="plan">
+            <div class="evidence-note">
+              <span>PLAN MODE · 읽기 전용</span>
+              <strong data-plan-summary>작업을 시작하면 영향을 받는 파일과 수정 계획이 표시됩니다.</strong>
+            </div>
+            <pre><code data-plan-code>1. src/save-note.js의 성공 이벤트 흐름 확인
+2. 중복 dispatch 발생 지점 식별
+3. 한 번만 알림이 발생하도록 수정
+4. 기존 테스트와 회귀 테스트 실행</code></pre>
+          </section>
+
+          <section role="tabpanel" id="panel-diff" aria-labelledby="tab-diff" data-evidence-panel="diff" hidden>
+            <div class="diff-file">src/save-note.js <span>1 deletion · 1 context</span></div>
+            <pre class="diff"><code><span class="context">  await store.save(note);</span>
+<span class="removed">- dispatchSuccess("메모가 저장되었습니다");</span>
+<span class="context">  return { ok: true, message: "메모가 저장되었습니다" };</span></code></pre>
+            <p class="diff-caption" data-diff-caption>수정 단계가 되면 최종 patch 근거가 표시됩니다.</p>
+          </section>
+
+          <section role="tabpanel" id="panel-test" aria-labelledby="tab-test" data-evidence-panel="test" hidden>
+            <div class="test-command"><span>$</span> npm test -- save-note</div>
+            <div class="test-result" data-test-result>
+              <strong>아직 실행되지 않음</strong>
+              <span>명령은 이 데모에서 합성 결과로만 표시됩니다.</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="run-controls">
+          <button type="button" class="quiet-button" data-previous disabled>이전 단계</button>
+          <button type="button" class="primary-button" data-next disabled>다음 단계</button>
+        </div>
+      </section>
+
+      <section class="review-decision" data-review-decision hidden aria-labelledby="review-title">
+        <div>
+          <span class="eyebrow">USER DECISION</span>
+          <h2 id="review-title">수정안을 적용할까요?</h2>
+          <p>파일 1개 변경 · 테스트 8개 통과 · Push/merge/deploy 없음</p>
+        </div>
+        <div class="decision-actions">
+          <button type="button" class="danger-button" data-decision="reject">거절</button>
+          <button type="button" class="quiet-button" data-decision="revise">한 번 더 수정</button>
+          <button type="button" class="approve-button" data-decision="accept">수정안 승인</button>
+        </div>
+        <p class="decision-status" data-decision-status aria-live="polite"></p>
+      </section>
+    </section>
+
+    <aside class="panel route-panel" data-panel="route" aria-labelledby="route-title">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">MODEL PLATFORM</span>
+          <h2 id="route-title">Business 14</h2>
+        </div>
+        <span class="platform-chip">Router Core</span>
+      </div>
+
+      <label class="route-field">
+        <span>모델 경로</span>
+        <select data-route-select>
+          <option value="auto">자동 선택 · Business 14</option>
+          <option value="local">로컬 모델 직접 선택</option>
+          <option value="external">외부 모델 직접 선택</option>
+        </select>
+      </label>
+
+      <label class="toggle-row">
+        <span><strong>로컬 우선</strong><small>가능하면 개인 장비에서 처리</small></span>
+        <input type="checkbox" data-local-first checked>
+      </label>
+
+      <label class="toggle-row">
+        <span><strong>외부 fallback</strong><small>로컬 경로 실패 시에만 사용</small></span>
+        <input type="checkbox" data-external-fallback>
+      </label>
+
+      <section class="route-record" aria-labelledby="route-record-title">
+        <div class="section-label" id="route-record-title">현재 경로 · 합성</div>
+        <dl>
+          <div><dt>Plan</dt><dd data-plan-route>Local Reasoner 14B</dd></div>
+          <div><dt>Build</dt><dd data-build-route>Code Builder 32B</dd></div>
+          <div><dt>Review</dt><dd data-review-route>Korean Review 8B</dd></div>
+          <div><dt>예상 사용량</dt><dd data-usage>₩0 · 로컬</dd></div>
+          <div><dt>데이터 경계</dt><dd data-boundary>장비 밖 전송 없음</dd></div>
+        </dl>
+      </section>
+
+      <section class="route-reason" aria-labelledby="reason-title">
+        <div class="section-label" id="reason-title">선택 이유</div>
+        <ul data-route-reasons>
+          <li>개인 저장소 작업</li>
+          <li>네트워크 권한 없음</li>
+          <li>한국어 계획·코딩 분리</li>
+        </ul>
+      </section>
+
+      <div class="route-warning" data-route-warning hidden role="status">
+        <strong>NO SAFE ROUTE</strong>
+        <span>현재 제약을 만족하는 모델 경로가 없습니다. 설정을 바꾸거나 사람이 직접 진행해야 합니다.</span>
+      </div>
+
+      <p class="synthetic-boundary">모델·Provider·비용·테스트는 모두 합성 데이터입니다. 실제 API 키와 모델 호출은 없습니다.</p>
+    </aside>
+  </main>
+
+  <footer>
+    <span>Business 54 · Personal-first</span>
+    <span>Business 14 supplies model access and routing</span>
+    <span>NO LIVE MODEL · NO REPOSITORY MUTATION</span>
+  </footer>
+
+  <script src="scripts/app.js?v=1"></script>
+</body>
+</html>
