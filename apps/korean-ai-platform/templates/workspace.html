@@ -58,6 +58,184 @@
     </div>
   </section>
 
+  <!-- ===== Start Screen (v3.2 Alpha) ===== -->
+  <section class="start-screen" aria-labelledby="start-title">
+    <div class="start-header">
+      <div class="start-mode-badge">
+        {% if b14_provider_mode == "mock" %}
+        <span class="mode-badge mode-mock" aria-label="Mock mode">
+          <span class="mode-dot" aria-hidden="true"></span>
+          모의 응답 · 실제 Provider 호출 없음
+        </span>
+        {% elif b14_provider_mode == "live" %}
+        <span class="mode-badge mode-live" aria-label="Live mode">
+          <span class="mode-dot" aria-hidden="true"></span>
+          실제 Provider 응답
+        </span>
+        {% else %}
+        <span class="mode-badge mode-mock" aria-label="Mock mode (default)">
+          <span class="mode-dot" aria-hidden="true"></span>
+          모의 응답 · 실제 Provider 호출 없음
+        </span>
+        {% endif %}
+      </div>
+      {% if not b14_has_key and b14_provider_mode == "live" %}
+      <span class="mode-badge mode-warning" aria-label="Key missing">
+        <span class="mode-dot" aria-hidden="true"></span>
+        API key 없음 — .env에 OPENROUTER_API_KEY 설정 필요
+      </span>
+      {% endif %}
+    </div>
+
+    <div class="start-hero-grid">
+      <!-- Left: Prompt & Options -->
+      <div class="start-left">
+        <div class="start-input-card">
+          <label for="start_prompt" class="start-label">한국어로 무엇을 도와드릴까요?</label>
+          <textarea id="start_prompt" class="start-textarea" rows="4"
+            placeholder="예: 한국어로 세 문장으로 설명해줘"
+            aria-label="프롬프트 입력"></textarea>
+
+          <div class="start-presets" aria-label="작업 preset">
+            <button type="button" class="preset-chip is-active" data-preset="general">일반 대화</button>
+            <button type="button" class="preset-chip" data-preset="korean">한국어 요약</button>
+            <button type="button" class="preset-chip" data-preset="code">코드 수정</button>
+            <button type="button" class="preset-chip" data-preset="document">문서 정리</button>
+          </div>
+
+          <div class="start-model-row">
+            <div class="start-model-field">
+              <label for="start_model" class="start-label-small">모델 선택</label>
+              <select id="start_model" class="start-select" aria-label="모델 선택">
+                <option value="b14/auto" data-auto="true">Business 14 자동 선택 (b14/auto)</option>
+                {% for m in b14_catalog_models %}
+                <option value="{{ m.model_id }}" data-provider="{{ m.provider }}">{{ m.name }}{% if m.korean_score %} · 한국어 {{ m.korean_score }}/5{% endif %}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="start-mode-field">
+              <label class="start-label-small">라우팅 모드</label>
+              <div class="routing-mode-group" role="radiogroup" aria-label="라우팅 모드">
+                <label class="mode-choice">
+                  <input type="radio" name="start_route_mode" value="auto" checked>
+                  <span>자동</span>
+                </label>
+                <label class="mode-choice">
+                  <input type="radio" name="start_route_mode" value="manual">
+                  <span>수동</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <details class="start-advanced">
+            <summary>고급 옵션</summary>
+            <div class="advanced-grid">
+              <label>최적화 기준
+                <select id="start_optimize_for" class="start-select-small">
+                  <option value="balanced">균형 (비용·속도·한국어)</option>
+                  <option value="cost">비용 절약</option>
+                  <option value="latency">응답 속도</option>
+                  <option value="korean">한국어 적합도</option>
+                </select>
+              </label>
+              <label>
+                <input type="checkbox" id="start_external_fallback" checked>
+                <span>외부 fallback 허용</span>
+              </label>
+            </div>
+          </details>
+
+          <div class="start-actions">
+            <button id="start_send" class="btn btn-primary start-send-btn" type="button">
+              <span class="send-text">보내기</span>
+            </button>
+            <button id="start_send_loading" class="btn btn-primary start-send-btn" type="button" style="display:none;">
+              <span>전송 중...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Route Preview & Response -->
+      <div class="start-right">
+        <div class="start-route-card" aria-labelledby="route-panel-title">
+          <div class="route-card-header">
+            <span class="kicker">예상 경로</span>
+            <h2 id="route-panel-title">이번 요청에 맞는 선택</h2>
+          </div>
+
+          <div class="route-preview" id="start_route_preview">
+            <div class="route-placeholder">
+              <span class="route-placeholder-text">프롬프트를 입력하고 보내기를 누르세요.</span>
+            </div>
+          </div>
+
+          <div class="route-meta" id="start_route_meta" style="display:none;">
+            <div class="meta-row">
+              <span class="meta-label">선택 Provider</span>
+              <span class="meta-value" id="start_selected_provider">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">선택 모델</span>
+              <span class="meta-value" id="start_selected_model">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">선택 이유</span>
+              <span class="meta-value" id="start_selected_reason">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">요청 상태</span>
+              <span class="meta-value" id="start_request_status">-</span>
+            </div>
+          </div>
+
+          <div class="route-cost" id="start_cost_estimate" style="display:none;">
+            <div class="cost-row">
+              <span>이번 요청 예상 비용</span>
+              <strong id="start_cost_value">-</strong>
+            </div>
+            <small>예상치이며, 실제 비용은 Provider 계약에 따라 별도 청구됩니다.</small>
+          </div>
+        </div>
+
+        <div class="start-response-card" aria-label="응답">
+          <div class="response-header">
+            <span class="kicker">응답</span>
+            <span class="response-mode-badge" id="start_response_mode" style="display:none;">-</span>
+          </div>
+          <div class="response-body" id="start_response_body"></div>
+          <div class="response-meta" id="start_response_meta" style="display:none;">
+            <div class="meta-row">
+              <span class="meta-label">Request ID</span>
+              <span class="meta-value" id="start_request_id">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">토큰</span>
+              <span class="meta-value" id="start_tokens">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">예상 비용</span>
+              <span class="meta-value" id="start_estimated_cost">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">지연 시간</span>
+              <span class="meta-value" id="start_latency">-</span>
+            </div>
+            {% if not b14_has_key and b14_provider_mode == "live" %}
+            <div class="meta-row">
+              <span class="meta-label">경고</span>
+              <span class="meta-value" style="color:#ef4444;">Live 모드이지만 API key가 설정되지 않았습니다.</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Existing Workspace Console ===== -->
   <div class="console-grid">
     <section class="console-panel connection-panel" aria-label="{{ _('workspace.connection_settings') }}">
       <div class="console-panel-header">
@@ -187,5 +365,6 @@
 <script id="workspace-config" type="application/json">
 {{ workspace_config | tojson }}
 </script>
+<script src="/start.js?v=alpha-1" defer></script>
 <script src="/workspace.js?v=phase3-3" defer></script>
 {% endblock %}

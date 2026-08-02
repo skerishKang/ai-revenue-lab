@@ -17,10 +17,14 @@ class PilotError(Exception):
 
 
 class PilotNotConfigured(PilotError):
-    def __init__(self) -> None:
+    def __init__(self, detail: str = "") -> None:
+        message = (
+            detail
+            or "BYOK Gateway Pilot가 설정되지 않았습니다. 환경변수 BUSINESS14_PILOT_BASE_URL과 BUSINESS14_PILOT_MODEL_ID를 확인하십시오."
+        )
         super().__init__(
             code="pilot_not_configured",
-            message="BYOK Gateway Pilot가 설정되지 않았습니다. 환경변수 BUSINESS14_PILOT_BASE_URL과 BUSINESS14_PILOT_MODEL_ID를 확인하십시오.",
+            message=message,
             status_code=503,
         )
 
@@ -115,6 +119,34 @@ class MalformedUpstreamResponse(PilotError):
         )
 
 
+class UpstreamClientError(PilotError):
+    """Upstream rejected the request with a non-auth 4xx status (404/409/422/…).
+
+    Never fallback-allowed: the request itself was rejected, so repeating it
+    against another model would hide a real configuration/schema problem.
+    """
+
+    def __init__(self, upstream_status: int = 400) -> None:
+        self.upstream_status = upstream_status
+        super().__init__(
+            code="upstream_client_error",
+            message=f"Provider가 요청을 거부했습니다 (upstream HTTP {upstream_status}).",
+            status_code=502,
+        )
+
+
+class UpstreamResponseTooLarge(PilotError):
+    """Upstream response exceeded the streamed byte cap (aborted mid-body)."""
+
+    def __init__(self, max_bytes: int = 1024 * 1024) -> None:
+        self.max_bytes = max_bytes
+        super().__init__(
+            code="upstream_response_too_large",
+            message=f"Provider 응답이 허용된 크기({max_bytes} bytes)를 초과하여 중단되었습니다.",
+            status_code=502,
+        )
+
+
 class InvalidRequest(PilotError):
     def __init__(self, detail: str = "요청 형식이 올바르지 않습니다.") -> None:
         super().__init__(
@@ -167,3 +199,18 @@ class AmbiguousModelRoute(PilotError):
             message=f"모델 '{model_id}'에 대한 라우팅 정보가 중복되거나 모호합니다.",
             status_code=500,
         )
+
+
+class NoSafeRoute(PilotError):
+    """Raised when no safe routing path exists (no upstream call made)."""
+
+    def __init__(self, reason_code: str = "no_safe_route", message: str = "", upstream_called: bool = False) -> None:
+        if not message:
+            message = "안전한 라우팅 경로를 찾을 수 없습니다. 모델 선택이나 옵션을 확인하십시오."
+        super().__init__(
+            code="no_safe_route",
+            message=message,
+            status_code=503,
+        )
+        self.reason_code = reason_code
+        self.upstream_called = upstream_called

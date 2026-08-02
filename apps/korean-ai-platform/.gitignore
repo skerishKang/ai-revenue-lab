@@ -13,3 +13,6 @@ node_modules/
 python_modules/
 src/vendor/
 pylock.toml
+.env
+.env.local
+.env.*.local

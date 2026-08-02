@@ -18,7 +18,7 @@ import json
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
+from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.config import pilot_settings
