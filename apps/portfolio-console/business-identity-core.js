@@ -72,7 +72,7 @@
     { n:51, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
     { n:52, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
     { n:53, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
-    { n:54, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
+    { n:54, ui:"IN_PROGRESS",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
     { n:55, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" }
   ]);
 
