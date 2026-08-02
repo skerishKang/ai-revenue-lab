@@ -135,6 +135,39 @@ python -m pytest -q
 
 All tests use `httpx.MockTransport` — no external network calls.
 
+### Browser Tests
+
+Browser tests use Playwright to verify the Start screen and user journeys
+in a real Chromium browser (desktop 1440×1000 and mobile 390×844).
+
+#### Setup
+
+1. Install Python dependencies (including Playwright):
+   ```bash
+   uv sync --group dev --frozen
+   ```
+
+2. Install the Chromium browser binary (separate from Python deps):
+   ```bash
+   uv run playwright install chromium
+   ```
+
+   > **Note:** If `playwright install chromium` fails, the browser tests
+   > cannot run and must NOT be marked as PASS.
+
+#### Run
+
+```bash
+uv run python browser_tests/alpha1_start_screen_smoke.py
+```
+
+The script starts a mock-mode server, then verifies:
+- Start screen renders correctly (prompt, model select, send button)
+- Desktop and mobile layouts (no horizontal overflow)
+- Navigation journeys (workspace → model/price/pricing/usage/developer → back)
+- Mock chat flow (prompt input, Enter submit, response verification)
+- Console/page errors, failed local assets, and external requests are zero
+
 ## Documentation
 
 - [Business 14 Product Language Policy](docs/BUSINESS14_LANGUAGE_POLICY.md)
@@ -176,8 +209,8 @@ prompt input, model selection, optimization options, and route preview.
 | Command | Description |
 |---------|-------------|
 | `python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000` | Documented owner start command (loads `.env`; mode comes from `B14_PROVIDER_MODE`) |
-| `python3 -m app.pilot.catalog validate-model-catalog` | Check the configured catalog snapshot against the public OpenRouter Models API |
-| `python3 -m app.pilot.smoke_live` | Run a single live smoke test with `openrouter/free` (only when a real key is present) |
+| `python3 -m app.pilot.catalog validate-model-catalog` | Check the configured catalog snapshot against the public OpenRouter Models API (may require a key for full access; anonymous check attempted by default) |
+| `python3 -m app.pilot.smoke_live` | Run a single live smoke test with `openrouter/free` (only when a real key is present); without a key it prints `LIVE_SMOKE_READY_NOT_EXECUTED` and makes zero chat API calls |
 
 ### Mock Mode
 
@@ -267,8 +300,16 @@ The chat completions response includes bounded `business14` metadata:
 ### Catalog
 
 The Alpha catalog is a **configured snapshot** taken from the public
-OpenRouter Models API (`GET https://openrouter.ai/api/v1/models`, no key
-required). Prices are snapshot metadata, not a live invoice.
+OpenRouter Models API (`GET https://openrouter.ai/api/v1/models`).
+
+Models API의 현재 인증 요구는 upstream 정책에 따르며,
+키 없이 anonymous 검사를 시도할 수 있으나 성공을 보장하지 않는다.
+If OPENROUTER_API_KEY is set, the Authorization Bearer header is used.
+HTTP 401/403 is reported as `authentication_required`; network errors
+are reported as `network_skipped`. The catalog is only `checked=true`
+when the live check succeeds.
+
+Prices are snapshot metadata, not a live invoice.
 
 | Model ID | Provider | Notes |
 |----------|----------|-------|

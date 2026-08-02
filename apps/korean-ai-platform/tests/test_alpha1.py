@@ -1882,3 +1882,51 @@ class TestActualRouteId:
         assert "http" not in route_id
         assert "@" not in route_id
         assert route_id.startswith("openrouter:")
+
+
+# ============================================================================
+# Keyless live smoke evidence (zero chat API calls without a key)
+# ============================================================================
+
+
+class TestKeylessLiveSmoke:
+    def test_keyless_smoke_prints_ready_not_executed(self, capsys, monkeypatch):
+        """Without OPENROUTER_API_KEY, smoke_live prints
+        LIVE_SMOKE_READY_NOT_EXECUTED and makes zero chat API calls."""
+        monkeypatch.setenv("OPENROUTER_API_KEY", "")
+        monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
+
+        from app.pilot.smoke_live import run_live_smoke
+
+        calls = []
+
+        def fake_call(**kw):
+            calls.append(kw)
+            raise AssertionError("chat completions must NOT be called keyless")
+
+        import app.pilot.smoke_live as smoke_mod
+        original = smoke_mod.call_openrouter_chat_completions
+        smoke_mod.call_openrouter_chat_completions = fake_call
+        try:
+            rc = run_live_smoke()
+        finally:
+            smoke_mod.call_openrouter_chat_completions = original
+
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "LIVE_SMOKE_READY_NOT_EXECUTED" in out
+        assert "SMOKE_TEST_OK" not in out
+        assert len(calls) == 0
+
+    def test_keyless_smoke_mock_mode_ready_not_executed(self, capsys, monkeypatch):
+        """B14_PROVIDER_MODE=mock with no key also prints READY_NOT_EXECUTED."""
+        monkeypatch.setenv("OPENROUTER_API_KEY", "")
+        monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
+
+        from app.pilot.smoke_live import run_live_smoke
+
+        rc = run_live_smoke()
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "LIVE_SMOKE_READY_NOT_EXECUTED" in out
+        assert "SMOKE_TEST_OK" not in out

@@ -21,6 +21,7 @@ dev = [
     "pytest-asyncio>=0.24,<1",
     "workers-py>=1.15.0",
     "workers-runtime-sdk>=1.6.3",
+    "playwright>=1.50,<2",
 ]
 
 [tool.setuptools.packages.find]

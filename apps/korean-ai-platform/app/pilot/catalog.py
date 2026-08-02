@@ -7,14 +7,24 @@ Source of truth
 ---------------
 Model IDs, display names, context lengths, and per-token prices are a
 **configured snapshot** taken from the public OpenRouter Models API
-(`GET https://openrouter.ai/api/v1/models`, no key required) at
+(`GET https://openrouter.ai/api/v1/models`) at
 `CATALOG_SOURCE_CHECKED_AT`. Prices are snapshot metadata, NOT a live
 invoice — actual billing is between the owner and OpenRouter. A price of
 ``0.0`` means "known free at snapshot time"; ``None`` means "unknown".
 
 The CLI entry point `python -m app.pilot.catalog validate-model-catalog`
-re-checks the snapshot against the live Models API (public endpoint) and
-reports availability and price drift.
+re-checks the snapshot against the live Models API and reports availability
+and price drift.
+
+Authentication
+--------------
+Models API의 현재 인증 요구는 upstream 정책에 따르며,
+키 없이 anonymous 검사를 시도할 수 있으나 성공을 보장하지 않는다.
+If OPENROUTER_API_KEY is set, the Authorization Bearer header is used.
+If no key is present, an anonymous request is attempted.
+HTTP 401/403 is reported as `authentication_required`, not `network_skipped`.
+Network errors are reported as `network_skipped`.
+The catalog is only `checked=true` when the live check succeeds.
 
 Free Models Router
 ------------------
@@ -309,11 +319,22 @@ def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def fetch_live_models() -> dict:
-    """Fetch the public OpenRouter Models API (no key required).
+def fetch_live_models(transport=None) -> dict:
+    """Fetch the OpenRouter Models API with proper auth handling.
+
+    Models API의 현재 인증 요구는 upstream 정책에 따르며,
+    키 없이 anonymous 검사를 시도할 수 있으나 성공을 보장하지 않는다.
+
+    If OPENROUTER_API_KEY is set, the Authorization Bearer header is used.
+    If no key is present, an anonymous request is attempted.
+
+    Args:
+        transport: Optional httpx transport for testing (MockTransport).
 
     Returns ``{"ok": True, "checked_at": ..., "models_by_id": {...}}`` on
-    success or ``{"ok": False, "reason": ...}`` on network/shape errors.
+    success, ``{"ok": False, "reason": "authentication_required"}`` on
+    HTTP 401/403, or ``{"ok": False, "reason": "network_skipped: ..."}``
+    on network errors.
     """
     import httpx
 
@@ -323,15 +344,28 @@ def fetch_live_models() -> dict:
     except ValueError as e:
         return {"ok": False, "reason": f"invalid base URL: {e}"}
 
+    headers: dict[str, str] = {"Accept": "application/json"}
+    if openrouter_config.has_key:
+        headers["Authorization"] = f"Bearer {openrouter_config.api_key}"
+
+    client_kwargs: dict = {
+        "timeout": httpx.Timeout(None, connect=10.0, read=30.0, write=10.0, pool=10.0),
+    }
+    if transport is not None:
+        client_kwargs["transport"] = transport
+
     try:
-        with httpx.Client(timeout=httpx.Timeout(None, connect=10.0, read=30.0, write=10.0, pool=10.0)) as client:
+        with httpx.Client(**client_kwargs) as client:
             resp = client.get(
                 f"{base_url}/models",
-                headers={"Accept": "application/json"},
+                headers=headers,
                 follow_redirects=False,
             )
     except (httpx.TimeoutException, httpx.RequestError) as e:
-        return {"ok": False, "reason": f"network error: {type(e).__name__}"}
+        return {"ok": False, "reason": f"network_skipped: {type(e).__name__}"}
+
+    if resp.status_code in (401, 403):
+        return {"ok": False, "reason": "authentication_required"}
 
     if resp.status_code != 200:
         return {"ok": False, "reason": f"upstream returned HTTP {resp.status_code}"}
@@ -363,18 +397,26 @@ def _live_price_per_1m(item: dict, field_name: str) -> float | None:
         return None
 
 
-def validate_catalog_ids_live() -> dict:
+def validate_catalog_ids_live(transport=None) -> dict:
     """Check the configured catalog snapshot against the live Models API.
 
-    The Models API is public — no API key and no live provider mode are
-    required. This performs a real read-only check of model availability
-    and reports price drift between the configured snapshot and live
-    metadata. It never makes a chat/completions call.
+    Models API의 현재 인증 요구는 upstream 정책에 따르며,
+    키 없이 anonymous 검사를 시도할 수 있으나 성공을 보장하지 않는다.
+
+    If OPENROUTER_API_KEY is set, the Authorization Bearer header is used.
+    If no key is present, an anonymous request is attempted.
+
+    HTTP 401/403 is reported as `authentication_required` (not `network_skipped`).
+    Network errors are reported as `network_skipped`.
+    The catalog is only `checked=true` when the live check succeeds.
+
+    Args:
+        transport: Optional httpx transport for testing (MockTransport).
 
     Returns a dict with:
-        - checked: bool (live check actually ran)
-        - skipped: bool (network/config prevented the check)
-        - reason: str (when skipped)
+        - checked: bool (live check actually ran and succeeded)
+        - skipped: bool (network/config/auth prevented the check)
+        - reason: str (when skipped: "authentication_required", "network_skipped: ...", etc.)
         - checked_at: str (UTC, when the live check ran)
         - source: str
         - unavailable: list[str] (catalog model_ids not found upstream)
@@ -393,7 +435,7 @@ def validate_catalog_ids_live() -> dict:
         "price_drift": [],
     }
 
-    live = fetch_live_models()
+    live = fetch_live_models(transport=transport)
     if not live["ok"]:
         result["skipped"] = True
         result["reason"] = live["reason"]
@@ -463,12 +505,19 @@ def _cli_validate_model_catalog() -> int:
         print()
 
     result = validate_catalog_ids_live()
-    print("=== Live validation (public Models API, no key required) ===")
+    print("=== Live validation (public Models API) ===")
     if result["skipped"]:
-        print(f"SKIPPED: {result['reason']}")
+        reason = result["reason"]
+        if reason == "authentication_required":
+            print("AUTHENTICATION_REQUIRED: The upstream Models API returned HTTP 401/403.")
+            print("An OPENROUTER_API_KEY may be required for this endpoint.")
+        elif reason.startswith("network_skipped:"):
+            print(f"NETWORK_SKIPPED: {reason}")
+        else:
+            print(f"SKIPPED: {reason}")
         print()
         print("Catalog model IDs/prices remain a configured snapshot.")
-        print("Re-run with network access to check against the live Models API.")
+        print("Re-run with network access and/or a valid API key to check against the live Models API.")
         return 0
 
     print(f"checked_at: {result['checked_at']}")
