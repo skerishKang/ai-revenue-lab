@@ -273,3 +273,20 @@
   calculateCost();
   updateBudget();
 })();
+
+
+(() => {
+  const load = (src) => new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.body.append(script);
+  });
+  load('scripts/catalog-v31-install.js')
+    .then(() => load('scripts/catalog-v31.js'))
+    .catch(() => {
+      const toast = document.querySelector('#toast');
+      if (toast) { toast.textContent = '모델 카탈로그를 불러오지 못했습니다.'; toast.hidden = false; }
+    });
+})();
