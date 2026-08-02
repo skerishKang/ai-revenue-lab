@@ -164,11 +164,8 @@ cp .env.example .env
 #    B14_PROVIDER_MODE=live
 #    OPENROUTER_API_KEY=sk-or-v1-...
 
-# 3. Run in mock mode (no key needed, simulated responses)
-B14_PROVIDER_MODE=mock python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
-
-# 4. Or run in live mode (requires OPENROUTER_API_KEY in .env)
-B14_PROVIDER_MODE=live python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+# 3. Start with the documented command (loads .env; mock mode needs no key)
+python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000
 ```
 
 Visit `http://localhost:8000/workspace` — the Start screen shows the
@@ -178,10 +175,9 @@ prompt input, model selection, optimization options, and route preview.
 
 | Command | Description |
 |---------|-------------|
-| `B14_PROVIDER_MODE=mock python3 -m uvicorn app.main:app` | Start in mock mode (simulated responses) |
-| `B14_PROVIDER_MODE=live OPENROUTER_API_KEY=... python3 -m uvicorn app.main:app` | Start in live mode (real OpenRouter calls) |
-| `python3 -m app.pilot.catalog validate-model-catalog` | Validate catalog model IDs against live OpenRouter |
-| `python3 -m app.pilot.smoke_live` | Run a single live smoke test (uses free model, low cost) |
+| `python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000` | Documented owner start command (loads `.env`; mode comes from `B14_PROVIDER_MODE`) |
+| `python3 -m app.pilot.catalog validate-model-catalog` | Check the configured catalog snapshot against the public OpenRouter Models API |
+| `python3 -m app.pilot.smoke_live` | Run a single live smoke test with `openrouter/free` (only when a real key is present) |
 
 ### Mock Mode
 
@@ -207,8 +203,8 @@ prompt input, model selection, optimization options, and route preview.
 - Authorization is via `Authorization: Bearer` header only
 - Redirects are disabled (`follow_redirects=False`)
 - Exact host allow-list: `openrouter.ai` only
-- Connect/read/total timeout bounds applied (10s/30s/35s)
-- Response body size limited to 1 MB
+- Explicit connect/read/write/pool timeout bounds applied (10s/30s/10s/10s; no implicit total timeout)
+- Success responses are streamed and aborted as soon as the 1 MB body cap is exceeded
 - Upstream error body truncated to 500 characters
 - `.env` is in `.gitignore`; `.env.example` has empty values only
 
@@ -217,8 +213,8 @@ prompt input, model selection, optimization options, and route preview.
 - **Manual**: specific catalog model ID → single upstream call
 - **Automatic**: `model: "b14/auto"` → deterministic selection by `optimize_for`
   (balanced / cost / latency / korean)
-- **Fallback**: retries on timeout, 429, 5xx (up to `max_attempts`, default 3)
-- **No fallback**: 401/403, malformed request, missing key, 4xx
+- **Fallback**: retries only on transport failure, timeout, HTTP 429, HTTP 5xx (up to `max_attempts`, default 3)
+- **No fallback**: HTTP 400/401/403/404/409/422/any other 4xx, malformed request, malformed upstream response, oversize response, missing key, unsupported feature, unknown exceptions
 - **No-safe-route**: returns `NO_SAFE_ROUTE` with zero upstream calls
 - Resolve endpoint (`POST /api/pilot/router/resolve`) performs no upstream calls
 
@@ -236,19 +232,33 @@ The chat completions response includes bounded `business14` metadata:
 ```json
 {
   "route_mode": "auto",
-  "selected_provider": "OpenRouter",
+  "selected_provider": "Google",
   "selected_model": "google/gemini-2.5-flash",
+  "selected_upstream_model": "google/gemini-2.5-flash",
+  "actual_response_model": "google/gemini-2.5-flash",
   "selected_route_id": "b14route_...",
   "reason_codes": ["optimize_for:balanced", "capabilities:chat"],
   "fallback_allowed": true,
   "fallback_used": false,
   "attempt_count": 1,
+  "attempt_evidence": [
+    {
+      "attempt": 1,
+      "model_id": "google/gemini-2.5-flash",
+      "upstream_model": "google/gemini-2.5-flash",
+      "provider": "Google",
+      "outcome": "success",
+      "error_code": null,
+      "actual_response_model": "google/gemini-2.5-flash"
+    }
+  ],
   "route_evidence_status": "mock_no_upstream_call",
   "prompt_tokens": 0,
   "completion_tokens": 0,
   "total_tokens": 0,
   "estimated_usd": null,
   "estimated_krw": null,
+  "cost_basis": "unknown",
   "request_id": "b14req_...",
   "provider_mode": "mock"
 }
@@ -256,23 +266,27 @@ The chat completions response includes bounded `business14` metadata:
 
 ### Catalog
 
-The Alpha catalog includes:
+The Alpha catalog is a **configured snapshot** taken from the public
+OpenRouter Models API (`GET https://openrouter.ai/api/v1/models`, no key
+required). Prices are snapshot metadata, not a live invoice.
 
 | Model ID | Provider | Notes |
 |----------|----------|-------|
-| `openrouter/free` | OpenRouter (free) | Free tier (no cost) |
-| `google/gemini-2.5-flash` | Google | Low-cost Gemini series |
-| `deepseek/deepseek-chat` | DeepSeek | Qwen/DeepSeek/Mistral series |
-| `anthropic/claude-3-5-sonnet-20241022` | Anthropic | Strong paid model |
+| `openrouter/free` | OpenRouter (free router) | Sends exactly `"model": "openrouter/free"`; actual free model preserved in `actual_response_model` |
+| `google/gemini-2.5-flash` | Google | Snapshot-priced paid model |
+| `deepseek/deepseek-chat` | DeepSeek | Snapshot-priced paid model |
+| `mistralai/mistral-small-3.2-24b-instruct` | Mistral | Snapshot-priced paid model |
+| `anthropic/claude-sonnet-4.5` | Anthropic | Snapshot-priced paid model |
 
-Model IDs are verified against the live OpenRouter API via:
+Model IDs and snapshot prices are checked against the live OpenRouter Models API via:
 
 ```bash
 python3 -m app.pilot.catalog validate-model-catalog
 ```
 
-This command calls `GET https://openrouter.ai/api/v1/models` when a key and
-network are available. In mock mode or without a key, it reports `SKIPPED`.
+This command calls the public Models API; no API key or live provider mode
+is required. Without network access it reports `SKIPPED` and the catalog
+remains a configured snapshot.
 
 ### Limitations
 
@@ -280,5 +294,5 @@ network are available. In mock mode or without a key, it reports `SKIPPED`.
 - **No platform credits** — no prepaid wallet or credit system
 - **No persistent key vault** — key is read from env var per deployment
 - **No merge/deploy** — this is an owner-tryable Alpha, not a production release
-- Model IDs in the catalog are configured defaults; use `validate-model-catalog`
-  to verify they exist on the live OpenRouter API
+- Catalog model IDs and prices are a configured snapshot; use
+  `validate-model-catalog` to check them against the live OpenRouter Models API

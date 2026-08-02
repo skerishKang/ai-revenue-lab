@@ -13,6 +13,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from typing import Any
 
 from starlette.routing import Router
 from starlette.responses import JSONResponse
@@ -295,7 +296,6 @@ def _catalog_summary_dicts() -> list[dict]:
         "context_window": 0,
     })
     return result
-    return result
 
 
 @router.route("/health", methods=["GET"])
@@ -492,14 +492,15 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     - Detects mock vs live mode from B14_PROVIDER_MODE
     - In mock mode: returns canned response, zero upstream calls
     - In live mode: calls OpenRouter with fallback logic
-    - Returns full Business 14 metadata
+    - Response metadata describes the candidate that ACTUALLY answered
+      (after any fallback), never the primary decision candidate
+    - Unknown exceptions fail closed (no fallback)
     """
     from app.pilot.openrouter_config import openrouter_config as cfg
 
     model_id = body["model"]
     b14_opts = body.get("business14", {})
 
-    # Resolve route (no upstream call)
     decision = rcore.resolve_route(model_id, b14_opts)
 
     candidate = rcore.RouteCandidate(
@@ -526,6 +527,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     fallback_used = False
     last_error: PilotError | None = None
     response_data: dict[str, Any] | None = None
+    success_candidate: dict[str, str] | None = None
+    attempt_evidence: list[dict[str, Any]] = []
 
     candidates: list[dict[str, str]] = [
         {
@@ -558,7 +561,6 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                     provider=current["provider"],
                 )
             else:
-                # live mode: real OpenRouter call
                 if not cfg.has_key:
                     raise PilotNotConfigured(
                         "LIVE 모드에서는 OPENROUTER_API_KEY가 필요합니다. "
@@ -574,8 +576,16 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 )
         except PilotError as e:
             last_error = e
-            error_code = e.code
-            if not rcore.is_error_fallback_allowed(error_code):
+            attempt_evidence.append({
+                "attempt": attempt_count,
+                "model_id": current["model_id"],
+                "upstream_model": current["upstream_model"],
+                "provider": current["provider"],
+                "outcome": "error",
+                "error_code": e.code,
+                "actual_response_model": None,
+            })
+            if not rcore.is_error_fallback_allowed(e.code):
                 break
             if attempt_count >= max_attempts or idx >= len(candidates) - 1:
                 break
@@ -587,23 +597,38 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 current["model_id"],
                 redact_sensitive(str(e)),
             )
-            if attempt_count >= max_attempts or idx >= len(candidates) - 1:
-                last_error = PilotError(
-                    code="upstream_server_error",
-                    message="Provider 처리 중 오류가 발생했습니다.",
-                    status_code=502,
-                )
-            else:
-                continue
+            attempt_evidence.append({
+                "attempt": attempt_count,
+                "model_id": current["model_id"],
+                "upstream_model": current["upstream_model"],
+                "provider": current["provider"],
+                "outcome": "error",
+                "error_code": "internal_error",
+                "actual_response_model": None,
+            })
+            last_error = PilotError(
+                code="internal_error",
+                message="요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                status_code=500,
+            )
             break
 
-        # Success
+        actual_model = response_data.get("_actual_response_model")
+        attempt_evidence.append({
+            "attempt": attempt_count,
+            "model_id": current["model_id"],
+            "upstream_model": current["upstream_model"],
+            "provider": current["provider"],
+            "outcome": "success",
+            "error_code": None,
+            "actual_response_model": actual_model,
+        })
+        success_candidate = current
         break
 
     latency_ms = int((time.monotonic() - start_time) * 1000)
 
-    if response_data is None:
-        # All attempts failed
+    if response_data is None or success_candidate is None:
         if last_error is not None:
             logger.warning(
                 "alpha_error request_id=%s code=%s status=%d attempt=%d",
@@ -619,6 +644,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                         "code": last_error.code,
                         "message": last_error.message,
                         "request_id": request_id,
+                        "attempt_count": attempt_count,
+                        "fallback_used": fallback_used,
+                        "attempt_evidence": attempt_evidence,
                     }
                 },
             )
@@ -628,14 +656,13 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             upstream_called=False,
         )
 
-    # Build response
-    biz14 = response_data.get("business14", {})
+    actual_response_model = response_data.get("_actual_response_model")
     if cfg.is_mock:
         biz14 = orv.build_mock_metadata(
             request_id=request_id,
-            model_id=decision.selected_model,
-            upstream_model=decision.selected_upstream_model,
-            provider=decision.selected_provider,
+            model_id=success_candidate["model_id"],
+            upstream_model=success_candidate["upstream_model"],
+            provider=success_candidate["provider"],
         )
     else:
         usage = response_data.get("usage") or {}
@@ -644,15 +671,16 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         tt = usage.get("total_tokens")
         biz14 = orv.build_live_metadata(
             request_id=request_id,
-            model_id=decision.selected_model,
-            upstream_model=decision.selected_upstream_model,
-            provider=decision.selected_provider,
+            model_id=success_candidate["model_id"],
+            upstream_model=success_candidate["upstream_model"],
+            provider=success_candidate["provider"],
             latency_ms=latency_ms,
             prompt_tokens=pt,
             completion_tokens=ct,
             total_tokens=tt,
             attempt_count=attempt_count,
             fallback_used=fallback_used,
+            actual_response_model=actual_response_model,
         )
 
     usage = response_data.get("usage") or {}
@@ -662,13 +690,16 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
 
     biz14.update({
         "route_mode": decision.route_mode,
-        "selected_provider": decision.selected_provider,
-        "selected_model": decision.selected_model,
+        "selected_provider": success_candidate["provider"],
+        "selected_model": success_candidate["model_id"],
+        "selected_upstream_model": success_candidate["upstream_model"],
+        "actual_response_model": actual_response_model,
         "selected_route_id": decision.selected_route_id,
         "reason_codes": decision.reason_codes,
         "fallback_allowed": decision.fallback_allowed,
         "fallback_used": fallback_used,
         "attempt_count": attempt_count,
+        "attempt_evidence": attempt_evidence,
         "route_evidence_status": (
             "mock_no_upstream_call" if cfg.is_mock else "live_verified"
         ),
@@ -677,14 +708,17 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         "total_tokens": total_tokens,
     })
 
-    response_data["model"] = decision.selected_model
+    if actual_response_model:
+        response_data["model"] = actual_response_model
     response_data["business14"] = biz14
+    for internal_key in [k for k in response_data if k.startswith("_")]:
+        del response_data[internal_key]
 
     logger.info(
         "alpha_success request_id=%s model=%s provider=%s mode=%s attempt=%d latency_ms=%d",
         request_id,
-        decision.selected_model,
-        decision.selected_provider,
+        success_candidate["model_id"],
+        success_candidate["provider"],
         cfg.provider_mode,
         attempt_count,
         latency_ms,

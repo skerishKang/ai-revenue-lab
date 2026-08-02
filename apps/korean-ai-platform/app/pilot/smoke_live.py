@@ -85,7 +85,9 @@ def run_live_smoke() -> int:
 
     print()
     print("SMOKE_TEST_OK")
-    print(f"  model: {model_id}")
+    print(f"  requested_model: {model_id}")
+    print(f"  requested_upstream_model: {upstream_model}")
+    print(f"  actual_response_model: {result.get('_actual_response_model', '-')}")
     print(f"  request_id: {result.get('id', '-')}")
     print(f"  prompt_tokens: {usage.get('prompt_tokens', '?')}")
     print(f"  completion_tokens: {usage.get('completion_tokens', '?')}")

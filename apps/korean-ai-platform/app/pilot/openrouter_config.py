@@ -44,9 +44,27 @@ class OpenRouterConfig:
 
         self.connect_timeout_seconds: float = 10.0
         self.read_timeout_seconds: float = 30.0
-        self.total_timeout_seconds: float = 35.0
+        self.write_timeout_seconds: float = 10.0
+        self.pool_timeout_seconds: float = 10.0
         self.max_response_bytes: int = 1024 * 1024
         self.max_error_body_chars: int = 500
+
+    def build_http_timeout(self):
+        """Build the httpx.Timeout with every component set explicitly.
+
+        No implicit default: connect/read/write/pool are each bounded and
+        match the documented values. There is no separate "total" deadline —
+        the per-phase bounds are the contract.
+        """
+        import httpx
+
+        return httpx.Timeout(
+            None,
+            connect=self.connect_timeout_seconds,
+            read=self.read_timeout_seconds,
+            write=self.write_timeout_seconds,
+            pool=self.pool_timeout_seconds,
+        )
 
     @property
     def is_live(self) -> bool:

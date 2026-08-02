@@ -6,6 +6,7 @@ All tests are network-free (use httpx.MockTransport). No external network calls.
 from __future__ import annotations
 
 import json
+import os
 
 import httpx
 import pytest
@@ -14,6 +15,9 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.catalog import (
     CATALOG_MODELS,
+    CATALOG_SOURCE,
+    CATALOG_SOURCE_URL,
+    CatalogModel,
     get_catalog_by_id,
     list_catalog_summaries,
     select_by_optimize,
@@ -248,8 +252,8 @@ class TestAutoRoute:
         d = resolve_auto_route(optimize_for="cost")
         selected = get_catalog_by_id(d.selected_model)
         assert selected is not None
-        # openrouter/free has zero cost — should be first for cost
-        assert selected.input_price_usd_per_1m + selected.output_price_usd_per_1m <= 0.01
+        price = (selected.input_price_usd_per_1m or 0.0) + (selected.output_price_usd_per_1m or 0.0)
+        assert price <= 0.01
 
     def test_auto_route_deterministic(self):
         d1 = resolve_auto_route(optimize_for="balanced", task_type="general")
@@ -626,28 +630,46 @@ class TestLiveAdapter:
 class TestCostEstimate:
     def test_price_known_estimate(self):
         cm = get_catalog_by_id("google/gemini-2.5-flash")
-        # 1M input @ $0.05, 1M output @ $0.10
+        assert cm.price_is_known
+        expected = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
         assert usd is not None
-        assert usd == pytest.approx(0.15, rel=1e-3)
+        assert usd == pytest.approx(expected, rel=1e-9)
+
+    def test_free_route_known_zero_estimate(self):
+        cm = get_catalog_by_id("openrouter/free")
+        assert cm.price_is_known
+        assert cm.input_price_usd_per_1m == 0.0
+        assert cm.output_price_usd_per_1m == 0.0
+        assert cm.estimate_cost_usd(1000, 500) == 0.0
+        assert cm.estimate_cost_krw(1000, 500) == 0.0
 
     def test_price_unknown_null(self):
-        cm = get_catalog_by_id("openrouter/free")
-        # zero-price → estimate returns None
-        usd = cm.estimate_cost_usd(1000, 500)
-        assert usd is None
-        krw = cm.estimate_cost_krw(1000, 500)
-        assert krw is None
+        cm = CatalogModel(
+            model_id="test/unknown-price",
+            upstream_model="test/unknown-price",
+            display_name="Unknown Price",
+            provider="Test",
+            provider_type="external",
+            input_price_usd_per_1m=None,
+            output_price_usd_per_1m=None,
+        )
+        assert cm.price_is_known is False
+        assert cm.estimate_cost_usd(1000, 500) is None
+        assert cm.estimate_cost_krw(1000, 500) is None
 
     def test_krw_uses_configured_rate(self):
         cm = get_catalog_by_id("google/gemini-2.5-flash")
+        expected_usd = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         krw = cm.estimate_cost_krw(1_000_000, 1_000_000)
         assert krw is not None
-        assert krw == pytest.approx(0.15 * 1380, rel=1e-3)
+        assert krw == pytest.approx(expected_usd * 1380, rel=1e-9)
 
     def test_live_response_has_estimate(self):
         _set_live()
         from app.pilot.openrouter import build_live_metadata
+        cm = get_catalog_by_id("google/gemini-2.5-flash")
+        expected_usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
         meta = build_live_metadata(
             request_id="b14req_test",
             model_id="google/gemini-2.5-flash",
@@ -658,24 +680,28 @@ class TestCostEstimate:
             completion_tokens=1_000_000,
             total_tokens=2_000_000,
         )
-        assert meta["estimated_usd"] == pytest.approx(0.15, rel=1e-3)
-        assert meta["estimated_krw"] == pytest.approx(0.15 * 1380, rel=1e-3)
+        assert meta["estimated_usd"] == pytest.approx(expected_usd, rel=1e-9)
+        assert meta["estimated_krw"] == pytest.approx(expected_usd * 1380, rel=1e-9)
+        assert meta["cost_basis"] == "configured_snapshot"
 
-    def test_unknown_price_estimate_null(self):
+    def test_free_route_live_metadata_known_free(self):
         _set_live()
         from app.pilot.openrouter import build_live_metadata
         meta = build_live_metadata(
             request_id="b14req_test",
             model_id="openrouter/free",
-            upstream_model="google/gemini-2.0-flash",
-            provider="OpenRouter (free)",
+            upstream_model="openrouter/free",
+            provider="OpenRouter (free router)",
             latency_ms=100,
             prompt_tokens=1000,
             completion_tokens=500,
             total_tokens=1500,
+            actual_response_model="some/free-model",
         )
-        assert meta["estimated_usd"] is None
-        assert meta["estimated_krw"] is None
+        assert meta["estimated_usd"] == 0.0
+        assert meta["estimated_krw"] == 0.0
+        assert meta["cost_basis"] == "known_free"
+        assert meta["actual_response_model"] == "some/free-model"
 
 
 # ============================================================================
@@ -687,17 +713,21 @@ class TestMetadataCompleteness:
         "route_mode",
         "selected_provider",
         "selected_model",
+        "selected_upstream_model",
+        "actual_response_model",
         "selected_route_id",
         "reason_codes",
         "fallback_allowed",
         "fallback_used",
         "attempt_count",
+        "attempt_evidence",
         "route_evidence_status",
         "prompt_tokens",
         "completion_tokens",
         "total_tokens",
         "estimated_usd",
         "estimated_krw",
+        "cost_basis",
         "request_id",
         "provider_mode",
     }
@@ -1012,7 +1042,13 @@ class TestResponseLimits:
     def test_timeout_bounds_configured(self):
         assert orcfg.connect_timeout_seconds <= 10
         assert orcfg.read_timeout_seconds <= 30
-        assert orcfg.total_timeout_seconds <= 35
+        assert orcfg.write_timeout_seconds <= 10
+        assert orcfg.pool_timeout_seconds <= 10
+        timeout = orcfg.build_http_timeout()
+        assert timeout.connect == orcfg.connect_timeout_seconds
+        assert timeout.read == orcfg.read_timeout_seconds
+        assert timeout.write == orcfg.write_timeout_seconds
+        assert timeout.pool == orcfg.pool_timeout_seconds
 
 
 # ============================================================================
@@ -1027,3 +1063,392 @@ class TestRouteSmoke:
         for route in routes:
             resp = client.get(route)
             assert resp.status_code == 200, f"{route} returned {resp.status_code}"
+
+
+# ============================================================================
+# Alpha 1 correction regressions (Web CTO review blockers)
+# ============================================================================
+
+def _ok_upstream_json(model: str) -> dict:
+    return {
+        "id": "cmpl-correction",
+        "object": "chat.completion",
+        "model": model,
+        "choices": [
+            {
+                "index": 0,
+                "message": {"role": "assistant", "content": "OK"},
+                "finish_reason": "stop",
+            }
+        ],
+        "usage": {"prompt_tokens": 1000, "completion_tokens": 1000, "total_tokens": 2000},
+    }
+
+
+class TestFreeRouterExactRoute:
+    def test_free_router_catalog_exact_upstream_id(self):
+        cm = get_catalog_by_id("openrouter/free")
+        assert cm is not None
+        assert cm.model_id == "openrouter/free"
+        assert cm.upstream_model == "openrouter/free"
+
+    @pytest.mark.asyncio
+    async def test_free_router_request_body_exact_and_actual_model_preserved(self):
+        _set_live()
+        captured = []
+        concrete_free_model = "mistralai/mistral-small-3.2-24b-instruct:free"
+
+        async def handler(request):
+            captured.append(json.loads(request.read()))
+            return httpx.Response(200, json=_ok_upstream_json(concrete_free_model))
+
+        result = await call_openrouter_chat_completions(
+            messages=[{"role": "user", "content": "안녕"}],
+            temperature=0.2,
+            max_tokens=16,
+            model_id="openrouter/free",
+            upstream_model="openrouter/free",
+            provider="OpenRouter (free router)",
+            transport=httpx.MockTransport(handler),
+        )
+        assert captured[0]["model"] == "openrouter/free"
+        assert result["_requested_upstream_model"] == "openrouter/free"
+        assert result["_actual_response_model"] == concrete_free_model
+        assert result["model"] == concrete_free_model
+
+
+class TestCatalogSourceContract:
+    def test_catalog_source_metadata(self):
+        assert CATALOG_SOURCE == "openrouter_models_api"
+        assert CATALOG_SOURCE_URL == "https://openrouter.ai/api/v1/models"
+        summaries = list_catalog_summaries()
+        assert summaries
+        for s in summaries:
+            assert s["source"] == CATALOG_SOURCE
+            assert s["snapshot_state"] == "configured_snapshot"
+            assert s["source_checked_at"]
+            assert "upstream_model" in s
+            assert "price_is_known" in s
+
+    def test_gemini_deepseek_price_snapshot(self):
+        gemini = get_catalog_by_id("google/gemini-2.5-flash")
+        assert gemini.input_price_usd_per_1m == pytest.approx(0.30)
+        assert gemini.output_price_usd_per_1m == pytest.approx(2.50)
+        assert gemini.context_window == 1048576
+
+        deepseek = get_catalog_by_id("deepseek/deepseek-chat")
+        assert deepseek.input_price_usd_per_1m == pytest.approx(0.2574)
+        assert deepseek.output_price_usd_per_1m == pytest.approx(1.0287)
+        assert deepseek.context_window == 163840
+
+
+class TestFallbackFailClosed:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status,expected_code", [
+        (400, "malformed_upstream_response"),
+        (404, "upstream_client_error"),
+        (422, "upstream_client_error"),
+    ])
+    async def test_client_errors_raise_and_no_fallback(self, status, expected_code):
+        _set_live()
+        from app.pilot.errors import PilotError
+
+        async def handler(request):
+            return httpx.Response(status, json={"error": {"message": "rejected"}})
+
+        with pytest.raises(PilotError) as exc_info:
+            await call_openrouter_chat_completions(
+                messages=[{"role": "user", "content": "hi"}],
+                temperature=0.2,
+                max_tokens=16,
+                model_id="google/gemini-2.5-flash",
+                upstream_model="google/gemini-2.5-flash",
+                provider="Google",
+                transport=httpx.MockTransport(handler),
+            )
+        assert exc_info.value.code == expected_code
+        assert is_error_fallback_allowed(exc_info.value.code) is False
+
+    def test_unknown_exception_no_fallback_in_gateway(self, client):
+        _set_live()
+        from app.pilot import openrouter as orv
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            raise ValueError("unexpected")
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "b14/auto",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"optimize_for": "cost", "max_attempts": 3},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 500
+        data = resp.json()
+        assert data["error"]["code"] == "internal_error"
+        assert data["error"]["fallback_used"] is False
+        assert data["error"]["attempt_count"] == 1
+        assert len(calls) == 1
+
+
+class TestFallbackActualEvidence:
+    def test_fallback_metadata_describes_actual_success_candidate(self, client):
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import UpstreamRateLimited
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
+            if len(calls) == 1:
+                raise UpstreamRateLimited()
+            return {
+                "id": "cmpl-fb-actual",
+                "object": "chat.completion",
+                "model": upstream_model,
+                "choices": [{
+                    "index": 0,
+                    "message": {"role": "assistant", "content": "OK"},
+                    "finish_reason": "stop",
+                }],
+                "usage": {"prompt_tokens": 1000, "completion_tokens": 1000, "total_tokens": 2000},
+                "_live": True,
+                "_requested_upstream_model": upstream_model,
+                "_actual_response_model": upstream_model,
+            }
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "b14/auto",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"optimize_for": "cost", "max_attempts": 3},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 200
+        assert len(calls) == 2
+        data = resp.json()
+        biz14 = data["business14"]
+        actual = calls[1]
+        assert biz14["fallback_used"] is True
+        assert biz14["attempt_count"] == 2
+        assert biz14["selected_model"] == actual["model_id"]
+        assert biz14["selected_provider"] == actual["provider"]
+        assert biz14["selected_upstream_model"] == actual["upstream_model"]
+        assert biz14["actual_response_model"] == actual["upstream_model"]
+        assert data["model"] == actual["upstream_model"]
+        assert biz14["attempt_evidence"][0]["outcome"] == "error"
+        assert biz14["attempt_evidence"][0]["error_code"] == "upstream_rate_limited"
+        assert biz14["attempt_evidence"][1]["outcome"] == "success"
+
+        cm = get_catalog_by_id(actual["model_id"])
+        expected_usd = cm.estimate_cost_usd(1000, 1000)
+        if cm.price_is_known:
+            assert biz14["estimated_usd"] == pytest.approx(expected_usd, rel=1e-9)
+            assert biz14["cost_basis"] in {"configured_snapshot", "known_free"}
+        else:
+            assert biz14["estimated_usd"] is None
+            assert biz14["cost_basis"] == "unknown"
+
+
+class TestOptionEnforcement:
+    def test_allow_external_fallback_false_resolve(self):
+        d = resolve_auto_route(optimize_for="cost", allow_external_fallback=False)
+        assert d.fallback_allowed is False
+        assert d.eligible_fallback == []
+        assert d.max_attempts == 1
+        assert "external_fallback_disabled" in d.reason_codes
+
+    def test_allow_external_fallback_false_gateway_no_retry(self, client):
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import UpstreamRateLimited
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            raise UpstreamRateLimited()
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "b14/auto",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"optimize_for": "cost", "allow_external_fallback": False},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 429
+        assert resp.json()["error"]["code"] == "upstream_rate_limited"
+        assert len(calls) == 1
+
+    def test_provider_order_changes_selection(self):
+        d = resolve_auto_route(optimize_for="cost", provider_order=["Anthropic"])
+        assert d.selected_provider == "Anthropic"
+        assert any(rc.startswith("provider_order:") for rc in d.reason_codes)
+
+    def test_provider_order_api(self, client):
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "b14/auto",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"optimize_for": "cost", "provider_order": ["Anthropic"]},
+            },
+        )
+        assert resp.status_code == 200
+        assert resp.json()["selected_provider"] == "Anthropic"
+
+    def test_provider_order_invalid_type_422(self, client):
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "b14/auto",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"provider_order": "Anthropic"},
+            },
+        )
+        assert resp.status_code == 422
+
+    def test_task_type_hard_capability_filter(self):
+        coding = resolve_auto_route(task_type="coding")
+        coding_model = get_catalog_by_id(coding.selected_model)
+        assert "coding" in coding_model.capabilities
+
+        document = resolve_auto_route(task_type="document")
+        document_model = get_catalog_by_id(document.selected_model)
+        assert "long_context" in document_model.capabilities
+
+    def test_task_type_invalid_422(self, client):
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "b14/auto",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"task_type": "not-a-task"},
+            },
+        )
+        assert resp.status_code == 422
+
+    def test_unknown_business14_field_422(self, client):
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "b14/auto",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"unsupported_option": True},
+            },
+        )
+        assert resp.status_code == 422
+
+
+class TestStreamedResponseLimit:
+    @pytest.mark.asyncio
+    async def test_oversize_response_aborts_before_full_body(self):
+        _set_live()
+        from app.pilot.errors import UpstreamResponseTooLarge
+
+        chunk = b"x" * (512 * 1024)
+        chunks = [chunk, chunk, chunk, b'{"never": "fully read"}']
+
+        class CountingStream(httpx.AsyncByteStream):
+            def __init__(self, parts):
+                self.parts = parts
+                self.consumed = 0
+
+            async def __aiter__(self):
+                for part in self.parts:
+                    self.consumed += 1
+                    yield part
+
+        stream = CountingStream(chunks)
+
+        async def handler(request):
+            return httpx.Response(200, stream=stream)
+
+        with pytest.raises(UpstreamResponseTooLarge):
+            await call_openrouter_chat_completions(
+                messages=[{"role": "user", "content": "hi"}],
+                temperature=0.2,
+                max_tokens=16,
+                model_id="google/gemini-2.5-flash",
+                upstream_model="google/gemini-2.5-flash",
+                provider="Google",
+                transport=httpx.MockTransport(handler),
+            )
+        assert stream.consumed < len(chunks)
+        assert is_error_fallback_allowed("upstream_response_too_large") is False
+
+
+class TestOwnerEnvWorkflow:
+    def test_env_bootstrap_loads_file(self, tmp_path, monkeypatch):
+        from app.env_bootstrap import load_env_file
+
+        key = "B14_TEST_ENV_BOOTSTRAP_KEY"
+        export_key = "B14_TEST_ENV_BOOTSTRAP_EXPORT"
+        monkeypatch.delenv(key, raising=False)
+        monkeypatch.delenv(export_key, raising=False)
+
+        env_file = tmp_path / ".env"
+        env_file.write_text(
+            "# comment\n"
+            f"{key}=hello\n"
+            f'export {export_key}="quoted value"\n',
+            encoding="utf-8",
+        )
+        try:
+            loaded = load_env_file(env_file)
+            assert loaded == 2
+            assert os.environ.get(key) == "hello"
+            assert os.environ.get(export_key) == "quoted value"
+        finally:
+            monkeypatch.delenv(key, raising=False)
+            monkeypatch.delenv(export_key, raising=False)
+
+    def test_env_bootstrap_does_not_overwrite_existing(self, tmp_path, monkeypatch):
+        from app.env_bootstrap import load_env_file
+
+        key = "B14_TEST_ENV_BOOTSTRAP_EXISTING"
+        monkeypatch.setenv(key, "existing")
+        env_file = tmp_path / ".env"
+        env_file.write_text(f"{key}=from_file\n", encoding="utf-8")
+        loaded = load_env_file(env_file)
+        assert loaded == 0
+        assert os.environ.get(key) == "existing"
+
+    def test_documented_startup_command_in_readme(self):
+        from pathlib import Path
+        readme = Path(__file__).resolve().parent.parent / "README.md"
+        text = readme.read_text(encoding="utf-8")
+        assert "python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000" in text
+
+    def test_secret_not_exposed_when_key_configured(self, client):
+        secret = "sk-or-v1-super-secret-abcdef1234567890"
+        _set_live(secret)
+        resp = client.get("/api/pilot/health")
+        assert resp.status_code == 200
+        assert resp.json()["business14"]["has_key"] is True
+        for path in ("/api/pilot/health", "/api/pilot/models", "/workspace"):
+            page = client.get(path)
+            assert page.status_code == 200
+            assert secret not in page.text

@@ -119,6 +119,34 @@ class MalformedUpstreamResponse(PilotError):
         )
 
 
+class UpstreamClientError(PilotError):
+    """Upstream rejected the request with a non-auth 4xx status (404/409/422/…).
+
+    Never fallback-allowed: the request itself was rejected, so repeating it
+    against another model would hide a real configuration/schema problem.
+    """
+
+    def __init__(self, upstream_status: int = 400) -> None:
+        self.upstream_status = upstream_status
+        super().__init__(
+            code="upstream_client_error",
+            message=f"Provider가 요청을 거부했습니다 (upstream HTTP {upstream_status}).",
+            status_code=502,
+        )
+
+
+class UpstreamResponseTooLarge(PilotError):
+    """Upstream response exceeded the streamed byte cap (aborted mid-body)."""
+
+    def __init__(self, max_bytes: int = 1024 * 1024) -> None:
+        self.max_bytes = max_bytes
+        super().__init__(
+            code="upstream_response_too_large",
+            message=f"Provider 응답이 허용된 크기({max_bytes} bytes)를 초과하여 중단되었습니다.",
+            status_code=502,
+        )
+
+
 class InvalidRequest(PilotError):
     def __init__(self, detail: str = "요청 형식이 올바르지 않습니다.") -> None:
         super().__init__(

@@ -6,10 +6,22 @@ Security requirements:
 - HTTP-Referer and X-OpenRouter-Title use non-secret values only
 - Exact host allow-list (openrouter.ai)
 - Redirects disabled
-- Connect/read/total timeout bounds
-- Response body size limit
-- Upstream error body length limit
+- Explicit connect/read/write/pool timeout bounds (no implicit total)
+- Streamed response body with an enforced 1 MB byte cap (the body is
+  never fully buffered: reading aborts as soon as the cap is exceeded)
+- Upstream error body length limit (bounded stream read)
 - Authorization via Bearer header
+
+Error classification (drives the Router Core fallback contract):
+- timeout            -> UpstreamTimeout          (fallback allowed)
+- transport failure  -> UpstreamServerError      (fallback allowed)
+- HTTP 429           -> UpstreamRateLimited      (fallback allowed)
+- HTTP 5xx           -> UpstreamServerError      (fallback allowed)
+- HTTP 400 / 3xx     -> MalformedUpstreamResponse (NO fallback)
+- HTTP 401 / 403     -> UpstreamAuthFailed        (NO fallback)
+- other HTTP 4xx     -> UpstreamClientError       (NO fallback)
+- oversize response  -> UpstreamResponseTooLarge  (NO fallback)
+- malformed body     -> MalformedUpstreamResponse (NO fallback)
 
 Mock mode returns a canned response with zero upstream calls.
 Live mode makes a real HTTP call to OpenRouter.
@@ -31,7 +43,9 @@ from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotNotConfigured,
     UpstreamAuthFailed,
+    UpstreamClientError,
     UpstreamRateLimited,
+    UpstreamResponseTooLarge,
     UpstreamServerError,
     UpstreamTimeout,
 )
@@ -74,6 +88,8 @@ def _mock_response(model_id: str, upstream_model: str, provider: str) -> dict[st
             "total_tokens": 0,
         },
         "_mock": True,
+        "_requested_upstream_model": upstream_model,
+        "_actual_response_model": upstream_model,
     }
 
 
@@ -93,12 +109,15 @@ async def call_openrouter_chat_completions(
         temperature: Sampling temperature
         max_tokens: Max output tokens
         model_id: Business 14 catalog model ID
-        upstream_model: OpenRouter upstream model ID
+        upstream_model: OpenRouter upstream model ID sent in the request body
         provider: Provider name for metadata
-        transport: Optional MockTransport for testing (forces mock behavior)
+        transport: Optional MockTransport for testing
 
     Returns:
-        OpenAI-compatible response dict with business14 metadata
+        OpenAI-compatible response dict. The ``model`` field echoes the
+        requested upstream model; ``_actual_response_model`` preserves the
+        ``model`` field OpenRouter actually returned (for ``openrouter/free``
+        this is the concrete free model the router selected).
     """
     if openrouter_config.is_mock:
         logger.info(
@@ -119,6 +138,23 @@ async def call_openrouter_chat_completions(
     )
 
 
+async def _read_error_body_bounded(response: httpx.Response) -> str:
+    """Read an upstream error body with a hard byte bound (never full-body)."""
+    byte_cap = MAX_ERROR_BODY_CHARS * 4
+    parts: list[bytes] = []
+    total = 0
+    try:
+        async for chunk in response.aiter_bytes():
+            parts.append(chunk)
+            total += len(chunk)
+            if total >= byte_cap:
+                break
+    except httpx.HTTPError:
+        pass
+    text = b"".join(parts).decode("utf-8", "replace")
+    return _truncate_error_body(text)
+
+
 async def _live_call(
     messages: list[dict[str, str]],
     temperature: float | None,
@@ -128,7 +164,13 @@ async def _live_call(
     provider: str,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
-    """Make a real HTTP call to OpenRouter (live mode only)."""
+    """Make a real HTTP call to OpenRouter (live mode only).
+
+    Uses the httpx streaming API: status and headers are inspected before
+    any body bytes are consumed, and the success body is read incrementally
+    with an enforced byte cap — the full body is never held in memory and
+    reading aborts immediately once the cap is exceeded.
+    """
     if not openrouter_config.has_key:
         raise PilotNotConfigured(
             "OPENROUTER_API_KEY is not set. "
@@ -155,7 +197,7 @@ async def _live_call(
         body["max_tokens"] = int(max_tokens)
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(openrouter_config.total_timeout_seconds),
+        "timeout": openrouter_config.build_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
@@ -163,12 +205,30 @@ async def _live_call(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            response = await client.post(
+            async with client.stream(
+                "POST",
                 chat_url,
                 headers=headers,
                 json=body,
                 follow_redirects=False,
-            )
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    body_text = await _read_error_body_bounded(response)
+                    logger.warning(
+                        "openrouter_upstream_error status=%d body=%s",
+                        response.status_code,
+                        redact_sensitive(body_text),
+                    )
+                    _raise_upstream_error(response.status_code)
+
+                chunks: list[bytes] = []
+                total_bytes = 0
+                async for chunk in response.aiter_bytes():
+                    total_bytes += len(chunk)
+                    if total_bytes > MAX_RESPONSE_BYTES:
+                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
+                    chunks.append(chunk)
+                raw = b"".join(chunks)
     except httpx.TimeoutException:
         raise UpstreamTimeout()
     except httpx.RequestError as e:
@@ -180,15 +240,8 @@ async def _live_call(
 
     latency_ms = int((time.monotonic() - start) * 1000)
 
-    if response.status_code < 200 or response.status_code >= 300:
-        await _handle_upstream_error(response)
-
-    raw_text = response.text
-    if len(raw_text) > MAX_RESPONSE_BYTES:
-        raise MalformedUpstreamResponse()
-
     try:
-        response_data = response.json()
+        response_data = json.loads(raw)
     except (json.JSONDecodeError, ValueError):
         raise MalformedUpstreamResponse()
 
@@ -207,10 +260,13 @@ async def _live_call(
     completion_tokens = usage.get("completion_tokens") if isinstance(usage, dict) else None
     total_tokens = usage.get("total_tokens") if isinstance(usage, dict) else None
 
+    raw_model = response_data.get("model")
+    actual_response_model = raw_model if isinstance(raw_model, str) and raw_model else None
+
     return {
         "id": response_data.get("id", f"b14live_{uuid.uuid4().hex[:12]}"),
         "object": "chat.completion",
-        "model": upstream_model,
+        "model": actual_response_model or upstream_model,
         "choices": choices,
         "usage": (
             {
@@ -223,26 +279,17 @@ async def _live_call(
         ),
         "_live": True,
         "_upstream_latency_ms": latency_ms,
+        "_requested_upstream_model": upstream_model,
+        "_actual_response_model": actual_response_model,
+        "_response_bytes": total_bytes,
     }
 
 
-async def _handle_upstream_error(response: httpx.Response) -> None:
-    """Map OpenRouter error responses to PilotError subclasses."""
-    status = response.status_code
+def _raise_upstream_error(status: int) -> None:
+    """Map an upstream HTTP status to a normalized PilotError.
 
-    body_text = ""
-    try:
-        body_text = response.text or ""
-    except Exception:
-        body_text = ""
-
-    body_text = _truncate_error_body(body_text)
-    logger.warning(
-        "openrouter_upstream_error status=%d body=%s",
-        status,
-        redact_sensitive(body_text),
-    )
-
+    Fallback-allowed: 429, 5xx. Everything else fails closed (no fallback).
+    """
     if status in (401, 403):
         raise UpstreamAuthFailed()
     if status == 429:
@@ -251,9 +298,9 @@ async def _handle_upstream_error(response: httpx.Response) -> None:
         raise MalformedUpstreamResponse()
     if 500 <= status < 600:
         raise UpstreamServerError()
-    if 300 <= status < 400:
-        raise MalformedUpstreamResponse()
-    raise UpstreamServerError()
+    if 300 <= status < 500:
+        raise UpstreamClientError(status)
+    raise MalformedUpstreamResponse()
 
 
 def build_mock_metadata(
@@ -269,10 +316,12 @@ def build_mock_metadata(
         "provider": provider,
         "model_route": model_id,
         "upstream_model": upstream_model,
+        "actual_response_model": upstream_model,
         "latency_ms": 0,
         "request_id": request_id,
         "estimated_usd": None,
         "estimated_krw": None,
+        "cost_basis": "unknown",
         "route_mode": "manual",
         "attempt_count": 1,
         "fallback_used": False,
@@ -292,16 +341,24 @@ def build_live_metadata(
     attempt_count: int = 1,
     fallback_used: bool = False,
     mode: str = "live",
+    actual_response_model: str | None = None,
 ) -> dict[str, Any]:
-    """Build Business 14 metadata for a live response."""
+    """Build Business 14 metadata for a live response.
+
+    All arguments must describe the candidate that ACTUALLY answered
+    (after any fallback), never the primary candidate.
+    """
     from app.pilot.catalog import get_catalog_by_id
 
     cm = get_catalog_by_id(model_id)
     estimated_usd = None
     estimated_krw = None
+    cost_basis = "unknown"
     if cm and prompt_tokens is not None and completion_tokens is not None:
         estimated_usd = cm.estimate_cost_usd(prompt_tokens, completion_tokens)
         estimated_krw = cm.estimate_cost_krw(prompt_tokens, completion_tokens)
+        if cm.price_is_known:
+            cost_basis = "known_free" if estimated_usd == 0.0 else "configured_snapshot"
 
     return {
         "provider_mode": "live",
@@ -309,10 +366,12 @@ def build_live_metadata(
         "provider": provider,
         "model_route": model_id,
         "upstream_model": upstream_model,
+        "actual_response_model": actual_response_model,
         "latency_ms": latency_ms,
         "request_id": request_id,
         "estimated_usd": estimated_usd,
         "estimated_krw": estimated_krw,
+        "cost_basis": cost_basis,
         "route_mode": "auto" if model_id == "b14/auto" else "manual",
         "attempt_count": attempt_count,
         "fallback_used": fallback_used,
