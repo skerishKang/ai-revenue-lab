@@ -146,3 +146,139 @@ All tests use `httpx.MockTransport` — no external network calls.
 - [Phase 3 Charter](docs/PHASE3_SESSION_WORKSPACE_CHARTER.md)
 - [Phase 3 Security Contract](docs/PHASE3_SESSION_SECURITY_CONTRACT.md)
 - [Phase 3 Workspace Runbook](docs/PHASE3_WORKSPACE_RUNBOOK.md)
+
+## Alpha 1 — Owner-Tryable OpenRouter Gateway
+
+Business 14 Alpha 1 lets an owner run the app locally with their own OpenRouter
+API key, send Korean questions, and receive real model responses.
+
+### Quick Start
+
+```bash
+cd apps/korean-ai-platform
+
+# 1. Copy the example environment
+cp .env.example .env
+
+# 2. Edit .env — set your OpenRouter key and switch to live mode
+#    B14_PROVIDER_MODE=live
+#    OPENROUTER_API_KEY=sk-or-v1-...
+
+# 3. Run in mock mode (no key needed, simulated responses)
+B14_PROVIDER_MODE=mock python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# 4. Or run in live mode (requires OPENROUTER_API_KEY in .env)
+B14_PROVIDER_MODE=live python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+Visit `http://localhost:8000/workspace` — the Start screen shows the
+prompt input, model selection, optimization options, and route preview.
+
+### Run Commands
+
+| Command | Description |
+|---------|-------------|
+| `B14_PROVIDER_MODE=mock python3 -m uvicorn app.main:app` | Start in mock mode (simulated responses) |
+| `B14_PROVIDER_MODE=live OPENROUTER_API_KEY=... python3 -m uvicorn app.main:app` | Start in live mode (real OpenRouter calls) |
+| `python3 -m app.pilot.catalog validate-model-catalog` | Validate catalog model IDs against live OpenRouter |
+| `python3 -m app.pilot.smoke_live` | Run a single live smoke test (uses free model, low cost) |
+
+### Mock Mode
+
+- No API key required
+- `B14_PROVIDER_MODE=mock` (default if unset)
+- Returns canned responses labeled "모의 응답 · 실제 Provider 호출 없음"
+- Zero upstream HTTP calls
+
+### Live Mode
+
+- Requires `OPENROUTER_API_KEY` in environment or `.env`
+- `B14_PROVIDER_MODE=live`
+- Makes real POST /chat/completions calls to `https://openrouter.ai/api/v1`
+- API key is read from server env var only — never sent to browser, never logged
+- Responses labeled "실제 Provider 응답"
+
+### Security Boundary
+
+- `OPENROUTER_API_KEY` is **only** read from server-side environment variables
+- API key is **never** transmitted to the browser
+- API key is **never** included in logs, exceptions, or responses
+- API key is **never** passed as a query parameter
+- Authorization is via `Authorization: Bearer` header only
+- Redirects are disabled (`follow_redirects=False`)
+- Exact host allow-list: `openrouter.ai` only
+- Connect/read/total timeout bounds applied (10s/30s/35s)
+- Response body size limited to 1 MB
+- Upstream error body truncated to 500 characters
+- `.env` is in `.gitignore`; `.env.example` has empty values only
+
+### Router Core
+
+- **Manual**: specific catalog model ID → single upstream call
+- **Automatic**: `model: "b14/auto"` → deterministic selection by `optimize_for`
+  (balanced / cost / latency / korean)
+- **Fallback**: retries on timeout, 429, 5xx (up to `max_attempts`, default 3)
+- **No fallback**: 401/403, malformed request, missing key, 4xx
+- **No-safe-route**: returns `NO_SAFE_ROUTE` with zero upstream calls
+- Resolve endpoint (`POST /api/pilot/router/resolve`) performs no upstream calls
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/pilot/health` | Health check (includes B14 provider mode + key availability) |
+| GET | `/api/pilot/models` | Catalog models + existing BYOK models |
+| POST | `/api/pilot/router/resolve` | Resolve route without upstream calls |
+| POST | `/api/pilot/v1/chat/completions` | Chat completions (mock or live depending on mode) |
+
+The chat completions response includes bounded `business14` metadata:
+
+```json
+{
+  "route_mode": "auto",
+  "selected_provider": "OpenRouter",
+  "selected_model": "google/gemini-2.5-flash",
+  "selected_route_id": "b14route_...",
+  "reason_codes": ["optimize_for:balanced", "capabilities:chat"],
+  "fallback_allowed": true,
+  "fallback_used": false,
+  "attempt_count": 1,
+  "route_evidence_status": "mock_no_upstream_call",
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "total_tokens": 0,
+  "estimated_usd": null,
+  "estimated_krw": null,
+  "request_id": "b14req_...",
+  "provider_mode": "mock"
+}
+```
+
+### Catalog
+
+The Alpha catalog includes:
+
+| Model ID | Provider | Notes |
+|----------|----------|-------|
+| `openrouter/free` | OpenRouter (free) | Free tier (no cost) |
+| `google/gemini-2.5-flash` | Google | Low-cost Gemini series |
+| `deepseek/deepseek-chat` | DeepSeek | Qwen/DeepSeek/Mistral series |
+| `anthropic/claude-3-5-sonnet-20241022` | Anthropic | Strong paid model |
+
+Model IDs are verified against the live OpenRouter API via:
+
+```bash
+python3 -m app.pilot.catalog validate-model-catalog
+```
+
+This command calls `GET https://openrouter.ai/api/v1/models` when a key and
+network are available. In mock mode or without a key, it reports `SKIPPED`.
+
+### Limitations
+
+- **No payment processing** — actual billing is between the user and OpenRouter
+- **No platform credits** — no prepaid wallet or credit system
+- **No persistent key vault** — key is read from env var per deployment
+- **No merge/deploy** — this is an owner-tryable Alpha, not a production release
+- Model IDs in the catalog are configured defaults; use `validate-model-catalog`
+  to verify they exist on the live OpenRouter API

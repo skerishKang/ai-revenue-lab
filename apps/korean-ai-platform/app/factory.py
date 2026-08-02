@@ -26,6 +26,8 @@ def _build_root_static_routes() -> list[Route]:
         "workspace-console-responsive.css": "text/css",
         "app.js": "application/javascript",
         "workspace.js": "application/javascript",
+        "start.js": "application/javascript",
+        "start.css": "text/css",
     }
 
     def _make_handler(filename: str, media_type: str):
@@ -65,6 +67,11 @@ def _build_jinja_env() -> Environment:
 
     from app.pilot.config import pilot_settings
     env.globals["pilot_configured"] = pilot_settings.configured
+
+    from app.pilot.openrouter_config import openrouter_config
+    env.globals["b14_provider_mode"] = openrouter_config.provider_mode
+    env.globals["b14_has_key"] = openrouter_config.has_key
+    env.globals["b14_site_name"] = openrouter_config.site_name
 
     return env
 
