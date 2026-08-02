@@ -52,7 +52,7 @@
     identity({ n:12, s:"creator-mini-media", t:"Creator Mini-Media", k:"크리에이터 미니미디어", a:NA.PROPOSED, l:"visual_reference", st:"review", p:52, w:"reference/business-12-creator-mini-media-v1/" }),
     // ═══ 13–14: CANONICAL ═══
     identity({ n:13, s:"personal-video-archive", t:"Personal Video Archive", k:"나의 영상 아카이브", a:NA.CANONICAL, l:"private_preview", st:"review", p:42, su:"https://feat-personal-video-archive.ai-revenue-personal-video-archive.pages.dev", w:"apps/personal-video-archive/" }),
-    identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 실행 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:92, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
+    identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 모델 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:98, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
     // ═══ 15–22: PROPOSED ═══
     identity({ n:15, s:"global-ai-newsroom", t:"Global AI Newsroom", k:"글로벌 AI 뉴스룸", a:NA.PROPOSED, l:"visual_reference", st:"review", p:40, w:"reference/business-15-global-ai-newsroom-v1/" }),
     identity({ n:16, s:"personal-sports", t:"Personal Sports", k:"나의 스포츠 채널", a:NA.PROPOSED, l:"visual_reference", st:"review", p:38, w:"reference/business-16-personal-sports-v1/" }),
@@ -88,7 +88,7 @@
     identity({ n:43, s:"ai-software-factory", t:"AI Software Factory", k:"AI 소프트웨어 공장", a:NA.PROPOSED, l:"visual_reference", st:"review", p:18, w:"reference/business-43-ai-software-factory-v1/" }),
     // ═══ 44: EXISTING PROJECT ═══
     identity({ n:44, s:"portfolio-console", t:"Portfolio Console", k:"포트폴리오 콘솔", a:NA.EXISTING_PROJECT, l:"active", st:"running", p:10, w:"apps/portfolio-console/" }),
-    // ═══ 45–55: CANDIDATE ═══
+    // ═══ 45–55: CANDIDATE / PROPOSED ═══
     identity({ n:45, s:"ai-content-engine", t:"AI Content Engine", k:"AI 콘텐츠 엔진", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
     identity({ n:46, s:"ai-personalization-engine", t:"AI Personalization Engine", k:"AI 개인화 엔진", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
     identity({ n:47, s:"real-time-feedback-engine", t:"Real-Time Feedback Engine", k:"실시간 반응 엔진", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
@@ -98,7 +98,7 @@
     identity({ n:51, s:"ai-workflow-marketplace", t:"AI Workflow Marketplace", k:"AI 워크플로우 마켓", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
     identity({ n:52, s:"scheduled-agent-operations", t:"Scheduled Agent Operations", k:"예약형 AI 운영", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
     identity({ n:53, s:"embedded-ai-sdk", t:"Embedded AI SDK", k:"임베드 AI SDK", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
-    identity({ n:54, s:"ai-model-router", t:"AI Model Router", k:"AI 모델 라우터", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
+    identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.PROPOSED, l:"visual_reference", st:"review", p:90, w:"reference/business-54-korean-ai-code-agent-v1/" }),
     identity({ n:55, s:"local-ai-fleet", t:"Local AI Fleet", k:"로컬 AI 플릿", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
   ];
 
