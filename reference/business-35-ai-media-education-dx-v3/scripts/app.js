@@ -1,4 +1,18 @@
 (() => {
+  const calmStyle = document.createElement('link');
+  calmStyle.rel = 'stylesheet';
+  calmStyle.href = 'styles/hero-v3-1.css';
+  document.head.appendChild(calmStyle);
+
+  const heroLabel = document.querySelector('.hero .micro-label');
+  if (heroLabel) heroLabel.textContent = '기관·기업 미디어팀을 위한 6주 AI 업무전환 프로그램';
+  const primaryHeroAction = document.querySelector('.hero-actions .button--signal');
+  if (primaryHeroAction) primaryHeroAction.textContent = '우리 팀 전환안 살펴보기';
+  const secondaryHeroAction = document.querySelector('.hero-actions .button--glass');
+  if (secondaryHeroAction) secondaryHeroAction.textContent = '프로그램 방식 보기';
+  const consoleLabel = document.querySelector('.console-head span');
+  if (consoleLabel) consoleLabel.textContent = '조직 전환 미리보기';
+
   const data = window.PADIEM_V3_DATA;
   const topbar = document.querySelector('[data-topbar]');
   const form = document.querySelector('#transformation-form');
