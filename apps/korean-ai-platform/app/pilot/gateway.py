@@ -509,6 +509,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         provider=decision.selected_provider,
         provider_type="external",
         reason="alpha_route_resolution",
+        route_id=decision.selected_route_id,
     )
 
     fallback_candidates = [
@@ -516,6 +517,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "model_id": fc["model_id"],
             "upstream_model": fc["upstream_model"],
             "provider": fc["provider"],
+            "route_id": fc.get("route_id", f"openrouter:{fc['model_id']}"),
         }
         for fc in decision.eligible_fallback
     ] if decision.fallback_allowed else []
@@ -535,6 +537,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "model_id": candidate.model_id,
             "upstream_model": candidate.upstream_model,
             "provider": candidate.provider,
+            "route_id": candidate.route_id,
         }
     ] + fallback_candidates
 
@@ -581,6 +584,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "model_id": current["model_id"],
                 "upstream_model": current["upstream_model"],
                 "provider": current["provider"],
+                "route_id": current["route_id"],
                 "outcome": "error",
                 "error_code": e.code,
                 "actual_response_model": None,
@@ -602,6 +606,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "model_id": current["model_id"],
                 "upstream_model": current["upstream_model"],
                 "provider": current["provider"],
+                "route_id": current["route_id"],
                 "outcome": "error",
                 "error_code": "internal_error",
                 "actual_response_model": None,
@@ -619,6 +624,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "model_id": current["model_id"],
             "upstream_model": current["upstream_model"],
             "provider": current["provider"],
+            "route_id": current["route_id"],
             "outcome": "success",
             "error_code": None,
             "actual_response_model": actual_model,
@@ -694,7 +700,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         "selected_model": success_candidate["model_id"],
         "selected_upstream_model": success_candidate["upstream_model"],
         "actual_response_model": actual_response_model,
-        "selected_route_id": decision.selected_route_id,
+        "selected_route_id": success_candidate["route_id"],
         "reason_codes": decision.reason_codes,
         "fallback_allowed": decision.fallback_allowed,
         "fallback_used": fallback_used,

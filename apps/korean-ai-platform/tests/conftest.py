@@ -8,6 +8,7 @@ import warnings
 # filters must be added BEFORE the warning fires, so they take precedence.
 warnings.filterwarnings("ignore", message=r"Using .httpx. with .starlette.testclient")
 warnings.filterwarnings("ignore", message=r"Setting per-request cookies")
+warnings.filterwarnings("ignore", message=r"The `route` decorator is deprecated")
 
 import pytest
 from starlette.testclient import TestClient

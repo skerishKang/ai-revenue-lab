@@ -211,7 +211,8 @@ class TestManualRoute:
         assert d.selected_model == "google/gemini-2.5-flash"
         assert d.selected_upstream_model == "google/gemini-2.5-flash"
         assert d.selected_provider == "Google"
-        assert d.reason_codes == ["manual_selection"]
+        assert "manual_selection" in d.reason_codes
+        assert "external_fallback_disabled" in d.reason_codes
         assert d.credential_available is False  # mock mode
 
     def test_manual_route_unknown_model_no_safe_route(self):
@@ -224,9 +225,21 @@ class TestManualRoute:
         d = resolve_manual_route("deepseek/deepseek-chat")
         assert d.evidence_status == "resolved_not_called"
 
-    def test_manual_route_has_fallback_candidates(self):
+    def test_manual_route_no_fallback_by_default(self):
         d = resolve_manual_route("google/gemini-2.5-flash")
+        assert d.fallback_allowed is False
+        assert d.eligible_fallback == []
+        assert d.max_attempts == 1
+        assert "external_fallback_disabled" in d.reason_codes
+
+    def test_manual_route_explicit_fallback_enabled(self):
+        d = resolve_manual_route("google/gemini-2.5-flash", allow_external_fallback=True)
+        assert d.fallback_allowed is True
         assert len(d.eligible_fallback) > 0
+
+    def test_manual_route_id_is_candidate_specific(self):
+        d = resolve_manual_route("google/gemini-2.5-flash")
+        assert d.selected_route_id == "openrouter:google/gemini-2.5-flash"
 
 
 # ============================================================================
@@ -302,7 +315,7 @@ class TestAutoRoute:
         assert data["route_mode"] == "auto"
         assert data["selected_model"] in {m.model_id for m in CATALOG_MODELS}
         assert data["evidence_status"] == "resolved_not_called"
-        assert data["selected_route_id"].startswith("b14route_")
+        assert data["selected_route_id"].startswith("openrouter:")
         assert data["credential_available"] is False
 
     def test_resolve_manual_model(self, client):
@@ -317,6 +330,10 @@ class TestAutoRoute:
         data = resp.json()
         assert data["route_mode"] == "manual"
         assert data["selected_model"] == "google/gemini-2.5-flash"
+        assert data["selected_route_id"] == "openrouter:google/gemini-2.5-flash"
+        assert data["fallback_allowed"] is False
+        assert data["eligible_fallback"] == []
+        assert data["max_attempts"] == 1
 
     def test_resolve_unknown_model_400(self, client):
         resp = client.post(
@@ -1252,6 +1269,7 @@ class TestFallbackActualEvidence:
         assert biz14["selected_upstream_model"] == actual["upstream_model"]
         assert biz14["actual_response_model"] == actual["upstream_model"]
         assert data["model"] == actual["upstream_model"]
+        assert biz14["selected_route_id"] == f"openrouter:{actual['model_id']}"
         assert biz14["attempt_evidence"][0]["outcome"] == "error"
         assert biz14["attempt_evidence"][0]["error_code"] == "upstream_rate_limited"
         assert biz14["attempt_evidence"][1]["outcome"] == "success"
@@ -1452,3 +1470,415 @@ class TestOwnerEnvWorkflow:
             page = client.get(path)
             assert page.status_code == 200
             assert secret not in page.text
+
+
+# ============================================================================
+# Issue 2: Manual route default fallback separation
+# ============================================================================
+
+
+class TestManualRouteDefaultFallback:
+    """Manual model ID: allow_external_fallback defaults to False.
+
+    Only when the user explicitly passes allow_external_fallback=true
+    are fallback candidates and multi-attempt logic engaged.
+    """
+
+    def test_manual_model_no_business14_resolve(self, client):
+        """manual model, no business14 → no fallback, one attempt."""
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={"model": "google/gemini-2.5-flash", "messages": [{"role": "user", "content": "hi"}]},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["route_mode"] == "manual"
+        assert data["fallback_allowed"] is False
+        assert data["eligible_fallback"] == []
+        assert data["max_attempts"] == 1
+        assert data["selected_route_id"] == "openrouter:google/gemini-2.5-flash"
+
+    def test_manual_model_empty_business14_resolve(self, client):
+        """manual model, empty business14 → no fallback, one attempt."""
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "deepseek/deepseek-chat",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {},
+            },
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["fallback_allowed"] is False
+        assert data["eligible_fallback"] == []
+        assert data["max_attempts"] == 1
+        assert data["selected_route_id"] == "openrouter:deepseek/deepseek-chat"
+
+    def test_manual_model_explicit_false_resolve(self, client):
+        """manual model, allow_external_fallback=false → no fallback, one attempt."""
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "google/gemini-2.5-flash",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"allow_external_fallback": False},
+            },
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["fallback_allowed"] is False
+        assert data["eligible_fallback"] == []
+        assert data["max_attempts"] == 1
+
+    def test_manual_model_explicit_true_resolve(self, client):
+        """manual model, allow_external_fallback=true → fallback candidates populated."""
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={
+                "model": "google/gemini-2.5-flash",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"allow_external_fallback": True},
+            },
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["fallback_allowed"] is True
+        assert len(data["eligible_fallback"]) > 0
+        assert data["max_attempts"] > 1
+        assert data["selected_route_id"] == "openrouter:google/gemini-2.5-flash"
+
+    def test_manual_model_no_business14_chat_one_attempt(self, client):
+        """manual model, no business14 → only 1 upstream call, no fallback."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            return {
+                "id": "cmpl-test", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+                "_live": True,
+                "_requested_upstream_model": upstream_model,
+                "_actual_response_model": upstream_model,
+            }
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={"model": "google/gemini-2.5-flash", "messages": [{"role": "user", "content": "hi"}]},
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 200
+        biz14 = resp.json()["business14"]
+        assert biz14["fallback_allowed"] is False
+        assert biz14["attempt_count"] == 1
+        assert biz14["fallback_used"] is False
+        assert len(calls) == 1
+
+    def test_manual_model_explicit_true_429_fallback(self, client):
+        """manual model, allow_external_fallback=true → 429 allows fallback to second candidate."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import UpstreamRateLimited
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            if len(calls) == 1:
+                raise UpstreamRateLimited()
+            return {
+                "id": "cmpl-fb", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+                "_live": True,
+                "_requested_upstream_model": upstream_model,
+                "_actual_response_model": upstream_model,
+            }
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "google/gemini-2.5-flash",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"allow_external_fallback": True},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 200
+        biz14 = resp.json()["business14"]
+        assert biz14["fallback_allowed"] is True
+        assert biz14["fallback_used"] is True
+        assert biz14["attempt_count"] >= 2
+        assert len(calls) >= 2
+        assert calls[1] != calls[0]
+
+    def test_manual_model_explicit_true_401_no_fallback(self, client):
+        """manual model, allow_external_fallback=true → 401 NO fallback (fail closed)."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import UpstreamAuthFailed
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            raise UpstreamAuthFailed()
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "google/gemini-2.5-flash",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"allow_external_fallback": True},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 401
+        assert resp.json()["error"]["code"] == "upstream_auth_failed"
+        assert resp.json()["error"]["fallback_used"] is False
+        assert len(calls) == 1
+
+    def test_manual_model_explicit_true_404_no_fallback(self, client):
+        """manual model, allow_external_fallback=true → 404 NO fallback."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import UpstreamClientError
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            raise UpstreamClientError(404)
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "google/gemini-2.5-flash",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"allow_external_fallback": True},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 502
+        assert resp.json()["error"]["code"] == "upstream_client_error"
+        assert resp.json()["error"]["fallback_used"] is False
+        assert len(calls) == 1
+
+    def test_manual_model_explicit_true_malformed_no_fallback(self, client):
+        """manual model, allow_external_fallback=true → malformed NO fallback."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import MalformedUpstreamResponse
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            raise MalformedUpstreamResponse()
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "google/gemini-2.5-flash",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"allow_external_fallback": True},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 502
+        assert resp.json()["error"]["code"] == "malformed_upstream_response"
+        assert resp.json()["error"]["fallback_used"] is False
+        assert len(calls) == 1
+
+    def test_manual_model_explicit_true_unknown_error_no_fallback(self, client):
+        """manual model, allow_external_fallback=true → unknown error NO fallback."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append(model_id)
+            raise ValueError("unexpected internal failure")
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "google/gemini-2.5-flash",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"allow_external_fallback": True},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 500
+        assert resp.json()["error"]["code"] == "internal_error"
+        assert resp.json()["error"]["fallback_used"] is False
+        assert len(calls) == 1
+
+
+# ============================================================================
+# Issue 3: Actual candidate-specific selected_route_id
+# ============================================================================
+
+
+class TestActualRouteId:
+    """selected_route_id must be the actual candidate's route ID, never a random ID."""
+
+    def test_resolve_route_id_is_openrouter_prefixed(self, client):
+        """Resolve endpoint must return openrouter:<model_id> route IDs."""
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["selected_route_id"].startswith("openrouter:")
+        assert data["selected_route_id"] == f"openrouter:{data['selected_model']}"
+
+    def test_manual_resolve_route_id(self, client):
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={"model": "deepseek/deepseek-chat", "messages": [{"role": "user", "content": "hi"}]},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["selected_route_id"] == "openrouter:deepseek/deepseek-chat"
+
+    def test_primary_success_route_id(self, client):
+        """Primary candidate success: selected_route_id = primary candidate route_id."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        original = orv.call_openrouter_chat_completions
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            return {
+                "id": "cmpl-pk", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+                "_live": True,
+                "_requested_upstream_model": upstream_model,
+                "_actual_response_model": upstream_model,
+            }
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 200
+        biz14 = resp.json()["business14"]
+        assert biz14["selected_route_id"] == f"openrouter:{biz14['selected_model']}"
+        assert not biz14["fallback_used"]
+
+    def test_fallback_success_route_id_differs_from_primary(self, client):
+        """Fallback success: selected_route_id = actual fallback success candidate route_id."""
+        _set_live()
+        from app.pilot import openrouter as orv
+        from app.pilot.errors import UpstreamRateLimited
+        original = orv.call_openrouter_chat_completions
+        calls = []
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
+            if len(calls) == 1:
+                raise UpstreamRateLimited()
+            return {
+                "id": "cmpl-fb", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+                "_live": True,
+                "_requested_upstream_model": upstream_model,
+                "_actual_response_model": upstream_model,
+            }
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "b14/auto",
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "business14": {"optimize_for": "cost", "max_attempts": 3},
+                },
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 200
+        biz14 = resp.json()["business14"]
+        primary_route_id = f"openrouter:{calls[0]['model_id']}"
+        fallback_route_id = f"openrouter:{calls[1]['model_id']}"
+        assert biz14["selected_route_id"] == fallback_route_id
+        assert biz14["selected_route_id"] != primary_route_id
+        assert biz14["selected_model"] == calls[1]["model_id"]
+        assert biz14["selected_provider"] == calls[1]["provider"]
+        assert biz14["selected_upstream_model"] == calls[1]["upstream_model"]
+        assert biz14["attempt_evidence"][1]["route_id"] == fallback_route_id
+
+    def test_route_id_no_api_key_or_url(self, client):
+        """selected_route_id must not contain API keys or user-supplied URLs."""
+        _set_live()
+        secret = "sk-or-v1-super-secret-key-12345"
+        from app.pilot import openrouter as orv
+        original = orv.call_openrouter_chat_completions
+
+        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+            assert secret not in model_id
+            assert secret not in upstream_model
+            return {
+                "id": "cmpl-test", "object": "chat.completion",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+                "_live": True,
+                "_requested_upstream_model": upstream_model,
+                "_actual_response_model": upstream_model,
+            }
+
+        orv.call_openrouter_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            )
+        finally:
+            orv.call_openrouter_chat_completions = original
+
+        assert resp.status_code == 200
+        biz14 = resp.json()["business14"]
+        route_id = biz14["selected_route_id"]
+        assert secret not in route_id
+        assert "http" not in route_id
+        assert "@" not in route_id
+        assert route_id.startswith("openrouter:")

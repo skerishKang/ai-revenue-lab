@@ -71,6 +71,7 @@ class RouteCandidate:
     provider: str
     provider_type: str
     reason: str
+    route_id: str
 
 
 @dataclass(frozen=True)
@@ -137,15 +138,17 @@ def _check_credentials() -> tuple[bool, str]:
 
 def resolve_manual_route(
     model_id: str,
-    allow_external_fallback: bool = True,
+    allow_external_fallback: bool = False,
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
 
     Returns a RouteDecision. Does NOT make upstream calls.
     Raises NoSafeRoute if the model is not in the catalog or is disabled.
 
-    ``allow_external_fallback=False`` is enforced: no fallback candidates,
-    fallback_allowed=False.
+    Manual routes default to ``allow_external_fallback=False``: no fallback
+    candidates, ``fallback_allowed=False``, ``max_attempts=1``.  Only when the
+    caller explicitly passes ``allow_external_fallback=True`` are fallback
+    candidates populated (subject to error-allow-list in the gateway).
     """
     request_id = _new_request_id()
     cm = get_catalog_by_id(model_id)
@@ -165,7 +168,7 @@ def resolve_manual_route(
         )
 
     cred_ok, cred_status = _check_credentials()
-    route_id = f"b14route_{uuid.uuid4().hex[:12]}"
+    route_id = f"openrouter:{cm.model_id}"
 
     fallback_candidates: list[dict[str, str]] = []
     if allow_external_fallback:
@@ -175,6 +178,7 @@ def resolve_manual_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
+                "route_id": f"openrouter:{m.model_id}",
                 "reason": "catalog_alternative",
             }
             for m in all_models
@@ -200,7 +204,7 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=openrouter_config.provider_mode,
-        max_attempts=1,
+        max_attempts=1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3),
     )
 
 
@@ -233,8 +237,6 @@ def resolve_auto_route(
     Returns RouteDecision. Raises NoSafeRoute if no candidate is found.
     """
     request_id = _new_request_id()
-    route_id = f"b14route_{uuid.uuid4().hex[:12]}"
-
     cred_ok, cred_status = _check_credentials()
 
     candidates = _filter_catalog(
@@ -269,6 +271,7 @@ def resolve_auto_route(
         task_type=task_type,
     )
     selected = sorted_candidates[0]
+    route_id = f"openrouter:{selected.model_id}"
 
     if allow_external_fallback:
         fallback_candidates = [
@@ -276,6 +279,7 @@ def resolve_auto_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
+                "route_id": f"openrouter:{m.model_id}",
                 "reason": "auto_fallback_candidate",
             }
             for m in sorted_candidates[1:]
@@ -322,9 +326,9 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
     Returns RouteDecision. Raises NoSafeRoute if routing fails.
     """
     opts = business14_options or {}
-    allow_external_fallback = opts.get("allow_external_fallback", True)
 
     if model_id.strip() == "b14/auto":
+        allow_external_fallback = opts.get("allow_external_fallback", True)
         return resolve_auto_route(
             task_type=opts.get("task_type", "general"),
             required_capabilities=opts.get("required_capabilities") or ["chat"],
@@ -334,6 +338,7 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
             max_attempts=opts.get("max_attempts"),
         )
 
+    allow_external_fallback = opts.get("allow_external_fallback", False)
     return resolve_manual_route(
         model_id,
         allow_external_fallback=allow_external_fallback,
