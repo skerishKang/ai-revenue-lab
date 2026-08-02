@@ -7,6 +7,7 @@ This operational-product reference uses no photography, third-party screenshots,
 - CSS-drawn route lines and nodes — original, repository source
 - inline text glyphs and semantic initials — original
 - no remote icon library
+- no runtime hotlink
 - no base64 image payload
 - no generated image
 
