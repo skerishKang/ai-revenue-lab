@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Living Archive — 3D 서가와 2D 정밀 리더를 오가는 개인 기록서재 MVP">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Living Archive · 나의 기록서재</title>
+  <link rel="stylesheet" href="styles/living-archive.css?v=living-archive-20260806-1">
+</head>
+<body>
+  <main class="app" id="app" data-mode="shelf">
+    <header class="topbar">
+      <div>
+        <p class="kicker">Business 59 · Local-first prototype</p>
+        <h1>나의 기록서재</h1>
+      </div>
+      <div class="topbar__actions">
+        <button class="quiet-button" id="open-import" type="button">자료 가져오기</button>
+        <button class="quiet-button" id="toggle-motion" type="button" aria-pressed="false">움직임 줄이기</button>
+      </div>
+    </header>
+
+    <section class="shelf-view view" id="shelf-view" aria-labelledby="shelf-title">
+      <div class="shelf-copy">
+        <p class="kicker">Spatial library</p>
+        <h2 id="shelf-title">파일을 찾지 말고,<br>기록을 꺼내 읽습니다.</h2>
+        <p>책은 자료의 정체성과 읽던 위치를 보여줍니다. 정확한 검색과 주석은 2D 정밀 리더에서 이어집니다.</p>
+      </div>
+
+      <div class="shelf-stage" aria-label="3D 책장">
+        <div class="shelf" id="shelf"></div>
+        <div class="shelf-plank" aria-hidden="true"></div>
+      </div>
+
+      <aside class="volume-summary" aria-live="polite">
+        <p class="kicker" id="summary-collection">사건 기록</p>
+        <h3 id="summary-title">회의와 결정 기록</h3>
+        <p id="summary-description"></p>
+        <dl class="summary-meta">
+          <div><dt>자료</dt><dd id="summary-sources"></dd></div>
+          <div><dt>읽던 곳</dt><dd id="summary-progress"></dd></div>
+          <div><dt>갱신</dt><dd id="summary-updated"></dd></div>
+        </dl>
+        <div class="summary-actions">
+          <button class="primary-button" id="open-3d" type="button">3D로 열기</button>
+          <button class="secondary-button" id="open-2d-direct" type="button">2D로 읽기</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="book-view view" id="book-view" aria-labelledby="book-title" hidden>
+      <div class="book-toolbar">
+        <button class="quiet-button" id="back-to-shelf" type="button">← 서가</button>
+        <div>
+          <p class="kicker">3D preview · derived pages</p>
+          <h2 id="book-title"></h2>
+        </div>
+        <button class="primary-button" id="continue-2d" type="button">정밀 리더에서 계속</button>
+      </div>
+
+      <div class="book-scene" id="book-scene">
+        <div class="open-book" id="open-book" aria-label="열린 책 미리보기">
+          <article class="book-page book-page--left" id="preview-left"></article>
+          <article class="book-page book-page--right" id="preview-right"></article>
+          <span class="book-spine" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="page-controls" aria-label="3D 미리보기 페이지 이동">
+        <button class="round-button" id="preview-previous" type="button" aria-label="이전 펼침면">←</button>
+        <p><strong id="preview-label"></strong><span id="preview-counter"></span></p>
+        <button class="round-button" id="preview-next" type="button" aria-label="다음 펼침면">→</button>
+      </div>
+      <p class="source-warning">3D 페이지는 탐색용 파생 미리보기입니다. 원본 확인·검색·선택·주석은 2D 리더를 사용합니다.</p>
+    </section>
+
+    <section class="reader-view view" id="reader-view" aria-labelledby="reader-title" hidden>
+      <header class="reader-toolbar">
+        <button class="quiet-button" id="reader-back-3d" type="button">← 3D 책</button>
+        <div class="reader-identity">
+          <p class="kicker" id="reader-kind"></p>
+          <h2 id="reader-title"></h2>
+        </div>
+        <div class="reader-tools">
+          <label class="search-box">
+            <span class="sr-only">본문 검색</span>
+            <input id="search-input" type="search" placeholder="이 책에서 검색">
+            <output id="search-count">0</output>
+          </label>
+          <button class="quiet-button" id="search-next" type="button">다음 결과</button>
+          <button class="quiet-button" id="toggle-bookmark" type="button" aria-pressed="false">책갈피</button>
+        </div>
+      </header>
+
+      <div class="reader-layout">
+        <nav class="reader-outline" aria-label="책 목차">
+          <p class="kicker">Contents</p>
+          <ol id="outline-list"></ol>
+        </nav>
+
+        <article class="reader-document" id="reader-document" tabindex="0">
+          <div class="document-page" id="document-page"></div>
+        </article>
+
+        <aside class="reader-notes" aria-labelledby="notes-title">
+          <p class="kicker">Reading record</p>
+          <h3 id="notes-title">이 페이지의 메모</h3>
+          <label>
+            <span>메모</span>
+            <textarea id="note-input" rows="8" placeholder="이 부분이 왜 중요한지 기록합니다."></textarea>
+          </label>
+          <p class="note-anchor" id="note-anchor"></p>
+          <button class="secondary-button" id="save-note" type="button">현재 위치에 기록</button>
+          <output class="save-status" id="save-status" aria-live="polite"></output>
+        </aside>
+      </div>
+
+      <footer class="reader-footer">
+        <button class="round-button" id="reader-previous" type="button" aria-label="이전 페이지">←</button>
+        <p><strong id="reader-page-label"></strong><span id="reader-page-counter"></span></p>
+        <label class="zoom-control">읽기 크기 <input id="zoom-range" type="range" min="85" max="125" value="100"></label>
+        <button class="round-button" id="reader-next" type="button" aria-label="다음 페이지">→</button>
+      </footer>
+    </section>
+
+    <dialog class="import-dialog" id="import-dialog">
+      <form method="dialog">
+        <button class="dialog-close" value="cancel" aria-label="닫기">×</button>
+        <p class="kicker">Local import concept</p>
+        <h2>내 컴퓨터에서 책 만들기</h2>
+        <p>이 MVP는 실제 업로드나 저장을 수행하지 않습니다. 다음 런타임에서 원본은 로컬에 보존하고, 3D 미리보기와 검색 색인만 파생 생성합니다.</p>
+        <div class="format-grid">
+          <article><strong>PDF</strong><span>페이지·목차·텍스트 레이어</span></article>
+          <article><strong>TXT</strong><span>문단과 제목을 읽기 장으로 변환</span></article>
+          <article><strong>Markdown</strong><span>헤딩을 목차와 책갈피 기준으로 사용</span></article>
+        </div>
+        <label class="file-concept">파일 선택 — 동작 시뮬레이션
+          <input id="file-concept" type="file" accept=".pdf,.txt,.md,text/plain,text/markdown,application/pdf">
+        </label>
+        <output id="file-concept-status" aria-live="polite"></output>
+        <button class="primary-button" value="cancel">확인</button>
+      </form>
+    </dialog>
+
+    <div class="sr-only" id="live-region" aria-live="polite"></div>
+  </main>
+  <script src="scripts/fixtures.js?v=living-archive-20260806-1"></script>
+  <script src="scripts/living-archive.js?v=living-archive-20260806-1"></script>
+</body>
+</html>
