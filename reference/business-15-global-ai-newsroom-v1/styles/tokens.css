@@ -1,0 +1,20 @@
+:root {
+  color-scheme: dark;
+  --ink: #0c1118;
+  --panel: #151c25;
+  --panel-2: #1b2530;
+  --paper: #f1eee6;
+  --evidence: #fcfaf5;
+  --blue: #4e7fb8;
+  --amber: #d8943b;
+  --red: #b94a48;
+  --green: #3f765d;
+  --rule: #cbd0d2;
+  --muted: #93a0ad;
+  --muted-dark: #59636e;
+  --white: #f8f6ef;
+  --shadow: 0 22px 70px rgb(0 0 0 / 0.28);
+  --serif: Georgia, "Times New Roman", "Noto Serif KR", serif;
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+  --version: "global-ai-newsroom-20260728-1";
+}

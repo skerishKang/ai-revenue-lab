@@ -1,0 +1,57 @@
+.atlas-caption, .ledger-head, .dossier-meta, .dossier-header, .edition-sheet header, .mobile-brief header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.atlas-caption { position: absolute; z-index: 2; top: 16px; left: 18px; right: 18px; color: #b9c7d3; font-size: 10px; letter-spacing: .09em; }
+.atlas-caption strong { color: var(--white); font-size: 13px; letter-spacing: 0; }
+.map-legend { position: absolute; z-index: 3; bottom: 12px; left: 14px; display: flex; flex-wrap: wrap; gap: 12px; padding: 7px 9px; background: rgb(12 17 24 / .82); font-size: 10px; }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-dot { width: 8px; height: 8px; border: 2px solid var(--paper); border-radius: 50%; }
+.legend-dot.corroborated { background: var(--green); }
+.legend-dot.pending { background: var(--amber); }
+.legend-line { width: 17px; height: 3px; }
+.legend-line.conflict { background: repeating-linear-gradient(90deg, var(--red) 0 4px, transparent 4px 7px); }
+.desk-entry { display: grid; grid-template-columns: 42px 1fr auto; gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid #34404d; transition: background .15s; }
+.desk-entry:hover { background: rgb(255 255 255 / 0.04); }
+.desk-entry .desk-code { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #5a6878; font-size: 10px; font-weight: 800; }
+.desk-entry strong { font-size: 13px; }
+.desk-entry p { margin: 3px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.desk-entry time { color: var(--muted); font-size: 10px; }
+.desk-entry.is-corroborating .desk-code { border-color: var(--green); }
+.desk-entry.is-conflicting .desk-code { border-color: var(--red); }
+.fact-band { display: grid; grid-template-columns: repeat(3, 1fr); margin: 18px 0; border-block: 1px solid #b8b8b2; }
+.fact-band div { display: grid; gap: 0; padding: 10px; border-right: 1px solid #b8b8b2; }
+.fact-band div:last-child { border-right: 0; }
+.fact-band strong { font-family: var(--serif); font-size: 26px; font-weight: 500; }
+.fact-band span { font-size: 10px; }
+.lead-lines { position: relative; display: grid; gap: 6px; min-height: 86px; padding: 5px 0 0; overflow: hidden; }
+.evidence-strip { position: relative; z-index: 2; width: 73%; padding: 7px 9px; border-left: 3px solid var(--green); background: #e1e8e1; font-size: 10px; font-weight: 750; transition: transform 340ms ease, opacity 180ms ease; }
+.evidence-strip--b { width: 81%; margin-left: 8%; }
+.evidence-strip--conflict { width: 66%; margin-left: 27%; border-color: var(--red); background: #eed9d6; }
+.chain-reveal { position: absolute; z-index: 1; right: 3%; top: 14px; width: 40%; height: 48px; border-top: 1px solid var(--green); border-right: 1px solid var(--green); clip-path: inset(0 100% 0 0); }
+.human-seal { opacity: 1; padding: 5px 8px; border: 2px solid var(--green); color: var(--green); font-size: 10px; letter-spacing: .08em; transform: rotate(-2deg); }
+.convergence-scene.is-converging .source-marker { animation: markerActivate 180ms ease both; }
+.convergence-scene.is-converging .evidence-strip--a { animation: convergeA 680ms ease both; }
+.convergence-scene.is-converging .evidence-strip--b { animation: convergeB 680ms ease both; }
+.convergence-scene.is-converging .evidence-strip--conflict { animation: holdConflict 680ms ease both; }
+.convergence-scene.is-converging .chain-reveal { animation: revealChain 680ms ease both; }
+.convergence-scene.is-converging .human-seal { animation: humanSeal 680ms ease both; }
+@keyframes markerActivate { from { opacity: .45; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes convergeA { 0%, 18% { opacity: .55; transform: translateX(-24px); } 72%, 100% { opacity: 1; transform: translateX(15%); } }
+@keyframes convergeB { 0%, 22% { opacity: .55; transform: translateX(-18px); } 75%, 100% { opacity: 1; transform: translateX(8%); } }
+@keyframes holdConflict { 0%, 25% { opacity: .55; transform: translateX(0); } 55%, 100% { opacity: 1; transform: translateX(-4px); } }
+@keyframes revealChain { 0%, 34% { clip-path: inset(0 100% 0 0); } 76%, 100% { clip-path: inset(0 0 0 0); } }
+@keyframes humanSeal { 0%, 76% { opacity: 0; transform: scale(.96) rotate(-2deg); } 100% { opacity: 1; transform: scale(1) rotate(-2deg); } }
+.convergence-scene.motion-complete .source-marker { opacity: 1; transform: translateY(0); }
+.convergence-scene.motion-complete .evidence-strip--a { opacity: 1; transform: translateX(15%); }
+.convergence-scene.motion-complete .evidence-strip--b { opacity: 1; transform: translateX(8%); }
+.convergence-scene.motion-complete .evidence-strip--conflict { opacity: 1; transform: translateX(-4px); }
+.convergence-scene.motion-complete .chain-reveal { clip-path: inset(0); }
+.convergence-scene.motion-complete .human-seal { opacity: 1; transform: scale(1) rotate(-2deg); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+  .convergence-scene.is-converging .evidence-strip,
+  .convergence-scene.motion-complete .evidence-strip { opacity: 1; transform: none; }
+  .convergence-scene.is-converging .chain-reveal,
+  .convergence-scene.motion-complete .chain-reveal { clip-path: inset(0); }
+  .convergence-scene.is-converging .human-seal,
+  .convergence-scene.motion-complete .human-seal { opacity: 1; transform: rotate(-2deg); }
+}
