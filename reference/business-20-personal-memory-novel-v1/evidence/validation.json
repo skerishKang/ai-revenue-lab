@@ -1,0 +1,25 @@
+{
+  "status": "pass",
+  "version": "memory-novel-20260727-1",
+  "captures": [
+    {"state": "cover", "viewport": [1440, 1100], "overflow": 0, "file": "manuscript-cover-1440x1100.png", "reduced": false},
+    {"state": "source", "viewport": [1440, 1100], "overflow": 0, "file": "source-memory-1440x1100.png", "reduced": false},
+    {"state": "draft", "viewport": [1440, 1100], "overflow": 0, "file": "scene-draft-1440x1100.png", "reduced": false},
+    {"state": "map", "viewport": [1440, 1100], "overflow": 0, "file": "transformation-map-1440x1100.png", "reduced": false},
+    {"state": "versions", "viewport": [1440, 1100], "overflow": 0, "file": "two-versions-1440x1100.png", "reduced": false},
+    {"state": "proof", "viewport": [1440, 1100], "overflow": 0, "file": "author-proof-1440x1100.png", "reduced": false},
+    {"state": "proof", "viewport": [768, 1024], "overflow": 0, "file": "tablet-author-proof-768x1024.png", "reduced": false},
+    {"state": "mobile", "viewport": [390, 844], "overflow": 0, "file": "mobile-scene-390x844.png", "reduced": false},
+    {"state": "draft", "viewport": [1440, 1100], "overflow": 0, "file": "reduced-motion-1440x1100.png", "reduced": true}
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "external_runtime_requests": [],
+  "local_image_failures": [],
+  "keyboard": {"arrow_right": true, "end": true},
+  "truth_labels_visible": true,
+  "synthetic_label_visible": true,
+  "motion_evidence": "fact-to-fiction-fold.mp4",
+  "failures": [],
+  "harness_note": "Chromium validation uses an inlined document because this execution environment blocks local URL navigation; production files retain repository-local relative asset paths."
+}
