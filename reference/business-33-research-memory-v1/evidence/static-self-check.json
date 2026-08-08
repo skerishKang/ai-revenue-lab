@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "checks": {
+    "exact_states": true,
+    "exact_controls": true,
+    "local_css_js": true,
+    "assets_min_10": true,
+    "all_assets_documented": true,
+    "all_labels": true,
+    "reduced_motion": true,
+    "responsive": true,
+    "animationend": true,
+    "replay_reset": true,
+    "no_timeout": true,
+    "no_external_runtime": true,
+    "fixed_asset_version": true
+  },
+  "state_count": 7,
+  "asset_count": 11
+}
