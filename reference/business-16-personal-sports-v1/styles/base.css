@@ -1,0 +1,72 @@
+:root {
+  --ink:#10151a;
+  --ink-soft:#273036;
+  --paper:#f1efe8;
+  --sheet:#fcfbf7;
+  --field:#3e6651;
+  --field-deep:#20392e;
+  --coral:#d65c49;
+  --blue:#4977a3;
+  --gold:#d8a247;
+  --rule:#cdd0cc;
+  --muted:#68706d;
+  --shadow:0 26px 70px rgb(6 12 15 / .22);
+  --page:clamp(18px,3vw,48px);
+  --display:"Arial Narrow","Roboto Condensed","Noto Sans KR",Arial,sans-serif;
+  --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;
+  --ease:cubic-bezier(.22,.78,.18,1);
+  --asset-version:"personal-sports-20260728-1";
+}
+*{box-sizing:border-box}
+html{background:var(--ink);scrollbar-gutter:stable}
+body{margin:0;min-width:320px;background:var(--ink);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit}
+img{display:block;max-width:100%}
+figure{margin:0}
+h1,h2,h3,p{margin-top:0}
+h1,h2,h3{font-family:var(--display);line-height:1.02;letter-spacing:-.035em}
+button,a{outline-offset:4px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+[hidden]{display:none!important}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;padding:10px 14px;background:var(--sheet);color:var(--ink);transform:translateY(-160%)}
+.skip-link:focus{transform:none}
+.eyebrow,.issue-label,.kicker{font-family:var(--display);font-size:.73rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.issue-label{color:var(--coral)}
+.source-line{font-size:.75rem;color:var(--muted)}
+.visual-state{min-height:730px;animation:state-in 260ms var(--ease)}
+@keyframes state-in{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}.visual-state{animation:none}}
+.site-shell{width:min(100%,1600px);margin:0 auto;background:var(--paper);min-height:100vh}
+.site-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px var(--page);background:var(--ink);color:var(--sheet);border-bottom:1px solid rgb(255 255 255 / .14)}
+.brand-lockup{display:flex;align-items:center;gap:14px}
+.brand-lockup h1{margin:0;font-size:clamp(1.25rem,2.2vw,2rem);letter-spacing:-.02em}
+.brand-lockup .eyebrow{margin:0 0 3px;color:#cfd3cf}
+.brand-mark{display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--paper);font-family:var(--display);font-size:1.7rem;font-weight:900;transform:skew(-8deg)}
+.brand-mark.small{width:34px;height:34px;font-size:1.2rem}
+.truth-stamp{max-width:350px;padding:8px 12px;border:1px solid rgb(255 255 255 / .24);font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-align:right}
+.truth-stamp span{color:#b9c0bc}
+.review-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:22px;padding:12px var(--page);background:#e4e2dc;border-bottom:1px solid var(--rule)}
+.review-nav>p{margin:0;font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.state-controls{display:flex;align-items:center;justify-content:center;gap:4px;overflow-x:auto;padding:3px}
+.state-controls button{display:flex;align-items:center;gap:6px;white-space:nowrap;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);padding:7px 10px;cursor:pointer;font-size:.82rem;font-weight:700}
+.state-controls button span{font-family:var(--display);font-size:.68rem;color:#8c928f}
+.state-controls button[aria-selected="true"]{color:var(--ink);border-color:var(--coral)}
+.review-note{text-align:right;color:var(--muted)}
+.visual-stage{min-height:760px;background:var(--sheet)}
+.site-footer{display:flex;justify-content:space-between;gap:20px;padding:16px var(--page);background:var(--ink);color:#aeb5b1;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.editorial-grid{display:grid}
+.spread-heading{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:40px;align-items:end;padding:38px var(--page) 28px;background:var(--sheet);border-bottom:1px solid var(--rule)}
+.spread-heading.compact{padding-bottom:20px}
+.spread-heading h2{margin:0;font-size:clamp(2.2rem,5vw,5.6rem);max-width:980px}
+.spread-heading .standfirst{margin:0;font-size:1.05rem;border-left:3px solid var(--coral);padding-left:18px}
+@media(max-width:900px){.review-nav{grid-template-columns:1fr}.review-nav>p,.review-note{display:none}.state-controls{justify-content:flex-start}.spread-heading{grid-template-columns:1fr;gap:16px}.site-footer{flex-wrap:wrap}.truth-stamp{display:none}}
+@media(max-width:560px){.site-header{padding:15px 16px}.brand-lockup .eyebrow{font-size:.58rem}.brand-lockup h1{font-size:1.08rem}.brand-mark{width:40px;height:40px}.review-nav{padding:8px 10px}.state-controls button{padding:7px 8px;font-size:.74rem}.state-controls button span{display:none}.site-footer{padding:14px 16px}.site-footer span:last-child{display:none}}
+.ruled-note{background:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,rgb(16 21 26 / .09) 32px);padding:24px}
+.ticket-fragment{transform:rotate(-1.3deg);filter:drop-shadow(0 14px 22px rgb(16 21 26 / .14))}
+.ticket-fragment figcaption,.preview-photo figcaption,.preview-tactic figcaption,.tactical-board figcaption,.player-poster figcaption,.player-field figcaption,.season-visual figcaption{margin-top:8px;font-family:var(--display);font-size:.67rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.fixture-line,.kickoff-line,.fixture-scoreboard,.mobile-fixture{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.fixture-line strong,.mobile-fixture strong{color:var(--coral)}
+.hand-note{font-family:"Segoe Print","Comic Sans MS",cursive;transform:rotate(-1deg);color:var(--ink-soft)}
+.motion-replay{border:1px solid var(--ink);background:var(--sheet);color:var(--ink);padding:9px 14px;cursor:pointer;font-size:.76rem;font-weight:800;letter-spacing:.06em}
+.motion-replay:hover{background:var(--ink);color:var(--sheet)}
+.truth-stamp,.fixture-scoreboard,.synthetic-score{font-family:var(--display)}
