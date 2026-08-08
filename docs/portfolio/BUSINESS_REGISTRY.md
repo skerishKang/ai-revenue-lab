@@ -15,6 +15,8 @@ It prevents four recurring errors:
 3. treating shared Firebase authentication as shared product authorization;
 4. presenting a preview or synthetic MVP as an active production service.
 
+For a numbered Business that has expanded into an external successor product, this registry preserves the number while `docs/portfolio/BUSINESS_EXPANSION_LINEAGE.md` records the successor and implementation-location boundary.
+
 ## 2. Registry fields
 
 Every verified Business entry must eventually record:
@@ -31,7 +33,8 @@ Every verified Business entry must eventually record:
 - portal integration state;
 - canonical issues or decision documents;
 - public or staging hostname when approved;
-- known limitations.
+- known limitations;
+- successor or external implementation state when applicable.
 
 Secrets, database URLs, Firebase service-account material, API keys, private hostnames, and user data are prohibited.
 
@@ -43,7 +46,7 @@ Secrets, database URLs, Firebase service-account material, API keys, private hos
 | 2 | `living-travel` | Living Travel / 리빙 트래블 | `apps/living-travel/` | Implemented private MVP; production foundation and pre-staging security contracts merged | Shared Firebase identity; Living Travel owns traveler/operator mapping and data access. | Not yet integrated; no portal implementation in Issue #74 | Issues #32, #43, #69, #74, #86 |
 | 3 | `living-fiction` | Living Fiction / 리빙 픽션 | `apps/living-fiction/` | Implemented private reader/editorial MVP; production infrastructure open | Product-local invite, reader, and editorial authorization; shared identity integration not yet accepted as a completed portal flow. | Not yet integrated | Issues #34, #55, #75, #77 |
 | 4 | `living-learning` | Living Learning / 리빙 러닝 | `apps/living-learning/` | Isolated adaptive-learning MVP and static adaptive UI preview | Current product-local/synthetic access contract; portfolio identity integration not yet implemented. | Not yet integrated | Issue #37 and current Business 4 project direction |
-| 5 | `neighbor-market` | Neighbor Market / 우리단지 이웃가게 | `apps/neighbor-market/` — planned, not yet created | concept | Shared Firebase authentication may be used later; Neighbor Market owns resident verification, listing eligibility, operator/moderator/admin roles, and product records | Not implemented | Issues #89 and #99; approved reference commit `89add370b78e5f7567a2acb44e53a45f07680372` |
+| 5 | `neighbor-market` | Neighbor Market / 우리단지 이웃가게 | **External successor: DanjiOn / 단지온 — `skerishKang/02-danji-on`; `NO_INTERNAL_IMPLEMENTATION`** | `private_preview`; B5 number preserved as `EXPANDED_SUCCESSOR` lineage | DanjiOn external source owns resident verification, listing eligibility, operator/moderator/admin roles, Auth and product records. AI Revenue Lab does not create a parallel authorization implementation. | List/link only inside AI Revenue Lab; actual product work stays in DanjiOn | Owner decision 2026-08-09; `BUSINESS_EXPANSION_LINEAGE.md`; prior Issues #89 and #99 |
 | 6 | `reserved-06` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
 | 7 | `reserved-07` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
 | 8 | `reserved-08` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
@@ -93,7 +96,7 @@ Use only these lifecycle values in future portal metadata:
 - `reserved`
 - `number_reconciliation_required`
 
-Lifecycle describes product maturity, not user authorization.
+Lifecycle describes product maturity, not user authorization or expansion lineage. Expansion state such as `EXPANDED_SUCCESSOR` is separate metadata defined in `BUSINESS_EXPANSION_LINEAGE.md`.
 
 ## 7. Portal access vocabulary
 
@@ -124,7 +127,7 @@ This is public architecture metadata, not a credential. No service-account JSON,
 
 ### Product authorization
 
-Every Business remains the authority for its own memberships, roles, and records.
+Every Business remains the authority for its own memberships, roles, and records. When a Business has an external successor, that successor source owns the live product authorization; AI Revenue Lab does not recreate it in parallel.
 
 ### Deployment
 
@@ -151,6 +154,8 @@ A new or reconciled Business number requires:
 
 Do not renumber an implemented Business silently. A renumbering must document aliases, affected issues, routes, deployment names, evidence records, and migration consequences.
 
+A Business that expands to an external successor keeps its original number. Expansion is not renumbering and the vacated number must not be reused.
+
 ## 10. Current reconciliation findings
 
 The following mappings are treated as verified because current project work or issue evidence explicitly identifies them:
@@ -160,11 +165,11 @@ Business 1  Personal Edition
 Business 2  Living Travel
 Business 3  Living Fiction
 Business 4  Living Learning
-Business 5  Neighbor Market
+Business 5  Neighbor Market → DanjiOn successor implementation
 Business 13 Personal Video Archive
 Business 14 Korean AI Platform
 ```
 
-Business 1–5 are assigned as verified mappings. Business 6–12 remain reserved. Business 13–14 remain assigned. World Feed remains unnumbered / number_reconciliation_required.
+Business 1–5 are assigned as verified mappings. B5 now preserves its original Neighbor Market number while actual implementation continues in the external DanjiOn successor. Business 6–12 remain reserved. Business 13–14 remain assigned. World Feed remains unnumbered / number_reconciliation_required.
 
-This is preferable to preserving contradictory historic tables or inventing assignments without evidence.
+This is preferable to preserving contradictory historic tables, deleting successful Business lineage, or inventing assignments without evidence.
