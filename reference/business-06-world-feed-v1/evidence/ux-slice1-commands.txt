@@ -1,0 +1,28 @@
+Business 6 · World Feed UX Slice 1 focused correction
+
+Starting remote head:
+  d92933e8851a67bb227f136145a07a8df2915e65
+
+Focused source checks:
+  node --check scripts/feed-state.js
+  node --check scripts/navigation.js
+  node --check scripts/story-state.js
+  node --check scripts/preference-state.js
+  node --check scripts/ux-app.js
+  wc -l index.html scripts/*.js styles/**/*.css
+  scan index.html for world-feed-20260726-4
+  scan index.html for stale world-feed-20260726-3 loading references
+  scan all loaded CSS/JS for unversioned references
+  scan source for localStorage, document.cookie, fetch(), XMLHttpRequest, and external URLs
+  verify every repository-local SVG reference exists
+
+Browser validation:
+  python /mnt/data/world-feed-slice1-correction/validate.py
+
+Browser dimensions:
+  desktop 1440x900
+  mobile 390x844
+  desktop reduced-motion 1440x900
+
+Environment note:
+  Local HTTP navigation is blocked by administrator policy. The validator inlines the exact source bytes into Managed Chromium and rewrites repository-local SVGs to data URIs solely for rendering evidence. Production source paths remain unchanged.

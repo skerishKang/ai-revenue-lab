@@ -1,0 +1,79 @@
+{
+  "starting_head": "d92933e8851a67bb227f136145a07a8df2915e65",
+  "allowed_workspace": "reference/business-06-world-feed-v1/**",
+  "version_token": "world-feed-20260726-4",
+  "loaded_source_files": [
+    "styles/tokens.css",
+    "styles/base.css",
+    "styles/layout.css",
+    "styles/components.css",
+    "styles/states/home-topic.css",
+    "styles/states/story-why.css",
+    "styles/states/adjusted-mobile-motion.css",
+    "styles/journeys/primary-journey.css",
+    "scripts/feed-state.js",
+    "scripts/navigation.js",
+    "scripts/story-state.js",
+    "scripts/preference-state.js",
+    "scripts/ux-app.js"
+  ],
+  "loaded_source_line_counts": {
+    "styles/tokens.css": 19,
+    "styles/base.css": 26,
+    "styles/layout.css": 33,
+    "styles/components.css": 28,
+    "styles/states/home-topic.css": 103,
+    "styles/states/story-why.css": 44,
+    "styles/states/adjusted-mobile-motion.css": 33,
+    "styles/journeys/primary-journey.css": 164,
+    "scripts/feed-state.js": 101,
+    "scripts/navigation.js": 138,
+    "scripts/story-state.js": 114,
+    "scripts/preference-state.js": 62,
+    "scripts/ux-app.js": 24
+  },
+  "max_loaded_source_lines": 164,
+  "all_loaded_sources_at_or_below_500": true,
+  "token_occurrences": 13,
+  "stale_minus_3_loading_references": 0,
+  "unversioned_css_js": [],
+  "story_button_map": {
+    "open-harbor-story": "harbor",
+    "open-market-studio-from-feed": "market-studio",
+    "open-maker-from-mosaic": "maker",
+    "open-maker-adjusted": "maker",
+    "open-maker-from-nearby": "maker",
+    "open-cinema-from-culture": "cinema"
+  },
+  "supported_story_ids": [
+    "harbor",
+    "market-studio",
+    "maker",
+    "cinema"
+  ],
+  "local_asset_references": [
+    "./assets/images/hero-harbor.svg",
+    "./assets/images/maker-studio.svg",
+    "./assets/images/small-cinema.svg"
+  ],
+  "missing_local_assets": [],
+  "forbidden_runtime_scans": {
+    "localStorage": 0,
+    "document.cookie": 0,
+    "fetch_call": 0,
+    "XMLHttpRequest": 0,
+    "external_http_url": 0
+  },
+  "changed_paths_planned": [
+    "reference/business-06-world-feed-v1/index.html",
+    "reference/business-06-world-feed-v1/scripts/feed-state.js",
+    "reference/business-06-world-feed-v1/scripts/navigation.js",
+    "reference/business-06-world-feed-v1/scripts/story-state.js",
+    "reference/business-06-world-feed-v1/scripts/preference-state.js",
+    "reference/business-06-world-feed-v1/styles/journeys/primary-journey.css",
+    "reference/business-06-world-feed-v1/evidence/ux-slice1-validation.json",
+    "reference/business-06-world-feed-v1/evidence/ux-slice1-source-audit.json",
+    "reference/business-06-world-feed-v1/evidence/ux-slice1-commands.txt"
+  ],
+  "browser_validation_method": "Managed Chromium with exact HTML/CSS/JS/SVG bytes inlined because local HTTP navigation is blocked by administrator policy; no runtime requests were made."
+}

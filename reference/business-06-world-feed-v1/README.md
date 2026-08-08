@@ -1,65 +1,92 @@
-# Business 6 · World Feed — Phase 1 Visual UI Reference
+# Business 6 · World Feed — Phase 2 UX Slice 1
 
 ## Status
 
-- Phase: **UI_ONLY / Phase 1 visual UI**
-- Current review verdict entering this correction: **UI_NOT_READY**
+- Phase: **UX_ONLY / Phase 2 frontend prototype**
+- Issue: `#165`
+- Starting base: `48807067a261d8f1ca3814b4b26758dd6947788a`
+- Accepted visual baseline: PR `#158`, visual head `cde6677e71172125cb3a0406f6ba6a79e0467d36`
+- Branch: `feat/business-06-world-feed-ux-165`
 - Visual direction: **Personal World Dispatch / 나의 세계 편집면**
-- Issue: `#155`
-- Draft PR: `#158`
-- Focused-correction starting head: `99981006dcf792c359795a0c618c92a800d65c0d`
-- Hosted review: `https://ai-revenue-world-feed.pages.dev`
+- Backend: **FROZEN**
 
-This directory remains a static visual reference. It does not implement accepted UX, recommendation logic, current-information ingestion, authentication, persistence, APIs, AI providers, analytics, notifications, billing, or deployment logic.
+This slice converts the approved visual reference into one deterministic frontend journey using synthetic local content and in-memory state only.
 
-> 시각 검토용 합성 콘텐츠이며 현재 사실을 나타내지 않습니다.
-
-## Focused correction v2
-
-The correction keeps the existing seven-state product direction and concentrates on:
-
-- Korean display-title scale and controlled wrapping;
-- stronger legibility for navigation, body, source, and time text;
-- reduced vertical whitespace and tighter editorial rhythm;
-- rebalanced Home hero, signal rail, and discovery mosaic;
-- reduced Topic heading scale and aligned A/B/C stack;
-- active-looking After composition using order, size, and emphasis instead of opacity;
-- reduced repetition of harbor and pottery imagery;
-- two additional repository-local images: `neighborhood-bookshop.svg` and `maker-studio.svg`;
-- quieter Phase 1 and development-language treatment;
-- actual 390px responsive evidence;
-- preserved Horizon Shift and reduced-motion behavior.
-
-## Stylesheet structure
-
-The former monolithic `styles.css` is removed. Styles are split by responsibility:
+## Primary journey
 
 ```text
+나의 피드
+→ 가까운 동네 또는 장소와 문화 선택
+→ 이야기 열기
+→ 출처와 등장 이유 확인
+→ 동네 소식 더 보기 적용
+→ 변경된 피드 확인
+→ 실행 취소 또는 전체 초기화
+→ 이전 피드 위치와 포커스로 복귀
+```
+
+## Direct routes
+
+```text
+#feed
+#nearby
+#culture
+#story
+#why
+#preferences
+```
+
+Browser Back and Forward operate through deterministic History API entries. Opening a story captures the originating route, scroll position, and focusable control. Returning restores that context.
+
+## Frontend-only state
+
+- selected route and stream;
+- one preference: `동네 소식 더 보기`;
+- immediate feed-order change;
+- Undo and full Reset;
+- source-action dialog that explicitly performs no external request.
+
+No `localStorage`, cookie, account, API, database, crawler, live provider, or network data is used.
+
+## Source structure
+
+```text
+index.html
+scripts/
+├─ feed-state.js
+├─ navigation.js
+├─ story-state.js
+├─ preference-state.js
+└─ ux-app.js
 styles/
 ├─ tokens.css
 ├─ base.css
 ├─ layout.css
 ├─ components.css
-└─ states/
-   ├─ home-topic.css
-   ├─ story-why.css
-   └─ adjusted-mobile-motion.css
+├─ states/
+│  ├─ home-topic.css
+│  ├─ story-why.css
+│  └─ adjusted-mobile-motion.css
+└─ journeys/
+   └─ primary-journey.css
 ```
 
-All CSS and JavaScript resources use the deterministic query:
+All loaded CSS and JavaScript use:
 
 ```text
-world-feed-20260726-2
+world-feed-20260726-3
 ```
 
-## Review states
+Every authored or materially modified source file remains at or below 500 physical lines.
 
-1. `home`
-2. `topic`
-3. `story`
-4. `why`
-5. `adjusted`
-6. `mobile`
-7. `motion`
+## Explicitly deferred
 
-The controls are for visual inspection only. They do not establish final navigation or preference UX.
+- loading skeleton;
+- empty filter result;
+- recoverable error and retry;
+- unavailable story or source state;
+- onboarding and account history;
+- authentication and persistence;
+- backend, API, DB, crawling, AI, notifications, billing, and deployment configuration.
+
+These belong to later UX slices or separately authorized phases.

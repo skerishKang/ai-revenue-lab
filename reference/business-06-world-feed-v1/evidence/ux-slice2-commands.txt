@@ -1,0 +1,38 @@
+Business 6 · World Feed Phase 2 UX Slice 2 validation
+
+Slice 1 accepted head / Slice 2 starting head:
+41ba31bf615b73e824d8f23a1fa751914c366d08
+Branch: feat/business-06-world-feed-ux-165
+Allowed workspace: reference/business-06-world-feed-v1/**
+Verdict held: UX_NOT_READY
+Backend: FROZEN
+
+1. JavaScript syntax
+node --check scripts/feed-state.js
+node --check scripts/navigation.js
+node --check scripts/story-state.js
+node --check scripts/preference-state.js
+node --check scripts/state-matrix.js
+node --check scripts/ux-app.js
+node --check scripts/views/*.js
+Result: exit 0 for all fourteen loaded JavaScript files
+
+2. HTML and source contract
+Python html.parser parse of index.html
+python /mnt/data/world-feed-slice2-work/generate_audit.py
+Checks: deterministic world-feed-20260726-5 token; stale -4 loading references; unversioned CSS/JS; physical line counts; local asset resolution; forbidden storage/network/API references; allowed-path plan
+Result: exit 0; audit pass=true; see ux-slice2-source-audit.json
+
+3. Chromium UX state matrix and Slice 1 regression
+python /mnt/data/world-feed-slice2-work/validate_slice2.py
+Desktop viewport: 1440x900
+Mobile viewport: actual 390x844 with is_mobile=true and has_touch=true
+Reduced motion: Chromium context reduced_motion=reduce
+Flows: loading→feed; empty→clear→feed; synthetic error→Retry→feed; story unavailable→context return; source unavailable→story return and Back/Forward; four story identities; Why identities; visible adjusted feed; Undo; Reset; scroll/focus restoration; source-dialog focus restoration
+Result: exit 0; validation pass=true; see ux-slice2-validation.json
+
+Browser environment note:
+Managed Chromium blocks local HTTP and file navigation. The validator therefore executes exact index/CSS/JavaScript source bytes in an about:blank document and supplies exact repository SVG bytes through data-URI srcset hydration while retaining original src attributes. No runtime network request, fetch, XMLHttpRequest, localStorage, cookie, service worker, API, crawler, or external article request is used.
+
+4. Binary evidence
+Generated outside GitHub under the local evidence workspace. PNG files and the final ZIP are not committed. Google Drive upload is not performed.
