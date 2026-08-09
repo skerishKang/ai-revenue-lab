@@ -14,9 +14,44 @@
         <div class="demo-gen-step" id="step2"><span class="demo-gen-step-icon">02</span><span class="demo-gen-step-text">동네와 시간을 연결하는 중 · CHORYANG → YEONGDO → SONGDO</span></div>
         <div class="demo-gen-step" id="step3"><span class="demo-gen-step-icon">03</span><span class="demo-gen-step-text">사람이 검토할 여행판으로 정리하는 중</span></div>
       </div>
-      <div id="demoFailBtnWrapper" style="margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:.75rem;"><button class="btn btn-outline btn-sm" style="color:rgba(255,255,255,.68);border-color:rgba(255,255,255,.2);" onclick="triggerFailure()">실패 상태 검증</button></div>
+      <div id="demoFailBtnWrapper" style="margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:.75rem;"><button class="btn btn-outline btn-sm" style="color:rgba(255,255,255,.68);border-color:rgba(255,255,255,.2);" onclick="triggerFailure()">데모 실패 보기</button></div>
     </div>
     <div id="genFailure" style="display:none;max-width:560px;width:92vw;"><div class="demo-failure-state"><h3>여행판을 끝까지 구성하지 못했습니다.</h3><p>현재 선택은 유지되어 있습니다. 같은 취향으로 경로 구성을 다시 시도할 수 있습니다.</p><button class="lt-primary" onclick="retryGeneration()">다시 시도</button></div></div>
   </div>
-  <script>var canceled=false;function simulateStep(stepNum){if(canceled)return;var prev=document.getElementById('step'+(stepNum-1));var curr=document.getElementById('step'+stepNum);if(prev){prev.classList.remove('active');prev.classList.add('done');}if(curr){curr.classList.add('active');}if(stepNum===1)setTimeout(function(){simulateStep(2);},1200);else if(stepNum===2)setTimeout(function(){simulateStep(3);},1400);else if(stepNum===3)setTimeout(function(){document.getElementById('step3').classList.remove('active');document.getElementById('step3').classList.add('done');setTimeout(function(){if(!canceled)window.location.href='pending.html';},600);},1500);}function triggerFailure(){canceled=true;document.getElementById('genContent').style.display='none';document.getElementById('genFailure').style.display='block';}function retryGeneration(){canceled=false;document.getElementById('genContent').style.display='block';document.getElementById('genFailure').style.display='none';['step1','step2','step3'].forEach(function(id){document.getElementById(id).className='demo-gen-step';});simulateStep(1);}setTimeout(function(){simulateStep(1);},500);</script>
+  <script>
+  var canceled = false;
+  function simulateStep(stepNum) {
+    if (canceled) return;
+    var prev = document.getElementById('step' + (stepNum - 1));
+    var curr = document.getElementById('step' + stepNum);
+    if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
+    if (curr) curr.classList.add('active');
+    if (stepNum === 1) {
+      setTimeout(function() { simulateStep(2); }, 1200);
+    } else if (stepNum === 2) {
+      setTimeout(function() { simulateStep(3); }, 1400);
+    } else if (stepNum === 3) {
+      setTimeout(function() {
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('step3').classList.add('done');
+        setTimeout(function() {
+          if (!canceled) window.location.href = 'pending.html';
+        }, 600);
+      }, 1500);
+    }
+  }
+  function triggerFailure() {
+    canceled = true;
+    document.getElementById('genContent').style.display = 'none';
+    document.getElementById('genFailure').style.display = 'block';
+  }
+  function retryGeneration() {
+    canceled = false;
+    document.getElementById('genContent').style.display = 'block';
+    document.getElementById('genFailure').style.display = 'none';
+    ['step1','step2','step3'].forEach(function(id) { document.getElementById(id).className = 'demo-gen-step'; });
+    simulateStep(1);
+  }
+  setTimeout(function() { simulateStep(1); }, 500);
+  </script>
 </body></html>
