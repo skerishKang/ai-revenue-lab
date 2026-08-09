@@ -1,4 +1,4 @@
-name: Align B4 B6 Production 465
+name: Verify B4 B6 Deploy B8 465
 
 on:
   pull_request:
@@ -11,16 +11,18 @@ permissions:
   contents: read
 
 jobs:
-  align-and-deploy:
+  verify-and-deploy:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      EXPECTED_SHA: 0fd4752df0311e41adca5528634acb3b7dccea9d
+      EXPECTED_SHA: 03db134d61f054f53b096104e83ba1342337ae9e
       B4_PROJECT: ai-revenue-living-learning
       B6_PROJECT: ai-revenue-world-feed
+      B8_PROJECT: ai-revenue-business-08-family-newspaper
       B4_URL: https://ai-revenue-living-learning.pages.dev
       B6_URL: https://ai-revenue-world-feed.pages.dev
+      B8_URL: https://ai-revenue-business-08-family-newspaper.pages.dev
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
@@ -31,70 +33,69 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assert exact current main and guide bytes
+      - name: Assert exact current main
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
+          echo "remote_main=$remote_main"
           test "$remote_main" = "$EXPECTED_SHA"
-          grep -q 'Guide · 30 seconds' apps/living-learning/pages-preview/guide.html
-          grep -q 'href="/guide.html"' apps/living-learning/pages-preview/index.html
-          grep -q 'GUIDE · 30 SECONDS' reference/business-06-world-feed-v1/guide.html
-          grep -q './guide.html' reference/business-06-world-feed-v1/scripts/views/shell-loading-view.js
-      - name: Set canonical Pages production branch to main
+          test -f apps/living-learning/pages-preview/guide.html
+          test -f reference/business-06-world-feed-v1/guide.html
+          test -f reference/business-08-family-newspaper-v1/guide.html
+          test -f reference/business-08-family-newspaper-v1/ux.html
+      - name: Align B8 production branch to main
         shell: bash
         run: |
           set -euo pipefail
-          for project in "$B4_PROJECT" "$B6_PROJECT"; do
-            code=$(curl -sS -o "/tmp/${project}-patch.json" -w '%{http_code}' -X PATCH \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              -H 'Content-Type: application/json' \
-              --data '{"production_branch":"main"}' \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}")
-            echo "$project PATCH_HTTP=$code"
-            cat "/tmp/${project}-patch.json"
-            test "$code" = 200
-            PROJECT="$project" python3 - <<'PY'
-          import json, os
-          x=json.load(open('/tmp/'+os.environ['PROJECT']+'-patch.json'))
+          code=$(curl -sS -o /tmp/b8-patch.json -w '%{http_code}' -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data '{"production_branch":"main"}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${B8_PROJECT}")
+          cat /tmp/b8-patch.json
+          test "$code" = 200
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/b8-patch.json'))
           assert x.get('success') is True, x.get('errors')
-          p=x['result']
-          cfg=((p.get('source') or {}).get('config') or {})
-          top=p.get('production_branch')
-          effective=cfg.get('production_branch') if cfg.get('production_branch') is not None else top
-          print(os.environ['PROJECT']+'_EFFECTIVE_PRODUCTION_BRANCH='+str(effective))
-          assert effective == 'main', (top,cfg)
+          p=x['result']; cfg=((p.get('source') or {}).get('config') or {})
+          effective=cfg.get('production_branch') or p.get('production_branch')
+          print('B8_EFFECTIVE_PRODUCTION_BRANCH='+str(effective))
+          assert effective == 'main'
           PY
-          done
-      - name: Deploy exact main bytes as Production
+      - name: Deploy B8 exact-main bytes
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview \
-            --project-name "$B4_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
-            --commit-message 'B4 exact main canonical Production'
-          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
-            --project-name "$B6_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
-            --commit-message 'B6 exact main canonical Production'
-      - name: Verify canonical public surfaces
+          npx --yes wrangler@latest pages deploy reference/business-08-family-newspaper-v1 \
+            --project-name "$B8_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B8 exact main UI UX guide Production'
+      - name: Verify canonical bytes for B4 B6 B8
         shell: bash
         run: |
           set -euo pipefail
-          verify() {
-            url="$1"; marker1="$2"; marker2="$3"; out="$4"; ok=0
-            for i in $(seq 1 20); do
+          fetch_until_match() {
+            local url="$1" source="$2" out="$3" label="$4" ok=0
+            local expected actual code
+            expected=$(sha256sum "$source" | cut -d' ' -f1)
+            echo "$label expected_sha256=$expected"
+            for i in $(seq 1 30); do
               code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url" || true)
-              echo "$url poll=$i http=$code"
-              if [[ "$code" == 200 ]] && grep -q "$marker1" "$out" && grep -q "$marker2" "$out"; then ok=1; break; fi
+              actual='none'
+              if [[ -f "$out" ]]; then actual=$(sha256sum "$out" | cut -d' ' -f1); fi
+              echo "$label poll=$i http=$code actual_sha256=$actual"
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then ok=1; break; fi
               sleep 3
             done
             test "$ok" = 1
           }
-          verify "$B4_URL/guide.html" 'Guide · 30 seconds' '다음 수업이 나에게 맞게' /tmp/b4-guide.html
-          verify "$B6_URL/guide.html" 'GUIDE · 30 SECONDS' 'WHY · 설명 가능한 개인화' /tmp/b6-guide.html
-          curl -L -sS --max-time 20 "$B4_URL/" > /tmp/b4-root.html
-          curl -L -sS --max-time 20 "$B6_URL/" > /tmp/b6-root.html
-          grep -q '/guide.html' /tmp/b4-root.html
-          grep -q 'world-feed-20260810-6' /tmp/b6-root.html
-          echo 'B4_B6_CANONICAL_PUBLIC_VERIFIED=1'
+          fetch_until_match "$B4_URL/guide.html" apps/living-learning/pages-preview/guide.html /tmp/b4-guide.html B4_GUIDE
+          fetch_until_match "$B4_URL/" apps/living-learning/pages-preview/index.html /tmp/b4-root.html B4_ROOT
+          fetch_until_match "$B6_URL/guide.html" reference/business-06-world-feed-v1/guide.html /tmp/b6-guide.html B6_GUIDE
+          fetch_until_match "$B6_URL/index.html" reference/business-06-world-feed-v1/index.html /tmp/b6-root.html B6_ROOT
+          fetch_until_match "$B8_URL/guide.html" reference/business-08-family-newspaper-v1/guide.html /tmp/b8-guide.html B8_GUIDE
+          fetch_until_match "$B8_URL/ux.html" reference/business-08-family-newspaper-v1/ux.html /tmp/b8-ux.html B8_UX
+          fetch_until_match "$B8_URL/index.html" reference/business-08-family-newspaper-v1/index.html /tmp/b8-root.html B8_ROOT
+          echo 'B4_B6_B8_CANONICAL_BYTES_VERIFIED=1'
