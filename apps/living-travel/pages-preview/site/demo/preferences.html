@@ -4,96 +4,99 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 여행 취향 설정</title>
+  <title>Living Travel — 여행의 성격 정하기</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <div class="demo-pref-page">
-    <div class="demo-pref-container">
-      <h1>여행 취향을 알려주세요</h1>
-      <p class="subtitle">선택한 내용으로 개인 여행판을 만듭니다. 데모에서는 고정된 부산 여행 시나리오를 사용합니다.</p>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="../index.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+  </nav>
+
+  <main class="lt-pref-shell">
+    <aside class="lt-pref-map" aria-label="부산 여행 배경">
+      <img src="../assets/images/busan-hero.webp" alt="부산 여행 분위기를 보여주는 시각 자료">
+      <div class="lt-pref-map-copy">
+        <div class="lt-kicker">Busan · 2 nights / 3 days</div>
+        <h1>어디를 갈지보다<br>어떻게 머물지.</h1>
+        <p>선택이 바뀌면 장소 수, 이동 거리, 머무는 시간과 동네의 성격까지 달라집니다.</p>
+      </div>
+    </aside>
+
+    <section class="lt-pref-panel">
+      <div class="lt-step-label">01 / Shape the trip</div>
+      <h1 class="lt-pref-title">여행의 성격을<br>정해 주세요.</h1>
+      <p class="lt-pref-deck">설정값을 채우는 화면이 아니라, 이번 여행에서 무엇을 덜 하고 무엇에 더 오래 머물지 정하는 단계입니다.</p>
 
       <form method="get" action="generation.html" onsubmit="return simulateGeneration(event)">
-
         <div class="demo-pref-group">
-          <label class="group-label">목적지</label>
+          <label class="group-label">DESTINATION · 목적지</label>
           <div class="demo-pref-options">
-            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)" disabled>부산</button>
+            <button type="button" class="demo-pref-option selected" disabled>부산 · BUSAN</button>
           </div>
         </div>
 
         <div class="demo-pref-group">
-          <label class="group-label">여행 기간</label>
+          <label class="group-label">PACE · 여행 속도</label>
           <div class="demo-pref-options">
-            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)" disabled>2박 3일</button>
+            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">천천히 · 오래 머물기</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">보통 · 균형 있게</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">빠르게 · 넓게 보기</button>
           </div>
         </div>
 
         <div class="demo-pref-group">
-          <label class="group-label">여행 속도</label>
+          <label class="group-label">GRAVITY · 이번 여행을 끌어당기는 것</label>
           <div class="demo-pref-options">
-            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">천천히</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">보통</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">빠르게</button>
-          </div>
-        </div>
-
-        <div class="demo-pref-group">
-          <label class="group-label">관심사 (중복 선택)</label>
-          <div class="demo-pref-options">
-            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">골목 탐방</button>
+            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">골목 · 생활권</button>
             <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">현지 음식</button>
-            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">바다</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">카페</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">문화/역사</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">자연/공원</button>
+            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">바다 · 해안</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">카페 · 휴식</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">문화 · 역사</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">자연 · 공원</button>
           </div>
         </div>
 
         <div class="demo-pref-group">
-          <label class="group-label">피하고 싶은 것 (중복 선택)</label>
+          <label class="group-label">AVOID · 이번에는 덜 하고 싶은 것</label>
           <div class="demo-pref-options">
-            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">유명 관광지</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">번화가</button>
+            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">유명 관광지 위주</button>
             <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">사람 많은 곳</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">야간 활동</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">긴 이동</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">야간 일정</button>
           </div>
         </div>
 
         <div class="demo-pref-group">
-          <label class="group-label">원하는 분위기</label>
+          <label class="group-label">MOOD · 기억하고 싶은 분위기</label>
           <div class="demo-pref-options">
             <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">조용한</button>
+            <button type="button" class="demo-pref-option selected" onclick="togglePref(this)">로컬 감성</button>
             <button type="button" class="demo-pref-option" onclick="togglePref(this)">활기찬</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">로컬 감성</button>
-            <button type="button" class="demo-pref-option" onclick="togglePref(this)">힐링</button>
+            <button type="button" class="demo-pref-option" onclick="togglePref(this)">회복 · 힐링</button>
           </div>
         </div>
 
-        <div class="notice" style="margin-top:2rem;">
-          <strong>Demo mode</strong><br>
-          선택한 취향은 데모 시나리오에 반영됩니다. 실제 AI 처리는 이루어지지 않습니다.
+        <div class="lt-pref-submit">
+          <small>현재 데모는 부산 2박 3일 고정 시나리오를 사용합니다. 실제 예약·실시간 운영정보는 포함하지 않습니다.</small>
+          <button type="submit" class="btn btn-accent">이 취향으로 여행판 만들기 <span aria-hidden="true">→</span></button>
         </div>
-
-        <button type="submit" class="btn btn-accent" style="width:100%;padding:0.75rem;margin-top:1.5rem;font-size:1rem;">
-          이 취향으로 여행판 만들기
-        </button>
       </form>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
   function togglePref(el) {
     if (el.disabled) return;
     el.classList.toggle('selected');
   }
-
   function simulateGeneration(e) {
     e.preventDefault();
     window.location.href = 'generation.html';
+    return false;
   }
   </script>
 </body>
