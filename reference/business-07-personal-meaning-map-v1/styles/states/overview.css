@@ -1,0 +1,131 @@
+.overview-sheet .contour-field {
+  left: 3%;
+  top: 6%;
+  width: 58%;
+  height: 80%;
+}
+
+.overview-dominant {
+  position: absolute;
+  z-index: 3;
+  left: 8%;
+  top: 14%;
+  width: 50%;
+  height: 58%;
+  border: 1px solid rgba(78,109,114,.7);
+  border-radius: 48% 52% 44% 56% / 58% 38% 62% 42%;
+  background: rgba(115,141,150,.1);
+}
+
+.overview-dominant::before,
+.overview-dominant::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(78,109,114,.42);
+  border-radius: inherit;
+}
+
+.overview-dominant::before {
+  inset: 18px 28px 24px 19px;
+}
+
+.overview-dominant::after {
+  inset: 39px 54px 50px 42px;
+}
+
+.overview-title {
+  position: absolute;
+  z-index: 5;
+  left: 10.5%;
+  top: 18%;
+  width: 35%;
+}
+
+.overview-title h3 {
+  margin-bottom: 7px;
+  font-size: clamp(26px, 3vw, 46px);
+  line-height: .96;
+}
+
+.overview-title p {
+  width: 82%;
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.overview-house {
+  left: 33%;
+  top: 39%;
+  width: 25%;
+  height: 31%;
+  transform: rotate(1.4deg);
+}
+
+.overview-cup {
+  right: 8%;
+  top: 18%;
+  width: 17%;
+  height: 26%;
+  transform: rotate(-2deg);
+}
+
+.overview-label--person { left: 19%; top: 58%; }
+.overview-label--event { left: 63%; top: 52%; }
+.overview-label--object { left: 72%; top: 73%; }
+.overview-label--place { left: 47%; top: 24%; }
+
+.overview-rule--one { left: 25%; top: 62%; width: 20%; transform: rotate(-12deg); }
+.overview-rule--two { left: 54%; top: 46%; width: 17%; transform: rotate(18deg); }
+.overview-rule--three { left: 66%; top: 68%; width: 12%; transform: rotate(34deg); }
+
+.overview-note {
+  right: 6%;
+  bottom: 9%;
+}
+
+@media (max-width: 700px) {
+  .overview-sheet {
+    min-height: 640px;
+  }
+
+  .overview-dominant {
+    left: 4%;
+    top: 9%;
+    width: 78%;
+    height: 54%;
+  }
+
+  .overview-title {
+    left: 8%;
+    top: 13%;
+    width: 58%;
+  }
+
+  .overview-title h3 {
+    font-size: 29px;
+  }
+
+  .overview-house {
+    left: 35%;
+    top: 38%;
+    width: 45%;
+    height: 27%;
+  }
+
+  .overview-cup {
+    right: 4%;
+    top: 67%;
+    width: 30%;
+    height: 20%;
+  }
+
+  .overview-label--person { left: 10%; top: 58%; }
+  .overview-label--event { left: 12%; top: 72%; }
+  .overview-label--object { left: 46%; top: 85%; }
+  .overview-label--place { left: 50%; top: 29%; }
+  .overview-note { display: none; }
+  .overview-rule--one { left: 22%; top: 64%; width: 28%; }
+  .overview-rule--two { left: 49%; top: 52%; width: 24%; }
+  .overview-rule--three { left: 48%; top: 79%; width: 22%; }
+}

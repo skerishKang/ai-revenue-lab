@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 300" role="img" aria-label="접힌 편지 합성 이미지">
+<rect width="440" height="300" fill="#d5c8ad"/>
+<path d="M55 35h330v230H55z" fill="#f3ead8" stroke="#343a36" stroke-width="2" transform="rotate(-2 220 150)"/>
+<path d="M76 81h218M76 107h281M76 133h255M76 178h281M76 204h211" stroke="#68736a" stroke-opacity=".55" stroke-width="3" transform="rotate(-2 220 150)"/>
+<path d="M283 55l93 83-96 8z" fill="#e1d4bd" stroke="#343a36" stroke-width="1.5" transform="rotate(-2 220 150)"/>
+<text x="83" y="161" font-family="serif" font-size="18" fill="#a45f46" transform="rotate(-2 220 150)">“이대로 두자.”</text>
+<circle cx="337" cy="225" r="29" fill="none" stroke="#a45f46" stroke-width="4" opacity=".72"/>
+<text x="305" y="229" font-family="monospace" font-size="9" fill="#a45f46">07.18</text>
+</svg>

@@ -1,0 +1,332 @@
+.mobile-stage {
+  display: grid;
+  grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+  gap: 54px;
+  align-items: center;
+  min-height: 650px;
+  padding: 38px 8% 38px 10%;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(115,141,150,.18), transparent 30%),
+    var(--paper-light);
+}
+
+.mobile-frame {
+  position: relative;
+  width: 390px;
+  max-width: 100%;
+  height: 620px;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  border-radius: 28px;
+  background: var(--paper);
+  box-shadow: 0 26px 50px rgba(45,39,29,.2);
+}
+
+.mobile-frame__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 46px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--rule-strong);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.mobile-frame__map {
+  position: relative;
+  height: 574px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(37,44,41,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,44,41,.05) 1px, transparent 1px),
+    var(--paper-light);
+  background-size: 32px 32px;
+}
+
+.mobile-frame__map .contour-field {
+  left: -14%;
+  top: -4%;
+  width: 100%;
+  height: 76%;
+}
+
+.mobile-dominant {
+  position: absolute;
+  z-index: 3;
+  left: 18px;
+  top: 22px;
+  width: 265px;
+  height: 306px;
+  border: 1px solid var(--mineral);
+  border-radius: 52% 48% 60% 40% / 42% 54% 46% 58%;
+  background: rgba(115,141,150,.1);
+}
+
+.mobile-dominant h3 {
+  position: absolute;
+  z-index: 3;
+  top: 33px;
+  left: 24px;
+  width: 180px;
+  font-size: 29px;
+  line-height: .96;
+}
+
+.mobile-house {
+  left: 88px;
+  top: 154px;
+  width: 208px;
+  height: 164px;
+}
+
+.mobile-person { left: 38px; top: 354px; }
+.mobile-event { left: 192px; top: 412px; }
+.mobile-object { left: 62px; top: 500px; }
+
+.mobile-stage__notes h3 {
+  margin-bottom: 12px;
+  font-size: 34px;
+}
+
+.mobile-stage__notes p {
+  max-width: 510px;
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+.ripple-sheet {
+  min-height: 650px;
+}
+
+.ripple-sheet .contour-field {
+  inset: 0;
+}
+
+.ripple-origin {
+  position: absolute;
+  z-index: 7;
+  left: 45%;
+  top: 43%;
+  width: 140px;
+  height: 140px;
+  border: 1px solid var(--ochre);
+  border-radius: 50%;
+  background: rgba(181,138,67,.14);
+  cursor: pointer;
+}
+
+.ripple-origin img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ripple-ring {
+  position: absolute;
+  z-index: 4;
+  left: calc(45% + 70px);
+  top: calc(43% + 70px);
+  width: 140px;
+  height: 140px;
+  border: 1px solid var(--mineral);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.75);
+  pointer-events: none;
+}
+
+.ripple-related {
+  position: absolute;
+  z-index: 6;
+  opacity: .42;
+  transition: opacity 180ms ease, transform 300ms ease;
+}
+
+.ripple-related--place { left: 13%; top: 19%; }
+.ripple-related--person { right: 13%; top: 19%; }
+.ripple-related--event { left: 17%; bottom: 16%; }
+.ripple-related--context { right: 12%; bottom: 14%; }
+
+.ripple-related h3 {
+  margin-bottom: 4px;
+  font-size: 22px;
+}
+
+.ripple-related p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+
+.ripple-replay {
+  position: absolute;
+  z-index: 10;
+  left: 30px;
+  bottom: 28px;
+  background: var(--paper-light);
+}
+
+.ripple-summary {
+  position: absolute;
+  z-index: 8;
+  right: 30px;
+  bottom: 28px;
+  width: 330px;
+  padding: 16px 18px;
+  border-top: 3px solid var(--clay);
+  background: var(--ink);
+  color: var(--paper-light);
+  opacity: .54;
+  transform: translateY(8px);
+}
+
+.ripple-summary strong {
+  display: block;
+  margin-bottom: 5px;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.ripple-summary span {
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba(247,242,231,.76);
+}
+
+.ripple-sheet.is-rippling .ripple-ring--one {
+  animation: map-ripple var(--ripple-duration) ease-out 0ms both;
+}
+
+.ripple-sheet.is-rippling .ripple-ring--two {
+  animation: map-ripple var(--ripple-duration) ease-out 90ms both;
+}
+
+.ripple-sheet.is-rippling .ripple-ring--three {
+  animation: map-ripple var(--ripple-duration) ease-out 180ms both;
+}
+
+.ripple-sheet.is-rippling .ripple-related {
+  opacity: 1;
+  transform: translateY(-4px);
+}
+
+.ripple-sheet.is-rippling .ripple-related--place { transition-delay: 170ms; }
+.ripple-sheet.is-rippling .ripple-related--person { transition-delay: 260ms; }
+.ripple-sheet.is-rippling .ripple-related--event { transition-delay: 350ms; }
+.ripple-sheet.is-rippling .ripple-related--context { transition-delay: 430ms; }
+
+.ripple-sheet.is-rippling .ripple-summary {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 180ms ease 430ms, transform 220ms ease 430ms;
+}
+
+@keyframes map-ripple {
+  0% { opacity: .65; transform: translate(-50%, -50%) scale(.72); }
+  70% { opacity: .24; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(3.3); }
+}
+
+@media (max-width: 760px) {
+  .mobile-stage {
+    display: block;
+    padding: 18px;
+  }
+
+  .mobile-frame {
+    margin: 0 auto 26px;
+  }
+
+  .mobile-stage__notes {
+    display: none;
+  }
+
+  .ripple-origin {
+    left: 34%;
+    top: 37%;
+    width: 112px;
+    height: 112px;
+  }
+
+  .ripple-ring {
+    left: calc(34% + 56px);
+    top: calc(37% + 56px);
+    width: 112px;
+    height: 112px;
+  }
+
+  .ripple-related--place { left: 7%; top: 14%; }
+  .ripple-related--person { right: 7%; top: 17%; }
+  .ripple-related--event { left: 8%; bottom: 25%; }
+  .ripple-related--context { right: 6%; bottom: 21%; }
+  .ripple-summary { right: 14px; bottom: 14px; width: calc(100% - 28px); }
+  .ripple-replay { left: 14px; bottom: 118px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .ripple-sheet.is-rippling .ripple-ring {
+    display: none;
+  }
+
+  .ripple-sheet.is-rippling .ripple-related,
+  .ripple-sheet.is-rippling .ripple-summary {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  body[data-active-state="mobile"] .site-header,
+  body[data-active-state="mobile"] .state-heading {
+    display: none;
+  }
+
+  body[data-active-state="mobile"] .review-main {
+    padding: 12px;
+  }
+
+  body[data-active-state="mobile"] .mobile-stage {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  body[data-active-state="mobile"] .mobile-frame {
+    width: 100%;
+    height: 820px;
+    margin: 0;
+    border-radius: 22px;
+  }
+
+  body[data-active-state="mobile"] .mobile-frame__map {
+    height: 774px;
+  }
+
+  body[data-active-state="mobile"] .mobile-dominant {
+    width: 278px;
+    height: 330px;
+  }
+
+  body[data-active-state="mobile"] .mobile-house {
+    top: 166px;
+    width: 220px;
+    height: 174px;
+  }
+
+  body[data-active-state="mobile"] .mobile-person { top: 378px; }
+  body[data-active-state="mobile"] .mobile-event { top: 450px; left: 178px; }
+  body[data-active-state="mobile"] .mobile-object { top: 538px; }
+}

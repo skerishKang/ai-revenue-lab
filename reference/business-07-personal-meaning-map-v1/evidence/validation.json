@@ -1,0 +1,50 @@
+{
+  "artifact": "Business 7 Personal Meaning Map Phase 1 visual UI focused correction",
+  "starting_base": "48807067a261d8f1ca3814b4b26758dd6947788a",
+  "focused_correction_from": "aa7e6410923b1d6b4b685bdbe5832f79c96262a1",
+  "branch": "feat/business-07-personal-meaning-map-ui",
+  "pull_request": 174,
+  "version_query": "personal-meaning-map-20260726-2",
+  "expected_states": [
+    "overview",
+    "person",
+    "place",
+    "event-object",
+    "explanation",
+    "mobile",
+    "ripple"
+  ],
+  "results": {
+    "static_validation": "PASS",
+    "browser_validation": "PASS_WITH_NAVIGATION_LIMITATION",
+    "explanation_drawer_scoped_to_active_state": "PASS",
+    "explanation_drawer_visible_after_toggle": "PASS",
+    "explanation_drawer_focus": "PASS",
+    "aria_expanded_matches_drawer_state": "PASS",
+    "closed_drawer_hidden": "PASS",
+    "focus_inside_hidden_ancestor": 0,
+    "overview_ripple_copy_isolation": "PASS",
+    "desktop_horizontal_overflow_px": 0,
+    "mobile_390_horizontal_overflow_px": 0,
+    "mobile_archive_contour_label_fully_inside": "PASS",
+    "console_errors": 0,
+    "page_errors": 0,
+    "failed_local_assets": 0,
+    "external_runtime_requests": 0,
+    "keyboard_state_navigation": "PASS",
+    "visible_focus": "PASS",
+    "meaning_ripple_duration": "680ms",
+    "reduced_motion": "PASS",
+    "stale_v1_loading_references": 0,
+    "unversioned_css_js_references": 0
+  },
+  "browser_limitation": "Direct localhost and file URL navigation was blocked by administrator policy. Playwright Chromium page.set_content rendered the exact local HTML/CSS/JS with repository SVG bytes inlined for layout, interaction, console, error, request, motion, reduced-motion, drawer focus, and copy-isolation checks.",
+  "boundaries": {
+    "ui_only": true,
+    "ui_not_ready": true,
+    "ux_implemented": false,
+    "backend_implemented": false,
+    "deployment_implemented": false,
+    "synthetic_reference_only": true
+  }
+}
