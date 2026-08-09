@@ -1,0 +1,60 @@
+name: Transplant B7 UI UX 465
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/transplant-b7-465.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  transplant:
+    if: github.event.pull_request.head.ref == 'ops/transplant-b7-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      EXPECTED_MAIN: 47d5a6c1e2ea5a083aaa64f04eb40d3f4547a60d
+      UI_BASE: b7d18cb00c4521b833f21cbfb5f69fc162a1358a
+      UI_HEAD: a2f0e292a0718b6b83867ae840c8f3d1bd0afaea
+      UX_HEAD: 9e4f3fa9f7e9b398abf6a4e87b3f2c95eb248802
+      TARGET_BRANCH: feat/b7-personal-meaning-map-complete-465
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Transplant approved B7 UI plus guided UX
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_main=$(git ls-remote origin refs/heads/main | cut -f1)
+          echo "remote_main=$remote_main"
+          test "$remote_main" = "$EXPECTED_MAIN"
+          git fetch origin "$UI_BASE" "$UI_HEAD" "$UX_HEAD"
+          git checkout -B "$TARGET_BRANCH" "$EXPECTED_MAIN"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mapfile -t ui_commits < <(git rev-list --reverse "$UI_BASE..$UI_HEAD")
+          printf 'ui_commits=%s\n' "${#ui_commits[@]}"
+          test "${#ui_commits[@]}" = 29
+          for commit in "${ui_commits[@]}"; do git cherry-pick "$commit"; done
+          mapfile -t ux_commits < <(git rev-list --reverse "$UI_HEAD..$UX_HEAD")
+          printf 'ux_commits=%s\n' "${#ux_commits[@]}"
+          test "${#ux_commits[@]}" = 1
+          for commit in "${ux_commits[@]}"; do git cherry-pick "$commit"; done
+          changed=$(git diff --name-only "$EXPECTED_MAIN...HEAD")
+          printf '%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -v '^reference/business-07-personal-meaning-map-v1/' | grep -q .; then
+            echo 'out-of-scope file detected'
+            exit 1
+          fi
+          test -f reference/business-07-personal-meaning-map-v1/index.html
+          test -f reference/business-07-personal-meaning-map-v1/ux.html
+          grep -q 'personal-meaning-map-20260726-2' reference/business-07-personal-meaning-map-v1/index.html
+          git diff --check "$EXPECTED_MAIN...HEAD"
+          git push --force-with-lease origin "HEAD:refs/heads/$TARGET_BRANCH"
+          echo "B7_TRANSPLANT_HEAD=$(git rev-parse HEAD)"
+          echo 'B7_TRANSPLANT_PASS=1'
