@@ -1,52 +1,55 @@
 {% extends "base.html" %}
-{% block title %}접속 — Personal Edition{% endblock %}
+{% block title %}Private Access — Personal Edition{% endblock %}
 {% block content %}
-{% set _base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id) if participant is defined else '/p/access' %}
-<div class="access-page">
-  <div class="access-content animate-slide-up">
-    <h1 class="access-brand">Personal Edition</h1>
-    <p class="access-subtitle">당신의 기록이 한 편의 에디션이 됩니다.</p>
-    <p class="access-description">남겨주신 이야기와 생각을 정리해 오직 당신만 읽을 수 있는 글로 전합니다.</p>
+<section class="v3-workflow" aria-labelledby="access-title">
+  <aside class="v3-workflow-rail">
+    <div>
+      <span class="v3-kicker">Private invitation · Entry</span>
+      <h1 id="access-title">Your private<br>edition starts here.</h1>
+      <div class="v3-stage-ledger" aria-label="Personal Edition 제작 원칙">
+        <div class="v3-stage-row is-current"><span>01</span><strong>Private access</strong></div>
+        <div class="v3-stage-row"><span>02</span><strong>Gather sources</strong></div>
+        <div class="v3-stage-row"><span>03</span><strong>Human review</strong></div>
+        <div class="v3-stage-row"><span>04</span><strong>Bind edition</strong></div>
+      </div>
+    </div>
+    <p class="v3-hero-note">Private by default · No automatic publish</p>
+  </aside>
 
-    <ol class="access-workflow" aria-label="제작 흐름">
-      <li class="access-workflow-step"><span class="workflow-num">1</span> 기록을 남깁니다</li>
-      <li class="access-workflow-step"><span class="workflow-num">2</span> AI가 초안을 구성합니다</li>
-      <li class="access-workflow-step"><span class="workflow-num">3</span> 편집자가 검토합니다</li>
-      <li class="access-workflow-step"><span class="workflow-num">4</span> 비공개 에디션으로 발행됩니다</li>
-    </ol>
-
-    <ul class="access-privacy">
-      <li>비공개 초대 전용</li>
-      <li>자동으로 공개되지 않음</li>
-      <li>검토 후 발행</li>
-    </ul>
+  <div class="v3-workflow-scene">
+    <span class="v3-state-label">Invitation / 개인 편집실 입장</span>
+    <h2>당신의 기록은<br>공개 피드로 가지 않습니다.</h2>
+    <p>초대받은 사람만 자신의 기록을 맡기고, AI가 구조를 정리한 뒤 사람이 다시 읽습니다. 검토를 마친 결과만 개인 라이브러리의 한 권으로 묶입니다.</p>
 
     {% if error %}
     <div class="alert alert-error" role="alert">{{ error }}</div>
     {% endif %}
 
-    <form method="post" action="/p/access">
+    <form method="post" action="/p/access" class="v3-write-form" style="max-width:44rem;margin-top:2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
-      <div class="access-form-group">
-        <label for="token">접속 토큰</label>
-        <input type="text" id="token" name="token" required
-               placeholder="토큰을 입력하세요" autocomplete="off" autofocus>
+      <div class="v3-write-label-row">
+        <label for="token">초대 토큰</label>
+        <span>Private access token</span>
       </div>
-      <button type="submit" class="btn btn-primary">비공개 편집실 입장</button>
+      <input type="text" id="token" name="token" required autocomplete="off" autofocus
+             placeholder="초대 토큰을 입력하세요"
+             style="width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--v3-line,#aaa79f);background:transparent;color:inherit;font:inherit;font-size:clamp(1.1rem,2vw,1.45rem);padding:1rem 0;outline-offset:6px;">
+      <div class="v3-state-actions" style="margin-top:1.5rem;">
+        <button type="submit" class="btn btn-primary">개인 편집실 입장</button>
+      </div>
     </form>
 
     {% if is_preview %}
-    <div class="preview-journey-nav">
-      <p class="preview-journey-hint">미리보기에서는 실제 인증 없이 다음 단계로 이동합니다.</p>
-      <a href="/preview/participant/empty/" class="btn btn-primary">다음: 기록 단계로 →</a>
+    <div class="v3-state-actions" style="margin-top:2rem;">
+      <a href="/preview/participant/empty/" class="btn btn-secondary">검토용 흐름 바로 보기 →</a>
     </div>
     {% endif %}
-  </div>
 
-  <div class="access-image animate-fade-in">
-    <img src="/static/images/access-invitation.webp"
-         alt="비공개 초대 이미지"
-         width="1122" height="1402">
+    <div class="v3-status-composition" aria-hidden="true">
+      <div class="v3-status-fragment">invite / private</div>
+      <div class="v3-status-fragment">source / yours only</div>
+      <div class="v3-status-fragment">publish / human reviewed</div>
+    </div>
   </div>
-</div>
+</section>
 {% endblock %}
