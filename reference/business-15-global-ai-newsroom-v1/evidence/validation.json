@@ -1,0 +1,141 @@
+{
+  "generated_at": "2026-07-28",
+  "reference_version": "global-ai-newsroom-20260728-1",
+  "browser_execution_mode": "in-memory Chromium document assembled from exact authored HTML, CSS, JavaScript, and local SVG bytes",
+  "limitations": [
+    "The execution sandbox blocked direct localhost navigation with ERR_BLOCKED_BY_ADMINISTRATOR. Browser rendering therefore used an in-memory Chromium document; every referenced local path was separately verified before assembly."
+  ],
+  "summary": {
+    "seven_states_present": true,
+    "all_state_switches_correct": true,
+    "horizontal_overflow_zero": true,
+    "console_errors_zero": true,
+    "page_errors_zero": true,
+    "failed_requests_zero": true,
+    "external_runtime_requests_zero": true,
+    "failed_images_zero": true,
+    "version_queries_complete": true,
+    "stale_version_references_zero": true,
+    "keyboard_navigation_pass": true,
+    "visible_focus_pass": true,
+    "motion_scroll_stable": true,
+    "reduced_motion_equivalent": true,
+    "touch_targets_min_44": true,
+    "screenshots_nonblank": true,
+    "missing_local_paths_zero": true,
+    "external_runtime_references_zero": true,
+    "synthetic_truthfulness_pass": true,
+    "animation_end_event_used": true,
+    "replay_equal_results": true
+  },
+  "viewports": {
+    "desktop": {
+      "viewport": "1440x1100",
+      "states_checked": [
+        "global",
+        "signals",
+        "dossier",
+        "verification",
+        "edition",
+        "handoff",
+        "mobile"
+      ],
+      "max_document_overflow_px": 0,
+      "max_body_overflow_px": 0,
+      "console_errors": 0,
+      "page_errors": 0,
+      "failed_requests": 0,
+      "external_requests": 0,
+      "failed_images": 0
+    },
+    "tablet": {
+      "viewport": "768x1024",
+      "states_checked": [
+        "global",
+        "signals",
+        "dossier",
+        "verification",
+        "edition",
+        "handoff",
+        "mobile"
+      ],
+      "max_document_overflow_px": 0,
+      "max_body_overflow_px": 0,
+      "console_errors": 0,
+      "page_errors": 0,
+      "failed_requests": 0,
+      "external_requests": 0,
+      "failed_images": 0
+    },
+    "mobile": {
+      "viewport": "390x844",
+      "states_checked": [
+        "global",
+        "signals",
+        "dossier",
+        "verification",
+        "edition",
+        "handoff",
+        "mobile"
+      ],
+      "max_document_overflow_px": 0,
+      "max_body_overflow_px": 0,
+      "console_errors": 0,
+      "page_errors": 0,
+      "failed_requests": 0,
+      "external_requests": 0,
+      "failed_images": 0,
+      "minimum_touch_target_height_px": 48
+    }
+  },
+  "keyboard": {
+    "focused_after_arrow": "signals",
+    "active_after_enter": "signals",
+    "home_focus": "tab-global",
+    "end_focus": "tab-mobile",
+    "focus_outline": {
+      "width": "3px",
+      "style": "solid",
+      "color": "rgb(130, 180, 237)"
+    },
+    "console_errors": [],
+    "page_errors": []
+  },
+  "motion": {
+    "desktop": {
+      "duration_spec_ms": 680,
+      "scroll_before": 0,
+      "scroll_after": 0,
+      "scene": true,
+      "pressed_during": "true",
+      "pressed_after": "false",
+      "replay_equal": true,
+      "no_fixed_timeout": true
+    },
+    "reduced": {
+      "prefersReduced": true,
+      "pressed_final": "false",
+      "seal_visible": true
+    }
+  },
+  "static": {
+    "required_state_count": 7,
+    "state_ids": [
+      "global",
+      "signals",
+      "dossier",
+      "verification",
+      "edition",
+      "handoff",
+      "mobile"
+    ],
+    "missing_local_paths": [],
+    "external_runtime_references": [],
+    "version_query_missing": [],
+    "stale_version_references": [],
+    "synthetic_label_present": true,
+    "non_live_language_present": true,
+    "all_image_paths_local": true,
+    "hover_states_present": true
+  }
+}
