@@ -1,0 +1,40 @@
+name: Validate Portfolio Truth Audit 445
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/portfolio-console/**'
+      - '.github/workflows/validate-portfolio-truth-audit-445.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/portfolio-truth-audit-445'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/portfolio-console
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/portfolio-console/package-lock.json
+      - run: npm ci
+      - name: Static and contract tests
+        run: npm run test:static
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Business launcher truth matrix
+        run: npx playwright test tests/business-launcher.spec.js
+      - name: Live-data mutation freeze regression
+        run: npx playwright test tests/live-mutation-loop.spec.js --project=chromium-desktop
