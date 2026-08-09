@@ -79,7 +79,7 @@ jobs:
                   break
                 fi
                 if test "${cattempt}" = '1'; then
-                  sed -E 's/([[:alnum:]_]*[Tt]oken[[:alnum:]_]*|"value"|api[_-]?key)[^,}]{0,80}/REDACTED/g' /tmp/create.json | head -5 >&2
+                  (jq -c '{success, errors, messages}' /tmp/create.json 2>/dev/null || head -c 800 /tmp/create.json) | sed -E 's/([[:alnum:]_]*[Tt]oken[[:alnum:]_]*|"value"|api[_-]?key)[^,}]{0,80}/REDACTED/g' >&2
                 fi
                 sleep 10
               done
