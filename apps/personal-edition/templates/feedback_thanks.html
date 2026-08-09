@@ -2,13 +2,17 @@
 {% block title %}편집 메모 완료 — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
-<div class="thanks-page">
-  <h1>편집 메모가 다음 호에 전달되었습니다.</h1>
-  <p>에디션 #{{ edition_number }}에 대한 피드백을 보내주셔서 감사합니다.</p>
-  <div class="thanks-actions">
-    <a href="{{ _base }}/" class="btn btn-primary">홈으로 돌아가기</a>
-     <a href="{{ _base }}/editions/{{ edition_id if edition_id is defined else edition_number }}/adaptation" class="btn btn-primary">다음 호 변화 보기 →</a>
-    <a href="{{ _base }}/history/" class="btn btn-secondary">기록 보기</a>
+<section class="v3-thanks" aria-labelledby="thanks-title">
+  <div class="v3-thanks-mark" aria-hidden="true">↗</div>
+  <div class="v3-thanks-copy">
+    <span class="v3-kicker">Direction received · Edition {{ '%02d'|format(edition_number) }}</span>
+    <h1 id="thanks-title">당신의 메모가 다음 호의 편집선에 들어왔습니다.</h1>
+    <p>이번 호에 대한 의견은 다음 에디션의 강조점과 서술 방식에 연결됩니다.</p>
+    <div class="v3-thanks-actions">
+      <a href="{{ _base }}/editions/{{ edition_id if edition_id is defined else edition_number }}/adaptation" class="btn btn-primary">무엇이 달라지는지 보기</a>
+      <a href="{{ _base }}/history" class="btn btn-secondary">아카이브 보기</a>
+      <a href="{{ _base }}/" class="btn btn-secondary">라이브러리</a>
+    </div>
   </div>
-</div>
+</section>
 {% endblock %}
