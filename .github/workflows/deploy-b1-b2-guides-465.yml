@@ -1,4 +1,4 @@
-name: Recover B4 B6 Production 465
+name: Align B4 B6 Production 465
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  recover:
+  align-and-deploy:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -19,7 +19,6 @@ jobs:
       EXPECTED_SHA: 0fd4752df0311e41adca5528634acb3b7dccea9d
       B4_PROJECT: ai-revenue-living-learning
       B6_PROJECT: ai-revenue-world-feed
-      B6_PRODUCTION_BRANCH: feat/business-06-world-feed-ui-155
       B4_URL: https://ai-revenue-living-learning.pages.dev
       B6_URL: https://ai-revenue-world-feed.pages.dev
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -39,26 +38,46 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
           test "$remote_main" = "$EXPECTED_SHA"
-          test -f apps/living-learning/pages-preview/guide.html
           grep -q 'Guide · 30 seconds' apps/living-learning/pages-preview/guide.html
           grep -q 'href="/guide.html"' apps/living-learning/pages-preview/index.html
-          test -f reference/business-06-world-feed-v1/guide.html
           grep -q 'GUIDE · 30 SECONDS' reference/business-06-world-feed-v1/guide.html
           grep -q './guide.html' reference/business-06-world-feed-v1/scripts/views/shell-loading-view.js
-      - name: Recover exact main to canonical Production
+      - name: Set canonical Pages production branch to main
         shell: bash
         run: |
           set -euo pipefail
-          # B4 is a Direct Upload project (production_branch is null): omitting --branch creates Production.
+          for project in "$B4_PROJECT" "$B6_PROJECT"; do
+            code=$(curl -sS -o "/tmp/${project}-patch.json" -w '%{http_code}' -X PATCH \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data '{"production_branch":"main"}' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}")
+            echo "$project PATCH_HTTP=$code"
+            cat "/tmp/${project}-patch.json"
+            test "$code" = 200
+            PROJECT="$project" python3 - <<'PY'
+          import json, os
+          x=json.load(open('/tmp/'+os.environ['PROJECT']+'-patch.json'))
+          assert x.get('success') is True, x.get('errors')
+          p=x['result']
+          cfg=((p.get('source') or {}).get('config') or {})
+          top=p.get('production_branch')
+          effective=cfg.get('production_branch') if cfg.get('production_branch') is not None else top
+          print(os.environ['PROJECT']+'_EFFECTIVE_PRODUCTION_BRANCH='+str(effective))
+          assert effective == 'main', (top,cfg)
+          PY
+          done
+      - name: Deploy exact main bytes as Production
+        shell: bash
+        run: |
+          set -euo pipefail
           npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview \
-            --project-name "$B4_PROJECT" --commit-hash "$EXPECTED_SHA" \
-            --commit-message 'B4 exact main canonical Production recovery'
-          # B6 canonical Production is still keyed to the historical approved production branch.
-          # Deploy exact current-main bytes to that branch; no source branch is modified.
+            --project-name "$B4_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B4 exact main canonical Production'
           npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
-            --project-name "$B6_PROJECT" --branch "$B6_PRODUCTION_BRANCH" \
-            --commit-hash "$EXPECTED_SHA" --commit-message 'B6 exact main canonical Production recovery'
-      - name: Verify canonical public surfaces and environments
+            --project-name "$B6_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B6 exact main canonical Production'
+      - name: Verify canonical public surfaces
         shell: bash
         run: |
           set -euo pipefail
@@ -78,15 +97,4 @@ jobs:
           curl -L -sS --max-time 20 "$B6_URL/" > /tmp/b6-root.html
           grep -q '/guide.html' /tmp/b4-root.html
           grep -q 'world-feed-20260810-6' /tmp/b6-root.html
-          for project in "$B4_PROJECT" "$B6_PROJECT"; do
-            curl --fail-with-body -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}" > "/tmp/${project}.json"
-            PROJECT="$project" python3 - <<'PY'
-          import json, os
-          p=json.load(open('/tmp/'+os.environ['PROJECT']+'.json'))['result']
-          d=p.get('latest_deployment') or {}
-          print(os.environ['PROJECT']+'_LATEST_ENV='+str(d.get('environment')))
-          print(os.environ['PROJECT']+'_LATEST_ID='+str(d.get('id')))
-          PY
-          done
           echo 'B4_B6_CANONICAL_PUBLIC_VERIFIED=1'
