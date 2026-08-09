@@ -1,0 +1,62 @@
+name: Inspect B1 B2 Pages Production 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/inspect-b1-b2-pages-production-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/inspect-b1-b2-pages-production-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Inspect B1 and B2 Git-connected Pages configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCOUNT_ID"
+          test -n "$CF_API_TOKEN"
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          for project in ai-revenue-personal-edition ai-revenue-living-travel; do
+            base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${project}"
+            curl --fail-with-body -sS "${auth[@]}" "$base" > "/tmp/${project}.json"
+            curl --fail-with-body -sS "${auth[@]}" "$base/deployments" > "/tmp/${project}-deployments.json"
+            PROJECT="$project" python3 - <<'PY'
+          import json, os
+          project=os.environ['PROJECT']
+          p=(json.load(open(f'/tmp/{project}.json', encoding='utf-8')).get('result') or {})
+          b=p.get('build_config') or {}
+          s=(p.get('source') or {}).get('config') or {}
+          print(f'PROJECT={project}')
+          print('production_branch='+repr(s.get('production_branch')))
+          print('repo_name='+repr(s.get('repo_name')))
+          print('owner='+repr(s.get('owner')))
+          print('root_dir='+repr(b.get('root_dir')))
+          print('destination_dir='+repr(b.get('destination_dir')))
+          print('build_command='+repr(b.get('build_command')))
+          print('preview_branch_includes='+repr(s.get('preview_branch_includes')))
+          print('preview_branch_excludes='+repr(s.get('preview_branch_excludes')))
+          print('production_deployments_enabled='+repr(s.get('production_deployments_enabled')))
+          rows=[d for d in (json.load(open(f'/tmp/{project}-deployments.json', encoding='utf-8')).get('result') or []) if d.get('environment')=='production']
+          rows.sort(key=lambda d:d.get('created_on') or '', reverse=True)
+          for i,d in enumerate(rows[:3],1):
+              meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+              stage=d.get('latest_stage') or {}
+              sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+              print(f'production_{i}_id={d.get("id")}')
+              print(f'production_{i}_sha={sha}')
+              print(f'production_{i}_branch={meta.get("branch")}')
+              print(f'production_{i}_stage={stage.get("name")}/{stage.get("status")}')
+              print(f'production_{i}_url={d.get("url")}')
+          print('---')
+          PY
+          done
