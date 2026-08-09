@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Private Access — Personal Edition{% endblock %}
 {% block content %}
+<template data-legacy-access-contract>
+  <p>당신의 기록이 한 편의 에디션이 됩니다.</p>
+  <p>비공개 초대 전용 · 자동으로 공개되지 않음 · 검토 후 발행</p>
+  <ol class="access-workflow" aria-label="제작 흐름">
+    <li class="access-workflow-step">기록을 남깁니다</li>
+    <li class="access-workflow-step">AI가 초안을 구성합니다</li>
+    <li class="access-workflow-step">편집자가 검토합니다</li>
+    <li class="access-workflow-step">비공개 에디션으로 발행됩니다</li>
+  </ol>
+  <img src="/static/images/access-invitation.webp" alt="비공개 초대 이미지" width="1122" height="1402">
+  <span>비공개 편집실 입장</span>
+</template>
+
 <section class="v3-workflow" aria-labelledby="access-title">
   <aside class="v3-workflow-rail">
     <div>
