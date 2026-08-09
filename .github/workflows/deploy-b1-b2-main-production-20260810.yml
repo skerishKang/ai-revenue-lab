@@ -1,0 +1,244 @@
+name: Deploy B1 B2 Main Production 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b1-b2-main-production-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/deploy-b1-b2-main-production-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 0c9b6efa8acdcb0a1fd8a37d0b194d8aa5a4c607
+      B1_PROJECT: ai-revenue-personal-edition
+      B2_PROJECT: ai-revenue-living-travel
+      PORTFOLIO_PROJECT: ai-revenue-portfolio-console
+      B1_URL: https://ai-revenue-personal-edition.pages.dev/
+      B2_URL: https://ai-revenue-living-travel.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      B1_BUILD_COMMAND: python -m pip install . && python -m scripts.build_static_production
+
+    steps:
+      - name: Persist B1 Production builder and verify Pages routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+
+          b1="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${B1_PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$b1" > /tmp/b1-before.json
+          python3 - <<'PY'
+          import json, os
+          p=(json.load(open('/tmp/b1-before.json', encoding='utf-8')).get('result') or {})
+          b=p.get('build_config') or {}
+          s=(p.get('source') or {}).get('config') or {}
+          assert s.get('production_branch') == 'main', s
+          assert b.get('root_dir') == 'apps/personal-edition', b
+          assert b.get('destination_dir') == 'dist-preview', b
+          payload={'build_config': {
+              'build_command': os.environ['B1_BUILD_COMMAND'],
+              'root_dir': b.get('root_dir'),
+              'destination_dir': b.get('destination_dir'),
+              'build_caching': b.get('build_caching', True),
+          }}
+          open('/tmp/b1-patch.json','w',encoding='utf-8').write(json.dumps(payload))
+          print('B1_BEFORE_BUILD_COMMAND='+repr(b.get('build_command')))
+          PY
+          curl --fail-with-body -sS -X PATCH "${auth[@]}" --data-binary @/tmp/b1-patch.json "$b1" > /tmp/b1-updated.json
+          python3 - <<'PY'
+          import json, os
+          x=json.load(open('/tmp/b1-updated.json', encoding='utf-8'))
+          assert x.get('success') is True, x.get('errors')
+          b=(x.get('result') or {}).get('build_config') or {}
+          assert b.get('build_command') == os.environ['B1_BUILD_COMMAND'], b
+          assert b.get('root_dir') == 'apps/personal-edition', b
+          assert b.get('destination_dir') == 'dist-preview', b
+          print('B1_PRODUCTION_BUILDER_PERSISTED=1')
+          PY
+
+          b2="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${B2_PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$b2" > /tmp/b2-config.json
+          python3 - <<'PY'
+          import json
+          p=(json.load(open('/tmp/b2-config.json', encoding='utf-8')).get('result') or {})
+          b=p.get('build_config') or {}
+          s=(p.get('source') or {}).get('config') or {}
+          assert s.get('production_branch') == 'main', s
+          assert b.get('root_dir') == 'apps/living-travel/pages-preview', b
+          assert b.get('destination_dir') == 'site', b
+          assert (b.get('build_command') or '') == '', b
+          print('B2_PRODUCTION_ROUTING_CONFIRMED=1')
+          PY
+
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+
+      - name: Assert checkout is still current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
+          echo "remote_main=$remote_main"
+          test "$remote_main" = "$EXPECTED_SHA"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Build exact B1 V3 Production bytes
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install .
+          python -m scripts.build_static_production
+          test -f dist-preview/index.html
+          grep -q 'b1-personal-edition-v3-454' dist-preview/index.html
+          grep -q 'data-static-production-review="b1-v3-454"' dist-preview/index.html
+          grep -q '흩어진 기록이' dist-preview/index.html
+          grep -q 'v3-write' dist-preview/preview/participant/input/index.html
+          if grep -q 'UI Preview · Synthetic data · No persistence' dist-preview/index.html; then exit 1; fi
+          if grep -q 'PERSONAL EDITION — UI PREVIEW' dist-preview/index.html; then exit 1; fi
+          echo 'B1_EXACT_MAIN_PRODUCTION_BYTES_READY=1'
+
+      - name: Verify exact B2 V2 Production bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f apps/living-travel/pages-preview/site/index.html
+          grep -q 'b2-v2-457.css' apps/living-travel/pages-preview/site/index.html
+          grep -q 'Move through' apps/living-travel/pages-preview/site/index.html
+          grep -q 'CHORYANG' apps/living-travel/pages-preview/site/index.html
+          if grep -q 'UI Preview · Synthetic data · No persistence' apps/living-travel/pages-preview/site/index.html; then exit 1; fi
+          echo 'B2_EXACT_MAIN_PRODUCTION_BYTES_READY=1'
+
+      - name: Direct deploy exact main B1 to Production
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy dist-preview \
+            --project-name "$B1_PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B1 V3 exact main live owner review' | tee /tmp/b1-deploy.log
+          echo 'B1_DIRECT_MAIN_DEPLOY_SUBMITTED=1'
+
+      - name: Direct deploy exact main B2 to Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy apps/living-travel/pages-preview/site \
+            --project-name "$B2_PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B2 V2 exact main live owner review' | tee /tmp/b2-deploy.log
+          echo 'B2_DIRECT_MAIN_DEPLOY_SUBMITTED=1'
+
+      - name: Direct deploy Portfolio Console with canonical B1 B2 links
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy apps/portfolio-console \
+            --project-name "$PORTFOLIO_PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'Portfolio exact main B1 B2 Production review links' | tee /tmp/portfolio-deploy.log
+          echo 'PORTFOLIO_DIRECT_MAIN_DEPLOY_SUBMITTED=1'
+
+      - name: Verify exact successful Production deployments
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          verify_project() {
+            project="$1"
+            base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}"
+            for i in $(seq 1 40); do
+              curl --fail-with-body -sS "${auth[@]}" "$base/deployments" > "/tmp/${project}-deployments.json"
+              if PROJECT="$project" python3 - <<'PY'
+          import json, os, sys
+          project=os.environ['PROJECT']
+          expected=os.environ['EXPECTED_SHA']
+          rows=[d for d in (json.load(open(f'/tmp/{project}-deployments.json', encoding='utf-8')).get('result') or []) if d.get('environment')=='production']
+          rows.sort(key=lambda d:d.get('created_on') or '', reverse=True)
+          for d in rows:
+              meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+              sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+              stage=d.get('latest_stage') or {}
+              if sha == expected and stage.get('name')=='deploy' and stage.get('status')=='success':
+                  print(f'{project}_SUCCESS_DEPLOYMENT_ID={d.get("id")}')
+                  print(f'{project}_SUCCESS_DEPLOYMENT_URL={d.get("url")}')
+                  print(f'{project}_SUCCESS_TRIGGER={(d.get("deployment_trigger") or {}).get("type")}')
+                  sys.exit(0)
+          sys.exit(1)
+          PY
+              then
+                return 0
+              fi
+              echo "${project} deployment poll ${i}"
+              sleep 4
+            done
+            return 1
+          }
+          verify_project "$B1_PROJECT"
+          verify_project "$B2_PROJECT"
+          verify_project "$PORTFOLIO_PROJECT"
+          echo 'ALL_EXACT_MAIN_PRODUCTION_DEPLOYMENTS_VERIFIED=1'
+
+      - name: Verify public B1 and B2 markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify_b1=0
+          for i in $(seq 1 30); do
+            code=$(curl -L -sS --max-time 25 -o /tmp/b1-live.html -w '%{http_code}' "$B1_URL" || true)
+            echo "B1 live poll=$i http=$code"
+            if [[ "$code" == "200" ]] \
+              && grep -q 'b1-personal-edition-v3-454' /tmp/b1-live.html \
+              && grep -q '흩어진 기록이' /tmp/b1-live.html \
+              && ! grep -q 'UI Preview · Synthetic data · No persistence' /tmp/b1-live.html; then
+              verify_b1=1
+              break
+            fi
+            sleep 4
+          done
+          test "$verify_b1" = 1
+
+          verify_b2=0
+          for i in $(seq 1 30); do
+            code=$(curl -L -sS --max-time 25 -o /tmp/b2-live.html -w '%{http_code}' "$B2_URL" || true)
+            echo "B2 live poll=$i http=$code"
+            if [[ "$code" == "200" ]] \
+              && grep -q 'b2-v2-457.css' /tmp/b2-live.html \
+              && grep -q 'Move through' /tmp/b2-live.html \
+              && grep -q 'CHORYANG' /tmp/b2-live.html \
+              && ! grep -q 'UI Preview · Synthetic data · No persistence' /tmp/b2-live.html; then
+              verify_b2=1
+              break
+            fi
+            sleep 4
+          done
+          test "$verify_b2" = 1
+          echo 'B1_V3_PUBLIC_PRODUCTION_VERIFIED=1'
+          echo 'B2_V2_PUBLIC_PRODUCTION_VERIFIED=1'
