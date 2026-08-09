@@ -1,54 +1,55 @@
 {% extends "base.html" %}
-{% block title %}Feedback Adaptation — Personal Edition{% endblock %}
+{% block title %}피드백 반영 — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 {% set feedback_text = "개인화가 구체적으로 어떻게 실천되는지 더 깊이 알고 싶습니다." %}
 {% set before_text = "고객이 빨리 받으면 만족할 것이라 믿었죠. 하지만 이 믿음은 고객들을 만나면서 점점 흔들렸습니다." %}
 {% set after_text = "고객마다 원하는 속도와 방식이 다르다는 것을 깨달았습니다. 어떤 고객은 천천히 읽고 싶어 했고, 어떤 고객은 맞춤형 요약을 원했습니다. 개인화는 단순한 속도의 문제가 아니라 각 고객의 상황과 취향을 이해하는 과정이었습니다." %}
 {% set changed_section = "고객과의 만남이 바꾼 것" %}
-<div class="adaptation-page">
-  <h1>다음 호의 변화</h1>
+<div class="adaptation-page-v2">
+  <header class="adaptation-head-v2">
+    <h1>다음 호는 어떻게 달라졌나</h1>
+    <div class="feedback-brief-v2">
+      <span class="brief-label">Reader direction · exact feedback</span>
+      <blockquote>“{{ feedback_text }}”</blockquote>
+    </div>
+  </header>
 
-  <section class="adaptation-summary">
-    <h2>사용자 피드택</h2>
-    <blockquote class="feedback-quote">
-      "{{ feedback_text }}"
-    </blockquote>
-    <p>이 피드백이 다음 에디션에 어떻게 반영되었는지 확인하세요.</p>
+  <section class="adaptation-delta-v2" aria-label="피드백 반영 전후 비교">
+    <article class="delta-panel-v2 is-before">
+      <span class="delta-label-v2">Before · 제{{ edition.edition_number }}호</span>
+      <div class="edition-cover-mini" aria-hidden="true">01</div>
+      <h2>{{ changed_section }}</h2>
+      <p class="delta-copy-v2 before-text">{{ before_text }}</p>
+    </article>
+
+    <div class="delta-arrow-v2" aria-hidden="true"><span>→</span></div>
+
+    <article class="delta-panel-v2 is-after">
+      <span class="delta-label-v2">After · next edition</span>
+      <h2>{{ changed_section }}</h2>
+      <p class="delta-copy-v2 after-text">{{ after_text }}</p>
+    </article>
   </section>
 
-  <section class="adaptation-comparison">
-    <div class="editorial-grid">
-      <div class="main">
-        <h3>첫 번째 에디션 (before)</h3>
-        <div class="edition-cover-mini">
-          <img src="/static/images/img-edition-cover.svg" alt="첫 번째 에디션 표지">
-        </div>
-        <div class="comparison-section">
-          <h4>"{{ changed_section }}" 섹션의 before</h4>
-          <p class="before-text">{{ before_text }}</p>
-        </div>
-      </div>
-      <div class="sidebar comparison-sidebar">
-        <h3>다음 호 (after)</h3>
-        <div class="comparison-section">
-          <h4>{{ changed_section }} — 변경된 내용</h4>
-          <p class="after-text">{{ after_text }}</p>
-        </div>
-        <h4>변경된 이유</h4>
-        <ul>
-          <li>사용자가 "개인화가 구체적으로 어떻게 실천되는지"를 요청</li>
-          <li>첫 번째 에디션의 추상적 표현을 제거</li>
-          <li>구체적인 고객 사례와 행동 변화를 추가</li>
-          <li>속도 중심에서 개인화 중심으로 서사 전환</li>
-        </ul>
-      </div>
+  <section class="adaptation-proof-v2" aria-label="변경된 이유와 근거">
+    <div>
+      <strong>01 / 변경된 이유 · Request</strong>
+      <p>“개인화가 구체적으로 어떻게 실천되는지”를 더 깊게 보여달라는 독자 요청을 그대로 기준점으로 삼았습니다.</p>
+    </div>
+    <div>
+      <strong>02 / Editorial change</strong>
+      <p>추상적인 가치 설명을 줄이고, 서로 다른 고객이 실제로 원하는 방식의 차이를 본문에 추가했습니다.</p>
+    </div>
+    <div>
+      <strong>03 / Continuity</strong>
+      <p>속도 중심의 첫 가설에서 개인화 중심의 다음 판단으로 서사가 이어지도록 변경 지점을 기록했습니다.</p>
     </div>
   </section>
 
-  <section class="adaptation-nav">
-     <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-secondary">감사 페이지로</a>
-    <a href="{{ _base }}/history" class="btn btn-secondary">지난 에디션 보기</a>
-  </section>
+  <nav class="adaptation-actions-v2" aria-label="피드백 반영 다음 작업">
+    <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-secondary">감사 페이지로</a>
+    <a href="{{ _base }}/history" class="btn btn-primary">지난 에디션 보기</a>
+  </nav>
 </div>
 {% endblock %}

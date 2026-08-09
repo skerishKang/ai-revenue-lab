@@ -1,59 +1,66 @@
 {% extends "base.html" %}
 {% block title %}Personal Edition{% endblock %}
 {% block content %}
-<div class="intro-page">
-  <section class="hero-section">
-    <img src="/static/images/img-hero-transformation.svg" alt="" aria-hidden="true">
-    <div class="hero-overlay">
-      <h1>Personal Edition</h1>
-      <p>개인 기록이 비공개 에디션으로</p>
+<div class="intro-page-v2">
+  <section class="intro-hero-v2" aria-labelledby="intro-title">
+    <div class="intro-copy-v2">
+      <div>
+        <div class="intro-edition-mark-v2">Private publication · No. 01</div>
+        <h1 class="intro-title-v2" id="intro-title">당신의 기록을 <em>한 권의 에디션</em>으로.</h1>
+        <p class="intro-lede-v2">흩어진 대화와 메모를 AI가 초안으로 묶고, 사람이 다시 읽고 다듬어 오직 한 사람을 위한 비공개 출판물로 완성합니다.</p>
+      </div>
+      <div class="intro-actions-v2">
+        <a href="/preview/participant/access/" class="btn btn-primary">에디션 시작하기</a>
+        <span class="intro-privacy-v2">PRIVATE BY DEFAULT · HUMAN REVIEWED · SYNTHETIC PREVIEW</span>
+      </div>
+    </div>
+
+    <div class="fragment-stage-v2" aria-label="기록 조각이 하나의 에디션으로 모이는 시각화">
+      <article class="source-fragment-v2 is-one">
+        <small>conversation / 01</small>
+        “처음에는 속도가 가장 중요하다고 생각했습니다.”
+      </article>
+      <article class="source-fragment-v2 is-two">
+        <small>note / 02</small>
+        고객이 원하는 것은 더 빠른 답보다 자신을 이해하는 제안이었다.
+      </article>
+      <article class="source-fragment-v2 is-three">
+        <small>reflection / 03</small>
+        방향을 바꾼 순간부터 기록의 의미도 달라졌다.
+      </article>
+      <div class="bound-edition-v2" aria-hidden="true">
+        <span class="cover-eyebrow">Personal Edition</span>
+        <strong>속도에서<br>개인화로</strong>
+        <span class="cover-number">01</span>
+      </div>
+      <span class="stage-caption-v2">source fragments → edited private edition</span>
     </div>
   </section>
 
-  <section class="intro-description">
-    <h2>작은 기록이 모여, 한 권의 에디션</h2>
-    <p>대화 조각, 메모, 음성 전사, 사진 메모가 AI와 편집자의 손을 거쳐 비공개 에디션으로 출판됩니다. 블로그도, 일기장도, 챗봇도 아닙니다. 개인만을 위한 정적 출판물입니다.</p>
-    <p><strong>합성 데이터 · 저장 없음</strong> — 데모를 체험해 보세요.</p>
-  </section>
-
-  <section class="intro-cta">
-    <a href="/preview/participant/access/" class="btn btn-primary">데모 시작하기</a>
-  </section>
-
-  <section class="intro-transformation">
-    <h2>어떻게 만들어지나요</h2>
-    <div class="transformation-flow">
-      <div class="transformation-step">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <div class="step-label">원본 기록</div>
-          <p>대화, 메모, 음성 전사, 사진 메모가 콜라주됩니다.</p>
-        </div>
-        <img src="/static/images/img-source-fragments.svg" alt="" aria-hidden="true">
-      </div>
-      <div class="transformation-step">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <div class="step-label">AI 초안</div>
-          <p>기록이 에디션 초안으로 정리됩니다.</p>
-        </div>
-      </div>
-      <div class="transformation-step">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <div class="step-label">편집자 검토</div>
-          <p>연필선과 교정 표시로 편집합니다.</p>
-        </div>
-        <img src="/static/images/img-editorial-review.svg" alt="" aria-hidden="true">
-      </div>
-      <div class="transformation-step">
-        <div class="step-number">4</div>
-        <div class="step-content">
-          <div class="step-label">발행 완료</div>
-          <p>비공개 에디션이 출판됩니다.</p>
-        </div>
-        <img src="/static/images/img-edition-cover.svg" alt="" aria-hidden="true">
-      </div>
+  <section class="intro-ledger-v2" aria-label="에디션 제작 흐름">
+    <div class="ledger-intro">
+      <span class="ledger-number-v2">THE EDITION PROCESS</span>
+      <strong>기록은 자동 게시되지 않습니다.</strong>
+    </div>
+    <div>
+      <span class="ledger-number-v2">01 / SOURCE</span>
+      <strong class="ledger-title-v2">기록을 남깁니다</strong>
+      <p class="ledger-copy-v2">대화, 메모, 생각의 조각을 개인 원본으로 보관합니다.</p>
+    </div>
+    <div>
+      <span class="ledger-number-v2">02 / DRAFT</span>
+      <strong class="ledger-title-v2">초안을 구성합니다</strong>
+      <p class="ledger-copy-v2">AI가 원본의 맥락을 보존하며 읽을 수 있는 구조로 정리합니다.</p>
+    </div>
+    <div>
+      <span class="ledger-number-v2">03 / REVIEW</span>
+      <strong class="ledger-title-v2">사람이 검토합니다</strong>
+      <p class="ledger-copy-v2">편집자가 표현과 근거를 확인하고 공개 전 상태를 유지합니다.</p>
+    </div>
+    <div>
+      <span class="ledger-number-v2">04 / EDITION</span>
+      <strong class="ledger-title-v2">당신에게 발행합니다</strong>
+      <p class="ledger-copy-v2">검토가 끝난 뒤에만 비공개 에디션으로 전달됩니다.</p>
     </div>
   </section>
 </div>

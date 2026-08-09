@@ -2,89 +2,70 @@
 {% block title %}{{ content.publication_title if content else '에디션' }} — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
-<article class="edition-article">
-  <div class="edition-cover animate-fade-in">
-    {% if edition.edition_number == 1 %}
-    <img src="/static/images/edition-cover-shift.webp"
-         alt="에디션 커버"
-         width="1122" height="1402">
-    {% else %}
-    <img src="/static/images/edition-cover-archive.webp"
-         alt="에디션 커버"
-         width="1122" height="1402">
-    {% endif %}
-  </div>
-
-  <header class="edition-header">
-    <span class="edition-issue">제{{ edition.edition_number }}호</span>
-    <h1>{{ content.publication_title if content else '' }}</h1>
-    <p class="edition-deck">{{ content.deck if content else '' }}</p>
-    {% if edition.published_at %}
-    <time>{{ edition.published_at[:10] }}</time>
-    {% endif %}
+<article class="edition-article-v2">
+  <header class="edition-opening-spread-v2">
+    <div class="edition-cover edition-cover-panel-v2" style="margin-bottom:0">
+      <div class="edition-object-v2" aria-hidden="true">
+        <span class="cover-eyebrow">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
+        <span class="cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</span>
+        <span class="cover-number">{{ '%02d'|format(edition.edition_number) }}</span>
+      </div>
+    </div>
+    <div class="edition-title-panel-v2">
+      <span class="edition-issue">Personal Edition · 제{{ edition.edition_number }}호</span>
+      <h1>{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</h1>
+      <p class="edition-deck">{{ content.deck if content else '' }}</p>
+      {% if edition.published_at %}<time datetime="{{ edition.published_at[:10] }}">{{ edition.published_at[:10] }}</time>{% endif %}
+    </div>
   </header>
 
-  <div class="edition-opening">
-    {{ content.opening if content else '' }}
-  </div>
+  <div class="edition-reading-body-v2">
+    <div class="edition-opening">{{ content.opening if content else '' }}</div>
 
-  {% if content and content.highlighted_insight %}
-  <aside class="edition-insight">
-    {{ content.highlighted_insight }}
-  </aside>
-  {% endif %}
+    {% if content and content.highlighted_insight %}
+    <aside class="edition-insight">{{ content.highlighted_insight }}</aside>
+    {% endif %}
 
-  {% if content and content.sections %}
-  {% for section in content.sections %}
-  <section class="edition-section" id="section-{{ section.section_id }}">
-    <h3>{{ section.title }}</h3>
-    {% for para in section.paragraphs %}
-    <p>{{ para }}</p>
+    {% if content and content.sections %}
+    {% for section in content.sections %}
+    <section class="edition-section" id="section-{{ section.section_id }}">
+      <h3>{{ section.title }}</h3>
+      <div class="section-copy-v2">
+        {% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}
+      </div>
+    </section>
     {% endfor %}
-  </section>
-  {% endfor %}
-  {% endif %}
-
-  {% if content and content.continuity_note %}
-  <aside class="edition-continuity">
-    {{ content.continuity_note }}
-  </aside>
-  {% endif %}
-
-  {% if prior_feedback_summary %}
-  <aside class="edition-feedback-applied">
-    <strong>이전 피드백 반영:</strong>
-    <p>{{ prior_feedback_summary.action }}</p>
-    {% if prior_feedback_summary.evidence %}
-    <p class="feedback-evidence">{{ prior_feedback_summary.evidence }}</p>
-    {% endif %}
-  </aside>
-  {% endif %}
-
-  {% if content and content.next_edition_prompt %}
-  <aside class="edition-prompt">
-    <strong>{{ content.next_edition_prompt.question }}</strong>
-  </aside>
-  {% endif %}
-
-  <footer class="edition-footer">
-    <p class="provenance">{{ content.provenance_note if content else '' }}</p>
-  </footer>
-
-  <nav class="edition-actions">
-{% if not has_given_feedback %}
-     <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback"
-        class="btn btn-primary">피드백 보내기</a>
-    {% else %}
-    <p class="feedback-submitted">이미 피드백을 제출했습니다.</p>
     {% endif %}
 
-    <a href="{{ _base }}/history" class="btn btn-secondary">기록 보기</a>
-
-    {% if next_edition_number %}
-    <a href="{{ _base }}/editions/{{ next_edition_number }}"
-       class="btn btn-secondary">다음 에디션 보기</a>
+    {% if content and content.continuity_note %}
+    <aside class="edition-continuity">{{ content.continuity_note }}</aside>
     {% endif %}
-  </nav>
+
+    {% if prior_feedback_summary %}
+    <aside class="edition-feedback-applied">
+      <strong>이전 피드백 반영</strong>
+      <p>{{ prior_feedback_summary.action }}</p>
+      {% if prior_feedback_summary.evidence %}<p class="feedback-evidence">{{ prior_feedback_summary.evidence }}</p>{% endif %}
+    </aside>
+    {% endif %}
+
+    {% if content and content.next_edition_prompt %}
+    <aside class="edition-prompt"><strong>{{ content.next_edition_prompt.question }}</strong></aside>
+    {% endif %}
+
+    <footer class="edition-footer">
+      <p class="provenance">{{ content.provenance_note if content else '' }}</p>
+    </footer>
+
+    <nav class="edition-actions" aria-label="에디션 다음 작업">
+      {% if not has_given_feedback %}
+      <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback" class="btn btn-primary">피드백 보내기</a>
+      {% else %}
+      <p class="feedback-submitted">이미 피드백을 제출했습니다.</p>
+      {% endif %}
+      <a href="{{ _base }}/history" class="btn btn-secondary">기록 보기</a>
+      {% if next_edition_number %}<a href="{{ _base }}/editions/{{ next_edition_number }}" class="btn btn-secondary">다음 에디션 보기</a>{% endif %}
+    </nav>
+  </div>
 </article>
 {% endblock %}
