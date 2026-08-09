@@ -1,0 +1,49 @@
+name: Prepare B16 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/prepare-b16-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/prepare-b16-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize approved B16 UI plus existing UX on exact main
+        shell: bash
+        env:
+          EXPECTED_MAIN: 9953f2e72d3ce037942a48e6d809347cc41f3696
+          TARGET_BRANCH: feat/b16-personal-sports-complete-465
+          UI_BRANCH: feat/business-16-personal-sports-ui
+          UX_BRANCH: feat/business-16-personal-sports-ux-396
+          SCOPE: reference/business-16-personal-sports-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
+          git fetch origin "$UI_BRANCH" "$UX_BRANCH"
+          test "$(git rev-parse origin/$UI_BRANCH)" = 5ca786196d36daf1c28c6ca59cbe793a60aa11ca
+          test "$(git rev-parse origin/$UX_BRANCH)" = 8f4db08b6d908fa073716a1e48bceb28fdafa91f
+          if git ls-tree -r --name-only HEAD -- "$SCOPE" | grep -q .; then
+            echo 'B16 scope unexpectedly exists on current main; refusing overwrite' >&2
+            exit 1
+          fi
+          git switch -c "$TARGET_BRANCH"
+          git checkout "origin/$UI_BRANCH" -- "$SCOPE"
+          git checkout "origin/$UX_BRANCH" -- "$SCOPE/ux.html"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$SCOPE"
+          git diff --cached --check
+          git commit -m 'feat(b16): integrate approved matchday UI and personal sports UX'
+          git push origin "$TARGET_BRANCH"
+          echo B16_PREPARE_PASS=1
