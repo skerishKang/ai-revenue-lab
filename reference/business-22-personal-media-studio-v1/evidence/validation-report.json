@@ -1,0 +1,329 @@
+{
+  "kind": "business-22-browser-validation",
+  "baseUrl": "in-memory://business-22/index.html",
+  "browserEnvironment": "Chromium headless with fully inlined set_content; localhost and file navigation blocked by administrator policy",
+  "viewports": {
+    "1440x1100": [
+      {
+        "state": "cover",
+        "active": "cover",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "sources",
+        "active": "sources",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "spine",
+        "active": "spine",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "suite",
+        "active": "suite",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "adaptation",
+        "active": "adaptation",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "trace",
+        "active": "trace",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      },
+      {
+        "state": "mobile",
+        "active": "mobile",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        }
+      }
+    ],
+    "768x1024": [
+      {
+        "state": "sources",
+        "active": "sources",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      {
+        "state": "suite",
+        "active": "suite",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      {
+        "state": "adaptation",
+        "active": "adaptation",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    ],
+    "390x844": [
+      {
+        "state": "cover",
+        "active": "cover",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      {
+        "state": "suite",
+        "active": "suite",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      {
+        "state": "mobile",
+        "active": "mobile",
+        "visible": true,
+        "horizontalOverflow": 0,
+        "brokenImages": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "externalRequests": [],
+  "keyboard": {
+    "arrowRightState": "sources",
+    "arrowRightFocus": "tab-sources",
+    "endState": "mobile",
+    "homeState": "cover",
+    "passed": true
+  },
+  "motion": {
+    "before": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "idle",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
+    "running": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "running",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": false
+    },
+    "after": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "complete",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
+    "computedTiming": {
+      "steps": [
+        {
+          "className": "master-annotation relay-step step-annotation",
+          "animationName": "relayReveal",
+          "delayMs": 80,
+          "durationMs": 120,
+          "endMs": 200
+        },
+        {
+          "className": "relay-rule relay-step step-rule",
+          "animationName": "relayRule",
+          "delayMs": 180,
+          "durationMs": 120,
+          "endMs": 300
+        },
+        {
+          "className": "adapt-output relay-step step-article",
+          "animationName": "relayReveal",
+          "delayMs": 280,
+          "durationMs": 120,
+          "endMs": 400
+        },
+        {
+          "className": "adapt-output relay-step step-audio",
+          "animationName": "relayReveal",
+          "delayMs": 380,
+          "durationMs": 120,
+          "endMs": 500
+        },
+        {
+          "className": "adapt-output relay-step step-video",
+          "animationName": "relayReveal",
+          "delayMs": 460,
+          "durationMs": 120,
+          "endMs": 580
+        },
+        {
+          "className": "adapt-output relay-step step-card",
+          "animationName": "relayReveal",
+          "delayMs": 540,
+          "durationMs": 120,
+          "endMs": 660
+        },
+        {
+          "className": "review-resolution relay-step step-review",
+          "animationName": "relayReview",
+          "delayMs": 620,
+          "durationMs": 120,
+          "endMs": 740
+        }
+      ],
+      "computedFinalEndMs": 740
+    },
+    "computedFinalEndMs": 740,
+    "timingRangePassed": true,
+    "runningStatePassed": true,
+    "completionStatePassed": true,
+    "focusScrollGeometryPassed": true,
+    "humanReviewVisible": true,
+    "passed": true,
+    "evidenceFrames": [
+      "motion-relay-frames.svg / 00 before",
+      "motion-relay-frames.svg / 01 annotation",
+      "motion-relay-frames.svg / 02 article",
+      "motion-relay-frames.svg / 03 formats",
+      "motion-relay-frames.svg / 04 review"
+    ]
+  },
+  "reducedMotion": {
+    "before": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "idle",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
+    "after": {
+      "focus": "replay",
+      "x": 0,
+      "y": 20,
+      "h": 1140,
+      "state": "complete",
+      "source": {
+        "x": 337.59375,
+        "y": 204.4375,
+        "width": 359.375,
+        "height": 720
+      },
+      "reviewVisible": true
+    },
+    "allFinalStepsVisible": true,
+    "humanReviewVisible": true,
+    "focus": "replay",
+    "state": "complete",
+    "geometryStable": true,
+    "passed": true
+  },
+  "summary": {
+    "allQueriesResolve": true,
+    "zeroHorizontalOverflow": true,
+    "zeroBrokenImages": true,
+    "zeroConsoleErrors": true,
+    "zeroPageErrors": true,
+    "zeroFailedRequests": true,
+    "zeroExternalRequests": true,
+    "keyboardPassed": true,
+    "motionPassed": true,
+    "reducedMotionPassed": true
+  },
+  "passed": true,
+  "motionEvidence": "motion-relay-frames.svg"
+}

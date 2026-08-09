@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 220" role="img" aria-labelledby="title desc">
+  <title id="title">합성 앰비언트 오디오 파형</title>
+  <desc id="desc">실제 녹음이 아닌 시각 검토용 합성 파형.</desc>
+  <rect width="1200" height="220" fill="#172023"/>
+  <g stroke="#8aaec9" stroke-width="4" opacity=".88">
+    <path d="M20 110h15l8-35 10 72 10-50 10 29 10-83 10 134 10-86 12 42 12-20 14 55 14-103 14 77 16-31 17 12 18-64 18 96 18-49 20 26 20-86 20 133 20-79 20 45 20-22 22 61 22-105 22 79 22-43 22 24 24-73 24 117 24-65 24 34 24-52 24 78 26-103 26 136 26-84 26 28 28-32 28 67 28-88 28 57 28-19 30 51 30-95 30 73 30-40 30 18 30-58 30 89 30-52 30 20 30-36 30 62 30-84 30 44 30-14 30 39 30-68 30 48 30-28 30 18 30-42 30 57 30-34 30 11 30-26 30 47 30-61 30 38 30-15h32" fill="none"/>
+  </g>
+  <g font-family="ui-monospace, monospace" fill="#efe6d3" font-size="16"><text x="20" y="28">AMB-07 · SYNTHETIC AMBIENCE</text><text x="20" y="204">00:00</text><text x="1088" y="204">06:00</text></g>
+  <g stroke="#e85b40"><path d="M394 18v184M805 18v184"/></g>
+</svg>

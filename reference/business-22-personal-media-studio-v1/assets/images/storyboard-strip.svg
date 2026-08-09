@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 520" role="img" aria-labelledby="title desc">
+  <title id="title">합성 세로 영상 스토리보드</title>
+  <desc id="desc">실제 촬영물이 아닌 60초 세로 영상용 네 장면 원본 벡터 스토리보드.</desc>
+  <rect width="1040" height="520" fill="#171d1f"/>
+  <g transform="translate(32 46)">
+    <g><rect width="220" height="390" fill="#eee4d0"/><rect x="22" y="24" width="176" height="252" fill="#20282a"/><circle cx="68" cy="82" r="28" fill="#e85b40"/><path d="M38 250 88 108h88l28 142" stroke="#8aaec9" stroke-width="4" fill="none"/><text x="22" y="316" font-family="sans-serif" font-size="18" fill="#182123">01. 불이 켜진다</text><text x="22" y="350" font-family="monospace" font-size="14" fill="#182123">00:00–00:11</text></g>
+    <g transform="translate(244)"><rect width="220" height="390" fill="#eee4d0"/><rect x="22" y="24" width="176" height="252" fill="#252d2f"/><g fill="#d3c45d"><circle cx="58" cy="80" r="12"/><circle cx="112" cy="112" r="18"/><circle cx="162" cy="66" r="9"/></g><text x="22" y="316" font-family="sans-serif" font-size="18" fill="#182123">02. 소리가 먼저 온다</text><text x="22" y="350" font-family="monospace" font-size="14" fill="#182123">00:11–00:27</text></g>
+    <g transform="translate(488)"><rect width="220" height="390" fill="#eee4d0"/><rect x="22" y="24" width="176" height="252" fill="#1d2527"/><path d="M30 208h160" stroke="#e85b40" stroke-width="8"/><rect x="82" y="85" width="58" height="123" fill="#8aaec9"/><text x="22" y="316" font-family="sans-serif" font-size="18" fill="#182123">03. 손이 시간을 나눈다</text><text x="22" y="350" font-family="monospace" font-size="14" fill="#182123">00:27–00:44</text></g>
+    <g transform="translate(732)"><rect width="220" height="390" fill="#eee4d0"/><rect x="22" y="24" width="176" height="252" fill="#20282a"/><circle cx="152" cy="72" r="31" fill="#e85b40"/><path d="M36 234c64-84 95-29 158-117" stroke="#d3c45d" stroke-width="5" fill="none"/><text x="22" y="316" font-family="sans-serif" font-size="18" fill="#182123">04. 도시가 깨어난다</text><text x="22" y="350" font-family="monospace" font-size="14" fill="#182123">00:44–01:00</text></g>
+  </g>
+  <text x="32" y="26" font-family="ui-monospace, monospace" font-size="16" fill="#eee4d0">VERTICAL SCRIPT PROOF · SYNTHETIC</text>
+</svg>
