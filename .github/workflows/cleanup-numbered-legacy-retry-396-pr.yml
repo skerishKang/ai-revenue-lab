@@ -17,7 +17,7 @@ jobs:
   cleanup:
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/portfolio-review-deploy-396'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -40,31 +40,26 @@ jobs:
 
           api_call() {
             method="$1"; url="$2"; outfile="$3"
-            attempt=0
-            while :; do
-              attempt=$((attempt + 1))
+            for attempt in 1 2 3; do
               code="$(curl -sS -D /tmp/headers.txt -o "${outfile}" -w '%{http_code}' -X "${method}" -H "${auth}" "${url}" || true)"
               if test "${code}" != '429'; then
                 printf '%s' "${code}"
                 return 0
               fi
               retry_after="$(awk 'BEGIN{IGNORECASE=1} /^retry-after:/ {gsub("\r",""); print $2}' /tmp/headers.txt | tail -1)"
-              case "${retry_after}" in ''|*[!0-9]*) retry_after=$((20 * attempt));; esac
-              test "${retry_after}" -le 120 || retry_after=120
-              echo "RATE_LIMIT_429 sleeping ${retry_after}s for ${url}" >&2
+              case "${retry_after}" in ''|*[!0-9]*) retry_after=30;; esac
+              test "${retry_after}" -le 60 || retry_after=60
+              echo "RATE_LIMIT_429 attempt=${attempt} sleep=${retry_after}s ${url}" >&2
               sleep "${retry_after}"
-              test "${attempt}" -lt 8 || {
-                printf '%s' '429'
-                return 0
-              }
             done
+            printf '%s' '429'
           }
 
           delete_history_batch() {
             project="$1"
             list_code="$(api_call GET "${api_base}/${project}/deployments" /tmp/list.json)"
             test "${list_code}" = '200' || return 2
-            ids="$(jq -r '.result[]?.id // empty' /tmp/list.json | head -20)"
+            ids="$(jq -r '.result[]?.id // empty' /tmp/list.json | head -15)"
             test -n "${ids}" || return 1
             deleted=0
             while IFS= read -r did; do
@@ -72,8 +67,10 @@ jobs:
               dcode="$(api_call DELETE "${api_base}/${project}/deployments/${did}?force=true" /tmp/del-deployment.json)"
               if test "${dcode}" = '200' || test "${dcode}" = '204'; then
                 deleted=$((deleted + 1))
+              elif test "${dcode}" = '429'; then
+                echo "${project}: deployment delete still rate-limited; stop this batch" >&2
+                break
               fi
-              sleep 1
             done <<< "${ids}"
             echo "${project}: history batch deleted=${deleted}" >&2
             test "${deleted}" -gt 0
@@ -105,16 +102,21 @@ jobs:
             fi
             test "${legacy_code}" = '200' || return 15
 
-            round=0
-            while :; do
-              round=$((round + 1))
+            for round in $(seq 1 20); do
               dcode="$(api_call DELETE "${api_base}/${legacy}" /tmp/delete-project.json)"
               if test "${dcode}" = '200' || test "${dcode}" = '204'; then
-                break
+                for v in $(seq 1 10); do
+                  vcode="$(api_call GET "${api_base}/${legacy}" /tmp/verify.json)"
+                  test "${vcode}" = '404' && {
+                    echo "${legacy}: DELETE_VERIFIED"
+                    return 0
+                  }
+                  sleep 2
+                done
+                return 18
               fi
               if grep -q '8000076\|too many deployments' /tmp/delete-project.json 2>/dev/null; then
-                test "${round}" -le 20 || return 16
-                delete_history_batch "${legacy}" || true
+                delete_history_batch "${legacy}" || return 16
                 sleep 5
                 continue
               fi
@@ -122,16 +124,7 @@ jobs:
               jq -c '{success,errors,messages}' /tmp/delete-project.json 2>/dev/null >&2 || true
               return 17
             done
-
-            for v in $(seq 1 12); do
-              vcode="$(api_call GET "${api_base}/${legacy}" /tmp/verify.json)"
-              test "${vcode}" = '404' && {
-                echo "${legacy}: DELETE_VERIFIED"
-                return 0
-              }
-              sleep 3
-            done
-            return 18
+            return 19
           }
 
           failures=0
@@ -149,7 +142,7 @@ jobs:
               failures=$((failures + 1))
             fi
             printf '%s\t%s\t%s\t%s\t%s\t%s\n' "${id}" "${target}" "${legacy}" "${expected}" "${status}" "${reason}" >> /tmp/results.tsv
-            sleep 10
+            sleep 3
           done < ops/cloudflare-numbered-legacy-cleanup-retry-396.tsv
 
           echo "LEGACY_CLEANUP_PASS=${done_count}"
@@ -157,7 +150,7 @@ jobs:
           cat /tmp/results.tsv
 
           npx --yes wrangler@4 pages project list > /tmp/projects-after.txt 2>/tmp/projects-after.err || true
-          sed -n '/│ Project Name/,/└/p' /tmp/projects-after.txt || cat /tmp/projects-after.txt
+          cat /tmp/projects-after.txt || true
           awk -F '│' '/^│/ && $2 !~ /Project Name|^-|^[[:space:]]*$/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); if ($2 != "") n++} END {print "POST_CLEANUP_PROJECT_COUNT=" n}' /tmp/projects-after.txt
 
           cp /tmp/results.tsv "${GITHUB_WORKSPACE}/cloudflare-numbered-legacy-cleanup-results.tsv"
