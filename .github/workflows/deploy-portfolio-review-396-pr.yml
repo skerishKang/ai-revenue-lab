@@ -135,7 +135,6 @@ jobs:
             test -n "${id}" || continue
             echo "::group::Deploy B${id} from PR #${pr}"
             url="https://${project}.pages.dev/${entry}"
-            dir="$4"; project="$5"; entry="$6"
             if deploy_one "${id}" "${pr}" "${sha}" "${dir}" "${project}" "${entry}"; then
               status='PASS'
               reason=''
