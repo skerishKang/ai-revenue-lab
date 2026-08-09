@@ -6,6 +6,25 @@
   const replayButton = document.querySelector('[data-motion-replay]');
   const stateNames = new Set(states.map((state) => state.dataset.state));
 
+  function installGuideLink() {
+    if (document.querySelector('[data-first-use-guide]')) return;
+    const guide = document.createElement('a');
+    guide.href = './guide.html';
+    guide.dataset.firstUseGuide = 'true';
+    guide.setAttribute('aria-label', '나의 기억소설 30초 사용법 열기');
+    if (window.matchMedia('(max-width:600px)').matches) {
+      guide.textContent = '30초 사용법';
+      guide.style.cssText = 'position:fixed;right:10px;top:8px;z-index:60;display:inline-flex;align-items:center;min-height:26px;padding:3px 7px;border:1px solid #8f8277;background:#f0e9dc;color:#1e1d1b;text-decoration:none;font:700 9px/1.2 system-ui;white-space:nowrap';
+      document.body.append(guide);
+      return;
+    }
+    const identityCopy = document.querySelector('.identity > div');
+    if (!identityCopy) return;
+    guide.textContent = '30초 사용법 / Guide';
+    guide.style.cssText = 'display:inline-flex;width:max-content;max-width:100%;min-height:24px;align-items:center;margin-top:4px;padding:3px 7px;border:1px solid #8f8277;color:inherit;text-decoration:none;font:700 9px/1.2 system-ui;white-space:normal';
+    identityCopy.append(guide);
+  }
+
   function completeFold() {
     if (!foldStage) return;
     foldStage.classList.remove('folding');
@@ -58,6 +77,7 @@
     if (event.target.classList.contains('approval-note')) completeFold();
   });
 
+  installGuideLink();
   const initial = new URLSearchParams(location.search).get('state') || 'cover';
   setState(initial, { updateUrl: false });
   window.__memoryNovelReview = { setState, replayFold, completeFold, version: 'memory-novel-20260727-1' };
