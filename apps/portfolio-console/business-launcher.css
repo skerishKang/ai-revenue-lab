@@ -39,8 +39,48 @@
   font-weight: 500;
 }
 
+/* Desktop launcher rows use one shared column contract so authority, phase and
+   action cells land on the same vertical axes regardless of label length. */
 #view-business .biz-item {
-  grid-template-columns: 50px minmax(0, 1fr) 90px minmax(180px, auto) auto;
+  grid-template-columns: 52px minmax(360px, 1fr) 124px 320px 156px;
+  column-gap: 16px;
+  align-items: center;
+}
+
+#view-business .biz-number {
+  justify-self: start;
+}
+
+#view-business .biz-title-group {
+  min-width: 0;
+}
+
+#view-business .biz-auth {
+  width: 116px;
+  min-width: 116px;
+  max-width: 116px;
+  justify-self: start;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#view-business .biz-phase-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  align-items: center;
+  gap: 8px;
+}
+
+#view-business .biz-phase-badge {
+  min-width: 0;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
 }
 
 #view-business .biz-item.has-direct-service {
@@ -55,8 +95,11 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 5px;
-  min-width: max-content;
+  gap: 6px;
+  width: 156px;
+  min-width: 156px;
+  max-width: 156px;
+  justify-self: end;
 }
 
 .biz-launch-open,
@@ -70,9 +113,11 @@
   border-radius: 6px;
   font: 600 9px/1 var(--mono);
   letter-spacing: .02em;
+  white-space: nowrap;
 }
 
 .biz-launch-open {
+  min-width: 100px;
   border: 1px solid rgba(78, 215, 160, .32);
   background: var(--green-soft);
   color: var(--green);
@@ -85,6 +130,7 @@
 }
 
 .biz-launch-detail {
+  min-width: 50px;
   border: 1px solid var(--line);
   background: var(--panel);
   color: var(--muted);
@@ -103,14 +149,16 @@
 }
 
 .biz-launch-state {
+  min-width: 100px;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--quiet);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1180px) {
   #view-business .biz-item {
-    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-columns: 44px minmax(0, 1fr) 124px;
+    column-gap: 12px;
   }
 
   #view-business .biz-number {
@@ -132,10 +180,16 @@
 
   #view-business .biz-phase-group {
     grid-column: 2 / span 2;
+    width: min(100%, 320px);
+    min-width: 0;
+    max-width: 320px;
   }
 
   #view-business .biz-launch-actions {
     grid-column: 2 / span 2;
+    width: auto;
+    min-width: 0;
+    max-width: none;
     justify-self: start;
   }
 }
@@ -169,7 +223,27 @@
 
   #view-business .biz-auth {
     grid-row: auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
     justify-self: start;
+  }
+
+  #view-business .biz-phase-group {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  #view-business .biz-phase-badge {
+    width: auto;
+    justify-self: start;
+  }
+
+  #view-business .biz-launch-actions {
+    width: auto;
+    min-width: 0;
+    max-width: none;
   }
 
   .biz-launch-open,
