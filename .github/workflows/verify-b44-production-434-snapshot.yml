@@ -17,10 +17,11 @@ jobs:
     env:
       PROJECT: ai-revenue-portfolio-console
       EXPECTED_SHA: 07ab5fddd59e886f530fe39c441c372c34c14d8c
+      PRODUCTION_URL: https://ai-revenue-portfolio-console.pages.dev/
       CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
-      - name: Read latest Production deployment
+      - name: Verify latest Production deployment
         shell: bash
         run: |
           set -euo pipefail
@@ -38,5 +39,22 @@ jobs:
           print(f"deployment_id={d.get('id')} created_on={d.get('created_on')} modified_on={d.get('modified_on')} source_sha={sha} branch={meta.get('branch')} stage={stage.get('name')}/{stage.get('status')}")
           print('stages='+','.join(f"{s.get('name')}:{s.get('status')}" for s in d.get('stages',[])))
           if sha != expected: raise SystemExit('latest Production SHA mismatch')
-          print('EXPECTED_PRODUCTION_SOURCE_PRESENT=1')
+          if stage.get('name') != 'deploy' or stage.get('status') != 'success': raise SystemExit('Production deployment not successful')
+          print('B44_PRODUCTION_DEPLOYMENT_ACCEPTED=1')
           PY
+
+      - name: Verify post-deploy anonymous Access boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -sS --max-time 20 -o /tmp/body -D /tmp/headers -w '%{http_code}' "$PRODUCTION_URL")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/{sub(/\r$/,""); print substr($0,index($0,":")+2); exit}' /tmp/headers)
+          host=$(python3 - "$location" <<'PY'
+          import sys, urllib.parse
+          print(urllib.parse.urlsplit(sys.argv[1]).hostname or '')
+          PY
+          )
+          echo "production_http=$code redirect_host=$host"
+          [[ "$code" == "302" ]]
+          [[ "$host" == "limoneai.cloudflareaccess.com" ]]
+          echo "B44_POST_DEPLOY_ACCESS_BOUNDARY_VERIFIED=1"
