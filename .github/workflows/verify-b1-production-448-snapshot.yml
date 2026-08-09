@@ -1,0 +1,43 @@
+name: Snapshot B1 Production 448
+
+on:
+  pull_request:
+    branches: [main]
+    types: [synchronize]
+    paths: [.github/workflows/verify-b1-production-448-snapshot.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    if: github.event.pull_request.head.ref == 'ops/verify-b1-production-448'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      PROJECT: ai-revenue-personal-edition
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Read current Cloudflare state
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$base" > /tmp/project.json
+          curl --fail-with-body -sS "${auth[@]}" "$base/deployments" > /tmp/deployments.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/project.json')).get('result') or {}
+          src=p.get('source') or {}; cfg=src.get('config') or {}; build=p.get('build_config') or {}
+          print('PROJECT_CONFIG', 'source='+str(src.get('type')), 'repo='+str(cfg.get('repo_name')), 'production_branch='+str(cfg.get('production_branch')), 'enabled='+str(cfg.get('production_deployments_enabled')), 'root='+str(build.get('root_dir')), 'dest='+str(build.get('destination_dir')))
+          rows=[x for x in (json.load(open('/tmp/deployments.json')).get('result') or []) if x.get('environment')=='production']
+          rows.sort(key=lambda x:x.get('created_on') or '', reverse=True)
+          for d in rows[:5]:
+              meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+              stage=d.get('latest_stage') or {}
+              sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+              stages=','.join(f"{s.get('name')}:{s.get('status')}" for s in (d.get('stages') or []))
+              print('DEPLOYMENT', d.get('id'), d.get('created_on'), sha, meta.get('branch'), str(stage.get('name'))+'/'+str(stage.get('status')), stages)
+          PY
