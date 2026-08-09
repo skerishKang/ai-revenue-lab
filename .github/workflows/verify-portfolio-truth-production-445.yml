@@ -1,0 +1,74 @@
+name: Verify Portfolio Truth Production 445
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/verify-portfolio-truth-production-445.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-portfolio-truth-audit-445'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PROJECT: ai-revenue-portfolio-console
+      EXPECTED_SHA: 3e9207bf9000240c5cba7942f5390f4fbec9678a
+      PRODUCTION_URL: https://ai-revenue-portfolio-console.pages.dev/
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Wait for exact automatic Production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          for i in $(seq 1 120); do
+            curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" "$base/deployments" > /tmp/d.json
+            result=$(python3 - "$EXPECTED_SHA" <<'PY'
+import json,sys
+expected=sys.argv[1]
+rows=[x for x in json.load(open('/tmp/d.json')).get('result',[]) if x.get('environment')=='production']
+rows.sort(key=lambda x:x.get('created_on') or '', reverse=True)
+match=next((d for d in rows if ((d.get('deployment_trigger') or {}).get('metadata') or {}).get('commit_hash')==expected), None)
+if not match:
+    print('missing')
+else:
+    meta=(match.get('deployment_trigger') or {}).get('metadata') or {}
+    stage=match.get('latest_stage') or {}
+    print(f"{match.get('id')}|{meta.get('branch')}|{stage.get('name')}|{stage.get('status')}")
+PY
+            )
+            echo "poll=$i result=$result"
+            if [[ "$result" == *"|main|deploy|success" ]]; then
+              echo "PORTFOLIO_TRUTH_PRODUCTION_EXACT_SHA_PASS=1"
+              echo "deployment=$result"
+              exit 0
+            fi
+            if [[ "$result" == *"|failure"* ]]; then
+              echo "Exact Production deployment failed: $result" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "Timed out waiting for exact Production deploy/success" >&2
+          exit 1
+      - name: Verify Access boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -sS --max-time 20 -o /tmp/body -D /tmp/headers -w '%{http_code}' "$PRODUCTION_URL")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/{sub(/\r$/,""); print substr($0,index($0,":")+2); exit}' /tmp/headers)
+          host=$(python3 - "$location" <<'PY'
+import sys,urllib.parse
+print(urllib.parse.urlsplit(sys.argv[1]).hostname or '')
+PY
+          )
+          echo "production_http=$code redirect_host=$host"
+          [[ "$code" == "302" ]]
+          [[ "$host" == "limoneai.cloudflareaccess.com" ]]
+          echo "PORTFOLIO_TRUTH_ACCESS_BOUNDARY_PASS=1"
