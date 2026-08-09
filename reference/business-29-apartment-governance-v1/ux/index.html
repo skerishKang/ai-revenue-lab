@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resident Assembly Ledger — 주민총회 원장 · Business 29 Phase 2 UX</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <div class="shell">
+
+    <header class="masthead">
+      <div class="identity">
+        <div class="ledger-no" aria-hidden="true">29</div>
+        <div>
+          <p>Resident Assembly Ledger · Business 29</p>
+          <h1>주민총회 원장<span>Apartment Governance · 합성 UX</span></h1>
+        </div>
+      </div>
+      <div class="notice-cluster" aria-label="공개·비공개 표지">
+        <span class="status public">공개</span>
+        <span class="status working">검토 중</span>
+        <span class="status private">비공개</span>
+        <span class="status redacted">redacted</span>
+        <span class="audit-mark">의결</span>
+        <span class="audit-mark">감사 기록</span>
+      </div>
+    </header>
+
+    <nav class="review-nav" aria-label="원장 탭">
+      <div class="nav-title">
+        <b>2026년 3분기 합성 대표회의</b>
+        <span>솔빛마루 2단지 · 420세대 · 합성 fixture</span>
+      </div>
+      <div class="role-switch" role="group" aria-label="합성 역할 전환">
+        <b>역할</b>
+        <div id="role-chips"></div>
+      </div>
+    </nav>
+
+    <div class="review-nav rule-tabs" role="tablist" aria-label="규약 탭">
+      <button type="button" role="tab" aria-selected="true" data-rule-tab="ledger">원장</button>
+      <button type="button" role="tab" aria-selected="false" data-rule-tab="rulebook">규약·근거</button>
+      <button type="button" role="tab" aria-selected="false" data-rule-tab="documents">문서·증거</button>
+      <button type="button" role="tab" aria-selected="false" data-rule-tab="history">변경·공개 이력</button>
+    </div>
+    <p id="tab-note" class="deny-note" hidden></p>
+
+    <main id="main" class="review-stage" tabindex="-1">
+      <div aria-live="polite" class="loading-note" id="live-region" hidden></div>
+
+      <section class="section-head" aria-labelledby="state-title">
+        <div>
+          <h2 id="state-title">회의 원장</h2>
+          <p id="state-caption" class="folio">합성 회의 상태</p>
+        </div>
+        <div id="state-badge" class="state-badge"></div>
+      </section>
+
+      <div id="flowbar" class="flowbar" aria-label="회의 흐름"></div>
+      <div id="panel" class="state"></div>
+    </main>
+
+    <footer>
+      <div>주민총회 원장 · Business 29 Phase 2 UX — 합성 데이터 전용 · 전자투표·법률 판단·결제 기능 없음</div>
+      <div id="footer-meta">main 기준</div>
+    </footer>
+  </div>
+
+  <script src="scripts/fixture.js"></script>
+  <script src="scripts/state-machine.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+name: Validate B29 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-29-apartment-governance-v1/**'
+      - '.github/workflows/validate-b29-complete-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b29-apartment-governance-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Existing UI and UX contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 reference/business-29-apartment-governance-v1/tests/validate_reference.py
+          node --test reference/business-29-apartment-governance-v1/ux/tests/static-contract.test.js reference/business-29-apartment-governance-v1/ux/tests/state-machine.test.js
+          node --check reference/business-29-apartment-governance-v1/scripts/review.js
+          node --check reference/business-29-apartment-governance-v1/ux/scripts/app.js
+          node --check reference/business-29-apartment-governance-v1/ux/scripts/state-machine.js
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          base=Path('reference/business-29-apartment-governance-v1')
+          for rel in ('index.html','guide.html','ux/index.html'):
+              HTMLParser().feed((base/rel).read_text(encoding='utf-8'))
+          root=(base/'index.html').read_text(encoding='utf-8')
+          guide=(base/'guide.html').read_text(encoding='utf-8')
+          ux=(base/'ux/index.html').read_text(encoding='utf-8')
+          js=(base/'scripts/review.js').read_text(encoding='utf-8')
+          for marker in ('방림명지로드힐아파트','101동','102동','192세대','김경애'):
+              assert marker in root, marker
+          for marker in ('GUIDE · 30 SECONDS','01 · STATUS','02 · DOCUMENTS','03 · MEETING','04 · DECISION LOG','05 · SANDBOX','./ux/index.html'):
+              assert marker in guide, marker
+          for marker in ('솔빛마루 2단지','합성','SYNTHETIC'):
+              assert marker in ux, marker
+          assert './guide.html' in js and 'dataset.firstUseGuide' in js
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in guide+'\n'+js, forbidden
+          for html in ('index.html','guide.html'):
+              text=(base/html).read_text(encoding='utf-8')
+              for rel in re.findall(r'(?:href|src)="(\./[^"?#]+)', text):
+                  assert (base/rel[2:]).exists(), (html,rel)
+          print('B29_INTEGRATION_CONTRACT_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-29-apartment-governance-v1/**'
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b29-browser && cd /tmp/b29-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser root guide sandbox desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4181 --directory reference/business-29-apartment-governance-v1 >/tmp/b29-http.log 2>&1 &
+          server=$!
+          trap 'kill $server || true' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4181/index.html >/dev/null && break; sleep 0.5; done
+          cd /tmp/b29-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          async function assertNoOverflow(page,label){
+            const diag=await page.evaluate(()=>{const de=document.documentElement,vw=de.clientWidth;const offenders=[...document.querySelectorAll('body *')].map(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{tag:el.tagName,id:el.id||'',cls:typeof el.className==='string'?el.className:'',left:+r.left.toFixed(1),right:+r.right.toFixed(1),width:+r.width.toFixed(1),display:cs.display,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,60)}}).filter(x=>x.display!=='none'&&(x.right>vw+1||x.left<-1)).slice(0,15);return{scrollWidth:de.scrollWidth,clientWidth:vw,offenders}});if(diag.scrollWidth>diag.clientWidth){console.error(`OVERFLOW_DIAG ${label} ${JSON.stringify(diag)}`);throw new Error(`${label}: overflow ${diag.scrollWidth}>${diag.clientWidth}`)}}
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const vp of [{width:1440,height:1100,name:'desktop'},{width:390,height:844,name:'mobile'}]){
+              const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+              const errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)}); page.on('pageerror',e=>errors.push(`page:${e.message}`));
+              await page.goto('http://127.0.0.1:4181/index.html',{waitUntil:'networkidle'});
+              await page.locator('[data-first-use-guide]').waitFor({state:'visible'});
+              if(!(await page.locator('body').innerText()).includes('방림명지로드힐아파트')) throw new Error(`${vp.name}: approved apartment identity missing`);
+              await assertNoOverflow(page,`${vp.name}: root`);
+              await page.locator('[data-first-use-guide]').click();
+              await page.waitForURL(/guide\.html/);
+              const guideText=await page.locator('body').innerText();
+              if(!guideText.includes('실제 단지 정체성') || !guideText.includes('합성 운영 sandbox')) throw new Error(`${vp.name}: real/synthetic boundary missing`);
+              await assertNoOverflow(page,`${vp.name}: guide`);
+              await page.getByRole('link',{name:'합성 운영 sandbox 체험'}).click();
+              await page.waitForURL(/\/ux\/index\.html/);
+              const uxText=await page.locator('body').innerText();
+              if(!uxText.includes('솔빛마루 2단지')) throw new Error(`${vp.name}: synthetic sandbox identity missing`);
+              if(!/합성|SYNTHETIC/i.test(uxText)) throw new Error(`${vp.name}: synthetic disclosure missing`);
+              const controls=await page.locator('button,a').count();
+              if(controls<8) throw new Error(`${vp.name}: sandbox controls unexpectedly sparse (${controls})`);
+              await assertNoOverflow(page,`${vp.name}: sandbox`);
+              if(errors.length) throw new Error(`${vp.name}: ${errors.join(' | ')}`);
+              await page.close();
+            }
+            await browser.close(); console.log('B29_BROWSER_BOUNDARY_PASS=1');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
