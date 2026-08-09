@@ -1,9 +1,10 @@
 name: Verify B44 Production 434
 
 on:
-  push:
+  pull_request:
     branches:
-      - ops/verify-b44-production-434
+      - main
+    types: [opened, synchronize, reopened]
     paths:
       - .github/workflows/verify-b44-production-434.yml
   workflow_dispatch:
@@ -13,6 +14,7 @@ permissions:
 
 jobs:
   verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
@@ -36,7 +38,7 @@ jobs:
               -H "Content-Type: application/json" \
               "$endpoint" > /tmp/deployments.json
             python3 - <<'PY' > /tmp/state.env
-          import json, os, shlex
+          import json, shlex
           data=json.load(open('/tmp/deployments.json', encoding='utf-8'))
           if not data.get('success'):
               raise SystemExit('Cloudflare API success=false')
@@ -82,7 +84,6 @@ jobs:
           echo "production_http=$code"
           if [[ "$code" == "200" ]]; then
             grep -q 'Portfolio Console' /tmp/root.html
-            grep -q 'business-launcher' /tmp/root.html || true
             echo "B44_ANONYMOUS_BOUNDARY=PUBLIC_200_CONTENT_PRESENT"
           elif [[ "$code" =~ ^30[12378]$ ]]; then
             echo "redirect_host=$(python3 - "$location" <<'PY'
