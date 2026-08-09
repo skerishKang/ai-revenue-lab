@@ -6,37 +6,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Living Travel — Editorial Desk</title>
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/v2.css">
+  <link rel="stylesheet" href="../assets/operator-v2.css">
 </head>
-<body>
-  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+<body class="lt-v2 lt-operator">
+  <span class="lt-sr-only">Synthetic Preview</span>
 
-  <div class="operator-login-page">
-    <div class="operator-login-card">
-      <h1>Editorial Desk</h1>
-      <p class="subtitle" style="text-align: center; font-size: 0.9rem;">
-        Living Travel 운영자 전용 워크스페이스
-      </p>
+  <main class="lt-op-login">
+    <section class="lt-op-login-context">
+      <a href="../index.html" class="lt-op-brand" style="position:absolute;top:1.5rem;left:1.5rem;"><span>LT</span>Living Travel</a>
+      <div class="lt-op-eyebrow" style="color:var(--lt-lime);">Editorial control desk</div>
+      <h1>여행을<br>발행하기 전.</h1>
+      <p>여행자의 취향, 생성된 동선, 출처와 편집 결과를 한 번에 보고 발행 여부를 판단하는 운영자 워크스페이스입니다.</p>
+    </section>
 
-      <div class="notice" style="text-align: left;">
-        <strong>Synthetic Preview</strong><br>
-        이 화면은 제품 검토용 가상 데이터로 구성되며 실제 인증을 수행하지 않습니다.
-      </div>
-
+    <section class="lt-op-login-form">
+      <div class="lt-op-eyebrow">Operator access</div>
+      <h2>Editorial Desk</h2>
+      <p class="lt-op-deck" style="margin-bottom:.5rem;">정적 검토 화면에서는 실제 인증을 수행하지 않습니다.</p>
       <form method="post" action="#" onsubmit="return false;">
         <input type="hidden" name="csrf_token" value="preview-csrf-token">
         <label for="secret">Operator Secret</label>
-        <input type="password" id="secret" name="secret" required autocomplete="off"
-               value="preview-operator-secret">
-        <p class="small" style="margin-top: -0.5rem; margin-bottom: 1rem;">
-          ※ 정적 프리뷰: 실제 인증 없이 <a href="dashboard.html">대시보드</a>로 이동합니다.
-        </p>
-        <a href="dashboard.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Login</a>
+        <input type="password" id="secret" name="secret" required autocomplete="off" value="preview-operator-secret">
+        <a href="dashboard.html" class="btn btn-primary">Login <span aria-hidden="true">→</span></a>
       </form>
-
-      <div style="text-align: center; margin-top: 1rem;">
-        <a href="../index.html" class="hero-operator-link">← Preview Home</a>
-      </div>
-    </div>
-  </div>
+      <p class="lt-qa-note" style="margin-top:1rem;">Preview fixture · 실제 backend/database 변경 없음</p>
+    </section>
+  </main>
 </body>
 </html>
