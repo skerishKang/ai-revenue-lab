@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+:root {
+  --paper: #f2ead9;
+  --paper-light: #fbf7ed;
+  --paper-deep: #ded0b6;
+  --ink: #171510;
+  --ink-soft: #4a453b;
+  --line: #9f9279;
+  --line-soft: rgba(23, 21, 16, 0.2);
+  --accent: #d8492f;
+  --accent-deep: #a92d1e;
+  --annotation: #1f6075;
+  --annotation-soft: #d8e6e7;
+  --olive: #5d6546;
+  --shadow: 0 22px 70px rgba(42, 33, 18, 0.16);
+  --serif: "Iowan Old Style", "Palatino Linotype", "Noto Serif KR", "Nanum Myeongjo", Georgia, serif;
+  --sans: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --page-max: 1440px;
+  --content-max: 1240px;
+  --rule: 1px solid var(--line-soft);
+  --motion-fast: 180ms;
+  --motion-medium: 360ms;
+  --motion-echo: 680ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 1ms;
+    --motion-medium: 1ms;
+    --motion-echo: 1ms;
+  }
+}
