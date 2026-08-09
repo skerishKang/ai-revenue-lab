@@ -31,8 +31,8 @@ module.exports = defineConfig({
   ],
   webServer: {
     command: process.platform === 'win32'
-      ? 'python -m http.server 4173'
-      : 'python3 -m http.server 4173',
+      ? 'python tests/dev_server.py'
+      : 'python3 tests/dev_server.py',
     url: 'http://127.0.0.1:4173',
     timeout: 10000,
     reuseExistingServer: true,
