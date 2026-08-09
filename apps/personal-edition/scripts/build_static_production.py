@@ -57,6 +57,10 @@ def _production_post_process(html: str) -> str:
             '<meta name="robots" content="noindex,nofollow">\n<meta name="viewport"',
             1,
         )
+    html = html.replace(
+        'href="/preview/participant/empty/" data-product-guide="true"',
+        'href="/guide/" data-product-guide="true"',
+    )
     html = html.replace("</head>", f"{_PRODUCTION_GUARD_CSS}\n</head>", 1)
     return html
 
