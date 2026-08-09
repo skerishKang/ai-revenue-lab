@@ -1,4 +1,4 @@
-name: Deploy B1 B2 Guides 465
+name: Deploy B1 B2 B4 Guides 465
 
 on:
   pull_request:
@@ -14,13 +14,15 @@ jobs:
   deploy:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
-      EXPECTED_SHA: 8af20f123923e5a2b4b1dab556a596fb0fffc169
+      EXPECTED_SHA: 7bc81e7a5a21d772449a4f94466fd88f855f0c4d
       B1_PROJECT: ai-revenue-personal-edition
       B2_PROJECT: ai-revenue-living-travel
+      B4_PROJECT: ai-revenue-living-learning
       B1_URL: https://ai-revenue-personal-edition.pages.dev
       B2_URL: https://ai-revenue-living-travel.pages.dev
+      B4_URL: https://ai-revenue-living-learning.pages.dev
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
@@ -34,10 +36,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assert exact main
+      - name: Assert exact current main
         run: |
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
+          echo "remote_main=$remote_main"
           test "$remote_main" = "$EXPECTED_SHA"
       - name: Build B1 Production with guide
         working-directory: apps/personal-edition
@@ -48,36 +51,39 @@ jobs:
           grep -q 'Guide · 30 seconds' dist-preview/guide/index.html
           grep -q '/guide/' dist-preview/index.html
           if grep -q 'UI Preview · Synthetic data · No persistence' dist-preview/guide/index.html; then exit 1; fi
-      - name: Verify B2 guide bytes
+      - name: Verify B2 and B4 guide bytes
         run: |
           test -f apps/living-travel/pages-preview/site/guide.html
           grep -q 'Guide · 30 seconds' apps/living-travel/pages-preview/site/guide.html
           grep -q 'href="guide.html"' apps/living-travel/pages-preview/site/index.html
-      - name: Deploy B1 exact main
-        working-directory: apps/personal-edition
+          test -f apps/living-learning/pages-preview/guide/index.html
+          grep -q 'Guide · 30 seconds' apps/living-learning/pages-preview/guide/index.html
+          grep -q 'href="/guide/"' apps/living-learning/pages-preview/index.html
+      - name: Deploy exact main review surfaces
         run: |
-          npx --yes wrangler@latest pages deploy dist-preview --project-name "$B1_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B1 guide exact main owner review'
-      - name: Deploy B2 exact main
-        run: |
+          npx --yes wrangler@latest pages deploy apps/personal-edition/dist-preview --project-name "$B1_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B1 guide exact main owner review'
           npx --yes wrangler@latest pages deploy apps/living-travel/pages-preview/site --project-name "$B2_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B2 guide exact main owner review'
+          npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview --project-name "$B4_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B4 guide exact main owner review'
       - name: Verify canonical guide surfaces
+        shell: bash
         run: |
-          b1=0
-          for i in $(seq 1 30); do
-            code=$(curl -L -sS --max-time 20 -o /tmp/b1-guide.html -w '%{http_code}' "$B1_URL/guide/" || true)
-            if [[ "$code" == 200 ]] && grep -q 'Guide · 30 seconds' /tmp/b1-guide.html && grep -q 'Personal Edition은' /tmp/b1-guide.html; then b1=1; break; fi
-            sleep 3
-          done
-          test "$b1" = 1
-          b2=0
-          for i in $(seq 1 30); do
-            code=$(curl -L -sS --max-time 20 -o /tmp/b2-guide.html -w '%{http_code}' "$B2_URL/guide.html" || true)
-            if [[ "$code" == 200 ]] && grep -q 'Guide · 30 seconds' /tmp/b2-guide.html && grep -q 'Living Travel은' /tmp/b2-guide.html; then b2=1; break; fi
-            sleep 3
-          done
-          test "$b2" = 1
+          verify() {
+            url="$1"; marker1="$2"; marker2="$3"; out="$4"; ok=0
+            for i in $(seq 1 30); do
+              code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url" || true)
+              echo "$url poll=$i http=$code"
+              if [[ "$code" == 200 ]] && grep -q "$marker1" "$out" && grep -q "$marker2" "$out"; then ok=1; break; fi
+              sleep 3
+            done
+            test "$ok" = 1
+          }
+          verify "$B1_URL/guide/" 'Guide · 30 seconds' 'Personal Edition은' /tmp/b1-guide.html
+          verify "$B2_URL/guide.html" 'Guide · 30 seconds' 'Living Travel은' /tmp/b2-guide.html
+          verify "$B4_URL/guide/" 'Guide · 30 seconds' '다음 수업이 나에게 맞게' /tmp/b4-guide.html
           curl -L -sS --max-time 20 "$B1_URL/" > /tmp/b1-root.html
           curl -L -sS --max-time 20 "$B2_URL/" > /tmp/b2-root.html
+          curl -L -sS --max-time 20 "$B4_URL/" > /tmp/b4-root.html
           grep -q '/guide/' /tmp/b1-root.html
           grep -q 'guide.html' /tmp/b2-root.html
-          echo 'B1_B2_GUIDES_PUBLIC_VERIFIED=1'
+          grep -q '/guide/' /tmp/b4-root.html
+          echo 'B1_B2_B4_GUIDES_PUBLIC_VERIFIED=1'
