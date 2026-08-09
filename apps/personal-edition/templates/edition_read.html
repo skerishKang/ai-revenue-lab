@@ -4,7 +4,7 @@
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <article class="edition-article-v2">
   <header class="edition-opening-spread-v2">
-    <div class="edition-cover-panel-v2">
+    <div class="edition-cover edition-cover-panel-v2" style="margin-bottom:0">
       <div class="edition-object-v2" aria-hidden="true">
         <span class="cover-eyebrow">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
         <span class="cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</span>
