@@ -20,6 +20,50 @@ test.describe('Portfolio Console Business Launcher', () => {
     await expect(summary).toContainText('미배포 9');
   });
 
+  test('desktop launcher authority, phase and action columns share fixed axes', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1100 });
+
+    const rows = [1, 5, 6].map((number) => page.locator(`.biz-item[data-biz-number="${number}"]`));
+    const boxes = [];
+    for (const row of rows) {
+      boxes.push({
+        auth: await row.locator('.biz-auth').boundingBox(),
+        phases: await row.locator('.biz-phase-group').boundingBox(),
+        actions: await row.locator('.biz-launch-actions').boundingBox(),
+      });
+    }
+
+    for (const key of ['auth', 'phases', 'actions']) {
+      expect(boxes[0][key]).not.toBeNull();
+      for (const box of boxes.slice(1)) {
+        expect(Math.abs(box[key].x - boxes[0][key].x)).toBeLessThanOrEqual(1);
+        expect(Math.abs(box[key].width - boxes[0][key].width)).toBeLessThanOrEqual(1);
+      }
+    }
+
+    expect(boxes[0].auth.width).toBeGreaterThanOrEqual(115);
+    expect(boxes[0].phases.width).toBeGreaterThanOrEqual(319);
+    expect(boxes[0].actions.width).toBeGreaterThanOrEqual(155);
+  });
+
+  test('desktop phase badges align internally across rows', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1100 });
+
+    const first = page.locator('.biz-item[data-biz-number="1"] .biz-phase-badge');
+    const sixth = page.locator('.biz-item[data-biz-number="6"] .biz-phase-badge');
+    await expect(first).toHaveCount(3);
+    await expect(sixth).toHaveCount(3);
+
+    for (let index = 0; index < 3; index += 1) {
+      const a = await first.nth(index).boundingBox();
+      const b = await sixth.nth(index).boundingBox();
+      expect(a).not.toBeNull();
+      expect(b).not.toBeNull();
+      expect(Math.abs(a.x - b.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(a.width - b.width)).toBeLessThanOrEqual(1);
+    }
+  });
+
   test('canonical numbered review surfaces are linked directly', async ({ page }) => {
     const expectations = [
       [6, 'https://06-world-feed.pages.dev/'],
