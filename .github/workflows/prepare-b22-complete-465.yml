@@ -1,0 +1,49 @@
+name: Prepare B22 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/prepare-b22-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/prepare-b22-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize approved B22 UI plus existing UX on exact main
+        shell: bash
+        env:
+          EXPECTED_MAIN: d0556283ebbb7a319be09c0226686af96fd7af98
+          TARGET_BRANCH: feat/b22-personal-media-studio-complete-465
+          UI_BRANCH: feat/business-22-personal-media-studio-ui-223
+          UX_BRANCH: feat/business-22-personal-media-studio-ux-396
+          SCOPE: reference/business-22-personal-media-studio-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
+          git fetch origin "$UI_BRANCH" "$UX_BRANCH"
+          test "$(git rev-parse origin/$UI_BRANCH)" = e43da95f7e59d1800cd1f182c2c835ab9a59456b
+          test "$(git rev-parse origin/$UX_BRANCH)" = 9e42eb6641fa8f1d662db263a00e27e2597ace4e
+          if git ls-tree -r --name-only HEAD -- "$SCOPE" | grep -q .; then
+            echo 'B22 scope unexpectedly exists on current main; refusing overwrite' >&2
+            exit 1
+          fi
+          git switch -c "$TARGET_BRANCH"
+          git checkout "origin/$UI_BRANCH" -- "$SCOPE"
+          git checkout "origin/$UX_BRANCH" -- "$SCOPE/ux.html"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$SCOPE"
+          git diff --cached --check
+          git commit -m 'feat(b22): integrate approved media-studio UI and production UX'
+          git push origin "$TARGET_BRANCH"
+          echo B22_PREPARE_PASS=1
