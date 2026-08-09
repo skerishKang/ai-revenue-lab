@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: numbered-pages-migration-396
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   migrate:
@@ -54,7 +54,7 @@ jobs:
             prod_id=''
             while :; do
               rounds=$((rounds + 1))
-              test "${rounds}" -le 20 || {
+              test "${rounds}" -le 30 || {
                 echo "${project}: deployment cleanup exceeded safety round limit" >&2
                 return 1
               }
@@ -72,22 +72,42 @@ jobs:
                 return 0
               fi
 
-              progressed=0
+              rm -rf /tmp/cf-deploy-delete
+              mkdir -p /tmp/cf-deploy-delete
+              pids=''
               while IFS= read -r deployment_id; do
                 test -n "${deployment_id}" || continue
-                npx --yes wrangler@4 pages deployment delete "${deployment_id}" \
-                  --project-name "${project}" --force >/tmp/wrangler-del.log 2>&1 || true
-                if grep -q 'Successfully deleted' /tmp/wrangler-del.log; then
+                (
+                  code="$(curl -sS -o "/tmp/cf-deploy-delete/${deployment_id}.json" -w '%{http_code}' -X DELETE \
+                    -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                    "${api_base}/${project}/deployments/${deployment_id}?force=true" || true)"
+                  printf '%s' "${code}" > "/tmp/cf-deploy-delete/${deployment_id}.code"
+                ) &
+                pids="${pids} $!"
+              done <<< "${to_delete}"
+
+              for pid in ${pids}; do
+                wait "${pid}" || true
+              done
+
+              progressed=0
+              detected_prod=''
+              while IFS= read -r deployment_id; do
+                test -n "${deployment_id}" || continue
+                code="$(cat "/tmp/cf-deploy-delete/${deployment_id}.code" 2>/dev/null || true)"
+                if test "${code}" = '200' || test "${code}" = '204'; then
                   progressed=$((progressed + 1))
-                elif grep -qi 'active production deployment' /tmp/wrangler-del.log; then
-                  prod_id="${deployment_id}"
+                elif grep -qi 'production deployment\|latest deployment\|cannot be deleted' "/tmp/cf-deploy-delete/${deployment_id}.json" 2>/dev/null; then
+                  detected_prod="${deployment_id}"
                 fi
               done <<< "${to_delete}"
 
+              test -n "${detected_prod}" && prod_id="${detected_prod}"
               if test "${progressed}" -eq 0 && test -z "${prod_id}"; then
-                tail -50 /tmp/wrangler-del.log >&2 || true
+                echo "${project}: parallel deployment cleanup made no progress" >&2
                 return 1
               fi
+              echo "${project}: deployment cleanup round ${rounds}, deleted=${progressed}, protected_prod=${prod_id:-unknown}"
             done
           }
 
