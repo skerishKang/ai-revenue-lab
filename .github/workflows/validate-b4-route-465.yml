@@ -1,0 +1,28 @@
+name: Validate B4 Guide Route 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/living-learning/pages-preview/**'
+      - '.github/workflows/validate-b4-route-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'fix/b4-guide-route-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pytest>=8,<9'
+      - name: Validate explicit static guide route
+        run: |
+          python -m pytest apps/living-learning/pages-preview/test_static_preview.py -q
+          test -f apps/living-learning/pages-preview/guide/index.html
+          grep -q 'href="/guide/index.html"' apps/living-learning/pages-preview/index.html
+          git diff --check
+          echo 'B4_EXPLICIT_GUIDE_ROUTE_PASS=1'
