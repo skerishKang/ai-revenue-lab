@@ -53,6 +53,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Korean font for visual QA
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
