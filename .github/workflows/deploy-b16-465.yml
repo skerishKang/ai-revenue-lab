@@ -1,0 +1,52 @@
+name: Deploy B16 Numbered Canonical 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b16-465.yml'
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b16-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: 2df873ae5825704c17c8e57246430f7e2b95d934
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact current main and canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/16-personal-sports")
+          echo "16-personal-sports HTTP=$code"; test "$code" = 200
+      - name: Deploy exact-main bytes
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          sleep 25
+          npx --yes wrangler@latest pages deploy reference/business-16-personal-sports-v1 --project-name 16-personal-sports --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B16 latest main UI UX guide' --commit-dirty=true
+      - name: Verify canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 25); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify https://16-personal-sports.pages.dev/index.html reference/business-16-personal-sports-v1/index.html B16_ROOT
+          verify https://16-personal-sports.pages.dev/ux.html reference/business-16-personal-sports-v1/ux.html B16_UX
+          verify https://16-personal-sports.pages.dev/guide.html reference/business-16-personal-sports-v1/guide.html B16_GUIDE
+          echo B16_NUMBERED_CANONICAL_VERIFIED=1
