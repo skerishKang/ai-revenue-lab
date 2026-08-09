@@ -106,7 +106,7 @@ jobs:
               done
               if test "${create_ok}" = true; then
                 :
-              elif jq -e '.errors[].code == 8000027 or (.errors[]?.message // "") | test("limit")' /tmp/create.json >/dev/null 2>&1; then
+              elif grep -q 'limit of projects\|8000027' /tmp/create.json 2>/dev/null; then
                 reason='cloudflare_project_limit_reached'
               else
                 reason="project_create_http_${create_code}"
