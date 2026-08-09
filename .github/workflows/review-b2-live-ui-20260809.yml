@@ -37,38 +37,37 @@ jobs:
           import fs from 'node:fs';
           const root = process.env.B2_URL;
           const browser = await chromium.launch({headless:true});
-          const viewports = [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          const viewports=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          const routeDefs=[
+            ['root',''],
+            ['traveler','traveler/enter.html'],
+            ['operator','operator/login.html'],
+            ['demo-intro','demo/intro.html'],
+            ['demo-home','demo/traveler-home.html'],
+            ['demo-edition','demo/edition.html'],
+            ['demo-comparison','demo/comparison.html']
+          ];
           const report=[];
-          for (const v of viewports) {
-            const rootPage = await browser.newPage({viewport:{width:v.width,height:v.height}});
-            await rootPage.goto(root,{waitUntil:'networkidle',timeout:60000});
-            await rootPage.waitForTimeout(800);
-            const hrefs = await rootPage.locator('a').evaluateAll(as => as.map(a=>({text:(a.textContent||'').trim(),href:a.href})));
-            const traveler = hrefs.find(x=>x.text.includes('Traveler'))?.href;
-            const operator = hrefs.find(x=>x.text.includes('Operator'))?.href;
-            await rootPage.close();
-            const routes=[{name:'root',url:root},{name:'traveler',url:traveler},{name:'operator',url:operator}].filter(x=>x.url);
-            for (const r of routes) {
+          for(const v of viewports){
+            for(const [name,path] of routeDefs){
               const page=await browser.newPage({viewport:{width:v.width,height:v.height}});
               const consoleErrors=[]; const pageErrors=[];
               page.on('console',m=>{if(m.type()==='error') consoleErrors.push(m.text())});
               page.on('pageerror',e=>pageErrors.push(String(e)));
-              const response=await page.goto(r.url,{waitUntil:'networkidle',timeout:60000});
-              await page.waitForTimeout(900);
-              await page.screenshot({path:`b2-live-review/${v.name}-${r.name}.png`,fullPage:true});
-              const text=(await page.locator('body').innerText()).slice(0,12000);
-              fs.writeFileSync(`b2-live-review/${v.name}-${r.name}.txt`,text);
+              const url=new URL(path,root).href;
+              const response=await page.goto(url,{waitUntil:'networkidle',timeout:60000});
+              await page.waitForTimeout(700);
+              await page.screenshot({path:`b2-live-review/${v.name}-${name}.png`,fullPage:true});
+              fs.writeFileSync(`b2-live-review/${v.name}-${name}.txt`,(await page.locator('body').innerText()).slice(0,12000));
               const metrics=await page.evaluate(()=>({
                 scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,
                 scrollHeight:document.documentElement.scrollHeight,clientHeight:document.documentElement.clientHeight,
                 h1:[...document.querySelectorAll('h1')].map(x=>x.textContent?.trim()).filter(Boolean),
                 headings:[...document.querySelectorAll('h2,h3')].map(x=>x.textContent?.trim()).filter(Boolean).slice(0,30),
                 actions:[...document.querySelectorAll('button,a')].map(x=>x.textContent?.trim()).filter(Boolean).slice(0,80),
-                imageCount:document.images.length,
-                bodyBg:getComputedStyle(document.body).backgroundColor,
-                bodyFont:getComputedStyle(document.body).fontFamily
+                imageCount:document.images.length,bodyBg:getComputedStyle(document.body).backgroundColor,bodyFont:getComputedStyle(document.body).fontFamily
               }));
-              report.push({viewport:v.name,route:r.name,url:r.url,status:response?.status(),title:await page.title(),consoleErrors,pageErrors,metrics});
+              report.push({viewport:v.name,route:name,url,status:response?.status(),title:await page.title(),consoleErrors,pageErrors,metrics});
               await page.close();
             }
           }
