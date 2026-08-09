@@ -54,3 +54,47 @@ jobs:
 
       - name: Check whitespace
         run: git -C "${{ github.workspace }}" diff --check
+
+  visual-evidence:
+    name: 3-viewport browser evidence
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EVIDENCE_DIR: ${{ runner.temp }}/personal-edition-visual-${{ github.event.pull_request.head.sha }}
+    defaults:
+      run:
+        working-directory: apps/personal-edition
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/personal-edition/pyproject.toml
+
+      - name: Install dependencies and Chromium
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run exact-head browser validator
+        run: |
+          python docs/visual-review/final/validate_final.py --output-dir "$EVIDENCE_DIR"
+
+      - name: Upload deterministic visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: personal-edition-visual-${{ github.event.pull_request.head.sha }}
+          path: ${{ env.EVIDENCE_DIR }}
+          if-no-files-found: warn
+          retention-days: 30
