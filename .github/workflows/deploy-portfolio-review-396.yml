@@ -1,0 +1,154 @@
+name: Deploy portfolio UX reviews 396
+
+on:
+  push:
+    branches:
+      - ops/portfolio-review-deploy-396
+    paths:
+      - .github/workflows/deploy-portfolio-review-396.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-review-deploy-396
+  cancel-in-progress: false
+
+jobs:
+  deploy-review:
+    name: Deploy B${{ matrix.id }} review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - { id: '07', pr: '397', sha: '9e4f3fa9f7e9b398abf6a4e87b3f2c95eb248802', dir: 'reference/business-07-personal-meaning-map-v1', project: 'arl-review-b07-personal-meaning-map' }
+          - { id: '08', pr: '398', sha: '72b478a5f51f76522a689dfd80321afb75b866ee', dir: 'reference/business-08-family-newspaper-v1', project: 'arl-review-b08-family-newspaper' }
+          - { id: '09', pr: '399', sha: '26bdf6e5c8d44921cecedafa3a8568ceb81ebf72', dir: 'reference/business-09-personalized-childrens-story-v1', project: 'arl-review-b09-personalized-childrens-story' }
+          - { id: '10', pr: '400', sha: 'ea40906005366b6356904ad10a93981d823b0f63', dir: 'reference/business-10-fan-magazine-v1', project: 'arl-review-b10-fan-magazine' }
+          - { id: '11', pr: '401', sha: '282cd9757d820ba3c496a083c1bea72fd18f1045', dir: 'reference/business-11-language-learning-magazine-v1', project: 'arl-review-b11-language-learning-magazine' }
+          - { id: '12', pr: '402', sha: 'ac70446ace1bbba3ab02a49c637dcd205add93dc', dir: 'reference/business-12-creator-mini-media-v1', project: 'arl-review-b12-creator-mini-media' }
+          - { id: '15', pr: '403', sha: '8b490afaa3808860c05dc6f0aa4e18d4ae26b1e0', dir: 'reference/business-15-global-ai-newsroom-v1', project: 'arl-review-b15-global-ai-newsroom' }
+          - { id: '16', pr: '404', sha: '8f4db08b6d908fa073716a1e48bceb28fdafa91f', dir: 'reference/business-16-personal-sports-v1', project: 'arl-review-b16-personal-sports' }
+          - { id: '17', pr: '405', sha: 'fecfb4ce306870b6e035a4e425c7e9c2e86b326c', dir: 'reference/business-17-local-shop-magazine-v1', project: 'arl-review-b17-local-shop-magazine' }
+          - { id: '18', pr: '406', sha: '2014020c65f80d206520f14bcc10190850eafa7b', dir: 'reference/business-18-personal-audio-channel-v1', project: 'arl-review-b18-personal-audio-channel' }
+          - { id: '19', pr: '407', sha: '33b1f30b54d23a91ed6f0a257977741ddf8cbace', dir: 'reference/business-19-personal-memory-book-v1', project: 'arl-review-b19-personal-memory-book' }
+          - { id: '20', pr: '408', sha: '55ba9e9b4d63494428addf13e644b57581228aeb', dir: 'reference/business-20-personal-memory-novel-v1', project: 'arl-review-b20-personal-memory-novel' }
+          - { id: '21', pr: '409', sha: '5f18d9a727c9fe4e1ea492657dfd72189b3f2a73', dir: 'reference/business-21-founder-strategy-letter-v1', project: 'arl-review-b21-founder-strategy-letter' }
+          - { id: '22', pr: '410', sha: '9e42eb6641fa8f1d662db263a00e27e2597ace4e', dir: 'reference/business-22-personal-media-studio-v1', project: 'arl-review-b22-personal-media-studio' }
+          - { id: '33', pr: '411', sha: 'c034ccae74d038bb3c5517c62e3c290db5bffc2a', dir: 'reference/business-33-research-memory-v1', project: 'arl-review-b33-research-memory' }
+          - { id: '34', pr: '412', sha: '4e77ce30ffc266997ba26fa55fd835c6fca32c85', dir: 'reference/business-34-ai-dubbing-studio-v1', project: 'arl-review-b34-ai-dubbing-studio' }
+          - { id: '36', pr: '413', sha: '6d0e904b33b68754b61b45568389c7a67b7124eb', dir: 'reference/business-36-ai-women-safety-v1', project: 'arl-review-b36-ai-women-safety' }
+          - { id: '37', pr: '414', sha: '03d43309500aa8be07204fa0e6d6eaf602bbc23d', dir: 'reference/business-37-ai-safe-route-v1', project: 'arl-review-b37-ai-safe-route' }
+          - { id: '38', pr: '415', sha: 'd24aeb46cc74d5b7c9fa70f270345d92c133b000', dir: 'reference/business-38-ai-exercise-coach-v1', project: 'arl-review-b38-ai-exercise-coach' }
+          - { id: '39', pr: '416', sha: 'f62149fee46dc6bb7c9a26a2c20850b925342d43', dir: 'reference/business-39-112-real-time-interpretation-v1', project: 'arl-review-b39-112-real-time-interpretation' }
+          - { id: '40', pr: '417', sha: '82e71599ef539443a6a97fb97d038bc962b660cd', dir: 'reference/business-40-emergency-urgency-ai-v1', project: 'arl-review-b40-emergency-urgency-ai' }
+          - { id: '41', pr: '418', sha: 'e59e82204be94f2f0c49bb9fce01a9c81711ed5e', dir: 'reference/business-41-foreign-emergency-assistant-v1', project: 'arl-review-b41-foreign-emergency-assistant' }
+          - { id: '42', pr: '419', sha: '04789d43cf99c94a9c4a3a4c39f4c501c74c128d', dir: 'reference/business-42-ai-development-control-tower-v1', project: 'arl-review-b42-ai-development-control-tower' }
+          - { id: '43', pr: '420', sha: '2cb76c6a7e27b2d7c74c75113ec24ecd4164978f', dir: 'reference/business-43-ai-software-factory-v1', project: 'arl-review-b43-ai-software-factory' }
+          - { id: '45', pr: '421', sha: 'b649a824839003145090fe870ded899d551d2733', dir: 'reference/business-45-ai-content-engine-v1', project: 'arl-review-b45-ai-content-engine' }
+          - { id: '46', pr: '422', sha: '2747d64c2387bb6f76dda6e3c619604150d7dd21', dir: 'reference/business-46-ai-personalization-engine-v1', project: 'arl-review-b46-ai-personalization-engine' }
+          - { id: '47', pr: '423', sha: '744a0c9ee66da73e774c4fa24fe12a5bad428b80', dir: 'reference/business-47-real-time-feedback-engine-v1', project: 'arl-review-b47-real-time-feedback-engine' }
+          - { id: '48', pr: '424', sha: '3e662d330a8b30383d4bfc1f8b0319a3e9e2382e', dir: 'reference/business-48-ai-verification-engine-v1', project: 'arl-review-b48-ai-verification-engine' }
+          - { id: '49', pr: '425', sha: '84d24d3665e91413f36822697d6cd7905035781e', dir: 'reference/business-49-public-data-connector-hub-v1', project: 'arl-review-b49-public-data-connector-hub' }
+          - { id: '51', pr: '426', sha: '1accf2929dac862233434aed3b512335b37a55c3', dir: 'reference/business-51-ai-workflow-marketplace-v1', project: 'arl-review-b51-ai-workflow-marketplace' }
+          - { id: '52', pr: '427', sha: '19e78810554e5680f925af8c807254b5ea7baba1', dir: 'reference/business-52-scheduled-agent-operations-v1', project: 'arl-review-b52-scheduled-agent-operations' }
+          - { id: '53', pr: '428', sha: 'b4e8f962e51dd298174d0a070dcfb5759f9935c6', dir: 'reference/business-53-embedded-ai-sdk-v1', project: 'arl-review-b53-embedded-ai-sdk' }
+          - { id: '55', pr: '429', sha: '3e3eb0aff6eeb198b342be59b312dd265c3ced55', dir: 'reference/business-55-local-ai-fleet-v1', project: 'arl-review-b55-local-ai-fleet' }
+          - { id: '57', pr: '430', sha: '930a8dc4c2d13c2537c723ee76eec8217983d8e3', dir: 'reference/business-57-classic-literature-translation-studio-v1', project: 'arl-review-b57-classic-literature-translation' }
+          - { id: '58', pr: '431', sha: '135a0cd0901ca132346ad2d1e1537d1c6fef8444', dir: 'reference/business-58-personal-writing-voice-studio-v1', project: 'arl-review-b58-personal-writing-voice' }
+
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      SOURCE_DIR: ${{ matrix.dir }}
+      PROJECT: ${{ matrix.project }}
+      APPROVED_SHA: ${{ matrix.sha }}
+      BUSINESS_ID: ${{ matrix.id }}
+      APPROVAL_PR: ${{ matrix.pr }}
+
+    steps:
+      - name: Require Cloudflare credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+
+      - name: Check out exact review head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: ${{ matrix.dir }}
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source and UX entry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${APPROVED_SHA}"
+          test -f "${SOURCE_DIR}/index.html"
+          test -f "${SOURCE_DIR}/ux.html"
+          test -s "${SOURCE_DIR}/ux.html"
+
+      - name: Ensure dedicated review Pages project
+        shell: bash
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          code="$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${api}")"
+          if test "${code}" = "404"; then
+            create_code="$(curl -sS -o /tmp/create.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data "{\"name\":\"${PROJECT}\",\"production_branch\":\"main\"}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects")"
+            test "${create_code}" = "200" -o "${create_code}" = "201"
+            jq -e '.success == true' /tmp/create.json >/dev/null
+          else
+            test "${code}" = "200"
+            jq -e '.success == true' /tmp/project.json >/dev/null
+          fi
+
+      - name: Deploy exact head to review project
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy "${SOURCE_DIR}" \
+            --project-name "${PROJECT}" \
+            --branch main \
+            --commit-hash "${APPROVED_SHA}" \
+            --commit-message "B${BUSINESS_ID} review UX PR #${APPROVAL_PR}" \
+            --commit-dirty=false
+
+      - name: Verify public UX bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(sha256sum "${SOURCE_DIR}/ux.html" | awk '{print $1}')"
+          url="https://${PROJECT}.pages.dev/ux.html"
+          ok=false
+          for attempt in $(seq 1 12); do
+            code="$(curl -L -sS -o /tmp/public.html -w '%{http_code}' "${url}" || true)"
+            if test "${code}" = "200"; then
+              actual="$(sha256sum /tmp/public.html | awk '{print $1}')"
+              if test "${actual}" = "${expected}"; then
+                ok=true
+                break
+              fi
+            fi
+            sleep 3
+          done
+          test "${ok}" = true
+          {
+            echo "## B${BUSINESS_ID} review deployment"
+            echo "- PR: #${APPROVAL_PR}"
+            echo "- exact head: \`${APPROVED_SHA}\`"
+            echo "- project: \`${PROJECT}\`"
+            echo "- URL: ${url}"
+            echo "- ux.html public-byte verification: PASS"
+          } >> "${GITHUB_STEP_SUMMARY}"
