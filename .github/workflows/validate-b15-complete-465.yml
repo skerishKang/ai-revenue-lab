@@ -42,7 +42,7 @@ jobs:
               assert marker in ux, marker
           for marker in ('Guide · 30 seconds','DESK · 오늘의 데스크','SOURCES · 출처 확인','COMPARE · 주장 비교','BRIEF · 내 브리핑','REVIEW · 검토 완료','./ux.html#desk'):
               assert marker in guide, marker
-          assert './guide.html' in js and 'data.firstUseGuide' in js
+          assert './guide.html' in js and 'dataset.firstUseGuide' in js
           for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
               assert forbidden not in ux+'\n'+guide+'\n'+js, forbidden
           for html in ('index.html','guide.html'):
