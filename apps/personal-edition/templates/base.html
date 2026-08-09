@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="/static/guide-20260810.css?v=b1-guide-20260810">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
+{% set _guide_href = '/preview/participant/empty/' if is_preview is defined and is_preview else '/guide/' %}
 <body data-ui-version="b1-personal-edition-v3-454" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
 {% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
 <header class="site-header v3-site-header">
@@ -27,7 +28,7 @@
     {% elif participant is defined and participant %}
     <a href="{{ _nav_base }}/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
     <div class="nav-links v3-nav-links">
-      <a href="/guide/">Guide</a>
+      <a href="{{ _guide_href }}" data-product-guide="true">Guide</a>
       <a href="{{ _nav_base }}/">Library</a>
       <a href="{{ _nav_base }}/input">Write</a>
       <a href="{{ _nav_base }}/history">Archive</a>
@@ -40,7 +41,7 @@
     </div>
     {% else %}
     <a href="/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
-    <div class="v3-nav-caption"><a href="/guide/">30초 사용법</a>Private · Human reviewed</div>
+    <div class="v3-nav-caption"><a href="{{ _guide_href }}" data-product-guide="true">30초 사용법</a>Private · Human reviewed</div>
     {% endif %}
   </nav>
 </header>
