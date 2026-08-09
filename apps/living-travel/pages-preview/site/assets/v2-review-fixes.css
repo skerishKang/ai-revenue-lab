@@ -16,7 +16,7 @@
 }
 .lt-pref-panel .demo-pref-group {
   display: grid;
-  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  grid-template-columns: minmax(190px, 220px) minmax(0, 1fr);
   gap: clamp(1.25rem, 3vw, 3rem);
   align-items: start;
   padding: 1.3rem 0 1.45rem !important;
@@ -33,6 +33,7 @@
   letter-spacing: .08em !important;
   text-transform: uppercase;
   color: var(--lt-sea) !important;
+  word-break: keep-all;
 }
 .lt-pref-panel .demo-pref-options {
   display: grid !important;
@@ -141,13 +142,14 @@
 }
 .lt-assembly-stop strong {
   display: block;
+  color: #fff !important;
   font-size: 1.02rem;
   line-height: 1.2;
 }
 .lt-assembly-stop span {
   display: block;
   margin-top: .35rem;
-  color: rgba(255,255,255,.52);
+  color: rgba(255,255,255,.58);
   font-size: .72rem;
   line-height: 1.4;
 }
