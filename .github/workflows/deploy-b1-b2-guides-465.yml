@@ -1,65 +1,85 @@
-name: Verify B4 B6 Inspect B8 465
-
+name: Recover B6 Canonical 465
 on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]
     paths:
       - '.github/workflows/deploy-b1-b2-guides-465.yml'
-
 permissions:
   contents: read
-
 jobs:
-  verify:
+  recover:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       EXPECTED_SHA: 03db134d61f054f53b096104e83ba1342337ae9e
-      B4_URL: https://ai-revenue-living-learning.pages.dev
-      B6_URL: https://ai-revenue-world-feed.pages.dev
-      B8_URL: https://ai-revenue-business-08-family-newspaper.pages.dev
+      PROJECT: ai-revenue-world-feed
+      URL: https://ai-revenue-world-feed.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.EXPECTED_SHA }}
           persist-credentials: false
-      - name: Assert exact current main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact current main and production config
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
-      - name: Verify B4 and B6 canonical bytes
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}" > /tmp/project-before.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/project-before.json'))['result']
+          print('PRODUCTION_BRANCH='+str(((p.get('source') or {}).get('config') or {}).get('production_branch')))
+          print('CANONICAL_ID='+str((p.get('canonical_deployment') or {}).get('id')))
+          print('CANONICAL_HASH='+str((((p.get('canonical_deployment') or {}).get('deployment_trigger') or {}).get('metadata') or {}).get('commit_hash')))
+          assert ((p.get('source') or {}).get('config') or {}).get('production_branch') == 'main'
+          PY
+      - name: Redeploy exact main after production-branch propagation
         shell: bash
         run: |
           set -euo pipefail
-          fetch_until_match() {
-            local url="$1" source="$2" out="$3" label="$4" ok=0
-            local expected actual code
+          sleep 5
+          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
+            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B6 exact current-main canonical recovery'
+      - name: Verify canonical source equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify() {
+            local path="$1" source="$2" out="$3" ok=0 expected actual code
             expected=$(sha256sum "$source" | cut -d' ' -f1)
-            echo "$label expected_sha256=$expected"
-            for i in $(seq 1 20); do
-              code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url" || true)
-              actual='none'; [[ -f "$out" ]] && actual=$(sha256sum "$out" | cut -d' ' -f1)
-              echo "$label poll=$i http=$code actual_sha256=$actual"
+            echo "$path expected=$expected"
+            for i in $(seq 1 30); do
+              code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$URL/$path" || true)
+              actual=$(sha256sum "$out" 2>/dev/null | cut -d' ' -f1 || true)
+              echo "$path poll=$i http=$code actual=$actual"
               if [[ "$code" == 200 && "$actual" == "$expected" ]]; then ok=1; break; fi
               sleep 3
             done
             test "$ok" = 1
           }
-          fetch_until_match "$B4_URL/guide.html" apps/living-learning/pages-preview/guide.html /tmp/b4-guide.html B4_GUIDE
-          fetch_until_match "$B4_URL/index.html" apps/living-learning/pages-preview/index.html /tmp/b4-root.html B4_ROOT
-          fetch_until_match "$B6_URL/guide.html" reference/business-06-world-feed-v1/guide.html /tmp/b6-guide.html B6_GUIDE
-          fetch_until_match "$B6_URL/index.html" reference/business-06-world-feed-v1/index.html /tmp/b6-root.html B6_ROOT
-          echo 'B4_B6_CANONICAL_BYTES_VERIFIED=1'
-      - name: Inspect historical B8 canonical URL without mutation
-        shell: bash
-        run: |
-          set -euo pipefail
-          for path in / /guide.html /ux.html; do
-            code=$(curl -L -sS --max-time 20 -o /tmp/b8.out -w '%{http_code}' "$B8_URL$path" || true)
-            echo "B8_URL=$B8_URL$path HTTP=$code SHA256=$(sha256sum /tmp/b8.out 2>/dev/null | cut -d' ' -f1 || true)"
-          done
-          echo 'B8_CANONICAL_INSPECTION_COMPLETE=1'
+          verify guide.html reference/business-06-world-feed-v1/guide.html /tmp/guide.html
+          verify index.html reference/business-06-world-feed-v1/index.html /tmp/index.html
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}" > /tmp/project-after.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/project-after.json'))['result']; d=p.get('canonical_deployment') or {}
+          m=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          print('CANONICAL_ENV='+str(d.get('environment')))
+          print('CANONICAL_ID='+str(d.get('id')))
+          print('CANONICAL_BRANCH='+str(m.get('branch')))
+          print('CANONICAL_HASH='+str(m.get('commit_hash')))
+          assert d.get('environment') == 'production'
+          assert m.get('branch') == 'main'
+          PY
+          echo 'B6_CANONICAL_EXACT_MAIN_VERIFIED=1'
