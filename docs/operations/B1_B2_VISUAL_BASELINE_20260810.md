@@ -27,3 +27,5 @@ Keep the `PLACE → ROUTE → DAY → ADAPT` art direction. Repair product shell
 Businesses 04–22 must be visually re-audited against this owner bar. SVG-heavy static-reference / Visual-Atlas presentation is not considered sufficient merely because historical validators passed. Functional UX work may be reused as a foundation, but weak art direction must be redesigned rather than preserved.
 
 Owner UI approval remains a separate live-Production decision.
+
+Validation checkpoint: the shared B2 shell was materialized onto all traveler-facing static HTML files before the final CI/browser pass.
