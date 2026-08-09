@@ -141,6 +141,15 @@
     }
   });
 
+  const reviewRail = document.querySelector('.review-rail');
+  if (reviewRail) {
+    const productLinks = document.createElement('div');
+    productLinks.setAttribute('aria-label', '제품 사용 링크');
+    productLinks.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:0 4px';
+    productLinks.innerHTML = '<a href="./guide.html" style="color:inherit;font:700 12px system-ui;text-decoration:underline;text-underline-offset:3px">30초 사용법</a><a href="./ux.html" style="color:inherit;font:700 12px system-ui;text-decoration:underline;text-underline-offset:3px">이야기 체험</a>';
+    reviewRail.appendChild(productLinks);
+  }
+
   window.__PERSONALIZED_STORY_REVIEW__ = {
     states: [...stateNames],
     showStateByName(name) {
