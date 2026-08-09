@@ -4,60 +4,41 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 검토 대기</title>
+  <title>Living Travel — 사람의 검토를 기다리는 중</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="../index.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+  </nav>
 
-  <div class="demo-pending-page">
-    <div class="demo-pending-card">
-      <span class="demo-pending-icon">📋</span>
-      <h1>여행판 검토 대기 중</h1>
-      <p class="subtitle" style="margin-bottom:1.5rem;">
-        운영자가 여행판을 검토하고 있습니다.
-      </p>
-
-      <div style="text-align:left;margin-bottom:1.5rem;">
-        <div class="preferences-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="preference-item">
-            <label>여행자</label>
-            <span class="value">여행자 B-014</span>
-          </div>
-          <div class="preference-item">
-            <label>목적지</label>
-            <span class="value">부산</span>
-          </div>
-          <div class="preference-item">
-            <label>기간</label>
-            <span class="value">2박 3일</span>
-          </div>
-          <div class="preference-item">
-            <label>속도</label>
-            <span class="value">천천히</span>
-          </div>
-          <div class="preference-item">
-            <label>관심사</label>
-            <span class="value">골목 · 현지 음식 · 바다</span>
-          </div>
-          <div class="preference-item">
-            <label>분위기</label>
-            <span class="value">조용한 · 로컬 감성</span>
-          </div>
-        </div>
+  <main class="lt-generation">
+    <section class="lt-gen-stage">
+      <div class="lt-step-label" style="color:var(--lt-lime);">03 / Human review</div>
+      <h1>여행판은<br><span>사람을 한 번 거칩니다.</span></h1>
+      <p class="lt-gen-deck">자동으로 만든 장소 목록을 바로 보여주지 않습니다. 취향과 동선이 자연스럽게 이어지는지, 일정이 과밀하지 않은지 검토한 뒤 발행합니다.</p>
+      <div class="lt-gen-network">
+        <div class="lt-gen-node"><code>TRAVELER</code><strong>B-014</strong><span>천천히 · 골목 · 음식 · 바다</span></div>
+        <div class="lt-gen-node"><code>DENSITY</code><strong>2–3 places / day</strong><span>이동보다 체류 우선</span></div>
+        <div class="lt-gen-node"><code>STATUS</code><strong>EDITORIAL REVIEW</strong><span>발행 전 마지막 점검</span></div>
       </div>
+    </section>
 
-      <div class="notice" style="margin-bottom:1.5rem;">
-        <strong>Demo 진행</strong><br>
-        데모에서는 검토 결과가 미리 구성된 시나리오로 진행됩니다. 운영자 화면에서 '발행'을 선택하면 다음 단계로 넘어갑니다.
+    <aside class="lt-gen-rail">
+      <div class="lt-route-card-label">Review checkpoint</div>
+      <ol class="lt-route-stops" style="margin-top:1.5rem;">
+        <li><span><strong>Preferences normalized</strong>취향 신호 정리 완료</span></li>
+        <li><span><strong>Route composed</strong>3일 동선 편집 완료</span></li>
+        <li><span><strong>Human review</strong>현재 단계</span></li>
+      </ol>
+      <div style="display:grid;gap:.65rem;margin-top:2rem;">
+        <a href="traveler-home.html" class="btn btn-accent">검토 완료 상태 보기</a>
+        <a href="../operator/queue.html" class="btn btn-outline" style="color:#fff;">운영자 대기열 보기</a>
       </div>
-
-      <div style="display:flex;gap:0.75rem;flex-direction:column;">
-        <a href="traveler-home.html" class="btn btn-accent" style="width:100%;padding:0.7rem;">검토 완료 상태 보기</a>
-        <a href="../operator/queue.html" class="btn btn-outline" style="width:100%;">운영자 대기열 보기</a>
-      </div>
-    </div>
-  </div>
+    </aside>
+  </main>
 </body>
 </html>
