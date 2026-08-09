@@ -1,0 +1,121 @@
+/* Living Travel persistent traveler shell — 2026-08-10
+   Same information architecture on every traveler-facing surface. */
+.lt-topbar--persistent {
+  min-height: 68px;
+  isolation: isolate;
+}
+
+.lt-nav--persistent {
+  display: flex;
+  align-items: center;
+  gap: clamp(.42rem, 1.15vw, 1rem);
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.lt-nav--persistent .lt-shell-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: .52rem .64rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  text-decoration: none !important;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: -.015em;
+  opacity: .68;
+  transition: opacity .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.lt-nav--persistent .lt-shell-link:hover,
+.lt-nav--persistent .lt-shell-link:focus-visible,
+.lt-nav--persistent .lt-shell-link.is-active {
+  opacity: 1;
+}
+
+.lt-nav--persistent .lt-shell-link.is-active::after {
+  content: "";
+  position: absolute;
+  left: .7rem;
+  right: .7rem;
+  bottom: .22rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.lt-nav--persistent .lt-shell-link.is-guide {
+  padding-inline: .82rem;
+  border-color: color-mix(in srgb, currentColor 46%, transparent);
+  background: color-mix(in srgb, currentColor 7%, transparent);
+  opacity: 1;
+}
+
+.lt-topbar:not(.lt-topbar--light) .lt-nav--persistent .lt-shell-link.is-guide {
+  border-color: rgba(199, 212, 166, .66);
+  color: var(--lt-lime);
+  background: rgba(199, 212, 166, .08);
+}
+
+.lt-nav--persistent .lt-shell-link.is-utility {
+  margin-left: .12rem;
+  opacity: .52;
+}
+
+.lt-nav--persistent .lt-shell-link.is-utility::before {
+  content: "";
+  width: 1px;
+  height: 14px;
+  margin-right: .45rem;
+  background: currentColor;
+  opacity: .28;
+}
+
+@media (max-width: 860px) {
+  .lt-topbar--persistent {
+    gap: .6rem;
+    padding-inline: .8rem;
+  }
+  .lt-wordmark {
+    flex: 0 0 auto;
+    font-size: .66rem;
+    letter-spacing: .09em;
+  }
+  .lt-nav--persistent {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lt-nav--persistent::-webkit-scrollbar { display: none; }
+  .lt-nav--persistent .lt-shell-link {
+    flex: 0 0 auto;
+    font-size: .68rem;
+    padding-inline: .58rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .lt-topbar--persistent {
+    min-height: 62px;
+    padding-inline: .68rem;
+  }
+  .lt-wordmark {
+    width: 32px;
+    overflow: hidden;
+    gap: 0;
+    color: transparent;
+  }
+  .lt-wordmark::before {
+    color: currentColor;
+    color: var(--lt-white);
+    flex: 0 0 30px;
+  }
+  .lt-topbar--light .lt-wordmark::before { color: var(--lt-ink); }
+  .lt-nav--persistent { gap: .24rem; }
+  .lt-nav--persistent .lt-shell-link { min-height: 34px; }
+  .lt-nav--persistent .lt-shell-link.is-utility { display: none; }
+}
