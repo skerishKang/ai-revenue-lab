@@ -1,0 +1,76 @@
+name: Verify B44 Hotfix 436
+
+on:
+  push:
+    branches: [ops/verify-b44-hotfix-436]
+    paths: [.github/workflows/verify-b44-hotfix-436.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PROJECT: ai-revenue-portfolio-console
+      EXPECTED_SHA: 830d3d6d1da6f33cd39cae2b933de0fc44c97bfe
+      PRODUCTION_URL: https://ai-revenue-portfolio-console.pages.dev/
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Wait for exact automatic Production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCOUNT_ID"
+          test -n "$CF_API_TOKEN"
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          matched=0
+          for attempt in $(seq 1 60); do
+            curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" "$base/deployments" > /tmp/d.json
+            python3 - "$EXPECTED_SHA" <<'PY' > /tmp/state.env
+          import json,sys,shlex
+          expected=sys.argv[1]
+          rows=[x for x in json.load(open('/tmp/d.json')).get('result',[]) if x.get('environment')=='production']
+          rows.sort(key=lambda x:x.get('created_on') or '', reverse=True)
+          d=rows[0] if rows else {}
+          meta=(d.get('deployment_trigger') or {}).get('metadata') or {}
+          stage=d.get('latest_stage') or {}
+          vals={
+            'DEPLOYMENT_ID':d.get('id') or '',
+            'SOURCE_SHA':meta.get('commit_hash') or '',
+            'SOURCE_BRANCH':meta.get('branch') or '',
+            'STAGE_NAME':stage.get('name') or '',
+            'STAGE_STATUS':stage.get('status') or '',
+            'CREATED_ON':d.get('created_on') or '',
+            'MODIFIED_ON':d.get('modified_on') or '',
+          }
+          for k,v in vals.items(): print(k+'='+shlex.quote(str(v)))
+          PY
+            source /tmp/state.env
+            echo "attempt=$attempt deployment_id=${DEPLOYMENT_ID:-none} source_sha=${SOURCE_SHA:-none} branch=${SOURCE_BRANCH:-none} stage=${STAGE_NAME:-none}/${STAGE_STATUS:-none} created=${CREATED_ON:-none} modified=${MODIFIED_ON:-none}"
+            if [[ "$SOURCE_SHA" == "$EXPECTED_SHA" && "$STAGE_NAME" == "deploy" && "$STAGE_STATUS" == "success" ]]; then
+              matched=1
+              break
+            fi
+            sleep 10
+          done
+          [[ "$matched" == 1 ]]
+          echo "B44_HOTFIX_PRODUCTION_ACCEPTED=1"
+
+      - name: Verify Access boundary after hotfix
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -sS --max-time 20 -o /tmp/body -D /tmp/headers -w '%{http_code}' "$PRODUCTION_URL")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/{sub(/\r$/,""); print substr($0,index($0,":")+2); exit}' /tmp/headers)
+          host=$(python3 - "$location" <<'PY'
+          import sys,urllib.parse
+          print(urllib.parse.urlsplit(sys.argv[1]).hostname or '')
+          PY
+          )
+          echo "production_http=$code redirect_host=$host"
+          [[ "$code" == "302" ]]
+          [[ "$host" == "limoneai.cloudflareaccess.com" ]]
+          echo "B44_HOTFIX_ACCESS_BOUNDARY_VERIFIED=1"
