@@ -61,6 +61,8 @@ jobs:
           import json
           import os
           import pathlib
+          import time
+          import urllib.error
           import urllib.parse
           import urllib.request
 
@@ -72,38 +74,64 @@ jobs:
               "gukje.jpg": "File:Gukje Market Busan South Korea 02.jpg",
               "seaside.jpg": "File:Busan's seaside.jpg",
           }
+          headers = {
+              "User-Agent": "ai-revenue-lab-b2-asset-import/1.0 (GitHub Actions; contact via repository)",
+              "Accept": "image/avif,image/webp,image/jpeg,*/*",
+          }
+
+          query = urllib.parse.urlencode({
+              "action": "query",
+              "format": "json",
+              "prop": "imageinfo",
+              "iiprop": "url|size|sha1",
+              "iiurlwidth": "1920",
+              "titles": "|".join(files.values()),
+          })
+          req = urllib.request.Request(
+              "https://commons.wikimedia.org/w/api.php?" + query,
+              headers=headers,
+          )
+          with urllib.request.urlopen(req, timeout=30) as response:
+              payload = json.load(response)
+
+          info_by_title = {}
+          for page in payload["query"]["pages"].values():
+              info_by_title[page["title"]] = page["imageinfo"][0]
+
+          def download(url: str) -> bytes:
+              for attempt in range(5):
+                  try:
+                      image_req = urllib.request.Request(url, headers=headers)
+                      with urllib.request.urlopen(image_req, timeout=60) as response:
+                          return response.read()
+                  except urllib.error.HTTPError as exc:
+                      if exc.code != 429 or attempt == 4:
+                          raise
+                      time.sleep(4 * (2 ** attempt))
+              raise RuntimeError("unreachable")
+
           manifest = []
-          headers = {"User-Agent": "ai-revenue-lab-b2-asset-import/1.0"}
-          for local_name, title in files.items():
-              query = urllib.parse.urlencode({
-                  "action": "query",
-                  "format": "json",
-                  "prop": "imageinfo",
-                  "iiprop": "url|size|sha1",
-                  "titles": title,
-              })
-              req = urllib.request.Request(
-                  "https://commons.wikimedia.org/w/api.php?" + query,
-                  headers=headers,
-              )
-              with urllib.request.urlopen(req, timeout=30) as response:
-                  payload = json.load(response)
-              page = next(iter(payload["query"]["pages"].values()))
-              info = page["imageinfo"][0]
-              image_req = urllib.request.Request(info["url"], headers=headers)
-              with urllib.request.urlopen(image_req, timeout=60) as response:
-                  data = response.read()
+          for index, (local_name, title) in enumerate(files.items()):
+              info = info_by_title[title]
+              asset_url = info.get("thumburl") or info["url"]
+              data = download(asset_url)
               (out / local_name).write_bytes(data)
               manifest.append({
                   "local_name": local_name,
                   "commons_title": title,
                   "source_url": info["descriptionurl"],
                   "original_url": info["url"],
-                  "width": info["width"],
-                  "height": info["height"],
-                  "sha1": info["sha1"],
-                  "bytes": len(data),
+                  "download_url": asset_url,
+                  "original_width": info["width"],
+                  "original_height": info["height"],
+                  "download_width": info.get("thumbwidth", info["width"]),
+                  "download_height": info.get("thumbheight", info["height"]),
+                  "original_sha1": info["sha1"],
+                  "download_bytes": len(data),
               })
+              if index < len(files) - 1:
+                  time.sleep(3)
+
           (out / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, indent=2),
               encoding="utf-8",
