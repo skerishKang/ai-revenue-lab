@@ -42,11 +42,13 @@ jobs:
 
           proj_codes="$(curl -sS -o /tmp/projects.json -w '%{http_code}' \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=200" || true)"
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=50" || true)"
           echo "cloudflare_pages_project_list_http=${proj_codes}" >&2
           if test "${proj_codes}" = '200'; then
-            jq -r '.result | length' /tmp/projects.json 2>/dev/null | xargs -I{} echo "cloudflare_pages_project_count={}" >&2
+            jq -r '.result_info.total' /tmp/projects.json 2>/dev/null | xargs -I{} echo "cloudflare_pages_project_total={}" >&2
             jq -r '.result[] | .name' /tmp/projects.json 2>/dev/null | sed 's/^/CF_PROJECT /' >&2
+          else
+            (jq -c . /tmp/projects.json 2>/dev/null || head -c 1200 /tmp/projects.json) | sed -E 's/([[:alnum:]_]*[Tt]oken[[:alnum:]_]*|"value"|api[_-]?key)[^,}]{0,80}/REDACTED/g' >&2
           fi
 
           deploy_one() {
