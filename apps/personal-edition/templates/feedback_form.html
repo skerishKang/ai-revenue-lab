@@ -1,70 +1,45 @@
 {% extends "base.html" %}
-{% block title %}피드백 — Personal Edition{% endblock %}
+{% block title %}편집 메모 — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
-<div class="feedback-page animate-fade-in">
-  <div class="feedback-header">
-    <h1>다음 에디션을 위한 편집 메모</h1>
-    <p>이번 에디션에서 좋았던 점과 다음 호에서 바꾸고 싶은 방향을 알려주세요.</p>
-    <div class="edition-num-badge">에디션 #{{ edition.edition_number }}</div>
-  </div>
+<section class="v3-feedback" aria-labelledby="feedback-title">
+  <aside class="v3-feedback-brief">
+    <span class="v3-kicker">Recut · Reader direction</span>
+    <h1 id="feedback-title">다음 호의<br>방향을 표시하세요.</h1>
+    <p>이번 호에서 더 오래 머물고 싶은 지점과 덜어내고 싶은 부분을 편집자에게 직접 남깁니다.</p>
+    <div class="edition-num-badge">Edition {{ '%02d'|format(edition.edition_number) }}</div>
+  </aside>
 
-  {% if error %}
-  <div class="alert alert-error" role="alert">{{ error }}</div>
-  {% endif %}
-
-       <form method="post"
-              action="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback"
-        class="feedback-form">
+  <form method="post" action="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback" class="v3-feedback-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
 
-    <!-- Group 1: Direction choices -->
-    <fieldset class="feedback-group-card">
-      <legend>피드백 방향 (하나 이상 선택)</legend>
-      <p class="group-help-text">다음 호 편집 시 반영할 수 있는 편집 요청사항입니다.</p>
-      <div class="checkbox-grid">
+    <fieldset class="v3-direction-set">
+      <legend>다음 호에 반영할 방향</legend>
+      <div class="v3-directions">
         {% for value, label in feedback_directions %}
-        <label class="checkbox-option">
-          <input type="checkbox" name="direction_choices" value="{{ value }}">
-          <span>{{ label }}</span>
-        </label>
+        <label class="v3-direction"><input type="checkbox" name="direction_choices" value="{{ value }}"><span>{{ label }}</span></label>
         {% endfor %}
       </div>
     </fieldset>
 
-    <!-- Group 2: Section selector -->
     {% if content and content.sections %}
-    <div class="feedback-group-card">
-      <label for="selected_section_id">특정 섹션 선택 (선택사항)</label>
-      <p class="group-help-text">의견을 남기고 싶은 특정 본문 섹션이 있다면 선택해주세요.</p>
-      <select id="selected_section_id" name="selected_section_id" class="form-control">
-        <option value="">전체 에디션 대상 (섹션 지정 안 함)</option>
-        {% for section in content.sections %}
-        <option value="{{ section.section_id }}">{{ section.title }}</option>
-        {% endfor %}
+    <div class="v3-feedback-field">
+      <label for="selected_section_id">어느 부분에 대한 메모인가요?</label>
+      <select id="selected_section_id" name="selected_section_id">
+        <option value="">에디션 전체</option>
+        {% for section in content.sections %}<option value="{{ section.section_id }}">{{ section.title }}</option>{% endfor %}
       </select>
     </div>
     {% endif %}
 
-    <!-- Group 3: Freeform text -->
-    <div class="feedback-group-card">
-      <label for="free_text">추가 자유 의견 (선택사항)</label>
-      <p class="group-help-text">에디터에게 전하고 싶은 이야기나 바라는 점을 편하게 적어주세요.</p>
-      <textarea id="free_text" name="free_text" rows="4"
-                placeholder="추가 의견이 있으시면 자유롭게 작성해주세요..."
-                maxlength="2000"></textarea>
+    <div class="v3-feedback-field">
+      <label for="free_text">편집자에게 남길 문장</label>
+      <textarea id="free_text" name="free_text" rows="5" placeholder="예: 이 장면은 더 구체적으로 읽고 싶어요. 다음 호에서는 개인화가 실제로 어떻게 달라졌는지 보여주세요." maxlength="2000"></textarea>
     </div>
 
-    <div class="feedback-submit-wrap">
-      <button type="submit" class="btn btn-primary btn-lg">편집 메모 전달하기</button>
-    </div>
-
-    {% if is_preview %}
-    <div class="preview-journey-nav">
-      <p class="preview-journey-hint">미리보기에서는 피드백이 실제 전송되지 않습니다.</p>
-       <a href="/preview/participant/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-primary">다음: 피드백 완료 →</a>
-    </div>
-    {% endif %}
+    <div class="v3-feedback-submit"><button type="submit" class="btn btn-primary">다음 호에 방향 전달하기</button></div>
+    {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}
   </form>
-</div>
+</section>
 {% endblock %}
