@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects" > /tmp/projects.json
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects?per_page=50" > /tmp/projects.json
           python3 - <<'PY'
           import json
           x=json.load(open('/tmp/projects.json'))
@@ -34,5 +34,6 @@ jobs:
                   found+=1
                   print('CANDIDATE='+name+'|subdomain='+str(p.get('subdomain'))+'|production_branch='+str(((p.get('source') or {}).get('config') or {}).get('production_branch')))
           print('MATCH_COUNT='+str(found))
-          print('TOTAL_PROJECTS='+str(len(rows)))
+          print('RETURNED_PROJECTS='+str(len(rows)))
+          print('RESULT_INFO='+str(x.get('result_info')))
           PY
