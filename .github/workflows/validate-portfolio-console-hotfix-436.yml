@@ -1,0 +1,53 @@
+name: Validate Portfolio Console Hotfix 436
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/portfolio-console/**'
+      - '.github/workflows/validate-portfolio-console-hotfix-436.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-console-hotfix-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/portfolio-console-live-mutation-loop-434'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/portfolio-console
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/portfolio-console/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Static and contract tests
+        run: npm run test:static
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Live-data mutation regression
+        run: npx playwright test tests/live-mutation-loop.spec.js --project=chromium-desktop
+
+      - name: Launcher regression
+        run: npx playwright test tests/business-launcher.spec.js --project=chromium-desktop
