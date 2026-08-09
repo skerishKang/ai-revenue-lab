@@ -1,11 +1,11 @@
-/*  businesses.js  —  B1–55 derived from ARL_MANIFEST (Phase 2A)
+/*  businesses.js  —  B1–59 derived from ARL_MANIFEST (Phase 2A+)
  *
  *  This is a thin compatibility layer that exposes ARL_MANIFEST
  *  as ARL_BUSINESSES for the existing app.js consumer.
  *
  *  The sole identity source is business-manifest.js → window.ARL_MANIFEST.
- *  No Business identity data is duplicated in this file.
- *  No volatile GitHub state (Issue state, PR state, CI, SHA) here.
+ *  Review deployment metadata is loaded from review-surfaces-396.js.
+ *  Business launcher behavior is layered on top without changing app.js.
  */
 
 (function () {
@@ -17,4 +17,14 @@
   }
   window.ARL_BUSINESSES = manifest;
   window.ARL_SUMMARY = window.ARL_MANIFEST_SUMMARY || null;
+
+  // index.html loads businesses.js immediately before app.js. Keep the review
+  // registry parser-blocking so app.js sees the attached reviewSurface fields.
+  // The launcher registers a deferred DOMContentLoaded enhancement and therefore
+  // can be loaded here before app.js without racing app initialization.
+  if (typeof document !== "undefined" && document.readyState === "loading") {
+    document.write('<link rel="stylesheet" href="./business-launcher.css?v=business-launcher-20260809-1">');
+    document.write('<script src="./review-surfaces-396.js?v=review-surfaces-20260809-2"><\/script>');
+    document.write('<script src="./business-launcher.js?v=business-launcher-20260809-1"><\/script>');
+  }
 })();

@@ -1,5 +1,12 @@
 const { defineConfig, devices } = require('@playwright/test');
 
+const plainStaticServer = process.platform === 'win32'
+  ? 'python -m http.server 4173'
+  : 'python3 -m http.server 4173';
+const apiAwareTestServer = process.platform === 'win32'
+  ? 'python tests/dev_server.py'
+  : 'python3 tests/dev_server.py';
+
 module.exports = defineConfig({
   testDir: 'tests',
   timeout: 10000,
@@ -30,9 +37,7 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: process.platform === 'win32'
-      ? 'python -m http.server 4173'
-      : 'python3 -m http.server 4173',
+    command: process.env.ARL_PLAIN_STATIC_SERVER === '1' ? plainStaticServer : apiAwareTestServer,
     url: 'http://127.0.0.1:4173',
     timeout: 10000,
     reuseExistingServer: true,
