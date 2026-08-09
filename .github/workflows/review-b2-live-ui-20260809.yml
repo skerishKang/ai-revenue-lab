@@ -18,20 +18,15 @@ jobs:
     env:
       B2_URL: https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev/
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
-
       - name: Install Playwright Chromium
         run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium
-
       - name: Capture live B2
         shell: bash
         run: |
@@ -40,47 +35,49 @@ jobs:
           cat > capture-b2.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'node:fs';
-          const url = process.env.B2_URL;
+          const root = process.env.B2_URL;
           const browser = await chromium.launch({headless:true});
-          const cases = [
-            {name:'desktop', width:1440, height:1100},
-            {name:'mobile', width:390, height:844}
-          ];
-          const report = [];
-          for (const c of cases) {
-            const page = await browser.newPage({viewport:{width:c.width,height:c.height}, deviceScaleFactor:1});
-            const consoleErrors=[]; const pageErrors=[];
-            page.on('console', msg => { if (msg.type()==='error') consoleErrors.push(msg.text()); });
-            page.on('pageerror', err => pageErrors.push(String(err)));
-            const response = await page.goto(url, {waitUntil:'networkidle', timeout:60000});
-            await page.waitForTimeout(1200);
-            await page.screenshot({path:`b2-live-review/${c.name}.png`, fullPage:true});
-            const title = await page.title();
-            const finalUrl = page.url();
-            const text = (await page.locator('body').innerText()).slice(0,12000);
-            fs.writeFileSync(`b2-live-review/${c.name}.txt`, text);
-            const metrics = await page.evaluate(() => ({
-              scrollWidth: document.documentElement.scrollWidth,
-              clientWidth: document.documentElement.clientWidth,
-              scrollHeight: document.documentElement.scrollHeight,
-              clientHeight: document.documentElement.clientHeight,
-              h1: [...document.querySelectorAll('h1')].map(x=>x.textContent?.trim()).filter(Boolean),
-              buttons: [...document.querySelectorAll('button,a')].map(x=>x.textContent?.trim()).filter(Boolean).slice(0,80),
-              images: [...document.images].map(i=>({src:i.currentSrc||i.src,alt:i.alt,nw:i.naturalWidth,nh:i.naturalHeight})).slice(0,80),
-              bodyBg: getComputedStyle(document.body).backgroundColor,
-              bodyFont: getComputedStyle(document.body).fontFamily
-            }));
-            report.push({case:c.name,status:response?.status(),title,finalUrl,consoleErrors,pageErrors,metrics});
-            await page.close();
+          const viewports = [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          const report=[];
+          for (const v of viewports) {
+            const rootPage = await browser.newPage({viewport:{width:v.width,height:v.height}});
+            await rootPage.goto(root,{waitUntil:'networkidle',timeout:60000});
+            await rootPage.waitForTimeout(800);
+            const hrefs = await rootPage.locator('a').evaluateAll(as => as.map(a=>({text:(a.textContent||'').trim(),href:a.href})));
+            const traveler = hrefs.find(x=>x.text.includes('Traveler'))?.href;
+            const operator = hrefs.find(x=>x.text.includes('Operator'))?.href;
+            await rootPage.close();
+            const routes=[{name:'root',url:root},{name:'traveler',url:traveler},{name:'operator',url:operator}].filter(x=>x.url);
+            for (const r of routes) {
+              const page=await browser.newPage({viewport:{width:v.width,height:v.height}});
+              const consoleErrors=[]; const pageErrors=[];
+              page.on('console',m=>{if(m.type()==='error') consoleErrors.push(m.text())});
+              page.on('pageerror',e=>pageErrors.push(String(e)));
+              const response=await page.goto(r.url,{waitUntil:'networkidle',timeout:60000});
+              await page.waitForTimeout(900);
+              await page.screenshot({path:`b2-live-review/${v.name}-${r.name}.png`,fullPage:true});
+              const text=(await page.locator('body').innerText()).slice(0,12000);
+              fs.writeFileSync(`b2-live-review/${v.name}-${r.name}.txt`,text);
+              const metrics=await page.evaluate(()=>({
+                scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,
+                scrollHeight:document.documentElement.scrollHeight,clientHeight:document.documentElement.clientHeight,
+                h1:[...document.querySelectorAll('h1')].map(x=>x.textContent?.trim()).filter(Boolean),
+                headings:[...document.querySelectorAll('h2,h3')].map(x=>x.textContent?.trim()).filter(Boolean).slice(0,30),
+                actions:[...document.querySelectorAll('button,a')].map(x=>x.textContent?.trim()).filter(Boolean).slice(0,80),
+                imageCount:document.images.length,
+                bodyBg:getComputedStyle(document.body).backgroundColor,
+                bodyFont:getComputedStyle(document.body).fontFamily
+              }));
+              report.push({viewport:v.name,route:r.name,url:r.url,status:response?.status(),title:await page.title(),consoleErrors,pageErrors,metrics});
+              await page.close();
+            }
           }
-          fs.writeFileSync('b2-live-review/report.json', JSON.stringify(report,null,2));
+          fs.writeFileSync('b2-live-review/report.json',JSON.stringify(report,null,2));
           await browser.close();
           JS
           node capture-b2.mjs
           cat b2-live-review/report.json
-
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: b2-live-ui-review
           path: b2-live-review
