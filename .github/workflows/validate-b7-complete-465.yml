@@ -1,0 +1,58 @@
+name: Validate B7 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-07-personal-meaning-map-v1/**'
+      - '.github/workflows/validate-b7-complete-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b7-personal-meaning-map-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate approved UI, guided UX and tutorial
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=reference/business-07-personal-meaning-map-v1
+          python "$base/evidence/validate-reference.py"
+          node --check "$base/scripts/review-state.js"
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          base=Path('reference/business-07-personal-meaning-map-v1')
+          for name in ('index.html','ux.html','guide.html'):
+              text=(base/name).read_text(encoding='utf-8')
+              HTMLParser().feed(text)
+              assert len(text.splitlines()) <= 500, name
+          ux=(base/'ux.html').read_text(encoding='utf-8')
+          guide=(base/'guide.html').read_text(encoding='utf-8')
+          for marker in ('id="connect"','id="undo"','id="reset"','이번에 발견한 의미'):
+              assert marker in ux, marker
+          for marker in ('Guide · 30 seconds','Select · 기억 조각','Inspect · 의미 노드','Connect · 연결','Review · 제안 검토','Undo · 통제권'):
+              assert marker in guide, marker
+          source=ux+'\n'+guide
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in source, forbidden
+          for html_name in ('ux.html','guide.html'):
+              html=(base/html_name).read_text(encoding='utf-8')
+              for rel in re.findall(r'(?:href|src)="(\./[^"?#]+)', html):
+                  assert (base/rel[2:]).exists(), f'{html_name}: missing {rel}'
+          print('B7_UI_UX_GUIDE_STATIC_PASS=1')
+          PY
+          git diff --check origin/main...HEAD
+          echo 'B7_COMPLETE_VALIDATION_PASS=1'
