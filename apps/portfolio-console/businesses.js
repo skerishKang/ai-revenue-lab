@@ -27,6 +27,6 @@
     document.write('<link rel="stylesheet" href="./business-launcher.css?v=business-launcher-20260809-1">');
     document.write('<script src="./review-surfaces-396.js?v=review-surfaces-20260809-2"><\/script>');
     document.write('<script src="./business-launcher.js?v=business-launcher-20260809-1"><\/script>');
-    document.write('<script src="./portfolio-truth-audit.js?v=portfolio-truth-20260809-1"><\/script>');
+    document.write('<script src="./portfolio-truth-audit.js?v=portfolio-truth-20260810-1"><\/script>');
   }
 })();
