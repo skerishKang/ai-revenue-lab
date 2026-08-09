@@ -4,93 +4,77 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 내 여행</title>
+  <title>Living Travel — 나의 부산 여행판</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html" class="active">내 여행</a>
-      <a href="history.html">지난 기록</a>
-      <a href="../index.html">홈</a>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="traveler-home.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+    <div class="lt-nav-links">
+      <a href="history.html">Archive</a>
+      <a href="../index.html">Home</a>
     </div>
   </nav>
 
-  <div class="demo-home-header">
-    <span class="badge badge-published" style="margin-bottom:0.5rem;display:inline-block;">여행자 B-014</span>
-    <h1>여행자 B-014 님</h1>
-    <p class="meta">부산 · 2박 3일 · 천천히 · 조용한 여행</p>
-    <div class="demo-home-summary">
-      <div class="demo-home-summary-item">
-        <strong>현재 여행판</strong>
-        1판
-      </div>
-      <div class="demo-home-summary-item">
-        <strong>상태</strong>
-        <span class="badge badge-published">발행됨</span>
-      </div>
-      <div class="demo-home-summary-item">
-        <strong>여행 기간</strong>
-        2박 3일
-      </div>
-    </div>
-  </div>
-
-  <main class="container">
-    <div class="notice">
-      <strong>Synthetic Preview — Demo</strong><br>
-      이 화면은 제품 검토용 가상 데이터입니다. 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
-    </div>
-
-    <div class="dashboard-section-title">
-      <h2>최신 여행판</h2>
-    </div>
-
-    <div class="demo-edition-cover" style="cursor:pointer;padding:0;overflow:hidden;" onclick="window.location.href='edition.html'">
-      <img src="../assets/images/edition-cover.webp" alt="부산 여행판 커버 합성 데모 이미지" width="720" height="450" style="width:100%;height:auto;display:block;" onerror="this.style.display='none'">
-      <div style="padding:1.5rem;">
-        <h2>부산: 골목과 바다, 그리고 조용한 아침</h2>
-        <p class="meta">Edition #1 · 2026. 7. 24. · 발행됨</p>
-        <div style="margin-top:0.75rem;">
-          <span class="badge badge-published">published</span>
+  <main class="lt-home">
+    <section class="lt-home-hero">
+      <article class="lt-home-cover" onclick="window.location.href='edition.html'" role="link" tabindex="0" onkeydown="if(event.key==='Enter') window.location.href='edition.html'">
+        <img src="../assets/images/edition-cover.webp" alt="부산 여행판 대표 시각 자료">
+        <div class="lt-home-cover-copy">
+          <div class="lt-kicker">Current edition · #01 · published</div>
+          <h1>부산,<br>골목과 바다 사이.</h1>
+          <p>유명 관광지를 줄이고 동네의 시간에 오래 머무는 2박 3일. 지금 읽을 수 있는 당신의 최신 여행판입니다.</p>
         </div>
-      </div>
-    </div>
+      </article>
 
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
-      <a href="edition.html" class="btn btn-accent">여행판 읽기</a>
-      <a href="feedback.html" class="btn btn-outline">이 여행판에 의견 남기기</a>
-    </div>
+      <aside class="lt-home-side">
+        <div class="lt-section-code">Traveler B-014</div>
+        <h2>이번 여행의 성격</h2>
+        <div class="lt-trip-meta">
+          <div><small>Destination</small><strong>부산</strong></div>
+          <div><small>Dates</small><strong>2박 3일</strong></div>
+          <div><small>Pace</small><strong>천천히</strong></div>
+          <div><small>Focus</small><strong>골목 · 음식 · 바다</strong></div>
+          <div><small>Density</small><strong>2–3곳 / day</strong></div>
+          <div><small>Status</small><strong>발행됨</strong></div>
+        </div>
+        <div class="lt-home-actions">
+          <a href="edition.html" class="btn btn-accent">여행판 읽기 <span aria-hidden="true">→</span></a>
+          <a href="feedback.html" class="btn btn-outline" style="color:#fff;">이 여행판에 의견 남기기</a>
+        </div>
+      </aside>
+    </section>
 
-    <div class="preferences-section">
-      <h3>내 여행 취향</h3>
-      <div class="preferences-grid">
-        <div class="preference-item">
-          <label>목적지</label>
-          <span class="value">부산</span>
+    <section class="lt-home-archive">
+      <div class="lt-home-archive-head">
+        <div>
+          <div class="lt-section-code">Travel shelf</div>
+          <h2>여행은 쌓이고,<br>다음 판은 달라집니다.</h2>
         </div>
-        <div class="preference-item">
-          <label>속도</label>
-          <span class="value">천천히</span>
-        </div>
-        <div class="preference-item">
-          <label>관심사</label>
-          <span class="value">골목 · 현지 음식 · 바다</span>
-        </div>
-        <div class="preference-item">
-          <label>분위기</label>
-          <span class="value">조용한 · 로컬 감성</span>
-        </div>
+        <a href="history.html" class="btn btn-outline">전체 여행 기록</a>
       </div>
-    </div>
+      <div class="lt-archive-strip">
+        <article class="lt-archive-item">
+          <code>#01 · CURRENT</code>
+          <strong>골목과 바다,<br>그리고 조용한 아침</strong>
+          <span class="small">초량 · 감천 · 해운대 · 송도</span>
+        </article>
+        <article class="lt-archive-item">
+          <code>FEEDBACK</code>
+          <strong>더 천천히.<br>유명 관광지는 덜.</strong>
+          <span class="small">다음 여행판의 편집 방향</span>
+        </article>
+        <article class="lt-archive-item">
+          <code>#02 · NEXT</code>
+          <strong>골목에 머물다,<br>개인적인 하루</strong>
+          <a href="edition-2.html" class="btn btn-outline">2판 미리 보기</a>
+        </article>
+      </div>
+    </section>
   </main>
-
-  <footer class="site-footer">
-    <p>Living Travel — Interactive Concept Demo</p>
-  </footer>
 </body>
 </html>
