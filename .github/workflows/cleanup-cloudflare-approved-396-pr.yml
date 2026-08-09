@@ -1,0 +1,81 @@
+name: Cleanup approved Cloudflare Pages projects 396
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-review-cleanup-396-pr
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/portfolio-review-deploy-396'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Delete only owner-approved obsolete Pages projects
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || { echo 'CLOUDFLARE_API_TOKEN missing' >&2; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || { echo 'CLOUDFLARE_ACCOUNT_ID missing' >&2; exit 1; }
+
+          approved_projects=(
+            'living-travel-preview'
+            'ai-revenue-business-54-ai-model-router'
+            'ai-revenue-neighbor-market'
+          )
+
+          for project in "${approved_projects[@]}"; do
+            api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}"
+            get_code="$(curl -sS -o /tmp/get.json -w '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "${api}" || true)"
+
+            if test "${get_code}" = '404'; then
+              echo "${project}: already absent — idempotent skip"
+              continue
+            fi
+
+            test "${get_code}" = '200' || {
+              echo "${project}: lookup failed with HTTP ${get_code}" >&2
+              jq -c '{success, errors, messages}' /tmp/get.json 2>/dev/null || true
+              exit 1
+            }
+
+            delete_code="$(curl -sS -o /tmp/delete.json -w '%{http_code}' -X DELETE \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "${api}" || true)"
+
+            if ! { test "${delete_code}" = '200' || test "${delete_code}" = '204'; }; then
+              echo "${project}: delete failed with HTTP ${delete_code}" >&2
+              jq -c '{success, errors, messages}' /tmp/delete.json 2>/dev/null || true
+              exit 1
+            fi
+
+            verify_code=''
+            for attempt in $(seq 1 10); do
+              verify_code="$(curl -sS -o /tmp/verify.json -w '%{http_code}' \
+                -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                "${api}" || true)"
+              test "${verify_code}" = '404' && break
+              sleep 2
+            done
+
+            test "${verify_code}" = '404' || {
+              echo "${project}: deletion verification failed; expected 404, got ${verify_code}" >&2
+              exit 1
+            }
+            echo "${project}: DELETE_VERIFIED"
+          done
+
+          echo 'APPROVED_CLOUDFLARE_CLEANUP_3_OF_3_COMPLETE'
