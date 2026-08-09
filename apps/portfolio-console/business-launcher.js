@@ -1,12 +1,28 @@
 (function () {
   "use strict";
 
+  var PROJECT_NUMBER_ALIASES = {
+    "lovebud": 23,
+    "lovetree-3": 24,
+    "love-matchmaking": 25,
+    "portfolio-console": 44
+  };
+
   function pad(number) {
     return String(number).padStart(2, "0");
   }
 
   function businesses() {
     return Array.isArray(window.ARL_BUSINESSES) ? window.ARL_BUSINESSES : [];
+  }
+
+  function applyProjectNumberAliases() {
+    if (!Array.isArray(window.ARL_PROJECTS)) return;
+    window.ARL_PROJECTS.forEach(function (project) {
+      if (Object.prototype.hasOwnProperty.call(PROJECT_NUMBER_ALIASES, project.id)) {
+        project.businessNumber = PROJECT_NUMBER_ALIASES[project.id];
+      }
+    });
   }
 
   function businessForRow(row) {
@@ -172,6 +188,7 @@
   }, true);
 
   function init() {
+    applyProjectNumberAliases();
     var list = document.querySelector("#biz-list");
     if (list) {
       new MutationObserver(function () {
