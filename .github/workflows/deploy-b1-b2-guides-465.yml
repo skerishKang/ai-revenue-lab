@@ -1,0 +1,83 @@
+name: Deploy B1 B2 Guides 465
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b1-b2-guides-465.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: 8af20f123923e5a2b4b1dab556a596fb0fffc169
+      B1_PROJECT: ai-revenue-personal-edition
+      B2_PROJECT: ai-revenue-living-travel
+      B1_URL: https://ai-revenue-personal-edition.pages.dev
+      B2_URL: https://ai-revenue-living-travel.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact main
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
+          test "$remote_main" = "$EXPECTED_SHA"
+      - name: Build B1 Production with guide
+        working-directory: apps/personal-edition
+        run: |
+          python -m pip install .
+          python -m scripts.build_static_production
+          test -f dist-preview/guide/index.html
+          grep -q 'Guide · 30 seconds' dist-preview/guide/index.html
+          grep -q '/guide/' dist-preview/index.html
+          if grep -q 'UI Preview · Synthetic data · No persistence' dist-preview/guide/index.html; then exit 1; fi
+      - name: Verify B2 guide bytes
+        run: |
+          test -f apps/living-travel/pages-preview/site/guide.html
+          grep -q 'Guide · 30 seconds' apps/living-travel/pages-preview/site/guide.html
+          grep -q 'href="guide.html"' apps/living-travel/pages-preview/site/index.html
+      - name: Deploy B1 exact main
+        working-directory: apps/personal-edition
+        run: |
+          npx --yes wrangler@latest pages deploy dist-preview --project-name "$B1_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B1 guide exact main owner review'
+      - name: Deploy B2 exact main
+        run: |
+          npx --yes wrangler@latest pages deploy apps/living-travel/pages-preview/site --project-name "$B2_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B2 guide exact main owner review'
+      - name: Verify canonical guide surfaces
+        run: |
+          b1=0
+          for i in $(seq 1 30); do
+            code=$(curl -L -sS --max-time 20 -o /tmp/b1-guide.html -w '%{http_code}' "$B1_URL/guide/" || true)
+            if [[ "$code" == 200 ]] && grep -q 'Guide · 30 seconds' /tmp/b1-guide.html && grep -q 'Personal Edition은' /tmp/b1-guide.html; then b1=1; break; fi
+            sleep 3
+          done
+          test "$b1" = 1
+          b2=0
+          for i in $(seq 1 30); do
+            code=$(curl -L -sS --max-time 20 -o /tmp/b2-guide.html -w '%{http_code}' "$B2_URL/guide.html" || true)
+            if [[ "$code" == 200 ]] && grep -q 'Guide · 30 seconds' /tmp/b2-guide.html && grep -q 'Living Travel은' /tmp/b2-guide.html; then b2=1; break; fi
+            sleep 3
+          done
+          test "$b2" = 1
+          curl -L -sS --max-time 20 "$B1_URL/" > /tmp/b1-root.html
+          curl -L -sS --max-time 20 "$B2_URL/" > /tmp/b2-root.html
+          grep -q '/guide/' /tmp/b1-root.html
+          grep -q 'guide.html' /tmp/b2-root.html
+          echo 'B1_B2_GUIDES_PUBLIC_VERIFIED=1'
