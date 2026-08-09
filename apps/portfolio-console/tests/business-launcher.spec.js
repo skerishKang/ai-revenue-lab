@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Portfolio Console Business Launcher', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(180);
   });
 
   test('Business index is the default launcher view', async ({ page }) => {
@@ -12,67 +12,127 @@ test.describe('Portfolio Console Business Launcher', () => {
     await expect(page.locator('.biz-item')).toHaveCount(58);
   });
 
-  test('launcher summarizes web, non-web, expanded and undeployed Businesses', async ({ page }) => {
+  test('launcher separates internal web, non-web and all external or successor Businesses', async ({ page }) => {
     const summary = page.locator('#business-launcher-summary');
     await expect(summary).toBeVisible();
-    await expect(summary).toContainText('바로 열기 48');
+    await expect(summary).toContainText('바로 열기 46');
     await expect(summary).toContainText('비웹 1');
-    await expect(summary).toContainText('확장 1');
-    await expect(summary).toContainText('미배포 8');
+    await expect(summary).toContainText('확장 11');
+    await expect(summary).toContainText('미배포 0');
   });
 
-  test('B1 owner rejection is reflected as UI not ready while UX waits and backend stays frozen', async ({ page }) => {
-    const badges = page.locator('.biz-item[data-biz-number="1"] .biz-phase-badge');
+  test('B1 owner rejection is rendered as redesign while technical phase truth remains available', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="1"]');
+    const badges = row.locator('.biz-phase-badge');
+    await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REJECTED');
     await expect(badges).toHaveCount(3);
-    await expect(badges.nth(0)).toHaveText('UI · 미완료');
+    await expect(badges.nth(0)).toHaveText('UI · 재설계');
     await expect(badges.nth(1)).toHaveText('UX · UI 확정 대기');
     await expect(badges.nth(2)).toHaveText('BE · 동결');
 
     const identity = await page.evaluate(() => {
       const business = window.ARL_BUSINESSES.find((item) => item.number === 1);
       return {
+        ownerUiStatus: business.ownerUiStatus,
         uiStatus: business.uiStatus,
         uxStatus: business.uxStatus,
         backendStatus: business.backendStatus,
       };
     });
     expect(identity).toEqual({
+      ownerUiStatus: 'OWNER_REJECTED',
       uiStatus: 'UI_NOT_READY',
       uxStatus: 'BLOCKED_BY_UI',
       backendStatus: 'FROZEN',
     });
   });
 
-  test('B5 is shown as expanded to DanjiOn instead of an internal phase-gated Business', async ({ page }) => {
-    const row = page.locator('.biz-item[data-biz-number="5"]');
-    await expect(row).toHaveAttribute('data-portfolio-class', 'expanded-successor');
-    await expect(row.locator('.biz-auth')).toHaveText('확장');
-    await expect(row.locator('.biz-expanded-lineage')).toHaveText('단지온으로 확장 · 외부 개발');
-    await expect(row.locator('.biz-phase-badge')).toHaveCount(0);
-    await expect(row.locator('.biz-launch-state')).toHaveCount(0);
-    await expect(row.locator('.biz-launch-external')).toHaveAttribute('href', 'https://github.com/skerishKang/02-danji-on');
+  test('historical technical UI approval is not displayed as final owner approval', async ({ page }) => {
+    for (const number of [2, 4, 6, 13, 14, 44]) {
+      const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
+      await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REVIEW_REQUIRED');
+      await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 검토 필요');
+    }
 
-    const identity = await page.evaluate(() => {
-      const business = window.ARL_BUSINESSES.find((item) => item.number === 5);
-      return {
-        portfolioClass: business.portfolioClass,
-        lifecycle: business.lifecycle,
-        state: business.state,
-        workspace: business.workspace,
-        uiStatus: business.uiStatus,
-        uxStatus: business.uxStatus,
-        backendStatus: business.backendStatus,
-      };
+    const technical = await page.evaluate(() => [2, 4, 6, 13, 14, 44].map((number) => {
+      const business = window.ARL_BUSINESSES.find((item) => item.number === number);
+      return [number, business.uiStatus, business.ownerUiStatus];
+    }));
+    expect(technical).toEqual([
+      [2, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
+      [4, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
+      [6, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
+      [13, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
+      [14, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
+      [44, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
+    ]);
+  });
+
+  test('all #396 hard exclusions are list-only external or successor rows with no internal phase badges', async ({ page }) => {
+    const excluded = [3, 5, 23, 24, 25, 26, 27, 28, 30, 31, 50];
+    for (const number of excluded) {
+      const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
+      await expect(row).toHaveAttribute('data-portfolio-class', 'expanded-successor');
+      await expect(row).toHaveAttribute('data-owner-ui-status', 'NOT_APPLICABLE');
+      await expect(row.locator('.biz-phase-badge')).toHaveCount(0);
+      await expect(row.locator('.biz-auth')).toHaveText('외부/확장');
+    }
+
+    const states = await page.evaluate((numbers) => numbers.map((number) => {
+      const business = window.ARL_BUSINESSES.find((item) => item.number === number);
+      return [number, business.uiStatus, business.uxStatus, business.backendStatus, business.ownerUiStatus];
+    }), excluded);
+    states.forEach(([number, ui, ux, be, owner]) => {
+      expect([ui, ux, be, owner], `B${number}`).toEqual(['NOT_APPLICABLE', 'NOT_APPLICABLE', 'NOT_APPLICABLE', 'NOT_APPLICABLE']);
     });
-    expect(identity).toEqual({
-      portfolioClass: 'expanded-successor',
-      lifecycle: 'expanded_successor',
-      state: 'external',
-      workspace: 'skerishKang/02-danji-on',
-      uiStatus: 'NOT_APPLICABLE',
-      uxStatus: 'NOT_APPLICABLE',
-      backendStatus: 'NOT_APPLICABLE',
-    });
+  });
+
+  test('B5 is shown as expanded to DanjiOn with authoritative source link', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="5"]');
+    await expect(row).toHaveAttribute('data-boundary-kind', 'expanded-successor');
+    await expect(row.locator('.biz-expanded-lineage')).toHaveText('단지온으로 확장 · 외부 개발');
+    await expect(row.locator('.biz-launch-external')).toHaveAttribute('href', 'https://github.com/skerishKang/02-danji-on');
+  });
+
+  test('B23 and B24 keep direct access to their existing external live sites', async ({ page }) => {
+    await expect(page.locator('.biz-item[data-biz-number="23"] .biz-launch-external'))
+      .toHaveAttribute('href', 'https://lovebud.pages.dev/');
+    await expect(page.locator('.biz-item[data-biz-number="24"] .biz-launch-external'))
+      .toHaveAttribute('href', 'https://lovetree3.pages.dev/');
+    await expect(page.locator('.biz-item[data-biz-number="23"] .biz-launch-external')).toHaveText('사이트 열기 ↗');
+    await expect(page.locator('.biz-item[data-biz-number="24"] .biz-launch-external')).toHaveText('사이트 열기 ↗');
+  });
+
+  test('integrated successor lineages are explicit and do not invent repository links', async ({ page }) => {
+    for (const number of [26, 28, 50]) {
+      const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
+      await expect(row).toHaveAttribute('data-boundary-kind', 'integrated-successor');
+      await expect(row.locator('.biz-expanded-lineage')).toHaveText('이어온으로 통합 · 외부 개발');
+      await expect(row.locator('.biz-launch-state')).toHaveText('외부 작업');
+      await expect(row.locator('.biz-launch-external')).toHaveCount(0);
+    }
+    for (const number of [27, 31]) {
+      const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
+      await expect(row).toHaveAttribute('data-boundary-kind', 'integrated-successor');
+      await expect(row.locator('.biz-expanded-lineage')).toHaveText('사실로으로 통합 · 외부 개발');
+      await expect(row.locator('.biz-launch-state')).toHaveText('외부 작업');
+      await expect(row.locator('.biz-launch-external')).toHaveCount(0);
+    }
+  });
+
+  test('B30 points to 400-ai-finder instead of an internal placeholder', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="30"]');
+    await expect(row).toHaveAttribute('data-boundary-kind', 'expanded-successor');
+    await expect(row.locator('.biz-expanded-lineage')).toHaveText('400-ai-finder으로 확장 · 외부 개발');
+    await expect(row.locator('.biz-launch-external')).toHaveAttribute('href', 'https://github.com/skerishKang/400-ai-finder');
+  });
+
+  test('B3 is conservatively excluded as external parallel work without invented source URL', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="3"]');
+    await expect(row).toHaveAttribute('data-boundary-kind', 'external-parallel');
+    await expect(row.locator('.biz-expanded-lineage')).toHaveText('외부·병렬 확장 · 내부 개발 제외');
+    await expect(row.locator('.biz-launch-state')).toHaveText('외부 작업');
+    await expect(row.locator('.biz-launch-external')).toHaveCount(0);
   });
 
   test('B5 detail dialog explains that internal phases no longer apply', async ({ page }) => {
@@ -162,7 +222,7 @@ test.describe('Portfolio Console Business Launcher', () => {
     await expect(row.locator('.biz-launch-detail')).toHaveCount(1);
   });
 
-  test('clicking a web Business row opens its service directly', async ({ page }) => {
+  test('clicking an internal web Business row opens its service directly', async ({ page }) => {
     await page.evaluate(() => {
       window.__launcherOpened = [];
       window.open = (...args) => {
