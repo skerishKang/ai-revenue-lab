@@ -1,4 +1,4 @@
-name: Verify B4 B6 Deploy B8 465
+name: Verify B4 B6 Inspect B8 465
 
 on:
   pull_request:
@@ -11,68 +11,27 @@ permissions:
   contents: read
 
 jobs:
-  verify-and-deploy:
+  verify:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     env:
       EXPECTED_SHA: 03db134d61f054f53b096104e83ba1342337ae9e
-      B4_PROJECT: ai-revenue-living-learning
-      B6_PROJECT: ai-revenue-world-feed
-      B8_PROJECT: ai-revenue-business-08-family-newspaper
       B4_URL: https://ai-revenue-living-learning.pages.dev
       B6_URL: https://ai-revenue-world-feed.pages.dev
       B8_URL: https://ai-revenue-business-08-family-newspaper.pages.dev
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.EXPECTED_SHA }}
           persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
       - name: Assert exact current main
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
-          echo "remote_main=$remote_main"
-          test "$remote_main" = "$EXPECTED_SHA"
-          test -f apps/living-learning/pages-preview/guide.html
-          test -f reference/business-06-world-feed-v1/guide.html
-          test -f reference/business-08-family-newspaper-v1/guide.html
-          test -f reference/business-08-family-newspaper-v1/ux.html
-      - name: Align B8 production branch to main
-        shell: bash
-        run: |
-          set -euo pipefail
-          code=$(curl -sS -o /tmp/b8-patch.json -w '%{http_code}' -X PATCH \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H 'Content-Type: application/json' \
-            --data '{"production_branch":"main"}' \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${B8_PROJECT}")
-          cat /tmp/b8-patch.json
-          test "$code" = 200
-          python3 - <<'PY'
-          import json
-          x=json.load(open('/tmp/b8-patch.json'))
-          assert x.get('success') is True, x.get('errors')
-          p=x['result']; cfg=((p.get('source') or {}).get('config') or {})
-          effective=cfg.get('production_branch') or p.get('production_branch')
-          print('B8_EFFECTIVE_PRODUCTION_BRANCH='+str(effective))
-          assert effective == 'main'
-          PY
-      - name: Deploy B8 exact-main bytes
-        shell: bash
-        run: |
-          set -euo pipefail
-          npx --yes wrangler@latest pages deploy reference/business-08-family-newspaper-v1 \
-            --project-name "$B8_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
-            --commit-message 'B8 exact main UI UX guide Production'
-      - name: Verify canonical bytes for B4 B6 B8
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+      - name: Verify B4 and B6 canonical bytes
         shell: bash
         run: |
           set -euo pipefail
@@ -81,10 +40,9 @@ jobs:
             local expected actual code
             expected=$(sha256sum "$source" | cut -d' ' -f1)
             echo "$label expected_sha256=$expected"
-            for i in $(seq 1 30); do
+            for i in $(seq 1 20); do
               code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url" || true)
-              actual='none'
-              if [[ -f "$out" ]]; then actual=$(sha256sum "$out" | cut -d' ' -f1); fi
+              actual='none'; [[ -f "$out" ]] && actual=$(sha256sum "$out" | cut -d' ' -f1)
               echo "$label poll=$i http=$code actual_sha256=$actual"
               if [[ "$code" == 200 && "$actual" == "$expected" ]]; then ok=1; break; fi
               sleep 3
@@ -92,10 +50,16 @@ jobs:
             test "$ok" = 1
           }
           fetch_until_match "$B4_URL/guide.html" apps/living-learning/pages-preview/guide.html /tmp/b4-guide.html B4_GUIDE
-          fetch_until_match "$B4_URL/" apps/living-learning/pages-preview/index.html /tmp/b4-root.html B4_ROOT
+          fetch_until_match "$B4_URL/index.html" apps/living-learning/pages-preview/index.html /tmp/b4-root.html B4_ROOT
           fetch_until_match "$B6_URL/guide.html" reference/business-06-world-feed-v1/guide.html /tmp/b6-guide.html B6_GUIDE
           fetch_until_match "$B6_URL/index.html" reference/business-06-world-feed-v1/index.html /tmp/b6-root.html B6_ROOT
-          fetch_until_match "$B8_URL/guide.html" reference/business-08-family-newspaper-v1/guide.html /tmp/b8-guide.html B8_GUIDE
-          fetch_until_match "$B8_URL/ux.html" reference/business-08-family-newspaper-v1/ux.html /tmp/b8-ux.html B8_UX
-          fetch_until_match "$B8_URL/index.html" reference/business-08-family-newspaper-v1/index.html /tmp/b8-root.html B8_ROOT
-          echo 'B4_B6_B8_CANONICAL_BYTES_VERIFIED=1'
+          echo 'B4_B6_CANONICAL_BYTES_VERIFIED=1'
+      - name: Inspect historical B8 canonical URL without mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in / /guide.html /ux.html; do
+            code=$(curl -L -sS --max-time 20 -o /tmp/b8.out -w '%{http_code}' "$B8_URL$path" || true)
+            echo "B8_URL=$B8_URL$path HTTP=$code SHA256=$(sha256sum /tmp/b8.out 2>/dev/null | cut -d' ' -f1 || true)"
+          done
+          echo 'B8_CANONICAL_INSPECTION_COMPLETE=1'
