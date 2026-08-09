@@ -7,94 +7,87 @@
   <title>부산 — 골목과 바다, 그리고 조용한 아침</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html">내 여행</a>
-      <a href="history.html">지난 기록</a>
-      <a href="../index.html">홈</a>
-    </div>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="traveler-home.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+    <div class="lt-nav-links"><a href="history.html">Archive</a><a href="traveler-home.html">My trip</a></div>
   </nav>
 
-  <main class="container container-narrow" style="max-width:var(--max-reading);">
-    <div class="notice" style="margin-bottom:1.5rem;">
-      <strong>예시 여행판입니다</strong><br>
-      이 콘텐츠는 데모용 합성 데이터입니다. 실시간 여행 정보, 운영시간, 가격, 예약 가능 여부를 포함하지 않습니다.
-    </div>
+  <main class="lt-edition">
+    <header class="lt-edition-cover">
+      <img src="../assets/images/edition-cover.webp" alt="부산 여행판 대표 시각 자료">
+      <div class="lt-edition-cover-copy">
+        <div class="lt-edition-meta"><span>Edition #01</span><span>Busan · 2 nights / 3 days</span><span>Traveler B-014</span></div>
+        <h1>골목과 바다,<br>그리고 조용한 아침.</h1>
+        <p>바쁜 일상에서 빠져나와 부산의 동네와 해안을 천천히 걷는 2박 3일. 많이 보는 대신, 기억에 남을 시간에 오래 머무는 방향으로 편집했습니다.</p>
+      </div>
+    </header>
 
-    <div class="edition-header">
-      <div class="edition-meta-row">
-        <span>Edition #1</span>
-        <span>여행자 B-014</span>
-        <span>부산 · 2박 3일</span>
-        <span class="badge badge-published">발행됨</span>
+    <section class="lt-day">
+      <div class="lt-day-media">
+        <img src="../assets/images/busan-alley.webp" alt="초량동 골목을 표현한 여행 시각 자료">
+        <div class="lt-day-index">Day 01 · Choryang / Jagalchi</div>
       </div>
-      <h1>부산: 골목과 바다,<br>그리고 조용한 아침</h1>
-      <p class="edition-opening">
-        바쁜 일상에서 벗어나 부산의 조용한 골목과 현지 맛집을 따라 천천히 걷는 2박 3일.
-        유명 관광지 대신 동네의 온도를 느낄 수 있는 장소들로 구성했습니다.
-      </p>
-    </div>
+      <div class="lt-day-copy">
+        <div class="day-no">DAY 01 · ARRIVE SLOWLY</div>
+        <h2>부산에 도착해서<br>바로 서두르지 않기.</h2>
+        <p>부산역에 도착하면 첫 발걸음은 초량동으로 향합니다. 골목을 따라 오르다 작은 카페에서 한 번 멈추고, 점심은 주민이 많은 동네 밥집에서 먹습니다. 해가 낮아질 무렵에야 자갈치 쪽으로 이동합니다.</p>
+        <div class="lt-day-route">
+          <div><time>09:20</time><span><strong>초량동</strong> · 짐을 두고 골목에 천천히 들어가기</span></div>
+          <div><time>12:10</time><span><strong>동네 밥집</strong> · 관광지보다 생활권에서 점심</span></div>
+          <div><time>17:40</time><span><strong>자갈치</strong> · 시장을 목적지가 아니라 저녁 산책으로</span></div>
+        </div>
+      </div>
+    </section>
 
-    <!-- Day 1 -->
-    <div class="edition-section">
-      <div class="edition-section-number">1일차</div>
-      <h2>부산 도착 — 초량동과 자갈치</h2>
-      <img src="../assets/images/busan-alley.webp" alt="초량동 골목의 합성 데모 이미지" width="720" height="450" style="width:100%;height:auto;border-radius:var(--radius-sm);margin-bottom:1rem;" onerror="this.style.display='none'">
-      <div class="edition-section-body">
-        <p>부산역에 도착하면 첫 발걸음은 초량동으로. 168계단을 따라 올라가며 만나는 오래된 동네 풍경이 낯설지만 따뜻합니다. 가파른 골목길 중간중간 자리 잡은 작은 카페에서 잠시 숨을 고르고, 동네 고양이와 인사하는 여유.</p>
-        <p>점심은 자갈치 인근의 오래된 밥집에서. 관광객보다 동네 주민으로 가득한 식당의 뜨거운 국물이 피로를 풀어줍니다.</p>
+    <section class="lt-day">
+      <div class="lt-day-media">
+        <img src="../assets/images/busan-sea.webp" alt="감천과 부산 바다를 표현한 여행 시각 자료">
+        <div class="lt-day-index">Day 02 · Gamcheon / Haeundae</div>
       </div>
-      <div class="info-item">
-        <strong>초량 168계단</strong> 초량동 · 골목 · 무료
+      <div class="lt-day-copy">
+        <div class="day-no">DAY 02 · MORNING BEFORE CROWDS</div>
+        <h2>사람보다 먼저<br>동네의 아침을 보기.</h2>
+        <p>감천문화마을은 붐비기 전 시간에 들어갑니다. 좁은 골목과 생활의 흔적을 먼저 보고, 오후에는 해운대 백사장보다 동백섬 산책로에 시간을 더 둡니다. 목적지는 두 곳이지만 하루의 장면은 더 길게 남습니다.</p>
+        <div class="lt-day-route">
+          <div><time>08:10</time><span><strong>감천</strong> · 관광객이 몰리기 전 골목 산책</span></div>
+          <div><time>13:30</time><span><strong>동네 식당</strong> · 이동보다 식사 시간 확보</span></div>
+          <div><time>16:20</time><span><strong>동백섬</strong> · 바다를 보며 걷고 앉아 있기</span></div>
+        </div>
       </div>
-      <div class="info-item">
-        <strong>자갈치 인근 밥집</strong> 남포동 · 현지 음식
-      </div>
-    </div>
+    </section>
 
-    <!-- Day 2 -->
-    <div class="edition-section">
-      <div class="edition-section-number">2일차</div>
-      <h2>감천문화마을과 해운대 해변</h2>
-      <img src="../assets/images/busan-sea.webp" alt="감천마을과 바다의 합성 데모 이미지" width="720" height="450" style="width:100%;height:auto;border-radius:var(--radius-sm);margin-bottom:1rem;" loading="lazy" onerror="this.style.display='none'">
-      <div class="edition-section-body">
-        <p>아침 일찍 감천문화마을로. 사람들로 북적이기 전인 오전 8시, 마을은 조용합니다. 푸른 지붕 사이로 보이는 바다가 그림 같습니다. 좁은 골목길을 따라 걷다 보면 동네 할머니가 운영하는 작은 가게에서 따뜻한 식혜 한 잔을 건네줍니다.</p>
-        <p>오후에는 해운대 해변으로. 사람이 붐비는 백사장보다 동백섬 산책로를 따라 천천히 걷습니다. 바다를 보며 잠시 앉아 있기 좋은 벤치가 여러 곳 있습니다.</p>
+    <section class="lt-day">
+      <div class="lt-day-media">
+        <img src="../assets/images/busan-food.webp" alt="부산 현지 음식과 마지막 날을 표현한 여행 시각 자료">
+        <div class="lt-day-index">Day 03 · Songdo / Nampo</div>
       </div>
-      <div class="info-item">
-        <strong>감천문화마을</strong> 감천동 · 골목 · 아침 방문 추천
+      <div class="lt-day-copy">
+        <div class="day-no">DAY 03 · LEAVE ROOM TO END</div>
+        <h2>마지막 날에도<br>하나를 덜 넣기.</h2>
+        <p>송도에서는 케이블카보다 해안 산책을 선택합니다. 돌아가는 시간을 빽빽하게 채우지 않고, 찻집에 앉아 여행을 정리할 여백을 남깁니다. 남포동 골목을 마지막으로 걷고 부산역으로 돌아갑니다.</p>
+        <div class="lt-day-route">
+          <div><time>09:40</time><span><strong>송도</strong> · 바다를 따라 느린 산책</span></div>
+          <div><time>12:20</time><span><strong>찻집</strong> · 여행의 마지막 긴 휴식</span></div>
+          <div><time>15:30</time><span><strong>남포</strong> · 마지막 골목 후 부산역 이동</span></div>
+        </div>
       </div>
-      <div class="info-item">
-        <strong>동백섬 산책로</strong> 해운대 · 해안 산책
-      </div>
-    </div>
+    </section>
 
-    <!-- Day 3 -->
-    <div class="edition-section">
-      <div class="edition-section-number">3일차</div>
-      <h2>송도 해안과 돌아가는 길</h2>
-      <img src="../assets/images/busan-food.webp" alt="부산 현지 음식의 합성 데모 이미지" width="720" height="450" style="width:100%;height:auto;border-radius:var(--radius-sm);margin-bottom:1rem;" loading="lazy" onerror="this.style.display='none'">
-      <div class="edition-section-body">
-        <p>마지막 날은 송도 해안 케이블카 대신 해안 산책로를 선택했습니다. 느린 걸음으로 바닷가를 걸으며 2박 3일의 여행을 천천히 마무리합니다. 산책로 끝에 있는 작은 찻집에서 동네 아주머니가 건네주는 따뜻한 차 한 잔이 여행의 마침표.</p>
+    <footer class="lt-edition-outro">
+      <div class="lt-section-code" style="color:var(--lt-lime);">Your edit matters</div>
+      <h2>다음 여행판은<br>같지 않아야 합니다.</h2>
+      <p>이번 여행판에서 너무 빠르거나, 너무 유명하거나, 더 오래 머물고 싶은 부분을 알려주세요. 다음 판의 동선과 하루 밀도가 실제로 달라집니다.</p>
+      <div class="lt-home-actions">
+        <a href="feedback.html" class="btn btn-accent">이 여행판에 의견 남기기</a>
+        <a href="traveler-home.html" class="btn btn-outline" style="color:#fff;">내 여행으로</a>
       </div>
-      <div class="info-item">
-        <strong>송도 해안 산책로</strong> 송도 · 해안 · 산책
-      </div>
-    </div>
-
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border-light);">
-      <a href="feedback.html" class="btn btn-accent">이 여행판에 의견 남기기</a>
-      <a href="traveler-home.html" class="btn btn-outline">내 여행으로</a>
-    </div>
+      <p class="lt-qa-note" style="margin-top:2rem;color:rgba(255,255,255,.4);">예시 여행판이며 실시간 운영시간·가격·예약 가능 여부를 제공하지 않습니다.</p>
+    </footer>
   </main>
-
-  <footer class="site-footer">
-    <p>Living Travel — Interactive Concept Demo · Synthetic content · Not real travel information</p>
-  </footer>
 </body>
 </html>
