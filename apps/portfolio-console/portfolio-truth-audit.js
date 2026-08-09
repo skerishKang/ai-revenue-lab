@@ -49,7 +49,7 @@
   function ownerUiStatusFor(number) {
     var n = Number(number);
     if (boundaryFor(n) || n === 54) return OWNER.NOT_APPLICABLE;
-    if (n === 1) return OWNER.REJECTED;
+    if (n === 1 || n === 2) return OWNER.REJECTED;
     if (OWNER_APPROVED[n]) return OWNER.APPROVED;
     return OWNER.REVIEW_REQUIRED;
   }
