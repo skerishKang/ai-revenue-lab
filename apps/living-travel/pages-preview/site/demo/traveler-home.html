@@ -1,96 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="robots" content="noindex,nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 내 여행</title>
-  <link rel="stylesheet" href="../assets/style.css">
-  <link rel="stylesheet" href="../assets/demo.css">
-</head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
-
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html" class="active">내 여행</a>
-      <a href="history.html">지난 기록</a>
-      <a href="../index.html">홈</a>
-    </div>
-  </nav>
-
-  <div class="demo-home-header">
-    <span class="badge badge-published" style="margin-bottom:0.5rem;display:inline-block;">여행자 B-014</span>
-    <h1>여행자 B-014 님</h1>
-    <p class="meta">부산 · 2박 3일 · 천천히 · 조용한 여행</p>
-    <div class="demo-home-summary">
-      <div class="demo-home-summary-item">
-        <strong>현재 여행판</strong>
-        1판
-      </div>
-      <div class="demo-home-summary-item">
-        <strong>상태</strong>
-        <span class="badge badge-published">발행됨</span>
-      </div>
-      <div class="demo-home-summary-item">
-        <strong>여행 기간</strong>
-        2박 3일
-      </div>
-    </div>
-  </div>
-
-  <main class="container">
-    <div class="notice">
-      <strong>Synthetic Preview — Demo</strong><br>
-      이 화면은 제품 검토용 가상 데이터입니다. 실제 여행 정보나 사용자 데이터를 사용하지 않습니다.
-    </div>
-
-    <div class="dashboard-section-title">
-      <h2>최신 여행판</h2>
-    </div>
-
-    <div class="demo-edition-cover" style="cursor:pointer;padding:0;overflow:hidden;" onclick="window.location.href='edition.html'">
-      <img src="../assets/images/edition-cover.webp" alt="부산 여행판 커버 합성 데모 이미지" width="720" height="450" style="width:100%;height:auto;display:block;" onerror="this.style.display='none'">
-      <div style="padding:1.5rem;">
-        <h2>부산: 골목과 바다, 그리고 조용한 아침</h2>
-        <p class="meta">Edition #1 · 2026. 7. 24. · 발행됨</p>
-        <div style="margin-top:0.75rem;">
-          <span class="badge badge-published">published</span>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
-      <a href="edition.html" class="btn btn-accent">여행판 읽기</a>
-      <a href="feedback.html" class="btn btn-outline">이 여행판에 의견 남기기</a>
-    </div>
-
-    <div class="preferences-section">
-      <h3>내 여행 취향</h3>
-      <div class="preferences-grid">
-        <div class="preference-item">
-          <label>목적지</label>
-          <span class="value">부산</span>
-        </div>
-        <div class="preference-item">
-          <label>속도</label>
-          <span class="value">천천히</span>
-        </div>
-        <div class="preference-item">
-          <label>관심사</label>
-          <span class="value">골목 · 현지 음식 · 바다</span>
-        </div>
-        <div class="preference-item">
-          <label>분위기</label>
-          <span class="value">조용한 · 로컬 감성</span>
-        </div>
-      </div>
-    </div>
+<head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Living Travel — 나의 부산</title><link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/demo.css"><link rel="stylesheet" href="../assets/b2-v2-457.css"></head>
+<body class="lt-v2">
+  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Demo · Synthetic data · No booking</span>
+  <header class="lt-topbar"><a class="lt-wordmark" href="traveler-home.html">Living Travel</a><nav class="lt-nav" aria-label="여행자 메뉴"><a href="traveler-home.html">Current trip</a><a href="history.html">Archive</a><a href="../index.html">Home</a></nav></header>
+  <main>
+    <section class="lt-home-hero">
+      <div class="lt-home-copy"><div class="lt-kicker">Current journey · Edition 01</div><h1>부산을<br>천천히 통과하는<br>3일.</h1><p>초량의 오래된 골목에서 시작해 영도의 바람과 송도의 아침으로 이어지는 여행. 넓게 훑는 대신 세 개의 동네에 오래 머무는 흐름으로 편집했습니다.</p><div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;"><a class="lt-primary" href="edition.html">여행판 읽기 →</a><a class="lt-secondary" href="feedback.html">이 여행판에 의견 남기기</a></div></div>
+      <aside class="lt-current-edition" aria-label="현재 여행판"><article class="lt-edition-card" onclick="window.location.href='edition.html'" tabindex="0" onkeydown="if(event.key==='Enter')window.location.href='edition.html'"><div class="issue">Living Travel / Edition 01 / Busan</div><h2>골목과 바다,<br>조용한 아침</h2><div class="route-mini" aria-hidden="true"><span></span><span></span><span></span></div><div><strong>CHORYANG → YEONGDO → SONGDO</strong><p style="margin:.4rem 0 0;color:var(--lt-muted);font-size:.82rem;">2026.07.24 · 2박 3일 · 느린 속도</p></div></article></aside>
+    </section>
+    <section class="lt-home-body"><div class="lt-home-grid"><div><div class="lt-kicker" style="color:var(--lt-sea);">Why this route</div><h2 class="lt-home-section-title">당신이 고른 취향이<br>이 경로에 남아 있습니다.</h2><p style="max-width:720px;line-height:1.8;color:#536168;">유명 관광지를 빠르게 연결하는 대신, 아침 시간과 골목 산책을 우선했습니다. 이동 횟수를 줄이고 각 동네의 체류 시간을 늘려 여행의 밀도를 조절했습니다.</p></div><aside class="lt-taste-list" aria-label="여행 취향 요약"><div><small>Pace</small><strong>천천히</strong></div><div><small>Focus</small><strong>골목 · 음식 · 바다</strong></div><div><small>Avoid</small><strong>혼잡 · 유명지 위주</strong></div><div><small>Mood</small><strong>조용한 · 로컬</strong></div></aside></div></section>
   </main>
-
-  <footer class="site-footer">
-    <p>Living Travel — Interactive Concept Demo</p>
-  </footer>
-</body>
-</html>
+</body></html>

@@ -4,74 +4,62 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 의견 남기기</title>
+  <title>Living Travel — 다음 여행의 방향</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/b2-v2-457.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Demo · Synthetic data · No booking · 다음 여행판에 반영하기</span>
+  <header class="lt-topbar">
+    <a class="lt-wordmark" href="traveler-home.html">Living Travel</a>
+    <nav class="lt-nav" aria-label="여행자 메뉴"><a href="edition.html">Edition 01</a><a href="history.html">Archive</a></nav>
+  </header>
 
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html">내 여행</a>
-      <a href="history.html">지난 기록</a>
-      <a href="../index.html">홈</a>
-    </div>
-  </nav>
+  <main class="lt-pref-layout">
+    <aside class="lt-pref-aside">
+      <div class="lt-kicker">Recut the next edition</div>
+      <h1>좋았던 여행은<br>남기고,<br>다음은 바꿉니다.</h1>
+      <p>피드백은 별점이 아니라 다음 여행의 편집 지시가 됩니다. 속도, 장소 밀도, 동네의 깊이를 직접 조정합니다.</p>
+      <div class="lt-trip-signature"><span>EDITION 01</span><span>→</span><span>EDITION 02</span></div>
+    </aside>
 
-  <div class="demo-feedback-page">
-    <div class="demo-feedback-container">
-      <h1>이 여행판에 의견을 남겨주세요</h1>
-      <p class="subtitle">선택한 의견을 다음 여행판의 편집 방향으로 사용합니다.</p>
-
+    <section class="lt-pref-main">
       <form method="get" action="comparison.html" onsubmit="return submitFeedback(event)">
-
-        <div class="preferences-section" style="margin-bottom:1rem;">
-          <h3>다음 여행판에서 원하는 방향</h3>
-
-          <div class="checkbox-group">
-            <label><input type="checkbox" id="fb-slower" checked> 더 천천히</label>
-            <label><input type="checkbox" id="fb-less-tourist" checked> 유명 관광지 줄이기</label>
-            <label><input type="checkbox" id="fb-more-food"> 현지 음식 늘리기</label>
-            <label><input type="checkbox" id="fb-less-walk"> 걷는 일정 줄이기</label>
-            <label><input type="checkbox" id="fb-quieter" checked> 조용한 장소 늘리기</label>
+        <div class="lt-pref-section">
+          <div class="lt-pref-section-label">01 · Pace</div>
+          <div class="lt-pref-options">
+            <button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">더 천천히 · 장소 수 줄이기</button>
+            <button type="button" class="lt-pref-choice" onclick="togglePref(this)">걷는 구간 줄이기</button>
           </div>
         </div>
-
-        <div class="preferences-section" style="margin-bottom:1rem;">
-          <h3>추가 의견 (선택)</h3>
-          <textarea id="freeText" rows="3" placeholder="더 조용하고 느린 동네 중심으로 바꿔 주세요." maxlength="200" oninput="updateCharCount()"></textarea>
-          <div class="char-counter"><span id="charCount">0</span>/200</div>
+        <div class="lt-pref-section">
+          <div class="lt-pref-section-label">02 · Places</div>
+          <div class="lt-pref-options">
+            <button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">유명 관광지 더 줄이기</button>
+            <button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">조용한 동네 더 늘리기</button>
+            <button type="button" class="lt-pref-choice" onclick="togglePref(this)">현지 음식 비중 늘리기</button>
+          </div>
         </div>
-
-        <div class="notice" style="margin-bottom:1.5rem;">
-          <strong>Demo mode</strong><br>
-          선택한 의견을 다음 여행판의 편집 방향으로 사용합니다. 실제 AI 처리 없이 미리 구성된 시나리오로 변화를 보여줍니다.
+        <div class="lt-pref-section">
+          <div class="lt-pref-section-label">03 · Your note</div>
+          <div>
+            <textarea id="freeText" rows="5" maxlength="200" placeholder="예: 다음에는 해변보다 동네 골목에서 보내는 시간을 더 늘려 주세요." oninput="updateCharCount()" style="font-size:1.05rem;line-height:1.7;resize:vertical;"></textarea>
+            <div class="char-counter"><span id="charCount">0</span>/200</div>
+          </div>
         </div>
-
-        <button type="submit" class="btn btn-accent" style="width:100%;padding:0.75rem;font-size:1rem;">
-          다음 여행판에 반영하기
-        </button>
+        <div class="lt-pref-action">
+          <small>이 데모는 선택을 외부로 전송하지 않습니다. 다음 화면에서 같은 부산 여행이 어떻게 재편집되는지 보여줍니다.</small>
+          <button type="submit" class="lt-primary">Edition 02로 재편집하기 →</button>
+        </div>
       </form>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
-  function updateCharCount() {
-    var el = document.getElementById('freeText');
-    var count = document.getElementById('charCount');
-    count.textContent = el.value.length;
-    if (el.value.length >= 200) {
-      el.value = el.value.substring(0, 200);
-      count.textContent = '200';
-    }
-  }
-
-  function submitFeedback(e) {
-    e.preventDefault();
-    window.location.href = 'comparison.html';
-  }
+  function togglePref(el){el.classList.toggle('selected');}
+  function updateCharCount(){var el=document.getElementById('freeText');if(el.value.length>200)el.value=el.value.substring(0,200);document.getElementById('charCount').textContent=el.value.length;}
+  function submitFeedback(e){e.preventDefault();window.location.href='comparison.html';return false;}
   </script>
 </body>
 </html>

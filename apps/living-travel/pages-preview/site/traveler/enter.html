@@ -4,41 +4,42 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 내 에디션 열기</title>
+  <title>Living Travel — 나의 여행 열기</title>
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/b2-v2-457.css">
 </head>
-<body>
-  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+<body class="lt-v2">
+  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Synthetic Preview</span>
+  <header class="lt-topbar">
+    <a class="lt-wordmark" href="../index.html">Living Travel</a>
+    <nav class="lt-nav" aria-label="주요 메뉴"><a href="../demo/intro.html">Journey 01</a><a href="../operator/login.html">Operator</a></nav>
+  </header>
 
-  <div class="invitation-page">
-    <div class="invitation-card">
-      <span class="invitation-envelope-icon">✉</span>
-      <h1>당신의 에디션이 도착했습니다</h1>
-      <p class="subtitle">
-        초대 토큰을 입력하면<br>
-        나만의 여행 에디션을 열 수 있습니다
-      </p>
-
-      <div class="notice" style="text-align: left;">
-        <strong>Synthetic Preview</strong><br>
-        이 화면은 가상 데이터로 구성되며 실제 인증을 수행하지 않습니다.
+  <main class="lt-entry">
+    <section class="lt-entry-main">
+      <div class="lt-kicker">Private journey access</div>
+      <h1>Open the trip <span>made for you.</span></h1>
+      <div class="lt-entry-copy">
+        <p>초대받은 여행자만 자신의 Edition과 피드백 기록을 열 수 있습니다. 이 정적 검토 화면에서는 저장이나 실제 인증 없이 다음 화면으로 이동합니다.</p>
+        <a class="lt-primary" href="dashboard.html">나의 여행 열기 →</a>
       </div>
-
-      <div class="token-field">
-        <input type="text" id="token" name="token" autocomplete="off"
-               placeholder="초대 토큰 입력"
-               value="lt_preview_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
-               aria-label="Access Token">
+      <div style="max-width:620px;margin-top:2rem;padding-top:1.4rem;border-top:1px solid var(--lt-line-dark);">
+        <label for="token" style="color:rgba(255,255,255,.62);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;">Invitation token</label>
+        <input type="text" id="token" name="token" autocomplete="off" value="lt_preview_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6" aria-label="Access Token" style="margin-top:.5rem;background:transparent;color:var(--lt-white);border:0;border-bottom:1px solid rgba(255,255,255,.35);border-radius:0;padding:.8rem 0;">
       </div>
+    </section>
 
-      <div class="action-grid" style="justify-content: center;">
-        <a href="dashboard.html" class="btn btn-primary">에디션 열기</a>
-      </div>
-
-      <p class="small" style="margin-top: 1rem;">
-        ※ 정적 프리뷰: 실제 인증 없이 대시보드로 이동합니다.
-      </p>
-    </div>
-  </div>
+    <aside class="lt-route-stage" aria-label="private journey route">
+      <div class="lt-map-orbit" aria-hidden="true"></div>
+      <div class="lt-route-line" aria-hidden="true"></div>
+      <i class="lt-route-dot lt-route-dot--1" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--2" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--3" aria-hidden="true"></i>
+      <span class="lt-place-label lt-place-label--1">PRIVATE</span>
+      <span class="lt-place-label lt-place-label--2">EDITION 01</span>
+      <span class="lt-place-label lt-place-label--3">BUSAN</span>
+      <div class="lt-route-meta"><div><strong>1 active trip</strong><span>current</span></div><div><strong>2 editions</strong><span>archive</span></div><div><strong>feedback linked</strong><span>adaptation</span></div></div>
+    </aside>
+  </main>
 </body>
 </html>

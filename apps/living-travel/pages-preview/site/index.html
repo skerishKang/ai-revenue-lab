@@ -4,39 +4,47 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 당신의 여행이 한 권의 에디션이 되다</title>
+  <title>Living Travel — 나를 위해 해석된 여행</title>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/b2-v2-457.css">
 </head>
-<body>
-  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+<body class="lt-v2">
+  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Synthetic Preview</span>
+  <header class="lt-topbar">
+    <a class="lt-wordmark" href="index.html">Living Travel</a>
+    <nav class="lt-nav" aria-label="주요 메뉴">
+      <a href="demo/intro.html">Journey 01</a>
+      <a href="demo/history.html">Archive</a>
+      <a href="operator/login.html">Operator</a>
+    </nav>
+  </header>
 
-  <main class="hero">
-    <div class="hero-content">
-      <h1 class="hero-brand">
-        Living
-        <span class="hero-brand-accent">Travel</span>
-      </h1>
-      <p class="hero-tagline">
-        당신의 여행이<br>
-        한 권의 에디션이 됩니다
-      </p>
-      <p class="hero-description">
-        매 여행마다 당신을 위해 기록된 개인 맞춤 에디션.<br>
-        읽고, 반응하고, 다시 찾아보는 나만의 여행 아카이브.
-      </p>
-
-      <div class="hero-actions">
-        <a href="demo/intro.html" class="btn btn-primary" style="font-size:1.05rem;padding:0.75rem 1.75rem;">🎬 인터랙티브 데모 시작하기</a>
-        <div class="hero-divider"></div>
-        <a href="traveler/enter.html" class="btn btn-outline">Traveler — 내 에디션 보기</a>
-        <a href="operator/login.html" class="hero-operator-link">Operator Preview</a>
+  <main class="lt-entry">
+    <section class="lt-entry-main">
+      <div class="lt-kicker">Personal travel edition · Busan</div>
+      <h1>Move through <span>your Busan.</span></h1>
+      <div class="lt-entry-copy">
+        <p>장소를 나열하지 않습니다. 당신이 좋아하는 속도와 동네, 시간의 결을 읽고 한 번의 여행을 하나의 흐름으로 편집합니다.</p>
+        <a class="lt-primary" href="demo/preferences.html">내 여행 시작하기 →</a>
+        <a class="lt-secondary" href="demo/edition.html">현재 여행판 먼저 보기</a>
       </div>
+    </section>
 
-      <div class="notice" style="margin-top: 2.5rem; max-width: 440px; margin-left: auto; margin-right: auto;">
-        <strong>Synthetic Preview</strong><br>
-        이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다. 모든 버튼과 링크는 정적 화면 간 이동만 처리합니다.
+    <aside class="lt-route-stage" aria-label="부산 여행 경로 미리보기">
+      <div class="lt-map-orbit" aria-hidden="true"></div>
+      <div class="lt-route-line" aria-hidden="true"></div>
+      <i class="lt-route-dot lt-route-dot--1" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--2" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--3" aria-hidden="true"></i>
+      <span class="lt-place-label lt-place-label--1">01 · CHORYANG</span>
+      <span class="lt-place-label lt-place-label--2">02 · YEONGDO</span>
+      <span class="lt-place-label lt-place-label--3">03 · SONGDO</span>
+      <div class="lt-route-meta">
+        <div><strong>2박 3일</strong><span>duration</span></div>
+        <div><strong>느린 속도</strong><span>pace</span></div>
+        <div><strong>골목 · 바다</strong><span>focus</span></div>
       </div>
-    </div>
+    </aside>
   </main>
 </body>
 </html>

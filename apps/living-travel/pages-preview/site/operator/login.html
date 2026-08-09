@@ -6,37 +6,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Living Travel — Editorial Desk</title>
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/b2-v2-457.css">
 </head>
-<body>
-  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+<body class="lt-v2">
+  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Synthetic Preview</span>
+  <header class="lt-topbar">
+    <a class="lt-wordmark" href="../index.html">Living Travel</a>
+    <nav class="lt-nav" aria-label="주요 메뉴"><a href="../traveler/enter.html">Traveler</a><a href="../demo/intro.html">Journey 01</a></nav>
+  </header>
 
-  <div class="operator-login-page">
-    <div class="operator-login-card">
-      <h1>Editorial Desk</h1>
-      <p class="subtitle" style="text-align: center; font-size: 0.9rem;">
-        Living Travel 운영자 전용 워크스페이스
-      </p>
-
-      <div class="notice" style="text-align: left;">
-        <strong>Synthetic Preview</strong><br>
-        이 화면은 제품 검토용 가상 데이터로 구성되며 실제 인증을 수행하지 않습니다.
+  <main class="lt-entry">
+    <section class="lt-entry-main">
+      <div class="lt-kicker">Operator / Editorial desk</div>
+      <h1>Review the route <span>before it leaves.</span></h1>
+      <div class="lt-entry-copy">
+        <p>여행자의 취향, 생성된 경로, 근거와 이전 피드백을 한 흐름에서 확인하고 발행 여부를 결정합니다. 여행자 화면과 같은 장소·경로 언어를 쓰되 더 빠르게 스캔할 수 있게 구성합니다.</p>
+        <a class="lt-primary" href="dashboard.html">Editorial Desk 열기 →</a>
       </div>
-
-      <form method="post" action="#" onsubmit="return false;">
+      <form method="post" action="#" onsubmit="return false;" style="max-width:620px;margin-top:2rem;padding-top:1.4rem;border-top:1px solid var(--lt-line-dark);">
         <input type="hidden" name="csrf_token" value="preview-csrf-token">
-        <label for="secret">Operator Secret</label>
-        <input type="password" id="secret" name="secret" required autocomplete="off"
-               value="preview-operator-secret">
-        <p class="small" style="margin-top: -0.5rem; margin-bottom: 1rem;">
-          ※ 정적 프리뷰: 실제 인증 없이 <a href="dashboard.html">대시보드</a>로 이동합니다.
-        </p>
-        <a href="dashboard.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Login</a>
+        <label for="secret" style="color:rgba(255,255,255,.62);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;">Operator secret</label>
+        <input type="password" id="secret" name="secret" required autocomplete="off" value="preview-operator-secret" style="margin-top:.5rem;background:transparent;color:var(--lt-white);border:0;border-bottom:1px solid rgba(255,255,255,.35);border-radius:0;padding:.8rem 0;">
       </form>
+    </section>
 
-      <div style="text-align: center; margin-top: 1rem;">
-        <a href="../index.html" class="hero-operator-link">← Preview Home</a>
-      </div>
-    </div>
-  </div>
+    <aside class="lt-route-stage" aria-label="operator review queue summary">
+      <div class="lt-map-orbit" aria-hidden="true"></div>
+      <div class="lt-route-line" aria-hidden="true"></div>
+      <i class="lt-route-dot lt-route-dot--1" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--2" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--3" aria-hidden="true"></i>
+      <span class="lt-place-label lt-place-label--1">PREFERENCES</span>
+      <span class="lt-place-label lt-place-label--2">DRAFT ROUTE</span>
+      <span class="lt-place-label lt-place-label--3">PUBLISH</span>
+      <div class="lt-route-meta"><div><strong>3 pending</strong><span>queue</span></div><div><strong>1 recut</strong><span>feedback</span></div><div><strong>Busan</strong><span>active destination</span></div></div>
+    </aside>
+  </main>
 </body>
 </html>
