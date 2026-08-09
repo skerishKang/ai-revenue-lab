@@ -19,17 +19,17 @@
   // #396 hard exclusions. Repository links are supplied only where an
   // authoritative source is recorded. Missing links remain intentionally null.
   var BOUNDARIES = Object.freeze({
-    3:  { kind:"external-parallel",      title:"External / Parallel Track", korean:"외부·병렬 작업", repository:null },
-    5:  { kind:"expanded-successor",     title:"DanjiOn", korean:"단지온", repository:"https://github.com/skerishKang/02-danji-on" },
-    23: { kind:"external-implementation",title:"LoveBud", korean:"LoveBud", repository:"https://github.com/skerishKang/LoveBud" },
-    24: { kind:"external-implementation",title:"LoveTree 3.0", korean:"LoveTree 3.0", repository:"https://github.com/skerishKang/lovetree3.0" },
-    25: { kind:"external-implementation",title:"Love Matchmaking", korean:"러브 매치메이킹", repository:"https://github.com/skerishKang/401-love-match-making" },
-    26: { kind:"integrated-successor",    title:"Ieeon", korean:"이어온", repository:null },
-    27: { kind:"integrated-successor",    title:"Sasillo", korean:"사실로", repository:null },
-    28: { kind:"integrated-successor",    title:"Ieeon", korean:"이어온", repository:null },
-    30: { kind:"expanded-successor",      title:"400 AI Finder", korean:"400-ai-finder", repository:"https://github.com/skerishKang/400-ai-finder" },
-    31: { kind:"integrated-successor",    title:"Sasillo", korean:"사실로", repository:null },
-    50: { kind:"integrated-successor",    title:"Ieeon", korean:"이어온", repository:null }
+    3:  { kind:"external-parallel",       title:"External / Parallel Track", korean:"외부·병렬 작업", repository:null },
+    5:  { kind:"expanded-successor",      title:"DanjiOn", korean:"단지온", repository:"https://github.com/skerishKang/02-danji-on" },
+    23: { kind:"external-implementation", title:"LoveBud", korean:"LoveBud", repository:"https://github.com/skerishKang/LoveBud" },
+    24: { kind:"external-implementation", title:"LoveTree 3.0", korean:"LoveTree 3.0", repository:"https://github.com/skerishKang/lovetree3.0" },
+    25: { kind:"external-implementation", title:"Love Matchmaking", korean:"러브 매치메이킹", repository:"https://github.com/skerishKang/401-love-match-making" },
+    26: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null },
+    27: { kind:"integrated-successor",     title:"Sasillo", korean:"사실로", repository:null },
+    28: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null },
+    30: { kind:"expanded-successor",       title:"400 AI Finder", korean:"400-ai-finder", repository:"https://github.com/skerishKang/400-ai-finder" },
+    31: { kind:"integrated-successor",     title:"Sasillo", korean:"사실로", repository:null },
+    50: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null }
   });
 
   function boundaryFor(number) {
@@ -56,7 +56,11 @@
       // presentation class only; the exact boundary kind remains separately set.
       business.portfolioClass = "expanded-successor";
       business.boundaryKind = boundary.kind;
-      business.lifecycle = boundary.kind === "integrated-successor" ? "integrated_successor" : "external_successor";
+      business.lifecycle = boundary.kind === "integrated-successor"
+        ? "integrated_successor"
+        : boundary.kind === "expanded-successor"
+          ? "expanded_successor"
+          : "external_implementation";
       business.state = "external";
       business.uiStatus = "NOT_APPLICABLE";
       business.uxStatus = "NOT_APPLICABLE";
@@ -100,7 +104,7 @@
     if (boundary.kind === "integrated-successor") {
       return lang === "en"
         ? "Integrated into " + boundary.title + " · external development"
-        : boundary.korean + "으로 통합 · 외부 개발";
+        : "통합 → " + boundary.korean + " · 외부 개발";
     }
     if (boundary.kind === "external-implementation") {
       return lang === "en"
@@ -112,7 +116,7 @@
     }
     return lang === "en"
       ? "Expanded to " + boundary.title + " · external development"
-      : boundary.korean + "으로 확장 · 외부 개발";
+      : "확장 → " + boundary.korean + " · 외부 개발";
   }
 
   function decorateRow(row) {
