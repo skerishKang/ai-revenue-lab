@@ -1,0 +1,6 @@
+@import url("styles/base.css?v=personal-sports-20260728-1");
+@import url("styles/match-preview-watch.css?v=personal-sports-20260728-1");
+@import url("styles/recap.css?v=personal-sports-20260728-1");
+@import url("styles/player-season-mobile.css?v=personal-sports-20260728-1");
+
+.guide-entry{display:inline-flex;align-items:center;min-height:34px;padding:0 11px;border:1px solid currentColor;color:inherit;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.03em;white-space:nowrap}.guide-entry:hover{background:var(--ink,#17231e);color:var(--paper,#efe9d8)}.guide-entry:focus-visible{outline:3px solid #86b66b;outline-offset:3px}@media(max-width:720px){.guide-entry{white-space:normal;text-align:center}}
