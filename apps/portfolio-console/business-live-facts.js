@@ -222,7 +222,8 @@
       if (discovery.ui && discovery.ui.status === "conflict") {
         parts.push("UI:" + l("conflict"));
       }
-      target.textContent = parts.length ? parts.join(" ") : "";
+      var nextText = parts.length ? parts.join(" ") : "";
+      if (target.textContent !== nextText) target.textContent = nextText;
     }
   }
 
