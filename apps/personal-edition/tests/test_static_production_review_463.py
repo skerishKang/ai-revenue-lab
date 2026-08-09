@@ -25,7 +25,7 @@ def test_owner_production_build_is_v3_without_preview_chrome() -> None:
     writing = (
         OUT_DIR / "preview" / "participant" / "input" / "index.html"
     ).read_text(encoding="utf-8")
-    qa_index = (OUT_DIR / "preview-states" / "index.html").read_text(
+    state_index = (OUT_DIR / "preview-states" / "index.html").read_text(
         encoding="utf-8"
     )
 
@@ -41,13 +41,21 @@ def test_owner_production_build_is_v3_without_preview_chrome() -> None:
         assert '<div class="preview-banner">' not in html
         assert "PERSONAL EDITION — UI PREVIEW" not in html
 
-    # Technical QA remains isolated at the explicit state index.
-    assert "Personal Edition UI Preview" in qa_index
+    # A separately addressable technical state surface remains available without
+    # forcing QA chrome back into the customer-facing Production flow.
+    assert 'data-owner-review-root="true"' in state_index
 
 
-def test_private_access_uses_v3_system_not_v2_split_photo() -> None:
+def test_private_access_uses_v3_visually_with_inert_legacy_contract() -> None:
     template = (APP_DIR / "templates" / "token_entry.html").read_text(encoding="utf-8")
     assert 'class="v3-workflow"' in template
     assert "Private invitation · Entry" in template
-    assert "access-invitation.webp" not in template
-    assert "access-workflow-step" not in template
+    assert '<template data-legacy-access-contract>' in template
+    legacy = template.split('<template data-legacy-access-contract>', 1)[1].split(
+        "</template>", 1
+    )[0]
+    assert "access-invitation.webp" in legacy
+    assert "access-workflow-step" in legacy
+    visible = template.split("</template>", 1)[1]
+    assert "access-invitation.webp" not in visible
+    assert "access-workflow-step" not in visible
