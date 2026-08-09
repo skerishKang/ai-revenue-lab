@@ -1,0 +1,53 @@
+name: Prepare B29 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/prepare-b29-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/prepare-b29-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize approved B29 UI plus synthetic UX sandbox on exact main
+        shell: bash
+        env:
+          EXPECTED_MAIN: 3d9081c96418b41841a8204cc6bfac90b5127604
+          TARGET_BRANCH: feat/b29-apartment-governance-complete-465
+          UI_BRANCH: feat/business-29-apartment-governance-ui
+          UI_SCOPE: reference/business-29-apartment-governance-v1
+          UX_BRANCH: ux/business-29-apartment-governance
+          UX_SCOPE: reference/business-29-apartment-governance-ux
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
+          git fetch origin "$UI_BRANCH" "$UX_BRANCH"
+          test "$(git rev-parse origin/$UI_BRANCH)" = d0bf2107de356501d3bfecab0576e44f83f24ab8
+          test "$(git rev-parse origin/$UX_BRANCH)" = 8e610431ed1cbcb5c2e93f89cbb12433a50b5752
+          if git ls-tree -r --name-only HEAD -- "$UI_SCOPE" | grep -q .; then
+            echo 'B29 UI scope unexpectedly exists on current main; refusing overwrite' >&2
+            exit 1
+          fi
+          git switch -c "$TARGET_BRANCH"
+          git checkout "origin/$UI_BRANCH" -- "$UI_SCOPE"
+          git checkout "origin/$UX_BRANCH" -- "$UX_SCOPE"
+          mkdir -p "$UI_SCOPE/ux"
+          cp -a "$UX_SCOPE"/. "$UI_SCOPE/ux"/
+          rm -rf "$UX_SCOPE"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$UI_SCOPE" "$UX_SCOPE"
+          git diff --cached --check
+          git commit -m 'feat(b29): integrate approved apartment UI and synthetic governance UX sandbox'
+          git push origin "$TARGET_BRANCH"
+          echo B29_PREPARE_PASS=1
