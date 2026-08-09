@@ -5,6 +5,7 @@
  *
  *  The sole identity source is business-manifest.js → window.ARL_MANIFEST.
  *  Review deployment metadata is loaded from review-surfaces-396.js.
+ *  Business launcher behavior is layered on top without changing app.js.
  */
 
 (function () {
@@ -19,7 +20,11 @@
 
   // index.html loads businesses.js immediately before app.js. Keep the review
   // registry parser-blocking so app.js sees the attached reviewSurface fields.
+  // The launcher registers a deferred DOMContentLoaded enhancement and therefore
+  // can be loaded here before app.js without racing app initialization.
   if (typeof document !== "undefined" && document.readyState === "loading") {
-    document.write('<script src="./review-surfaces-396.js?v=review-surfaces-20260809-1"><\/script>');
+    document.write('<link rel="stylesheet" href="./business-launcher.css?v=business-launcher-20260809-1">');
+    document.write('<script src="./review-surfaces-396.js?v=review-surfaces-20260809-2"><\/script>');
+    document.write('<script src="./business-launcher.js?v=business-launcher-20260809-1"><\/script>');
   }
 })();
