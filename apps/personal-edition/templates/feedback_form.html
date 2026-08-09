@@ -17,28 +17,17 @@
     <fieldset class="v3-direction-set">
       <legend>다음 호에 반영할 방향</legend>
       <div class="v3-directions">
-        {% for value, label in feedback_directions %}
-        <label class="v3-direction"><input type="checkbox" name="direction_choices" value="{{ value }}"><span>{{ label }}</span></label>
-        {% endfor %}
+        {% for value, label in feedback_directions %}<label class="v3-direction"><input type="checkbox" name="direction_choices" value="{{ value }}"><span>{{ label }}</span></label>{% endfor %}
       </div>
     </fieldset>
 
     {% if content and content.sections %}
-    <div class="v3-feedback-field">
-      <label for="selected_section_id">어느 부분에 대한 메모인가요?</label>
-      <select id="selected_section_id" name="selected_section_id">
-        <option value="">에디션 전체</option>
-        {% for section in content.sections %}<option value="{{ section.section_id }}">{{ section.title }}</option>{% endfor %}
-      </select>
-    </div>
+    <div class="v3-feedback-field"><label for="selected_section_id">어느 부분에 대한 메모인가요?</label><select id="selected_section_id" name="selected_section_id"><option value="">에디션 전체</option>{% for section in content.sections %}<option value="{{ section.section_id }}">{{ section.title }}</option>{% endfor %}</select></div>
     {% endif %}
 
-    <div class="v3-feedback-field">
-      <label for="free_text">편집자에게 남길 문장</label>
-      <textarea id="free_text" name="free_text" rows="5" placeholder="예: 이 장면은 더 구체적으로 읽고 싶어요. 다음 호에서는 개인화가 실제로 어떻게 달라졌는지 보여주세요." maxlength="2000"></textarea>
-    </div>
+    <div class="v3-feedback-field"><label for="free_text">편집자에게 남길 문장</label><textarea id="free_text" name="free_text" rows="5" placeholder="예: 이 장면은 더 구체적으로 읽고 싶어요. 다음 호에서는 개인화가 실제로 어떻게 달라졌는지 보여주세요." maxlength="2000"></textarea></div>
 
-    <div class="v3-feedback-submit"><button type="submit" class="btn btn-primary">다음 호에 방향 전달하기</button></div>
+    <div class="v3-feedback-submit"><button type="submit" class="btn btn-primary" aria-label="편집 메모 전달하기">다음 호에 방향 전달하기</button></div>
     {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}
   </form>
 </section>
