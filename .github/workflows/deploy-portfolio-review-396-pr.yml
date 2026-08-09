@@ -40,6 +40,15 @@ jobs:
           printf 'business_id\tsource_pr\texact_sha\tsource_directory\tentry_file\tproject\tpublic_url\tsource_sha256\tpublic_sha256\tstatus\treason\n' > /tmp/portfolio-review-396-results.tsv
           failures=0
 
+          proj_codes="$(curl -sS -o /tmp/projects.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=200" || true)"
+          echo "cloudflare_pages_project_list_http=${proj_codes}" >&2
+          if test "${proj_codes}" = '200'; then
+            jq -r '.result | length' /tmp/projects.json 2>/dev/null | xargs -I{} echo "cloudflare_pages_project_count={}" >&2
+            jq -r '.result[] | .name' /tmp/projects.json 2>/dev/null | sed 's/^/CF_PROJECT /' >&2
+          fi
+
           deploy_one() {
             id="$1"; pr="$2"; sha="$3"; dir="$4"; project="$5"; entry="$6"
             reason=''
@@ -145,8 +154,10 @@ jobs:
               echo "B${id}: FAIL — ${reason}" >&2
             fi
             source_hash="$(git show "${sha}:${dir}/${entry}" 2>/dev/null | sha256sum | awk '{print $1}')"
-            public_hash="$(curl -L -sS -o /tmp/pubhash.html -w '' "${url}" 2>/dev/null && sha256sum /tmp/pubhash.html | awk '{print $1}')"
-            test "${status}" = 'PASS' || public_hash=''
+            public_hash=''
+            if test "${status}" = 'PASS'; then
+              public_hash="$(curl -L -sS -o /tmp/pubhash.html -w '' "${url}" 2>/dev/null && sha256sum /tmp/pubhash.html | awk '{print $1}')" || true
+            fi
             printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
               "${id}" "${pr}" "${sha}" "${dir}" "${entry}" "${project}" "${url}" "${source_hash}" "${public_hash}" "${status}" "${reason}" >> /tmp/portfolio-review-396-results.tsv
             sleep 4
