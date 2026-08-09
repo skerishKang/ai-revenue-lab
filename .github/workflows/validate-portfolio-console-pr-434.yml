@@ -47,5 +47,8 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run browser tests
-        run: npm run test:browser
+      - name: Run baseline browser regression
+        run: npx playwright test tests/browser.spec.js --project=chromium-desktop
+
+      - name: Run Business launcher browser matrix
+        run: npx playwright test tests/business-launcher.spec.js
