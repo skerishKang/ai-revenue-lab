@@ -1,0 +1,175 @@
+name: Cleanup remaining numbered Pages legacy 396
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: numbered-legacy-cleanup-396
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/portfolio-review-deploy-396'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check out cleanup authority branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Delete only exact allowlisted numbered legacy projects
+        shell: bash
+        run: |
+          set -u
+          test -n "${CLOUDFLARE_API_TOKEN}" || exit 1
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || exit 1
+          api_base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+          auth="Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"
+          printf 'business_id\ttarget_project\tlegacy_project\ttarget_hash\tstatus\treason\n' > /tmp/results.tsv
+
+          api_call() {
+            method="$1"; url="$2"; outfile="$3"
+            attempt=0
+            while :; do
+              attempt=$((attempt + 1))
+              code="$(curl -sS -D /tmp/headers.txt -o "${outfile}" -w '%{http_code}' -X "${method}" -H "${auth}" "${url}" || true)"
+              if test "${code}" != '429'; then
+                printf '%s' "${code}"
+                return 0
+              fi
+              retry_after="$(awk 'BEGIN{IGNORECASE=1} /^retry-after:/ {gsub("\r",""); print $2}' /tmp/headers.txt | tail -1)"
+              case "${retry_after}" in ''|*[!0-9]*) retry_after=$((20 * attempt));; esac
+              test "${retry_after}" -le 120 || retry_after=120
+              echo "RATE_LIMIT_429 sleeping ${retry_after}s for ${url}" >&2
+              sleep "${retry_after}"
+              test "${attempt}" -lt 8 || {
+                printf '%s' '429'
+                return 0
+              }
+            done
+          }
+
+          delete_history_batch() {
+            project="$1"
+            list_code="$(api_call GET "${api_base}/${project}/deployments" /tmp/list.json)"
+            test "${list_code}" = '200' || return 2
+            ids="$(jq -r '.result[]?.id // empty' /tmp/list.json | head -20)"
+            test -n "${ids}" || return 1
+            deleted=0
+            while IFS= read -r did; do
+              test -n "${did}" || continue
+              dcode="$(api_call DELETE "${api_base}/${project}/deployments/${did}?force=true" /tmp/del-deployment.json)"
+              if test "${dcode}" = '200' || test "${dcode}" = '204'; then
+                deleted=$((deleted + 1))
+              fi
+              sleep 1
+            done <<< "${ids}"
+            echo "${project}: history batch deleted=${deleted}" >&2
+            test "${deleted}" -gt 0
+          }
+
+          delete_legacy() {
+            id="$1"; target="$2"; legacy="$3"; expected="$4"
+
+            case "${legacy}" in
+              "ai-revenue-business-${id}-"*) ;;
+              *) echo "REFUSING_NON_ALLOWLIST_PATTERN ${legacy}" >&2; return 10;;
+            esac
+            case "${target}" in
+              "${id}-"*) ;;
+              *) echo "REFUSING_INVALID_TARGET ${target}" >&2; return 11;;
+            esac
+
+            target_code="$(api_call GET "${api_base}/${target}" /tmp/target.json)"
+            test "${target_code}" = '200' || return 12
+            public_code="$(curl -L -sS -o /tmp/public.html -w '%{http_code}' "https://${target}.pages.dev/index.html" || true)"
+            test "${public_code}" = '200' || return 13
+            actual="$(sha256sum /tmp/public.html | awk '{print $1}')"
+            test "${actual}" = "${expected}" || return 14
+
+            legacy_code="$(api_call GET "${api_base}/${legacy}" /tmp/legacy.json)"
+            if test "${legacy_code}" = '404'; then
+              echo "${legacy}: already absent"
+              return 0
+            fi
+            test "${legacy_code}" = '200' || return 15
+
+            round=0
+            while :; do
+              round=$((round + 1))
+              dcode="$(api_call DELETE "${api_base}/${legacy}" /tmp/delete-project.json)"
+              if test "${dcode}" = '200' || test "${dcode}" = '204'; then
+                break
+              fi
+              if grep -q '8000076\|too many deployments' /tmp/delete-project.json 2>/dev/null; then
+                test "${round}" -le 20 || return 16
+                delete_history_batch "${legacy}" || true
+                sleep 5
+                continue
+              fi
+              echo "${legacy}: project delete failed HTTP ${dcode}" >&2
+              jq -c '{success,errors,messages}' /tmp/delete-project.json 2>/dev/null >&2 || true
+              return 17
+            done
+
+            for v in $(seq 1 12); do
+              vcode="$(api_call GET "${api_base}/${legacy}" /tmp/verify.json)"
+              test "${vcode}" = '404' && {
+                echo "${legacy}: DELETE_VERIFIED"
+                return 0
+              }
+              sleep 3
+            done
+            return 18
+          }
+
+          failures=0
+          done_count=0
+          header=1
+          while IFS=$'\t' read -r id target expected legacy; do
+            if test "${header}" -eq 1; then header=0; continue; fi
+            test -n "${id}" || continue
+            status='FAIL'; reason='delete_failed'
+            if delete_legacy "${id}" "${target}" "${legacy}" "${expected}"; then
+              status='PASS'; reason=''; done_count=$((done_count + 1))
+            else
+              rc=$?
+              reason="cleanup_rc_${rc}"
+              failures=$((failures + 1))
+            fi
+            printf '%s\t%s\t%s\t%s\t%s\t%s\n' "${id}" "${target}" "${legacy}" "${expected}" "${status}" "${reason}" >> /tmp/results.tsv
+            sleep 10
+          done < ops/cloudflare-numbered-legacy-cleanup-retry-396.tsv
+
+          echo "LEGACY_CLEANUP_PASS=${done_count}"
+          echo "LEGACY_CLEANUP_FAIL=${failures}"
+          cat /tmp/results.tsv
+
+          npx --yes wrangler@4 pages project list > /tmp/projects-after.txt 2>/tmp/projects-after.err || true
+          sed -n '/│ Project Name/,/└/p' /tmp/projects-after.txt || cat /tmp/projects-after.txt
+          awk -F '│' '/^│/ && $2 !~ /Project Name|^-|^[[:space:]]*$/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); if ($2 != "") n++} END {print "POST_CLEANUP_PROJECT_COUNT=" n}' /tmp/projects-after.txt
+
+          cp /tmp/results.tsv "${GITHUB_WORKSPACE}/cloudflare-numbered-legacy-cleanup-results.tsv"
+          cp /tmp/projects-after.txt "${GITHUB_WORKSPACE}/cloudflare-projects-after-numbered-cleanup.txt"
+          test "${failures}" -eq 0
+
+      - name: Upload cleanup evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-numbered-legacy-cleanup-396
+          path: |
+            cloudflare-numbered-legacy-cleanup-results.tsv
+            cloudflare-projects-after-numbered-cleanup.txt
+          if-no-files-found: warn
