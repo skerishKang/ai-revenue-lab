@@ -7,6 +7,7 @@
 <title>{% block title %}Personal Edition{% endblock %}</title>
 <link rel="stylesheet" href="/static/app.css?v=pe-ui51-20260722-3">
 <link rel="stylesheet" href="/static/ui-v3-454.css?v=b1-v3-454">
+<link rel="stylesheet" href="/static/ui-v3-454-compat.css?v=b1-v3-454-2">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
 <body data-ui-version="b1-personal-edition-v3-454" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
