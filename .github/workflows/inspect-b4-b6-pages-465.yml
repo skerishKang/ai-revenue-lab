@@ -1,0 +1,41 @@
+name: Inspect B4 B6 Pages 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/inspect-b4-b6-pages-465.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Inspect existing Pages project production branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          for project in ai-revenue-living-learning ai-revenue-world-feed; do
+            curl --fail-with-body -sS \
+              -H "Authorization: Bearer ${CF_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${project}" > "/tmp/${project}.json"
+            PROJECT="$project" python3 - <<'PY'
+          import json, os
+          p=json.load(open('/tmp/'+os.environ['PROJECT']+'.json'))['result']
+          src=p.get('source') or {}
+          cfg=src.get('config') or {}
+          dep=p.get('latest_deployment') or {}
+          print('PROJECT='+p.get('name',''))
+          print('SUBDOMAIN='+str(p.get('subdomain')))
+          print('PRODUCTION_BRANCH='+str(cfg.get('production_branch')))
+          print('LATEST_ENV='+str(dep.get('environment')))
+          print('LATEST_BRANCH='+str(((dep.get('deployment_trigger') or {}).get('metadata') or {}).get('branch')))
+          print('LATEST_ID='+str(dep.get('id')))
+          PY
+          done
