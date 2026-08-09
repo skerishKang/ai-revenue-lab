@@ -53,6 +53,72 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch verified CC0 Busan source assets
+        env:
+          OUT_DIR: ${{ runner.temp }}/b2-cc0-source-assets
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.parse
+          import urllib.request
+
+          out = pathlib.Path(os.environ["OUT_DIR"])
+          out.mkdir(parents=True, exist_ok=True)
+          files = {
+              "gamcheon.jpg": "File:Gamcheon Culture Village.jpg",
+              "jagalchi.jpg": "File:Jagalchi Market 02.jpg",
+              "gukje.jpg": "File:Gukje Market Busan South Korea 02.jpg",
+              "seaside.jpg": "File:Busan's seaside.jpg",
+          }
+          manifest = []
+          headers = {"User-Agent": "ai-revenue-lab-b2-asset-import/1.0"}
+          for local_name, title in files.items():
+              query = urllib.parse.urlencode({
+                  "action": "query",
+                  "format": "json",
+                  "prop": "imageinfo",
+                  "iiprop": "url|size|sha1",
+                  "titles": title,
+              })
+              req = urllib.request.Request(
+                  "https://commons.wikimedia.org/w/api.php?" + query,
+                  headers=headers,
+              )
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  payload = json.load(response)
+              page = next(iter(payload["query"]["pages"].values()))
+              info = page["imageinfo"][0]
+              image_req = urllib.request.Request(info["url"], headers=headers)
+              with urllib.request.urlopen(image_req, timeout=60) as response:
+                  data = response.read()
+              (out / local_name).write_bytes(data)
+              manifest.append({
+                  "local_name": local_name,
+                  "commons_title": title,
+                  "source_url": info["descriptionurl"],
+                  "original_url": info["url"],
+                  "width": info["width"],
+                  "height": info["height"],
+                  "sha1": info["sha1"],
+                  "bytes": len(data),
+              })
+          (out / "manifest.json").write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2),
+              encoding="utf-8",
+          )
+          print(json.dumps(manifest, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload verified CC0 source assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2-cc0-source-assets
+          path: ${{ runner.temp }}/b2-cc0-source-assets
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Install Korean font for visual QA
         run: |
           sudo apt-get update -qq
