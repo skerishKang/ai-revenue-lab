@@ -1,42 +1,56 @@
 {% extends "base.html" %}
 {% block title %}게재 결정 — Personal Edition 관리자{% endblock %}
 {% block content %}
-<div class="publish-decision-page">
-  <header class="decision-header">
-    <a href="/admin/review/modal-preview-edition/content/" class="back-link">← 콘텐츠 검토로 돌아가기</a>
-    <h1>게재 결정</h1>
-    <p class="decision-meta">에디션 #{{ edition.edition_number }} — {{ edition.rendered_title }}</p>
+<div class="publish-decision-page operator-shell-v2">
+  <header class="operator-header-v2 decision-header">
+    <div>
+      <a href="/admin/review/modal-preview-edition/content/" class="back-link">← 콘텐츠 검토로 돌아가기</a>
+      <span class="operator-kicker-v2">Final editorial gate · edition #{{ edition.edition_number }}</span>
+      <h1>게재 결정</h1>
+      <p>{{ edition.rendered_title }} · 독자 공개 여부를 마지막으로 결정합니다.</p>
+    </div>
+    <div class="operator-header-status-v2">
+      <div>Preview only</div>
+      <div>No persistence</div>
+      <div>Human decision required</div>
+    </div>
   </header>
 
-  <section class="decision-preview">
+  <section class="decision-preview" aria-labelledby="decision-preview-title">
     <div class="edition-article">
-      <div class="edition-issue">Personal Edition #{{ edition.edition_number }}</div>
-      <h2>{{ content.publication_title }}</h2>
+      <span class="edition-issue">Personal Edition · #{{ edition.edition_number }}</span>
+      <h2 id="decision-preview-title">{{ content.edition_title }}</h2>
       <p class="edition-deck">{{ content.deck }}</p>
       <div class="edition-opening">{{ content.opening }}</div>
     </div>
   </section>
 
-  <section class="decision-controls">
+  <section class="decision-controls" aria-label="게재 결정 선택지">
+    <div class="operator-section-head-v2">
+      <h2>Decision</h2>
+      <span>미리보기에서는 상태를 변경하지 않습니다.</span>
+    </div>
     <div class="publish-control-grid">
       <div class="publish-action-box publish-box">
-        <h3>발행</h3>
-        <p>검토가 완료된 에디션을 즉시 독자에게 공개합니다. 독자가 전문을 읽고 피드백을 전달할 수 있습니다.</p>
+        <span class="operator-kicker-v2">Publish</span>
+        <h3>검토 완료 · 발행</h3>
+        <p>검토가 완료된 에디션을 독자 라이브러리에 공개합니다. 독자는 전문을 읽고 다음 호 방향에 대한 피드백을 남길 수 있습니다.</p>
         <div class="btn btn-success btn-lg preview-only-cta" data-action="publish">이 에디션 발행하기</div>
-        <p class="preview-note">실제 발행은 수행되지 않습니다. 미리보기 전용입니다.</p>
+        <p class="preview-note">실제 발행은 수행되지 않습니다.</p>
       </div>
       <div class="publish-action-box reject-box">
-        <h3>반려</h3>
-        <p>에디션을 반려합니다. 독자에게 공개되지 않으며, 편집자가 초안을 보완하여 다시 생성할 수 있습니다.</p>
+        <span class="operator-kicker-v2">Return</span>
+        <h3>보완 필요 · 반려</h3>
+        <p>에디션을 독자에게 공개하지 않고 편집 단계로 돌려보냅니다. 원본과 초안은 유지되며 다음 검토를 준비할 수 있습니다.</p>
         <div class="btn btn-danger btn-lg preview-only-cta" data-action="reject">이 에디션 반려하기</div>
-        <p class="preview-note">실제 반려는 수행되지 않습니다. 미리보기 전용입니다.</p>
+        <p class="preview-note">실제 반려는 수행되지 않습니다.</p>
       </div>
     </div>
   </section>
 
-  <section class="decision-actions">
+  <nav class="decision-actions button-group" aria-label="게재 결정 이후 탐색">
     <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
     <a href="/admin/participants/modal-preview-user/feedback/" class="btn btn-secondary">피드백 연속성 확인</a>
-  </section>
+  </nav>
 </div>
 {% endblock %}
