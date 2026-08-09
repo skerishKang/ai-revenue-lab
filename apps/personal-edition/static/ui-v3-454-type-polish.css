@@ -1,0 +1,99 @@
+/* B1 Personal Edition V3 typography polish — 2026-08-10
+   Keep the V3 art direction; remove mixed Latin/CJK fallback behavior. */
+:root {
+  --v3-display: "Noto Serif KR", "Noto Serif CJK KR", "Source Han Serif K", "KoPub Batang", "AppleMyungjo", "Batang", serif;
+  --v3-ui: "Pretendard", "SUIT", "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", Arial, sans-serif;
+}
+
+body.v3-participant-surface,
+body.v3-operator-surface {
+  font-kerning: normal;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.v3-participant-surface h1,
+.v3-participant-surface h2,
+.v3-participant-surface h3,
+.v3-participant-surface blockquote,
+.v3-edition-title,
+.v3-library-cover .cover-name,
+.v3-library-cover .cover-index {
+  word-break: keep-all;
+  line-break: strict;
+  font-synthesis: none;
+}
+
+/* Korean display copy needs room to breathe; the old Latin-first metrics were too compressed. */
+.v3-hero-title {
+  max-width: 10.4ch;
+  font-size: clamp(3.35rem, 6.7vw, 7.9rem);
+  line-height: .96;
+  letter-spacing: -.042em;
+  font-weight: 400;
+}
+
+.v3-hero-lede {
+  max-width: 33rem;
+  font-family: var(--v3-ui);
+  font-size: clamp(1rem, 1.25vw, 1.18rem);
+  line-height: 1.72;
+  letter-spacing: -.012em;
+  color: #c8c5bc;
+}
+
+.v3-library-head h1 {
+  line-height: .9;
+  letter-spacing: -.048em;
+  font-weight: 400;
+}
+
+.v3-edition-title,
+.v3-library-cover .cover-name,
+.v3-process-strip strong {
+  line-height: 1.02;
+  letter-spacing: -.032em;
+  font-weight: 400;
+}
+
+.v3-fragment {
+  line-height: 1.62;
+  letter-spacing: -.012em;
+}
+
+/* Micro labels remain a separate sans-serif editorial layer. */
+.v3-kicker,
+.v3-brand,
+.v3-nav-links,
+.v3-nav-caption,
+.v3-edition-eyebrow,
+.v3-fragment small,
+.v3-hero-note,
+.v3-site-footer,
+.btn {
+  font-family: var(--v3-ui);
+  word-break: keep-all;
+}
+
+@media (max-width: 900px) {
+  .v3-hero-title {
+    max-width: 11ch;
+    font-size: clamp(3rem, 11vw, 6rem);
+    line-height: .98;
+    letter-spacing: -.038em;
+  }
+}
+
+@media (max-width: 560px) {
+  .v3-hero-title {
+    max-width: 10.8ch;
+    font-size: clamp(2.8rem, 14.5vw, 4.9rem);
+    line-height: 1;
+    letter-spacing: -.034em;
+  }
+  .v3-hero-lede {
+    font-size: 1rem;
+    line-height: 1.68;
+  }
+}
