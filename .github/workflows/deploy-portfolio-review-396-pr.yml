@@ -104,7 +104,14 @@ jobs:
                 fi
                 sleep 10
               done
-              test "${create_ok}" = true || { reason="project_create_http_${create_code}"; return 1; }
+              if test "${create_ok}" = true; then
+                :
+              elif jq -e '.errors[].code == 8000027 or (.errors[]?.message // "") | test("limit")' /tmp/create.json >/dev/null 2>&1; then
+                reason='cloudflare_project_limit_reached'
+              else
+                reason="project_create_http_${create_code}"
+              fi
+              test "${create_ok}" = true || { test -n "${reason}" || reason="project_create_http_${create_code}"; return 1; }
             elif test "${code}" = '200'; then
               jq -e '.success == true' /tmp/project.json >/dev/null 2>&1 || { reason='project_lookup_api_failure'; return 1; }
             else
