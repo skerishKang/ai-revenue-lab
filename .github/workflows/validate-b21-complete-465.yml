@@ -1,0 +1,110 @@
+name: Validate B21 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-21-founder-strategy-letter-v1/**'
+      - '.github/workflows/validate-b21-complete-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b21-founder-strategy-letter-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Static contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check reference/business-21-founder-strategy-letter-v1/scripts/app.js
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          base=Path('reference/business-21-founder-strategy-letter-v1')
+          for name in ('index.html','ux.html','guide.html'):
+              HTMLParser().feed((base/name).read_text(encoding='utf-8'))
+          index=(base/'index.html').read_text(encoding='utf-8')
+          ux=(base/'ux.html').read_text(encoding='utf-8')
+          guide=(base/'guide.html').read_text(encoding='utf-8')
+          js=(base/'scripts/app.js').read_text(encoding='utf-8')
+          for marker in ('Founder Strategy Letter','data-state="weekly"','data-state="evidence"','data-state="tensions"','data-state="decision"','반대 의견','합성'):
+              assert marker in index, marker
+          for marker in ('id="letter"','id="evidence"','id="decision"','id="summary"','data-pick="A"','data-pick="C"','data-decision="조건부 진행"','id="makeSummary"','id="finish"','window.onpopstate'):
+              assert marker in ux, marker
+          for marker in ('GUIDE · 30 SECONDS','01 · QUESTION','02 · EVIDENCE','03 · COUNTER','04 · DECISION','05 · WATCH','./ux.html#letter'):
+              assert marker in guide, marker
+          assert './guide.html' in js and 'dataset.firstUseGuide' in js
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in ux+'\n'+guide+'\n'+js, forbidden
+          for html in ('index.html','guide.html'):
+              text=(base/html).read_text(encoding='utf-8')
+              for rel in re.findall(r'(?:href|src)="(\./[^"?#]+)', text):
+                  assert (base/rel[2:]).exists(), (html,rel)
+          print('B21_STATIC_CONTRACT_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-21-founder-strategy-letter-v1/**'
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b21-browser && cd /tmp/b21-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser journey desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4179 --directory reference/business-21-founder-strategy-letter-v1 >/tmp/b21-http.log 2>&1 &
+          server=$!
+          trap 'kill $server || true' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4179/index.html >/dev/null && break; sleep 0.5; done
+          cd /tmp/b21-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          async function assertNoOverflow(page,label){
+            const diag=await page.evaluate(()=>{const de=document.documentElement,vw=de.clientWidth;const offenders=[...document.querySelectorAll('body *')].map(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{tag:el.tagName,id:el.id||'',cls:typeof el.className==='string'?el.className:'',left:+r.left.toFixed(1),right:+r.right.toFixed(1),width:+r.width.toFixed(1),display:cs.display,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,60)}}).filter(x=>x.display!=='none'&&(x.right>vw+1||x.left<-1)).slice(0,15);return{scrollWidth:de.scrollWidth,clientWidth:vw,offenders}});if(diag.scrollWidth>diag.clientWidth){console.error(`OVERFLOW_DIAG ${label} ${JSON.stringify(diag)}`);throw new Error(`${label}: overflow ${diag.scrollWidth}>${diag.clientWidth}`)}}
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const vp of [{width:1440,height:1100,name:'desktop'},{width:390,height:844,name:'mobile'}]){
+              const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+              const errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)}); page.on('pageerror',e=>errors.push(`page:${e.message}`));
+              await page.goto('http://127.0.0.1:4179/index.html',{waitUntil:'networkidle'});
+              await page.locator('[data-first-use-guide]').waitFor({state:'visible'});
+              await assertNoOverflow(page,`${vp.name}: root`);
+              await page.locator('[data-first-use-guide]').click();
+              await page.waitForURL(/guide\.html/); await assertNoOverflow(page,`${vp.name}: guide`);
+              await page.getByRole('link',{name:'판단 체험 시작'}).click();
+              await page.waitForURL(/ux\.html#letter/);
+              await page.getByRole('button',{name:'근거와 반론 보기'}).click();
+              await page.locator('[data-pick="A"]').click();
+              await page.locator('[data-pick="C"]').click();
+              let eStatus=await page.locator('#evidenceStatus').textContent();
+              if(!eStatus || !eStatus.includes('2개')) throw new Error(`${vp.name}: evidence count missing`);
+              await page.getByRole('button',{name:'내 판단 남기기'}).click();
+              await page.locator('#makeSummary').click();
+              let dStatus=await page.locator('#decisionStatus').textContent();
+              if(!dStatus || !dStatus.includes('판단을 하나 선택')) throw new Error(`${vp.name}: decision gate missing`);
+              await page.locator('[data-decision="조건부 진행"]').click();
+              await page.locator('#makeSummary').click();
+              const summary=await page.locator('#summaryText').textContent();
+              if(!summary || !summary.includes('조건부 진행') || !summary.includes('2개의 합성 근거/반론')) throw new Error(`${vp.name}: summary missing selected evidence/decision`);
+              await page.locator('#finish').click();
+              const status=await page.locator('#finishStatus').textContent();
+              if(!status || !status.includes('검토를 마쳤습니다')) throw new Error(`${vp.name}: finish status missing`);
+              await assertNoOverflow(page,`${vp.name}: ux`);
+              if(errors.length) throw new Error(`${vp.name}: ${errors.join(' | ')}`);
+              await page.close();
+            }
+            await browser.close(); console.log('B21_BROWSER_JOURNEY_PASS=1');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
