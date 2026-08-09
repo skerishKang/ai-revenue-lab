@@ -4,38 +4,52 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 당신의 여행이 한 권의 에디션이 되다</title>
+  <title>Living Travel — 나에게 맞게 편집된 여행</title>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/v2.css">
 </head>
-<body>
-  <div class="preview-banner">UI Preview · Synthetic data · No persistence</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Synthetic Preview</span>
 
-  <main class="hero">
-    <div class="hero-content">
-      <h1 class="hero-brand">
-        Living
-        <span class="hero-brand-accent">Travel</span>
-      </h1>
-      <p class="hero-tagline">
-        당신의 여행이<br>
-        한 권의 에디션이 됩니다
-      </p>
-      <p class="hero-description">
-        매 여행마다 당신을 위해 기록된 개인 맞춤 에디션.<br>
-        읽고, 반응하고, 다시 찾아보는 나만의 여행 아카이브.
-      </p>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="index.html">
+      <span class="lt-brand-dot">LT</span>
+      Living Travel
+    </a>
+    <div class="lt-nav-links">
+      <a href="demo/history.html">Travel Archive</a>
+      <a href="operator/login.html">Operator</a>
+    </div>
+  </nav>
 
-      <div class="hero-actions">
-        <a href="demo/intro.html" class="btn btn-primary" style="font-size:1.05rem;padding:0.75rem 1.75rem;">🎬 인터랙티브 데모 시작하기</a>
-        <div class="hero-divider"></div>
-        <a href="traveler/enter.html" class="btn btn-outline">Traveler — 내 에디션 보기</a>
-        <a href="operator/login.html" class="hero-operator-link">Operator Preview</a>
-      </div>
+  <main class="lt-hero">
+    <div class="lt-hero-media" aria-hidden="true">
+      <img src="assets/images/busan-hero.webp" alt="">
+    </div>
 
-      <div class="notice" style="margin-top: 2.5rem; max-width: 440px; margin-left: auto; margin-right: auto;">
-        <strong>Synthetic Preview</strong><br>
-        이 화면은 제품 검토용 가상 데이터로 구성되며 실제 여행 정보나 사용자 데이터를 사용하지 않습니다. 모든 버튼과 링크는 정적 화면 간 이동만 처리합니다.
-      </div>
+    <div class="lt-hero-inner">
+      <section>
+        <div class="lt-kicker">Personal travel edition · 02</div>
+        <h1 class="lt-place">BUSAN<em>나의 속도로.</em></h1>
+        <p class="lt-hero-copy">
+          유명한 곳을 많이 넣는 여행이 아니라, 내가 좋아할 시간과 동네를 골라
+          하나의 여행 흐름으로 편집합니다.
+        </p>
+        <div class="lt-hero-actions">
+          <a class="lt-cta lt-cta-primary" href="demo/preferences.html">내 여행 편집 시작하기 <span aria-hidden="true">→</span></a>
+          <a class="lt-cta lt-cta-ghost" href="demo/edition.html">완성된 여행판 보기</a>
+        </div>
+      </section>
+
+      <aside class="lt-route-card" aria-label="이번 여행의 흐름">
+        <div class="lt-route-card-label">Your route · 2 nights / 3 days</div>
+        <ol class="lt-route-stops">
+          <li><span><strong>초량</strong>골목에서 시작</span></li>
+          <li><span><strong>감천 · 이기대</strong>동네와 바다</span></li>
+          <li><span><strong>송도 · 남포</strong>느린 마지막 날</span></li>
+        </ol>
+        <div class="lt-route-time">PACE  /  SLOW<br>FOCUS / LOCAL · FOOD · SEA</div>
+      </aside>
     </div>
   </main>
 </body>
