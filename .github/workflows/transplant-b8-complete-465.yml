@@ -1,0 +1,49 @@
+name: Prepare B8 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/transplant-b8-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EXPECTED_MAIN: 0fd4752df0311e41adca5528634acb3b7dccea9d
+      B8_AUTHORITY: 72b478a5f51f76522a689dfd80321afb75b866ee
+      TARGET_BRANCH: feat/b8-family-newspaper-complete-465
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_MAIN }}
+          fetch-depth: 0
+      - name: Materialize approved B8 UI plus validated UX on current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          remote_main=$(git ls-remote origin refs/heads/main | cut -f1)
+          test "$remote_main" = "$EXPECTED_MAIN"
+          git fetch origin "$B8_AUTHORITY"
+          git switch -c "$TARGET_BRANCH"
+          git checkout "$B8_AUTHORITY" -- reference/business-08-family-newspaper-v1
+          git diff --check
+          changed=$(git status --short | awk '{print $2}')
+          test -n "$changed"
+          if echo "$changed" | grep -Ev '^reference/business-08-family-newspaper-v1/' ; then
+            echo 'OUT_OF_SCOPE_CHANGE=1'; exit 1
+          fi
+          test -f reference/business-08-family-newspaper-v1/index.html
+          test -f reference/business-08-family-newspaper-v1/ux.html
+          grep -q '가족' reference/business-08-family-newspaper-v1/index.html
+          grep -q 'front page' reference/business-08-family-newspaper-v1/ux.html || grep -q '1면' reference/business-08-family-newspaper-v1/ux.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add reference/business-08-family-newspaper-v1
+          git commit -m 'feat(b8): integrate approved Family Newspaper UI and UX'
+          git push --force-with-lease origin "$TARGET_BRANCH"
+          echo "B8_PREPARED_HEAD=$(git rev-parse HEAD)"
