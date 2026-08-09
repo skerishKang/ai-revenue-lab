@@ -47,25 +47,62 @@ test.describe('Portfolio Console Business Launcher', () => {
     });
   });
 
-  test('historical technical UI approval is not displayed as final owner approval', async ({ page }) => {
-    for (const number of [2, 4, 6, 13, 14, 44]) {
+  test('B6 preserves the explicit historical user visual approval', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="6"]');
+    await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_APPROVED');
+    await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 사용자 승인');
+
+    const decision = await page.evaluate(() => {
+      const business = window.ARL_BUSINESSES.find((item) => item.number === 6);
+      return {
+        ownerUiStatus: business.ownerUiStatus,
+        source: business.ownerUiDecision && business.ownerUiDecision.source,
+        date: business.ownerUiDecision && business.ownerUiDecision.date,
+        exactHead: business.ownerUiDecision && business.ownerUiDecision.exactHead,
+      };
+    });
+    expect(decision).toEqual({
+      ownerUiStatus: 'OWNER_APPROVED',
+      source: 'PR #158 issuecomment-5082096357',
+      date: '2026-07-26',
+      exactHead: 'cde6677e71172125cb3a0406f6ba6a79e0467d36',
+    });
+  });
+
+  test('historical technical UI approval is not displayed as final owner approval without explicit owner evidence', async ({ page }) => {
+    for (const number of [2, 4, 13, 14, 44]) {
       const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
       await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REVIEW_REQUIRED');
       await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 검토 필요');
     }
 
-    const technical = await page.evaluate(() => [2, 4, 6, 13, 14, 44].map((number) => {
+    const technical = await page.evaluate(() => [2, 4, 13, 14, 44].map((number) => {
       const business = window.ARL_BUSINESSES.find((item) => item.number === number);
       return [number, business.uiStatus, business.ownerUiStatus];
     }));
     expect(technical).toEqual([
       [2, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
       [4, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
-      [6, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
       [13, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
       [14, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
       [44, 'UI_APPROVED', 'OWNER_REVIEW_REQUIRED'],
     ]);
+  });
+
+  test('every remaining internal web surface is owner-reviewable even when legacy technical status says in progress', async ({ page }) => {
+    const audit = await page.evaluate(() => window.ARL_BUSINESSES.map((business) => ({
+      number: business.number,
+      owner: business.ownerUiStatus,
+      surfaceUrl: business.surfaceUrl || '',
+    })));
+    const reviewRequired = audit.filter((item) => item.owner === 'OWNER_REVIEW_REQUIRED');
+    expect(reviewRequired).toHaveLength(44);
+    expect(reviewRequired.every((item) => /^https:\/\//.test(item.surfaceUrl))).toBe(true);
+
+    for (const item of reviewRequired) {
+      const row = page.locator(`.biz-item[data-biz-number="${item.number}"]`);
+      await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 검토 필요');
+    }
   });
 
   test('all #396 hard exclusions are list-only external or successor rows with no internal phase badges', async ({ page }) => {
@@ -215,8 +252,9 @@ test.describe('Portfolio Console Business Launcher', () => {
     await expect(row.locator('.biz-launch-open')).toHaveAttribute('href', 'https://ai-revenue-portfolio-console.pages.dev/');
   });
 
-  test('B54 stays non-web and does not masquerade as a site', async ({ page }) => {
+  test('B54 stays non-web and is outside the web UI owner-approval gate', async ({ page }) => {
     const row = page.locator('.biz-item[data-biz-number="54"]');
+    await expect(row).toHaveAttribute('data-owner-ui-status', 'NOT_APPLICABLE');
     await expect(row.locator('.biz-launch-open')).toHaveCount(0);
     await expect(row.locator('.biz-launch-state')).toHaveText('CLI/TUI');
     await expect(row.locator('.biz-launch-detail')).toHaveCount(1);

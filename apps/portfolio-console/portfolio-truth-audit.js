@@ -32,16 +32,25 @@
     50: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null }
   });
 
+  // Explicit owner visual decisions only. This is intentionally much narrower
+  // than historical technical UI_APPROVED evidence.
+  var OWNER_APPROVED = Object.freeze({
+    6: {
+      source: "PR #158 issuecomment-5082096357",
+      date: "2026-07-26",
+      exactHead: "cde6677e71172125cb3a0406f6ba6a79e0467d36"
+    }
+  });
+
   function boundaryFor(number) {
     return BOUNDARIES[Number(number)] || null;
   }
 
   function ownerUiStatusFor(number) {
     var n = Number(number);
-    if (boundaryFor(n)) return OWNER.NOT_APPLICABLE;
+    if (boundaryFor(n) || n === 54) return OWNER.NOT_APPLICABLE;
     if (n === 1) return OWNER.REJECTED;
-    // No historical machine/CTO validation is promoted to owner acceptance.
-    // Explicit future owner decisions may add OWNER.APPROVED entries here.
+    if (OWNER_APPROVED[n]) return OWNER.APPROVED;
     return OWNER.REVIEW_REQUIRED;
   }
 
@@ -49,6 +58,9 @@
     var list = Array.isArray(root.ARL_BUSINESSES) ? root.ARL_BUSINESSES : [];
     list.forEach(function (business) {
       business.ownerUiStatus = ownerUiStatusFor(business.number);
+      if (OWNER_APPROVED[business.number]) {
+        business.ownerUiDecision = OWNER_APPROVED[business.number];
+      }
       var boundary = boundaryFor(business.number);
       if (!boundary) return;
 
@@ -92,9 +104,7 @@
     if (!business) return "";
     if (business.ownerUiStatus === OWNER.REJECTED) return lang === "en" ? "UI · REDESIGN" : "UI · 재설계";
     if (business.ownerUiStatus === OWNER.APPROVED) return lang === "en" ? "UI · OWNER APPROVED" : "UI · 사용자 승인";
-    if (business.ownerUiStatus === OWNER.REVIEW_REQUIRED && business.uiStatus === "UI_APPROVED") {
-      return lang === "en" ? "UI · OWNER REVIEW" : "UI · 검토 필요";
-    }
+    if (business.ownerUiStatus === OWNER.REVIEW_REQUIRED) return lang === "en" ? "UI · OWNER REVIEW" : "UI · 검토 필요";
     return null;
   }
 
@@ -129,9 +139,19 @@
       var firstBadge = row.querySelector(".biz-phase-badge");
       if (firstBadge && firstBadge.textContent !== ownerCopy) firstBadge.textContent = ownerCopy;
       if (firstBadge) {
-        firstBadge.title = business.ownerUiStatus === OWNER.REJECTED
-          ? (language() === "en" ? "Owner rejected current visual UI; redesign required" : "현재 UI 사용자 미승인 · 재설계 필요")
-          : (language() === "en" ? "Technical UI evidence exists; final owner visual review is still required" : "기술 UI 검증 이력 있음 · 사용자 최종 시각 검토 필요");
+        if (business.ownerUiStatus === OWNER.REJECTED) {
+          firstBadge.title = language() === "en"
+            ? "Owner rejected current visual UI; redesign required"
+            : "현재 UI 사용자 미승인 · 재설계 필요";
+        } else if (business.ownerUiStatus === OWNER.APPROVED) {
+          firstBadge.title = language() === "en"
+            ? "Explicit owner visual approval is recorded"
+            : "사용자 직접 시각 승인 기록 있음";
+        } else {
+          firstBadge.title = language() === "en"
+            ? "A review surface exists; final owner visual review is still required"
+            : "검토 가능한 화면 있음 · 사용자 최종 시각 검토 필요";
+        }
       }
     }
 
@@ -189,6 +209,7 @@
   root.ARL_PORTFOLIO_TRUTH = Object.freeze({
     OWNER: OWNER,
     BOUNDARIES: BOUNDARIES,
+    OWNER_APPROVED: OWNER_APPROVED,
     boundaryFor: boundaryFor,
     ownerUiStatusFor: ownerUiStatusFor
   });
