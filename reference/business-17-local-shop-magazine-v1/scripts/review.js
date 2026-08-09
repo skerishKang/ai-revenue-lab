@@ -18,7 +18,7 @@
     guide.dataset.firstUseGuide = 'true';
     guide.textContent = '30초 사용법 / Guide';
     guide.setAttribute('aria-label', '우리 가게 매거진 30초 사용법 열기');
-    guide.style.cssText = 'display:inline-flex;align-items:center;min-height:32px;padding:0 9px;border:1px solid currentColor;color:inherit;text-decoration:none;font:700 11px/1 system-ui;white-space:nowrap';
+    guide.style.cssText = 'display:inline-flex;width:90px;max-width:100%;min-height:32px;align-items:center;justify-content:center;padding:5px 2px;border:1px solid currentColor;color:inherit;text-decoration:none;text-align:center;font:700 10px/1.2 system-ui;white-space:normal;overflow-wrap:anywhere';
     meta.prepend(guide);
   }
 
