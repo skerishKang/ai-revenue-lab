@@ -4,94 +4,97 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 여행판 생성 중</title>
+  <title>Living Travel — 여행 흐름 편집 중</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <div class="demo-gen-page">
-    <div id="genContent">
-      <h1 style="color:var(--forest);">여행판을 만들고 있어요</h1>
-      <p class="subtitle" style="max-width:400px;margin:0 auto 1rem;">
-        데모 모드입니다. 실제 AI가 아닌 정해진 시나리오로 진행됩니다.
-      </p>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="../index.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+  </nav>
 
-      <div class="demo-gen-steps" id="genSteps">
+  <main class="lt-generation">
+    <section class="lt-gen-stage" id="genContent">
+      <div class="lt-step-label" style="color:var(--lt-lime);">02 / Interpret & route</div>
+      <h1>취향이<br><span>동선이 되는 중.</span></h1>
+      <p class="lt-gen-deck">선택한 속도와 관심사를 장소 목록으로 바꾸는 것이 아니라, 하루의 밀도·이동량·머무는 시간을 함께 편집합니다.</p>
+
+      <div class="lt-gen-network" aria-label="여행 해석 요소">
+        <div class="lt-gen-node"><code>SIGNAL 01</code><strong>천천히</strong><span>하루 장소 수를 줄이고 체류시간을 늘립니다.</span></div>
+        <div class="lt-gen-node"><code>SIGNAL 02</code><strong>골목 · 현지 음식</strong><span>관광 동선보다 생활권 연결을 우선합니다.</span></div>
+        <div class="lt-gen-node"><code>SIGNAL 03</code><strong>조용한 · 바다</strong><span>혼잡 시간대를 피하고 해안 체류를 길게 잡습니다.</span></div>
+      </div>
+
+      <div id="demoFailBtnWrapper" style="margin-top:2rem;">
+        <button class="btn btn-outline" style="color:#fff;" onclick="triggerFailure()">실패 상태 확인</button>
+      </div>
+    </section>
+
+    <aside class="lt-gen-rail" aria-label="편집 진행 상태">
+      <div class="lt-route-card-label">Live composition</div>
+      <div class="demo-gen-steps" id="genSteps" style="margin-top:1.5rem;">
         <div class="demo-gen-step" id="step1">
           <span class="demo-gen-step-icon">1</span>
-          <span class="demo-gen-step-text">취향 정리 중...</span>
+          <span class="demo-gen-step-text">취향 신호를 여행 밀도로 변환</span>
         </div>
         <div class="demo-gen-step" id="step2">
           <span class="demo-gen-step-icon">2</span>
-          <span class="demo-gen-step-text">여행판 구성 중...</span>
+          <span class="demo-gen-step-text">초량 → 감천 → 이기대 → 송도 흐름 편집</span>
         </div>
         <div class="demo-gen-step" id="step3">
           <span class="demo-gen-step-icon">3</span>
-          <span class="demo-gen-step-text">운영자 검토 준비 중...</span>
+          <span class="demo-gen-step-text">운영자 검토용 여행판 정리</span>
         </div>
       </div>
+      <p class="lt-route-time" style="margin-top:2rem;">ROUTE DENSITY / LOW<br>DWELL TIME / HIGH<br>TOURIST WEIGHT / LOW</p>
+    </aside>
 
-      <div id="demoFailBtnWrapper" style="margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
-        <span style="font-size:0.8rem;color:var(--ink-faded);">정상 흐름 외에 실패 상태도 확인해보세요.</span>
-        <button class="btn btn-outline btn-sm" onclick="triggerFailure()">데모 실패 보기</button>
-      </div>
-    </div>
-
-    <div id="genFailure" style="display:none;max-width:480px;width:100%;">
-      <div class="demo-failure-state">
-        <h3>⚠️ 여행판 생성에 실패했습니다</h3>
-        <p>데모 시나리오에서 일시적인 오류가 발생했습니다. 다시 시도해 주세요.</p>
+    <section id="genFailure" style="display:none;position:fixed;inset:0;z-index:120;background:var(--lt-night);color:#fff;padding:8rem 1.5rem;">
+      <div style="max-width:560px;margin:0 auto;">
+        <div class="lt-step-label" style="color:var(--lt-sun);">Route interrupted</div>
+        <h2 style="color:#fff;font-size:clamp(2.6rem,6vw,5.5rem);line-height:.95;letter-spacing:-.06em;">여행판 구성이<br>잠시 멈췄습니다.</h2>
+        <p style="color:rgba(255,255,255,.66);">데모 실패 상태입니다. 다시 시작하면 동일한 취향 신호로 여행 흐름을 재구성합니다.</p>
         <button class="btn btn-accent" onclick="retryGeneration()">다시 시도</button>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
   var canceled = false;
-
   function simulateStep(stepNum) {
     if (canceled) return;
     var prev = document.getElementById('step' + (stepNum - 1));
     var curr = document.getElementById('step' + stepNum);
     if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
     if (curr) { curr.classList.add('active'); }
-
     if (stepNum === 1) {
-      setTimeout(function() { simulateStep(2); }, 1200);
+      setTimeout(function() { simulateStep(2); }, 1050);
     } else if (stepNum === 2) {
-      setTimeout(function() { simulateStep(3); }, 1400);
+      setTimeout(function() { simulateStep(3); }, 1200);
     } else if (stepNum === 3) {
       setTimeout(function() {
         document.getElementById('step3').classList.remove('active');
         document.getElementById('step3').classList.add('done');
-        setTimeout(function() {
-          if (!canceled) {
-            window.location.href = 'pending.html';
-          }
-        }, 600);
-      }, 1500);
+        setTimeout(function() { if (!canceled) window.location.href = 'pending.html'; }, 500);
+      }, 1250);
     }
   }
-
   function triggerFailure() {
     canceled = true;
-    document.getElementById('genContent').style.display = 'none';
     document.getElementById('genFailure').style.display = 'block';
   }
-
   function retryGeneration() {
     canceled = false;
-    document.getElementById('genContent').style.display = 'block';
     document.getElementById('genFailure').style.display = 'none';
     document.getElementById('step1').className = 'demo-gen-step';
     document.getElementById('step2').className = 'demo-gen-step';
     document.getElementById('step3').className = 'demo-gen-step';
     simulateStep(1);
   }
-
-  setTimeout(function() { simulateStep(1); }, 500);
+  setTimeout(function() { simulateStep(1); }, 400);
   </script>
 </body>
 </html>
