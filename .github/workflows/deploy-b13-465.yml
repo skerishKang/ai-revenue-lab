@@ -1,0 +1,100 @@
+name: Deploy B13 Production 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b13-465.yml'
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b13-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 390953dcaa8271b4a2b3dbc76766ce1f70f986a0
+      PROJECT: ai-revenue-personal-video-archive
+      URL: https://ai-revenue-personal-video-archive.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact main and build canonical output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          cd apps/personal-video-archive
+          python -m pip install -e .
+          python -m scripts.build_static_production
+          test -f dist-preview/index.html
+          test -f dist-preview/guide.html
+          test -f dist-preview/topics/new/index.html
+          ! grep -q 'class="top-note"' dist-preview/index.html
+          grep -q 'href="/guide.html"' dist-preview/index.html
+          grep -q 'GUIDE · 30 SECONDS' dist-preview/guide.html
+      - name: Persist Production builder in existing Pages project
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}" > /tmp/project.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/project.json'))['result']
+          build=dict(p.get('build_config') or {})
+          build['build_command']='python -m pip install -e . && python -m scripts.build_static_production'
+          build['destination_dir']='dist-preview'
+          build['root_dir']='apps/personal-video-archive'
+          json.dump({'production_branch':'main','build_config':build},open('/tmp/patch.json','w'))
+          print('OLD_BUILD='+str((p.get('build_config') or {}).get('build_command')))
+          print('NEW_BUILD='+build['build_command'])
+          PY
+          code=$(curl -sS -o /tmp/patched.json -w '%{http_code}' -X PATCH \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' \
+            --data-binary @/tmp/patch.json \
+            "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          cat /tmp/patched.json
+          test "$code" = 200
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/patched.json')); assert x.get('success') is True, x.get('errors')
+          p=x['result']; cfg=((p.get('source') or {}).get('config') or {})
+          branch=cfg.get('production_branch') or p.get('production_branch')
+          build=p.get('build_config') or {}
+          assert branch == 'main', branch
+          assert build.get('build_command') == 'python -m pip install -e . && python -m scripts.build_static_production', build
+          print('B13_PAGES_CONFIG_UPDATED=1')
+          PY
+      - name: Deploy exact-main Production output
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 25
+          npx --yes wrangler@latest pages deploy apps/personal-video-archive/dist-preview \
+            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B13 exact main approved UI guide Production' --commit-dirty=true
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Verify canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 30); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify "$URL/index.html" apps/personal-video-archive/dist-preview/index.html B13_ROOT
+          verify "$URL/guide.html" apps/personal-video-archive/dist-preview/guide.html B13_GUIDE
+          verify "$URL/topics/new/index.html" apps/personal-video-archive/dist-preview/topics/new/index.html B13_TOPIC_NEW
+          ! curl -L -sS --max-time 20 "$URL/index.html" | grep -q 'class="top-note"'
+          echo B13_PRODUCTION_BYTES_VERIFIED=1
