@@ -1,155 +1,130 @@
 {% extends "base.html" %}
-{% block title %}작업실 — Personal Edition{% endblock %}
+{% block title %}Private Library — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
+{% set _stage_no = 1 if workflow_stage == 'record' else (2 if workflow_stage == 'input_received' else (3 if workflow_stage == 'reviewing' else (4 if workflow_stage == 'published' else 5))) %}
+
+<span class="v3-sr-only">개인 출판 작업실</span>
+<ol class="v3-sr-only" aria-label="제작 진행 단계">
+  <li class="progress-step{% if _stage_no > 1 %} completed{% elif _stage_no == 1 %} current{% endif %}"{% if _stage_no == 1 %} aria-current="step"{% endif %}>기록</li>
+  <li class="progress-step{% if _stage_no > 2 %} completed{% elif _stage_no == 2 %} current{% endif %}"{% if _stage_no == 2 %} aria-current="step"{% endif %}>초안 구성</li>
+  <li class="progress-step{% if _stage_no > 3 %} completed{% elif _stage_no == 3 %} current{% endif %}"{% if _stage_no == 3 %} aria-current="step"{% endif %}>편집 검토</li>
+  <li class="progress-step{% if _stage_no > 4 %} completed{% elif _stage_no == 4 %} current{% endif %}"{% if _stage_no == 4 %} aria-current="step"{% endif %}>발행</li>
+</ol>
+<template data-legacy-visual-contract>
+  {% if workflow_stage == 'record' %}<img src="/static/images/private-library-hero.webp" alt="개인 출판 작업실" width="1536" height="1024">{% endif %}
+  {% if workflow_stage in ['input_received', 'reviewing'] %}<img src="/static/images/editorial-process-layers.webp" alt="편집 과정" width="1536" height="1024">{% endif %}
+  {% if workflow_stage == 'published' %}<img src="/static/images/edition-cover-shift.webp" alt="발행 에디션 커버" width="1122" height="1402">{% endif %}
+</template>
 
 {% if workflow_stage == 'published' %}
-<section class="published-home-v2" aria-labelledby="published-home-title">
-  <header class="published-masthead-v2">
-    <h1 id="published-home-title">Your Private Library</h1>
-    <div class="published-masthead-meta-v2">
-      <div>발행 완료 · {{ participant.display_name }}</div>
-      <div>{{ published_editions|length }} published edition{% if published_editions|length != 1 %}s{% endif %}</div>
-      <div>Private · human reviewed</div>
+<section class="v3-library" aria-labelledby="library-title">
+  <header class="v3-library-head">
+    <div>
+      <span class="v3-kicker">Private archive · {{ participant.display_name }}</span>
+      <h1 id="library-title">Private<br>Library</h1>
+    </div>
+    <div class="v3-library-meta">
+      <span>발행 완료 · Human reviewed</span>
+      <span>{{ published_editions|length }} edition{% if published_editions|length != 1 %}s{% endif %} in archive</span>
+      <span>Private by default</span>
     </div>
   </header>
 
-  <nav class="progress-steps" aria-label="제작 진행 단계">
-    <ol class="progress-track">
-      <li class="progress-step completed"><span class="progress-dot"></span><span class="progress-label">기록</span></li>
-      <li class="progress-connector completed"></li>
-      <li class="progress-step completed"><span class="progress-dot"></span><span class="progress-label">초안 구성</span></li>
-      <li class="progress-connector completed"></li>
-      <li class="progress-step completed"><span class="progress-dot"></span><span class="progress-label">편집 검토</span></li>
-      <li class="progress-connector completed"></li>
-      <li class="progress-step current" aria-current="step"><span class="progress-dot"></span><span class="progress-label">발행</span></li>
-    </ol>
-  </nav>
-
   {% if published_editions %}
-  <div class="published-spread-v2">
-    <div class="edition-object-v2">
-      {% if published_editions[0].edition_number == 1 %}
-      <img src="/static/images/edition-cover-shift.webp" alt="" aria-hidden="true" width="1122" height="1402" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.13;mix-blend-mode:multiply">
-      {% else %}
-      <img src="/static/images/edition-cover-archive.webp" alt="" aria-hidden="true" width="1122" height="1402" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.13;mix-blend-mode:multiply">
-      {% endif %}
-      <span class="cover-eyebrow" style="position:relative;z-index:1">Personal Edition · Private</span>
-      <span class="cover-title" style="position:relative;z-index:1">{{ published_editions[0].rendered_title or '제목 없음' }}</span>
-      <span class="cover-number" style="position:relative;z-index:1">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
+  <div class="v3-library-stage">
+    <div class="v3-library-object-zone" aria-label="최신 에디션 오브젝트">
+      <div class="v3-library-cover" aria-hidden="true">
+        <span class="cover-kicker">Personal Edition · Private</span>
+        <strong class="cover-name">{{ published_editions[0].rendered_title or '제목 없음' }}</strong>
+        <span class="cover-index">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
+      </div>
     </div>
-
-    <div class="published-story-v2">
-      <span class="published-kicker-v2">Latest edition · 제{{ published_editions[0].edition_number }}호</span>
+    <div class="v3-library-story">
+      <span class="v3-kicker">Latest edition · 제{{ published_editions[0].edition_number }}호</span>
       <h2>{{ published_editions[0].rendered_title or '제목 없음' }}</h2>
-      <p class="edition-deck-v2">당신이 남긴 기록이 편집 검토를 거쳐 한 편의 읽을거리로 완성되었습니다. 지금은 결과를 읽고, 다음 에디션의 방향을 직접 남길 차례입니다.</p>
-      <div class="edition-meta-v2">
+      <p>흩어진 기록이 편집 검토를 거쳐 하나의 읽을거리로 결속되었습니다. 이번 호를 읽은 뒤 남기는 편집 메모는 다음 에디션의 리듬과 초점을 실제로 바꿉니다.</p>
+      <div class="v3-library-meta" style="margin-top:1rem">
         {% if published_editions[0].published_at %}<span>{{ published_editions[0].published_at[:10] }}</span>{% endif %}
-        <span>edition {{ '%02d'|format(published_editions[0].edition_number) }}</span>
+        <span>Edition {{ '%02d'|format(published_editions[0].edition_number) }}</span>
       </div>
-      <div class="published-actions-v2">
-        <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-primary latest-edition" style="display:inline-flex!important;grid-template-columns:none">최신 에디션 읽기</a>
-        {% if not has_feedback_on_latest %}
-        <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}/feedback" class="btn btn-secondary">피드백 보내기</a>
-        {% endif %}
-        <a href="{{ _base }}/input" class="btn btn-secondary">새 기록 남기기</a>
+      <div class="v3-library-actions">
+        <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-primary latest-edition">최신 에디션 읽기</a>
+        {% if not has_feedback_on_latest %}<a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}/feedback" class="btn btn-secondary" aria-label="피드백 보내기">편집 메모 남기기</a>{% endif %}
+        <a href="{{ _base }}/input" class="btn btn-secondary">새 기록 추가하기</a>
       </div>
     </div>
   </div>
   {% endif %}
 
-  <p class="published-privacy-v2">이 라이브러리는 비공개입니다. 자동 게시되지 않으며, 검토된 에디션만 이곳에 추가됩니다.</p>
-</section>
-
-{% else %}
-<div class="dashboard dashboard-v2">
-  <div class="dashboard-hero animate-fade-in">
-    <img src="/static/images/private-library-hero.webp" alt="개인 라이브러리" width="1536" height="1024">
-  </div>
-
-  <div class="workspace-header">
-    <h1 class="dashboard-greeting">{{ participant.display_name }}님, 안녕하세요</h1>
-    <p class="dashboard-sub">개인 출판 작업실</p>
-  </div>
-
-  <nav class="progress-steps" aria-label="제작 진행 단계">
-    <ol class="progress-track">
-      <li class="progress-step{% if workflow_stage not in ('record',) %} completed{% endif %}{% if workflow_stage == 'record' %} current{% endif %}"{% if workflow_stage == 'record' %} aria-current="step"{% endif %}>
-        <span class="progress-dot"></span><span class="progress-label">기록</span>
-      </li>
-      <li class="progress-connector{% if workflow_stage in ('input_received','reviewing','feedback') %} completed{% endif %}"></li>
-      <li class="progress-step{% if workflow_stage in ('reviewing','feedback') %} completed{% endif %}{% if workflow_stage == 'input_received' %} current{% endif %}"{% if workflow_stage == 'input_received' %} aria-current="step"{% endif %}>
-        <span class="progress-dot"></span><span class="progress-label">초안 구성</span>
-      </li>
-      <li class="progress-connector{% if workflow_stage in ('reviewing','feedback') %} completed{% endif %}"></li>
-      <li class="progress-step{% if workflow_stage == 'feedback' %} completed{% endif %}{% if workflow_stage == 'reviewing' %} current{% endif %}"{% if workflow_stage == 'reviewing' %} aria-current="step"{% endif %}>
-        <span class="progress-dot"></span><span class="progress-label">편집 검토</span>
-      </li>
-      <li class="progress-connector{% if workflow_stage == 'feedback' %} completed{% endif %}"></li>
-      <li class="progress-step{% if workflow_stage == 'feedback' %} completed{% endif %}">
-        <span class="progress-dot"></span><span class="progress-label">발행</span>
-      </li>
-    </ol>
-  </nav>
-
-  {% if workflow_stage == 'record' %}
-  <div class="state-empty animate-slide-up">
-    <h2>기록을 시작하세요</h2>
-    <p>완성된 글을 쓰지 않아도 됩니다. 지금 떠오르는 생각이나 대화의 한 장면부터 남겨주세요. 원본은 비공개로 유지됩니다.</p>
-    <a href="{{ _base }}/input" class="btn btn-primary">첫 기록 시작하기</a>
-  </div>
-
-  {% elif workflow_stage == 'input_received' %}
-  <div class="state-recorded animate-slide-up">
-    <div class="state-status"><span class="status-indicator status-received">기록 접수됨</span></div>
-    <img src="/static/images/editorial-process-layers.webp" alt="편집 과정" width="1122" height="1402">
-    <p>기록이 접수되었습니다. 원본을 바탕으로 초안 구성이 시작됩니다. 추가 기록이 있으면 언제든 이어서 남길 수 있습니다.</p>
-    <div class="state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">추가 기록하기</a></div>
-    {% if is_preview %}
-    <div class="preview-journey-nav"><a href="/preview/participant/editing/" class="btn btn-primary">다음: 편집 검토 단계로 →</a></div>
-    {% endif %}
-  </div>
-
-  {% elif workflow_stage == 'reviewing' %}
-  <div class="state-reviewing animate-slide-up">
-    <div class="state-status"><span class="status-indicator status-reviewing">편집 검토 중</span></div>
-    <p>초안이 편집자의 검토를 받고 있습니다. 자동으로 공개되지 않으며, 기록과 초안의 맥락을 확인한 뒤 발행됩니다.</p>
-    <p class="state-hint">기다리는 동안 새로운 기록을 추가해도 현재 검토 중인 에디션은 안전하게 유지됩니다.</p>
-    <div class="state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">추가 기록하기</a></div>
-    {% if is_preview %}
-    <div class="preview-journey-nav"><a href="/preview/participant/published/" class="btn btn-primary">다음: 발행 단계로 →</a></div>
-    {% endif %}
-  </div>
-
-  {% elif workflow_stage == 'feedback' %}
-  <div class="state-feedback animate-slide-up">
-    <div class="state-status"><span class="status-indicator status-feedback">피드백 완료</span></div>
-    <p>피드백이 다음 에디션 방향에 연결되었습니다. 새 기록이 있으면 언제든 이어서 남길 수 있습니다.</p>
-    <div class="state-actions">
-      <a href="{{ _base }}/input" class="btn btn-primary">새 기록 남기기</a>
-      {% if published_editions %}
-      <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>
-      {% endif %}
+  <section class="v3-edition-sequence" aria-labelledby="edition-sequence-title">
+    <div class="v3-edition-sequence-head">
+      <h2 id="edition-sequence-title">Collected editions</h2>
+      <span class="v3-library-meta">한 권씩 쌓이는 개인 기록</span>
     </div>
-  </div>
-  {% endif %}
-
-  {% if published_editions|length > 1 %}
-  <section class="past-editions">
-    <h2>지난 에디션</h2>
-    <div class="past-edition-list">
-      {% for edition in published_editions[1:] %}
-      <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="past-edition-item">
-        <span class="past-edition-num">#{{ edition.edition_number }}</span>
-        <span class="past-edition-title">{{ edition.rendered_title or '제목 없음' }}</span>
-        <span class="past-edition-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
+    <div class="v3-spines">
+      {% for edition in published_editions %}
+      <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v3-spine{% if loop.first %} is-current{% endif %}">
+        <span class="v3-spine-no">{{ '%02d'|format(edition.edition_number) }}</span>
+        <strong class="v3-spine-title">{{ edition.rendered_title or '제목 없음' }}</strong>
+        <span class="v3-spine-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
       </a>
       {% endfor %}
     </div>
   </section>
-  {% endif %}
+  <p class="v3-privacy-line">이 라이브러리는 비공개입니다. 기록은 자동 게시되지 않으며, 사람의 검토를 마친 에디션만 추가됩니다.</p>
+</section>
 
-  <p class="privacy-note">이 에디션은 비공개입니다. 다른 사람에게 자동 공개되지 않으며, 검토를 거쳐 안전하게 관리됩니다.</p>
-</div>
+{% else %}
+<section class="v3-workflow" aria-labelledby="workflow-title">
+  <aside class="v3-workflow-rail">
+    <div>
+      <span class="v3-kicker">{{ participant.display_name }} · Private workflow</span>
+      <h1 id="workflow-title">Your edition<br>is taking shape.</h1>
+      <div class="v3-stage-ledger" aria-label="제작 진행 단계">
+        <div class="v3-stage-row{% if _stage_no > 1 %} is-done{% elif _stage_no == 1 %} is-current{% endif %}"><span>01</span><strong>Gather</strong></div>
+        <div class="v3-stage-row{% if _stage_no > 2 %} is-done{% elif _stage_no == 2 %} is-current{% endif %}"><span>02</span><strong>Shape</strong></div>
+        <div class="v3-stage-row{% if _stage_no > 3 %} is-done{% elif _stage_no == 3 %} is-current{% endif %}"><span>03</span><strong>Review</strong></div>
+        <div class="v3-stage-row{% if _stage_no == 4 %} is-current{% endif %}"><span>04</span><strong>Bind</strong></div>
+      </div>
+    </div>
+    <p class="v3-hero-note">Private by default · No automatic publish</p>
+  </aside>
+
+  <div class="v3-workflow-scene">
+    {% if workflow_stage == 'record' %}
+      <span class="v3-state-label">01 · Gather / 지금 여기</span>
+      <h2>첫 조각을<br>남겨주세요.</h2>
+      <p>완성된 글일 필요는 없습니다. 오늘 머문 생각, 대화의 한 장면, 오래 남기고 싶은 문장 하나면 충분합니다.</p>
+      <div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-primary">첫 기록 시작하기</a></div>
+      <div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">09:42 / “오늘 문득…”</div><div class="v3-status-fragment">margin note / 작은 전환점</div><div class="v3-status-fragment">source 01 / 아직 다듬지 않은 문장</div></div>
+
+    {% elif workflow_stage == 'input_received' %}
+      <span class="v3-state-label">02 · Shape / 기록 접수됨</span>
+      <h2>조각들이<br>정렬되고 있습니다.</h2>
+      <p>원본의 말투와 맥락을 보존하면서 서로 이어지는 흐름을 찾습니다. 추가 기록은 언제든 더할 수 있습니다.</p>
+      <div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">기록 더하기</a></div>
+      {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/editing/" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}
+      <div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">source / 03 fragments</div><div class="v3-status-fragment">shape / theme emerging</div><div class="v3-status-fragment">draft / private</div></div>
+
+    {% elif workflow_stage == 'reviewing' %}
+      <span class="v3-state-label">03 · Review / 편집 검토 중</span>
+      <h2>사람이 다시<br>읽고 있습니다.</h2>
+      <p>자동으로 공개되지 않습니다. 표현, 근거, 맥락이 원본과 어긋나지 않는지 사람이 확인한 뒤 한 권의 에디션으로 묶습니다.</p>
+      <div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">기록 더하기</a></div>
+      {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/published/" class="btn btn-primary">완성된 에디션 보기</a></div>{% endif %}
+      <div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">proof / context checked</div><div class="v3-status-fragment">editor / human review</div><div class="v3-status-fragment">bind / awaiting release</div></div>
+
+    {% elif workflow_stage == 'feedback' %}
+      <span class="v3-state-label">Recut / 피드백 완료</span>
+      <h2>다음 호의<br>초점이 바뀌었습니다.</h2>
+      <p>남긴 편집 메모가 다음 에디션의 강조점과 서술 방식에 연결되었습니다. 새 기록을 더하면 그 변화 위에서 다음 호가 시작됩니다.</p>
+      <div class="v3-state-actions">
+        <a href="{{ _base }}/input" class="btn btn-primary">새 기록 남기기</a>
+        {% if published_editions %}<a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
 {% endif %}
 {% endblock %}

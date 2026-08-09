@@ -3,48 +3,51 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#11110f">
 <title>{% block title %}Personal Edition{% endblock %}</title>
 <link rel="stylesheet" href="/static/app.css?v=pe-ui51-20260722-3">
-<link rel="stylesheet" href="/static/ui-v2-443.css?v=b1-v2-443">
+<link rel="stylesheet" href="/static/ui-v3-454.css?v=b1-v3-454">
+<link rel="stylesheet" href="/static/ui-v3-454-compat.css?v=b1-v3-454-2">
 </head>
-<body data-ui-version="b1-personal-edition-v2-443" class="{% if request.url.path.startswith('/admin') %}admin-surface{% else %}participant-surface{% endif %}">
-<header class="site-header">
-  <nav>
-    {% if is_preview is defined and is_preview %}
-    <span class="nav-brand">Personal Edition — UI Preview</span>
-    <div class="nav-links">
-      <a href="/">프리뷰 목록</a>
-    </div>
-    {% elif request.url.path.startswith('/admin') %}
-    <a href="/admin/" class="nav-brand">Personal Edition 편집실</a>
-    <div class="nav-links">
-      <a href="/admin/">대시보드</a>
+{% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
+<body data-ui-version="b1-personal-edition-v3-454" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
+{% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
+<header class="site-header v3-site-header">
+  <nav class="v3-site-nav" aria-label="주요 탐색">
+    {% if request.url.path.startswith('/admin') %}
+    <a href="/admin/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition 편집실</span></a>
+    <div class="nav-links v3-nav-links">
+      <a href="/admin/">Queue</a>
       <form method="post" action="/admin/logout" class="inline-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
         <button type="submit" class="btn-link">로그아웃</button>
       </form>
     </div>
     {% elif participant is defined and participant %}
-    <a href="/p/{{ participant.id }}" class="nav-brand">Personal Edition</a>
-    <div class="nav-links">
-      <a href="/p/{{ participant.id }}">홈</a>
-      <a href="/p/{{ participant.id }}/input">글쓰기</a>
-      <a href="/p/{{ participant.id }}/history">기록</a>
+    <a href="{{ _nav_base }}/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
+    <div class="nav-links v3-nav-links">
+      <a href="{{ _nav_base }}/">Library</a>
+      <a href="{{ _nav_base }}/input">Write</a>
+      <a href="{{ _nav_base }}/history">Archive</a>
+      {% if not (is_preview is defined and is_preview) %}
       <form method="post" action="/p/{{ participant.id }}/logout" class="inline-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token|default('', true) }}">
         <button type="submit" class="btn-link">로그아웃</button>
       </form>
+      {% endif %}
     </div>
     {% else %}
-    <a href="/p/access" class="nav-brand">Personal Edition</a>
+    <a href="/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
+    <div class="v3-nav-caption">Private · Human reviewed</div>
     {% endif %}
   </nav>
 </header>
-<main class="container">
+<main class="container v3-main">
 {% block content %}{% endblock %}
 </main>
-<footer class="site-footer">
-  <p>&copy; Personal Edition</p>
+<footer class="site-footer v3-site-footer">
+  <span>Personal Edition</span>
+  <span>Private by default · Human reviewed</span>
 </footer>
 </body>
 </html>

@@ -1,48 +1,39 @@
 {% extends "base.html" %}
-{% block title %}Personal Edition UI Preview{% endblock %}
+{% block title %}Personal Edition{% endblock %}
 {% block content %}
-<div class="preview-index-page">
-  <h1>Personal Edition UI Preview</h1>
-  <p class="preview-index-sub">Cloudflare Pages 정적 프리뷰입니다. 실제 데이터는 사용되지 않습니다.</p>
-
-  <section class="preview-section">
-    <h2>소개 흐름</h2>
-    <ul class="preview-link-list">
-      <li><a href="/preview/intro/" class="btn btn-secondary">제품 소개 — 변환</a></li>
-      <li><a href="/preview/participant/transformation/" class="btn btn-secondary">기록 → 에디션 변환 단계</a></li>
-    </ul>
+<style>
+/* Canonical owner-review root must never expose static-preview scaffolding. */
+.preview-banner { display:none !important; }
+</style>
+<div class="v3-intro" data-owner-review-root="true">
+  <section class="v3-hero" aria-labelledby="root-title">
+    <div class="v3-hero-copy">
+      <div>
+        <span class="v3-kicker">Private publication · No. 01</span>
+        <h1 class="v3-hero-title" id="root-title">흩어진 기록이 <em>당신의 한 권</em>이 됩니다.</h1>
+        <p class="v3-hero-lede">메모와 대화의 조각을 모으고, 맥락을 읽고, 사람의 검토를 거쳐 오래 남길 수 있는 비공개 에디션으로 엮습니다.</p>
+      </div>
+      <div class="v3-hero-action">
+        <a href="/preview/participant/published/" class="btn btn-primary">완성된 에디션 보기</a>
+        <span class="v3-hero-note">Private by default · Human reviewed</span>
+      </div>
+    </div>
+    <div class="v3-assembly-stage" aria-label="기록 조각이 한 권의 에디션으로 결속되는 장면">
+      <div class="v3-binding-axis" aria-hidden="true"></div>
+      <article class="v3-fragment f1"><small>09:42 · conversation</small>처음에는 속도가 가장 중요하다고 생각했습니다.</article>
+      <article class="v3-fragment f2"><small>note · margin 02</small>고객이 원하는 것은 더 빠른 답보다 자신을 이해하는 제안이었다.</article>
+      <article class="v3-fragment f3"><small>reflection · 18:10</small>방향을 바꾼 순간부터 기록의 의미도 달라졌다.</article>
+      <article class="v3-fragment f4"><small>editorial cue</small>속도보다 사람마다 다른 맥락을 먼저 읽기.</article>
+      <div class="v3-edition-object" aria-hidden="true"><span class="v3-edition-eyebrow">Personal Edition · Private</span><strong class="v3-edition-title">속도에서 개인화로</strong><span class="v3-edition-no">01</span></div>
+      <span class="v3-assembly-caption">gather → sort → bind → reveal</span>
+    </div>
   </section>
-
-  <section class="preview-section">
-    <h2>참여자 화면</h2>
-    <ul class="preview-link-list">
-      <li><a href="/preview/participant/access/" class="btn btn-secondary">참여자 접속 화면</a></li>
-      <li><a href="/preview/participant/empty/" class="btn btn-secondary">참여자 홈 — 기록 없음</a></li>
-      <li><a href="/preview/participant/input-received/" class="btn btn-secondary">참여자 홈 — 기록 접수</a></li>
-      <li><a href="/preview/participant/editing/" class="btn btn-secondary">참여자 홈 — 편집 검토</a></li>
-      <li><a href="/preview/participant/published/" class="btn btn-secondary">참여자 홈 — 발행 완료</a></li>
-      <li><a href="/preview/participant/feedback/" class="btn btn-secondary">참여자 홈 — 피드백 완료</a></li>
-      <li><a href="/preview/participant/editions/modal-preview-edition/" class="btn btn-secondary">에디션 읽기</a></li>
-      <li><a href="/preview/participant/editions/modal-preview-edition/feedback/" class="btn btn-secondary">피드백 입력</a></li>
-      <li><a href="/preview/participant/editions/modal-preview-edition/feedback/thanks/" class="btn btn-secondary">피드백 완료</a></li>
-      <li><a href="/preview/participant/editions/modal-preview-edition/adaptation/" class="btn btn-secondary">다음 호 변화</a></li>
-      <li><a href="/preview/participant/history/" class="btn btn-secondary">지난 에디션</a></li>
-      <li><a href="/preview/participant/input/" class="btn btn-secondary">글쓰기 폼</a></li>
-    </ul>
-  </section>
-
-  <section class="preview-section">
-    <h2>관리자 화면</h2>
-    <ul class="preview-link-list">
-      <li><a href="/admin/access/" class="btn btn-secondary">관리자 접속</a></li>
-      <li><a href="/admin/" class="btn btn-secondary">편집 대기열</a></li>
-      <li><a href="/admin/participants/modal-preview-user/" class="btn btn-secondary">참여자 맥락</a></li>
-      <li><a href="/admin/review/modal-preview-edition/" class="btn btn-secondary">AI 초안 검토</a></li>
-      <li><a href="/admin/review/modal-preview-edition/evidence/" class="btn btn-secondary">생성 증거</a></li>
-      <li><a href="/admin/review/modal-preview-edition/content/" class="btn btn-secondary">콘텐츠 검토</a></li>
-      <li><a href="/admin/review/modal-preview-edition/publish/" class="btn btn-secondary">게재 결정</a></li>
-      <li><a href="/admin/participants/modal-preview-user/feedback/" class="btn btn-secondary">피드백 연속성</a></li>
-    </ul>
+  <section class="v3-process-strip" aria-label="Personal Edition 원칙">
+    <div><span>One continuous editorial system</span><strong>당신의 기록은 한 권의 흐름이 됩니다.</strong></div>
+    <div><span>Gather</span><strong>조각을 모으고</strong><p>완성되지 않은 생각부터 받습니다.</p></div>
+    <div><span>Shape</span><strong>맥락을 찾고</strong><p>원본의 말투와 의미를 보존합니다.</p></div>
+    <div><span>Review</span><strong>사람이 읽고</strong><p>자동 공개 없이 표현과 근거를 확인합니다.</p></div>
+    <div><span>Bind</span><strong>한 권으로 남깁니다</strong><p>검토된 결과만 개인 라이브러리에 쌓입니다.</p></div>
   </section>
 </div>
 {% endblock %}

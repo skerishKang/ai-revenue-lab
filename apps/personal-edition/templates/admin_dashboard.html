@@ -9,7 +9,7 @@
       <p>독자 기록, 에디션 검토, 피드백 연속성을 한 작업 흐름에서 확인합니다.</p>
     </div>
     <div class="operator-header-status-v2">
-      <div>Preview data only</div>
+      <div>Private workspace</div>
       <div>Human review required</div>
       <div>No automatic publish</div>
     </div>
@@ -24,72 +24,30 @@
   </section>
 
   <section aria-labelledby="operator-queue-title">
-    <div class="operator-section-head-v2">
-      <h2 id="operator-queue-title">Editorial queue</h2>
-      <span>{{ queue_items|length }} active item{% if queue_items|length != 1 %}s{% endif %}</span>
-    </div>
-
+    <div class="operator-section-head-v2"><h2 id="operator-queue-title">Editorial queue</h2><span>{{ queue_items|length }} active item{% if queue_items|length != 1 %}s{% endif %}</span></div>
     {% if queue_items %}
     <div class="operator-queue-list-v2">
       {% for item in queue_items %}
       <article class="operator-queue-item-v2">
-        <div class="operator-cell-v2">
-          <span class="cell-label-v2">Participant</span>
-          <div><strong>{{ item.participant.display_name }}</strong><br><code>{{ item.participant.id }}</code></div>
-        </div>
-        <div class="operator-cell-v2">
-          <span class="cell-label-v2">Status</span>
-          <div><span class="status-badge {{ item.status_info.status_class }}">{{ item.status_info.status_label }}</span></div>
-        </div>
-        <div class="operator-cell-v2">
-          <span class="cell-label-v2">Last input</span>
-          <p>{% if item.latest_input %}{{ item.latest_input.submitted_at[:16] }}{% else %}-{% endif %}</p>
-        </div>
-        <div class="operator-cell-v2">
-          <span class="cell-label-v2">Latest edition</span>
-          <p>{% if item.latest_edition %}<strong>#{{ item.latest_edition.edition_number }}</strong> · {{ item.latest_edition.rendered_title or '제목 없음' }}{% else %}-{% endif %}</p>
-        </div>
-        <div class="operator-cell-v2">
-          <span class="cell-label-v2">Next action</span>
-          <p>{{ item.status_info.recommended_action }}{% if item.has_feedback %} · 피드백 도착{% endif %}</p>
-        </div>
-        <div class="operator-queue-actions-v2">
-          <a href="/admin/participants/{{ item.participant.id }}/" class="btn btn-secondary">참여자</a>
-          <a href="{{ item.status_info.recommended_action_url }}" class="btn btn-primary">검토</a>
-        </div>
+        <div class="operator-cell-v2"><span class="cell-label-v2">Participant</span><div><strong>{{ item.participant.display_name }}</strong><br><code>{{ item.participant.id }}</code></div></div>
+        <div class="operator-cell-v2"><span class="cell-label-v2">Status</span><div><span class="status-badge {{ item.status_info.status_class }}">{{ item.status_info.status_label }}</span></div></div>
+        <div class="operator-cell-v2"><span class="cell-label-v2">Last input</span><p>{% if item.latest_input %}{{ item.latest_input.submitted_at[:16] }}{% else %}-{% endif %}</p></div>
+        <div class="operator-cell-v2"><span class="cell-label-v2">Latest edition</span><p>{% if item.latest_edition %}<strong>#{{ item.latest_edition.edition_number }}</strong> · {{ item.latest_edition.rendered_title or '제목 없음' }}{% else %}-{% endif %}</p></div>
+        <div class="operator-cell-v2"><span class="cell-label-v2">Next action</span><p>{{ item.status_info.recommended_action }}{% if item.has_feedback %} · 피드백 도착{% endif %}</p></div>
+        <div class="operator-queue-actions-v2"><a href="/admin/participants/{{ item.participant.id }}/" class="btn btn-secondary">참여자</a><a href="{{ item.status_info.recommended_action_url }}" class="btn btn-primary">검토</a></div>
       </article>
       {% endfor %}
     </div>
-    {% else %}
-    <p class="empty-state">현재 편집 업무가 없습니다.</p>
-    {% endif %}
+    {% else %}<p class="empty-state">현재 편집 업무가 없습니다.</p>{% endif %}
   </section>
 
   <details class="tech-info-details">
-    <summary class="tech-info-summary">
-      <span>기술 정보 및 Provider 상태</span>
-      <span class="summary-hint">검토 증거용</span>
-    </summary>
+    <summary class="tech-info-summary"><span>기술 정보 및 Provider 상태</span><span class="summary-hint">검토 증거</span></summary>
     <div class="tech-info-content">
       <div class="provider-status-grid">
-        <div><strong>설정 Provider</strong><br><code>{{ provider_name }}</code></div>
-        <div><strong>설정 Model</strong><br><code>{{ model_name }}</code></div>
-        <div><strong>실제 Provider</strong><br><code>{{ actual_provider }}</code></div>
-        <div><strong>실제 Model</strong><br><code>{{ actual_model }}</code></div>
+        <div><strong>설정 Provider</strong><br><code>{{ provider_name }}</code></div><div><strong>설정 Model</strong><br><code>{{ model_name }}</code></div><div><strong>실제 Provider</strong><br><code>{{ actual_provider }}</code></div><div><strong>실제 Model</strong><br><code>{{ actual_model }}</code></div>
       </div>
-      {% if recent_generation_runs %}
-      <div class="records-list">
-        {% for r in recent_generation_runs %}
-        <div class="record-card">
-          <div class="record-card-header">
-            <span class="record-num">{{ r.task_type }}</span>
-            <span>{{ r.provider }} / {{ r.advertised_model }}</span>
-            <span class="consent-tag">{% if r.success %}성공{% else %}실패{% endif %}</span>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
+      {% if recent_generation_runs %}<div class="records-list">{% for r in recent_generation_runs %}<div class="record-card"><div class="record-card-header"><span class="record-num">{{ r.task_type }}</span><span>{{ r.provider }} / {{ r.advertised_model }}</span><span class="consent-tag">{% if r.success %}성공{% else %}실패{% endif %}</span></div></div>{% endfor %}</div>{% endif %}
     </div>
   </details>
 </div>

@@ -1,55 +1,27 @@
 {% extends "base.html" %}
-{% block title %}피드백 반영 — Personal Edition{% endblock %}
+{% block title %}다음 호의 변화 — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 {% set feedback_text = "개인화가 구체적으로 어떻게 실천되는지 더 깊이 알고 싶습니다." %}
 {% set before_text = "고객이 빨리 받으면 만족할 것이라 믿었죠. 하지만 이 믿음은 고객들을 만나면서 점점 흔들렸습니다." %}
 {% set after_text = "고객마다 원하는 속도와 방식이 다르다는 것을 깨달았습니다. 어떤 고객은 천천히 읽고 싶어 했고, 어떤 고객은 맞춤형 요약을 원했습니다. 개인화는 단순한 속도의 문제가 아니라 각 고객의 상황과 취향을 이해하는 과정이었습니다." %}
 {% set changed_section = "고객과의 만남이 바꾼 것" %}
-<div class="adaptation-page-v2">
-  <header class="adaptation-head-v2">
-    <h1>다음 호는 어떻게 달라졌나</h1>
-    <div class="feedback-brief-v2">
-      <span class="brief-label">Reader direction · exact feedback</span>
-      <blockquote>“{{ feedback_text }}”</blockquote>
-    </div>
+<section class="v3-adaptation" aria-labelledby="adapt-title">
+  <span class="edition-cover-mini" aria-hidden="true" style="display:none">{{ edition.edition_number }}</span>
+  <header class="v3-adapt-head">
+    <h1 id="adapt-title">당신의 메모가<br>다음 호를 다시 자릅니다.</h1>
+    <div class="v3-reader-note"><span>Reader direction · exact feedback</span><blockquote>“{{ feedback_text }}”</blockquote></div>
   </header>
-
-  <section class="adaptation-delta-v2" aria-label="피드백 반영 전후 비교">
-    <article class="delta-panel-v2 is-before">
-      <span class="delta-label-v2">Before · 제{{ edition.edition_number }}호</span>
-      <div class="edition-cover-mini" aria-hidden="true">01</div>
-      <h2>{{ changed_section }}</h2>
-      <p class="delta-copy-v2 before-text">{{ before_text }}</p>
-    </article>
-
-    <div class="delta-arrow-v2" aria-hidden="true"><span>→</span></div>
-
-    <article class="delta-panel-v2 is-after">
-      <span class="delta-label-v2">After · next edition</span>
-      <h2>{{ changed_section }}</h2>
-      <p class="delta-copy-v2 after-text">{{ after_text }}</p>
-    </article>
+  <section class="v3-recut-stage" aria-label="before current treatment and after next treatment">
+    <article class="v3-recut-current" aria-label="Before · current edition"><span class="v3-recut-label">Before · Edition {{ '%02d'|format(edition.edition_number) }}</span><h2>{{ changed_section }}</h2><p class="v3-recut-copy">{{ before_text }}</p></article>
+    <div class="v3-recut-mark" aria-hidden="true">Recut</div>
+    <article class="v3-recut-next" aria-label="After · next edition"><span class="v3-recut-label">After · next edition</span><h2>{{ changed_section }}</h2><p class="v3-recut-copy">{{ after_text }}</p></article>
   </section>
-
-  <section class="adaptation-proof-v2" aria-label="변경된 이유와 근거">
-    <div>
-      <strong>01 / 변경된 이유 · Request</strong>
-      <p>“개인화가 구체적으로 어떻게 실천되는지”를 더 깊게 보여달라는 독자 요청을 그대로 기준점으로 삼았습니다.</p>
-    </div>
-    <div>
-      <strong>02 / Editorial change</strong>
-      <p>추상적인 가치 설명을 줄이고, 서로 다른 고객이 실제로 원하는 방식의 차이를 본문에 추가했습니다.</p>
-    </div>
-    <div>
-      <strong>03 / Continuity</strong>
-      <p>속도 중심의 첫 가설에서 개인화 중심의 다음 판단으로 서사가 이어지도록 변경 지점을 기록했습니다.</p>
-    </div>
+  <section class="v3-proof-line" aria-label="피드백 반영 근거">
+    <div><strong>01 · 변경된 이유 · Reader signal</strong><p>추상적인 개인화 설명보다 실제 차이를 더 깊게 보고 싶다는 요청을 기준점으로 삼았습니다.</p></div>
+    <div><strong>02 · Editorial recut</strong><p>속도에 대한 일반 설명을 줄이고, 서로 다른 고객이 원하는 방식의 차이를 본문 장면으로 확장합니다.</p></div>
+    <div><strong>03 · Continuity</strong><p>첫 호의 가설이 다음 호의 관찰로 자연스럽게 이어지도록 서사의 초점을 이동합니다.</p></div>
   </section>
-
-  <nav class="adaptation-actions-v2" aria-label="피드백 반영 다음 작업">
-    <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-secondary">감사 페이지로</a>
-    <a href="{{ _base }}/history" class="btn btn-primary">지난 에디션 보기</a>
-  </nav>
-</div>
+  <nav class="v3-adapt-actions" aria-label="다음 작업"><a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback/thanks" class="btn btn-secondary">편집 메모 확인</a><a href="{{ _base }}/history" class="btn btn-primary">지난 에디션 보기</a></nav>
+</section>
 {% endblock %}
