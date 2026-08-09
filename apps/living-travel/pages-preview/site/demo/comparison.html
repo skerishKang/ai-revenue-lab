@@ -4,102 +4,63 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 여행판 변화 비교</title>
+  <title>Living Travel — 여행판이 다시 편집되었습니다</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html">내 여행</a>
-      <a href="history.html">지난 기록</a>
-      <a href="../index.html">홈</a>
-    </div>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="traveler-home.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+    <div class="lt-nav-links"><a href="history.html">Archive</a></div>
   </nav>
 
-  <div class="demo-compare-page">
-    <div class="demo-compare-header">
-      <h1>여행판이 어떻게 달라졌나요?</h1>
-      <p class="subtitle" style="margin-bottom:0;">의견을 반영해 두 번째 여행판이 새롭게 구성되었습니다.</p>
+  <main class="lt-recut">
+    <header class="lt-recut-head">
+      <div class="lt-step-label" style="color:var(--lt-lime);">05 / Recut applied</div>
+      <h1>같은 부산,<br>다른 여행.</h1>
+      <p>“더 천천히 · 유명 관광지 줄이기 · 조용한 장소 늘리기”라는 의견이 단순 메모로 남지 않고, 하루의 장소 수와 이동량을 실제로 바꿨습니다.</p>
+    </header>
+
+    <section class="lt-recut-grid" aria-label="1판과 2판 여행 흐름 비교">
+      <article class="lt-recut-plan before">
+        <div class="lt-section-code" style="color:var(--lt-lime);">Edition #01 · Before</div>
+        <h2>넓게 보고, 많이 이동</h2>
+        <ul>
+          <li><strong>Day 1</strong><br>초량 → 자갈치 → 용두산 → 광복동 → 남포</li>
+          <li><strong>Day 2</strong><br>감천 → 해운대 → 동백섬 → 센텀 → 야시장</li>
+          <li><strong>Day 3</strong><br>송도 → 케이블카 → 서면 → 부산역</li>
+          <li><strong>Density</strong><br>하루 4–5개 장소 · 이동 많음</li>
+        </ul>
+      </article>
+
+      <div class="lt-recut-axis" aria-hidden="true"><span>RECUT</span></div>
+
+      <article class="lt-recut-plan after">
+        <div class="lt-section-code">Edition #02 · After</div>
+        <h2>적게 보고, 오래 머물기</h2>
+        <ul>
+          <li><strong>Day 1</strong><br>초량 골목 → 동네 밥집 → 자갈치 해질녘</li>
+          <li><strong>Day 2</strong><br>감천 아침 → 이기대 해안 → 송정 카페</li>
+          <li><strong>Day 3</strong><br>송도 산책 → 찻집 → 남포 골목</li>
+          <li><strong>Density</strong><br>하루 2–3개 장소 · 체류시간 증가</li>
+        </ul>
+      </article>
+    </section>
+
+    <section style="padding:0 clamp(1.25rem,5vw,5rem) 5rem;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--lt-line);">
+      <div class="lt-gen-node"><code>PLACES</code><strong>5 → 3</strong><span>하루 장소 수 감소</span></div>
+      <div class="lt-gen-node"><code>DWELL</code><strong>+42%</strong><span>머무는 시간 증가</span></div>
+      <div class="lt-gen-node"><code>TOURIST</code><strong>HIGH → LOW</strong><span>유명 관광지 비중 감소</span></div>
+      <div class="lt-gen-node"><code>LOCAL</code><strong>MED → HIGH</strong><span>생활권 중심으로 이동</span></div>
+    </section>
+
+    <div style="padding:0 clamp(1.25rem,5vw,5rem) 5rem;display:flex;gap:.75rem;flex-wrap:wrap;">
+      <a href="edition-2.html" class="btn btn-accent">2판 읽기</a>
+      <a href="history.html" class="btn btn-outline" style="color:#fff;">여행판 기록 보기</a>
     </div>
-
-    <div class="demo-compare-layout">
-      <!-- Feedback summary -->
-      <div class="demo-compare-feedback">
-        <strong>반영한 피드백</strong><br>
-        더 천천히 · 유명 관광지 줄이기 · 조용한 장소 늘리기 · "더 조용하고 느린 동네 중심으로 바꿔 주세요."
-      </div>
-
-      <!-- Before / After -->
-      <div class="demo-compare-row">
-        <div class="demo-compare-card">
-          <h3><span class="badge badge-info">1판</span> Before</h3>
-          <div class="demo-compare-item">
-            <strong>1일차</strong><br>
-            초량동 168계단 → 자갈치 시장 → 용두산 공원 → 광복동 쇼핑 거리 → 남포동 저녁
-          </div>
-          <div class="demo-compare-item">
-            <strong>2일차</strong><br>
-            감천문화마을 → 해운대 해변 → 동백섬 → 센텀시트 → 해운대 야시장
-          </div>
-          <div class="demo-compare-item">
-            <strong>3일차</strong><br>
-            송도 해안 → 송도 케이블카 → 송도 구름산책로 → 서면 쇼핑 → 부산역
-          </div>
-          <div class="demo-compare-item" style="color:var(--ink-faded);font-size:0.8rem;">
-            <strong>하루 평균</strong> 4~5개 장소 · 이동 많음
-          </div>
-        </div>
-
-        <div class="demo-compare-card" style="border-left:3px solid var(--forest);">
-          <h3><span class="badge badge-published">2판</span> After <span style="font-weight:400;font-size:0.8rem;color:var(--ink-faded);">(피드백 반영)</span></h3>
-          <div class="demo-compare-item">
-            <strong>1일차</strong><br>
-            초량동 골목 카페 → 168계단 산책 → 동네 밥집 → 자갈치 해질녘 산책
-          </div>
-          <div class="demo-compare-item">
-            <strong>2일차</strong><br>
-            감천마을 아침 산책 → 동네 식당 → 이기대 바다 산책로 → 송정 조용한 카페
-          </div>
-          <div class="demo-compare-item">
-            <strong>3일차</strong><br>
-            송도 해안 산책로 → 찻집 휴식 → 남포동 골목 마지막 산책
-          </div>
-          <div class="demo-compare-item" style="color:var(--ink-faded);font-size:0.8rem;">
-            <strong>하루 평균</strong> 2~3개 장소 · 머무는 시간 증가
-          </div>
-        </div>
-      </div>
-
-      <!-- What changed summary -->
-      <div class="demo-compare-changes">
-        <h3>무엇이 달라졌나요?</h3>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>장소 수 감소</strong> — 하루 4~5곳에서 2~3곳으로 줄었습니다.</span>
-        </div>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>유명 관광지 제외</strong> — 용두산 공원, 광복동 쇼핑 거리, 서면, 송도 케이블카가 빠졌습니다.</span>
-        </div>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>골목과 생활권 중심</strong> — 동네 식당, 골목 카페, 조용한 찻집이 늘었습니다.</span>
-        </div>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>이동 감소, 머무는 시간 증가</strong> — 촉박한 일정 대신 여유로운 산책과 휴식.</span>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem;">
-        <a href="edition-2.html" class="btn btn-accent">2판 읽기</a>
-        <a href="history.html" class="btn btn-outline">여행판 기록 보기</a>
-      </div>
-    </div>
-  </div>
+  </main>
 </body>
 </html>
