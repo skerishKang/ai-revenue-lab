@@ -4,34 +4,47 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 인터랙티브 데모</title>
+  <title>Living Travel — 부산, 나의 속도로</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <section class="demo-hero" style="background:none;position:relative;">
-    <img src="../assets/images/busan-hero.webp" alt="부산 해안과 도심의 합성 데모 이미지" width="1200" height="600" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">
-    <div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(26,60,52,0.7) 0%, rgba(58,122,114,0.4) 50%, rgba(198,106,74,0.3) 100%);pointer-events:none;"></div>
-    <div class="demo-hero-content">
-      <h1 class="demo-hero-brand">
-        Living
-        <span class="demo-hero-brand-accent">Travel</span>
-      </h1>
-      <p class="demo-hero-tagline">
-        내 취향을 담아 만들고,<br>
-        피드백에 따라 다시 편집되는 개인 여행판
-      </p>
-      <p class="demo-hero-desc">
-        3분 동안 클릭으로 경험하는 Living Travel 콘셉트 데모입니다.<br>
-        실제 AI 호출이나 데이터 저장은 이루어지지 않습니다.
-      </p>
-      <div class="demo-hero-actions">
-        <a href="preferences.html" class="btn btn-primary" style="background:var(--terracotta);border-color:var(--terracotta);font-size:1rem;padding:0.75rem 2rem;">내 여행판 시작하기</a>
-        <a href="../index.html" class="btn btn-outline" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3);">기존 프리뷰로 돌아가기</a>
-      </div>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="../index.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+    <div class="lt-nav-links"><a href="history.html">Archive</a></div>
+  </nav>
+
+  <main class="lt-hero">
+    <div class="lt-hero-media" aria-hidden="true">
+      <img src="../assets/images/busan-hero.webp" alt="">
     </div>
-  </section>
+    <div class="lt-hero-inner">
+      <section>
+        <div class="lt-kicker">Scene 00 · Arrival</div>
+        <h1 class="lt-place">부산<em>많이 말고, 깊게.</em></h1>
+        <p class="lt-hero-copy">
+          빠르게 관광지를 찍는 대신, 조용한 골목과 바다에 오래 머무는 2박 3일.
+          당신의 취향이 여행의 밀도와 동선을 바꿉니다.
+        </p>
+        <div class="lt-hero-actions">
+          <a href="preferences.html" class="lt-cta lt-cta-primary">내 여행판 시작하기 <span aria-hidden="true">→</span></a>
+          <a href="edition.html" class="lt-cta lt-cta-ghost">결과 먼저 보기</a>
+        </div>
+      </section>
+
+      <aside class="lt-route-card">
+        <div class="lt-route-card-label">Interpretation preview</div>
+        <ol class="lt-route-stops">
+          <li><span><strong>09:20 · 초량</strong>도착 후 바로 걷지 않기</span></li>
+          <li><span><strong>08:10 · 감천</strong>사람이 적은 아침</span></li>
+          <li><span><strong>15:40 · 송도</strong>마지막 바다에 오래 머물기</span></li>
+        </ol>
+        <div class="lt-route-time">NOT A CHECKLIST<br>A TRIP COMPOSED FOR YOU</div>
+      </aside>
+    </div>
+  </main>
 </body>
 </html>
