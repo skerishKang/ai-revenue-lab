@@ -1,0 +1,110 @@
+name: Validate B17 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-17-local-shop-magazine-v1/**'
+      - '.github/workflows/validate-b17-complete-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b17-local-shop-magazine-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Static contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 reference/business-17-local-shop-magazine-v1/tests/self-check.py
+          node --check reference/business-17-local-shop-magazine-v1/scripts/review.js
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          base=Path('reference/business-17-local-shop-magazine-v1')
+          for name in ('index.html','ux.html','guide.html'):
+              HTMLParser().feed((base/name).read_text(encoding='utf-8'))
+          index=(base/'index.html').read_text(encoding='utf-8')
+          ux=(base/'ux.html').read_text(encoding='utf-8')
+          guide=(base/'guide.html').read_text(encoding='utf-8')
+          js=(base/'scripts/review.js').read_text(encoding='utf-8')
+          for marker in ('우리 가게 매거진','data-state-target="cover"','data-state-target="product"','data-state-target="maker"','합성'):
+              assert marker in index, marker
+          for marker in ('id="material"','id="preview"','id="proof"','id="issue"','id="draft"','data-proof="price"','data-proof="person"','data-proof="claim"','id="publish"','id="finish"'):
+              assert marker in ux, marker
+          for marker in ('GUIDE · 30 SECONDS','01 · SCENE','02 · VOICE','03 · EDIT','04 · PROOF','05 · ISSUE','./ux.html#material'):
+              assert marker in guide, marker
+          assert './guide.html' in js and 'dataset.firstUseGuide' in js
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in ux+'\n'+guide+'\n'+js, forbidden
+          for html in ('index.html','guide.html'):
+              text=(base/html).read_text(encoding='utf-8')
+              for rel in re.findall(r'(?:href|src)="(\./[^"?#]+)', text):
+                  assert (base/rel[2:]).exists(), (html,rel)
+          print('B17_STATIC_CONTRACT_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-17-local-shop-magazine-v1/**'
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b17-browser && cd /tmp/b17-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser journey desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4175 --directory reference/business-17-local-shop-magazine-v1 >/tmp/b17-http.log 2>&1 &
+          server=$!
+          trap 'kill $server || true' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4175/index.html >/dev/null && break; sleep 0.5; done
+          cd /tmp/b17-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const vp of [{width:1440,height:1100,name:'desktop'},{width:390,height:844,name:'mobile'}]){
+              const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+              const errors=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+              page.on('pageerror',e=>errors.push(`page:${e.message}`));
+              await page.goto('http://127.0.0.1:4175/index.html',{waitUntil:'networkidle'});
+              await page.locator('[data-first-use-guide]').waitFor({state:'visible'});
+              if(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)) throw new Error(`${vp.name}: root overflow`);
+              await page.locator('[data-first-use-guide]').click();
+              await page.waitForURL(/guide\.html/);
+              if(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)) throw new Error(`${vp.name}: guide overflow`);
+              await page.getByRole('link',{name:'가게 이야기 만들기'}).click();
+              await page.waitForURL(/ux\.html#material/);
+              await page.locator('#draft').click();
+              if(!(await page.locator('#preview').evaluate(el=>el.classList.contains('active')))) throw new Error(`${vp.name}: preview did not open`);
+              await page.getByRole('button',{name:'내용 확인'}).click();
+              await page.locator('#publish').click();
+              let gate=await page.locator('#proofStatus').textContent();
+              if(!gate || !gate.includes('세 확인 항목')) throw new Error(`${vp.name}: proof gate missing`);
+              const proofs=page.locator('[data-proof]');
+              await proofs.nth(0).click(); await proofs.nth(1).click(); await proofs.nth(2).click();
+              await page.locator('#publish').click();
+              if(!(await page.locator('#issue').evaluate(el=>el.classList.contains('active')))) throw new Error(`${vp.name}: issue did not open`);
+              await page.locator('#finish').click();
+              const status=await page.locator('#issueStatus').textContent();
+              if(!status || !status.includes('검토 완료')) throw new Error(`${vp.name}: finish status missing`);
+              if(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)) throw new Error(`${vp.name}: ux overflow`);
+              if(errors.length) throw new Error(`${vp.name}: ${errors.join(' | ')}`);
+              await page.close();
+            }
+            await browser.close();
+            console.log('B17_BROWSER_JOURNEY_PASS=1');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
