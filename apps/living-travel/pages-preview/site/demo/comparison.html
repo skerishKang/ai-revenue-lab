@@ -4,102 +4,57 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 여행판 변화 비교</title>
+  <title>Living Travel — 경로가 이렇게 달라졌습니다</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/b2-v2-457.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Demo · Synthetic data · No booking · 2판 읽기 · 여행판 기록 보기</span>
+  <header class="lt-topbar lt-topbar--light">
+    <a class="lt-wordmark" href="traveler-home.html">Living Travel</a>
+    <nav class="lt-nav" aria-label="여행자 메뉴"><a href="edition-2.html">Edition 02</a><a href="history.html">Archive</a></nav>
+  </header>
 
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html">내 여행</a>
-      <a href="history.html">지난 기록</a>
-      <a href="../index.html">홈</a>
-    </div>
-  </nav>
+  <main style="padding:clamp(4rem,8vw,8rem) clamp(1rem,5vw,5rem);background:var(--lt-paper);min-height:100vh;">
+    <section style="max-width:1400px;margin:auto;">
+      <div class="lt-kicker" style="color:var(--lt-sea);">Feedback → Route recut</div>
+      <h1 style="margin:0;max-width:980px;font-family:var(--lt-display);font-size:clamp(3.3rem,7vw,7rem);line-height:.9;letter-spacing:-.055em;">같은 부산이지만,<br>여행의 밀도는 달라졌습니다.</h1>
+      <p style="max-width:680px;margin:1.5rem 0 3rem;line-height:1.8;color:var(--lt-muted);">“더 천천히, 유명 관광지는 줄이고, 조용한 동네를 늘려 달라”는 의견을 장소 수·이동 횟수·체류 시간에 직접 반영했습니다.</p>
 
-  <div class="demo-compare-page">
-    <div class="demo-compare-header">
-      <h1>여행판이 어떻게 달라졌나요?</h1>
-      <p class="subtitle" style="margin-bottom:0;">의견을 반영해 두 번째 여행판이 새롭게 구성되었습니다.</p>
-    </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--lt-line);border:1px solid var(--lt-line);">
+        <article style="background:#ebe5db;padding:clamp(1.2rem,3vw,2.5rem);">
+          <div class="lt-pref-section-label">Edition 01 · Before</div>
+          <h2 style="font-family:var(--lt-display);font-size:clamp(2rem,4vw,3.8rem);line-height:.95;letter-spacing:-.04em;">넓게 보고,<br>많이 이동합니다.</h2>
+          <div class="lt-route-stack" style="margin:2rem 0;"><span style="--w:92%;background:#d3ccc1"></span><span style="--w:84%;background:#d3ccc1"></span><span style="--w:88%;background:#d3ccc1"></span></div>
+          <div class="lt-taste-list">
+            <div><small>Places / day</small><strong>4–5곳</strong></div><div><small>Transfer</small><strong>높음</strong></div>
+            <div><small>Local depth</small><strong>보통</strong></div><div><small>Stay time</small><strong>짧음</strong></div>
+          </div>
+          <p style="margin:2rem 0 0;line-height:1.8;">초량 → 자갈치 → 용두산 → 광복동 → 남포동처럼 하루에 여러 지점을 연결하는 구조였습니다.</p>
+        </article>
 
-    <div class="demo-compare-layout">
-      <!-- Feedback summary -->
-      <div class="demo-compare-feedback">
-        <strong>반영한 피드백</strong><br>
-        더 천천히 · 유명 관광지 줄이기 · 조용한 장소 늘리기 · "더 조용하고 느린 동네 중심으로 바꿔 주세요."
+        <article style="background:var(--lt-ink);color:var(--lt-white);padding:clamp(1.2rem,3vw,2.5rem);">
+          <div class="lt-pref-section-label" style="color:var(--lt-lime);">Edition 02 · After</div>
+          <h2 style="color:var(--lt-white);font-family:var(--lt-display);font-size:clamp(2rem,4vw,3.8rem);line-height:.95;letter-spacing:-.04em;">덜 이동하고,<br>더 오래 머뭅니다.</h2>
+          <div class="lt-route-stack" style="margin:2rem 0;"><span style="--w:52%"></span><span style="--w:43%"></span><span style="--w:49%"></span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.18);">
+            <div style="padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.18);"><small style="display:block;color:rgba(255,255,255,.5);">Places / day</small><strong>2–3곳</strong></div>
+            <div style="padding:1rem 0 1rem 1rem;border-left:1px solid rgba(255,255,255,.18);border-bottom:1px solid rgba(255,255,255,.18);"><small style="display:block;color:rgba(255,255,255,.5);">Transfer</small><strong>낮음</strong></div>
+            <div style="padding:1rem 0;"><small style="display:block;color:rgba(255,255,255,.5);">Local depth</small><strong>높음</strong></div>
+            <div style="padding:1rem 0 1rem 1rem;border-left:1px solid rgba(255,255,255,.18);"><small style="display:block;color:rgba(255,255,255,.5);">Stay time</small><strong>길어짐</strong></div>
+          </div>
+          <p style="margin:2rem 0 0;line-height:1.8;color:rgba(255,255,255,.72);">초량 골목과 영도, 송도에 집중하고 쇼핑·대표 관광지 연결을 제거해 동네 체류 시간을 늘렸습니다.</p>
+        </article>
       </div>
 
-      <!-- Before / After -->
-      <div class="demo-compare-row">
-        <div class="demo-compare-card">
-          <h3><span class="badge badge-info">1판</span> Before</h3>
-          <div class="demo-compare-item">
-            <strong>1일차</strong><br>
-            초량동 168계단 → 자갈치 시장 → 용두산 공원 → 광복동 쇼핑 거리 → 남포동 저녁
-          </div>
-          <div class="demo-compare-item">
-            <strong>2일차</strong><br>
-            감천문화마을 → 해운대 해변 → 동백섬 → 센텀시트 → 해운대 야시장
-          </div>
-          <div class="demo-compare-item">
-            <strong>3일차</strong><br>
-            송도 해안 → 송도 케이블카 → 송도 구름산책로 → 서면 쇼핑 → 부산역
-          </div>
-          <div class="demo-compare-item" style="color:var(--ink-faded);font-size:0.8rem;">
-            <strong>하루 평균</strong> 4~5개 장소 · 이동 많음
-          </div>
-        </div>
-
-        <div class="demo-compare-card" style="border-left:3px solid var(--forest);">
-          <h3><span class="badge badge-published">2판</span> After <span style="font-weight:400;font-size:0.8rem;color:var(--ink-faded);">(피드백 반영)</span></h3>
-          <div class="demo-compare-item">
-            <strong>1일차</strong><br>
-            초량동 골목 카페 → 168계단 산책 → 동네 밥집 → 자갈치 해질녘 산책
-          </div>
-          <div class="demo-compare-item">
-            <strong>2일차</strong><br>
-            감천마을 아침 산책 → 동네 식당 → 이기대 바다 산책로 → 송정 조용한 카페
-          </div>
-          <div class="demo-compare-item">
-            <strong>3일차</strong><br>
-            송도 해안 산책로 → 찻집 휴식 → 남포동 골목 마지막 산책
-          </div>
-          <div class="demo-compare-item" style="color:var(--ink-faded);font-size:0.8rem;">
-            <strong>하루 평균</strong> 2~3개 장소 · 머무는 시간 증가
-          </div>
-        </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;align-items:center;">
+        <a class="lt-primary" href="edition-2.html">새 여행판 읽기 →</a>
+        <a class="lt-secondary" href="history.html">여행 아카이브 보기</a>
       </div>
+    </section>
+  </main>
 
-      <!-- What changed summary -->
-      <div class="demo-compare-changes">
-        <h3>무엇이 달라졌나요?</h3>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>장소 수 감소</strong> — 하루 4~5곳에서 2~3곳으로 줄었습니다.</span>
-        </div>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>유명 관광지 제외</strong> — 용두산 공원, 광복동 쇼핑 거리, 서면, 송도 케이블카가 빠졌습니다.</span>
-        </div>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>골목과 생활권 중심</strong> — 동네 식당, 골목 카페, 조용한 찻집이 늘었습니다.</span>
-        </div>
-        <div class="demo-compare-change-item">
-          <span class="change-icon">✓</span>
-          <span><strong>이동 감소, 머무는 시간 증가</strong> — 촉박한 일정 대신 여유로운 산책과 휴식.</span>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem;">
-        <a href="edition-2.html" class="btn btn-accent">2판 읽기</a>
-        <a href="history.html" class="btn btn-outline">여행판 기록 보기</a>
-      </div>
-    </div>
-  </div>
+  <style>@media(max-width:760px){main>section>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}</style>
 </body>
 </html>
