@@ -53,85 +53,77 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch verified CC0 Busan source assets
+      - name: Fetch verified Unsplash Busan source assets
         env:
-          OUT_DIR: ${{ runner.temp }}/b2-cc0-source-assets
+          OUT_DIR: ${{ runner.temp }}/b2-unsplash-source-assets
         run: |
           python - <<'PY'
+          import hashlib
           import json
           import os
           import pathlib
-          import time
-          import urllib.error
-          import urllib.parse
           import urllib.request
 
           out = pathlib.Path(os.environ["OUT_DIR"])
           out.mkdir(parents=True, exist_ok=True)
-          files = {
-              "gamcheon.jpg": "File:Gamcheon Culture Village.jpg",
-              "jagalchi.jpg": "File:Jagalchi Market 02.jpg",
-              "gukje.jpg": "File:Gukje Market Busan South Korea 02.jpg",
-              "seaside.jpg": "File:Busan's seaside.jpg",
-          }
+          assets = [
+              {
+                  "local_name": "gamcheon.jpg",
+                  "photo_id": "sA-MiDbdI94",
+                  "photographer": "Sung Jin Cho",
+                  "profile": "@mbuff",
+                  "location": "Gamcheon Culture Village, Busan, South Korea",
+                  "source_page": "https://unsplash.com/photos/sA-MiDbdI94",
+                  "image_url": "https://images.unsplash.com/photo-1701786551898-bb997c0e9db7?auto=format&fit=crop&fm=jpg&q=88&w=2200",
+              },
+              {
+                  "local_name": "market.jpg",
+                  "photo_id": "c43XH-lCqy4",
+                  "photographer": "Alicja Podstolska",
+                  "profile": "@podstolina",
+                  "location": "Busan, South Korea",
+                  "source_page": "https://unsplash.com/photos/c43XH-lCqy4",
+                  "image_url": "https://images.unsplash.com/photo-1706443256843-121b4646816c?auto=format&fit=crop&fm=jpg&q=88&w=2200",
+              },
+              {
+                  "local_name": "seaside.jpg",
+                  "photo_id": "H7FWCMGeqcs",
+                  "photographer": "YMA",
+                  "profile": "@anhsy",
+                  "location": "Huinnyeoul-gil, Yeongdo-gu, Busan, South Korea",
+                  "source_page": "https://unsplash.com/photos/H7FWCMGeqcs",
+                  "image_url": "https://images.unsplash.com/photo-1723707739016-28da9e81e3d0?auto=format&fit=crop&fm=jpg&q=88&w=2200",
+              },
+              {
+                  "local_name": "beach.jpg",
+                  "photo_id": "bYAwT2rgwmk",
+                  "photographer": "sehoon ye",
+                  "profile": "@_3bread",
+                  "location": "Busan, South Korea",
+                  "source_page": "https://unsplash.com/photos/bYAwT2rgwmk",
+                  "image_url": "https://images.unsplash.com/photo-1650698055751-664bb87c8639?auto=format&fit=crop&fm=jpg&q=88&w=2200",
+              },
+          ]
           headers = {
-              "User-Agent": "ai-revenue-lab-b2-asset-import/1.0 (GitHub Actions; contact via repository)",
-              "Accept": "image/avif,image/webp,image/jpeg,*/*",
+              "User-Agent": "ai-revenue-lab-b2-asset-import/1.0",
+              "Accept": "image/jpeg,image/*;q=0.8,*/*;q=0.5",
           }
-
-          query = urllib.parse.urlencode({
-              "action": "query",
-              "format": "json",
-              "prop": "imageinfo",
-              "iiprop": "url|size|sha1",
-              "iiurlwidth": "1920",
-              "titles": "|".join(files.values()),
-          })
-          req = urllib.request.Request(
-              "https://commons.wikimedia.org/w/api.php?" + query,
-              headers=headers,
-          )
-          with urllib.request.urlopen(req, timeout=30) as response:
-              payload = json.load(response)
-
-          info_by_title = {}
-          for page in payload["query"]["pages"].values():
-              info_by_title[page["title"]] = page["imageinfo"][0]
-
-          def download(url: str) -> bytes:
-              for attempt in range(5):
-                  try:
-                      image_req = urllib.request.Request(url, headers=headers)
-                      with urllib.request.urlopen(image_req, timeout=60) as response:
-                          return response.read()
-                  except urllib.error.HTTPError as exc:
-                      if exc.code != 429 or attempt == 4:
-                          raise
-                      time.sleep(4 * (2 ** attempt))
-              raise RuntimeError("unreachable")
-
           manifest = []
-          for index, (local_name, title) in enumerate(files.items()):
-              info = info_by_title[title]
-              asset_url = info.get("thumburl") or info["url"]
-              data = download(asset_url)
-              (out / local_name).write_bytes(data)
+          for asset in assets:
+              request = urllib.request.Request(asset["image_url"], headers=headers)
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  data = response.read()
+                  content_type = response.headers.get("Content-Type", "")
+              if not content_type.startswith("image/") or len(data) < 100_000:
+                  raise RuntimeError((asset["local_name"], content_type, len(data)))
+              (out / asset["local_name"]).write_bytes(data)
               manifest.append({
-                  "local_name": local_name,
-                  "commons_title": title,
-                  "source_url": info["descriptionurl"],
-                  "original_url": info["url"],
-                  "download_url": asset_url,
-                  "original_width": info["width"],
-                  "original_height": info["height"],
-                  "download_width": info.get("thumbwidth", info["width"]),
-                  "download_height": info.get("thumbheight", info["height"]),
-                  "original_sha1": info["sha1"],
+                  **asset,
+                  "license": "Unsplash License",
                   "download_bytes": len(data),
+                  "download_sha256": hashlib.sha256(data).hexdigest(),
+                  "content_type": content_type,
               })
-              if index < len(files) - 1:
-                  time.sleep(3)
-
           (out / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, indent=2),
               encoding="utf-8",
@@ -139,11 +131,11 @@ jobs:
           print(json.dumps(manifest, ensure_ascii=False, indent=2))
           PY
 
-      - name: Upload verified CC0 source assets
+      - name: Upload verified Unsplash source assets
         uses: actions/upload-artifact@v4
         with:
-          name: b2-cc0-source-assets
-          path: ${{ runner.temp }}/b2-cc0-source-assets
+          name: b2-unsplash-source-assets
+          path: ${{ runner.temp }}/b2-unsplash-source-assets
           if-no-files-found: error
           retention-days: 1
 
