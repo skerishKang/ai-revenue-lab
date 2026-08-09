@@ -1,0 +1,60 @@
+name: Verify B44 B5 Lineage 440
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: [.github/workflows/verify-b44-b5-lineage-440.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-b44-b5-lineage-440'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PROJECT: ai-revenue-portfolio-console
+      EXPECTED_SHA: 4688bdd7b6750db93c009f8350bc6f2809269604
+      PRODUCTION_URL: https://ai-revenue-portfolio-console.pages.dev/
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Capture latest Production deployment state
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" "$base/deployments" > /tmp/d.json
+          python3 - "$EXPECTED_SHA" <<'PY'
+          import json,sys
+          expected=sys.argv[1]
+          rows=[x for x in json.load(open('/tmp/d.json')).get('result',[]) if x.get('environment')=='production']
+          rows.sort(key=lambda x:x.get('created_on') or '', reverse=True)
+          for d in rows[:5]:
+              meta=(d.get('deployment_trigger') or {}).get('metadata') or {}
+              stage=d.get('latest_stage') or {}
+              print(f"deployment_id={d.get('id')} source_sha={meta.get('commit_hash')} branch={meta.get('branch')} stage={stage.get('name')}/{stage.get('status')} created={d.get('created_on')} modified={d.get('modified_on')}")
+          match=next((d for d in rows if ((d.get('deployment_trigger') or {}).get('metadata') or {}).get('commit_hash')==expected), None)
+          if not match: raise SystemExit('expected automatic Production deployment not created yet')
+          meta=(match.get('deployment_trigger') or {}).get('metadata') or {}
+          stage=match.get('latest_stage') or {}
+          print('B44_B5_LINEAGE_EXPECTED_SOURCE_PRESENT=1')
+          print(f"expected_stage={stage.get('name')}/{stage.get('status')}")
+          PY
+
+      - name: Verify Access boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -sS --max-time 20 -o /tmp/body -D /tmp/headers -w '%{http_code}' "$PRODUCTION_URL")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/{sub(/\r$/,""); print substr($0,index($0,":")+2); exit}' /tmp/headers)
+          host=$(python3 - "$location" <<'PY'
+          import sys,urllib.parse
+          print(urllib.parse.urlsplit(sys.argv[1]).hostname or '')
+          PY
+          )
+          echo "production_http=$code redirect_host=$host"
+          [[ "$code" == "302" ]]
+          [[ "$host" == "limoneai.cloudflareaccess.com" ]]
