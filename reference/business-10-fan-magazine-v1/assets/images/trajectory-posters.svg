@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">가상 작품 연대 포스터</title>
+  <desc id="desc">네 개의 가상 작품을 서로 다른 인쇄 포스터 조각으로 구성한 연대 이미지</desc>
+  <rect width="1200" height="820" fill="#ebe6dc"/>
+  <g transform="translate(70 70)">
+    <rect width="235" height="620" fill="#171513"/>
+    <circle cx="118" cy="200" r="74" fill="#b93a2b"/>
+    <path d="M25 420H210M25 454H155" stroke="#eee8de" stroke-width="8"/>
+    <text x="25" y="540" fill="#eee8de" font-family="Georgia, serif" font-size="38">잔광</text>
+    <text x="25" y="580" fill="#aaa59d" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">2014 · EP</text>
+  </g>
+  <g transform="translate(340 118) rotate(-2)">
+    <rect width="235" height="620" fill="#c8c4bd"/>
+    <path d="M0 170L235 75V265Z" fill="#77736d"/>
+    <path d="M38 350C100 275 150 275 205 350" fill="none" stroke="#b93a2b" stroke-width="13"/>
+    <text x="28" y="520" fill="#161412" font-family="Georgia, serif" font-size="34">미세한 파도</text>
+    <text x="28" y="564" fill="#4e4a46" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">2017 · ALBUM</text>
+  </g>
+  <g transform="translate(615 52) rotate(2)">
+    <rect width="235" height="620" fill="#f5f0e7" stroke="#171513" stroke-width="3"/>
+    <path d="M55 95H180V390H55Z" fill="#171513"/>
+    <path d="M72 115H163V370H72Z" fill="#d7d2c9"/>
+    <path d="M118 120V370" stroke="#b93a2b" stroke-width="9"/>
+    <text x="28" y="520" fill="#161412" font-family="Georgia, serif" font-size="34">은빛 계단</text>
+    <text x="28" y="564" fill="#4e4a46" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">2021 · STAGE</text>
+  </g>
+  <g transform="translate(885 105) rotate(-1)">
+    <rect width="235" height="620" fill="#b93a2b"/>
+    <path d="M32 88H203V345H32Z" fill="#e7e1d8"/>
+    <path d="M62 118L173 315M173 118L62 315" stroke="#1b1816" stroke-width="12"/>
+    <text x="25" y="520" fill="#f5f0e7" font-family="Georgia, serif" font-size="31">여름의 뒷면</text>
+    <text x="25" y="564" fill="#ead8d2" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">2026 · FILM SCORE</text>
+  </g>
+  <text x="70" y="770" fill="#171513" font-family="Arial, sans-serif" font-size="22" letter-spacing="7">FOUR FICTIONAL WORKS / REPOSITORY-LOCAL ORIGINAL</text>
+</svg>

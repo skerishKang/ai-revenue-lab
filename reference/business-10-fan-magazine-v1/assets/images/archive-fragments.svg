@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" role="img" aria-labelledby="title desc">
+  <title id="title">과거 아카이브 조각</title>
+  <desc id="desc">필름 스트립, 카세트 테이프, 연필 메모와 날짜 도장을 합성한 가상 아카이브</desc>
+  <rect width="1200" height="850" fill="#c9c5bd"/>
+  <g transform="translate(65 90) rotate(-4)">
+    <rect width="690" height="290" fill="#171513"/>
+    <g fill="#d9d4ca">
+      <rect x="18" y="18" width="45" height="28"/><rect x="82" y="18" width="45" height="28"/><rect x="146" y="18" width="45" height="28"/><rect x="210" y="18" width="45" height="28"/><rect x="274" y="18" width="45" height="28"/><rect x="338" y="18" width="45" height="28"/><rect x="402" y="18" width="45" height="28"/><rect x="466" y="18" width="45" height="28"/><rect x="530" y="18" width="45" height="28"/><rect x="594" y="18" width="45" height="28"/>
+      <rect x="18" y="244" width="45" height="28"/><rect x="82" y="244" width="45" height="28"/><rect x="146" y="244" width="45" height="28"/><rect x="210" y="244" width="45" height="28"/><rect x="274" y="244" width="45" height="28"/><rect x="338" y="244" width="45" height="28"/><rect x="402" y="244" width="45" height="28"/><rect x="466" y="244" width="45" height="28"/><rect x="530" y="244" width="45" height="28"/><rect x="594" y="244" width="45" height="28"/>
+    </g>
+    <rect x="64" y="62" width="170" height="165" fill="#6f6b65"/>
+    <rect x="260" y="62" width="170" height="165" fill="#e7e1d7"/>
+    <rect x="456" y="62" width="170" height="165" fill="#b93a2b"/>
+    <circle cx="149" cy="142" r="52" fill="#161412"/>
+    <path d="M292 190L355 94L402 190Z" fill="#171513"/>
+    <path d="M492 100H590V190H492Z" fill="#e7e1d7"/>
+  </g>
+  <g transform="translate(775 95) rotate(5)">
+    <rect width="330" height="220" rx="18" fill="#eee8dd" stroke="#171513" stroke-width="5"/>
+    <circle cx="90" cy="112" r="55" fill="#aaa59d" stroke="#171513" stroke-width="8"/>
+    <circle cx="240" cy="112" r="55" fill="#aaa59d" stroke="#171513" stroke-width="8"/>
+    <path d="M90 112H240" stroke="#b93a2b" stroke-width="10"/>
+    <text x="34" y="200" fill="#171513" font-family="Arial, sans-serif" font-size="18" letter-spacing="4">DEMO TAPE 03</text>
+  </g>
+  <g transform="translate(270 450) rotate(2)">
+    <rect width="700" height="290" fill="#f3ede2"/>
+    <path d="M55 72H625M55 124H555M55 176H650M55 228H430" stroke="#5f5a54" stroke-width="7"/>
+    <path d="M635 52C575 104 566 178 620 240" fill="none" stroke="#b93a2b" stroke-width="12"/>
+    <text x="52" y="264" fill="#171513" font-family="Georgia, serif" font-size="28">“목소리보다 먼저 남은 것은 숨의 간격이었다.”</text>
+  </g>
+  <circle cx="1040" cy="640" r="92" fill="none" stroke="#b93a2b" stroke-width="10"/>
+  <text x="973" y="634" fill="#b93a2b" font-family="Arial, sans-serif" font-size="26" font-weight="700">2017</text>
+  <text x="986" y="669" fill="#b93a2b" font-family="Arial, sans-serif" font-size="17" letter-spacing="3">ARCHIVE</text>
+</svg>

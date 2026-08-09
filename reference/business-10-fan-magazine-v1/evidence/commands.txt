@@ -1,0 +1,37 @@
+# Business 10 Fan Magazine — Cover Reveal focused correction v2
+# Review source head: 931e059b75ffdf90c23b0322155d7f95b6852e2c
+# Target branch: feat/business-10-fan-magazine-ui
+
+# GitHub connector checks performed before modification:
+# - fetch PR #177: OPEN, DRAFT, unmerged, head 931e059b75ffdf90c23b0322155d7f95b6852e2c
+# - fetched exact-head index.html, mobile-reveal.css, and review-state.js
+
+# Static scope and version checks
+cd /tmp/fan-magazine/reference/business-10-fan-magazine-v1
+grep -n 'fan-magazine-20260726-1' index.html
+grep -RIn 'fan-magazine-20260726-2' index.html README.md
+find . -type f ! -path './evidence/*' -print0 | sort -z | xargs -0 wc -l
+
+# Browser validation and evidence generation
+# Chromium direct localhost and file:// navigation are blocked in this sandbox.
+# validate-focused.py therefore builds an inline bundle directly from repository HTML,
+# CSS, JavaScript, and base64-embedded repository-local SVG bytes, then runs Chromium.
+python /tmp/fan-magazine/validate-focused.py
+
+# The validation script:
+# - captures exact animation-time frames at 0, 80, 160, 240, 400, and 680ms
+# - also captures every 40ms frame for first reveal, button return, and second reveal
+# - checks base-background exposure, feature opacity, masthead/issue context,
+#   controls, overflow, replay equality, Escape return, reduced motion, errors, and requests
+# - creates cover-reveal.gif and cover-reveal.mp4 with ffmpeg/Pillow
+
+# Media inspection
+ffprobe -v error -show_entries format=duration,size -of json /tmp/fan-magazine/evidence-focused/cover-reveal.mp4
+file /tmp/fan-magazine/evidence-focused/cover-reveal.gif
+
+# Evidence hashes and ZIP
+sha256sum /tmp/fan-magazine/evidence-focused/cover-reveal.gif
+sha256sum /tmp/fan-magazine/evidence-focused/cover-reveal.mp4
+sha256sum /tmp/fan-magazine/evidence-focused/motion-frames/*.png
+zip -X -r /mnt/data/fan-magazine-cover-reveal-evidence-v2.zip fan-magazine-cover-reveal-evidence-v2
+sha256sum /mnt/data/fan-magazine-cover-reveal-evidence-v2.zip
