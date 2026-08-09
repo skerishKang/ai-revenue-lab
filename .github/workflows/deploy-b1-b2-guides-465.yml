@@ -1,4 +1,4 @@
-name: Deploy B10 Numbered Canonical 465
+name: Deploy B11 Numbered Canonical 465
 on:
   pull_request:
     branches: [main]
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      EXPECTED_SHA: 1f54f55a127ca00aab92887b98e9324ac74a2061
+      EXPECTED_SHA: 670e6e6fa64318821d9d20225b38a25a0f4d494b
       CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
@@ -24,43 +24,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assert exact current main and B10 project
+      - name: Assert exact current main and B11 project
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
-          code=$(curl -sS -o /tmp/b10.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/10-fan-magazine")
-          echo "10-fan-magazine HTTP=$code"; test "$code" = 200
-          test -f reference/business-10-fan-magazine-v1/index.html
-          test -f reference/business-10-fan-magazine-v1/ux.html
-          test -f reference/business-10-fan-magazine-v1/guide.html
-      - name: Cool down then deploy B10 exact-main bytes
+          code=$(curl -sS -o /tmp/b11.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/11-language-learning-magazine")
+          echo "11-language-learning-magazine HTTP=$code"; test "$code" = 200
+      - name: Cool down then deploy B11 exact-main bytes
         shell: bash
         run: |
           set -euo pipefail
-          sleep 30
-          npx --yes wrangler@latest pages deploy reference/business-10-fan-magazine-v1 --project-name 10-fan-magazine --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B10 latest main UI UX guide review' --commit-dirty=true
+          sleep 25
+          npx --yes wrangler@latest pages deploy reference/business-11-language-learning-magazine-v1 --project-name 11-language-learning-magazine --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B11 latest main UI UX guide review' --commit-dirty=true
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      - name: Verify B10 canonical byte equality
+      - name: Verify B11 canonical byte equality
         shell: bash
         run: |
           set -euo pipefail
-          verify() {
-            local url="$1" source="$2" label="$3" expected actual code
-            expected=$(sha256sum "$source" | cut -d' ' -f1)
-            for i in $(seq 1 25); do
-              code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url" || true)
-              actual=$(sha256sum /tmp/public 2>/dev/null | cut -d' ' -f1 || true)
-              echo "$label poll=$i http=$code expected=$expected actual=$actual"
-              if [[ "$code" == 200 && "$expected" == "$actual" ]]; then return 0; fi
-              sleep 3
-            done
-            return 1
-          }
-          verify https://10-fan-magazine.pages.dev/index.html reference/business-10-fan-magazine-v1/index.html B10_ROOT
-          verify https://10-fan-magazine.pages.dev/ux.html reference/business-10-fan-magazine-v1/ux.html B10_UX
-          verify https://10-fan-magazine.pages.dev/guide.html reference/business-10-fan-magazine-v1/guide.html B10_GUIDE
-          echo B10_NUMBERED_CANONICAL_VERIFIED=1
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 25); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify https://11-language-learning-magazine.pages.dev/index.html reference/business-11-language-learning-magazine-v1/index.html B11_ROOT
+          verify https://11-language-learning-magazine.pages.dev/ux.html reference/business-11-language-learning-magazine-v1/ux.html B11_UX
+          verify https://11-language-learning-magazine.pages.dev/guide.html reference/business-11-language-learning-magazine-v1/guide.html B11_GUIDE
+          echo B11_NUMBERED_CANONICAL_VERIFIED=1
