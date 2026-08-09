@@ -12,12 +12,65 @@ test.describe('Portfolio Console Business Launcher', () => {
     await expect(page.locator('.biz-item')).toHaveCount(58);
   });
 
-  test('launcher summarizes web, non-web and undeployed Businesses', async ({ page }) => {
+  test('launcher summarizes web, non-web, expanded and undeployed Businesses', async ({ page }) => {
     const summary = page.locator('#business-launcher-summary');
     await expect(summary).toBeVisible();
     await expect(summary).toContainText('바로 열기 48');
     await expect(summary).toContainText('비웹 1');
-    await expect(summary).toContainText('미배포 9');
+    await expect(summary).toContainText('확장 1');
+    await expect(summary).toContainText('미배포 8');
+  });
+
+  test('B1 phase badges explicitly identify UI UX and BE semantics', async ({ page }) => {
+    const badges = page.locator('.biz-item[data-biz-number="1"] .biz-phase-badge');
+    await expect(badges).toHaveCount(3);
+    await expect(badges.nth(0)).toHaveText('UI · 진행 중');
+    await expect(badges.nth(1)).toHaveText('UX · UI 확정 대기');
+    await expect(badges.nth(2)).toHaveText('BE · 동결');
+  });
+
+  test('B5 is shown as expanded to DanjiOn instead of an internal phase-gated Business', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="5"]');
+    await expect(row).toHaveAttribute('data-portfolio-class', 'expanded-successor');
+    await expect(row.locator('.biz-auth')).toHaveText('확장');
+    await expect(row.locator('.biz-expanded-lineage')).toHaveText('단지온으로 확장 · 외부 개발');
+    await expect(row.locator('.biz-phase-badge')).toHaveCount(0);
+    await expect(row.locator('.biz-launch-state')).toHaveCount(0);
+    await expect(row.locator('.biz-launch-external')).toHaveAttribute('href', 'https://github.com/skerishKang/02-danji-on');
+
+    const identity = await page.evaluate(() => {
+      const business = window.ARL_BUSINESSES.find((item) => item.number === 5);
+      return {
+        portfolioClass: business.portfolioClass,
+        lifecycle: business.lifecycle,
+        state: business.state,
+        workspace: business.workspace,
+        uiStatus: business.uiStatus,
+        uxStatus: business.uxStatus,
+        backendStatus: business.backendStatus,
+      };
+    });
+    expect(identity).toEqual({
+      portfolioClass: 'expanded-successor',
+      lifecycle: 'expanded_successor',
+      state: 'external',
+      workspace: 'skerishKang/02-danji-on',
+      uiStatus: 'NOT_APPLICABLE',
+      uxStatus: 'NOT_APPLICABLE',
+      backendStatus: 'NOT_APPLICABLE',
+    });
+  });
+
+  test('B5 detail dialog explains that internal phases no longer apply', async ({ page }) => {
+    const row = page.locator('.biz-item[data-biz-number="5"]');
+    await row.locator('.biz-launch-detail').click();
+    const dialog = page.locator('#business-dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.dialog-name')).toHaveText('Neighbor Market');
+    await expect(dialog.locator('.dialog-section').nth(0).locator('.dialog-section-value')).toContainText('확장');
+    await expect(dialog.locator('.dialog-section').nth(1).locator('.dialog-section-value')).toHaveText('단지온으로 확장 · 내부 UI/UX/BE 단계 미적용');
+    await expect(dialog.locator('.expanded-successor-link')).toHaveAttribute('href', 'https://github.com/skerishKang/02-danji-on');
+    await page.keyboard.press('Escape');
   });
 
   test('desktop launcher authority, phase and action columns share fixed axes', async ({ page }) => {
@@ -42,11 +95,11 @@ test.describe('Portfolio Console Business Launcher', () => {
     }
 
     expect(boxes[0].auth.width).toBeGreaterThanOrEqual(115);
-    expect(boxes[0].phases.width).toBeGreaterThanOrEqual(319);
+    expect(boxes[0].phases.width).toBeGreaterThanOrEqual(359);
     expect(boxes[0].actions.width).toBeGreaterThanOrEqual(155);
   });
 
-  test('desktop phase badges align internally across rows', async ({ page }) => {
+  test('desktop phase badges align internally across normal rows', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1100 });
 
     const first = page.locator('.biz-item[data-biz-number="1"] .biz-phase-badge');

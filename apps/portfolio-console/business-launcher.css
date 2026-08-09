@@ -33,6 +33,11 @@
   color: var(--green);
 }
 
+.launcher-count-expanded {
+  background: var(--purple-soft);
+  color: var(--purple);
+}
+
 .launcher-hint {
   margin-left: auto;
   color: var(--quiet);
@@ -42,7 +47,7 @@
 /* Desktop launcher rows use one shared column contract so authority, phase and
    action cells land on the same vertical axes regardless of label length. */
 #view-business .biz-item {
-  grid-template-columns: 52px minmax(360px, 1fr) 124px 320px 156px;
+  grid-template-columns: 52px minmax(360px, 1fr) 124px 360px 156px;
   column-gap: 16px;
   align-items: center;
 }
@@ -65,12 +70,17 @@
   white-space: nowrap;
 }
 
+#view-business .biz-auth-expanded {
+  color: var(--purple);
+  background: var(--purple-soft);
+}
+
 #view-business .biz-phase-group {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: 320px;
-  min-width: 320px;
-  max-width: 320px;
+  width: 360px;
+  min-width: 360px;
+  max-width: 360px;
   align-items: center;
   gap: 8px;
 }
@@ -83,12 +93,35 @@
   white-space: nowrap;
 }
 
+#view-business .biz-phase-group.is-expanded-lineage {
+  grid-template-columns: 1fr;
+}
+
+.biz-expanded-lineage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  width: 100%;
+  padding: 0 10px;
+  border: 1px solid rgba(186, 156, 255, .28);
+  border-radius: 6px;
+  background: var(--purple-soft);
+  color: var(--purple);
+  font: 600 9px/1.2 var(--mono);
+  white-space: nowrap;
+}
+
 #view-business .biz-item.has-direct-service {
   cursor: pointer;
 }
 
 #view-business .biz-item.has-direct-service:hover {
   border-color: var(--accent);
+}
+
+#view-business .biz-item.is-expanded-successor {
+  cursor: default;
 }
 
 .biz-launch-actions {
@@ -103,6 +136,7 @@
 }
 
 .biz-launch-open,
+.biz-launch-external,
 .biz-launch-detail,
 .biz-launch-state {
   display: inline-flex;
@@ -129,6 +163,19 @@
   border-color: var(--green);
 }
 
+.biz-launch-external {
+  min-width: 100px;
+  border: 1px solid rgba(186, 156, 255, .32);
+  background: var(--purple-soft);
+  color: var(--purple);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.biz-launch-external:hover {
+  border-color: var(--purple);
+}
+
 .biz-launch-detail {
   min-width: 50px;
   border: 1px solid var(--line);
@@ -143,6 +190,7 @@
 }
 
 .biz-launch-open:focus-visible,
+.biz-launch-external:focus-visible,
 .biz-launch-detail:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -180,9 +228,9 @@
 
   #view-business .biz-phase-group {
     grid-column: 2 / span 2;
-    width: min(100%, 320px);
+    width: min(100%, 360px);
     min-width: 0;
-    max-width: 320px;
+    max-width: 360px;
   }
 
   #view-business .biz-launch-actions {
@@ -240,6 +288,11 @@
     justify-self: start;
   }
 
+  .biz-expanded-lineage {
+    justify-content: flex-start;
+    white-space: normal;
+  }
+
   #view-business .biz-launch-actions {
     width: auto;
     min-width: 0;
@@ -247,6 +300,7 @@
   }
 
   .biz-launch-open,
+  .biz-launch-external,
   .biz-launch-detail,
   .biz-launch-state {
     min-height: 32px;

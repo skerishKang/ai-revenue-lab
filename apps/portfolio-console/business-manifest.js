@@ -31,6 +31,9 @@
       state: data.st || "planned",
       uiStatus: phase.ui, uxStatus: phase.ux, backendStatus: phase.be,
       workspace: data.w || null, surfaceUrl: data.su || null, releaseState: data.rs || "not_released",
+      portfolioClass: data.pc || "internal",
+      successorTitle: data.sn || null, successorKoreanTitle: data.sk || null,
+      successorRepository: data.sr || null,
       priority: data.p || 0,
     };
   }
@@ -42,7 +45,7 @@
     identity({ n:3, s:"living-fiction", t:"Living Fiction", k:"리빙 픽션", a:NA.CANONICAL, l:"private_preview", st:"review", p:32, w:"apps/living-fiction/" }),
     identity({ n:4, s:"living-learning", t:"Living Learning", k:"리빙 러닝", a:NA.CANONICAL, l:"private_preview", st:"running", p:30, su:"https://ai-revenue-living-learning.pages.dev/", w:"apps/living-learning/" }),
     // ═══ 5–6 ═══
-    identity({ n:5, s:"neighbor-market", t:"Neighbor Market", k:"우리단지 이웃가게", a:NA.PROPOSED, l:"concept", st:"review", p:95, w:"reference/business-05-neighbor-market-v2/" }),
+    identity({ n:5, s:"neighbor-market", t:"Neighbor Market", k:"우리단지 이웃가게", a:NA.PROPOSED, l:"expanded_successor", st:"external", p:95, w:"skerishKang/02-danji-on", pc:"expanded-successor", sn:"DanjiOn", sk:"단지온", sr:"https://github.com/skerishKang/02-danji-on" }),
     identity({ n:6, s:"world-feed", t:"World Feed", k:"월드 피드", a:NA.RECONCILIATION, l:"research", st:"review", p:88, su:"https://ai-revenue-world-feed.pages.dev/", w:"apps/world-feed/" }),
     // ═══ 7–12: PROPOSED ═══
     identity({ n:7, s:"personal-meaning-map", t:"Personal Meaning Map", k:"개인 의미 지도", a:NA.PROPOSED, l:"visual_reference", st:"review", p:65, w:"reference/business-07-personal-meaning-map-v1/" }),
