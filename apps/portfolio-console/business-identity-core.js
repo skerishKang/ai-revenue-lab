@@ -13,7 +13,7 @@
 
   var BUSINESS_PHASE_AUTHORITY = Object.freeze([
     // n, ui, ux, be
-    { n:1,  ui:"IN_PROGRESS",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
+    { n:1,  ui:"UI_NOT_READY",  ux:"BLOCKED_BY_UI",  be:"FROZEN" },
     { n:2,  ui:"UI_APPROVED",   ux:"NOT_STARTED",    be:"IMPLEMENTED" },
     { n:3,  ui:"UI_APPROVED",   ux:"NOT_STARTED",    be:"IMPLEMENTED" },
     { n:4,  ui:"UI_APPROVED",   ux:"NOT_STARTED",    be:"NOT_APPLICABLE" },

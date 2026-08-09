@@ -21,12 +21,26 @@ test.describe('Portfolio Console Business Launcher', () => {
     await expect(summary).toContainText('미배포 8');
   });
 
-  test('B1 phase badges explicitly identify UI UX and BE semantics', async ({ page }) => {
+  test('B1 owner rejection is reflected as UI not ready while UX waits and backend stays frozen', async ({ page }) => {
     const badges = page.locator('.biz-item[data-biz-number="1"] .biz-phase-badge');
     await expect(badges).toHaveCount(3);
-    await expect(badges.nth(0)).toHaveText('UI · 진행 중');
+    await expect(badges.nth(0)).toHaveText('UI · 미완료');
     await expect(badges.nth(1)).toHaveText('UX · UI 확정 대기');
     await expect(badges.nth(2)).toHaveText('BE · 동결');
+
+    const identity = await page.evaluate(() => {
+      const business = window.ARL_BUSINESSES.find((item) => item.number === 1);
+      return {
+        uiStatus: business.uiStatus,
+        uxStatus: business.uxStatus,
+        backendStatus: business.backendStatus,
+      };
+    });
+    expect(identity).toEqual({
+      uiStatus: 'UI_NOT_READY',
+      uxStatus: 'BLOCKED_BY_UI',
+      backendStatus: 'FROZEN',
+    });
   });
 
   test('B5 is shown as expanded to DanjiOn instead of an internal phase-gated Business', async ({ page }) => {
