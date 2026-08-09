@@ -11,15 +11,15 @@
   let replaying = false;
 
   function installGuideLink() {
-    const meta = document.querySelector('.rail-meta');
-    if (!meta || meta.querySelector('[data-first-use-guide]')) return;
+    const identity = document.querySelector('.identity');
+    if (!identity || identity.querySelector('[data-first-use-guide]')) return;
     const guide = document.createElement('a');
     guide.href = './guide.html';
     guide.dataset.firstUseGuide = 'true';
     guide.textContent = '30초 사용법 / Guide';
     guide.setAttribute('aria-label', '우리 가게 매거진 30초 사용법 열기');
-    guide.style.cssText = 'display:inline-flex;width:90px;max-width:100%;min-height:32px;align-items:center;justify-content:center;padding:5px 2px;border:1px solid currentColor;color:inherit;text-decoration:none;text-align:center;font:700 10px/1.2 system-ui;white-space:normal;overflow-wrap:anywhere';
-    meta.prepend(guide);
+    guide.style.cssText = 'display:inline-flex;width:max-content;max-width:100%;min-height:28px;align-items:center;justify-content:center;margin-top:5px;padding:4px 7px;border:1px solid #80786f;color:#f8f2e8;text-decoration:none;text-align:center;font:700 10px/1.2 system-ui;white-space:normal;overflow-wrap:anywhere';
+    identity.append(guide);
   }
 
   function activate(index, focusTab = false) {
