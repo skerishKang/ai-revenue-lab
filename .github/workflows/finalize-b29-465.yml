@@ -1,0 +1,105 @@
+name: Finalize B29 After Persisted Validation 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/finalize-b29-465.yml'
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  finalize:
+    if: github.event.pull_request.head.ref == 'feat/b29-apartment-governance-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Require persisted exact validation success
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .b29-validation-result-465
+          cat .b29-validation-result-465
+          grep -qx 'static=success' .b29-validation-result-465
+          grep -qx 'browser_setup=success' .b29-validation-result-465
+          grep -qx 'browser=success' .b29-validation-result-465
+          test -f reference/business-29-apartment-governance-v1/index.html
+          test -f reference/business-29-apartment-governance-v1/guide.html
+          test -f reference/business-29-apartment-governance-v1/ux/index.html
+      - name: Remove one-off validation artifacts only
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .b29-validation-pass-465 .b29-validation-result-465
+          rm -f .github/workflows/validate-b29-complete-465.yml
+          rm -f .github/workflows/validate-b29-marker-465.yml
+          rm -f .github/workflows/validate-b29-result-465.yml
+          rm -f .github/workflows/finalize-b29-465.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(b29): remove one-off validation artifacts'
+            git push origin HEAD:feat/b29-apartment-governance-complete-465
+          fi
+      - name: Reconfirm cleanup changed no product bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff HEAD^..HEAD --name-only | grep -Ev '^(.github/workflows/|.b29-validation)' > /tmp/non_validation || true
+          test ! -s /tmp/non_validation
+      - name: Merge validated B29 PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr ready 510 --repo "$GITHUB_REPOSITORY"
+          gh pr merge 510 --repo "$GITHUB_REPOSITORY" --merge --subject 'feat(apartment-governance): integrate approved UI, synthetic UX sandbox and guide (#510)'
+      - name: Resolve exact merged main
+        id: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 20); do
+            git fetch origin main
+            sha=$(git rev-parse origin/main)
+            if git merge-base --is-ancestor HEAD "$sha"; then
+              echo "sha=$sha" >> "$GITHUB_OUTPUT"
+              git switch --detach "$sha"
+              echo "merged main=$sha"
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+      - name: Deploy exact merged main to existing numbered canonical
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/29-apartment-governance")
+          echo "29-apartment-governance HTTP=$code"; test "$code" = 200
+          sleep 25
+          npx --yes wrangler@latest pages deploy reference/business-29-apartment-governance-v1 --project-name 29-apartment-governance --branch main --commit-hash "${{ steps.main.outputs.sha }}" --commit-message 'B29 latest main UI UX guide' --commit-dirty=true
+      - name: Verify canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 25); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify https://29-apartment-governance.pages.dev/index.html reference/business-29-apartment-governance-v1/index.html B29_ROOT
+          verify https://29-apartment-governance.pages.dev/guide.html reference/business-29-apartment-governance-v1/guide.html B29_GUIDE
+          verify https://29-apartment-governance.pages.dev/ux/index.html reference/business-29-apartment-governance-v1/ux/index.html B29_UX
+          echo B29_CANONICAL_VERIFIED=1
