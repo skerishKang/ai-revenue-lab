@@ -91,7 +91,7 @@ jobs:
               await page.getByRole('button',{name:'다음 장'}).click();
               await page.locator('#table [data-mark]').click();
               await page.getByRole('button',{name:'출처 보기'}).click();
-              await page.getByRole('button',{name:'표시한 문장'}).click();
+              await page.getByRole('button',{name:'표시한 문장',exact:true}).click();
               const marked=page.locator('#markedList .source'); if(await marked.count()!==2) throw new Error(`${vp.name}: expected 2 marked sentences`);
               await page.locator('#finish').click();
               const status=await page.locator('#finishStatus').textContent(); if(!status || !status.includes('읽기 완료')) throw new Error(`${vp.name}: finish status missing`);
