@@ -1,0 +1,133 @@
+name: Recover B1 Production 448
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/recover-b1-production-448.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-b1-production-448'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: 722f2bc24dcaf789554e784eaf83d61bea3f663a
+      PROJECT: ai-revenue-personal-edition
+      PRODUCTION_URL: https://ai-revenue-personal-edition.pages.dev/
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Verify project production source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCOUNT_ID"
+          test -n "$CF_API_TOKEN"
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$base" > /tmp/project.json
+          python3 - <<'PY'
+          import json
+          p=(json.load(open('/tmp/project.json', encoding='utf-8')).get('result') or {})
+          src=p.get('source') or {}; cfg=src.get('config') or {}; build=p.get('build_config') or {}
+          print('source_type='+str(src.get('type')))
+          print('repo='+str(cfg.get('repo_name')))
+          print('production_branch='+str(cfg.get('production_branch')))
+          print('production_enabled='+str(cfg.get('production_deployments_enabled')))
+          print('root_dir='+str(build.get('root_dir')))
+          print('destination_dir='+str(build.get('destination_dir')))
+          assert src.get('type') == 'github'
+          assert cfg.get('repo_name') == 'ai-revenue-lab'
+          assert cfg.get('production_branch') == 'main'
+          assert cfg.get('production_deployments_enabled') is True
+          assert build.get('root_dir') == 'apps/personal-edition'
+          assert build.get('destination_dir') == 'dist-preview'
+          PY
+
+      - name: Start replacement Production deployment from exact main HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments"
+          code=$(curl -sS -o /tmp/create.json -w '%{http_code}' -X POST "$url" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -F branch=main \
+            -F commit_dirty=false \
+            -F commit_hash="$EXPECTED_SHA" \
+            -F commit_message='Recover stalled B1 Production deployment for PR #448')
+          echo "create_http=$code"
+          test -f /tmp/create.json && cat /tmp/create.json | python3 -c 'import json,sys; x=json.load(sys.stdin); print("create_success="+str(x.get("success"))); print("create_errors="+str(x.get("errors")))' || true
+          [[ "$code" =~ ^2 ]]
+          python3 - <<'PY' >> "$GITHUB_ENV"
+          import json, os
+          x=json.load(open('/tmp/create.json', encoding='utf-8'))
+          assert x.get('success') is True, x.get('errors')
+          d=x.get('result') or {}
+          meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+          print('RECOVERY_DEPLOYMENT_ID='+str(d.get('id') or ''))
+          print('RECOVERY_DEPLOYMENT_URL='+str(d.get('url') or ''))
+          print('RECOVERY_ENVIRONMENT='+str(d.get('environment') or ''))
+          print('RECOVERY_SHA='+sha)
+          assert d.get('id')
+          assert d.get('environment') == 'production', d.get('environment')
+          assert meta.get('branch') == 'main', meta
+          assert sha == os.environ['EXPECTED_SHA'], (sha, os.environ['EXPECTED_SHA'])
+          PY
+
+      - name: Wait for replacement deployment success
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          url="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments/${RECOVERY_DEPLOYMENT_ID}"
+          for i in $(seq 1 72); do
+            curl --fail-with-body -sS "${auth[@]}" "$url" > /tmp/current.json
+            state=$(python3 - <<'PY'
+          import json
+          d=(json.load(open('/tmp/current.json', encoding='utf-8')).get('result') or {})
+          meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+          stage=d.get('latest_stage') or {}
+          stages=','.join(f"{s.get('name')}:{s.get('status')}" for s in (d.get('stages') or []))
+          print(f"{stage.get('name')}|{stage.get('status')}|{sha}|{stages}")
+          PY
+            )
+            IFS='|' read -r name status sha stages <<< "$state"
+            echo "poll=$i id=$RECOVERY_DEPLOYMENT_ID stage=$name/$status sha=$sha stages=$stages"
+            [[ "$sha" == "$EXPECTED_SHA" ]]
+            if [[ "$name" == "deploy" && "$status" == "success" ]]; then
+              echo "B1_RECOVERY_DEPLOYMENT_SUCCESS=1"
+              break
+            fi
+            if [[ "$status" == "failure" || "$status" == "canceled" ]]; then
+              echo "replacement deployment ended $name/$status" >&2
+              exit 1
+            fi
+            if [[ "$i" == "72" ]]; then
+              echo "replacement deployment did not complete within watcher window" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Verify canonical Production serves B1 V2
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            code=$(curl -L -sS --max-time 25 -o /tmp/b1.html -w '%{http_code}' "$PRODUCTION_URL" || true)
+            echo "live_poll=$i http=$code"
+            if [[ "$code" == "200" ]] && grep -q 'b1-personal-edition-v2-443' /tmp/b1.html && grep -q '당신의 기록을' /tmp/b1.html; then
+              echo "B1_V2_LIVE_PRODUCTION_VERIFIED=1"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "canonical Production did not expose B1 V2 marker/content in time" >&2
+          exit 1
