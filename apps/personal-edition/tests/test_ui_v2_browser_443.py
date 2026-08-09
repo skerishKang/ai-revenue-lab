@@ -212,6 +212,7 @@ def _assert_screen_basics(page: Page, base_url: str, path: str) -> dict[str, obj
     console_errors: list[str] = []
     page_errors: list[str] = []
     external_requests: list[str] = []
+    local_http_errors: list[str] = []
 
     def on_console(msg: object) -> None:
         if getattr(msg, "type", None) == "error":
@@ -225,9 +226,19 @@ def _assert_screen_basics(page: Page, base_url: str, path: str) -> dict[str, obj
         if url and not url.startswith(base_url) and not url.startswith(("data:", "blob:")):
             external_requests.append(url)
 
+    def on_response(response: object) -> None:
+        url = str(getattr(response, "url", ""))
+        status = int(getattr(response, "status", 0) or 0)
+        parsed_path = urlparse(url).path
+        # Chromium may probe /favicon.ico even though the static preview does not
+        # declare one. It is browser chrome, not a product/local-asset contract.
+        if url.startswith(base_url) and status >= 400 and parsed_path != "/favicon.ico":
+            local_http_errors.append(f"{status} {parsed_path}")
+
     page.on("console", on_console)
     page.on("pageerror", on_page_error)
     page.on("request", on_request)
+    page.on("response", on_response)
     response = page.goto(base_url + path, wait_until="networkidle", timeout=15_000)
     assert response is not None and response.status == 200, path
     page.wait_for_timeout(120)
@@ -249,9 +260,19 @@ def _assert_screen_basics(page: Page, base_url: str, path: str) -> dict[str, obj
     )
     assert metrics["reducedMotion"] is True, path
     assert metrics["brokenImages"] == [], (path, metrics["brokenImages"])
-    assert console_errors == [], (path, console_errors)
+    assert local_http_errors == [], (path, local_http_errors)
     assert page_errors == [], (path, page_errors)
     assert external_requests == [], (path, external_requests)
+
+    # Generic Chromium resource-console messages do not include the failing URL;
+    # URL-specific local 4xx/5xx responses are asserted above, while external
+    # requests are asserted separately. Keep all other console errors fatal.
+    meaningful_console_errors = [
+        message
+        for message in console_errors
+        if not message.startswith("Failed to load resource:")
+    ]
+    assert meaningful_console_errors == [], (path, meaningful_console_errors)
 
     # Use keyboard modality so :focus-visible is evaluated rather than plain :focus.
     page.evaluate("document.activeElement && document.activeElement.blur()")
