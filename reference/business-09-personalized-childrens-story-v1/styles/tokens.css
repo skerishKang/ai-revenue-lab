@@ -1,0 +1,24 @@
+:root {
+  --paper: #f4eedf;
+  --paper-light: #fffaf0;
+  --paper-deep: #e7dcc6;
+  --ink: #1b2a35;
+  --ink-soft: #55616a;
+  --rain: #7ba6b8;
+  --rain-deep: #31586c;
+  --moss: #526b4f;
+  --moss-light: #9eb28f;
+  --ochre: #d5a33f;
+  --accent: #c94d32;
+  --accent-dark: #833421;
+  --night: #182c3e;
+  --cream: #fff7e7;
+  --line: rgba(27, 42, 53, 0.2);
+  --shadow-book: 0 24px 80px rgba(34, 42, 43, 0.19), 0 2px 10px rgba(34, 42, 43, 0.08);
+  --shadow-soft: 0 12px 35px rgba(34, 42, 43, 0.13);
+  --font-serif: Georgia, "Times New Roman", "Noto Serif KR", serif;
+  --font-sans: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --book-radius: 2px 14px 14px 2px;
+  --motion-duration: 680ms;
+  --motion-ease: cubic-bezier(0.22, 0.72, 0.18, 1);
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 760" role="img" aria-labelledby="title desc">
+  <title id="title">고정된 노란 장화와 종이 지면</title>
+  <desc id="desc">이야기 레이어가 나타나기 전부터 움직이지 않는 노란 장화와 절제된 종이 배경</desc>
+  <defs>
+    <filter id="grain"><feTurbulence baseFrequency="0.7" numOctaves="2" seed="31"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .1 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+  </defs>
+  <rect width="760" height="760" fill="#d8e1da"/>
+  <path d="M0 552c166-87 301-60 401-20 127 51 237 48 359-8v236H0z" fill="#7ba6b8" opacity=".7" filter="url(#grain)"/>
+  <path d="M48 504c155-52 287-39 396 8 91 40 183 44 268 20" fill="none" stroke="#f4eedf" stroke-width="5" stroke-linecap="round" opacity=".48"/>
+  <g transform="translate(270 274)" filter="url(#grain)">
+    <path d="M30 0h106v224c0 54-33 98-82 98H0v-87h32z" fill="#e0aa32"/>
+    <path d="M26 274h112v38H26z" fill="#9d6821"/>
+    <path d="M66 34c36 9 56 32 61 70" fill="none" stroke="#f4eedf" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+  </g>
+</svg>
