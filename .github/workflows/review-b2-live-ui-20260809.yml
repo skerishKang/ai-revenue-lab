@@ -37,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p b2-live-review
-          cat > /tmp/capture-b2.mjs <<'JS'
+          cat > capture-b2.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'node:fs';
           const url = process.env.B2_URL;
@@ -76,7 +76,7 @@ jobs:
           fs.writeFileSync('b2-live-review/report.json', JSON.stringify(report,null,2));
           await browser.close();
           JS
-          node /tmp/capture-b2.mjs
+          node capture-b2.mjs
           cat b2-live-review/report.json
 
       - name: Upload screenshots
