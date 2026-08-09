@@ -1,0 +1,34 @@
+name: Validate B4 Guide 465
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/living-learning/pages-preview/**'
+      - '.github/workflows/validate-b4-guide-465.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b4-guide-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install 'pytest>=8,<9'
+      - name: Validate Living Learning static product and guide
+        run: |
+          python -m pytest apps/living-learning/pages-preview/test_static_preview.py -q
+          test -f apps/living-learning/pages-preview/guide/index.html
+          grep -q 'Guide · 30 seconds' apps/living-learning/pages-preview/guide/index.html
+          grep -q '05 · Adapt' apps/living-learning/pages-preview/guide/index.html
+          grep -q 'href="/guide/"' apps/living-learning/pages-preview/index.html
+          git diff --check origin/main...HEAD
+          echo 'B4_GUIDE_VALIDATION_PASS=1'
