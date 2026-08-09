@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-labelledby="title desc">
+<title id="title">Neighborhood Route</title><desc id="desc">A synthetic editorial map tracing evening movement around a small bookshop.</desc>
+<rect width="900" height="600" fill="#efe6d5"/>
+<g stroke="#9f9279" stroke-width="2" fill="none" opacity=".7"><path d="M0 110h900M0 270h900M0 455h900"/><path d="M150 0v600M360 0v600M630 0v600M790 0v600"/></g>
+<path d="M75 520C180 410 190 330 310 344s126 117 239 70 125-171 280-267" fill="none" stroke="#d8492f" stroke-width="14" stroke-linecap="round" stroke-dasharray="2 24"/>
+<circle cx="310" cy="344" r="44" fill="#1f6075" stroke="#171510" stroke-width="6"/>
+<circle cx="548" cy="414" r="26" fill="#5d6546" stroke="#171510" stroke-width="5"/>
+<circle cx="829" cy="147" r="25" fill="#d8492f" stroke="#171510" stroke-width="5"/>
+<rect x="246" y="210" width="190" height="84" fill="#f2ead9" stroke="#171510" stroke-width="5"/>
+<text x="341" y="246" text-anchor="middle" font-family="Georgia,serif" font-size="25" font-weight="700" fill="#171510">BOOKSHOP</text>
+<text x="341" y="273" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#1f6075">7:42 P.M. · lights on</text>
+<text x="76" y="551" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#171510">DINNER</text>
+<text x="514" y="461" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#171510">FLOWER SHOP</text>
+<text x="736" y="113" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#171510">LAST BUS</text>
+<text x="70" y="70" font-family="Georgia,serif" font-size="48" font-weight="700" fill="#171510">An evening drawn by habit.</text>
+</svg>

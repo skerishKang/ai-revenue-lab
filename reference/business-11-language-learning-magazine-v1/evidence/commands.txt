@@ -1,0 +1,29 @@
+# Browser and static validation commands
+# Executed in the isolated Web implementation environment on 2026-07-26.
+
+# Source line counts
+find reference/business-11-language-learning-magazine-v1 -type f -print0 | sort -z | xargs -0 wc -l
+
+# Intended ordinary local serving command
+python3 -m http.server 4173 --directory reference/business-11-language-learning-magazine-v1
+
+# Environment result
+# Chromium navigation to localhost and file:// was blocked by administrator policy.
+# The validation harness therefore loaded the same local HTML, CSS, JavaScript,
+# and SVG bytes with Playwright page.set_content. It did not rewrite source files.
+
+python3 /tmp/validate_llm_inline.py
+python3 /tmp/capture_motion.py
+ffmpeg -y -framerate 6 \
+  -i language-learning-magazine-reference-output/motion-frames/frame-%02d.png \
+  -vf "fps=6,scale=960:-1:flags=lanczos" \
+  -loop 0 language-learning-magazine-reference-output/margin-echo.gif
+
+# Static scans performed by the validation harness
+# - all authored files <= 500 physical lines
+# - every loaded CSS/JS path uses language-learning-magazine-20260726-1
+# - stale version query references: 0
+# - missing local references: 0
+# - runtime external URL references in index.html: 0
+# - localStorage mentions: 0
+# - cookie mentions: 0
