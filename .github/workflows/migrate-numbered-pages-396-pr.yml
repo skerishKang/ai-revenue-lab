@@ -59,14 +59,15 @@ jobs:
                 return 1
               }
 
-              list_json="$(npx --yes wrangler@4 pages deployment list --project-name "${project}" --json 2>/tmp/wrangler-list.err || true)"
-              test -n "${list_json}" || {
-                echo "${project}: deployment list failed" >&2
-                tail -40 /tmp/wrangler-list.err >&2 || true
+              list_code="$(curl -sS -o /tmp/cf-deployments-list.json -w '%{http_code}' \
+                -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                "${api_base}/${project}/deployments" || true)"
+              test "${list_code}" = '200' || {
+                echo "${project}: deployment list API failed HTTP ${list_code}" >&2
                 return 1
               }
 
-              ids="$(printf '%s' "${list_json}" | jq -r '.[].Id // .[].id // empty' 2>/dev/null || true)"
+              ids="$(jq -r '.result[]?.id // empty' /tmp/cf-deployments-list.json 2>/dev/null || true)"
               to_delete="$(printf '%s\n' "${ids}" | grep -v -F -x "${prod_id}" | grep . || true)"
               if test -z "${to_delete}"; then
                 return 0
