@@ -61,6 +61,13 @@
       if (OWNER_APPROVED[business.number]) {
         business.ownerUiDecision = OWNER_APPROVED[business.number];
       }
+
+      // Issue #451: owner reviews internal UI changes on the canonical Production
+      // surface. B1 must never route owner review to a stale branch Preview URL.
+      if (business.number === 1) {
+        business.surfaceUrl = "https://ai-revenue-personal-edition.pages.dev/";
+      }
+
       var boundary = boundaryFor(business.number);
       if (!boundary) return;
 
