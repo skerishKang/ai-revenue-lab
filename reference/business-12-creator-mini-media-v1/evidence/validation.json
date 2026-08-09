@@ -1,0 +1,122 @@
+{
+  "url": "in-memory://creator-mini-media/index.html",
+  "version_token": "creator-mini-media-20260726-1",
+  "browser_runtime_mode": "in-memory render of exact repository HTML/CSS/JS/SVG; localhost and file navigation blocked by sandbox policy",
+  "desktop": {
+    "state_ids": [
+      "desk",
+      "article",
+      "newsletter",
+      "short",
+      "video",
+      "mobile",
+      "relay"
+    ],
+    "state_count": 7,
+    "horizontal_overflow_px": 0,
+    "desk_visible": true,
+    "article_visible": true,
+    "video_visible": true,
+    "all_states_switchable": true,
+    "state_visibility": {
+      "desk": true,
+      "article": true,
+      "newsletter": true,
+      "short": true,
+      "video": true,
+      "mobile": true,
+      "relay": true
+    },
+    "keyboard_arrow_selected": "article",
+    "keyboard_focus_target": "article",
+    "visible_focus_style": {
+      "style": "solid",
+      "width": "3px",
+      "color": "rgb(23, 104, 168)"
+    },
+    "keyboard_ok": true,
+    "console_errors": [],
+    "page_errors": [],
+    "failed_requests": [],
+    "failed_local_assets": [],
+    "external_runtime_requests": []
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "horizontal_overflow_px": 0,
+    "mobile_state_visible": true,
+    "console_errors": [],
+    "page_errors": [],
+    "failed_requests": [],
+    "failed_local_assets": [],
+    "external_runtime_requests": []
+  },
+  "motion": {
+    "observed_formats": [
+      "article",
+      "newsletter",
+      "script",
+      "script",
+      "script"
+    ],
+    "final_format": "script",
+    "relay_ok": true,
+    "reduced_motion_format": "script",
+    "reduced_motion_style": {
+      "transition": "0.001s",
+      "transform": "none"
+    },
+    "reduced_motion_ok": true
+  },
+  "source_checks": {
+    "line_counts": {
+      "IMAGE_SOURCES.md": 18,
+      "MOTION_SPEC.md": 41,
+      "README.md": 40,
+      "REFERENCE_NOTES.md": 86,
+      "assets/images/market-evening-wide.svg": 1,
+      "assets/images/market-portrait.svg": 1,
+      "assets/images/market-square.svg": 1,
+      "assets/images/market-still-life.svg": 1,
+      "assets/images/script-scene.svg": 1,
+      "evidence/browser-check-commands.md": 12,
+      "evidence/validation.json": 122,
+      "index.html": 221,
+      "scripts/review-state.js": 106,
+      "styles/base.css": 97,
+      "styles/components.css": 132,
+      "styles/layout.css": 151,
+      "styles/states/article.css": 38,
+      "styles/states/desk.css": 60,
+      "styles/states/mobile.css": 48,
+      "styles/states/newsletter.css": 37,
+      "styles/states/relay.css": 84,
+      "styles/states/short-form.css": 30,
+      "styles/states/video.css": 34,
+      "styles/tokens.css": 31
+    },
+    "files_over_500": [],
+    "loaded_css_js": [
+      "./styles/tokens.css?v=creator-mini-media-20260726-1",
+      "./styles/base.css?v=creator-mini-media-20260726-1",
+      "./styles/layout.css?v=creator-mini-media-20260726-1",
+      "./styles/components.css?v=creator-mini-media-20260726-1",
+      "./styles/states/desk.css?v=creator-mini-media-20260726-1",
+      "./styles/states/article.css?v=creator-mini-media-20260726-1",
+      "./styles/states/newsletter.css?v=creator-mini-media-20260726-1",
+      "./styles/states/short-form.css?v=creator-mini-media-20260726-1",
+      "./styles/states/video.css?v=creator-mini-media-20260726-1",
+      "./styles/states/mobile.css?v=creator-mini-media-20260726-1",
+      "./styles/states/relay.css?v=creator-mini-media-20260726-1",
+      "./scripts/review-state.js?v=creator-mini-media-20260726-1"
+    ],
+    "missing_version_query": [],
+    "stale_version_query": [],
+    "missing_local_paths": [],
+    "api_strings_found": false
+  },
+  "pass": true
+}

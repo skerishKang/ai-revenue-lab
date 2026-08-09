@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+.mobile-review-state { background: #d7cbb9; }
+.mobile-frame {
+  width: 390px;
+  max-width: 100%;
+  height: 844px;
+  max-height: calc(100vh - 180px);
+  min-height: 620px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--paper-light);
+  border: 1px solid var(--ink);
+  box-shadow: var(--shadow);
+}
+.mobile-topline { display: flex; justify-content: space-between; padding: 12px 14px 9px; border-bottom: 1px solid var(--ink); }
+.mobile-masthead { padding: 14px; }
+.mobile-masthead h2 { font-family: var(--serif); font-size: 46px; line-height: .86; letter-spacing: -.055em; }
+.mobile-masthead p { margin-top: 10px; font-family: var(--serif); font-size: 15px; line-height: 1.4; }
+.mobile-hero { margin: 0 14px; }
+.mobile-hero .image-frame { height: 250px; }
+.mobile-lead { margin: -24px 14px 0; position: relative; z-index: 2; padding: 18px; border-top: 7px solid var(--signal); }
+.mobile-lead h3 { margin: 10px 0 12px; font-family: var(--serif); font-size: 32px; line-height: .96; }
+.mobile-lead p { font-family: var(--serif); font-size: 14px; line-height: 1.55; }
+.mobile-relay-hint { display: grid; grid-template-columns: auto 1fr; gap: 11px; align-items: center; margin: 16px 14px 0; }
+.mobile-format-line { position: relative; height: 1px; background: var(--ink); }
+.mobile-format-line::after { content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; background: var(--signal); }
+.mobile-next { display: flex; gap: 8px; margin-top: 9px; font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
+.mobile-next span { padding: 3px 5px; border: 1px solid var(--ink); }
+
+@media (max-width: 430px) {
+  .mobile-review-state { padding: 0; }
+  .mobile-frame { width: 100%; height: 844px; max-height: none; border: 0; box-shadow: none; }
+}
+
+@media (max-width: 430px) {
+  .mobile-topline { padding: 8px 12px 6px; }
+  .mobile-masthead { padding: 10px 12px 8px; }
+  .mobile-masthead h2 { font-size: 39px; }
+  .mobile-masthead p { margin-top: 6px; font-size: 12px; }
+  .mobile-hero { margin: 0 12px; }
+  .mobile-hero .image-frame { height: 190px; }
+  .mobile-lead { margin: -16px 12px 0; padding: 13px; }
+  .mobile-lead h3 { margin: 7px 0 8px; font-size: 28px; }
+  .mobile-lead p { font-size: 12px; line-height: 1.45; }
+  .mobile-relay-hint { margin: 10px 12px 0; }
+  .mobile-next { margin: 7px 12px 0; }
+}

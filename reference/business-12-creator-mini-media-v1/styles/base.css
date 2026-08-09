@@ -1,0 +1,97 @@
+@charset "UTF-8";
+
+* { box-sizing: border-box; }
+html { background: var(--paper-deep); color: var(--ink); }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: var(--sans);
+  background:
+    linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.02)),
+    repeating-linear-gradient(90deg, rgba(24,23,21,.018) 0, rgba(24,23,21,.018) 1px, transparent 1px, transparent 7px),
+    var(--paper-deep);
+}
+button, a { font: inherit; }
+button { color: inherit; }
+img { display: block; max-width: 100%; }
+figure, blockquote, p, h1, h2, h3, h4 { margin: 0; }
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 8px;
+  left: 8px;
+  transform: translateY(-160%);
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--paper-light);
+}
+.skip-link:focus { transform: translateY(0); }
+
+button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
+  outline: 3px solid var(--proof);
+  outline-offset: 4px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.25;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.serif { font-family: var(--serif); }
+.mono { font-family: var(--mono); }
+.signal { color: var(--signal); }
+.proof { color: var(--proof); }
+.muted { color: var(--ink-soft); }
+.upper { text-transform: uppercase; }
+
+.crop-corners { position: relative; }
+.crop-corners::before,
+.crop-corners::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.crop-corners::before {
+  top: -7px; left: -7px;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+.crop-corners::after {
+  right: -7px; bottom: -7px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.source-slip {
+  padding: 10px 12px;
+  border-left: 3px solid var(--proof);
+  background: rgba(255,255,255,.35);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.proof-mark {
+  position: relative;
+  color: var(--proof);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.proof-mark::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  width: 12px;
+  border-top: 1px solid currentColor;
+}
+
+[hidden] { display: none !important; }

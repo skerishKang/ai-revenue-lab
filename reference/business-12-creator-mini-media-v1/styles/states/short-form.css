@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+.short-form-grid {
+  display: grid;
+  grid-template-columns: 1.05fr .75fr 1.2fr;
+  grid-template-rows: auto auto;
+  gap: 18px;
+}
+.short-item { position: relative; overflow: hidden; }
+.short-observation { grid-row: 1 / span 2; min-height: 540px; padding: 28px; background: var(--ink); color: var(--paper-light); }
+.short-observation h2 { margin-top: 80px; font-family: var(--serif); font-size: clamp(42px, 5vw, 70px); line-height: .94; letter-spacing: -.05em; }
+.short-observation .channel-label { color: var(--signal); }
+.short-caption { min-height: 250px; }
+.short-caption .image-frame { height: 168px; }
+.short-caption-copy { padding: 15px; font-family: var(--serif); font-size: 17px; line-height: 1.35; }
+.short-post { min-height: 250px; padding: 22px; border-top: 9px solid var(--proof); }
+.short-post p { margin-top: 40px; font-family: var(--serif); font-size: 23px; line-height: 1.2; }
+.short-cards { grid-column: 2 / span 2; display: grid; grid-template-columns: repeat(3, 1fr); min-height: 270px; }
+.short-card-panel { padding: 18px; border-right: 1px solid var(--ink); }
+.short-card-panel:last-child { border-right: 0; }
+.short-card-panel b { display: block; margin: 34px 0 12px; font-family: var(--serif); font-size: 24px; line-height: 1; }
+.short-card-panel:nth-child(2) { background: var(--signal); color: white; }
+.short-card-panel:nth-child(3) { background: var(--paper-deep); }
+.short-editor-note { position: absolute; left: 28px; bottom: 24px; max-width: 300px; }
+
+@media (max-width: 900px) {
+  .short-form-grid { grid-template-columns: 1fr 1fr; }
+  .short-observation { grid-row: auto; min-height: 360px; }
+  .short-cards { grid-column: 1 / span 2; }
+}
