@@ -11,6 +11,19 @@
   let activeState = 'cover';
   let relayCompletionHandler = null;
 
+  function installGuideLink() {
+    const rail = document.querySelector('.review-rail');
+    const kicker = document.querySelector('.rail-kicker');
+    if (!rail || !kicker || rail.querySelector('[data-first-use-guide]')) return;
+    const guide = document.createElement('a');
+    guide.href = './guide.html';
+    guide.dataset.firstUseGuide = 'true';
+    guide.textContent = '30초 사용법 / Guide';
+    guide.setAttribute('aria-label', '개인 미디어 스튜디오 30초 사용법 열기');
+    guide.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;max-width:100%;min-height:30px;margin:0 0 12px;padding:4px 8px;border:1px solid #7d8586;color:inherit;text-decoration:none;text-align:center;font:700 10px/1.2 system-ui;white-space:normal;overflow-wrap:anywhere';
+    kicker.insertAdjacentElement('afterend', guide);
+  }
+
   function normalizeState(candidate) {
     return stateOrder.includes(candidate) ? candidate : 'cover';
   }
@@ -115,6 +128,7 @@
     const state = new URL(window.location.href).searchParams.get('state');
     setState(normalizeState(state), { skipRelay: true });
   });
+  installGuideLink();
   const initialState = normalizeState(new URL(window.location.href).searchParams.get('state'));
   setState(initialState, { skipRelay: initialState !== 'adaptation' });
   window.__B22_REVIEW__ = { getState: () => activeState, setState, runRelay, states: [...stateOrder] };
