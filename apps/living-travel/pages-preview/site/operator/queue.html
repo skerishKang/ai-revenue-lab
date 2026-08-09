@@ -4,47 +4,45 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 운영자 대기열</title>
+  <title>Living Travel — 운영자 검토 대기열</title>
   <link rel="stylesheet" href="../assets/style.css">
-  <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
+  <link rel="stylesheet" href="../assets/operator-v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2 lt-operator">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <nav class="operator-nav">
-    <a href="../operator/queue.html" class="brand">◈ Living Travel · 운영자</a>
-    <div class="nav-links">
-      <a href="../operator/queue.html" class="active" style="color:var(--ink);">검토 대기</a>
-      <a href="../demo/intro.html">데모로 돌아가기</a>
-    </div>
-  </nav>
-
-  <main class="operator-main">
-    <div class="operator-desk-header">
-      <h1>검토 대기열</h1>
-      <span class="operator-desk-summary">1건의 검토 대기</span>
-    </div>
-
-    <div class="operator-section" style="margin-top:1.5rem;">
-      <div class="operator-queue-item">
-        <div class="operator-queue-info">
-          <span class="operator-queue-edition">부산 2박 3일 — 1판</span>
-          <span class="operator-queue-traveler">여행자 B-014</span>
-          <span class="operator-queue-meta">
-            Demo fixture · 12 sources · 골목/음식/바다 관심
-          </span>
-        </div>
-        <div class="operator-queue-actions">
-          <span class="badge badge-pending">pending_review</span>
-          <a href="../operator/review.html" class="btn btn-sm btn-primary">검토</a>
-        </div>
+  <main class="lt-op-shell">
+    <aside class="lt-op-sidebar">
+      <div>
+        <a href="queue.html" class="lt-op-brand"><span>LT</span>Living Travel</a>
+        <nav class="lt-op-nav" aria-label="운영자 메뉴">
+          <a class="active" href="queue.html">검토 대기열</a>
+          <a href="../demo/history.html">Traveler archive</a>
+        </nav>
       </div>
-    </div>
+      <small>Editorial control desk<br>Static review fixture</small>
+    </aside>
 
-    <div class="notice" style="margin-top:2rem;">
-      <strong>Demo mode</strong><br>
-      이 화면은 데모용 합성 데이터입니다. 실제 운영자 대시보드가 아닙니다.
-    </div>
+    <section class="lt-op-main">
+      <div class="lt-op-eyebrow">Review queue · 1 pending</div>
+      <h1 class="lt-op-title">발행 전,<br>여행의 흐름을 봅니다.</h1>
+      <p class="lt-op-deck">여행자의 취향과 생성 결과를 빠르게 대조하고, 과밀 일정·출처·동선 맥락을 확인한 뒤 발행 여부를 결정합니다.</p>
+
+      <div class="lt-op-queue">
+        <article class="lt-op-row">
+          <code>01</code>
+          <div>
+            <strong>부산 2박 3일 · Edition #1</strong>
+            <p>Traveler B-014 · 천천히 · 골목/음식/바다 · 12 sources</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+            <span class="lt-op-status">pending_review</span>
+            <a href="review.html" class="btn btn-primary">검토</a>
+          </div>
+        </article>
+      </div>
+    </section>
   </main>
 </body>
 </html>
