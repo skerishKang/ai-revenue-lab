@@ -2,7 +2,7 @@ name: Inspect B7 Pages Project 465
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize,reopened]
     paths:
       - '.github/workflows/inspect-b7-project-465.yml'
 permissions:
@@ -20,14 +20,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects?per_page=100" > /tmp/projects.json
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects" > /tmp/projects.json
           python3 - <<'PY'
           import json
-          rows=(json.load(open('/tmp/projects.json')).get('result') or [])
+          x=json.load(open('/tmp/projects.json'))
+          assert x.get('success') is True, x.get('errors')
+          rows=x.get('result') or []
+          found=0
           for p in rows:
               name=str(p.get('name') or '')
               low=name.lower()
               if 'meaning' in low or low.startswith('07-') or '-07-' in low or low.endswith('-07'):
+                  found+=1
                   print('CANDIDATE='+name+'|subdomain='+str(p.get('subdomain'))+'|production_branch='+str(((p.get('source') or {}).get('config') or {}).get('production_branch')))
+          print('MATCH_COUNT='+str(found))
           print('TOTAL_PROJECTS='+str(len(rows)))
           PY
