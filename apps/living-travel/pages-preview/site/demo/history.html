@@ -4,80 +4,50 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 여행판 기록</title>
+  <title>Living Travel — 여행 기록</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/v2.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
 
-  <nav class="navbar traveler-nav">
-    <a href="traveler-home.html" class="brand">Living Travel</a>
-    <div class="nav-links">
-      <a href="traveler-home.html">내 여행</a>
-      <a href="history.html" class="active">지난 기록</a>
-      <a href="../index.html">홈</a>
-    </div>
+  <nav class="lt-nav" aria-label="Living Travel">
+    <a class="lt-brand" href="traveler-home.html"><span class="lt-brand-dot">LT</span>Living Travel</a>
+    <div class="lt-nav-links"><a href="traveler-home.html">My trip</a><a href="../index.html">Home</a></div>
   </nav>
 
-  <main class="container" style="max-width:var(--max-reading);">
-    <div class="archive-header">
-      <h1>여행판 기록</h1>
-      <p class="meta">여행자 B-014 · 부산 2박 3일</p>
-    </div>
-
-    <div class="demo-history-timeline">
-      <div class="demo-history-item feedback-applied">
-        <div class="demo-history-dot"></div>
-        <div class="dashboard-current-card">
-          <div class="edition-entry-header" style="display:flex;align-items:baseline;gap:0.75rem;padding:1.25rem 1.25rem 0;">
-            <span class="edition-entry-number">#2</span>
-            <span class="badge badge-published">발행됨</span>
-            <span class="badge badge-info" style="margin-left:0.25rem;">피드백 반영</span>
-          </div>
-          <div class="edition-entry-body" style="padding:0.5rem 1.25rem 1.25rem;">
-            <div class="edition-entry-destination">부산: 골목에 머물다, 개인적인 하루</div>
-            <div class="edition-entry-meta">
-              <span>2026. 7. 24. 발행</span>
-            </div>
-            <div class="feedback-summary" style="margin:0.5rem 0 0;">
-              <strong>반영한 피드백</strong><br>
-              더 천천히 · 유명 관광지 줄이기 · 조용한 장소 늘리기
-            </div>
-          </div>
-          <div style="padding:0 1.25rem 1.25rem;">
-            <a href="edition-2.html" class="btn btn-sm btn-accent">2판 읽기</a>
-          </div>
-        </div>
+  <main class="lt-history">
+    <header class="lt-history-head">
+      <div>
+        <div class="lt-section-code">Travel archive · B-014</div>
+        <h1>같은 여행도<br>판마다 달라집니다.</h1>
       </div>
+      <p>부산 2박 3일의 기록입니다. 첫 판의 피드백이 두 번째 판의 장소 수와 동네 선택을 어떻게 바꿨는지 이어서 볼 수 있습니다.</p>
+    </header>
 
-      <div class="demo-history-item">
-        <div class="demo-history-dot"></div>
-        <div class="dashboard-current-card">
-          <div class="edition-entry-header" style="display:flex;align-items:baseline;gap:0.75rem;padding:1.25rem 1.25rem 0;">
-            <span class="edition-entry-number">#1</span>
-            <span class="badge badge-published">발행됨</span>
-          </div>
-          <div class="edition-entry-body" style="padding:0.5rem 1.25rem 1.25rem;">
-            <div class="edition-entry-destination">부산: 골목과 바다, 그리고 조용한 아침</div>
-            <div class="edition-entry-meta">
-              <span>2026. 7. 24. 발행</span>
-            </div>
-            <div class="edition-entry-meta" style="margin-top:0.25rem;">
-              <span class="badge badge-info">의견 있음</span>
-            </div>
-          </div>
-          <div style="padding:0 1.25rem 1.25rem;">
-            <a href="edition.html" class="btn btn-sm btn-outline">1판 읽기</a>
-            <a href="comparison.html" class="btn btn-sm btn-outline" style="margin-left:0.5rem;">변화 비교</a>
-          </div>
+    <section class="lt-history-track">
+      <article class="lt-history-ticket latest">
+        <div>
+          <code>EDITION #02 · FEEDBACK APPLIED · 2026.07.24</code>
+          <h2>골목에 머물다,<br>개인적인 하루</h2>
+          <p>장소 수 감소 · 생활권 증가 · 이기대와 송정 중심 · 체류시간 증가</p>
         </div>
-      </div>
-    </div>
+        <a href="edition-2.html" class="btn btn-accent">2판 읽기</a>
+      </article>
+
+      <article class="lt-history-ticket">
+        <div>
+          <code>EDITION #01 · ORIGINAL · 2026.07.24</code>
+          <h2>골목과 바다,<br>그리고 조용한 아침</h2>
+          <p>초량 · 감천 · 해운대 · 송도. 첫 피드백: 더 천천히, 유명 관광지는 덜.</p>
+        </div>
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap;">
+          <a href="edition.html" class="btn btn-accent">1판 읽기</a>
+          <a href="comparison.html" class="btn btn-outline" style="color:#fff;">변화 비교</a>
+        </div>
+      </article>
+    </section>
   </main>
-
-  <footer class="site-footer">
-    <p>Living Travel — Interactive Concept Demo</p>
-  </footer>
 </body>
 </html>
