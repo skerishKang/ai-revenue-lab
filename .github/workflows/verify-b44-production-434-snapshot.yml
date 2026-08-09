@@ -1,0 +1,42 @@
+name: Snapshot B44 Production 434
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: [.github/workflows/verify-b44-production-434-snapshot.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      PROJECT: ai-revenue-portfolio-console
+      EXPECTED_SHA: 07ab5fddd59e886f530fe39c441c372c34c14d8c
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Read latest Production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" "$base/deployments" > /tmp/d.json
+          python3 - "$EXPECTED_SHA" <<'PY'
+          import json,sys
+          expected=sys.argv[1]
+          rows=[x for x in json.load(open('/tmp/d.json')).get('result',[]) if x.get('environment')=='production']
+          rows.sort(key=lambda x:x.get('created_on') or '',reverse=True)
+          d=rows[0]
+          meta=(d.get('deployment_trigger') or {}).get('metadata') or {}
+          stage=d.get('latest_stage') or {}
+          sha=meta.get('commit_hash') or ''
+          print(f"deployment_id={d.get('id')} created_on={d.get('created_on')} modified_on={d.get('modified_on')} source_sha={sha} branch={meta.get('branch')} stage={stage.get('name')}/{stage.get('status')}")
+          print('stages='+','.join(f"{s.get('name')}:{s.get('status')}" for s in d.get('stages',[])))
+          if sha != expected: raise SystemExit('latest Production SHA mismatch')
+          print('EXPECTED_PRODUCTION_SOURCE_PRESENT=1')
+          PY
