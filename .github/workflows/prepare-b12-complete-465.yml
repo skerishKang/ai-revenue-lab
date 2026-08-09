@@ -1,0 +1,41 @@
+name: Prepare B12 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/prepare-b12-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/prepare-b12-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EXPECTED_MAIN: 670e6e6fa64318821d9d20225b38a25a0f4d494b
+      AUTHORITY: ac70446ace1bbba3ab02a49c637dcd205add93dc
+      TARGET_BRANCH: feat/b12-creator-mini-media-complete-465
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_MAIN }}
+          fetch-depth: 0
+      - name: Materialize approved B12 UI plus existing UX
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
+          git fetch origin "$AUTHORITY"
+          git switch -c "$TARGET_BRANCH"
+          git checkout "$AUTHORITY" -- reference/business-12-creator-mini-media-v1
+          test -f reference/business-12-creator-mini-media-v1/index.html
+          test -f reference/business-12-creator-mini-media-v1/ux.html
+          if git status --short | awk '{print $2}' | grep -Ev '^reference/business-12-creator-mini-media-v1/' ; then exit 1; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add reference/business-12-creator-mini-media-v1
+          git commit -m 'feat(b12): integrate approved creator-media UI and publishing UX'
+          git push --force-with-lease origin "$TARGET_BRANCH"
+          echo "B12_PREPARED_HEAD=$(git rev-parse HEAD)"
