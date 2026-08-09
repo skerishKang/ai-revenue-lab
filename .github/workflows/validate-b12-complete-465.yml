@@ -1,0 +1,46 @@
+name: Validate B12 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-12-creator-mini-media-v1/**'
+      - '.github/workflows/validate-b12-complete-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b12-creator-mini-media-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate creator-mini-media UI UX and guide
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check reference/business-12-creator-mini-media-v1/scripts/review-state.js
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          base=Path('reference/business-12-creator-mini-media-v1')
+          for name in ('index.html','ux.html','guide.html'): HTMLParser().feed((base/name).read_text(encoding='utf-8'))
+          ux=(base/'ux.html').read_text(encoding='utf-8'); guide=(base/'guide.html').read_text(encoding='utf-8'); js=(base/'scripts/review-state.js').read_text(encoding='utf-8')
+          for marker in ('id="sourceText"','data-format="article"','data-format="short"','data-format="mail"','id="make"','id="approve"','id="reset"','window.onpopstate'):
+              assert marker in ux, marker
+          for marker in ('GUIDE · 30 SECONDS','01 · SOURCE','02 · FORMAT','03 · TONE','04 · REVIEW','05 · PACKAGE','미니미디어 체험 시작'):
+              assert marker in guide, marker
+          assert './guide.html' in js and './ux.html#source' in js
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in ux+'\n'+guide, forbidden
+          for rel in re.findall(r'(?:href|src)="(\./[^"?#]+)', guide): assert (base/rel[2:]).exists(), rel
+          print('B12_UI_UX_GUIDE_STATIC_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-12-creator-mini-media-v1/*.html' 'reference/business-12-creator-mini-media-v1/styles/**' 'reference/business-12-creator-mini-media-v1/scripts/**'
+          echo 'B12_COMPLETE_VALIDATION_PASS=1'
