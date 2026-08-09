@@ -1,4 +1,4 @@
-name: Recover B6 Deploy B9 465
+name: Deploy B6 B7 B8 B9 Numbered Canonicals 465
 on:
   pull_request:
     branches: [main]
@@ -8,18 +8,14 @@ on:
 permissions:
   contents: read
 jobs:
-  recover:
+  deploy:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       EXPECTED_SHA: d3f6ec2c5656ab2cad62e8b4e5dad0f6bd10f751
-      B6_PROJECT: ai-revenue-world-feed
-      B9_PROJECT: ai-revenue-personalized-childrens-story
-      B6_URL: https://ai-revenue-world-feed.pages.dev
-      B9_URL: https://ai-revenue-personalized-childrens-story.pages.dev
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,69 +24,52 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assert exact current main
+      - name: Assert exact current main and target projects
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
-          test -f reference/business-06-world-feed-v1/guide.html
-          test -f reference/business-09-personalized-childrens-story-v1/guide.html
-          test -f reference/business-09-personalized-childrens-story-v1/ux.html
-      - name: Ensure B6 and B9 production branches are main
-        shell: bash
-        run: |
-          set -euo pipefail
-          for project in "$B6_PROJECT" "$B9_PROJECT"; do
-            code=$(curl -sS -o "/tmp/${project}-patch.json" -w '%{http_code}' -X PATCH \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              -H 'Content-Type: application/json' \
-              --data '{"production_branch":"main"}' \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}")
-            echo "$project PATCH_HTTP=$code"
-            cat "/tmp/${project}-patch.json"
-            test "$code" = 200
-            PROJECT="$project" python3 - <<'PY'
-          import json, os
-          x=json.load(open('/tmp/'+os.environ['PROJECT']+'-patch.json'))
-          assert x.get('success') is True, x.get('errors')
-          p=x['result']; cfg=((p.get('source') or {}).get('config') or {})
-          effective=cfg.get('production_branch') or p.get('production_branch')
-          print(os.environ['PROJECT']+'_PRODUCTION_BRANCH='+str(effective))
-          assert effective == 'main'
-          PY
+          for project in 06-world-feed 07-personal-meaning-map 08-family-newspaper 09-personalized-childrens-story; do
+            code=$(curl -sS -o "/tmp/${project}.json" -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${project}")
+            echo "$project HTTP=$code"; test "$code" = 200
           done
-      - name: Deploy exact-main bytes
+      - name: Deploy numbered canonical surfaces
         shell: bash
         run: |
           set -euo pipefail
-          sleep 5
-          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
-            --project-name "$B6_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
-            --commit-message 'B6 exact current-main canonical recovery'
-          npx --yes wrangler@latest pages deploy reference/business-09-personalized-childrens-story-v1 \
-            --project-name "$B9_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
-            --commit-message 'B9 exact current-main UI UX guide Production'
-      - name: Verify canonical source equality
+          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 --project-name 06-world-feed --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B6 latest main guide review'
+          npx --yes wrangler@latest pages deploy reference/business-07-personal-meaning-map-v1 --project-name 07-personal-meaning-map --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B7 latest main guide review'
+          npx --yes wrangler@latest pages deploy reference/business-08-family-newspaper-v1 --project-name 08-family-newspaper --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B8 latest main guide review'
+          npx --yes wrangler@latest pages deploy reference/business-09-personalized-childrens-story-v1 --project-name 09-personalized-childrens-story --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B9 latest main guide review'
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Verify numbered canonical byte equality
         shell: bash
         run: |
           set -euo pipefail
           verify() {
-            local url="$1" path="$2" source="$3" out="$4" label="$5" ok=0 expected actual code
+            local url="$1" source="$2" label="$3"; local expected actual code
             expected=$(sha256sum "$source" | cut -d' ' -f1)
-            echo "$label expected=$expected"
-            for i in $(seq 1 30); do
-              code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url/$path" || true)
-              actual=$(sha256sum "$out" 2>/dev/null | cut -d' ' -f1 || true)
-              echo "$label poll=$i http=$code actual=$actual"
-              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then ok=1; break; fi
+            for i in $(seq 1 25); do
+              code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url" || true)
+              actual=$(sha256sum /tmp/public 2>/dev/null | cut -d' ' -f1 || true)
+              echo "$label poll=$i http=$code expected=$expected actual=$actual"
+              if [[ "$code" == 200 && "$expected" == "$actual" ]]; then return 0; fi
               sleep 3
             done
-            test "$ok" = 1
+            return 1
           }
-          verify "$B6_URL" guide.html reference/business-06-world-feed-v1/guide.html /tmp/b6-guide.html B6_GUIDE
-          verify "$B6_URL" index.html reference/business-06-world-feed-v1/index.html /tmp/b6-index.html B6_ROOT
-          verify "$B9_URL" guide.html reference/business-09-personalized-childrens-story-v1/guide.html /tmp/b9-guide.html B9_GUIDE
-          verify "$B9_URL" ux.html reference/business-09-personalized-childrens-story-v1/ux.html /tmp/b9-ux.html B9_UX
-          verify "$B9_URL" index.html reference/business-09-personalized-childrens-story-v1/index.html /tmp/b9-index.html B9_ROOT
-          echo 'B6_B9_CANONICAL_BYTES_VERIFIED=1'
+          verify https://06-world-feed.pages.dev/index.html reference/business-06-world-feed-v1/index.html B6_ROOT
+          verify https://06-world-feed.pages.dev/guide.html reference/business-06-world-feed-v1/guide.html B6_GUIDE
+          verify https://07-personal-meaning-map.pages.dev/index.html reference/business-07-personal-meaning-map-v1/index.html B7_ROOT
+          verify https://07-personal-meaning-map.pages.dev/ux.html reference/business-07-personal-meaning-map-v1/ux.html B7_UX
+          verify https://07-personal-meaning-map.pages.dev/guide.html reference/business-07-personal-meaning-map-v1/guide.html B7_GUIDE
+          verify https://08-family-newspaper.pages.dev/index.html reference/business-08-family-newspaper-v1/index.html B8_ROOT
+          verify https://08-family-newspaper.pages.dev/ux.html reference/business-08-family-newspaper-v1/ux.html B8_UX
+          verify https://08-family-newspaper.pages.dev/guide.html reference/business-08-family-newspaper-v1/guide.html B8_GUIDE
+          verify https://09-personalized-childrens-story.pages.dev/index.html reference/business-09-personalized-childrens-story-v1/index.html B9_ROOT
+          verify https://09-personalized-childrens-story.pages.dev/ux.html reference/business-09-personalized-childrens-story-v1/ux.html B9_UX
+          verify https://09-personalized-childrens-story.pages.dev/guide.html reference/business-09-personalized-childrens-story-v1/guide.html B9_GUIDE
+          echo NUMBERED_B6_B9_PUBLIC_BYTES_VERIFIED=1
