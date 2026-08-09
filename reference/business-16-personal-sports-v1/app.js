@@ -7,6 +7,18 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let activeIndex = 0;
 
+  function installGuideLink() {
+    const header = document.querySelector('.site-header');
+    if (!header || header.querySelector('[data-first-use-guide]')) return;
+    const guide = document.createElement('a');
+    guide.href = './guide.html';
+    guide.className = 'guide-entry';
+    guide.dataset.firstUseGuide = 'true';
+    guide.textContent = '30초 사용법 / Guide';
+    guide.setAttribute('aria-label', '나의 스포츠 채널 30초 사용법 열기');
+    header.append(guide);
+  }
+
   function setState(name, { focus = false, replaceUrl = true } = {}) {
     const nextIndex = states.indexOf(name);
     if (nextIndex < 0) return;
@@ -94,6 +106,7 @@
 
   document.querySelector('.motion-replay')?.addEventListener('click', replayTurningPoint);
 
+  installGuideLink();
   const initial = new URLSearchParams(window.location.search).get('state');
   setState(states.includes(initial) ? initial : states[0], { replaceUrl: false });
   if (initial === 'review' && new URLSearchParams(window.location.search).get('motion') === 'play') {
