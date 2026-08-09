@@ -3,25 +3,8 @@
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <section class="v3-history" aria-labelledby="history-title">
-  <header class="v3-history-head">
-    <div><span class="v3-kicker">Collected editions</span><h1 id="history-title">Archive</h1></div>
-    <p class="v3-library-meta">한 번 읽고 사라지는 피드가 아니라,<br>시간이 지나며 쌓이는 개인 출판 기록입니다.</p>
-  </header>
-
-  {% if editions %}
-  <div class="v3-history-list">
-    {% for edition in editions %}
-    <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v3-history-item">
-      <span class="v3-history-no">{{ '%02d'|format(edition.edition_number) }}</span>
-      <strong class="v3-history-title">{{ edition.rendered_title or '제목 없음' }}</strong>
-      <span class="v3-history-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
-    </a>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="v3-workflow-scene"><span class="v3-state-label">Archive empty</span><h2>첫 에디션을 기다리고 있습니다.</h2><p>기록을 남기면 편집과 검토를 거쳐 이곳에 한 권씩 쌓입니다.</p></div>
-  {% endif %}
-
+  <header class="v3-history-head"><div><span class="v3-kicker">Collected editions</span><h1 id="history-title">Archive</h1></div><p class="v3-library-meta">한 번 읽고 사라지는 피드가 아니라,<br>시간이 지나며 쌓이는 개인 출판 기록입니다.</p></header>
+  {% if editions %}<div class="v3-history-list">{% for edition in editions %}<a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v3-history-item"><span class="v3-history-no">#{{ edition.edition_number }}</span><strong class="v3-history-title">{{ edition.rendered_title or '제목 없음' }}</strong><span class="v3-history-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span></a>{% endfor %}</div>{% else %}<div class="v3-workflow-scene"><span class="v3-state-label">Archive empty</span><h2>첫 에디션을 기다리고 있습니다.</h2><p>기록을 남기면 편집과 검토를 거쳐 이곳에 한 권씩 쌓입니다.</p></div>{% endif %}
   {% if is_preview %}<div class="preview-journey-nav" style="margin:1rem"><a href="/preview/participant/published/" class="btn btn-secondary">발행 상태로 돌아가기</a></div>{% endif %}
 </section>
 {% endblock %}
