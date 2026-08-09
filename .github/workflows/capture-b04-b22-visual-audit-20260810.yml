@@ -1,0 +1,103 @@
+name: Capture B04 B22 Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/capture-b04-b22-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    if: github.event.pull_request.head.ref == 'ops/capture-b04-b22-visual-audit-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium
+        run: |
+          mkdir -p /tmp/b04-b22-audit
+          cd /tmp/b04-b22-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Capture current canonical Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b04-b22-evidence
+          cd /tmp/b04-b22-audit
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const path = require('path');
+          const out = '/tmp/b04-b22-evidence';
+          const ids = [4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
+          const slugs = {
+            4:'living-learning',6:'world-feed',7:'personal-meaning-map',8:'family-newspaper',9:'personalized-childrens-story',10:'fan-magazine',11:'language-learning-magazine',12:'creator-mini-media',13:'personal-video-archive',14:'korean-ai-platform',15:'global-ai-newsroom',16:'personal-sports',17:'local-shop-magazine',18:'personal-audio-channel',19:'personal-memory-book',20:'personal-memory-novel',21:'founder-strategy-letter',22:'personal-media-studio'
+          };
+          const special = {
+            13:'https://ai-revenue-personal-video-archive.pages.dev/'
+          };
+          const results = [];
+
+          function urlFor(id) { return special[id] || `https://${String(id).padStart(2,'0')}-${slugs[id]}.pages.dev/`; }
+
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            for (const id of ids) {
+              const url = urlFor(id);
+              for (const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]) {
+                const page = await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+                const errors=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+                page.on('pageerror',e=>errors.push(`page:${e.message}`));
+                let status = 0;
+                let navError = '';
+                try {
+                  const resp = await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+                  status = resp ? resp.status() : 0;
+                  await page.waitForTimeout(900);
+                } catch (e) { navError = e.message; }
+                const audit = await page.evaluate(() => {
+                  const imgs=[...document.images];
+                  const srcs=imgs.map(i=>i.getAttribute('src')||'');
+                  const text=(document.body?.innerText||'').replace(/\s+/g,' ').slice(0,5000);
+                  return {
+                    title:document.title,
+                    scrollWidth:document.documentElement.scrollWidth,
+                    clientWidth:document.documentElement.clientWidth,
+                    bodyHeight:Math.round(document.body?.getBoundingClientRect().height||0),
+                    inlineSvg:document.querySelectorAll('svg').length,
+                    svgImages:srcs.filter(s=>/\.svg(?:[?#]|$)/i.test(s)).length,
+                    rasterImages:srcs.filter(s=>/\.(?:png|jpe?g|webp|avif)(?:[?#]|$)/i.test(s)).length,
+                    allImages:imgs.length,
+                    visualReference:/VISUAL REFERENCE|UI_ONLY|UI ONLY/i.test(text),
+                    synthetic:/SYNTHETIC|합성/i.test(text),
+                    guide:/30초 사용법|GUIDE/i.test(text),
+                    sample:text.slice(0,500)
+                  };
+                });
+                const file=`b${String(id).padStart(2,'0')}-${vp.name}.png`;
+                await page.screenshot({path:path.join(out,file),fullPage:true});
+                results.push({id,slug:slugs[id],url,viewport:vp.name,status,navError,errors,...audit,screenshot:file});
+                await page.close();
+              }
+            }
+            await browser.close();
+            fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(results,null,2));
+            const desktop = results.filter(r=>r.viewport==='desktop');
+            console.log('CAPTURED='+results.length);
+            console.log('HTTP200='+desktop.filter(r=>r.status===200).length+'/'+desktop.length);
+            console.log('SVG_HEAVY='+desktop.filter(r=>(r.inlineSvg+r.svgImages)>=3 && r.rasterImages===0).map(r=>`B${r.id}`).join(','));
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: b04-b22-production-visual-audit-20260810
+          path: /tmp/b04-b22-evidence
+          retention-days: 7
+          if-no-files-found: error
