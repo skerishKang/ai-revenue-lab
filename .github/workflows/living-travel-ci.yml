@@ -71,6 +71,15 @@ jobs:
       - name: Run static preview test suite
         run: python -m pytest pages-preview/tests -q
 
+      - name: Upload B2 V2 Chromium review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2-v2-457-visual-evidence
+          path: ${{ runner.temp }}/living-travel-v2-457-*
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Startup health smoke
         env:
           LT_ENVIRONMENT: testing
