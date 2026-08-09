@@ -1,155 +1,145 @@
-"""Issue #443 regression tests for the Personal Edition UI V2 shell.
+"""Issue #454 regression contracts for the Personal Edition V3 art-direction reset.
 
-These tests intentionally stay inside the static-preview boundary: they assert
-visual-system contracts and deterministic rendered states without touching
-backend, auth, database or production services.
+The filename is retained to avoid breaking historical CI references, but V2 visual
+assertions are deliberately removed: #454 explicitly rejects the V2 art direction.
 """
-
 from __future__ import annotations
 
 from pathlib import Path
-
 import pytest
-
 from scripts.build_static_preview import main as build_main
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "dist-preview"
-V2_CSS = BASE_DIR / "static" / "ui-v2-443.css"
-
+V3_CSS = BASE_DIR / "static" / "ui-v3-454.css"
 
 @pytest.fixture(scope="module", autouse=True)
 def _build_preview() -> None:
     build_main()
 
-
 def _html(rel: str) -> str:
     return (OUTPUT_DIR / rel).read_text(encoding="utf-8")
 
-
-def test_v2_stylesheet_is_local_linked_and_copied() -> None:
+def test_v3_stylesheet_replaces_v2_shell() -> None:
     base = (BASE_DIR / "templates" / "base.html").read_text(encoding="utf-8")
-    assert '/static/ui-v2-443.css?v=b1-v2-443' in base
-    assert 'data-ui-version="b1-personal-edition-v2-443"' in base
-    assert (OUTPUT_DIR / "static" / "ui-v2-443.css").is_file()
+    assert '/static/ui-v3-454.css?v=b1-v3-454' in base
+    assert 'data-ui-version="b1-personal-edition-v3-454"' in base
+    assert '/static/ui-v2-443.css' not in base
+    assert (OUTPUT_DIR / "static" / "ui-v3-454.css").is_file()
 
-
-def test_entry_is_full_viewport_publication_not_legacy_card_explainer() -> None:
+def test_entry_is_a_new_assembly_art_direction_not_v2_split_shell() -> None:
     page = _html("preview/intro/index.html")
-    assert "intro-hero-v2" in page
-    assert "fragment-stage-v2" in page
-    assert "bound-edition-v2" in page
-    assert "intro-ledger-v2" in page
-    assert 'class="hero-section"' not in page
-    assert 'class="transformation-step"' not in page
+    assert "v3-assembly-stage" in page
+    assert "v3-binding-axis" in page
+    assert "v3-edition-object" in page
+    assert "gather → sort → bind → reveal" in page
+    assert "intro-page-v2" not in page
+    assert "fragment-stage-v2" not in page
+    assert "bound-edition-v2" not in page
 
+def test_canonical_root_is_product_first_not_preview_index() -> None:
+    template = (BASE_DIR / "templates" / "preview_index.html").read_text(encoding="utf-8")
+    assert "data-owner-review-root" in template
+    assert "Personal Edition UI Preview" not in template
+    assert "프리뷰 목록" not in template
+    assert ".preview-banner { display:none !important; }" in template
+    root = _html("index.html")
+    assert "v3-assembly-stage" in root
+    assert "data-owner-review-root" in root
 
-def test_entry_keeps_preview_participant_route_contract() -> None:
-    page = _html("preview/intro/index.html")
-    assert "/preview/participant/access/" in page
-    assert "에디션 시작하기" in page
+def test_participant_core_routes_share_one_v3_system() -> None:
+    expected = {
+        "preview/participant/published/index.html": "v3-library",
+        "preview/participant/input/index.html": "v3-write",
+        "preview/participant/editions/modal-preview-edition/index.html": "v3-read",
+        "preview/participant/editions/modal-preview-edition/feedback/index.html": "v3-feedback",
+        "preview/participant/editions/modal-preview-edition/adaptation/index.html": "v3-adaptation",
+        "preview/participant/history/index.html": "v3-history",
+    }
+    for path, marker in expected.items():
+        assert marker in _html(path), (path, marker)
 
+def test_writing_surface_makes_textarea_the_primary_interaction() -> None:
+    page = _html("preview/participant/input/index.html")
+    assert "v3-write-desk" in page
+    assert "v3-write-form" in page
+    assert 'id="raw_text"' in page
+    assert "editorial-process-layers.webp" not in page
+    assert "편집 시스템에 맡기기" in page
 
-def test_published_home_is_private_library_spread() -> None:
+def test_library_uses_collectible_sequence_not_crud_grid_or_stepper_centerpiece() -> None:
     page = _html("preview/participant/published/index.html")
-    assert "published-home-v2" in page
-    assert "published-spread-v2" in page
-    assert "edition-object-v2" in page
-    assert "속도에서 개인화로" in page
-    assert "/preview/participant/editions/modal-preview-edition" in page
+    assert "v3-library-stage" in page
+    assert "v3-library-cover" in page
+    assert "v3-spines" in page
+    assert "latest-edition" in page
+    assert "progress-track" not in page
+    assert "published-spread-v2" not in page
 
-
-def test_edition_reader_has_opening_spread_and_reading_body() -> None:
+def test_edition_read_has_collectible_cover_and_long_form_rhythm() -> None:
     page = _html("preview/participant/editions/modal-preview-edition/index.html")
-    assert "edition-opening-spread-v2" in page
-    assert "edition-reading-body-v2" in page
-    assert "section-copy-v2" in page
+    assert "v3-read-opening" in page
+    assert "v3-reading-shell" in page
+    assert "v3-reading-main" in page
+    assert 'class="edition-cover v3-read-cover"' in page
     assert "제1호" in page
     assert "/preview/participant/editions/modal-preview-edition/feedback" in page
 
+def test_feedback_and_adaptation_are_editorial_direction_and_recut() -> None:
+    feedback = _html("preview/participant/editions/modal-preview-edition/feedback/index.html")
+    assert "v3-directions" in feedback
+    assert "편집자에게 남길 문장" in feedback
+    adaptation = _html("preview/participant/editions/modal-preview-edition/adaptation/index.html")
+    assert "v3-recut-stage" in adaptation
+    assert "Reader direction" in adaptation
+    assert "Before · Edition 01" in adaptation
+    assert "After · next edition" in adaptation
+    assert "변경된 이유" in adaptation
+    assert "고객마다 원하는 속도와 방식이 다르다는 것을 깨달았습니다" in adaptation
 
-def test_feedback_adaptation_is_concrete_before_after() -> None:
-    page = _html("preview/participant/editions/modal-preview-edition/adaptation/index.html")
-    assert "adaptation-delta-v2" in page
-    assert "Before · 제1호" in page
-    assert "After · next edition" in page
-    assert "변경된 이유" in page
-    assert "개인화가 구체적으로 어떻게 실천되는지 더 깊이 알고 싶습니다" in page
-    assert "고객마다 원하는 속도와 방식이 다르다는 것을 깨달았습니다" in page
+def test_participant_art_direction_uses_no_decorative_raster_photos() -> None:
+    for name in ["intro.html", "participant_dashboard.html", "input_form.html", "edition_read.html", "participant_history.html"]:
+        source = (BASE_DIR / "templates" / name).read_text(encoding="utf-8")
+        assert ".webp" not in source, name
+        assert "<img" not in source, name
 
-
-def test_operator_queue_uses_responsive_records_not_wide_table() -> None:
+def test_operator_queue_remains_responsive_and_human_reviewed() -> None:
     page = _html("admin/index.html")
-    assert "operator-shell-v2" in page
     assert "operator-queue-list-v2" in page
     assert "operator-queue-item-v2" in page
+    assert "Private workspace" in page
+    assert "Human review required" in page
     assert 'class="data-table queue-table"' not in page
-    assert "/admin/participants/modal-preview-user/" in page
-    assert "/admin/review/modal-preview-edition" in page
 
-
-def test_operator_content_review_has_manuscript_and_inspector() -> None:
-    page = _html("admin/review/modal-preview-edition/content/index.html")
-    assert "review-desk-v2" in page
-    assert "review-manuscript-v2" in page
-    assert "review-inspector-v2" in page
-    assert "속도에서 개인화로" in page
-    assert "more_reflective" in page
-    assert "/admin/review/modal-preview-edition/publish/" in page
-
-
-def test_publish_gate_keeps_preview_only_human_decision_semantics() -> None:
-    page = _html("admin/review/modal-preview-edition/publish/index.html")
-    assert "Final editorial gate" in page
-    assert "Human decision required" in page
-    assert "실제 발행은 수행되지 않습니다" in page
-    assert "실제 반려는 수행되지 않습니다" in page
-    assert "/admin/participants/modal-preview-user/feedback/" in page
-
-
-def test_v2_css_breaks_out_of_legacy_680px_shell() -> None:
-    css = V2_CSS.read_text(encoding="utf-8")
-    assert ".participant-surface .container" in css
-    assert "max-width: none" in css
-    assert "min-height: calc(100svh - 64px)" in css
-    assert "font-size: clamp(4.1rem" in css
-
-
-def test_v2_css_has_three_scale_responsive_rules() -> None:
-    css = V2_CSS.read_text(encoding="utf-8")
-    assert "@media (max-width: 1100px)" in css
-    assert "@media (max-width: 820px)" in css
+def test_v3_css_has_spatial_motion_and_three_scale_responsiveness() -> None:
+    css = V3_CSS.read_text(encoding="utf-8")
+    assert "@keyframes v3-bind" in css
+    assert "@keyframes v3-gather-1" in css
+    assert ".v3-binding-axis" in css
+    assert "@media (max-width: 900px)" in css
     assert "@media (max-width: 600px)" in css
-    assert ".operator-queue-item-v2 { grid-template-columns: 1fr;" in css
-
-
-def test_v2_css_preserves_keyboard_focus_and_reduced_motion() -> None:
-    css = V2_CSS.read_text(encoding="utf-8")
-    assert ":focus-visible" in css
-    assert "outline: 3px solid var(--v2-accent)" in css
     assert "@media (prefers-reduced-motion: reduce)" in css
-    assert "animation: none !important" in css
 
-
-def test_v2_css_has_no_external_asset_dependency() -> None:
-    css = V2_CSS.read_text(encoding="utf-8")
+def test_v3_css_keeps_focus_and_no_external_dependency() -> None:
+    css = V3_CSS.read_text(encoding="utf-8")
+    assert ":focus-visible" in css
+    assert "outline: 3px solid var(--v3-signal)" in css
     assert "http://" not in css
     assert "https://" not in css
     assert "@import" not in css
     assert "url(" not in css
 
-
-def test_ui_v2_does_not_claim_owner_approval() -> None:
-    for path in [
+def test_v3_does_not_claim_owner_approval() -> None:
+    paths = [
+        BASE_DIR / "templates" / "base.html",
         BASE_DIR / "templates" / "intro.html",
         BASE_DIR / "templates" / "participant_dashboard.html",
+        BASE_DIR / "templates" / "input_form.html",
         BASE_DIR / "templates" / "edition_read.html",
+        BASE_DIR / "templates" / "feedback_form.html",
         BASE_DIR / "templates" / "feedback_adaptation.html",
-        BASE_DIR / "templates" / "admin_dashboard.html",
-        BASE_DIR / "templates" / "admin_content_review.html",
-        BASE_DIR / "templates" / "admin_publish_decision.html",
-        V2_CSS,
-    ]:
+        V3_CSS,
+    ]
+    for path in paths:
         content = path.read_text(encoding="utf-8")
-        assert "UI_APPROVED" not in content
         assert "OWNER_UI_APPROVED=true" not in content
