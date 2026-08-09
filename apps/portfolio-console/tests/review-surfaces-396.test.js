@@ -67,42 +67,31 @@ assert.equal(webReviews.length, 39, 'Exactly 39 web review surfaces are prepared
 assert.equal(entries.length, 40, '39 web review targets plus the B54 CLI/TUI surface');
 
 const verified = webReviews.filter((entry) => entry.status === 'CLOUDFLARE_REVIEW_VERIFIED');
-const pending = webReviews.filter((entry) => entry.status === 'CLOUDFLARE_REVIEW_DEPLOY_PENDING');
-assert.equal(verified.length, 36, '36 web review surfaces are byte-verified and live');
-assert.equal(pending.length, 3, '3 web review surfaces remain deployment-pending');
-assert.deepEqual(
-  pending.map((entry) => entry.pr).sort((a, b) => a - b),
-  [354, 370, 392],
-  'pending surfaces are exactly manifest-sourced B32, B35 and B59 PR heads 354/370/392',
-);
+assert.equal(verified.length, 39, 'All 39 numbered web surfaces are byte-verified and live');
+assert.equal(webReviews.some((entry) => entry.status === 'CLOUDFLARE_REVIEW_DEPLOY_PENDING'), false);
 
 for (const entry of webReviews) {
   assert.match(entry.exactHead, /^[0-9a-f]{40}$/);
-  assert.match(entry.plannedUrl, /^https:\/\/arl-review-b\d{2}-[a-z0-9-]+\.pages\.dev\/(ux|index)\.html$/);
-}
-
-for (const entry of verified) {
-  assert.match(entry.surfaceUrl, /^https:\/\/arl-review-b\d{2}-[a-z0-9-]+\.pages\.dev\/(ux|index)\.html$/);
-}
-for (const entry of pending) {
-  assert.equal(entry.surfaceUrl, null, `B${entry.number} must not promote an unverified review URL`);
+  assert.match(entry.project, /^\d{2}-[a-z0-9-]+$/);
+  assert.equal(entry.entry, 'index.html');
+  assert.equal(entry.plannedUrl, `https://${entry.project}.pages.dev/`);
+  assert.equal(entry.surfaceUrl, entry.plannedUrl);
+  assert.doesNotMatch(entry.surfaceUrl, /arl-review|ai-revenue/);
 }
 
 for (const business of businesses) {
   if (!business.reviewSurface || business.reviewSurface.kind !== 'web-review') continue;
-  if (business.reviewSurface.status === 'CLOUDFLARE_REVIEW_VERIFIED') {
-    assert.equal(business.surfaceUrl, business.reviewSurface.surfaceUrl);
-  } else {
-    assert.ok(
-      business.surfaceUrl === undefined || business.surfaceUrl === null,
-      `B${business.number} must not expose an unverified surface URL`,
-    );
-  }
+  assert.equal(business.reviewSurface.status, 'CLOUDFLARE_REVIEW_VERIFIED');
+  assert.equal(business.surfaceUrl, business.reviewSurface.surfaceUrl);
 }
 
-assert.equal(review[6].entry, 'index.html');
-assert.equal(review[32].entry, 'index.html');
-assert.equal(review[35].entry, 'index.html');
-assert.equal(review[59].entry, 'index.html');
+for (const number of [6, 32, 35, 59]) {
+  assert.equal(review[number].entry, 'index.html');
+}
+
+assert.equal(review[6].surfaceUrl, 'https://06-world-feed.pages.dev/');
+assert.equal(review[32].surfaceUrl, 'https://32-ai-skill-studio.pages.dev/');
+assert.equal(review[35].surfaceUrl, 'https://35-ai-media-education-dx.pages.dev/');
+assert.equal(review[59].surfaceUrl, 'https://59-living-archive.pages.dev/');
 
 console.log('PORTFOLIO_REVIEW_SURFACES_396_PASS');
