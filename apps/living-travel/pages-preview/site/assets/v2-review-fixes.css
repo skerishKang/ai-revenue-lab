@@ -1,0 +1,214 @@
+/* B2 V2 screenshot-review refinements — Issue #457 */
+
+/* Entry: route information should read as a deliberate overlay, not tiny floating copy. */
+.lt-hero .lt-route-card {
+  width: min(100%, 430px);
+  padding: 1.6rem 1.7rem;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(7,18,20,.46);
+  backdrop-filter: blur(10px);
+}
+.lt-hero .lt-route-card .lt-route-stops { margin-top: 1.2rem; }
+
+/* Preferences: convert the option-card wall into an editorial selection rail. */
+.lt-pref-panel form {
+  border-top: 1px solid var(--lt-line-dark);
+}
+.lt-pref-panel .demo-pref-group {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: start;
+  padding: 1.3rem 0 1.45rem !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid var(--lt-line-dark);
+}
+.lt-pref-panel .demo-pref-group label.group-label {
+  position: sticky;
+  top: 5.5rem;
+  margin: .35rem 0 0 !important;
+  font-family: var(--lt-mono);
+  font-size: .68rem !important;
+  line-height: 1.45;
+  letter-spacing: .08em !important;
+  text-transform: uppercase;
+  color: var(--lt-sea) !important;
+}
+.lt-pref-panel .demo-pref-options {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  border-top: 1px solid var(--lt-line-dark);
+}
+.lt-pref-panel .demo-pref-option {
+  position: relative;
+  min-height: 66px !important;
+  padding: 1rem 2.7rem 1rem 1rem !important;
+  border: 0 !important;
+  border-right: 1px solid var(--lt-line-dark) !important;
+  border-bottom: 1px solid var(--lt-line-dark) !important;
+  background: transparent !important;
+  color: var(--lt-night) !important;
+  box-shadow: none !important;
+  font-size: .92rem !important;
+  font-weight: 780 !important;
+}
+.lt-pref-panel .demo-pref-option:nth-child(even) {
+  border-right: 0 !important;
+}
+.lt-pref-panel .demo-pref-option::after {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(13,23,24,.35);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.lt-pref-panel .demo-pref-option.selected {
+  background: var(--lt-night) !important;
+  color: #fff !important;
+}
+.lt-pref-panel .demo-pref-option.selected::after {
+  border-color: var(--lt-lime);
+  background: var(--lt-lime);
+  box-shadow: 0 0 0 4px rgba(216,239,122,.12);
+}
+.lt-pref-panel .demo-pref-option:hover:not(:disabled) {
+  background: rgba(13,23,24,.06) !important;
+}
+.lt-pref-panel .demo-pref-option.selected:hover:not(:disabled) {
+  background: var(--lt-night) !important;
+}
+
+/* Generation: signals now resolve into a route field rather than three static cards. */
+.lt-route-assembly {
+  position: relative;
+  min-height: 315px;
+  margin-top: 2.6rem;
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,.16);
+  border-bottom: 1px solid rgba(255,255,255,.16);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(216,239,122,.06), transparent 38%),
+    linear-gradient(90deg, rgba(255,255,255,.025), transparent 30%, rgba(255,255,255,.025));
+}
+.lt-route-assembly svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.lt-route-assembly .route-base {
+  fill: none;
+  stroke: rgba(255,255,255,.15);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 7;
+}
+.lt-route-assembly .route-live {
+  fill: none;
+  stroke: var(--lt-lime);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 12 7;
+  animation: ltRouteDraw 5s linear infinite;
+}
+.lt-assembly-stop {
+  position: absolute;
+  width: min(180px, 25%);
+  color: #fff;
+}
+.lt-assembly-stop::before {
+  content: "";
+  display: block;
+  width: 13px;
+  height: 13px;
+  margin-bottom: .55rem;
+  border-radius: 50%;
+  border: 2px solid var(--lt-lime);
+  background: var(--lt-night);
+  box-shadow: 0 0 0 5px rgba(216,239,122,.08);
+}
+.lt-assembly-stop code {
+  display: block;
+  margin-bottom: .35rem;
+  font: 800 .64rem/1 var(--lt-mono);
+  color: var(--lt-lime);
+  letter-spacing: .08em;
+}
+.lt-assembly-stop strong {
+  display: block;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+.lt-assembly-stop span {
+  display: block;
+  margin-top: .35rem;
+  color: rgba(255,255,255,.52);
+  font-size: .72rem;
+  line-height: 1.4;
+}
+.lt-assembly-stop.s1 { left: 5%; bottom: 14%; }
+.lt-assembly-stop.s2 { left: 35%; top: 16%; }
+.lt-assembly-stop.s3 { right: 5%; bottom: 18%; }
+.lt-assembly-caption {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font: 700 .62rem/1.4 var(--lt-mono);
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.42);
+  text-align: right;
+}
+
+@keyframes ltRouteDraw {
+  to { stroke-dashoffset: -76; }
+}
+
+@media (max-width: 900px) {
+  .lt-hero .lt-route-card {
+    width: 100%;
+    padding: 1.25rem 0 0;
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,.18);
+    background: transparent;
+    backdrop-filter: none;
+  }
+  .lt-pref-panel .demo-pref-group {
+    grid-template-columns: 1fr;
+    gap: .8rem;
+  }
+  .lt-pref-panel .demo-pref-group label.group-label {
+    position: static;
+  }
+}
+
+@media (max-width: 620px) {
+  .lt-pref-panel .demo-pref-options {
+    grid-template-columns: 1fr !important;
+  }
+  .lt-pref-panel .demo-pref-option,
+  .lt-pref-panel .demo-pref-option:nth-child(even) {
+    border-right: 0 !important;
+  }
+  .lt-route-assembly {
+    min-height: 430px;
+  }
+  .lt-route-assembly svg {
+    transform: rotate(90deg) scale(1.35);
+  }
+  .lt-assembly-stop {
+    width: 46%;
+  }
+  .lt-assembly-stop.s1 { left: 5%; bottom: 7%; }
+  .lt-assembly-stop.s2 { left: 46%; top: 10%; }
+  .lt-assembly-stop.s3 { right: 3%; bottom: 26%; }
+  .lt-assembly-caption { left: 0; right: auto; top: 1rem; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lt-route-assembly .route-live { animation: none !important; }
+}
