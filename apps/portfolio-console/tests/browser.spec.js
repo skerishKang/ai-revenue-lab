@@ -137,8 +137,8 @@ test.describe('Portfolio Console Browser Tests', () => {
     await expect(page.locator('.pd-card[data-project-id="personal-edition"] .pd-card-biznumber')).toHaveText('B01');
   });
 
-  test('Portfolio Console shows PROJECT label', async ({ page }) => {
-    await expect(page.locator('.pd-card[data-project-id="portfolio-console"] .pd-card-biznumber')).toHaveText('PROJECT');
+  test('Portfolio Console displays canonical B44 identity', async ({ page }) => {
+    await expect(page.locator('.pd-card[data-project-id="portfolio-console"] .pd-card-biznumber')).toHaveText('B44');
   });
 
   test('work button exists and is a real button', async ({ page }) => {
