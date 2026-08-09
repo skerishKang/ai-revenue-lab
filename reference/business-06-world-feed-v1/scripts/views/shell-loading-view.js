@@ -13,6 +13,7 @@
     </header>
 
     <nav class="product-nav" aria-label="World Feed 주요 탐색">
+      <a href="./guide.html" data-product-guide>30초 사용법</a>
       <a href="#feed" data-route-link="feed">나의 피드</a>
       <a href="#nearby" data-route-link="nearby">가까운 동네</a>
       <a href="#culture" data-route-link="culture">장소와 문화</a>
