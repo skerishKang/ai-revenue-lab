@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/static/app.css?v=pe-ui51-20260722-3">
 <link rel="stylesheet" href="/static/ui-v3-454.css?v=b1-v3-454">
 <link rel="stylesheet" href="/static/ui-v3-454-compat.css?v=b1-v3-454-2">
+<link rel="stylesheet" href="/static/guide-20260810.css?v=b1-guide-20260810">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
 <body data-ui-version="b1-personal-edition-v3-454" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
@@ -26,6 +27,7 @@
     {% elif participant is defined and participant %}
     <a href="{{ _nav_base }}/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
     <div class="nav-links v3-nav-links">
+      <a href="/guide/">Guide</a>
       <a href="{{ _nav_base }}/">Library</a>
       <a href="{{ _nav_base }}/input">Write</a>
       <a href="{{ _nav_base }}/history">Archive</a>
@@ -38,7 +40,7 @@
     </div>
     {% else %}
     <a href="/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
-    <div class="v3-nav-caption">Private · Human reviewed</div>
+    <div class="v3-nav-caption"><a href="/guide/">30초 사용법</a>Private · Human reviewed</div>
     {% endif %}
   </nav>
 </header>
