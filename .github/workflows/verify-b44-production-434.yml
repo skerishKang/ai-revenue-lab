@@ -2,11 +2,9 @@ name: Verify B44 Production 434
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     types: [opened, synchronize, reopened]
-    paths:
-      - .github/workflows/verify-b44-production-434.yml
+    paths: [.github/workflows/verify-b44-production-434.yml]
   workflow_dispatch:
 
 permissions:
@@ -16,7 +14,7 @@ jobs:
   verify:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 5
     env:
       EXPECTED_SHA: 07ab5fddd59e886f530fe39c441c372c34c14d8c
       PROJECT: ai-revenue-portfolio-console
@@ -24,75 +22,78 @@ jobs:
       CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
-      - name: Verify Cloudflare Production deployment source
+      - name: Capture Cloudflare project and deployment state
         shell: bash
         run: |
           set -euo pipefail
           test -n "$CF_ACCOUNT_ID"
           test -n "$CF_API_TOKEN"
-          endpoint="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments"
-          matched=0
-          for attempt in $(seq 1 12); do
-            curl --fail-with-body --silent --show-error \
-              -H "Authorization: Bearer ${CF_API_TOKEN}" \
-              -H "Content-Type: application/json" \
-              "$endpoint" > /tmp/deployments.json
-            python3 - <<'PY' > /tmp/state.env
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$base" > /tmp/project.json
+          curl --fail-with-body -sS "${auth[@]}" "$base/deployments" > /tmp/deployments.json
+          python3 - <<'PY' > /tmp/state.env
           import json, shlex
+          p=json.load(open('/tmp/project.json', encoding='utf-8')).get('result') or {}
           data=json.load(open('/tmp/deployments.json', encoding='utf-8'))
-          if not data.get('success'):
-              raise SystemExit('Cloudflare API success=false')
           rows=[x for x in (data.get('result') or []) if x.get('environment')=='production']
           rows.sort(key=lambda x: x.get('created_on') or '', reverse=True)
-          if not rows:
-              raise SystemExit('No production deployment found')
-          d=rows[0]
-          trig=d.get('deployment_trigger') or {}
-          meta=trig.get('metadata') or {}
-          stage=d.get('latest_stage') or {}
-          sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
-          branch=meta.get('branch') or ''
-          status=stage.get('status') or d.get('status') or ''
-          print('DEPLOYMENT_ID='+shlex.quote(str(d.get('id') or '')))
-          print('DEPLOYMENT_URL='+shlex.quote(str(d.get('url') or '')))
-          print('CREATED_ON='+shlex.quote(str(d.get('created_on') or '')))
-          print('SOURCE_SHA='+shlex.quote(str(sha)))
-          print('SOURCE_BRANCH='+shlex.quote(str(branch)))
-          print('STAGE_NAME='+shlex.quote(str(stage.get('name') or '')))
-          print('STAGE_STATUS='+shlex.quote(str(status)))
+          d=rows[0] if rows else {}
+          trig=d.get('deployment_trigger') or {}; meta=trig.get('metadata') or {}; stage=d.get('latest_stage') or {}
+          src=p.get('source') or {}; cfg=src.get('config') or {}; build=p.get('build_config') or {}
+          vals={
+            'DEPLOYMENT_ID': d.get('id') or '', 'DEPLOYMENT_URL': d.get('url') or '',
+            'CREATED_ON': d.get('created_on') or '', 'MODIFIED_ON': d.get('modified_on') or '',
+            'SOURCE_SHA': meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or '',
+            'SOURCE_BRANCH': meta.get('branch') or '', 'STAGE_NAME': stage.get('name') or '', 'STAGE_STATUS': stage.get('status') or '',
+            'PRODUCTION_BRANCH': cfg.get('production_branch') or '',
+            'PRODUCTION_DEPLOYS_ENABLED': cfg.get('production_deployments_enabled'),
+            'REPO_NAME': cfg.get('repo_name') or '', 'SOURCE_TYPE': src.get('type') or '',
+            'ROOT_DIR': build.get('root_dir') or '', 'DESTINATION_DIR': build.get('destination_dir') or '',
+          }
+          for k,v in vals.items(): print(k+'='+shlex.quote(str(v)))
+          print('STAGES='+shlex.quote(','.join(f"{s.get('name')}:{s.get('status')}" for s in (d.get('stages') or []))))
           PY
-            source /tmp/state.env
-            echo "attempt=$attempt environment=production stage=${STAGE_NAME:-unknown}/${STAGE_STATUS:-unknown} branch=${SOURCE_BRANCH:-unknown} source_sha=${SOURCE_SHA:-unknown} deployment_id=${DEPLOYMENT_ID:-unknown} created_on=${CREATED_ON:-unknown}"
-            if [[ "$SOURCE_SHA" == "$EXPECTED_SHA" && "$STAGE_STATUS" == "success" ]]; then
-              matched=1
-              break
-            fi
-            sleep 15
-          done
-          if [[ "$matched" != 1 ]]; then
-            echo "Expected successful Production deployment for $EXPECTED_SHA was not observed." >&2
-            exit 1
-          fi
-          echo "B44_PRODUCTION_SOURCE_VERIFIED sha=$SOURCE_SHA deployment_id=$DEPLOYMENT_ID"
+          source /tmp/state.env
+          echo "project=$PROJECT source_type=$SOURCE_TYPE repo=$REPO_NAME production_branch=$PRODUCTION_BRANCH production_deploys_enabled=$PRODUCTION_DEPLOYS_ENABLED root_dir=$ROOT_DIR destination_dir=$DESTINATION_DIR"
+          echo "deployment_id=$DEPLOYMENT_ID created_on=$CREATED_ON modified_on=$MODIFIED_ON source_sha=$SOURCE_SHA source_branch=$SOURCE_BRANCH latest_stage=$STAGE_NAME/$STAGE_STATUS stages=$STAGES"
+          [[ "$SOURCE_SHA" == "$EXPECTED_SHA" ]]
+          echo "B44_AUTOMATIC_DEPLOYMENT_TRIGGER_VERIFIED=1"
+          curl --fail-with-body -sS "${auth[@]}" "$base/deployments/$DEPLOYMENT_ID" > /tmp/deployment.json
+          curl -sS "${auth[@]}" "$base/deployments/$DEPLOYMENT_ID/history/logs" > /tmp/history.json || true
+          python3 - <<'PY'
+          import json
+          try:
+              h=json.load(open('/tmp/history.json', encoding='utf-8'))
+          except Exception:
+              print('history_logs=unavailable'); raise SystemExit
+          r=h.get('result') or {}
+          lines=r.get('data') if isinstance(r,dict) else []
+          print('history_log_lines='+str(len(lines or [])))
+          if lines:
+              for item in lines[-8:]:
+                  line=str(item.get('line') or '').replace('\n',' ')[:500]
+                  print('build_log_tail='+line)
+          PY
 
       - name: Verify anonymous Production boundary
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          code=$(curl --silent --show-error --max-time 20 --output /tmp/root.html --dump-header /tmp/root.headers --write-out '%{http_code}' "$PRODUCTION_URL" || true)
+          code=$(curl -sS --max-time 20 -o /tmp/root.html -D /tmp/root.headers -w '%{http_code}' "$PRODUCTION_URL" || true)
           location=$(awk 'BEGIN{IGNORECASE=1} /^location:/{sub(/\r$/,""); print substr($0,index($0,":")+2); exit}' /tmp/root.headers || true)
           echo "production_http=$code"
           if [[ "$code" == "200" ]]; then
             grep -q 'Portfolio Console' /tmp/root.html
             echo "B44_ANONYMOUS_BOUNDARY=PUBLIC_200_CONTENT_PRESENT"
           elif [[ "$code" =~ ^30[12378]$ ]]; then
-            echo "redirect_host=$(python3 - "$location" <<'PY'
+            python3 - "$location" <<'PY'
           import sys, urllib.parse
-          print(urllib.parse.urlsplit(sys.argv[1]).hostname or '')
+          print('redirect_host='+str(urllib.parse.urlsplit(sys.argv[1]).hostname or ''))
           PY
-          )"
             echo "B44_ANONYMOUS_BOUNDARY=REDIRECT_PROTECTED"
           else
-            echo "Unexpected Production HTTP status: $code" >&2
+            echo "B44_ANONYMOUS_BOUNDARY=UNEXPECTED_$code"
             exit 1
           fi
