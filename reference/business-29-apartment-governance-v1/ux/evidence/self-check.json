@@ -1,0 +1,81 @@
+{
+  "workspace": "reference/business-29-apartment-governance-ux",
+  "contract": {
+    "issue": 351,
+    "pr": 352,
+    "repair": "RESIDENT_INTERNAL_TAB_BYPASS_FIXED · RAW_GOVERNANCE_OBJECTS_PRIVATE · ROLE_GATED_INTERNAL_TABS_ENFORCED · PROJECTION_REVIEW_PROVENANCE_RECORDED · PROJECTION_PUBLICATION_PROVENANCE_RECORDED"
+  },
+  "resident_boundary": {
+    "currentTab": "ledger forced for 일반 주민",
+    "internal_tabs": "rulebook/documents/history disabled + reason text for 일반 주민",
+    "render_gate": "renderRuleTabs() re-checks role; resident renders panelResidentView() only",
+    "reason": "일반 주민은 Disclosure 검토를 거쳐 게시된 공개 projection만 열람할 수 있습니다."
+  },
+  "tab_roles": {
+    "ledger": "all roles",
+    "rulebook": "대표회의 관리자, 동대표·위원, 관리사무소, 감사, 외부 검토자",
+    "documents": "대표회의 관리자, 관리사무소, 감사, 외부 검토자",
+    "history": "대표회의 관리자, 동대표·위원, 관리사무소, 감사, 외부 검토자"
+  },
+  "raw_objects": {
+    "default": "private",
+    "rules": "private",
+    "agenda": "private",
+    "dissent": "private",
+    "resolution": "private"
+  },
+  "projection_provenance": {
+    "schema": "id/publicTitle/publicSummary/disclosureState/sourceObjectId/reviewedBy/reviewedVersion/publishedBy/publishedVersion",
+    "approvePublic": "stamps reviewedBy + reviewedVersion on every approved projection",
+    "publishPublicNotice": "stamps publishedBy + publishedVersion; blocks when review provenance missing",
+    "notice": "Gate 1 stamps full provenance (reviewedBy/reviewedVersion/publishedBy/publishedVersion)"
+  },
+  "runner": "node tests/state-machine.test.js",
+  "environment": "Node, no browser/Playwright/CDP/WebBridge",
+  "checks": {
+    "total": 34,
+    "passed": 34,
+    "failed": 0
+  },
+  "results": [
+    "24-state contract coverage",
+    "정상 전체 journey (empty → completed)",
+    "quorum incomplete block",
+    "quorum supplement and recheck",
+    "dissent retention",
+    "no premature disclosure at every lifecycle state",
+    "approved projections only after final publication",
+    "redaction before public and return to disclosure-review",
+    "manual disclosure approval and final publish gates",
+    "approvePublic gate checks",
+    "publishPublicNotice gate checks",
+    "overdue ActionItem surfaced",
+    "system-error → retry preserves state",
+    "cancelled and completed terminal behavior",
+    "Version + AuditEvent generation (actor/role/sequence)",
+    "fixture.js mirrors data/fixture.json",
+    "final public surface leaks no private raw data",
+    "audit actor varies by acting role",
+    "keyboard contract markers",
+    "required authority labels",
+    "390px CSS contract markers",
+    "external runtime dependency 0",
+    "JavaScript syntax",
+    "allowed-scope check",
+    "git diff --check clean",
+    "raw governance objects default private",
+    "projection review provenance recorded after approvePublic",
+    "projection publication provenance recorded after publish",
+    "publish blocked when review provenance missing",
+    "notice projections carry full provenance schema",
+    "resident tab boundary enforced (app.js source)",
+    "internal tabs exclude 일반 주민",
+    "resident role switch resets currentTab",
+    "resident screen HTML leaks no raw governance data"
+  ],
+  "browser_verification": "DEFERRED",
+  "backend": "FROZEN",
+  "external_runtime_requests": 0,
+  "synthetic_data_only": true,
+  "recorded_at": "2026-08-01"
+}

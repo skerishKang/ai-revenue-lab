@@ -1,0 +1,170 @@
+/*  main.css  —  Business 29 Phase 2 UX  (Phase 1 visual system preserved)
+ *
+ *  Keeps the Phase 1 Resident Assembly Ledger / 주민총회 원장 grammar:
+ *  paper + ledger lines, Korean-first serif typography, charcoal/forest/
+ *  brick/brass direction, public-private labels, rulebook tabs, resolution
+ *  and audit marks. Adds the interactive state-machine contract components.
+ */
+
+:root {
+  --paper:#eee7d8; --paper2:#f8f3e8; --ink:#2b332e; --muted:#716b60;
+  --forest:#425247; --brick:#954b40; --brass:#9b8552; --line:#b8ad99;
+  --private:#4f4b4b; --greenwash:#d8e1d5; --redwash:#ecd8d2;
+  --shadow:0 18px 50px rgba(48,43,35,.12);
+}
+
+* { box-sizing: border-box; }
+html { background:#d8d0c0; color:var(--ink); font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
+body {
+  margin:0; background:linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px),var(--paper);
+  background-size:28px 28px;
+}
+.skip-link{position:fixed;left:12px;top:-80px;background:#ffe500;color:#111;padding:12px 18px;z-index:99}
+.skip-link:focus{top:12px}
+.shell{max-width:1580px;margin:auto;min-height:100vh}
+.masthead{display:flex;justify-content:space-between;gap:30px;padding:28px 38px 20px;border-bottom:3px solid var(--ink);background:rgba(248,243,232,.92)}
+.identity{display:flex;align-items:center;gap:18px}
+.ledger-no{display:grid;place-items:center;width:64px;height:64px;border:3px double var(--ink);font:700 25px Georgia,serif}
+.identity p,.folio{margin:0 0 6px;font-size:12px;letter-spacing:.16em;font-weight:800}
+.identity h1{margin:0;font:700 clamp(24px,3vw,40px) Georgia,"Nanum Myeongjo",serif}
+.identity h1 span{font:500 15px system-ui;margin-left:10px;color:var(--muted)}
+.notice-cluster{max-width:520px;display:flex;align-content:flex-start;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.notice-cluster>*{border:1px solid var(--ink);padding:6px 8px;font-size:11px}
+.notice-cluster b{background:var(--ink);color:var(--paper2)}
+
+.review-nav{position:sticky;top:0;z-index:30;background:rgba(238,231,216,.97);border-bottom:1px solid var(--ink);display:flex;align-items:center;gap:25px;padding:12px 38px;flex-wrap:wrap}
+.nav-title{min-width:230px}
+.nav-title b,.nav-title span{display:block}
+.nav-title span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:4px;overflow:auto;padding:3px}
+.tabs button{border:0;border-left:1px solid var(--line);border-radius:0;background:transparent;padding:9px 14px;color:var(--ink);font-weight:700;white-space:nowrap}
+.tabs button i{font-style:normal;color:var(--brick);font-size:10px;margin-right:7px}
+.tabs button[aria-selected="true"]{background:var(--forest);color:white}
+.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:4px solid #ffd900;outline-offset:2px;box-shadow:0 0 0 2px #111}
+
+.review-stage{padding:32px 38px 60px;min-height:820px}
+.review-stage:focus{outline:none}
+.state{animation:stateIn .28s ease-out}
+.state[hidden]{display:none!important}
+@keyframes stateIn{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:none}}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:25px;margin-bottom:24px;border-bottom:2px solid var(--ink);padding-bottom:16px;flex-wrap:wrap}
+.section-head h2{font:700 clamp(27px,4vw,48px)/1.16 Georgia,"Nanum Myeongjo",serif;margin:0;max-width:950px}
+
+/* state badges — 24-state contract, non-color-only (label + color) */
+.state-badge{display:inline-block;padding:5px 9px;border:1px solid currentColor;font-size:10px;letter-spacing:.08em;font-weight:900;text-transform:uppercase;font-family:ui-monospace,monospace}
+.sb-empty{color:#5a5349;background:#e5ded0}
+.sb-draft{color:#5a5349;background:#ece5d6}
+.sb-agenda-ready{color:#665326;background:#eee4bd}
+.sb-notice-review{color:#7a5b12;background:#f3e7b9}
+.sb-notice-published{color:#665326;background:#eee4bd}
+.sb-attendance-open{color:#46574b;background:#e1e6dc}
+.sb-quorum-incomplete{color:#843e35;background:#f0d7d2}
+.sb-quorum-recorded{color:#254d3a;background:#d8e6d8}
+.sb-discussion-open{color:#46574b;background:#e1e6dc}
+.sb-dissent-recorded{color:#843e35;background:#f0d7d2}
+.sb-resolution-draft{color:#745d21;background:#f3e7b9}
+.sb-resolution-review{color:#745d21;background:#f3e7b9}
+.sb-resolution-approved{color:#254d3a;background:#d8e6d8}
+.sb-action-pending{color:#46574b;background:#e1e6dc}
+.sb-action-overdue{color:#843e35;background:#f0d7d2}
+.sb-disclosure-review{color:#7a5b12;background:#f3e7b9}
+.sb-redaction-required{color:#843e35;background:#f0d7d2}
+.sb-public-notice-ready{color:#254d3a;background:#d8e6d8}
+.sb-public-notice-published{color:#254d3a;background:#d8e6d8}
+.sb-version-history{color:#46574b;background:#e1e6dc}
+.sb-system-error{color:#a40000;background:#f5dcd5}
+.sb-retry{color:#843e35;background:#f0d7d2}
+.sb-cancelled{color:#5a5349;background:#e0d9cc}
+.sb-completed{color:#254d3a;background:#d8e6d8}
+
+.status{display:inline-block;padding:5px 8px;border:1px solid currentColor;font-size:10px;letter-spacing:.08em;font-weight:900;text-transform:uppercase}
+.public{color:#2f5942;background:#dce8dc}
+.working{color:#665326;background:#eee4bd}
+.private{color:#fff;background:var(--private)}
+.redacted{color:#6b4d2e;background:#ecdcc2}
+.reviewed,.resolved,.approved{color:#254d3a;background:#d8e6d8}
+.rule{color:#46574b;background:#e1e6dc}
+.dissent,.unresolved{color:#843e35;background:#f0d7d2}
+
+/* layout */
+.flowbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 26px;padding:14px;background:var(--paper2);border:1px solid var(--line)}
+.flowbar .step{font-size:11px;color:var(--muted);padding:4px 8px;border:1px dashed var(--line)}
+.flowbar .step.done{color:var(--forest);border-style:solid;background:var(--greenwash)}
+.flowbar .step.current{color:var(--paper2);background:var(--brick);border-style:solid;font-weight:800}
+.ledger-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}
+.panel{background:var(--paper2);border:1px solid var(--line);padding:22px}
+.panel h3{font:700 24px Georgia,serif;margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.panel ul{margin:0;padding:0;list-style:none}
+.panel li{border-top:1px solid var(--line);padding:11px 0}
+.panel small{color:var(--muted);display:block;margin-top:4px}
+.disclosure-chip{font-size:9px;font-weight:900;letter-spacing:.06em;padding:3px 6px;border:1px solid currentColor}
+.dp-public{color:#2f5942;background:#dce8dc}
+.dp-private{color:#fff;background:var(--private)}
+.dp-redacted{color:#6b4d2e;background:#ecdcc2}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button.action-btn{background:var(--brick);color:white;border:0;padding:12px 16px;font-weight:800;font-size:14px}
+button.action-btn:hover:not(:disabled){filter:brightness(1.08)}
+button.action-btn:disabled{opacity:.42;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);font-weight:700}
+button.ghost:disabled{opacity:.42}
+.deny-note{font-size:11px;color:var(--brick);font-weight:700;margin-top:6px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+.form-row label{font-size:12px;font-weight:800;color:var(--muted)}
+.form-row input,.form-row textarea,.form-row select{width:100%;padding:10px;border:1px solid var(--ink);background:white;font:inherit}
+.form-row .full{grid-column:1/3}
+.quorum-card{background:var(--redwash);border:2px solid var(--brick);padding:16px;margin-top:12px}
+.quorum-card.ok{background:var(--greenwash);border-color:var(--forest)}
+.quorum-card h4{margin:0 0 8px;font:700 18px Georgia,serif}
+.audit-table{width:100%;border-collapse:collapse;background:var(--paper2)}
+.audit-table th,.audit-table td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
+.audit-table th{font-size:10px;letter-spacing:.08em;color:var(--muted);border-top:3px double var(--ink)}
+.error-panel{background:#f5dcd5;border:3px solid #a40000;padding:18px;margin-top:14px}
+.error-panel h3{color:#a40000;margin:0 0 8px;font:700 20px Georgia,serif}
+.empty-note{padding:26px;text-align:center;border:1px dashed var(--line);color:var(--muted);font-weight:700}
+.loading-note{padding:12px;background:var(--greenwash);border:1px solid var(--forest);font-size:12px;font-weight:800;margin:10px 0}
+.role-switch{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.role-switch b{font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.role-chip{border:1px solid var(--line);background:var(--paper2);padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}
+.role-chip[aria-pressed="true"]{background:var(--forest);color:white;border-color:var(--forest)}
+.audit-marks{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.audit-mark{font-size:10px;font-weight:900;letter-spacing:.08em;padding:4px 7px;border:2px double currentColor}
+.resolution-seal{display:inline-block;border:4px double var(--brick);color:var(--brick);font:800 13px ui-monospace,monospace;padding:8px 12px;letter-spacing:.1em}
+.notice-paper{border:1px solid var(--ink);border-top:6px double var(--ink);background:var(--paper2);padding:22px;max-width:720px}
+.notice-paper h4{margin:0 0 10px;font:700 26px Georgia,"Nanum Myeongjo",serif}
+.rule-tabs{display:flex;gap:4px;margin-bottom:16px}
+.rule-tabs button{border:1px solid var(--line);background:var(--paper2);padding:8px 12px;font-weight:800;font-size:12px}
+.rule-tabs button[aria-selected="true"]{background:var(--forest);color:white}
+.ledger-list span{display:block;border-top:1px solid var(--line);padding:12px 0;line-height:1.55}
+footer{display:flex;justify-content:space-between;gap:20px;border-top:3px solid var(--ink);padding:20px 38px;font-size:11px;background:var(--paper2)}
+
+/* 390px contract marker — ledger flow fully usable without horizontal scroll */
+@media(max-width:900px){.masthead{flex-direction:column}.notice-cluster{justify-content:flex-start}.review-nav{align-items:flex-start;flex-direction:column;gap:8px}.tabs{width:100%}.ledger-grid{grid-template-columns:1fr}}
+@media(max-width:520px){
+  body{background:var(--paper)}
+  .masthead,.review-stage{padding-left:16px;padding-right:16px}
+  .masthead{padding-top:18px}.ledger-no{width:50px;height:50px}
+  .identity h1 span{display:block;margin:4px 0 0}
+  .review-nav{position:relative;padding:10px 12px}
+  .section-head{align-items:flex-start;flex-direction:column}
+  .section-head h2{font-size:31px}
+  .form-row{grid-template-columns:1fr}.form-row .full{grid-column:1}
+  .ledger-grid{grid-template-columns:1fr}
+  .audit-table-wrap{overflow-x:auto}
+  .flowbar .step{font-size:10px}
+  footer{flex-direction:column;padding:18px 16px}
+}
+/* 390px contract marker — ledger flow usable at 390px without horizontal scroll */
+@media(max-width:390px){
+  .masthead,.review-stage{padding-left:12px;padding-right:12px}
+  .ledger-no{width:44px;height:44px;font-size:20px}
+  .identity h1{font-size:26px}
+  .tabs button{padding:8px 9px}
+  .panel{padding:14px}
+  .flowbar .step{font-size:9px;padding:3px 6px}
+  .audit-table{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-delay:0ms!important;transition-duration:.001ms!important}
+  .state{animation:none}
+}
