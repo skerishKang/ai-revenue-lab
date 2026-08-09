@@ -1,0 +1,136 @@
+/* B2 V2 feedback screenshot-review refinement — Issue #457 */
+
+.lt-feedback-panel form {
+  margin-top: 2rem;
+  border-top: 1px solid var(--lt-line-dark);
+}
+
+.lt-feedback-panel .lt-feedback-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0 0 2.5rem;
+}
+
+.lt-feedback-panel .lt-feedback-grid label {
+  position: relative;
+  min-height: 72px;
+  padding: 1rem 4.2rem 1rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--lt-line-dark);
+  background: transparent;
+  color: var(--lt-night);
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  align-items: center;
+  gap: .85rem;
+  font-size: clamp(.95rem, 1.5vw, 1.08rem);
+  font-weight: 760;
+  letter-spacing: -.015em;
+  cursor: pointer;
+  transition: padding-left .2s ease, background .2s ease;
+}
+
+.lt-feedback-panel .lt-feedback-grid label::before {
+  content: "SHIFT";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font: 800 .6rem/1 var(--lt-mono);
+  letter-spacing: .09em;
+  color: var(--lt-muted);
+}
+
+.lt-feedback-panel .lt-feedback-grid label::after {
+  content: "→";
+  position: absolute;
+  right: 2.7rem;
+  top: 50%;
+  transform: translateY(-52%);
+  color: var(--lt-muted);
+  font-size: 1rem;
+}
+
+.lt-feedback-panel .lt-feedback-grid label:has(input:checked) {
+  padding-left: .85rem;
+  background: var(--lt-night);
+  color: #fff;
+}
+
+.lt-feedback-panel .lt-feedback-grid label:has(input:checked)::before,
+.lt-feedback-panel .lt-feedback-grid label:has(input:checked)::after {
+  color: var(--lt-lime);
+}
+
+.lt-feedback-panel .lt-feedback-grid input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.lt-feedback-panel .lt-feedback-grid input[type="checkbox"]::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.lt-feedback-panel .lt-feedback-grid input[type="checkbox"]:checked {
+  border-color: var(--lt-lime);
+}
+
+.lt-feedback-panel .lt-feedback-grid input[type="checkbox"]:checked::after {
+  background: var(--lt-lime);
+}
+
+.lt-feedback-panel .lt-section-code[for="freeText"],
+.lt-feedback-panel label[for="freeText"] {
+  margin-top: 1rem;
+}
+
+body.lt-v2 .lt-feedback-panel textarea {
+  min-height: 128px;
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--lt-line-dark);
+  border-bottom: 2px solid var(--lt-night);
+  background: transparent;
+  color: var(--lt-night);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+body.lt-v2 .lt-feedback-panel textarea::placeholder {
+  color: #8a928f;
+}
+
+.lt-feedback-panel .char-counter {
+  margin-top: .45rem;
+  text-align: right;
+  font: 700 .64rem/1 var(--lt-mono);
+  color: var(--lt-muted);
+}
+
+.lt-feedback-panel .lt-feedback-submit {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--lt-line-dark);
+}
+
+@media (max-width: 620px) {
+  .lt-feedback-panel .lt-feedback-grid label {
+    min-height: 68px;
+    padding-right: 3.8rem;
+    font-size: .94rem;
+  }
+  .lt-feedback-panel .lt-feedback-grid label::after {
+    right: 2.5rem;
+  }
+}
