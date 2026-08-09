@@ -10,6 +10,18 @@
   let activeIndex = 0;
   let replaying = false;
 
+  function installGuideLink() {
+    const meta = document.querySelector('.rail-meta');
+    if (!meta || meta.querySelector('[data-first-use-guide]')) return;
+    const guide = document.createElement('a');
+    guide.href = './guide.html';
+    guide.dataset.firstUseGuide = 'true';
+    guide.textContent = '30초 사용법 / Guide';
+    guide.setAttribute('aria-label', '우리 가게 매거진 30초 사용법 열기');
+    guide.style.cssText = 'display:inline-flex;align-items:center;min-height:32px;padding:0 9px;border:1px solid currentColor;color:inherit;text-decoration:none;font:700 11px/1 system-ui;white-space:nowrap';
+    meta.prepend(guide);
+  }
+
   function activate(index, focusTab = false) {
     const bounded = (index + states.length) % states.length;
     activeIndex = bounded;
@@ -74,6 +86,7 @@
   if (typeof reducedMotion.addEventListener === 'function') {
     reducedMotion.addEventListener('change', () => completeMotion('완성된 지면 상태입니다.'));
   }
+  installGuideLink();
   activate(0);
   completeMotion('완성된 표지 상태입니다.');
 })();
