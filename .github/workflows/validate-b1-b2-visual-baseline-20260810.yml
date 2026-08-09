@@ -1,0 +1,213 @@
+name: Validate B1 B2 Visual Baseline 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/personal-edition/**'
+      - 'apps/living-travel/**'
+      - '.github/workflows/validate-b1-b2-visual-baseline-20260810.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  visual-baseline:
+    if: github.event.pull_request.head.ref == 'fix/b1-b2-visual-baseline-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Korean visual QA fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+
+      - name: Materialize the persistent B2 traveler shell
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+
+          root = Path('apps/living-travel/pages-preview/site')
+          targets = [root / 'index.html', root / 'guide.html']
+          targets += sorted((root / 'demo').glob('*.html'))
+          traveler_enter = root / 'traveler' / 'enter.html'
+          if traveler_enter.exists():
+              targets.append(traveler_enter)
+
+          for path in targets:
+              text = path.read_text(encoding='utf-8')
+              rel_assets = os.path.relpath(root / 'assets', path.parent).replace(os.sep, '/')
+              css_href = f'{rel_assets}/b2-shell-20260810.css'
+              js_src = f'{rel_assets}/b2-shell-20260810.js'
+
+              if css_href not in text:
+                  marker = '</head>'
+                  text = text.replace(marker, f'<link rel="stylesheet" href="{css_href}">\n{marker}', 1)
+              if js_src not in text:
+                  marker = '</body>'
+                  text = text.replace(marker, f'<script src="{js_src}"></script>\n{marker}', 1)
+              path.write_text(text, encoding='utf-8')
+
+          print(f'B2_SHELL_TARGETS={len(targets)}')
+          PY
+
+      - name: Build B1 owner-facing Production surface
+        working-directory: apps/personal-edition
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m scripts.build_static_production
+
+      - name: Install Playwright
+        run: |
+          mkdir -p /tmp/ui-baseline-browser
+          cd /tmp/ui-baseline-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+
+      - name: Chromium screenshot and shell gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ui-baseline-evidence
+          python3 -m http.server 4181 --directory apps/personal-edition/dist-preview >/tmp/b1-http.log 2>&1 &
+          b1=$!
+          python3 -m http.server 4182 --directory apps/living-travel/pages-preview/site >/tmp/b2-http.log 2>&1 &
+          b2=$!
+          trap 'kill $b1 $b2 || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4181/ >/dev/null && curl -fsS http://127.0.0.1:4182/index.html >/dev/null && break; sleep .5; done
+
+          cd /tmp/ui-baseline-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const path = require('path');
+          const fs = require('fs');
+          const out = '/tmp/ui-baseline-evidence';
+          const expectedNav = ['30초 사용법','취향','현재 여행판','기록','편집실'];
+
+          async function noOverflow(page, label) {
+            const d = await page.evaluate(() => ({sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth}));
+            if (d.sw > d.cw + 1) throw new Error(`${label}: horizontal overflow ${d.sw}>${d.cw}`);
+          }
+
+          async function openClean(browser, viewport) {
+            const page = await browser.newPage({ viewport });
+            const errors = [];
+            page.on('console', m => { if (m.type() === 'error') errors.push(`console:${m.text()}`); });
+            page.on('pageerror', e => errors.push(`page:${e.message}`));
+            page._qaErrors = errors;
+            return page;
+          }
+
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            const manifest = { b1: {}, b2: {} };
+
+            for (const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]) {
+              const page = await openClean(browser, {width:vp.width,height:vp.height});
+              await page.goto('http://127.0.0.1:4181/', {waitUntil:'networkidle'});
+              await noOverflow(page, `B1 root ${vp.name}`);
+              const type = await page.evaluate(() => {
+                const title = document.querySelector('.v3-hero-title');
+                const lede = document.querySelector('.v3-hero-lede');
+                return {
+                  titleFamily: title ? getComputedStyle(title).fontFamily : '',
+                  titleWeight: title ? getComputedStyle(title).fontWeight : '',
+                  titleLineHeight: title ? getComputedStyle(title).lineHeight : '',
+                  ledeFamily: lede ? getComputedStyle(lede).fontFamily : '',
+                  notoSerifCJK: document.fonts.check('16px "Noto Serif CJK KR"'),
+                  notoSansCJK: document.fonts.check('16px "Noto Sans CJK KR"')
+                };
+              });
+              if (!type.titleFamily.includes('Noto Serif')) throw new Error(`B1 ${vp.name}: Korean-first display stack missing: ${type.titleFamily}`);
+              if (!type.ledeFamily.includes('Noto Sans') && !type.ledeFamily.includes('Pretendard')) throw new Error(`B1 ${vp.name}: sans lede stack missing: ${type.ledeFamily}`);
+              manifest.b1[vp.name] = type;
+              await page.screenshot({path:path.join(out,`b1-root-${vp.name}.png`),fullPage:true});
+              await page.goto('http://127.0.0.1:4181/guide/', {waitUntil:'networkidle'});
+              await noOverflow(page, `B1 guide ${vp.name}`);
+              await page.screenshot({path:path.join(out,`b1-guide-${vp.name}.png`),fullPage:true});
+              if (page._qaErrors.length) throw new Error(`B1 ${vp.name}: ${page._qaErrors.join(' | ')}`);
+              await page.close();
+            }
+
+            const b2Routes = [
+              ['root','index.html'],
+              ['guide','guide.html'],
+              ['preferences','demo/preferences.html'],
+              ['generation','demo/generation.html'],
+              ['home','demo/traveler-home.html'],
+              ['edition','demo/edition.html'],
+              ['feedback','demo/feedback.html'],
+              ['comparison','demo/comparison.html'],
+              ['history','demo/history.html']
+            ];
+
+            for (const [name, route] of b2Routes) {
+              const page = await openClean(browser, {width:1440,height:1100});
+              await page.goto(`http://127.0.0.1:4182/${route}`, {waitUntil:'domcontentloaded'});
+              await page.locator('.lt-nav--persistent').waitFor({state:'visible'});
+              const labels = (await page.locator('.lt-nav--persistent .lt-shell-link').allTextContents()).map(x=>x.trim());
+              if (JSON.stringify(labels) !== JSON.stringify(expectedNav)) throw new Error(`B2 ${name}: inconsistent nav ${JSON.stringify(labels)}`);
+              if (await page.locator('[data-product-guide="true"]').count() !== 1) throw new Error(`B2 ${name}: Guide entry missing/duplicated`);
+              await noOverflow(page, `B2 ${name} desktop`);
+              if (['root','guide','preferences','home','edition'].includes(name)) {
+                await page.screenshot({path:path.join(out,`b2-${name}-desktop.png`),fullPage:true});
+              }
+              manifest.b2[name] = labels;
+              if (page._qaErrors.length) throw new Error(`B2 ${name}: ${page._qaErrors.join(' | ')}`);
+              await page.close();
+            }
+
+            for (const [name, route] of [['root','index.html'],['guide','guide.html'],['home','demo/traveler-home.html'],['edition','demo/edition.html']]) {
+              const page = await openClean(browser, {width:390,height:844});
+              await page.goto(`http://127.0.0.1:4182/${route}`, {waitUntil:'domcontentloaded'});
+              await page.locator('.lt-nav--persistent').waitFor({state:'visible'});
+              const labels = (await page.locator('.lt-nav--persistent .lt-shell-link').allTextContents()).map(x=>x.trim());
+              if (JSON.stringify(labels) !== JSON.stringify(expectedNav)) throw new Error(`B2 ${name} mobile: inconsistent nav`);
+              const guideVisible = await page.locator('[data-product-guide="true"]').isVisible();
+              if (!guideVisible) throw new Error(`B2 ${name} mobile: Guide not visible`);
+              await noOverflow(page, `B2 ${name} mobile`);
+              await page.screenshot({path:path.join(out,`b2-${name}-mobile.png`),fullPage:true});
+              if (page._qaErrors.length) throw new Error(`B2 ${name} mobile: ${page._qaErrors.join(' | ')}`);
+              await page.close();
+            }
+
+            fs.writeFileSync(path.join(out,'manifest.json'), JSON.stringify(manifest,null,2));
+            await browser.close();
+            console.log('B1_B2_VISUAL_BASELINE_BROWSER_PASS=1');
+          })().catch(err => { console.error(err); process.exit(1); });
+          JS
+
+      - name: Commit materialized B2 shell includes
+        if: success()
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/living-travel/pages-preview/site
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix(B2): materialize persistent traveler shell'
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b1-b2-visual-baseline-20260810
+          path: /tmp/ui-baseline-evidence
+          if-no-files-found: warn
+          retention-days: 7
