@@ -9,147 +9,15 @@ on:
 permissions:
   contents: read
 
+# Safety stop: owner changed cleanup scope to numbered Business projects only.
+# Any older in-progress cleanup using the previous broader target list must be cancelled.
 concurrency:
   group: portfolio-review-cleanup-396-pr
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   cleanup:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/portfolio-review-deploy-396'
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: Delete only owner-approved obsolete Pages projects
-        shell: bash
-        run: |
-          set -u
-          test -n "${CLOUDFLARE_API_TOKEN}" || { echo 'CLOUDFLARE_API_TOKEN missing' >&2; exit 1; }
-          test -n "${CLOUDFLARE_ACCOUNT_ID}" || { echo 'CLOUDFLARE_ACCOUNT_ID missing' >&2; exit 1; }
-
-          approved_projects=(
-            'living-travel-preview'
-            'ai-revenue-business-54-ai-model-router'
-            'ai-revenue-neighbor-market'
-          )
-
-          delete_high_deployment_history() {
-            project="$1"
-            prod_id=''
-            rounds=0
-            while :; do
-              rounds=$((rounds + 1))
-              test "${rounds}" -le 20 || {
-                echo "${project}: deployment cleanup exceeded safety round limit" >&2
-                return 1
-              }
-
-              list_json="$(npx --yes wrangler@4 pages deployment list --project-name "${project}" --json 2>/tmp/wrangler-list.err || true)"
-              test -n "${list_json}" || {
-                echo "${project}: deployment list failed" >&2
-                cat /tmp/wrangler-list.err >&2 || true
-                return 1
-              }
-
-              ids="$(printf '%s' "${list_json}" | jq -r '.[].Id // .[].id // empty' 2>/dev/null || true)"
-              to_delete="$(printf '%s\n' "${ids}" | grep -v -F -x "${prod_id}" | grep . || true)"
-              if test -z "${to_delete}"; then
-                echo "${project}: deployment cleanup complete; active production=${prod_id:-none}"
-                return 0
-              fi
-
-              echo "${project}: deleting $(printf '%s\n' "${to_delete}" | wc -l | tr -d ' ') historical deployments"
-              progressed=0
-              while IFS= read -r deployment_id; do
-                test -n "${deployment_id}" || continue
-                npx --yes wrangler@4 pages deployment delete "${deployment_id}" \
-                  --project-name "${project}" --force > /tmp/wrangler-del.log 2>&1 || true
-                if grep -q 'Successfully deleted' /tmp/wrangler-del.log; then
-                  progressed=$((progressed + 1))
-                elif grep -qi 'active production deployment' /tmp/wrangler-del.log; then
-                  prod_id="${deployment_id}"
-                else
-                  echo "${project}: could not delete deployment ${deployment_id}" >&2
-                  tail -20 /tmp/wrangler-del.log >&2 || true
-                fi
-              done <<< "${to_delete}"
-
-              if test "${progressed}" -eq 0 && test -z "${prod_id}"; then
-                echo "${project}: deployment cleanup made no progress" >&2
-                return 1
-              fi
-            done
-          }
-
-          delete_project() {
-            project="$1"
-            api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}"
-
-            get_code="$(curl -sS -o /tmp/get.json -w '%{http_code}' \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              "${api}" || true)"
-
-            if test "${get_code}" = '404'; then
-              echo "${project}: already absent — idempotent skip"
-              return 0
-            fi
-            test "${get_code}" = '200' || {
-              echo "${project}: lookup failed with HTTP ${get_code}" >&2
-              jq -c '{success, errors, messages}' /tmp/get.json 2>/dev/null || true
-              return 1
-            }
-
-            delete_code="$(curl -sS -o /tmp/delete.json -w '%{http_code}' -X DELETE \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              "${api}" || true)"
-
-            if { test "${delete_code}" = '200' || test "${delete_code}" = '204'; }; then
-              :
-            elif grep -q '8000076\|too many deployments' /tmp/delete.json 2>/dev/null; then
-              echo "${project}: high deployment count detected; applying Cloudflare documented cleanup workaround"
-              delete_high_deployment_history "${project}" || return 1
-              delete_code="$(curl -sS -o /tmp/delete-retry.json -w '%{http_code}' -X DELETE \
-                -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-                "${api}" || true)"
-              if ! { test "${delete_code}" = '200' || test "${delete_code}" = '204'; }; then
-                echo "${project}: project delete retry failed with HTTP ${delete_code}" >&2
-                jq -c '{success, errors, messages}' /tmp/delete-retry.json 2>/dev/null || true
-                return 1
-              fi
-            else
-              echo "${project}: delete failed with HTTP ${delete_code}" >&2
-              jq -c '{success, errors, messages}' /tmp/delete.json 2>/dev/null || true
-              return 1
-            fi
-
-            verify_code=''
-            for attempt in $(seq 1 15); do
-              verify_code="$(curl -sS -o /tmp/verify.json -w '%{http_code}' \
-                -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-                "${api}" || true)"
-              test "${verify_code}" = '404' && break
-              sleep 2
-            done
-            test "${verify_code}" = '404' || {
-              echo "${project}: deletion verification failed; expected 404, got ${verify_code}" >&2
-              return 1
-            }
-            echo "${project}: DELETE_VERIFIED"
-            return 0
-          }
-
-          failures=0
-          for project in "${approved_projects[@]}"; do
-            if ! delete_project "${project}"; then
-              failures=$((failures + 1))
-              echo "${project}: DELETE_FAILED" >&2
-            fi
-          done
-
-          test "${failures}" -eq 0 || {
-            echo "APPROVED_CLOUDFLARE_CLEANUP_FAILED_COUNT=${failures}" >&2
-            exit 1
-          }
-          echo 'APPROVED_CLOUDFLARE_CLEANUP_3_OF_3_COMPLETE'
+      - run: echo 'CLOUDFLARE_CLEANUP_PAUSED_FOR_NUMBERED_BUSINESS_ONLY_REDESIGN'
