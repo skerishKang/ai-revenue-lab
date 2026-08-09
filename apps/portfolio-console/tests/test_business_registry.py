@@ -7,6 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "business-manifest.js"
 IDENTITY_CORE = ROOT / "business-identity-core.js"
 
+EXPECTED_NUMBERS = [*range(1, 56), 57, 58, 59]
+
 
 class BusinessRegistryTests(unittest.TestCase):
     @classmethod
@@ -28,11 +30,12 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIsNotNone(match, f"Business {number} entry not found in identity core")
         return match.group(0)
 
-    def test_registry_has_exact_ordered_unique_numbers_one_through_fiftyfive(self) -> None:
+    def test_registry_has_exact_ordered_unique_numbers_through_fiftynine_with_gap_56(self) -> None:
         numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.script)]
-        self.assertGreaterEqual(len(numbers), 55)
-        self.assertEqual(numbers, list(range(1, 56)))
+        self.assertEqual(numbers, EXPECTED_NUMBERS)
+        self.assertEqual(len(numbers), 58)
         self.assertEqual(len(numbers), len(set(numbers)))
+        self.assertNotIn(56, numbers)
 
     def test_reserved_slots_seven_through_twelve_exist_as_proposed(self) -> None:
         for number in range(7, 13):
@@ -41,18 +44,19 @@ class BusinessRegistryTests(unittest.TestCase):
 
     def test_businesses_seven_through_twelve_use_correct_mappings(self) -> None:
         expected = {
-            7: ("personal-meaning-map", "Personal Meaning Map", "개인 의미 지도", "visual_reference"),
-            8: ("family-newspaper", "Family Newspaper", "우리 가족 신문", "visual_reference"),
-            9: ("personalized-childrens-story", r"Personalized Children\u2019s Story", "우리 아이 이야기", "visual_reference"),
-            10: ("fan-magazine", "Fan Magazine", "나만의 팬 매거진", "visual_reference"),
-            11: ("language-learning-magazine", "Language Learning Magazine", "나의 언어학습 매거진", "visual_reference"),
-            12: ("creator-mini-media", "Creator Mini-Media", "크리에이터 미니미디어", "visual_reference"),
+            7: ("personal-meaning-map", "Personal Meaning Map", "개인 의미 지도"),
+            8: ("family-newspaper", "Family Newspaper", "우리 가족 신문"),
+            9: ("personalized-childrens-story", "Personalized Children’s Story", "우리 아이 이야기"),
+            10: ("fan-magazine", "Fan Magazine", "나만의 팬 매거진"),
+            11: ("language-learning-magazine", "Language Learning Magazine", "나의 언어학습 매거진"),
+            12: ("creator-mini-media", "Creator Mini-Media", "크리에이터 미니미디어"),
         }
-        for number, (slug, title, korean_title, lifecycle) in expected.items():
+        for number, (slug, title, korean_title) in expected.items():
             block = self.business_block(number)
             self.assertIn(f's:"{slug}"', block)
             self.assertIn(f't:"{title}"', block)
             self.assertIn(f'k:"{korean_title}"', block)
+            self.assertIn('l:"visual_reference"', block)
 
     def test_business_nine_records_ui_approval(self) -> None:
         core = self.core_block(9)
@@ -60,9 +64,10 @@ class BusinessRegistryTests(unittest.TestCase):
         block = self.business_block(9)
         self.assertIn('st:"review"', block)
 
-    def test_identity_core_covers_one_through_fiftyfive_in_order(self) -> None:
+    def test_identity_core_matches_manifest_number_contract(self) -> None:
         numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.core_script)]
-        self.assertEqual(numbers, list(range(1, 56)))
+        self.assertEqual(numbers, EXPECTED_NUMBERS)
+        self.assertNotIn(56, numbers)
 
     def test_manifest_defines_no_phase_status_literals_single_source(self) -> None:
         for literal in ('ui:"', 'ux:"', 'be:"'):
@@ -75,6 +80,31 @@ class BusinessRegistryTests(unittest.TestCase):
         block = self.business_block(15)
         self.assertIn('"global-ai-newsroom"', block)
         self.assertIn('l:"visual_reference"', block)
+
+    def test_business_38_is_ai_exercise_coach(self) -> None:
+        block = self.business_block(38)
+        self.assertIn('s:"ai-exercise-coach"', block)
+        self.assertIn('t:"AI Exercise Coach"', block)
+        self.assertIn('k:"AI 운동 코치"', block)
+        self.assertIn('w:"reference/business-38-ai-exercise-coach-v1/"', block)
+        self.assertNotIn('AI Learning Tutor', block)
+
+    def test_business_54_is_korean_ai_code_agent(self) -> None:
+        block = self.business_block(54)
+        self.assertIn('s:"korean-ai-code-agent"', block)
+        self.assertIn('t:"Korean AI Code Agent"', block)
+        self.assertIn('k:"한국형 AI 코드 에이전트"', block)
+        self.assertIn('w:"apps/korean-ai-code-agent/"', block)
+        self.assertNotIn('AI Model Router', block)
+
+    def test_businesses_57_58_59_exist(self) -> None:
+        expected = {
+            57: "classic-literature-translation-studio",
+            58: "personal-writing-voice-studio",
+            59: "living-archive",
+        }
+        for number, slug in expected.items():
+            self.assertIn(f's:"{slug}"', self.business_block(number))
 
 
 if __name__ == "__main__":
