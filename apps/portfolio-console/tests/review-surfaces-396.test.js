@@ -66,19 +66,38 @@ const webReviews = entries.filter((entry) => entry.kind === 'web-review');
 assert.equal(webReviews.length, 39, 'Exactly 39 web review surfaces are prepared');
 assert.equal(entries.length, 40, '39 web review targets plus the B54 CLI/TUI surface');
 
+const verified = webReviews.filter((entry) => entry.status === 'CLOUDFLARE_REVIEW_VERIFIED');
+const pending = webReviews.filter((entry) => entry.status === 'CLOUDFLARE_REVIEW_DEPLOY_PENDING');
+assert.equal(verified.length, 36, '36 web review surfaces are byte-verified and live');
+assert.equal(pending.length, 3, '3 web review surfaces remain deployment-pending');
+assert.deepEqual(
+  pending.map((entry) => entry.pr).sort((a, b) => a - b),
+  [354, 370, 392],
+  'pending surfaces are exactly manifest-sourced B32, B35 and B59 PR heads 354/370/392',
+);
+
 for (const entry of webReviews) {
-  assert.equal(entry.status, 'CLOUDFLARE_REVIEW_DEPLOY_PENDING');
   assert.match(entry.exactHead, /^[0-9a-f]{40}$/);
   assert.match(entry.plannedUrl, /^https:\/\/arl-review-b\d{2}-[a-z0-9-]+\.pages\.dev\/(ux|index)\.html$/);
 }
 
+for (const entry of verified) {
+  assert.match(entry.surfaceUrl, /^https:\/\/arl-review-b\d{2}-[a-z0-9-]+\.pages\.dev\/(ux|index)\.html$/);
+}
+for (const entry of pending) {
+  assert.equal(entry.surfaceUrl, null, `B${entry.number} must not promote an unverified review URL`);
+}
+
 for (const business of businesses) {
   if (!business.reviewSurface || business.reviewSurface.kind !== 'web-review') continue;
-  assert.notEqual(
-    business.surfaceUrl,
-    business.reviewSurface.plannedUrl,
-    `B${business.number} must not expose an unverified review URL as a live service`,
-  );
+  if (business.reviewSurface.status === 'CLOUDFLARE_REVIEW_VERIFIED') {
+    assert.equal(business.surfaceUrl, business.reviewSurface.surfaceUrl);
+  } else {
+    assert.ok(
+      business.surfaceUrl === undefined || business.surfaceUrl === null,
+      `B${business.number} must not expose an unverified surface URL`,
+    );
+  }
 }
 
 assert.equal(review[6].entry, 'index.html');

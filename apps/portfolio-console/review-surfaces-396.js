@@ -1,13 +1,15 @@
 /* Review-surface registry for owner program #396.
  *
- * This file intentionally does not promote a planned URL to `surfaceUrl` until
- * deployment has been verified. Portfolio Console may safely consume
- * `business.reviewSurface` without creating broken "service" links.
+ * Only surfaces whose deployed Cloudflare Pages bytes were verified to match
+ * the exact manifest head (`sha256(public) === sha256(source)`) are promoted to
+ * `surfaceUrl` with status `CLOUDFLARE_REVIEW_VERIFIED`. Pending targets remain
+ * attached as review metadata only and are NOT promoted to `surfaceUrl`.
  */
 (function () {
   "use strict";
 
   var PENDING = "CLOUDFLARE_REVIEW_DEPLOY_PENDING";
+  var VERIFIED = "CLOUDFLARE_REVIEW_VERIFIED";
   var AVAILABLE = "AVAILABLE_NON_WEB";
 
   var rows = [
@@ -49,22 +51,66 @@
     [55, 429, "3e3eb0aff6eeb198b342be59b312dd265c3ced55", "arl-review-b55-local-ai-fleet", "ux.html"],
     [57, 430, "930a8dc4c2d13c2537c723ee76eec8217983d8e3", "arl-review-b57-classic-literature-translation", "ux.html"],
     [58, 431, "135a0cd0901ca132346ad2d1e1537d1c6fef8444", "arl-review-b58-personal-writing-voice", "ux.html"],
-    [59, 392, "f327093a445086d4efb79452b1bc62ba53ff8a9b", "arl-review-b59-living-archive", "index.html"]
+    [59, 392, "f327093a445086d4efb79452b1bc62ba53ff8a9b", "arl-review-b59-living-archive", "index.html"],
   ];
+
+  var verifiedUrls = {
+    6: "https://arl-review-b06-world-feed.pages.dev/index.html",
+    7: "https://arl-review-b07-personal-meaning-map.pages.dev/ux.html",
+    8: "https://arl-review-b08-family-newspaper.pages.dev/ux.html",
+    9: "https://arl-review-b09-personalized-childrens-story.pages.dev/ux.html",
+    10: "https://arl-review-b10-fan-magazine.pages.dev/ux.html",
+    11: "https://arl-review-b11-language-learning-magazine.pages.dev/ux.html",
+    12: "https://arl-review-b12-creator-mini-media.pages.dev/ux.html",
+    15: "https://arl-review-b15-global-ai-newsroom.pages.dev/ux.html",
+    16: "https://arl-review-b16-personal-sports.pages.dev/ux.html",
+    17: "https://arl-review-b17-local-shop-magazine.pages.dev/ux.html",
+    18: "https://arl-review-b18-personal-audio-channel.pages.dev/ux.html",
+    19: "https://arl-review-b19-personal-memory-book.pages.dev/ux.html",
+    20: "https://arl-review-b20-personal-memory-novel.pages.dev/ux.html",
+    21: "https://arl-review-b21-founder-strategy-letter.pages.dev/ux.html",
+    22: "https://arl-review-b22-personal-media-studio.pages.dev/ux.html",
+    33: "https://arl-review-b33-research-memory.pages.dev/ux.html",
+    34: "https://arl-review-b34-ai-dubbing-studio.pages.dev/ux.html",
+    36: "https://arl-review-b36-ai-women-safety.pages.dev/ux.html",
+    37: "https://arl-review-b37-ai-safe-route.pages.dev/ux.html",
+    38: "https://arl-review-b38-ai-exercise-coach.pages.dev/ux.html",
+    39: "https://arl-review-b39-112-real-time-interpretation.pages.dev/ux.html",
+    40: "https://arl-review-b40-emergency-urgency-ai.pages.dev/ux.html",
+    41: "https://arl-review-b41-foreign-emergency-assistant.pages.dev/ux.html",
+    42: "https://arl-review-b42-ai-development-control-tower.pages.dev/ux.html",
+    43: "https://arl-review-b43-ai-software-factory.pages.dev/ux.html",
+    45: "https://arl-review-b45-ai-content-engine.pages.dev/ux.html",
+    46: "https://arl-review-b46-ai-personalization-engine.pages.dev/ux.html",
+    47: "https://arl-review-b47-real-time-feedback-engine.pages.dev/ux.html",
+    48: "https://arl-review-b48-ai-verification-engine.pages.dev/ux.html",
+    49: "https://arl-review-b49-public-data-connector-hub.pages.dev/ux.html",
+    51: "https://arl-review-b51-ai-workflow-marketplace.pages.dev/ux.html",
+    52: "https://arl-review-b52-scheduled-agent-operations.pages.dev/ux.html",
+    53: "https://arl-review-b53-embedded-ai-sdk.pages.dev/ux.html",
+    55: "https://arl-review-b55-local-ai-fleet.pages.dev/ux.html",
+    57: "https://arl-review-b57-classic-literature-translation.pages.dev/ux.html",
+    58: "https://arl-review-b58-personal-writing-voice.pages.dev/ux.html",
+  };
 
   var map = {};
   rows.forEach(function (row) {
     var number = row[0];
     var project = row[3];
     var entry = row[4];
+    var verified = false;
+    if (Object.prototype.hasOwnProperty.call(verifiedUrls, number)) {
+      verified = true;
+    }
     map[number] = {
       kind: "web-review",
-      status: PENDING,
+      status: verified ? VERIFIED : PENDING,
       pr: row[1],
       exactHead: row[2],
       project: project,
       entry: entry,
       plannedUrl: "https://" + project + ".pages.dev/" + entry,
+      surfaceUrl: verified ? verifiedUrls[number] : null,
     };
   });
 
@@ -80,8 +126,10 @@
   (window.ARL_BUSINESSES || []).forEach(function (business) {
     if (!map[business.number]) return;
     business.reviewSurface = map[business.number];
-    if (map[business.number].status === AVAILABLE) {
+    if (map[business.number].kind === "cli-tui") {
       business.surfaceUrl = map[business.number].plannedUrl;
+    } else if (map[business.number].status === VERIFIED) {
+      business.surfaceUrl = map[business.number].surfaceUrl;
     }
   });
 })();
