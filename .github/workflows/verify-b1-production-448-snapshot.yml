@@ -31,10 +31,10 @@ jobs:
           import json
           p=json.load(open('/tmp/project.json')).get('result') or {}
           src=p.get('source') or {}; cfg=src.get('config') or {}; build=p.get('build_config') or {}
-          print('PROJECT_CONFIG', 'source='+str(src.get('type')), 'repo='+str(cfg.get('repo_name')), 'production_branch='+str(cfg.get('production_branch')), 'enabled='+str(cfg.get('production_deployments_enabled')), 'root='+str(build.get('root_dir')), 'dest='+str(build.get('destination_dir')))
+          print('PROJECT_CONFIG', 'source='+str(src.get('type')), 'repo='+str(cfg.get('repo_name')), 'production_branch='+str(cfg.get('production_branch')), 'enabled='+str(cfg.get('production_deployments_enabled')), 'root='+str(build.get('root_dir')), 'dest='+str(build.get('destination_dir')), 'command='+repr(build.get('build_command')))
           rows=[x for x in (json.load(open('/tmp/deployments.json')).get('result') or []) if x.get('environment')=='production']
           rows.sort(key=lambda x:x.get('created_on') or '', reverse=True)
-          for d in rows[:5]:
+          for d in rows[:8]:
               meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
               stage=d.get('latest_stage') or {}
               sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
