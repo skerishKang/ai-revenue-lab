@@ -21,6 +21,7 @@ dev = [
     "pytest>=8.3,<9",
     "httpx>=0.28,<1",
     "build>=1.2",
+    "playwright>=1.55,<2",
 ]
 firebase = [
     "firebase-admin>=6.5",
