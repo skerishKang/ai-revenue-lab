@@ -1,0 +1,40 @@
+name: Validate B1 Owner UI State 443
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/portfolio-console/**'
+      - '.github/workflows/validate-b1-owner-ui-state-443.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/b1-owner-ui-state-443'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/portfolio-console
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/portfolio-console/package-lock.json
+      - run: npm ci
+      - name: Static and contract tests
+        run: npm run test:static
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Business launcher regression
+        run: npx playwright test tests/business-launcher.spec.js --project=chromium-desktop
+      - name: Live-data freeze regression
+        run: npx playwright test tests/live-mutation-loop.spec.js --project=chromium-desktop
