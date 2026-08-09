@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 800" role="img" aria-labelledby="title desc">
+  <title id="title">강변을 걷는 네 사람</title>
+  <desc id="desc">여름 강변 산책의 합성 장면</desc>
+  <rect width="1400" height="800" fill="#d9e1d5"/>
+  <path d="M0 0h1400v310H0z" fill="#b7c9c4"/>
+  <path d="M0 350c220-100 390 30 620-20s420-80 780 20v210H0z" fill="#6d9d86"/>
+  <path d="M0 520c370-120 780-50 1400 10v270H0z" fill="#d2b98c"/>
+  <path d="M0 610c410-90 840-30 1400 40" fill="none" stroke="#f4eedf" stroke-width="30"/>
+  <g fill="#172826">
+    <circle cx="470" cy="470" r="34"/><rect x="443" y="500" width="54" height="130" rx="24"/><path d="M460 620l-30 120M484 620l44 115" stroke="#172826" stroke-width="28" stroke-linecap="round"/>
+    <circle cx="610" cy="455" r="31"/><rect x="584" y="483" width="52" height="140" rx="22"/><path d="M598 615l-42 120M623 615l38 122" stroke="#172826" stroke-width="26" stroke-linecap="round"/>
+    <circle cx="760" cy="478" r="29"/><rect x="737" y="504" width="48" height="123" rx="21"/><path d="M747 618l-32 113M773 618l35 112" stroke="#172826" stroke-width="24" stroke-linecap="round"/>
+    <circle cx="885" cy="462" r="33"/><rect x="858" y="492" width="54" height="138" rx="23"/><path d="M870 620l-35 118M899 620l37 118" stroke="#172826" stroke-width="27" stroke-linecap="round"/>
+  </g>
+  <g fill="#e4573d"><rect x="574" y="503" width="71" height="68" rx="16"/><rect x="852" y="510" width="66" height="72" rx="16"/></g>
+  <g fill="#f2bf4b"><circle cx="160" cy="120" r="54"/><path d="M1150 350c60-80 140-75 230-45-70 20-130 58-198 110z"/></g>
+</svg>

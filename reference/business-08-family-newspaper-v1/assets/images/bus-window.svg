@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-labelledby="title desc">
+  <title id="title">비 오는 버스 창문</title>
+  <desc id="desc">저녁 버스 창문과 빗방울을 표현한 합성 일러스트</desc>
+  <rect width="900" height="900" fill="#172826"/>
+  <rect x="85" y="70" width="730" height="700" rx="34" fill="#7f9e9b" stroke="#f4eedf" stroke-width="18"/>
+  <path d="M450 80v680" stroke="#f4eedf" stroke-width="14"/>
+  <path d="M110 590c180-110 300-60 430-90s180-70 250-45v290H110z" fill="#d29a69" opacity=".65"/>
+  <g fill="#dce7e3" opacity=".85">
+    <ellipse cx="190" cy="165" rx="13" ry="28"/><ellipse cx="315" cy="245" rx="10" ry="22"/><ellipse cx="540" cy="150" rx="12" ry="25"/><ellipse cx="680" cy="260" rx="14" ry="30"/><ellipse cx="245" cy="405" rx="9" ry="21"/><ellipse cx="620" cy="430" rx="11" ry="23"/>
+  </g>
+  <g fill="#f2bf4b" opacity=".85">
+    <circle cx="160" cy="610" r="34"/><circle cx="300" cy="650" r="26"/><circle cx="610" cy="590" r="40"/><circle cx="735" cy="650" r="28"/>
+  </g>
+  <path d="M130 820h640" stroke="#e4573d" stroke-width="28" stroke-linecap="round"/>
+</svg>

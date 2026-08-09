@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750" role="img" aria-labelledby="title desc">
+  <title id="title">강변에 세워둔 자전거</title>
+  <desc id="desc">난간 옆 자전거를 그린 합성 일러스트</desc>
+  <rect width="1000" height="750" fill="#c9d8d1"/>
+  <path d="M0 430c200-70 380 20 560-20s280-100 440-40v380H0z" fill="#6d9d86"/>
+  <path d="M0 520h1000" stroke="#f4eedf" stroke-width="40"/>
+  <g stroke="#172826" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="290" cy="560" r="128"/><circle cx="710" cy="560" r="128"/>
+    <path d="M290 560l170-200 140 200H290l120-230h130l170 230M460 360l-45-80M600 560l75-245M650 315h105M390 330h-90"/>
+  </g>
+  <rect x="770" y="120" width="22" height="420" fill="#40504c"/>
+  <rect x="650" y="180" width="250" height="20" fill="#40504c"/>
+  <circle cx="160" cy="120" r="48" fill="#f2bf4b"/>
+  <path d="M0 135c180 40 320-50 480 20s300 20 520-30" fill="none" stroke="#f4eedf" stroke-width="18" opacity=".7"/>
+</svg>
