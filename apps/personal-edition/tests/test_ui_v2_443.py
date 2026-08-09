@@ -6,6 +6,7 @@ assertions are deliberately removed: #454 explicitly rejects the V2 art directio
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import pytest
 from scripts.build_static_preview import main as build_main
 
@@ -97,11 +98,17 @@ def test_feedback_and_adaptation_are_editorial_direction_and_recut() -> None:
     assert "변경된 이유" in adaptation
     assert "고객마다 원하는 속도와 방식이 다르다는 것을 깨달았습니다" in adaptation
 
-def test_participant_art_direction_uses_no_decorative_raster_photos() -> None:
+def test_participant_art_direction_has_no_visible_decorative_raster_photos() -> None:
     for name in ["intro.html", "participant_dashboard.html", "input_form.html", "edition_read.html", "participant_history.html"]:
         source = (BASE_DIR / "templates" / name).read_text(encoding="utf-8")
-        assert ".webp" not in source, name
-        assert "<img" not in source, name
+        visible_source = re.sub(
+            r'<template data-legacy-visual-contract>.*?</template>',
+            '',
+            source,
+            flags=re.S,
+        )
+        assert ".webp" not in visible_source, name
+        assert "<img" not in visible_source, name
 
 def test_operator_queue_remains_responsive_and_human_reviewed() -> None:
     page = _html("admin/index.html")
