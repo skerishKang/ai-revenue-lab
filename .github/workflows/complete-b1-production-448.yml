@@ -1,0 +1,128 @@
+name: Complete B1 Production 448
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/complete-b1-production-448.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  complete:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-b1-production-448'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: 722f2bc24dcaf789554e784eaf83d61bea3f663a
+      PROJECT: ai-revenue-personal-edition
+      ORIGINAL_DEPLOYMENT_ID: cfbbe799-24d7-4b26-b464-b58d41b1e9b6
+      PRODUCTION_URL: https://ai-revenue-personal-edition.pages.dev/
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Preflight exact stalled Production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCOUNT_ID"
+          test -n "$CF_API_TOKEN"
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$base/deployments/$ORIGINAL_DEPLOYMENT_ID" > /tmp/original.json
+          python3 - <<'PY'
+          import json, os
+          d=(json.load(open('/tmp/original.json', encoding='utf-8')).get('result') or {})
+          meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+          stage=d.get('latest_stage') or {}
+          print('original_id='+str(d.get('id')))
+          print('original_environment='+str(d.get('environment')))
+          print('original_sha='+sha)
+          print('original_branch='+str(meta.get('branch')))
+          print('original_stage='+str(stage.get('name'))+'/'+str(stage.get('status')))
+          print('original_stages='+','.join(f"{s.get('name')}:{s.get('status')}" for s in (d.get('stages') or [])))
+          assert d.get('id') == os.environ['ORIGINAL_DEPLOYMENT_ID']
+          assert d.get('environment') == 'production'
+          assert sha == os.environ['EXPECTED_SHA']
+          assert meta.get('branch') == 'main'
+          PY
+
+      - name: Retry exact stalled deployment once
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          url="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments/${ORIGINAL_DEPLOYMENT_ID}/retry"
+          code=$(curl -sS -o /tmp/retry.json -w '%{http_code}' -X POST "${auth[@]}" "$url")
+          echo "retry_http=$code"
+          cat /tmp/retry.json | python3 -c 'import json,sys; x=json.load(sys.stdin); print("retry_success="+str(x.get("success"))); print("retry_errors="+str(x.get("errors")))'
+          [[ "$code" =~ ^2 ]]
+          python3 - <<'PY' >> "$GITHUB_ENV"
+          import json, os
+          x=json.load(open('/tmp/retry.json', encoding='utf-8'))
+          assert x.get('success') is True, x.get('errors')
+          d=x.get('result') or {}
+          meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+          print('RETRY_DEPLOYMENT_ID='+str(d.get('id') or ''))
+          print('RETRY_RETURNED_SHA='+sha)
+          print('RETRY_RETURNED_ENV='+str(d.get('environment') or ''))
+          assert d.get('id')
+          assert d.get('environment') == 'production'
+          assert sha == os.environ['EXPECTED_SHA']
+          PY
+
+      - name: Wait for retried deployment success
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          url="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments/${RETRY_DEPLOYMENT_ID}"
+          for i in $(seq 1 72); do
+            curl --fail-with-body -sS "${auth[@]}" "$url" > /tmp/current.json
+            state=$(python3 - <<'PY'
+          import json, os
+          d=(json.load(open('/tmp/current.json', encoding='utf-8')).get('result') or {})
+          meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+          stage=d.get('latest_stage') or {}
+          stages=','.join(f"{s.get('name')}:{s.get('status')}" for s in (d.get('stages') or []))
+          print(f"{stage.get('name')}|{stage.get('status')}|{sha}|{stages}")
+          PY
+            )
+            IFS='|' read -r name status sha stages <<< "$state"
+            echo "poll=$i id=$RETRY_DEPLOYMENT_ID stage=$name/$status sha=$sha stages=$stages"
+            [[ "$sha" == "$EXPECTED_SHA" ]]
+            if [[ "$name" == "deploy" && "$status" == "success" ]]; then
+              echo "B1_PRODUCTION_DEPLOYMENT_SUCCESS=1"
+              break
+            fi
+            if [[ "$status" == "failure" || "$status" == "canceled" ]]; then
+              echo "deployment ended $name/$status" >&2
+              exit 1
+            fi
+            if [[ "$i" == "72" ]]; then
+              echo "deployment did not complete within watcher window" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Verify live B1 V2 Production screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            code=$(curl -L -sS --max-time 25 -o /tmp/b1.html -w '%{http_code}' "$PRODUCTION_URL" || true)
+            echo "live_poll=$i http=$code"
+            if [[ "$code" == "200" ]] && grep -q 'b1-personal-edition-v2-443' /tmp/b1.html && grep -q '당신의 기록을' /tmp/b1.html; then
+              echo "B1_V2_LIVE_PRODUCTION_VERIFIED=1"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Production did not expose B1 V2 marker/content in time" >&2
+          exit 1
