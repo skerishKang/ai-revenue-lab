@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
   <link rel="stylesheet" href="../assets/v2.css">
+  <link rel="stylesheet" href="../assets/v2-review-fixes.css">
 </head>
 <body class="lt-v2">
   <span class="lt-sr-only">Demo · Synthetic data · No booking</span>
@@ -22,13 +23,30 @@
       <h1>취향이<br><span>동선이 되는 중.</span></h1>
       <p class="lt-gen-deck">선택한 속도와 관심사를 장소 목록으로 바꾸는 것이 아니라, 하루의 밀도·이동량·머무는 시간을 함께 편집합니다.</p>
 
-      <div class="lt-gen-network" aria-label="여행 해석 요소">
-        <div class="lt-gen-node"><code>SIGNAL 01</code><strong>천천히</strong><span>하루 장소 수를 줄이고 체류시간을 늘립니다.</span></div>
-        <div class="lt-gen-node"><code>SIGNAL 02</code><strong>골목 · 현지 음식</strong><span>관광 동선보다 생활권 연결을 우선합니다.</span></div>
-        <div class="lt-gen-node"><code>SIGNAL 03</code><strong>조용한 · 바다</strong><span>혼잡 시간대를 피하고 해안 체류를 길게 잡습니다.</span></div>
+      <div class="lt-route-assembly" aria-label="취향 신호가 부산 여행 동선으로 조립되는 과정">
+        <svg viewBox="0 0 760 315" role="img" aria-label="초량에서 감천과 이기대를 거쳐 송도와 남포로 이어지는 여행 동선">
+          <path class="route-base" d="M38 242 C138 238 150 112 275 112 S442 260 558 208 S648 78 728 92" />
+          <path class="route-live" d="M38 242 C138 238 150 112 275 112 S442 260 558 208 S648 78 728 92" />
+        </svg>
+        <div class="lt-assembly-caption">SIGNALS → NEIGHBORHOODS → DWELL TIME</div>
+        <div class="lt-assembly-stop s1">
+          <code>SIGNAL 01 · SLOW</code>
+          <strong>초량 · 골목</strong>
+          <span>첫날 장소 수를 줄이고 동네 체류를 길게.</span>
+        </div>
+        <div class="lt-assembly-stop s2">
+          <code>SIGNAL 02 · LOCAL</code>
+          <strong>감천 · 이기대</strong>
+          <span>유명 코스보다 생활권과 해안의 연결을 우선.</span>
+        </div>
+        <div class="lt-assembly-stop s3">
+          <code>SIGNAL 03 · QUIET</code>
+          <strong>송도 · 남포</strong>
+          <span>마지막 날 이동을 줄이고 긴 바다 시간을 남김.</span>
+        </div>
       </div>
 
-      <div id="demoFailBtnWrapper" style="margin-top:2rem;">
+      <div id="demoFailBtnWrapper" style="margin-top:1.4rem;">
         <button class="btn btn-outline" style="color:#fff;" onclick="triggerFailure()">데모 실패 보기</button>
       </div>
     </section>
