@@ -8,18 +8,35 @@
   <header class="published-masthead-v2">
     <h1 id="published-home-title">Your Private Library</h1>
     <div class="published-masthead-meta-v2">
-      <div>{{ participant.display_name }}</div>
+      <div>발행 완료 · {{ participant.display_name }}</div>
       <div>{{ published_editions|length }} published edition{% if published_editions|length != 1 %}s{% endif %}</div>
       <div>Private · human reviewed</div>
     </div>
   </header>
 
+  <nav class="progress-steps" aria-label="제작 진행 단계">
+    <ol class="progress-track">
+      <li class="progress-step completed"><span class="progress-dot"></span><span class="progress-label">기록</span></li>
+      <li class="progress-connector completed"></li>
+      <li class="progress-step completed"><span class="progress-dot"></span><span class="progress-label">초안 구성</span></li>
+      <li class="progress-connector completed"></li>
+      <li class="progress-step completed"><span class="progress-dot"></span><span class="progress-label">편집 검토</span></li>
+      <li class="progress-connector completed"></li>
+      <li class="progress-step current" aria-current="step"><span class="progress-dot"></span><span class="progress-label">발행</span></li>
+    </ol>
+  </nav>
+
   {% if published_editions %}
   <div class="published-spread-v2">
-    <div class="edition-object-v2" aria-hidden="true">
-      <span class="cover-eyebrow">Personal Edition · Private</span>
-      <span class="cover-title">{{ published_editions[0].rendered_title or '제목 없음' }}</span>
-      <span class="cover-number">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
+    <div class="edition-object-v2">
+      {% if published_editions[0].edition_number == 1 %}
+      <img src="/static/images/edition-cover-shift.webp" alt="" aria-hidden="true" width="1122" height="1402" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.13;mix-blend-mode:multiply">
+      {% else %}
+      <img src="/static/images/edition-cover-archive.webp" alt="" aria-hidden="true" width="1122" height="1402" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.13;mix-blend-mode:multiply">
+      {% endif %}
+      <span class="cover-eyebrow" style="position:relative;z-index:1">Personal Edition · Private</span>
+      <span class="cover-title" style="position:relative;z-index:1">{{ published_editions[0].rendered_title or '제목 없음' }}</span>
+      <span class="cover-number" style="position:relative;z-index:1">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
     </div>
 
     <div class="published-story-v2">
@@ -31,7 +48,7 @@
         <span>edition {{ '%02d'|format(published_editions[0].edition_number) }}</span>
       </div>
       <div class="published-actions-v2">
-        <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-primary">최신 에디션 읽기</a>
+        <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-primary latest-edition" style="display:inline-flex!important;grid-template-columns:none">최신 에디션 읽기</a>
         {% if not has_feedback_on_latest %}
         <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}/feedback" class="btn btn-secondary">피드백 보내기</a>
         {% endif %}
