@@ -71,6 +71,21 @@ jobs:
           cd /tmp/b18-browser
           node <<'JS'
           const { chromium } = require('playwright');
+          async function assertNoOverflow(page,label){
+            const diag=await page.evaluate(()=>{
+              const de=document.documentElement, vw=de.clientWidth;
+              const offenders=[...document.querySelectorAll('body *')].map((el)=>{
+                const r=el.getBoundingClientRect();
+                const cs=getComputedStyle(el);
+                return {tag:el.tagName,id:el.id||'',cls:typeof el.className==='string'?el.className:'',left:+r.left.toFixed(1),right:+r.right.toFixed(1),width:+r.width.toFixed(1),display:cs.display,position:cs.position,overflowX:cs.overflowX,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,70)};
+              }).filter(x=>x.display!=='none'&&(x.right>vw+1||x.left<-1)).sort((a,b)=>Math.max(b.right-vw,-b.left)-Math.max(a.right-vw,-a.left)).slice(0,20);
+              return {scrollWidth:de.scrollWidth,clientWidth:vw,offenders};
+            });
+            if(diag.scrollWidth>diag.clientWidth){
+              console.error(`OVERFLOW_DIAG ${label} ${JSON.stringify(diag)}`);
+              throw new Error(`${label}: overflow ${diag.scrollWidth}>${diag.clientWidth}`);
+            }
+          }
           (async()=>{
             const browser=await chromium.launch({headless:true});
             for(const vp of [{width:1440,height:1100,name:'desktop'},{width:390,height:844,name:'mobile'}]){
@@ -80,10 +95,10 @@ jobs:
               page.on('pageerror',e=>errors.push(`page:${e.message}`));
               await page.goto('http://127.0.0.1:4176/index.html',{waitUntil:'networkidle'});
               await page.locator('[data-first-use-guide]').waitFor({state:'visible'});
-              if(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)) throw new Error(`${vp.name}: root overflow`);
+              await assertNoOverflow(page,`${vp.name}: root`);
               await page.locator('[data-first-use-guide]').click();
               await page.waitForURL(/guide\.html/);
-              if(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)) throw new Error(`${vp.name}: guide overflow`);
+              await assertNoOverflow(page,`${vp.name}: guide`);
               await page.getByRole('link',{name:'오늘 듣기 시작'}).click();
               await page.waitForURL(/ux\.html#listen/);
               await page.getByRole('button',{name:'재생 큐 열기'}).click();
@@ -102,7 +117,7 @@ jobs:
               await page.locator('#finish').click();
               status=await page.locator('#noteStatus').textContent();
               if(!status || !status.includes('오늘 듣기를 완료')) throw new Error(`${vp.name}: finish state missing`);
-              if(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)) throw new Error(`${vp.name}: ux overflow`);
+              await assertNoOverflow(page,`${vp.name}: ux`);
               if(errors.length) throw new Error(`${vp.name}: ${errors.join(' | ')}`);
               await page.close();
             }
