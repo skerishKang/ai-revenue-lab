@@ -39,35 +39,22 @@ jobs:
           const slugs = {
             4:'living-learning',6:'world-feed',7:'personal-meaning-map',8:'family-newspaper',9:'personalized-childrens-story',10:'fan-magazine',11:'language-learning-magazine',12:'creator-mini-media',13:'personal-video-archive',14:'korean-ai-platform',15:'global-ai-newsroom',16:'personal-sports',17:'local-shop-magazine',18:'personal-audio-channel',19:'personal-memory-book',20:'personal-memory-novel',21:'founder-strategy-letter',22:'personal-media-studio'
           };
-          const special = {
-            13:'https://ai-revenue-personal-video-archive.pages.dev/'
-          };
+          const special = {13:'https://ai-revenue-personal-video-archive.pages.dev/'};
           const results = [];
-
           function urlFor(id) { return special[id] || `https://${String(id).padStart(2,'0')}-${slugs[id]}.pages.dev/`; }
-
-          (async()=>{
-            const browser = await chromium.launch({headless:true});
-            for (const id of ids) {
-              const url = urlFor(id);
-              for (const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]) {
-                const page = await browser.newPage({viewport:{width:vp.width,height:vp.height}});
-                const errors=[];
-                page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
-                page.on('pageerror',e=>errors.push(`page:${e.message}`));
-                let status = 0;
-                let navError = '';
-                try {
-                  const resp = await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
-                  status = resp ? resp.status() : 0;
-                  await page.waitForTimeout(900);
-                } catch (e) { navError = e.message; }
-                const audit = await page.evaluate(() => {
+          async function stableAudit(page) {
+            let last;
+            for (let attempt=0; attempt<5; attempt++) {
+              try {
+                await page.waitForLoadState('domcontentloaded',{timeout:5000}).catch(()=>{});
+                await page.waitForTimeout(700);
+                return await page.evaluate(() => {
                   const imgs=[...document.images];
                   const srcs=imgs.map(i=>i.getAttribute('src')||'');
                   const text=(document.body?.innerText||'').replace(/\s+/g,' ').slice(0,5000);
                   return {
                     title:document.title,
+                    finalUrl:location.href,
                     scrollWidth:document.documentElement.scrollWidth,
                     clientWidth:document.documentElement.clientWidth,
                     bodyHeight:Math.round(document.body?.getBoundingClientRect().height||0),
@@ -81,8 +68,31 @@ jobs:
                     sample:text.slice(0,500)
                   };
                 });
+              } catch (e) { last=e; await page.waitForTimeout(600); }
+            }
+            throw last || new Error('stable audit failed');
+          }
+
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            for (const id of ids) {
+              const url = urlFor(id);
+              for (const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]) {
+                const page = await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+                const errors=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+                page.on('pageerror',e=>errors.push(`page:${e.message}`));
+                let status = 0, navError = '', audit = {};
+                try {
+                  const resp = await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+                  status = resp ? resp.status() : 0;
+                  audit = await stableAudit(page);
+                } catch (e) {
+                  navError = e.message;
+                  try { audit = await stableAudit(page); } catch (inner) { audit = {title:'',finalUrl:page.url(),captureError:inner.message}; }
+                }
                 const file=`b${String(id).padStart(2,'0')}-${vp.name}.png`;
-                await page.screenshot({path:path.join(out,file),fullPage:true});
+                try { await page.screenshot({path:path.join(out,file),fullPage:true,timeout:15000}); } catch (e) { audit.screenshotError=e.message; }
                 results.push({id,slug:slugs[id],url,viewport:vp.name,status,navError,errors,...audit,screenshot:file});
                 await page.close();
               }
@@ -92,10 +102,11 @@ jobs:
             const desktop = results.filter(r=>r.viewport==='desktop');
             console.log('CAPTURED='+results.length);
             console.log('HTTP200='+desktop.filter(r=>r.status===200).length+'/'+desktop.length);
-            console.log('SVG_HEAVY='+desktop.filter(r=>(r.inlineSvg+r.svgImages)>=3 && r.rasterImages===0).map(r=>`B${r.id}`).join(','));
+            console.log('SVG_HEAVY='+desktop.filter(r=>((r.inlineSvg||0)+(r.svgImages||0))>=3 && (r.rasterImages||0)===0).map(r=>`B${r.id}`).join(','));
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: b04-b22-production-visual-audit-20260810
           path: /tmp/b04-b22-evidence
