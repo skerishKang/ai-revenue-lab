@@ -57,6 +57,10 @@ def _production_post_process(html: str) -> str:
             '<meta name="robots" content="noindex,nofollow">\n<meta name="viewport"',
             1,
         )
+    html = html.replace(
+        'href="/preview/participant/empty/" data-product-guide="true"',
+        'href="/guide/" data-product-guide="true"',
+    )
     html = html.replace("</head>", f"{_PRODUCTION_GUARD_CSS}\n</head>", 1)
     return html
 
@@ -69,8 +73,6 @@ def _rewrite_root(out_dir: Path) -> None:
 
     intro_path = out_dir / "preview" / "intro" / "index.html"
     intro = intro_path.read_text(encoding="utf-8")
-    # The static Production review does not need the legacy token-entry screen.
-    # Enter the V3 journey directly at the Private Library / Gather state.
     intro = intro.replace(
         'href="/preview/participant/access/"',
         'href="/preview/participant/empty/"',
@@ -82,6 +84,24 @@ def _rewrite_root(out_dir: Path) -> None:
         1,
     )
     (out_dir / "index.html").write_text(intro, encoding="utf-8")
+
+
+def _write_guide(out_dir: Path) -> None:
+    """Render the owner-facing 30-second onboarding guide into Production."""
+    env = preview._build_jinja_env()
+    edition = preview.make_edition(
+        publication_state="published", generation_status="published"
+    )
+    html = preview._render(
+        env,
+        "guide.html",
+        {"edition": edition},
+        "/guide/",
+    )
+    html = _production_post_process(html)
+    guide_dir = out_dir / "guide"
+    guide_dir.mkdir(parents=True, exist_ok=True)
+    (guide_dir / "index.html").write_text(html, encoding="utf-8")
 
 
 def _clean_static_navigation(out_dir: Path) -> None:
@@ -105,16 +125,27 @@ def _assert_owner_surface(out_dir: Path) -> None:
     library = (out_dir / "preview" / "participant" / "empty" / "index.html").read_text(
         encoding="utf-8"
     )
+    guide = (out_dir / "guide" / "index.html").read_text(encoding="utf-8")
 
     required_root = (
         "b1-personal-edition-v3-454",
         "흩어진 기록이",
         "v3-assembly-stage",
-        "/preview/participant/empty/",
+        "/guide/",
     )
     for marker in required_root:
         if marker not in root:
             raise RuntimeError(f"missing B1 V3 Production marker: {marker}")
+
+    required_guide = (
+        "Guide · 30 seconds",
+        "Personal Edition은",
+        "Gather · 시작",
+        "Read & Recut",
+    )
+    for marker in required_guide:
+        if marker not in guide:
+            raise RuntimeError(f"missing B1 guide marker: {marker}")
 
     forbidden = (
         "UI Preview · Synthetic data · No persistence",
@@ -122,7 +153,7 @@ def _assert_owner_surface(out_dir: Path) -> None:
         "PERSONAL EDITION — UI PREVIEW",
     )
     for marker in forbidden:
-        if marker in root or marker in writing or marker in library:
+        if marker in root or marker in writing or marker in library or marker in guide:
             raise RuntimeError(f"owner-facing QA chrome leaked into Production: {marker}")
 
     if "v3-write" not in writing:
@@ -134,13 +165,12 @@ def _assert_owner_surface(out_dir: Path) -> None:
 
 
 def main() -> None:
-    # Keep the existing deterministic preview builder as the single fixture and
-    # route inventory source, but replace only its QA post-processing behavior.
     preview._post_process = _production_post_process
     preview.main()
 
     out_dir = Path(preview._OUTPUT_DIR)
     _rewrite_root(out_dir)
+    _write_guide(out_dir)
     _clean_static_navigation(out_dir)
     _assert_owner_surface(out_dir)
     print(f"Static Production review built at {out_dir}")
