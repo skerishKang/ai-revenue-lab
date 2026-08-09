@@ -1,0 +1,34 @@
+@charset "UTF-8";
+
+.script-board {
+  display: grid;
+  grid-template-columns: .78fr 1.22fr;
+  gap: 18px;
+}
+.script-visual { padding: 18px; }
+.script-visual .image-frame { height: 430px; }
+.script-hook { margin-top: 18px; padding: 16px 0 4px; border-top: 5px solid var(--signal); }
+.script-hook strong { display: block; margin-top: 8px; font-family: var(--serif); font-size: 32px; line-height: 1.05; }
+.script-scenes { border-top: 1px solid var(--ink); }
+.script-scene {
+  display: grid;
+  grid-template-columns: 50px 92px 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 17px 10px;
+  border-bottom: 1px solid var(--ink);
+}
+.script-scene h3 { font-family: var(--mono); font-size: 10px; color: var(--proof); margin-bottom: 7px; }
+.script-scene p { font-family: var(--serif); font-size: 14px; line-height: 1.5; }
+.script-scene .cue { font-family: var(--mono); font-size: 10px; line-height: 1.5; color: var(--signal); }
+.script-caption-board { margin-top: 18px; padding: 16px; border: 1px dashed var(--ink); display: flex; justify-content: space-between; gap: 18px; }
+.script-caption-board strong { font-family: var(--serif); font-size: 24px; }
+.script-closing { margin-top: 18px; padding: 22px; background: var(--ink); color: var(--paper-light); }
+.script-closing span { color: var(--signal); }
+.script-closing p { margin-top: 12px; font-family: var(--serif); font-size: 30px; line-height: 1.05; }
+
+@media (max-width: 920px) {
+  .script-board { grid-template-columns: 1fr; }
+  .script-scene { grid-template-columns: 42px 74px 1fr; }
+  .script-scene > div:last-child { grid-column: 3; }
+}
