@@ -4,34 +4,47 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 인터랙티브 데모</title>
+  <title>Living Travel — Journey 01</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
+  <link rel="stylesheet" href="../assets/b2-v2-457.css">
 </head>
-<body>
-  <div class="demo-banner">Demo · Synthetic data · No booking</div>
+<body class="lt-v2">
+  <header class="lt-topbar">
+    <a class="lt-wordmark" href="../index.html">Living Travel</a>
+    <nav class="lt-nav" aria-label="주요 메뉴">
+      <a href="preferences.html">Preferences</a>
+      <a href="history.html">Archive</a>
+      <a href="../operator/login.html">Operator</a>
+    </nav>
+  </header>
 
-  <section class="demo-hero" style="background:none;position:relative;">
-    <img src="../assets/images/busan-hero.webp" alt="부산 해안과 도심의 합성 데모 이미지" width="1200" height="600" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">
-    <div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(26,60,52,0.7) 0%, rgba(58,122,114,0.4) 50%, rgba(198,106,74,0.3) 100%);pointer-events:none;"></div>
-    <div class="demo-hero-content">
-      <h1 class="demo-hero-brand">
-        Living
-        <span class="demo-hero-brand-accent">Travel</span>
-      </h1>
-      <p class="demo-hero-tagline">
-        내 취향을 담아 만들고,<br>
-        피드백에 따라 다시 편집되는 개인 여행판
-      </p>
-      <p class="demo-hero-desc">
-        3분 동안 클릭으로 경험하는 Living Travel 콘셉트 데모입니다.<br>
-        실제 AI 호출이나 데이터 저장은 이루어지지 않습니다.
-      </p>
-      <div class="demo-hero-actions">
-        <a href="preferences.html" class="btn btn-primary" style="background:var(--terracotta);border-color:var(--terracotta);font-size:1rem;padding:0.75rem 2rem;">내 여행판 시작하기</a>
-        <a href="../index.html" class="btn btn-outline" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3);">기존 프리뷰로 돌아가기</a>
+  <main class="lt-entry">
+    <section class="lt-entry-main">
+      <div class="lt-kicker">Journey 01 · Busan · 2 nights / 3 days</div>
+      <h1>Not a list. <span>Your route.</span></h1>
+      <div class="lt-entry-copy">
+        <p>빠르게 많이 보는 여행 대신, 골목과 바다 사이에서 오래 머무는 부산을 준비합니다. 취향을 고르면 같은 도시도 전혀 다른 경로가 됩니다.</p>
+        <a class="lt-primary" href="preferences.html">취향으로 경로 만들기 →</a>
+        <a class="lt-secondary" href="edition.html">완성된 Edition 보기</a>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <aside class="lt-route-stage" aria-label="Journey 01 route">
+      <div class="lt-map-orbit" aria-hidden="true"></div>
+      <div class="lt-route-line" aria-hidden="true"></div>
+      <i class="lt-route-dot lt-route-dot--1" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--2" aria-hidden="true"></i>
+      <i class="lt-route-dot lt-route-dot--3" aria-hidden="true"></i>
+      <span class="lt-place-label lt-place-label--1">08:40 · CHORYANG</span>
+      <span class="lt-place-label lt-place-label--2">15:20 · YEONGDO</span>
+      <span class="lt-place-label lt-place-label--3">07:50 · SONGDO</span>
+      <div class="lt-route-meta">
+        <div><strong>3 neighborhoods</strong><span>depth over coverage</span></div>
+        <div><strong>09:00–20:00</strong><span>daily rhythm</span></div>
+        <div><strong>Local / Quiet</strong><span>travel character</span></div>
+      </div>
+    </aside>
+  </main>
 </body>
 </html>
