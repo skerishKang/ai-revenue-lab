@@ -1,0 +1,31 @@
+name: Validate B4 Flat Guide 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/living-learning/pages-preview/**'
+      - '.github/workflows/validate-b4-flat-guide-465.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'fix/b4-guide-flat-route-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pytest>=8,<9'
+      - name: Validate B4 flat guide
+        run: |
+          python -m pytest apps/living-learning/pages-preview/test_static_preview.py -q
+          test -f apps/living-learning/pages-preview/guide.html
+          grep -q 'Guide · 30 seconds' apps/living-learning/pages-preview/guide.html
+          grep -q 'href="/guide.html"' apps/living-learning/pages-preview/index.html
+          git diff --check origin/main...HEAD
+          echo 'B4_FLAT_GUIDE_VALIDATION_PASS=1'
