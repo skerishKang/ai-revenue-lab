@@ -435,7 +435,7 @@ class TestPreviewNotice:
     def test_quiet_notice_present_on_all_pages(self, preview_dir):
         for html_file in _all_html_files(preview_dir):
             content = _read(html_file)
-            rel = str(html_file.relative_to(preview_dir))
+            rel = html_file.relative_to(preview_dir).as_posix()
             if rel.startswith("en/"):
                 assert "Preview" in content and "Sample data" in content, (
                     f"English quiet notice missing in {rel}"
@@ -926,4 +926,132 @@ class TestPortalShellPresentation:
             assert 'class="page-identity"' in content, path
             assert 'class="page-business"' in content, path
             assert 'id="resurface"' in content, path
+
+
+class TestVisualRefinement118:
+    """Contract tests for the Issue #118 visual refinement."""
+
+    LEGACY_GLYPHS = ["⌕", "⌂", "▦", "✎", "↺"]
+
+    def test_no_legacy_unicode_nav_glyphs(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for glyph in self.LEGACY_GLYPHS:
+                assert glyph not in content, (
+                    f"Legacy Unicode nav glyph '{glyph}' found in "
+                    f"{html_file.relative_to(preview_dir).as_posix()}"
+                )
+
+    def test_inline_svg_in_navigation(self, preview_dir):
+        for path in ("index.html", "en/index.html"):
+            content = _read(preview_dir / path)
+            assert "<svg" in content, f"No inline SVG in {path}"
+            assert "aria-hidden" in content, f"SVG missing aria-hidden in {path}"
+
+    def test_no_external_font_or_icon_cdn(self, preview_dir):
+        cdn_hosts = [
+            "fonts.googleapis.com",
+            "fonts.googleapis",
+            "use.fontawesome",
+            "cdn.jsdelivr.net/npm/@fortawesome",
+            "unpkg.com",
+        ]
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for host in cdn_hosts:
+                assert host not in content, (
+                    f"External CDN '{host}' found in "
+                    f"{html_file.relative_to(preview_dir).as_posix()}"
+                )
+
+    def test_no_css_import(self, preview_dir):
+        css = _read(preview_dir / "static" / "style.css")
+        assert "@import" not in css, "CSS @import found in style.css"
+
+    def test_core_palette_tokens_exist(self, preview_dir):
+        css = _read(preview_dir / "static" / "style.css")
+        for token in [
+            "--canvas", "--surface", "--ink", "--ink-2", "--ink-3",
+            "--line", "--signature", "--dark-section", "--forest",
+        ]:
+            assert token in css, f"Palette token '{token}' missing from style.css"
+
+    def test_no_hero_gradient_overlay(self, preview_dir):
+        css = _read(preview_dir / "static" / "style.css")
+        assert "hero-media:after" not in css, "hero-media gradient still present"
+        assert "hero-overlay" not in css, "hero-overlay still present"
+
+    def test_no_story_card_gradient(self, preview_dir):
+        css = _read(preview_dir / "static" / "style.css")
+        assert "story-card:after" not in css, "story-card gradient still present"
+
+    def test_topic_thumbnail_stack_on_home(self, preview_dir):
+        for path in ("index.html", "en/index.html"):
+            content = _read(preview_dir / path)
+            assert "mini-stack" in content, f"Topic thumbnail stack missing in {path}"
+
+    def test_all_internal_routes_generated(self, preview_dir):
+        required = [
+            "index.html",
+            "en/index.html",
+            "topics/index.html",
+            "en/topics/index.html",
+            "topics/new/index.html",
+            "en/topics/new/index.html",
+            "records/index.html",
+            "en/records/index.html",
+            "proposals/index.html",
+            "en/proposals/index.html",
+            "health/index.html",
+            "en/health/index.html",
+        ]
+        for rel in required:
+            assert (preview_dir / rel).exists(), f"Missing generated page: {rel}"
+
+    def test_all_eight_filter_states_generated(self, preview_dir):
+        states = ["all", "unseen", "opened", "saved", "in_progress",
+                   "completed", "revisit", "irrelevant"]
+        for topic_id in ("pv-topic-0001", "pv-topic-0002", "pv-topic-0003"):
+            for state in states:
+                if state == "all":
+                    rel = f"topics/{topic_id}/index.html"
+                else:
+                    rel = f"topics/{topic_id}/{state}/index.html"
+                assert (preview_dir / rel).exists(), (
+                    f"Missing filter page: {rel}"
+                )
+
+    def test_youtube_links_safe_attributes(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            for match in re.finditer(r'href="https://www\.youtube\.com/watch\?v=([^"]+)"', content):
+                href_start = match.start()
+                tag_end = content.index(">", href_start) + 1
+                tag_end = content.index("</a>", tag_end)
+                tag = content[href_start:tag_end]
+                assert 'target="_blank"' in tag, (
+                    f"YouTube link missing target=_blank in "
+                    f"{html_file.relative_to(preview_dir).as_posix()}"
+                )
+                assert "noopener" in tag, (
+                    f"YouTube link missing noopener in "
+                    f"{html_file.relative_to(preview_dir).as_posix()}"
+                )
+                assert "noreferrer" in tag, (
+                    f"YouTube link missing noreferrer in "
+                    f"{html_file.relative_to(preview_dir).as_posix()}"
+                )
+
+    def test_preview_notice_on_all_pages(self, preview_dir):
+        for html_file in _all_html_files(preview_dir):
+            content = _read(html_file)
+            rel = html_file.relative_to(preview_dir).as_posix()
+            if rel.startswith("en/"):
+                assert "Preview" in content and "Sample data" in content, (
+                    f"English preview notice missing in {rel}"
+                )
+            else:
+                assert "미리보기" in content and "예시 데이터" in content, (
+                    f"Korean preview notice missing in {rel}"
+                )
 

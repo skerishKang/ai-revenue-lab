@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>나의 영상 아카이브 · 30초 사용법</title>
+  <style>
+    :root{--canvas:#F4F2ED;--surface:#FCFBF8;--ink:#181816;--muted:#68655F;--line:#D8D3C9;--sig:#7A4035;--soft:#F3EBE7;--dark:#20231F}
+    *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all}
+    a{color:inherit}.shell{max-width:1180px;margin:auto;min-height:100vh;padding:0 22px 48px}.top{height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{font-weight:800}.kicker{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--sig)}
+    .hero{display:grid;grid-template-columns:1.25fr .75fr;gap:42px;padding:64px 0 46px;border-bottom:1px solid var(--line)}h1{font-family:"Iowan Old Style",Georgia,serif;font-size:clamp(46px,7vw,78px);font-weight:600;line-height:.98;letter-spacing:-.055em;margin:14px 0 22px}.lead{font-size:18px;line-height:1.75;color:var(--muted);max-width:720px}.archive-card{background:var(--dark);color:#f8f4ed;padding:26px;border-radius:12px;align-self:start}.archive-card small{color:#c7bfb2}.archive-card ol{padding-left:20px;line-height:2}.archive-card strong{color:#fff}
+    .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:36px}.step{background:var(--surface);padding:22px 18px;min-height:280px}.step .n{font-size:11px;font-weight:800;color:var(--sig);letter-spacing:.08em}.step h2{font-family:"Iowan Old Style",Georgia,serif;font-size:25px;font-weight:600;line-height:1.1;margin:28px 0 11px}.step p{font-size:14px;line-height:1.7;color:var(--muted)}.step a{display:inline-block;margin-top:10px;font-size:13px;font-weight:800;color:var(--sig);text-underline-offset:3px}
+    .why{margin-top:38px;background:var(--soft);padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:30px;border-radius:10px}.why h2{margin:0 0 10px;font-family:"Iowan Old Style",Georgia,serif;font-size:28px}.why p{margin:0;line-height:1.75;color:var(--muted)}.finish{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}.note{font-size:12px;line-height:1.6;color:var(--muted);max-width:650px}.buttons{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-block;padding:11px 15px;border:1px solid var(--ink);border-radius:6px;text-decoration:none;font-weight:800;font-size:13px}.primary{background:var(--sig);border-color:var(--sig);color:#fff}
+    @media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:42px}.steps{grid-template-columns:1fr}.step{min-height:0}.why{grid-template-columns:1fr}.finish{display:block}.buttons{margin-top:18px}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="top"><div><span class="kicker">BUSINESS 13</span> <span class="brand">나의 영상 아카이브</span></div><span class="kicker">GUIDE · 30 SECONDS</span></header>
+  <section class="hero">
+    <div><span class="kicker">PRIVATE CINEMA ARCHIVE / HOW IT WORKS</span><h1>영상보다 오래 남는 건<br>내가 무엇을 생각했는지입니다.</h1><p class="lead">관심 주제를 정하면 관련 영상을 한곳에 모아 보고, 본 상태를 정리하고, 영상마다 내 생각·배운 점·의문·다음 행동을 개인 기록으로 남깁니다. AI 제안은 자동 정답이 아니라 <strong>내 메모를 정돈해보는 검토용 초안</strong>입니다.</p></div>
+    <aside class="archive-card"><small>ONE LOOP</small><ol><li><strong>주제</strong>를 만든다</li><li><strong>검색 규칙</strong>을 확인한다</li><li><strong>영상 상태</strong>를 정리한다</li><li><strong>내 기록</strong>을 남긴다</li><li><strong>다시 발견</strong>한다</li></ol></aside>
+  </section>
+  <section class="steps" aria-label="사용 순서">
+    <article class="step"><span class="n">01 · TOPIC</span><h2>관심 주제를 만듭니다.</h2><p>“AI 제품 디자인 사례를 꾸준히 보고 싶다”처럼 자연어로 관심사를 적습니다. 제안된 검색 규칙은 그대로 확정되지 않고 먼저 사람이 확인·수정합니다.</p><a href="/topics/new/">주제 만들기 →</a></article>
+    <article class="step"><span class="n">02 · DISCOVER</span><h2>새 영상을 발견합니다.</h2><p>주제별 피드에서 새 영상을 보고 아직 보지 않음, 열어봄, 저장함, 보는 중, 다 봄, 다시 보기 등으로 상태를 정리합니다.</p><a href="/topics/">주제별 영상 보기 →</a></article>
+    <article class="step"><span class="n">03 · WATCH</span><h2>원본 영상을 봅니다.</h2><p>영상은 이 서비스에 다시 올리지 않습니다. 원본 YouTube 링크를 새 탭으로 열고, 아카이브에는 내가 어떤 상태인지와 출처만 남깁니다.</p><a href="/">오늘의 영상으로 →</a></article>
+    <article class="step"><span class="n">04 · RECORD</span><h2>내 생각을 기록합니다.</h2><p>본 뒤 느낀 점, 배운 점, 동의·비동의, 아직 모르는 점, 다음에 할 일을 개인 기록으로 남깁니다. 자유 메모는 항상 원문 그대로 보존됩니다.</p><a href="/records">내 기록 보기 →</a></article>
+    <article class="step"><span class="n">05 · RESURFACE</span><h2>나중에 다시 발견합니다.</h2><p>AI 구조화 제안은 미리 보고 수락하거나 거절할 수 있습니다. 쌓인 기록은 Resurfaced에서 다시 나타나 예전 생각과 지금의 관점을 이어줍니다.</p><a href="/#resurface">다시 발견하기 →</a></article>
+  </section>
+  <section class="why"><div><h2>왜 영상 플랫폼과 다른가</h2><p>추천 영상을 끝없이 소비하는 피드가 아니라, <strong>내가 선택한 주제와 내 기록</strong>이 중심인 사적 아카이브입니다. 영상 자체보다 내가 왜 저장했고 무엇을 남겼는지가 더 중요합니다.</p></div><div><h2>현재 검토본의 범위</h2><p>현재 Production 검토본은 deterministic fixture와 안전한 정적 화면을 사용합니다. 실제 개인 YouTube 계정, 시청기록 가져오기, 실시간 API, 외부 LLM 호출, 자동 게시·공유는 하지 않습니다.</p></div></section>
+  <section class="finish"><p class="note">Guide는 제품 흐름을 설명하기 위한 첫 방문용 화면입니다. 각 링크는 현재 정적 검토본에서 생성된 실제 화면으로 연결됩니다.</p><div class="buttons"><a class="btn" href="/">아카이브 홈</a><a class="btn primary" href="/topics/new/">첫 주제 만들어보기</a></div></section>
+</main>
+</body></html>
