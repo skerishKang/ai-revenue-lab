@@ -1,51 +1,80 @@
 {% extends "base.html" %}
-{% block title %}Content Review — Personal Edition{% endblock %}
+{% block title %}콘텐츠 검토 — Personal Edition{% endblock %}
 {% block content %}
-<div class="content-review-page">
-  <h1>콘텐츠 검토</h1>
+<div class="review-desk-v2 content-review-page">
+  <header class="operator-header-v2">
+    <div>
+      <a href="/admin/review/modal-preview-edition/" class="back-link">← AI 초안 검토</a>
+      <span class="operator-kicker-v2">Editorial proof · edition #{{ edition.edition_number }}</span>
+      <h1>콘텐츠 검토</h1>
+      <p>본문을 독자 시점으로 읽고, 원본 기록과 피드백 연속성을 확인한 뒤 게재 결정을 진행합니다.</p>
+    </div>
+    <div class="operator-header-status-v2">
+      <div>게재 준비일 {{ edition.drafted_at[:10] }}</div>
+      <div>상태 {{ edition.publication_state }}</div>
+      <div>{{ input_count }} source records</div>
+    </div>
+  </header>
 
-  <section class="content-review-header">
-    <h2>{{ edition.edition_number }}호 — {{ edition.rendered_title }}</h2>
-    <p class="edition-meta">게재 준비일: {{ edition.drafted_at }} · 상태: {{ edition.publication_state }}</p>
-  </section>
+  <div class="review-desk-grid-v2">
+    <article class="review-manuscript-v2">
+      <header class="review-manuscript-head-v2">
+        <div>
+          <span class="review-pub-v2">{{ content.publication_title }} · draft proof</span>
+          <h2>{{ edition.rendered_title }}</h2>
+          <p class="edition-deck">{{ content.deck }}</p>
+        </div>
+        <div class="operator-header-status-v2">
+          <div>#{{ edition.edition_number }}</div>
+          <div>{{ edition.drafted_at[:10] }}</div>
+        </div>
+      </header>
 
-  <section class="content-review-body">
-    <div class="editorial-grid">
-      <div class="main">
-        <h3>{{ content.publication_title }} — {{ content.edition_title }}</h3>
-        <p class="edition-deck">{{ content.deck }}</p>
-        <div class="content-body">
-          {% for section in content.sections %}
-          <div class="content-section">
-            <h4>{{ section.title }}</h4>
-            {% for para in section.paragraphs %}
-            <p>{{ para }}</p>
-            {% endfor %}
+      <div class="review-manuscript-body-v2">
+        {% for section in content.sections %}
+        <section class="review-section-v2">
+          <h3>{{ section.title }}</h3>
+          <div>
+            {% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}
+          </div>
+        </section>
+        {% endfor %}
+      </div>
+    </article>
+
+    <aside class="review-inspector-v2" aria-label="검토 정보">
+      <section class="review-inspector-block-v2">
+        <h3>Edition identity</h3>
+        <dl>
+          <dt>Publication</dt><dd>{{ content.publication_title }}</dd>
+          <dt>Edition title</dt><dd>{{ content.edition_title }}</dd>
+          <dt>Participant</dt><dd>{{ participant.display_name }}</dd>
+          <dt>State</dt><dd>{{ edition.publication_state }}</dd>
+          <dt>Source records</dt><dd>{{ input_count }}</dd>
+        </dl>
+      </section>
+
+      <section class="review-inspector-block-v2">
+        <h3>Reader feedback</h3>
+        {% if feedbacks %}
+          {% for fb in feedbacks %}
+          <div class="review-feedback-v2">
+            <strong>{% if fb.direction is string %}{{ fb.direction }}{% else %}{{ fb.direction | join(", ") }}{% endif %}</strong><br>
+            {{ fb.free_text }}
           </div>
           {% endfor %}
-        </div>
-      </div>
-      <div class="sidebar">
-        <h4>작업 정보</h4>
-        <ul>
-          <li>작성자: {{ participant.display_name }}</li>
-          <li>상태: {{ edition.publication_state }}</li>
-          <li>원본 기록: {{ input_count }}개</li>
-        </ul>
-        <h4>피드백</h4>
-        <ul>
-          {% for fb in feedbacks %}
-          <li>{% if fb.direction is string %}{{ fb.direction }}{% else %}{{ fb.direction | join(", ") }}{% endif %}: {{ fb.free_text|truncate(80) }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </section>
+        {% else %}
+          <p class="muted-text">이전 피드백 없음</p>
+        {% endif %}
+      </section>
 
-  <section class="content-review-actions">
-    <a href="/admin/review/modal-preview-edition/evidence/" class="btn btn-secondary">생성 증거</a>
-    <a href="/admin/review/modal-preview-edition/publish/" class="btn btn-primary">게재 결정</a>
-    <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
-  </section>
+      <section class="review-inspector-block-v2 review-actions-v2">
+        <h3>Review actions</h3>
+        <a href="/admin/review/modal-preview-edition/evidence/" class="btn btn-secondary">생성 증거 확인</a>
+        <a href="/admin/review/modal-preview-edition/publish/" class="btn btn-primary">게재 결정으로 이동</a>
+        <a href="/admin/" class="btn btn-secondary">대기열로 돌아가기</a>
+      </section>
+    </aside>
+  </div>
 </div>
 {% endblock %}
