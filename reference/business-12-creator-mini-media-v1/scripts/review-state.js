@@ -1,106 +1,11 @@
 (() => {
   "use strict";
-
-  const stateButtons = [...document.querySelectorAll("[data-state-target]")];
-  const states = [...document.querySelectorAll("[data-review-state]")];
-  const relayButton = document.querySelector("[data-relay-play]");
-  const relayPaper = document.querySelector("[data-relay-paper]");
-  const relayLabels = [...document.querySelectorAll("[data-relay-label]")];
-  const formats = ["article", "newsletter", "short", "script"];
-  const relayTotalMs = 660;
-  const relayStepMs = relayTotalMs / formats.length;
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let relayTimers = [];
-
-  function showState(id, focusState = false) {
-    states.forEach((state) => {
-      const active = state.dataset.reviewState === id;
-      state.hidden = !active;
-      state.setAttribute("aria-hidden", String(!active));
-      if (active && focusState) state.focus({ preventScroll: true });
-    });
-
-    stateButtons.forEach((button) => {
-      const active = button.dataset.stateTarget === id;
-      button.setAttribute("aria-selected", String(active));
-      button.tabIndex = active ? 0 : -1;
-    });
-
-    document.body.dataset.activeState = id;
-  }
-
-  function clearRelay() {
-    relayTimers.forEach((timer) => window.clearTimeout(timer));
-    relayTimers = [];
-  }
-
-  function setRelayFormat(format) {
-    relayPaper.dataset.format = format;
-    relayLabels.forEach((label) => {
-      label.classList.toggle("is-active", label.dataset.relayLabel === format);
-    });
-    relayPaper.querySelector("[data-relay-format]").textContent = {
-      article: "ARTICLE PROOF / 대표 기사",
-      newsletter: "NEWSLETTER / 뉴스레터",
-      short: "SHORT CHANNEL / 짧은 채널",
-      script: "VIDEO SCRIPT / 영상 대본"
-    }[format];
-    relayPaper.querySelector("[data-relay-mark]").textContent = {
-      article: "교정 02 · 제목 밑줄",
-      newsletter: "제07호 · subject rule",
-      short: "1:1 crop · 62자",
-      script: "SCENE 04 · CUT CUE"
-    }[format];
-  }
-
-  function playRelay() {
-    clearRelay();
-    showState("relay");
-    relayButton.setAttribute("aria-pressed", "true");
-
-    if (reducedMotion.matches) {
-      setRelayFormat("script");
-      relayTimers.push(window.setTimeout(() => relayButton.setAttribute("aria-pressed", "false"), 30));
-      return;
-    }
-
-    formats.forEach((format, index) => {
-      relayTimers.push(window.setTimeout(() => setRelayFormat(format), index * relayStepMs));
-    });
-    relayTimers.push(window.setTimeout(() => relayButton.setAttribute("aria-pressed", "false"), relayTotalMs));
-  }
-
-  stateButtons.forEach((button, index) => {
-    button.addEventListener("click", () => showState(button.dataset.stateTarget));
-    button.addEventListener("keydown", (event) => {
-      if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
-      event.preventDefault();
-      let next = index;
-      if (event.key === "ArrowRight") next = (index + 1) % stateButtons.length;
-      if (event.key === "ArrowLeft") next = (index - 1 + stateButtons.length) % stateButtons.length;
-      if (event.key === "Home") next = 0;
-      if (event.key === "End") next = stateButtons.length - 1;
-      stateButtons[next].focus();
-      showState(stateButtons[next].dataset.stateTarget);
-    });
-  });
-
-  relayButton.addEventListener("click", playRelay);
-  document.addEventListener("keydown", (event) => {
-    if (event.altKey || event.ctrlKey || event.metaKey) return;
-    const current = stateButtons.findIndex((button) => button.getAttribute("aria-selected") === "true");
-    if (event.key === "PageDown") {
-      event.preventDefault();
-      const next = (current + 1) % stateButtons.length;
-      showState(stateButtons[next].dataset.stateTarget, true);
-    }
-    if (event.key === "PageUp") {
-      event.preventDefault();
-      const next = (current - 1 + stateButtons.length) % stateButtons.length;
-      showState(stateButtons[next].dataset.stateTarget, true);
-    }
-  });
-
-  setRelayFormat("article");
-  showState("desk");
+  const stateButtons=[...document.querySelectorAll("[data-state-target]")],states=[...document.querySelectorAll("[data-review-state]")],relayButton=document.querySelector("[data-relay-play]"),relayPaper=document.querySelector("[data-relay-paper]"),relayLabels=[...document.querySelectorAll("[data-relay-label]")],formats=["article","newsletter","short","script"],relayTotalMs=660,relayStepMs=relayTotalMs/formats.length,reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");let relayTimers=[];
+  function showState(id,focusState=false){states.forEach(state=>{const active=state.dataset.reviewState===id;state.hidden=!active;state.setAttribute("aria-hidden",String(!active));if(active&&focusState)state.focus({preventScroll:true})});stateButtons.forEach(button=>{const active=button.dataset.stateTarget===id;button.setAttribute("aria-selected",String(active));button.tabIndex=active?0:-1});document.body.dataset.activeState=id}
+  function clearRelay(){relayTimers.forEach(timer=>window.clearTimeout(timer));relayTimers=[]}
+  function setRelayFormat(format){relayPaper.dataset.format=format;relayLabels.forEach(label=>label.classList.toggle("is-active",label.dataset.relayLabel===format));relayPaper.querySelector("[data-relay-format]").textContent={article:"ARTICLE PROOF / 대표 기사",newsletter:"NEWSLETTER / 뉴스레터",short:"SHORT CHANNEL / 짧은 채널",script:"VIDEO SCRIPT / 영상 대본"}[format];relayPaper.querySelector("[data-relay-mark]").textContent={article:"교정 02 · 제목 밑줄",newsletter:"제07호 · subject rule",short:"1:1 crop · 62자",script:"SCENE 04 · CUT CUE"}[format]}
+  function playRelay(){clearRelay();showState("relay");relayButton.setAttribute("aria-pressed","true");if(reducedMotion.matches){setRelayFormat("script");relayTimers.push(window.setTimeout(()=>relayButton.setAttribute("aria-pressed","false"),30));return}formats.forEach((format,index)=>relayTimers.push(window.setTimeout(()=>setRelayFormat(format),index*relayStepMs)));relayTimers.push(window.setTimeout(()=>relayButton.setAttribute("aria-pressed","false"),relayTotalMs))}
+  stateButtons.forEach((button,index)=>{button.addEventListener("click",()=>showState(button.dataset.stateTarget));button.addEventListener("keydown",event=>{if(!["ArrowRight","ArrowLeft","Home","End"].includes(event.key))return;event.preventDefault();let next=index;if(event.key==="ArrowRight")next=(index+1)%stateButtons.length;if(event.key==="ArrowLeft")next=(index-1+stateButtons.length)%stateButtons.length;if(event.key==="Home")next=0;if(event.key==="End")next=stateButtons.length-1;stateButtons[next].focus();showState(stateButtons[next].dataset.stateTarget)})});relayButton.addEventListener("click",playRelay);document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey)return;const current=stateButtons.findIndex(button=>button.getAttribute("aria-selected")==="true");if(event.key==="PageDown"){event.preventDefault();const next=(current+1)%stateButtons.length;showState(stateButtons[next].dataset.stateTarget,true)}if(event.key==="PageUp"){event.preventDefault();const next=(current-1+stateButtons.length)%stateButtons.length;showState(stateButtons[next].dataset.stateTarget,true)}});
+  const reviewBar=document.querySelector('.review-bar, .review-toolbar, header');if(reviewBar){const links=document.createElement('div');links.setAttribute('aria-label','제품 사용 링크');links.style.cssText='display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font:700 12px system-ui';links.innerHTML='<a href="./guide.html" style="color:inherit;text-underline-offset:3px">30초 사용법</a><a href="./ux.html#source" style="color:inherit;text-underline-offset:3px">미니미디어 체험</a>';reviewBar.appendChild(links)}
+  setRelayFormat("article");showState("desk");
 })();
