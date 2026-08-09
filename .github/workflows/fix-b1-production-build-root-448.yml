@@ -1,0 +1,68 @@
+name: Fix B1 Production Build Root 448
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/fix-b1-production-build-root-448.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fix:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-b1-production-448'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PROJECT: ai-revenue-personal-edition
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      EXPECTED_ROOT: apps/personal-edition
+      EXPECTED_DEST: dist-preview
+      NEW_BUILD_COMMAND: >-
+        python -m pip install . && python -m scripts.build_static_preview && mkdir -p dist-preview/preview-states && cp dist-preview/index.html dist-preview/preview-states/index.html && cp dist-preview/preview/intro/index.html dist-preview/index.html
+    steps:
+      - name: Update only B1 build command
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCOUNT_ID"
+          test -n "$CF_API_TOKEN"
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' "$base" > /tmp/before.json
+          python3 - <<'PY'
+          import json, os
+          p=(json.load(open('/tmp/before.json')).get('result') or {})
+          b=p.get('build_config') or {}
+          print('before_command='+repr(b.get('build_command')))
+          print('before_root='+repr(b.get('root_dir')))
+          print('before_dest='+repr(b.get('destination_dir')))
+          assert b.get('root_dir') == os.environ['EXPECTED_ROOT']
+          assert b.get('destination_dir') == os.environ['EXPECTED_DEST']
+          payload={'build_config': {
+              'build_command': os.environ['NEW_BUILD_COMMAND'],
+              'root_dir': b.get('root_dir'),
+              'destination_dir': b.get('destination_dir'),
+              'build_caching': b.get('build_caching', True),
+          }}
+          open('/tmp/patch.json','w',encoding='utf-8').write(json.dumps(payload))
+          PY
+          curl --fail-with-body -sS -X PATCH \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/patch.json "$base" > /tmp/updated.json
+          python3 - <<'PY'
+          import json, os
+          x=json.load(open('/tmp/updated.json'))
+          assert x.get('success') is True, x.get('errors')
+          b=(x.get('result') or {}).get('build_config') or {}
+          print('updated_command='+repr(b.get('build_command')))
+          print('updated_root='+repr(b.get('root_dir')))
+          print('updated_dest='+repr(b.get('destination_dir')))
+          assert b.get('build_command') == os.environ['NEW_BUILD_COMMAND']
+          assert b.get('root_dir') == os.environ['EXPECTED_ROOT']
+          assert b.get('destination_dir') == os.environ['EXPECTED_DEST']
+          print('B1_CUSTOMER_ROOT_BUILD_COMMAND_PERSISTED=1')
+          PY
