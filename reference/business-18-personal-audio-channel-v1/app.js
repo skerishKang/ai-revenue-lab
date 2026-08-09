@@ -6,15 +6,16 @@
   const initial = allowed.has(params.get('state')) ? params.get('state') : 'today';
 
   function installGuideLink() {
-    const nav = document.querySelector('.state-nav');
-    if (!nav || nav.querySelector('[data-first-use-guide]')) return;
+    const masthead = document.querySelector('.masthead');
+    if (!masthead || masthead.querySelector('[data-first-use-guide]')) return;
+    masthead.style.position = 'relative';
     const guide = document.createElement('a');
     guide.href = './guide.html';
     guide.dataset.firstUseGuide = 'true';
-    guide.textContent = '30초 사용법 / Guide';
+    guide.textContent = '30초 사용법';
     guide.setAttribute('aria-label', '나의 오디오 채널 30초 사용법 열기');
-    guide.style.cssText = 'display:inline-flex;flex:0 0 auto;align-items:center;min-height:38px;padding:0 12px;border-left:1px solid currentColor;color:inherit;text-decoration:none;font:700 11px/1.2 system-ui;white-space:nowrap';
-    nav.append(guide);
+    guide.style.cssText = 'position:absolute;right:12px;bottom:6px;z-index:3;display:inline-flex;align-items:center;min-height:24px;padding:3px 7px;border:1px solid #9d968c;background:#fcfaf5;color:#11151b;text-decoration:none;font:700 10px/1.1 system-ui;white-space:nowrap';
+    masthead.append(guide);
   }
 
   function showState(name, updateUrl = true) {
