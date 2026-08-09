@@ -44,8 +44,9 @@
 
   // B1/B2 were previously owner-rejected, then materially redesigned and
   // technically merged under the #451 live-Production review policy. They are
-  // now review-ready, not owner-approved. Keep their canonical review surfaces
-  // explicit so the Portfolio Console never routes the owner to a stale branch.
+  // now review-ready, not owner-approved. Keep their canonical Production
+  // surfaces explicit so the Portfolio Console never routes the owner to a
+  // stale branch-preview hostname.
   var OWNER_REVIEW_READY = Object.freeze({
     1: {
       source: "PR #456",
@@ -55,7 +56,7 @@
     2: {
       source: "PR #460",
       mergedCommit: "d2fcd03dc696c451fa1ab31a690249fa37c82a21",
-      surfaceUrl: "https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev/"
+      surfaceUrl: "https://ai-revenue-living-travel.pages.dev/"
     }
   });
 
