@@ -1,5 +1,6 @@
 name: Verify Portfolio Truth Production 445
 
+# Read-only synchronize trigger after verifier PR creation.
 on:
   pull_request:
     branches: [main]
