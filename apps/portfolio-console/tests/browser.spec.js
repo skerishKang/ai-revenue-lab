@@ -4,6 +4,7 @@ test.describe('Portfolio Console Browser Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
     await page.waitForTimeout(1000);
+    await page.click('.view-nav-item[data-view="projects"]');
   });
 
   test('renders 13 project cards', async ({ page }) => {
@@ -62,6 +63,7 @@ test.describe('Portfolio Console Browser Tests', () => {
     page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
     page.on('pageerror', err => errors.push(err.message));
     await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForTimeout(150);
     expect(errors).toHaveLength(0);
   });
 
@@ -71,6 +73,7 @@ test.describe('Portfolio Console Browser Tests', () => {
       if (!req.url().startsWith('data:') && !req.url().startsWith('ws:')) failed.push(req.url());
     });
     await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForTimeout(150);
     expect(failed).toHaveLength(0);
   });
 
