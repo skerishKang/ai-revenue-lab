@@ -1,4 +1,4 @@
-name: Deploy B1 B2 B4 B6 Guides 465
+name: Recover B4 B6 Production 465
 
 on:
   pull_request:
@@ -11,18 +11,15 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  recover:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     env:
       EXPECTED_SHA: 0fd4752df0311e41adca5528634acb3b7dccea9d
-      B1_PROJECT: ai-revenue-personal-edition
-      B2_PROJECT: ai-revenue-living-travel
       B4_PROJECT: ai-revenue-living-learning
       B6_PROJECT: ai-revenue-world-feed
-      B1_URL: https://ai-revenue-personal-edition.pages.dev
-      B2_URL: https://ai-revenue-living-travel.pages.dev
+      B6_PRODUCTION_BRANCH: feat/business-06-world-feed-ui-155
       B4_URL: https://ai-revenue-living-learning.pages.dev
       B6_URL: https://ai-revenue-world-feed.pages.dev
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -32,47 +29,42 @@ jobs:
         with:
           ref: ${{ env.EXPECTED_SHA }}
           persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assert exact current main
+      - name: Assert exact current main and guide bytes
+        shell: bash
         run: |
+          set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           remote_main=$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)
-          echo "remote_main=$remote_main"
           test "$remote_main" = "$EXPECTED_SHA"
-      - name: Build and verify exact guide bytes
-        run: |
-          cd apps/personal-edition
-          python -m pip install .
-          python -m scripts.build_static_production
-          cd ../..
-          test -f apps/personal-edition/dist-preview/guide/index.html
-          grep -q 'Guide · 30 seconds' apps/personal-edition/dist-preview/guide/index.html
-          if grep -q 'UI Preview · Synthetic data · No persistence' apps/personal-edition/dist-preview/guide/index.html; then exit 1; fi
-          test -f apps/living-travel/pages-preview/site/guide.html
-          grep -q 'Guide · 30 seconds' apps/living-travel/pages-preview/site/guide.html
           test -f apps/living-learning/pages-preview/guide.html
           grep -q 'Guide · 30 seconds' apps/living-learning/pages-preview/guide.html
           grep -q 'href="/guide.html"' apps/living-learning/pages-preview/index.html
           test -f reference/business-06-world-feed-v1/guide.html
           grep -q 'GUIDE · 30 SECONDS' reference/business-06-world-feed-v1/guide.html
           grep -q './guide.html' reference/business-06-world-feed-v1/scripts/views/shell-loading-view.js
-      - name: Deploy exact main review surfaces
-        run: |
-          npx --yes wrangler@latest pages deploy apps/personal-edition/dist-preview --project-name "$B1_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B1 exact main owner guide review'
-          npx --yes wrangler@latest pages deploy apps/living-travel/pages-preview/site --project-name "$B2_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B2 exact main owner guide review'
-          npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview --project-name "$B4_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B4 exact main owner guide review'
-          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 --project-name "$B6_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B6 exact main UX guide review'
-      - name: Verify canonical public surfaces
+      - name: Recover exact main to canonical Production
         shell: bash
         run: |
+          set -euo pipefail
+          # B4 is a Direct Upload project (production_branch is null): omitting --branch creates Production.
+          npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview \
+            --project-name "$B4_PROJECT" --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B4 exact main canonical Production recovery'
+          # B6 canonical Production is still keyed to the historical approved production branch.
+          # Deploy exact current-main bytes to that branch; no source branch is modified.
+          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
+            --project-name "$B6_PROJECT" --branch "$B6_PRODUCTION_BRANCH" \
+            --commit-hash "$EXPECTED_SHA" --commit-message 'B6 exact main canonical Production recovery'
+      - name: Verify canonical public surfaces and environments
+        shell: bash
+        run: |
+          set -euo pipefail
           verify() {
             url="$1"; marker1="$2"; marker2="$3"; out="$4"; ok=0
-            for i in $(seq 1 30); do
+            for i in $(seq 1 20); do
               code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url" || true)
               echo "$url poll=$i http=$code"
               if [[ "$code" == 200 ]] && grep -q "$marker1" "$out" && grep -q "$marker2" "$out"; then ok=1; break; fi
@@ -80,16 +72,21 @@ jobs:
             done
             test "$ok" = 1
           }
-          verify "$B1_URL/guide/" 'Guide · 30 seconds' 'Personal Edition은' /tmp/b1-guide.html
-          verify "$B2_URL/guide.html" 'Guide · 30 seconds' 'Living Travel은' /tmp/b2-guide.html
           verify "$B4_URL/guide.html" 'Guide · 30 seconds' '다음 수업이 나에게 맞게' /tmp/b4-guide.html
           verify "$B6_URL/guide.html" 'GUIDE · 30 SECONDS' 'WHY · 설명 가능한 개인화' /tmp/b6-guide.html
-          curl -L -sS --max-time 20 "$B1_URL/" > /tmp/b1-root.html
-          curl -L -sS --max-time 20 "$B2_URL/" > /tmp/b2-root.html
           curl -L -sS --max-time 20 "$B4_URL/" > /tmp/b4-root.html
           curl -L -sS --max-time 20 "$B6_URL/" > /tmp/b6-root.html
-          grep -q '/guide/' /tmp/b1-root.html
-          grep -q 'guide.html' /tmp/b2-root.html
           grep -q '/guide.html' /tmp/b4-root.html
           grep -q 'world-feed-20260810-6' /tmp/b6-root.html
-          echo 'B1_B2_B4_B6_PUBLIC_VERIFIED=1'
+          for project in "$B4_PROJECT" "$B6_PROJECT"; do
+            curl --fail-with-body -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}" > "/tmp/${project}.json"
+            PROJECT="$project" python3 - <<'PY'
+          import json, os
+          p=json.load(open('/tmp/'+os.environ['PROJECT']+'.json'))['result']
+          d=p.get('latest_deployment') or {}
+          print(os.environ['PROJECT']+'_LATEST_ENV='+str(d.get('environment')))
+          print(os.environ['PROJECT']+'_LATEST_ID='+str(d.get('id')))
+          PY
+          done
+          echo 'B4_B6_CANONICAL_PUBLIC_VERIFIED=1'
