@@ -1,0 +1,109 @@
+name: Verify B1 Production 448
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: [.github/workflows/verify-b1-production-448.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-b1-production-448'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: 722f2bc24dcaf789554e784eaf83d61bea3f663a
+      PROJECT: ai-revenue-personal-edition
+      PRODUCTION_URL: https://ai-revenue-personal-edition.pages.dev/
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Verify Git-connected project and wait for exact Production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCOUNT_ID"
+          test -n "$CF_API_TOKEN"
+          auth=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          curl --fail-with-body -sS "${auth[@]}" "$base" > /tmp/project.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/project.json', encoding='utf-8')).get('result') or {}
+          src=p.get('source') or {}; cfg=src.get('config') or {}; build=p.get('build_config') or {}
+          print('project='+str(p.get('name') or ''))
+          print('source_type='+str(src.get('type') or ''))
+          print('repo='+str(cfg.get('repo_name') or ''))
+          print('production_branch='+str(cfg.get('production_branch') or ''))
+          print('production_deployments_enabled='+str(cfg.get('production_deployments_enabled')))
+          print('root_dir='+str(build.get('root_dir') or ''))
+          print('destination_dir='+str(build.get('destination_dir') or ''))
+          assert p.get('name') == 'ai-revenue-personal-edition'
+          assert src.get('type') == 'github'
+          assert (cfg.get('repo_name') or '').endswith('ai-revenue-lab')
+          assert cfg.get('production_branch') == 'main'
+          assert cfg.get('production_deployments_enabled') is True
+          PY
+
+          found=0
+          for attempt in $(seq 1 50); do
+            curl --fail-with-body -sS "${auth[@]}" "$base/deployments" > /tmp/deployments.json
+            python3 - "$EXPECTED_SHA" <<'PY' > /tmp/state.env
+          import json, shlex, sys
+          expected=sys.argv[1]
+          data=json.load(open('/tmp/deployments.json', encoding='utf-8'))
+          rows=[x for x in (data.get('result') or []) if x.get('environment')=='production']
+          rows.sort(key=lambda x:x.get('created_on') or '', reverse=True)
+          match=None
+          for d in rows:
+              meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+              sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+              if sha == expected:
+                  match=d; break
+          d=match or {}
+          meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+          stage=d.get('latest_stage') or {}
+          vals={
+            'FOUND': bool(match), 'DEPLOYMENT_ID': d.get('id') or '', 'DEPLOYMENT_URL': d.get('url') or '',
+            'CREATED_ON': d.get('created_on') or '', 'MODIFIED_ON': d.get('modified_on') or '',
+            'SOURCE_SHA': meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or '',
+            'SOURCE_BRANCH': meta.get('branch') or '', 'STAGE_NAME': stage.get('name') or '', 'STAGE_STATUS': stage.get('status') or '',
+            'STAGES': ','.join(f"{s.get('name')}:{s.get('status')}" for s in (d.get('stages') or [])),
+          }
+          for k,v in vals.items(): print(k+'='+shlex.quote(str(v)))
+          PY
+            source /tmp/state.env
+            echo "attempt=$attempt found=$FOUND deployment_id=$DEPLOYMENT_ID source_sha=$SOURCE_SHA branch=$SOURCE_BRANCH latest=$STAGE_NAME/$STAGE_STATUS stages=$STAGES"
+            if [[ "$FOUND" == "True" ]]; then
+              found=1
+              if [[ "$STAGE_NAME" == "deploy" && "$STAGE_STATUS" == "success" ]]; then
+                echo "B1_EXACT_PRODUCTION_DEPLOYMENT_SUCCESS=1"
+                break
+              fi
+              if [[ "$STAGE_STATUS" == "failure" ]]; then
+                echo "Exact Production deployment failed"
+                exit 1
+              fi
+            fi
+            sleep 15
+          done
+          [[ "$found" == "1" ]]
+          [[ "$STAGE_NAME" == "deploy" && "$STAGE_STATUS" == "success" ]]
+          [[ "$SOURCE_SHA" == "$EXPECTED_SHA" ]]
+          [[ "$SOURCE_BRANCH" == "main" ]]
+          echo "B1_GIT_CONNECTED_PRODUCTION_VERIFIED=1"
+
+      - name: Verify live B1 V2 screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -L -sS --max-time 30 -o /tmp/root.html -w '%{http_code}' "$PRODUCTION_URL")
+          echo "production_http=$code"
+          [[ "$code" == "200" ]]
+          grep -q 'data-ui-version="b1-personal-edition-v2-443"' /tmp/root.html
+          grep -q '당신의 기록을' /tmp/root.html
+          grep -q '에디션 시작하기' /tmp/root.html
+          echo "B1_LIVE_V2_CONTENT_VERIFIED=1"
