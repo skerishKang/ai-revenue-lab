@@ -1,0 +1,32 @@
+{
+  "reference": "Proposed Business 16 · Personal Sports",
+  "status": "UI_IMPLEMENTATION_READY_FOR_LOCAL_VALIDATION",
+  "asset_version": "personal-sports-20260728-1",
+  "checked_at": "2026-07-28T16:00:00Z",
+  "browser_mode": "Chromium in-memory rendering of semantically identical implementation HTML with exact repository CSS, JavaScript and SVG sources because localhost navigation is blocked by the execution sandbox",
+  "viewports": {
+    "1440x1100": {"state_overflow": {"matchday": 0, "preview": 0, "notes": 0, "review": 0, "player": 0, "season": 0, "mobile": 0}, "max_overflow": 0, "console_errors": [], "page_errors": [], "failed_requests": [], "external_runtime_requests": []},
+    "768x1024": {"state_overflow": {"matchday": 0, "preview": 0, "notes": 0, "review": 0, "player": 0, "season": 0, "mobile": 0}, "max_overflow": 0, "console_errors": [], "page_errors": [], "failed_requests": [], "external_runtime_requests": []},
+    "390x844": {"state_overflow": {"matchday": 0, "preview": 0, "notes": 0, "review": 0, "player": 0, "season": 0, "mobile": 0}, "max_overflow": 0, "console_errors": [], "page_errors": [], "failed_requests": [], "external_runtime_requests": []}
+  },
+  "states": {
+    "matchday": {"visible": true, "overflow_1440": 0, "truth_label_count": 2},
+    "preview": {"visible": true, "overflow_1440": 0, "truth_label_count": 2},
+    "notes": {"visible": true, "overflow_1440": 0, "truth_label_count": 2},
+    "review": {"visible": true, "overflow_1440": 0, "truth_label_count": 2},
+    "player": {"visible": true, "overflow_1440": 0, "truth_label_count": 2},
+    "season": {"visible": true, "overflow_1440": 0, "truth_label_count": 2},
+    "mobile": {"visible": true, "overflow_1440": 0, "truth_label_count": 2}
+  },
+  "keyboard": {"arrow_right_selected_preview": true},
+  "focus": {"outline": "rgb(216, 162, 71) solid 3px", "visible": true},
+  "motion": {"specified_ms": 680, "running_at_620ms": true, "completion_trigger": "animationend on .player-review-note", "normal_completion_authority": "animationend", "safety_timeout_ms": 2000, "safety_timeout_role": "abnormal fallback only", "normal_path_used_safety_timeout": false, "complete_class": true, "scroll_before": 0, "scroll_after": 0, "scroll_stable": true, "reduced_motion": {"complete": true, "playerOpacity": "1", "zoneOpacity": "1", "scrollY": 0}},
+  "runtime": {"console_errors": [], "page_errors": [], "failed_requests": [], "browser_requests": [], "external_runtime_requests": [], "css_js_refs": ["styles.css?v=personal-sports-20260728-1", "styles/base.css?v=personal-sports-20260728-1", "styles/match-preview-watch.css?v=personal-sports-20260728-1", "styles/recap.css?v=personal-sports-20260728-1", "styles/player-season-mobile.css?v=personal-sports-20260728-1", "app.js?v=personal-sports-20260728-1"], "versioned_css_js": true, "local_paths_checked": 20, "missing_local_paths": []},
+  "truthfulness": {"required_label_present": true, "synthetic_teams": ["해람 시티", "북항 유나이티드"], "synthetic_player": "윤재호", "real_team_marks_used": false},
+  "required_evidence": {"my-matchday-1440x1100.png": true, "match-preview-1440x1100.png": true, "match-recap-1440x1100.png": true, "player-lens-1440x1100.png": true, "mobile-matchday-390x844.png": true, "turning-point-sweep.gif": true, "reduced-motion-1440x1100.png": true},
+  "git_diff_check": "pass",
+  "exact_head": "7e578a0d4f78514b683c446b0a0605970a4b3047",
+  "authored_files": {"IMAGE_SOURCES.md": 19, "MOTION_SPEC.md": 40, "README.md": 42, "REFERENCE_NOTES.md": 80, "app.js": 104, "assets/images/matchday-ticket.svg": 1, "assets/images/player-action.svg": 1, "assets/images/season-strip.svg": 1, "assets/images/stadium-night.svg": 1, "assets/images/tactical-field.svg": 1, "evidence/browser-check-commands.md": 10, "evidence/validation.json": 33, "index.html": 46, "styles/base.css": 72, "styles/match-preview-watch.css": 33, "styles/player-season-mobile.css": 17, "styles/recap.css": 21, "styles.css": 4},
+  "files_over_500_physical_lines": [],
+  "binary_evidence": {"generated": true, "committed": false, "delivery": "separate review artifacts linked in implementation report"}
+}
