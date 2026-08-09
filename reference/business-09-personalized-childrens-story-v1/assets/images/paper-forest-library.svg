@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" role="img" aria-labelledby="title desc">
+  <title id="title">도서관에서 이어지는 종이 숲</title>
+  <desc id="desc">영수증과 책갈피가 나무와 길로 변하는 합성 콜라주 장면</desc>
+  <defs>
+    <filter id="grain"><feTurbulence baseFrequency="0.62" numOctaves="3" seed="27"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .12 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+  </defs>
+  <rect width="900" height="760" fill="#efe4cd"/>
+  <path d="M0 604c169-82 318-57 461-10 158 52 292 42 439-11v177H0z" fill="#9eb28f" filter="url(#grain)"/>
+  <g filter="url(#grain)">
+    <path d="M94 642L155 98l122 3 40 541z" fill="#31586c"/>
+    <path d="M270 642L337 44l128 4 31 594z" fill="#526b4f"/>
+    <path d="M499 642L545 116l117-17 69 543z" fill="#c94d32"/>
+    <path d="M676 642L741 71l105 20 37 551z" fill="#31586c"/>
+  </g>
+  <g fill="#f8f1df" opacity=".88">
+    <rect x="126" y="171" width="116" height="19" transform="rotate(-4 126 171)"/><rect x="119" y="213" width="129" height="13" transform="rotate(2 119 213)"/>
+    <rect x="354" y="126" width="83" height="16"/><rect x="348" y="162" width="98" height="12"/>
+    <rect x="571" y="184" width="71" height="15" transform="rotate(-3 571 184)"/><rect x="565" y="219" width="82" height="12"/>
+    <rect x="758" y="151" width="66" height="15"/><rect x="750" y="184" width="75" height="11"/>
+  </g>
+  <path d="M438 760c-42-118-31-216 37-293 50-56 85-111 101-165" fill="none" stroke="#d5a33f" stroke-width="46" stroke-linecap="round" opacity=".84"/>
+  <path d="M436 760c-36-116-23-210 39-279 47-52 78-104 94-158" fill="none" stroke="#f4eedf" stroke-width="5" stroke-dasharray="12 20" stroke-linecap="round"/>
+  <g transform="translate(354 475)">
+    <circle cx="48" cy="-26" r="30" fill="#9a6a45"/>
+    <path d="M20-34c10-35 60-37 76 0-22-11-56-9-76 0z" fill="#20333d"/>
+    <path d="M8 10h82v104H8z" rx="20" fill="#c94d32"/>
+    <path d="M16 108h29v72H0v-31h16zM58 108h29v72h46v-31H88l-1-41z" fill="#e0aa32"/>
+  </g>
+  <g fill="#f4eedf" stroke="#1b2a35" stroke-width="2">
+    <path d="M511 334l44-23 21 43-44 22z"/><path d="M613 254l41-23 20 41-42 24z"/><path d="M718 211l38-19 17 36-39 21z"/>
+  </g>
+</svg>

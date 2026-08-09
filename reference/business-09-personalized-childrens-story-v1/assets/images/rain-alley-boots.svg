@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-labelledby="title desc">
+  <title id="title">비 오는 골목과 노란 장화</title>
+  <desc id="desc">종이 오리기와 과슈 질감으로 만든 합성 골목 장면</desc>
+  <defs>
+    <filter id="grain"><feTurbulence baseFrequency="0.72" numOctaves="3" seed="9" type="fractalNoise"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .13 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6f9eb2"/><stop offset="1" stop-color="#b7c7c4"/></linearGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#sky)"/>
+  <path d="M0 225L195 142l145 84 154-132 154 117 252-77v492H0z" fill="#314e5d" opacity=".92" filter="url(#grain)"/>
+  <path d="M0 334l184-81 170 88 144-104 166 80 236-101v410H0z" fill="#d8d5c5" filter="url(#grain)"/>
+  <g fill="#f4eedf" opacity=".86">
+    <rect x="72" y="312" width="84" height="112" transform="rotate(-2 72 312)"/>
+    <rect x="232" y="278" width="103" height="132" transform="rotate(2 232 278)"/>
+    <rect x="575" y="287" width="100" height="126" transform="rotate(-1 575 287)"/>
+    <rect x="728" y="252" width="104" height="145" transform="rotate(2 728 252)"/>
+  </g>
+  <path d="M0 615c150-48 250 24 383-2 141-27 270-28 517 9v278H0z" fill="#6b7f7c" filter="url(#grain)"/>
+  <ellipse cx="492" cy="724" rx="260" ry="80" fill="#b9ced4" opacity=".72"/>
+  <ellipse cx="492" cy="724" rx="185" ry="44" fill="#7da5b5" opacity=".7"/>
+  <g stroke="#eaf0e9" stroke-width="5" stroke-linecap="round" opacity=".65">
+    <path d="M85 40l-40 95"/><path d="M178 14l-44 105"/><path d="M288 28l-47 116"/><path d="M409 8l-48 118"/><path d="M552 22l-50 122"/><path d="M680 7l-45 111"/><path d="M806 22l-51 123"/>
+  </g>
+  <g transform="translate(378 462)">
+    <path d="M101 4c51 0 84 42 84 104v96H17v-96C17 48 50 4 101 4z" fill="#c94d32" filter="url(#grain)"/>
+    <circle cx="101" cy="-6" r="48" fill="#9a6a45"/>
+    <path d="M55-10c10-56 82-70 101-12 5 16 1 31-4 41-15-26-76-34-97 4-4-9-5-20 0-33z" fill="#20333d"/>
+    <path d="M35 203h57v109c0 30-19 55-47 55H7v-68h26z" fill="#e0aa32" filter="url(#grain)"/>
+    <path d="M111 203h57v109c0 30 19 55 47 55h38v-68h-26l-2-96z" fill="#e0aa32" filter="url(#grain)"/>
+    <path d="M6 328h86v28H6zM168 328h87v28h-87z" fill="#9d6821"/>
+    <path d="M19 126l-64 92" stroke="#c94d32" stroke-width="28" stroke-linecap="round"/><path d="M181 126l70 74" stroke="#c94d32" stroke-width="28" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#d5a33f" stroke-width="6" stroke-linecap="round" opacity=".9">
+    <path d="M182 676c58-38 111-34 153 3"/><path d="M622 696c51-30 104-27 153 8"/>
+  </g>
+  <circle cx="132" cy="92" r="28" fill="#d5a33f" opacity=".7"/>
+</svg>
