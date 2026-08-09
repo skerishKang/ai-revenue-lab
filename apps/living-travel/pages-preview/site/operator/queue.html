@@ -1,50 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="robots" content="noindex,nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Travel — 운영자 대기열</title>
-  <link rel="stylesheet" href="../assets/style.css">
-  <link rel="stylesheet" href="../assets/demo.css">
-</head>
-<body>
+<head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Living Travel — 운영자 대기열</title><link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/demo.css"><link rel="stylesheet" href="../assets/b2-v2-457.css"></head>
+<body class="lt-v2">
   <div class="demo-banner">Demo · Synthetic data · No booking</div>
-
-  <nav class="operator-nav">
-    <a href="../operator/queue.html" class="brand">◈ Living Travel · 운영자</a>
-    <div class="nav-links">
-      <a href="../operator/queue.html" class="active" style="color:var(--ink);">검토 대기</a>
-      <a href="../demo/intro.html">데모로 돌아가기</a>
-    </div>
-  </nav>
-
-  <main class="operator-main">
-    <div class="operator-desk-header">
-      <h1>검토 대기열</h1>
-      <span class="operator-desk-summary">1건의 검토 대기</span>
-    </div>
-
-    <div class="operator-section" style="margin-top:1.5rem;">
+  <header class="lt-topbar lt-topbar--light"><a class="lt-wordmark" href="queue.html">Living Travel · Desk</a><nav class="lt-nav"><a href="queue.html">검토 대기</a><a href="../demo/intro.html">Traveler demo</a></nav></header>
+  <main class="operator-main" style="max-width:1280px;padding-top:clamp(3rem,7vw,6rem);">
+    <div class="lt-kicker" style="color:var(--lt-sea);">Editorial queue</div>
+    <div class="operator-desk-header"><h1 style="font-family:var(--lt-display);font-size:clamp(3rem,6vw,5.8rem);line-height:.92;letter-spacing:-.05em;">발행 전,<br>여행의 흐름을 봅니다.</h1><span class="operator-desk-summary">1건의 검토 대기</span></div>
+    <div class="operator-section" style="margin-top:2rem;border-radius:0;box-shadow:none;border:1px solid var(--lt-line);">
       <div class="operator-queue-item">
-        <div class="operator-queue-info">
-          <span class="operator-queue-edition">부산 2박 3일 — 1판</span>
-          <span class="operator-queue-traveler">여행자 B-014</span>
-          <span class="operator-queue-meta">
-            Demo fixture · 12 sources · 골목/음식/바다 관심
-          </span>
-        </div>
-        <div class="operator-queue-actions">
-          <span class="badge badge-pending">pending_review</span>
-          <a href="../operator/review.html" class="btn btn-sm btn-primary">검토</a>
-        </div>
+        <div class="operator-queue-info"><span class="operator-queue-edition">BUSAN · 2박 3일 · Edition 01</span><span class="operator-queue-traveler">여행자 B-014</span><span class="operator-queue-meta">SLOW / LOCAL / QUIET · 12 sources · CHORYANG → YEONGDO → SONGDO</span></div>
+        <div class="operator-queue-actions"><span class="badge badge-pending">pending_review</span><a href="review.html" class="btn btn-sm btn-primary">검토</a></div>
       </div>
     </div>
-
-    <div class="notice" style="margin-top:2rem;">
-      <strong>Demo mode</strong><br>
-      이 화면은 데모용 합성 데이터입니다. 실제 운영자 대시보드가 아닙니다.
-    </div>
   </main>
-</body>
-</html>
+</body></html>
