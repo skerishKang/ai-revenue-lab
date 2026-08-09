@@ -36,19 +36,19 @@ jobs:
           test -n "${CLOUDFLARE_API_TOKEN}" || { echo 'CLOUDFLARE_API_TOKEN missing' >&2; exit 1; }
           test -n "${CLOUDFLARE_ACCOUNT_ID}" || { echo 'CLOUDFLARE_ACCOUNT_ID missing' >&2; exit 1; }
           cp ops/portfolio-review-396-manifest.tsv /tmp/portfolio-review-396-manifest.tsv
-          printf 'business_id\tpr\tsha\tproject\turl\tstatus\treason\n' > /tmp/portfolio-review-396-results.tsv
+          printf 'business_id\tpr\tsha\tproject\tentry\turl\tstatus\treason\n' > /tmp/portfolio-review-396-results.tsv
           failures=0
 
           deploy_one() {
-            id="$1"; pr="$2"; sha="$3"; dir="$4"; project="$5"
+            id="$1"; pr="$2"; sha="$3"; dir="$4"; project="$5"; entry="$6"
             reason=''
-            url="https://${project}.pages.dev/ux.html"
+            url="https://${project}.pages.dev/${entry}"
 
             git fetch --no-tags origin "${sha}" >/dev/null 2>&1 || { reason='git_fetch_failed'; return 1; }
             git checkout --force --detach "${sha}" >/dev/null 2>&1 || { reason='git_checkout_failed'; return 1; }
             test "$(git rev-parse HEAD)" = "${sha}" || { reason='sha_mismatch'; return 1; }
             test -f "${dir}/index.html" || { reason='index_missing'; return 1; }
-            test -s "${dir}/ux.html" || { reason='ux_missing_or_empty'; return 1; }
+            test -s "${dir}/${entry}" || { reason='entry_missing_or_empty'; return 1; }
 
             api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}"
             code="$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${api}" || true)"
@@ -74,10 +74,10 @@ jobs:
               --project-name "${project}" \
               --branch main \
               --commit-hash "${sha}" \
-              --commit-message "B${id} review UX PR #${pr}" \
+              --commit-message "B${id} review surface PR #${pr}" \
               --commit-dirty=false >/tmp/wrangler.log 2>&1 || { tail -80 /tmp/wrangler.log; reason='wrangler_deploy_failed'; return 1; }
 
-            expected="$(sha256sum "${dir}/ux.html" | awk '{print $1}')"
+            expected="$(sha256sum "${dir}/${entry}" | awk '{print $1}')"
             verified=false
             for attempt in $(seq 1 12); do
               public_code="$(curl -L -sS -o /tmp/public.html -w '%{http_code}' "${url}" || true)"
@@ -94,20 +94,21 @@ jobs:
             return 0
           }
 
-          while IFS=$'\t' read -r id pr sha dir project; do
+          while IFS=$'\t' read -r id pr sha dir project entry; do
             test -n "${id}" || continue
             echo "::group::Deploy B${id} from PR #${pr}"
-            if deploy_one "${id}" "${pr}" "${sha}" "${dir}" "${project}"; then
+            url="https://${project}.pages.dev/${entry}"
+            if deploy_one "${id}" "${pr}" "${sha}" "${dir}" "${project}" "${entry}"; then
               status='PASS'
               reason=''
-              echo "B${id}: PASS — https://${project}.pages.dev/ux.html"
+              echo "B${id}: PASS — ${url}"
             else
               status='FAIL'
               failures=$((failures + 1))
               echo "B${id}: FAIL — ${reason}" >&2
             fi
-            printf '%s\t%s\t%s\t%s\thttps://%s.pages.dev/ux.html\t%s\t%s\n' \
-              "${id}" "${pr}" "${sha}" "${project}" "${project}" "${status}" "${reason}" >> /tmp/portfolio-review-396-results.tsv
+            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+              "${id}" "${pr}" "${sha}" "${project}" "${entry}" "${url}" "${status}" "${reason}" >> /tmp/portfolio-review-396-results.tsv
             echo "::endgroup::"
           done < /tmp/portfolio-review-396-manifest.tsv
 
