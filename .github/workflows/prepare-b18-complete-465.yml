@@ -1,0 +1,49 @@
+name: Prepare B18 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/prepare-b18-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/prepare-b18-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize approved B18 UI plus existing UX on exact main
+        shell: bash
+        env:
+          EXPECTED_MAIN: 895a715989d9d48acfa329d0d62f90b996b3b06d
+          TARGET_BRANCH: feat/b18-personal-audio-channel-complete-465
+          UI_BRANCH: feat/business-18-personal-audio-channel-ui
+          UX_BRANCH: feat/business-18-personal-audio-channel-ux-396
+          SCOPE: reference/business-18-personal-audio-channel-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
+          git fetch origin "$UI_BRANCH" "$UX_BRANCH"
+          test "$(git rev-parse origin/$UI_BRANCH)" = 4da83a879a861c8e80edd2d5f76ea4268de3d5ad
+          test "$(git rev-parse origin/$UX_BRANCH)" = 2014020c65f80d206520f14bcc10190850eafa7b
+          if git ls-tree -r --name-only HEAD -- "$SCOPE" | grep -q .; then
+            echo 'B18 scope unexpectedly exists on current main; refusing overwrite' >&2
+            exit 1
+          fi
+          git switch -c "$TARGET_BRANCH"
+          git checkout "origin/$UI_BRANCH" -- "$SCOPE"
+          git checkout "origin/$UX_BRANCH" -- "$SCOPE/ux.html"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$SCOPE"
+          git diff --cached --check
+          git commit -m 'feat(b18): integrate approved listening-letter UI and audio queue UX'
+          git push origin "$TARGET_BRANCH"
+          echo B18_PREPARE_PASS=1
