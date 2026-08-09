@@ -1,4 +1,4 @@
-name: Recover B6 Canonical 465
+name: Recover B6 Deploy B9 465
 on:
   pull_request:
     branches: [main]
@@ -11,11 +11,13 @@ jobs:
   recover:
     if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
-      EXPECTED_SHA: 03db134d61f054f53b096104e83ba1342337ae9e
-      PROJECT: ai-revenue-world-feed
-      URL: https://ai-revenue-world-feed.pages.dev
+      EXPECTED_SHA: d3f6ec2c5656ab2cad62e8b4e5dad0f6bd10f751
+      B6_PROJECT: ai-revenue-world-feed
+      B9_PROJECT: ai-revenue-personalized-childrens-story
+      B6_URL: https://ai-revenue-world-feed.pages.dev
+      B9_URL: https://ai-revenue-personalized-childrens-story.pages.dev
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
@@ -26,60 +28,69 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Assert exact current main and production config
+      - name: Assert exact current main
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
-          curl --fail-with-body -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}" > /tmp/project-before.json
-          python3 - <<'PY'
-          import json
-          p=json.load(open('/tmp/project-before.json'))['result']
-          print('PRODUCTION_BRANCH='+str(((p.get('source') or {}).get('config') or {}).get('production_branch')))
-          print('CANONICAL_ID='+str((p.get('canonical_deployment') or {}).get('id')))
-          print('CANONICAL_HASH='+str((((p.get('canonical_deployment') or {}).get('deployment_trigger') or {}).get('metadata') or {}).get('commit_hash')))
-          assert ((p.get('source') or {}).get('config') or {}).get('production_branch') == 'main'
+          test -f reference/business-06-world-feed-v1/guide.html
+          test -f reference/business-09-personalized-childrens-story-v1/guide.html
+          test -f reference/business-09-personalized-childrens-story-v1/ux.html
+      - name: Ensure B6 and B9 production branches are main
+        shell: bash
+        run: |
+          set -euo pipefail
+          for project in "$B6_PROJECT" "$B9_PROJECT"; do
+            code=$(curl -sS -o "/tmp/${project}-patch.json" -w '%{http_code}' -X PATCH \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data '{"production_branch":"main"}' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}")
+            echo "$project PATCH_HTTP=$code"
+            cat "/tmp/${project}-patch.json"
+            test "$code" = 200
+            PROJECT="$project" python3 - <<'PY'
+          import json, os
+          x=json.load(open('/tmp/'+os.environ['PROJECT']+'-patch.json'))
+          assert x.get('success') is True, x.get('errors')
+          p=x['result']; cfg=((p.get('source') or {}).get('config') or {})
+          effective=cfg.get('production_branch') or p.get('production_branch')
+          print(os.environ['PROJECT']+'_PRODUCTION_BRANCH='+str(effective))
+          assert effective == 'main'
           PY
-      - name: Redeploy exact main after production-branch propagation
+          done
+      - name: Deploy exact-main bytes
         shell: bash
         run: |
           set -euo pipefail
           sleep 5
           npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
-            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --project-name "$B6_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
             --commit-message 'B6 exact current-main canonical recovery'
+          npx --yes wrangler@latest pages deploy reference/business-09-personalized-childrens-story-v1 \
+            --project-name "$B9_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B9 exact current-main UI UX guide Production'
       - name: Verify canonical source equality
         shell: bash
         run: |
           set -euo pipefail
           verify() {
-            local path="$1" source="$2" out="$3" ok=0 expected actual code
+            local url="$1" path="$2" source="$3" out="$4" label="$5" ok=0 expected actual code
             expected=$(sha256sum "$source" | cut -d' ' -f1)
-            echo "$path expected=$expected"
+            echo "$label expected=$expected"
             for i in $(seq 1 30); do
-              code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$URL/$path" || true)
+              code=$(curl -L -sS --max-time 20 -o "$out" -w '%{http_code}' "$url/$path" || true)
               actual=$(sha256sum "$out" 2>/dev/null | cut -d' ' -f1 || true)
-              echo "$path poll=$i http=$code actual=$actual"
+              echo "$label poll=$i http=$code actual=$actual"
               if [[ "$code" == 200 && "$actual" == "$expected" ]]; then ok=1; break; fi
               sleep 3
             done
             test "$ok" = 1
           }
-          verify guide.html reference/business-06-world-feed-v1/guide.html /tmp/guide.html
-          verify index.html reference/business-06-world-feed-v1/index.html /tmp/index.html
-          curl --fail-with-body -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}" > /tmp/project-after.json
-          python3 - <<'PY'
-          import json
-          p=json.load(open('/tmp/project-after.json'))['result']; d=p.get('canonical_deployment') or {}
-          m=((d.get('deployment_trigger') or {}).get('metadata') or {})
-          print('CANONICAL_ENV='+str(d.get('environment')))
-          print('CANONICAL_ID='+str(d.get('id')))
-          print('CANONICAL_BRANCH='+str(m.get('branch')))
-          print('CANONICAL_HASH='+str(m.get('commit_hash')))
-          assert d.get('environment') == 'production'
-          assert m.get('branch') == 'main'
-          PY
-          echo 'B6_CANONICAL_EXACT_MAIN_VERIFIED=1'
+          verify "$B6_URL" guide.html reference/business-06-world-feed-v1/guide.html /tmp/b6-guide.html B6_GUIDE
+          verify "$B6_URL" index.html reference/business-06-world-feed-v1/index.html /tmp/b6-index.html B6_ROOT
+          verify "$B9_URL" guide.html reference/business-09-personalized-childrens-story-v1/guide.html /tmp/b9-guide.html B9_GUIDE
+          verify "$B9_URL" ux.html reference/business-09-personalized-childrens-story-v1/ux.html /tmp/b9-ux.html B9_UX
+          verify "$B9_URL" index.html reference/business-09-personalized-childrens-story-v1/index.html /tmp/b9-index.html B9_ROOT
+          echo 'B6_B9_CANONICAL_BYTES_VERIFIED=1'
