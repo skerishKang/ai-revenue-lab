@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" role="img" aria-labelledby="t d">
+<title id="t">저녁 청취 풍경</title><desc id="d">산책길과 절제된 신호 리본을 추상화한 원본 벡터</desc>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#26384a"/><stop offset=".6" stop-color="#5c7694"/><stop offset="1" stop-color="#c1a77f"/></linearGradient>
+ <linearGradient id="path" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2eee5" stop-opacity=".04"/><stop offset="1" stop-color="#f2eee5" stop-opacity=".55"/></linearGradient>
+ <filter id="noise"><feTurbulence baseFrequency=".9" numOctaves="2" seed="7"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .06 0"/></filter>
+</defs>
+<rect width="1600" height="1100" fill="url(#sky)"/>
+<circle cx="1240" cy="210" r="130" fill="#f2d6a2" opacity=".75"/>
+<path d="M0 620c260-90 460-72 690 26 288 123 526 86 910-67v521H0z" fill="#1d2929"/>
+<path d="M0 745c275-92 512-72 740 40 295 144 498 135 860-15v330H0z" fill="#11151b"/>
+<path d="M690 1100c-28-168 4-303 94-421 92-119 214-201 365-292-78 113-150 231-178 356-27 121-12 239 20 357z" fill="url(#path)"/>
+<g fill="#f2eee5" opacity=".7"><circle cx="278" cy="650" r="4"/><circle cx="350" cy="666" r="3"/><circle cx="448" cy="684" r="5"/><circle cx="1222" cy="585" r="4"/><circle cx="1328" cy="553" r="5"/></g>
+<path d="M180 330c130-95 255-110 374-28 97 67 171 73 274 12 116-69 227-57 350 37" fill="none" stroke="#c58a3d" stroke-width="10" stroke-linecap="round" opacity=".9"/>
+<path d="M180 330c130-95 255-110 374-28 97 67 171 73 274 12 116-69 227-57 350 37" fill="none" stroke="#f2eee5" stroke-width="2" stroke-dasharray="8 22" stroke-linecap="round" opacity=".7"/>
+<g transform="translate(158 294)" fill="#f2eee5"><circle cx="0" cy="0" r="7"/><circle cx="256" cy="-54" r="7"/><circle cx="514" cy="30" r="7"/><circle cx="782" cy="14" r="7"/><circle cx="1018" cy="57" r="7"/></g>
+<rect width="1600" height="1100" filter="url(#noise)"/>
+</svg>

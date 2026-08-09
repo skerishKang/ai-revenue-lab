@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-labelledby="t d">
+<title id="t">오늘의 저녁 산책 편지 표지</title><desc id="d">밤의 도시, 접힌 종이와 잔잔한 음성 리본을 표현한 원본 벡터</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#11151b"/><stop offset=".55" stop-color="#273746"/><stop offset="1" stop-color="#5c7694"/></linearGradient>
+ <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f2d4a2"/><stop offset="1" stop-color="#c58a3d" stop-opacity="0"/></linearGradient>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="3" seed="18"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .08 0"/></filter>
+</defs>
+<rect width="1200" height="1500" fill="url(#bg)"/>
+<circle cx="820" cy="260" r="230" fill="url(#glow)" opacity=".72"/>
+<path d="M0 955C190 860 334 878 505 963s328 82 695-69v606H0z" fill="#11151b" opacity=".92"/>
+<path d="M0 1030c210-100 350-87 540 3 183 87 371 45 660-55" fill="none" stroke="#f2eee5" stroke-opacity=".3" stroke-width="2"/>
+<path d="M44 1204c208-93 367-87 548 0 188 90 353 70 562-26" fill="none" stroke="#c58a3d" stroke-width="7" stroke-linecap="round"/>
+<g fill="#f2eee5" opacity=".88">
+ <rect x="88" y="652" width="170" height="290" rx="2"/><rect x="275" y="585" width="115" height="357" rx="2"/><rect x="410" y="708" width="205" height="234" rx="2"/><rect x="636" y="520" width="126" height="422" rx="2"/><rect x="785" y="635" width="250" height="307" rx="2"/>
+</g>
+<g fill="#11151b" opacity=".8">
+ <rect x="116" y="693" width="22" height="22"/><rect x="164" y="693" width="22" height="22"/><rect x="212" y="693" width="22" height="22"/>
+ <rect x="300" y="625" width="18" height="18"/><rect x="342" y="625" width="18" height="18"/><rect x="300" y="671" width="18" height="18"/><rect x="342" y="671" width="18" height="18"/>
+ <rect x="445" y="747" width="38" height="18"/><rect x="514" y="747" width="38" height="18"/><rect x="445" y="794" width="38" height="18"/><rect x="514" y="794" width="38" height="18"/>
+ <rect x="664" y="559" width="28" height="28"/><rect x="714" y="559" width="28" height="28"/><rect x="664" y="617" width="28" height="28"/><rect x="714" y="617" width="28" height="28"/>
+ <rect x="828" y="683" width="48" height="20"/><rect x="914" y="683" width="48" height="20"/><rect x="828" y="735" width="48" height="20"/><rect x="914" y="735" width="48" height="20"/>
+</g>
+<path d="M95 210l515 185-205 255L95 210z" fill="#fcfaf5" opacity=".92"/>
+<path d="M95 210l310 440 54-270 151 15z" fill="#d2ccc0" opacity=".95"/>
+<path d="M95 210l515 185" stroke="#a65348" stroke-width="10"/>
+<g transform="translate(78 1285)" fill="#fcfaf5"><circle cx="0" cy="0" r="5"/><circle cx="45" cy="0" r="5"/><circle cx="90" cy="0" r="5"/><circle cx="135" cy="0" r="5"/><circle cx="180" cy="0" r="5"/></g>
+<rect width="1200" height="1500" filter="url(#grain)" opacity=".85"/>
+</svg>
