@@ -1,0 +1,33 @@
+name: Inspect B7 Pages Project 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/inspect-b7-project-465.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-guides-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: List candidate existing Pages projects for B7
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects?per_page=100" > /tmp/projects.json
+          python3 - <<'PY'
+          import json
+          rows=(json.load(open('/tmp/projects.json')).get('result') or [])
+          for p in rows:
+              name=str(p.get('name') or '')
+              low=name.lower()
+              if 'meaning' in low or low.startswith('07-') or '-07-' in low or low.endswith('-07'):
+                  print('CANDIDATE='+name+'|subdomain='+str(p.get('subdomain'))+'|production_branch='+str(((p.get('source') or {}).get('config') or {}).get('production_branch')))
+          print('TOTAL_PROJECTS='+str(len(rows)))
+          PY
