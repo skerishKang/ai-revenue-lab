@@ -1,7 +1,7 @@
 /*  business-identity-core.js  —  SINGLE SOURCE for B1–59 phase authority (Phase 2A+)
  *
- *  Static portfolio phase status only. Volatile Issue/PR/CI/SHA facts remain
- *  outside this file. B56 is an intentional numbering gap.
+ * Static portfolio phase status only. Volatile Issue/PR/CI/SHA facts remain
+ * outside this file. B56 is an intentional numbering gap.
  */
 
 (function (root, factory) {
@@ -17,7 +17,7 @@
     { n:2,  ui:"UI_APPROVED",   ux:"NOT_STARTED",    be:"IMPLEMENTED" },
     { n:3,  ui:"UI_APPROVED",   ux:"NOT_STARTED",    be:"IMPLEMENTED" },
     { n:4,  ui:"UI_APPROVED",   ux:"NOT_STARTED",    be:"NOT_APPLICABLE" },
-    { n:5,  ui:"IN_PROGRESS",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
+    { n:5,  ui:"NOT_APPLICABLE",ux:"NOT_APPLICABLE", be:"NOT_APPLICABLE" },
     { n:6,  ui:"UI_APPROVED",   ux:"UX_NOT_READY",   be:"FROZEN" },
     { n:7,  ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"FROZEN" },
     { n:8,  ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"FROZEN" },
