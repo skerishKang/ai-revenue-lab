@@ -1,0 +1,48 @@
+name: Prepare B15 Complete 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/prepare-b15-complete-465.yml'
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.event.pull_request.head.ref == 'ops/prepare-b15-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize approved B15 UI plus existing UX on exact main
+        shell: bash
+        env:
+          EXPECTED_MAIN: 390953dcaa8271b4a2b3dbc76766ce1f70f986a0
+          TARGET_BRANCH: feat/b15-global-ai-newsroom-complete-465
+          UI_BRANCH: feat/business-15-global-ai-newsroom-ui
+          UX_BRANCH: feat/business-15-global-ai-newsroom-ux-396
+          SCOPE: reference/business-15-global-ai-newsroom-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
+          git fetch origin "$UI_BRANCH" "$UX_BRANCH"
+          test "$(git rev-parse origin/$UI_BRANCH)" = 14edd4ef9879f0cc035d0018ad8c0a78fb231324
+          test "$(git rev-parse origin/$UX_BRANCH)" = 8b490afaa3808860c05dc6f0aa4e18d4ae26b1e0
+          if git ls-tree -r --name-only HEAD -- "$SCOPE" | grep -q .; then
+            echo 'B15 scope unexpectedly exists on current main; refusing overwrite' >&2
+            exit 1
+          fi
+          git switch -c "$TARGET_BRANCH"
+          git checkout "origin/$UI_BRANCH" -- "$SCOPE"
+          git checkout "origin/$UX_BRANCH" -- "$SCOPE/ux.html"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$SCOPE"
+          git diff --cached --check
+          git commit -m 'feat(b15): integrate approved newsroom UI and briefing UX'
+          git push origin "$TARGET_BRANCH"
+          echo B15_PREPARE_PASS=1
