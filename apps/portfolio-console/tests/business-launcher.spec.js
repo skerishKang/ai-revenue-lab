@@ -90,7 +90,7 @@ test.describe('Portfolio Console Business Launcher', () => {
   test('B5 is shown as expanded to DanjiOn with authoritative source link', async ({ page }) => {
     const row = page.locator('.biz-item[data-biz-number="5"]');
     await expect(row).toHaveAttribute('data-boundary-kind', 'expanded-successor');
-    await expect(row.locator('.biz-expanded-lineage')).toHaveText('단지온으로 확장 · 외부 개발');
+    await expect(row.locator('.biz-expanded-lineage')).toHaveText('확장 → 단지온 · 외부 개발');
     await expect(row.locator('.biz-launch-external')).toHaveAttribute('href', 'https://github.com/skerishKang/02-danji-on');
   });
 
@@ -107,14 +107,14 @@ test.describe('Portfolio Console Business Launcher', () => {
     for (const number of [26, 28, 50]) {
       const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
       await expect(row).toHaveAttribute('data-boundary-kind', 'integrated-successor');
-      await expect(row.locator('.biz-expanded-lineage')).toHaveText('이어온으로 통합 · 외부 개발');
+      await expect(row.locator('.biz-expanded-lineage')).toHaveText('통합 → 이어온 · 외부 개발');
       await expect(row.locator('.biz-launch-state')).toHaveText('외부 작업');
       await expect(row.locator('.biz-launch-external')).toHaveCount(0);
     }
     for (const number of [27, 31]) {
       const row = page.locator(`.biz-item[data-biz-number="${number}"]`);
       await expect(row).toHaveAttribute('data-boundary-kind', 'integrated-successor');
-      await expect(row.locator('.biz-expanded-lineage')).toHaveText('사실로으로 통합 · 외부 개발');
+      await expect(row.locator('.biz-expanded-lineage')).toHaveText('통합 → 사실로 · 외부 개발');
       await expect(row.locator('.biz-launch-state')).toHaveText('외부 작업');
       await expect(row.locator('.biz-launch-external')).toHaveCount(0);
     }
@@ -123,7 +123,7 @@ test.describe('Portfolio Console Business Launcher', () => {
   test('B30 points to 400-ai-finder instead of an internal placeholder', async ({ page }) => {
     const row = page.locator('.biz-item[data-biz-number="30"]');
     await expect(row).toHaveAttribute('data-boundary-kind', 'expanded-successor');
-    await expect(row.locator('.biz-expanded-lineage')).toHaveText('400-ai-finder으로 확장 · 외부 개발');
+    await expect(row.locator('.biz-expanded-lineage')).toHaveText('확장 → 400-ai-finder · 외부 개발');
     await expect(row.locator('.biz-launch-external')).toHaveAttribute('href', 'https://github.com/skerishKang/400-ai-finder');
   });
 
