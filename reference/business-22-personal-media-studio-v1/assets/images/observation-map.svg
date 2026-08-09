@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" role="img" aria-labelledby="title desc">
+  <title id="title">합성 관찰 동선 지도</title>
+  <desc id="desc">실재 지리와 무관한 새벽시장 관찰 동선 개념도.</desc>
+  <rect width="720" height="460" fill="#eee6d5"/>
+  <g stroke="#87969b" stroke-width="1.5" fill="none" opacity=".8">
+    <path d="M40 92h640M40 196h640M40 306h640"/>
+    <path d="M118 40v380M276 40v380M442 40v380M602 40v380"/>
+  </g>
+  <path d="M86 348c70-30 90-137 184-126 82 10 84 97 164 93 74-4 80-98 196-164" fill="none" stroke="#e85b40" stroke-width="8" stroke-linecap="round" stroke-dasharray="4 16"/>
+  <g fill="#1c2729" stroke="#eee6d5" stroke-width="5">
+    <circle cx="88" cy="348" r="13"/><circle cx="270" cy="222" r="13"/><circle cx="434" cy="315" r="13"/><circle cx="630" cy="151" r="13"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="16" fill="#1c2729">
+    <text x="42" y="390">A · 첫 불빛</text><text x="225" y="188">B · 손수레 교차</text><text x="386" y="354">C · 상자 소리</text><text x="548" y="120">D · 문 여는 시간</text>
+    <text x="40" y="30">OBSERVATION MAP · SYNTHETIC</text>
+  </g>
+</svg>

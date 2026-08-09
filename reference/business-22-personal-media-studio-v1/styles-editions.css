@@ -1,0 +1,50 @@
+/* Suite */
+.edition-suite { display: grid; grid-template-columns: 1.15fr .72fr .82fr; grid-template-areas: "article article audio" "video cards cards" "newsletter interview book"; gap: 18px; align-items: stretch; }
+.edition-suite article { min-width: 0; }
+.edition-suite header span, .edition-suite footer { font: 9px var(--mono); letter-spacing: .06em; }
+.edition-suite header b { display: block; margin-top: 6px; }
+.article-galley { grid-area: article; padding: 22px; }
+.article-galley header { border-top: 7px solid var(--red); padding-top: 11px; }
+.article-galley header b { font-family: var(--serif); font-size: 32px; }
+.galley-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; margin-top: 18px; }
+.galley-layout h3 { font-family: var(--serif); font-size: 40px; line-height: .92; letter-spacing: -.04em; margin: 0 0 18px; }
+.galley-layout p { font-family: var(--serif); line-height: 1.75; font-size: 15px; }
+.galley-layout .lead { font-weight: 700; font-size: 17px; }
+.galley-layout figure img { height: 280px; width: 100%; object-fit: cover; }
+.galley-layout figcaption { margin-top: 6px; font: 9px var(--mono); }
+.article-galley footer { border-top: 1px solid rgba(24,33,36,.25); padding-top: 10px; margin-top: 18px; }
+.audio-cue { grid-area: audio; background: #1b2325; border: 1px solid rgba(137,172,197,.4); padding: 20px; }
+.audio-cue header b { color: var(--paper); font-family: var(--serif); font-size: 22px; }
+.audio-cue header span { color: var(--blue); }
+.cue-line { display: grid; grid-template-columns: 48px 1fr; gap: 8px; margin-top: 18px; position: relative; }
+.cue-line time { color: var(--yellow); font: 10px var(--mono); }
+.cue-line span { position: absolute; left: 54px; top: 7px; width: 28px; height: 1px; background: var(--blue); }
+.cue-line p { grid-column: 2; margin: 0; padding-left: 40px; font-size: 12px; line-height: 1.5; }
+.audio-bars { height: 66px; display: flex; gap: 4px; align-items: center; margin-top: 18px; }
+.audio-bars i { flex: 1; background: var(--blue); height: 20%; }
+.audio-bars i:nth-child(2n) { height: 70%; }.audio-bars i:nth-child(3n) { height: 42%; }.audio-bars i:nth-child(5n) { height: 90%; }
+.audio-cue footer { color: var(--muted); margin-top: 10px; }
+.video-proof { grid-area: video; background: #13191b; border: 1px solid var(--line); padding: 16px; }
+.video-proof header { margin-bottom: 12px; }.video-proof header span { color: var(--red); }.video-proof header b { font-family: var(--serif); font-size: 22px; }
+.video-proof footer { color: var(--muted); margin-top: 10px; }
+.visual-cards { grid-area: cards; border-top: 6px solid var(--yellow); padding: 16px 0 0; }
+.visual-cards header { display: flex; align-items: end; justify-content: space-between; margin-bottom: 12px; }.visual-cards header b { font-family: var(--serif); font-size: 26px; }
+.contact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.contact-grid figure { min-height: 210px; background: var(--paper); color: var(--ink); padding: 8px; }
+.contact-grid i { display: block; height: 125px; background: var(--ink); position: relative; overflow: hidden; }
+.contact-grid i::before { content: ""; position: absolute; inset: 20px; border: 3px solid var(--blue); transform: skew(-8deg); }
+.contact-grid .scene-b::before { border-color: var(--red); border-radius: 50%; }
+.contact-grid .scene-c::before { inset: 50px 18px 18px; border-color: var(--yellow); }
+.contact-grid .scene-d::before { inset: 18px 65px; border-color: var(--red); }
+.contact-grid figcaption { font-family: var(--serif); font-size: 16px; line-height: 1.1; margin-top: 10px; }
+.visual-cards footer { color: var(--muted); margin-top: 8px; }
+.newsletter-fold { grid-area: newsletter; display: grid; grid-template-columns: 1fr 1fr; min-height: 260px; }
+.newsletter-fold > div { padding: 20px; }
+.fold-left { border-right: 1px dashed rgba(24,33,36,.35); background: linear-gradient(135deg,rgba(232,91,63,.09),transparent); }
+.fold-left span { font: 9px var(--mono); }.fold-left h3 { font-family: var(--serif); font-size: 30px; line-height: .95; margin: 14px 0; }.fold-left p { line-height: 1.55; font-size: 12px; }
+.fold-right strong { display: block; border-bottom: 3px solid var(--ink); padding-bottom: 8px; }.fold-right ol { padding-left: 18px; line-height: 1.9; }.fold-right small { font: 9px var(--mono); color: #687476; }
+.interview-proof { grid-area: interview; border: 1px solid var(--line); padding: 20px; background: var(--studio-2); }
+.interview-proof header span { color: var(--yellow); }.interview-proof header b { font-family: var(--serif); font-size: 24px; line-height: 1.1; margin-top: 12px; }
+.interview-proof dl div { display: grid; grid-template-columns: 28px 1fr; gap: 10px; border-top: 1px solid var(--line); padding: 12px 0; }.interview-proof dt { font: 700 18px var(--serif); color: var(--red); }.interview-proof dd { margin: 0; font-size: 13px; line-height: 1.6; }.interview-proof footer { color: var(--muted); }
+.book-signature { grid-area: book; padding: 22px 24px; position: relative; border-bottom: 12px solid var(--red); }
+.folio-number { position: absolute; right: 18px; top: 14px; font: 38px var(--serif); color: rgba(24,33,36,.18); }.book-signature header span { color: #687476; }.book-signature header b { font-family: var(--serif); font-size: 26px; }.book-signature > p { font-family: var(--serif); font-size: 14px; line-height: 1.75; }.book-signature .dropcap { float: left; font-size: 72px; line-height: .8; margin: 8px 8px 0 0; color: var(--red); }.book-signature footer { border-top: 1px solid rgba(24,33,36,.25); padding-top: 9px; margin-top: 18px; }
