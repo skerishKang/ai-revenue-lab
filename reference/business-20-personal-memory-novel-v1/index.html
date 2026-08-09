@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Proposed Business 20 Personal Memory Novel Phase 1 visual UI reference">
+  <meta name="robots" content="noindex,nofollow">
+  <title>나의 기억소설 · 기억의 원고</title>
+  <link rel="stylesheet" href="styles.css?v=memory-novel-20260727-1">
+</head>
+<body>
+  <a class="skip-link" href="#visual-stage">원고 화면으로 건너뛰기</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="identity">
+        <span class="monogram" aria-hidden="true">記</span>
+        <div>
+          <p class="eyebrow">Proposed Business 20 · Personal Memory Novel</p>
+          <h1>나의 기억소설 <span>Memory Manuscript</span></h1>
+        </div>
+      </div>
+      <div class="synthetic-stamp">모든 인물·자료·장면은 합성입니다 <span>/ SYNTHETIC</span></div>
+    </header>
+
+    <nav class="review-nav" aria-label="시각 상태 검토">
+      <div class="review-heading"><strong>VISUAL REVIEW</strong><span>상태 전환은 검토용이며 UX 승인이 아닙니다.</span></div>
+      <div class="state-tabs" role="tablist" aria-label="기억소설 시각 상태">
+        <button role="tab" aria-selected="true" data-state-target="cover"><b>01</b><span>표지</span></button>
+        <button role="tab" aria-selected="false" data-state-target="source"><b>02</b><span>원래 기억</span></button>
+        <button role="tab" aria-selected="false" data-state-target="draft"><b>03</b><span>장면 초고</span></button>
+        <button role="tab" aria-selected="false" data-state-target="map"><b>04</b><span>변형 지도</span></button>
+        <button role="tab" aria-selected="false" data-state-target="versions"><b>05</b><span>두 문장</span></button>
+        <button role="tab" aria-selected="false" data-state-target="proof"><b>06</b><span>작가 검토본</span></button>
+        <button role="tab" aria-selected="false" data-state-target="mobile"><b>07</b><span>모바일</span></button>
+      </div>
+    </nav>
+
+    <main id="visual-stage" class="visual-stage" tabindex="-1">
+      <section class="visual-state state-cover is-active" data-state="cover" aria-labelledby="cover-title">
+        <figure class="cover-image"><img src="assets/images/station-winter.svg" alt="가상의 온새미역과 겨울 마지막 열차를 그린 원본 일러스트"></figure>
+        <article class="cover-board">
+          <p class="folio">PRIVATE MANUSCRIPT · SYNTHETIC MEMORY 01</p>
+          <div class="cover-title-block">
+            <p>기억의 원고</p>
+            <h2 id="cover-title">마지막 열차가 오기 전,<br>눈은 소리를 먼저 지웠다</h2>
+            <span>2003년 겨울 · 가상의 온새미역</span>
+          </div>
+          <div class="cover-meta">
+            <div><span>원래 기억</span><strong>마지막 열차를 기다린 밤</strong></div>
+            <div><span>사실 앵커</span><strong>시간표 · 메모 · 날씨 기록</strong></div>
+            <div><span>창작 변형</span><strong>합성 인물 · 대화 · 순서 재배치</strong></div>
+          </div>
+          <div class="cover-seal">AUTHORIAL CONTROL<br><small>최종 작가는 사용자입니다</small></div>
+        </article>
+      </section>
+
+      <section class="visual-state state-source" data-state="source" aria-labelledby="source-title" hidden>
+        <header class="spread-header">
+          <div><p class="folio">SOURCE MEMORY / 원래 기억</p><h2 id="source-title">사실이 남아 있는 자리부터 시작한다</h2></div>
+          <p>확인된 자료와 기억의 빈틈을 같은 문장으로 섞지 않습니다. 불확실성은 불확실성으로 남겨 둡니다.</p>
+        </header>
+        <div class="source-grid">
+          <figure class="contact-sheet"><img src="assets/images/source-contact-sheet.svg" alt="가상 온새미역 시간표와 플랫폼을 담은 합성 연락사진 시트"><figcaption>합성 자료 · 실제 장소와 무관 · 2003 WINTER SOURCE SET</figcaption></figure>
+          <article class="memory-ledger">
+            <div class="ledger-row"><span class="label fact">FACT</span><div><strong>시간</strong><p>2003년 12월, 밤 10시 이후. 시간표 사진에 막차 표기가 남아 있다.</p></div></div>
+            <div class="ledger-row"><span class="label fact">FACT</span><div><strong>장소</strong><p>가상의 온새미역 2번 승강장. 젖은 콘크리트 바닥과 노란 안전선.</p></div></div>
+            <div class="ledger-row"><span class="label inference">INFERENCE</span><div><strong>감정</strong><p>돌아갈 수 없다는 생각보다, 아무 말도 하지 못했다는 마음이 더 오래 남은 것으로 보인다.</p></div></div>
+            <div class="ledger-row"><span class="label redacted">REDACTED</span><div><strong>사적 정보</strong><p><span class="redaction">제3자와 관련된 구체적 사건 및 식별 단서</span></p></div></div>
+            <aside class="uncertainty"><strong>기억의 불확실성</strong><p>역무원의 얼굴, 열차 지연 시간, 이모가 실제로 한 말은 확인되지 않음.</p></aside>
+          </article>
+          <figure class="note-fragment"><img src="assets/images/handwritten-note.svg" alt="막차와 눈에 관한 합성 손글씨 기억 메모"><figcaption>짧은 메모 · 합성 필체 · 식별 가능한 실제 필체 아님</figcaption></figure>
+          <aside class="weather-card"><span>WEATHER RECORD · SYNTHETIC</span><strong>−4.2°C</strong><p>21:40부터 약한 눈. 북서풍 2.8m/s. 관측소와 수치는 모두 합성.</p></aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-draft" data-state="draft" aria-labelledby="draft-title" hidden>
+        <header class="spread-header compact">
+          <div><p class="folio">SCENE DRAFT / 장면 초고</p><h2 id="draft-title">눈이 소리를 먼저 지우던 밤</h2></div>
+          <button class="motion-replay" type="button" data-motion-replay>사실과 창작의 접힘 재생</button>
+        </header>
+        <div class="manuscript-worktable" data-fold-stage>
+          <aside class="source-margin">
+            <p>ANCHORS</p>
+            <span class="anchor-chip">22:18 시간표</span>
+            <span class="anchor-chip">2번 승강장</span>
+            <span class="anchor-chip">약한 눈</span>
+            <span class="anchor-chip">짧은 메모</span>
+          </aside>
+          <article class="scene-page">
+            <div class="page-head"><span>CHAPTER 01 · DRAFT 3</span><span>합성 장면</span></div>
+            <p class="fact-line"><span class="margin-rule fact-rule">FACT</span>열 시가 넘자 온새미역의 매표창구는 불을 반쯤 내렸다. 2번 승강장 끝에는 마지막 열차의 시각만 남아 있었다.</p>
+            <p class="inference-line"><span class="margin-rule inference-rule">INFERENCE</span>서진은 떠나는 일이 아니라, 남겨 둔 말의 무게를 견디고 있는 듯했다.</p>
+            <p class="fiction-line"><span class="margin-rule fiction-rule">FICTION</span>이모는 장갑을 벗지 않은 채 말했다. “기차가 늦는 건 우리 잘못이 아니야.” 서진은 노란 선을 바라보며 대답했다. “그래도 기다린 건 우리잖아.” 이름 없는 역무원이 멀리서 말했다. “오늘 막차는 천천히 들어옵니다.”</p>
+            <p class="redacted-line"><span class="margin-rule redacted-rule">REDACTED</span>그날 두 사람이 역까지 오게 된 이유는 <span class="redaction long">제3자의 사생활과 연결되어 삭제됨</span>.</p>
+            <p class="scene-close">눈은 선로 위의 쇳소리를 덮었고, 열차가 오기 전까지 역은 누구의 편도 들지 않았다.</p>
+            <aside class="approval-note"><span class="label approved">AUTHOR APPROVED</span><p>사실과 창작의 경계가 보이는 상태로 이 장면의 정서를 승인함. 대화는 모두 창작임을 유지할 것.</p></aside>
+          </article>
+          <aside class="ethics-margin">
+            <p>TRANSFORMATION NOTES</p>
+            <div><span>합성 인물</span><strong>역무원</strong></div>
+            <div><span>창작 대화</span><strong>3문장</strong></div>
+            <div><span>시간 재배치</span><strong>후반부 → 도입부</strong></div>
+            <div><span>삭제 유지</span><strong>사적 원인</strong></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-map" data-state="map" aria-labelledby="map-title" hidden>
+        <header class="spread-header">
+          <div><p class="folio">TRANSFORMATION MAP / 변형 지도</p><h2 id="map-title">무엇을 남기고, 무엇을 바꾸었는가</h2></div>
+          <p>문학적 효과는 사실을 숨기는 장치가 아니라, 변형의 위치를 드러내는 별도 층으로 기록합니다.</p>
+        </header>
+        <div class="map-layout">
+          <figure class="map-figure"><img src="assets/images/transformation-map.svg" alt="사실, 추론, 창작, 삭제, 작가 승인 단계의 합성 변형 지도"><figcaption>원자료에서 작가 승인본까지 · 모든 노드 합성</figcaption></figure>
+          <div class="map-key">
+            <article><span class="label fact">FACT</span><h3>보존</h3><p>겨울, 막차, 2번 승강장, 시간표 사진</p></article>
+            <article><span class="label inference">INFERENCE</span><h3>해석</h3><p>말하지 못한 감정의 잔류</p></article>
+            <article><span class="label fiction">FICTION</span><h3>발명</h3><p>역무원, 대화 세 문장, 상징적 결말</p></article>
+            <article><span class="label redacted">REDACTED</span><h3>삭제</h3><p>제3자의 식별 정보와 사건 원인</p></article>
+            <article><span class="label approved">AUTHOR APPROVED</span><h3>승인</h3><p>정서적 진실은 유지하되 변형 표시는 삭제하지 않음</p></article>
+          </div>
+          <aside class="transformation-summary">
+            <div><span>COMPRESSED</span><strong>40분의 대기 → 6분의 장면</strong></div>
+            <div><span>REORDERED</span><strong>메모의 마지막 문장을 도입부로</strong></div>
+            <div><span>COMBINED</span><strong>두 개의 주변 기억 → 합성 역무원</strong></div>
+            <div><span>UNRESOLVED</span><strong>이모의 실제 발언 여부</strong></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-versions" data-state="versions" aria-labelledby="versions-title" hidden>
+        <header class="spread-header">
+          <div><p class="folio">TWO VERSIONS / 두 개의 문장</p><h2 id="versions-title">기록과 문학은 서로 다른 책임을 가진다</h2></div>
+          <p>어느 문장이 더 우월한지 점수화하지 않습니다. 무엇을 확인했고 무엇을 변형했는지만 비교합니다.</p>
+        </header>
+        <div class="versions-grid">
+          <article class="version documentary">
+            <div class="version-head"><span>DOCUMENTARY</span><strong>기록 문장</strong></div>
+            <blockquote>“2003년 12월 밤, 온새미역 2번 승강장에서 막차를 기다렸다. 눈이 내렸고 열차는 시간표보다 늦게 도착했다.”</blockquote>
+            <dl><div><dt>근거</dt><dd>시간표 사진, 날씨 기록</dd></div><div><dt>불확실성</dt><dd>정확한 지연 시간</dd></div><div><dt>변형</dt><dd>없음</dd></div></dl>
+          </article>
+          <div class="comparison-axis" aria-hidden="true"><span>같은 기억</span><i></i><span>다른 처리</span></div>
+          <article class="version literary">
+            <div class="version-head"><span>LITERARY</span><strong>문학 문장</strong></div>
+            <blockquote>“눈은 선로 위의 쇳소리를 먼저 지웠고, 막차가 오기 전까지 역은 누구의 편도 들지 않았다.”</blockquote>
+            <dl><div><dt>근거</dt><dd>눈, 선로, 대기</dd></div><div><dt>추론</dt><dd>정서적 고립</dd></div><div><dt>창작</dt><dd>‘역은 누구의 편도 들지 않았다’</dd></div></dl>
+          </article>
+        </div>
+        <aside class="author-choice"><span class="label approved">AUTHOR APPROVED</span><p>문학 문장을 본문에 사용하되, 장면 끝의 변형 주석에서 창작 표현임을 밝힌다.</p></aside>
+      </section>
+
+      <section class="visual-state state-proof" data-state="proof" aria-labelledby="proof-title" hidden>
+        <header class="spread-header compact">
+          <div><p class="folio">AUTHOR PROOF / 작가 검토본</p><h2 id="proof-title">승인된 문장에도 질문은 남는다</h2></div>
+          <span class="proof-status">PROOF 04 · NOT FOR PUBLICATION</span>
+        </header>
+        <div class="proof-layout">
+          <figure class="proof-image"><img src="assets/images/manuscript-proof.svg" alt="붉은 교정 부호와 삭제 표시가 있는 합성 원고 교정본"><figcaption>합성 교정지 · 실제 출판 원고 아님</figcaption></figure>
+          <article class="approved-passage">
+            <div class="approval-band"><span class="label approved">AUTHOR APPROVED</span><span>2026.07.27 · 합성 검토 기록</span></div>
+            <h3>장면 01 — 마지막 열차</h3>
+            <p>열 시가 넘자 온새미역의 매표창구는 불을 반쯤 내렸다. 2번 승강장 끝에는 마지막 열차의 시각만 남아 있었다.</p>
+            <p>서진은 떠나는 일이 아니라, 남겨 둔 말의 무게를 견디고 있는 듯했다.</p>
+            <p class="approved-fiction">이모는 장갑을 벗지 않은 채 말했다. “기차가 늦는 건 우리 잘못이 아니야.”</p>
+            <p>눈은 선로 위의 쇳소리를 덮었고, 열차가 오기 전까지 역은 누구의 편도 들지 않았다.</p>
+            <div class="passage-legend"><span><i class="fact-dot"></i>사실 근거</span><span><i class="inference-dot"></i>추론</span><span><i class="fiction-dot"></i>창작</span></div>
+          </article>
+          <aside class="ethical-questions">
+            <p class="folio">UNRESOLVED NOTES</p>
+            <ol><li><strong>이모라는 호칭</strong><span>실제 관계를 연상시키지 않도록 완전한 합성 인물임을 유지할 것.</span></li><li><strong>대화 세 문장</strong><span>원문 기억이 아니라 장면을 위해 창작된 대화임을 명시할 것.</span></li><li><strong>삭제된 사건</strong><span>맥락 설명을 위해 다시 노출하지 말 것.</span></li></ol>
+            <div class="final-note"><strong>최종 작가 메모</strong><p>“이 장면은 사실의 복원이 아니라, 기억이 남긴 감정의 형태를 책임 있게 소설화한 것이다.”</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="visual-state state-mobile" data-state="mobile" aria-labelledby="mobile-title" hidden>
+        <div class="mobile-stage">
+          <article class="phone-manuscript">
+            <header><p>기억의 원고 · 장면 01</p><span>합성 장면</span></header>
+            <div class="mobile-photo"><img src="assets/images/station-winter.svg" alt="가상의 온새미역 겨울 장면"><span>2003 WINTER · ONSAEMI</span></div>
+            <p class="mobile-source"><span class="label fact">FACT</span> 2번 승강장 · 마지막 열차 시간표 · 약한 눈</p>
+            <h2 id="mobile-title">눈이 소리를 먼저 지우던 밤</h2>
+            <p class="mobile-prose fact-mobile">열 시가 넘자 매표창구는 불을 반쯤 내렸다.</p>
+            <p class="mobile-prose inference-mobile">서진은 남겨 둔 말의 무게를 견디고 있는 듯했다.</p>
+            <p class="mobile-prose fiction-mobile">“기차가 늦는 건 우리 잘못이 아니야.” 이모가 말했다.</p>
+            <p class="mobile-redacted"><span class="label redacted">REDACTED</span><span class="redaction">제3자 관련 사건</span></p>
+            <aside><span class="label approved">AUTHOR APPROVED</span><p>대화는 창작. 감정의 방향만 승인.</p></aside>
+            <footer><span>01 / 07</span><strong>PRIVATE PROOF</strong></footer>
+          </article>
+          <div class="mobile-side-note"><p>모바일 장면 읽기</p><span>출처 표식과 변형 라벨을 본문 흐름에서 분리하지 않습니다.</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js?v=memory-novel-20260727-1"></script>
+</body>
+</html>
