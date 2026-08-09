@@ -117,6 +117,15 @@
     reducedMotion.addListener(updateMotionPreference);
   }
 
+  const reviewHeader = document.querySelector('.review-header, .review-rail, header');
+  if (reviewHeader) {
+    const links = document.createElement('div');
+    links.setAttribute('aria-label', '제품 사용 링크');
+    links.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font:700 12px Arial,sans-serif';
+    links.innerHTML = '<a href="./guide.html" style="color:inherit;text-underline-offset:3px">30초 사용법</a><a href="./ux.html#cover" style="color:inherit;text-underline-offset:3px">이번 호 체험</a>';
+    reviewHeader.appendChild(links);
+  }
+
   updateMotionPreference();
   showState(window.location.hash.slice(1), { updateHash: true });
 })();
