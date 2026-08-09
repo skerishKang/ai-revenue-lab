@@ -25,7 +25,7 @@ jobs:
           TARGET_BRANCH: feat/b29-apartment-governance-complete-465
           UI_BRANCH: feat/business-29-apartment-governance-ui
           UI_SCOPE: reference/business-29-apartment-governance-v1
-          UX_BRANCH: ux/business-29-apartment-governance
+          UX_BRANCH: feat/business-29-apartment-governance-ux
           UX_SCOPE: reference/business-29-apartment-governance-ux
         run: |
           set -euo pipefail
@@ -33,7 +33,7 @@ jobs:
           test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$EXPECTED_MAIN"
           git fetch origin "$UI_BRANCH" "$UX_BRANCH"
           test "$(git rev-parse origin/$UI_BRANCH)" = d0bf2107de356501d3bfecab0576e44f83f24ab8
-          test "$(git rev-parse origin/$UX_BRANCH)" = 8e610431ed1cbcb5c2e93f89cbb12433a50b5752
+          test "$(git rev-parse origin/$UX_BRANCH)" = 8e610bd040c6d48ba17fe087fd917be026c35cb2
           if git ls-tree -r --name-only HEAD -- "$UI_SCOPE" | grep -q .; then
             echo 'B29 UI scope unexpectedly exists on current main; refusing overwrite' >&2
             exit 1
