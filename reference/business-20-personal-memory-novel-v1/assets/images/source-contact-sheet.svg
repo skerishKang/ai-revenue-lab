@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 760" role="img" aria-labelledby="t d">
+<title id="t">합성 기억자료 연락사진 시트</title><desc id="d">가상 역 시간표, 승강장, 역 시계와 눈 쌓인 선로를 필름 연락사진처럼 배열한 원본 벡터</desc>
+<rect width="920" height="760" fill="#2a2927"/><g fill="#111"><rect x="22" y="22" width="876" height="716" rx="8"/></g>
+<g stroke="#d7d0c5" stroke-width="9" fill="#514f4a">
+<rect x="58" y="62" width="360" height="270"/><rect x="500" y="62" width="360" height="270"/><rect x="58" y="420" width="360" height="270"/><rect x="500" y="420" width="360" height="270"/>
+</g>
+<g>
+<rect x="74" y="78" width="328" height="238" fill="#d9d1c4"/><rect x="102" y="102" width="272" height="40" fill="#60768c"/><text x="238" y="129" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#fff" letter-spacing="4">ONSAEMI 2003</text><g fill="#5e5a55"><rect x="110" y="166" width="255" height="13"/><rect x="110" y="194" width="190" height="11"/><rect x="110" y="220" width="225" height="11"/><rect x="110" y="248" width="170" height="11"/></g><circle cx="343" cy="254" r="31" fill="none" stroke="#9c4c45" stroke-width="5"/><path d="M322 254h42" stroke="#9c4c45" stroke-width="4"/>
+<rect x="516" y="78" width="328" height="238" fill="#27343a"/><path d="M516 258 L844 192 L844 316 L516 316 Z" fill="#56636b"/><path d="M516 270 L844 214" stroke="#d4bd67" stroke-width="7"/><path d="M552 210 H788" stroke="#b9c1c3" stroke-width="11" opacity=".55"/><circle cx="780" cy="126" r="32" fill="#efe7d8" opacity=".75"/><path d="M780 126l0-19M780 126l15 10" stroke="#3c4448" stroke-width="5" stroke-linecap="round"/>
+<rect x="74" y="436" width="328" height="238" fill="#75828a"/><path d="M74 590 L402 534 L402 674 L74 674 Z" fill="#273039"/><path d="M74 620 L402 560" stroke="#bcc3c5" stroke-width="8" opacity=".6"/><g fill="#edf0ef"><circle cx="112" cy="480" r="4"/><circle cx="180" cy="520" r="4"/><circle cx="250" cy="470" r="3"/><circle cx="334" cy="538" r="5"/></g>
+<rect x="516" y="436" width="328" height="238" fill="#e3dacb"/><rect x="544" y="466" width="272" height="162" fill="#f7f0e6"/><path d="M570 505 C640 480 710 530 786 492 M570 548 C660 525 714 572 786 540 M570 590 C630 565 730 614 790 578" fill="none" stroke="#745a68" stroke-width="7" stroke-linecap="round"/><rect x="550" y="642" width="190" height="10" fill="#9c4c45" opacity=".8"/>
+</g>
+<g fill="#cfc7ba" font-family="monospace" font-size="16"><text x="60" y="49">01A</text><text x="501" y="49">02A</text><text x="60" y="407">03A</text><text x="501" y="407">04A</text><text x="745" y="727">SYNTHETIC CONTACT 2003-W</text></g>
+</svg>
