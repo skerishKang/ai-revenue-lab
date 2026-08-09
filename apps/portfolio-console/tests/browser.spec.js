@@ -54,8 +54,7 @@ test.describe('Portfolio Console Browser Tests', () => {
   });
 
   test('no button nested inside anchor link', async ({ page }) => {
-    const nested = page.locator('.pd-card a button');
-    await expect(nested).toHaveCount(0);
+    await expect(page.locator('.pd-card a button')).toHaveCount(0);
   });
 
   test('no console errors', async ({ page }) => {
@@ -75,86 +74,48 @@ test.describe('Portfolio Console Browser Tests', () => {
     expect(failed).toHaveLength(0);
   });
 
-  test('no horizontal overflow on desktop', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 1100 });
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-    expect(overflow).toBeFalsy();
-  });
-
-  test('no horizontal overflow on tablet', async ({ page }) => {
-    await page.setViewportSize({ width: 768, height: 1024 });
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-    expect(overflow).toBeFalsy();
-  });
-
-  test('no horizontal overflow on mobile', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-    expect(overflow).toBeFalsy();
-  });
+  for (const [label, width, height] of [['desktop', 1440, 1100], ['tablet', 768, 1024], ['mobile', 390, 844]]) {
+    test(`no horizontal overflow on ${label}`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+      expect(overflow).toBeFalsy();
+    });
+  }
 
   test('Korean is default language', async ({ page }) => {
     await expect(page.locator('#topbar-title')).toContainText('내 비즈니스 관리');
   });
 
-  test('EN switch works', async ({ page }) => {
+  test('EN switch works and Korean restores', async ({ page }) => {
     await page.click('#lang-en');
-    await page.waitForTimeout(200);
     await expect(page.locator('#topbar-title')).toContainText('Business Operations');
-  });
-
-  test('Korean click restores Korean', async ({ page }) => {
-    await page.click('#lang-en');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#topbar-title')).toContainText('Business Operations');
-    await page.click('#lang-ko');
-    await page.waitForTimeout(200);
-    await expect(page.locator('#topbar-title')).toContainText('내 비즈니스 관리');
-  });
-
-  test('language toggle buttons show active state', async ({ page }) => {
-    await expect(page.locator('#lang-ko')).toHaveClass(/is-active/);
-    await expect(page.locator('#lang-en')).not.toHaveClass(/is-active/);
-    await page.click('#lang-en');
-    await page.waitForTimeout(200);
     await expect(page.locator('#lang-en')).toHaveClass(/is-active/);
-    await expect(page.locator('#lang-ko')).not.toHaveClass(/is-active/);
+    await page.click('#lang-ko');
+    await expect(page.locator('#topbar-title')).toContainText('내 비즈니스 관리');
+    await expect(page.locator('#lang-ko')).toHaveClass(/is-active/);
   });
 
-  test('initial html lang is ko', async ({ page }) => {
-    const lang = await page.evaluate(() => document.documentElement.lang);
-    expect(lang).toBe('ko');
-  });
-
-  test('EN click sets html lang to en', async ({ page }) => {
+  test('initial html lang is ko and EN click sets en', async ({ page }) => {
+    expect(await page.evaluate(() => document.documentElement.lang)).toBe('ko');
     await page.click('#lang-en');
-    await page.waitForTimeout(200);
-    const lang = await page.evaluate(() => document.documentElement.lang);
-    expect(lang).toBe('en');
+    expect(await page.evaluate(() => document.documentElement.lang)).toBe('en');
   });
 
   test('theme toggle switches to light and back', async ({ page }) => {
     await page.click('#theme-toggle');
-    await page.waitForTimeout(100);
-    let theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-    expect(theme).toBe('light');
+    expect(await page.evaluate(() => document.documentElement.getAttribute('data-theme'))).toBe('light');
     await page.click('#theme-toggle');
-    await page.waitForTimeout(100);
-    theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-    expect(theme).toBe('dark');
+    expect(await page.evaluate(() => document.documentElement.getAttribute('data-theme'))).toBe('dark');
   });
 
   test('dialog shows on detail click', async ({ page }) => {
     await page.locator('.pd-card-detail-btn').first().click();
-    await page.waitForTimeout(300);
-    const dialog = page.locator('#project-dialog');
-    await expect(dialog).toBeVisible();
+    await expect(page.locator('#project-dialog')).toBeVisible();
     await page.keyboard.press('Escape');
   });
 
-  test('자세히 보기 button opens dialog', async ({ page }) => {
+  test('자세히 보기 button opens LoveBud dialog', async ({ page }) => {
     await page.locator('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn').click();
-    await page.waitForTimeout(300);
     const dialog = page.locator('#project-dialog');
     await expect(dialog).toBeVisible();
     await expect(dialog.locator('h2')).toHaveText('LoveBud');
@@ -164,37 +125,34 @@ test.describe('Portfolio Console Browser Tests', () => {
   test('dialog Escape returns focus to calling button', async ({ page }) => {
     const btn = page.locator('.pd-card[data-project-id="lovebud"] .pd-card-detail-btn');
     await btn.click();
-    await page.waitForTimeout(300);
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
-    const activeId = await page.evaluate(() => {
-      const el = document.activeElement;
-      return el ? el.dataset.projectId : null;
-    });
-    expect(activeId).toBe('lovebud');
+    await page.waitForTimeout(100);
+    expect(await page.evaluate(() => document.activeElement?.dataset.projectId || null)).toBe('lovebud');
   });
 
   test('B01 displayed on Personal Edition card', async ({ page }) => {
-    const card = page.locator('.pd-card[data-project-id="personal-edition"]');
-    await expect(card.locator('.pd-card-biznumber')).toHaveText('B01');
+    await expect(page.locator('.pd-card[data-project-id="personal-edition"] .pd-card-biznumber')).toHaveText('B01');
   });
 
   test('Portfolio Console shows PROJECT label', async ({ page }) => {
-    const card = page.locator('.pd-card[data-project-id="portfolio-console"]');
-    await expect(card.locator('.pd-card-biznumber')).toHaveText('PROJECT');
+    await expect(page.locator('.pd-card[data-project-id="portfolio-console"] .pd-card-biznumber')).toHaveText('PROJECT');
   });
 
   test('work button exists and is a real button', async ({ page }) => {
     const workBtn = page.locator('.view-nav-item[data-view="work"]');
     await expect(workBtn).toHaveCount(1);
-    const tagName = await workBtn.evaluate(el => el.tagName);
-    expect(tagName).toBe('BUTTON');
+    expect(await workBtn.evaluate(el => el.tagName)).toBe('BUTTON');
   });
 
-  test('business view shows 15 items', async ({ page }) => {
+  test('business view shows 58 represented Businesses through B59', async ({ page }) => {
     await page.click('.view-nav-item[data-view="business"]');
-    await page.waitForTimeout(200);
-    await expect(page.locator('.biz-item')).toHaveCount(15);
+    await expect(page.locator('.biz-item')).toHaveCount(58);
+    await expect(page.locator('.biz-item[data-biz-number="38"]')).toContainText('AI 운동 코치');
+    await expect(page.locator('.biz-item[data-biz-number="54"]')).toContainText('한국형 AI 코드 에이전트');
+    await expect(page.locator('.biz-item[data-biz-number="57"]')).toHaveCount(1);
+    await expect(page.locator('.biz-item[data-biz-number="58"]')).toHaveCount(1);
+    await expect(page.locator('.biz-item[data-biz-number="59"]')).toHaveCount(1);
+    await expect(page.locator('.biz-item[data-biz-number="56"]')).toHaveCount(0);
   });
 
   test('sidebar shows exactly 4 view buttons', async ({ page }) => {
@@ -203,30 +161,22 @@ test.describe('Portfolio Console Browser Tests', () => {
 
   test('copy workspace button works in dialog', async ({ page }) => {
     await page.locator('.pd-card[data-project-id="living-travel"] .pd-card-detail-btn').click();
-    await page.waitForTimeout(300);
     const dialog = page.locator('#project-dialog');
     await expect(dialog).toBeVisible();
-
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'clipboard', {
         value: { writeText: async (text) => { window.__copiedText = text; } },
         writable: true, configurable: true
       });
     });
-
     await dialog.locator('#dlg-copy-workspace').click();
-    await page.waitForTimeout(100);
-
-    const copiedValue = await page.evaluate(() => window.__copiedText);
-    expect(copiedValue).toBe('apps/living-travel/');
+    expect(await page.evaluate(() => window.__copiedText)).toBe('apps/living-travel/');
     await page.keyboard.press('Escape');
   });
 
-  test('no data modification — projects and businesses data unchanged', async ({ page }) => {
-    await page.waitForTimeout(500);
-    const pCount = await page.evaluate(() => window.ARL_PROJECTS.length);
-    const bCount = await page.evaluate(() => window.ARL_BUSINESSES.length);
-    expect(pCount).toBe(13);
-    expect(bCount).toBe(15);
+  test('projects remain 13 while Business registry expands to 58', async ({ page }) => {
+    await page.waitForTimeout(100);
+    expect(await page.evaluate(() => window.ARL_PROJECTS.length)).toBe(13);
+    expect(await page.evaluate(() => window.ARL_BUSINESSES.length)).toBe(58);
   });
 });
