@@ -42,6 +42,23 @@
     }
   });
 
+  // B1/B2 were previously owner-rejected, then materially redesigned and
+  // technically merged under the #451 live-Production review policy. They are
+  // now review-ready, not owner-approved. Keep their canonical review surfaces
+  // explicit so the Portfolio Console never routes the owner to a stale branch.
+  var OWNER_REVIEW_READY = Object.freeze({
+    1: {
+      source: "PR #456",
+      mergedCommit: "dc129b0a2768ec8aaae0d7517e182311d7b80422",
+      surfaceUrl: "https://ai-revenue-personal-edition.pages.dev/"
+    },
+    2: {
+      source: "PR #460",
+      mergedCommit: "d2fcd03dc696c451fa1ab31a690249fa37c82a21",
+      surfaceUrl: "https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev/"
+    }
+  });
+
   function boundaryFor(number) {
     return BOUNDARIES[Number(number)] || null;
   }
@@ -49,8 +66,8 @@
   function ownerUiStatusFor(number) {
     var n = Number(number);
     if (boundaryFor(n) || n === 54) return OWNER.NOT_APPLICABLE;
-    if (n === 1 || n === 2) return OWNER.REJECTED;
     if (OWNER_APPROVED[n]) return OWNER.APPROVED;
+    if (OWNER_REVIEW_READY[n]) return OWNER.REVIEW_REQUIRED;
     return OWNER.REVIEW_REQUIRED;
   }
 
@@ -61,11 +78,9 @@
       if (OWNER_APPROVED[business.number]) {
         business.ownerUiDecision = OWNER_APPROVED[business.number];
       }
-
-      // Issue #451: owner reviews internal UI changes on the canonical Production
-      // surface. B1 must never route owner review to a stale branch Preview URL.
-      if (business.number === 1) {
-        business.surfaceUrl = "https://ai-revenue-personal-edition.pages.dev/";
+      if (OWNER_REVIEW_READY[business.number]) {
+        business.ownerUiDecision = OWNER_REVIEW_READY[business.number];
+        business.surfaceUrl = OWNER_REVIEW_READY[business.number].surfaceUrl;
       }
 
       var boundary = boundaryFor(business.number);
@@ -217,6 +232,7 @@
     OWNER: OWNER,
     BOUNDARIES: BOUNDARIES,
     OWNER_APPROVED: OWNER_APPROVED,
+    OWNER_REVIEW_READY: OWNER_REVIEW_READY,
     boundaryFor: boundaryFor,
     ownerUiStatusFor: ownerUiStatusFor
   });
