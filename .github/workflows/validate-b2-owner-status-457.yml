@@ -1,0 +1,43 @@
+name: Validate B2 Owner Status 457
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - apps/portfolio-console/portfolio-truth-audit.js
+      - .github/workflows/validate-b2-owner-status-457.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'fix/portfolio-console-b2-owner-rejected-457'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate owner truth mapping
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/portfolio-console/portfolio-truth-audit.js
+          node <<'JS'
+          require('./apps/portfolio-console/portfolio-truth-audit.js');
+          const t = globalThis.ARL_PORTFOLIO_TRUTH;
+          if (!t) throw new Error('truth layer missing');
+          const O = t.OWNER;
+          const expect = (n, value) => {
+            const actual = t.ownerUiStatusFor(n);
+            if (actual !== value) throw new Error(`B${n}: expected ${value}, got ${actual}`);
+          };
+          expect(1, O.REJECTED);
+          expect(2, O.REJECTED);
+          expect(6, O.APPROVED);
+          expect(5, O.NOT_APPLICABLE);
+          expect(23, O.NOT_APPLICABLE);
+          expect(54, O.NOT_APPLICABLE);
+          expect(4, O.REVIEW_REQUIRED);
+          console.log('B2_OWNER_STATUS_VALIDATED=1');
+          JS
