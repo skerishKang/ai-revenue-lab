@@ -40,15 +40,25 @@ jobs:
           printf 'business_id\tsource_pr\texact_sha\tsource_directory\tentry_file\tproject\tpublic_url\tsource_sha256\tpublic_sha256\tstatus\treason\n' > /tmp/portfolio-review-396-results.tsv
           failures=0
 
-          proj_codes="$(curl -sS -o /tmp/projects.json -w '%{http_code}' \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=50" || true)"
-          echo "cloudflare_pages_project_list_http=${proj_codes}" >&2
-          if test "${proj_codes}" = '200'; then
-            jq -r '.result_info.total' /tmp/projects.json 2>/dev/null | xargs -I{} echo "cloudflare_pages_project_total={}" >&2
-            jq -r '.result[] | .name' /tmp/projects.json 2>/dev/null | sed 's/^/CF_PROJECT /' >&2
+          for pv in '50' '100' '200'; do
+            proj_codes="$(curl -sS -o /tmp/projects.json -w '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?page=1&per_page=${pv}" || true)"
+            echo "cloudflare_pages_project_list_per_page_${pv}_http=${proj_codes}" >&2
+            if test "${proj_codes}" = '200'; then
+              jq -r '.result_info.total, .result_info.count' /tmp/projects.json 2>/dev/null | xargs echo "cloudflare_pages_project_info" >&2
+              jq -r '.result[] | .name' /tmp/projects.json 2>/dev/null | sed 's/^/CF_PROJECT /' >&2
+              break
+            fi
+            (jq -c '{success, errors, messages}' /tmp/projects.json 2>/dev/null || head -c 1200 /tmp/projects.json) | sed -E 's/([[:alnum:]_]*[Tt]oken[[:alnum:]_]*|"value"|api[_-]?key)[^,}]{0,80}/REDACTED/g' >&2
+          done
+          echo '--- wrangler project list probe ---' >&2
+          npx --yes wrangler@4 pages project list > /tmp/wprojects.txt 2>/tmp/wprojects.err || true
+          if test -s /tmp/wprojects.txt; then
+            wc -l < /tmp/wprojects.txt | xargs -I{} echo "CF_WRANGLER_PROJECT_LINES={}" >&2
+            sed 's/^/CF_WRANGLER_PROJECT /' /tmp/wprojects.txt >&2
           else
-            (jq -c . /tmp/projects.json 2>/dev/null || head -c 1200 /tmp/projects.json) | sed -E 's/([[:alnum:]_]*[Tt]oken[[:alnum:]_]*|"value"|api[_-]?key)[^,}]{0,80}/REDACTED/g' >&2
+            sed -E 's/([[:alnum:]_]*[Tt]oken[[:alnum:]_]*|"value"|api[_-]?key)[^,}]{0,80}/REDACTED/g' /tmp/wprojects.err >&2
           fi
 
           deploy_one() {
