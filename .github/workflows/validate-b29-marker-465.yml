@@ -1,0 +1,90 @@
+name: Validate B29 Observable Gate 465
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/validate-b29-marker-465.yml'
+permissions:
+  contents: write
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'feat/b29-apartment-governance-complete-465'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Existing UI and UX contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 reference/business-29-apartment-governance-v1/tests/validate_reference.py
+          node --test reference/business-29-apartment-governance-v1/ux/tests/static-contract.test.js reference/business-29-apartment-governance-v1/ux/tests/state-machine.test.js
+          node --check reference/business-29-apartment-governance-v1/scripts/review.js
+          node --check reference/business-29-apartment-governance-v1/ux/scripts/app.js
+          node --check reference/business-29-apartment-governance-v1/ux/scripts/state-machine.js
+          git diff --check origin/main...HEAD -- 'reference/business-29-apartment-governance-v1/**'
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b29-marker && cd /tmp/b29-marker
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser boundary smoke desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4181 --directory reference/business-29-apartment-governance-v1 >/tmp/b29-http.log 2>&1 &
+          server=$!
+          trap 'kill $server || true' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4181/index.html >/dev/null && break; sleep 0.5; done
+          cd /tmp/b29-marker
+          node <<'JS'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const vp of [{width:1440,height:1100,name:'desktop'},{width:390,height:844,name:'mobile'}]){
+              const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+              const errors=[];
+              page.on('console',m=>{if(m.type()==='error') errors.push(m.text())});
+              page.on('pageerror',e=>errors.push(e.message));
+              const noOverflow=async(label)=>{const x=await page.evaluate(()=>[document.documentElement.scrollWidth,document.documentElement.clientWidth]);if(x[0]>x[1])throw new Error(`${vp.name}:${label} overflow ${x[0]}>${x[1]}`)};
+              await page.goto('http://127.0.0.1:4181/index.html',{waitUntil:'networkidle'});
+              await page.locator('[data-first-use-guide]').waitFor({state:'visible'});
+              if(!(await page.locator('body').innerText()).includes('방림명지로드힐아파트')) throw new Error(`${vp.name}:approved identity missing`);
+              await noOverflow('root');
+              await page.locator('[data-first-use-guide]').click();
+              await page.waitForURL(/guide\.html/);
+              const guide=await page.locator('body').innerText();
+              if(!guide.includes('실제 단지 정체성')||!guide.includes('합성 운영 sandbox'))throw new Error(`${vp.name}:boundary missing`);
+              await noOverflow('guide');
+              await page.getByRole('link',{name:'합성 운영 sandbox 체험'}).click();
+              await page.waitForURL(/\/ux\/index\.html/);
+              const ux=await page.locator('body').innerText();
+              if(!ux.includes('솔빛마루 2단지')||!/합성|SYNTHETIC/i.test(ux))throw new Error(`${vp.name}:sandbox disclosure missing`);
+              await noOverflow('sandbox');
+              if(errors.length)throw new Error(`${vp.name}:${errors.join(' | ')}`);
+              await page.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Commit success marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          printf 'B29_COMPLETE_VALIDATION_PASS=1\nvalidated_head=%s\n' "$(git rev-parse HEAD)" > .b29-validation-pass-465
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .b29-validation-pass-465
+          git commit -m 'test(b29): record exact-head validation pass'
+          git push origin HEAD:feat/b29-apartment-governance-complete-465
