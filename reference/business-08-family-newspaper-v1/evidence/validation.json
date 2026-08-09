@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-07-26",
+  "base_url": "file:///mnt/data/family-newspaper-work/reference/business-08-family-newspaper-v1/index.html",
+  "states": {
+    "front": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true"
+    },
+    "news": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true"
+    },
+    "photos": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true"
+    },
+    "calendar": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true"
+    },
+    "sources": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true",
+      "details_visible_after_toggle": true
+    },
+    "mobile": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true"
+    },
+    "fold": {
+      "visible": true,
+      "aria_hidden": "false",
+      "active_button": "true"
+    }
+  },
+  "desktop": {
+    "state_button_count": 7,
+    "horizontal_overflow_px": 0,
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "horizontal_overflow_px": 0,
+    "masthead_visible_first_viewport": true,
+    "lead_visible_first_viewport": true,
+    "family_signal_bottom_px": 677.27,
+    "family_signal_in_first_viewport": true
+  },
+  "motion": {
+    "duration_target_ms": 680,
+    "complete_class_after_760ms": true,
+    "location_label": "가족 소식면 · 2면"
+  },
+  "reduced_motion": {
+    "media_matches": true,
+    "immediate_complete": true,
+    "front_transform": "none",
+    "label": "가족 소식면 · 이동 없이 전환"
+  },
+  "console_errors": [],
+  "page_errors": [],
+  "failed_assets": [],
+  "external_runtime_requests": [],
+  "keyboard": {
+    "arrow_right_changes_state": true
+  },
+  "focus": {
+    "outlineStyle": "solid",
+    "outlineWidth": "3px",
+    "outlineColor": "rgb(242, 191, 75)",
+    "visible": true
+  },
+  "static_checks": {
+    "line_counts": {
+      "IMAGE_SOURCES.md": 18,
+      "MOTION_SPEC.md": 47,
+      "README.md": 73,
+      "REFERENCE_NOTES.md": 101,
+      "assets/images/bicycle-pause.svg": 15,
+      "assets/images/bus-window.svg": 15,
+      "assets/images/kitchen-note.svg": 19,
+      "assets/images/lead-balcony-table.svg": 35,
+      "assets/images/river-walk.svg": 17,
+      "evidence/commands.md": 57,
+      "evidence/validation.json": 145,
+      "index.html": 57,
+      "scripts/render-states.js": 6,
+      "scripts/review-state.js": 162,
+      "scripts/states/calendar-markup.js": 58,
+      "scripts/states/fold-markup.js": 37,
+      "scripts/states/front-markup.js": 57,
+      "scripts/states/mobile-markup.js": 33,
+      "scripts/states/news-markup.js": 49,
+      "scripts/states/photos-markup.js": 40,
+      "scripts/states/sources-markup.js": 44,
+      "styles/base.css": 178,
+      "styles/components.css": 387,
+      "styles/layout.css": 330,
+      "styles/states/front-page.css": 155,
+      "styles/states/mobile.css": 138,
+      "styles/states/sections.css": 370,
+      "styles/tokens.css": 27
+    },
+    "files_over_500": [],
+    "css_js_refs": [
+      "./styles/tokens.css?v=family-newspaper-20260726-1",
+      "./styles/base.css?v=family-newspaper-20260726-1",
+      "./styles/layout.css?v=family-newspaper-20260726-1",
+      "./styles/components.css?v=family-newspaper-20260726-1",
+      "./styles/states/front-page.css?v=family-newspaper-20260726-1",
+      "./styles/states/sections.css?v=family-newspaper-20260726-1",
+      "./styles/states/mobile.css?v=family-newspaper-20260726-1",
+      "./scripts/states/front-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/states/news-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/states/photos-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/states/calendar-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/states/sources-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/states/mobile-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/states/fold-markup.js?v=family-newspaper-20260726-1",
+      "./scripts/render-states.js?v=family-newspaper-20260726-1",
+      "./scripts/review-state.js?v=family-newspaper-20260726-1"
+    ],
+    "unversioned_css_js_refs": [],
+    "version_values": [
+      "family-newspaper-20260726-1"
+    ],
+    "stale_version_refs": [],
+    "missing_local_refs": [],
+    "external_html_refs": [],
+    "local_storage_mentions": 0,
+    "cookie_mentions": 0
+  }
+}

@@ -1,0 +1,155 @@
+.front-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.5fr) minmax(250px, 0.9fr);
+  gap: 32px;
+  margin-top: 26px;
+}
+
+.lead-story {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.45fr);
+  gap: 28px;
+  padding-right: 28px;
+  border-right: 1px solid var(--ink);
+}
+
+.lead-story__copy {
+  align-self: start;
+}
+
+.lead-story h2 {
+  margin-bottom: 20px;
+  font-size: clamp(3.1rem, 5.2vw, 6.3rem);
+  letter-spacing: -0.065em;
+}
+
+.lead-story .dek {
+  font-family: var(--font-display);
+  font-size: 1.13rem;
+  line-height: 1.62;
+}
+
+.lead-photo {
+  align-self: start;
+  margin: 0;
+  padding: 10px 10px 12px;
+  background: var(--paper-light);
+  box-shadow: var(--shadow-small);
+}
+
+.lead-photo img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.front-rail {
+  align-self: stretch;
+}
+
+@media (max-width: 980px) {
+  .front-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lead-story {
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .front-rail {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+  }
+
+  .brief {
+    border-bottom: 0;
+  }
+
+  .brief--accent {
+    margin: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .newspaper--front {
+    padding-top: 12px;
+  }
+
+  .masthead__kicker {
+    font-size: 0.6rem;
+  }
+
+  .front-grid {
+    gap: 18px;
+    margin-top: 16px;
+  }
+
+  .lead-story {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .lead-story__copy {
+    display: contents;
+  }
+
+  .lead-story .section-label {
+    order: 1;
+    margin-bottom: 0;
+  }
+
+  .lead-story h2 {
+    order: 2;
+    margin-bottom: 0;
+    font-size: clamp(2.7rem, 13vw, 4.3rem);
+  }
+
+  .lead-photo {
+    order: 3;
+    margin-bottom: 0;
+    padding: 7px;
+  }
+
+  .lead-story .dek {
+    order: 4;
+    margin-bottom: 0;
+    font-size: 1rem;
+  }
+
+  .lead-story .byline {
+    order: 5;
+  }
+
+  .front-rail {
+    display: block;
+    padding-top: 14px;
+  }
+
+  .brief:not(:first-child) {
+    display: none;
+  }
+
+  .brief:first-child {
+    padding-top: 12px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .edition-footer {
+    display: block;
+  }
+
+  .edition-footer p:first-child {
+    display: none;
+  }
+
+  .edition-footer p:last-child {
+    padding: 10px 12px;
+    color: var(--white);
+    background: var(--accent-dark);
+  }
+}

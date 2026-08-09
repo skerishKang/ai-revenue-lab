@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="우리 가족 신문 Phase 1 시각 UI 참고본">
+  <title>우리 가족 신문 — Phase 1 시각 참고본</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles/tokens.css?v=family-newspaper-20260726-1">
+  <link rel="stylesheet" href="./styles/base.css?v=family-newspaper-20260726-1">
+  <link rel="stylesheet" href="./styles/layout.css?v=family-newspaper-20260726-1">
+  <link rel="stylesheet" href="./styles/components.css?v=family-newspaper-20260726-1">
+  <link rel="stylesheet" href="./styles/states/front-page.css?v=family-newspaper-20260726-1">
+  <link rel="stylesheet" href="./styles/states/sections.css?v=family-newspaper-20260726-1">
+  <link rel="stylesheet" href="./styles/states/mobile.css?v=family-newspaper-20260726-1">
+  <script src="./scripts/states/front-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/states/news-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/states/photos-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/states/calendar-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/states/sources-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/states/mobile-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/states/fold-markup.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/render-states.js?v=family-newspaper-20260726-1" defer></script>
+  <script src="./scripts/review-state.js?v=family-newspaper-20260726-1" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#publication">신문 본문으로 이동</a>
+
+  <header class="review-bar" aria-label="시각 상태 검토 도구">
+    <div class="review-bar__identity">
+      <span class="review-bar__eyebrow">PHASE 1 · UI ONLY</span>
+      <strong id="current-state-label">이번 주 1면</strong>
+    </div>
+    <nav class="state-nav" aria-label="대표 시각 상태">
+      <button class="state-nav__button is-active" type="button" data-state-target="front" aria-pressed="true">1면</button>
+      <button class="state-nav__button" type="button" data-state-target="news" aria-pressed="false">소식면</button>
+      <button class="state-nav__button" type="button" data-state-target="photos" aria-pressed="false">사진 특집</button>
+      <button class="state-nav__button" type="button" data-state-target="calendar" aria-pressed="false">연감</button>
+      <button class="state-nav__button" type="button" data-state-target="sources" aria-pressed="false">편집 노트</button>
+      <button class="state-nav__button" type="button" data-state-target="mobile" aria-pressed="false">모바일판</button>
+      <button class="state-nav__button" type="button" data-state-target="fold" aria-pressed="false">지면 넘김</button>
+    </nav>
+    <div class="review-bar__pager" aria-label="상태 이동">
+      <button type="button" class="pager-button" data-state-step="-1" aria-label="이전 상태">←</button>
+      <span id="state-position" aria-live="polite">1 / 7</span>
+      <button type="button" class="pager-button" data-state-step="1" aria-label="다음 상태">→</button>
+    </div>
+  </header>
+
+  <main id="publication" class="publication-shell"></main>
+
+  <footer class="prototype-boundary">
+    <strong>UI_ONLY · UI_NOT_READY</strong>
+    <span>합성 콘텐츠 · reference-only · UX·백엔드·배포 미구현</span>
+  </footer>
+</body>
+</html>
