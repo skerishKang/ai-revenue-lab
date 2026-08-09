@@ -10,10 +10,11 @@
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
 <body data-ui-version="b1-personal-edition-v3-454" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
+{% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
 <header class="site-header v3-site-header">
   <nav class="v3-site-nav" aria-label="주요 탐색">
     {% if request.url.path.startswith('/admin') %}
-    <a href="/admin/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Editorial Desk</span></a>
+    <a href="/admin/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition 편집실</span></a>
     <div class="nav-links v3-nav-links">
       <a href="/admin/">Queue</a>
       <form method="post" action="/admin/logout" class="inline-form">
