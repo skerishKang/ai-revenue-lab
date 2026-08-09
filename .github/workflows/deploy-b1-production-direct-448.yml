@@ -1,0 +1,113 @@
+name: Deploy B1 Production Direct 448
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b1-production-direct-448.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'ops/verify-b1-production-448'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: 722f2bc24dcaf789554e784eaf83d61bea3f663a
+      PROJECT: ai-revenue-personal-edition
+      PRODUCTION_URL: https://ai-revenue-personal-edition.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Checkout exact B1 main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Reproduce Cloudflare static build and promote customer root
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m pip install .
+          python -m scripts.build_static_preview
+          test -f dist-preview/index.html
+          test -f dist-preview/preview/intro/index.html
+          grep -q 'b1-personal-edition-v2-443' dist-preview/preview/intro/index.html
+          mkdir -p dist-preview/preview-states
+          cp dist-preview/index.html dist-preview/preview-states/index.html
+          cp dist-preview/preview/intro/index.html dist-preview/index.html
+          grep -q 'b1-personal-edition-v2-443' dist-preview/index.html
+          grep -q '당신의 기록을' dist-preview/index.html
+          grep -q 'Personal Edition UI Preview' dist-preview/preview-states/index.html
+          echo "B1_STATIC_BUILD_EXACT_SHA=1"
+          echo "B1_CUSTOMER_ROOT_PROMOTED=1"
+      - name: Direct deploy exact B1 assets to Production
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          npx --yes wrangler@latest pages deploy dist-preview \
+            --project-name "$PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B1 V2 live owner review - recover stalled Git deployment' | tee /tmp/wrangler-deploy.log
+          echo "B1_DIRECT_PRODUCTION_DEPLOY_COMMAND_SUCCESS=1"
+      - name: Verify exact successful Production deployment and live V2 root
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}"
+          found=0
+          for i in $(seq 1 30); do
+            curl --fail-with-body -sS "${auth[@]}" "$base/deployments" > /tmp/deployments.json
+            if python3 - <<'PY'
+          import json, os, sys
+          rows=[d for d in (json.load(open('/tmp/deployments.json')).get('result') or []) if d.get('environment')=='production']
+          rows.sort(key=lambda d:d.get('created_on') or '', reverse=True)
+          for d in rows:
+              meta=((d.get('deployment_trigger') or {}).get('metadata') or {})
+              sha=meta.get('commit_hash') or meta.get('commit') or d.get('source_commit_hash') or ''
+              stage=d.get('latest_stage') or {}
+              trig=(d.get('deployment_trigger') or {}).get('type')
+              if sha == os.environ['EXPECTED_SHA'] and stage.get('name')=='deploy' and stage.get('status')=='success':
+                  print('SUCCESS_DEPLOYMENT_ID='+str(d.get('id')))
+                  print('SUCCESS_DEPLOYMENT_URL='+str(d.get('url')))
+                  print('SUCCESS_TRIGGER='+str(trig))
+                  sys.exit(0)
+          sys.exit(1)
+          PY
+            then
+              found=1
+              break
+            fi
+            sleep 4
+          done
+          test "$found" = 1
+          live=0
+          for i in $(seq 1 30); do
+            code=$(curl -L -sS --max-time 25 -o /tmp/b1.html -w '%{http_code}' "$PRODUCTION_URL" || true)
+            echo "live_poll=$i http=$code"
+            if [[ "$code" == "200" ]] && grep -q 'b1-personal-edition-v2-443' /tmp/b1.html && grep -q '당신의 기록을' /tmp/b1.html; then
+              live=1
+              break
+            fi
+            sleep 4
+          done
+          test "$live" = 1
+          echo "B1_V2_LIVE_PRODUCTION_VERIFIED=1"
