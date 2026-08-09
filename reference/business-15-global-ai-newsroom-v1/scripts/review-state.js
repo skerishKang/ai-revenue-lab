@@ -7,6 +7,18 @@
   const motionButton = document.querySelector("[data-convergence-play]");
   const validStates = new Set(panels.map((panel) => panel.dataset.reviewState));
 
+  function installGuideLink() {
+    const status = document.querySelector(".masthead__status");
+    if (!status || status.querySelector("[data-first-use-guide]")) return;
+    const guide = document.createElement("a");
+    guide.href = "./guide.html";
+    guide.className = "synthetic-flag";
+    guide.dataset.firstUseGuide = "true";
+    guide.textContent = "30초 사용법 / Guide";
+    guide.setAttribute("aria-label", "글로벌 AI 뉴스룸 30초 사용법 열기");
+    status.prepend(guide);
+  }
+
   function requestedState() {
     const params = new URLSearchParams(window.location.search);
     const state = params.get("state");
@@ -91,6 +103,7 @@
     }
   });
 
+  installGuideLink();
   window.addEventListener("popstate", () => setState(requestedState(), { updateUrl: false }));
   setState(requestedState(), { updateUrl: false });
   document.documentElement.dataset.assetVersion = version;
