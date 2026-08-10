@@ -1,0 +1,524 @@
+/* Business 04 · Living Learning — Adaptive Workspace V3
+   Carries the existing GOAL → DIAGNOSTIC → LESSON → FEEDBACK → ADAPT
+   product grammar through the learner/operator workspace without changing behavior. */
+
+:root{
+  --ll3-paper:#f1eee6;
+  --ll3-paper-2:#e8e3d8;
+  --ll3-ink:#080d15;
+  --ll3-panel:#0d1625;
+  --ll3-panel-2:#121d30;
+  --ll3-line:#cec7ba;
+  --ll3-line-dark:rgba(255,255,255,.12);
+  --ll3-blue:#3d72ff;
+  --ll3-cyan:#52d6ea;
+  --ll3-text:#172137;
+  --ll3-muted:#6d7584;
+}
+
+/* Keep the synthetic-preview disclosure in the accessibility tree without
+   spending the first visible row of every product surface on QA chrome. */
+.preview-banner{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  min-height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  clip-path:inset(50%)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+/* ---------- persistent learning desk ---------- */
+.shell{
+  grid-template-columns:228px minmax(0,1fr);
+  min-height:100vh;
+  background:var(--ll3-paper);
+}
+.shell .sidebar{
+  top:0;
+  height:100vh;
+  background:
+    linear-gradient(180deg,rgba(61,114,255,.08),transparent 25%),
+    var(--ll3-ink);
+  border-right:1px solid #28344a;
+}
+.shell .sidebar__brand{
+  min-height:88px;
+  padding:22px 20px 18px;
+  border-bottom:1px solid var(--ll3-line-dark);
+}
+.shell .brand-mark{
+  width:32px;
+  height:32px;
+  border-radius:2px;
+  background:var(--ll3-blue);
+  box-shadow:none;
+}
+.shell .brand-mark svg{width:18px;height:18px}
+.shell .brand-text__name{
+  font-size:13px;
+  letter-spacing:-.025em;
+}
+.shell .brand-text__tag{
+  margin-top:3px;
+  font-size:8px;
+  letter-spacing:.12em;
+  color:#718099;
+}
+.shell .sidebar__nav{
+  padding:18px 0 12px;
+  gap:0;
+}
+.shell .nav-label{
+  padding:14px 20px 7px;
+  color:#637089;
+  font-size:9px;
+  letter-spacing:.14em;
+}
+.shell .nav-link{
+  min-height:44px;
+  padding:11px 20px;
+  gap:10px;
+  border-radius:0;
+  border-left:3px solid transparent;
+  color:#9aa8bc;
+  font-size:12px;
+  letter-spacing:-.015em;
+}
+.shell .nav-link:hover{
+  background:#0d1727;
+  color:#f0f4fb;
+}
+.shell .nav-link[aria-current="page"]{
+  background:linear-gradient(90deg,rgba(61,114,255,.18),rgba(61,114,255,.03));
+  border-left-color:var(--ll3-blue);
+  box-shadow:none;
+}
+.shell .nav-link__icon{
+  width:15px;
+  height:15px;
+  opacity:.72;
+}
+.shell .nav-link__badge{
+  border-radius:2px;
+  background:#18263c;
+}
+.shell .ai-status{
+  margin:auto 16px 16px;
+  padding:15px 15px 14px;
+  border-radius:0;
+  background:#0b1422;
+  border:1px solid #29364b;
+  box-shadow:inset 3px 0 0 rgba(82,214,234,.8);
+}
+.shell .ai-status__head{
+  margin-bottom:10px;
+  color:var(--ll3-cyan);
+  font-size:9px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.shell .ai-status__pulse{
+  width:6px;
+  height:6px;
+  box-shadow:none;
+  animation:none;
+}
+.shell .ai-status__row{
+  padding:4px 0;
+  font-size:10px;
+  color:#79889e;
+}
+.shell .ai-status__row b{color:#eef3fb}
+
+/* ---------- top context + content measure ---------- */
+.shell .topbar{
+  top:0;
+  min-height:62px;
+  padding:0 34px;
+  background:rgba(241,238,230,.94);
+  border-bottom:1px solid var(--ll3-line);
+  backdrop-filter:blur(16px);
+}
+.shell .topbar__crumb{
+  font-size:11px;
+  letter-spacing:.01em;
+  color:#7b8290;
+}
+.shell .topbar__crumb b{color:#243047}
+.shell .learner-chip{
+  border-radius:2px;
+  border-color:#d1cabf;
+  background:#f7f4ed;
+  font-size:11px;
+}
+.shell .learner-chip__avatar{
+  border-radius:2px;
+  background:#e6ebff;
+  color:#295bd0;
+}
+.shell .topbar .badge{
+  border-radius:2px;
+  box-shadow:none;
+}
+.shell .content{
+  max-width:1180px;
+  padding:54px 44px 100px;
+}
+.shell .content--reading{max-width:940px}
+.shell .content--wide{max-width:1220px}
+
+/* ---------- Korean editorial hierarchy ---------- */
+.shell .page-head{
+  max-width:900px;
+  margin-bottom:38px;
+}
+.shell .page-head .eyebrow{
+  font-size:9px;
+  letter-spacing:.12em;
+  color:#3569df;
+  text-transform:uppercase;
+}
+.shell .page-head .eyebrow__line{
+  width:24px;
+  background:#5d87e8;
+}
+.shell .page-head h1{
+  max-width:18ch;
+  margin:12px 0 12px;
+  color:var(--ll3-text);
+  font-size:clamp(38px,3.25vw,50px);
+  line-height:1.09;
+  letter-spacing:-.045em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.shell .page-head p{
+  max-width:64ch;
+  color:var(--ll3-muted);
+  font-size:15px;
+  line-height:1.72;
+  word-break:keep-all;
+}
+.shell .h-section,
+.shell .h-section--sm{
+  letter-spacing:-.04em;
+  line-height:1.12;
+  word-break:keep-all;
+}
+
+/* ---------- selection / diagnostic surfaces ---------- */
+.shell .stack{gap:0}
+.shell .choice{
+  min-height:92px;
+  padding:18px 10px;
+  border:0;
+  border-top:1px solid var(--ll3-line);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.shell .choice:last-child{border-bottom:1px solid var(--ll3-line)}
+.shell .choice:hover{
+  background:rgba(255,255,255,.36);
+  box-shadow:none;
+}
+.shell .choice:has(input:checked){
+  background:#e8eeff;
+  box-shadow:inset 4px 0 0 var(--ll3-blue);
+}
+.shell .choice__icon{
+  border-radius:2px;
+  background:#e9edf5;
+  color:#285ed9;
+}
+.shell .choice__title{
+  color:#1f2a40;
+  font-size:16px;
+  line-height:1.45;
+  letter-spacing:-.025em;
+  word-break:keep-all;
+}
+.shell .choice__desc{
+  margin-top:4px;
+  color:#788190;
+  font-size:12px;
+  line-height:1.6;
+  word-break:keep-all;
+}
+.shell .field{
+  padding:24px 0 26px;
+  border:0;
+  border-top:1px solid var(--ll3-line);
+  border-radius:0;
+  background:transparent;
+}
+.shell .field:last-child{border-bottom:1px solid var(--ll3-line)}
+.shell .field__label,
+.shell .field>legend{
+  margin-bottom:13px;
+  font-size:14px;
+  letter-spacing:-.02em;
+}
+.shell .seg{gap:6px}
+.shell .seg span{
+  min-height:42px;
+  border-radius:2px;
+  background:#f7f4ed;
+  border-color:#cbc4b8;
+  font-size:12px;
+  box-shadow:none;
+}
+.shell .seg input:checked+span{
+  background:#245fe4;
+  border-color:#245fe4;
+  box-shadow:none;
+}
+
+/* ---------- lesson as a reading/editing protocol ---------- */
+.shell .stepper{
+  padding:0 0 20px;
+  border-bottom:1px solid var(--ll3-line);
+}
+.shell .stepper__num,
+.shell .stepper__bar{box-shadow:none}
+.shell .lesson{gap:38px}
+.shell .lesson article{min-width:0}
+.shell .lesson .page-head h1{max-width:20ch}
+.shell .lesson-section{
+  margin-bottom:46px;
+  padding-top:28px;
+  border-top:1px solid var(--ll3-line);
+}
+.shell .lesson-section>h2{
+  font-size:21px;
+  letter-spacing:-.035em;
+}
+.shell .prose,
+.shell .lesson-section>p{
+  color:#39445a;
+  line-height:1.75;
+}
+.shell .concept,
+.shell .card,
+.shell .memo,
+.shell .reveal,
+.shell .output,
+.shell .code{
+  border-radius:2px;
+  box-shadow:none;
+}
+.shell .concept{
+  background:#e9edf4;
+  border-color:#cbd3df;
+}
+.shell .lesson__rail{
+  top:86px;
+  gap:12px;
+}
+.shell .lesson__rail .memo--ai{
+  background:var(--ll3-panel);
+  color:#e9eff8;
+  border:1px solid #2a3850;
+  box-shadow:inset 3px 0 0 rgba(82,214,234,.85);
+}
+.shell .lesson__rail .memo--ai .muted,
+.shell .lesson__rail .memo--ai .memo__row{color:#8e9db2}
+.shell .lesson__rail .memo--ai .memo__row{border-color:rgba(255,255,255,.1)}
+.shell .lesson__rail .memo--ai .memo__row b{color:#f3f6fb}
+.shell .lesson__rail .memo--ai .ai-chip{color:var(--ll3-cyan)}
+.shell .reveal{
+  background:#f7f4ed;
+  border-color:#cbc4b8;
+}
+.shell .line-note{
+  border-radius:0;
+  border-top:1px solid #d7d0c5;
+  background:transparent;
+  padding:10px 0;
+}
+.shell .line-note:last-child{border-bottom:1px solid #d7d0c5}
+.shell .line-note code{border-radius:2px;box-shadow:none}
+
+/* ---------- ADAPT payoff ---------- */
+.shell .compare{gap:14px}
+.shell .compare__col{
+  border-radius:0;
+  border-color:#c9c2b7;
+  padding:24px;
+  box-shadow:none;
+}
+.shell .compare__col--before{background:#ebe7de}
+.shell .compare__col--after{
+  background:#edf2ff;
+  border-color:#7ea2ff;
+  box-shadow:inset 4px 0 0 var(--ll3-blue);
+}
+.shell .compare__arrow{
+  width:38px;
+  height:38px;
+  border-radius:2px;
+  box-shadow:none;
+}
+.shell .compare__delta,
+.shell .reason__tag{border-radius:2px}
+.shell .reason{
+  padding:15px 0;
+  border:0;
+  border-top:1px solid var(--ll3-line);
+  border-radius:0;
+  background:transparent;
+}
+.shell .reason:last-child{border-bottom:1px solid var(--ll3-line)}
+
+/* ---------- dashboard / history / operator surfaces ---------- */
+.shell .card,
+.shell .stat-card{
+  border-radius:2px;
+  box-shadow:none;
+}
+.shell .stat-card{
+  background:#f7f4ed;
+  border-color:#cec7ba;
+}
+.shell .timeline::before{background:#c9c2b6}
+.shell .tl-item::before{box-shadow:none}
+.shell .pager{
+  margin-top:34px;
+  padding-top:18px;
+  border-top:1px solid var(--ll3-line);
+}
+.shell .btn{
+  border-radius:2px;
+  box-shadow:none;
+}
+.shell .btn--primary{
+  background:#245fe4;
+  border-color:#245fe4;
+}
+.shell .callout{border-radius:2px;box-shadow:none}
+
+/* ---------- mobile: content first, not chrome first ---------- */
+@media(max-width:960px){
+  .shell{display:block;min-height:100vh}
+  .shell .sidebar{
+    position:relative;
+    height:auto;
+    overflow:visible;
+    border-right:0;
+    border-bottom:1px solid #263349;
+  }
+  .shell .sidebar__brand{
+    min-height:56px;
+    padding:11px 14px 9px;
+    border-bottom:0;
+  }
+  .shell .brand-mark{width:28px;height:28px}
+  .shell .brand-text__name{font-size:12px}
+  .shell .brand-text__tag{display:none}
+  .shell .sidebar__nav{
+    display:flex;
+    flex-direction:row;
+    gap:2px;
+    padding:0 8px 8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .shell .sidebar__nav::-webkit-scrollbar{display:none}
+  .shell .nav-label{display:none}
+  .shell .nav-link{
+    flex:0 0 auto;
+    min-height:34px;
+    padding:8px 10px;
+    border-left:0;
+    border-bottom:2px solid transparent;
+    font-size:10px;
+    white-space:nowrap;
+  }
+  .shell .nav-link[aria-current="page"]{
+    border-bottom-color:var(--ll3-blue);
+    background:rgba(61,114,255,.12);
+  }
+  .shell .nav-link__icon{display:none}
+  .shell .nav-link__badge{display:none}
+  .shell .ai-status{display:none}
+  .shell .topbar{
+    position:sticky;
+    top:0;
+    min-height:44px;
+    padding:7px 14px;
+    gap:7px;
+  }
+  .shell .topbar__crumb{font-size:10px}
+  .shell .learner-chip{font-size:9px;padding-right:7px}
+  .shell .learner-chip__avatar{width:21px;height:21px;font-size:9px}
+  .shell .topbar .badge{font-size:9px;padding:4px 7px}
+  .shell .content,
+  .shell .content--reading,
+  .shell .content--wide{
+    max-width:none;
+    padding:30px 16px 72px;
+  }
+  .shell .page-head{margin-bottom:28px}
+  .shell .page-head h1{
+    max-width:100%;
+    margin-top:9px;
+    font-size:clamp(31px,9.2vw,37px);
+    line-height:1.12;
+    letter-spacing:-.04em;
+    text-wrap:pretty;
+  }
+  .shell .page-head p{
+    font-size:13px;
+    line-height:1.68;
+  }
+  .shell .choice{
+    min-height:0;
+    padding:16px 6px;
+  }
+  .shell .choice__title{font-size:15px;line-height:1.42}
+  .shell .choice__desc{font-size:12px;line-height:1.55}
+  .shell .field{padding:20px 0 22px}
+  .shell .seg{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .shell .seg label{min-width:0}
+  .shell .seg span{
+    width:100%;
+    min-height:46px;
+    padding:6px 6px;
+    justify-content:center;
+    text-align:center;
+    line-height:1.3;
+    font-size:10.5px;
+    word-break:keep-all;
+  }
+  .shell .stepper{
+    overflow-x:auto;
+    scrollbar-width:none;
+    gap:7px;
+  }
+  .shell .stepper::-webkit-scrollbar{display:none}
+  .shell .stepper__step{flex:0 0 auto;font-size:10px}
+  .shell .lesson{display:block}
+  .shell .lesson-section{padding-top:24px;margin-bottom:38px}
+  .shell .lesson__rail{position:static;margin-top:30px}
+  .shell .compare{grid-template-columns:1fr}
+  .shell .compare__arrow{transform:rotate(90deg);margin:0 auto}
+  .shell .reason{flex-direction:column;gap:8px}
+  .shell .pager{gap:8px}
+  .shell .pager .btn{font-size:11px;padding-inline:12px}
+}
+
+@media(max-width:420px){
+  .shell .topbar__spacer{display:none}
+  .shell .learner-chip{margin-left:auto}
+  .shell .content,
+  .shell .content--reading,
+  .shell .content--wide{padding-left:14px;padding-right:14px}
+}
