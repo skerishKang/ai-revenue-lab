@@ -1,57 +1,18 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="우리 가족 신문 승인 시각 아틀라스와 UX 데모">
-  <title>우리 가족 신문 — Visual Atlas</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./styles/tokens.css?v=family-newspaper-20260726-1">
-  <link rel="stylesheet" href="./styles/base.css?v=family-newspaper-20260726-1">
-  <link rel="stylesheet" href="./styles/layout.css?v=family-newspaper-20260726-1">
-  <link rel="stylesheet" href="./styles/components.css?v=family-newspaper-20260726-1">
-  <link rel="stylesheet" href="./styles/states/front-page.css?v=family-newspaper-20260726-1">
-  <link rel="stylesheet" href="./styles/states/sections.css?v=family-newspaper-20260726-1">
-  <link rel="stylesheet" href="./styles/states/mobile.css?v=family-newspaper-20260726-1">
-  <script src="./scripts/states/front-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/states/news-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/states/photos-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/states/calendar-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/states/sources-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/states/mobile-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/states/fold-markup.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/render-states.js?v=family-newspaper-20260726-1" defer></script>
-  <script src="./scripts/review-state.js?v=family-newspaper-20260726-1" defer></script>
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="description" content="우리 가족 신문 — 작은 가족 기록을 한 호의 디지털 신문으로 편집"><title>우리 가족 신문 — Domestic Pressroom</title><link rel="stylesheet" href="./styles/pressroom-v2.css?v=b08-v2-20260810"></head>
 <body>
-  <a class="skip-link" href="#publication">신문 본문으로 이동</a>
-
-  <header class="review-bar" aria-label="시각 상태 검토 도구">
-    <div class="review-bar__identity">
-      <span class="review-bar__eyebrow">APPROVED VISUAL ATLAS</span>
-      <strong id="current-state-label">이번 주 1면</strong>
-    </div>
-    <nav class="state-nav" aria-label="대표 시각 상태">
-      <button class="state-nav__button is-active" type="button" data-state-target="front" aria-pressed="true">1면</button>
-      <button class="state-nav__button" type="button" data-state-target="news" aria-pressed="false">소식면</button>
-      <button class="state-nav__button" type="button" data-state-target="photos" aria-pressed="false">사진 특집</button>
-      <button class="state-nav__button" type="button" data-state-target="calendar" aria-pressed="false">연감</button>
-      <button class="state-nav__button" type="button" data-state-target="sources" aria-pressed="false">편집 노트</button>
-      <button class="state-nav__button" type="button" data-state-target="mobile" aria-pressed="false">모바일판</button>
-      <button class="state-nav__button" type="button" data-state-target="fold" aria-pressed="false">지면 넘김</button>
-    </nav>
-    <div class="review-bar__pager" aria-label="상태 이동">
-      <button type="button" class="pager-button" data-state-step="-1" aria-label="이전 상태">←</button>
-      <span id="state-position" aria-live="polite">1 / 7</span>
-      <button type="button" class="pager-button" data-state-step="1" aria-label="다음 상태">→</button>
-    </div>
-  </header>
-
-  <main id="publication" class="publication-shell"></main>
-
-  <footer class="prototype-boundary">
-    <strong>VISUAL ATLAS · UX DEMO READY</strong>
-    <span>합성 콘텐츠 · <a href="./guide.html" style="color:inherit;font-weight:700">30초 사용법</a> · <a href="./ux.html#front" style="color:inherit;font-weight:700">신문 체험</a></span>
-  </footer>
-</body>
-</html>
+<div class="fp-shell">
+<header class="fp-topbar"><a class="fp-brand" href="./index.html"><span class="fp-mark">FN</span><span><strong>Family Newspaper</strong><small>우리 가족 편집국</small></span></a><nav class="fp-nav" aria-label="가족 신문 주요 메뉴"><a class="is-guide" href="./guide.html">30초 사용법</a><a aria-current="page" href="./index.html">이번 호</a><a href="./ux.html#news">기사</a><a href="./ux.html#sources">편집 노트</a></nav></header>
+<main class="fp-edition">
+<header class="fp-masthead"><small>제 18호 · 가족 검토본</small><h1>우리 가족 신문</h1><small>2026년 8월 둘째 주</small></header>
+<div class="fp-strip"><span>Domestic Pressroom · Weekly Edition</span><span>사진 12 · 메모 7 · 일정 3 · 사람 검토 전</span></div>
+<section class="fp-front">
+<article class="fp-lead"><p class="fp-kicker">이번 주의 장면 / FRONT PAGE</p><h2>비가 그친 뒤,<br>다 같이 걸었던 저녁</h2><div class="fp-photo" role="img" aria-label="비가 그친 뒤 가족이 함께 걷는 합성 장면"><span class="fp-photo-label">FAMILY WALK · SYNTHETIC SCENE · 20:14</span></div><p class="fp-dek">작은 일정과 사진, 짧은 메모를 한 주의 1면으로 엮었습니다. 가족이 다시 읽고 싶은 장면을 중심으로 기사·사진·일정을 한 호 안에 모읍니다.</p><div class="fp-byline"><span>편집 제안 · 브라우저 데모</span><span>공개 발행 전 사람 확인 필요</span></div><div class="fp-actions"><a class="fp-button primary" href="./ux.html#front">이번 호 읽기</a><a class="fp-button" href="./guide.html">어떻게 쓰나요?</a></div></article>
+<aside class="fp-side"><div class="fp-issue"><span>THIS WEEK / ISSUE 18</span><strong>한 주의 작은 기록을<br>한 곳에.</strong><p>1면 → 소식 → 사진 → 일정 → 만든 과정</p></div><article><p class="fp-kicker">한 줄 소식</p><h3>아버지의 새 화분이 첫 잎을 냈어요</h3><p>창가 사진 한 장과 짧은 메모에서 시작된 생활 기사.</p></article><article><p class="fp-kicker">기념일</p><h3>토요일, 가족 저녁 7시</h3><p>가족이 직접 확인한 일정만 이번 호에 실립니다.</p></article><article><p class="fp-kicker">사진 특집</p><h3>이번 주 앨범에서 고른 네 장</h3><p>많이 찍은 사진보다 다시 보고 싶은 장면을 고릅니다.</p></article></aside>
+</section>
+<section class="fp-ribbon"><article><span>01 · HOME</span><strong>창가의 여름 정리</strong><small>오래 두었던 상자를 비우고 작은 책장을 옮긴 날.</small></article><article><span>02 · PEOPLE</span><strong>오랜 친구에게 온 전화</strong><small>별일 없는 안부였지만 기억하고 싶은 말 한 문장.</small></article><article><span>03 · NEIGHBORHOOD</span><strong>저녁 산책길의 새 가게</strong><small>가족 누구나 읽기 쉽게 장소와 느낌만 간결하게.</small></article><article><span>04 · NEXT</span><strong>다음 호에 남길 장면</strong><small>오늘의 기억에서 다음 주 편집 재료를 고릅니다.</small></article></section>
+</main>
+<footer class="fp-footer"><span>Family Newspaper</span><span>Private review edition · Human confirmation before sharing</span></footer>
+</div>
+</body></html>
