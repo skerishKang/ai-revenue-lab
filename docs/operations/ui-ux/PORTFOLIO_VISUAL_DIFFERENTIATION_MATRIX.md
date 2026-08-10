@@ -2,161 +2,160 @@
 
 Status: `AUDIT_IN_PROGRESS`
 
-Purpose: prevent unrelated numbered Businesses from converging on the same visual language before any further redesign implementation begins.
+Purpose: prevent unrelated numbered Businesses from converging on the same visual language **before** further redesign implementation begins.
 
-This matrix is not a list of approved UIs. It records the **intended or currently observed visual territory** that must be revalidated through the new read-only audit program.
+This matrix is not a list of approved UIs. It records intended/current visual territory and the new-standard verdict from fresh evidence.
 
 Legend:
 
 ```text
-CONFIRMED_CASE_STUDY     directly re-analysed under the new standard
-PRELIMINARY              based on current known surface; must be re-audited
+DIRECTION_FROZEN        fresh new-standard audit + direction document exists
+CASE_STUDY               methodology lesson recorded
+PRELIMINARY              known current surface; full new-standard audit pending
+PENDING                  audit not yet performed under new standard
 EXTERNAL / SUCCESSOR     no internal redesign
-NON_WEB                  web visual matrix not applicable
-PENDING                  audit not yet performed under the new standard
+NON_WEB                  web matrix not applicable
 ```
 
----
+## 1. Matrix
 
-## 1. Initial matrix
+| B# | Product | Authority | Reserved visual world | Core object | Density | Transformation / motion | Collision / verdict |
+|---:|---|---|---|---|---|---|---|
+| 01 | Personal Edition | internal live | **Private Archive Editorial** — tactile, intimate, authored, collectible | private Edition + source fragments | low–mid | fragment → edit → bind → read → recut | **DIRECTION_FROZEN · REDESIGN**; separate from B19/B20 |
+| 02 | Living Travel | internal live | **Cinematic Personal Journey** — place/light/weather first; route as supporting layer | personal journey / travel Edition | mid | place → route → day → adapt | **DIRECTION_FROZEN · REDESIGN**; current no-image dark route shell misses Issue #457 and collides B06/B07 |
+| 03 | External / Parallel | external | — | — | — | — | EXTERNAL |
+| 04 | Adaptive Learning | internal live | **Adaptive Learning Studio** — lesson revision / adaptation trace | lesson + before/after adaptation | mid | goal → diagnostic → lesson → feedback → adapt | **DIRECTION_FROZEN · FOCUSED_POLISH**; reduce dark-board sameness + fix Korean compression |
+| 05 | DanjiOn | successor | — | — | — | — | EXTERNAL |
+| 06 | World Feed | internal live/review lineage | **Personal World Signal Room / Editorial Dispatch** | lead story + feed signal | mid–high | signal → open → why → adjust → return | **DIRECTION_FROZEN · CASE_STUDY**; B06 style is not reusable portfolio template |
+| 07 | Personal Meaning Map | internal web | **Relational Meaning Field** — light/mineral, quiet spatial memory relationships | relationship between memories | low–mid | memory → signal → connect → review → reframe | **DIRECTION_FROZEN · REDESIGN ART LAYER**; interaction preserved, dark signal/orbit family rejected |
+| 08 | Family Newspaper | internal web | household/family publication — pending | family issue | TBD | TBD | PENDING; publication cluster |
+| 09 | Personalized Children's Story | internal web | illustrated/personal narrative — pending | story scene | TBD | TBD | PENDING |
+| 10 | Fan Magazine | internal web | fandom publication/replay — pending | fan edition / replay | TBD | TBD | PENDING; publication cluster |
+| 11 | Language Learning Magazine | internal web | language learning publication — pending | phrase/lesson issue | TBD | TBD | PENDING; publication cluster |
+| 12 | Creator Mini Media | internal web | creator release/media — pending | release package | TBD | TBD | PENDING |
+| 13 | Private Cinema Ledger | internal web | private cinema/viewing archive — pending | viewing record / film entry | TBD | TBD | PENDING; archive/audio overlap |
+| 14 | Korean AI Platform | internal live | AI workspace — pending | session / connection / model control | mid–high | connect → configure → work | PRELIMINARY; generic AI console risk |
+| 15 | Global AI Newsroom | internal live | verification newsroom — pending | claim + sources | mid–high | claim → sources → verdict | PRELIMINARY; B33/B48 collision |
+| 16 | Personal Sports | internal live | matchday journal — pending | match + moment | mid | matchday → focus → flow → moments | PRELIMINARY |
+| 17 | Local Shop Magazine | internal live | local counter journal — pending | scene / shop issue | mid | scene → voice → edit → proof → issue | PRELIMINARY; publication cluster |
+| 18 | Personal Audio Channel | internal live | listening room — pending | track / echo | mid | play → echo → keep | PRELIMINARY |
+| 19 | Personal Memory Book | internal live | memory binding/provenance — pending | memory page / provenance mark | low–mid | gather → date → compare → mark → bind | PRELIMINARY; strongest B01 collision risk |
+| 20 | Personal Memory Novel | internal live | manuscript/narrative interpretation — pending | source memory / narrative draft | mid | source → POV → draft → compare → author | PRELIMINARY; B01/B19 collision |
+| 21 | Founder Strategy Letter | internal web | decision/strategy — pending | decision / signal | mid | signal → tension → decision → watch | PRELIMINARY; control/dashboard risk |
+| 22 | Personal Media Studio | internal web | media/story production — pending | source / spine / media output | mid | sources → canvas → outputs → trace | PRELIMINARY |
+| 23 | LoveBud | external | — | — | — | — | EXTERNAL |
+| 24 | LoveTree | external | — | — | — | — | EXTERNAL |
+| 25 | Love Matchmaking | external | — | — | — | — | EXTERNAL |
+| 26 | Ieeon | integrated successor | — | — | — | — | EXTERNAL |
+| 27 | Sasillo | integrated successor | — | — | — | — | EXTERNAL |
+| 28 | Ieeon | integrated successor | — | — | — | — | EXTERNAL |
+| 29 | Apartment Governance | protected review authority | guided governance tutorial — pending | chapter / scenario | mid | guided scenario | PRELIMINARY |
+| 30 | 400 AI Finder | successor | — | — | — | — | EXTERNAL |
+| 31 | Sasillo | integrated successor | — | — | — | — | EXTERNAL |
+| 32 | AI Skill Studio | review authority | skill-building workbench — pending | task / evidence / saved skill | high | task → evidence → conflict → review → save | PRELIMINARY; generic workflow risk |
+| 33 | Research Memory | review authority | research memory — pending | source / claim / note | mid | question → sources → claims → note | PRELIMINARY; B15/B48 collision |
+| 34 | AI Dubbing Studio | review authority | rights-first dubbing workflow — pending | rights / segments / synthetic voice / review | mid | rights → segments → voice → review | PENDING |
+| 35 | AI Media Education DX | review lineage | pending | TBD | TBD | TBD | PENDING |
+| 36 | AI Women Safety | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
+| 37 | AI Safe Route | web review | pending | TBD | TBD | TBD | PENDING; emergency/safety family |
+| 38 | AI Exercise Coach | web review | pending | TBD | TBD | TBD | PENDING |
+| 39 | 112 Real-Time Interpretation | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
+| 40 | Emergency Urgency AI | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
+| 41 | Foreign Emergency Assistant | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
+| 42 | AI Development Control Tower | web review | pending | TBD | TBD | TBD | PENDING; control-room risk |
+| 43 | AI Software Factory | web review | pending | TBD | TBD | TBD | PENDING; control/factory risk |
+| 44 | Portfolio Console | special authority | resolve before direction | portfolio registry/control | high | TBD | AUTHORITY RESOLUTION |
+| 45 | AI Content Engine | web review | pending | TBD | TBD | TBD | PENDING |
+| 46 | AI Personalization Engine | web review | pending | TBD | TBD | TBD | PENDING |
+| 47 | Real-Time Feedback Engine | web review | pending | TBD | TBD | TBD | PENDING |
+| 48 | AI Verification Engine | web review | pending | TBD | TBD | TBD | PENDING; B15/B33 collision |
+| 49 | Public Data Connector Hub | web review | pending | TBD | TBD | TBD | PENDING |
+| 50 | Ieeon | integrated successor | — | — | — | — | EXTERNAL |
+| 51 | AI Workflow Marketplace | web review | pending | TBD | TBD | TBD | PENDING; generic marketplace risk |
+| 52 | Scheduled Agent Operations | web review | pending | TBD | TBD | TBD | PENDING; operations/control risk |
+| 53 | Embedded AI SDK | web review | pending | TBD | TBD | TBD | PENDING; developer-tool risk |
+| 54 | AI Model Router | CLI/TUI | — | routing policy | high | policy routing | NON_WEB |
+| 55 | Local AI Fleet | web review | pending | TBD | TBD | TBD | PENDING; engine/control risk |
+| 56 | intentional numbering gap / unresolved authority | none | — | — | — | — | AUTHORITY RESOLUTION |
+| 57 | Classic Literature Translation | web review | pending | TBD | TBD | TBD | PENDING; reading/editorial cluster |
+| 58 | Personal Writing Voice | web review | pending | TBD | TBD | TBD | PENDING; writing/editorial cluster |
+| 59 | Living Archive | web review | pending | TBD | TBD | TBD | PENDING; B01/B13/B19 archive collision |
 
-| B# | Product | Authority class | Intended / observed visual world | Core object | Density | Motion / transformation | Collision risk | New-standard status |
-|---:|---|---|---|---|---|---|---|---|
-| 01 | Personal Edition | internal live product | **Private Archive Editorial** — intimate, tactile, authored, collectible | private Edition / source fragments | low–mid | fragment → edit → bind → read → recut | B19/B20 editorial-memory overlap; beige/editorial portfolio repetition | **CONFIRMED_CASE_STUDY · REDESIGN** |
-| 02 | Living Travel | internal live product | traveler editorial workspace | place / route / day edition | mid | place → route → day → adapt | B06 discovery/feed; generic editorial shell | PRELIMINARY |
-| 03 | External / Parallel Track | external | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 04 | Adaptive Learning | internal live product | learner studio / active learning workspace | learning task / learner state | mid | attempt → feedback → adapt | dashboard/workspace sameness | PRELIMINARY |
-| 05 | DanjiOn | expanded successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 06 | World Feed | internal live/review lineage | **Signal Room / Personal World Dispatch** — alive, worldly, current, exploratory | feed signal / lead story | mid–high | signal → open → why → adjust → return | other dark control rooms; generic magazine/feed | **CONFIRMED_CASE_STUDY · METHODOLOGY POSITIVE** |
-| 07 | Personal Meaning Map | internal web | meaning field / personal relation landscape | meaning node / relationship | TBD | TBD | abstract map/diagram sameness | PENDING |
-| 08 | Family Newspaper | internal web | family press / household publication | family issue | TBD | TBD | B01/B17 magazine/editorial overlap | PENDING |
-| 09 | Personalized Children's Story | internal web | story bloom / illustrated narrative | story scene | TBD | TBD | decorative illustration / oversized typography | PENDING |
-| 10 | Fan Magazine | internal web | fandom/replay publication | fan edition / replay moment | TBD | TBD | magazine family overlap | PENDING |
-| 11 | Language Learning Magazine | internal web | language field journal | learning phrase / issue | TBD | TBD | publication family overlap | PENDING |
-| 12 | Creator Mini Media | internal web | creator release room | release package | TBD | TBD | newsroom/control-room overlap | PENDING |
-| 13 | Private Cinema Ledger | internal web | cinema ledger / private screening archive | viewing record / film entry | TBD | TBD | B18/B19 personal archive overlap | PENDING |
-| 14 | Korean AI Platform | internal live product | AI workspace / model session environment | session / connection / model/API control | mid–high | connect → configure → work | generic AI console / dark workspace | PRELIMINARY |
-| 15 | Global AI Newsroom | internal live product | verification desk | claim / source evidence | mid–high | claim → sources → verdict | B48 verification engine / control desk | PRELIMINARY |
-| 16 | Personal Sports | internal live product | matchday live journal | match / moment | mid | matchday → focus → flow → moments | live-feed / sports dashboard clichés | PRELIMINARY |
-| 17 | Local Shop Magazine | internal live product | counter journal / local issue | scene / shop issue | mid | scene → voice → edit → proof → issue | B08/B10/B11 magazine overlap | PRELIMINARY |
-| 18 | Personal Audio Channel | internal live product | listening room | track / echo | mid | play → echo → keep | B13 archive/player overlap | PRELIMINARY |
-| 19 | Personal Memory Book | internal live product | memory binding table | memory page / provenance mark | low–mid | gather → date → compare → mark → bind | **B01 strongest collision risk** | PRELIMINARY |
-| 20 | Personal Memory Novel | internal live product | manuscript studio | source memory / narrative draft | mid | source → POV → draft → compare → author | B01/B19 editorial-memory overlap | PRELIMINARY |
-| 21 | Founder Strategy Letter | internal web | decision corridor / strategic letter | decision / signal | mid | signal → tension → decision → watch | B42 control-tower / business-dashboard overlap | PRELIMINARY |
-| 22 | Personal Media Studio | internal web | story spine loom | source / story spine / media output | mid | sources → canvas → outputs → trace | creator/media production overlap | PRELIMINARY |
-| 23 | LoveBud | external implementation | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 24 | LoveTree | external implementation | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 25 | Love Matchmaking | external implementation | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 26 | Ieeon | integrated successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 27 | Sasillo | integrated successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 28 | Ieeon | integrated successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 29 | Apartment Governance | internal review authority | guided governance tutorial | chapter / scenario | mid | guided chapter/scenario | civic/tutorial sameness | PRELIMINARY |
-| 30 | 400 AI Finder | expanded successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 31 | Sasillo | integrated successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 32 | AI Skill Studio | internal review authority | skill-building workbench | task / evidence / saved skill | high | task → evidence → conflict → review → save | generic AI workflow/workbench | PRELIMINARY |
-| 33 | Research Memory | internal review authority | research constellation/note flow | source / claim / note | mid | question → sources → claims → note | B15/B48 evidence/research overlap | PRELIMINARY |
-| 34 | AI Dubbing Studio | internal review authority | rights-first dubbing workflow | rights / segments / synthetic voice / review | mid | rights → segments → voice → review | media-production workspace overlap | PENDING |
-| 35 | AI Media Education DX | internal web/review lineage | pending new-standard audit | TBD | TBD | TBD | education/workspace overlap | PENDING |
-| 36 | AI Women Safety | internal web review | pending | TBD | TBD | TBD | safety/emergency suite overlap | PENDING |
-| 37 | AI Safe Route | internal web review | pending | TBD | TBD | TBD | map/safety suite overlap | PENDING |
-| 38 | AI Exercise Coach | internal web review | pending | TBD | TBD | TBD | coaching/dashboard overlap | PENDING |
-| 39 | 112 Real-Time Interpretation | internal web review | pending | TBD | TBD | TBD | emergency suite overlap | PENDING |
-| 40 | Emergency Urgency AI | internal web review | pending | TBD | TBD | TBD | emergency suite overlap | PENDING |
-| 41 | Foreign Emergency Assistant | internal web review | pending | TBD | TBD | TBD | emergency suite overlap | PENDING |
-| 42 | AI Development Control Tower | internal web review | pending | TBD | TBD | TBD | control-room / dashboard repetition | PENDING |
-| 43 | AI Software Factory | internal web review | pending | TBD | TBD | TBD | factory/control-room/workflow repetition | PENDING |
-| 44 | Portfolio / control-related Business | special authority | resolve before audit | TBD | TBD | TBD | portfolio-console confusion | PENDING |
-| 45 | AI Content Engine | internal web review | pending | TBD | TBD | TBD | content/media engine overlap | PENDING |
-| 46 | AI Personalization Engine | internal web review | pending | TBD | TBD | TBD | recommendation/control-panel overlap | PENDING |
-| 47 | Real-Time Feedback Engine | internal web review | pending | TBD | TBD | TBD | feedback dashboard/control-room overlap | PENDING |
-| 48 | AI Verification Engine | internal web review | pending | TBD | TBD | TBD | B15/B33 evidence overlap | PENDING |
-| 49 | Public Data Connector Hub | internal web review | pending | TBD | TBD | TBD | connector/network/console overlap | PENDING |
-| 50 | Ieeon | integrated successor | — | — | — | — | — | EXTERNAL / SUCCESSOR |
-| 51 | AI Workflow Marketplace | internal web review | pending | TBD | TBD | TBD | marketplace/card-grid cliché | PENDING |
-| 52 | Scheduled Agent Operations | internal web review | pending | TBD | TBD | TBD | operations/control-room overlap | PENDING |
-| 53 | Embedded AI SDK | internal web review | pending | TBD | TBD | TBD | developer console/docs overlap | PENDING |
-| 54 | AI Model Router | non-web CLI/TUI authority | — | routing policy | high | policy routing | web matrix N/A | NON_WEB |
-| 55 | Local AI Fleet | internal web review | pending | TBD | TBD | TBD | engine-room/control-room overlap | PENDING |
-| 56 | authority requires resolution | unresolved | TBD | TBD | TBD | TBD | TBD | PENDING |
-| 57 | Classic Literature Translation | internal web review | pending | TBD | TBD | TBD | reading/editorial family overlap | PENDING |
-| 58 | Personal Writing Voice | internal web review | pending | TBD | TBD | TBD | writing/editorial family overlap | PENDING |
-| 59 | Living Archive | internal web review | pending | TBD | TBD | TBD | B01/B13/B19 archive overlap | PENDING |
+## 2. Batch A portfolio finding
 
----
+Fresh same-condition contact sheets exposed a portfolio-level problem that the previous number-by-number audit underweighted.
 
-## 2. High-priority collision clusters to examine before implementation
-
-### Archive / memory / publication cluster
+At thumbnail/first-viewport level, current B01/B02/B06/B07 all rely heavily on combinations of:
 
 ```text
-B01 Personal Edition
-B08 Family Newspaper
-B10 Fan Magazine
-B11 Language Learning Magazine
-B13 Private Cinema Ledger
-B17 Local Shop Magazine
-B19 Personal Memory Book
-B20 Personal Memory Novel
-B57 Classic Literature Translation
-B58 Personal Writing Voice
-B59 Living Archive
+very dark green/navy/black field
++ oversized high-contrast display headline
++ coral/orange or cyan accent
++ thin circle/orbit/route/connection geometry
++ small uppercase/micro metadata
++ similar compact top chrome
 ```
 
-Risk: beige paper, serif display, giant titles, issue-number treatments, card-like covers and generic editorial metaphors become indistinguishable.
+B04 uses a beige outer shell but still centers a large dark presentation board with oversized Korean display type and technical rail.
 
-Required action: reserve a different **core object + material + motion grammar** for each.
+Therefore future audits must evaluate **portfolio collision at thumbnail distance**, not only whether each product has domain-specific copy or a different state machine.
 
-### Signal / control / operations cluster
+The correction strategy is deliberately different per product:
 
 ```text
-B06 World Feed
-B14 Korean AI Platform
-B21 Founder Strategy Letter
-B32 AI Skill Studio
-B42 AI Development Control Tower
-B43 AI Software Factory
-B45–B55 engine/workflow/operations products
+B01 → tactile Private Archive Editorial
+B02 → place/image-first Cinematic Personal Journey
+B04 → learner-content-first Adaptive Learning Studio
+B06 → retain product-specific Signal Room / World Dispatch territory
+B07 → light/mineral Relational Meaning Field
 ```
 
-Risk: dark background, cyan/orange accents, left rail, terminal-like typography and dashboard panels repeat.
+## 3. High-priority collision clusters
 
-Required action: B06's Signal Room is **not** the default dark-product template.
-
-### Evidence / verification / research cluster
+### Archive / memory / publication
 
 ```text
-B15 Global AI Newsroom
-B33 Research Memory
-B48 AI Verification Engine
+B01, B08, B10, B11, B13, B17, B19, B20, B57, B58, B59
 ```
 
-Risk: all become claim/source/evidence card layouts.
+Do not let all become beige paper + serif/giant title + issue-number cover systems.
 
-Required action: differentiate the user job and primary visual object — editorial verification, personal research memory, reusable verification engine.
+### Signal / control / operations
 
-### Emergency / safety cluster
+```text
+B06, B14, B21, B32, B42, B43, B45–B55
+```
+
+B06's dark signal-room combination is reserved; other products need independent visual territory.
+
+### Evidence / verification / research
+
+```text
+B15, B33, B48
+```
+
+Differentiate editorial verification, personal research memory and reusable verification infrastructure.
+
+### Safety / emergency
 
 ```text
 B36–B41
 ```
 
-Risk: six products become the same alert dashboard with red badges and map panels.
+Do not allow six alert/map products to collapse into one red-badge dashboard family.
 
-Required action: re-audit as a family and assign clearly different role/task visual grammars before any implementation.
+## 4. Matrix completion rule
 
----
+`PENDING` rows cannot begin visual implementation.
 
-## 3. Matrix completion rule
+Each implementation target must first gain a frozen Business direction containing confirmed:
 
-`PENDING` rows may not begin new redesign implementation.
-
-Before implementation, each row must be updated from its individual `B##_VISUAL_DIRECTION.md` with:
-
-- confirmed visual world;
+- visual world;
 - core object;
 - density;
 - motion grammar;
+- reference translation;
 - collision notes;
-- final `KEEP / FOCUSED_POLISH / REDESIGN` decision.
+- `KEEP / FOCUSED_POLISH / REDESIGN` verdict.
 
-The matrix is updated **before** code, not after code.
+The matrix is updated before code, never retrofitted after implementation.
