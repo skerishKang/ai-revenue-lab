@@ -1,0 +1,230 @@
+/* B13 Cinema Ledger V2 — secondary surfaces.
+   Keeps existing routes/content semantics; changes only visual hierarchy. */
+
+.page-header{
+  position:relative;
+  min-height:150px;
+  margin:0 0 34px;
+  padding:26px 0 28px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:flex-end;
+}
+.page-header::before{
+  content:"PRIVATE CINEMA LEDGER · INDEX";
+  position:absolute;
+  top:18px;
+  left:0;
+  color:#666b67;
+  font:900 9px var(--sans);
+  letter-spacing:.16em;
+}
+.page-header h1{
+  margin:0;
+  color:#f4f0e8;
+  font:900 clamp(42px,5.5vw,76px)/.88 var(--sans);
+  letter-spacing:-.065em;
+}
+.page-header-actions{justify-content:space-between}
+.page-header-actions .btn{margin-left:auto;margin-bottom:4px}
+
+/* Topic index = screening bays, not generic cards. */
+.topic-list{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1px;
+  padding:1px;
+  background:var(--line);
+  counter-reset:topic;
+}
+.topic-card{
+  counter-increment:topic;
+  position:relative;
+  min-height:310px;
+  padding:22px;
+  border:0;
+  background:
+    radial-gradient(circle at 78% 16%,rgba(255,106,69,.10),transparent 19%),
+    repeating-linear-gradient(90deg,transparent 0 36px,rgba(255,255,255,.02) 36px 37px),
+    #101214;
+  overflow:hidden;
+}
+.topic-card::before{
+  content:"BAY 0" counter(topic);
+  display:block;
+  margin-bottom:auto;
+  color:var(--signature);
+  font:900 9px var(--sans);
+  letter-spacing:.16em;
+}
+.topic-card::after{
+  content:"";
+  position:absolute;
+  right:-28px;
+  bottom:-36px;
+  width:150px;
+  height:150px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:50%;
+  box-shadow:0 0 0 22px rgba(255,255,255,.018),0 0 0 44px rgba(255,255,255,.012);
+  pointer-events:none;
+}
+.topic-card:nth-child(2){background:radial-gradient(circle at 72% 20%,rgba(92,132,173,.12),transparent 20%),#111416}
+.topic-card:nth-child(3){background:radial-gradient(circle at 74% 18%,rgba(211,170,88,.10),transparent 20%),#14130f}
+.topic-card h3{
+  position:relative;
+  z-index:1;
+  margin-top:78px;
+  max-width:12ch;
+  color:#f5f1e8;
+  font:850 clamp(25px,2.4vw,34px)/1.02 var(--sans);
+  letter-spacing:-.05em;
+}
+.topic-intent{
+  position:relative;
+  z-index:1;
+  max-width:32ch;
+  margin-top:10px;
+  color:#8e928d;
+  font-size:12px;
+  line-height:1.65;
+  -webkit-line-clamp:3;
+}
+.topic-meta{
+  position:relative;
+  z-index:1;
+  margin-top:auto;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+  color:#696e69;
+}
+.topic-card:hover{background-color:#17191b}
+
+/* Record search = archival ledger with paper-note excerpts. */
+.form-inline{
+  display:grid;
+  grid-template-columns:minmax(220px,1.35fr) minmax(150px,.55fr) minmax(180px,.75fr) auto;
+  gap:1px;
+  align-items:stretch;
+  margin:-1px 0 26px;
+  padding:1px;
+  background:var(--line);
+}
+.form-inline .form-group{min-width:0;background:#0e1011}
+.form-inline .form-group input,
+.form-inline .form-group select{
+  min-height:48px;
+  height:100%;
+  border:0;
+  border-radius:0;
+  background:#0e1011;
+  color:#dedad2;
+  color-scheme:dark;
+  box-shadow:none;
+}
+.form-inline .btn{height:auto;min-height:48px;border:0}
+
+.record-list{
+  gap:1px;
+  padding:1px;
+  background:var(--line);
+  counter-reset:record;
+}
+.record-card{
+  counter-increment:record;
+  position:relative;
+  display:grid;
+  grid-template-columns:72px minmax(220px,.72fr) minmax(260px,1.28fr) auto;
+  gap:22px;
+  align-items:center;
+  min-height:145px;
+  padding:20px 22px;
+  border:0;
+  background:#0f1112;
+}
+.record-card::before{
+  content:"R-0" counter(record);
+  align-self:start;
+  padding-top:4px;
+  color:#666b67;
+  font:900 10px var(--sans);
+  letter-spacing:.14em;
+}
+.record-card .record-state{grid-column:2;grid-row:1;align-self:start}
+.record-card h3{
+  grid-column:2;
+  grid-row:1;
+  align-self:center;
+  margin:28px 0 0;
+  color:#f3efe7;
+  font:820 clamp(17px,1.55vw,23px)/1.12 var(--sans);
+  letter-spacing:-.04em;
+}
+.record-card>p.small{
+  grid-column:2;
+  grid-row:1;
+  align-self:end;
+  margin-bottom:3px;
+  color:#686d68;
+  font-size:10px;
+}
+.record-card .record-preview{
+  grid-column:3;
+  grid-row:1;
+  min-height:82px;
+  margin:0;
+  padding:16px 18px;
+  background:#e8dfd1;
+  color:#2b2824;
+  font:500 14px/1.6 var(--serif);
+  transform:rotate(-.2deg);
+}
+.record-card .tags{
+  grid-column:4;
+  grid-row:1;
+  align-self:end;
+  justify-content:flex-end;
+  max-width:160px;
+}
+.record-card:hover{background:#151719}
+.record-card:hover .record-preview{background:#eee5d8}
+.record-card .badge-user{background:rgba(87,160,126,.13);border-color:rgba(143,208,176,.22);color:#9bd8bb}
+.record-card .badge-muted{background:#17191b;border-color:var(--line);color:#777c77}
+
+@media(max-width:980px){
+  .topic-list{grid-template-columns:1fr 1fr}
+  .topic-card{min-height:270px}
+  .record-card{grid-template-columns:54px minmax(190px,.8fr) minmax(220px,1.2fr);gap:15px}
+  .record-card .tags{display:none}
+  .form-inline{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:640px){
+  .page-header{min-height:112px;margin-bottom:20px;padding:20px 0 18px}
+  .page-header::before{top:10px;font-size:7px}
+  .page-header h1{font-size:42px}
+  .page-header-actions{align-items:flex-end}
+  .page-header-actions .btn{min-height:38px;margin-bottom:0}
+  .topic-list{grid-template-columns:1fr;gap:1px}
+  .topic-card{min-height:230px;padding:18px}
+  .topic-card h3{margin-top:46px;font-size:28px}
+  .form-inline{grid-template-columns:1fr 1fr;margin-bottom:18px}
+  .form-inline .form-group:first-child{grid-column:1/-1}
+  .form-inline .btn{min-height:44px}
+  .record-list{background:transparent;padding:0;gap:12px}
+  .record-card{
+    display:grid;
+    grid-template-columns:42px minmax(0,1fr);
+    gap:8px 12px;
+    min-height:0;
+    padding:16px;
+    border:1px solid var(--line);
+    background:#101214;
+  }
+  .record-card::before{grid-column:1;grid-row:1/4}
+  .record-card .record-state{grid-column:2;grid-row:1}
+  .record-card h3{grid-column:2;grid-row:2;margin:0;font-size:18px}
+  .record-card>p.small{grid-column:2;grid-row:3;align-self:auto;margin:0}
+  .record-card .record-preview{grid-column:1/-1;grid-row:4;margin-top:8px;min-height:0;padding:14px;font-size:13px;transform:none}
+  .record-card .tags{display:flex;grid-column:1/-1;grid-row:5;max-width:none;justify-content:flex-start}
+}
