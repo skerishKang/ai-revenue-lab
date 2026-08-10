@@ -1,0 +1,69 @@
+/* B11 Language Field Journal V2 — Korean display rhythm polish, 2026-08-10.
+   Preserve READ → NOTICE → REWRITE → FEEDBACK → NEXT and the field-journal art direction. */
+
+.lf-copy h1{
+  max-width:11.5ch;
+  font-size:clamp(3.6rem,6.9vw,7.3rem);
+  line-height:1.03;
+  letter-spacing:-.043em;
+  text-wrap:balance;
+}
+.lf-copy>p:not(.lf-kicker){margin-top:1.75rem}
+.lf-index h2{
+  line-height:1.04;
+  letter-spacing:-.043em;
+  text-wrap:balance;
+}
+.lf-panel h1{
+  max-width:16ch;
+  font-size:clamp(2.8rem,5.2vw,5.5rem);
+  line-height:1.05;
+  letter-spacing:-.038em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.lf-guide-copy h1{
+  max-width:12ch;
+  font-size:clamp(3.35rem,6.35vw,6.8rem);
+  line-height:1.05;
+  letter-spacing:-.043em;
+  text-wrap:balance;
+}
+.lf-guide-copy p{margin-top:1.45rem}
+.lf-guide-step h2{
+  line-height:1.08;
+  letter-spacing:-.035em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.lf-guide-finish h2{
+  max-width:13ch;
+  font-size:clamp(2.8rem,5.3vw,5.8rem);
+  line-height:1.06;
+  letter-spacing:-.038em;
+  text-wrap:balance;
+}
+
+@media(max-width:620px){
+  .lf-copy h1{
+    max-width:11.3ch;
+    font-size:clamp(2.7rem,11.7vw,3rem);
+    line-height:1.08;
+    letter-spacing:-.032em;
+  }
+  .lf-copy>p:not(.lf-kicker){margin-top:1.35rem;line-height:1.72}
+  .lf-panel h1{
+    max-width:100%;
+    font-size:clamp(2.35rem,10.5vw,2.75rem);
+    line-height:1.09;
+    letter-spacing:-.03em;
+  }
+  .lf-guide-copy h1{
+    max-width:11.5ch;
+    font-size:clamp(2.55rem,11.3vw,2.9rem);
+    line-height:1.09;
+    letter-spacing:-.032em;
+  }
+  .lf-guide-step h2{line-height:1.1;letter-spacing:-.028em}
+  .lf-guide-finish h2{line-height:1.09;letter-spacing:-.028em}
+}
