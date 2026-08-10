@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="dark">
   <meta name="description" content="World Feed 30초 사용법">
   <title>30초 사용법 — World Feed</title>
   <link rel="stylesheet" href="./styles/tokens.css?v=world-feed-20260810-6">
@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="./styles/layout.css?v=world-feed-20260810-6">
   <link rel="stylesheet" href="./styles/components.css?v=world-feed-20260810-6">
   <link rel="stylesheet" href="./styles/journeys/guide.css?v=world-feed-20260810-6">
+  <link rel="stylesheet" href="./styles/art-direction-v2.css?v=world-feed-product-v2-20260810">
 </head>
 <body class="guide-page">
   <a class="skip-link" href="#main">본문으로 이동</a>
@@ -27,12 +28,12 @@
     <section class="guide-hero">
       <div class="guide-hero-copy">
         <p class="eyebrow">PERSONAL WORLD DISPATCH / HOW IT WORKS</p>
-        <h1>뉴스를 더 많이 보는 게 아니라,<br><em>내가 보고 싶은 세계를 편집합니다.</em></h1>
-        <p class="guide-dek">World Feed는 세계·가까운 동네·나의 관심에서 짧은 이야기를 모아 개인 편집면으로 보여줍니다. 이야기가 왜 나에게 보였는지 확인하고, 관심을 조정하면 피드가 즉시 달라집니다.</p>
+        <h1>세계를 더 많이 보는 게 아니라,<br><em>나에게 가까운 순서로 읽습니다.</em></h1>
+        <p class="guide-dek">World Feed는 세계·가까운 동네·나의 관심에서 짧은 이야기를 모아 한 사람의 편집면으로 보여줍니다. 이야기가 왜 나에게 보였는지 확인하고, 관심을 조정하면 피드의 순서가 바로 달라집니다.</p>
         <div class="guide-actions"><a class="solid-button" href="./index.html#feed">처음부터 따라하기</a><a class="text-button" href="./index.html#why?story=harbor">왜 보였는지 먼저 보기 ↗</a></div>
       </div>
       <aside class="guide-ledger" aria-label="World Feed 사용 흐름">
-        <div><span>01</span><strong>Scan</strong><small>나의 편집면 훑기</small></div>
+        <div><span>01</span><strong>Scan</strong><small>오늘의 편집면 훑기</small></div>
         <div><span>02</span><strong>Open</strong><small>짧은 이야기 열기</small></div>
         <div><span>03</span><strong>Why</strong><small>등장 이유 확인</small></div>
         <div><span>04</span><strong>Adjust</strong><small>관심 신호 조정</small></div>
@@ -41,39 +42,14 @@
     </section>
 
     <section class="guide-steps" aria-label="단계별 사용법">
-      <article class="guide-step">
-        <span class="guide-number">01</span>
-        <div><p class="eyebrow">SCAN · 나의 피드</p><h2>먼저 오늘의 편집면을 가볍게 훑습니다.</h2><p>세계의 장소와 문화, 가까운 동네, 내가 관심을 보인 주제가 한 화면에 섞여 있습니다. 전부 읽을 필요 없이 지금 눈이 가는 장면부터 고르면 됩니다.</p><a class="text-button" href="./index.html#feed">나의 피드 보기 ↗</a></div>
-        <div class="guide-card"><small>TODAY / YOUR SIGNALS</small><strong>세계 · 가까운 곳 · 나의 관심</strong><span>한 사람의 관심 순서로 편집</span></div>
-      </article>
-      <article class="guide-step">
-        <span class="guide-number">02</span>
-        <div><p class="eyebrow">OPEN · 짧은 맥락</p><h2>궁금한 이야기를 열어 맥락과 출처를 봅니다.</h2><p>World Feed는 원문 전체를 복제하는 서비스가 아닙니다. 왜 이 장면이 흥미로운지 짧은 맥락을 보여주고, 출처 이름·합성 provenance·시간 정보를 함께 표시합니다.</p><a class="text-button" href="./index.html#story?story=harbor">이야기 열기 ↗</a></div>
-        <div class="guide-card guide-card--image"><small>ATLAS LETTER · SYNTHETIC</small><strong>낯선 항구의 저녁</strong><span>짧은 맥락 + source forward</span></div>
-      </article>
-      <article class="guide-step">
-        <span class="guide-number">03</span>
-        <div><p class="eyebrow">WHY · 설명 가능한 개인화</p><h2>“왜 이게 나에게 보였지?”를 바로 확인합니다.</h2><p>저장한 관심, 가까운 장소 선호, 최근 반응 같은 평범한 신호로 설명합니다. 점수나 모델 가중치 같은 내부 기술 정보는 보여주지 않습니다.</p><a class="text-button" href="./index.html#why?story=harbor">등장 이유 보기 ↗</a></div>
-        <div class="guide-card guide-card--dark"><small>WHY YOU SAW THIS</small><strong>해안 도시 · 산책 · 장소 이야기</strong><span>이해할 수 있는 신호만 표시</span></div>
-      </article>
-      <article class="guide-step">
-        <span class="guide-number">04</span>
-        <div><p class="eyebrow">ADJUST · 관심 조정</p><h2>원하는 방향 하나만 가볍게 조정합니다.</h2><p>예를 들어 ‘동네 소식 더 보기’를 선택하면 가까운 이야기가 앞쪽으로 이동합니다. 결과가 마음에 들지 않으면 실행 취소하거나 전체 초기화할 수 있습니다.</p><a class="text-button" href="./index.html#preferences?story=market-studio">관심 조정 보기 ↗</a></div>
-        <div class="guide-card"><small>PREFERENCE / IN MEMORY ONLY</small><strong>동네 소식 더 보기</strong><span>Apply · Undo · Reset</span></div>
-      </article>
-      <article class="guide-step">
-        <span class="guide-number">05</span>
-        <div><p class="eyebrow">RETURN · 맥락 보존</p><h2>달라진 피드로 돌아와 변화가 실제로 보이는지 확인합니다.</h2><p>원래 보던 위치와 이야기를 잃지 않고 돌아가며, 선택한 관심이 피드 순서를 어떻게 바꿨는지 눈으로 확인합니다. 브라우저 뒤로/앞으로 이동도 같은 맥락을 유지합니다.</p><a class="solid-button" href="./index.html#feed">직접 사용해보기</a></div>
-        <div class="guide-card guide-card--accent"><small>BEFORE → AFTER</small><strong>가까운 동네 이야기가 먼저</strong><span>보이는 변화가 개인화의 결과</span></div>
-      </article>
+      <article class="guide-step"><span class="guide-number">01</span><div><p class="eyebrow">SCAN · 나의 피드</p><h2>먼저 오늘의 편집면을 가볍게 훑습니다.</h2><p>세계의 장소와 문화, 가까운 동네, 내가 관심을 보인 주제가 한 화면에 섞여 있습니다. 전부 읽을 필요 없이 지금 눈이 가는 장면부터 고르면 됩니다.</p><a class="text-button" href="./index.html#feed">나의 피드 보기 ↗</a></div><div class="guide-card"><small>TODAY / YOUR SIGNALS</small><strong>세계 · 가까운 곳 · 나의 관심</strong><span>한 사람의 관심 순서로 편집</span></div></article>
+      <article class="guide-step"><span class="guide-number">02</span><div><p class="eyebrow">OPEN · 짧은 맥락</p><h2>궁금한 이야기를 열어 맥락과 출처를 봅니다.</h2><p>원문 전체를 복제하는 서비스가 아닙니다. 왜 이 장면이 흥미로운지 짧은 맥락을 보여주고, 출처 이름·합성 provenance·시간 정보를 함께 표시합니다.</p><a class="text-button" href="./index.html#story?story=harbor">이야기 열기 ↗</a></div><div class="guide-card guide-card--image"><small>ATLAS LETTER · SYNTHETIC</small><strong>낯선 항구의 저녁</strong><span>짧은 맥락 + source forward</span></div></article>
+      <article class="guide-step"><span class="guide-number">03</span><div><p class="eyebrow">WHY · 설명 가능한 개인화</p><h2>“왜 이게 나에게 보였지?”를 바로 확인합니다.</h2><p>저장한 관심, 가까운 장소 선호, 최근 반응 같은 평범한 신호로 설명합니다. 점수나 모델 가중치 같은 내부 기술 정보는 보여주지 않습니다.</p><a class="text-button" href="./index.html#why?story=harbor">등장 이유 보기 ↗</a></div><div class="guide-card guide-card--dark"><small>WHY YOU SAW THIS</small><strong>해안 도시 · 산책 · 장소 이야기</strong><span>이해할 수 있는 신호만 표시</span></div></article>
+      <article class="guide-step"><span class="guide-number">04</span><div><p class="eyebrow">ADJUST · 관심 조정</p><h2>원하는 방향 하나만 가볍게 조정합니다.</h2><p>예를 들어 ‘동네 소식 더 보기’를 선택하면 가까운 이야기가 앞쪽으로 이동합니다. 결과가 마음에 들지 않으면 실행 취소하거나 전체 초기화할 수 있습니다.</p><a class="text-button" href="./index.html#preferences?story=market-studio">관심 조정 보기 ↗</a></div><div class="guide-card"><small>PREFERENCE / IN MEMORY ONLY</small><strong>동네 소식 더 보기</strong><span>Apply · Undo · Reset</span></div></article>
+      <article class="guide-step"><span class="guide-number">05</span><div><p class="eyebrow">RETURN · 맥락 보존</p><h2>달라진 피드로 돌아와 변화가 실제로 보이는지 확인합니다.</h2><p>원래 보던 위치와 이야기를 잃지 않고 돌아가며, 선택한 관심이 피드 순서를 어떻게 바꿨는지 눈으로 확인합니다. 브라우저 뒤로/앞으로 이동도 같은 맥락을 유지합니다.</p><a class="solid-button" href="./index.html#feed">직접 사용해보기</a></div><div class="guide-card guide-card--accent"><small>BEFORE → AFTER</small><strong>가까운 동네 이야기가 먼저</strong><span>보이는 변화가 개인화의 결과</span></div></article>
     </section>
 
-    <section class="guide-finish">
-      <p class="eyebrow">THAT IS ALL</p>
-      <h2>보고 → 이유를 알고 → 한 가지를 조정하고 → 달라진 세계로 돌아옵니다.</h2>
-      <p>현재 검토본은 합성 이야기만 사용하며 실제 뉴스 수집, 계정, 저장, 추천 모델, 외부 기사 요청은 없습니다.</p>
-      <div class="guide-actions"><a class="solid-button" href="./index.html#feed">나의 피드 시작하기</a><a class="text-button" href="./index.html#loading">상태 흐름부터 보기 ↗</a></div>
-    </section>
+    <section class="guide-finish"><p class="eyebrow">THAT IS ALL</p><h2>보고 → 이유를 알고 → 한 가지를 조정하고 → 달라진 세계로 돌아옵니다.</h2><p>현재 검토본은 합성 이야기만 사용하며 실제 뉴스 수집, 계정, 저장, 추천 모델, 외부 기사 요청은 없습니다.</p><div class="guide-actions"><a class="solid-button" href="./index.html#feed">나의 피드 시작하기</a><a class="text-button" href="./index.html#loading">상태 흐름부터 보기 ↗</a></div></section>
   </main>
 </body>
 </html>
