@@ -1,0 +1,165 @@
+name: B32 Live UX Audit 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b32-live-ux-audit-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b32-live-ux-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      MAIN_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      REVIEW_SHA: 73ec4718d0835248ab20d56bc68f3956536112b4
+      SOURCE_DIR: reference/business-32-ai-skill-studio-ux
+      CANONICAL: https://32-ai-skill-studio.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0, persist-credentials: false}
+
+      - name: Assert current main and exact review source
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$MAIN_SHA"
+          git cat-file -e "$REVIEW_SHA^{commit}"
+          test -z "$(git ls-tree -r --name-only "$MAIN_SHA" -- "$SOURCE_DIR")"
+          mkdir -p /tmp/b32-source
+          git archive "$REVIEW_SHA" "$SOURCE_DIR" | tar -x -C /tmp/b32-source
+          bash "/tmp/b32-source/$SOURCE_DIR/tests/run_tests.sh"
+
+      - name: Verify live review bytes against exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){
+            url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1)
+            for n in 1 2; do
+              curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "${url}?audit=${REVIEW_SHA}-${n}" -o /tmp/public
+              actual=$(sha256sum /tmp/public|cut -d' ' -f1)
+              echo "$url expected=$expected actual=$actual"
+              test "$actual" = "$expected"
+            done
+          }
+          root="/tmp/b32-source/$SOURCE_DIR"
+          verify "$CANONICAL/index.html" "$root/index.html"
+          verify "$CANONICAL/scripts/app.js" "$root/scripts/app.js"
+          verify "$CANONICAL/scripts/machine.js" "$root/scripts/machine.js"
+          verify "$CANONICAL/scripts/templates.js" "$root/scripts/templates.js"
+          verify "$CANONICAL/styles/layout.css" "$root/styles/layout.css"
+          verify "$CANONICAL/styles/components.css" "$root/styles/components.css"
+
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Capture visual and full role-handoff journey
+        shell: bash
+        run: |
+          mkdir -p /tmp/b32-audit-evidence
+          cat >/tmp/b32-audit.cjs <<'NODE'
+          const { chromium }=require(process.cwd()+'/node_modules/playwright');
+          const fs=require('fs');
+          const base='https://32-ai-skill-studio.pages.dev';
+          const viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}};
+          const failures=[],results=[];
+          async function state(page){return (await page.locator('#state-chip').innerText()).replace('STATE · ','').trim();}
+          async function expectState(page,want,label){const got=await state(page); if(got!==want) failures.push(`${label}: expected ${want}, got ${got}`);}
+          async function clickAction(page,action,qual='',label=''){
+            const sel=`button[data-action="${action}"]${qual}`;
+            const loc=page.locator(sel);
+            if(await loc.count()!==1){failures.push(`${label}: ${sel} count=${await loc.count()}`); return false;}
+            await loc.click(); return true;
+          }
+          async function snapshot(page,path){await page.screenshot({path:`/tmp/b32-audit-evidence/${path}.png`,fullPage:false});await page.screenshot({path:`/tmp/b32-audit-evidence/${path}-full.png`,fullPage:true});}
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){
+              const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              const page=await context.newPage(); const errors=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+              page.on('pageerror',e=>errors.push(`page:${e.message}`));
+              page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`));
+              const response=await page.goto(base+'/?audit='+Date.now(),{waitUntil:'networkidle'});
+              if(!response||!response.ok())failures.push(`${mode}: bad HTTP`);
+              await expectState(page,'initial',`${mode}/initial`);
+              const metrics=await page.evaluate(()=>{
+                const de=document.documentElement,b=document.body,h1=document.querySelector('.masthead h1'),hs=getComputedStyle(h1),hr=h1.getBoundingClientRect();
+                const f=parseFloat(hs.fontSize),l=parseFloat(hs.lineHeight); const mast=document.querySelector('.masthead').getBoundingClientRect(),bar=document.querySelector('.app-bar').getBoundingClientRect(),stage=document.querySelector('.stage').getBoundingClientRect();
+                return {viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(de.scrollWidth,b.scrollWidth)-innerWidth,pageHeight:de.scrollHeight,h1Font:f,h1Line:l,h1Ratio:Number.isFinite(l)&&Number.isFinite(f)&&f?l/f:null,h1Top:hr.top,h1Bottom:hr.bottom,mastBottom:mast.bottom,appBarTop:bar.top,appBarBottom:bar.bottom,stageTop:stage.top};
+              });
+              if(metrics.overflowX>1) failures.push(`${mode}: overflow ${metrics.overflowX}`);
+              if(metrics.h1Ratio!==null&&metrics.h1Ratio<1) failures.push(`${mode}: Korean masthead H1 ratio ${metrics.h1Ratio}`);
+              if(errors.length) failures.push(`${mode}: ${errors.join(' | ')}`);
+              await snapshot(page,`${mode}-initial`);
+
+              await page.locator('button[data-scenario="empty-bench"]').click();
+              await expectState(page,'empty',`${mode}/empty`); await snapshot(page,`${mode}-empty`);
+              await clickAction(page,'load-tasks','',`${mode}/empty-load`); await expectState(page,'initial',`${mode}/empty-recover`);
+              await page.locator('button[data-scenario="fault"]').click();
+              await expectState(page,'system-error',`${mode}/fault`); await snapshot(page,`${mode}-fault`);
+              await clickAction(page,'retry','',`${mode}/retry`); await expectState(page,'retry',`${mode}/retry-state`);
+              await clickAction(page,'retry-confirm','',`${mode}/retry-confirm`); await expectState(page,'loading',`${mode}/retry-loading`);
+              await clickAction(page,'load-ok','',`${mode}/load-ok-ui`).catch(()=>{});
+              // Scenario switch is the documented browser recovery path back to a deterministic standard bench.
+              await page.locator('button[data-scenario="standard"]').click(); await expectState(page,'initial',`${mode}/standard-reset`);
+
+              await clickAction(page,'select-task','',`${mode}/select`); await expectState(page,'task-selected',`${mode}/selected`);
+              await clickAction(page,'check-inputs','',`${mode}/check-inputs`); await expectState(page,'input-incomplete',`${mode}/inputs`);
+              await clickAction(page,'supplement','[data-input-id="criteria"]',`${mode}/supplement`); await expectState(page,'ready',`${mode}/ready`);
+              await clickAction(page,'begin-run','',`${mode}/begin`); await expectState(page,'running',`${mode}/running1`);
+              await clickAction(page,'complete-step','',`${mode}/step1-complete`); await expectState(page,'step-complete',`${mode}/step1-done`);
+              await clickAction(page,'next-step','',`${mode}/next2`); await expectState(page,'running',`${mode}/running2`);
+              await clickAction(page,'complete-step','',`${mode}/missing-trigger`); await expectState(page,'missing-evidence',`${mode}/missing`); await snapshot(page,`${mode}-missing-evidence`);
+
+              const evidenceBtn=page.locator('button[data-action="toggle-evidence"]');
+              if(await evidenceBtn.count()===1){await evidenceBtn.click(); if(await page.locator('#evidence-drawer').isHidden())failures.push(`${mode}: evidence drawer did not open`); await snapshot(page,`${mode}-evidence-drawer`); await page.keyboard.press('Escape'); if(!(await page.locator('#evidence-drawer').isHidden()))failures.push(`${mode}: evidence drawer did not close on Escape`);}
+              else failures.push(`${mode}: missing evidence drawer opener`);
+
+              await clickAction(page,'request-supplement','',`${mode}/request-supplement`); await expectState(page,'stopped',`${mode}/stopped`);
+              await clickAction(page,'resume-run','',`${mode}/resume-run`); await expectState(page,'resume',`${mode}/resume`);
+              await clickAction(page,'resume-confirm','',`${mode}/resume-confirm`); await expectState(page,'running',`${mode}/running2b`);
+              await clickAction(page,'complete-step','',`${mode}/step2-complete`); await expectState(page,'step-complete',`${mode}/step2-done`);
+              await clickAction(page,'next-step','',`${mode}/next3`); await expectState(page,'running',`${mode}/running3`);
+              await clickAction(page,'complete-step','',`${mode}/conflict-trigger`); await expectState(page,'conflicting-evidence',`${mode}/conflict`); await snapshot(page,`${mode}-conflicting-evidence`);
+              await clickAction(page,'resolve-conflict','[data-decision="C"]',`${mode}/resolve-C`); await expectState(page,'step-complete',`${mode}/conflict-resolved`);
+              await clickAction(page,'next-step','',`${mode}/next4`); await clickAction(page,'complete-step','',`${mode}/step4`); await clickAction(page,'next-step','',`${mode}/next5`); await clickAction(page,'complete-step','',`${mode}/step5`); await expectState(page,'draft-result',`${mode}/draft`); await snapshot(page,`${mode}-draft`);
+
+              await clickAction(page,'request-review','',`${mode}/request-review1`); await expectState(page,'review-requested',`${mode}/review-requested1`);
+              await clickAction(page,'handoff-to-reviewer','',`${mode}/handoff-reviewer1`);
+              const reviewerText=(await page.locator('.role-label').innerText()).trim(); if(!reviewerText.includes('사람 검토자'))failures.push(`${mode}: reviewer role banner missing`);
+              await clickAction(page,'reject-review','',`${mode}/reject`); await expectState(page,'correction-required',`${mode}/correction-required`); await snapshot(page,`${mode}-review-correction`);
+              await clickAction(page,'handoff-to-operator','',`${mode}/return-operator1`); await clickAction(page,'apply-correction','',`${mode}/apply-correction`); await expectState(page,'revised',`${mode}/revised`);
+              await clickAction(page,'re-run','',`${mode}/rerun`); await expectState(page,'running',`${mode}/rerunning`);
+              for(let i=1;i<=5;i++){await clickAction(page,'complete-step','',`${mode}/rerun-complete-${i}`); if(i<5)await clickAction(page,'next-step','',`${mode}/rerun-next-${i}`);}
+              await expectState(page,'draft-result',`${mode}/redraft`);
+              await clickAction(page,'request-review','',`${mode}/request-review2`); await clickAction(page,'handoff-to-reviewer','',`${mode}/handoff-reviewer2`); await clickAction(page,'approve-review','',`${mode}/approve-review`); await expectState(page,'approval-pending',`${mode}/approval-pending`); await clickAction(page,'approve','',`${mode}/approve-final`); await expectState(page,'approved',`${mode}/approved`); await snapshot(page,`${mode}-human-approved`);
+              await clickAction(page,'handoff-to-operator','',`${mode}/return-operator2`); await clickAction(page,'save-skill','',`${mode}/save-skill`); await expectState(page,'skill-saved',`${mode}/skill-saved`); await snapshot(page,`${mode}-skill-saved`);
+              await clickAction(page,'complete','',`${mode}/complete`); await expectState(page,'completed',`${mode}/completed`); await snapshot(page,`${mode}-completed`);
+              const bodyText=await page.locator('body').innerText();
+              for(const marker of ['VERIFIED ORGANIZATIONAL AI SKILL','브라우저 메모리','영구 저장 없음']) if(!bodyText.includes(marker)) failures.push(`${mode}: missing final marker ${marker}`);
+              results.push({mode,metrics,errors,finalState:await state(page)});
+              await page.close(); await context.close();
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b32-audit-evidence/metrics.json',JSON.stringify({mainSha:'a631122888d30c5a8a62f4b27e192967da331898',reviewSha:'73ec4718d0835248ab20d56bc68f3956536112b4',results,failures},null,2));
+            console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b32-audit.cjs
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b32-live-ux-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/b32-audit-evidence
+          if-no-files-found: error
+          retention-days: 7
