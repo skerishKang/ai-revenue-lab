@@ -1,0 +1,186 @@
+name: B06 Workspace V4 All Route Visual QA 20260810
+
+on:
+  push:
+    branches:
+      - 'design/b06-world-feed-workspace-v4-20260810'
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/b06-workspace-v4-visual-qa-20260810.yml'
+  pull_request:
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/b06-workspace-v4-visual-qa-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  all-route-visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Static workspace V4 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check reference/business-06-world-feed-v1/scripts/art-direction-v2.js
+          node --check reference/business-06-world-feed-v1/scripts/workspace-v4.js
+          grep -q 'workspace-v4.css' reference/business-06-world-feed-v1/index.html
+          grep -q 'workspace-v4.js' reference/business-06-world-feed-v1/index.html
+          grep -q 'real-photo-workspace-v4' reference/business-06-world-feed-v1/scripts/art-direction-v2.js
+          grep -q 'word-break:keep-all' reference/business-06-world-feed-v1/styles/workspace-v4.css
+          grep -q 'story-detail' reference/business-06-world-feed-v1/styles/workspace-v4.css
+          grep -q 'why-layout' reference/business-06-world-feed-v1/styles/workspace-v4.css
+          grep -q 'comparison-canvas' reference/business-06-world-feed-v1/styles/workspace-v4.css
+
+      - name: Install isolated Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b06-workspace-pw
+          cd /tmp/b06-workspace-pw
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory reference/business-06-world-feed-v1 >/tmp/b06-workspace-http.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b06-workspace-http.log
+          exit 1
+
+      - name: Desktop and mobile all-route screenshots
+        env:
+          NODE_PATH: /tmp/b06-workspace-pw/node_modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/b06-workspace-evidence
+          mkdir -p /tmp/b06-workspace-evidence
+          cat >/tmp/b06-workspace-qa.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const assert = require('assert');
+          const base = 'http://127.0.0.1:4173/index.html';
+
+          const routeSpecs = [
+            { key:'nearby', route:'nearby', title:'#nearby-title', photo:'.topic-hero img' },
+            { key:'culture', route:'culture', title:'#culture-title', photo:'.topic-hero img' },
+            { key:'story', route:'story', title:'#story-title', photo:'[data-story-image]', setup:() => { WorldFeed.store.setStoryId('harbor'); WorldFeed.story.renderStory('harbor'); } },
+            { key:'why', route:'why', title:'#why-title', photo:'[data-why-image]', setup:() => { WorldFeed.store.setStoryId('harbor'); WorldFeed.story.renderStory('harbor'); } },
+            { key:'preferences', route:'preferences', title:'#preferences-title', photo:'.comparison-canvas img' },
+            { key:'loading', route:'loading', title:'#loading-title', photo:null },
+            { key:'empty', route:'empty', title:'#empty-title', photo:null },
+            { key:'error', route:'error', title:'#error-title', photo:null },
+            { key:'story-unavailable', route:'story-unavailable', title:'#story-unavailable-title', photo:null },
+            { key:'source-unavailable', route:'source-unavailable', title:'#source-unavailable-title', photo:null }
+          ];
+
+          async function waitPhoto(page, selector) {
+            if (!selector) return;
+            await page.waitForFunction((sel) => {
+              const img = document.querySelector(sel);
+              return Boolean(img && img.complete && img.naturalWidth > 300 && img.naturalHeight > 300);
+            }, selector, { timeout: 20000 });
+          }
+
+          async function assertTypography(page, selector, viewport, label) {
+            const m = await page.locator(selector).evaluate((el) => {
+              const s = getComputedStyle(el); const r = el.getBoundingClientRect();
+              return { left:r.left, right:r.right, top:r.top, width:r.width, height:r.height, fontSize:parseFloat(s.fontSize), lineHeight:parseFloat(s.lineHeight), text:el.innerText };
+            });
+            assert.ok(m.left >= 10, `${label}: title touches left edge ${m.left}`);
+            assert.ok(m.right <= viewport.width - 10, `${label}: title touches/right-overflows ${m.right}/${viewport.width}`);
+            assert.ok(m.width <= viewport.width - 20, `${label}: title width overflow ${m.width}`);
+            assert.ok(m.lineHeight / m.fontSize >= .94, `${label}: Korean line-height too tight ${m.lineHeight}/${m.fontSize}`);
+            assert.ok(m.fontSize <= (viewport.width <= 700 ? 68 : 108), `${label}: title too large ${m.fontSize}`);
+            return m;
+          }
+
+          async function inspect(browser, name, viewport, reducedMotion='no-preference') {
+            const context = await browser.newContext({ viewport, reducedMotion });
+            const page = await context.newPage();
+            const errors=[]; const bad=[];
+            page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
+            page.on('console', m => { if (m.type()==='error') errors.push(`console: ${m.text()}`); });
+            page.on('response', r => { if (r.status()>=400) bad.push(`${r.status()} ${r.url()}`); });
+
+            await page.goto(base, { waitUntil:'networkidle', timeout:45000 });
+            await page.waitForSelector('#view-feed:not([hidden]) .wf-cinema-v4', { state:'visible', timeout:10000 });
+            await page.evaluate(() => document.fonts.ready);
+            assert.equal(await page.evaluate(() => document.documentElement.dataset.worldFeedArt), 'real-photo-workspace-v4');
+            assert.equal(await page.locator('.wf-scene').count(), 0, `${name}: legacy graphic scene remains visible`);
+
+            // Feed workspace: skip the cinematic entry and inspect the real product handoff.
+            await page.locator('.wf-v4-workspace-marker').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(250);
+            await waitPhoto(page, '.lead-image-wrap img');
+            const feedTitle = await assertTypography(page, '#feed-title', viewport, `${name}/feed`);
+            assert.ok((await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 1, `${name}/feed overflow`);
+            await page.screenshot({ path:`/tmp/b06-workspace-evidence/${name}-01-feed-workspace.png`, fullPage:false });
+
+            const routeResults={ feed:feedTitle };
+            let seq=2;
+            for (const spec of routeSpecs) {
+              await page.evaluate(({ route, needsHarbor }) => {
+                if (needsHarbor) { WorldFeed.store.setStoryId('harbor'); WorldFeed.story.renderStory('harbor'); }
+                WorldFeed.navigation.navigate(route);
+              }, { route:spec.route, needsHarbor:['story','why'].includes(spec.key) });
+              await page.waitForSelector(`#view-${spec.route}:not([hidden])`, { state:'visible', timeout:6000 });
+              await page.waitForTimeout(180);
+              await waitPhoto(page, spec.photo);
+              const routeState = await page.evaluate(() => ({
+                route:document.querySelector('.review-shell')?.dataset.route,
+                active:[...document.querySelectorAll('[data-route-view]')].filter(v=>!v.hidden).length,
+                overflow:document.documentElement.scrollWidth-innerWidth,
+                paperlogy:document.fonts.check('700 32px Paperlogy'),
+                suit:document.fonts.check('400 16px "SUIT Variable"')
+              }));
+              assert.equal(routeState.route, spec.route, `${name}/${spec.key}: wrong route`);
+              assert.equal(routeState.active, 1, `${name}/${spec.key}: active route != 1`);
+              assert.ok(routeState.overflow <= 1, `${name}/${spec.key}: overflow ${routeState.overflow}`);
+              assert.equal(routeState.paperlogy, true, `${name}/${spec.key}: Paperlogy missing`);
+              assert.equal(routeState.suit, true, `${name}/${spec.key}: SUIT missing`);
+              routeResults[spec.key] = await assertTypography(page, spec.title, viewport, `${name}/${spec.key}`);
+              await page.screenshot({ path:`/tmp/b06-workspace-evidence/${name}-${String(seq).padStart(2,'0')}-${spec.key}.png`, fullPage:false });
+              seq++;
+            }
+
+            assert.deepEqual(errors, [], `${name}: browser errors ${errors.join(' | ')}`);
+            assert.deepEqual(bad, [], `${name}: bad responses ${bad.join(' | ')}`);
+            await context.close();
+            return { routeResults, errors, bad };
+          }
+
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results={};
+            results.desktop=await inspect(browser,'desktop-1440x1100',{width:1440,height:1100});
+            results.mobile=await inspect(browser,'mobile-390x844',{width:390,height:844});
+            results.reduced=await inspect(browser,'reduced-1440x1100',{width:1440,height:1100},'reduce');
+            fs.writeFileSync('/tmp/b06-workspace-evidence/results.json',JSON.stringify(results,null,2));
+            await browser.close();
+            console.log(JSON.stringify(results,null,2));
+          })().catch(e=>{fs.writeFileSync('/tmp/b06-workspace-evidence/error.txt',String(e.stack||e));console.error(e);process.exit(1);});
+          NODE
+          node /tmp/b06-workspace-qa.cjs
+
+      - name: Upload all-route visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b06-workspace-v4-all-route-evidence-${{ github.run_number }}
+          path: /tmp/b06-workspace-evidence
+          if-no-files-found: error
