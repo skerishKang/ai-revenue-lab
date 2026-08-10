@@ -1,0 +1,43 @@
+name: Deploy B04 Living Learning KEEP 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b04-living-learning-keep-20260810.yml']
+permissions: {contents: read}
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b04-living-learning-keep-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: cbd7a7525844f804dbc8a54a4f0b846d0ddfa9ab
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Assert exact main and canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -f apps/living-learning/pages-preview/index.html
+          test -f apps/living-learning/pages-preview/guide.html
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/ai-revenue-living-learning")
+          test "$code" = 200
+      - name: Deploy exact-main Living Learning KEEP bytes
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview --project-name ai-revenue-living-learning --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B04 Living Learning KEEP exact main' --commit-dirty=true
+      - name: Verify canonical root and Guide byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){ url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 30); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify https://ai-revenue-living-learning.pages.dev/index.html apps/living-learning/pages-preview/index.html
+          verify https://ai-revenue-living-learning.pages.dev/guide.html apps/living-learning/pages-preview/guide.html
+          echo B04_LIVING_LEARNING_KEEP_PUBLIC_PASS=1
