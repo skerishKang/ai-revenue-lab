@@ -61,6 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/b06-visual
+          printf 'B06 visual QA started\n' >/tmp/b06-visual/qa-started.txt
           cat >/tmp/b06-qa.cjs <<'NODE'
           const { chromium } = require('playwright');
           const fs = require('fs');
@@ -77,6 +78,8 @@ jobs:
             await page.goto(`${base}#feed`, { waitUntil: 'networkidle' });
             await page.waitForSelector('#view-feed:not([hidden]) .wf-signal-stage', { state: 'visible' });
             await page.waitForFunction(() => document.querySelector('.wf-signal-stage')?.dataset.stageStep === '4', null, { timeout: 8000 });
+            await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.wf-stage-brief')).opacity) > 0.95, null, { timeout: 2500 });
+            await page.screenshot({ path: `/tmp/b06-visual/${name}.png`, fullPage: true });
 
             const state = await page.evaluate(() => {
               const stage = document.querySelector('.wf-signal-stage');
@@ -110,8 +113,6 @@ jobs:
             assert.equal(state.ctaDisabled, false, `${name}: brief CTA disabled`);
             assert.deepEqual(errors, [], `${name}: browser errors: ${errors.join(' | ')}`);
 
-            await page.screenshot({ path: `/tmp/b06-visual/${name}.png`, fullPage: true });
-
             await page.click('.wf-stage-brief [data-open-story][data-story-id="harbor"]');
             await page.waitForFunction(() => location.hash === '#story' && !document.querySelector('#view-story')?.hidden);
             assert.equal(await page.evaluate(() => document.querySelector('.review-shell')?.dataset.storyId), 'harbor', `${name}: harbor story contract broke`);
@@ -139,6 +140,7 @@ jobs:
             await browser.close();
             console.log(JSON.stringify(results, null, 2));
           })().catch(error => {
+            fs.writeFileSync('/tmp/b06-visual/error.txt', `${error.stack || error}\n`);
             console.error(error);
             process.exit(1);
           });
