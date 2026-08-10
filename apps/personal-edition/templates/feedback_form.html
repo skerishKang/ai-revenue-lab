@@ -14,6 +14,12 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
 
+    <div class="v4-feedback-preview" aria-label="현재 호와 다음 호의 편집 처리 예시">
+      <article><small>Current treatment · Edition {{ '%02d'|format(edition.edition_number) }}</small><strong>현재의 초점과 문장 리듬</strong><span>읽고 난 뒤 어떤 부분을 더 깊게, 더 짧게, 다른 시점으로 보고 싶은지 표시합니다.</span></article>
+      <div class="v4-feedback-arrow" aria-hidden="true">→</div>
+      <article><small>Next treatment · Recut</small><strong>남긴 메모가 다음 호의 편집 기준이 됩니다.</strong><span>피드백 완료 뒤 실제 Before / After 화면에서 바뀐 초점을 확인합니다.</span></article>
+    </div>
+
     <fieldset class="v3-direction-set">
       <legend>다음 호에 반영할 방향</legend>
       <div class="v3-directions">
