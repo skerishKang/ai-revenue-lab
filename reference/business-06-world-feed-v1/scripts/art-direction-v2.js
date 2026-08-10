@@ -1,46 +1,80 @@
 (() => {
   'use strict';
 
-  const sceneNames = {
-    'hero-harbor': ['harbor', 'Harbor / Dusk'],
-    'neighborhood-bookshop': ['bookshop', 'Neighborhood / Late light'],
-    'night-market': ['market', 'Market / 00:14'],
-    'sea-train': ['coast', 'Coastline / Slow rail'],
-    'maker-studio': ['maker', 'Maker / After hours'],
-    'stadium-culture': ['stadium', 'Stadium / Local chorus'],
-    'small-cinema': ['cinema', 'Cinema / Night block'],
-    'market-studio': ['maker', 'Market / Workshop'],
-    'story-harbor': ['harbor', 'Harbor / Context'],
-    'why-harbor': ['harbor', 'Why / Your signal']
+  const photos = {
+    'hero-harbor': {
+      src: 'https://images.unsplash.com/photo-1636649148027-5a18656382e7?auto=format&fit=crop&w=2200&q=82',
+      alt: '비에 젖은 야간 도심과 보행자의 불빛',
+      position: 'center 58%'
+    },
+    'neighborhood-bookshop': {
+      src: 'https://images.unsplash.com/photo-1646812965105-87821655690f?auto=format&fit=crop&w=1800&q=82',
+      alt: '한 사람이 걷는 조용한 야간 골목과 가로등',
+      position: 'center 54%'
+    },
+    'night-market': {
+      src: 'https://images.unsplash.com/photo-1648973174435-fc50d62a6198?auto=format&fit=crop&w=1800&q=82',
+      alt: '사람들이 오가는 야간 시장의 조명과 가게',
+      position: 'center 54%'
+    },
+    'sea-train': {
+      src: 'https://images.unsplash.com/photo-1534726972605-17962f8743d2?auto=format&fit=crop&w=1900&q=82',
+      alt: '밤거리의 사람들과 도시 간판 불빛',
+      position: 'center 46%'
+    },
+    'maker-studio': {
+      src: 'https://images.unsplash.com/photo-1646812965105-87821655690f?auto=format&fit=crop&w=2000&q=82',
+      alt: '늦은 저녁 골목 안쪽으로 이어지는 작업 공간의 분위기',
+      position: 'center 48%'
+    },
+    'stadium-culture': {
+      src: 'https://images.unsplash.com/photo-1534726972605-17962f8743d2?auto=format&fit=crop&w=1800&q=82',
+      alt: '사람들이 모여 있는 야간 도시 거리의 에너지',
+      position: 'center 52%'
+    },
+    'small-cinema': {
+      src: 'https://images.unsplash.com/photo-1768511813767-df4ade9ddca7?auto=format&fit=crop&w=2000&q=82',
+      alt: '붉은 간판 아래 사람들이 걷는 야간 문화 거리',
+      position: 'center 46%'
+    },
+    'market-studio': {
+      src: 'https://images.unsplash.com/photo-1648973174435-fc50d62a6198?auto=format&fit=crop&w=2000&q=82',
+      alt: '야간 시장 안쪽의 작은 가게와 사람들',
+      position: 'center 56%'
+    },
+    'story-harbor': {
+      src: 'https://images.unsplash.com/photo-1636649148027-5a18656382e7?auto=format&fit=crop&w=2200&q=82',
+      alt: '젖은 도심의 야간 산책 장면',
+      position: 'center 58%'
+    },
+    'why-harbor': {
+      src: 'https://images.unsplash.com/photo-1534726972605-17962f8743d2?auto=format&fit=crop&w=1800&q=82',
+      alt: '야간 도시 골목의 사람과 불빛',
+      position: 'center 48%'
+    }
   };
 
-  function sceneFor(img, index) {
-    const src = img.getAttribute('src') || '';
-    const base = (src.split('/').pop() || '').replace(/\.svg(?:[?#].*)?$/i, '');
-    const pair = sceneNames[base] || ['generic', base.replace(/[-_]+/g, ' ') || 'World signal'];
-    const scene = document.createElement('div');
-    scene.className = `wf-scene wf-scene--${pair[0]}`;
-    scene.setAttribute('role', 'img');
-    scene.setAttribute('aria-label', img.getAttribute('alt') || pair[1]);
-    scene.dataset.replacesSvg = base;
-    scene.innerHTML = [
-      `<span class="wf-scene-code">WF / ${String(index + 1).padStart(2, '0')} / SIGNAL</span>`,
-      '<i class="wf-scene-point p1" aria-hidden="true"></i>',
-      '<i class="wf-scene-point p2" aria-hidden="true"></i>',
-      '<i class="wf-scene-point p3" aria-hidden="true"></i>',
-      `<strong class="wf-scene-title">${pair[1]}</strong>`
-    ].join('');
-    return scene;
+  function assetKey(src) {
+    return ((src || '').split('/').pop() || '').replace(/\.svg(?:[?#].*)?$/i, '');
   }
 
-  function replaceVisibleSvgArtwork() {
+  function upgradePhoto(img, index) {
+    const key = assetKey(img.getAttribute('src'));
+    const photo = photos[key];
+    if (!photo) return;
+    img.src = photo.src;
+    img.alt = `${photo.alt} · 이야기 내용과 분리된 대표 실사 이미지`;
+    img.dataset.photoRole = key;
+    img.dataset.photoIndex = String(index + 1).padStart(2, '0');
+    img.style.setProperty('--wf-photo-position', photo.position);
+    if (!img.hasAttribute('loading') && !img.classList.contains('lead-image')) img.loading = 'lazy';
+  }
+
+  function upgradeVisibleArtwork() {
     const images = [...document.querySelectorAll('img')].filter((img) => /\.svg(?:[?#]|$)/i.test(img.getAttribute('src') || ''));
-    images.forEach((img, index) => {
-      if (img.closest('.brand, .verified-authority')) return;
-      img.replaceWith(sceneFor(img, index));
-    });
-    document.documentElement.dataset.worldFeedArt = 'product-v2';
-    document.documentElement.dataset.svgArtworkReplaced = String(images.length);
+    images.forEach(upgradePhoto);
+    document.documentElement.dataset.worldFeedArt = 'real-photo-workspace-v4';
+    document.documentElement.dataset.photoArtwork = String(images.filter((img) => img.dataset.photoRole).length);
   }
 
   function markCurrentNavigation() {
@@ -55,7 +89,8 @@
     });
   }
 
-  replaceVisibleSvgArtwork();
+  window.WorldFeedPhotoMap = photos;
+  upgradeVisibleArtwork();
   markCurrentNavigation();
   window.addEventListener('hashchange', markCurrentNavigation);
 })();
