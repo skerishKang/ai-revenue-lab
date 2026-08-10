@@ -1,0 +1,102 @@
+name: Visual Audit B01 B22 Against B06 Bar 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/visual-audit-b01-b22-b06-bar-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    if: github.event.pull_request.head.ref == 'ops/visual-audit-b01-b22-b06-bar-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/arl-visual-audit && cd /tmp/arl-visual-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Capture current Production roots
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/arl-visual-evidence
+          cd /tmp/arl-visual-audit
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'), path=require('path');
+          const out='/tmp/arl-visual-evidence';
+          const items=[
+            ['b01','https://ai-revenue-personal-edition.pages.dev/'],
+            ['b02','https://ai-revenue-living-travel.pages.dev/'],
+            ['b04','https://ai-revenue-living-learning.pages.dev/'],
+            ['b06','https://06-world-feed.pages.dev/'],
+            ['b07','https://07-personal-meaning-map.pages.dev/'],
+            ['b08','https://08-family-newspaper.pages.dev/'],
+            ['b09','https://09-personalized-childrens-story.pages.dev/'],
+            ['b10','https://10-fan-magazine.pages.dev/'],
+            ['b11','https://11-language-learning-magazine.pages.dev/'],
+            ['b12','https://12-creator-mini-media.pages.dev/'],
+            ['b13','https://ai-revenue-personal-video-archive.pages.dev/'],
+            ['b15','https://15-global-ai-newsroom.pages.dev/'],
+            ['b16','https://16-personal-sports.pages.dev/'],
+            ['b17','https://17-local-shop-magazine.pages.dev/'],
+            ['b18','https://18-personal-audio-channel.pages.dev/'],
+            ['b19','https://19-personal-memory-book.pages.dev/'],
+            ['b20','https://20-personal-memory-novel.pages.dev/'],
+            ['b21','https://21-founder-strategy-letter.pages.dev/'],
+            ['b22','https://22-personal-media-studio.pages.dev/']
+          ];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const manifest=[];
+            for(const [id,url] of items){
+              for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){
+                const page=await browser.newPage({viewport:vp});
+                const errors=[]; const failed=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                let status=0, finalUrl=url, error='';
+                try{
+                  const response=await page.goto(url,{waitUntil:'networkidle',timeout:45000});
+                  status=response?.status()||0; finalUrl=page.url();
+                  await page.evaluate(()=>document.fonts.ready);
+                  await page.waitForTimeout(500);
+                  const dims=await page.evaluate(()=>({
+                    sw:document.documentElement.scrollWidth,
+                    cw:document.documentElement.clientWidth,
+                    title:document.title,
+                    text:document.body.innerText.slice(0,500),
+                    h1:[...document.querySelectorAll('h1')].map(x=>x.innerText.trim()).filter(Boolean).slice(0,4),
+                    images:[...document.images].filter(i=>i.offsetWidth>100&&i.offsetHeight>100).length,
+                    svgs:[...document.querySelectorAll('svg')].filter(s=>s.getBoundingClientRect().width>100&&s.getBoundingClientRect().height>100).length
+                  }));
+                  await page.screenshot({path:path.join(out,`${id}-${vp.name}.png`),fullPage:false});
+                  manifest.push({id,url,finalUrl,viewport:vp.name,status,overflow:dims.sw-dims.cw,title:dims.title,h1:dims.h1,images:dims.images,svgs:dims.svgs,errors,failed,text:dims.text});
+                }catch(e){error=e.message;manifest.push({id,url,finalUrl,viewport:vp.name,status,error,errors,failed});}
+                await page.close();
+              }
+            }
+            await browser.close();
+            fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2));
+            console.log('CURRENT_VISUAL_AUDIT_CAPTURE_COMPLETE=1');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-audit-b01-b22-b06-bar-${{ github.run_number }}
+          path: /tmp/arl-visual-evidence
+          if-no-files-found: error
+          retention-days: 7
