@@ -35,10 +35,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p /tmp/b14-qa-evidence /tmp/b14-test-shim/fastapi
+          cat > /tmp/b14-test-shim/fastapi/__init__.py <<'PY'
+          # Test-only compatibility namespace for stale FastAPI TestClient imports.
+          PY
+          cat > /tmp/b14-test-shim/fastapi/testclient.py <<'PY'
+          from starlette.testclient import TestClient
+          __all__ = ["TestClient"]
+          PY
           git diff --check origin/main...HEAD
           cd apps/korean-ai-platform
-          python -m pip install -e . pytest uvicorn
-          python -m pytest -q
+          python -m pip install -e . 'pytest>=8.3,<9' pytest-asyncio 'uvicorn>=0.32,<1'
+          PYTHONPATH="/tmp/b14-test-shim:${PYTHONPATH:-}" python -m pytest -q
 
       - name: Start exact branch app
         shell: bash
