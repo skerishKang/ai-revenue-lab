@@ -1,0 +1,72 @@
+name: Deploy B11 Type Polish 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b11-type-polish-20260810.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-and-qa:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b11-type-polish-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      EXPECTED_SHA: 28aab00c239f4a42db23ced740b112e93baeb2a1
+      PROJECT: 11-language-learning-magazine
+      URL: https://11-language-learning-magazine.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - name: Assert exact main/source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          for f in index.html guide.html ux.html; do grep -q 'language-field-v2-type-polish.css' "reference/business-11-language-learning-magazine-v1/$f"; done
+          grep -q "window.scrollTo({top:0,behavior:'smooth'})" reference/business-11-language-learning-magazine-v1/ux.html
+      - name: Deploy exact main B11
+        run: |
+          npx --yes wrangler@latest pages deploy reference/business-11-language-learning-magazine-v1 \
+            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B11 Korean learning rhythm exact main'
+      - name: Wait for canonical bytes
+        run: |
+          set -euo pipefail
+          for n in $(seq 1 40); do
+            ok=1
+            for r in / /guide.html /ux.html; do b=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' "$URL$r" || true); grep -q 'language-field-v2-type-polish.css' <<<"$b" || ok=0; done
+            c=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' "$URL/styles/language-field-v2-type-polish.css" || true)
+            if [ "$ok" = 1 ] && grep -q 'Korean display rhythm polish' <<<"$c"; then exit 0; fi
+            sleep 4
+          done
+          exit 1
+      - name: Install Chromium/Korean fonts
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b11-prod && cd /tmp/b11-prod && npm init -y >/dev/null 2>&1 && npm install --silent playwright@1.55.0 && npx playwright install chromium
+      - name: Production browser QA
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b11-prod-evidence && cd /tmp/b11-prod
+          node <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),path=require('path');const base='https://11-language-learning-magazine.pages.dev',vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{const b=await chromium.launch({headless:true}),R=[];for(const vp of vps){for(const [n,r,s,min] of [['root','/','.lf-copy h1',1.02],['guide','/guide.html','.lf-guide-copy h1',1.03]]){const c=await b.newContext({viewport:vp,extraHTTPHeaders:{'Cache-Control':'no-cache'}}),p=await c.newPage(),E=[],F=[];p.on('console',m=>{if(m.type()==='error')E.push(m.text())});p.on('pageerror',e=>E.push(e.message));p.on('response',x=>{if(x.status()>=400)F.push(`${x.status()} ${x.url()}`)});const q=await p.goto(base+r,{waitUntil:'networkidle'});const m=await p.locator(s).evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),top:r.top,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('language-field-v2-type-polish.css'))}});const P=[...(q.status()===200?[]:['status']),...(m.ratio>=min?[]:['tight']),...(m.overflow<=1?[]:['overflow']),...(m.polish?[]:['missing']),...(E.length||F.length?['runtime']:[])];await p.screenshot({path:path.join('/tmp/b11-prod-evidence',`${vp.name}-${n}.png`),fullPage:false});R.push({viewport:vp.name,name:n,errors:E,failed:F,problems:P,...m});await c.close()}
+          const c=await b.newContext({viewport:vp,extraHTTPHeaders:{'Cache-Control':'no-cache'}}),p=await c.newPage(),E=[],F=[];p.on('console',m=>{if(m.type()==='error')E.push(m.text())});p.on('pageerror',e=>E.push(e.message));p.on('response',x=>{if(x.status()>=400)F.push(`${x.status()} ${x.url()}`)});const q=await p.goto(base+'/ux.html',{waitUntil:'networkidle'});await p.locator('.lf-phrase[data-key="came-alive"]').click();await p.locator('#read [data-go="vocab"]').click();await p.locator('#vocab [data-go="revise"]').click();await p.locator('#revise [data-go="feedback"]').click();await p.waitForTimeout(400);const m=await p.locator('.lf-panel.active h1').evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect(),toc=document.querySelector('.lf-toc')?.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),top:r.top,tocBottom:toc?.bottom??0,scrollY:scrollY,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('language-field-v2-type-polish.css'))}});const P=[...(q.status()===200?[]:['status']),...(m.ratio>=1.04?[]:['tight']),...(m.overflow<=1?[]:['overflow']),...(m.polish?[]:['missing']),...(E.length||F.length?['runtime']:[]),...(vp.name==='mobile'&&m.top<m.tocBottom+12?['obscured']:[]),...(vp.name==='mobile'&&m.scrollY>4?['scroll offset']:[])];await p.screenshot({path:path.join('/tmp/b11-prod-evidence',`${vp.name}-feedback.png`),fullPage:false});R.push({viewport:vp.name,name:'feedback',errors:E,failed:F,problems:P,...m});await c.close()}
+          await b.close();const bad=R.filter(x=>x.problems.length);fs.writeFileSync('/tmp/b11-prod-evidence/results.json',JSON.stringify({results:R,bad},null,2));if(bad.length){console.log(bad);process.exit(1)}})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Reassert exact main
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: 'b11-type-polish-production-evidence-${{ github.run_number }}', path: /tmp/b11-prod-evidence, if-no-files-found: error, retention-days: 7}
