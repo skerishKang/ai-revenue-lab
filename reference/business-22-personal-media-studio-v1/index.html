@@ -1,61 +1,80 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="dark" name="color-scheme"/>
-<title>개인 미디어 스튜디오 — Phase 1 시각 레퍼런스</title>
-<meta content="합성 자료 묶음을 여러 매체 교정본으로 확장하는 Business 22 UI_ONLY 시각 레퍼런스" name="description"/>
-<link href="styles.css" rel="stylesheet"/><link href="styles-editions.css" rel="stylesheet"/><link href="styles-responsive.css" rel="stylesheet"/><link href="motion-timing.css" rel="stylesheet"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Story Spine Loom — Personal Media Studio</title>
+<meta name="description" content="하나의 제한된 합성 자료 묶음에서 이야기 줄기를 고정하고 여러 매체 에디션의 출처 관계를 추적하는 Business 22 제품 데모">
+<link rel="stylesheet" href="./styles/story-spine-loom-v2.css">
 </head>
 <body>
-<a class="skip-link" href="#review-stage">대표 상태로 건너뛰기</a>
-<header class="studio-header">
-<div aria-label="Business 22 개인 미디어 스튜디오" class="brand-lockup">
-<span class="business-id">B22</span>
-<div>
-<strong>개인 미디어 스튜디오</strong>
-<span>PERSONAL MEDIA STUDIO · PHASE 1 UI_ONLY</span>
-</div>
-</div>
-<div class="header-meta">
-<span class="synthetic-chip">전체 자료 · 합성</span>
-<span class="folio">SET 01 / 07</span>
-</div>
+<div class="sl-shell">
+<header class="sl-topbar">
+  <a class="sl-brand" href="./index.html" aria-label="Story Spine Loom 홈">
+    <span class="sl-mark">22</span>
+    <span><strong>STORY SPINE LOOM</strong><small>Personal Media Studio · Master Edition Room</small></span>
+  </a>
+  <nav class="sl-nav" aria-label="주요 메뉴">
+    <a class="is-guide" href="./guide.html">30초 사용법</a>
+    <a aria-current="page" href="./index.html">에디션 룸</a>
+    <a href="./ux.html">직접 엮기</a>
+  </nav>
 </header>
-<div class="review-shell">
-<aside aria-label="시각 상태 검토" class="review-rail">
-<p class="rail-kicker">MASTER EDITION ROOM</p>
-<h1>새벽시장<br/>30일 기록</h1>
-<p class="rail-summary">하나의 제한된 자료 묶음이 기사·오디오·영상·카드·뉴스레터·인터뷰·책 원고로 갈라지되, 같은 이야기 줄기와 출처 관계를 유지합니다.</p>
-<div aria-label="대표 시각 상태" class="state-tabs" role="tablist">
-<button aria-controls="state-cover" aria-selected="true" data-state-target="cover" id="tab-cover" role="tab">01 <span>표지</span></button>
-<button aria-controls="state-sources" aria-selected="false" data-state-target="sources" id="tab-sources" role="tab" tabindex="-1">02 <span>원본판</span></button>
-<button aria-controls="state-spine" aria-selected="false" data-state-target="spine" id="tab-spine" role="tab" tabindex="-1">03 <span>이야기 줄기</span></button>
-<button aria-controls="state-suite" aria-selected="false" data-state-target="suite" id="tab-suite" role="tab" tabindex="-1">04 <span>에디션 세트</span></button>
-<button aria-controls="state-adaptation" aria-selected="false" data-state-target="adaptation" id="tab-adaptation" role="tab" tabindex="-1">05 <span>매체 변형</span></button>
-<button aria-controls="state-trace" aria-selected="false" data-state-target="trace" id="tab-trace" role="tab" tabindex="-1">06 <span>출처 추적</span></button>
-<button aria-controls="state-mobile" aria-selected="false" data-state-target="mobile" id="tab-mobile" role="tab" tabindex="-1">07 <span>모바일</span></button>
+
+<main>
+<section class="sl-hero">
+  <div class="sl-copy">
+    <p class="sl-kicker">ONE SOURCE SET / ONE STORY SPINE / MANY EDITIONS</p>
+    <h1>WEAVE ONE STORY.<span>MANY EDITIONS.</span></h1>
+    <p>기사·오디오·영상·카드가 서로 다른 말을 하게 두지 않습니다. 제한된 자료 묶음에서 먼저 하나의 Story Spine을 고정하고, 각 매체가 무엇을 줄이고 늘렸는지 Source Trace로 끝까지 남깁니다.</p>
+    <div class="sl-actions">
+      <a class="sl-btn primary" href="./ux.html">Story Spine 엮기</a>
+      <a class="sl-btn" href="./guide.html">30초 사용법</a>
+    </div>
+  </div>
+
+  <div class="sl-loom" aria-label="원자료에서 여러 에디션으로 갈라지는 Story Spine 개념도">
+    <div class="sl-spine"></div>
+    <article class="sl-source">
+      <small>SOURCE SET · 04 SYNTHETIC ITEMS</small>
+      <strong>새벽시장이 열리기 전 30분</strong>
+      <p>현장 메모, 사진 설명, 음성 메모, 시간 순서. 실제 상호·인물·위치는 사용하지 않습니다.</p>
+    </article>
+    <article class="sl-spine-card">
+      <small>MASTER STORY SPINE</small>
+      <strong>문이 열리기 전의 시장은 소리보다 준비의 순서로 깨어난다.</strong>
+      <p>모든 에디션이 공유하는 중심 문장. 매체별 변형은 이 문장과 선택한 원자료로 다시 추적됩니다.</p>
+    </article>
+    <article class="sl-edition sl-e1"><small>EDITION 01 · ARTICLE</small><strong>장면 사이의 맥락</strong></article>
+    <article class="sl-edition sl-e2"><small>EDITION 02 · AUDIO</small><strong>소리와 호흡의 순서</strong></article>
+    <article class="sl-edition sl-e3"><small>EDITION 03 · VIDEO</small><strong>움직임과 컷의 리듬</strong></article>
+    <article class="sl-edition sl-e4"><small>EDITION 04 · CARD / BOOK</small><strong>남길 문장과 장면</strong></article>
+    <span class="sl-thread sl-t1"></span><span class="sl-thread sl-t2"></span><span class="sl-thread sl-t3"></span><span class="sl-thread sl-t4"></span>
+    <div class="sl-trace">SOURCE TRACE · S01 + S02 + S04 → ALL EDITIONS</div>
+    <div class="sl-loom-label">SYNTHETIC MATERIAL · NO LIVE PUBLISHING</div>
+  </div>
+</section>
+
+<section class="sl-index">
+  <div class="sl-index-head">
+    <div>
+      <p class="sl-kicker">FIVE MOVES</p>
+      <h2>매체를 늘리기 전에 이야기의 등뼈부터 고정합니다.</h2>
+    </div>
+    <p>Business 12가 한 아이디어를 제작 패키지로 내보내는 Release Room이라면, Business 22는 여러 결과물이 같은 근거와 같은 중심 문장을 공유하는지 추적하는 Master Edition Room입니다.</p>
+  </div>
+  <div class="sl-steps">
+    <article class="sl-step"><span>01 · SOURCE SET</span><strong>원자료를 고릅니다.</strong><p>메모·사진 설명·음성·시간 단서를 제한된 자료 묶음으로 선택합니다.</p></article>
+    <article class="sl-step"><span>02 · STORY SPINE</span><strong>한 문장으로 묶습니다.</strong><p>모든 에디션이 공통으로 지켜야 할 중심 문장을 사람이 고정합니다.</p></article>
+    <article class="sl-step"><span>03 · EDITIONS</span><strong>매체별 역할을 나눕니다.</strong><p>기사·오디오·영상·카드/북이 같은 내용을 복제하지 않도록 역할을 분리합니다.</p></article>
+    <article class="sl-step"><span>04 · TRACE</span><strong>변형을 추적합니다.</strong><p>각 에디션의 문장과 장면이 어떤 원자료에서 왔는지 다시 읽습니다.</p></article>
+    <article class="sl-step"><span>05 · MASTER</span><strong>하나의 기준본을 남깁니다.</strong><p>새 사실이 섞이지 않았는지 사람이 확인한 뒤 Master 상태로 마칩니다.</p></article>
+  </div>
+</section>
+</main>
+
+<footer class="sl-footer"><span>BUSINESS 22 · STORY SPINE LOOM</span><span>SYNTHETIC SOURCES · SESSION ONLY · NO EXPORT</span></footer>
 </div>
-<div class="rail-controls">
-<button aria-label="이전 상태" class="text-button" data-action="previous" type="button">← 이전</button>
-<button aria-label="다음 상태" class="text-button" data-action="next" type="button">다음 →</button>
-</div>
-<p class="phase-note"><strong>정적 시각 검토용</strong><br/>업로드·생성·편집·저장·내보내기·게시 기능은 구현되지 않았습니다.</p>
-</aside>
-<main class="review-stage" id="review-stage" tabindex="-1">
-
-
-
-
-
-
-<div id="state-panels"></div></main>
-</div>
-<footer class="global-footer">
-<span>PROPOSED BUSINESS 22 · PERSONAL MEDIA STUDIO</span>
-<span>STATIC SYNTHETIC REFERENCE · NO RUNTIME SERVICES</span>
-</footer>
-<script src="states/cover.js"></script><script src="states/sources.js"></script><script src="states/spine.js"></script><script src="states/suite.js"></script><script src="states/adaptation.js"></script><script src="states/trace.js"></script><script src="states/mobile.js"></script><script src="app.js"></script>
 </body>
 </html>
