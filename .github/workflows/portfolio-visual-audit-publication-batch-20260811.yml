@@ -1,0 +1,97 @@
+name: Portfolio Visual Audit Publication Family 2026-08-11
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/portfolio-visual-audit-publication-batch-20260811.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.54.2
+          npx playwright install --with-deps chromium
+      - name: Capture publication-family surfaces
+        run: |
+          mkdir -p audit-output
+          cat > capture.mjs <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+          const roots = [
+            ['B08','https://08-family-newspaper.pages.dev/'],
+            ['B09','https://09-personalized-childrens-story.pages.dev/'],
+            ['B10','https://10-fan-magazine.pages.dev/'],
+            ['B11','https://11-language-learning-magazine.pages.dev/'],
+            ['B12','https://12-creator-mini-media.pages.dev/'],
+            ['B13','https://ai-revenue-personal-video-archive.pages.dev/'],
+            ['B17','https://17-local-shop-magazine.pages.dev/'],
+            ['B18','https://18-personal-audio-channel.pages.dev/'],
+            ['B19','https://19-personal-memory-book.pages.dev/'],
+            ['B20','https://20-personal-memory-novel.pages.dev/'],
+            ['B57','https://57-classic-literature-translation.pages.dev/'],
+            ['B58','https://58-personal-writing-voice.pages.dev/'],
+            ['B59','https://59-living-archive.pages.dev/']
+          ];
+          const routes = [];
+          for (const [id, root] of roots) {
+            routes.push([id,'root',root]);
+            routes.push([id,'guide',new URL('guide.html',root).href]);
+            routes.push([id,'ux',new URL('ux.html',root).href]);
+          }
+          const viewports = [['desktop',{width:1440,height:1100}],['mobile',{width:390,height:844}]];
+          const browser = await chromium.launch({headless:true});
+          const results=[];
+          for (const [vpName, viewport] of viewports) {
+            const context=await browser.newContext({viewport});
+            for (const [id,route,url] of routes) {
+              const page=await context.newPage(); const errors=[]; let response=null,navError=null;
+              page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+              page.on('pageerror',e=>errors.push(`page:${e.message}`));
+              try { response=await page.goto(url,{waitUntil:'networkidle',timeout:45000}); await page.waitForTimeout(900); } catch(e){ navError=String(e); }
+              const status=response?.status()??null;
+              let metrics=null;
+              try { metrics=await page.evaluate(()=>{
+                const h1=document.querySelector('h1'), hs=h1?getComputedStyle(h1):null, hr=h1?.getBoundingClientRect();
+                const links=[...document.querySelectorAll('a[href],button')].filter(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'});
+                const imgs=[...document.images];
+                return {title:document.title,h1:h1?.innerText?.trim()||null,h1FontSize:hs?.fontSize||null,h1LineHeight:hs?.lineHeight||null,h1Rect:hr?{y:hr.y,height:hr.height,bottom:hr.bottom}:null,firstActions:links.slice(0,6).map(x=>(x.innerText||x.getAttribute('aria-label')||'').trim()).filter(Boolean),horizontalOverflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),scrollHeight:document.documentElement.scrollHeight,bodyBackground:getComputedStyle(document.body).backgroundColor,images:imgs.length,brokenImages:imgs.filter(i=>i.complete&&i.naturalWidth===0).length,visibleTextSample:document.body.innerText.replace(/\s+/g,' ').slice(0,1000)};
+              }); } catch(e){ errors.push(`evaluate:${e}`); }
+              const safe=`${id}-${route}-${vpName}`;
+              if (status && status < 400 && metrics) {
+                await page.screenshot({path:`audit-output/${safe}-viewport.png`,fullPage:false});
+                await page.screenshot({path:`audit-output/${safe}-full.png`,fullPage:true});
+              }
+              results.push({id,route,url,viewport:vpName,status,navError,errors,metrics});
+              await page.close();
+            }
+            await context.close();
+          }
+          await browser.close();
+          fs.writeFileSync('audit-output/results.json',JSON.stringify(results,null,2));
+          NODE
+          node capture.mjs
+          python - <<'PY'
+          import json
+          r=json.load(open('audit-output/results.json'))
+          for x in r:
+            if x['viewport']=='desktop': print(x['id'],x['route'],x['status'],x['metrics'] and x['metrics']['h1'])
+          PY
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-visual-audit-publication-${{ github.sha }}
+          path: audit-output
+          if-no-files-found: error
+          retention-days: 14
