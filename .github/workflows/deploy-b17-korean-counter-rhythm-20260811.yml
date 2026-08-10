@@ -1,0 +1,163 @@
+name: Deploy B17 Korean Counter Rhythm 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b17-korean-counter-rhythm-20260811.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-and-verify:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b17-korean-counter-rhythm-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: 9dccc0d57f61e7c8e01d92d774d7352750cc4ff5
+      APP_DIR: reference/business-17-local-shop-magazine-v1
+      PROJECT: 17-local-shop-magazine
+      CANONICAL: https://17-local-shop-magazine.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact main and canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+
+      - name: Deploy exact-main bytes
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@latest pages deploy "$APP_DIR" \
+            --project-name "$PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B17 Korean Counter rhythm exact main' \
+            --commit-dirty=true
+
+      - name: Require stable canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          stable_verify() {
+            url="$1"; source="$2"; expected=$(sha256sum "$source" | cut -d' ' -f1); consecutive=0
+            echo "VERIFY $url expected=$expected"
+            for i in $(seq 1 45); do
+              code=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' -o /tmp/public -w '%{http_code}' "${url}?verify=${EXPECTED_SHA}-${i}" || true)
+              actual=$(sha256sum /tmp/public 2>/dev/null | cut -d' ' -f1 || true)
+              echo "attempt=$i code=$code actual=$actual consecutive=$consecutive"
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then
+                consecutive=$((consecutive+1))
+                [[ "$consecutive" -ge 3 ]] && return 0
+              else
+                consecutive=0
+              fi
+              sleep 2
+            done
+            echo "Stable exact-byte verification failed for $url" >&2
+            return 1
+          }
+          stable_verify "$CANONICAL/index.html" "$APP_DIR/index.html"
+          stable_verify "$CANONICAL/ux.html" "$APP_DIR/ux.html"
+          stable_verify "$CANONICAL/guide.html" "$APP_DIR/guide.html"
+          stable_verify "$CANONICAL/styles/counter-journal-v2-type-polish.css" "$APP_DIR/styles/counter-journal-v2-type-polish.css"
+
+      - name: Install browser QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Production browser and interaction QA
+        shell: bash
+        run: |
+          mkdir -p /tmp/b17-production-evidence
+          cat > /tmp/b17-production-qa.cjs <<'NODE'
+          const { chromium } = require(process.cwd() + '/node_modules/playwright');
+          const fs = require('fs');
+          const base = 'https://17-local-shop-magazine.pages.dev';
+          const surfaces = [['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']];
+          const viewports = { desktop:{width:1440,height:1100}, mobile:{width:390,height:844} };
+          const results=[]; const failures=[];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){
+              const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){
+                const page=await context.newPage(); const errors=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+                page.on('pageerror',e=>errors.push(`page:${e.message}`));
+                page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`));
+                const response=await page.goto(base+path+`?production=${Date.now()}`,{waitUntil:'networkidle'});
+                if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP response`);
+                const metrics=await page.evaluate(()=>{
+                  const h1=document.querySelector('h1'), topbar=document.querySelector('.cj-topbar'), actions=document.querySelector('.cj-actions');
+                  const body=document.body, root=document.documentElement, hr=h1?.getBoundingClientRect(), tr=topbar?.getBoundingClientRect(), ar=actions?.getBoundingClientRect();
+                  const s=h1?getComputedStyle(h1):null, fs=s?parseFloat(s.fontSize):NaN, lh=s?parseFloat(s.lineHeight):NaN;
+                  return {overflowX:Math.max(body.scrollWidth,root.scrollWidth)-innerWidth,h1Text:h1?.innerText||'',h1Font:fs,h1Line:lh,h1Ratio:Number.isFinite(fs)&&fs>0&&Number.isFinite(lh)?lh/fs:null,h1Top:hr?.top??null,h1Bottom:hr?.bottom??null,topbarBottom:tr?.bottom??null,actionsTop:ar?.top??null,actionsBottom:ar?.bottom??null,viewportWidth:innerWidth,viewportHeight:innerHeight,pageHeight:root.scrollHeight};
+                });
+                if(metrics.overflowX>1)failures.push(`${mode}/${name}: horizontal overflow ${metrics.overflowX}`);
+                if(errors.length)failures.push(`${mode}/${name}: runtime errors ${errors.join(' | ')}`);
+                if(metrics.h1Ratio!==null&&/[가-힣]/.test(metrics.h1Text)&&metrics.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean h1 line-height ratio ${metrics.h1Ratio.toFixed(3)} < 1.0`);
+                if(metrics.h1Top!==null&&metrics.topbarBottom!==null&&metrics.h1Top<metrics.topbarBottom-2)failures.push(`${mode}/${name}: h1 intersects top chrome`);
+                await page.screenshot({path:`/tmp/b17-production-evidence/${mode}-${name}.png`,fullPage:false});
+                await page.screenshot({path:`/tmp/b17-production-evidence/${mode}-${name}-full.png`,fullPage:true});
+                results.push({mode,name,metrics,errors}); await page.close();
+              }
+              const page=await context.newPage(); await page.goto(base+'/ux.html?journey='+Date.now(),{waitUntil:'networkidle'});
+              if(!(await page.locator('#material').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: material not initial active view`);
+              if(!(await page.locator('#publish').isDisabled()))failures.push(`${mode}/journey: publish should start disabled`);
+              await page.locator('#draft').click();
+              if(!(await page.locator('#preview').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: draft did not open preview`);
+              if(!((await page.locator('#bodyCopy').innerText()).includes('합성 매거진 예시')))failures.push(`${mode}/journey: synthetic copy contract missing`);
+              const boxes=page.locator('[data-proof]'); for(let i=0;i<await boxes.count();i++)await boxes.nth(i).check();
+              if(await page.locator('#publish').isDisabled())failures.push(`${mode}/journey: publish did not unlock at 3/3`);
+              await page.locator('#publish').click();
+              if(!(await page.locator('#issue').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: publish did not open issue`);
+              if(await page.locator('#finish').isDisabled())failures.push(`${mode}/journey: finish did not unlock after issue`);
+              await page.locator('#finish').click();
+              if(!((await page.locator('#proofStatus').innerText()).includes('검토 완료')))failures.push(`${mode}/journey: finish status contract missing`);
+              await page.screenshot({path:`/tmp/b17-production-evidence/${mode}-ux-finished-full.png`,fullPage:true});
+              await page.close(); await context.close();
+            }
+            await browser.close(); fs.writeFileSync('/tmp/b17-production-evidence/metrics.json',JSON.stringify({expectedSha:'9dccc0d57f61e7c8e01d92d774d7352750cc4ff5',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b17-production-qa.cjs
+
+      - name: Reconfirm main did not advance
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          echo "B17_PRODUCTION_EXACT_MAIN_PASS=$EXPECTED_SHA"
+
+      - name: Upload Production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b17-production-exact-main-evidence-${{ github.run_attempt }}
+          path: /tmp/b17-production-evidence
+          if-no-files-found: warn
+          retention-days: 7
