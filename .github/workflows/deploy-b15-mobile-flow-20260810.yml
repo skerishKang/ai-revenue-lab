@@ -1,0 +1,176 @@
+name: Deploy B15 Mobile Verification Flow Exact Main 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b15-mobile-flow-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b15-mobile-flow-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      EXPECTED_SHA: 575dfaa25d3829f79d754c49e9628ff9fd50d97d
+      APP_DIR: reference/business-15-global-ai-newsroom-v1
+      PROJECT: 15-global-ai-newsroom
+      URL: https://15-global-ai-newsroom.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact main and canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          test -f "$APP_DIR/index.html"
+          test -f "$APP_DIR/ux.html"
+          test -f "$APP_DIR/guide.html"
+          test -f "$APP_DIR/styles/verification-desk-v2-polish.css"
+          grep -q '\.vn-canvas{display:contents}' "$APP_DIR/styles/verification-desk-v2-polish.css"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+
+      - name: Deploy exact-main bytes
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy "$APP_DIR" \
+            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B15 mobile verification flow exact main' --commit-dirty=true
+
+      - name: Verify canonical byte equality is stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){
+            url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source" | cut -d' ' -f1); streak=0
+            for i in $(seq 1 50); do
+              code=$(curl -L -sS --max-time 20 -o /tmp/b15-public -w '%{http_code}' "$url" || true)
+              actual=$(sha256sum /tmp/b15-public 2>/dev/null | cut -d' ' -f1 || true)
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then streak=$((streak+1)); else streak=0; fi
+              echo "$label poll=$i streak=$streak http=$code expected=$expected actual=$actual"
+              [[ "$streak" -ge 3 ]] && return 0
+              sleep 3
+            done
+            return 1
+          }
+          verify "$URL/index.html" "$APP_DIR/index.html" B15_ROOT
+          verify "$URL/ux.html" "$APP_DIR/ux.html" B15_UX
+          verify "$URL/guide.html" "$APP_DIR/guide.html" B15_GUIDE
+          verify "$URL/styles/verification-desk-v2-polish.css" "$APP_DIR/styles/verification-desk-v2-polish.css" B15_POLISH_CSS
+          echo B15_EXACT_MAIN_PRODUCTION_BYTES_STABLE=1
+
+      - name: Install Production browser QA dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b15-prod-browser /tmp/b15-prod-evidence
+          cd /tmp/b15-prod-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Capture canonical Production desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/b15-prod-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs'), path = require('path');
+          const base = process.env.URL;
+          const cases = [
+            {name:'desktop',width:1440,height:1100},
+            {name:'mobile',width:390,height:844},
+          ];
+          const surfaces = [['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results=[];
+            for(const c of cases){
+              for(const [name,route] of surfaces){
+                const ctx=await browser.newContext({viewport:{width:c.width,height:c.height}});
+                const p=await ctx.newPage();
+                const consoleErrors=[],pageErrors=[],failed=[];
+                p.on('console',m=>{if(m.type()==='error') consoleErrors.push(m.text())});
+                p.on('pageerror',e=>pageErrors.push(e.message));
+                p.on('response',r=>{if(r.status()>=400) failed.push(`${r.status()} ${r.url()}`)});
+                const resp=await p.goto(base+route,{waitUntil:'networkidle',timeout:60000});
+                await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(400);
+                const common=await p.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,scrollHeight:document.documentElement.scrollHeight}));
+                let flow=null;
+                if(name==='ux'){
+                  flow=await p.evaluate(()=>{
+                    const rect=s=>{const r=document.querySelector(s).getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:r.height}};
+                    const canvas=document.querySelector('.vn-canvas');
+                    return {
+                      workDisplay:getComputedStyle(document.querySelector('.vn-work')).display,
+                      canvasDisplay:getComputedStyle(canvas).display,
+                      claimLabel:rect('.vn-canvas>.vn-label'),
+                      claimTitle:rect('.vn-canvas>h1'),
+                      claimCard:rect('.vn-canvas>.vn-claim-card'),
+                      rail:rect('.vn-rail'),
+                      compare:rect('.vn-canvas>.vn-compare'),
+                      brief:rect('.vn-canvas>.vn-brief'),
+                      inspector:rect('.vn-inspector'),
+                    };
+                  });
+                }
+                const problems=[];
+                if(!resp||resp.status()!==200) problems.push('status');
+                if(common.overflow>1) problems.push(`overflow ${common.overflow}`);
+                if(consoleErrors.length||pageErrors.length||failed.length) problems.push('runtime');
+                if(name==='ux'&&c.name==='desktop'){
+                  if(flow.workDisplay!=='grid') problems.push(`desktop work display ${flow.workDisplay}`);
+                  if(flow.canvasDisplay==='contents') problems.push('desktop canvas unexpectedly contents');
+                }
+                if(name==='ux'&&c.name==='mobile'){
+                  if(flow.workDisplay!=='flex') problems.push(`mobile work display ${flow.workDisplay}`);
+                  if(flow.canvasDisplay!=='contents') problems.push(`mobile canvas display ${flow.canvasDisplay}`);
+                  if(!(flow.claimLabel.top<flow.claimTitle.top&&flow.claimTitle.top<flow.claimCard.top&&flow.claimCard.bottom<=flow.rail.top+2&&flow.rail.bottom<=flow.compare.top+2&&flow.compare.bottom<=flow.brief.top+2&&flow.brief.bottom<=flow.inspector.top+2)) problems.push('mobile numbered flow order incorrect');
+                  if(flow.rail.top>844) problems.push(`sources below first viewport ${flow.rail.top}`);
+                }
+                await p.screenshot({path:path.join('/tmp/b15-prod-evidence',`${c.name}-${name}.png`),fullPage:false});
+                await p.screenshot({path:path.join('/tmp/b15-prod-evidence',`${c.name}-${name}-full.png`),fullPage:true});
+                results.push({viewport:c.name,name,status:resp?resp.status():0,consoleErrors,pageErrors,failed,problems,...common,flow});
+                await ctx.close();
+              }
+            }
+            await browser.close();
+            const bad=results.filter(r=>r.problems.length);
+            fs.writeFileSync('/tmp/b15-prod-evidence/results.json',JSON.stringify({expectedSha:process.env.EXPECTED_SHA,results,bad},null,2));
+            console.log(JSON.stringify({count:results.length,bad,results},null,2));
+            if(bad.length) process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+
+      - name: Upload canonical Production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b15-production-exact-main-evidence-${{ github.run_number }}
+          path: /tmp/b15-prod-evidence
+          if-no-files-found: error
+          retention-days: 7
