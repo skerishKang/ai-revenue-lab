@@ -1,0 +1,72 @@
+/* B09 Story Bloom V2 — Korean display rhythm polish, 2026-08-10.
+   Preserve the illustrated story stage and branching behavior; only loosen multi-line Hangul. */
+
+.sb-copy h1{
+  max-width:11.2ch;
+  font-size:clamp(3.6rem,6.9vw,7.3rem);
+  line-height:1.03;
+  letter-spacing:-.043em;
+  text-wrap:balance;
+}
+.sb-copy>p:not(.sb-kicker){margin-top:1.75rem}
+.sb-proof h2{
+  max-width:12ch;
+  line-height:1.04;
+  letter-spacing:-.043em;
+  text-wrap:balance;
+}
+.sb-reader-copy h1,
+.sb-next h2{
+  max-width:14ch;
+  font-size:clamp(2.7rem,4.5vw,5rem);
+  line-height:1.05;
+  letter-spacing:-.038em;
+  text-wrap:balance;
+}
+.sb-next-scene strong{line-height:1.12;word-break:keep-all}
+.sb-guide-copy h1{
+  max-width:12ch;
+  font-size:clamp(3.35rem,6.35vw,6.8rem);
+  line-height:1.05;
+  letter-spacing:-.043em;
+  text-wrap:balance;
+}
+.sb-guide-copy p{margin-top:1.45rem}
+.sb-guide-step h2{
+  line-height:1.08;
+  letter-spacing:-.035em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.sb-guide-finish h2{
+  max-width:13ch;
+  font-size:clamp(2.8rem,5.35vw,5.8rem);
+  line-height:1.06;
+  letter-spacing:-.038em;
+  text-wrap:balance;
+}
+
+@media(max-width:620px){
+  .sb-copy h1{
+    max-width:11ch;
+    font-size:clamp(2.75rem,11.9vw,3.05rem);
+    line-height:1.08;
+    letter-spacing:-.032em;
+  }
+  .sb-copy>p:not(.sb-kicker){margin-top:1.35rem;line-height:1.72}
+  .sb-reader-copy h1,
+  .sb-next h2{
+    max-width:100%;
+    font-size:clamp(2.45rem,10.8vw,2.8rem);
+    line-height:1.09;
+    letter-spacing:-.03em;
+  }
+  .sb-guide-copy h1{
+    max-width:11.5ch;
+    font-size:clamp(2.6rem,11.5vw,2.95rem);
+    line-height:1.09;
+    letter-spacing:-.032em;
+  }
+  .sb-guide-step h2{line-height:1.1;letter-spacing:-.028em}
+  .sb-guide-finish h2{line-height:1.09;letter-spacing:-.028em}
+}
