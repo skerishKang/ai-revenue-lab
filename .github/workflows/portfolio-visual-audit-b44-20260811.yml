@@ -21,11 +21,23 @@ jobs:
           cat > capture.mjs <<'NODE'
           import { chromium } from 'playwright'; import fs from 'node:fs';
           const b=await chromium.launch({headless:true}); const results=[];
-          for(const [name,vp] of [['desktop',{width:1440,height:1100}],['mobile',{width:390,height:844}]]){const c=await b.newContext({viewport:vp});const p=await c.newPage();const errors=[];p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});const r=await p.goto('https://ai-revenue-portfolio-console.pages.dev/',{waitUntil:'networkidle',timeout:60000});await p.waitForTimeout(1000);const m=await p.evaluate(()=>({title:document.title,h1:document.querySelector('h1')?.innerText||null,overflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),text:document.body.innerText.replace(/\s+/g,' ').slice(0,1400),items:document.querySelectorAll('.biz-item').length}));await p.screenshot({path:`audit-output/B44-${name}-viewport.png`,fullPage:false});await p.screenshot({path:`audit-output/B44-${name}-full.png`,fullPage:true});results.push({name,status:r.status(),errors,metrics:m});await c.close()}await b.close();fs.writeFileSync('audit-output/results.json',JSON.stringify(results,null,2));
+          for(const [name,vp] of [['desktop',{width:1440,height:1100}],['mobile',{width:390,height:844}]]){
+            const c=await b.newContext({viewport:vp}); const p=await c.newPage(); const errors=[];
+            p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            const r=await p.goto('https://ai-revenue-portfolio-console.pages.dev/',{waitUntil:'domcontentloaded',timeout:60000});
+            await p.waitForTimeout(3500);
+            const m=await p.evaluate(()=>({title:document.title,h1:document.querySelector('h1')?.innerText||null,overflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),text:document.body.innerText.replace(/\s+/g,' ').slice(0,1800),items:document.querySelectorAll('.biz-item').length,bodyBackground:getComputedStyle(document.body).backgroundColor}));
+            await p.screenshot({path:`audit-output/B44-${name}-viewport.png`,fullPage:false});
+            await p.screenshot({path:`audit-output/B44-${name}-full.png`,fullPage:true});
+            results.push({name,status:r.status(),errors,metrics:m}); await c.close();
+          }
+          await b.close(); fs.writeFileSync('audit-output/results.json',JSON.stringify(results,null,2));
           NODE
           node capture.mjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: portfolio-visual-audit-b44-${{ github.sha }}
           path: audit-output
+          if-no-files-found: error
           retention-days: 14
