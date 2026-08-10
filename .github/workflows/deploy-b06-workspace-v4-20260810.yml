@@ -1,0 +1,165 @@
+name: Deploy B06 Workspace V4 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b06-workspace-v4-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b06-workspace-v4-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: 685390c6de70b4f232a239e0933f85b1b3b3482b
+      PROJECT: 06-world-feed
+      URL: https://06-world-feed.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact current main and workspace V4 source markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          grep -q 'workspace-v4.css' reference/business-06-world-feed-v1/index.html
+          grep -q 'workspace-v4-polish.css' reference/business-06-world-feed-v1/index.html
+          grep -q 'workspace-v4.js' reference/business-06-world-feed-v1/index.html
+          grep -q 'real-photo-workspace-v4' reference/business-06-world-feed-v1/scripts/art-direction-v2.js
+          node --check reference/business-06-world-feed-v1/scripts/art-direction-v2.js
+          node --check reference/business-06-world-feed-v1/scripts/workspace-v4.js
+
+      - name: Deploy exact main B06
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
+            --project-name "$PROJECT" --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B06 route-wide workspace V4 exact main'
+
+      - name: Verify public canonical bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 35); do
+            html=$(curl -L -sS --max-time 20 "$URL" || true)
+            css=$(curl -L -sS --max-time 20 "${URL}styles/workspace-v4-polish.css?v=world-feed-workspace-v4-polish-20260810" || true)
+            js=$(curl -L -sS --max-time 20 "${URL}scripts/art-direction-v2.js?v=world-feed-real-photo-workspace-v4-20260810-2" || true)
+            if grep -q 'workspace-v4-polish.css' <<<"$html" \
+              && grep -q 'workspace-v4.js' <<<"$html" \
+              && grep -q 'Mobile story becomes a simple reading flow' <<<"$css" \
+              && grep -q 'real-photo-workspace-v4' <<<"$js"; then
+              echo 'B06_WORKSPACE_V4_PUBLIC_BYTES_PASS=1'
+              exit 0
+            fi
+            sleep 4
+          done
+          exit 1
+
+      - name: Install isolated Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b06-workspace-prod-pw
+          cd /tmp/b06-workspace-prod-pw
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Canonical Production all-route browser QA and screenshots
+        env:
+          NODE_PATH: /tmp/b06-workspace-prod-pw/node_modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/b06-workspace-prod-evidence
+          mkdir -p /tmp/b06-workspace-prod-evidence
+          cat >/tmp/b06-workspace-prod-qa.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const assert = require('assert');
+          const url = process.env.URL;
+          const routes = [
+            {key:'nearby',route:'nearby',title:'#nearby-title',photo:'.topic-hero img',wait:760},
+            {key:'culture',route:'culture',title:'#culture-title',photo:'.topic-hero img',wait:760},
+            {key:'story',route:'story',title:'#story-title',photo:'[data-story-image]',harbor:true},
+            {key:'why',route:'why',title:'#why-title',photo:'[data-why-image]',harbor:true},
+            {key:'preferences',route:'preferences',title:'#preferences-title',photo:'.comparison-canvas img'},
+            {key:'loading',route:'loading',title:'#loading-title'},
+            {key:'empty',route:'empty',title:'#empty-title'},
+            {key:'error',route:'error',title:'#error-title'},
+            {key:'story-unavailable',route:'story-unavailable',title:'#story-unavailable-title'},
+            {key:'source-unavailable',route:'source-unavailable',title:'#source-unavailable-title'}
+          ];
+
+          async function waitPhoto(page, selector){
+            if(!selector) return;
+            await page.waitForFunction(sel=>{const i=document.querySelector(sel);return !!(i&&i.complete&&i.naturalWidth>300&&i.naturalHeight>300);},selector,{timeout:20000});
+          }
+          async function metric(page,selector,viewport,label){
+            const m=await page.locator(selector).evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,height:r.height,fontSize:parseFloat(s.fontSize),lineHeight:parseFloat(s.lineHeight),text:el.innerText};});
+            assert.ok(m.left>=10,`${label}: left ${m.left}`); assert.ok(m.right<=viewport.width-10,`${label}: right ${m.right}`);
+            assert.ok(m.width<=viewport.width-20,`${label}: width ${m.width}`); assert.ok(m.lineHeight/m.fontSize>=.94,`${label}: tight line-height`);
+            assert.ok(m.fontSize<=(viewport.width<=700?68:108),`${label}: font ${m.fontSize}`); return m;
+          }
+          async function inspect(browser,name,viewport,reducedMotion='no-preference'){
+            const context=await browser.newContext({viewport,reducedMotion});
+            const page=await context.newPage(); const errors=[]; const bad=[];
+            const bind=p=>{p.on('pageerror',e=>errors.push(`pageerror: ${e.message}`));p.on('console',m=>{if(m.type()==='error')errors.push(`console: ${m.text()}`)});p.on('response',r=>{if(r.status()>=400)bad.push(`${r.status()} ${r.url()}`)});}; bind(page);
+            await page.goto(url,{waitUntil:'networkidle',timeout:45000});
+            await page.waitForSelector('#view-feed:not([hidden]) .wf-v4-entry',{state:'visible',timeout:15000});
+            await waitPhoto(page,'.wf-v4-entry-photo'); await page.evaluate(()=>document.fonts.ready);
+            const root=await page.evaluate(()=>({hash:location.hash,route:document.querySelector('.review-shell')?.dataset.route,active:[...document.querySelectorAll('[data-route-view]')].filter(v=>!v.hidden).length,overflow:document.documentElement.scrollWidth-innerWidth,art:document.documentElement.dataset.worldFeedArt,paperlogy:document.fonts.check('700 32px Paperlogy'),suit:document.fonts.check('400 16px "SUIT Variable"')}));
+            assert.deepEqual({hash:root.hash,route:root.route,active:root.active},{hash:'#feed',route:'feed',active:1}); assert.ok(root.overflow<=1); assert.equal(root.art,'real-photo-workspace-v4'); assert.equal(root.paperlogy,true); assert.equal(root.suit,true);
+            const entry=await metric(page,'#wf-v4-title',viewport,`${name}/entry`);
+            await page.screenshot({path:`/tmp/b06-workspace-prod-evidence/${name}-00-entry.png`,fullPage:false});
+
+            await page.locator('.journey-heading').scrollIntoViewIfNeeded(); await waitPhoto(page,'.lead-image-wrap img'); await page.waitForTimeout(220);
+            const feed=await metric(page,'#feed-title',viewport,`${name}/feed`); await page.screenshot({path:`/tmp/b06-workspace-prod-evidence/${name}-01-feed.png`,fullPage:false});
+            const out={entry,feed,routes:{}}; let seq=2;
+            for(const spec of routes){
+              await page.evaluate(({route,harbor})=>{if(harbor){WorldFeed.store.setStoryId('harbor');WorldFeed.story.renderStory('harbor');}WorldFeed.navigation.navigate(route);},{route:spec.route,harbor:!!spec.harbor});
+              await page.waitForSelector(`#view-${spec.route}:not([hidden])`,{state:'visible',timeout:6000}); await page.waitForTimeout(spec.wait||260); await waitPhoto(page,spec.photo);
+              const state=await page.evaluate(()=>({route:document.querySelector('.review-shell')?.dataset.route,active:[...document.querySelectorAll('[data-route-view]')].filter(v=>!v.hidden).length,overflow:document.documentElement.scrollWidth-innerWidth})); assert.equal(state.route,spec.route); assert.equal(state.active,1); assert.ok(state.overflow<=1,`${name}/${spec.key} overflow ${state.overflow}`);
+              out.routes[spec.key]=await metric(page,spec.title,viewport,`${name}/${spec.key}`);
+              await page.screenshot({path:`/tmp/b06-workspace-prod-evidence/${name}-${String(seq).padStart(2,'0')}-${spec.key}.png`,fullPage:false}); seq++;
+            }
+
+            const fresh=await context.newPage();bind(fresh);await fresh.goto(`${url}#loading`,{waitUntil:'networkidle',timeout:45000});await fresh.waitForSelector('#view-feed:not([hidden]) .wf-v4-entry',{state:'visible'});assert.equal(await fresh.evaluate(()=>location.hash),'#feed');await fresh.close();
+            assert.deepEqual(errors,[],`${name}: browser errors ${errors.join(' | ')}`); assert.deepEqual(bad,[],`${name}: bad responses ${bad.join(' | ')}`);
+            await context.close(); return out;
+          }
+          (async()=>{const browser=await chromium.launch({headless:true});const result={};result.desktop=await inspect(browser,'production-desktop-1440x1100',{width:1440,height:1100});result.mobile=await inspect(browser,'production-mobile-390x844',{width:390,height:844});result.reduced=await inspect(browser,'production-reduced-1440x1100',{width:1440,height:1100},'reduce');fs.writeFileSync('/tmp/b06-workspace-prod-evidence/results.json',JSON.stringify(result,null,2));await browser.close();console.log(JSON.stringify(result,null,2));})().catch(e=>{fs.writeFileSync('/tmp/b06-workspace-prod-evidence/error.txt',String(e.stack||e));console.error(e);process.exit(1);});
+          NODE
+          node /tmp/b06-workspace-prod-qa.cjs
+
+      - name: Re-assert main stayed exact after deploy and QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+
+      - name: Upload canonical Production all-route evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b06-workspace-v4-production-all-route-evidence-${{ github.run_number }}
+          path: /tmp/b06-workspace-prod-evidence
+          if-no-files-found: error
