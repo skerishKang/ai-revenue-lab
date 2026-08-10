@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Story Spine Loom · Interactive Workspace</title>
 <link rel="stylesheet" href="./styles/story-spine-loom-v2.css">
+<link rel="stylesheet" href="./styles/story-spine-loom-v2-mobile-source-fix.css">
 <style>
 .sl-source-item{display:block;width:100%;border-left:0;border-bottom:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
 .sl-source-item[aria-pressed="true"]{background:#171b24;box-shadow:inset 3px 0 0 var(--sl-cyan);padding-left:.85rem}
@@ -63,7 +64,7 @@
   <section class="sl-phase active" id="phase-source">
     <p class="sl-label">01 · SOURCE SET</p>
     <h1>CHOOSE THE THREADS.</h1>
-    <p class="sl-phase-intro">왼쪽에서 성격이 다른 합성 원자료를 최소 세 개 고릅니다. 선택하지 않은 자료는 이후 에디션의 근거로 사용할 수 없습니다.</p>
+    <p class="sl-phase-intro">성격이 다른 합성 원자료를 최소 세 개 고릅니다. 선택하지 않은 자료는 이후 에디션의 근거로 사용할 수 없습니다.</p>
     <div class="sl-actions-row"><button class="primary" id="toSpine" type="button" disabled>Story Spine 만들기</button></div>
   </section>
 
@@ -120,127 +121,30 @@
 <aside class="sl-trace-panel">
   <p class="sl-label">LIVE SOURCE TRACE</p>
   <h2>현재 연결</h2>
-  <div class="sl-trace-list" id="liveTrace">
-    <article class="sl-trace-card"><small>WAITING</small><strong>원자료를 선택하면 이곳에 근거 연결이 나타납니다.</strong><p>실제 저장은 하지 않습니다.</p></article>
-  </div>
-  <div class="sl-master-actions">
-    <button class="primary" type="button" id="jumpCurrent">현재 단계 다시 보기</button>
-  </div>
+  <div class="sl-trace-list" id="liveTrace"><article class="sl-trace-card"><small>WAITING</small><strong>원자료를 선택하면 이곳에 근거 연결이 나타납니다.</strong><p>실제 저장은 하지 않습니다.</p></article></div>
+  <div class="sl-master-actions"><button class="primary" type="button" id="jumpCurrent">현재 단계 다시 보기</button></div>
 </aside>
 </main>
 </div>
 
 <script>
-(()=> {
-  const sourceSet=new Set(), formatSet=new Set(), reviewSet=new Set();
-  const phases=['source','spine','editions','trace','master'];
-  let current='source';
-
-  const sourceButtons=[...document.querySelectorAll('[data-source]')];
-  const formatButtons=[...document.querySelectorAll('[data-format]')];
-  const progress=[...document.querySelectorAll('[data-step]')];
-
-  function showPhase(name){
-    current=name;
-    phases.forEach(p=>document.querySelector('#phase-'+p).classList.toggle('active',p===name));
-    progress.forEach((b,i)=>{
-      const ci=phases.indexOf(name);
-      b.classList.toggle('current',b.dataset.step===name);
-      b.classList.toggle('done',i<ci);
-    });
-    window.scrollTo({top:0,behavior:'instant'});
-  }
-
-  function renderLiveTrace(){
-    const box=document.querySelector('#liveTrace');
-    if(!sourceSet.size){
-      box.innerHTML='<article class="sl-trace-card"><small>WAITING</small><strong>원자료를 선택하면 이곳에 근거 연결이 나타납니다.</strong><p>실제 저장은 하지 않습니다.</p></article>';
-      return;
-    }
-    const selected=[...sourceSet].sort();
-    const formats=[...formatSet];
-    box.innerHTML=[
-      `<article class="sl-trace-card"><small>SELECTED SOURCES</small><strong>${selected.join(' + ')}</strong><p>${selected.length}개 합성 원자료가 현재 Story Spine의 근거 범위입니다.</p></article>`,
-      `<article class="sl-trace-card changed"><small>EDITION SCOPE</small><strong>${formats.length?formats.join(' · '):'아직 에디션 미선택'}</strong><p>매체별 변형은 원자료 연결과 분리해서 표시합니다.</p></article>`
-    ].join('');
-  }
-
-  sourceButtons.forEach(btn=>btn.addEventListener('click',()=>{
-    const key=btn.dataset.source;
-    sourceSet.has(key)?sourceSet.delete(key):sourceSet.add(key);
-    btn.setAttribute('aria-pressed',sourceSet.has(key)?'true':'false');
-    document.querySelector('#sourceStatus').textContent=`${sourceSet.size}/4 선택 · ${sourceSet.size>=3?'Story Spine을 만들 수 있습니다.':'최소 3개가 필요합니다.'}`;
-    document.querySelector('#toSpine').disabled=sourceSet.size<3;
-    renderLiveTrace();
-  }));
-
-  document.querySelector('#toSpine').addEventListener('click',()=>{if(sourceSet.size>=3)showPhase('spine')});
-  document.querySelector('#lockSpine').addEventListener('click',()=>{
-    const spine=document.querySelector('#spineInput').value.trim();
-    if(!spine){document.querySelector('#spineStatus').textContent='중심 문장을 한 줄 입력하세요.';return}
-    document.querySelector('#spineStatus').textContent='Story Spine이 이번 세션의 기준 문장으로 잠겼습니다.';
-    showPhase('editions');
-  });
-
-  function formatCopy(format){
-    const spine=document.querySelector('#spineInput').value.trim();
-    const map={
-      'ARTICLE':['맥락 편집','선택한 시간 단서와 장면 설명을 연결해 “왜 이 순서가 보이는가”를 읽게 합니다.'],
-      'AUDIO':['호흡 편집','S03 음성 메모를 중심으로 준비하는 소리와 침묵 사이의 간격을 남깁니다.'],
-      'VIDEO':['순서 편집','S04 시간 순서에서 05:40 → 05:57 → 06:05 세 변화를 컷의 축으로 사용합니다.'],
-      'CARD/BOOK':['잔상 편집','사진 설명과 중심 문장에서 오래 남길 한 장면과 한 문장을 골라 정리합니다.']
-    };
-    const [role,copy]=map[format];
-    return `<article class="sl-edition-card"><small>${format} · ${role}</small><h3>${spine}</h3><p>${copy}</p><div class="trace-line">TRACE · ${[...sourceSet].sort().join(' + ')} · SYNTHETIC</div></article>`;
-  }
-
-  function renderFormats(){
-    document.querySelector('#previewGrid').innerHTML=[...formatSet].map(formatCopy).join('');
-    document.querySelector('#formatStatus').textContent=`${formatSet.size}개 선택 · ${formatSet.size>=2?'Trace 단계로 갈 수 있습니다.':'최소 2개가 필요합니다.'}`;
-    document.querySelector('#toTrace').disabled=formatSet.size<2;
-    renderLiveTrace();
-  }
-
-  formatButtons.forEach(btn=>btn.addEventListener('click',()=>{
-    const key=btn.dataset.format;
-    formatSet.has(key)?formatSet.delete(key):formatSet.add(key);
-    btn.setAttribute('aria-pressed',formatSet.has(key)?'true':'false');
-    btn.classList.toggle('selected',formatSet.has(key));
-    renderFormats();
-  }));
-
-  document.querySelector('#toTrace').addEventListener('click',()=>{
-    if(formatSet.size<2)return;
-    const selected=[...sourceSet].sort().join(' + ');
-    document.querySelector('#tracePhaseList').innerHTML=[...formatSet].map((f,i)=>`<article class="sl-trace-card ${i%2?'changed':''}"><small>${f} · ${i%2?'ADAPTATION':'DIRECT TRACE'}</small><strong>${i%2?'매체 리듬에 맞게 강조점을 바꿈':'선택한 근거 범위 안에서 구성'}</strong><p>${selected} → ${f}. ${i%2?'강조 순서는 달라지지만 새 사실은 추가하지 않습니다.':'원자료의 시간·장면·표현을 직접 추적합니다.'}</p></article>`).join('');
-    showPhase('trace');
-  });
-
-  document.querySelector('#toMaster').addEventListener('click',()=>{
-    const spine=document.querySelector('#spineInput').value.trim();
-    document.querySelector('#masterSpine').textContent=spine;
-    document.querySelector('#masterSummary').textContent=`${[...sourceSet].sort().join(' + ')}를 근거로 ${[...formatSet].join(' · ')} 에디션을 엮었습니다. 아래 세 항목을 사람이 확인해야 Master 상태가 완료됩니다.`;
-    showPhase('master');
-  });
-
-  document.querySelectorAll('[data-review]').forEach(btn=>btn.addEventListener('click',()=>{
-    const key=btn.dataset.review;
-    reviewSet.has(key)?reviewSet.delete(key):reviewSet.add(key);
-    const on=reviewSet.has(key);
-    btn.setAttribute('aria-pressed',on?'true':'false');
-    btn.textContent=on?'확인됨':'확인';
-    document.querySelector('#finishMaster').disabled=reviewSet.size<3;
-  }));
-
-  document.querySelector('#finishMaster').addEventListener('click',()=>{
-    if(reviewSet.size<3)return;
-    document.querySelector('#finishStatus').textContent='MASTER READY · 출처 연결과 매체별 변형을 사람이 검토했습니다. 실제 파일·게시물·계정 상태는 만들지 않습니다.';
-  });
-  document.querySelector('#resetAll').addEventListener('click',()=>location.reload());
-  document.querySelector('#jumpCurrent').addEventListener('click',()=>showPhase(current));
-  document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>showPhase(btn.dataset.back)));
-
-  renderLiveTrace();
+(()=>{
+const sourceSet=new Set(),formatSet=new Set(),reviewSet=new Set();
+const phases=['source','spine','editions','trace','master'];let current='source';
+const sourceButtons=[...document.querySelectorAll('[data-source]')],formatButtons=[...document.querySelectorAll('[data-format]')],progress=[...document.querySelectorAll('[data-step]')];
+function showPhase(name){current=name;phases.forEach(p=>document.querySelector('#phase-'+p).classList.toggle('active',p===name));progress.forEach((b,i)=>{const ci=phases.indexOf(name);b.classList.toggle('current',b.dataset.step===name);b.classList.toggle('done',i<ci)});window.scrollTo({top:0,behavior:'instant'})}
+function renderLiveTrace(){const box=document.querySelector('#liveTrace');if(!sourceSet.size){box.innerHTML='<article class="sl-trace-card"><small>WAITING</small><strong>원자료를 선택하면 이곳에 근거 연결이 나타납니다.</strong><p>실제 저장은 하지 않습니다.</p></article>';return}const selected=[...sourceSet].sort(),formats=[...formatSet];box.innerHTML=`<article class="sl-trace-card"><small>SELECTED SOURCES</small><strong>${selected.join(' + ')}</strong><p>${selected.length}개 합성 원자료가 현재 Story Spine의 근거 범위입니다.</p></article><article class="sl-trace-card changed"><small>EDITION SCOPE</small><strong>${formats.length?formats.join(' · '):'아직 에디션 미선택'}</strong><p>매체별 변형은 원자료 연결과 분리해서 표시합니다.</p></article>`}
+sourceButtons.forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.source;sourceSet.has(key)?sourceSet.delete(key):sourceSet.add(key);btn.setAttribute('aria-pressed',sourceSet.has(key)?'true':'false');document.querySelector('#sourceStatus').textContent=`${sourceSet.size}/4 선택 · ${sourceSet.size>=3?'Story Spine을 만들 수 있습니다.':'최소 3개가 필요합니다.'}`;document.querySelector('#toSpine').disabled=sourceSet.size<3;renderLiveTrace()}));
+document.querySelector('#toSpine').addEventListener('click',()=>{if(sourceSet.size>=3)showPhase('spine')});
+document.querySelector('#lockSpine').addEventListener('click',()=>{const spine=document.querySelector('#spineInput').value.trim();if(!spine){document.querySelector('#spineStatus').textContent='중심 문장을 한 줄 입력하세요.';return}document.querySelector('#spineStatus').textContent='Story Spine이 이번 세션의 기준 문장으로 잠겼습니다.';showPhase('editions')});
+function formatCopy(format){const spine=document.querySelector('#spineInput').value.trim();const map={'ARTICLE':['맥락 편집','선택한 시간 단서와 장면 설명을 연결해 “왜 이 순서가 보이는가”를 읽게 합니다.'],'AUDIO':['호흡 편집','S03 음성 메모를 중심으로 준비하는 소리와 침묵 사이의 간격을 남깁니다.'],'VIDEO':['순서 편집','S04 시간 순서에서 05:40 → 05:57 → 06:05 세 변화를 컷의 축으로 사용합니다.'],'CARD/BOOK':['잔상 편집','사진 설명과 중심 문장에서 오래 남길 한 장면과 한 문장을 골라 정리합니다.']};const [role,copy]=map[format];return `<article class="sl-edition-card"><small>${format} · ${role}</small><h3>${spine}</h3><p>${copy}</p><div class="trace-line">TRACE · ${[...sourceSet].sort().join(' + ')} · SYNTHETIC</div></article>`}
+function renderFormats(){document.querySelector('#previewGrid').innerHTML=[...formatSet].map(formatCopy).join('');document.querySelector('#formatStatus').textContent=`${formatSet.size}개 선택 · ${formatSet.size>=2?'Trace 단계로 갈 수 있습니다.':'최소 2개가 필요합니다.'}`;document.querySelector('#toTrace').disabled=formatSet.size<2;renderLiveTrace()}
+formatButtons.forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.format;formatSet.has(key)?formatSet.delete(key):formatSet.add(key);btn.setAttribute('aria-pressed',formatSet.has(key)?'true':'false');btn.classList.toggle('selected',formatSet.has(key));renderFormats()}));
+document.querySelector('#toTrace').addEventListener('click',()=>{if(formatSet.size<2)return;const selected=[...sourceSet].sort().join(' + ');document.querySelector('#tracePhaseList').innerHTML=[...formatSet].map((f,i)=>`<article class="sl-trace-card ${i%2?'changed':''}"><small>${f} · ${i%2?'ADAPTATION':'DIRECT TRACE'}</small><strong>${i%2?'매체 리듬에 맞게 강조점을 바꿈':'선택한 근거 범위 안에서 구성'}</strong><p>${selected} → ${f}. ${i%2?'강조 순서는 달라지지만 새 사실은 추가하지 않습니다.':'원자료의 시간·장면·표현을 직접 추적합니다.'}</p></article>`).join('');showPhase('trace')});
+document.querySelector('#toMaster').addEventListener('click',()=>{const spine=document.querySelector('#spineInput').value.trim();document.querySelector('#masterSpine').textContent=spine;document.querySelector('#masterSummary').textContent=`${[...sourceSet].sort().join(' + ')}를 근거로 ${[...formatSet].join(' · ')} 에디션을 엮었습니다. 아래 세 항목을 사람이 확인해야 Master 상태가 완료됩니다.`;showPhase('master')});
+document.querySelectorAll('[data-review]').forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.review;reviewSet.has(key)?reviewSet.delete(key):reviewSet.add(key);const on=reviewSet.has(key);btn.setAttribute('aria-pressed',on?'true':'false');btn.textContent=on?'확인됨':'확인';document.querySelector('#finishMaster').disabled=reviewSet.size<3}));
+document.querySelector('#finishMaster').addEventListener('click',()=>{if(reviewSet.size<3)return;document.querySelector('#finishStatus').textContent='MASTER READY · 출처 연결과 매체별 변형을 사람이 검토했습니다. 실제 파일·게시물·계정 상태는 만들지 않습니다.'});
+document.querySelector('#resetAll').addEventListener('click',()=>location.reload());document.querySelector('#jumpCurrent').addEventListener('click',()=>showPhase(current));document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>showPhase(btn.dataset.back)));renderLiveTrace();
 })();
 </script>
 </body>
