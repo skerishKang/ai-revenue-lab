@@ -3,27 +3,26 @@
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'self'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
 
-# Interactive demo pages require inline scripts for clickable flow.
-# Core preview/invariant tests validate that /demo/ pages opt in only to
-# 'unsafe-inline' and still enforce 'unsafe-eval'-free, no external origins.
+# Interactive demo pages use inline scripts for the deterministic clickable flow
+# and the same-origin persistent shell script for shared traveler navigation.
+# External script origins and 'unsafe-eval' remain forbidden.
 /demo/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
 
-# Operator review/queue pages use inline scripts for interactive buttons.
+# Operator review/queue pages use inline scripts for interactive buttons and may
+# load the same-origin shared shell. External script origins stay forbidden.
 /operator/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
 
-# Connected staging surface only. The global /* CSP (script-src 'none';
-# connect-src 'none') is detached here so the staging pages can load the pinned
-# Firebase modular SDK from gstatic and call the isolated Modal staging API.
-# The synthetic preview CSP above is unchanged and still applies to every
-# non-staging path. No wildcard origins, no 'unsafe-inline', no 'unsafe-eval'.
-# connect-src lists only the exact Firebase auth origins and the exact Modal
-# staging API origin (must match API_BASE in staging/assets/config.js).
+# Connected staging surface only. The global synthetic-preview CSP is detached
+# here so staging can load the pinned Firebase modular SDK from gstatic and call
+# the isolated Modal staging API. No wildcard origins, no 'unsafe-inline', no
+# 'unsafe-eval'. connect-src lists only the exact Firebase auth origins and the
+# exact Modal staging API origin (must match API_BASE in staging/assets/config.js).
 /staging/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self'; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://ai-revenue-lab-identity.firebaseapp.com https://padiemipu--ai-revenue-living-travel-staging-web.modal.run; frame-src https://ai-revenue-lab-identity.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
