@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="World Feed — 개인 관심 순서로 편집되는 세계 피드">
-  <title>World Feed — 나의 세계 편집면</title>
+  <meta name="description" content="World Feed — 전 세계 소식 중 내 관심사와 가까운 것만 골라 오늘의 개인 브리프로 편집합니다">
+  <title>World Feed — 오늘의 개인 세계 브리프</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link rel="stylesheet" href="./styles/tokens.css?v=world-feed-20260810-6">
   <link rel="stylesheet" href="./styles/base.css?v=world-feed-20260810-6">
   <link rel="stylesheet" href="./styles/layout.css?v=world-feed-20260810-6">
@@ -17,7 +19,15 @@
   <link rel="stylesheet" href="./styles/journeys/primary-journey.css?v=world-feed-20260810-6">
   <link rel="stylesheet" href="./styles/art-direction-v2.css?v=world-feed-product-v2-20260810">
   <link rel="stylesheet" href="./styles/art-direction-v2-polish.css?v=world-feed-product-v2-20260810-2">
-  <link rel="stylesheet" href="./styles/signature-scene-v3.css?v=world-feed-signal-stage-v3-20260810">
+  <link rel="stylesheet" href="./styles/signature-scene-v4.css?v=world-feed-cinematic-real-photo-v4-20260810">
+  <!-- Root overflow must not create a scroll container or descendant position:sticky stops working. -->
+  <style>
+    html,body{overflow-x:clip}
+    .wf-v4-scene-copy{opacity:0;transition:opacity .16s ease}
+    .wf-v4-scene[data-active] .wf-v4-scene-copy{opacity:1;transition-delay:.2s}
+    .wf-v4-scene:not([data-active]) .wf-v4-scene-copy{transition-duration:.1s;transition-delay:0s}
+    @media(prefers-reduced-motion:reduce){.wf-v4-scene-copy{transition:none!important}}
+  </style>
 </head>
 <body>
   <div id="world-feed-root"></div>
@@ -30,7 +40,7 @@
   <script src="./scripts/views/unavailable-views.js?v=world-feed-20260810-6"></script>
   <script src="./scripts/views/render-views.js?v=world-feed-20260810-6"></script>
   <script src="./scripts/art-direction-v2.js?v=world-feed-product-v2-20260810"></script>
-  <script src="./scripts/signature-scene-v3.js?v=world-feed-signal-stage-v3-20260810"></script>
+  <script src="./scripts/signature-scene-v4.js?v=world-feed-cinematic-real-photo-v4-20260810"></script>
   <script src="./scripts/feed-state.js?v=world-feed-20260810-6"></script>
   <script src="./scripts/navigation.js?v=world-feed-20260810-6"></script>
   <script src="./scripts/story-state.js?v=world-feed-20260810-6"></script>
