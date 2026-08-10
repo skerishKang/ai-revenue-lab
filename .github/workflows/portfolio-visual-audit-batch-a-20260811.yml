@@ -1,0 +1,159 @@
+name: Portfolio Visual Audit Batch A 2026-08-11
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/portfolio-visual-audit-batch-a-20260811.yml'
+      - 'docs/operations/ui-ux/**'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.54.2
+          npx playwright install --with-deps chromium
+      - name: Capture live Batch A surfaces
+        run: |
+          mkdir -p audit-output
+          cat > /tmp/capture.mjs <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+
+          const targets = [
+            {
+              id: 'B01',
+              routes: [
+                ['root', 'https://ai-revenue-personal-edition.pages.dev/'],
+                ['library', 'https://ai-revenue-personal-edition.pages.dev/preview/participant/published/'],
+                ['write', 'https://ai-revenue-personal-edition.pages.dev/preview/participant/input/'],
+                ['read', 'https://ai-revenue-personal-edition.pages.dev/preview/participant/editions/modal-preview-edition/']
+              ]
+            },
+            {
+              id: 'B02',
+              routes: [
+                ['root', 'https://ai-revenue-living-travel.pages.dev/'],
+                ['guide', 'https://ai-revenue-living-travel.pages.dev/guide.html']
+              ]
+            },
+            {
+              id: 'B04',
+              routes: [
+                ['root', 'https://ai-revenue-living-learning.pages.dev/'],
+                ['guide', 'https://ai-revenue-living-learning.pages.dev/guide.html']
+              ]
+            },
+            {
+              id: 'B06',
+              routes: [
+                ['feed', 'https://ai-revenue-world-feed.pages.dev/#feed'],
+                ['why', 'https://ai-revenue-world-feed.pages.dev/#why?story=harbor'],
+                ['guide', 'https://ai-revenue-world-feed.pages.dev/guide.html']
+              ]
+            },
+            {
+              id: 'B07',
+              routes: [
+                ['root', 'https://07-personal-meaning-map.pages.dev/']
+              ]
+            }
+          ];
+
+          const viewports = [
+            ['desktop', { width: 1440, height: 1100 }],
+            ['mobile', { width: 390, height: 844 }]
+          ];
+
+          const browser = await chromium.launch({ headless: true });
+          const results = [];
+
+          for (const [vpName, viewport] of viewports) {
+            const context = await browser.newContext({ viewport });
+            for (const target of targets) {
+              for (const [routeName, url] of target.routes) {
+                const page = await context.newPage();
+                const errors = [];
+                page.on('console', msg => { if (msg.type() === 'error') errors.push(`console:${msg.text()}`); });
+                page.on('pageerror', err => errors.push(`page:${err.message}`));
+                let response = null;
+                let navError = null;
+                try {
+                  response = await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
+                  await page.waitForTimeout(1800);
+                } catch (err) {
+                  navError = String(err);
+                }
+
+                const status = response?.status() ?? null;
+                const metrics = await page.evaluate(() => {
+                  const h1 = document.querySelector('h1');
+                  const interactive = [...document.querySelectorAll('a[href],button,input:not([type="hidden"]),textarea,select')]
+                    .find(el => {
+                      const r = el.getBoundingClientRect();
+                      const s = getComputedStyle(el);
+                      return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+                    });
+                  const h1Style = h1 ? getComputedStyle(h1) : null;
+                  const h1Rect = h1?.getBoundingClientRect();
+                  const iRect = interactive?.getBoundingClientRect();
+                  const brokenImages = [...document.images].filter(img => img.complete && img.naturalWidth === 0).map(img => img.currentSrc || img.src);
+                  return {
+                    title: document.title,
+                    h1: h1?.innerText?.trim() || null,
+                    h1FontSize: h1Style?.fontSize || null,
+                    h1LineHeight: h1Style?.lineHeight || null,
+                    h1Rect: h1Rect ? { x:h1Rect.x, y:h1Rect.y, width:h1Rect.width, height:h1Rect.height, bottom:h1Rect.bottom } : null,
+                    firstInteractive: interactive ? {
+                      text: (interactive.innerText || interactive.getAttribute('aria-label') || interactive.getAttribute('placeholder') || interactive.tagName).trim(),
+                      tag: interactive.tagName,
+                      rect: iRect ? { x:iRect.x, y:iRect.y, width:iRect.width, height:iRect.height, bottom:iRect.bottom } : null
+                    } : null,
+                    viewport: { width: innerWidth, height: innerHeight },
+                    scroll: { width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight },
+                    horizontalOverflow: Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
+                    bodyBackground: getComputedStyle(document.body).backgroundColor,
+                    images: document.images.length,
+                    brokenImages,
+                    visibleTextSample: document.body.innerText.replace(/\s+/g,' ').slice(0,1200)
+                  };
+                });
+
+                const safe = `${target.id}-${routeName}-${vpName}`;
+                await page.screenshot({ path: `audit-output/${safe}-viewport.png`, fullPage: false });
+                await page.screenshot({ path: `audit-output/${safe}-full.png`, fullPage: true });
+                results.push({ target: target.id, route: routeName, url, viewport: vpName, status, navError, errors, metrics });
+                await page.close();
+              }
+            }
+            await context.close();
+          }
+
+          await browser.close();
+          fs.writeFileSync('audit-output/results.json', JSON.stringify(results, null, 2));
+          const bad = results.filter(r => r.navError || (r.status && r.status >= 400));
+          if (bad.length) {
+            console.log('Some optional routes were unavailable; evidence retained:', bad.map(x => `${x.target}/${x.route}:${x.status || x.navError}`).join(', '));
+          }
+          NODE
+          node /tmp/capture.mjs
+          cat audit-output/results.json
+      - name: Upload visual audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-visual-audit-batch-a-${{ github.sha }}
+          path: audit-output
+          if-no-files-found: error
+          retention-days: 14
