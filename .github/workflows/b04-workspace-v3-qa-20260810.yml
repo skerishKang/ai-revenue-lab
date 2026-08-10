@@ -71,6 +71,10 @@ jobs:
                   const banner=document.querySelector('.preview-banner');
                   const br=banner?.getBoundingClientRect();
                   const ws=[...document.styleSheets].some(s=>String(s.href||'').includes('workspace-v3-20260810.css'));
+                  const meaningful=[...document.querySelectorAll('.callout,.stepper,.page-head,h1')]
+                    .map(x=>({text:x.innerText.trim(),rect:x.getBoundingClientRect()}))
+                    .filter(x=>x.text&&x.rect.width>20&&x.rect.height>10)
+                    .sort((a,b)=>a.rect.y-b.rect.y)[0];
                   return {
                     overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
                     h1:h1?.innerText.trim()||'',
@@ -78,6 +82,8 @@ jobs:
                     h1W:hr?.width??null,
                     h1Font:cs?parseFloat(cs.fontSize):null,
                     h1Line:cs?parseFloat(cs.lineHeight):null,
+                    firstMeaningfulY:meaningful?.rect.y??null,
+                    firstMeaningfulText:meaningful?.text.slice(0,120)||'',
                     bannerVisible:!!(br&&br.width>4&&br.height>4),
                     workspaceLoaded:ws,
                     shell:!!document.querySelector('.shell'),
@@ -91,7 +97,8 @@ jobs:
                 if(failed.length)problems.push(`failed ${failed.join(' | ')}`);
                 if(!m.workspaceLoaded)problems.push('workspace css missing');
                 if(m.bannerVisible)problems.push('preview banner visible');
-                if(vp.name==='mobile'&&m.shell&&m.h1Y!==null&&m.h1Y>290)problems.push(`mobile h1 too low ${m.h1Y}`);
+                if(vp.name==='mobile'&&m.shell&&name!=='lesson2'&&m.h1Y!==null&&m.h1Y>290)problems.push(`mobile h1 too low ${m.h1Y}`);
+                if(vp.name==='mobile'&&m.shell&&name==='lesson2'&&m.firstMeaningfulY!==null&&m.firstMeaningfulY>190)problems.push(`adaptive lesson content too low ${m.firstMeaningfulY}`);
                 if(m.shell&&m.h1Font&&m.h1Line&&m.h1Line/m.h1Font<1.06)problems.push(`tight h1 line ratio ${(m.h1Line/m.h1Font).toFixed(2)}`);
                 await p.screenshot({path:path.join('/tmp/b04-v3-evidence',`${vp.name}-${name}.png`),fullPage:false});
                 results.push({viewport:vp.name,name,route,status:r?.status()||0,errors,failed,problems,...m});
@@ -112,8 +119,7 @@ jobs:
           for f in goals/index.html diagnostic/index.html lesson-1/index.html lesson-1/result/index.html feedback/index.html changes/index.html lesson-2/index.html home/index.html progress/index.html history/index.html review/index.html; do
             grep -q 'workspace-v3-20260810.css' "apps/living-learning/pages-preview/$f"
           done
-          ! git diff --check origin/main...HEAD
-        continue-on-error: true
+          git diff --check origin/main...HEAD
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
