@@ -1,0 +1,10 @@
+/* B22 mobile source selector: keep all four source cards directly reachable without a horizontal carousel. */
+@media (max-width:620px){
+  .sl-sources{padding:1rem;min-width:0}
+  .sl-source-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;max-width:100%;overflow:visible;gap:1px;background:var(--sl-line)}
+  .sl-source-item{min-width:0;flex:auto;border:0!important;padding:.78rem!important;background:#0e1016;overflow-wrap:anywhere}
+  .sl-source-item b{font-size:.64rem;line-height:1.35}
+  .sl-source-item p{font-size:.54rem;line-height:1.45}
+  .sl-source-item[aria-pressed="true"]{padding:.78rem!important;box-shadow:inset 0 0 0 1px var(--sl-cyan)!important;background:#171b24}
+}
+@media (max-width:360px){.sl-source-stack{grid-template-columns:1fr}}
