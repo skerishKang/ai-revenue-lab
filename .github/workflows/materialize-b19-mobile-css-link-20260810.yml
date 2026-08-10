@@ -1,0 +1,33 @@
+name: Materialize B19 Mobile CSS Link 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/materialize-b19-mobile-css-link-20260810.yml']
+permissions: {contents: write}
+jobs:
+  patch:
+    if: github.event.pull_request.head.ref == 'design/b19-memory-binding-table-v2-20260810'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.event.pull_request.head.ref }}', fetch-depth: 0}
+      - name: Link mobile fix and self-remove
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('reference/business-19-personal-memory-book-v1/ux.html')
+          s=p.read_text(encoding='utf-8')
+          old='<link rel="stylesheet" href="./styles/memory-binding-v2.css?v=b19-v2-20260810">'
+          new=old+'<link rel="stylesheet" href="./styles/memory-binding-v2-mobile-fix.css?v=b19-v2-20260810">'
+          assert old in s and 'memory-binding-v2-mobile-fix.css' not in s
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+          rm -f .github/workflows/materialize-b19-mobile-css-link-20260810.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix(B19): link mobile memory workspace clamp'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
