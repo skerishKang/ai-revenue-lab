@@ -1,0 +1,69 @@
+name: Deploy B10 Replay Stage V3 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b10-replay-stage-v3-20260810.yml']
+permissions: {contents: read}
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b10-replay-stage-v3-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 374b78ae23c343cdcd24fe19067ebc8f529417d0
+      PROJECT: 10-fan-magazine
+      URL: https://10-fan-magazine.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Assert exact main and deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          b=reference/business-10-fan-magazine-v1
+          grep -q 'fandom-replay-stage-v3.css' "$b/index.html"
+          grep -q 'fm-replay' "$b/index.html"
+          npx --yes wrangler@latest pages deploy "$b" --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B10 Replay Stage V3 exact main' --commit-dirty=true
+      - name: Verify canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          b=reference/business-10-fan-magazine-v1
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 40); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify "$URL/index.html" "$b/index.html" B10_ROOT
+          verify "$URL/guide.html" "$b/guide.html" B10_GUIDE
+          verify "$URL/ux.html" "$b/ux.html" B10_UX
+          curl -L -fsS "$URL/index.html" -o /tmp/root.html
+          grep -q 'fandom-replay-stage-v3.css' /tmp/root.html
+          grep -q 'KEPT MOMENT' /tmp/root.html
+          if grep -q 'fm-portrait' /tmp/root.html; then echo 'old portrait still exposed' >&2; exit 1; fi
+          echo B10_REPLAY_STAGE_PRODUCTION_BYTES_PASS=1
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b10-prod-browser && cd /tmp/b10-prod-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Production browser smoke
+        run: |
+          mkdir -p /tmp/b10-prod-evidence
+          cd /tmp/b10-prod-browser
+          node <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),path=require('path');const out='/tmp/b10-prod-evidence',base='https://10-fan-magazine.pages.dev';
+          (async()=>{const b=await chromium.launch({headless:true}),m={};for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of ['/index.html','/guide.html','/ux.html']){const p=await b.newPage({viewport:vp}),errs=[];p.on('console',x=>{if(x.type()==='error')errs.push(x.text())});p.on('pageerror',e=>errs.push(e.message));const r=await p.goto(base+rel,{waitUntil:'networkidle',timeout:45000});if(!r||r.status()!=200)throw new Error(`${vp.name}:${rel}:http`);const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,replay:!!document.querySelector('.fm-replay'),portrait:!!document.querySelector('.fm-portrait')}));if(d.sw>d.cw+1)throw new Error(`${vp.name}:${rel}:overflow ${d.sw}>${d.cw}`);if(rel==='/index.html'&&(!d.replay||d.portrait))throw new Error(`${vp.name}:root replay contract`);if(errs.length)throw new Error(`${vp.name}:${rel}:${errs.join('|')}`);m[`${vp.name}:${rel}`]=d;if(rel==='/index.html')await p.screenshot({path:path.join(out,`b10-prod-root-${vp.name}.png`),fullPage:true});await p.close()}}fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(m,null,2));await b.close();console.log('B10_REPLAY_STAGE_PRODUCTION_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b10-replay-stage-v3-production-20260810
+          path: /tmp/b10-prod-evidence
+          retention-days: 7
