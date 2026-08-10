@@ -1,0 +1,78 @@
+name: B33 Live Research Memory Audit 20260811
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b33-live-research-memory-audit-20260811.yml']
+permissions: {contents: read}
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b33-live-research-memory-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MAIN_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      REVIEW_SHA: c034ccae74d038bb3c5517c62e3c290db5bffc2a
+      SOURCE: reference/business-33-research-memory-v1/ux.html
+      CANONICAL: https://33-research-memory.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0, persist-credentials: false}
+      - name: Assert current main and numbered UX entry authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$MAIN_SHA"
+          test -z "$(git ls-tree -r --name-only "$MAIN_SHA" -- reference/business-33-research-memory-v1)"
+          git show "$REVIEW_SHA:$SOURCE" >/tmp/source-ux.html
+          expected=$(sha256sum /tmp/source-ux.html | cut -d' ' -f1)
+          test "$expected" = 8308e43de209db780693a4b28c4eec813cab1662f0f4c1b5bf3db9b083053a8e
+          for rel in index.html ux.html; do
+            for n in 1 2; do
+              curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "$CANONICAL/$rel?audit=${REVIEW_SHA}-${n}" -o /tmp/public
+              actual=$(sha256sum /tmp/public | cut -d' ' -f1)
+              echo "$rel expected=$expected actual=$actual"
+              test "$actual" = "$expected"
+            done
+          done
+      - name: Install Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Browser visual and evidence-to-note journey
+        shell: bash
+        run: |
+          mkdir -p /tmp/evidence
+          cat >/tmp/audit.cjs <<'NODE'
+          const { chromium }=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://33-research-memory.pages.dev';
+          const viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}};
+          const failures=[],results=[];
+          async function shot(p,n){await p.screenshot({path:`/tmp/evidence/${n}.png`});await p.screenshot({path:`/tmp/evidence/${n}-full.png`,fullPage:true})}
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){
+              const context=await browser.newContext({viewport,deviceScaleFactor:1}); const page=await context.newPage(),errors=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});page.on('pageerror',e=>errors.push(`page:${e.message}`));page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`));
+              const response=await page.goto(base+'/index.html?visual='+Date.now(),{waitUntil:'networkidle'});if(!response||!response.ok())failures.push(`${mode}: bad HTTP`);
+              const m=await page.evaluate(()=>{const de=document.documentElement,b=document.body,h=document.querySelector('.view.active h1'),s=getComputedStyle(h),f=parseFloat(s.fontSize),l=parseFloat(s.lineHeight),hr=h.getBoundingClientRect(),head=document.querySelector('.head').getBoundingClientRect(),nav=document.querySelector('.nav').getBoundingClientRect(),view=document.querySelector('.view.active').getBoundingClientRect(),cta=document.querySelector('#question .actions').getBoundingClientRect();return{viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(de.scrollWidth,b.scrollWidth)-innerWidth,pageHeight:de.scrollHeight,h1Font:f,h1Line:l,h1Ratio:l/f,h1Top:hr.top,h1Bottom:hr.bottom,headBottom:head.bottom,navTop:nav.top,navBottom:nav.bottom,viewTop:view.top,ctaTop:cta.top,ctaBottom:cta.bottom,title:document.title}});
+              if(m.overflowX>1)failures.push(`${mode}: overflow ${m.overflowX}`);if(m.h1Ratio<1)failures.push(`${mode}: Korean H1 ratio ${m.h1Ratio}`);if(!(m.headBottom<=m.navTop+1&&m.navBottom<=m.viewTop+1))failures.push(`${mode}: chrome/view collision`);if(mode==='mobile'&&m.ctaBottom>m.viewportHeight)failures.push(`${mode}: primary CTA below initial viewport`);if(errors.length)failures.push(`${mode}: ${errors.join(' | ')}`);await shot(page,`${mode}-question`);
+              await page.locator('#question [data-go="sources"]').click();await page.locator('[data-source="A"]').click();await page.locator('[data-source="C"]').click();if(!((await page.locator('#sourceStatus').innerText()).includes('2개')))failures.push(`${mode}: source count mismatch`);await shot(page,`${mode}-sources`);
+              await page.locator('#sources [data-go="claims"]').click();await page.locator('[data-claim="reject"]').click();await page.locator('[data-claim="accept"]').click();if(!((await page.locator('#claimStatus').innerText()).includes('메모 후보')))failures.push(`${mode}: claim verdict mismatch`);await shot(page,`${mode}-claims`);
+              await page.locator('#makeNote').click();if(!(await page.locator('#note').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}: note did not open`);if(!((await page.locator('#noteText').innerText()).includes('2개 합성 자료')))failures.push(`${mode}: note source count missing`);await page.locator('#finish').click();if(!((await page.locator('#finishStatus').innerText()).includes('실제 논문')))failures.push(`${mode}: finish disclaimer mismatch`);await shot(page,`${mode}-note-finished`);
+              await page.reload({waitUntil:'networkidle'});if((await page.locator('#noteText').innerText()).includes('2개 합성 자료'))failures.push(`${mode}: reload retained session state`);
+              results.push({mode,metrics:m,errors});await page.close();await context.close();
+            }
+            await browser.close();fs.writeFileSync('/tmp/evidence/metrics.json',JSON.stringify({mainSha:'a631122888d30c5a8a62f4b27e192967da331898',reviewSha:'c034ccae74d038bb3c5517c62e3c290db5bffc2a',canonicalEntrySha256:'8308e43de209db780693a4b28c4eec813cab1662f0f4c1b5bf3db9b083053a8e',results,failures},null,2));console.log(JSON.stringify({results,failures},null,2));if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b33-live-research-memory-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/evidence
+          if-no-files-found: error
+          retention-days: 7
