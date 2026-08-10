@@ -1,0 +1,60 @@
+name: Validate B18 Listening Room V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-18-personal-audio-channel-v1/**'
+      - '.github/workflows/validate-b18-listening-room-v2-20260810.yml'
+permissions: {contents: read}
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'design/b18-listening-room-v2-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.event.pull_request.head.ref }}', fetch-depth: 0}
+      - name: Static product contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          b=Path('reference/business-18-personal-audio-channel-v1')
+          texts={r:(b/r).read_text(encoding='utf-8') for r in ('index.html','ux.html','guide.html')}
+          for r,t in texts.items():
+              assert 'listening-room-v2.css' in t,r
+              assert '.svg' not in t.lower(),r
+              assert 'Phase 1' not in t and 'visual reference' not in t.lower(),r
+          css=(b/'styles/listening-room-v2.css').read_text(encoding='utf-8')
+          assert 'OPEN → LISTEN → MARK → REPLAY → CLOSE' in css
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in '\n'.join(texts.values()),forbidden
+          print('B18_LISTENING_ROOM_STATIC_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-18-personal-audio-channel-v1/**'
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b18-browser && cd /tmp/b18-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser listening journey and screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b18-evidence
+          python3 -m http.server 4198 --directory reference/business-18-personal-audio-channel-v1 >/tmp/b18-http.log 2>&1 &
+          server=$!; trap 'kill $server || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4198/index.html >/dev/null && break; sleep .5; done
+          cd /tmp/b18-browser
+          node <<'JS'
+          const {chromium}=require('playwright');const fs=require('fs'),path=require('path');const out='/tmp/b18-evidence';async function audit(p,l){const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svg:[...document.images].filter(i=>/\.svg(?:[?#]|$)/i.test(i.getAttribute('src')||'')).length,text:document.body.innerText}));if(d.sw>d.cw+1)throw new Error(`${l}:overflow ${d.sw}>${d.cw}`);if(d.svg)throw new Error(`${l}:svg ${d.svg}`);if(/Phase 1|visual reference/i.test(d.text))throw new Error(`${l}:old chrome`);return d}
+          (async()=>{const b=await chromium.launch({headless:true}),m={};for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of ['index.html','guide.html']){const p=await b.newPage({viewport:vp});await p.goto(`http://127.0.0.1:4198/${rel}`,{waitUntil:'networkidle'});m[`${vp.name}-${rel}`]=await audit(p,`${vp.name}:${rel}`);await p.screenshot({path:path.join(out,`b18-${rel.replace('.html','')}-${vp.name}.png`),fullPage:true});await p.close()}const p=await b.newPage({viewport:vp}),errs=[];p.on('console',x=>{if(x.type()==='error')errs.push(x.text())});p.on('pageerror',e=>errs.push(e.message));await p.goto('http://127.0.0.1:4198/ux.html',{waitUntil:'networkidle'});await p.locator('#play').click();if(!(await p.locator('#player').getAttribute('class')).includes('playing'))throw new Error(`${vp.name}:play state missing`);await p.locator('#mark').click();await p.locator('[data-track="ai"]').click();await p.locator('#mark').click();if(!(await p.locator('#closeStatus').innerText()).includes('2개'))throw new Error(`${vp.name}:two echoes missing`);await p.locator('#finish').click();if(!(await p.locator('#closeStatus').innerText()).includes('2개'))throw new Error(`${vp.name}:close missing`);m[`${vp.name}-ux`]=await audit(p,`${vp.name}:ux`);if(errs.length)throw new Error(errs.join('|'));await p.screenshot({path:path.join(out,`b18-ux-${vp.name}.png`),fullPage:true});await p.close()}fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(m,null,2));await b.close();console.log('B18_LISTENING_ROOM_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: b18-listening-room-v2-20260810, path: /tmp/b18-evidence, retention-days: 7, if-no-files-found: warn}
