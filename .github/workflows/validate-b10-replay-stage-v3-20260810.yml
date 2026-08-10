@@ -1,0 +1,57 @@
+name: Validate B10 Replay Stage V3 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-10-fan-magazine-v1/**'
+      - '.github/workflows/validate-b10-replay-stage-v3-20260810.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/b10-replay-stage-v3-20260810
+          fetch-depth: 0
+      - name: Static contract
+        run: |
+          set -euo pipefail
+          b=reference/business-10-fan-magazine-v1
+          grep -q 'fandom-replay-stage-v3.css' "$b/index.html"
+          grep -q 'fm-replay' "$b/index.html"
+          grep -q 'KEPT MOMENT' "$b/index.html"
+          grep -q 'FICTIONAL SUBJECT' "$b/index.html"
+          ! grep -q 'fm-portrait' "$b/index.html"
+          test -f "$b/styles/fandom-replay-stage-v3.css"
+          ! grep -REn 'https?://|url\(' "$b/styles/fandom-replay-stage-v3.css"
+          git diff --check origin/main...HEAD -- "$b"
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b10-browser && cd /tmp/b10-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser root Guide reader validation
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b10-v3-evidence
+          python3 -m http.server 4410 --directory reference/business-10-fan-magazine-v1 >/tmp/b10-http.log 2>&1 &
+          server=$!; trap 'kill $server || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4410/index.html >/dev/null && break; sleep .5; done
+          cd /tmp/b10-browser
+          node <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),path=require('path');const out='/tmp/b10-v3-evidence';
+          async function audit(p,label){const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,replay:!!document.querySelector('.fm-replay'),portrait:!!document.querySelector('.fm-portrait'),css:[...document.styleSheets].map(s=>s.href||'')}));if(d.sw>d.cw+1)throw new Error(`${label}:overflow ${d.sw}>${d.cw}`);return d}
+          (async()=>{const b=await chromium.launch({headless:true}),m={};for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of ['index.html','guide.html','ux.html']){const p=await b.newPage({viewport:vp}),errs=[];p.on('console',x=>{if(x.type()==='error')errs.push(x.text())});p.on('pageerror',e=>errs.push(e.message));const r=await p.goto(`http://127.0.0.1:4410/${rel}`,{waitUntil:'networkidle'});if(!r||r.status()!=200)throw new Error(`${vp.name}:${rel}:http`);const d=await audit(p,`${vp.name}:${rel}`);if(rel==='index.html'){if(!d.replay||d.portrait)throw new Error(`${vp.name}:root replay contract`);if(!d.css.some(x=>x.includes('fandom-replay-stage-v3.css')))throw new Error(`${vp.name}:V3 css missing`)}if(errs.length)throw new Error(`${vp.name}:${rel}:${errs.join('|')}`);m[`${vp.name}:${rel}`]=d;await p.screenshot({path:path.join(out,`b10-${rel.replace('.html','')}-${vp.name}.png`),fullPage:true});await p.close()}}fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(m,null,2));await b.close();console.log('B10_REPLAY_STAGE_V3_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b10-replay-stage-v3-20260810
+          path: /tmp/b10-v3-evidence
+          retention-days: 7
