@@ -1,0 +1,32 @@
+/* B19 Memory Binding Table V2 — Korean display rhythm polish.
+ * Preserve the evidence-binding layout while easing large Hangul display type. */
+
+.mb-copy h1 {
+  max-width: 11ch;
+  font-size: clamp(5.4rem, 6.8vw, 6.5rem);
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+.mb-guide-copy h1 {
+  max-width: 13ch;
+  font-size: clamp(4.8rem, 5.8vw, 5.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+@media (max-width: 620px) {
+  .mb-copy h1 {
+    font-size: clamp(3rem, 12.8vw, 3.45rem);
+    line-height: 1.06;
+    letter-spacing: -0.05em;
+  }
+
+  .mb-guide-copy h1 {
+    font-size: clamp(2.95rem, 12.4vw, 3.35rem);
+    line-height: 1.07;
+    letter-spacing: -0.05em;
+  }
+}
