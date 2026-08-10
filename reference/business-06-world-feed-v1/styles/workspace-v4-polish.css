@@ -36,13 +36,15 @@
   line-height:1.04!important;
   letter-spacing:-.052em!important;
 }
-.topic-main-copy{justify-content:center!important}
+.topic-main-copy{justify-content:center!important;color:var(--wf-v4-copy)!important}
 .topic-main-copy h2{
+  color:var(--wf-v4-copy)!important;
   font-size:clamp(2.55rem,3.9vw,4.25rem)!important;
   line-height:1.07!important;
   letter-spacing:-.048em!important;
   margin-bottom:1.8rem!important;
 }
+.topic-main-copy>p{color:#9aabad!important}
 
 /* Story had the densest Hangul block in QA. Give it width and reduce scale. */
 .story-detail{
@@ -110,14 +112,23 @@
     line-height:1.13!important;
     letter-spacing:-.04em!important;
   }
+  /* A grid min-content interaction collapsed the title track to 0px on 390px QA.
+     Mobile story becomes a simple reading flow instead of preserving the desktop grid. */
+  .story-detail{display:block!important}
+  .story-detail>.back-link{display:inline-flex!important;width:auto!important;max-width:100%!important;margin-bottom:2rem!important;white-space:nowrap!important}
+  .story-kicker{width:100%!important;margin:0 0 1.5rem!important}
   .story-detail>h1{
-    max-width:none!important;
+    display:block!important;width:100%!important;min-width:100%!important;max-width:100%!important;
     font-size:clamp(2.15rem,9.65vw,2.65rem)!important;
     line-height:1.14!important;
     letter-spacing:-.04em!important;
     margin:1rem 0 1.4rem!important;
   }
-  .story-intro{font-size:.94rem!important;line-height:1.8!important}
+  .story-detail>h1 span{display:inline!important}
+  .story-detail>h1 span+span::before{content:" ";}
+  .story-intro{width:100%!important;font-size:.94rem!important;line-height:1.8!important;margin-bottom:2rem!important}
+  .story-figure{width:100%!important;margin:0 0 2rem!important}
+  .story-body-grid{width:100%!important}
   .why-story-preview>h2{
     max-width:12.5ch!important;
     font-size:clamp(1.8rem,7.7vw,2.25rem)!important;
