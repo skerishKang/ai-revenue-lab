@@ -119,6 +119,7 @@ jobs:
           for f in goals/index.html diagnostic/index.html lesson-1/index.html lesson-1/result/index.html feedback/index.html changes/index.html lesson-2/index.html home/index.html progress/index.html history/index.html review/index.html; do
             grep -q 'workspace-v3-20260810.css' "apps/living-learning/pages-preview/$f"
           done
+          git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
           git diff --check origin/main...HEAD
       - name: Upload evidence
         if: always()
