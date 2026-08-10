@@ -67,27 +67,39 @@ jobs:
           verify "$URL/guide.html" "$root/guide.html" B02_GUIDE
           verify "$URL/demo/edition-2.html" "$root/demo/edition-2.html" B02_EDITION2
           verify "$URL/demo/pending.html" "$root/demo/pending.html" B02_PENDING
-          curl -sSI "$URL/index.html" > /tmp/root-headers.txt
-          curl -sSI "$URL/demo/traveler-home.html" > /tmp/demo-headers.txt
-          python3 - <<'PY'
+          for i in $(seq 1 50); do
+            curl -sSI --max-time 20 "$URL/index.html" > /tmp/root-headers.txt || true
+            curl -sSI --max-time 20 "$URL/demo/traveler-home.html" > /tmp/demo-headers.txt || true
+            if python3 - <<'PY'
           from pathlib import Path
           def csp(path):
               for line in Path(path).read_text(errors='replace').splitlines():
                   if line.lower().startswith('content-security-policy:'):
                       return line.split(':',1)[1].strip()
-              raise SystemExit(f'no CSP in {path}')
+              return ''
           root=csp('/tmp/root-headers.txt')
           demo=csp('/tmp/demo-headers.txt')
-          assert "script-src 'self'" in root, root
-          assert "style-src 'self'" in root, root
-          assert "connect-src 'none'" in root, root
-          assert "'unsafe-inline'" not in root, root
-          assert "'unsafe-eval'" not in root, root
-          assert "script-src 'self' 'unsafe-inline'" in demo, demo
-          assert "connect-src 'none'" in demo, demo
-          assert "'unsafe-eval'" not in demo, demo
-          print('B02_PUBLIC_CSP_HEADERS_PASS=1')
+          good=(
+              "script-src 'self'" in root and
+              "style-src 'self'" in root and
+              "connect-src 'none'" in root and
+              "'unsafe-inline'" not in root and
+              "'unsafe-eval'" not in root and
+              "script-src 'self' 'unsafe-inline'" in demo and
+              "connect-src 'none'" in demo and
+              "'unsafe-eval'" not in demo
+          )
+          print('ROOT_CSP=',root)
+          print('DEMO_CSP=',demo)
+          raise SystemExit(0 if good else 1)
           PY
+            then
+              echo "B02_PUBLIC_CSP_HEADERS_PASS=1 poll=$i"
+              break
+            fi
+            if [[ "$i" == 50 ]]; then echo 'canonical CSP did not converge' >&2; exit 1; fi
+            sleep 4
+          done
       - name: Install Chromium and Korean fonts
         run: |
           sudo apt-get update -y
