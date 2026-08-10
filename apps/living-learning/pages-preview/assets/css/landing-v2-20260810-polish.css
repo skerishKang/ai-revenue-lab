@@ -1,0 +1,29 @@
+/* B04 Adaptive Protocol V2 — screenshot polish pass. */
+.hero::after{
+  display:block;
+  padding:185px 24px 22px;
+  box-sizing:border-box;
+  overflow:hidden;
+  line-height:2.85;
+}
+
+/* Root's final 3 cards must remain readable; the generic guide-ending card
+   darkening rule in the first pass also matched this final root section. */
+.content>section.mt-16:last-child .grid--3>.card{
+  color:#182135;
+  background:#f8f5ef;
+}
+.content>section.mt-16:last-child .grid--3>.card:nth-child(2){background:#efebfa}
+.content>section.mt-16:last-child .grid--3>.card:nth-child(3){background:#e6f3f2}
+.content>section.mt-16:last-child .grid--3 .card__title{color:#182135}
+.content>section.mt-16:last-child .grid--3 .card__sub{color:#6a7388}
+.content>section.mt-16:last-child .grid--3 .badge--accent{color:#1f53d6}
+.content>section.mt-16:last-child .grid--3 .badge--violet{color:#5c4bd7}
+.content>section.mt-16:last-child .grid--3 .badge--cyan{color:#0c7e96}
+
+@media(max-width:900px){
+  .hero::after{padding:28px 18px 14px;line-height:2.65}
+}
+@media(max-width:640px){
+  .hero::after{padding:22px 13px 10px;line-height:2.55}
+}
