@@ -14,6 +14,14 @@
   border-color: rgba(245,240,228,.34) !important;
 }
 
+/* RECUT is a payoff, but should not revert to the portfolio's old oversized
+   Korean-poster habit. Keep it strong while preserving readable shape. */
+.v3-adapt-head h1 {
+  font-size: clamp(3.5rem, 6vw, 5.2rem) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -.035em !important;
+}
+
 /* The first mobile viewport should show both the thesis and the archive material,
    rather than spending almost the entire viewport on Korean display type. */
 @media (max-width: 600px) {
@@ -42,5 +50,11 @@
   .v3-guide-hero-copy h1 {
     font-size: clamp(2.55rem, 11vw, 3.1rem) !important;
     line-height: 1.1 !important;
+  }
+
+  .v3-adapt-head h1 {
+    font-size: clamp(2.65rem, 11vw, 2.95rem) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -.025em !important;
   }
 }
