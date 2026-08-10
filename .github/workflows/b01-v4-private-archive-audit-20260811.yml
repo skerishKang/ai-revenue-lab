@@ -1,0 +1,191 @@
+name: B01 Private Archive V4 Audit 2026-08-11
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/personal-edition/**'
+      - '.github/workflows/b01-v4-private-archive-audit-20260811.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+
+      - name: Install Personal Edition and browser dependencies
+        run: |
+          cd apps/personal-edition
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest playwright pillow
+          python -m playwright install --with-deps chromium
+          CHROME_PATH=$(python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as p:
+              print(p.chromium.executable_path)
+          PY
+          )
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+
+      - name: Run B01 regression contracts
+        run: |
+          python -m pytest apps/personal-edition/tests/test_ui_v2_443.py apps/personal-edition/tests/test_ui_v3_browser_454.py -q
+
+      - name: Build exact branch Production review
+        run: |
+          cd apps/personal-edition
+          python -m scripts.build_static_production
+          test -f dist-preview/static/ui-v4-private-archive.css
+          test -f dist-preview/static/images/v4/archive-entry-tableau.svg
+          test -f dist-preview/static/images/v4/proof-review-tableau.svg
+          test -f dist-preview/static/images/v4/edition-cover-material.svg
+          grep -q 'data-art-direction="b1-private-archive-v4"' dist-preview/index.html
+          grep -q '첫 기록 맡기기' dist-preview/index.html
+          grep -q '/guide/' dist-preview/index.html
+
+      - name: Start exact static Production bytes
+        run: |
+          cd apps/personal-edition/dist-preview
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/b01-v4-http.log 2>&1 &
+          echo $! > /tmp/b01-v4-http.pid
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/b01-v4-http.log
+          exit 1
+
+      - name: Capture and inspect Desktop Mobile surfaces
+        run: |
+          mkdir -p b01-v4-evidence/screenshots
+          cat > /tmp/b01_v4_audit.py <<'PY'
+          from __future__ import annotations
+          import json, os
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          from playwright.sync_api import sync_playwright
+
+          base='http://127.0.0.1:4173'
+          out=Path('b01-v4-evidence')
+          shots=out/'screenshots'
+          routes=[
+            ('root','/'),
+            ('guide','/guide/'),
+            ('library','/preview/participant/published/'),
+            ('review','/preview/participant/editing/'),
+            ('write','/preview/participant/input/'),
+            ('read','/preview/participant/editions/modal-preview-edition/'),
+            ('feedback','/preview/participant/editions/modal-preview-edition/feedback/'),
+            ('adaptation','/preview/participant/editions/modal-preview-edition/adaptation/'),
+            ('history','/preview/participant/history/'),
+            ('operator-review','/admin/review/modal-preview-edition/content/'),
+          ]
+          viewports=[('desktop',1440,1100),('mobile',390,844)]
+          results=[]
+          with sync_playwright() as pw:
+            browser=pw.chromium.launch(headless=True, executable_path=os.environ['CHROME_PATH'], args=['--no-sandbox'])
+            try:
+              for vp,w,h in viewports:
+                context=browser.new_context(viewport={'width':w,'height':h}, reduced_motion='reduce')
+                for name,path in routes:
+                  page=context.new_page(); errors=[]; failed=[]; external=[]
+                  page.on('console', lambda m: errors.append('console:'+m.text) if m.type=='error' else None)
+                  page.on('pageerror', lambda e: errors.append('page:'+str(e)))
+                  page.on('request', lambda r: external.append(r.url) if not r.url.startswith(base) and not r.url.startswith(('data:','blob:')) else None)
+                  def on_response(r):
+                    if r.url.startswith(base) and r.status >= 400 and not r.url.endswith('/favicon.ico'):
+                      failed.append(f'{r.status} {r.url}')
+                  page.on('response', on_response)
+                  response=page.goto(base+path, wait_until='networkidle', timeout=20000)
+                  assert response and response.status==200,(name,path,response.status if response else None)
+                  page.wait_for_timeout(500)
+                  metrics=page.evaluate("""() => {
+                    const h1=document.querySelector('h1'); const hs=h1?getComputedStyle(h1):null;
+                    const fs=hs?parseFloat(hs.fontSize):null; const lh=hs?(hs.lineHeight==='normal'?null:parseFloat(hs.lineHeight)):null;
+                    const stage=document.querySelector('.v3-assembly-stage');
+                    const cover=document.querySelector('.v3-library-cover,.v3-read-cover');
+                    return {
+                      art:document.body.dataset.artDirection||null,
+                      sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,
+                      h1:h1?.innerText?.trim()||null,fontSize:fs,lineHeight:lh,ratio:(fs&&lh)?lh/fs:null,
+                      stageBackground:stage?getComputedStyle(stage).backgroundImage:null,
+                      coverBackground:cover?getComputedStyle(cover).backgroundImage:null,
+                      firstViewportText:document.body.innerText.replace(/\s+/g,' ').slice(0,1000),
+                      rootProof:!!document.querySelector('.v4-entry-proof'),
+                      recutPreview:!!document.querySelector('.v4-feedback-preview'),
+                      imgs:document.images.length,
+                    }
+                  }""")
+                  assert metrics['art']=='b1-private-archive-v4',(name,vp,metrics)
+                  assert metrics['sw']<=metrics['cw'],(name,vp,metrics)
+                  if metrics['h1'] and any('\uac00' <= ch <= '\ud7a3' for ch in metrics['h1']) and metrics['ratio'] is not None:
+                    assert metrics['ratio'] >= 1.0,(name,vp,metrics['h1'],metrics['ratio'])
+                  if name=='root':
+                    assert metrics['rootProof']
+                    assert 'archive-entry-tableau.svg' in (metrics['stageBackground'] or '')
+                    assert page.get_by_text('첫 기록 맡기기',exact=True).count()>0
+                    assert page.get_by_text('30초 사용법',exact=True).count()>0
+                  if name in ('library','read'):
+                    assert 'edition-cover-material.svg' in (metrics['coverBackground'] or '')
+                  if name=='review':
+                    bg=page.locator('.v3-status-composition').evaluate('el=>getComputedStyle(el).backgroundImage')
+                    assert 'proof-review-tableau.svg' in bg
+                  if name=='feedback': assert metrics['recutPreview']
+                  assert errors==[],(name,vp,errors)
+                  assert failed==[],(name,vp,failed)
+                  assert external==[],(name,vp,external)
+                  shot=shots/f'{name}-{vp}.png'; page.screenshot(path=str(shot),full_page=False)
+                  results.append({'screen':name,'viewport':vp,'path':path,'metrics':metrics})
+                  page.close()
+                context.close()
+            finally: browser.close()
+
+          # Contact sheets for direct human review.
+          for vp,w,h in viewports:
+            files=[shots/f'{name}-{vp}.png' for name,_ in routes]
+            thumb_w=360 if vp=='desktop' else 260
+            thumb_h=round(h*thumb_w/w)
+            cols=2; rows=(len(files)+cols-1)//cols
+            sheet=Image.new('RGB',(cols*thumb_w,rows*(thumb_h+28)),(238,234,224))
+            draw=ImageDraw.Draw(sheet)
+            for i,(file,(name,_)) in enumerate(zip(files,routes)):
+              im=Image.open(file).convert('RGB'); im.thumbnail((thumb_w,thumb_h))
+              x=(i%cols)*thumb_w; y=(i//cols)*(thumb_h+28)
+              sheet.paste(im,(x,y)); draw.text((x+6,y+thumb_h+5),name,fill=(25,36,31))
+            sheet.save(out/f'contact-{vp}.jpg',quality=90)
+
+          conformance={
+            'direction':'B01_VISUAL_DIRECTION.md',
+            'automated_precheck':{
+              'v4_art_direction_marker':'MATCH',
+              'local_archive_focal_assets':'MATCH',
+              'first_action_and_guide':'MATCH',
+              'library_collectible_material':'MATCH',
+              'human_review_proof_material':'MATCH',
+              'feedback_recut_preview':'MATCH',
+              'korean_line_height':'MATCH',
+              'overflow_runtime_external':'MATCH'
+            },
+            'human_review_required':['reference fidelity','first viewport impact','asset quality','cross-state coherence','mobile composition','differentiation from B06/B19/B20']
+          }
+          (out/'results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
+          (out/'conformance.json').write_text(json.dumps(conformance,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          python /tmp/b01_v4_audit.py
+
+      - name: Upload B01 V4 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b01-private-archive-v4-${{ github.sha }}
+          path: b01-v4-evidence
+          if-no-files-found: error
+          retention-days: 14
