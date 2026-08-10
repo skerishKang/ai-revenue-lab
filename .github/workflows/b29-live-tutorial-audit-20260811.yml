@@ -1,0 +1,76 @@
+name: B29 Live Tutorial Audit 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b29-live-tutorial-audit-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b29-live-tutorial-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MAIN_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      APPROVED_SHA: cd4872268bc187ea67cc27c21bb91a094643c30f
+      CANONICAL: https://ai-revenue-business-29-governance-tutorial.pages.dev
+      SOURCE_PATH: reference/business-29-apartment-governance-tutorial/index.html
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0, persist-credentials: false}
+      - name: Assert current main and legacy approved tutorial bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$MAIN_SHA"
+          git fetch origin feat/business-29-governance-tutorial
+          test "$(git rev-parse FETCH_HEAD)" = "$APPROVED_SHA"
+          git show "$APPROVED_SHA:$SOURCE_PATH" >/tmp/approved-index.html
+          expected=$(sha256sum /tmp/approved-index.html|cut -d' ' -f1)
+          for n in 1 2; do
+            curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "$CANONICAL/index.html?audit=$n" -o /tmp/public
+            actual=$(sha256sum /tmp/public|cut -d' ' -f1)
+            echo "approved=$expected public=$actual"
+            test "$actual" = "$expected"
+          done
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Capture tutorial desktop/mobile evidence
+        shell: bash
+        run: |
+          mkdir -p /tmp/b29-audit-evidence
+          cat >/tmp/b29-audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://ai-revenue-business-29-governance-tutorial.pages.dev';
+          const viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}}; const failures=[],results=[];
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1}); const page=await context.newPage(); const errors=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)}); page.on('pageerror',e=>errors.push(`page:${e.message}`)); page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`));
+              const response=await page.goto(base+'/?audit='+Date.now(),{waitUntil:'networkidle'}); if(!response||!response.ok()) failures.push(`${mode}: bad HTTP`);
+              const m=await page.evaluate(()=>{const de=document.documentElement,b=document.body,h1=document.querySelector('.identity-copy h1'),hs=getComputedStyle(h1),hr=h1.getBoundingClientRect(),nav=document.querySelector('.tut-nav').getBoundingClientRect(),main=document.querySelector('#main').getBoundingClientRect(); const f=parseFloat(hs.fontSize),l=parseFloat(hs.lineHeight); return {overflowX:Math.max(de.scrollWidth,b.scrollWidth)-innerWidth,h1Font:f,h1Line:l,h1Ratio:l/f,h1Top:hr.top,h1Bottom:hr.bottom,navTop:nav.top,navBottom:nav.bottom,mainTop:main.top,tabs:document.querySelectorAll('#chapter-tabs button').length,scenarios:document.querySelectorAll('#scenario option').length,pageHeight:de.scrollHeight};});
+              if(m.overflowX>1) failures.push(`${mode}: overflow ${m.overflowX}`); if(errors.length) failures.push(`${mode}: ${errors.join(' | ')}`); if(m.h1Ratio<1.0) failures.push(`${mode}: Korean title ratio ${m.h1Ratio}`); if(m.tabs!==7) failures.push(`${mode}: expected 7 chapters got ${m.tabs}`); if(m.scenarios!==7) failures.push(`${mode}: expected 7 scenarios got ${m.scenarios}`);
+              await page.screenshot({path:`/tmp/b29-audit-evidence/${mode}-initial.png`}); await page.screenshot({path:`/tmp/b29-audit-evidence/${mode}-initial-full.png`,fullPage:true});
+              const tabs=page.locator('#chapter-tabs button'); await tabs.nth(6).click(); await page.locator('#scenario').selectOption({index:6}); await page.waitForTimeout(120);
+              const state=await page.evaluate(()=>({chapter:document.querySelector('#chapter-title')?.textContent?.trim(),status:document.querySelector('#scenario-status')?.textContent?.trim(),selected:document.querySelector('#scenario')?.selectedIndex}));
+              if(state.selected!==6) failures.push(`${mode}: scenario interaction failed`);
+              await page.screenshot({path:`/tmp/b29-audit-evidence/${mode}-chapter7-scenario7.png`}); await page.screenshot({path:`/tmp/b29-audit-evidence/${mode}-chapter7-scenario7-full.png`,fullPage:true});
+              results.push({mode,metrics:m,state,errors}); await page.close(); await context.close();}
+            await browser.close(); fs.writeFileSync('/tmp/b29-audit-evidence/metrics.json',JSON.stringify({mainSha:'a631122888d30c5a8a62f4b27e192967da331898',approvedSha:'cd4872268bc187ea67cc27c21bb91a094643c30f',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length) process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b29-audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b29-live-tutorial-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/b29-audit-evidence
+          if-no-files-found: error
+          retention-days: 7
