@@ -1,0 +1,1 @@
+Scope is UI/UX only under `reference/business-16-personal-sports-v1/**`. No backend, authentication, database, provider integration, live sports API, betting, prediction, notifications, analytics, deployment config, or external runtime asset work is included.
