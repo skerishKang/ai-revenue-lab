@@ -1,0 +1,65 @@
+/* B08 Domestic Pressroom V2 — Korean publication rhythm polish, 2026-08-10.
+   Preserve the newspaper character while avoiding compressed multi-line Hangul. */
+
+.fp-masthead h1{
+  line-height:1;
+  letter-spacing:-.045em;
+}
+.fp-lead h2{
+  max-width:11.5ch;
+  font-size:clamp(3.1rem,6.4vw,7.2rem);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.fp-page-title{
+  max-width:15ch;
+  font-size:clamp(2.8rem,5.25vw,6rem);
+  line-height:1.04;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.fp-guide-copy h1{
+  max-width:12ch;
+  font-size:clamp(3.45rem,6.6vw,7rem);
+  line-height:1.04;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.fp-guide-copy p{margin-top:1.45rem}
+.fp-guide-step h2{
+  line-height:1.07;
+  letter-spacing:-.038em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.fp-guide-finish h2{
+  max-width:13ch;
+  font-size:clamp(2.8rem,5.4vw,5.9rem);
+  line-height:1.05;
+  letter-spacing:-.04em;
+  text-wrap:balance;
+}
+
+@media(max-width:620px){
+  .fp-masthead h1{font-size:2.75rem;line-height:1.04;letter-spacing:-.035em}
+  .fp-lead h2{
+    font-size:clamp(2.75rem,12vw,3.05rem);
+    line-height:1.07;
+    letter-spacing:-.035em;
+  }
+  .fp-page-title{
+    max-width:100%;
+    font-size:clamp(2.55rem,11.4vw,2.9rem);
+    line-height:1.08;
+    letter-spacing:-.035em;
+  }
+  .fp-guide-copy h1{
+    max-width:11.5ch;
+    font-size:clamp(2.6rem,11.8vw,3rem);
+    line-height:1.08;
+    letter-spacing:-.035em;
+  }
+  .fp-guide-step h2{line-height:1.1;letter-spacing:-.03em}
+  .fp-guide-finish h2{line-height:1.08;letter-spacing:-.03em}
+}
