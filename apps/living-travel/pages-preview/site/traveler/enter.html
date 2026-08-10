@@ -7,10 +7,10 @@
   <title>Living Travel — 나의 여행 열기</title>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/b2-v2-457.css">
-<link rel="stylesheet" href="../assets/b2-shell-20260810.css">
+  <link rel="stylesheet" href="../assets/b2-shell-20260810.css">
 </head>
 <body class="lt-v2">
-  <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Synthetic Preview</span>
+  <span class="lt-sr-only">Synthetic Preview</span>
   <header class="lt-topbar">
     <a class="lt-wordmark" href="../index.html">Living Travel</a>
     <nav class="lt-nav" aria-label="주요 메뉴"><a href="../demo/intro.html">Journey 01</a><a href="../operator/login.html">Operator</a></nav>
@@ -24,9 +24,9 @@
         <p>초대받은 여행자만 자신의 Edition과 피드백 기록을 열 수 있습니다. 이 정적 검토 화면에서는 저장이나 실제 인증 없이 다음 화면으로 이동합니다.</p>
         <a class="lt-primary" href="dashboard.html">나의 여행 열기 →</a>
       </div>
-      <div style="max-width:620px;margin-top:2rem;padding-top:1.4rem;border-top:1px solid var(--lt-line-dark);">
-        <label for="token" style="color:rgba(255,255,255,.62);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;">Invitation token</label>
-        <input type="text" id="token" name="token" autocomplete="off" value="lt_preview_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6" aria-label="Access Token" style="margin-top:.5rem;background:transparent;color:var(--lt-white);border:0;border-bottom:1px solid rgba(255,255,255,.35);border-radius:0;padding:.8rem 0;">
+      <div class="lt-access-token-panel">
+        <label for="token" class="lt-access-token-label">Invitation token</label>
+        <input type="text" id="token" name="token" autocomplete="off" value="lt_preview_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6" aria-label="Access Token" class="lt-access-token-input">
       </div>
     </section>
 
