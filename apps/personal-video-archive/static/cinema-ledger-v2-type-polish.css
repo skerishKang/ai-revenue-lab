@@ -1,0 +1,49 @@
+/* B13 Private Cinema Ledger V2 — Korean display rhythm polish, 2026-08-10.
+   Preserve WATCH → MARK → RECORD → RESURFACE; correct compressed multi-line Hangul only. */
+
+.intro .display{
+  max-width:11.2ch;
+  font-size:clamp(3.65rem,6.8vw,6.2rem);
+  line-height:1.03;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+
+.page-header h1{
+  line-height:1.02;
+  letter-spacing:-.045em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+
+.b13-guide .hero h1{
+  max-width:11.5ch;
+  font-size:clamp(3.55rem,6.8vw,6.3rem);
+  line-height:1.04;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.b13-guide .lead{margin-top:1.45rem}
+.b13-guide .step h2{line-height:1.08;letter-spacing:-.035em;word-break:keep-all}
+.b13-guide .why h2{line-height:1.1;letter-spacing:-.03em}
+
+@media(max-width:640px){
+  .intro .display{
+    max-width:100%;
+    font-size:clamp(2.65rem,11.2vw,2.9rem);
+    line-height:1.08;
+    letter-spacing:-.032em;
+  }
+  .page-header h1{
+    font-size:40px;
+    line-height:1.05;
+    letter-spacing:-.035em;
+  }
+  .b13-guide .hero h1{
+    max-width:100%;
+    font-size:clamp(2.6rem,11vw,2.85rem);
+    line-height:1.08;
+    letter-spacing:-.032em;
+  }
+  .b13-guide .step h2{line-height:1.1;letter-spacing:-.028em}
+}
