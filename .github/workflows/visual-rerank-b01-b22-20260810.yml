@@ -1,0 +1,82 @@
+name: Visual Rerank B01 B22 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/visual-rerank-b01-b22-20260810.yml'
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/rerank && cd /tmp/rerank
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Capture current Production roots
+        run: |
+          mkdir -p /tmp/visual-rerank
+          cd /tmp/rerank
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'),path=require('path');
+          const out='/tmp/visual-rerank';
+          const items=[
+            ['b01','https://ai-revenue-personal-edition.pages.dev/'],
+            ['b02','https://ai-revenue-living-travel.pages.dev/'],
+            ['b04','https://ai-revenue-living-learning.pages.dev/'],
+            ['b06','https://06-world-feed.pages.dev/'],
+            ['b07','https://07-personal-meaning-map.pages.dev/'],
+            ['b08','https://08-family-newspaper.pages.dev/'],
+            ['b09','https://09-personalized-childrens-story.pages.dev/'],
+            ['b10','https://10-fan-magazine.pages.dev/'],
+            ['b11','https://11-language-learning-magazine.pages.dev/'],
+            ['b12','https://12-creator-mini-media.pages.dev/'],
+            ['b13','https://ai-revenue-personal-video-archive.pages.dev/'],
+            ['b15','https://15-global-ai-newsroom.pages.dev/'],
+            ['b16','https://16-personal-sports.pages.dev/'],
+            ['b17','https://17-local-shop-magazine.pages.dev/'],
+            ['b18','https://18-personal-audio-channel.pages.dev/'],
+            ['b19','https://19-personal-memory-book.pages.dev/'],
+            ['b20','https://20-personal-memory-novel.pages.dev/'],
+            ['b21','https://21-founder-strategy-letter.pages.dev/'],
+            ['b22','https://22-personal-media-studio.pages.dev/']
+          ];
+          (async()=>{
+            const b=await chromium.launch({headless:true});
+            const manifest=[];
+            for(const [id,url] of items){
+              for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){
+                const p=await b.newPage({viewport:vp});
+                const errs=[];
+                p.on('console',x=>{if(x.type()==='error')errs.push(x.text())});
+                p.on('pageerror',e=>errs.push(e.message));
+                let status=0,finalUrl=url,error='';
+                try{
+                  const r=await p.goto(url,{waitUntil:'networkidle',timeout:45000});
+                  status=r?.status()||0; finalUrl=p.url();
+                  await p.screenshot({path:path.join(out,`${id}-${vp.name}.png`),fullPage:true});
+                  const dims=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,title:document.title,text:document.body.innerText.slice(0,300)}));
+                  manifest.push({id,url,finalUrl,viewport:vp.name,status,overflow:dims.sw-dims.cw,title:dims.title,errors:errs,text:dims.text});
+                }catch(e){error=e.message;manifest.push({id,url,finalUrl,viewport:vp.name,status,error,errors:errs})}
+                await p.close();
+              }
+            }
+            await b.close();
+            fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2));
+            console.log('VISUAL_RERANK_CAPTURE_COMPLETE=1');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-rerank-b01-b22-20260810
+          path: /tmp/visual-rerank
+          retention-days: 7
