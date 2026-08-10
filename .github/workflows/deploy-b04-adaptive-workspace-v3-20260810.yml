@@ -1,0 +1,165 @@
+name: Deploy B04 Adaptive Workspace V3 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b04-adaptive-workspace-v3-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-and-qa:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b04-adaptive-workspace-v3-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      EXPECTED_SHA: 7277df0f6fa958982a29b036111e6de4aec8c9ac
+      PROJECT: ai-revenue-living-learning
+      URL: https://ai-revenue-living-learning.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Assert exact current main and B04 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          grep -q 'workspace-v3-20260810.css' apps/living-learning/pages-preview/index.html
+          grep -q 'workspace-v3-20260810.css' apps/living-learning/pages-preview/goals/index.html
+          grep -q 'workspace-v3-20260810.css' apps/living-learning/pages-preview/lesson-2/index.html
+          test -f apps/living-learning/pages-preview/assets/css/workspace-v3-20260810.css
+      - name: Deploy exact main B04
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy apps/living-learning/pages-preview \
+            --project-name "$PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B04 Adaptive Workspace V3 exact main'
+      - name: Poll canonical Production bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 40); do
+            root=$(curl -L -sS --max-time 20 "$URL/" || true)
+            css=$(curl -L -sS --max-time 20 "$URL/assets/css/workspace-v3-20260810.css" || true)
+            goal=$(curl -L -sS --max-time 20 "$URL/goals/" || true)
+            if grep -q 'workspace-v3-20260810.css' <<<"$root" \
+              && grep -q 'Adaptive Workspace V3' <<<"$css" \
+              && grep -q 'workspace-v3-20260810.css' <<<"$goal"; then
+              echo 'B04_V3_PUBLIC_BYTES_PASS=1'
+              exit 0
+            fi
+            sleep 4
+          done
+          echo 'B04_V3_PUBLIC_BYTES_PASS=0'
+          exit 1
+      - name: Install Chromium and Korean fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b04-prod && cd /tmp/b04-prod
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Canonical Production browser QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b04-prod-evidence
+          cd /tmp/b04-prod
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs=require('fs'), path=require('path');
+          const base='https://ai-revenue-living-learning.pages.dev';
+          const routes=[
+            ['root','/'],['guide','/guide.html'],['goals','/goals/'],['diagnostic','/diagnostic/'],
+            ['lesson1','/lesson-1/'],['lesson1-result','/lesson-1/result/'],['feedback','/feedback/'],
+            ['changes','/changes/'],['lesson2','/lesson-2/'],['home','/home/'],['progress','/progress/'],
+            ['history','/history/'],['review','/review/']
+          ];
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results=[];
+            for(const vp of vps){
+              for(const [name,route] of routes){
+                const page=await browser.newPage({viewport:vp});
+                const errors=[],failed=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+                await page.evaluate(()=>document.fonts.ready);
+                await page.waitForTimeout(350);
+                const m=await page.evaluate(()=>{
+                  const h1=document.querySelector('h1');
+                  const hr=h1?.getBoundingClientRect();
+                  const cs=h1?getComputedStyle(h1):null;
+                  const banner=document.querySelector('.preview-banner');
+                  const br=banner?.getBoundingClientRect();
+                  const ws=[...document.styleSheets].some(s=>String(s.href||'').includes('workspace-v3-20260810.css'));
+                  const meaningful=[...document.querySelectorAll('.callout,.stepper,.page-head,h1')]
+                    .map(x=>({text:x.innerText.trim(),rect:x.getBoundingClientRect()}))
+                    .filter(x=>x.text&&x.rect.width>20&&x.rect.height>10)
+                    .sort((a,b)=>a.rect.y-b.rect.y)[0];
+                  return {
+                    overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+                    h1:h1?.innerText.trim()||'',
+                    h1Y:hr?.y??null,
+                    h1Font:cs?parseFloat(cs.fontSize):null,
+                    h1Line:cs?parseFloat(cs.lineHeight):null,
+                    firstMeaningfulY:meaningful?.rect.y??null,
+                    bannerVisible:!!(br&&br.width>4&&br.height>4),
+                    workspaceLoaded:ws,
+                    shell:!!document.querySelector('.shell')
+                  };
+                });
+                const problems=[];
+                if((response?.status()||0)!==200) problems.push(`status ${response?.status()}`);
+                if(m.overflow>1) problems.push(`overflow ${m.overflow}`);
+                if(errors.length) problems.push(`console/page ${errors.join(' | ')}`);
+                if(failed.length) problems.push(`failed ${failed.join(' | ')}`);
+                if(!m.workspaceLoaded) problems.push('workspace css missing');
+                if(m.bannerVisible) problems.push('preview banner visible');
+                if(vp.name==='mobile'&&m.shell&&name!=='lesson2'&&m.h1Y!==null&&m.h1Y>290) problems.push(`mobile h1 too low ${m.h1Y}`);
+                if(vp.name==='mobile'&&m.shell&&name==='lesson2'&&m.firstMeaningfulY!==null&&m.firstMeaningfulY>190) problems.push(`adaptive content too low ${m.firstMeaningfulY}`);
+                if(m.shell&&m.h1Font&&m.h1Line&&m.h1Line/m.h1Font<1.06) problems.push(`tight Hangul ratio ${(m.h1Line/m.h1Font).toFixed(2)}`);
+                await page.screenshot({path:path.join('/tmp/b04-prod-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                results.push({viewport:vp.name,name,route,status:response?.status()||0,errors,failed,problems,...m});
+                await page.close();
+              }
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b04-prod-evidence/results.json',JSON.stringify(results,null,2));
+            const bad=results.filter(x=>x.problems.length);
+            console.log(JSON.stringify({count:results.length,bad},null,2));
+            if(bad.length) process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Reassert exact main after Production QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+      - name: Upload Production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b04-adaptive-workspace-v3-production-evidence-${{ github.run_number }}
+          path: /tmp/b04-prod-evidence
+          if-no-files-found: error
+          retention-days: 7
