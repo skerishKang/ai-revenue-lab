@@ -1,0 +1,58 @@
+name: Validate B02 Persistent Shell CSP 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/living-travel/pages-preview/**'
+      - '.github/workflows/validate-b02-shell-csp-20260810.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/b02-persistent-shell-csp-20260810
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Static Living Travel regression
+        run: |
+          python -m pip install --upgrade pip pytest
+          python -m pytest apps/living-travel/pages-preview/tests -q
+          git diff --check origin/main...HEAD -- apps/living-travel/pages-preview
+      - name: Install browser
+        run: |
+          mkdir -p /tmp/b02-browser && cd /tmp/b02-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser with effective _headers CSP
+        run: |
+          mkdir -p /tmp/b02-shell-evidence
+          cd /tmp/b02-browser
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'),path=require('path'),http=require('http');
+          const root=path.resolve(process.env.GITHUB_WORKSPACE,'apps/living-travel/pages-preview/site');
+          const headersText=fs.readFileSync(path.join(root,'_headers'),'utf8');
+          const policies={};let scope='';
+          for(const raw of headersText.split(/\r?\n/)){
+            const line=raw.trim();
+            if(['/*','/demo/*','/operator/*','/staging/*'].includes(line)){scope=line;continue}
+            if(line.startsWith('Content-Security-Policy:')&&scope&&!policies[scope]) policies[scope]=line.slice('Content-Security-Policy:'.length).trim();
+          }
+          function policyFor(urlPath){if(urlPath.startsWith('/staging/'))return policies['/staging/*'];if(urlPath.startsWith('/demo/'))return policies['/demo/*'];if(urlPath.startsWith('/operator/'))return policies['/operator/*'];return policies['/*'];}
+          const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp','.svg':'image/svg+xml','.txt':'text/plain; charset=utf-8'};
+          const server=http.createServer((req,res)=>{let p=decodeURIComponent((req.url||'/').split('?')[0]);if(p.endsWith('/'))p+='index.html';let file=path.normalize(path.join(root,p));if(!file.startsWith(root)){res.statusCode=403;return res.end('forbidden')}if(!fs.existsSync(file)||fs.statSync(file).isDirectory()){res.statusCode=404;return res.end('not found')}res.setHeader('Content-Security-Policy',policyFor(p));res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));});
+          (async()=>{await new Promise(r=>server.listen(4202,'127.0.0.1',r));const b=await chromium.launch({headless:true});const out='/tmp/b02-shell-evidence',manifest={};const pages=['/index.html','/guide.html','/traveler/enter.html','/demo/preferences.html','/demo/traveler-home.html','/demo/history.html'];for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of pages){const p=await b.newPage({viewport:vp});const errors=[];p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});p.on('pageerror',e=>errors.push(e.message));const r=await p.goto(`http://127.0.0.1:4202${rel}`,{waitUntil:'networkidle'});if(!r||r.status()!=200)throw new Error(`${rel}:http`);const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,ready:document.documentElement.classList.contains('lt-shell-ready'),links:[...document.querySelectorAll('.lt-nav--persistent .lt-shell-link')].map(a=>a.textContent.trim()),active:document.querySelector('.lt-nav--persistent [aria-current="page"]')?.textContent.trim()||''}));if(d.sw>d.cw+1)throw new Error(`${vp.name}:${rel}:overflow ${d.sw}>${d.cw}`);if(!d.ready)throw new Error(`${vp.name}:${rel}:shell not executed`);if(d.links.length!==5)throw new Error(`${vp.name}:${rel}:shell links ${d.links.length}`);if(d.links[0]!=='30초 사용법'||d.links[1]!=='취향'||d.links[2]!=='현재 여행판'||d.links[3]!=='기록'||d.links[4]!=='편집실')throw new Error(`${vp.name}:${rel}:shell order ${d.links.join('|')}`);if(errors.length)throw new Error(`${vp.name}:${rel}:console ${errors.join('|')}`);manifest[`${vp.name}:${rel}`]=d;if(rel==='/index.html'||rel==='/guide.html'||rel==='/demo/traveler-home.html')await p.screenshot({path:path.join(out,`b02-${rel.replaceAll('/','-').replace('.html','')}-${vp.name}.png`),fullPage:true});await p.close()}}await b.close();server.close();fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2));console.log('B02_PERSISTENT_SHELL_CSP_BROWSER_PASS=1')})().catch(e=>{console.error(e);server.close();process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b02-persistent-shell-csp-20260810
+          path: /tmp/b02-shell-evidence
+          retention-days: 7
