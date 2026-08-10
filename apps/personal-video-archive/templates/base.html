@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/final-refinement.css">
     <link rel="stylesheet" href="/static/cinema-ledger-v2.css">
+    <link rel="stylesheet" href="/static/cinema-ledger-v2-secondary.css">
 </head>
 <body>
 {% macro portal_control(href, cls) %}{% if href %}<a class="{{ cls }}" href="{{ href }}">{{ caller() }}</a>{% else %}<span class="{{ cls }}" title="{{ t('portal_not_configured') }}">{{ caller() }}</span>{% endif %}{% endmacro %}
