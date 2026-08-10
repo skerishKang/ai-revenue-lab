@@ -1,0 +1,68 @@
+name: B20 Deep Visual Audit 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b20-deep-visual-audit-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b20-deep-visual-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: e9cefbce4da2aeb7d78c0e0aea0682c8aa6a0b60
+      APP_DIR: reference/business-20-personal-memory-novel-v1
+      CANONICAL: https://20-personal-memory-novel.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', fetch-depth: 1, persist-credentials: false}
+
+      - name: Assert exact authority and Production bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          verify(){ url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1); for n in 1 2; do curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "${url}?audit=${EXPECTED_SHA}-${n}" -o /tmp/public; actual=$(sha256sum /tmp/public|cut -d' ' -f1); echo "$url expected=$expected actual=$actual"; test "$actual" = "$expected"; sleep 1; done; }
+          verify "$CANONICAL/index.html" "$APP_DIR/index.html"
+          verify "$CANONICAL/ux.html" "$APP_DIR/ux.html"
+          verify "$CANONICAL/guide.html" "$APP_DIR/guide.html"
+
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Capture desktop/mobile and both author paths
+        shell: bash
+        run: |
+          mkdir -p /tmp/b20-audit-evidence
+          cat > /tmp/b20-audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://20-personal-memory-novel.pages.dev', surfaces=[['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']], viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}}, failures=[],results=[];
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){const page=await context.newPage(),errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)}); page.on('pageerror',e=>errors.push(`page:${e.message}`)); page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`)); const response=await page.goto(base+path+'?audit='+Date.now(),{waitUntil:'networkidle'}); if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP`);
+                const m=await page.evaluate(()=>{const root=document.documentElement,body=document.body,h1=document.querySelector('h1'),top=document.querySelector('.ms-topbar'),hs=h1?getComputedStyle(h1):null,hr=h1?.getBoundingClientRect(),tr=top?.getBoundingClientRect(); const f=hs?parseFloat(hs.fontSize):NaN,l=hs?parseFloat(hs.lineHeight):NaN,s=document.querySelector('.ms-source')?.getBoundingClientRect(),c=document.querySelector('.ms-canvas')?.getBoundingClientRect(),a=document.querySelector('.ms-author')?.getBoundingClientRect(); return {viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,pageHeight:root.scrollHeight,h1Text:h1?.innerText||'',h1Font:f,h1Line:l,h1Ratio:Number.isFinite(f)&&f>0&&Number.isFinite(l)?l/f:null,h1Top:hr?.top??null,h1Bottom:hr?.bottom??null,topbarBottom:tr?.bottom??null,sourceTop:s?.top??null,canvasTop:c?.top??null,authorTop:a?.top??null};});
+                if(m.overflowX>1)failures.push(`${mode}/${name}: overflow ${m.overflowX}`); if(errors.length)failures.push(`${mode}/${name}: ${errors.join(' | ')}`); if(m.h1Top!==null&&m.topbarBottom!==null&&m.h1Top<m.topbarBottom-2)failures.push(`${mode}/${name}: H1 intersects chrome`); if(/[가-힣]/.test(m.h1Text)&&m.h1Ratio!==null&&m.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean H1 ratio ${m.h1Ratio}`); if(mode==='mobile'&&name==='ux'&&!(m.sourceTop<m.canvasTop&&m.canvasTop<m.authorTop))failures.push(`mobile/ux: visual order is not SOURCE → POV/DRAFT → AUTHOR`); await page.screenshot({path:`/tmp/b20-audit-evidence/${mode}-${name}.png`}); await page.screenshot({path:`/tmp/b20-audit-evidence/${mode}-${name}-full.png`,fullPage:true}); results.push({mode,name,metrics:m,errors}); await page.close();}
+              for(const [pathName,choice,decision] of [['rain-keep','rain','keep'],['tea-discard','tea','discard']]){const page=await context.newPage(); await page.goto(base+'/ux.html?journey='+pathName+'-'+Date.now(),{waitUntil:'networkidle'}); await page.locator(`[data-path="${choice}"]`).click(); if(!(await page.locator('#draft').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/${pathName}: draft not active`); const draftText=await page.locator('#draftText').innerText(); if(choice==='rain'&&!draftText.includes('비는 버스 창'))failures.push(`${mode}/${pathName}: rain draft mismatch`); if(choice==='tea'&&!draftText.includes('따뜻한 차'))failures.push(`${mode}/${pathName}: tea draft mismatch`); await page.locator('#inspect').click(); if(await page.locator('#compare').isHidden())failures.push(`${mode}/${pathName}: compare stayed hidden`); await page.locator('#draft [data-go="review"]').click(); await page.locator(`#${decision}`).click(); if(await page.locator('#finish').isDisabled())failures.push(`${mode}/${pathName}: finish did not unlock`); await page.locator('#finish').click(); const status=await page.locator('#authorStatus').innerText(); if(choice==='rain'&&!status.includes('세션 원고'))failures.push(`${mode}/${pathName}: keep completion mismatch`); if(choice==='tea'&&!status.includes('원 기억만 유지'))failures.push(`${mode}/${pathName}: discard completion mismatch`); await page.screenshot({path:`/tmp/b20-audit-evidence/${mode}-ux-${pathName}-full.png`,fullPage:true}); await page.close();}
+              await context.close();}
+            await browser.close(); fs.writeFileSync('/tmp/b20-audit-evidence/metrics.json',JSON.stringify({expectedSha:'e9cefbce4da2aeb7d78c0e0aea0682c8aa6a0b60',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b20-audit.cjs
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b20-deep-visual-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/b20-audit-evidence
+          if-no-files-found: error
+          retention-days: 7
