@@ -1,0 +1,114 @@
+name: B04 Deep Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b04-deep-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    if: github.event.pull_request.head.ref == 'ops/b04-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b04-audit && cd /tmp/b04-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Capture complete B04 journey
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b04-evidence
+          cd /tmp/b04-audit
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const path = require('path');
+          const base = 'https://ai-revenue-living-learning.pages.dev';
+          const routes = [
+            ['root','/'],
+            ['guide','/guide.html'],
+            ['goals','/goals/'],
+            ['diagnostic','/diagnostic/'],
+            ['lesson1','/lesson-1/'],
+            ['lesson1-result','/lesson-1/result/'],
+            ['feedback','/feedback/'],
+            ['changes','/changes/'],
+            ['lesson2','/lesson-2/'],
+            ['home','/home/'],
+            ['progress','/progress/'],
+            ['history','/history/'],
+            ['review','/review/']
+          ];
+          const viewports = [
+            {name:'desktop', width:1440, height:1100},
+            {name:'mobile', width:390, height:844}
+          ];
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            const manifest = [];
+            for (const vp of viewports) {
+              for (const [name, route] of routes) {
+                const page = await browser.newPage({viewport:vp});
+                const errors=[]; const failed=[];
+                page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); });
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('response',r=>{ if(r.status()>=400) failed.push(`${r.status()} ${r.url()}`); });
+                let status=0, error='';
+                try {
+                  const response = await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+                  status = response?.status() || 0;
+                  await page.evaluate(()=>document.fonts.ready);
+                  await page.waitForTimeout(450);
+                  const metrics = await page.evaluate(()=>{
+                    const h1=document.querySelector('h1');
+                    const rect=h1?.getBoundingClientRect();
+                    const cs=h1?getComputedStyle(h1):null;
+                    return {
+                      title:document.title,
+                      overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+                      bodyClass:document.body.className,
+                      previewText:[...document.querySelectorAll('.preview-banner')].map(x=>x.innerText.trim()).join(' | '),
+                      h1:h1?.innerText.trim()||'',
+                      h1Rect:rect?{x:rect.x,y:rect.y,width:rect.width,height:rect.height}:null,
+                      h1Font:cs?cs.fontSize:null,
+                      h1Line:cs?cs.lineHeight:null,
+                      cards:[...document.querySelectorAll('.card,.choice,.compare__col,.memo')].filter(x=>{const r=x.getBoundingClientRect();return r.width>120&&r.height>80;}).length,
+                      visibleSvgs:[...document.querySelectorAll('svg')].filter(s=>{const r=s.getBoundingClientRect();return r.width>100&&r.height>100;}).length
+                    };
+                  });
+                  await page.screenshot({path:path.join('/tmp/b04-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                  manifest.push({viewport:vp.name,name,route,status,errors,failed,...metrics});
+                } catch(e) {
+                  error=e.message;
+                  manifest.push({viewport:vp.name,name,route,status,error,errors,failed});
+                }
+                await page.close();
+              }
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b04-evidence/manifest.json',JSON.stringify(manifest,null,2));
+            const bad=manifest.filter(x=>x.status!==200||x.overflow>1||x.errors?.length||x.failed?.length||x.error);
+            console.log(JSON.stringify({count:manifest.length,bad},null,2));
+            if(bad.length) process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b04-deep-visual-audit-${{ github.run_number }}
+          path: /tmp/b04-evidence
+          if-no-files-found: error
+          retention-days: 7
