@@ -1,0 +1,67 @@
+name: B32 Live UX Audit 20260811
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b32-live-ux-audit-20260811.yml']
+permissions: {contents: read}
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b32-live-ux-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      MAIN_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      REVIEW_SHA: 73ec4718d0835248ab20d56bc68f3956536112b4
+      SOURCE_DIR: reference/business-32-ai-skill-studio-ux
+      CANONICAL: https://32-ai-skill-studio.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0, persist-credentials: false}
+      - name: Exact authority, tests, and live bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$MAIN_SHA"
+          test -z "$(git ls-tree -r --name-only "$MAIN_SHA" -- "$SOURCE_DIR")"
+          git cat-file -e "$REVIEW_SHA^{commit}"
+          mkdir -p /tmp/src && git archive "$REVIEW_SHA" "$SOURCE_DIR" | tar -x -C /tmp/src
+          root="/tmp/src/$SOURCE_DIR"
+          bash "$root/tests/run_tests.sh"
+          verify(){ url="$1"; file="$2"; e=$(sha256sum "$file"|cut -d' ' -f1); for n in 1 2; do curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "${url}?audit=${REVIEW_SHA}-${n}" -o /tmp/pub; a=$(sha256sum /tmp/pub|cut -d' ' -f1); echo "$url expected=$e actual=$a"; test "$a" = "$e"; done; }
+          verify "$CANONICAL/index.html" "$root/index.html"
+          verify "$CANONICAL/scripts/app.js" "$root/scripts/app.js"
+          verify "$CANONICAL/scripts/machine.js" "$root/scripts/machine.js"
+          verify "$CANONICAL/scripts/templates.js" "$root/scripts/templates.js"
+          verify "$CANONICAL/styles/layout.css" "$root/styles/layout.css"
+          verify "$CANONICAL/styles/components.css" "$root/styles/components.css"
+      - name: Install Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Browser visual and complete handoff journey
+        run: |
+          mkdir -p /tmp/evidence
+          cat >/tmp/audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');const fs=require('fs');
+          const base='https://32-ai-skill-studio.pages.dev',viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}},failures=[],results=[];
+          async function st(p){return (await p.locator('#state-chip').innerText()).replace('STATE · ','').trim()}
+          async function ex(p,w,l){let g=await st(p);if(g!==w)failures.push(`${l}: ${g} != ${w}`)}
+          async function act(p,a,q='',l=a){let x=p.locator(`button[data-action="${a}"]${q}`);let n=await x.count();if(n!==1){failures.push(`${l}: action count ${n}`);return false}await x.click();return true}
+          async function shot(p,n){await p.screenshot({path:`/tmp/evidence/${n}.png`});await p.screenshot({path:`/tmp/evidence/${n}-full.png`,fullPage:true})}
+          (async()=>{let b=await chromium.launch({headless:true});for(const [mode,viewport] of Object.entries(viewports)){let c=await b.newContext({viewport,deviceScaleFactor:1}),p=await c.newPage(),errs=[];p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});p.on('pageerror',e=>errs.push(e.message));p.on('requestfailed',r=>errs.push(r.url()));let r=await p.goto(base+'/?audit='+Date.now(),{waitUntil:'networkidle'});if(!r||!r.ok())failures.push(`${mode}: http`);await ex(p,'initial',`${mode}/initial`);let m=await p.evaluate(()=>{let d=document.documentElement,b=document.body,h=document.querySelector('.masthead h1'),s=getComputedStyle(h),r=h.getBoundingClientRect(),f=parseFloat(s.fontSize),l=parseFloat(s.lineHeight);return{width:innerWidth,height:innerHeight,overflowX:Math.max(d.scrollWidth,b.scrollWidth)-innerWidth,pageHeight:d.scrollHeight,h1Font:f,h1Line:l,h1Ratio:l/f,h1Top:r.top,h1Bottom:r.bottom}});if(m.overflowX>1)failures.push(`${mode}: overflow ${m.overflowX}`);if(m.h1Ratio<1)failures.push(`${mode}: h1 ratio ${m.h1Ratio}`);if(errs.length)failures.push(`${mode}: runtime ${errs.join('|')}`);await shot(p,`${mode}-initial`);
+          await p.locator('button[data-scenario="empty-bench"]').click();await ex(p,'empty',`${mode}/empty`);await shot(p,`${mode}-empty`);await act(p,'load-tasks');await ex(p,'initial',`${mode}/empty-recover`);await p.locator('button[data-scenario="fault"]').click();await ex(p,'system-error',`${mode}/fault`);await shot(p,`${mode}-fault`);await p.locator('button[data-scenario="standard"]').click();await ex(p,'initial',`${mode}/standard-reset`);
+          await act(p,'select-task');await act(p,'check-inputs');await ex(p,'input-incomplete',`${mode}/input-incomplete`);await act(p,'supplement','[data-input-id="criteria"]');await act(p,'begin-run');await act(p,'complete-step');await act(p,'next-step');await act(p,'complete-step');await ex(p,'missing-evidence',`${mode}/missing`);await shot(p,`${mode}-missing-evidence`);let ev=p.locator('button[data-action="toggle-evidence"]');if(await ev.count()===1){await ev.click();await shot(p,`${mode}-evidence-drawer`);await p.keyboard.press('Escape')}else failures.push(`${mode}: no evidence opener`);await act(p,'request-supplement');await act(p,'resume-run');await act(p,'resume-confirm');await act(p,'complete-step');await act(p,'next-step');await act(p,'complete-step');await ex(p,'conflicting-evidence',`${mode}/conflict`);await shot(p,`${mode}-conflict`);await act(p,'resolve-conflict','[data-decision="C"]');await act(p,'next-step');await act(p,'complete-step');await act(p,'next-step');await act(p,'complete-step');await ex(p,'draft-result',`${mode}/draft`);await shot(p,`${mode}-draft`);
+          await act(p,'request-review');await act(p,'handoff-to-reviewer');await act(p,'reject-review');await ex(p,'correction-required',`${mode}/correction`);await shot(p,`${mode}-correction`);await act(p,'handoff-to-operator');await act(p,'apply-correction');await act(p,'re-run');for(let i=0;i<5;i++){await act(p,'complete-step');if(i<4)await act(p,'next-step')}await ex(p,'draft-result',`${mode}/redraft`);await act(p,'request-review');await act(p,'handoff-to-reviewer');await act(p,'approve-review');await act(p,'approve');await ex(p,'approved',`${mode}/approved`);await shot(p,`${mode}-approved`);await act(p,'handoff-to-operator');await act(p,'save-skill');await ex(p,'skill-saved',`${mode}/saved`);await act(p,'complete');await ex(p,'completed',`${mode}/completed`);await shot(p,`${mode}-completed`);let text=await p.locator('body').innerText();for(const q of ['VERIFIED ORGANIZATIONAL AI SKILL','영구 저장 없음'])if(!text.includes(q))failures.push(`${mode}: missing ${q}`);results.push({mode,metrics:m,finalState:await st(p),errors:errs});await p.close();await c.close()}await b.close();fs.writeFileSync('/tmp/evidence/metrics.json',JSON.stringify({results,failures},null,2));console.log(JSON.stringify({results,failures},null,2));if(failures.length)process.exit(1)})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b32-live-ux-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/evidence
+          if-no-files-found: error
+          retention-days: 7
