@@ -25,7 +25,7 @@ jobs:
           python -m pip install -e 'apps/personal-video-archive[dev]'
           cd apps/personal-video-archive
           python -m pytest tests/test_static_production_review_465.py tests/test_static_preview.py -q
-          python scripts/build_static_production.py
+          PYTHONPATH=. python -c "from pathlib import Path; from scripts import build_static_production; build_static_production.main(Path('static-production'))"
           test -f static-production/static/cinema-ledger-v2.css
           grep -q 'cinema-ledger-v2.css' static-production/index.html
           grep -q 'PRIVATE CINEMA LEDGER' static-production/guide.html
