@@ -1,0 +1,84 @@
+name: Deploy B20 Korean Manuscript Rhythm 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b20-korean-manuscript-rhythm-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  deploy-and-verify:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b20-korean-manuscript-rhythm-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      APP_DIR: reference/business-20-personal-memory-novel-v1
+      PROJECT: 20-personal-memory-novel
+      CANONICAL: https://20-personal-memory-novel.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', fetch-depth: 1, persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Assert exact main and canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+      - name: Deploy exact-main bytes
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@latest pages deploy "$APP_DIR" --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B20 Korean Manuscript rhythm exact main' --commit-dirty=true
+      - name: Require stable canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){ url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1); consecutive=0; for i in $(seq 1 45); do code=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' -o /tmp/public -w '%{http_code}' "${url}?verify=${EXPECTED_SHA}-${i}" || true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$url attempt=$i code=$code expected=$expected actual=$actual consecutive=$consecutive"; if [[ "$code" == 200 && "$actual" == "$expected" ]]; then consecutive=$((consecutive+1)); [[ "$consecutive" -ge 3 ]] && return 0; else consecutive=0; fi; sleep 2; done; return 1; }
+          verify "$CANONICAL/index.html" "$APP_DIR/index.html"
+          verify "$CANONICAL/ux.html" "$APP_DIR/ux.html"
+          verify "$CANONICAL/guide.html" "$APP_DIR/guide.html"
+          verify "$CANONICAL/styles/manuscript-studio-v2-type-polish.css" "$APP_DIR/styles/manuscript-studio-v2-type-polish.css"
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Production visual and author-path QA
+        run: |
+          mkdir -p /tmp/b20-production-evidence
+          cat > /tmp/b20-production.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://20-personal-memory-novel.pages.dev', surfaces=[['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']], viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}}, failures=[],results=[];
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){const page=await context.newPage(),errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('requestfailed',r=>errors.push(r.url())); const response=await page.goto(base+path+'?production='+Date.now(),{waitUntil:'networkidle'}); if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP`); const m=await page.evaluate(()=>{const root=document.documentElement,body=document.body,h1=document.querySelector('h1'),top=document.querySelector('.ms-topbar'),hs=h1?getComputedStyle(h1):null,hr=h1?.getBoundingClientRect(),tr=top?.getBoundingClientRect(); const f=hs?parseFloat(hs.fontSize):NaN,l=hs?parseFloat(hs.lineHeight):NaN,s=document.querySelector('.ms-source')?.getBoundingClientRect(),c=document.querySelector('.ms-canvas')?.getBoundingClientRect(),a=document.querySelector('.ms-author')?.getBoundingClientRect(); return {viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,h1Text:h1?.innerText||'',h1Font:f,h1Line:l,h1Ratio:Number.isFinite(f)&&f>0&&Number.isFinite(l)?l/f:null,h1Top:hr?.top??null,topbarBottom:tr?.bottom??null,sourceTop:s?.top??null,canvasTop:c?.top??null,authorTop:a?.top??null};}); if(m.overflowX>1)failures.push(`${mode}/${name}: overflow`); if(errors.length)failures.push(`${mode}/${name}: runtime errors`); if(m.h1Top!==null&&m.topbarBottom!==null&&m.h1Top<m.topbarBottom-2)failures.push(`${mode}/${name}: chrome collision`); if(/[가-힣]/.test(m.h1Text)&&m.h1Ratio!==null&&m.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean ratio ${m.h1Ratio}`); if((name==='root'||name==='guide')&&m.h1Ratio<1.04)failures.push(`${mode}/${name}: polish ratio ${m.h1Ratio}`); if(mode==='mobile'&&name==='ux'&&!(m.sourceTop<m.canvasTop&&m.canvasTop<m.authorTop))failures.push('mobile/ux order mismatch'); await page.screenshot({path:`/tmp/b20-production-evidence/${mode}-${name}.png`}); await page.screenshot({path:`/tmp/b20-production-evidence/${mode}-${name}-full.png`,fullPage:true}); results.push({mode,name,metrics:m,errors}); await page.close();}
+              for(const [pathName,choice,decision] of [['rain-keep','rain','keep'],['tea-discard','tea','discard']]){const page=await context.newPage(); await page.goto(base+'/ux.html?journey='+pathName+'-'+Date.now(),{waitUntil:'networkidle'}); await page.locator(`[data-path="${choice}"]`).click(); await page.locator('#inspect').click(); if(await page.locator('#compare').isHidden())failures.push(`${mode}/${pathName}: compare hidden`); await page.locator('#draft [data-go="review"]').click(); await page.locator(`#${decision}`).click(); if(await page.locator('#finish').isDisabled())failures.push(`${mode}/${pathName}: finish locked`); await page.locator('#finish').click(); const status=await page.locator('#authorStatus').innerText(); if(choice==='rain'&&!status.includes('세션 원고'))failures.push(`${mode}/${pathName}: keep mismatch`); if(choice==='tea'&&!status.includes('원 기억만 유지'))failures.push(`${mode}/${pathName}: discard mismatch`); await page.screenshot({path:`/tmp/b20-production-evidence/${mode}-ux-${pathName}-full.png`,fullPage:true}); await page.close();}
+              await context.close();}
+            await browser.close(); fs.writeFileSync('/tmp/b20-production-evidence/metrics.json',JSON.stringify({expectedSha:'a631122888d30c5a8a62f4b27e192967da331898',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b20-production.cjs
+      - name: Reconfirm exact main
+        run: |
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          echo "B20_PRODUCTION_EXACT_MAIN_PASS=$EXPECTED_SHA"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b20-production-exact-main-evidence-${{ github.run_attempt }}
+          path: /tmp/b20-production-evidence
+          if-no-files-found: warn
+          retention-days: 7
