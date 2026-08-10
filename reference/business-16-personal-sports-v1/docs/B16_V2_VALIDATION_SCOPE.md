@@ -1,0 +1,1 @@
+Visual gate: 1440×1100 and 390×844; root, Guide and live match workspace; focus-team toggle; save two moments; wrap note; zero visible SVG; zero Phase 1/Visual Reference chrome; zero horizontal overflow; zero console/page errors.

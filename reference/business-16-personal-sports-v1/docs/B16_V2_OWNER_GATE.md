@@ -1,0 +1,1 @@
+`OWNER_UI_APPROVED=false` remains authoritative until the owner reviews the canonical Production surface after technical merge/deploy. CI success or internal visual review does not change owner approval.
