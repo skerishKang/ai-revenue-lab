@@ -1,0 +1,103 @@
+name: Deploy B19 Korean Memory Rhythm 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b19-korean-memory-rhythm-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  deploy-and-verify:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b19-korean-memory-rhythm-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: e9cefbce4da2aeb7d78c0e0aea0682c8aa6a0b60
+      APP_DIR: reference/business-19-personal-memory-book-v1
+      PROJECT: 19-personal-memory-book
+      CANONICAL: https://19-personal-memory-book.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', fetch-depth: 1, persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+
+      - name: Assert exact main and project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+
+      - name: Deploy exact-main bytes
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@latest pages deploy "$APP_DIR" --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B19 Korean Memory rhythm exact main' --commit-dirty=true
+
+      - name: Require stable canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){
+            url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1); consecutive=0
+            for i in $(seq 1 45); do
+              code=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' -o /tmp/public -w '%{http_code}' "${url}?verify=${EXPECTED_SHA}-${i}" || true)
+              actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true)
+              echo "$url attempt=$i code=$code expected=$expected actual=$actual consecutive=$consecutive"
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then consecutive=$((consecutive+1)); [[ "$consecutive" -ge 3 ]] && return 0; else consecutive=0; fi
+              sleep 2
+            done
+            return 1
+          }
+          verify "$CANONICAL/index.html" "$APP_DIR/index.html"
+          verify "$CANONICAL/ux.html" "$APP_DIR/ux.html"
+          verify "$CANONICAL/guide.html" "$APP_DIR/guide.html"
+          verify "$CANONICAL/styles/memory-binding-v2-type-polish.css" "$APP_DIR/styles/memory-binding-v2-type-polish.css"
+
+      - name: Install browser QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Production browser and journey QA
+        shell: bash
+        run: |
+          mkdir -p /tmp/b19-production-evidence
+          cat > /tmp/b19-production.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://19-personal-memory-book.pages.dev', surfaces=[['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']], viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}}, failures=[],results=[];
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){const page=await context.newPage(),errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('requestfailed',r=>errors.push(r.url())); const response=await page.goto(base+path+'?production='+Date.now(),{waitUntil:'networkidle'}); if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP`);
+                const m=await page.evaluate(()=>{const root=document.documentElement,body=document.body,h1=document.querySelector('h1'),top=document.querySelector('.mb-topbar'),hs=h1?getComputedStyle(h1):null,hr=h1?.getBoundingClientRect(),tr=top?.getBoundingClientRect(); const f=hs?parseFloat(hs.fontSize):NaN,l=hs?parseFloat(hs.lineHeight):NaN,ch=document.querySelector('.mb-chapters')?.getBoundingClientRect(),pg=document.querySelector('.mb-page')?.getBoundingClientRect(),ev=document.querySelector('.mb-evidence')?.getBoundingClientRect(); return {viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,h1Text:h1?.innerText||'',h1Font:f,h1Line:l,h1Ratio:Number.isFinite(f)&&f>0&&Number.isFinite(l)?l/f:null,h1Top:hr?.top??null,topbarBottom:tr?.bottom??null,chaptersTop:ch?.top??null,pageTop:pg?.top??null,evidenceTop:ev?.top??null};});
+                if(m.overflowX>1)failures.push(`${mode}/${name}: overflow`); if(errors.length)failures.push(`${mode}/${name}: runtime errors`); if(m.h1Top!==null&&m.topbarBottom!==null&&m.h1Top<m.topbarBottom-2)failures.push(`${mode}/${name}: chrome collision`); if(/[가-힣]/.test(m.h1Text)&&m.h1Ratio!==null&&m.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean ratio ${m.h1Ratio}`); if((name==='root'||name==='guide')&&m.h1Ratio<1.03)failures.push(`${mode}/${name}: polish ratio ${m.h1Ratio}`); if(mode==='mobile'&&name==='ux'&&!(m.chaptersTop<m.pageTop&&m.pageTop<m.evidenceTop))failures.push('mobile/ux order mismatch'); await page.screenshot({path:`/tmp/b19-production-evidence/${mode}-${name}.png`}); await page.screenshot({path:`/tmp/b19-production-evidence/${mode}-${name}-full.png`,fullPage:true}); results.push({mode,name,metrics:m,errors}); await page.close();}
+              const page=await context.newPage(); await page.goto(base+'/ux.html?journey='+Date.now(),{waitUntil:'networkidle'}); await page.locator('#cover [data-go="morning"]').click(); await page.locator('#morning [data-mark]').click(); await page.locator('#morning [data-go="table"]').click(); await page.locator('#table [data-mark]').click(); await page.locator('#table [data-go="sources"]').click(); await page.locator('#sources [data-go="marked"]').click(); if(await page.locator('#markedList .mb-marked-line').count()!==2)failures.push(`${mode}/journey: mark count`); await page.locator('#finish').click(); if(!((await page.locator('#finishStatus').innerText()).includes('2개 문장')))failures.push(`${mode}/journey: finish count`); await page.screenshot({path:`/tmp/b19-production-evidence/${mode}-ux-finished-full.png`,fullPage:true}); await page.close(); await context.close();}
+            await browser.close(); fs.writeFileSync('/tmp/b19-production-evidence/metrics.json',JSON.stringify({expectedSha:'e9cefbce4da2aeb7d78c0e0aea0682c8aa6a0b60',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b19-production.cjs
+
+      - name: Reconfirm exact main
+        run: |
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          echo "B19_PRODUCTION_EXACT_MAIN_PASS=$EXPECTED_SHA"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b19-production-exact-main-evidence-${{ github.run_attempt }}
+          path: /tmp/b19-production-evidence
+          if-no-files-found: warn
+          retention-days: 7
