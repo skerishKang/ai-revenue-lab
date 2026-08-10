@@ -1,0 +1,43 @@
+name: B13 Type Polish Materialize 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b13-type-polish-materialize-20260810.yml'
+      - 'apps/personal-video-archive/static/cinema-ledger-v2-type-polish.css'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.event.pull_request.head.ref == 'fix/b13-korean-cinema-rhythm-20260810'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Wire cinema-ledger typography polish
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          from pathlib import Path
+          base=Path('apps/personal-video-archive/templates/base.html')
+          text=base.read_text(encoding='utf-8')
+          marker='cinema-ledger-v2-type-polish.css'
+          if marker not in text:
+              text=text.replace('<link rel="stylesheet" href="/static/cinema-ledger-v2-secondary.css">','<link rel="stylesheet" href="/static/cinema-ledger-v2-secondary.css">\n    <link rel="stylesheet" href="/static/cinema-ledger-v2-type-polish.css?v=b13-type-20260810">',1)
+              base.write_text(text,encoding='utf-8')
+          guide=Path('apps/personal-video-archive/guide.html')
+          text=guide.read_text(encoding='utf-8')
+          if marker not in text:
+              text=text.replace('</head>','  <link rel="stylesheet" href="/static/cinema-ledger-v2-type-polish.css?v=b13-type-20260810">\n</head>',1)
+          if '<body class="b13-guide">' not in text:
+              text=text.replace('<body>','<body class="b13-guide">',1)
+          guide.write_text(text,encoding='utf-8')
+          PY
+          git rm .github/workflows/b13-type-polish-materialize-20260810.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/personal-video-archive
+          git commit -m 'fix(B13): wire Korean cinema-ledger rhythm polish'
+          git push origin HEAD:${GITHUB_HEAD_REF}
