@@ -16,7 +16,7 @@
   word-break: keep-all;
 }
 
-.cj-main h1 {
+.cj-canvas h1 {
   line-height: 1.03;
   letter-spacing: -0.055em;
   word-break: keep-all;
@@ -41,7 +41,7 @@
     letter-spacing: -0.05em;
   }
 
-  .cj-main h1 {
+  .cj-canvas h1 {
     font-size: clamp(3rem, 12.5vw, 3.4rem);
     line-height: 1.06;
     letter-spacing: -0.05em;
