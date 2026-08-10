@@ -1,0 +1,78 @@
+name: B07 Type Polish QA 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b07-type-polish-qa-20260810.yml'
+      - 'reference/business-07-personal-meaning-map-v1/**'
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    if: github.event.pull_request.head.ref == 'fix/b07-korean-display-rhythm-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b07-polish && cd /tmp/b07-polish
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Serve B07
+        run: |
+          cd reference/business-07-personal-meaning-map-v1
+          python3 -m http.server 4177 --bind 127.0.0.1 >/tmp/b07-http.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4177/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/b07-http.log
+          exit 1
+      - name: Screenshot and interaction QA
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b07-polish-evidence
+          cd /tmp/b07-polish
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'),path=require('path');
+          const base='http://127.0.0.1:4177';
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{
+            const browser=await chromium.launch({headless:true}); const results=[];
+            for(const vp of vps){
+              for(const [name,route] of [['root','/'],['guide','/guide.html']]){
+                const page=await browser.newPage({viewport:vp}); const errors=[],failed=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(base+route,{waitUntil:'networkidle'}); await page.evaluate(()=>document.fonts.ready); await page.waitForTimeout(250);
+                const m=await page.evaluate(()=>{const h=document.querySelector('h1'),r=h.getBoundingClientRect(),c=getComputedStyle(h);return{overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h.innerText.trim(),font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),width:r.width,height:r.height,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('meaning-field-v2-type-polish.css'))}});
+                const problems=[]; if(response.status()!==200)problems.push('status'); if(m.overflow>1)problems.push('overflow'); if(errors.length||failed.length)problems.push('runtime'); if(!m.polish)problems.push('polish missing'); if(m.ratio<1.0)problems.push(`tight ${m.ratio}`); if(vp.name==='mobile'&&m.font>52)problems.push(`mobile display too large ${m.font}`);
+                await page.screenshot({path:path.join('/tmp/b07-polish-evidence',`${vp.name}-${name}.png`),fullPage:false}); results.push({viewport:vp.name,name,status:response.status(),errors,failed,problems,...m}); await page.close();
+              }
+              const page=await browser.newPage({viewport:vp}); const errors=[],failed=[]; page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+              const response=await page.goto(base+'/ux.html',{waitUntil:'networkidle'}); await page.evaluate(()=>document.fonts.ready); await page.locator('.pm-memory').nth(0).click(); await page.locator('.pm-memory').nth(3).click(); const enabled=!(await page.locator('#connect').isDisabled()); await page.locator('#connect').click(); await page.waitForTimeout(180); const summary=await page.locator('#summary').evaluate(e=>e.classList.contains('show')); const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth); const polish=await page.evaluate(()=>[...document.styleSheets].some(s=>String(s.href||'').includes('meaning-field-v2-type-polish.css'))); await page.screenshot({path:path.join('/tmp/b07-polish-evidence',`${vp.name}-workspace-connected.png`),fullPage:false}); results.push({viewport:vp.name,name:'workspace-connected',status:response.status(),errors,failed,problems:[...(enabled?[]:['connect disabled']),...(summary?[]:['summary hidden']),...(overflow<=1?[]:[`overflow ${overflow}`]),...(polish?[]:['polish missing'])],overflow,enabled,summary,polish}); await page.close();
+            }
+            await browser.close(); const bad=results.filter(x=>x.problems.length); fs.writeFileSync('/tmp/b07-polish-evidence/results.json',JSON.stringify({results,bad},null,2)); console.log(JSON.stringify({count:results.length,bad},null,2)); if(bad.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Source scope check
+        run: |
+          set -euo pipefail
+          for f in index.html guide.html ux.html; do grep -q 'meaning-field-v2-type-polish.css' "reference/business-07-personal-meaning-map-v1/$f"; done
+          git diff --check origin/main...HEAD
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b07-type-polish-evidence-${{ github.run_number }}
+          path: /tmp/b07-polish-evidence
+          if-no-files-found: error
+          retention-days: 7
