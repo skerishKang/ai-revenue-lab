@@ -3,7 +3,7 @@
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'self'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; style-src 'self'; img-src 'self'; script-src 'self'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'
 
 # Interactive demo pages use inline scripts for the deterministic clickable flow
 # and the same-origin persistent shell script for shared traveler navigation.
