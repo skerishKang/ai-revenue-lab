@@ -1,0 +1,118 @@
+name: B11 Type Polish QA 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b11-type-polish-qa-20260810.yml'
+      - 'reference/business-11-language-learning-magazine-v1/**'
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    if: github.event.pull_request.head.ref == 'fix/b11-korean-learning-rhythm-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b11-polish && cd /tmp/b11-polish
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Serve B11
+        run: |
+          cd reference/business-11-language-learning-magazine-v1
+          python3 -m http.server 4181 --bind 127.0.0.1 >/tmp/b11-http.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4181/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/b11-http.log
+          exit 1
+      - name: Screenshot and interaction QA
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b11-polish-evidence
+          cd /tmp/b11-polish
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'),path=require('path');
+          const base='http://127.0.0.1:4181';
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results=[];
+            for(const vp of vps){
+              for(const [name,route,sel,minRatio,maxMobile] of [
+                ['root','/','.lf-copy h1',1.02,50],
+                ['guide','/guide.html','.lf-guide-copy h1',1.03,49]
+              ]){
+                const page=await browser.newPage({viewport:vp}); const errors=[],failed=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+                await page.evaluate(()=>document.fonts.ready); await page.waitForTimeout(220);
+                const m=await page.locator(sel).evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),width:r.width,height:r.height,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('language-field-v2-type-polish.css'))}});
+                const problems=[];
+                if(response.status()!==200)problems.push('status');
+                if(m.overflow>1)problems.push(`overflow ${m.overflow}`);
+                if(errors.length||failed.length)problems.push('runtime');
+                if(!m.polish)problems.push('polish missing');
+                if(m.ratio<minRatio)problems.push(`tight ${m.ratio}`);
+                if(vp.name==='mobile'&&m.font>maxMobile)problems.push(`mobile display too large ${m.font}`);
+                await page.screenshot({path:path.join('/tmp/b11-polish-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                results.push({viewport:vp.name,name,status:response.status(),errors,failed,problems,...m}); await page.close();
+              }
+              const page=await browser.newPage({viewport:vp}); const errors=[],failed=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+              page.on('pageerror',e=>errors.push(e.message));
+              page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+              const response=await page.goto(base+'/ux.html',{waitUntil:'networkidle',timeout:45000}); await page.evaluate(()=>document.fonts.ready);
+              await page.locator('.lf-phrase[data-key="came-alive"]').click();
+              const note=await page.locator('#marginText').textContent();
+              await page.locator('#read [data-go="vocab"]').click(); const vocab=await page.locator('.lf-panel.active').getAttribute('id');
+              await page.locator('#vocab [data-go="revise"]').click(); const revise=await page.locator('.lf-panel.active').getAttribute('id');
+              await page.locator('#revise [data-go="feedback"]').click(); const feedback=await page.locator('.lf-panel.active').getAttribute('id');
+              await page.locator('#finish').click(); const finish=await page.locator('#finishStatus').textContent();
+              const m=await page.locator('.lf-panel.active h1').evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),width:r.width,height:r.height,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('language-field-v2-type-polish.css'))}});
+              const problems=[];
+              if(response.status()!==200)problems.push('status');
+              if(m.overflow>1)problems.push(`overflow ${m.overflow}`);
+              if(errors.length||failed.length)problems.push('runtime');
+              if(!m.polish)problems.push('polish missing');
+              if(m.ratio<1.04)problems.push(`reader tight ${m.ratio}`);
+              if(vp.name==='mobile'&&m.font>46)problems.push(`mobile reader too large ${m.font}`);
+              if(!/came alive/.test(note||''))problems.push('note');
+              if(vocab!=='vocab'||revise!=='revise'||feedback!=='feedback')problems.push('journey');
+              if(!/다음 호 포인트/.test(finish||''))problems.push('finish');
+              await page.screenshot({path:path.join('/tmp/b11-polish-evidence',`${vp.name}-feedback.png`),fullPage:false});
+              results.push({viewport:vp.name,name:'reader-feedback',status:response.status(),errors,failed,problems,note,vocab,revise,feedback,finish,...m}); await page.close();
+            }
+            await browser.close();
+            const bad=results.filter(x=>x.problems.length);
+            fs.writeFileSync('/tmp/b11-polish-evidence/results.json',JSON.stringify({results,bad},null,2));
+            console.log(JSON.stringify({count:results.length,bad},null,2));
+            if(bad.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Source scope check
+        run: |
+          set -euo pipefail
+          for f in index.html guide.html ux.html; do grep -q 'language-field-v2-type-polish.css' "reference/business-11-language-learning-magazine-v1/$f"; done
+          git diff --check origin/main...HEAD
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b11-type-polish-evidence-${{ github.run_number }}
+          path: /tmp/b11-polish-evidence
+          if-no-files-found: error
+          retention-days: 7
