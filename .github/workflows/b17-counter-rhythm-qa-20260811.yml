@@ -1,0 +1,167 @@
+name: B17 Counter Journal visual QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-17-local-shop-magazine-v1/**'
+      - '.github/workflows/b17-counter-rhythm-qa-20260811.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Diff hygiene
+        run: |
+          git diff --check origin/main...HEAD
+          grep -q 'counter-journal-v2-type-polish.css' reference/business-17-local-shop-magazine-v1/index.html
+          grep -q 'counter-journal-v2-type-polish.css' reference/business-17-local-shop-magazine-v1/ux.html
+          grep -q 'counter-journal-v2-type-polish.css' reference/business-17-local-shop-magazine-v1/guide.html
+          if git diff origin/main...HEAD -- reference/business-17-local-shop-magazine-v1 | grep -q 'OWNER_UI_APPROVED=true'; then
+            echo 'OWNER_UI_APPROVED must remain false' >&2
+            exit 1
+          fi
+
+      - name: Install Chromium QA runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Serve B17
+        run: |
+          python3 -m http.server 4173 --directory reference/business-17-local-shop-magazine-v1 >/tmp/b17-http.log 2>&1 &
+          echo $! >/tmp/b17-http.pid
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/b17-http.log
+          exit 1
+
+      - name: Browser visual and interaction QA
+        run: |
+          mkdir -p /tmp/b17-evidence
+          cat > /tmp/b17-qa.cjs <<'NODE'
+          const { chromium } = require(process.cwd() + '/node_modules/playwright');
+          const fs = require('fs');
+
+          const base = 'http://127.0.0.1:4173';
+          const surfaces = [
+            ['root', '/index.html'],
+            ['ux', '/ux.html'],
+            ['guide', '/guide.html'],
+          ];
+          const viewports = {
+            desktop: { width: 1440, height: 1100 },
+            mobile: { width: 390, height: 844 },
+          };
+          const results = [];
+          const failures = [];
+
+          function finite(v) { return Number.isFinite(v) ? v : null; }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            for (const [mode, viewport] of Object.entries(viewports)) {
+              const context = await browser.newContext({ viewportSize: viewport, deviceScaleFactor: 1 });
+              for (const [name, path] of surfaces) {
+                const page = await context.newPage();
+                const errors = [];
+                page.on('console', m => { if (m.type() === 'error') errors.push(`console:${m.text()}`); });
+                page.on('pageerror', e => errors.push(`page:${e.message}`));
+                page.on('requestfailed', r => errors.push(`request:${r.url()} ${r.failure()?.errorText || ''}`));
+                const response = await page.goto(base + path, { waitUntil: 'networkidle' });
+                if (!response || !response.ok()) failures.push(`${mode}/${name}: bad HTTP response`);
+
+                const metrics = await page.evaluate(() => {
+                  const h1 = document.querySelector('h1');
+                  const topbar = document.querySelector('.cj-topbar');
+                  const actions = document.querySelector('.cj-actions');
+                  const body = document.body;
+                  const root = document.documentElement;
+                  const hr = h1?.getBoundingClientRect();
+                  const tr = topbar?.getBoundingClientRect();
+                  const ar = actions?.getBoundingClientRect();
+                  let h1Style = h1 ? getComputedStyle(h1) : null;
+                  const fs = h1Style ? parseFloat(h1Style.fontSize) : NaN;
+                  const lh = h1Style ? parseFloat(h1Style.lineHeight) : NaN;
+                  return {
+                    overflowX: Math.max(body.scrollWidth, root.scrollWidth) - innerWidth,
+                    h1Text: h1?.innerText || '',
+                    h1Font: fs,
+                    h1Line: lh,
+                    h1Ratio: Number.isFinite(fs) && fs > 0 && Number.isFinite(lh) ? lh / fs : null,
+                    h1Top: hr?.top ?? null,
+                    h1Bottom: hr?.bottom ?? null,
+                    topbarBottom: tr?.bottom ?? null,
+                    actionsTop: ar?.top ?? null,
+                    actionsBottom: ar?.bottom ?? null,
+                    viewportHeight: innerHeight,
+                    pageHeight: root.scrollHeight,
+                  };
+                });
+
+                if (metrics.overflowX > 1) failures.push(`${mode}/${name}: horizontal overflow ${metrics.overflowX}`);
+                if (errors.length) failures.push(`${mode}/${name}: runtime errors ${errors.join(' | ')}`);
+                if (metrics.h1Ratio !== null && /[가-힣]/.test(metrics.h1Text) && metrics.h1Ratio < 1.0) {
+                  failures.push(`${mode}/${name}: Korean h1 line-height ratio ${metrics.h1Ratio.toFixed(3)} < 1.0`);
+                }
+                if (metrics.h1Top !== null && metrics.topbarBottom !== null && metrics.h1Top < metrics.topbarBottom - 2) {
+                  failures.push(`${mode}/${name}: h1 intersects top chrome`);
+                }
+
+                await page.screenshot({ path: `/tmp/b17-evidence/${mode}-${name}.png`, fullPage: false });
+                await page.screenshot({ path: `/tmp/b17-evidence/${mode}-${name}-full.png`, fullPage: true });
+                results.push({ mode, name, metrics: Object.fromEntries(Object.entries(metrics).map(([k,v]) => [k, typeof v === 'number' ? finite(v) : v])), errors });
+                await page.close();
+              }
+
+              const page = await context.newPage();
+              await page.goto(base + '/ux.html', { waitUntil: 'networkidle' });
+              if (!(await page.locator('#material').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: material not initial active view`);
+              if (!(await page.locator('#publish').isDisabled())) failures.push(`${mode}/journey: publish should start disabled`);
+              await page.locator('#draft').click();
+              if (!(await page.locator('#preview').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: draft did not open preview`);
+              const bodyCopy = (await page.locator('#bodyCopy').innerText()).trim();
+              if (!bodyCopy.includes('합성 매거진 예시')) failures.push(`${mode}/journey: draft copy contract missing`);
+              const proofBoxes = page.locator('[data-proof]');
+              for (let i = 0; i < await proofBoxes.count(); i++) await proofBoxes.nth(i).check();
+              if (await page.locator('#publish').isDisabled()) failures.push(`${mode}/journey: publish did not unlock at 3/3`);
+              await page.locator('#publish').click();
+              if (!(await page.locator('#issue').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: publish did not open issue`);
+              if (await page.locator('#finish').isDisabled()) failures.push(`${mode}/journey: finish did not unlock after issue`);
+              await page.locator('#finish').click();
+              if (!((await page.locator('#proofStatus').innerText()).includes('검토 완료'))) failures.push(`${mode}/journey: finish status contract missing`);
+              await page.screenshot({ path: `/tmp/b17-evidence/${mode}-ux-finished-full.png`, fullPage: true });
+              await page.reload({ waitUntil: 'networkidle' });
+              if (!(await page.locator('#material').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: reload did not reset material view`);
+              if (!(await page.locator('#publish').isDisabled())) failures.push(`${mode}/journey: reload did not reset proof gate`);
+              if (await page.locator('[data-proof]:checked').count()) failures.push(`${mode}/journey: reload retained proof fixtures`);
+              await page.close();
+              await context.close();
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b17-evidence/metrics.json', JSON.stringify({ results, failures }, null, 2));
+            console.log(JSON.stringify({ results, failures }, null, 2));
+            if (failures.length) process.exit(1);
+          })().catch(e => { console.error(e); process.exit(1); });
+          NODE
+          node /tmp/b17-qa.cjs
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b17-counter-rhythm-evidence-${{ github.run_attempt }}
+          path: /tmp/b17-evidence
+          if-no-files-found: error
+          retention-days: 7
