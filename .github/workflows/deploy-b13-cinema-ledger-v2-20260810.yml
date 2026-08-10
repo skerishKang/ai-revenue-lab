@@ -1,0 +1,85 @@
+name: Deploy B13 Cinema Ledger V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b13-cinema-ledger-v2-20260810.yml'
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b13-cinema-ledger-v2-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 564598b8e57cfa43e0219e1a1af37ea2ceb6f8d9
+      PROJECT: ai-revenue-personal-video-archive
+      URL: https://ai-revenue-personal-video-archive.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact main and build Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          cd apps/personal-video-archive
+          python -m pip install -e .
+          python -m scripts.build_static_production
+          test -f dist-preview/index.html
+          test -f dist-preview/guide.html
+          test -f dist-preview/topics/index.html
+          test -f dist-preview/records/index.html
+          test -f dist-preview/static/cinema-ledger-v2.css
+          test -f dist-preview/static/cinema-ledger-v2-secondary.css
+          grep -q 'cinema-ledger-v2.css' dist-preview/index.html
+          grep -q 'cinema-ledger-v2-secondary.css' dist-preview/index.html
+          grep -q 'PRIVATE CINEMA LEDGER' dist-preview/guide.html
+          ! grep -q 'class="top-note"' dist-preview/index.html
+      - name: Assert canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -sS -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}" > /tmp/project.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/project.json'))['result']
+          assert p['name']=='ai-revenue-personal-video-archive', p.get('name')
+          print('B13_CANONICAL_PROJECT_OK=1')
+          PY
+      - name: Deploy exact-main Production output
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy apps/personal-video-archive/dist-preview \
+            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B13 Private Cinema Ledger V2 exact main' --commit-dirty=true
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Verify canonical byte equality
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 35); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify "$URL/index.html" apps/personal-video-archive/dist-preview/index.html B13_ROOT
+          verify "$URL/guide.html" apps/personal-video-archive/dist-preview/guide.html B13_GUIDE
+          verify "$URL/topics/index.html" apps/personal-video-archive/dist-preview/topics/index.html B13_TOPICS
+          verify "$URL/records/index.html" apps/personal-video-archive/dist-preview/records/index.html B13_RECORDS
+          curl -L -fsS "$URL/index.html" | grep -q 'cinema-ledger-v2.css'
+          curl -L -fsS "$URL/topics/index.html" | grep -q 'cinema-ledger-v2-secondary.css'
+          ! curl -L -fsS "$URL/index.html" | grep -q 'class="top-note"'
+          echo B13_CINEMA_LEDGER_PRODUCTION_VERIFIED=1
