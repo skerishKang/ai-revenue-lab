@@ -1,0 +1,86 @@
+name: B13 Type Polish QA 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b13-type-polish-qa-20260810.yml'
+      - 'apps/personal-video-archive/**'
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    if: github.event.pull_request.head.ref == 'fix/b13-korean-cinema-rhythm-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install app, Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          python -m pip install -e apps/personal-video-archive
+          mkdir -p /tmp/b13-polish && cd /tmp/b13-polish
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Start product and Guide servers
+        run: |
+          set -euo pipefail
+          cd apps/personal-video-archive
+          python -m uvicorn app.main:app --host 127.0.0.1 --port 4183 >/tmp/b13-app.log 2>&1 &
+          python -m http.server 4184 --bind 127.0.0.1 >/tmp/b13-guide.log 2>&1 &
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:4183/ >/dev/null && curl -fsS http://127.0.0.1:4184/guide.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/b13-app.log; cat /tmp/b13-guide.log; exit 1
+      - name: Screenshot actual app surfaces
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b13-polish-evidence
+          cd /tmp/b13-polish
+          node <<'JS'
+          const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
+          const app='http://127.0.0.1:4183',guide='http://127.0.0.1:4184/guide.html';
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{const browser=await chromium.launch({headless:true});const results=[];
+            for(const vp of vps){
+              const ctx=await browser.newContext({viewport:vp});const first=await ctx.newPage();const rootResponse=await first.goto(app+'/',{waitUntil:'networkidle',timeout:45000});const rootUrl=first.url();const links=await first.locator('a[href]').evaluateAll(as=>as.map(a=>a.href).filter(h=>h.startsWith(location.origin)));const topic=links.find(h=>/\/topics\/?$/.test(new URL(h).pathname));const records=links.find(h=>/\/records\/?$/.test(new URL(h).pathname));await first.close();
+              for(const [name,url,sel,minRatio,maxMobile] of [
+                ['root',rootUrl,'.intro .display',1.02,47],
+                ['guide',guide,'.b13-guide .hero h1',1.03,47],
+                ['topics',topic,'.page-header h1',1.01,42],
+                ['records',records,'.page-header h1',1.01,42]
+              ]){
+                const p=await ctx.newPage();const E=[],F=[];p.on('console',m=>{if(m.type()==='error')E.push(m.text())});p.on('pageerror',e=>E.push(e.message));p.on('response',r=>{if(r.status()>=400)F.push(`${r.status()} ${r.url()}`)});const r=await p.goto(url,{waitUntil:'networkidle',timeout:45000});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(200);const m=await p.locator(sel).evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),width:r.width,height:r.height,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('cinema-ledger-v2-type-polish.css'))}});const P=[...(r.status()===200?[]:['status']),...(m.ratio>=minRatio?[]:[`tight ${m.ratio}`]),...(m.overflow<=1?[]:['overflow']),...(m.polish?[]:['missing']),...(E.length||F.length?['runtime']:[]),...(vp.name==='mobile'&&m.font>maxMobile?[`mobile too large ${m.font}`]:[])];await p.screenshot({path:path.join('/tmp/b13-polish-evidence',`${vp.name}-${name}.png`),fullPage:false});results.push({viewport:vp.name,name,url,status:r.status(),errors:E,failed:F,problems:P,...m});await p.close();
+              }
+              await ctx.close();
+            }
+            await browser.close();const bad=results.filter(x=>x.problems.length);fs.writeFileSync('/tmp/b13-polish-evidence/results.json',JSON.stringify({results,bad},null,2));console.log(JSON.stringify({count:results.length,bad},null,2));if(bad.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Source and regression checks
+        working-directory: apps/personal-video-archive
+        run: |
+          set -euo pipefail
+          grep -q 'cinema-ledger-v2-type-polish.css' templates/base.html
+          grep -q 'cinema-ledger-v2-type-polish.css' guide.html
+          grep -q 'b13-guide' guide.html
+          python -m pytest -q
+          cd ../..
+          git diff --check origin/main...HEAD
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b13-type-polish-evidence-${{ github.run_number }}
+          path: /tmp/b13-polish-evidence
+          if-no-files-found: error
+          retention-days: 7
