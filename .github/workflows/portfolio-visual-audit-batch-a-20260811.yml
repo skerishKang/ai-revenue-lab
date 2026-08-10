@@ -27,7 +27,7 @@ jobs:
       - name: Capture live Batch A surfaces
         run: |
           mkdir -p audit-output
-          cat > /tmp/capture.mjs <<'NODE'
+          cat > capture.mjs <<'NODE'
           import { chromium } from 'playwright';
           import fs from 'node:fs';
 
@@ -147,7 +147,7 @@ jobs:
             console.log('Some optional routes were unavailable; evidence retained:', bad.map(x => `${x.target}/${x.route}:${x.status || x.navError}`).join(', '));
           }
           NODE
-          node /tmp/capture.mjs
+          node capture.mjs
           cat audit-output/results.json
       - name: Upload visual audit evidence
         if: always()
