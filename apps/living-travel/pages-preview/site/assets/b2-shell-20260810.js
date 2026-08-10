@@ -27,7 +27,7 @@
   var items = [
     { key: 'guide', label: '30초 사용법', href: 'guide.html', guide: true },
     { key: 'taste', label: '취향', href: 'demo/preferences.html' },
-    { key: 'edition', label: '여행판', href: 'demo/traveler-home.html' },
+    { key: 'edition', label: '현재 여행판', href: 'demo/traveler-home.html' },
     { key: 'archive', label: '기록', href: 'demo/history.html' },
     { key: 'operator', label: '편집실', href: 'operator/login.html', utility: true }
   ];
