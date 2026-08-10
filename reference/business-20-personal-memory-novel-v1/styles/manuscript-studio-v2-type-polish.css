@@ -1,0 +1,33 @@
+/* B20 Memory Manuscript Studio V2 — Korean display rhythm polish.
+ * Preserve the folded-manuscript art direction and author workflow while
+ * giving large Hangul display type calmer leading and slightly less scale. */
+
+.ms-copy h1 {
+  max-width: 12ch;
+  font-size: clamp(5.3rem, 6.6vw, 6.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+.ms-guide-copy h1 {
+  max-width: 13ch;
+  font-size: clamp(4.7rem, 5.7vw, 5.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+@media (max-width: 620px) {
+  .ms-copy h1 {
+    font-size: clamp(2.9rem, 12.2vw, 3.3rem);
+    line-height: 1.06;
+    letter-spacing: -0.05em;
+  }
+
+  .ms-guide-copy h1 {
+    font-size: clamp(2.85rem, 12vw, 3.2rem);
+    line-height: 1.07;
+    letter-spacing: -0.05em;
+  }
+}
