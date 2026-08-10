@@ -1,0 +1,59 @@
+name: Verify B11 Post Propagation 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/verify-b11-post-propagation-20260810.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b11-type-polish-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: 28aab00c239f4a42db23ced740b112e93baeb2a1
+      URL: https://11-language-learning-magazine.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - name: Wait for all canonical bytes with browser UA
+        run: |
+          set -euo pipefail
+          ua='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36'
+          for attempt in $(seq 1 45); do
+            ok=1
+            for route in / /guide.html /ux.html; do
+              body=$(curl -L -sS --max-time 20 -A "$ua" -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "$URL$route" || true)
+              grep -q 'language-field-v2-type-polish.css' <<<"$body" || ok=0
+            done
+            css=$(curl -L -sS --max-time 20 -A "$ua" -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "$URL/styles/language-field-v2-type-polish.css" || true)
+            if [ "$ok" = 1 ] && grep -q 'B11 Language Field Journal V2' <<<"$css"; then echo 'B11_ALL_CANONICAL_BYTES_PASS=1'; exit 0; fi
+            sleep 4
+          done
+          exit 1
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b11-verify && cd /tmp/b11-verify && npm init -y >/dev/null 2>&1 && npm install --silent playwright@1.55.0 && npx playwright install chromium
+      - name: Verify canonical screens with fresh contexts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b11-propagation-evidence && cd /tmp/b11-verify
+          node <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),path=require('path');const base='https://11-language-learning-magazine.pages.dev',vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{const b=await chromium.launch({headless:true}),R=[];for(const vp of vps){for(const [name,route,sel,min] of [['root','/','.lf-copy h1',1.02],['guide','/guide.html','.lf-guide-copy h1',1.03],['feedback','/ux.html','.lf-panel.active h1',1.04]]){let final=null;for(let attempt=1;attempt<=8;attempt++){const c=await b.newContext({viewport:vp,extraHTTPHeaders:{'Cache-Control':'no-cache','Pragma':'no-cache'}}),p=await c.newPage(),E=[],F=[];p.on('console',m=>{if(m.type()==='error')E.push(m.text())});p.on('pageerror',e=>E.push(e.message));p.on('response',x=>{if(x.status()>=400)F.push(`${x.status()} ${x.url()}`)});const q=await p.goto(base+route,{waitUntil:'networkidle',timeout:45000});if(name==='feedback'){await p.locator('.lf-phrase[data-key="came-alive"]').click();await p.locator('#read [data-go="vocab"]').click();await p.locator('#vocab [data-go="revise"]').click();await p.locator('#revise [data-go="feedback"]').click();await p.waitForTimeout(350)}const m=await p.locator(sel).evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect(),toc=document.querySelector('.lf-toc')?.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),top:r.top,tocBottom:toc?.bottom??0,scrollY:window.scrollY,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('language-field-v2-type-polish.css'))}});const P=[...(q.status()===200?[]:['status']),...(m.ratio>=min?[]:['tight']),...(m.overflow<=1?[]:['overflow']),...(m.polish?[]:['missing']),...(E.length||F.length?['runtime']:[]),...(name==='feedback'&&vp.name==='mobile'&&m.top<m.tocBottom+12?['obscured']:[]),...(name==='feedback'&&vp.name==='mobile'&&m.scrollY>4?['scroll']:[])];final={viewport:vp.name,name,attempt,errors:E,failed:F,problems:P,...m};if(!P.length){await p.screenshot({path:path.join('/tmp/b11-propagation-evidence',`${vp.name}-${name}.png`),fullPage:false});await c.close();break}await c.close();await new Promise(r=>setTimeout(r,1500))}R.push(final)}}await b.close();const bad=R.filter(x=>x.problems.length);fs.writeFileSync('/tmp/b11-propagation-evidence/results.json',JSON.stringify({results:R,bad},null,2));console.log(JSON.stringify({results:R,bad},null,2));if(bad.length)process.exit(1)})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Reassert exact main
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: 'b11-post-propagation-evidence-${{ github.run_number }}', path: /tmp/b11-propagation-evidence, if-no-files-found: error, retention-days: 7}
