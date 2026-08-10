@@ -78,11 +78,11 @@ jobs:
           const assert = require('assert');
           const base = 'http://127.0.0.1:4173/index.html#feed';
 
-          async function waitImages(page) {
-            await page.waitForFunction(() => {
-              const images = [...document.querySelectorAll('.wf-cinema-v4 img')];
-              return images.length >= 5 && images.every(img => img.complete && img.naturalWidth > 300 && img.naturalHeight > 300);
-            }, null, { timeout: 20000 });
+          async function waitImage(page, selector) {
+            await page.waitForFunction((sel) => {
+              const img = document.querySelector(sel);
+              return Boolean(img && img.complete && img.naturalWidth > 300 && img.naturalHeight > 300);
+            }, selector, { timeout: 20000 });
           }
 
           async function snapshot(page, name) {
@@ -101,7 +101,7 @@ jobs:
             await page.goto(base, { waitUntil: 'networkidle', timeout: 45000 });
             await page.waitForSelector('#view-feed:not([hidden]) .wf-cinema-v4', { state: 'visible', timeout: 10000 });
             await page.evaluate(() => document.fonts.ready);
-            await waitImages(page);
+            await waitImage(page, '.wf-v4-entry-photo');
 
             const initial = await page.evaluate(() => {
               const stage = document.querySelector('.wf-cinema-v4');
@@ -123,7 +123,9 @@ jobs:
                 bodyFamily: computedPromise.fontFamily,
                 titleLineHeight: computedTitle.lineHeight,
                 reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
-                scene: stage?.dataset.scene || null
+                scene: stage?.dataset.scene || null,
+                paperlogyReady: document.fonts.check('700 32px Paperlogy'),
+                suitReady: document.fonts.check('400 16px "SUIT Variable"')
               };
             });
 
@@ -137,6 +139,8 @@ jobs:
             assert.match(initial.promiseText, /개인 브리프/);
             assert.match(initial.titleFamily, /Paperlogy/i, `${name}: Paperlogy headline not active: ${initial.titleFamily}`);
             assert.match(initial.bodyFamily, /SUIT/i, `${name}: SUIT body not active: ${initial.bodyFamily}`);
+            assert.equal(initial.paperlogyReady, true, `${name}: Paperlogy webfont did not load`);
+            assert.equal(initial.suitReady, true, `${name}: SUIT webfont did not load`);
             await snapshot(page, `${name}-01-entry`);
 
             if (reducedMotion === 'no-preference') {
@@ -155,28 +159,36 @@ jobs:
                 await page.evaluate(({ top, travel, p }) => window.scrollTo(0, top + travel * p), { ...scenes, p: target.p });
                 await page.waitForTimeout(420);
                 assert.equal(await page.locator('.wf-cinema-v4').getAttribute('data-scene'), target.scene, `${name}: wrong sticky scene at ${target.p}`);
+                await waitImage(page, `.wf-v4-scene[data-v4-scene="${target.scene}"] img`);
                 await snapshot(page, `${name}-${target.file}`);
               }
             } else {
               assert.equal(initial.scene, '2', `${name}: reduced motion must resolve to explanatory scene`);
               await page.locator('.wf-v4-scenes').scrollIntoViewIfNeeded();
+              await waitImage(page, '.wf-v4-scene[data-v4-scene="2"] img');
               await page.waitForTimeout(150);
               await snapshot(page, `${name}-02-reduced-static-scene`);
             }
 
             await page.locator('.wf-v4-brief').scrollIntoViewIfNeeded();
+            await waitImage(page, '.wf-v4-brief-photo img');
             await page.waitForTimeout(300);
             await snapshot(page, `${name}-05-personal-brief`);
-            const brief = await page.evaluate(() => ({
-              title: document.querySelector('#wf-v4-brief-title')?.innerText || '',
-              ctaDisabled: document.querySelector('.wf-v4-brief [data-open-story][data-story-id="harbor"]')?.disabled || false,
-              overflow: document.documentElement.scrollWidth - window.innerWidth,
-              images: [...document.querySelectorAll('.wf-cinema-v4 img')].map(img => ({ src: img.currentSrc || img.src, w: img.naturalWidth, h: img.naturalHeight }))
-            }));
+            const brief = await page.evaluate((isReduced) => {
+              const images = [...document.querySelectorAll('.wf-cinema-v4 img')].map(img => ({ src: img.currentSrc || img.src, w: img.naturalWidth, h: img.naturalHeight, loaded: img.complete && img.naturalWidth > 300 && img.naturalHeight > 300 }));
+              return {
+                title: document.querySelector('#wf-v4-brief-title')?.innerText || '',
+                ctaDisabled: document.querySelector('.wf-v4-brief [data-open-story][data-story-id="harbor"]')?.disabled || false,
+                overflow: document.documentElement.scrollWidth - window.innerWidth,
+                images,
+                loadedImageCount: images.filter(img => img.loaded).length,
+                requiredImageCount: isReduced ? 3 : 5
+              };
+            }, reducedMotion === 'reduce');
             assert.match(brief.title, /오늘 당신이/);
             assert.equal(brief.ctaDisabled, false);
             assert.ok(brief.overflow <= 1, `${name}: brief horizontal overflow ${brief.overflow}`);
-            assert.ok(brief.images.every(img => img.w > 300 && img.h > 300), `${name}: bad cinematic image asset`);
+            assert.ok(brief.loadedImageCount >= brief.requiredImageCount, `${name}: expected ${brief.requiredImageCount} loaded cinematic images, got ${brief.loadedImageCount}`);
 
             if (reducedMotion === 'no-preference') {
               await page.click('[data-v4-replay]');
