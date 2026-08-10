@@ -1,4 +1,4 @@
-name: Deploy B14 Mobile Order Exact Main 20260810
+name: Verify B14 Exact Main Auto Deploy 20260810
 
 on:
   pull_request:
@@ -11,14 +11,13 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  verify:
     if: github.event.pull_request.head.ref == 'ops/deploy-b14-mobile-order-20260810'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 35
     env:
       EXPECTED_SHA: d9db0e8e6e320f4367e47c2ff4ac092cdeabc81f
       APP_DIR: apps/korean-ai-platform
-      WORKER_NAME: ai-revenue-korean-ai-platform
       URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev
     steps:
       - uses: actions/checkout@v4
@@ -27,60 +26,46 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Assert exact main and deployment contract
+      - name: Assert exact main and canonical contract
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p /tmp/b14-prod-evidence
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
           grep -q '^name = "ai-revenue-korean-ai-platform"' "$APP_DIR/wrangler.toml"
-          grep -q 'pywrangler sync --force' "$APP_DIR/deploy.sh"
           grep -q '\.connection-panel { order: 1; }' "$APP_DIR/static/workspace-console-responsive.css"
           grep -q '\.session-panel { order: 2; }' "$APP_DIR/static/workspace-console-responsive.css"
           sha256sum "$APP_DIR/static/workspace-console-responsive.css" | tee /tmp/b14-css.sha256
 
-      - name: Install uv and dry-run exact Worker bundle
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m pip install 'uv>=0.8,<1'
-          cd "$APP_DIR"
-          bash ./deploy.sh --dry-run
-
-      - name: Deploy exact-main Worker using repository SSOT
-        shell: bash
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          set -euo pipefail
-          cd "$APP_DIR"
-          bash ./deploy.sh
-
-      - name: Verify canonical Worker content and contracts
+      - name: Verify git-connected Workers Build published exact-main CSS
         shell: bash
         run: |
           set -euo pipefail
           expected_css=$(cut -d' ' -f1 /tmp/b14-css.sha256)
           streak=0
-          for i in $(seq 1 50); do
+          for i in $(seq 1 70); do
             code=$(curl -L -sS --max-time 20 -o /tmp/b14-public.css -w '%{http_code}' "$URL/workspace-console-responsive.css" || true)
             actual=$(sha256sum /tmp/b14-public.css 2>/dev/null | cut -d' ' -f1 || true)
             if [[ "$code" == 200 && "$actual" == "$expected_css" ]]; then streak=$((streak+1)); else streak=0; fi
-            echo "B14_CSS poll=$i streak=$streak http=$code expected=$expected_css actual=$actual"
-            [[ "$streak" -ge 3 ]] && break
+            echo "B14_AUTO_DEPLOY_CSS poll=$i streak=$streak http=$code expected=$expected_css actual=$actual"
+            if [[ "$streak" -ge 3 ]]; then
+              echo B14_GIT_CONNECTED_AUTO_DEPLOY_EXACT_MAIN=1
+              exit 0
+            fi
             sleep 3
           done
-          [[ "$streak" -ge 3 ]]
+          echo 'Canonical Worker did not converge to exact-main CSS. Manual Wrangler deployment is separately blocked by the current GitHub Actions Cloudflare token permissions.' >&2
+          exit 1
 
+      - name: Verify canonical Worker state and security contracts
+        shell: bash
+        run: |
+          set -euo pipefail
           curl -L -fsS "$URL/workspace" -o /tmp/b14-workspace.html
           grep -q 'AI 모델 대화' /tmp/b14-workspace.html
           grep -q 'workspace-console-responsive.css' /tmp/b14-workspace.html
@@ -103,7 +88,7 @@ jobs:
             grep -qi '^referrer-policy: no-referrer' "$headers"
             grep -qi '^cache-control: no-store' "$headers"
           done
-          echo B14_EXACT_MAIN_CANONICAL_CONTENT_VERIFIED=1
+          echo B14_EXACT_MAIN_CANONICAL_CONTRACTS_VERIFIED=1
 
       - name: Install canonical browser QA dependencies
         shell: bash
@@ -111,7 +96,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y fonts-noto-cjk
-          mkdir -p /tmp/b14-prod-browser /tmp/b14-prod-evidence
+          mkdir -p /tmp/b14-prod-browser
           cd /tmp/b14-prod-browser
           npm init -y >/dev/null 2>&1
           npm install --silent playwright@1.55.0
@@ -153,14 +138,17 @@ jobs:
                 const model=document.querySelector('#ws_model').getBoundingClientRect();
                 const key=document.querySelector('#ws_key').getBoundingClientRect();
                 const css=[...document.styleSheets].map(s=>String(s.href||'')).find(x=>x.includes('workspace-console-responsive.css'))||'';
+                const fixedSticky=[...document.querySelectorAll('body *')].filter(el=>['fixed','sticky'].includes(getComputedStyle(el).position)).map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName,cls:String(el.className||'').slice(0,100),position:getComputedStyle(el).position,top:r.top,bottom:r.bottom,height:r.height}}).filter(x=>x.bottom>0&&x.top<innerHeight);
                 return {
                   overflow:root.scrollWidth-root.clientWidth,
+                  scrollHeight:root.scrollHeight,
                   h1:{text:h1.textContent.trim(),font:parseFloat(hc.fontSize),line:parseFloat(hc.lineHeight),ratio:parseFloat(hc.lineHeight)/parseFloat(hc.fontSize),top:hr.top,bottom:hr.bottom},
                   connection:{top:connection.top,bottom:connection.bottom,height:connection.height},
                   session:{top:session.top,bottom:session.bottom,height:session.height},
                   model:{top:model.top,bottom:model.bottom},
                   key:{top:key.top,bottom:key.bottom},
-                  css
+                  css,
+                  fixedSticky
                 };
               });
               const problems=[];
@@ -192,5 +180,5 @@ jobs:
         with:
           name: b14-production-exact-main-evidence-${{ github.run_number }}
           path: /tmp/b14-prod-evidence
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
