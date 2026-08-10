@@ -1,0 +1,122 @@
+name: Validate B06 Product V2 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/validate-b06-product-v2-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'design/b06-world-feed-product-v2-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Static and syntax contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check reference/business-06-world-feed-v1/scripts/art-direction-v2.js
+          node --check reference/business-06-world-feed-v1/scripts/ux-app.js
+          node --check reference/business-06-world-feed-v1/scripts/navigation.js
+          node --check reference/business-06-world-feed-v1/scripts/story-state.js
+          node --check reference/business-06-world-feed-v1/scripts/preference-state.js
+          node --check reference/business-06-world-feed-v1/scripts/state-matrix.js
+          python3 - <<'PY'
+          from pathlib import Path
+          base=Path('reference/business-06-world-feed-v1')
+          index=(base/'index.html').read_text(encoding='utf-8')
+          guide=(base/'guide.html').read_text(encoding='utf-8')
+          css=(base/'styles/art-direction-v2.css').read_text(encoding='utf-8')
+          js=(base/'scripts/art-direction-v2.js').read_text(encoding='utf-8')
+          for marker in ('art-direction-v2.css','art-direction-v2.js','color-scheme" content="dark'):
+              assert marker in index, marker
+          for marker in ('art-direction-v2.css','GUIDE · 30 SECONDS','세계를 더 많이 보는 게 아니라'):
+              assert marker in guide, marker
+          for marker in ('SIGNAL → OPEN → WHY → ADJUST → RETURN','.wf-scene','#view-loading','.feed-mosaic'):
+              assert marker in css, marker
+          assert 'replaceVisibleSvgArtwork' in js
+          assert 'document.querySelectorAll(\'img\')' in js
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in js, forbidden
+          print('B06_PRODUCT_V2_STATIC_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-06-world-feed-v1/**'
+      - name: Install browser and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b06-browser
+          cd /tmp/b06-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser journey and screenshot gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b06-evidence
+          python3 -m http.server 4186 --directory reference/business-06-world-feed-v1 >/tmp/b06-http.log 2>&1 &
+          server=$!
+          trap 'kill $server || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4186/index.html >/dev/null && break; sleep .5; done
+          cd /tmp/b06-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const path = require('path');
+          const fs = require('fs');
+          const out='/tmp/b06-evidence';
+          async function diag(page,label){
+            const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svgImgs:document.querySelectorAll('img[src*=".svg"]').length,art:document.documentElement.dataset.worldFeedArt||'',replaced:+(document.documentElement.dataset.svgArtworkReplaced||0)}));
+            if(d.sw>d.cw+1) throw new Error(`${label}: overflow ${d.sw}>${d.cw}`);
+            if(d.svgImgs!==0) throw new Error(`${label}: visible SVG images remain ${d.svgImgs}`);
+            if(d.art!=='product-v2') throw new Error(`${label}: V2 art layer missing`);
+            return d;
+          }
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const manifest={};
+            for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){
+              manifest[vp.name]={};
+              for(const [name,hash] of [['loading','#loading'],['feed','#feed'],['story','#story?story=harbor'],['why','#why?story=harbor'],['preferences','#preferences?story=market-studio']]){
+                const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+                const errors=[];page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});page.on('pageerror',e=>errors.push(`page:${e.message}`));
+                await page.goto(`http://127.0.0.1:4186/index.html${hash}`,{waitUntil:'networkidle'});
+                await page.locator('.review-shell').waitFor({state:'visible'});
+                const d=await diag(page,`${vp.name}:${name}`);
+                const visible=await page.locator('.route-view:not([hidden])').count();
+                if(visible!==1) throw new Error(`${vp.name}:${name}: visible route count ${visible}`);
+                if(errors.length) throw new Error(`${vp.name}:${name}: ${errors.join(' | ')}`);
+                manifest[vp.name][name]=d;
+                if(['loading','feed','story','why'].includes(name)) await page.screenshot({path:path.join(out,`b06-${name}-${vp.name}.png`),fullPage:true});
+                await page.close();
+              }
+              const guide=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+              await guide.goto('http://127.0.0.1:4186/guide.html',{waitUntil:'networkidle'});
+              const g=await guide.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,text:document.body.innerText}));
+              if(g.sw>g.cw+1) throw new Error(`${vp.name}: guide overflow`);
+              if(!g.text.includes('GUIDE · 30 SECONDS')||!g.text.includes('나의 피드 시작하기')) throw new Error(`${vp.name}: guide markers missing`);
+              await guide.screenshot({path:path.join(out,`b06-guide-${vp.name}.png`),fullPage:true});
+              await guide.close();
+            }
+            fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2));
+            await browser.close();
+            console.log('B06_PRODUCT_V2_BROWSER_PASS=1');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b06-product-v2-20260810
+          path: /tmp/b06-evidence
+          retention-days: 7
+          if-no-files-found: warn
