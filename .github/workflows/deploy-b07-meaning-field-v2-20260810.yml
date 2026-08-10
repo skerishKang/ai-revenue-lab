@@ -1,0 +1,41 @@
+name: Deploy B07 Meaning Field V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b07-meaning-field-v2-20260810.yml']
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b07-meaning-field-v2-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: e3ef0f8040c23add57376956999d03addb5a76ad
+      PROJECT: 07-personal-meaning-map
+      URL: https://07-personal-meaning-map.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Verify and deploy exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          grep -q 'meaning-field-v2.css' reference/business-07-personal-meaning-map-v1/index.html
+          npx --yes wrangler@latest pages deploy reference/business-07-personal-meaning-map-v1 --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B07 Meaning Field V2 exact main'
+      - name: Verify public markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 35); do
+            root=$(curl -L -sS --max-time 20 "$URL" || true); ux=$(curl -L -sS --max-time 20 "${URL}ux.html" || true); guide=$(curl -L -sS --max-time 20 "${URL}guide.html" || true)
+            if grep -q 'meaning-field-v2.css' <<<"$root" && grep -q 'meaning-field-v2.css' <<<"$ux" && grep -q 'meaning-field-v2.css' <<<"$guide"; then echo B07_MEANING_FIELD_PUBLIC_PASS=1; exit 0; fi
+            sleep 4
+          done
+          exit 1
