@@ -9,7 +9,10 @@
 
   function routeFromHash() {
     const value = location.hash.slice(1).split("?")[0];
-    if (!value) return "loading";
+    // V4 is the product entry. The legacy loading route remains available to
+    // the in-app state matrix via navigate("loading"), but external entry and
+    // stale #loading deep-links normalize to the cinematic feed.
+    if (!value || value === "loading") return "feed";
     return validRoutes.has(value) ? value : "feed";
   }
 
