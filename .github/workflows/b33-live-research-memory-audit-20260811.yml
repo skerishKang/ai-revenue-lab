@@ -1,0 +1,67 @@
+name: B33 Live Research Memory Audit 20260811
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b33-live-research-memory-audit-20260811.yml']
+permissions: {contents: read}
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b33-live-research-memory-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      MAIN_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      REVIEW_SHA: c034ccae74d038bb3c5517c62e3c290db5bffc2a
+      SOURCE_DIR: reference/business-33-research-memory-v1
+      CANONICAL: https://33-research-memory.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0, persist-credentials: false}
+      - name: Assert authority and exact live bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$MAIN_SHA"
+          test -z "$(git ls-tree -r --name-only "$MAIN_SHA" -- "$SOURCE_DIR")"
+          git cat-file -e "$REVIEW_SHA^{commit}"
+          mkdir -p /tmp/src && git archive "$REVIEW_SHA" "$SOURCE_DIR" | tar -x -C /tmp/src
+          root="/tmp/src/$SOURCE_DIR"
+          verify(){ url="$1"; file="$2"; e=$(sha256sum "$file"|cut -d' ' -f1); for n in 1 2; do curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "${url}?audit=${REVIEW_SHA}-${n}" -o /tmp/pub; a=$(sha256sum /tmp/pub|cut -d' ' -f1); echo "$url expected=$e actual=$a"; test "$a" = "$e"; done; }
+          verify "$CANONICAL/index.html" "$root/index.html"
+          verify "$CANONICAL/ux.html" "$root/ux.html"
+          verify "$CANONICAL/styles/main.css" "$root/styles/main.css"
+          verify "$CANONICAL/scripts/review.js" "$root/scripts/review.js"
+      - name: Install Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Browser UI states and UX journey
+        shell: bash
+        run: |
+          mkdir -p /tmp/evidence
+          cat >/tmp/audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');const fs=require('fs');
+          const base='https://33-research-memory.pages.dev',viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}},failures=[],results=[];
+          async function shot(p,n){await p.screenshot({path:`/tmp/evidence/${n}.png`});await p.screenshot({path:`/tmp/evidence/${n}-full.png`,fullPage:true})}
+          (async()=>{let b=await chromium.launch({headless:true});for(const [mode,viewport] of Object.entries(viewports)){let c=await b.newContext({viewport,deviceScaleFactor:1});
+            let p=await c.newPage(),errs=[];p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});p.on('pageerror',e=>errs.push(e.message));p.on('requestfailed',r=>errs.push(r.url()));let r=await p.goto(base+'/index.html?audit='+Date.now(),{waitUntil:'networkidle'});if(!r||!r.ok())failures.push(`${mode}/root http`);
+            let rootMetrics=await p.evaluate(()=>{let d=document.documentElement,b=document.body,h=document.querySelector('.site-header h1'),s=getComputedStyle(h),f=parseFloat(s.fontSize),l=parseFloat(s.lineHeight);return{overflowX:Math.max(d.scrollWidth,b.scrollWidth)-innerWidth,pageHeight:d.scrollHeight,h1Font:f,h1Line:l,h1Ratio:Number.isFinite(l)&&Number.isFinite(f)&&f?l/f:null,tabs:document.querySelectorAll('[data-state-control]').length}});if(rootMetrics.overflowX>1)failures.push(`${mode}/root overflow ${rootMetrics.overflowX}`);if(rootMetrics.h1Ratio!==null&&rootMetrics.h1Ratio<1)failures.push(`${mode}/root Korean H1 ratio ${rootMetrics.h1Ratio}`);if(rootMetrics.tabs!==7)failures.push(`${mode}/root expected 7 states`);if(errs.length)failures.push(`${mode}/root runtime ${errs.join('|')}`);await shot(p,`${mode}-root-cover`);
+            const states=['question','literature','notes','equation','review','mobile'];let stateRatios={};for(const st of states){await p.locator(`[data-state-control="${st}"]`).click();let data=await p.evaluate((st)=>{let panel=document.querySelector(`[data-state="${st}"]`),h=panel.querySelector('h2'),s=h?getComputedStyle(h):null,f=s?parseFloat(s.fontSize):NaN,l=s?parseFloat(s.lineHeight):NaN;return{hidden:panel.hidden,ratio:Number.isFinite(f)&&f&&Number.isFinite(l)?l/f:null,text:h?.innerText||''}},st);if(data.hidden)failures.push(`${mode}/root ${st} remained hidden`);if(/[가-힣]/.test(data.text)&&data.ratio!==null&&data.ratio<1)failures.push(`${mode}/root ${st} Korean h2 ratio ${data.ratio}`);stateRatios[st]=data; if(['question','equation','review','mobile'].includes(st)) await shot(p,`${mode}-root-${st}`)}
+            await p.locator('[data-state-control="review"]').click();let replay=p.locator('[data-motion-replay]');if(await replay.count()!==1)failures.push(`${mode}/root replay missing`);else{await replay.click();await p.waitForFunction(()=>document.querySelector('[data-memory-trace]')?.dataset.motionState==='complete',{timeout:3000});let status=(await p.locator('[data-motion-status]').innerText()).trim();if(!status.includes('HUMAN-REVIEWED RESEARCH MEMORY'))failures.push(`${mode}/root replay final status mismatch`)}await p.close();
+            p=await c.newPage();errs=[];p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});p.on('pageerror',e=>errs.push(e.message));p.on('requestfailed',r=>errs.push(r.url()));r=await p.goto(base+'/ux.html?audit='+Date.now(),{waitUntil:'networkidle'});if(!r||!r.ok())failures.push(`${mode}/ux http`);
+            let uxMetrics=await p.evaluate(()=>{let d=document.documentElement,b=document.body,h=document.querySelector('.view.active h1'),s=getComputedStyle(h),f=parseFloat(s.fontSize),l=parseFloat(s.lineHeight),head=document.querySelector('.head').getBoundingClientRect(),nav=document.querySelector('.nav').getBoundingClientRect(),view=document.querySelector('.view.active').getBoundingClientRect();return{overflowX:Math.max(d.scrollWidth,b.scrollWidth)-innerWidth,pageHeight:d.scrollHeight,h1Font:f,h1Line:l,h1Ratio:l/f,headBottom:head.bottom,navTop:nav.top,navBottom:nav.bottom,viewTop:view.top}});if(uxMetrics.overflowX>1)failures.push(`${mode}/ux overflow ${uxMetrics.overflowX}`);if(uxMetrics.h1Ratio<1)failures.push(`${mode}/ux Korean h1 ratio ${uxMetrics.h1Ratio}`);if(!(uxMetrics.headBottom<=uxMetrics.navTop+1&&uxMetrics.navBottom<=uxMetrics.viewTop+1))failures.push(`${mode}/ux header/nav/view order collision`);if(errs.length)failures.push(`${mode}/ux runtime ${errs.join('|')}`);await shot(p,`${mode}-ux-question`);
+            await p.locator('[data-go="sources"]').click();await p.locator('[data-source="A"]').click();await p.locator('[data-source="C"]').click();let ss=(await p.locator('#sourceStatus').innerText()).trim();if(!ss.includes('2개'))failures.push(`${mode}/ux source count mismatch`);await shot(p,`${mode}-ux-sources`);await p.locator('[data-go="claims"]').click();await p.locator('[data-claim="reject"]').click();await p.locator('[data-claim="accept"]').click();let cs=(await p.locator('#claimStatus').innerText()).trim();if(!cs.includes('메모 후보'))failures.push(`${mode}/ux claim verdict mismatch`);await shot(p,`${mode}-ux-claims`);await p.locator('#makeNote').click();if(!(await p.locator('#note').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/ux note did not open`);let note=(await p.locator('#noteText').innerText()).trim();if(!note.includes('2개 합성 자료'))failures.push(`${mode}/ux note source count missing`);await p.locator('#finish').click();let finish=(await p.locator('#finishStatus').innerText()).trim();if(!finish.includes('실제 논문'))failures.push(`${mode}/ux finish disclaimer mismatch`);await shot(p,`${mode}-ux-note-finished`);await p.reload({waitUntil:'networkidle'});if((await p.locator('#noteText').innerText()).includes('2개 합성'))failures.push(`${mode}/ux reload retained session`);results.push({mode,rootMetrics,stateRatios,uxMetrics});await p.close();await c.close()}
+            await b.close();fs.writeFileSync('/tmp/evidence/metrics.json',JSON.stringify({mainSha:'a631122888d30c5a8a62f4b27e192967da331898',reviewSha:'c034ccae74d038bb3c5517c62e3c290db5bffc2a',results,failures},null,2));console.log(JSON.stringify({results,failures},null,2));if(failures.length)process.exit(1)})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b33-live-research-memory-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/evidence
+          if-no-files-found: error
+          retention-days: 7
