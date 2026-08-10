@@ -1,0 +1,67 @@
+name: B34 Live Dubbing Audit 20260811
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b34-live-dubbing-audit-20260811.yml']
+permissions: {contents: read}
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b34-live-dubbing-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MAIN_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      REVIEW_SHA: 4e77ce30ffc266997ba26fa55fd835c6fca32c85
+      SOURCE: reference/business-34-ai-dubbing-studio-v1/ux.html
+      CANONICAL: https://34-ai-dubbing-studio.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0, persist-credentials: false}
+      - name: Assert current main and numbered UX entry authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$MAIN_SHA"
+          test -z "$(git ls-tree -r --name-only "$MAIN_SHA" -- reference/business-34-ai-dubbing-studio-v1)"
+          git show "$REVIEW_SHA:$SOURCE" >/tmp/source-ux.html
+          expected=$(sha256sum /tmp/source-ux.html | cut -d' ' -f1)
+          test "$expected" = 2b7913db96cb4b4b71d1cb72518a748e4e538734cd0515c8a6c9f4f9c2227e03
+          for rel in index.html ux.html; do
+            for n in 1 2; do
+              curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "$CANONICAL/$rel?audit=${REVIEW_SHA}-${n}" -o /tmp/public
+              actual=$(sha256sum /tmp/public | cut -d' ' -f1)
+              echo "$rel expected=$expected actual=$actual"
+              test "$actual" = "$expected"
+            done
+          done
+      - name: Install Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Browser visual and rights-first journey
+        shell: bash
+        run: |
+          mkdir -p /tmp/evidence
+          cat >/tmp/audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');const fs=require('fs');
+          const base='https://34-ai-dubbing-studio.pages.dev',viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}},failures=[],results=[];
+          async function shot(p,n){await p.screenshot({path:`/tmp/evidence/${n}.png`});await p.screenshot({path:`/tmp/evidence/${n}-full.png`,fullPage:true})}
+          async function metrics(p){return p.evaluate(()=>{const de=document.documentElement,b=document.body,h=document.querySelector('.view.active h1'),s=getComputedStyle(h),f=parseFloat(s.fontSize),l=parseFloat(s.lineHeight),head=document.querySelector('.head').getBoundingClientRect(),nav=document.querySelector('.nav').getBoundingClientRect(),view=document.querySelector('.view.active').getBoundingClientRect();return{viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(de.scrollWidth,b.scrollWidth)-innerWidth,pageHeight:de.scrollHeight,h1Text:h.innerText,h1Font:f,h1Line:l,h1Ratio:l/f,headBottom:head.bottom,navTop:nav.top,navBottom:nav.bottom,viewTop:view.top}})}
+          (async()=>{const browser=await chromium.launch({headless:true});for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1});const page=await context.newPage(),errors=[];page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});page.on('pageerror',e=>errors.push(`page:${e.message}`));page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`));let r=await page.goto(base+'/index.html?visual='+Date.now(),{waitUntil:'networkidle'});if(!r||!r.ok())failures.push(`${mode}: bad HTTP`);let initial=await metrics(page);if(initial.overflowX>1)failures.push(`${mode}: overflow ${initial.overflowX}`);if(initial.h1Ratio<1)failures.push(`${mode}: rights Korean H1 ratio ${initial.h1Ratio}`);if(!(initial.headBottom<=initial.navTop+1&&initial.navBottom<=initial.viewTop+1))failures.push(`${mode}: chrome collision`);if(errors.length)failures.push(`${mode}: ${errors.join(' | ')}`);await shot(page,`${mode}-rights`);
+          await page.locator('#toSegments').click();if(!((await page.locator('#rightsStatus').innerText()).includes('세 권리')))failures.push(`${mode}: rights gate allowed early progress`);for(const id of ['video','script','voice'])await page.locator(`[data-check="${id}"]`).click();if(!((await page.locator('#rightsStatus').innerText()).includes('3/3')))failures.push(`${mode}: rights count mismatch`);await page.locator('#toSegments').click();if(!(await page.locator('#segments').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}: segments did not open`);let seg=await metrics(page);if(seg.h1Ratio<1)failures.push(`${mode}: segments Korean H1 ratio ${seg.h1Ratio}`);await shot(page,`${mode}-segments`);
+          await page.locator('#segments [data-go="voice"]').click();await page.locator('[data-voice="밝은 안내"]').click();if(!((await page.locator('#voiceStatus').innerText()).includes('밝은 안내')))failures.push(`${mode}: voice choice mismatch`);let voice=await metrics(page);if(voice.h1Ratio<1)failures.push(`${mode}: voice Korean H1 ratio ${voice.h1Ratio}`);await shot(page,`${mode}-voice`);
+          await page.locator('#voice [data-go="review"]').click();await page.locator('#finish').click();if(!((await page.locator('#reviewStatus').innerText()).includes('세 검토')))failures.push(`${mode}: review gate did not block early finish`);for(const id of ['meaning','timing','identity'])await page.locator(`[data-review="${id}"]`).click();await page.locator('#finish').click();const status=await page.locator('#reviewStatus').innerText();if(!status.includes('밝은 안내')||!status.includes('실제 음성 생성'))failures.push(`${mode}: final review status mismatch`);let review=await metrics(page);if(review.h1Ratio<1)failures.push(`${mode}: review Korean H1 ratio ${review.h1Ratio}`);await shot(page,`${mode}-review-finished`);
+          results.push({mode,initial,segments:seg,voice,review,errors});await page.close();await context.close()}await browser.close();fs.writeFileSync('/tmp/evidence/metrics.json',JSON.stringify({mainSha:'a631122888d30c5a8a62f4b27e192967da331898',reviewSha:'4e77ce30ffc266997ba26fa55fd835c6fca32c85',canonicalEntrySha256:'2b7913db96cb4b4b71d1cb72518a748e4e538734cd0515c8a6c9f4f9c2227e03',results,failures},null,2));console.log(JSON.stringify({results,failures},null,2));if(failures.length)process.exit(1)})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b34-live-dubbing-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/evidence
+          if-no-files-found: error
+          retention-days: 7
