@@ -1,0 +1,196 @@
+name: Deploy B14 Mobile Order Exact Main 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b14-mobile-order-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b14-mobile-order-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      EXPECTED_SHA: d9db0e8e6e320f4367e47c2ff4ac092cdeabc81f
+      APP_DIR: apps/korean-ai-platform
+      WORKER_NAME: ai-revenue-korean-ai-platform
+      URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact main and deployment contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          grep -q '^name = "ai-revenue-korean-ai-platform"' "$APP_DIR/wrangler.toml"
+          grep -q 'pywrangler sync --force' "$APP_DIR/deploy.sh"
+          grep -q '\.connection-panel { order: 1; }' "$APP_DIR/static/workspace-console-responsive.css"
+          grep -q '\.session-panel { order: 2; }' "$APP_DIR/static/workspace-console-responsive.css"
+          sha256sum "$APP_DIR/static/workspace-console-responsive.css" | tee /tmp/b14-css.sha256
+
+      - name: Install uv and dry-run exact Worker bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'uv>=0.8,<1'
+          cd "$APP_DIR"
+          bash ./deploy.sh --dry-run
+
+      - name: Deploy exact-main Worker using repository SSOT
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd "$APP_DIR"
+          bash ./deploy.sh
+
+      - name: Verify canonical Worker content and contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_css=$(cut -d' ' -f1 /tmp/b14-css.sha256)
+          streak=0
+          for i in $(seq 1 50); do
+            code=$(curl -L -sS --max-time 20 -o /tmp/b14-public.css -w '%{http_code}' "$URL/workspace-console-responsive.css" || true)
+            actual=$(sha256sum /tmp/b14-public.css 2>/dev/null | cut -d' ' -f1 || true)
+            if [[ "$code" == 200 && "$actual" == "$expected_css" ]]; then streak=$((streak+1)); else streak=0; fi
+            echo "B14_CSS poll=$i streak=$streak http=$code expected=$expected_css actual=$actual"
+            [[ "$streak" -ge 3 ]] && break
+            sleep 3
+          done
+          [[ "$streak" -ge 3 ]]
+
+          curl -L -fsS "$URL/workspace" -o /tmp/b14-workspace.html
+          grep -q 'AI 모델 대화' /tmp/b14-workspace.html
+          grep -q 'workspace-console-responsive.css' /tmp/b14-workspace.html
+
+          curl -L -fsS "$URL/api/pilot/health" -o /tmp/b14-health.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/b14-health.json'))
+          assert d.get('status') == 'not_configured', d
+          assert d.get('configured_providers') == 0, d
+          assert d.get('configured_models') == 0, d
+          print('B14_PROVIDER_STATE_PRESERVED=1')
+          PY
+
+          for path in workspace workspace-console-responsive.css; do
+            headers=$(mktemp)
+            curl -L -fsS -D "$headers" -o /dev/null "$URL/$path"
+            grep -qi '^x-content-type-options: nosniff' "$headers"
+            grep -qi '^x-frame-options: DENY' "$headers"
+            grep -qi '^referrer-policy: no-referrer' "$headers"
+            grep -qi '^cache-control: no-store' "$headers"
+          done
+          echo B14_EXACT_MAIN_CANONICAL_CONTENT_VERIFIED=1
+
+      - name: Install canonical browser QA dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b14-prod-browser /tmp/b14-prod-evidence
+          cd /tmp/b14-prod-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Capture canonical Production desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/b14-prod-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const path = require('path');
+          const base = process.env.URL;
+          const cases = [
+            {name:'desktop', width:1440, height:1100},
+            {name:'mobile', width:390, height:844},
+          ];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results=[];
+            for(const c of cases){
+              const ctx=await browser.newContext({viewport:{width:c.width,height:c.height}});
+              const p=await ctx.newPage();
+              const consoleErrors=[], pageErrors=[], failed=[];
+              p.on('console',m=>{if(m.type()==='error') consoleErrors.push(m.text())});
+              p.on('pageerror',e=>pageErrors.push(e.message));
+              p.on('response',r=>{if(r.status()>=400) failed.push(`${r.status()} ${r.url()}`)});
+              const resp=await p.goto(base+'/workspace',{waitUntil:'networkidle',timeout:60000});
+              await p.evaluate(()=>document.fonts.ready);
+              await p.waitForTimeout(500);
+              const m=await p.evaluate(()=>{
+                const root=document.documentElement;
+                const h1=document.querySelector('.console-heading h1');
+                const hc=getComputedStyle(h1), hr=h1.getBoundingClientRect();
+                const connection=document.querySelector('.connection-panel').getBoundingClientRect();
+                const session=document.querySelector('.session-panel').getBoundingClientRect();
+                const model=document.querySelector('#ws_model').getBoundingClientRect();
+                const key=document.querySelector('#ws_key').getBoundingClientRect();
+                const css=[...document.styleSheets].map(s=>String(s.href||'')).find(x=>x.includes('workspace-console-responsive.css'))||'';
+                return {
+                  overflow:root.scrollWidth-root.clientWidth,
+                  h1:{text:h1.textContent.trim(),font:parseFloat(hc.fontSize),line:parseFloat(hc.lineHeight),ratio:parseFloat(hc.lineHeight)/parseFloat(hc.fontSize),top:hr.top,bottom:hr.bottom},
+                  connection:{top:connection.top,bottom:connection.bottom,height:connection.height},
+                  session:{top:session.top,bottom:session.bottom,height:session.height},
+                  model:{top:model.top,bottom:model.bottom},
+                  key:{top:key.top,bottom:key.bottom},
+                  css
+                };
+              });
+              const problems=[];
+              if(!resp || resp.status()!==200) problems.push('status');
+              if(m.overflow>1) problems.push(`overflow ${m.overflow}`);
+              if(m.h1.ratio<1) problems.push(`h1 tight ${m.h1.ratio}`);
+              if(!m.css) problems.push('responsive css missing');
+              if(consoleErrors.length||pageErrors.length||failed.length) problems.push('runtime errors');
+              if(c.name==='desktop' && Math.abs(m.connection.top-m.session.top)>2) problems.push('desktop panel alignment changed');
+              if(c.name==='mobile' && !(m.connection.top<m.session.top)) problems.push('connection does not precede session');
+              if(c.name==='mobile' && !(m.model.top<m.session.top && m.key.top<m.session.top)) problems.push('prerequisite controls below session');
+              if(c.name==='mobile' && m.key.bottom>c.height) problems.push(`api key outside first viewport ${m.key.bottom}`);
+              await p.screenshot({path:path.join('/tmp/b14-prod-evidence',`${c.name}.png`),fullPage:false});
+              await p.screenshot({path:path.join('/tmp/b14-prod-evidence',`${c.name}-full.png`),fullPage:true});
+              results.push({viewport:c.name,status:resp?resp.status():0,consoleErrors,pageErrors,failed,problems,...m});
+              await ctx.close();
+            }
+            await browser.close();
+            const bad=results.filter(r=>r.problems.length);
+            fs.writeFileSync('/tmp/b14-prod-evidence/results.json',JSON.stringify({expectedSha:process.env.EXPECTED_SHA,results,bad},null,2));
+            console.log(JSON.stringify({count:results.length,bad,results},null,2));
+            if(bad.length) process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+
+      - name: Upload canonical Production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b14-production-exact-main-evidence-${{ github.run_number }}
+          path: /tmp/b14-prod-evidence
+          if-no-files-found: error
+          retention-days: 7
