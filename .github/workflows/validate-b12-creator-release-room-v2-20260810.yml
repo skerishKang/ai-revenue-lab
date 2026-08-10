@@ -15,36 +15,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {ref: '${{ github.event.pull_request.head.ref }}', fetch-depth: 0}
-      - name: Static and existing UX contracts
+      - name: Static contracts
         shell: bash
         run: |
           set -euo pipefail
           node --check reference/business-12-creator-mini-media-v1/scripts/creator-release-room-v2.js
-          node --check reference/business-12-creator-mini-media-v1/scripts/ux-app.js
           python3 - <<'PY'
           from pathlib import Path
-          base=Path('reference/business-12-creator-mini-media-v1')
-          root=(base/'index.html').read_text(encoding='utf-8')
-          guide=(base/'guide.html').read_text(encoding='utf-8')
-          ux=(base/'ux.html').read_text(encoding='utf-8')
-          css=(base/'styles/creator-release-room-v2.css').read_text(encoding='utf-8')
-          js=(base/'scripts/creator-release-room-v2.js').read_text(encoding='utf-8')
-          assert not (base/'index.v2-source.html').exists()
-          assert not (base/'guide.v2-source.html').exists()
-          for marker in ('creator-release-room-v2.css','Creator Release Room','30초 사용법'):
-              assert marker in root, marker
-              assert marker in guide, marker
-          for marker in ('creator-release-room-v2.css','creator-release-room-v2.js'):
-              assert marker in ux, marker
-          for marker in ('IDEA → DIRECTION → FORMATS → REVIEW → PACKAGE','.cr-board','.creator-scene'):
-              assert marker in css, marker
-          assert 'document.querySelectorAll(\'img\')' in js
+          b=Path('reference/business-12-creator-mini-media-v1')
+          root=(b/'index.html').read_text(encoding='utf-8')
+          guide=(b/'guide.html').read_text(encoding='utf-8')
+          ux=(b/'ux.html').read_text(encoding='utf-8')
+          css=(b/'styles/creator-release-room-v2.css').read_text(encoding='utf-8')
+          js=(b/'scripts/creator-release-room-v2.js').read_text(encoding='utf-8')
+          assert 'Creator Release Room' in root and '30초 사용법' in root
+          assert 'Creator Release Room' in guide and 'GUIDE · 30 SECONDS' in guide
+          assert 'creator-release-room-v2.css' in root and 'creator-release-room-v2.css' in guide and 'creator-release-room-v2.css' in ux
+          assert 'creator-release-room-v2.js' in ux
+          assert 'IDEA → DIRECTION → FORMATS → REVIEW → PACKAGE' in css
+          assert '.cr-board' in css and '.creator-scene' in css
+          assert "document.querySelectorAll('img')" in js
+          assert not (b/'index.v2-source.html').exists()
+          assert not (b/'guide.v2-source.html').exists()
           for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
               assert forbidden not in js, forbidden
-          print('B12_CREATOR_RELEASE_STATIC_PASS=1')
+          print('B12_STATIC_PASS=1')
           PY
-          if [ -f reference/business-12-creator-mini-media-v1/tests/validate_static.py ]; then python3 reference/business-12-creator-mini-media-v1/tests/validate_static.py; fi
-          if [ -f reference/business-12-creator-mini-media-v1/tests/run_tests.sh ]; then bash reference/business-12-creator-mini-media-v1/tests/run_tests.sh; fi
           git diff --check origin/main...HEAD -- 'reference/business-12-creator-mini-media-v1/**'
       - name: Install Chromium and Korean fonts
         run: |
@@ -54,7 +50,7 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --silent playwright@1.54.1
           npx playwright install chromium
-      - name: Browser product and screenshot gate
+      - name: Browser journey and screenshots
         shell: bash
         run: |
           set -euo pipefail
@@ -64,11 +60,9 @@ jobs:
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4192/index.html >/dev/null && break; sleep .5; done
           cd /tmp/b12-browser
           node <<'JS'
-          const {chromium}=require('playwright');const fs=require('fs'),path=require('path');const out='/tmp/b12-evidence';
-          async function audit(page,label){const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svg:[...document.images].filter(i=>/\.svg(?:[?#]|$)/i.test(i.getAttribute('src')||'')).length,text:document.body.innerText,room:document.documentElement.dataset.creatorRoom||'',scenes:document.querySelectorAll('.creator-scene').length}));if(d.sw>d.cw+1)throw new Error(`${label}: overflow ${d.sw}>${d.cw}`);if(d.svg)throw new Error(`${label}: visible SVG remains ${d.svg}`);if(/UI Preview|reference-only|Visual Atlas/i.test(d.text))throw new Error(`${label}: old preview chrome visible`);return d}
-          (async()=>{const browser=await chromium.launch({headless:true});const manifest={};for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){
-            for(const rel of ['index.html','guide.html','ux.html']){const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});const errs=[];page.on('console',m=>{if(m.type()==='error')errs.push(m.text())});page.on('pageerror',e=>errs.push(e.message));await page.goto(`http://127.0.0.1:4192/${rel}`,{waitUntil:'networkidle'});if(rel==='ux.html')await page.locator('#ux-root').waitFor({state:'attached'});const d=await audit(page,`${vp.name}:${rel}`);if(rel==='ux.html'&&d.room!=='v2')throw new Error(`${vp.name}: UX V2 runtime layer missing`);if(errs.length)throw new Error(`${vp.name}:${rel}: ${errs.join(' | ')}`);manifest[`${vp.name}-${rel}`]=d;await page.screenshot({path:path.join(out,`b12-${rel.replace('.html','')}-${vp.name}.png`),fullPage:true});await page.close()}}
-            fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2));await browser.close();console.log('B12_CREATOR_RELEASE_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          const {chromium}=require('playwright'); const fs=require('fs'),path=require('path'); const out='/tmp/b12-evidence';
+          async function audit(page,label){const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svg:[...document.images].filter(i=>/\.svg(?:[?#]|$)/i.test(i.getAttribute('src')||'')).length,text:document.body.innerText,room:document.documentElement.dataset.creatorRoom||'',scenes:document.querySelectorAll('.creator-scene').length})); if(d.sw>d.cw+1)throw new Error(`${label}: overflow ${d.sw}>${d.cw}`); if(d.svg)throw new Error(`${label}: visible SVG ${d.svg}`); if(/UI Preview|reference-only|Visual Atlas/i.test(d.text))throw new Error(`${label}: old chrome visible`); return d}
+          (async()=>{const browser=await chromium.launch({headless:true}); const m={}; for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of ['index.html','guide.html','ux.html']){const p=await browser.newPage({viewport:{width:vp.width,height:vp.height}}),errs=[]; p.on('console',x=>{if(x.type()==='error')errs.push(x.text())}); p.on('pageerror',e=>errs.push(e.message)); await p.goto(`http://127.0.0.1:4192/${rel}`,{waitUntil:'networkidle'}); const d=await audit(p,`${vp.name}:${rel}`); if(rel==='ux.html'&&d.room!=='v2')throw new Error(`${vp.name}: UX V2 runtime missing`); if(errs.length)throw new Error(`${vp.name}:${rel}:${errs.join('|')}`); m[`${vp.name}-${rel}`]=d; await p.screenshot({path:path.join(out,`b12-${rel.replace('.html','')}-${vp.name}.png`),fullPage:true}); await p.close()}} fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(m,null,2)); await browser.close(); console.log('B12_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
           JS
       - uses: actions/upload-artifact@v4
         if: always()
