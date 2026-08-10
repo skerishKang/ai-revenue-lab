@@ -1,0 +1,54 @@
+name: Validate B04 Adaptive Protocol V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/living-learning/pages-preview/**'
+      - '.github/workflows/validate-b04-adaptive-protocol-v2-20260810.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/b04-adaptive-learning-studio-v2-20260810
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Static preview regression
+        run: |
+          python -m pip install --upgrade pip pytest
+          python -m pytest apps/living-learning/pages-preview/test_static_preview.py -q
+          grep -q 'landing-v2-20260810.css' apps/living-learning/pages-preview/index.html
+          grep -q 'landing-v2-20260810.css' apps/living-learning/pages-preview/guide.html
+          test -f apps/living-learning/pages-preview/assets/css/landing-v2-20260810.css
+          git diff --check origin/main...HEAD -- apps/living-learning/pages-preview
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b04-browser && cd /tmp/b04-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser root and Guide validation
+        run: |
+          mkdir -p /tmp/b04-v2-evidence
+          python3 -m http.server 4404 --directory apps/living-learning/pages-preview >/tmp/b04-http.log 2>&1 &
+          server=$!; trap 'kill $server || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4404/index.html >/dev/null && break; sleep .5; done
+          cd /tmp/b04-browser
+          node <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),path=require('path');const out='/tmp/b04-v2-evidence';
+          (async()=>{const b=await chromium.launch({headless:true}),m={};for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of ['index.html','guide.html']){const p=await b.newPage({viewport:vp}),errs=[];p.on('console',x=>{if(x.type()==='error')errs.push(x.text())});p.on('pageerror',e=>errs.push(e.message));const r=await p.goto(`http://127.0.0.1:4404/${rel}`,{waitUntil:'networkidle'});if(!r||r.status()!=200)throw new Error(`${vp.name}:${rel}:http`);const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,css:[...document.styleSheets].map(s=>s.href||'')}));if(d.sw>d.cw+1)throw new Error(`${vp.name}:${rel}:overflow ${d.sw}>${d.cw}`);if(!d.css.some(x=>x.includes('landing-v2-20260810.css')))throw new Error(`${vp.name}:${rel}:V2 css missing`);if(errs.length)throw new Error(`${vp.name}:${rel}:${errs.join('|')}`);m[`${vp.name}:${rel}`]=d;await p.screenshot({path:path.join(out,`b04-${rel.replace('.html','')}-${vp.name}.png`),fullPage:true});await p.close()}}fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(m,null,2));await b.close();console.log('B04_ADAPTIVE_PROTOCOL_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b04-adaptive-protocol-v2-20260810
+          path: /tmp/b04-v2-evidence
+          retention-days: 7
