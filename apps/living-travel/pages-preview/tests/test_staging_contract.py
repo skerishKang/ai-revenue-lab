@@ -6,7 +6,8 @@ These tests guard the security/privacy contract of ``site/staging/**``:
 * the ``/staging/*`` CSP allows only the exact gstatic script origin and the
   exact Firebase auth + Modal staging API connect origins (no wildcard, no
   ``unsafe-inline``, no ``unsafe-eval``);
-* the synthetic preview CSP on ``/*`` is unchanged (still ``script-src 'none'``);
+* the synthetic preview CSP on ``/*`` stays network-isolated and permits only
+  the same-origin persistent traveler-shell script (no inline/eval/external scripts);
 * no secrets (service account, private key, Neon URL, Modal/operator secret)
   and only public Firebase web config ship to the browser;
 * API content is rendered with safe DOM sinks only (no ``innerHTML`` etc.);
@@ -188,10 +189,14 @@ class TestStagingCsp(unittest.TestCase):
         self.staging_csp = _csp_for(self.blocks, "/staging/*")
         self.global_csp = _csp_for(self.blocks, "/*")
 
-    def test_global_preview_csp_unchanged(self) -> None:
+    def test_global_preview_csp_remains_minimal(self) -> None:
         self.assertIsNotNone(self.global_csp)
-        self.assertIn("script-src 'none'", self.global_csp)
-        self.assertIn("connect-src 'none'", self.global_csp)
+        directives = _csp_directives(self.global_csp)
+        self.assertEqual(directives.get("script-src"), ["'self'"])
+        self.assertEqual(directives.get("connect-src"), ["'none'"])
+        self.assertNotIn("'unsafe-inline'", self.global_csp)
+        self.assertNotIn("'unsafe-eval'", self.global_csp)
+        self.assertNotRegex(" ".join(directives.get("script-src", [])), r"https?://")
 
     def test_staging_detaches_global_csp(self) -> None:
         self.assertIn("Content-Security-Policy", _detached(self.blocks, "/staging/*"))
