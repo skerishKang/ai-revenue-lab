@@ -1,0 +1,46 @@
+/* B01 V4 direct-screenshot correction — 2026-08-11.
+   Fixes human-review findings only; no route/state/backend changes. */
+
+/* Dark archive panels must keep their primary task/title legible. */
+.v3-workflow-rail h1,
+.v3-write-margin h1,
+.v3-feedback-brief h1 {
+  color: #f7f0e5 !important;
+}
+
+.v3-feedback-brief .edition-num-badge {
+  background: rgba(255,253,246,.05) !important;
+  color: #f0d9ca !important;
+  border-color: rgba(245,240,228,.34) !important;
+}
+
+/* The first mobile viewport should show both the thesis and the archive material,
+   rather than spending almost the entire viewport on Korean display type. */
+@media (max-width: 600px) {
+  .v3-hero-title {
+    max-width: 100% !important;
+    font-size: clamp(2.35rem, 10vw, 2.7rem) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -.025em !important;
+  }
+
+  .v3-hero-copy {
+    padding-top: 2rem !important;
+    padding-bottom: 1.55rem !important;
+  }
+
+  .v3-hero-lede {
+    margin-top: .8rem !important;
+    line-height: 1.62 !important;
+  }
+
+  .v3-workflow-scene h2 {
+    font-size: clamp(2.75rem, 12vw, 3.35rem) !important;
+    line-height: 1.1 !important;
+  }
+
+  .v3-guide-hero-copy h1 {
+    font-size: clamp(2.55rem, 11vw, 3.1rem) !important;
+    line-height: 1.1 !important;
+  }
+}
