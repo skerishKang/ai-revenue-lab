@@ -1,0 +1,221 @@
+name: B06 Cinematic Real Photo V4 QA
+
+on:
+  push:
+    branches:
+      - 'design/b06-world-feed-cinematic-real-photo-v4-20260810'
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/b06-cinematic-real-photo-v4-qa-20260810.yml'
+  pull_request:
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/b06-cinematic-real-photo-v4-qa-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Static V4 contract checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check reference/business-06-world-feed-v1/scripts/signature-scene-v4.js
+          grep -q 'signature-scene-v4.css' reference/business-06-world-feed-v1/index.html
+          grep -q 'signature-scene-v4.js' reference/business-06-world-feed-v1/index.html
+          ! grep -q 'signature-scene-v3.css' reference/business-06-world-feed-v1/index.html
+          ! grep -q 'signature-scene-v3.js' reference/business-06-world-feed-v1/index.html
+          grep -q 'prefers-reduced-motion' reference/business-06-world-feed-v1/styles/signature-scene-v4.css
+          grep -q 'Paperlogy' reference/business-06-world-feed-v1/styles/signature-scene-v4.css
+          grep -q 'SUIT Variable' reference/business-06-world-feed-v1/styles/signature-scene-v4.css
+          grep -q 'data-open-story data-story-id="harbor"' reference/business-06-world-feed-v1/scripts/signature-scene-v4.js
+          grep -q '전 세계 소식 중' reference/business-06-world-feed-v1/scripts/signature-scene-v4.js
+
+      - name: Install isolated Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b06-v4-pw
+          cd /tmp/b06-v4-pw
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory reference/business-06-world-feed-v1 >/tmp/b06-v4-http.log 2>&1 &
+          echo $! >/tmp/b06-v4-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b06-v4-http.log
+          exit 1
+
+      - name: Desktop mobile reduced-motion browser QA
+        env:
+          NODE_PATH: /tmp/b06-v4-pw/node_modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/b06-v4-evidence
+          mkdir -p /tmp/b06-v4-evidence
+          cat >/tmp/b06-v4-qa.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const assert = require('assert');
+          const base = 'http://127.0.0.1:4173/index.html#feed';
+
+          async function waitImages(page) {
+            await page.waitForFunction(() => {
+              const images = [...document.querySelectorAll('.wf-cinema-v4 img')];
+              return images.length >= 5 && images.every(img => img.complete && img.naturalWidth > 300 && img.naturalHeight > 300);
+            }, null, { timeout: 20000 });
+          }
+
+          async function snapshot(page, name) {
+            await page.screenshot({ path: `/tmp/b06-v4-evidence/${name}.png`, fullPage: false });
+          }
+
+          async function inspect(browser, name, viewport, reducedMotion = 'no-preference') {
+            const context = await browser.newContext({ viewport, reducedMotion });
+            const page = await context.newPage();
+            const errors = [];
+            const badResponses = [];
+            page.on('pageerror', error => errors.push(`pageerror: ${error.message}`));
+            page.on('console', msg => { if (msg.type() === 'error') errors.push(`console: ${msg.text()}`); });
+            page.on('response', response => { if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`); });
+
+            await page.goto(base, { waitUntil: 'networkidle', timeout: 45000 });
+            await page.waitForSelector('#view-feed:not([hidden]) .wf-cinema-v4', { state: 'visible', timeout: 10000 });
+            await page.evaluate(() => document.fonts.ready);
+            await waitImages(page);
+
+            const initial = await page.evaluate(() => {
+              const stage = document.querySelector('.wf-cinema-v4');
+              const entry = document.querySelector('.wf-v4-entry');
+              const title = document.querySelector('#wf-v4-title');
+              const promise = document.querySelector('.wf-v4-promise');
+              const routeViews = [...document.querySelectorAll('[data-route-view]')];
+              const computedTitle = getComputedStyle(title);
+              const computedPromise = getComputedStyle(promise);
+              return {
+                route: document.querySelector('.review-shell')?.dataset.route,
+                activeRoutes: routeViews.filter(node => !node.hidden).length,
+                overflow: document.documentElement.scrollWidth - window.innerWidth,
+                stageWidth: stage?.getBoundingClientRect().width || 0,
+                entryHeight: entry?.getBoundingClientRect().height || 0,
+                titleText: title?.innerText || '',
+                promiseText: promise?.innerText || '',
+                titleFamily: computedTitle.fontFamily,
+                bodyFamily: computedPromise.fontFamily,
+                titleLineHeight: computedTitle.lineHeight,
+                reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+                scene: stage?.dataset.scene || null
+              };
+            });
+
+            assert.equal(initial.route, 'feed', `${name}: feed route not active`);
+            assert.equal(initial.activeRoutes, 1, `${name}: expected exactly one active route`);
+            assert.ok(initial.overflow <= 1, `${name}: horizontal overflow ${initial.overflow}`);
+            assert.ok(initial.stageWidth > 300, `${name}: V4 stage not laid out`);
+            assert.ok(initial.entryHeight >= viewport.height * 0.72, `${name}: entry is not cinematic viewport scale`);
+            assert.match(initial.titleText, /전 세계 소식 중/);
+            assert.match(initial.titleText, /오늘의 한 편으로/);
+            assert.match(initial.promiseText, /개인 브리프/);
+            assert.match(initial.titleFamily, /Paperlogy/i, `${name}: Paperlogy headline not active: ${initial.titleFamily}`);
+            assert.match(initial.bodyFamily, /SUIT/i, `${name}: SUIT body not active: ${initial.bodyFamily}`);
+            await snapshot(page, `${name}-01-entry`);
+
+            if (reducedMotion === 'no-preference') {
+              await page.click('[data-v4-jump-scenes]');
+              await page.waitForTimeout(850);
+              const scenes = await page.evaluate(() => {
+                const el = document.querySelector('.wf-v4-scenes');
+                return { top: el.offsetTop, travel: Math.max(1, el.offsetHeight - innerHeight) };
+              });
+              const targets = [
+                { p: .08, scene: '0', file: '02-scene-discover' },
+                { p: .45, scene: '1', file: '03-scene-select' },
+                { p: .82, scene: '2', file: '04-scene-explain' }
+              ];
+              for (const target of targets) {
+                await page.evaluate(({ top, travel, p }) => window.scrollTo(0, top + travel * p), { ...scenes, p: target.p });
+                await page.waitForTimeout(420);
+                assert.equal(await page.locator('.wf-cinema-v4').getAttribute('data-scene'), target.scene, `${name}: wrong sticky scene at ${target.p}`);
+                await snapshot(page, `${name}-${target.file}`);
+              }
+            } else {
+              assert.equal(initial.scene, '2', `${name}: reduced motion must resolve to explanatory scene`);
+              await page.locator('.wf-v4-scenes').scrollIntoViewIfNeeded();
+              await page.waitForTimeout(150);
+              await snapshot(page, `${name}-02-reduced-static-scene`);
+            }
+
+            await page.locator('.wf-v4-brief').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(300);
+            await snapshot(page, `${name}-05-personal-brief`);
+            const brief = await page.evaluate(() => ({
+              title: document.querySelector('#wf-v4-brief-title')?.innerText || '',
+              ctaDisabled: document.querySelector('.wf-v4-brief [data-open-story][data-story-id="harbor"]')?.disabled || false,
+              overflow: document.documentElement.scrollWidth - window.innerWidth,
+              images: [...document.querySelectorAll('.wf-cinema-v4 img')].map(img => ({ src: img.currentSrc || img.src, w: img.naturalWidth, h: img.naturalHeight }))
+            }));
+            assert.match(brief.title, /오늘 당신이/);
+            assert.equal(brief.ctaDisabled, false);
+            assert.ok(brief.overflow <= 1, `${name}: brief horizontal overflow ${brief.overflow}`);
+            assert.ok(brief.images.every(img => img.w > 300 && img.h > 300), `${name}: bad cinematic image asset`);
+
+            if (reducedMotion === 'no-preference') {
+              await page.click('[data-v4-replay]');
+              await page.waitForTimeout(900);
+              assert.equal(await page.locator('.wf-cinema-v4').getAttribute('data-scene'), '0', `${name}: replay did not reset scene`);
+            }
+
+            await page.locator('.wf-v4-brief').scrollIntoViewIfNeeded();
+            await page.click('.wf-v4-brief [data-open-story][data-story-id="harbor"]');
+            await page.waitForFunction(() => location.hash === '#story' && !document.querySelector('#view-story')?.hidden, null, { timeout: 5000 });
+            assert.equal(await page.evaluate(() => document.querySelector('.review-shell')?.dataset.storyId), 'harbor', `${name}: harbor story contract broke`);
+
+            assert.deepEqual(errors, [], `${name}: browser errors ${errors.join(' | ')}`);
+            assert.deepEqual(badResponses, [], `${name}: bad asset responses ${badResponses.join(' | ')}`);
+            await context.close();
+            return { initial, brief, errors, badResponses };
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const results = {};
+            results.desktop = await inspect(browser, 'desktop-1440x1100', { width: 1440, height: 1100 });
+            results.mobile = await inspect(browser, 'mobile-390x844', { width: 390, height: 844 });
+            results.reduced = await inspect(browser, 'reduced-motion-1440x1100', { width: 1440, height: 1100 }, 'reduce');
+            fs.writeFileSync('/tmp/b06-v4-evidence/results.json', JSON.stringify(results, null, 2));
+            await browser.close();
+            console.log(JSON.stringify(results, null, 2));
+          })().catch(error => {
+            fs.writeFileSync('/tmp/b06-v4-evidence/error.txt', `${error.stack || error}\n`);
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node /tmp/b06-v4-qa.cjs
+
+      - name: Upload B06 V4 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b06-cinematic-real-photo-v4-evidence-${{ github.run_number }}
+          path: /tmp/b06-v4-evidence
+          if-no-files-found: error
