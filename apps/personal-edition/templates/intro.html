@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Personal Edition{% endblock %}
 {% block content %}
-{% set _cta = cta_href if cta_href is defined else ('/preview/participant/access/' if is_preview is defined and is_preview else '/p/access') %}
+{% set _cta = cta_href if cta_href is defined else ('/preview/participant/input/' if is_preview is defined and is_preview else '/p/access') %}
 <div class="v3-intro">
   <section class="v3-hero" aria-labelledby="intro-title">
     <div class="v3-hero-copy">
       <div>
-        <span class="v3-kicker">Private publication · No. 01</span>
+        <span class="v3-kicker">Private archive · Edition 01</span>
         <h1 class="v3-hero-title" id="intro-title">흩어진 기록이 <em>당신의 한 권</em>이 됩니다.</h1>
-        <p class="v3-hero-lede">메모와 대화의 조각을 모으고, 맥락을 읽고, 사람의 검토를 거쳐 오래 남길 수 있는 비공개 에디션으로 엮습니다.</p>
+        <p class="v3-hero-lede">메모와 대화, 아직 다듬지 않은 문장을 비공개로 모아 맥락을 읽고, 사람의 검토를 거쳐 오래 남길 한 권으로 엮습니다.</p>
       </div>
       <div class="v3-hero-action">
         <a href="{{ _cta }}" class="btn btn-primary">첫 기록 맡기기</a>
+        <a href="/guide/" data-product-guide="true" class="btn btn-secondary">30초 사용법</a>
         <span class="v3-hero-note">Private by default · Human reviewed</span>
       </div>
     </div>
 
-    <div class="v3-assembly-stage" aria-label="흩어진 기록 조각이 한 권의 에디션으로 결속되는 장면">
+    <div class="v3-assembly-stage" aria-label="보관함 속 기록 조각과 교정 흔적이 한 권의 에디션으로 결속되는 장면">
       <div class="v3-binding-axis" aria-hidden="true"></div>
       <article class="v3-fragment f1"><small>09:42 · conversation</small>처음에는 속도가 가장 중요하다고 생각했습니다.</article>
       <article class="v3-fragment f2"><small>note · margin 02</small>고객이 원하는 것은 더 빠른 답보다 자신을 이해하는 제안이었다.</article>
       <article class="v3-fragment f3"><small>reflection · 18:10</small>방향을 바꾼 순간부터 기록의 의미도 달라졌다.</article>
-      <article class="v3-fragment f4"><small>editorial cue</small>속도보다 사람마다 다른 맥락을 먼저 읽기.</article>
+      <article class="v3-fragment f4"><small>proof · human note</small>속도보다 사람마다 다른 맥락을 먼저 읽기.</article>
       <div class="v3-edition-object" aria-hidden="true">
         <span class="v3-edition-eyebrow">Personal Edition · Private</span>
         <strong class="v3-edition-title">속도에서 개인화로</strong>
@@ -31,6 +32,11 @@
     </div>
   </section>
 
+  <section class="v4-entry-proof" aria-label="Personal Edition 핵심 원칙">
+    <div><small>01 · Source</small><strong>원본부터 시작합니다.</strong><p>완성된 글보다 당시의 말투·날짜·맥락을 먼저 보존합니다.</p></div>
+    <div><small>02 · Human proof</small><strong>사람이 다시 읽습니다.</strong><p>자동 게시하지 않고 표현과 근거를 확인한 뒤 한 권으로 묶습니다.</p></div>
+    <div><small>03 · Your archive</small><strong>한 번 보고 사라지지 않습니다.</strong><p>발행된 에디션과 다음 호를 위한 편집 메모가 개인 아카이브에 이어집니다.</p></div>
+  </section>
   <section class="v3-process-strip" aria-label="에디션 제작 흐름">
     <div><span>One continuous editorial system</span><strong>기록은 자동 게시되지 않습니다.</strong></div>
     <div><span>01 · Gather</span><strong>기록을 모읍니다</strong><p>완성된 글이 아니라 생각의 조각부터 시작합니다.</p></div>

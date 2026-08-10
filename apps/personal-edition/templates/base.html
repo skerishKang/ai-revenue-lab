@@ -3,17 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#11110f">
+<meta name="theme-color" content="#17392f">
 <title>{% block title %}Personal Edition{% endblock %}</title>
 <link rel="stylesheet" href="/static/app.css?v=pe-ui51-20260722-3">
 <link rel="stylesheet" href="/static/ui-v3-454.css?v=b1-v3-454">
 <link rel="stylesheet" href="/static/ui-v3-454-compat.css?v=b1-v3-454-2">
 <link rel="stylesheet" href="/static/ui-v3-454-type-polish.css?v=b1-type-20260810">
 <link rel="stylesheet" href="/static/guide-20260810.css?v=b1-guide-20260810">
+<link rel="stylesheet" href="/static/ui-v4-private-archive.css?v=b1-private-archive-v4-20260811">
+<link rel="stylesheet" href="/static/ui-v4-private-archive-visual-fix.css?v=b1-private-archive-v4-visual-fix-20260811">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
-{% set _guide_href = '/preview/participant/empty/' if is_preview is defined and is_preview else '/guide/' %}
-<body data-ui-version="b1-personal-edition-v3-454" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
+{% set _guide_href = '/guide/' %}
+<body data-ui-version="b1-personal-edition-v3-454" data-art-direction="b1-private-archive-v4" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
 {% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
 <header class="site-header v3-site-header">
   <nav class="v3-site-nav" aria-label="주요 탐색">
@@ -42,7 +44,7 @@
     </div>
     {% else %}
     <a href="/" class="nav-brand v3-brand"><span class="v3-brand-mark" aria-hidden="true">PE</span><span>Personal Edition</span></a>
-    <div class="v3-nav-caption"><a href="{{ _guide_href }}" data-product-guide="true">30초 사용법</a>Private · Human reviewed</div>
+    <div class="v3-nav-caption"><a href="{{ _guide_href }}" data-product-guide="true">30초 사용법</a><span>Private · Human reviewed</span></div>
     {% endif %}
   </nav>
 </header>
