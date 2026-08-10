@@ -1,0 +1,87 @@
+name: B13 Deep Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b13-deep-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b13-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b13-audit && cd /tmp/b13-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Capture discovered B13 Production routes
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b13-evidence
+          cd /tmp/b13-audit
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'),path=require('path');
+          const base='https://ai-revenue-personal-video-archive.pages.dev';
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results=[];
+            for(const vp of vps){
+              const ctx=await browser.newContext({viewport:vp});
+              const discovery=await ctx.newPage();
+              await discovery.goto(base+'/',{waitUntil:'networkidle',timeout:45000});
+              const hrefs=await discovery.locator('a[href]').evaluateAll(as=>as.map(a=>({text:(a.textContent||'').trim(),href:a.href})).filter(x=>x.href.startsWith(location.origin)));
+              const topicHref=(hrefs.find(x=>/\/topics\/?$/.test(new URL(x.href).pathname))||{}).href;
+              const recordsHref=(hrefs.find(x=>/\/records\/?$/.test(new URL(x.href).pathname))||{}).href;
+              const rootUrl=discovery.url();
+              await discovery.close();
+              const routes=[['root',rootUrl],['guide',base+'/guide.html']];
+              if(topicHref)routes.push(['topics',topicHref]);
+              if(recordsHref)routes.push(['records',recordsHref]);
+              for(const [name,url] of routes){
+                const page=await ctx.newPage();const errors=[],failed=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(url,{waitUntil:'networkidle',timeout:45000});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(300);
+                const m=await page.evaluate(()=>{const h=document.querySelector('h1'),r=h?.getBoundingClientRect(),c=h?getComputedStyle(h):null;return{url:location.href,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h?.innerText.trim()||'',font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,h1Y:r?.y??null,previewVisible:[...document.querySelectorAll('.preview-notice,[class*=preview]')].some(x=>{const r=x.getBoundingClientRect();return r.width>20&&r.height>10&&getComputedStyle(x).visibility!=='hidden'}),largeSvg:[...document.querySelectorAll('svg')].filter(s=>{const x=s.getBoundingClientRect();return x.width>100&&x.height>100}).length}});
+                const candidates=await page.locator('a[href]').evaluateAll(as=>as.map(a=>({text:(a.textContent||'').trim(),href:a.href})).filter(x=>x.href.startsWith(location.origin)));
+                let detail='';
+                if(name==='topics')detail=(candidates.find(x=>/\/topics\/.+/.test(new URL(x.href).pathname)&&!/\/topics\/?$/.test(new URL(x.href).pathname))||{}).href||'';
+                if(name==='records')detail=(candidates.find(x=>/\/records\/.+/.test(new URL(x.href).pathname)&&!/\/records\/?$/.test(new URL(x.href).pathname))||{}).href||'';
+                await page.screenshot({path:path.join('/tmp/b13-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                results.push({viewport:vp.name,name,status:response?.status()||0,errors,failed,detail,...m});await page.close();
+                if(detail){
+                  const d=await ctx.newPage();const de=[],df=[];d.on('console',m=>{if(m.type()==='error')de.push(m.text())});d.on('pageerror',e=>de.push(e.message));d.on('response',r=>{if(r.status()>=400)df.push(`${r.status()} ${r.url()}`)});const dr=await d.goto(detail,{waitUntil:'networkidle',timeout:45000});await d.evaluate(()=>document.fonts.ready);const dm=await d.evaluate(()=>{const h=document.querySelector('h1'),r=h?.getBoundingClientRect(),c=h?getComputedStyle(h):null;return{url:location.href,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h?.innerText.trim()||'',font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,h1Y:r?.y??null,largeSvg:[...document.querySelectorAll('svg')].filter(s=>{const x=s.getBoundingClientRect();return x.width>100&&x.height>100}).length}});await d.screenshot({path:path.join('/tmp/b13-evidence',`${vp.name}-${name}-detail.png`),fullPage:false});results.push({viewport:vp.name,name:`${name}-detail`,status:dr?.status()||0,errors:de,failed:df,...dm});await d.close();
+                }
+              }
+              await ctx.close();
+            }
+            await browser.close();
+            const bad=results.filter(x=>x.status!==200||x.overflow>1||x.errors.length||x.failed.length||x.largeSvg>0);
+            const required=[];
+            for(const vp of ['desktop','mobile']){if(!results.find(x=>x.viewport===vp&&x.name==='topics'))required.push(`${vp} topics undiscovered`);if(!results.find(x=>x.viewport===vp&&x.name==='records'))required.push(`${vp} records undiscovered`)}
+            fs.writeFileSync('/tmp/b13-evidence/results.json',JSON.stringify({results,bad,required},null,2));console.log(JSON.stringify({count:results.length,bad:bad.map(x=>[x.viewport,x.name]),required},null,2));if(bad.length||required.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b13-deep-visual-audit-${{ github.run_number }}
+          path: /tmp/b13-evidence
+          if-no-files-found: error
+          retention-days: 7
