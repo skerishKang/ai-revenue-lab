@@ -1,0 +1,39 @@
+name: B09 Type Polish Materialize 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b09-type-polish-materialize-20260810.yml'
+      - 'reference/business-09-personalized-childrens-story-v1/styles/story-bloom-v2-type-polish.css'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.event.pull_request.head.ref == 'fix/b09-korean-story-rhythm-20260810'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Wire Story Bloom typography polish
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          from pathlib import Path
+          root=Path('reference/business-09-personalized-childrens-story-v1')
+          marker='story-bloom-v2-type-polish.css'
+          link='<link rel="stylesheet" href="./styles/story-bloom-v2-type-polish.css?v=b09-type-20260810">'
+          for name in ['index.html','guide.html','ux.html']:
+              p=root/name
+              text=p.read_text(encoding='utf-8')
+              if marker not in text:
+                  text=text.replace('</head>',link+'\n</head>',1)
+                  p.write_text(text,encoding='utf-8')
+          PY
+          git rm .github/workflows/b09-type-polish-materialize-20260810.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add reference/business-09-personalized-childrens-story-v1
+          git commit -m 'fix(B09): wire Korean story rhythm polish'
+          git push origin HEAD:${GITHUB_HEAD_REF}
