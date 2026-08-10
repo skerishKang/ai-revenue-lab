@@ -1,0 +1,68 @@
+name: B21 Deep Visual Audit 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b21-deep-visual-audit-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b21-deep-visual-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      APP_DIR: reference/business-21-founder-strategy-letter-v1
+      CANONICAL: https://21-founder-strategy-letter.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', fetch-depth: 1, persist-credentials: false}
+      - name: Assert exact authority and Production bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          verify(){ url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1); for n in 1 2; do curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "${url}?audit=${EXPECTED_SHA}-${n}" -o /tmp/public; actual=$(sha256sum /tmp/public|cut -d' ' -f1); echo "$url expected=$expected actual=$actual"; test "$actual" = "$expected"; sleep 1; done; }
+          verify "$CANONICAL/index.html" "$APP_DIR/index.html"
+          verify "$CANONICAL/ux.html" "$APP_DIR/ux.html"
+          verify "$CANONICAL/guide.html" "$APP_DIR/guide.html"
+          verify "$CANONICAL/styles/decision-corridor-v2-mobile-fix.css" "$APP_DIR/styles/decision-corridor-v2-mobile-fix.css"
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Capture visual and decision-path evidence
+        shell: bash
+        run: |
+          mkdir -p /tmp/b21-audit-evidence
+          cat > /tmp/b21-audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://21-founder-strategy-letter.pages.dev';
+          const surfaces=[['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']];
+          const viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}};
+          const failures=[],results=[];
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){const page=await context.newPage(),errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)}); page.on('pageerror',e=>errors.push(`page:${e.message}`)); page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`)); const response=await page.goto(base+path+'?audit='+Date.now(),{waitUntil:'networkidle'}); if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP`);
+                const m=await page.evaluate(()=>{const root=document.documentElement,body=document.body,h1=document.querySelector('h1'),top=document.querySelector('.dc-topbar'),hs=h1?getComputedStyle(h1):null,hr=h1?.getBoundingClientRect(),tr=top?.getBoundingClientRect(); const f=hs?parseFloat(hs.fontSize):NaN,l=hs?parseFloat(hs.lineHeight):NaN,s=document.querySelector('.dc-signals')?.getBoundingClientRect(),c=document.querySelector('.dc-canvas')?.getBoundingClientRect(),d=document.querySelector('.dc-decision')?.getBoundingClientRect(); return {viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,pageHeight:root.scrollHeight,h1Text:h1?.innerText||'',h1Font:f,h1Line:l,h1Ratio:Number.isFinite(f)&&f>0&&Number.isFinite(l)?l/f:null,h1Top:hr?.top??null,h1Bottom:hr?.bottom??null,topbarBottom:tr?.bottom??null,signalsTop:s?.top??null,canvasTop:c?.top??null,decisionTop:d?.top??null};});
+                if(m.overflowX>1)failures.push(`${mode}/${name}: overflow ${m.overflowX}`); if(errors.length)failures.push(`${mode}/${name}: ${errors.join(' | ')}`); if(m.h1Top!==null&&m.topbarBottom!==null&&m.h1Top<m.topbarBottom-2)failures.push(`${mode}/${name}: H1 intersects chrome`); if(/[가-힣]/.test(m.h1Text)&&m.h1Ratio!==null&&m.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean H1 ratio ${m.h1Ratio}`); if(mode==='mobile'&&name==='ux'&&!(m.signalsTop<m.canvasTop&&m.canvasTop<m.decisionTop))failures.push('mobile/ux: visual order is not SIGNALS → QUESTION/TENSION → DECISION/WATCH'); await page.screenshot({path:`/tmp/b21-audit-evidence/${mode}-${name}.png`}); await page.screenshot({path:`/tmp/b21-audit-evidence/${mode}-${name}-full.png`,fullPage:true}); results.push({mode,name,metrics:m,errors}); await page.close();}
+              for(const [pathName,decision] of [['onboarding','onboarding'],['pricing','pricing']]){const page=await context.newPage(); await page.goto(base+'/ux.html?journey='+pathName+'-'+Date.now(),{waitUntil:'networkidle'}); await page.locator('[data-signal="activation"]').click(); await page.locator('[data-signal="pricing"]').click(); if(await page.locator('#buildTension').isDisabled())failures.push(`${mode}/${pathName}: signal gate did not unlock`); await page.locator('#buildTension').click(); if(!(await page.locator('#tension').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/${pathName}: tension not active`); await page.locator('#tension [data-go="brief"]').click(); await page.locator('#brief [data-go="review"]').click(); await page.locator(`[data-decision="${decision}"]`).click(); if(!(await page.locator('#review').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/${pathName}: review not active`); if(await page.locator('#finish').isDisabled())failures.push(`${mode}/${pathName}: finish stayed disabled`); const watch=await page.locator('#watchText').innerText(); if(decision==='onboarding'&&!watch.includes('첫 24시간'))failures.push(`${mode}/${pathName}: onboarding watchpoint mismatch`); if(decision==='pricing'&&!watch.includes('가격/플랜'))failures.push(`${mode}/${pathName}: pricing watchpoint mismatch`); await page.locator('#finish').click(); if(!((await page.locator('#decisionStatus').innerText()).includes('결정 메모 완료')))failures.push(`${mode}/${pathName}: completion status mismatch`); await page.screenshot({path:`/tmp/b21-audit-evidence/${mode}-ux-${pathName}-full.png`,fullPage:true}); await page.close();}
+              await context.close();}
+            await browser.close(); fs.writeFileSync('/tmp/b21-audit-evidence/metrics.json',JSON.stringify({expectedSha:'a631122888d30c5a8a62f4b27e192967da331898',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b21-audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b21-deep-visual-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/b21-audit-evidence
+          if-no-files-found: error
+          retention-days: 7
