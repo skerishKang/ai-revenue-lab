@@ -1,161 +1,148 @@
 # AI Revenue Lab — Portfolio Visual Differentiation Matrix
 
-Status: `AUDIT_IN_PROGRESS`
+Status: `DIRECTION_MATRIX_COMPLETE`
 
-Purpose: prevent unrelated numbered Businesses from converging on the same visual language **before** further redesign implementation begins.
+Purpose: reserve a distinct visual territory for each internal web Business before numbered implementation restarts.
 
-This matrix is not a list of approved UIs. It records intended/current visual territory and the new-standard verdict from fresh evidence.
+This matrix is a direction contract, not owner approval.
 
-Legend:
+## Final territory matrix
 
-```text
-DIRECTION_FROZEN        fresh new-standard audit + direction document exists
-CASE_STUDY               methodology lesson recorded
-PRELIMINARY              known current surface; full new-standard audit pending
-PENDING                  audit not yet performed under new standard
-EXTERNAL / SUCCESSOR     no internal redesign
-NON_WEB                  web matrix not applicable
-```
+| B# | Reserved visual world | Core object | Verdict |
+|---:|---|---|---|
+| 01 | Private Archive Editorial | collectible private Edition + source fragments | REDESIGN |
+| 02 | Cinematic Personal Journey | place-first travel Edition + route/time layer | REDESIGN |
+| 03 | external / parallel | — | NO BUILD |
+| 04 | Adaptive Learning Studio | lesson + visible adaptation trace | FOCUSED POLISH |
+| 05 | DanjiOn successor | — | NO BUILD |
+| 06 | Personal World Signal Room / Editorial Dispatch | lead story + feed signal | KEEP / case study |
+| 07 | Relational Meaning Field | relationship between personal memories | REDESIGN ART LAYER |
+| 08 | Domestic Pressroom | family newspaper issue | KEEP |
+| 09 | Living Picture Book | illustrated child story spread | REDESIGN ART LAYER |
+| 10 | Personal Cover Story | one subject-led fan magazine issue | REDESIGN |
+| 11 | Bilingual Field Journal | annotated target-language reading spread | FOCUSED POLISH |
+| 12 | Solo Editorial Desk | one source → multiple format proofs | REDESIGN |
+| 13 | Private Cinema Ledger | screening record / contact sheet | KEEP |
+| 14 | Korean AI Execution Workspace | active session + connection/model state | KEEP |
+| 15 | Evidence Newsroom | claim dossier + source packets | REDESIGN ART LAYER |
+| 16 | Matchday Broadcast Journal | match clock / momentum timeline / moments | REDESIGN ART LAYER |
+| 17 | Counter Journal | local shop scene → proofed issue | FOCUSED POLISH |
+| 18 | Listening Room | track + playback timeline + echoes | REDESIGN ART LAYER |
+| 19 | Memory Provenance Table | dated/compared/marked memory page | REDESIGN |
+| 20 | Narrative Draft Room | source memory + working manuscript | REDESIGN ART LAYER |
+| 21 | Decision Memo / Tension Corridor | strategic question + tension + decision + watch | REDESIGN ART LAYER |
+| 22 | Story Spine Loom | story spine linking sources to media editions | REDESIGN ART LAYER |
+| 23–28 | external / integrated successors | — | NO BUILD |
+| 29 | Guided Governance Manual | chapter + scenario | KEEP / protected authority |
+| 30–31 | successors | — | NO BUILD |
+| 32 | Skill Evidence Bench | task + evidence + reusable skill artifact | REDESIGN ART LAYER |
+| 33 | Research Trace Desk | question → source → claim → note lineage | REDESIGN ART LAYER |
+| 34 | Rights-First Dubbing Suite | rights slate + segment timeline + voice direction | REDESIGN ART LAYER |
+| 35 | Media Transformation Program | organizational transformation phases + evidence | KEEP CORE |
+| 36 | Personal Safety Plan Board | user-owned safety plan | REDESIGN |
+| 37 | Evidence Route Map | route paths + segment evidence | REDESIGN |
+| 38 | Movement Session Canvas | exercise sequence + user adjustment | REDESIGN |
+| 39 | Bilingual Call Console | original/interpreted call timeline | REDESIGN |
+| 40 | Known / Unknown Triage Board | confirmed/missing facts + AI signal + human decision | REDESIGN |
+| 41 | Emergency Phrase Builder | structured facts → bilingual statement | REDESIGN |
+| 42 | Development Control Tower | work/evidence/dependency operations map | REDESIGN |
+| 43 | Work Contract Assembly Line | bounded software work contract + verification packets | REDESIGN |
+| 44 | Portfolio Operations Index | numbered business truth/status/action list | KEEP ROLE; live conformance pending |
+| 45 | Content Lineage Engine | source → transform → reviewed output lineage | REDESIGN |
+| 46 | Preference Control Mixer | explicit controls + live before/after preview | REDESIGN |
+| 47 | Feedback Signal Basin | feedback events → themes/conflicts → manual proposal | REDESIGN |
+| 48 | Claim-Evidence Gate | claim/evidence chain + verification gate | REDESIGN |
+| 49 | Schema Connector Blueprint | source schema → field mapping → validation | REDESIGN |
+| 50 | Ieeon successor | — | NO BUILD |
+| 51 | Workflow Package Shelf | workflow package contract + pre-install check | REDESIGN |
+| 52 | Time Rail Operations | schedule/run/exception/human-review timeline | REDESIGN |
+| 53 | Host Insertion Frame | host app + embedded slot + IO contract | REDESIGN |
+| 54 | CLI/TUI Model Router | routing policy | NON-WEB |
+| 55 | Local Hardware Topology | device fleet + task/capacity/incident state | REDESIGN |
+| 56 | intentional numbering gap | — | DO NOT INVENT |
+| 57 | Translation Proof Workshop | parallel source/translation proof | REDESIGN |
+| 58 | Writing Voice Studio | textual voice fingerprint + draft comparison | REDESIGN |
+| 59 | Spatial Living Library | synchronized 3D volume + 2D source reader | KEEP CORE |
 
-## 1. Matrix
+## Portfolio collision findings from fresh same-condition screenshots
 
-| B# | Product | Authority | Reserved visual world | Core object | Density | Transformation / motion | Collision / verdict |
-|---:|---|---|---|---|---|---|---|
-| 01 | Personal Edition | internal live | **Private Archive Editorial** — tactile, intimate, authored, collectible | private Edition + source fragments | low–mid | fragment → edit → bind → read → recut | **DIRECTION_FROZEN · REDESIGN**; separate from B19/B20 |
-| 02 | Living Travel | internal live | **Cinematic Personal Journey** — place/light/weather first; route as supporting layer | personal journey / travel Edition | mid | place → route → day → adapt | **DIRECTION_FROZEN · REDESIGN**; current no-image dark route shell misses Issue #457 and collides B06/B07 |
-| 03 | External / Parallel | external | — | — | — | — | EXTERNAL |
-| 04 | Adaptive Learning | internal live | **Adaptive Learning Studio** — lesson revision / adaptation trace | lesson + before/after adaptation | mid | goal → diagnostic → lesson → feedback → adapt | **DIRECTION_FROZEN · FOCUSED_POLISH**; reduce dark-board sameness + fix Korean compression |
-| 05 | DanjiOn | successor | — | — | — | — | EXTERNAL |
-| 06 | World Feed | internal live/review lineage | **Personal World Signal Room / Editorial Dispatch** | lead story + feed signal | mid–high | signal → open → why → adjust → return | **DIRECTION_FROZEN · CASE_STUDY**; B06 style is not reusable portfolio template |
-| 07 | Personal Meaning Map | internal web | **Relational Meaning Field** — light/mineral, quiet spatial memory relationships | relationship between memories | low–mid | memory → signal → connect → review → reframe | **DIRECTION_FROZEN · REDESIGN ART LAYER**; interaction preserved, dark signal/orbit family rejected |
-| 08 | Family Newspaper | internal web | household/family publication — pending | family issue | TBD | TBD | PENDING; publication cluster |
-| 09 | Personalized Children's Story | internal web | illustrated/personal narrative — pending | story scene | TBD | TBD | PENDING |
-| 10 | Fan Magazine | internal web | fandom publication/replay — pending | fan edition / replay | TBD | TBD | PENDING; publication cluster |
-| 11 | Language Learning Magazine | internal web | language learning publication — pending | phrase/lesson issue | TBD | TBD | PENDING; publication cluster |
-| 12 | Creator Mini Media | internal web | creator release/media — pending | release package | TBD | TBD | PENDING |
-| 13 | Private Cinema Ledger | internal web | private cinema/viewing archive — pending | viewing record / film entry | TBD | TBD | PENDING; archive/audio overlap |
-| 14 | Korean AI Platform | internal live | AI workspace — pending | session / connection / model control | mid–high | connect → configure → work | PRELIMINARY; generic AI console risk |
-| 15 | Global AI Newsroom | internal live | verification newsroom — pending | claim + sources | mid–high | claim → sources → verdict | PRELIMINARY; B33/B48 collision |
-| 16 | Personal Sports | internal live | matchday journal — pending | match + moment | mid | matchday → focus → flow → moments | PRELIMINARY |
-| 17 | Local Shop Magazine | internal live | local counter journal — pending | scene / shop issue | mid | scene → voice → edit → proof → issue | PRELIMINARY; publication cluster |
-| 18 | Personal Audio Channel | internal live | listening room — pending | track / echo | mid | play → echo → keep | PRELIMINARY |
-| 19 | Personal Memory Book | internal live | memory binding/provenance — pending | memory page / provenance mark | low–mid | gather → date → compare → mark → bind | PRELIMINARY; strongest B01 collision risk |
-| 20 | Personal Memory Novel | internal live | manuscript/narrative interpretation — pending | source memory / narrative draft | mid | source → POV → draft → compare → author | PRELIMINARY; B01/B19 collision |
-| 21 | Founder Strategy Letter | internal web | decision/strategy — pending | decision / signal | mid | signal → tension → decision → watch | PRELIMINARY; control/dashboard risk |
-| 22 | Personal Media Studio | internal web | media/story production — pending | source / spine / media output | mid | sources → canvas → outputs → trace | PRELIMINARY |
-| 23 | LoveBud | external | — | — | — | — | EXTERNAL |
-| 24 | LoveTree | external | — | — | — | — | EXTERNAL |
-| 25 | Love Matchmaking | external | — | — | — | — | EXTERNAL |
-| 26 | Ieeon | integrated successor | — | — | — | — | EXTERNAL |
-| 27 | Sasillo | integrated successor | — | — | — | — | EXTERNAL |
-| 28 | Ieeon | integrated successor | — | — | — | — | EXTERNAL |
-| 29 | Apartment Governance | protected review authority | guided governance tutorial — pending | chapter / scenario | mid | guided scenario | PRELIMINARY |
-| 30 | 400 AI Finder | successor | — | — | — | — | EXTERNAL |
-| 31 | Sasillo | integrated successor | — | — | — | — | EXTERNAL |
-| 32 | AI Skill Studio | review authority | skill-building workbench — pending | task / evidence / saved skill | high | task → evidence → conflict → review → save | PRELIMINARY; generic workflow risk |
-| 33 | Research Memory | review authority | research memory — pending | source / claim / note | mid | question → sources → claims → note | PRELIMINARY; B15/B48 collision |
-| 34 | AI Dubbing Studio | review authority | rights-first dubbing workflow — pending | rights / segments / synthetic voice / review | mid | rights → segments → voice → review | PENDING |
-| 35 | AI Media Education DX | review lineage | pending | TBD | TBD | TBD | PENDING |
-| 36 | AI Women Safety | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
-| 37 | AI Safe Route | web review | pending | TBD | TBD | TBD | PENDING; emergency/safety family |
-| 38 | AI Exercise Coach | web review | pending | TBD | TBD | TBD | PENDING |
-| 39 | 112 Real-Time Interpretation | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
-| 40 | Emergency Urgency AI | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
-| 41 | Foreign Emergency Assistant | web review | pending | TBD | TBD | TBD | PENDING; emergency family |
-| 42 | AI Development Control Tower | web review | pending | TBD | TBD | TBD | PENDING; control-room risk |
-| 43 | AI Software Factory | web review | pending | TBD | TBD | TBD | PENDING; control/factory risk |
-| 44 | Portfolio Console | special authority | resolve before direction | portfolio registry/control | high | TBD | AUTHORITY RESOLUTION |
-| 45 | AI Content Engine | web review | pending | TBD | TBD | TBD | PENDING |
-| 46 | AI Personalization Engine | web review | pending | TBD | TBD | TBD | PENDING |
-| 47 | Real-Time Feedback Engine | web review | pending | TBD | TBD | TBD | PENDING |
-| 48 | AI Verification Engine | web review | pending | TBD | TBD | TBD | PENDING; B15/B33 collision |
-| 49 | Public Data Connector Hub | web review | pending | TBD | TBD | TBD | PENDING |
-| 50 | Ieeon | integrated successor | — | — | — | — | EXTERNAL |
-| 51 | AI Workflow Marketplace | web review | pending | TBD | TBD | TBD | PENDING; generic marketplace risk |
-| 52 | Scheduled Agent Operations | web review | pending | TBD | TBD | TBD | PENDING; operations/control risk |
-| 53 | Embedded AI SDK | web review | pending | TBD | TBD | TBD | PENDING; developer-tool risk |
-| 54 | AI Model Router | CLI/TUI | — | routing policy | high | policy routing | NON_WEB |
-| 55 | Local AI Fleet | web review | pending | TBD | TBD | TBD | PENDING; engine/control risk |
-| 56 | intentional numbering gap / unresolved authority | none | — | — | — | — | AUTHORITY RESOLUTION |
-| 57 | Classic Literature Translation | web review | pending | TBD | TBD | TBD | PENDING; reading/editorial cluster |
-| 58 | Personal Writing Voice | web review | pending | TBD | TBD | TBD | PENDING; writing/editorial cluster |
-| 59 | Living Archive | web review | pending | TBD | TBD | TBD | PENDING; B01/B13/B19 archive collision |
+### 1. Dark giant-title family was overused
 
-## 2. Batch A portfolio finding
-
-Fresh same-condition contact sheets exposed a portfolio-level problem that the previous number-by-number audit underweighted.
-
-At thumbnail/first-viewport level, current B01/B02/B06/B07 all rely heavily on combinations of:
+Fresh contact sheets showed B01/B02/B06/B07 and especially B10/B12/B15/B16/B18/B21/B22 converging on combinations of:
 
 ```text
-very dark green/navy/black field
-+ oversized high-contrast display headline
-+ coral/orange or cyan accent
-+ thin circle/orbit/route/connection geometry
-+ small uppercase/micro metadata
-+ similar compact top chrome
+dark field
++ oversized condensed title
++ one bright accent
++ thin abstract geometry
++ small metadata
 ```
 
-B04 uses a beige outer shell but still centers a large dark presentation board with oversized Korean display type and technical rail.
+Direction split:
 
-Therefore future audits must evaluate **portfolio collision at thumbnail distance**, not only whether each product has domain-specific copy or a different state machine.
+- B06 keeps Signal Room because it fits the product.
+- B01 moves tactile/archive.
+- B02 becomes place/image-first travel.
+- B07 becomes quiet relational field.
+- B10 becomes subject/image-led cover story.
+- B12 returns to physical editorial desk.
+- B15 becomes evidence newsroom.
+- B16 becomes matchday timeline.
+- B18 becomes playback/listening room.
+- B21 becomes decision memo.
+- B22 becomes story-spine loom.
 
-The correction strategy is deliberately different per product:
+### 2. Generic light-card prototype family was more severe
+
+Fresh screenshots showed B36–B43, B45–B49 and B51–B55 using nearly interchangeable:
 
 ```text
-B01 → tactile Private Archive Editorial
-B02 → place/image-first Cinematic Personal Journey
-B04 → learner-content-first Adaptive Learning Studio
-B06 → retain product-specific Signal Room / World Dispatch territory
-B07 → light/mineral Relational Meaning Field
+light beige/gray page
++ dark top bar
++ ~64px heading
++ 2–3 white cards
 ```
 
-## 3. High-priority collision clusters
+This is now explicitly rejected. Each Business has a different core object in its own direction document.
 
-### Archive / memory / publication
+### 3. Publication/archive family required separation
+
+B01/B08/B09/B10/B11/B12/B13/B17/B19/B20/B57/B58/B59 must not all use “paper + issue number + large serif title”. The matrix assigns distinct jobs/materials: newspaper, picture book, cover story, field journal, creator desk, cinema contact sheet, shop counter journal, provenance table, manuscript room, translation proof, writing voice, spatial library.
+
+### 4. Evidence products required role separation
 
 ```text
-B01, B08, B10, B11, B13, B17, B19, B20, B57, B58, B59
+B15 = newsroom briefing
+B33 = durable research memory
+B48 = reusable verification gate
 ```
 
-Do not let all become beige paper + serif/giant title + issue-number cover systems.
+A shared claim/source card UI would erase the different user jobs.
 
-### Signal / control / operations
+### 5. Emergency products required task separation
 
 ```text
-B06, B14, B21, B32, B42, B43, B45–B55
+B36 = personal plan
+B37 = route evidence map
+B39 = live bilingual call trace
+B40 = known/unknown triage
+B41 = emergency statement builder
 ```
 
-B06's dark signal-room combination is reserved; other products need independent visual territory.
+Do not reuse one red alert dashboard.
 
-### Evidence / verification / research
+## Implementation collision gate
 
-```text
-B15, B33, B48
-```
+Before implementing a Business, reviewers must compare the proposed first viewport against at least its nearest two collision neighbors in this matrix.
 
-Differentiate editorial verification, personal research memory and reusable verification infrastructure.
+A redesign fails before merge if it reproduces another Business's combination of:
 
-### Safety / emergency
-
-```text
-B36–B41
-```
-
-Do not allow six alert/map products to collapse into one red-badge dashboard family.
-
-## 4. Matrix completion rule
-
-`PENDING` rows cannot begin visual implementation.
-
-Each implementation target must first gain a frozen Business direction containing confirmed:
-
-- visual world;
+- dominant background/material;
+- headline behavior;
 - core object;
-- density;
+- layout skeleton;
 - motion grammar;
-- reference translation;
-- collision notes;
-- `KEEP / FOCUSED_POLISH / REDESIGN` verdict.
+- primary accent system;
+- interaction metaphor.
 
-The matrix is updated before code, never retrofitted after implementation.
+Shared accessibility/UI conventions are allowed. Shared art direction without product justification is not.
