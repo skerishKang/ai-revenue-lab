@@ -1,0 +1,205 @@
+name: Deploy B06 V4 Canonical Entry Fix 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b06-v4-entry-route-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b06-v4-entry-route-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 6d6d1a976579e357c171cf62a4c8833ef501a7d5
+      PROJECT: 06-world-feed
+      URL: https://06-world-feed.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact current main and entry-route source markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          grep -q 'navigation.js?v=world-feed-v4-entry-route-20260810' reference/business-06-world-feed-v1/index.html
+          grep -q 'if (!value || value === "loading") return "feed"' reference/business-06-world-feed-v1/scripts/navigation.js
+          grep -q 'signature-scene-v4.js' reference/business-06-world-feed-v1/index.html
+
+      - name: Deploy exact main B06
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
+            --project-name "$PROJECT" --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B06 V4 canonical entry route exact main'
+
+      - name: Verify public canonical bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 35); do
+            html=$(curl -L -sS --max-time 20 "$URL" || true)
+            nav=$(curl -L -sS --max-time 20 "${URL}scripts/navigation.js?v=world-feed-v4-entry-route-20260810" || true)
+            if grep -q 'navigation.js?v=world-feed-v4-entry-route-20260810' <<<"$html" \
+              && grep -q 'signature-scene-v4.js' <<<"$html" \
+              && grep -q 'value === "loading"' <<<"$nav" \
+              && grep -q 'return "feed"' <<<"$nav"; then
+              echo 'B06_V4_CANONICAL_ENTRY_PUBLIC_BYTES_PASS=1'
+              exit 0
+            fi
+            sleep 4
+          done
+          exit 1
+
+      - name: Install isolated Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b06-prod-entry-pw
+          cd /tmp/b06-prod-entry-pw
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Canonical Production no-hash browser QA and screenshots
+        env:
+          NODE_PATH: /tmp/b06-prod-entry-pw/node_modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/b06-prod-entry-evidence
+          mkdir -p /tmp/b06-prod-entry-evidence
+          cat >/tmp/b06-prod-entry-qa.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const assert = require('assert');
+          const url = process.env.URL;
+
+          async function waitEntry(page) {
+            await page.waitForSelector('#view-feed:not([hidden]) .wf-cinema-v4 .wf-v4-entry', { state: 'visible', timeout: 15000 });
+            await page.waitForFunction(() => {
+              const img = document.querySelector('.wf-v4-entry-photo');
+              return Boolean(img && img.complete && img.naturalWidth > 300 && img.naturalHeight > 300);
+            }, null, { timeout: 20000 });
+          }
+
+          async function inspect(browser, name, viewport, reducedMotion = 'no-preference') {
+            const context = await browser.newContext({ viewport, reducedMotion });
+            const page = await context.newPage();
+            const errors = [];
+            const badResponses = [];
+            const bind = target => {
+              target.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
+              target.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
+              target.on('response', r => { if (r.status() >= 400) badResponses.push(`${r.status()} ${r.url()}`); });
+            };
+            bind(page);
+
+            // Exact user path: canonical URL, no #feed added by QA.
+            await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
+            await waitEntry(page);
+            await page.evaluate(() => document.fonts.ready);
+            const root = await page.evaluate(() => ({
+              hash: location.hash,
+              route: document.querySelector('.review-shell')?.dataset.route,
+              activeRoutes: [...document.querySelectorAll('[data-route-view]')].filter(v => !v.hidden).length,
+              loadingHidden: document.querySelector('#view-loading')?.hidden,
+              feedHidden: document.querySelector('#view-feed')?.hidden,
+              title: document.querySelector('#wf-v4-title')?.innerText || '',
+              promise: document.querySelector('.wf-v4-promise')?.innerText || '',
+              overflow: document.documentElement.scrollWidth - innerWidth,
+              paperlogyReady: document.fonts.check('700 32px Paperlogy'),
+              suitReady: document.fonts.check('400 16px "SUIT Variable"'),
+              reduced: matchMedia('(prefers-reduced-motion: reduce)').matches
+            }));
+            assert.equal(root.hash, '#feed');
+            assert.equal(root.route, 'feed');
+            assert.equal(root.activeRoutes, 1);
+            assert.equal(root.loadingHidden, true);
+            assert.equal(root.feedHidden, false);
+            assert.match(root.title, /전 세계 소식 중/);
+            assert.match(root.promise, /개인 브리프/);
+            assert.ok(root.overflow <= 1, `${name}: overflow ${root.overflow}`);
+            assert.equal(root.paperlogyReady, true);
+            assert.equal(root.suitReady, true);
+            await page.screenshot({ path: `/tmp/b06-prod-entry-evidence/${name}-canonical-root.png`, fullPage: false });
+
+            const stalePage = await context.newPage();
+            bind(stalePage);
+            await stalePage.goto(`${url}#loading`, { waitUntil: 'networkidle', timeout: 45000 });
+            await waitEntry(stalePage);
+            const stale = await stalePage.evaluate(() => ({
+              hash: location.hash,
+              route: document.querySelector('.review-shell')?.dataset.route,
+              loadingHidden: document.querySelector('#view-loading')?.hidden,
+              feedHidden: document.querySelector('#view-feed')?.hidden
+            }));
+            assert.deepEqual(stale, { hash: '#feed', route: 'feed', loadingHidden: true, feedHidden: false });
+            await stalePage.close();
+
+            await page.evaluate(() => window.WorldFeed.navigation.navigate('loading'));
+            await page.waitForSelector('#view-loading:not([hidden])', { state: 'visible', timeout: 5000 });
+            const internal = await page.evaluate(() => ({
+              hash: location.hash,
+              route: document.querySelector('.review-shell')?.dataset.route,
+              loadingHidden: document.querySelector('#view-loading')?.hidden,
+              feedHidden: document.querySelector('#view-feed')?.hidden
+            }));
+            assert.deepEqual(internal, { hash: '#loading', route: 'loading', loadingHidden: false, feedHidden: true });
+            await page.evaluate(() => window.WorldFeed.navigation.navigate('feed'));
+            await waitEntry(page);
+
+            assert.deepEqual(errors, [], `${name}: browser errors ${errors.join(' | ')}`);
+            assert.deepEqual(badResponses, [], `${name}: bad responses ${badResponses.join(' | ')}`);
+            await context.close();
+            return { root, stale, internal, errors, badResponses };
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const result = {};
+            result.desktop = await inspect(browser, 'production-desktop-1440x1100', { width: 1440, height: 1100 });
+            result.mobile = await inspect(browser, 'production-mobile-390x844', { width: 390, height: 844 });
+            result.reduced = await inspect(browser, 'production-reduced-motion-1440x1100', { width: 1440, height: 1100 }, 'reduce');
+            fs.writeFileSync('/tmp/b06-prod-entry-evidence/results.json', JSON.stringify(result, null, 2));
+            await browser.close();
+            console.log(JSON.stringify(result, null, 2));
+          })().catch(error => {
+            fs.writeFileSync('/tmp/b06-prod-entry-evidence/error.txt', `${error.stack || error}\n`);
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node /tmp/b06-prod-entry-qa.cjs
+
+      - name: Re-assert main stayed exact after deploy and QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+
+      - name: Upload canonical Production entry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b06-v4-canonical-entry-production-evidence-${{ github.run_number }}
+          path: /tmp/b06-prod-entry-evidence
+          if-no-files-found: error
