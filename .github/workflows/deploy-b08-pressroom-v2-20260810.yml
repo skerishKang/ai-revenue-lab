@@ -1,0 +1,35 @@
+name: Deploy B08 Pressroom V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b08-pressroom-v2-20260810.yml']
+permissions: {contents: read}
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b08-pressroom-v2-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: 92f335bbfc99e74e860da7028646122c0592d94f
+      PROJECT: 08-family-newspaper
+      URL: https://08-family-newspaper.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          grep -q 'pressroom-v2.css' reference/business-08-family-newspaper-v1/index.html
+          npx --yes wrangler@latest pages deploy reference/business-08-family-newspaper-v1 --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B08 Pressroom V2 exact main'
+          for i in $(seq 1 35); do
+            root=$(curl -L -sS --max-time 20 "$URL" || true); ux=$(curl -L -sS --max-time 20 "${URL}ux.html" || true); guide=$(curl -L -sS --max-time 20 "${URL}guide.html" || true)
+            if grep -q 'pressroom-v2.css' <<<"$root" && grep -q 'pressroom-v2.css' <<<"$ux" && grep -q 'pressroom-v2.css' <<<"$guide"; then echo B08_PRESSROOM_PUBLIC_PASS=1; exit 0; fi
+            sleep 4
+          done
+          exit 1
