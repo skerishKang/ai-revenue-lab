@@ -14,7 +14,7 @@ jobs:
   deploy-and-qa:
     if: github.event.pull_request.head.ref == 'ops/deploy-b04-adaptive-workspace-v3-20260810'
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       EXPECTED_SHA: 7277df0f6fa958982a29b036111e6de4aec8c9ac
       PROJECT: ai-revenue-living-learning
@@ -46,23 +46,32 @@ jobs:
             --branch main \
             --commit-hash "$EXPECTED_SHA" \
             --commit-message 'B04 Adaptive Workspace V3 exact main'
-      - name: Poll canonical Production bytes
+      - name: Wait for all canonical Production routes
         shell: bash
         run: |
           set -euo pipefail
-          for i in $(seq 1 40); do
-            root=$(curl -L -sS --max-time 20 "$URL/" || true)
-            css=$(curl -L -sS --max-time 20 "$URL/assets/css/workspace-v3-20260810.css" || true)
-            goal=$(curl -L -sS --max-time 20 "$URL/goals/" || true)
-            if grep -q 'workspace-v3-20260810.css' <<<"$root" \
-              && grep -q 'Adaptive Workspace V3' <<<"$css" \
-              && grep -q 'workspace-v3-20260810.css' <<<"$goal"; then
-              echo 'B04_V3_PUBLIC_BYTES_PASS=1'
+          routes=(
+            / /guide.html /goals/ /diagnostic/ /lesson-1/ /lesson-1/result/
+            /feedback/ /changes/ /lesson-2/ /home/ /progress/ /history/ /review/
+          )
+          ua='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36'
+          for attempt in $(seq 1 45); do
+            missing=0
+            for route in "${routes[@]}"; do
+              body=$(curl -L -sS --max-time 20 -A "$ua" -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "$URL$route" || true)
+              if ! grep -q 'workspace-v3-20260810.css' <<<"$body"; then
+                echo "attempt=$attempt stale=$route"
+                missing=1
+              fi
+            done
+            css=$(curl -L -sS --max-time 20 -A "$ua" -H 'Cache-Control: no-cache' "$URL/assets/css/workspace-v3-20260810.css" || true)
+            if [ "$missing" -eq 0 ] && grep -q 'Adaptive Workspace V3' <<<"$css"; then
+              echo 'B04_V3_ALL_CANONICAL_ROUTES_PASS=1'
               exit 0
             fi
             sleep 4
           done
-          echo 'B04_V3_PUBLIC_BYTES_PASS=0'
+          echo 'B04_V3_ALL_CANONICAL_ROUTES_PASS=0'
           exit 1
       - name: Install Chromium and Korean fonts
         shell: bash
@@ -96,50 +105,63 @@ jobs:
             const results=[];
             for(const vp of vps){
               for(const [name,route] of routes){
-                const page=await browser.newPage({viewport:vp});
-                const errors=[],failed=[];
-                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-                page.on('pageerror',e=>errors.push(e.message));
-                page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
-                const response=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
-                await page.evaluate(()=>document.fonts.ready);
-                await page.waitForTimeout(350);
-                const m=await page.evaluate(()=>{
-                  const h1=document.querySelector('h1');
-                  const hr=h1?.getBoundingClientRect();
-                  const cs=h1?getComputedStyle(h1):null;
-                  const banner=document.querySelector('.preview-banner');
-                  const br=banner?.getBoundingClientRect();
-                  const ws=[...document.styleSheets].some(s=>String(s.href||'').includes('workspace-v3-20260810.css'));
-                  const meaningful=[...document.querySelectorAll('.callout,.stepper,.page-head,h1')]
-                    .map(x=>({text:x.innerText.trim(),rect:x.getBoundingClientRect()}))
-                    .filter(x=>x.text&&x.rect.width>20&&x.rect.height>10)
-                    .sort((a,b)=>a.rect.y-b.rect.y)[0];
-                  return {
-                    overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
-                    h1:h1?.innerText.trim()||'',
-                    h1Y:hr?.y??null,
-                    h1Font:cs?parseFloat(cs.fontSize):null,
-                    h1Line:cs?parseFloat(cs.lineHeight):null,
-                    firstMeaningfulY:meaningful?.rect.y??null,
-                    bannerVisible:!!(br&&br.width>4&&br.height>4),
-                    workspaceLoaded:ws,
-                    shell:!!document.querySelector('.shell')
-                  };
-                });
-                const problems=[];
-                if((response?.status()||0)!==200) problems.push(`status ${response?.status()}`);
-                if(m.overflow>1) problems.push(`overflow ${m.overflow}`);
-                if(errors.length) problems.push(`console/page ${errors.join(' | ')}`);
-                if(failed.length) problems.push(`failed ${failed.join(' | ')}`);
-                if(!m.workspaceLoaded) problems.push('workspace css missing');
-                if(m.bannerVisible) problems.push('preview banner visible');
-                if(vp.name==='mobile'&&m.shell&&name!=='lesson2'&&m.h1Y!==null&&m.h1Y>290) problems.push(`mobile h1 too low ${m.h1Y}`);
-                if(vp.name==='mobile'&&m.shell&&name==='lesson2'&&m.firstMeaningfulY!==null&&m.firstMeaningfulY>190) problems.push(`adaptive content too low ${m.firstMeaningfulY}`);
-                if(m.shell&&m.h1Font&&m.h1Line&&m.h1Line/m.h1Font<1.06) problems.push(`tight Hangul ratio ${(m.h1Line/m.h1Font).toFixed(2)}`);
-                await page.screenshot({path:path.join('/tmp/b04-prod-evidence',`${vp.name}-${name}.png`),fullPage:false});
-                results.push({viewport:vp.name,name,route,status:response?.status()||0,errors,failed,problems,...m});
-                await page.close();
+                let final=null;
+                for(let attempt=1;attempt<=8;attempt++){
+                  const context=await browser.newContext({
+                    viewport:vp,
+                    extraHTTPHeaders:{'Cache-Control':'no-cache','Pragma':'no-cache'}
+                  });
+                  const page=await context.newPage();
+                  const errors=[],failed=[];
+                  page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                  page.on('pageerror',e=>errors.push(e.message));
+                  page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                  const response=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+                  await page.evaluate(()=>document.fonts.ready);
+                  await page.waitForTimeout(350);
+                  const m=await page.evaluate(()=>{
+                    const h1=document.querySelector('h1');
+                    const hr=h1?.getBoundingClientRect();
+                    const cs=h1?getComputedStyle(h1):null;
+                    const banner=document.querySelector('.preview-banner');
+                    const br=banner?.getBoundingClientRect();
+                    const ws=[...document.styleSheets].some(s=>String(s.href||'').includes('workspace-v3-20260810.css'));
+                    const meaningful=[...document.querySelectorAll('.callout,.stepper,.page-head,h1')]
+                      .map(x=>({text:x.innerText.trim(),rect:x.getBoundingClientRect()}))
+                      .filter(x=>x.text&&x.rect.width>20&&x.rect.height>10)
+                      .sort((a,b)=>a.rect.y-b.rect.y)[0];
+                    return {
+                      overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+                      h1:h1?.innerText.trim()||'',
+                      h1Y:hr?.y??null,
+                      h1Font:cs?parseFloat(cs.fontSize):null,
+                      h1Line:cs?parseFloat(cs.lineHeight):null,
+                      firstMeaningfulY:meaningful?.rect.y??null,
+                      bannerVisible:!!(br&&br.width>4&&br.height>4),
+                      workspaceLoaded:ws,
+                      shell:!!document.querySelector('.shell')
+                    };
+                  });
+                  const problems=[];
+                  if((response?.status()||0)!==200) problems.push(`status ${response?.status()}`);
+                  if(m.overflow>1) problems.push(`overflow ${m.overflow}`);
+                  if(errors.length) problems.push(`console/page ${errors.join(' | ')}`);
+                  if(failed.length) problems.push(`failed ${failed.join(' | ')}`);
+                  if(!m.workspaceLoaded) problems.push('workspace css missing');
+                  if(m.bannerVisible) problems.push('preview banner visible');
+                  if(vp.name==='mobile'&&m.shell&&name!=='lesson2'&&m.h1Y!==null&&m.h1Y>290) problems.push(`mobile h1 too low ${m.h1Y}`);
+                  if(vp.name==='mobile'&&m.shell&&name==='lesson2'&&m.firstMeaningfulY!==null&&m.firstMeaningfulY>190) problems.push(`adaptive content too low ${m.firstMeaningfulY}`);
+                  if(m.shell&&m.h1Font&&m.h1Line&&m.h1Line/m.h1Font<1.06) problems.push(`tight Hangul ratio ${(m.h1Line/m.h1Font).toFixed(2)}`);
+                  final={viewport:vp.name,name,route,status:response?.status()||0,attempt,errors,failed,problems,...m};
+                  if(!problems.length){
+                    await page.screenshot({path:path.join('/tmp/b04-prod-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                    await context.close();
+                    break;
+                  }
+                  await context.close();
+                  await new Promise(r=>setTimeout(r,1500));
+                }
+                results.push(final);
               }
             }
             await browser.close();
