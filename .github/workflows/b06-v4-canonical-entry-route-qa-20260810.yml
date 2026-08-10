@@ -83,9 +83,12 @@ jobs:
             const page = await context.newPage();
             const errors = [];
             const badResponses = [];
-            page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
-            page.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
-            page.on('response', r => { if (r.status() >= 400) badResponses.push(`${r.status()} ${r.url()}`); });
+            const bindDiagnostics = (target) => {
+              target.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
+              target.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
+              target.on('response', r => { if (r.status() >= 400) badResponses.push(`${r.status()} ${r.url()}`); });
+            };
+            bindDiagnostics(page);
 
             // Critical regression: real canonical entry has NO #feed appended by QA.
             await page.goto(base, { waitUntil: 'networkidle', timeout: 45000 });
@@ -111,16 +114,20 @@ jobs:
             assert.ok(root.overflow <= 1, `${name}: overflow ${root.overflow}`);
             await page.screenshot({ path: `/tmp/b06-entry-evidence/${name}-canonical-root.png`, fullPage: false });
 
-            // Stale URLs created by the old release must also escape #loading.
-            await page.goto(`${base}#loading`, { waitUntil: 'networkidle', timeout: 45000 });
-            await waitEntry(page);
-            const stale = await page.evaluate(() => ({
+            // Stale #loading must be tested as a fresh document navigation, not a
+            // same-document hash change from the already initialized #feed page.
+            const stalePage = await context.newPage();
+            bindDiagnostics(stalePage);
+            await stalePage.goto(`${base}#loading`, { waitUntil: 'networkidle', timeout: 45000 });
+            await waitEntry(stalePage);
+            const stale = await stalePage.evaluate(() => ({
               hash: location.hash,
               route: document.querySelector('.review-shell')?.dataset.route,
               loadingHidden: document.querySelector('#view-loading')?.hidden,
               feedHidden: document.querySelector('#view-feed')?.hidden
             }));
-            assert.deepEqual(stale, { hash: '#feed', route: 'feed', loadingHidden: true, feedHidden: false }, `${name}: stale #loading was not normalized`);
+            assert.deepEqual(stale, { hash: '#feed', route: 'feed', loadingHidden: true, feedHidden: false }, `${name}: fresh stale #loading entry was not normalized`);
+            await stalePage.close();
 
             // Preserve the loading state as an internal state-matrix route.
             await page.evaluate(() => window.WorldFeed.navigation.navigate('loading'));
