@@ -53,107 +53,57 @@ jobs:
           cat > /tmp/b17-qa.cjs <<'NODE'
           const { chromium } = require(process.cwd() + '/node_modules/playwright');
           const fs = require('fs');
-
           const base = 'http://127.0.0.1:4173';
-          const surfaces = [
-            ['root', '/index.html'],
-            ['ux', '/ux.html'],
-            ['guide', '/guide.html'],
-          ];
-          const viewports = {
-            desktop: { width: 1440, height: 1100 },
-            mobile: { width: 390, height: 844 },
-          };
-          const results = [];
-          const failures = [];
-
-          function finite(v) { return Number.isFinite(v) ? v : null; }
-
-          (async () => {
-            const browser = await chromium.launch({ headless: true });
-            for (const [mode, viewport] of Object.entries(viewports)) {
-              const context = await browser.newContext({ viewportSize: viewport, deviceScaleFactor: 1 });
-              for (const [name, path] of surfaces) {
-                const page = await context.newPage();
-                const errors = [];
-                page.on('console', m => { if (m.type() === 'error') errors.push(`console:${m.text()}`); });
-                page.on('pageerror', e => errors.push(`page:${e.message}`));
-                page.on('requestfailed', r => errors.push(`request:${r.url()} ${r.failure()?.errorText || ''}`));
-                const response = await page.goto(base + path, { waitUntil: 'networkidle' });
-                if (!response || !response.ok()) failures.push(`${mode}/${name}: bad HTTP response`);
-
-                const metrics = await page.evaluate(() => {
-                  const h1 = document.querySelector('h1');
-                  const topbar = document.querySelector('.cj-topbar');
-                  const actions = document.querySelector('.cj-actions');
-                  const body = document.body;
-                  const root = document.documentElement;
-                  const hr = h1?.getBoundingClientRect();
-                  const tr = topbar?.getBoundingClientRect();
-                  const ar = actions?.getBoundingClientRect();
-                  let h1Style = h1 ? getComputedStyle(h1) : null;
-                  const fs = h1Style ? parseFloat(h1Style.fontSize) : NaN;
-                  const lh = h1Style ? parseFloat(h1Style.lineHeight) : NaN;
-                  return {
-                    overflowX: Math.max(body.scrollWidth, root.scrollWidth) - innerWidth,
-                    h1Text: h1?.innerText || '',
-                    h1Font: fs,
-                    h1Line: lh,
-                    h1Ratio: Number.isFinite(fs) && fs > 0 && Number.isFinite(lh) ? lh / fs : null,
-                    h1Top: hr?.top ?? null,
-                    h1Bottom: hr?.bottom ?? null,
-                    topbarBottom: tr?.bottom ?? null,
-                    actionsTop: ar?.top ?? null,
-                    actionsBottom: ar?.bottom ?? null,
-                    viewportHeight: innerHeight,
-                    pageHeight: root.scrollHeight,
-                  };
+          const surfaces = [['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']];
+          const viewports = { desktop:{width:1440,height:1100}, mobile:{width:390,height:844} };
+          const results=[]; const failures=[];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){
+              const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){
+                const page=await context.newPage(); const errors=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});
+                page.on('pageerror',e=>errors.push(`page:${e.message}`));
+                page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`));
+                const response=await page.goto(base+path,{waitUntil:'networkidle'});
+                if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP response`);
+                const metrics=await page.evaluate(()=>{
+                  const h1=document.querySelector('h1'), topbar=document.querySelector('.cj-topbar'), actions=document.querySelector('.cj-actions');
+                  const body=document.body, root=document.documentElement, hr=h1?.getBoundingClientRect(), tr=topbar?.getBoundingClientRect(), ar=actions?.getBoundingClientRect();
+                  const s=h1?getComputedStyle(h1):null, fs=s?parseFloat(s.fontSize):NaN, lh=s?parseFloat(s.lineHeight):NaN;
+                  return {overflowX:Math.max(body.scrollWidth,root.scrollWidth)-innerWidth,h1Text:h1?.innerText||'',h1Font:fs,h1Line:lh,h1Ratio:Number.isFinite(fs)&&fs>0&&Number.isFinite(lh)?lh/fs:null,h1Top:hr?.top??null,h1Bottom:hr?.bottom??null,topbarBottom:tr?.bottom??null,actionsTop:ar?.top??null,actionsBottom:ar?.bottom??null,viewportWidth:innerWidth,viewportHeight:innerHeight,pageHeight:root.scrollHeight};
                 });
-
-                if (metrics.overflowX > 1) failures.push(`${mode}/${name}: horizontal overflow ${metrics.overflowX}`);
-                if (errors.length) failures.push(`${mode}/${name}: runtime errors ${errors.join(' | ')}`);
-                if (metrics.h1Ratio !== null && /[가-힣]/.test(metrics.h1Text) && metrics.h1Ratio < 1.0) {
-                  failures.push(`${mode}/${name}: Korean h1 line-height ratio ${metrics.h1Ratio.toFixed(3)} < 1.0`);
-                }
-                if (metrics.h1Top !== null && metrics.topbarBottom !== null && metrics.h1Top < metrics.topbarBottom - 2) {
-                  failures.push(`${mode}/${name}: h1 intersects top chrome`);
-                }
-
-                await page.screenshot({ path: `/tmp/b17-evidence/${mode}-${name}.png`, fullPage: false });
-                await page.screenshot({ path: `/tmp/b17-evidence/${mode}-${name}-full.png`, fullPage: true });
-                results.push({ mode, name, metrics: Object.fromEntries(Object.entries(metrics).map(([k,v]) => [k, typeof v === 'number' ? finite(v) : v])), errors });
-                await page.close();
+                if(metrics.overflowX>1)failures.push(`${mode}/${name}: horizontal overflow ${metrics.overflowX}`);
+                if(errors.length)failures.push(`${mode}/${name}: runtime errors ${errors.join(' | ')}`);
+                if(metrics.h1Ratio!==null&&/[가-힣]/.test(metrics.h1Text)&&metrics.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean h1 line-height ratio ${metrics.h1Ratio.toFixed(3)} < 1.0`);
+                if(metrics.h1Top!==null&&metrics.topbarBottom!==null&&metrics.h1Top<metrics.topbarBottom-2)failures.push(`${mode}/${name}: h1 intersects top chrome`);
+                await page.screenshot({path:`/tmp/b17-evidence/${mode}-${name}.png`,fullPage:false});
+                await page.screenshot({path:`/tmp/b17-evidence/${mode}-${name}-full.png`,fullPage:true});
+                results.push({mode,name,metrics,errors}); await page.close();
               }
-
-              const page = await context.newPage();
-              await page.goto(base + '/ux.html', { waitUntil: 'networkidle' });
-              if (!(await page.locator('#material').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: material not initial active view`);
-              if (!(await page.locator('#publish').isDisabled())) failures.push(`${mode}/journey: publish should start disabled`);
+              const page=await context.newPage(); await page.goto(base+'/ux.html',{waitUntil:'networkidle'});
+              if(!(await page.locator('#material').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: material not initial active view`);
+              if(!(await page.locator('#publish').isDisabled()))failures.push(`${mode}/journey: publish should start disabled`);
               await page.locator('#draft').click();
-              if (!(await page.locator('#preview').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: draft did not open preview`);
-              const bodyCopy = (await page.locator('#bodyCopy').innerText()).trim();
-              if (!bodyCopy.includes('합성 매거진 예시')) failures.push(`${mode}/journey: draft copy contract missing`);
-              const proofBoxes = page.locator('[data-proof]');
-              for (let i = 0; i < await proofBoxes.count(); i++) await proofBoxes.nth(i).check();
-              if (await page.locator('#publish').isDisabled()) failures.push(`${mode}/journey: publish did not unlock at 3/3`);
+              if(!(await page.locator('#preview').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: draft did not open preview`);
+              if(!((await page.locator('#bodyCopy').innerText()).includes('합성 매거진 예시')))failures.push(`${mode}/journey: draft copy contract missing`);
+              const boxes=page.locator('[data-proof]'); for(let i=0;i<await boxes.count();i++)await boxes.nth(i).check();
+              if(await page.locator('#publish').isDisabled())failures.push(`${mode}/journey: publish did not unlock at 3/3`);
               await page.locator('#publish').click();
-              if (!(await page.locator('#issue').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: publish did not open issue`);
-              if (await page.locator('#finish').isDisabled()) failures.push(`${mode}/journey: finish did not unlock after issue`);
+              if(!(await page.locator('#issue').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: publish did not open issue`);
+              if(await page.locator('#finish').isDisabled())failures.push(`${mode}/journey: finish did not unlock after issue`);
               await page.locator('#finish').click();
-              if (!((await page.locator('#proofStatus').innerText()).includes('검토 완료'))) failures.push(`${mode}/journey: finish status contract missing`);
-              await page.screenshot({ path: `/tmp/b17-evidence/${mode}-ux-finished-full.png`, fullPage: true });
-              await page.reload({ waitUntil: 'networkidle' });
-              if (!(await page.locator('#material').evaluate(el => el.classList.contains('active')))) failures.push(`${mode}/journey: reload did not reset material view`);
-              if (!(await page.locator('#publish').isDisabled())) failures.push(`${mode}/journey: reload did not reset proof gate`);
-              if (await page.locator('[data-proof]:checked').count()) failures.push(`${mode}/journey: reload retained proof fixtures`);
-              await page.close();
-              await context.close();
+              if(!((await page.locator('#proofStatus').innerText()).includes('검토 완료')))failures.push(`${mode}/journey: finish status contract missing`);
+              await page.screenshot({path:`/tmp/b17-evidence/${mode}-ux-finished-full.png`,fullPage:true});
+              await page.reload({waitUntil:'networkidle'});
+              if(!(await page.locator('#material').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: reload did not reset material view`);
+              if(!(await page.locator('#publish').isDisabled()))failures.push(`${mode}/journey: reload did not reset proof gate`);
+              if(await page.locator('[data-proof]:checked').count())failures.push(`${mode}/journey: reload retained proof fixtures`);
+              await page.close(); await context.close();
             }
-            await browser.close();
-            fs.writeFileSync('/tmp/b17-evidence/metrics.json', JSON.stringify({ results, failures }, null, 2));
-            console.log(JSON.stringify({ results, failures }, null, 2));
-            if (failures.length) process.exit(1);
-          })().catch(e => { console.error(e); process.exit(1); });
+            await browser.close(); fs.writeFileSync('/tmp/b17-evidence/metrics.json',JSON.stringify({results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
           NODE
           node /tmp/b17-qa.cjs
 
