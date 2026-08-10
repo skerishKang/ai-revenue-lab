@@ -37,13 +37,16 @@ jobs:
           index=(base/'index.html').read_text(encoding='utf-8')
           guide=(base/'guide.html').read_text(encoding='utf-8')
           css=(base/'styles/art-direction-v2.css').read_text(encoding='utf-8')
+          polish=(base/'styles/art-direction-v2-polish.css').read_text(encoding='utf-8')
           js=(base/'scripts/art-direction-v2.js').read_text(encoding='utf-8')
-          for marker in ('art-direction-v2.css','art-direction-v2.js','color-scheme" content="dark'):
+          for marker in ('art-direction-v2.css','art-direction-v2-polish.css','art-direction-v2.js','color-scheme" content="dark'):
               assert marker in index, marker
           for marker in ('art-direction-v2.css','GUIDE · 30 SECONDS','세계를 더 많이 보는 게 아니라'):
               assert marker in guide, marker
           for marker in ('SIGNAL → OPEN → WHY → ADJUST → RETURN','.wf-scene','#view-loading','.feed-mosaic'):
               assert marker in css, marker
+          for marker in ('.prototype-state-panel','.site-footer','.feed-lead-title'):
+              assert marker in polish, marker
           assert 'replaceVisibleSvgArtwork' in js
           assert 'document.querySelectorAll(\'img\')' in js
           for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
@@ -76,10 +79,11 @@ jobs:
           const fs = require('fs');
           const out='/tmp/b06-evidence';
           async function diag(page,label){
-            const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svgImgs:document.querySelectorAll('img[src*=".svg"]').length,art:document.documentElement.dataset.worldFeedArt||'',replaced:+(document.documentElement.dataset.svgArtworkReplaced||0)}));
+            const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svgImgs:document.querySelectorAll('img[src*=".svg"]').length,art:document.documentElement.dataset.worldFeedArt||'',replaced:+(document.documentElement.dataset.svgArtworkReplaced||0),qaVisible:[...document.querySelectorAll('.issue-tag,.prototype-state-panel,.site-footer')].some(el=>getComputedStyle(el).display!=='none')}));
             if(d.sw>d.cw+1) throw new Error(`${label}: overflow ${d.sw}>${d.cw}`);
             if(d.svgImgs!==0) throw new Error(`${label}: visible SVG images remain ${d.svgImgs}`);
             if(d.art!=='product-v2') throw new Error(`${label}: V2 art layer missing`);
+            if(d.qaVisible) throw new Error(`${label}: internal QA chrome visible`);
             return d;
           }
           (async()=>{
@@ -104,7 +108,7 @@ jobs:
               await guide.goto('http://127.0.0.1:4186/guide.html',{waitUntil:'networkidle'});
               const g=await guide.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,text:document.body.innerText}));
               if(g.sw>g.cw+1) throw new Error(`${vp.name}: guide overflow`);
-              if(!g.text.includes('GUIDE · 30 SECONDS')||!g.text.includes('나의 피드 시작하기')) throw new Error(`${vp.name}: guide markers missing`);
+              if(!g.text.includes('PERSONAL WORLD DISPATCH')||!g.text.includes('나의 피드 시작하기')) throw new Error(`${vp.name}: guide markers missing`);
               await guide.screenshot({path:path.join(out,`b06-guide-${vp.name}.png`),fullPage:true});
               await guide.close();
             }
