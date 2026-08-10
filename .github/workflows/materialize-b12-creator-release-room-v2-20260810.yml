@@ -1,0 +1,46 @@
+name: Materialize B12 Creator Release Room V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-12-creator-mini-media-v1/**'
+      - '.github/workflows/materialize-b12-creator-release-room-v2-20260810.yml'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.event.pull_request.head.ref == 'design/b12-creator-release-room-v2-20260810'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Materialize product files and remove staging helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          base=Path('reference/business-12-creator-mini-media-v1')
+          (base/'index.html').write_text((base/'index.v2-source.html').read_text(encoding='utf-8'), encoding='utf-8')
+          (base/'guide.html').write_text((base/'guide.v2-source.html').read_text(encoding='utf-8'), encoding='utf-8')
+          ux=(base/'ux.html').read_text(encoding='utf-8')
+          if 'creator-release-room-v2.css' not in ux:
+              ux=ux.replace('</head>','<link rel="stylesheet" href="./styles/creator-release-room-v2.css?v=b12-v2-20260810"></head>')
+          if 'creator-release-room-v2.js' not in ux:
+              ux=ux.replace('</body>','<script src="./scripts/creator-release-room-v2.js?v=b12-v2-20260810"></script></body>')
+          if '<body>' in ux:
+              ux=ux.replace('<body>','<body class="ux-page">',1)
+          (base/'ux.html').write_text(ux,encoding='utf-8')
+          (base/'index.v2-source.html').unlink()
+          (base/'guide.v2-source.html').unlink()
+          Path('.github/workflows/materialize-b12-creator-release-room-v2-20260810.yml').unlink()
+          PY
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(B12): materialize Creator Release Room V2'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
