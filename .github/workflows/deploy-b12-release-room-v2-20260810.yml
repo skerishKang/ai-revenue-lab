@@ -1,0 +1,39 @@
+name: Deploy B12 Creator Release Room V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/deploy-b12-release-room-v2-20260810.yml']
+permissions: {contents: read}
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b12-release-room-v2-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '737da04fde6b755badd168df6dd3d5b484f52a67', fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Deploy exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '737da04fde6b755badd168df6dd3d5b484f52a67'
+          grep -q 'creator-release-room-v2.css' reference/business-12-creator-mini-media-v1/index.html
+          npx --yes wrangler@latest pages deploy reference/business-12-creator-mini-media-v1 --project-name 12-creator-mini-media --branch main --commit-hash 737da04fde6b755badd168df6dd3d5b484f52a67 --commit-message 'B12 Creator Release Room V2 exact main'
+      - name: Verify canonical public markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 35); do
+            root=$(curl -L -sS --max-time 20 https://12-creator-mini-media.pages.dev/ || true)
+            ux=$(curl -L -sS --max-time 20 https://12-creator-mini-media.pages.dev/ux.html || true)
+            guide=$(curl -L -sS --max-time 20 https://12-creator-mini-media.pages.dev/guide.html || true)
+            if grep -q 'creator-release-room-v2.css' <<<"$root" && grep -q 'creator-release-room-v2.css' <<<"$ux" && grep -q 'creator-release-room-v2.css' <<<"$guide"; then echo B12_CREATOR_RELEASE_PUBLIC_PASS=1; exit 0; fi
+            sleep 4
+          done
+          exit 1
