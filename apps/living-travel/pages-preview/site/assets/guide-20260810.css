@@ -2,9 +2,9 @@
 .lt-guide{min-height:100svh;background:var(--lt-paper);color:var(--lt-ink)}
 .lt-guide-hero{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);min-height:72svh;border-bottom:1px solid var(--lt-line)}
 .lt-guide-copy{padding:clamp(7rem,12vh,10rem) clamp(1.25rem,5vw,5.5rem) 4rem;align-self:end}
-.lt-guide-copy h1{margin:0;max-width:900px;font-family:var(--lt-display);font-size:clamp(3.8rem,8vw,8rem);line-height:.86;letter-spacing:-.06em;text-transform:uppercase}
+.lt-guide-copy h1{margin:0;max-width:900px;font-family:var(--lt-display);font-size:clamp(3.8rem,8vw,8rem);line-height:.9;letter-spacing:-.05em;text-transform:uppercase;word-break:keep-all}
 .lt-guide-copy h1 span{display:block;color:var(--lt-sea-bright)}
-.lt-guide-copy p{max-width:620px;margin:1.8rem 0 0;line-height:1.75;color:var(--lt-muted);font-size:clamp(1rem,1.4vw,1.18rem)}
+.lt-guide-copy p{max-width:620px;margin:1.8rem 0 0;line-height:1.75;color:var(--lt-muted);font-size:clamp(1rem,1.4vw,1.18rem);word-break:keep-all}
 .lt-guide-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem}
 .lt-guide-route{position:relative;overflow:hidden;background:linear-gradient(160deg,#0a1619,#143d45);color:var(--lt-white);padding:clamp(7rem,12vh,10rem) clamp(1.2rem,4vw,4rem) 3rem}
 .lt-guide-route:before{content:"BUSAN / YOUR ROUTE";position:absolute;right:1rem;top:50%;writing-mode:vertical-rl;font-size:.65rem;letter-spacing:.18em;opacity:.45}
@@ -18,16 +18,40 @@
 .lt-guide-step{display:grid;grid-template-columns:6rem minmax(0,1.1fr) minmax(260px,.7fr);gap:clamp(1.5rem,4vw,5rem);align-items:center;padding:clamp(3.5rem,7vw,7rem) 0;border-bottom:1px solid var(--lt-line)}
 .lt-guide-no{align-self:start;font-family:var(--lt-display);font-size:clamp(3rem,5vw,5.8rem);line-height:1;color:var(--lt-sun)}
 .lt-guide-step-copy>span{display:block;margin-bottom:.9rem;font-size:.68rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--lt-sea)}
-.lt-guide-step-copy h2{margin:0 0 1rem;max-width:15ch;font-family:var(--lt-display);font-size:clamp(2.1rem,4vw,4.7rem);line-height:.94;letter-spacing:-.045em}
-.lt-guide-step-copy p{max-width:640px;margin:0 0 1.25rem;line-height:1.8;color:var(--lt-muted)}
+.lt-guide-step-copy h2{margin:0 0 1rem;max-width:15ch;font-family:var(--lt-display);font-size:clamp(2.1rem,4vw,4.7rem);line-height:1;letter-spacing:-.038em;word-break:keep-all}
+.lt-guide-step-copy p{max-width:640px;margin:0 0 1.25rem;line-height:1.8;color:var(--lt-muted);word-break:keep-all}
 .lt-guide-card{min-height:220px;padding:1.4rem;border:1px solid var(--lt-line);background:rgba(255,255,255,.42);display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--lt-shadow);transform:rotate(-1.5deg)}
 .lt-guide-card.is-dark{background:var(--lt-ink);color:var(--lt-white);transform:rotate(1.5deg)}
 .lt-guide-card.is-route{background:linear-gradient(150deg,#15424a,#0f2429);color:var(--lt-white)}
 .lt-guide-card small{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;opacity:.7}
-.lt-guide-card strong{font-family:var(--lt-display);font-size:clamp(2rem,3vw,3.5rem);line-height:.94}
+.lt-guide-card strong{font-family:var(--lt-display);font-size:clamp(2rem,3vw,3.5rem);line-height:1.02;word-break:keep-all}
 .lt-guide-card b{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--lt-sun)}
 .lt-guide-finish{margin:5rem auto 0;max-width:1500px;padding:clamp(3rem,7vw,7rem) clamp(1.2rem,5vw,5rem);background:var(--lt-night);color:var(--lt-white)}
-.lt-guide-finish h2{margin:.9rem 0 1.3rem;max-width:14ch;font-family:var(--lt-display);font-size:clamp(2.8rem,5.5vw,6.2rem);line-height:.9;letter-spacing:-.05em}
-.lt-guide-finish p{max-width:680px;color:rgba(255,255,255,.68);line-height:1.8}
+.lt-guide-finish h2{margin:.9rem 0 1.3rem;max-width:14ch;font-family:var(--lt-display);font-size:clamp(2.8rem,5.5vw,6.2rem);line-height:.96;letter-spacing:-.042em;word-break:keep-all}
+.lt-guide-finish p{max-width:680px;color:rgba(255,255,255,.68);line-height:1.8;word-break:keep-all}
 @media(max-width:900px){.lt-guide-hero{grid-template-columns:1fr;min-height:auto}.lt-guide-route{min-height:520px}.lt-guide-step{grid-template-columns:4rem 1fr}.lt-guide-step>.lt-guide-card{grid-column:2}}
-@media(max-width:560px){.lt-guide-copy{padding-top:6rem}.lt-guide-step{grid-template-columns:1fr;gap:1.2rem;padding:3.5rem 0}.lt-guide-step>.lt-guide-card{grid-column:1}.lt-guide-actions a{width:100%;justify-content:center}}
+@media(max-width:560px){
+  .lt-guide-copy{padding:5.6rem 1rem 2.4rem}
+  .lt-guide-copy .lt-kicker{margin-bottom:1rem;font-size:.6rem;letter-spacing:.12em}
+  .lt-guide-copy h1{max-width:10.5ch;font-size:clamp(2.65rem,13.2vw,3.45rem);line-height:1.04;letter-spacing:-.035em;text-transform:none}
+  .lt-guide-copy p{margin-top:1.25rem;font-size:.94rem;line-height:1.72}
+  .lt-guide-actions{gap:.55rem;margin-top:1.35rem}
+  .lt-guide-actions a{width:100%;justify-content:center;min-height:44px}
+  .lt-guide-route{min-height:390px;padding:3rem 1rem 2rem}
+  .lt-guide-route:before{right:.55rem;font-size:.52rem}
+  .lt-guide-route-step{grid-template-columns:1.8rem 1fr;gap:.65rem;padding:.72rem 0;font-size:.72rem}
+  .lt-guide-route-step:first-of-type{margin-top:1.4rem}
+  .lt-guide-route-step small{grid-column:2;line-height:1.4}
+  .lt-guide-steps{padding:0 1rem}
+  .lt-guide-step{grid-template-columns:1fr;gap:1rem;padding:2.8rem 0}
+  .lt-guide-no{font-size:2.25rem;line-height:1;margin-bottom:.1rem}
+  .lt-guide-step>.lt-guide-card{grid-column:1}
+  .lt-guide-step-copy>span{margin-bottom:.55rem;font-size:.6rem;letter-spacing:.11em}
+  .lt-guide-step-copy h2{max-width:13ch;margin-bottom:.8rem;font-size:clamp(1.9rem,9.5vw,2.45rem);line-height:1.08;letter-spacing:-.03em}
+  .lt-guide-step-copy p{font-size:.9rem;line-height:1.72;margin-bottom:.85rem}
+  .lt-guide-card{min-height:180px;padding:1.1rem}
+  .lt-guide-card strong{font-size:clamp(1.7rem,9vw,2.25rem);line-height:1.08}
+  .lt-guide-finish{margin-top:2.8rem;padding:3rem 1rem}
+  .lt-guide-finish h2{max-width:11ch;font-size:clamp(2.05rem,10vw,2.65rem);line-height:1.08;letter-spacing:-.03em}
+  .lt-guide-finish p{font-size:.9rem;line-height:1.72}
+}
