@@ -6,7 +6,7 @@
 }
 
 .lt-nav--persistent {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: clamp(.42rem, 1.15vw, 1rem);
   min-width: 0;
@@ -15,7 +15,7 @@
 
 .lt-nav--persistent .lt-shell-link {
   position: relative;
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   min-height: 36px;
   padding: .52rem .64rem;
@@ -26,6 +26,7 @@
   font-weight: 800;
   letter-spacing: -.015em;
   opacity: .68;
+  visibility: visible !important;
   transition: opacity .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
 }
 
@@ -84,38 +85,72 @@
   }
   .lt-nav--persistent {
     flex: 1 1 auto;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    justify-content: flex-end;
+    overflow: visible;
   }
-  .lt-nav--persistent::-webkit-scrollbar { display: none; }
   .lt-nav--persistent .lt-shell-link {
     flex: 0 0 auto;
     font-size: .68rem;
-    padding-inline: .58rem;
+    padding-inline: .54rem;
   }
 }
 
 @media (max-width: 560px) {
   .lt-topbar--persistent {
+    display: grid !important;
+    grid-template-columns: 30px minmax(0, 1fr);
+    align-items: center;
+    gap: .42rem;
     min-height: 62px;
-    padding-inline: .68rem;
+    padding-inline: .58rem;
   }
-  .lt-wordmark {
-    width: 32px;
+  .lt-topbar--persistent .lt-wordmark {
+    width: 30px;
+    min-width: 30px;
     overflow: hidden;
     gap: 0;
+    font-size: 0 !important;
+    letter-spacing: 0;
     color: transparent;
   }
-  .lt-wordmark::before {
-    color: currentColor;
+  .lt-topbar--persistent .lt-wordmark::before {
     color: var(--lt-white);
     flex: 0 0 30px;
+    font-size: .58rem;
   }
   .lt-topbar--light .lt-wordmark::before { color: var(--lt-ink); }
-  .lt-nav--persistent { gap: .24rem; }
-  .lt-nav--persistent .lt-shell-link { min-height: 34px; }
-  .lt-nav--persistent .lt-shell-link.is-utility { display: none; }
+  .lt-topbar--persistent .lt-nav--persistent {
+    width: 100%;
+    min-width: 0;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, .7fr) minmax(0, .85fr) minmax(0, .62fr);
+    align-items: center;
+    justify-content: stretch;
+    gap: .08rem;
+    overflow: visible !important;
+  }
+  .lt-topbar--persistent .lt-nav--persistent .lt-shell-link {
+    display: inline-flex !important;
+    min-width: 0;
+    min-height: 32px;
+    padding: .38rem .24rem;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: .6rem;
+    letter-spacing: -.035em;
+    visibility: visible !important;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  .lt-topbar--persistent .lt-nav--persistent .lt-shell-link.is-guide {
+    padding-inline: .32rem;
+  }
+  .lt-topbar--persistent .lt-nav--persistent .lt-shell-link.is-active::after {
+    left: .34rem;
+    right: .34rem;
+    bottom: .14rem;
+  }
+  .lt-topbar--persistent .lt-nav--persistent .lt-shell-link.is-utility {
+    display: none !important;
+  }
 }
