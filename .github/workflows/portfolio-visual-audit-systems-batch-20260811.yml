@@ -1,0 +1,53 @@
+name: Portfolio Visual Audit Safety Systems 2026-08-11
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/portfolio-visual-audit-systems-batch-20260811.yml'
+permissions: { contents: read }
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.54.2
+          npx playwright install --with-deps chromium
+      - name: Capture safety and systems family
+        run: |
+          mkdir -p audit-output
+          cat > capture.mjs <<'NODE'
+          import { chromium } from 'playwright'; import fs from 'node:fs';
+          const roots=[
+            ['B36','https://36-ai-women-safety.pages.dev/'],
+            ['B37','https://37-ai-safe-route.pages.dev/'],
+            ['B38','https://38-ai-exercise-coach.pages.dev/'],
+            ['B39','https://39-112-real-time-interpretation.pages.dev/'],
+            ['B40','https://40-emergency-urgency-ai.pages.dev/'],
+            ['B41','https://41-foreign-emergency-assistant.pages.dev/'],
+            ['B42','https://42-ai-development-control-tower.pages.dev/'],
+            ['B43','https://43-ai-software-factory.pages.dev/'],
+            ['B51','https://51-ai-workflow-marketplace.pages.dev/'],
+            ['B52','https://52-scheduled-agent-operations.pages.dev/'],
+            ['B53','https://53-embedded-ai-sdk.pages.dev/'],
+            ['B55','https://55-local-ai-fleet.pages.dev/']
+          ];
+          const routes=[];for(const [id,root] of roots){routes.push([id,'root',root],[id,'guide',new URL('guide.html',root).href],[id,'ux',new URL('ux.html',root).href])}
+          const vps=[['desktop',{width:1440,height:1100}],['mobile',{width:390,height:844}]];const browser=await chromium.launch({headless:true}),results=[];
+          for(const [vn,vp] of vps){const ctx=await browser.newContext({viewport:vp});for(const [id,route,url] of routes){const p=await ctx.newPage();let resp=null,navError=null;const errors=[];p.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)});p.on('pageerror',e=>errors.push(`page:${e.message}`));try{resp=await p.goto(url,{waitUntil:'networkidle',timeout:45000});await p.waitForTimeout(700)}catch(e){navError=String(e)}const status=resp?.status()??null;let m=null;try{m=await p.evaluate(()=>{const h=document.querySelector('h1'),s=h?getComputedStyle(h):null,r=h?.getBoundingClientRect(),imgs=[...document.images],acts=[...document.querySelectorAll('a[href],button')].filter(x=>{const q=x.getBoundingClientRect(),g=getComputedStyle(x);return q.width>0&&q.height>0&&g.display!=='none'&&g.visibility!=='hidden'});return{title:document.title,h1:h?.innerText?.trim()||null,h1FontSize:s?.fontSize||null,h1LineHeight:s?.lineHeight||null,h1Rect:r?{y:r.y,height:r.height,bottom:r.bottom}:null,firstActions:acts.slice(0,5).map(x=>(x.innerText||x.getAttribute('aria-label')||'').trim()).filter(Boolean),horizontalOverflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),scrollHeight:document.documentElement.scrollHeight,bodyBackground:getComputedStyle(document.body).backgroundColor,images:imgs.length,brokenImages:imgs.filter(i=>i.complete&&i.naturalWidth===0).length,text:document.body.innerText.replace(/\s+/g,' ').slice(0,900)}})}catch(e){errors.push(`evaluate:${e}`)}const safe=`${id}-${route}-${vn}`;if(status&&status<400&&m){await p.screenshot({path:`audit-output/${safe}-viewport.png`,fullPage:false});await p.screenshot({path:`audit-output/${safe}-full.png`,fullPage:true})}results.push({id,route,url,viewport:vn,status,navError,errors,metrics:m});await p.close()}await ctx.close()}await browser.close();fs.writeFileSync('audit-output/results.json',JSON.stringify(results,null,2));
+          NODE
+          node capture.mjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-visual-audit-systems-${{ github.sha }}
+          path: audit-output
+          if-no-files-found: error
+          retention-days: 14
