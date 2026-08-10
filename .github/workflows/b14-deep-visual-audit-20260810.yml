@@ -1,0 +1,156 @@
+name: B14 Deep Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b14-deep-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    if: github.event.pull_request.head.ref == 'ops/b14-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      EXPECTED_MAIN_SHA: e1a722c063f41332dfe185407a84220cbd977c6a
+      RUNTIME_URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace
+      REFERENCE_URL: https://ai-revenue-business-14-korean-ai-platform.pages.dev/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_MAIN_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert audit authority remains exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_MAIN_SHA"
+          grep -q 'n:14.*korean-ai-platform' apps/portfolio-console/business-manifest.js
+          grep -q 'ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace' apps/portfolio-console/business-manifest.js
+
+      - name: Install browser audit dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b14-browser && cd /tmp/b14-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Capture canonical runtime and current visual reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b14-evidence
+          cd /tmp/b14-browser
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const path = require('path');
+
+          const targets = [
+            { name: 'runtime', url: process.env.RUNTIME_URL, authority: 'canonical-manifest-surface' },
+            { name: 'reference', url: process.env.REFERENCE_URL, authority: 'comparison-only-current-deployed-reference' },
+          ];
+          const viewports = [
+            { name: 'desktop', width: 1440, height: 1100 },
+            { name: 'mobile', width: 390, height: 844 },
+          ];
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const results = [];
+            for (const target of targets) {
+              for (const vp of viewports) {
+                const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+                const page = await ctx.newPage();
+                const consoleErrors = [];
+                const pageErrors = [];
+                const failedResponses = [];
+                page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+                page.on('pageerror', e => pageErrors.push(e.message));
+                page.on('response', r => { if (r.status() >= 400) failedResponses.push(`${r.status()} ${r.url()}`); });
+
+                const response = await page.goto(target.url, { waitUntil: 'networkidle', timeout: 60000 });
+                await page.evaluate(() => document.fonts.ready);
+                await page.waitForTimeout(500);
+
+                const metrics = await page.evaluate(() => {
+                  const root = document.documentElement;
+                  const h1 = document.querySelector('h1');
+                  const h1cs = h1 ? getComputedStyle(h1) : null;
+                  const h1r = h1 ? h1.getBoundingClientRect() : null;
+                  const chrome = [...document.querySelectorAll('body *')].filter(el => {
+                    const cs = getComputedStyle(el);
+                    if (!['fixed','sticky'].includes(cs.position)) return false;
+                    const r = el.getBoundingClientRect();
+                    return r.width > 20 && r.height > 20 && r.bottom > 0 && r.top < innerHeight;
+                  }).slice(0, 20).map(el => {
+                    const r = el.getBoundingClientRect();
+                    return { tag: el.tagName, cls: String(el.className || '').slice(0,120), top:r.top, bottom:r.bottom, height:r.height, position:getComputedStyle(el).position };
+                  });
+                  const bodyText = (document.body.innerText || '').replace(/\s+/g,' ').trim();
+                  return {
+                    title: document.title,
+                    finalUrl: location.href,
+                    lang: document.documentElement.lang,
+                    viewport: { width: innerWidth, height: innerHeight },
+                    clientWidth: root.clientWidth,
+                    scrollWidth: root.scrollWidth,
+                    scrollHeight: root.scrollHeight,
+                    horizontalOverflow: root.scrollWidth - root.clientWidth,
+                    h1: h1 ? { text:h1.textContent.trim(), fontSize:parseFloat(h1cs.fontSize), lineHeight:parseFloat(h1cs.lineHeight), ratio:parseFloat(h1cs.lineHeight)/parseFloat(h1cs.fontSize), top:h1r.top, bottom:h1r.bottom, height:h1r.height } : null,
+                    chrome,
+                    textSample: bodyText.slice(0, 1800),
+                    bodyBackground: getComputedStyle(document.body).backgroundColor,
+                  };
+                });
+
+                await page.screenshot({ path: path.join('/tmp/b14-evidence', `${target.name}-${vp.name}.png`), fullPage: false });
+                await page.screenshot({ path: path.join('/tmp/b14-evidence', `${target.name}-${vp.name}-full.png`), fullPage: true });
+                fs.writeFileSync(path.join('/tmp/b14-evidence', `${target.name}-${vp.name}.html`), await page.content());
+
+                results.push({
+                  target: target.name,
+                  authority: target.authority,
+                  viewport: vp.name,
+                  status: response ? response.status() : 0,
+                  consoleErrors,
+                  pageErrors,
+                  failedResponses,
+                  ...metrics,
+                });
+                await ctx.close();
+              }
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b14-evidence/results.json', JSON.stringify({ expectedMainSha: process.env.EXPECTED_MAIN_SHA, results }, null, 2));
+
+            const canonical = results.filter(r => r.target === 'runtime');
+            const blocking = canonical.filter(r => r.status !== 200 || r.horizontalOverflow > 1 || r.consoleErrors.length || r.pageErrors.length || r.failedResponses.length);
+            console.log(JSON.stringify({ count: results.length, canonicalBlocking: blocking }, null, 2));
+            if (blocking.length) process.exit(1);
+          })().catch(err => { console.error(err); process.exit(1); });
+          JS
+
+      - name: Upload B14 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b14-deep-visual-audit-${{ github.run_number }}
+          path: /tmp/b14-evidence
+          if-no-files-found: error
+          retention-days: 7
