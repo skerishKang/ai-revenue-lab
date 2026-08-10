@@ -148,7 +148,8 @@ jobs:
               await page.waitForTimeout(850);
               const scenes = await page.evaluate(() => {
                 const el = document.querySelector('.wf-v4-scenes');
-                return { top: el.offsetTop, travel: Math.max(1, el.offsetHeight - innerHeight) };
+                const rect = el.getBoundingClientRect();
+                return { top: rect.top + window.scrollY, travel: Math.max(1, el.offsetHeight - innerHeight) };
               });
               const targets = [
                 { p: .08, scene: '0', file: '02-scene-discover' },
@@ -160,6 +161,11 @@ jobs:
                 await page.waitForTimeout(420);
                 assert.equal(await page.locator('.wf-cinema-v4').getAttribute('data-scene'), target.scene, `${name}: wrong sticky scene at ${target.p}`);
                 await waitImage(page, `.wf-v4-scene[data-v4-scene="${target.scene}"] img`);
+                const stickyVisible = await page.locator('.wf-v4-sticky').evaluate((el) => {
+                  const r = el.getBoundingClientRect();
+                  return r.bottom > 0 && r.top < innerHeight && r.width > 300 && r.height > 500;
+                });
+                assert.equal(stickyVisible, true, `${name}: sticky scene is not in viewport at ${target.p}`);
                 await snapshot(page, `${name}-${target.file}`);
               }
             } else {
