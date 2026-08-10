@@ -1,0 +1,89 @@
+name: Deploy B1 B2 Visual Polish 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b1-b2-visual-polish-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b1-b2-visual-polish-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 16e5e874ce1a364b0802215736df5643af6ee9ea
+      B1_PROJECT: ai-revenue-personal-edition
+      B2_PROJECT: ai-revenue-living-travel
+      B1_URL: https://ai-revenue-personal-edition.pages.dev/
+      B2_URL: https://ai-revenue-living-travel.pages.dev/
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+      - name: Build B1 Production bytes
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install .
+          python -m scripts.build_static_production
+          grep -q 'ui-v3-454-type-polish.css' dist-preview/index.html
+          grep -q '30초 사용법' dist-preview/index.html
+          grep -q '흩어진 기록이' dist-preview/index.html
+          ! grep -q 'UI Preview · Synthetic data · No persistence' dist-preview/index.html
+      - name: Verify B2 polished source bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in index.html guide.html demo/preferences.html demo/traveler-home.html demo/edition.html demo/history.html; do
+            grep -q 'b2-shell-20260810.css' "apps/living-travel/pages-preview/site/$f"
+            grep -q 'b2-shell-20260810.js' "apps/living-travel/pages-preview/site/$f"
+          done
+          grep -q 'line-height:1.04' apps/living-travel/pages-preview/site/assets/guide-20260810.css
+      - name: Deploy exact main B1
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          npx --yes wrangler@latest pages deploy dist-preview --project-name "$B1_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B1 typography polish exact main'
+      - name: Deploy exact main B2
+        shell: bash
+        run: |
+          npx --yes wrangler@latest pages deploy apps/living-travel/pages-preview/site --project-name "$B2_PROJECT" --branch main --commit-hash "$EXPECTED_SHA" --commit-message 'B2 traveler shell polish exact main'
+      - name: Verify public Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 35); do
+            b1=$(curl -L -sS --max-time 20 "$B1_URL" || true)
+            b2=$(curl -L -sS --max-time 20 "$B2_URL" || true)
+            g2=$(curl -L -sS --max-time 20 "${B2_URL}guide.html" || true)
+            if grep -q 'ui-v3-454-type-polish.css' <<<"$b1" \
+              && grep -q 'b2-shell-20260810.css' <<<"$b2" \
+              && grep -q 'b2-shell-20260810.js' <<<"$b2" \
+              && grep -q 'b2-shell-20260810.css' <<<"$g2"; then
+              echo 'B1_B2_VISUAL_POLISH_PUBLIC_PASS=1'
+              exit 0
+            fi
+            sleep 4
+          done
+          exit 1
