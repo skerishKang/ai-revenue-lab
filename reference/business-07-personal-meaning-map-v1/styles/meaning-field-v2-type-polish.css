@@ -1,0 +1,53 @@
+/* B07 Meaning Field V2 — Korean display rhythm polish, 2026-08-10.
+   Keep the existing product/art direction; only give large Hangul more measure and leading. */
+
+.pm-hero h1{
+  max-width:11ch;
+  font-size:clamp(3.8rem,7.35vw,7.7rem);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.pm-hero-copy>p:not(.pm-kicker){
+  margin-top:1.8rem;
+  max-width:640px;
+}
+.pm-guide-copy h1{
+  max-width:12ch;
+  font-size:clamp(3.45rem,6.7vw,7rem);
+  line-height:1.03;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.pm-guide-copy p{margin-top:1.45rem}
+.pm-section-head h2{
+  max-width:12ch;
+  line-height:1.03;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+.pm-guide-step h2{
+  line-height:1.06;
+  letter-spacing:-.04em;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+
+@media(max-width:560px){
+  .pm-hero-copy{padding-top:3.4rem}
+  .pm-hero h1{
+    max-width:10.8ch;
+    font-size:clamp(2.8rem,12.6vw,3.2rem);
+    line-height:1.07;
+    letter-spacing:-.035em;
+  }
+  .pm-hero-copy>p:not(.pm-kicker){margin-top:1.35rem;line-height:1.72}
+  .pm-guide-copy h1{
+    max-width:11.2ch;
+    font-size:clamp(2.65rem,12vw,3.05rem);
+    line-height:1.08;
+    letter-spacing:-.035em;
+  }
+  .pm-section-head h2{line-height:1.07;letter-spacing:-.035em}
+  .pm-guide-step h2{line-height:1.09;letter-spacing:-.03em}
+}
