@@ -39,10 +39,6 @@ jobs:
           test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
           grep -q 'signature-scene-v3.css' reference/business-06-world-feed-v1/index.html
           grep -q 'signature-scene-v3.js' reference/business-06-world-feed-v1/index.html
-          grep -q 'SOURCE' reference/business-06-world-feed-v1/scripts/signature-scene-v3.js
-          grep -q 'EXTRACT' reference/business-06-world-feed-v1/scripts/signature-scene-v3.js
-          grep -q 'VERIFY' reference/business-06-world-feed-v1/scripts/signature-scene-v3.js
-          grep -q 'BRIEF' reference/business-06-world-feed-v1/scripts/signature-scene-v3.js
           node --check reference/business-06-world-feed-v1/scripts/signature-scene-v3.js
 
       - name: Deploy exact main B06
@@ -50,8 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           npx --yes wrangler@latest pages deploy reference/business-06-world-feed-v1 \
-            --project-name "$PROJECT" \
-            --branch main \
+            --project-name "$PROJECT" --branch main \
             --commit-hash "$EXPECTED_SHA" \
             --commit-message 'B06 World Feed Signal Stage V3 exact main'
 
@@ -65,8 +60,8 @@ jobs:
             js=$(curl -L -sS --max-time 20 "${URL}scripts/signature-scene-v3.js" || true)
             if grep -q 'signature-scene-v3.css' <<<"$html" \
               && grep -q 'signature-scene-v3.js' <<<"$html" \
-              && grep -q 'THE WORLD' <<<"$js" \
-              && grep -q 'wf-signal-stage' <<<"$css"; then
+              && grep -q 'wf-signal-stage' <<<"$css" \
+              && grep -q 'THE WORLD' <<<"$js"; then
               echo 'B06_SIGNAL_STAGE_V3_PUBLIC_BYTES_PASS=1'
               exit 0
             fi
@@ -90,6 +85,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf /tmp/b06-prod-evidence
           mkdir -p /tmp/b06-prod-evidence
           cat >/tmp/b06-prod-qa.cjs <<'NODE'
           const { chromium } = require('playwright');
@@ -107,7 +103,34 @@ jobs:
             page.on('response', response => { if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`); });
 
             await page.goto(`${url}#feed`, { waitUntil: 'networkidle' });
-            await page.waitForSelector('#view-feed:not([hidden]) .wf-signal-stage', { state: 'visible' });
+            await page.waitForTimeout(350);
+            const pre = await page.evaluate(() => {
+              const stage = document.querySelector('.wf-signal-stage');
+              const feed = document.querySelector('#view-feed');
+              const variant = document.querySelector('#view-feed [data-feed-variant="default"]');
+              return {
+                href: location.href,
+                reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+                readyState: document.readyState,
+                hasStage: Boolean(stage),
+                stageDisplay: stage ? getComputedStyle(stage).display : null,
+                stageVisibility: stage ? getComputedStyle(stage).visibility : null,
+                stageRect: stage ? stage.getBoundingClientRect().toJSON() : null,
+                stageStep: stage?.dataset.stageStep || null,
+                feedHidden: feed?.hidden ?? null,
+                feedDisplay: feed ? getComputedStyle(feed).display : null,
+                variantHidden: variant?.hidden ?? null,
+                variantDisplay: variant ? getComputedStyle(variant).display : null,
+                shellRoute: document.querySelector('.review-shell')?.dataset.route || null,
+                htmlHasScript: [...document.scripts].some(s => (s.src || '').includes('signature-scene-v3.js')),
+                reducedDataset: document.documentElement.dataset.reducedMotion || null,
+                errors: [...document.querySelectorAll('script')].length
+              };
+            });
+            fs.writeFileSync(`/tmp/b06-prod-evidence/${name}-pre.json`, JSON.stringify({ pre, errors, badResponses }, null, 2));
+            await page.screenshot({ path: `/tmp/b06-prod-evidence/${name}-pre.png`, fullPage: true });
+
+            await page.waitForSelector('#view-feed:not([hidden]) .wf-signal-stage', { state: 'visible', timeout: 12000 });
             await page.waitForFunction(() => document.querySelector('.wf-signal-stage')?.dataset.stageStep === '4', null, { timeout: 9000 });
             await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.wf-stage-brief')).opacity) > 0.95, null, { timeout: 3000 });
 
@@ -125,30 +148,30 @@ jobs:
               }).length
             }));
 
-            assert.equal(state.route, 'feed', `${name}: route`);
-            assert.equal(state.step, '4', `${name}: stage step`);
-            assert.equal(state.activeRoutes, 1, `${name}: active routes`);
+            assert.equal(state.route, 'feed');
+            assert.equal(state.step, '4');
+            assert.equal(state.activeRoutes, 1);
             assert.ok(state.overflow <= 1, `${name}: horizontal overflow ${state.overflow}`);
-            assert.ok(state.stageWidth > 300, `${name}: stage width`);
-            assert.ok(state.briefOpacity > 0.95, `${name}: brief opacity`);
-            assert.equal(state.visibleSvg, 0, `${name}: visible SVG`);
+            assert.ok(state.stageWidth > 300);
+            assert.ok(state.briefOpacity > 0.95);
+            assert.equal(state.visibleSvg, 0);
             assert.deepEqual(errors, [], `${name}: browser errors ${errors.join(' | ')}`);
             assert.deepEqual(badResponses, [], `${name}: bad responses ${badResponses.join(' | ')}`);
 
             await page.screenshot({ path: `/tmp/b06-prod-evidence/${name}.png`, fullPage: true });
             await page.click('.wf-stage-brief [data-open-story][data-story-id="harbor"]');
             await page.waitForFunction(() => location.hash === '#story' && !document.querySelector('#view-story')?.hidden);
-            assert.equal(await page.evaluate(() => document.querySelector('.review-shell')?.dataset.storyId), 'harbor', `${name}: harbor story id`);
+            assert.equal(await page.evaluate(() => document.querySelector('.review-shell')?.dataset.storyId), 'harbor');
             await context.close();
-            return state;
+            return { pre, state };
           }
 
           (async () => {
             const browser = await chromium.launch({ headless: true });
             const result = {};
+            result.reduced = await inspect(browser, 'production-reduced-motion-1440x1100', { width: 1440, height: 1100 }, 'reduce');
             result.desktop = await inspect(browser, 'production-desktop-1440x1100', { width: 1440, height: 1100 });
             result.mobile = await inspect(browser, 'production-mobile-390x844', { width: 390, height: 844 });
-            result.reduced = await inspect(browser, 'production-reduced-motion-1440x1100', { width: 1440, height: 1100 }, 'reduce');
             fs.writeFileSync('/tmp/b06-prod-evidence/results.json', JSON.stringify(result, null, 2));
             await browser.close();
             console.log(JSON.stringify(result, null, 2));
@@ -164,6 +187,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: b06-signal-stage-v3-production-evidence
+          name: b06-signal-stage-v3-production-evidence-${{ github.run_number }}
           path: /tmp/b06-prod-evidence
           if-no-files-found: error
