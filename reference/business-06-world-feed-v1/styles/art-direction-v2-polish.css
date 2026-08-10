@@ -1,0 +1,45 @@
+/* B06 V2 visual QA polish after first Chromium review. */
+.issue-tag,
+.prototype-state-panel,
+.site-footer {
+  display: none !important;
+}
+
+.masthead {
+  grid-template-columns: minmax(210px,1fr) auto minmax(260px,.72fr) !important;
+}
+
+.feed-lead-title {
+  max-width: 10.5ch !important;
+  font-size: clamp(2.65rem,4.25vw,4.85rem) !important;
+  line-height: .93 !important;
+  letter-spacing: -.045em !important;
+  word-break: keep-all;
+}
+
+.story-layout h1,
+.story-layout h2,
+.why-layout h1,
+.why-layout h2,
+.preference-layout h1,
+.preference-layout h2 {
+  word-break: keep-all;
+}
+
+@media (max-width: 980px) {
+  .masthead {
+    grid-template-columns: 1fr auto !important;
+  }
+  .masthead-meta {
+    display: none !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .feed-lead-title {
+    max-width: 9.5ch !important;
+    font-size: clamp(2.45rem,12vw,3.7rem) !important;
+    line-height: .95 !important;
+    letter-spacing: -.038em !important;
+  }
+}
