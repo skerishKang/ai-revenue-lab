@@ -1,0 +1,140 @@
+/* B06 V4 screenshot-review polish — Korean scale, measure and first-viewport balance. */
+
+/* Signature scenes: keep the cinematic hierarchy without compressing Hangul. */
+.wf-v4-entry h1{
+  max-width:13ch!important;
+  font-size:clamp(3.4rem,6.7vw,7.15rem)!important;
+  line-height:.99!important;
+  letter-spacing:-.058em!important;
+}
+.wf-v4-promise{margin-top:2rem!important;max-width:720px!important}
+.wf-v4-scene h2{
+  max-width:11.5ch!important;
+  font-size:clamp(3rem,5.35vw,5.85rem)!important;
+  line-height:1.01!important;
+  letter-spacing:-.056em!important;
+}
+.wf-v4-brief h2{
+  font-size:clamp(3rem,4.6vw,5.2rem)!important;
+  line-height:1.01!important;
+  letter-spacing:-.058em!important;
+}
+.wf-v4-brief h3{
+  font-size:clamp(1.65rem,2.45vw,2.75rem)!important;
+  line-height:1.14!important;
+  letter-spacing:-.046em!important;
+}
+
+/* Workspace titles: editorial, not poster-sized. */
+#view-feed .journey-heading h1{
+  font-size:clamp(3.35rem,5.5vw,5.8rem)!important;
+  line-height:1.03!important;
+  letter-spacing:-.052em!important;
+}
+.topic-header h1{
+  font-size:clamp(3.25rem,5.25vw,5.55rem)!important;
+  line-height:1.04!important;
+  letter-spacing:-.052em!important;
+}
+.topic-main-copy{justify-content:center!important}
+.topic-main-copy h2{
+  font-size:clamp(2.55rem,3.9vw,4.25rem)!important;
+  line-height:1.07!important;
+  letter-spacing:-.048em!important;
+  margin-bottom:1.8rem!important;
+}
+
+/* Story had the densest Hangul block in QA. Give it width and reduce scale. */
+.story-detail{
+  grid-template-columns:minmax(0,.92fr) minmax(430px,1.08fr)!important;
+  column-gap:clamp(3.5rem,6.5vw,7rem)!important;
+}
+.story-detail>h1{
+  max-width:12ch!important;
+  font-size:clamp(3rem,4.65vw,5rem)!important;
+  line-height:1.08!important;
+  letter-spacing:-.05em!important;
+  margin:.8rem 0 1.25rem!important;
+}
+.story-intro{line-height:1.86!important}
+
+.why-panel h1{
+  font-size:clamp(3rem,4.45vw,4.85rem)!important;
+  line-height:1.07!important;
+  letter-spacing:-.05em!important;
+  margin-bottom:2rem!important;
+}
+.why-story-preview>h2{
+  max-width:12ch!important;
+  font-size:clamp(1.9rem,2.85vw,3.15rem)!important;
+  line-height:1.1!important;
+  letter-spacing:-.044em!important;
+}
+.adjusted-header h1{
+  font-size:clamp(3rem,4.5vw,4.9rem)!important;
+  line-height:1.08!important;
+  letter-spacing:-.05em!important;
+}
+.state-card h1,#view-loading .state-heading h1{
+  font-size:clamp(2.8rem,4.35vw,4.7rem)!important;
+  line-height:1.1!important;
+  letter-spacing:-.047em!important;
+}
+
+@media(max-width:700px){
+  .wf-v4-entry h1{
+    max-width:10.8ch!important;
+    font-size:clamp(2.55rem,11.6vw,3.55rem)!important;
+    line-height:1.08!important;
+    letter-spacing:-.046em!important;
+  }
+  .wf-v4-entry-copy{padding-bottom:clamp(4.8rem,9vh,6.5rem)!important}
+  .wf-v4-promise{margin-top:1.55rem!important;line-height:1.72!important}
+  .wf-v4-scene h2{
+    max-width:11.8ch!important;
+    font-size:clamp(2.25rem,9.8vw,3.05rem)!important;
+    line-height:1.1!important;
+    letter-spacing:-.044em!important;
+  }
+  .wf-v4-brief h2{
+    font-size:clamp(2.45rem,10.8vw,3.35rem)!important;
+    line-height:1.08!important;
+  }
+  #view-feed .journey-heading h1,.topic-header h1{
+    font-size:clamp(2.55rem,12.8vw,3.55rem)!important;
+    line-height:1.08!important;
+    letter-spacing:-.046em!important;
+  }
+  .feed-lead-title,.topic-main-copy h2{
+    font-size:clamp(2rem,9vw,2.8rem)!important;
+    line-height:1.13!important;
+    letter-spacing:-.04em!important;
+  }
+  .story-detail>h1{
+    max-width:none!important;
+    font-size:clamp(2.15rem,9.65vw,2.65rem)!important;
+    line-height:1.14!important;
+    letter-spacing:-.04em!important;
+    margin:1rem 0 1.4rem!important;
+  }
+  .story-intro{font-size:.94rem!important;line-height:1.8!important}
+  .why-story-preview>h2{
+    max-width:12.5ch!important;
+    font-size:clamp(1.8rem,7.7vw,2.25rem)!important;
+    line-height:1.14!important;
+    letter-spacing:-.036em!important;
+    bottom:6.7rem!important;
+  }
+  .why-panel h1,.adjusted-header h1{
+    max-width:11.5ch!important;
+    font-size:clamp(2.25rem,9.8vw,2.85rem)!important;
+    line-height:1.13!important;
+    letter-spacing:-.04em!important;
+  }
+  .state-card h1,#view-loading .state-heading h1{
+    max-width:12ch!important;
+    font-size:clamp(2.15rem,9.2vw,2.7rem)!important;
+    line-height:1.15!important;
+    letter-spacing:-.038em!important;
+  }
+}
