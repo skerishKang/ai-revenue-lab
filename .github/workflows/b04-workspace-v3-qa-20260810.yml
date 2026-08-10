@@ -1,0 +1,124 @@
+name: B04 Workspace V3 QA 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b04-workspace-v3-qa-20260810.yml'
+      - 'apps/living-learning/pages-preview/**'
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    if: github.event.pull_request.head.ref == 'design/b04-adaptive-workspace-v3-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b04-v3 && cd /tmp/b04-v3
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Serve B04 source
+        run: |
+          cd apps/living-learning/pages-preview
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/b04-http.log 2>&1 &
+          echo $! >/tmp/b04-http.pid
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/b04-http.log
+          exit 1
+      - name: Run complete screenshot and layout QA
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b04-v3-evidence
+          cd /tmp/b04-v3
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs=require('fs'), path=require('path');
+          const base='http://127.0.0.1:4173';
+          const routes=[
+            ['root','/'],['guide','/guide.html'],['goals','/goals/'],['diagnostic','/diagnostic/'],
+            ['lesson1','/lesson-1/'],['lesson1-result','/lesson-1/result/'],['feedback','/feedback/'],
+            ['changes','/changes/'],['lesson2','/lesson-2/'],['home','/home/'],['progress','/progress/'],
+            ['history','/history/'],['review','/review/']
+          ];
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{
+            const b=await chromium.launch({headless:true});
+            const results=[];
+            for(const vp of vps){
+              for(const [name,route] of routes){
+                const p=await b.newPage({viewport:vp});
+                const errors=[],failed=[];
+                p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                p.on('pageerror',e=>errors.push(e.message));
+                p.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const r=await p.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+                await p.evaluate(()=>document.fonts.ready);
+                await p.waitForTimeout(250);
+                const m=await p.evaluate(()=>{
+                  const h1=document.querySelector('h1');
+                  const hr=h1?.getBoundingClientRect();
+                  const cs=h1?getComputedStyle(h1):null;
+                  const banner=document.querySelector('.preview-banner');
+                  const br=banner?.getBoundingClientRect();
+                  const ws=[...document.styleSheets].some(s=>String(s.href||'').includes('workspace-v3-20260810.css'));
+                  return {
+                    overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+                    h1:h1?.innerText.trim()||'',
+                    h1Y:hr?.y??null,
+                    h1W:hr?.width??null,
+                    h1Font:cs?parseFloat(cs.fontSize):null,
+                    h1Line:cs?parseFloat(cs.lineHeight):null,
+                    bannerVisible:!!(br&&br.width>4&&br.height>4),
+                    workspaceLoaded:ws,
+                    shell:!!document.querySelector('.shell'),
+                    sidebarHeight:document.querySelector('.sidebar')?.getBoundingClientRect().height??0
+                  };
+                });
+                const problems=[];
+                if((r?.status()||0)!==200)problems.push(`status ${r?.status()}`);
+                if(m.overflow>1)problems.push(`overflow ${m.overflow}`);
+                if(errors.length)problems.push(`errors ${errors.join(' | ')}`);
+                if(failed.length)problems.push(`failed ${failed.join(' | ')}`);
+                if(!m.workspaceLoaded)problems.push('workspace css missing');
+                if(m.bannerVisible)problems.push('preview banner visible');
+                if(vp.name==='mobile'&&m.shell&&m.h1Y!==null&&m.h1Y>290)problems.push(`mobile h1 too low ${m.h1Y}`);
+                if(m.shell&&m.h1Font&&m.h1Line&&m.h1Line/m.h1Font<1.06)problems.push(`tight h1 line ratio ${(m.h1Line/m.h1Font).toFixed(2)}`);
+                await p.screenshot({path:path.join('/tmp/b04-v3-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                results.push({viewport:vp.name,name,route,status:r?.status()||0,errors,failed,problems,...m});
+                await p.close();
+              }
+            }
+            await b.close();
+            fs.writeFileSync('/tmp/b04-v3-evidence/results.json',JSON.stringify(results,null,2));
+            const bad=results.filter(x=>x.problems.length);
+            console.log(JSON.stringify({count:results.length,bad},null,2));
+            if(bad.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Verify source scope
+        run: |
+          set -euo pipefail
+          grep -q 'workspace-v3-20260810.css' apps/living-learning/pages-preview/index.html
+          for f in goals/index.html diagnostic/index.html lesson-1/index.html lesson-1/result/index.html feedback/index.html changes/index.html lesson-2/index.html home/index.html progress/index.html history/index.html review/index.html; do
+            grep -q 'workspace-v3-20260810.css' "apps/living-learning/pages-preview/$f"
+          done
+          ! git diff --check origin/main...HEAD
+        continue-on-error: true
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b04-workspace-v3-evidence-${{ github.run_number }}
+          path: /tmp/b04-v3-evidence
+          if-no-files-found: error
+          retention-days: 7
