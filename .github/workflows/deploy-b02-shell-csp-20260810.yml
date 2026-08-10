@@ -1,0 +1,118 @@
+name: Deploy B02 Shell CSP 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b02-shell-csp-20260810.yml'
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b02-shell-csp-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: 66a229e2bfc4de25298fa6797bde2fbbe690db8f
+      PROJECT: ai-revenue-living-travel
+      URL: https://ai-revenue-living-travel.pages.dev
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact main and source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" = "$EXPECTED_SHA"
+          root=apps/living-travel/pages-preview/site
+          grep -Fq "script-src 'self'; connect-src 'none'" "$root/_headers"
+          grep -Fq "script-src 'self' 'unsafe-inline'" "$root/_headers"
+          ! grep -Fq "'unsafe-eval'" "$root/_headers"
+          test -f "$root/assets/b2-shell-20260810.js"
+          test -f "$root/assets/b2-shell-20260810.css"
+          grep -q 'class="lt-topbar"' "$root/demo/edition-2.html"
+          grep -q 'class="lt-topbar"' "$root/demo/pending.html"
+      - name: Assert canonical project
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl --fail-with-body -sS -o /tmp/project.json -w '%{http_code}' -H "Authorization: Bearer ${CF_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+          node -e "const p=require('/tmp/project.json').result; if(p.name!=='ai-revenue-living-travel') process.exit(1); console.log('B02_CANONICAL_PROJECT_OK=1')"
+      - name: Deploy exact-main Living Travel
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy apps/living-travel/pages-preview/site \
+            --project-name "$PROJECT" --branch main --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B02 persistent traveler shell CSP exact main' --commit-dirty=true
+      - name: Verify public bytes and CSP headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=apps/living-travel/pages-preview/site
+          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 40); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify "$URL/index.html" "$root/index.html" B02_ROOT
+          verify "$URL/guide.html" "$root/guide.html" B02_GUIDE
+          verify "$URL/demo/edition-2.html" "$root/demo/edition-2.html" B02_EDITION2
+          verify "$URL/demo/pending.html" "$root/demo/pending.html" B02_PENDING
+          curl -sSI "$URL/index.html" > /tmp/root-headers.txt
+          curl -sSI "$URL/demo/traveler-home.html" > /tmp/demo-headers.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          def csp(path):
+              for line in Path(path).read_text(errors='replace').splitlines():
+                  if line.lower().startswith('content-security-policy:'):
+                      return line.split(':',1)[1].strip()
+              raise SystemExit(f'no CSP in {path}')
+          root=csp('/tmp/root-headers.txt')
+          demo=csp('/tmp/demo-headers.txt')
+          assert "script-src 'self'" in root, root
+          assert "style-src 'self'" in root, root
+          assert "connect-src 'none'" in root, root
+          assert "'unsafe-inline'" not in root, root
+          assert "'unsafe-eval'" not in root, root
+          assert "script-src 'self' 'unsafe-inline'" in demo, demo
+          assert "connect-src 'none'" in demo, demo
+          assert "'unsafe-eval'" not in demo, demo
+          print('B02_PUBLIC_CSP_HEADERS_PASS=1')
+          PY
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b02-prod-browser && cd /tmp/b02-prod-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Verify every public traveler shell surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b02-prod-evidence
+          cd /tmp/b02-prod-browser
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'),path=require('path');
+          const site=path.resolve(process.env.GITHUB_WORKSPACE,'apps/living-travel/pages-preview/site');
+          const base='https://ai-revenue-living-travel.pages.dev';
+          function shellPages(dir=site){let out=[];for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory()){if(e.name==='staging')continue;out=out.concat(shellPages(p));}else if(e.name.endsWith('.html')){const t=fs.readFileSync(p,'utf8');if(t.includes('b2-shell-20260810.js'))out.push('/'+path.relative(site,p).split(path.sep).join('/'));}}return out.sort();}
+          (async()=>{const browser=await chromium.launch({headless:true});const pages=shellPages();const manifest={pages,checks:{}};if(pages.length!==13)throw new Error(`expected 13 shell pages, found ${pages.length}: ${pages.join(',')}`);for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){for(const rel of pages){const p=await browser.newPage({viewport:vp}),errors=[];p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});p.on('pageerror',e=>errors.push(e.message));const r=await p.goto(base+rel,{waitUntil:'networkidle',timeout:45000});if(!r||r.status()!==200)throw new Error(`${vp.name}:${rel}:HTTP ${r?.status()}`);const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,ready:document.documentElement.classList.contains('lt-shell-ready'),links:[...document.querySelectorAll('.lt-nav--persistent .lt-shell-link')].map(a=>a.textContent.trim()),active:document.querySelector('.lt-nav--persistent [aria-current="page"]')?.textContent.trim()||''}));if(d.sw>d.cw+1)throw new Error(`${vp.name}:${rel}:overflow ${d.sw}>${d.cw}`);if(!d.ready)throw new Error(`${vp.name}:${rel}:shell not ready`);const expected=['30초 사용법','취향','현재 여행판','기록','편집실'];if(JSON.stringify(d.links)!==JSON.stringify(expected))throw new Error(`${vp.name}:${rel}:links ${d.links.join('|')}`);if(errors.length)throw new Error(`${vp.name}:${rel}:console ${errors.join('|')}`);manifest.checks[`${vp.name}:${rel}`]=d;if(['/index.html','/guide.html','/demo/traveler-home.html'].includes(rel))await p.screenshot({path:`/tmp/b02-prod-evidence/b02-prod-${rel.replaceAll('/','-').replace('.html','')}-${vp.name}.png`,fullPage:true});await p.close()}}await browser.close();fs.writeFileSync('/tmp/b02-prod-evidence/manifest.json',JSON.stringify(manifest,null,2));console.log('B02_PRODUCTION_ALL_13_SHELL_PAGES_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b02-production-shell-csp-20260810
+          path: /tmp/b02-prod-evidence
+          retention-days: 7
