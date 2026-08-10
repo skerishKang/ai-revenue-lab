@@ -34,6 +34,7 @@ jobs:
           PY
           )
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+          echo "CHROME_BIN=$CHROME_PATH" >> "$GITHUB_ENV"
 
       - name: Run B01 regression contracts
         run: |
@@ -148,7 +149,6 @@ jobs:
                 context.close()
             finally: browser.close()
 
-          # Contact sheets for direct human review.
           for vp,w,h in viewports:
             files=[shots/f'{name}-{vp}.png' for name,_ in routes]
             thumb_w=360 if vp=='desktop' else 260
