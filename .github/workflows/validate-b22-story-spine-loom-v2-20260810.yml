@@ -1,0 +1,81 @@
+name: Validate B22 Story Spine Loom V2 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'reference/business-22-personal-media-studio-v1/**'
+      - '.github/workflows/validate-b22-story-spine-loom-v2-20260810.yml'
+permissions: {contents: read}
+jobs:
+  validate:
+    if: github.event.pull_request.head.ref == 'design/b22-story-spine-loom-v2-20260810'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.event.pull_request.head.ref }}', fetch-depth: 0}
+      - name: Static product contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          b=Path('reference/business-22-personal-media-studio-v1')
+          texts={r:(b/r).read_text(encoding='utf-8') for r in ('index.html','ux.html','guide.html')}
+          for r,t in texts.items():
+              assert 'story-spine-loom-v2.css' in t,r
+              assert '.svg' not in t.lower(),r
+              assert 'Visual Reference' not in t and 'Phase 1' not in t and 'UI_ONLY' not in t,r
+          joined='\n'.join(texts.values())
+          for marker in ('SOURCE SET','STORY SPINE','EDITIONS','TRACE','MASTER'):
+              assert marker in joined,marker
+          for forbidden in ('fetch(', 'XMLHttpRequest', 'localStorage', 'document.cookie', 'serviceWorker'):
+              assert forbidden not in joined,forbidden
+          print('B22_STORY_SPINE_STATIC_PASS=1')
+          PY
+          git diff --check origin/main...HEAD -- 'reference/business-22-personal-media-studio-v1/**'
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b22-browser && cd /tmp/b22-browser
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.54.1
+          npx playwright install chromium
+      - name: Browser loom journey and screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b22-evidence
+          python3 -m http.server 4222 --directory reference/business-22-personal-media-studio-v1 >/tmp/b22-http.log 2>&1 &
+          server=$!; trap 'kill $server || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4222/index.html >/dev/null && break; sleep .5; done
+          cd /tmp/b22-browser
+          node <<'JS'
+          const {chromium}=require('playwright');const fs=require('fs'),path=require('path');const out='/tmp/b22-evidence';
+          async function audit(p,l){const d=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,svg:[...document.images].filter(i=>/\.svg(?:[?#]|$)/i.test(i.getAttribute('src')||'')).length,text:document.body.innerText}));if(d.sw>d.cw+1)throw new Error(`${l}:overflow ${d.sw}>${d.cw}`);if(d.svg)throw new Error(`${l}:svg ${d.svg}`);if(/Visual Reference|Phase 1|UI_ONLY/i.test(d.text))throw new Error(`${l}:old chrome`);return d}
+          async function runLoom(p,label){
+            for(const key of ['S01','S02','S04'])await p.locator(`[data-source="${key}"]`).click();
+            if(await p.locator('#toSpine').isDisabled())throw new Error(`${label}:source gate`);
+            await p.locator('#toSpine').click();
+            if(!(await p.locator('#phase-spine').isVisible()))throw new Error(`${label}:spine phase`);
+            await p.locator('#lockSpine').click();
+            for(const key of ['ARTICLE','AUDIO','VIDEO'])await p.locator(`[data-format="${key}"]`).click();
+            if(await p.locator('#toTrace').isDisabled())throw new Error(`${label}:format gate`);
+            await p.locator('#toTrace').click();
+            if(await p.locator('#tracePhaseList .sl-trace-card').count()!=3)throw new Error(`${label}:trace count`);
+            await p.locator('#toMaster').click();
+            for(const key of ['trace','role','fact'])await p.locator(`[data-review="${key}"]`).click();
+            if(await p.locator('#finishMaster').isDisabled())throw new Error(`${label}:review gate`);
+            await p.locator('#finishMaster').click();
+            if(!(await p.locator('#finishStatus').innerText()).includes('MASTER READY'))throw new Error(`${label}:finish`);
+          }
+          (async()=>{const b=await chromium.launch({headless:true}),m={};for(const vp of [{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}]){
+            for(const rel of ['index.html','guide.html']){const p=await b.newPage({viewport:vp});await p.goto(`http://127.0.0.1:4222/${rel}`,{waitUntil:'networkidle'});m[`${vp.name}-${rel}`]=await audit(p,`${vp.name}:${rel}`);await p.screenshot({path:path.join(out,`b22-${rel.replace('.html','')}-${vp.name}.png`),fullPage:true});await p.close()}
+            const p=await b.newPage({viewport:vp}),errs=[];p.on('console',x=>{if(x.type()==='error')errs.push(x.text())});p.on('pageerror',e=>errs.push(e.message));await p.goto('http://127.0.0.1:4222/ux.html',{waitUntil:'networkidle'});await runLoom(p,`${vp.name}:loom`);m[`${vp.name}-ux`]=await audit(p,`${vp.name}:ux`);if(errs.length)throw new Error(errs.join('|'));await p.screenshot({path:path.join(out,`b22-ux-${vp.name}.png`),fullPage:true});await p.close()
+          }fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(m,null,2));await b.close();console.log('B22_STORY_SPINE_BROWSER_PASS=1')})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: b22-story-spine-loom-v2-20260810, path: /tmp/b22-evidence, retention-days: 7, if-no-files-found: warn}
