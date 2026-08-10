@@ -73,6 +73,44 @@
   opacity: .28;
 }
 
+/* CSP-safe helpers for global preview pages. */
+.lt-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.lt-access-token-panel {
+  max-width: 620px;
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--lt-line-dark);
+}
+
+.lt-access-token-label {
+  color: rgba(255,255,255,.62);
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.lt-access-token-input {
+  margin-top: .5rem !important;
+  background: transparent !important;
+  color: var(--lt-white) !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.35) !important;
+  border-radius: 0 !important;
+  padding: .8rem 0 !important;
+}
+
 @media (max-width: 860px) {
   .lt-topbar--persistent {
     gap: .6rem;
