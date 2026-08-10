@@ -1,0 +1,65 @@
+name: B08 Deep Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b08-deep-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b08-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b08-audit && cd /tmp/b08-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Capture B08 Production journey
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b08-evidence
+          cd /tmp/b08-audit
+          node <<'JS'
+          const {chromium}=require('playwright'); const fs=require('fs'),path=require('path');
+          const base='https://08-family-newspaper.pages.dev'; const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{const browser=await chromium.launch({headless:true}); const results=[];
+            for(const vp of vps){
+              for(const [name,route] of [['root','/'],['guide','/guide.html']]){
+                const page=await browser.newPage({viewport:vp}); const errors=[],failed=[]; page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000}); await page.evaluate(()=>document.fonts.ready); await page.waitForTimeout(300);
+                const m=await page.evaluate(()=>{const h=document.querySelector('h1'),r=h?.getBoundingClientRect(),c=h?getComputedStyle(h):null;return{overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h?.innerText.trim()||'',h1Y:r?.y??null,font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,visibleSvg:[...document.querySelectorAll('svg')].filter(s=>{const x=s.getBoundingClientRect();return x.width>60&&x.height>60}).length,oldChrome:/Visual Atlas|UI_ONLY|Phase 1|Visual Reference/i.test(document.body.innerText)}});
+                await page.screenshot({path:path.join('/tmp/b08-evidence',`${vp.name}-${name}.png`),fullPage:false}); results.push({viewport:vp.name,name,status:response.status(),errors,failed,...m}); await page.close();
+              }
+              const page=await browser.newPage({viewport:vp}); const errors=[],failed=[]; page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+              const response=await page.goto(base+'/ux.html',{waitUntil:'networkidle',timeout:45000}); await page.evaluate(()=>document.fonts.ready);
+              async function snap(name){const m=await page.evaluate(()=>{const active=document.querySelector('.fp-page.active'); const h=active?.querySelector('h1'),r=h?.getBoundingClientRect(),c=h?getComputedStyle(h):null;return{overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,active:active?.id||'',h1:h?.innerText.trim()||'',h1Y:r?.y??null,font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,bookmark:document.querySelector('[data-bookmark]')?.dataset.on||null}}); await page.screenshot({path:path.join('/tmp/b08-evidence',`${vp.name}-${name}.png`),fullPage:false}); results.push({viewport:vp.name,name,status:response.status(),errors:[...errors],failed:[...failed],...m}); return m;}
+              await snap('reader-front'); await page.locator('[data-bookmark]').click(); await snap('reader-bookmarked');
+              for(const id of ['news','photos','calendar','sources']){await page.locator(`.fp-reader-nav [data-page="${id}"]`).click(); await page.waitForTimeout(100); await snap(`reader-${id}`)}
+              await page.goBack(); await page.waitForTimeout(100); await snap('reader-back'); await page.close();
+            }
+            await browser.close();
+            const bad=results.filter(x=>x.status!==200||x.overflow>1||x.errors?.length||x.failed?.length||x.visibleSvg>0||x.oldChrome);
+            const required=[]; for(const vp of ['desktop','mobile']){const get=n=>results.find(x=>x.viewport===vp&&x.name===n); if(get('reader-bookmarked')?.bookmark!=='1')required.push(`${vp} bookmark`); for(const id of ['news','photos','calendar','sources'])if(get(`reader-${id}`)?.active!==id)required.push(`${vp} ${id}`); if(get('reader-back')?.active!=='calendar')required.push(`${vp} history back`)}
+            fs.writeFileSync('/tmp/b08-evidence/results.json',JSON.stringify({results,bad,required},null,2)); console.log(JSON.stringify({count:results.length,bad:bad.map(x=>[x.viewport,x.name]),required},null,2)); if(bad.length||required.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b08-deep-visual-audit-${{ github.run_number }}
+          path: /tmp/b08-evidence
+          if-no-files-found: error
+          retention-days: 7
