@@ -1,0 +1,1 @@
+B19 mobile correction: removed the inline three-column provenance grid override from `ux.html` so the shared responsive rule collapses evidence comparison to one column at 390px. This commit also intentionally retriggers the real-Chromium validation after the bot-authored materialization commit.
