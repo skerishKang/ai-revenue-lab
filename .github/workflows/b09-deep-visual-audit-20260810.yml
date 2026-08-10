@@ -1,0 +1,63 @@
+name: B09 Deep Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b09-deep-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b09-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b09-audit && cd /tmp/b09-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Capture B09 Production journey
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b09-evidence
+          cd /tmp/b09-audit
+          node <<'JS'
+          const {chromium}=require('playwright'); const fs=require('fs'),path=require('path');
+          const base='https://09-personalized-childrens-story.pages.dev'; const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{const browser=await chromium.launch({headless:true});const results=[];
+            for(const vp of vps){
+              for(const [name,route] of [['root','/'],['guide','/guide.html']]){
+                const page=await browser.newPage({viewport:vp}),errors=[],failed=[]; page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(300);
+                const m=await page.evaluate(()=>{const h=document.querySelector('h1'),r=h?.getBoundingClientRect(),c=h?getComputedStyle(h):null;return{overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h?.innerText.trim()||'',h1Y:r?.y??null,font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,visibleSvg:[...document.querySelectorAll('svg')].filter(s=>{const x=s.getBoundingClientRect();return x.width>60&&x.height>60}).length,oldChrome:/UI_ONLY|Visual Reference|Phase 1|Visual Atlas/i.test(document.body.innerText)}});
+                await page.screenshot({path:path.join('/tmp/b09-evidence',`${vp.name}-${name}.png`),fullPage:false});results.push({viewport:vp.name,name,status:response.status(),errors,failed,...m});await page.close();
+              }
+              for(const choice of ['river','shop']){
+                const page=await browser.newPage({viewport:vp}),errors=[],failed=[];page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const response=await page.goto(base+'/ux.html',{waitUntil:'networkidle',timeout:45000});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(150);
+                async function snap(name){const m=await page.evaluate(()=>{const visible=document.querySelector('#next.show');const h=(visible?document.querySelector('#nextTitle'):document.querySelector('.sb-reader-copy h1'));const c=h?getComputedStyle(h):null,r=h?.getBoundingClientRect();return{overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,next:!!visible,title:h?.innerText.trim()||'',h1Y:r?.y??null,font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,whyHidden:document.querySelector('#whyText')?.hidden,mark:document.querySelector('#pageMark')?.textContent.trim()||'',continueDisabled:document.querySelector('#continue')?.disabled,continueText:document.querySelector('#continue')?.textContent.trim()||'',spreadHidden:document.querySelector('#spread')?.hidden||false}});await page.screenshot({path:path.join('/tmp/b09-evidence',`${vp.name}-${choice}-${name}.png`),fullPage:false});results.push({viewport:vp.name,name:`${choice}-${name}`,status:response.status(),errors:[...errors],failed:[...failed],...m});return m;}
+                await snap('initial');await page.locator(`.sb-choice[data-choice="${choice}"]`).click();await page.waitForTimeout(220);await snap('branch');await page.locator('#whyButton').click();await page.waitForTimeout(120);await snap('why');await page.locator('#back').click();await page.waitForTimeout(120);await snap('back');await page.locator(`.sb-choice[data-choice="${choice}"]`).click();await page.waitForTimeout(120);await page.locator('#continue').click();await page.waitForTimeout(100);await snap('end');await page.close();
+              }
+            }
+            await browser.close();const bad=results.filter(x=>x.status!==200||x.overflow>1||x.errors?.length||x.failed?.length||x.visibleSvg>0||x.oldChrome);const required=[];for(const vp of ['desktop','mobile'])for(const ch of ['river','shop']){const g=n=>results.find(x=>x.viewport===vp&&x.name===`${ch}-${n}`);if(!g('branch')?.next||g('branch')?.spreadHidden!==true)required.push(`${vp} ${ch} branch`);if(g('why')?.whyHidden!==false)required.push(`${vp} ${ch} why`);if(g('back')?.next!==false||g('back')?.spreadHidden!==false)required.push(`${vp} ${ch} back`);if(g('end')?.continueDisabled!==true||!/데모 종료/.test(g('end')?.continueText||''))required.push(`${vp} ${ch} end`)}
+            fs.writeFileSync('/tmp/b09-evidence/results.json',JSON.stringify({results,bad,required},null,2));console.log(JSON.stringify({count:results.length,bad:bad.map(x=>[x.viewport,x.name]),required},null,2));if(bad.length||required.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b09-deep-visual-audit-${{ github.run_number }}
+          path: /tmp/b09-evidence
+          if-no-files-found: error
+          retention-days: 7
