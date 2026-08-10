@@ -1,0 +1,254 @@
+name: Deploy B01 Private Archive V4 Exact Main 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b01-private-archive-v4-20260811.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-and-verify:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b01-private-archive-v4-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: ff235ffb039c1262d0d80a118e49e21a11ade286
+      APP_DIR: apps/personal-edition
+      PROJECT: ai-revenue-personal-edition
+      CANONICAL: https://ai-revenue-personal-edition.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact authoritative main and existing Pages project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+          echo "authoritative_main=$latest"
+          test "$latest" = "$EXPECTED_SHA"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+          jq -e '.success == true and .result.name == "ai-revenue-personal-edition"' /tmp/project.json >/dev/null
+
+      - name: Build B01 owner Production bytes from exact main
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install .
+          python -m scripts.build_static_production
+          test -f dist-preview/index.html
+          test -f dist-preview/guide/index.html
+          test -f dist-preview/static/ui-v4-private-archive.css
+          test -f dist-preview/static/ui-v4-private-archive-visual-fix.css
+          test -f dist-preview/static/images/v4/archive-entry-tableau.svg
+          test -f dist-preview/static/images/v4/proof-review-tableau.svg
+          test -f dist-preview/static/images/v4/edition-cover-material.svg
+          grep -q 'data-art-direction="b1-private-archive-v4"' dist-preview/index.html
+          grep -q 'ui-v4-private-archive-visual-fix.css' dist-preview/index.html
+          grep -q '첫 기록 맡기기' dist-preview/index.html
+          grep -q '30초 사용법' dist-preview/index.html
+          grep -q 'Private Archive' dist-preview/static/ui-v4-private-archive.css
+          ! grep -q 'UI Preview · Synthetic data · No persistence' dist-preview/index.html
+
+      - name: Deploy exact-main bytes to canonical B01 Production
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy dist-preview \
+            --project-name "$PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B01 Private Archive V4 exact main'
+
+      - name: Confirm Cloudflare recorded exact main commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          for i in $(seq 1 30); do
+            code=$(curl -sS -o /tmp/deployments.json -w '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments?env=production&per_page=10")
+            if [[ "$code" == 200 ]] && jq -e --arg sha "$EXPECTED_SHA" '.result[] | select(.deployment_trigger.metadata.commit_hash == $sha)' /tmp/deployments.json >/dev/null; then
+              found=1
+              jq -r --arg sha "$EXPECTED_SHA" '.result[] | select(.deployment_trigger.metadata.commit_hash == $sha) | "deployment_id=\(.id) url=\(.url) commit=\(.deployment_trigger.metadata.commit_hash)"' /tmp/deployments.json | head -1
+              break
+            fi
+            sleep 2
+          done
+          test "$found" = 1
+
+      - name: Require three consecutive canonical byte matches
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify() {
+            local url="$1" source="$2" label="$3"
+            local expected actual code consecutive=0
+            expected=$(sha256sum "$source" | cut -d' ' -f1)
+            for i in $(seq 1 50); do
+              code=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' -o /tmp/public -w '%{http_code}' "${url}?verify=${EXPECTED_SHA}-${label}-${i}" || true)
+              actual=$(sha256sum /tmp/public 2>/dev/null | cut -d' ' -f1 || true)
+              echo "$label attempt=$i code=$code expected=$expected actual=$actual consecutive=$consecutive"
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then
+                consecutive=$((consecutive+1))
+                [[ "$consecutive" -ge 3 ]] && return 0
+              else
+                consecutive=0
+              fi
+              sleep 2
+            done
+            return 1
+          }
+
+          verify "$CANONICAL/" "$APP_DIR/dist-preview/index.html" root
+          verify "$CANONICAL/guide/" "$APP_DIR/dist-preview/guide/index.html" guide
+          verify "$CANONICAL/preview/participant/published/" "$APP_DIR/dist-preview/preview/participant/published/index.html" library
+          verify "$CANONICAL/preview/participant/input/" "$APP_DIR/dist-preview/preview/participant/input/index.html" write
+          verify "$CANONICAL/preview/participant/editions/modal-preview-edition/" "$APP_DIR/dist-preview/preview/participant/editions/modal-preview-edition/index.html" read
+          verify "$CANONICAL/static/ui-v4-private-archive.css" "$APP_DIR/dist-preview/static/ui-v4-private-archive.css" v4css
+          verify "$CANONICAL/static/ui-v4-private-archive-visual-fix.css" "$APP_DIR/dist-preview/static/ui-v4-private-archive-visual-fix.css" v4fix
+          verify "$CANONICAL/static/images/v4/archive-entry-tableau.svg" "$APP_DIR/dist-preview/static/images/v4/archive-entry-tableau.svg" entryart
+          verify "$CANONICAL/static/images/v4/proof-review-tableau.svg" "$APP_DIR/dist-preview/static/images/v4/proof-review-tableau.svg" proofart
+          verify "$CANONICAL/static/images/v4/edition-cover-material.svg" "$APP_DIR/dist-preview/static/images/v4/edition-cover-material.svg" coverart
+
+      - name: Install Production Chromium QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Verify canonical Production Desktop and Mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b01-production-evidence
+          cat > /tmp/b01-production.cjs <<'NODE'
+          const { chromium } = require(process.cwd() + '/node_modules/playwright');
+          const fs = require('fs');
+          const base = 'https://ai-revenue-personal-edition.pages.dev';
+          const expectedSha = 'ff235ffb039c1262d0d80a118e49e21a11ade286';
+          const surfaces = [
+            ['root','/'],
+            ['guide','/guide/'],
+            ['library','/preview/participant/published/'],
+            ['review','/preview/participant/editing/'],
+            ['write','/preview/participant/input/'],
+            ['read','/preview/participant/editions/modal-preview-edition/'],
+            ['feedback','/preview/participant/editions/modal-preview-edition/feedback/'],
+            ['adaptation','/preview/participant/editions/modal-preview-edition/adaptation/'],
+            ['history','/preview/participant/history/'],
+            ['operator-review','/admin/review/modal-preview-edition/content/']
+          ];
+          const viewports = {desktop:{width:1440,height:1100}, mobile:{width:390,height:844}};
+          const failures = [], results = [];
+
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            for (const [mode, viewport] of Object.entries(viewports)) {
+              const context = await browser.newContext({viewport, deviceScaleFactor:1, reducedMotion:'reduce'});
+              for (const [name,path] of surfaces) {
+                const page = await context.newPage();
+                const errors = [], failedRequests = [], external = [];
+                page.on('console', m => { if (m.type() === 'error') errors.push('console:' + m.text()); });
+                page.on('pageerror', e => errors.push('page:' + e.message));
+                page.on('requestfailed', r => failedRequests.push(r.url()));
+                page.on('request', r => {
+                  if (!r.url().startsWith(base) && !r.url().startsWith('data:') && !r.url().startsWith('blob:')) external.push(r.url());
+                });
+                const response = await page.goto(base + path + '?production=' + expectedSha + '-' + mode + '-' + name, {waitUntil:'networkidle', timeout:30000});
+                if (!response || !response.ok()) failures.push(`${mode}/${name}: bad HTTP ${response && response.status()}`);
+                const m = await page.evaluate(() => {
+                  const root=document.documentElement, body=document.body, h1=document.querySelector('h1');
+                  const hs=h1?getComputedStyle(h1):null, fs=hs?parseFloat(hs.fontSize):null, lh=hs&&hs.lineHeight!=='normal'?parseFloat(hs.lineHeight):null;
+                  const stage=document.querySelector('.v3-assembly-stage');
+                  const cover=document.querySelector('.v3-library-cover,.v3-read-cover');
+                  return {
+                    art:body.dataset.artDirection || null,
+                    overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,
+                    h1Text:h1?.innerText?.trim() || '',
+                    h1Font:fs,h1Line:lh,h1Ratio:(fs&&lh)?lh/fs:null,
+                    stageBackground:stage?getComputedStyle(stage).backgroundImage:null,
+                    coverBackground:cover?getComputedStyle(cover).backgroundImage:null,
+                    rootProof:!!document.querySelector('.v4-entry-proof'),
+                    recutPreview:!!document.querySelector('.v4-feedback-preview'),
+                    firstText:body.innerText.replace(/\s+/g,' ').slice(0,900)
+                  };
+                });
+                if (m.art !== 'b1-private-archive-v4') failures.push(`${mode}/${name}: art marker ${m.art}`);
+                if (m.overflowX > 1) failures.push(`${mode}/${name}: overflow ${m.overflowX}`);
+                if (/[가-힣]/.test(m.h1Text) && m.h1Ratio !== null && m.h1Ratio < 1.0) failures.push(`${mode}/${name}: Korean ratio ${m.h1Ratio}`);
+                if (name === 'root') {
+                  if (!m.rootProof) failures.push(`${mode}/root: missing entry proof`);
+                  if (!(m.stageBackground||'').includes('archive-entry-tableau.svg')) failures.push(`${mode}/root: missing focal art`);
+                  if (await page.getByText('첫 기록 맡기기',{exact:true}).count() < 1) failures.push(`${mode}/root: missing primary CTA`);
+                  if (await page.getByText('30초 사용법',{exact:true}).count() < 1) failures.push(`${mode}/root: missing guide CTA`);
+                }
+                if ((name === 'library' || name === 'read') && !(m.coverBackground||'').includes('edition-cover-material.svg')) failures.push(`${mode}/${name}: missing Edition material`);
+                if (name === 'review') {
+                  const bg = await page.locator('.v3-status-composition').evaluate(el => getComputedStyle(el).backgroundImage);
+                  if (!bg.includes('proof-review-tableau.svg')) failures.push(`${mode}/review: missing proof material`);
+                }
+                if (name === 'feedback' && !m.recutPreview) failures.push(`${mode}/feedback: missing RECUT preview`);
+                if (errors.length) failures.push(`${mode}/${name}: runtime errors ${errors.join('|')}`);
+                if (failedRequests.length) failures.push(`${mode}/${name}: failed requests ${failedRequests.join('|')}`);
+                if (external.length) failures.push(`${mode}/${name}: external requests ${external.join('|')}`);
+                await page.screenshot({path:`/tmp/b01-production-evidence/${mode}-${name}.png`});
+                await page.screenshot({path:`/tmp/b01-production-evidence/${mode}-${name}-full.png`, fullPage:true});
+                results.push({mode,name,path,metrics:m,errors,failedRequests,external});
+                await page.close();
+              }
+              await context.close();
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b01-production-evidence/metrics.json', JSON.stringify({expectedSha,results,failures},null,2));
+            console.log(JSON.stringify({expectedSha,failures},null,2));
+            if (failures.length) process.exit(1);
+          })().catch(e => { console.error(e); process.exit(1); });
+          NODE
+          node /tmp/b01-production.cjs
+
+      - name: Reconfirm exact authoritative main after Production verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          echo "B01_PRODUCTION_EXACT_MAIN_PASS=$EXPECTED_SHA"
+
+      - name: Upload Production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b01-production-exact-main-evidence-${{ github.run_attempt }}
+          path: /tmp/b01-production-evidence
+          if-no-files-found: warn
+          retention-days: 7
