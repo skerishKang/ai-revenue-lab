@@ -1,0 +1,67 @@
+name: B22 Deep Visual Audit 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b22-deep-visual-audit-20260811.yml']
+
+permissions: {contents: read}
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b22-deep-visual-audit-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: a631122888d30c5a8a62f4b27e192967da331898
+      APP_DIR: reference/business-22-personal-media-studio-v1
+      CANONICAL: https://22-personal-media-studio.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.EXPECTED_SHA }}', fetch-depth: 1, persist-credentials: false}
+      - name: Assert exact authority and Production bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote https://github.com/skerishKang/ai-revenue-lab.git refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          verify(){ url="$1"; source="$2"; expected=$(sha256sum "$source"|cut -d' ' -f1); for n in 1 2; do curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "${url}?audit=${EXPECTED_SHA}-${n}" -o /tmp/public; actual=$(sha256sum /tmp/public|cut -d' ' -f1); echo "$url expected=$expected actual=$actual"; test "$actual" = "$expected"; sleep 1; done; }
+          verify "$CANONICAL/index.html" "$APP_DIR/index.html"
+          verify "$CANONICAL/ux.html" "$APP_DIR/ux.html"
+          verify "$CANONICAL/guide.html" "$APP_DIR/guide.html"
+          verify "$CANONICAL/styles/story-spine-loom-v2-mobile-source-fix.css" "$APP_DIR/styles/story-spine-loom-v2-mobile-source-fix.css"
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Capture visual and master-path evidence
+        shell: bash
+        run: |
+          mkdir -p /tmp/b22-audit-evidence
+          cat > /tmp/b22-audit.cjs <<'NODE'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright'); const fs=require('fs');
+          const base='https://22-personal-media-studio.pages.dev';
+          const surfaces=[['root','/index.html'],['ux','/ux.html'],['guide','/guide.html']];
+          const viewports={desktop:{width:1440,height:1100},mobile:{width:390,height:844}};
+          const failures=[],results=[];
+          (async()=>{const browser=await chromium.launch({headless:true});
+            for(const [mode,viewport] of Object.entries(viewports)){const context=await browser.newContext({viewport,deviceScaleFactor:1});
+              for(const [name,path] of surfaces){const page=await context.newPage(),errors=[]; page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`)}); page.on('pageerror',e=>errors.push(`page:${e.message}`)); page.on('requestfailed',r=>errors.push(`request:${r.url()} ${r.failure()?.errorText||''}`)); const response=await page.goto(base+path+'?audit='+Date.now(),{waitUntil:'networkidle'}); if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP`);
+                const m=await page.evaluate(()=>{const root=document.documentElement,body=document.body,h1=document.querySelector('h1'),top=document.querySelector('.sl-topbar'),hs=h1?getComputedStyle(h1):null,hr=h1?.getBoundingClientRect(),tr=top?.getBoundingClientRect(); const f=hs?parseFloat(hs.fontSize):NaN,l=hs?parseFloat(hs.lineHeight):NaN,s=document.querySelector('.sl-sources')?.getBoundingClientRect(),c=document.querySelector('.sl-canvas')?.getBoundingClientRect(),t=document.querySelector('.sl-trace-panel')?.getBoundingClientRect(); return {viewportWidth:innerWidth,viewportHeight:innerHeight,overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,pageHeight:root.scrollHeight,h1Text:h1?.innerText||'',h1Font:f,h1Line:l,h1Ratio:Number.isFinite(f)&&f>0&&Number.isFinite(l)?l/f:null,h1Top:hr?.top??null,h1Bottom:hr?.bottom??null,topbarBottom:tr?.bottom??null,sourcesTop:s?.top??null,canvasTop:c?.top??null,traceTop:t?.top??null};});
+                if(m.overflowX>1)failures.push(`${mode}/${name}: overflow ${m.overflowX}`); if(errors.length)failures.push(`${mode}/${name}: ${errors.join(' | ')}`); if(m.h1Top!==null&&m.topbarBottom!==null&&m.h1Top<m.topbarBottom-2)failures.push(`${mode}/${name}: H1 intersects chrome`); if(/[가-힣]/.test(m.h1Text)&&m.h1Ratio!==null&&m.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean H1 ratio ${m.h1Ratio}`); if(mode==='mobile'&&name==='ux'&&!(m.sourcesTop<m.canvasTop&&m.canvasTop<m.traceTop))failures.push('mobile/ux: visual order is not SOURCES → CANVAS → LIVE TRACE'); await page.screenshot({path:`/tmp/b22-audit-evidence/${mode}-${name}.png`}); await page.screenshot({path:`/tmp/b22-audit-evidence/${mode}-${name}-full.png`,fullPage:true}); results.push({mode,name,metrics:m,errors}); await page.close();}
+              const page=await context.newPage(); await page.goto(base+'/ux.html?journey='+Date.now(),{waitUntil:'networkidle'}); for(const key of ['S01','S02','S04']) await page.locator(`[data-source="${key}"]`).click(); if(await page.locator('#toSpine').isDisabled())failures.push(`${mode}/journey: 3-source gate did not unlock`); await page.locator('#toSpine').click(); if(!(await page.locator('#phase-spine').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: spine phase not active`); await page.locator('#lockSpine').click(); for(const fmt of ['ARTICLE','AUDIO','VIDEO']) await page.locator(`[data-format="${fmt}"]`).click(); if(await page.locator('#toTrace').isDisabled())failures.push(`${mode}/journey: edition gate did not unlock`); await page.locator('#toTrace').click(); if(!(await page.locator('#phase-trace').evaluate(el=>el.classList.contains('active'))))failures.push(`${mode}/journey: trace phase not active`); await page.locator('#toMaster').click(); for(const key of ['trace','role','fact']) await page.locator(`[data-review="${key}"]`).click(); if(await page.locator('#finishMaster').isDisabled())failures.push(`${mode}/journey: human review gate did not unlock`); await page.locator('#finishMaster').click(); if(!((await page.locator('#finishStatus').innerText()).includes('MASTER READY')))failures.push(`${mode}/journey: master completion status mismatch`); await page.screenshot({path:`/tmp/b22-audit-evidence/${mode}-ux-master-ready-full.png`,fullPage:true}); await page.close(); await context.close();}
+            await browser.close(); fs.writeFileSync('/tmp/b22-audit-evidence/metrics.json',JSON.stringify({expectedSha:'a631122888d30c5a8a62f4b27e192967da331898',results,failures},null,2)); console.log(JSON.stringify({results,failures},null,2)); if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b22-audit.cjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b22-deep-visual-audit-evidence-${{ github.run_attempt }}
+          path: /tmp/b22-audit-evidence
+          if-no-files-found: error
+          retention-days: 7
