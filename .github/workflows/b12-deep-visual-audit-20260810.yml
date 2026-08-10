@@ -1,0 +1,33 @@
+name: B12 Deep Visual Audit 20260810
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths: ['.github/workflows/b12-deep-visual-audit-20260810.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b12-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b12-audit && cd /tmp/b12-audit && npm init -y >/dev/null 2>&1 && npm install --silent playwright@1.55.0 && npx playwright install chromium
+      - name: Capture B12 Production journey
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b12-evidence && cd /tmp/b12-audit
+          node <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),path=require('path');const base='https://12-creator-mini-media.pages.dev',vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{const b=await chromium.launch({headless:true}),R=[];for(const vp of vps){for(const [n,r] of [['root','/'],['guide','/guide.html']]){const p=await b.newPage({viewport:vp}),E=[],F=[];p.on('console',m=>{if(m.type()==='error')E.push(m.text())});p.on('pageerror',e=>E.push(e.message));p.on('response',x=>{if(x.status()>=400)F.push(`${x.status()} ${x.url()}`)});const q=await p.goto(base+r,{waitUntil:'networkidle'});await p.evaluate(()=>document.fonts.ready);const m=await p.evaluate(()=>{const h=document.querySelector('h1'),c=h?getComputedStyle(h):null;return{overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h?.innerText.trim()||'',font:c?parseFloat(c.fontSize):null,line:c?parseFloat(c.lineHeight):null,ratio:c?parseFloat(c.lineHeight)/parseFloat(c.fontSize):null,visibleSvg:[...document.querySelectorAll('svg')].filter(s=>{const x=s.getBoundingClientRect();return x.width>60&&x.height>60}).length,oldChrome:/UI_ONLY|Visual Reference|Phase 1|Visual Atlas/i.test(document.body.innerText)}});await p.screenshot({path:path.join('/tmp/b12-evidence',`${vp.name}-${n}.png`),fullPage:false});R.push({viewport:vp.name,name:n,status:q.status(),errors:E,failed:F,...m});await p.close()}
+          const p=await b.newPage({viewport:vp}),E=[],F=[];p.on('console',m=>{if(m.type()==='error')E.push(m.text())});p.on('pageerror',e=>E.push(e.message));p.on('response',x=>{if(x.status()>=400)F.push(`${x.status()} ${x.url()}`)});const q=await p.goto(base+'/ux.html',{waitUntil:'networkidle'});await p.locator('[data-next="formats"]').click();const formats=await p.locator('.step.active').getAttribute('id');await p.locator('.format[data-format="mail"]').click();const selected=await p.locator('.format.selected').count();await p.locator('#make').click();const preview=await p.locator('.step.active').getAttribute('id');const previewCount=await p.locator('#previews .preview').count();await p.locator('[data-intent="scene"]').click();const previewStatus=await p.locator('#previewStatus').textContent();await p.locator('[data-next="package"]').click();const pkg=await p.locator('.step.active').getAttribute('id');const packageCount=await p.locator('#packageList li').count();await p.locator('#approve').click();const approved=await p.locator('#packageStatus').textContent();const m=await p.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,visibleSvg:[...document.querySelectorAll('svg')].filter(s=>{const x=s.getBoundingClientRect();return x.width>60&&x.height>60}).length,oldChrome:/UI_ONLY|Visual Reference|Phase 1|Visual Atlas/i.test(document.body.innerText)}));await p.screenshot({path:path.join('/tmp/b12-evidence',`${vp.name}-package.png`),fullPage:false});R.push({viewport:vp.name,name:'workspace-package',status:q.status(),errors:E,failed:F,formats,selected,preview,previewCount,previewStatus,pkg,packageCount,approved,...m});await p.close()}
+          await b.close();const bad=R.filter(x=>x.status!==200||x.overflow>1||x.errors?.length||x.failed?.length||x.visibleSvg>0||x.oldChrome);const req=[];for(const vp of ['desktop','mobile']){const x=R.find(r=>r.viewport===vp&&r.name==='workspace-package');if(x.formats!=='formats'||x.selected!==3||x.preview!=='preview'||x.previewCount!==3||!/장면 중심/.test(x.previewStatus||'')||x.pkg!=='package'||x.packageCount!==3||!/검토 완료/.test(x.approved||''))req.push(vp)}fs.writeFileSync('/tmp/b12-evidence/results.json',JSON.stringify({results:R,bad,required:req},null,2));if(bad.length||req.length)process.exit(1)})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: 'b12-deep-visual-audit-${{ github.run_number }}', path: /tmp/b12-evidence, if-no-files-found: error, retention-days: 7}
