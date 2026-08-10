@@ -1,0 +1,54 @@
+/* B17 Counter Journal — focused Korean display rhythm correction.
+ * Preserve the V2 art direction while giving Korean display type enough
+ * leading and reducing first-screen headline scale where it was compressed. */
+
+.cj-hero h1 {
+  font-size: clamp(5.8rem, 7.4vw, 7rem);
+  line-height: 1.02;
+  letter-spacing: -0.065em;
+  word-break: keep-all;
+}
+
+.cj-guide-copy h1 {
+  font-size: clamp(5rem, 6.4vw, 6rem);
+  line-height: 1.03;
+  letter-spacing: -0.06em;
+  word-break: keep-all;
+}
+
+.cj-canvas h1 {
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+.cj-index h2,
+.cj-guide-step h2 {
+  line-height: 1.08;
+  word-break: keep-all;
+}
+
+@media (max-width: 620px) {
+  .cj-hero h1 {
+    font-size: clamp(3rem, 13vw, 3.55rem);
+    line-height: 1.05;
+    letter-spacing: -0.055em;
+  }
+
+  .cj-guide-copy h1 {
+    font-size: clamp(3rem, 12.6vw, 3.45rem);
+    line-height: 1.06;
+    letter-spacing: -0.05em;
+  }
+
+  .cj-canvas h1 {
+    font-size: clamp(3rem, 12.5vw, 3.4rem);
+    line-height: 1.06;
+    letter-spacing: -0.05em;
+  }
+
+  .cj-index h2,
+  .cj-guide-step h2 {
+    line-height: 1.12;
+  }
+}
