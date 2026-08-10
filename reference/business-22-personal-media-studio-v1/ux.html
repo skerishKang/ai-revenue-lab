@@ -1,1 +1,247 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>개인 미디어 스튜디오 · UX Demo</title><style>:root{--d:#171919;--p:#f2eee4;--v:#735c96;--o:#d36b43;--l:#bcb8ae}*{box-sizing:border-box}body{margin:0;background:var(--d);font-family:Arial,"Noto Sans KR",sans-serif;color:var(--d)}.studio{max-width:1120px;margin:auto;background:var(--p);min-height:100vh}.head{padding:18px 24px;background:#111;color:white;display:flex;justify-content:space-between;align-items:center}.head b{font-size:23px}.nav{display:flex;overflow:auto;border-bottom:1px solid var(--d)}.nav button{border:0;border-right:1px solid var(--l);background:none;padding:12px 16px;cursor:pointer;white-space:nowrap}.nav button[aria-current=page]{background:var(--v);color:white}.view{display:none;padding:28px 24px 56px}.view.active{display:block}.view h1{font-size:clamp(40px,6vw,66px);line-height:1;margin:8px 0 22px}.inputgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.inputgrid textarea{width:100%;min-height:180px;padding:16px;border:1px solid var(--l);background:white;font:16px/1.6 inherit}.presets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.preset{padding:17px;border:1px solid var(--d);background:none;text-align:left;cursor:pointer}.preset.active{background:var(--d);color:white}.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.asset{padding:18px;background:white;border-top:5px solid var(--v);min-height:230px}.asset:nth-child(2){border-color:var(--o)}.asset:nth-child(3){border-color:#5b8673}.asset h3{font-size:23px}.review{display:grid;grid-template-columns:1fr 1fr;gap:18px}.check{padding:17px;border:1px solid var(--l);background:white}.check.ok{border-color:#5b8673;box-shadow:inset 0 0 0 2px #5b8673}.check button,.actions button{padding:10px 13px;border:1px solid var(--d);background:none;cursor:pointer}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}.actions .primary{background:var(--d);color:white}.package{padding:22px;border-left:6px solid var(--v);background:white;line-height:1.7}.status{font-size:13px;color:var(--o);min-height:22px;margin-top:10px}@media(max-width:760px){.inputgrid,.presets,.board,.review{grid-template-columns:1fr}.view h1{font-size:46px}}</style></head><body><main class="studio"><header class="head"><b>개인 미디어 스튜디오</b><small>ONE-PERSON PRODUCTION · SYNTHETIC</small></header><nav class="nav"><button data-view="idea" aria-current="page">1 아이디어</button><button data-view="direction">2 방향</button><button data-view="board">3 제작 보드</button><button data-view="review">4 검토</button><button data-view="package">5 내보내기 준비</button></nav><section class="view active" id="idea"><h1>한 문장으로<br>제작을 시작합니다.</h1><div class="inputgrid"><textarea id="ideaText">오래된 동네 골목을 산책하면서 사라지는 간판과 새로 생긴 가게를 함께 기록하는 짧은 개인 미디어를 만들고 싶다.</textarea><div><h2>이번 제작의 목표</h2><p>완벽한 콘텐츠 자동생성이 아니라, 한 사람이 아이디어를 여러 제작 단위로 나누고 검토할 수 있는 흐름을 보여줍니다.</p><div class="actions"><button class="primary" data-go="direction">제작 방향 고르기</button></div></div></div></section><section class="view" id="direction"><h1>어떤 톤으로 만들까요?</h1><div class="presets"><button class="preset active" data-tone="기록형"><b>기록형</b><p>관찰과 장소 정보를 차분하게</p></button><button class="preset" data-tone="에세이형"><b>에세이형</b><p>개인의 느낌과 연결을 더 많이</p></button><button class="preset" data-tone="짧은 다큐형"><b>짧은 다큐형</b><p>장면·내레이션·컷 순서 중심</p></button></div><div class="actions"><button data-go="idea">아이디어로</button><button class="primary" id="build">제작 보드 만들기</button></div></section><section class="view" id="board"><h1>제작 보드</h1><div class="board"><article class="asset"><small>ARTICLE</small><h3>골목 기록 600자</h3><p id="articleCopy"></p></article><article class="asset"><small>SHORT VIDEO</small><h3>30초 컷 구성</h3><p>1. 오래된 간판<br>2. 비어 있는 자리<br>3. 새 가게의 불빛<br>4. 걷는 발걸음<br>5. 마지막 한 문장</p></article><article class="asset"><small>AUDIO NOTE</small><h3>2분 내레이션</h3><p>“같은 골목인데, 무엇이 사라졌고 무엇이 새로 생겼는지 천천히 걸으며 보았습니다.”</p></article></div><div class="actions"><button data-go="direction">방향 수정</button><button class="primary" data-go="review">제작물 검토</button></div></section><section class="view" id="review"><h1>내보내기 전 검토</h1><div class="review"><article class="check"><b>사실/장소 표현</b><p>실제 상호·주소를 사용하지 않는 합성 데모인지 확인합니다.</p><button data-check="fact">확인</button></article><article class="check"><b>원본 아이디어 유지</b><p>제작물이 원래 의도와 다른 방향으로 과장되지 않았는지 확인합니다.</p><button data-check="intent">확인</button></article><article class="check"><b>사람·초상권</b><p>실제 사람 얼굴이나 동의가 필요한 자료가 없음을 확인합니다.</p><button data-check="people">확인</button></article><article class="check"><b>채널별 길이</b><p>기사·영상·오디오가 같은 내용을 기계적으로 복제하지 않는지 확인합니다.</p><button data-check="format">확인</button></article></div><div class="actions"><button data-go="board">제작 보드로</button><button class="primary" id="packageBtn">내보내기 준비</button></div><div class="status" id="reviewStatus" role="status"></div></section><section class="view" id="package"><h1>내보내기 준비</h1><div class="package"><b>이번 패키지</b><p id="packageCopy"></p><ul><li>기사 초안 1개</li><li>30초 영상 컷 구성 1개</li><li>2분 오디오 내레이션 1개</li></ul><p>이 데모는 파일 생성·게시·예약발행·외부 플랫폼 업로드를 하지 않습니다.</p></div><div class="actions"><button data-go="review">검토로</button><button id="reset">처음부터</button><button class="primary" id="finish">제작 세션 완료</button></div><div class="status" id="finishStatus" role="status"></div></section></main><script>(()=>{const checked=new Set(),views=[...document.querySelectorAll('.view')],tabs=[...document.querySelectorAll('.nav button')];let tone='기록형';function open(id){views.forEach(v=>v.classList.toggle('active',v.id===id));tabs.forEach(t=>t.setAttribute('aria-current',t.dataset.view===id?'page':'false'));history.pushState({id},'',`#${id}`)}tabs.forEach(b=>b.onclick=()=>open(b.dataset.view));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>open(b.dataset.go));document.querySelectorAll('[data-tone]').forEach(b=>b.onclick=()=>{tone=b.dataset.tone;document.querySelectorAll('[data-tone]').forEach(x=>x.classList.toggle('active',x===b))});document.querySelector('#build').onclick=()=>{const idea=document.querySelector('#ideaText').value.trim();document.querySelector('#articleCopy').textContent=`${tone}으로 편집: ${idea.slice(0,90)}${idea.length>90?'…':''}`;open('board')};document.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>{checked.add(b.dataset.check);b.closest('.check').classList.add('ok');b.textContent='확인됨';b.disabled=true;document.querySelector('#reviewStatus').textContent=`${checked.size}/4 항목을 확인했습니다.`});document.querySelector('#packageBtn').onclick=()=>{if(checked.size<4){document.querySelector('#reviewStatus').textContent='네 검토 항목을 모두 확인하세요.';return}document.querySelector('#packageCopy').textContent=`${tone} 방향으로 구성한 세 가지 제작 단위를 사람 검토 완료 상태로 묶었습니다.`;open('package')};document.querySelector('#reset').onclick=()=>location.href=location.pathname;document.querySelector('#finish').onclick=()=>document.querySelector('#finishStatus').textContent='제작 세션을 완료했습니다. 실제 파일·게시물·계정 상태는 만들지 않습니다.';window.onpopstate=e=>{const id=e.state?.id||location.hash.slice(1)||'idea';views.forEach(v=>v.classList.toggle('active',v.id===id));tabs.forEach(t=>t.setAttribute('aria-current',t.dataset.view===id?'page':'false'))}})();</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Story Spine Loom · Interactive Workspace</title>
+<link rel="stylesheet" href="./styles/story-spine-loom-v2.css">
+<style>
+.sl-source-item{display:block;width:100%;border-left:0;border-bottom:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.sl-source-item[aria-pressed="true"]{background:#171b24;box-shadow:inset 3px 0 0 var(--sl-cyan);padding-left:.85rem}
+.sl-source-item[aria-pressed="true"] b{color:#fff}
+.sl-progress{display:flex;gap:.35rem;flex-wrap:wrap;margin:0 0 1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--sl-line)}
+.sl-progress button{border:0;background:transparent;color:#5f6570;font:800 .56rem var(--sl-ui);letter-spacing:.08em;padding:.35rem 0;cursor:default}
+.sl-progress button+button::before{content:"→";margin:0 .35rem;color:#343944}
+.sl-progress button.current{color:#b7afff}.sl-progress button.done{color:#65b8bd}
+.sl-phase-intro{max-width:660px;color:#8b919b;line-height:1.7;word-break:keep-all}
+.sl-gate{margin-top:1rem;padding:.8rem;border-left:3px solid var(--sl-violet);background:#11141b;color:#aaa4ca;font-size:.67rem;line-height:1.55}
+.sl-format.selected{box-shadow:inset 0 0 0 2px var(--sl-violet)}
+.sl-review-check{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 0;border-top:1px solid var(--sl-line)}
+.sl-review-check b{font-size:.72rem;word-break:keep-all}.sl-review-check button{min-width:72px;min-height:34px;border:1px solid var(--sl-line);background:transparent;color:#f2f0eb;cursor:pointer}
+.sl-review-check button[aria-pressed="true"]{border-color:var(--sl-cyan);color:var(--sl-cyan)}
+.sl-trace-card small{display:block;margin-bottom:.35rem;color:#9b95c7;font-size:.5rem;letter-spacing:.08em}
+@media(max-width:620px){.sl-progress{gap:.2rem}.sl-progress button{font-size:.5rem}.sl-review-check{align-items:flex-start}.sl-review-check button{flex:0 0 auto}}
+</style>
+</head>
+<body>
+<div class="sl-shell">
+<header class="sl-topbar">
+  <a class="sl-brand" href="./index.html" aria-label="Story Spine Loom 홈">
+    <span class="sl-mark">22</span>
+    <span><strong>STORY SPINE LOOM</strong><small>Interactive Master Edition Room</small></span>
+  </a>
+  <nav class="sl-nav" aria-label="주요 메뉴">
+    <a class="is-guide" href="./guide.html">30초 사용법</a>
+    <a href="./index.html">에디션 룸</a>
+    <a aria-current="page" href="./ux.html">직접 엮기</a>
+  </nav>
+</header>
+
+<main class="sl-work">
+<aside class="sl-sources">
+  <p class="sl-label">SOURCE SET · SYNTHETIC</p>
+  <h2>이번 이야기에 남길 원자료</h2>
+  <div class="sl-source-stack">
+    <button class="sl-source-item" type="button" data-source="S01" aria-pressed="false"><b>S01 · 현장 메모</b><p>05:40. 셔터가 오르기 전, 바닥 물기와 상자 끄는 소리가 먼저 움직인다.</p></button>
+    <button class="sl-source-item" type="button" data-source="S02" aria-pressed="false"><b>S02 · 사진 설명</b><p>빈 통로 중앙에 접힌 천막, 오른쪽에 정리 중인 과일 상자 세 줄.</p></button>
+    <button class="sl-source-item" type="button" data-source="S03" aria-pressed="false"><b>S03 · 음성 메모</b><p>“문을 여는 사람보다 먼저 도착하는 건 준비하는 소리였다.”</p></button>
+    <button class="sl-source-item" type="button" data-source="S04" aria-pressed="false"><b>S04 · 시간 순서</b><p>05:40 바닥 정리 → 05:48 상자 이동 → 05:57 첫 셔터 → 06:05 통로 점등.</p></button>
+  </div>
+  <div class="sl-gate" id="sourceStatus" role="status">0/4 선택 · 최소 3개가 필요합니다.</div>
+</aside>
+
+<section class="sl-canvas">
+  <div class="sl-progress" aria-label="진행 단계">
+    <button data-step="source" class="current">SOURCE SET</button>
+    <button data-step="spine">STORY SPINE</button>
+    <button data-step="editions">EDITIONS</button>
+    <button data-step="trace">TRACE</button>
+    <button data-step="master">MASTER</button>
+  </div>
+
+  <section class="sl-phase active" id="phase-source">
+    <p class="sl-label">01 · SOURCE SET</p>
+    <h1>CHOOSE THE THREADS.</h1>
+    <p class="sl-phase-intro">왼쪽에서 성격이 다른 합성 원자료를 최소 세 개 고릅니다. 선택하지 않은 자료는 이후 에디션의 근거로 사용할 수 없습니다.</p>
+    <div class="sl-actions-row"><button class="primary" id="toSpine" type="button" disabled>Story Spine 만들기</button></div>
+  </section>
+
+  <section class="sl-phase" id="phase-spine">
+    <p class="sl-label">02 · STORY SPINE</p>
+    <h1>LOCK ONE LINE.</h1>
+    <div class="sl-spine-form">
+      <label for="spineInput">모든 에디션이 공유할 중심 문장</label>
+      <input id="spineInput" value="문이 열리기 전의 시장은 소리보다 준비의 순서로 깨어난다.">
+      <p>선택한 근거가 함께 지지하는 범위 안에서만 씁니다. 새 인물·사건·원인을 사실처럼 추가하지 않습니다.</p>
+    </div>
+    <div class="sl-actions-row"><button type="button" data-back="source">자료 다시 고르기</button><button class="primary" id="lockSpine" type="button">이 문장을 기준으로</button></div>
+    <div class="sl-status" id="spineStatus" role="status"></div>
+  </section>
+
+  <section class="sl-phase" id="phase-editions">
+    <p class="sl-label">03 · EDITIONS</p>
+    <h1>GIVE EACH FORMAT A JOB.</h1>
+    <p class="sl-phase-intro">최소 두 개 에디션을 고릅니다. 같은 내용을 짧게 복제하는 대신 매체마다 무엇을 담당할지 다르게 둡니다.</p>
+    <div class="sl-editions-grid" id="formatGrid">
+      <button class="sl-format" type="button" data-format="ARTICLE" aria-pressed="false"><small>ARTICLE</small><strong>맥락을 연결하는 기사</strong><p>시간 순서와 장면 사이의 의미를 문장으로 연결합니다.</p></button>
+      <button class="sl-format" type="button" data-format="AUDIO" aria-pressed="false"><small>AUDIO</small><strong>소리의 간격을 남기는 오디오</strong><p>음성 메모와 현장 소리를 중심으로 듣는 순서를 설계합니다.</p></button>
+      <button class="sl-format" type="button" data-format="VIDEO" aria-pressed="false"><small>VIDEO</small><strong>움직임의 순서를 보여주는 영상</strong><p>05:40부터 06:05까지 변화를 컷의 순서로 압축합니다.</p></button>
+      <button class="sl-format" type="button" data-format="CARD/BOOK" aria-pressed="false"><small>CARD / BOOK</small><strong>남길 문장과 장면을 고르는 판</strong><p>핵심 문장과 시각 단서를 정적인 읽기 순서로 묶습니다.</p></button>
+    </div>
+    <div class="sl-preview" id="previewGrid" aria-live="polite"></div>
+    <div class="sl-actions-row"><button type="button" data-back="spine">Story Spine 수정</button><button class="primary" id="toTrace" type="button" disabled>Source Trace 확인</button></div>
+    <div class="sl-status" id="formatStatus" role="status">0개 선택 · 최소 2개가 필요합니다.</div>
+  </section>
+
+  <section class="sl-phase" id="phase-trace">
+    <p class="sl-label">04 · TRACE</p>
+    <h1>TRACE EVERY CHANGE.</h1>
+    <p class="sl-phase-intro">에디션마다 어떤 원자료를 직접 사용했고, 매체 특성 때문에 무엇을 줄이거나 강조했는지 분리해서 봅니다.</p>
+    <div class="sl-trace-list" id="tracePhaseList"></div>
+    <div class="sl-actions-row"><button type="button" data-back="editions">에디션 다시 고르기</button><button class="primary" id="toMaster" type="button">Master 검토</button></div>
+  </section>
+
+  <section class="sl-phase" id="phase-master">
+    <p class="sl-label">05 · MASTER</p>
+    <h1>KEEP ONE MASTER.</h1>
+    <div class="sl-master">
+      <strong id="masterSpine">Story Spine</strong>
+      <p id="masterSummary"></p>
+      <div class="sl-review-check"><b>선택한 모든 에디션의 Source Trace를 읽었습니다.</b><button type="button" data-review="trace" aria-pressed="false">확인</button></div>
+      <div class="sl-review-check"><b>매체별 역할이 서로 다르고 단순 복제가 아님을 확인했습니다.</b><button type="button" data-review="role" aria-pressed="false">확인</button></div>
+      <div class="sl-review-check"><b>선택한 원자료에 없는 새 사실을 추가하지 않았습니다.</b><button type="button" data-review="fact" aria-pressed="false">확인</button></div>
+    </div>
+    <div class="sl-actions-row"><button type="button" data-back="trace">Trace로 돌아가기</button><button class="primary" id="finishMaster" type="button" disabled>Master 상태 완료</button><button type="button" id="resetAll">처음부터</button></div>
+    <div class="sl-status" id="finishStatus" role="status"></div>
+  </section>
+</section>
+
+<aside class="sl-trace-panel">
+  <p class="sl-label">LIVE SOURCE TRACE</p>
+  <h2>현재 연결</h2>
+  <div class="sl-trace-list" id="liveTrace">
+    <article class="sl-trace-card"><small>WAITING</small><strong>원자료를 선택하면 이곳에 근거 연결이 나타납니다.</strong><p>실제 저장은 하지 않습니다.</p></article>
+  </div>
+  <div class="sl-master-actions">
+    <button class="primary" type="button" id="jumpCurrent">현재 단계 다시 보기</button>
+  </div>
+</aside>
+</main>
+</div>
+
+<script>
+(()=> {
+  const sourceSet=new Set(), formatSet=new Set(), reviewSet=new Set();
+  const phases=['source','spine','editions','trace','master'];
+  let current='source';
+
+  const sourceButtons=[...document.querySelectorAll('[data-source]')];
+  const formatButtons=[...document.querySelectorAll('[data-format]')];
+  const progress=[...document.querySelectorAll('[data-step]')];
+
+  function showPhase(name){
+    current=name;
+    phases.forEach(p=>document.querySelector('#phase-'+p).classList.toggle('active',p===name));
+    progress.forEach((b,i)=>{
+      const ci=phases.indexOf(name);
+      b.classList.toggle('current',b.dataset.step===name);
+      b.classList.toggle('done',i<ci);
+    });
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  function renderLiveTrace(){
+    const box=document.querySelector('#liveTrace');
+    if(!sourceSet.size){
+      box.innerHTML='<article class="sl-trace-card"><small>WAITING</small><strong>원자료를 선택하면 이곳에 근거 연결이 나타납니다.</strong><p>실제 저장은 하지 않습니다.</p></article>';
+      return;
+    }
+    const selected=[...sourceSet].sort();
+    const formats=[...formatSet];
+    box.innerHTML=[
+      `<article class="sl-trace-card"><small>SELECTED SOURCES</small><strong>${selected.join(' + ')}</strong><p>${selected.length}개 합성 원자료가 현재 Story Spine의 근거 범위입니다.</p></article>`,
+      `<article class="sl-trace-card changed"><small>EDITION SCOPE</small><strong>${formats.length?formats.join(' · '):'아직 에디션 미선택'}</strong><p>매체별 변형은 원자료 연결과 분리해서 표시합니다.</p></article>`
+    ].join('');
+  }
+
+  sourceButtons.forEach(btn=>btn.addEventListener('click',()=>{
+    const key=btn.dataset.source;
+    sourceSet.has(key)?sourceSet.delete(key):sourceSet.add(key);
+    btn.setAttribute('aria-pressed',sourceSet.has(key)?'true':'false');
+    document.querySelector('#sourceStatus').textContent=`${sourceSet.size}/4 선택 · ${sourceSet.size>=3?'Story Spine을 만들 수 있습니다.':'최소 3개가 필요합니다.'}`;
+    document.querySelector('#toSpine').disabled=sourceSet.size<3;
+    renderLiveTrace();
+  }));
+
+  document.querySelector('#toSpine').addEventListener('click',()=>{if(sourceSet.size>=3)showPhase('spine')});
+  document.querySelector('#lockSpine').addEventListener('click',()=>{
+    const spine=document.querySelector('#spineInput').value.trim();
+    if(!spine){document.querySelector('#spineStatus').textContent='중심 문장을 한 줄 입력하세요.';return}
+    document.querySelector('#spineStatus').textContent='Story Spine이 이번 세션의 기준 문장으로 잠겼습니다.';
+    showPhase('editions');
+  });
+
+  function formatCopy(format){
+    const spine=document.querySelector('#spineInput').value.trim();
+    const map={
+      'ARTICLE':['맥락 편집','선택한 시간 단서와 장면 설명을 연결해 “왜 이 순서가 보이는가”를 읽게 합니다.'],
+      'AUDIO':['호흡 편집','S03 음성 메모를 중심으로 준비하는 소리와 침묵 사이의 간격을 남깁니다.'],
+      'VIDEO':['순서 편집','S04 시간 순서에서 05:40 → 05:57 → 06:05 세 변화를 컷의 축으로 사용합니다.'],
+      'CARD/BOOK':['잔상 편집','사진 설명과 중심 문장에서 오래 남길 한 장면과 한 문장을 골라 정리합니다.']
+    };
+    const [role,copy]=map[format];
+    return `<article class="sl-edition-card"><small>${format} · ${role}</small><h3>${spine}</h3><p>${copy}</p><div class="trace-line">TRACE · ${[...sourceSet].sort().join(' + ')} · SYNTHETIC</div></article>`;
+  }
+
+  function renderFormats(){
+    document.querySelector('#previewGrid').innerHTML=[...formatSet].map(formatCopy).join('');
+    document.querySelector('#formatStatus').textContent=`${formatSet.size}개 선택 · ${formatSet.size>=2?'Trace 단계로 갈 수 있습니다.':'최소 2개가 필요합니다.'}`;
+    document.querySelector('#toTrace').disabled=formatSet.size<2;
+    renderLiveTrace();
+  }
+
+  formatButtons.forEach(btn=>btn.addEventListener('click',()=>{
+    const key=btn.dataset.format;
+    formatSet.has(key)?formatSet.delete(key):formatSet.add(key);
+    btn.setAttribute('aria-pressed',formatSet.has(key)?'true':'false');
+    btn.classList.toggle('selected',formatSet.has(key));
+    renderFormats();
+  }));
+
+  document.querySelector('#toTrace').addEventListener('click',()=>{
+    if(formatSet.size<2)return;
+    const selected=[...sourceSet].sort().join(' + ');
+    document.querySelector('#tracePhaseList').innerHTML=[...formatSet].map((f,i)=>`<article class="sl-trace-card ${i%2?'changed':''}"><small>${f} · ${i%2?'ADAPTATION':'DIRECT TRACE'}</small><strong>${i%2?'매체 리듬에 맞게 강조점을 바꿈':'선택한 근거 범위 안에서 구성'}</strong><p>${selected} → ${f}. ${i%2?'강조 순서는 달라지지만 새 사실은 추가하지 않습니다.':'원자료의 시간·장면·표현을 직접 추적합니다.'}</p></article>`).join('');
+    showPhase('trace');
+  });
+
+  document.querySelector('#toMaster').addEventListener('click',()=>{
+    const spine=document.querySelector('#spineInput').value.trim();
+    document.querySelector('#masterSpine').textContent=spine;
+    document.querySelector('#masterSummary').textContent=`${[...sourceSet].sort().join(' + ')}를 근거로 ${[...formatSet].join(' · ')} 에디션을 엮었습니다. 아래 세 항목을 사람이 확인해야 Master 상태가 완료됩니다.`;
+    showPhase('master');
+  });
+
+  document.querySelectorAll('[data-review]').forEach(btn=>btn.addEventListener('click',()=>{
+    const key=btn.dataset.review;
+    reviewSet.has(key)?reviewSet.delete(key):reviewSet.add(key);
+    const on=reviewSet.has(key);
+    btn.setAttribute('aria-pressed',on?'true':'false');
+    btn.textContent=on?'확인됨':'확인';
+    document.querySelector('#finishMaster').disabled=reviewSet.size<3;
+  }));
+
+  document.querySelector('#finishMaster').addEventListener('click',()=>{
+    if(reviewSet.size<3)return;
+    document.querySelector('#finishStatus').textContent='MASTER READY · 출처 연결과 매체별 변형을 사람이 검토했습니다. 실제 파일·게시물·계정 상태는 만들지 않습니다.';
+  });
+  document.querySelector('#resetAll').addEventListener('click',()=>location.reload());
+  document.querySelector('#jumpCurrent').addEventListener('click',()=>showPhase(current));
+  document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>showPhase(btn.dataset.back)));
+
+  renderLiveTrace();
+})();
+</script>
+</body>
+</html>
