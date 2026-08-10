@@ -1,5 +1,12 @@
 /* Business 14 workspace post-verification responsive corrections. */
 
+@media (max-width: 820px) {
+  /* Connection is a prerequisite for the session workspace. Keep the
+   * configuration controls ahead of the conversation surface on compact UI. */
+  .connection-panel { order: 1; }
+  .session-panel { order: 2; }
+}
+
 @media (max-width: 620px) {
   body.workspace-page .topbar {
     height: auto;
