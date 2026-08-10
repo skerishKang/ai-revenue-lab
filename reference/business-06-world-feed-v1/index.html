@@ -20,8 +20,14 @@
   <link rel="stylesheet" href="./styles/art-direction-v2.css?v=world-feed-product-v2-20260810">
   <link rel="stylesheet" href="./styles/art-direction-v2-polish.css?v=world-feed-product-v2-20260810-2">
   <link rel="stylesheet" href="./styles/signature-scene-v4.css?v=world-feed-cinematic-real-photo-v4-20260810">
-  <!-- overflow-x: hidden creates a scroll container and breaks descendant position: sticky. -->
-  <style>html,body{overflow-x:clip}</style>
+  <!-- Root overflow must not create a scroll container or descendant position:sticky stops working. -->
+  <style>
+    html,body{overflow-x:clip}
+    .wf-v4-scene-copy{opacity:0;transition:opacity .16s ease}
+    .wf-v4-scene[data-active] .wf-v4-scene-copy{opacity:1;transition-delay:.2s}
+    .wf-v4-scene:not([data-active]) .wf-v4-scene-copy{transition-duration:.1s;transition-delay:0s}
+    @media(prefers-reduced-motion:reduce){.wf-v4-scene-copy{transition:none!important}}
+  </style>
 </head>
 <body>
   <div id="world-feed-root"></div>
