@@ -1,0 +1,97 @@
+name: B07 Deep Visual Audit 20260810
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/b07-deep-visual-audit-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: github.event.pull_request.head.ref == 'ops/b07-deep-visual-audit-20260810'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Korean fonts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/b07-audit && cd /tmp/b07-audit
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+      - name: Capture B07 Production journey
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b07-evidence
+          cd /tmp/b07-audit
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs'), path=require('path');
+          const base='https://07-personal-meaning-map.pages.dev';
+          const vps=[{name:'desktop',width:1440,height:1100},{name:'mobile',width:390,height:844}];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const results=[];
+            for(const vp of vps){
+              const simple=[['root','/'],['guide','/guide.html']];
+              for(const [name,route] of simple){
+                const page=await browser.newPage({viewport:vp});
+                const errors=[],failed=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+                const r=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+                await page.evaluate(()=>document.fonts.ready);
+                await page.waitForTimeout(400);
+                const m=await page.evaluate(()=>{
+                  const h1=document.querySelector('h1'); const rect=h1?.getBoundingClientRect(); const cs=h1?getComputedStyle(h1):null;
+                  return {overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,h1:h1?.innerText.trim()||'',h1Y:rect?.y??null,h1Font:cs?parseFloat(cs.fontSize):null,h1Line:cs?parseFloat(cs.lineHeight):null,visibleSvg:[...document.querySelectorAll('svg')].filter(s=>{const r=s.getBoundingClientRect();return r.width>60&&r.height>60}).length,oldChrome:/UI_ONLY|Visual Reference|Phase 1|Visual Atlas/i.test(document.body.innerText)};
+                });
+                await page.screenshot({path:path.join('/tmp/b07-evidence',`${vp.name}-${name}.png`),fullPage:false});
+                results.push({viewport:vp.name,name,status:r?.status()||0,errors,failed,...m}); await page.close();
+              }
+              const page=await browser.newPage({viewport:vp});
+              const errors=[],failed=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(m.text())}); page.on('pageerror',e=>errors.push(e.message)); page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+              const r=await page.goto(base+'/ux.html',{waitUntil:'networkidle',timeout:45000}); await page.evaluate(()=>document.fonts.ready); await page.waitForTimeout(300);
+              async function snap(name){
+                const m=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,progress:document.querySelector('#progress')?.textContent.trim()||'',summary:document.querySelector('#summary')?.classList.contains('show')||false,selected:[...document.querySelectorAll('.pm-memory[aria-pressed="true"]')].length,connectDisabled:document.querySelector('#connect')?.disabled,notice:document.querySelector('#notice')?.textContent.trim()||'',visibleSvg:[...document.querySelectorAll('svg')].filter(s=>{const r=s.getBoundingClientRect();return r.width>60&&r.height>60}).length,oldChrome:/UI_ONLY|Visual Reference|Phase 1|Visual Atlas/i.test(document.body.innerText)}));
+                await page.screenshot({path:path.join('/tmp/b07-evidence',`${vp.name}-${name}.png`),fullPage:false}); results.push({viewport:vp.name,name,status:r?.status()||0,errors:[...errors],failed:[...failed],...m}); return m;
+              }
+              await snap('workspace-initial');
+              await page.locator('.pm-memory').nth(0).click(); await page.locator('.pm-memory').nth(3).click(); await page.waitForTimeout(120); await snap('workspace-selected');
+              await page.locator('#connect').click(); await page.waitForTimeout(350); await snap('workspace-connected');
+              await page.locator('#undo').click(); await page.waitForTimeout(120); await snap('workspace-undo');
+              await page.locator('#reset').click(); await page.waitForTimeout(120); await snap('workspace-reset');
+              await page.close();
+            }
+            await browser.close();
+            const bad=results.filter(x=>x.status!==200||x.overflow>1||x.errors?.length||x.failed?.length||x.visibleSvg>0||x.oldChrome);
+            const required=[];
+            for(const vp of ['desktop','mobile']){
+              const s=n=>results.find(x=>x.viewport===vp&&x.name===n);
+              if(s('workspace-selected')?.selected!==2||s('workspace-selected')?.connectDisabled!==false) required.push(`${vp} selected state`);
+              if(s('workspace-connected')?.summary!==true||!/검토/.test(s('workspace-connected')?.progress||'')) required.push(`${vp} connected state`);
+              if(s('workspace-undo')?.summary!==false) required.push(`${vp} undo state`);
+              if(s('workspace-reset')?.selected!==0||s('workspace-reset')?.summary!==false) required.push(`${vp} reset state`);
+            }
+            fs.writeFileSync('/tmp/b07-evidence/results.json',JSON.stringify({results,bad,required},null,2));
+            console.log(JSON.stringify({count:results.length,bad:bad.map(x=>[x.viewport,x.name]),required},null,2));
+            if(bad.length||required.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b07-deep-visual-audit-${{ github.run_number }}
+          path: /tmp/b07-evidence
+          if-no-files-found: error
+          retention-days: 7
