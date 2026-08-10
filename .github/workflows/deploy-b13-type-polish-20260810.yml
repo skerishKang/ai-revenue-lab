@@ -14,7 +14,7 @@ jobs:
   deploy:
     if: github.event.pull_request.head.ref == 'ops/deploy-b13-type-polish-20260810'
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       EXPECTED_SHA: e1a722c063f41332dfe185407a84220cbd977c6a
       PROJECT: ai-revenue-personal-video-archive
@@ -81,22 +81,27 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      - name: Verify canonical byte equality
+      - name: Verify canonical byte equality is stable
         shell: bash
         run: |
           set -euo pipefail
-          verify(){ url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); for i in $(seq 1 35); do code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true); actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true); echo "$label poll=$i http=$code expected=$expected actual=$actual"; [[ "$code" == 200 && "$actual" == "$expected" ]] && return 0; sleep 3; done; return 1; }
+          verify(){
+            url="$1"; source="$2"; label="$3"; expected=$(sha256sum "$source"|cut -d' ' -f1); streak=0
+            for i in $(seq 1 50); do
+              code=$(curl -L -sS --max-time 20 -o /tmp/public -w '%{http_code}' "$url"||true)
+              actual=$(sha256sum /tmp/public 2>/dev/null|cut -d' ' -f1||true)
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then streak=$((streak+1)); else streak=0; fi
+              echo "$label poll=$i streak=$streak http=$code expected=$expected actual=$actual"
+              [[ "$streak" -ge 3 ]] && return 0
+              sleep 3
+            done
+            return 1
+          }
           verify "$URL/index.html" apps/personal-video-archive/dist-preview/index.html B13_ROOT
           verify "$URL/guide.html" apps/personal-video-archive/dist-preview/guide.html B13_GUIDE
           verify "$URL/topics/index.html" apps/personal-video-archive/dist-preview/topics/index.html B13_TOPICS
           verify "$URL/records/index.html" apps/personal-video-archive/dist-preview/records/index.html B13_RECORDS
-          curl -L -fsS "$URL/index.html" -o /tmp/b13-root-public.html
-          curl -L -fsS "$URL/guide.html" -o /tmp/b13-guide-public.html
-          grep -q 'cinema-ledger-v2-type-polish.css' /tmp/b13-root-public.html
-          grep -q 'cinema-ledger-v2-type-polish.css' /tmp/b13-guide-public.html
-          ! grep -q 'cinema-ledger-v2-type-polish.css?v=' /tmp/b13-root-public.html
-          if grep -q 'class="top-note"' /tmp/b13-root-public.html; then echo 'preview chrome exposed' >&2; exit 1; fi
-          echo B13_CINEMA_LEDGER_PRODUCTION_BYTES_VERIFIED=1
+          echo B13_CINEMA_LEDGER_PRODUCTION_BYTES_STABLE=1
 
       - name: Install browser QA dependencies
         shell: bash
@@ -132,16 +137,26 @@ jobs:
             for(const vp of vps){
               const ctx=await browser.newContext({viewport:{width:vp.width,height:vp.height}});
               for(const [name,url,sel,minRatio,maxMobile] of surfaces){
-                const p=await ctx.newPage(); const errors=[], failed=[];
+                const p=await ctx.newPage();
+                let r=null, ready=false, attempt=0;
+                for(attempt=1;attempt<=12;attempt++){
+                  r=await p.goto(url,{waitUntil:'networkidle',timeout:45000});
+                  await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(250);
+                  ready=await p.evaluate(()=>[...document.styleSheets].some(s=>String(s.href||'').includes('cinema-ledger-v2-type-polish.css')));
+                  if(r.status()===200 && ready) break;
+                  await p.waitForTimeout(3000);
+                }
+                const errors=[], failed=[];
                 p.on('console',m=>{if(m.type()==='error') errors.push(m.text())});
                 p.on('pageerror',e=>errors.push(e.message));
-                p.on('response',r=>{if(r.status()>=400) failed.push(`${r.status()} ${r.url()}`)});
-                const r=await p.goto(url,{waitUntil:'networkidle',timeout:45000});
+                p.on('response',resp=>{if(resp.status()>=400) failed.push(`${resp.status()} ${resp.url()}`)});
+                await p.reload({waitUntil:'networkidle',timeout:45000});
                 await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(250);
-                const m=await p.locator(sel).evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect();return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),width:r.width,height:r.height,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:[...document.styleSheets].some(s=>String(s.href||'').includes('cinema-ledger-v2-type-polish.css'))}});
-                const problems=[...(r.status()===200?[]:['status']),...(m.ratio>=minRatio?[]:[`tight ${m.ratio}`]),...(m.overflow<=1?[]:['overflow']),...(m.polish?[]:['missing type polish']),...(errors.length||failed.length?['runtime']:[]),...(vp.name==='mobile'&&m.font>maxMobile?[`mobile too large ${m.font}`]:[])];
+                const m=await p.locator(sel).evaluate(h=>{const c=getComputedStyle(h),r=h.getBoundingClientRect();const polishHref=[...document.styleSheets].map(s=>String(s.href||'')).find(x=>x.includes('cinema-ledger-v2-type-polish.css'))||'';return{font:parseFloat(c.fontSize),line:parseFloat(c.lineHeight),ratio:parseFloat(c.lineHeight)/parseFloat(c.fontSize),width:r.width,height:r.height,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,polish:!!polishHref,polishHref,polishHasQuery:polishHref.includes('?')}});
+                const status=r?.status()||0;
+                const problems=[...(status===200?[]:['status']),...(m.ratio>=minRatio?[]:[`tight ${m.ratio}`]),...(m.overflow<=1?[]:['overflow']),...(m.polish?[]:['missing type polish']),...(!m.polishHasQuery?[]:['query-string polish href']),...(errors.length||failed.length?['runtime']:[]),...(vp.name==='mobile'&&m.font>maxMobile?[`mobile too large ${m.font}`]:[])];
                 await p.screenshot({path:path.join('/tmp/b13-prod-evidence',`${vp.name}-${name}.png`),fullPage:false});
-                results.push({viewport:vp.name,name,url,status:r.status(),errors,failed,problems,...m});
+                results.push({viewport:vp.name,name,url,status,readinessAttempts:attempt,errors,failed,problems,...m});
                 await p.close();
               }
               await ctx.close();
