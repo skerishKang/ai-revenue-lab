@@ -1,0 +1,167 @@
+name: B06 V4 Canonical Entry Route QA 20260810
+
+on:
+  push:
+    branches:
+      - 'fix/b06-v4-canonical-entry-route-20260810'
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/b06-v4-canonical-entry-route-qa-20260810.yml'
+  pull_request:
+    paths:
+      - 'reference/business-06-world-feed-v1/**'
+      - '.github/workflows/b06-v4-canonical-entry-route-qa-20260810.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  entry-route-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Static entry-route contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check reference/business-06-world-feed-v1/scripts/navigation.js
+          grep -q 'if (!value || value === "loading") return "feed"' reference/business-06-world-feed-v1/scripts/navigation.js
+          grep -q 'navigation.js?v=world-feed-v4-entry-route-20260810' reference/business-06-world-feed-v1/index.html
+
+      - name: Install isolated Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b06-entry-pw
+          cd /tmp/b06-entry-pw
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory reference/business-06-world-feed-v1 >/tmp/b06-entry-http.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b06-entry-http.log
+          exit 1
+
+      - name: Canonical no-hash desktop mobile reduced-motion QA
+        env:
+          NODE_PATH: /tmp/b06-entry-pw/node_modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/b06-entry-evidence
+          mkdir -p /tmp/b06-entry-evidence
+          cat >/tmp/b06-entry-qa.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const assert = require('assert');
+          const base = 'http://127.0.0.1:4173/index.html';
+
+          async function waitEntry(page) {
+            await page.waitForSelector('#view-feed:not([hidden]) .wf-cinema-v4 .wf-v4-entry', { state: 'visible', timeout: 12000 });
+            await page.waitForFunction(() => {
+              const img = document.querySelector('.wf-v4-entry-photo');
+              return Boolean(img && img.complete && img.naturalWidth > 300);
+            }, null, { timeout: 20000 });
+          }
+
+          async function inspect(browser, name, viewport, reducedMotion = 'no-preference') {
+            const context = await browser.newContext({ viewport, reducedMotion });
+            const page = await context.newPage();
+            const errors = [];
+            const badResponses = [];
+            page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
+            page.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
+            page.on('response', r => { if (r.status() >= 400) badResponses.push(`${r.status()} ${r.url()}`); });
+
+            // Critical regression: real canonical entry has NO #feed appended by QA.
+            await page.goto(base, { waitUntil: 'networkidle', timeout: 45000 });
+            await waitEntry(page);
+            const root = await page.evaluate(() => ({
+              hash: location.hash,
+              route: document.querySelector('.review-shell')?.dataset.route,
+              activeRoutes: [...document.querySelectorAll('[data-route-view]')].filter(v => !v.hidden).length,
+              loadingHidden: document.querySelector('#view-loading')?.hidden,
+              feedHidden: document.querySelector('#view-feed')?.hidden,
+              title: document.querySelector('#wf-v4-title')?.innerText || '',
+              promise: document.querySelector('.wf-v4-promise')?.innerText || '',
+              overflow: document.documentElement.scrollWidth - innerWidth,
+              reduced: matchMedia('(prefers-reduced-motion: reduce)').matches
+            }));
+            assert.equal(root.hash, '#feed', `${name}: root entry did not normalize to #feed`);
+            assert.equal(root.route, 'feed', `${name}: root entry route is not feed`);
+            assert.equal(root.activeRoutes, 1, `${name}: expected one active route`);
+            assert.equal(root.loadingHidden, true, `${name}: legacy loading view is visible on root entry`);
+            assert.equal(root.feedHidden, false, `${name}: feed is hidden on root entry`);
+            assert.match(root.title, /전 세계 소식 중/);
+            assert.match(root.promise, /개인 브리프/);
+            assert.ok(root.overflow <= 1, `${name}: overflow ${root.overflow}`);
+            await page.screenshot({ path: `/tmp/b06-entry-evidence/${name}-canonical-root.png`, fullPage: false });
+
+            // Stale URLs created by the old release must also escape #loading.
+            await page.goto(`${base}#loading`, { waitUntil: 'networkidle', timeout: 45000 });
+            await waitEntry(page);
+            const stale = await page.evaluate(() => ({
+              hash: location.hash,
+              route: document.querySelector('.review-shell')?.dataset.route,
+              loadingHidden: document.querySelector('#view-loading')?.hidden,
+              feedHidden: document.querySelector('#view-feed')?.hidden
+            }));
+            assert.deepEqual(stale, { hash: '#feed', route: 'feed', loadingHidden: true, feedHidden: false }, `${name}: stale #loading was not normalized`);
+
+            // Preserve the loading state as an internal state-matrix route.
+            await page.evaluate(() => window.WorldFeed.navigation.navigate('loading'));
+            await page.waitForSelector('#view-loading:not([hidden])', { state: 'visible', timeout: 5000 });
+            const internalLoading = await page.evaluate(() => ({
+              hash: location.hash,
+              route: document.querySelector('.review-shell')?.dataset.route,
+              loadingHidden: document.querySelector('#view-loading')?.hidden,
+              feedHidden: document.querySelector('#view-feed')?.hidden
+            }));
+            assert.deepEqual(internalLoading, { hash: '#loading', route: 'loading', loadingHidden: false, feedHidden: true }, `${name}: internal loading state contract broke`);
+
+            await page.evaluate(() => window.WorldFeed.navigation.navigate('feed'));
+            await waitEntry(page);
+            assert.deepEqual(errors, [], `${name}: browser errors ${errors.join(' | ')}`);
+            assert.deepEqual(badResponses, [], `${name}: bad responses ${badResponses.join(' | ')}`);
+            await context.close();
+            return { root, stale, internalLoading, errors, badResponses };
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const result = {};
+            result.desktop = await inspect(browser, 'desktop-1440x1100', { width: 1440, height: 1100 });
+            result.mobile = await inspect(browser, 'mobile-390x844', { width: 390, height: 844 });
+            result.reduced = await inspect(browser, 'reduced-motion-1440x1100', { width: 1440, height: 1100 }, 'reduce');
+            fs.writeFileSync('/tmp/b06-entry-evidence/results.json', JSON.stringify(result, null, 2));
+            await browser.close();
+            console.log(JSON.stringify(result, null, 2));
+          })().catch(error => {
+            fs.writeFileSync('/tmp/b06-entry-evidence/error.txt', `${error.stack || error}\n`);
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          node /tmp/b06-entry-qa.cjs
+
+      - name: Upload entry-route evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b06-v4-canonical-entry-route-evidence-${{ github.run_number }}
+          path: /tmp/b06-entry-evidence
+          if-no-files-found: error
