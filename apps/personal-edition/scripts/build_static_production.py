@@ -75,12 +75,12 @@ def _rewrite_root(out_dir: Path) -> None:
     intro = intro_path.read_text(encoding="utf-8")
     intro = intro.replace(
         'href="/preview/participant/access/"',
-        'href="/preview/participant/empty/"',
+        'href="/preview/participant/input/"',
         1,
     )
     intro = intro.replace(
         '<body ',
-        '<body data-static-production-review="b1-v5-image-led" ',
+        '<body data-static-production-review="b1-v3-454" ',
         1,
     )
     (out_dir / "index.html").write_text(intro, encoding="utf-8")
