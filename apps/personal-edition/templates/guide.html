@@ -5,20 +5,19 @@
   <header class="v3-guide-hero">
     <div class="v3-guide-hero-copy">
       <span class="v3-kicker">Guide · 30 seconds</span>
-      <h1 id="guide-title">Personal Edition은<br><em>이렇게 씁니다.</em></h1>
-      <p>잘 쓴 글을 준비할 필요가 없습니다. 기록을 남기면 원본이 정리되고, 사람이 다시 읽고, 한 권의 비공개 에디션으로 묶입니다. 읽고 남긴 편집 메모는 다음 호의 초점을 바꿉니다.</p>
+      <h1 id="guide-title">기록 하나가<br><em>한 권이 되는 법.</em></h1>
+      <p>기록을 남기고, 사람이 검토하는 과정을 확인하고, 완성된 에디션을 읽은 뒤 다음 호의 방향을 남깁니다. 네 번의 행동만 알면 됩니다.</p>
       <div class="v3-guide-actions">
         <a href="/preview/participant/input/" class="btn btn-primary">첫 기록부터 따라하기</a>
-        <a href="/preview/participant/published/" class="btn btn-secondary">완성본 먼저 보기</a>
+        <a href="/preview/participant/editions/{{ edition.edition_uid }}/" class="btn btn-secondary">완성본 먼저 읽기</a>
       </div>
     </div>
     <div class="v3-guide-map" aria-label="Personal Edition 사용 흐름">
       <span class="v3-guide-map-label">Your path</span>
-      <div class="v3-guide-map-row is-now"><span>01</span><strong>Gather</strong><small>내 기록 남기기</small></div>
-      <div class="v3-guide-map-row"><span>02</span><strong>Shape</strong><small>맥락 정리 확인</small></div>
-      <div class="v3-guide-map-row"><span>03</span><strong>Review</strong><small>사람의 교정 흔적</small></div>
-      <div class="v3-guide-map-row"><span>04</span><strong>Bind</strong><small>완성된 한 권 읽기</small></div>
-      <div class="v3-guide-map-row"><span>05</span><strong>Recut</strong><small>다음 호 방향 남기기</small></div>
+      <div class="v3-guide-map-row is-now"><span>01</span><strong>Write</strong><small>내 기록 남기기</small></div>
+      <div class="v3-guide-map-row"><span>02</span><strong>Review</strong><small>사람의 검토 확인</small></div>
+      <div class="v3-guide-map-row"><span>03</span><strong>Read</strong><small>완성된 한 권 읽기</small></div>
+      <div class="v3-guide-map-row"><span>04</span><strong>Recut</strong><small>다음 호 방향 남기기</small></div>
     </div>
   </header>
 
@@ -26,49 +25,36 @@
     <article class="v3-guide-step">
       <div class="v3-guide-step-no">01</div>
       <div class="v3-guide-step-copy">
-        <span>Gather · 시작</span>
-        <h2>다듬지 않은 기록을 그대로 남깁니다.</h2>
+        <span>Write · 기록</span>
+        <h2>잘 쓴 글 대신, 아직 다듬지 않은 기록을 남깁니다.</h2>
         <p>오늘 든 생각, 대화에서 남은 한 문장, 나중에도 기억하고 싶은 장면이면 충분합니다. 원본의 말투와 맥락이 첫 재료가 됩니다.</p>
         <a href="/preview/participant/input/">실제 기록 화면 보기 →</a>
       </div>
       <div class="v3-guide-mini is-source" aria-hidden="true">
-        <i>09:42 / raw source</i><strong>아직 다듬지 않은 문장</strong><span>private · original context</span>
+        <i>raw source / private</i><strong>원본의 말투와 맥락부터</strong><span>fragment becomes editorial material</span>
       </div>
     </article>
 
     <article class="v3-guide-step">
       <div class="v3-guide-step-no">02</div>
       <div class="v3-guide-step-copy">
-        <span>Shape · 자동 정리</span>
-        <h2>조각들이 어떤 흐름으로 이어지는지 확인합니다.</h2>
-        <p>원문의 말투와 의미를 유지하면서 서로 이어지는 주제와 장면을 정리합니다. 아직 발행되지 않은 비공개 초안 상태입니다.</p>
-        <a href="/preview/participant/input-received/">정리되는 상태 보기 →</a>
+        <span>Review · 사람의 확인</span>
+        <h2>원본과 초안을 놓고 사람이 다시 읽습니다.</h2>
+        <p>자동으로 공개하지 않습니다. 맥락이 틀어지거나 표현이 과장되지 않았는지 사람이 확인하고, 교정된 흐름만 한 권으로 넘어갑니다.</p>
+        <a href="/preview/participant/editing/">검토 중 화면 보기 →</a>
       </div>
-      <div class="v3-guide-mini is-layered" aria-hidden="true">
-        <i>source 03</i><strong>fragment → theme</strong><span>draft remains private</span>
+      <div class="v3-guide-mini is-proof" aria-hidden="true">
+        <i>human proof</i><strong>source → edit → decision</strong><span>context checked before bind</span>
       </div>
     </article>
 
     <article class="v3-guide-step">
       <div class="v3-guide-step-no">03</div>
       <div class="v3-guide-step-copy">
-        <span>Review · 사람의 확인</span>
-        <h2>원본과 초안을 놓고 사람이 다시 읽습니다.</h2>
-        <p>맥락이 틀어지거나 과장된 표현이 없는지 확인합니다. 교정 흔적과 원본의 관계가 보인 뒤에만 다음 단계로 넘어갑니다.</p>
-        <a href="/preview/participant/editing/">검토 중 화면 보기 →</a>
-      </div>
-      <div class="v3-guide-mini is-proof" aria-hidden="true">
-        <i>human proof</i><strong>source → edit → decision</strong><span>context checked</span>
-      </div>
-    </article>
-
-    <article class="v3-guide-step">
-      <div class="v3-guide-step-no">04</div>
-      <div class="v3-guide-step-copy">
-        <span>Bind · 한 권으로</span>
-        <h2>검토가 끝나면 개인 라이브러리에 한 권이 생깁니다.</h2>
-        <p>표지, 읽는 순서, 본문 리듬을 가진 에디션으로 보관됩니다. 다음 기록이 쌓이면 02호, 03호처럼 개인 아카이브가 이어집니다.</p>
-        <a href="/preview/participant/published/">Private Library 보기 →</a>
+        <span>Read · 완성본</span>
+        <h2>검토된 기록은 읽을 리듬을 가진 한 권이 됩니다.</h2>
+        <p>표지에서 끝나는 것이 아니라 이미지, 본문, 인용과 편집 흔적이 함께 호흡하는 에디션으로 읽습니다. 이전 호는 개인 라이브러리에 계속 쌓입니다.</p>
+        <a href="/preview/participant/editions/{{ edition.edition_uid }}/">완성된 에디션 읽기 →</a>
       </div>
       <div class="v3-guide-cover" aria-hidden="true">
         <small>Personal Edition · Private</small>
@@ -78,22 +64,22 @@
     </article>
 
     <article class="v3-guide-step">
-      <div class="v3-guide-step-no">05</div>
+      <div class="v3-guide-step-no">04</div>
       <div class="v3-guide-step-copy">
-        <span>Read & Recut · 다음 호로</span>
-        <h2>읽고 남긴 편집 메모가 다음 에디션을 실제로 바꿉니다.</h2>
-        <p>더 깊게 보고 싶은 부분이나 덜어내고 싶은 부분을 남기면 현재 호와 다음 호의 처리 차이를 나란히 확인할 수 있습니다.</p>
-        <a href="/preview/participant/editions/{{ edition.edition_uid }}/">완성된 에디션 읽기 →</a>
+        <span>Recut · 다음 호</span>
+        <h2>읽고 남긴 편집 메모가 다음 에디션의 처리를 바꿉니다.</h2>
+        <p>더 깊게 보고 싶은 부분, 덜어낼 부분, 다른 시점으로 보고 싶은 부분을 남깁니다. 현재 처리와 다음 처리의 차이를 눈으로 확인할 수 있습니다.</p>
+        <a href="/preview/participant/editions/{{ edition.edition_uid }}/feedback/">편집 메모 화면 보기 →</a>
       </div>
       <div class="v3-guide-mini is-recut" aria-hidden="true">
-        <i>before</i><strong>이번 호의 처리</strong><span>→ next treatment</span>
+        <i>current treatment</i><strong>이번 호의 초점</strong><span>→ your note → next treatment</span>
       </div>
     </article>
   </div>
 
   <section class="v3-guide-finish" aria-labelledby="guide-finish-title">
     <span class="v3-kicker">That is all</span>
-    <h2 id="guide-finish-title">기록을 남기고, 사람이 검토한 한 권을 읽고,<br>다음 호의 방향을 남깁니다.</h2>
+    <h2 id="guide-finish-title">기록 → 사람 검토 → 한 권 읽기 → 다음 호 바꾸기.</h2>
     <p>현재 화면에는 흐름을 보여주기 위한 합성 예시 기록이 들어 있습니다. 실제 운영에서는 본인이 남긴 기록과 에디션이 이 자리에 쌓입니다.</p>
     <div class="v3-guide-actions">
       <a href="/preview/participant/input/" class="btn btn-primary">첫 기록 맡기기</a>
