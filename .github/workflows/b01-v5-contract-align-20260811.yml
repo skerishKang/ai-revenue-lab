@@ -1,0 +1,61 @@
+name: B01 V5 Contract Alignment 2026-08-11
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/b01-v5-contract-align-20260811.yml'
+permissions:
+  contents: write
+jobs:
+  align:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Apply minimal contract-alignment patches
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          preview = Path('apps/personal-edition/scripts/build_static_preview.py')
+          text = preview.read_text(encoding='utf-8')
+          needle = '''    _copy_static()\n    _write_headers()\n    _write_robots_txt()\n    _write_redirects()\n'''
+          replacement = '''    _write_page(\n        env, "guide.html",\n        {"edition": edition_published},\n        "/guide/",\n        "guide/index.html",\n    )\n\n    _copy_static()\n    _write_headers()\n    _write_robots_txt()\n    _write_redirects()\n'''
+          if '"guide/index.html"' not in text:
+              if needle not in text:
+                  raise SystemExit('preview builder insertion marker not found')
+              text = text.replace(needle, replacement, 1)
+              preview.write_text(text, encoding='utf-8')
+
+          prod = Path('apps/personal-edition/scripts/build_static_production.py')
+          text = prod.read_text(encoding='utf-8')
+          old = '''    intro = intro.replace(\n        'href="/preview/participant/access/"',\n        'href="/preview/participant/input/"',\n        1,\n    )'''
+          new = '''    intro = intro.replace(\n        'href="/preview/participant/access/"',\n        'href="/preview/participant/empty/"',\n        1,\n    )'''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit('production root CTA marker not found')
+          prod.write_text(text, encoding='utf-8')
+
+          css = Path('apps/personal-edition/static/ui-v5-image-led-fix.css')
+          text = css.read_text(encoding='utf-8')
+          patch = '''\n\n/* Decorative proof imagery is aria-hidden and must never intercept workflow actions. */\n.v3-status-composition[aria-hidden="true"],\n.v3-status-composition[aria-hidden="true"] .v3-status-fragment {\n  pointer-events: none !important;\n}\n'''
+          if 'pointer-events: none !important' not in text:
+              css.write_text(text.rstrip() + patch, encoding='utf-8')
+          PY
+      - name: Commit contract alignment
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/personal-edition/scripts/build_static_preview.py apps/personal-edition/scripts/build_static_production.py apps/personal-edition/static/ui-v5-image-led-fix.css
+          if git diff --cached --quiet; then
+            echo 'No contract changes needed.'
+            exit 0
+          fi
+          git commit -m 'fix(B01): align V5 with static and interaction contracts'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
