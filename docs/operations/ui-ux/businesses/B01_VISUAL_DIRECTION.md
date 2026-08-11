@@ -1,594 +1,372 @@
 # B01 — Personal Edition Visual Direction
 
-Status: `DIRECTION_DRAFT_FROZEN_FOR_PREIMPLEMENTATION_AUDIT`
+Status: `V5_IMAGE_LED_DIRECTION_FROZEN`
 
-Implementation verdict under the new program:
-
-```text
-REDESIGN
-```
-
-Reason:
+Current owner judgment:
 
 ```text
-reference fidelity failure
-+ insufficient perceptual differentiation
-+ usage clarity gap
-```
-
-No product implementation is authorized by this document alone.
-
-```text
+V4_OWNER_VISUAL_REJECTED=true
+V5_REDESIGN_REQUIRED=true
 OWNER_UI_APPROVED=false
 ```
 
-remains unchanged.
+This document supersedes the B01 V4 visual implementation direction while preserving the product/state/backend contracts.
 
 ---
 
-## 1. Authority / current evidence snapshot
+## 1. Product job
 
-Current repository main when this document was created:
-
-```text
-a631122888d30c5a8a62f4b27e192967da331898
-```
-
-Canonical live product:
-
-```text
-https://ai-revenue-personal-edition.pages.dev/
-```
-
-Relevant lineage:
-
-```text
-PR #111 — image-led clickable concept work
-Issue #454 — owner rejected V2; art-direction reset required
-PR #456 — V3 ASSEMBLY → BIND → READ → RECUT
-PR #511 — later B01 typography polish
-```
-
-The current V3 contains useful functional/state structure but is not considered visually complete under the new standard.
-
----
-
-## 2. Product job
-
-Personal Edition turns scattered private personal records into a human-reviewed private publication the participant wants to keep and return to.
-
-The product is not primarily:
-
-- a writing SaaS;
-- a notes database;
-- a generic personal dashboard;
-- a newsletter tool;
-- an AI chat interface;
-- a scrapbook generator.
-
-The user value is the **transformation from raw private fragments into an authored, collectible personal Edition**.
-
----
-
-## 3. Core transformation
-
-Use this as the visible product grammar:
+Personal Edition turns scattered private records into a human-reviewed private publication the participant wants to read, keep, revisit, and influence over time.
 
 ```text
 FRAGMENT → EDIT → BIND → READ → RECUT
 ```
 
-Interpretation:
-
-- `FRAGMENT` — a private memory, conversation, note or sentence enters the system;
-- `EDIT` — context and relationships are shaped, then human-reviewed;
-- `BIND` — the reviewed material becomes a singular private Edition object;
-- `READ` — the Edition opens into a designed long-form reading experience;
-- `RECUT` — participant editorial feedback visibly changes the next Edition's treatment/focus.
-
-Do not reduce this to a generic progress stepper.
+The core result is an **authored private Edition**, not a dashboard card, notes database, scrapbook, AI chat, or generic article.
 
 ---
 
-## 4. Product feeling
+## 2. V4 rejection lesson — binding implementation constraint
+
+The V4 implementation was technically valid but visually rejected by the owner.
+
+Why:
+
+1. Main focal visuals were SVG tableaux that illustrated archive/paper metaphors instead of providing convincing material/image authority.
+2. Deep forest green spread across too many large surfaces and flattened the palette into a green/ivory theme.
+3. Asset presence was incorrectly treated as evidence of reference fidelity; **asset quality and perceptual effect** are the actual acceptance criteria.
+4. Entry received more art-direction emphasis than Edition Read, even though Read is the product payoff.
+5. The result still felt like a designed explanation of an archive rather than a private publication worth keeping.
+
+Therefore:
+
+```text
+MAIN_FOCAL_ART_AS_SVG = FORBIDDEN
+ASSET_EXISTS = NOT_A_VISUAL_PASS
+EDITION_READ_MUST_BE_STRONGEST_SURFACE = REQUIRED
+```
+
+SVG may be used only for minor UI marks, icons, rules, proof lines, or geometry. It must not be the Hero, Human Review, Library/Edition focal visual, or the primary Read visual break.
+
+---
+
+## 3. V5 visual thesis — Image-led Private Archive Editorial
+
+Target response:
+
+> “My scattered private records become a beautiful, authored publication that feels real enough to keep.”
 
 Target qualities:
 
 ```text
 intimate
-archival
-quietly luxurious
-contemporary editorial
 tactile
+authored
+contemporary editorial
+quietly luxurious
+image-led
 collectible
 human-reviewed
 ```
 
-These qualities must be expressed through concrete material and composition, not only copywriting.
-
-The product should feel private and valuable, not nostalgic or precious for its own sake.
+The product should feel closer to a carefully photographed independent publication / editorial campaign than to a vector concept illustration or SaaS prototype.
 
 ---
 
-## 5. Visual world — Private Archive Editorial
+## 4. V5 palette — restore the stronger earlier color tension
 
-The design territory is a contemporary private archive / independent publication studio.
-
-### Primary material vocabulary
-
-Use selectively and meaningfully:
-
-- warm ivory / warm white paper;
-- deep charcoal/ink;
-- deep forest green archival envelope/folder material;
-- translucent tracing paper / vellum-like layers;
-- restrained oxblood red editorial thread, proof mark or binding accent;
-- muted gray and restrained terracotta only where useful;
-- pencil/proof marks;
-- date stamps / archival indexing;
-- clipped source fragments;
-- thin binding lines/thread;
-- shallow tactile paper depth and soft natural-light shadow;
-- museum-catalog / independent-publication precision;
-- high-quality stationery tactility without vintage cosplay.
-
-### Explicitly avoid
-
-- beige-on-beige monotony;
-- distressed/dirty/torn paper effects;
-- sepia nostalgia;
-- generic scrapbook collage;
-- decorative stationery photos unrelated to product state;
-- flat CSS rectangles pretending to be sufficient focal artwork;
-- glassmorphism;
-- neon/cyberpunk;
-- stock-photo people;
-- cartoonish 3D;
-- generic SaaS cards and dashboard grids.
-
----
-
-## 6. Color territory
-
-Indicative, not final token lock:
+Use the earlier B01 palette as the starting tonal system:
 
 ```text
-warm ivory / white     — principal reading material
-charcoal / near-black  — ink and framing
-forest green           — archival/private object identity
-restrained oxblood     — editorial/binding intervention
-muted gray             — metadata/provenance
-terracotta             — optional secondary material accent
+ink / near-black      #171915  — structural frame and typography
+warm paper            #f2eee4  — primary field
+bright paper          #fbf8f1  — reading surfaces
+paper depth           #ded6c7  — secondary material
+editorial coral       #b7462d  — proof / intervention / authored accent
+soft coral            #e9b9a4  — secondary editorial mark
+muted olive           #53644a  — limited supporting material
+slate / muted blue    ~#40597a — limited visual counterpoint
 ```
 
-The final palette must remain more materially varied than a single beige paper field.
+Deep forest green is **not** a default canvas. It may appear only in a limited archive object/folder/material role when it materially improves the composition.
 
-Do not copy B06's cyan/orange signal palette.
+Required palette behavior:
 
----
-
-## 7. Core object
-
-The dominant object is the **Edition** — not a card, not a dashboard tile.
-
-The Edition should appear as a designed object with:
-
-- issue/edition identity;
-- cover hierarchy;
-- tactile material;
-- deliberate proportions;
-- visible relationship to source fragments;
-- opening/reading behavior;
-- collectible continuity across previous issues.
-
-The Edition must look desirable enough that the participant understands why this product is worth keeping.
+- warm paper + deep ink carry most of the experience;
+- coral provides authored editorial tension;
+- olive/slate appear sparingly;
+- do not allow any single green family to dominate multiple routes;
+- avoid beige-on-beige monotony.
 
 ---
 
-## 8. Reference Translation Sheet
+## 5. Image policy — mandatory for V5
 
-### A. Private Archive Editorial / museum catalogue / independent publication language
+### 5.1 Main focal art
 
-**OBSERVE**
+The following surfaces require **raster photographic/image-led material** (`WebP`/`PNG` or equivalent local raster asset):
 
-- tactile paper relationships;
-- archival folders/envelopes;
-- translucent overlays;
-- controlled annotations;
-- physical hierarchy without decorative clutter.
-
-**ADOPT**
-
-- forest archival object;
-- vellum/tracing layer;
-- proof/editorial marks;
-- quiet material depth;
-- catalogue-like precision.
-
-**REJECT**
-
-- antique nostalgia;
-- distressed scrapbook effects;
-- excessive decorative ephemera.
-
-**TRANSLATE**
-
-- private source material physically/visually enters an editorial archive and becomes an Edition.
-
-**SURFACE**
-
-- Entry;
+- Entry / first viewport;
 - Human Review;
-- Edition Cover/Open;
-- Library.
+- Private Library / Edition collection;
+- Edition Read opening and/or major visual break.
 
-**VERIFY**
+The imagery must be stored locally in the product build. Do not depend on runtime third-party CDN requests.
 
-- screenshots must visibly contain the translated material system; it must not exist only in hidden assets or prose.
+### 5.2 Raster text rule
+
+Issue #454 explicitly forbids readable text baked into raster imagery.
+
+Therefore source photography containing printed text must be cropped, defocused, masked, or blurred enough that the raster acts as **material/image**, while all meaningful titles, source text, annotations, issue numbers, proof decisions, and controls remain real HTML.
+
+### 5.3 Stock-photo rule
+
+Do not use recognizable stock-photo people as the product identity.
+
+Hands or partial human presence may appear only when they directly communicate **human editorial review**, and must remain secondary to the proof/source material.
+
+### 5.4 Narrative rule
+
+A photograph is not accepted merely because it contains books, paper, or stationery.
+
+Every image must serve one of these product meanings:
+
+```text
+raw material
+human editorial intervention
+collectible Edition
+reading / opening / keeping
+```
+
+Decorative stationery mood photography unrelated to state is a MISS.
 
 ---
 
-### B. The Gentlewoman — issue identity / collectible publication
+## 6. Reference translation
 
-**OBSERVE**
+### Private Archive / independent publication
 
-- strong issue identity;
-- confident cover hierarchy;
-- archive as a sequence of collectible publications.
+**Adopt**
+- tactile paper and printed-object relationships;
+- image-led still life with real light/shadow;
+- controlled marginalia and proof intervention;
+- collectible issue identity.
 
-**ADOPT**
+**Reject**
+- antique nostalgia;
+- scrapbook collage;
+- fake vector paper scenes;
+- stationery mood boards.
 
+**Surfaces**
+- Entry, Review, Library, Edition Read.
+
+### The Gentlewoman
+
+**Adopt**
 - singular issue identity;
-- disciplined cover typography;
-- previous Editions as a collection.
+- confident cover hierarchy;
+- previous issues as a collection.
 
-**REJECT**
+**Reject**
+- celebrity/fashion-magazine dependency.
 
-- fashion-magazine identity;
-- portrait/celebrity dependency.
+**Surfaces**
+- Library, cover/opening, history.
 
-**TRANSLATE**
+### MUBI Notebook
 
-- participant's private Editions become a personal library with distinct issue presence.
+**Adopt**
+- decisive image/type rhythm;
+- strong editorial crops;
+- macro-to-detail pacing;
+- visual moments that punctuate reading.
 
-**SURFACE**
-
-- Private Library;
-- Edition Cover;
-- archive/history.
-
-**VERIFY**
-
-- latest Edition is visually dominant and previous Editions read as a collectible series, not CRUD cards.
-
----
-
-### C. MUBI Notebook — image/type editorial rhythm
-
-**OBSERVE**
-
-- image and type create pacing;
-- confident editorial crops;
-- visual moments punctuate reading rather than decorate it.
-
-**ADOPT**
-
-- macro-to-detail rhythm;
-- decisive visual breakpoints;
-- text/image/material pacing.
-
-**REJECT**
-
+**Reject**
 - film-specific identity;
-- blog/article-template imitation.
+- generic blog/article template.
 
-**TRANSLATE**
+**Surfaces**
+- Edition Read is the primary translation surface.
 
-- source fragments, proof traces and Edition material create reading rhythm inside a private personal publication.
+### Are.na
 
-**SURFACE**
+**Adopt**
+- fragments remain distinct before accumulating into meaning;
+- source relationship remains visible.
 
-- Edition Read;
-- opening spread;
-- section transitions.
+**Reject**
+- neutral research-board grid.
 
-**VERIFY**
-
-- Edition Read must not collapse into a plain centered article column.
-
----
-
-### D. Are.na — fragments accumulating into meaning
-
-**OBSERVE**
-
-- separate fragments acquire meaning through relation and accumulation.
-
-**ADOPT**
-
-- visible fragment identity;
-- accumulation/association;
-- source pieces remain legible as originating material.
-
-**REJECT**
-
-- neutral research-board interface;
-- generic block grid.
-
-**TRANSLATE**
-
-- private notes/conversation fragments become editorial material and then a singular Edition.
-
-**SURFACE**
-
-- Entry;
-- source capture transition;
-- Human Review.
-
-**VERIFY**
-
-- the source-to-edition relationship must be visible, not only described by `Gather/Shape` labels.
+**Surfaces**
+- Entry, source capture, Human Review.
 
 ---
 
-## 9. Key surface direction
+## 7. Surface contracts
 
-### 9.1 Entry / first viewport
+### 7.1 Entry / first viewport
 
-Goal: show the transformation before the user reads an explanation.
+Required:
 
-Composition direction:
-
-- one clear, short Korean thesis;
+- image-led focal composition has at least equal visual authority to the headline;
+- short Korean thesis;
 - one primary CTA: `첫 기록 맡기기`;
-- one secondary learning entry such as `30초 사용법`;
-- a dominant tactile visual occupying roughly half or more of the meaningful composition;
-- archival envelope/folder + translucent fragment layers + emerging Edition relationship;
-- motion may gather/reveal/bind, but only if it communicates product meaning.
+- secondary `30초 사용법`;
+- actual image material communicates fragment → Edition transformation;
+- no generic process-card strip as the first explanation;
+- on 390px, the headline must not push the focal image entirely below the meaningful first viewport.
 
-Remove from first viewport:
+Failure conditions:
 
-- generic four-column process explanation;
-- excessive product prose;
-- QA/debug labels;
-- weak decorative objects.
+- focal art still looks like vector/SVG illustration;
+- green canvas dominates;
+- image behaves as a decorative rectangle unrelated to transformation.
 
-The first 5 seconds should say:
+### 7.2 Guide / 30초 사용법
 
-> my scattered private records become one authored private Edition.
-
----
-
-### 9.2 30-second use path
-
-Must answer:
+Show four real user steps:
 
 ```text
 1. 기록 남기기
-2. 편집/사람 검토 보기
+2. 사람 검토 확인
 3. 완성된 Edition 읽기
 4. 편집 메모로 다음 호 바꾸기
 ```
 
-Prefer actual screen previews or visual state transitions over four generic explanation cards.
+Use actual product-screen/image-preview rhythm. Do not return to generic `how it works` cards or icon explainers.
 
-The Guide should show what the participant does, not only what the editorial system does.
+### 7.3 Writing
 
----
+Textarea remains the hero interaction.
 
-### 9.3 Writing / source capture
-
-The textarea remains the hero interaction.
-
-Required:
-
-- comfortable writing measure;
-- clear action state;
+- calm warm-paper writing field;
+- prompts as restrained marginalia;
 - privacy/consent visible but secondary;
-- prompts behave like restrained editorial cues/marginalia;
-- source provenance feels real without clutter;
-- tactile material may frame the writing environment, but must not compete with typing.
+- image decoration must not compete with typing.
 
-Do not add an unrelated large photograph below the form.
+### 7.4 Human Review
 
----
+This is a proof surface, not a loading/status illustration.
 
-### 9.4 Human Review
-
-This should become one of B01's strongest differentiating surfaces.
-
-Show a legible relationship between:
+The user should understand:
 
 ```text
 original fragment
-editorial shaping / proof trace
-human-reviewed decision
-emerging Edition structure
+→ editorial intervention
+→ human-reviewed decision
+→ emerging Edition structure
 ```
 
-Use proof marks, annotation, vellum overlays, source index or binding cues where they improve understanding.
+Use raster editorial/proof material as supporting evidence, while actual source/proof labels remain HTML.
 
-Do not theme the operator so heavily that scanning/review becomes harder.
-
----
-
-### 9.5 Private Library
-
-Goal: personal archive, not dashboard.
-
-Required:
+### 7.5 Private Library
 
 - latest Edition is the dominant collectible object;
-- previous issues have distinct yet coherent covers/spines;
-- next meaningful action is obvious;
-- archive/history reads as accumulated personal time;
-- no generic card grid as the primary language.
+- previous issues read as a coherent but non-identical series;
+- image/cover material has real depth;
+- avoid CRUD cards and dashboard grids.
 
-Strong differentiation from B19 is mandatory.
+### 7.6 Edition Read — highest visual priority
 
-B01 = authored private publication / Edition collection.
-
-B19 = memory binding/provenance book workflow.
-
----
-
-### 9.6 Edition Read
-
-This is the payoff surface and must be the strongest screen in the product.
+**Edition Read must be the strongest surface in B01 V5.**
 
 Required:
 
-- authentic cover/opening transition;
-- controlled long-form Korean reading rhythm;
-- section markers;
-- pull insight / proof/reference moments when appropriate;
-- material shifts that support pacing;
-- clear provenance/human-review context without compliance-dashboard weight;
-- Mobile reading composition independently designed.
+- authentic opening/cover moment;
+- image/type editorial pacing;
+- at least one major raster visual break inside the reading journey;
+- pull quote / source/proof fragment / section shifts where appropriate;
+- readable long-form Korean body rhythm;
+- HTML text remains authoritative and selectable;
+- Mobile is independently composed, not just stacked Desktop.
 
-Avoid plain blog/article layout.
+A plain article column after an attractive cover is a MISS.
 
----
+### 7.7 Feedback / RECUT
 
-### 9.7 Feedback / RECUT
-
-The participant should **see** that feedback changes the next Edition.
-
-Required:
-
-- current treatment vs next treatment relationship;
-- one or two visible changes in focus, framing or editorial emphasis;
-- an authored transition rather than a generic form confirmation;
-- clear human control.
-
----
-
-## 10. Typography
-
-Korean typography is a primary material but must remain controlled.
-
-Rules:
-
-- no default Korean display line-height below `1.0`;
-- avoid giant titles merely to signal premium/editorial quality;
-- prefer fewer, stronger lines;
-- control Hangul line shapes deliberately;
-- body reading comfort outranks dramatic display type;
-- use Latin microcopy sparingly as metadata, not as the dominant identity.
-
-The design should not depend on a Latin-first serif/condensed fallback to create quality.
-
----
-
-## 11. Motion grammar
-
-Allowed meaningful motions:
+The user must visibly understand:
 
 ```text
-fragment arrival
-overlap / reveal
-vellum shift
-editorial mark appearance
-binding alignment
-cover/opening reveal
-recut comparison transition
+current treatment
+→ my editorial note
+→ next treatment
 ```
 
-Motion must answer “what changed in the product state?”
+Use HTML before/after treatment differences. Do not bake explanation into imagery.
+
+### 7.8 History
+
+Past Editions should feel accumulated and collectible, with controlled cover/image variation rather than a CRUD list.
+
+---
+
+## 8. Typography
+
+- Korean display line-height `<1.0` is not allowed by default;
+- do not use giant type merely to signal premium quality;
+- image and type share the visual burden;
+- body reading comfort outranks display drama;
+- manual line breaks must be compositionally intentional;
+- Latin microcopy remains metadata, not brand dominance.
+
+---
+
+## 9. Motion
+
+Allowed:
+
+- image mask/opening reveal;
+- source fragment arrival;
+- proof mark appearance;
+- cover/opening transition;
+- restrained recut comparison transition.
 
 Avoid:
 
-- endless decorative floating;
-- generic parallax;
-- orbit/radar motion associated with B06;
-- motion that delays writing/reading;
-- motion that becomes the product's identity instead of supporting it.
+- decorative orbit/radar motion;
+- endless floating;
+- parallax with no state meaning;
+- motion that delays reading or writing.
 
 Full reduced-motion equivalence required.
 
 ---
 
-## 12. Desktop composition
+## 10. V5 conformance gate
 
-Desktop may use asymmetric editorial composition, but the product action must remain dominant.
+Technical QA is necessary but insufficient.
 
-Target characteristics:
-
-- strong material scale;
-- one clear focal object;
-- intentional negative space;
-- controlled asymmetry;
-- no tiny action controls stranded in large canvases;
-- reading width remains comfortable.
-
----
-
-## 13. 390px Mobile composition
-
-Mobile must be independently authored.
-
-Requirements:
-
-- product identity visible in the first viewport;
-- main CTA accessible without excessive scroll;
-- focal archive/Edition material crops intentionally;
-- large Korean titles compact relative to Desktop;
-- sticky chrome must not cover the real task;
-- writing field gets priority over decorative material;
-- Edition Read feels designed, not merely stacked.
-
----
-
-## 14. Differentiation requirements
-
-### vs B06 World Feed
-
-B01 must feel:
+A reviewer must directly inspect Desktop `1440×1100` and Mobile `390×844` screenshots and score:
 
 ```text
-inward / private / slow / tactile / collected
+IMAGE AUTHORITY
+REFERENCE FIDELITY
+PALETTE QUALITY
+FIRST VIEWPORT
+ASSET QUALITY
+EDITION READ PAYOFF
+HUMAN REVIEW CLARITY
+LIBRARY COLLECTIBILITY
+KOREAN TYPOGRAPHY
+MOBILE COMPOSITION
+CROSS-STATE COHERENCE
+DIFFERENTIATION FROM B06 / B19 / B20
 ```
 
-not:
+Each item is `MATCH / PARTIAL / MISS`.
 
-```text
-outward / current / signal-dense / exploratory
-```
+### Automatic rejection conditions
 
-### vs B19 Personal Memory Book
+V5 is not merge-ready if any of the following are true:
 
-B01 core object is **an authored Edition**.
+- Hero/Review/Library/Read focal art is still SVG-led;
+- a main raster asset contains readable baked-in UI/product text;
+- green dominates the overall product palette again;
+- Entry looks stronger/more authored than Edition Read;
+- Read collapses into a plain article after the opening;
+- Mobile headline pushes the focal image out of the meaningful first experience;
+- asset quality looks like placeholder/prototype art;
+- the screen looks materially similar to B06, B19, or B20.
 
-B19 core object should remain the **memory/provenance binding process**.
-
-### vs B20 Personal Memory Novel
-
-B01 is private publication from broad personal fragments.
-
-B20 is narrative interpretation of memory with source/POV/author boundaries.
-
-Do not let all three become paper + giant serif title products.
-
----
-
-## 15. Observable acceptance criteria
-
-A future B01 implementation is visually conforming only if direct Desktop/Mobile screenshots show:
-
-1. a clearly new Private Archive Editorial material system;
-2. deep forest / ivory / ink / restrained oxblood used with purpose rather than as token-only changes;
-3. visible tactile layering or equivalent high-quality focal art;
-4. source fragments visibly becoming an Edition;
-5. an Edition that appears collectible;
-6. a clear first action;
-7. a real 30-second use path;
-8. Writing dominated by the writing surface;
-9. Human Review visually communicates source → edit/proof → decision;
-10. Edition Read is stronger than a plain article;
-11. RECUT visibly changes the next treatment;
-12. Korean typography passes direct visual review;
-13. Mobile preserves identity and action clarity;
-14. the result does not look like B06, B19 or B20;
-15. a reviewer can point to each major reference translation in screenshots.
-
-If several load-bearing items are `MISS`, the redesign is incomplete even if all technical tests pass.
+`OWNER_UI_APPROVED=false` remains unchanged after technical merge/deploy until the owner explicitly accepts the actual live V5.
