@@ -75,7 +75,7 @@ def _rewrite_root(out_dir: Path) -> None:
     intro = intro_path.read_text(encoding="utf-8")
     intro = intro.replace(
         'href="/preview/participant/access/"',
-        'href="/preview/participant/input/"',
+        'href="/preview/participant/empty/"',
         1,
     )
     intro = intro.replace(
