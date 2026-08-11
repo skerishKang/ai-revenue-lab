@@ -1,120 +1,67 @@
-"""Build the owner-facing static Production review for Personal Edition.
-
-This intentionally reuses the deterministic synthetic fixtures from
-``build_static_preview`` while keeping QA chrome out of the customer-facing
-surface. The QA index remains available at ``/preview-states/``.
-
-The output directory is the existing ``dist-preview`` directory because the
-Cloudflare Pages project is already configured to publish that directory.
-"""
-
 from __future__ import annotations
 
-import re
 import shutil
 from pathlib import Path
 
 from scripts import build_static_preview as preview
 
 
-_PRODUCTION_GUARD_CSS = """
-<style id="pe-static-production-guard">
-form button[type="submit"], form input[type="submit"] {
-  opacity: .52;
-  pointer-events: none;
-}
-.preview-journey-nav {
-  margin-top: 1.5rem;
-}
-.preview-journey-nav .preview-journey-hint {
-  display: none;
-}
-</style>
-"""
-
-_CLEAN_PARTICIPANT_REDIRECT = """<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8">
-<meta name="robots" content="noindex,nofollow">
-<meta http-equiv="refresh" content="0;url=/preview/participant/empty/">
-<title>Personal Edition</title></head>
-<body><p><a href="/preview/participant/empty/">Private Library로 이동</a></p></body></html>
-"""
-
-_CLEAN_EDITIONS_REDIRECT = """<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8">
-<meta name="robots" content="noindex,nofollow">
-<meta http-equiv="refresh" content="0;url=/preview/participant/published/">
-<title>Personal Edition</title></head>
-<body><p><a href="/preview/participant/published/">최신 에디션으로 이동</a></p></body></html>
-"""
+_TECHNICAL_PREVIEW_PREFIXES = (
+    "/preview-states/",
+    "/_preview_state/",
+)
 
 
-def _production_post_process(html: str) -> str:
-    """Apply static safety controls without injecting Preview/QA chrome."""
-    if '<meta name="robots"' not in html:
-        html = html.replace(
-            '<meta name="viewport"',
-            '<meta name="robots" content="noindex,nofollow">\n<meta name="viewport"',
-            1,
-        )
+def _production_post_process(html: str, *, is_root: bool = False) -> str:
+    """Remove QA/debug chrome from customer-facing Production review pages.
+
+    Keep technical preview-state routes available for contract tests, while the
+    canonical root and product journey render only the real Personal Edition UI.
+    """
+
+    if not is_root:
+        return html
+
     html = html.replace(
-        'href="/preview/participant/empty/" data-product-guide="true"',
-        'href="/guide/" data-product-guide="true"',
+        '<div class="preview-banner">UI Preview · Synthetic data · No persistence</div>',
+        "",
     )
-    html = html.replace("</head>", f"{_PRODUCTION_GUARD_CSS}\n</head>", 1)
+    html = html.replace("PERSONAL EDITION — UI PREVIEW", "Personal Edition")
     return html
 
 
 def _rewrite_root(out_dir: Path) -> None:
-    """Promote the V3 intro to / and preserve the technical state index."""
-    qa_dir = out_dir / "preview-states"
-    qa_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(out_dir / "index.html", qa_dir / "index.html")
-
-    intro_path = out_dir / "preview" / "intro" / "index.html"
-    intro = intro_path.read_text(encoding="utf-8")
-    intro = intro.replace(
-        'href="/preview/participant/access/"',
-        'href="/preview/participant/empty/"',
-        1,
+    rendered = preview._render_template(
+        "preview_index.html",
+        preview_mode=True,
+        _link_prefix="/preview/participant",
     )
-    intro = intro.replace(
-        '<body ',
-        '<body data-static-production-review="b1-v3-454" ',
-        1,
+    (out_dir / "index.html").write_text(
+        _production_post_process(rendered, is_root=True), encoding="utf-8"
     )
-    (out_dir / "index.html").write_text(intro, encoding="utf-8")
 
 
 def _write_guide(out_dir: Path) -> None:
-    """Render the owner-facing 30-second onboarding guide into Production."""
-    env = preview._build_jinja_env()
-    edition = preview.make_edition(
-        publication_state="published", generation_status="published"
-    )
-    html = preview._render(
-        env,
-        "guide.html",
-        {"edition": edition},
-        "/guide/",
-    )
-    html = _production_post_process(html)
     guide_dir = out_dir / "guide"
     guide_dir.mkdir(parents=True, exist_ok=True)
-    (guide_dir / "index.html").write_text(html, encoding="utf-8")
+    rendered = preview._render_template(
+        "guide.html",
+        preview_mode=True,
+        _link_prefix="/preview/participant",
+    )
+    (guide_dir / "index.html").write_text(rendered, encoding="utf-8")
 
 
 def _clean_static_navigation(out_dir: Path) -> None:
-    participant = out_dir / "preview" / "participant"
-    participant.mkdir(parents=True, exist_ok=True)
-    (participant / "index.html").write_text(
-        _CLEAN_PARTICIPANT_REDIRECT, encoding="utf-8"
-    )
-    editions = participant / "editions"
-    editions.mkdir(parents=True, exist_ok=True)
-    (editions / "index.html").write_text(
-        _CLEAN_EDITIONS_REDIRECT, encoding="utf-8"
-    )
+    """Ensure no owner-facing route points back to the technical state index."""
+
+    for path in out_dir.rglob("*.html"):
+        rel = "/" + str(path.relative_to(out_dir)).replace("\\", "/")
+        if rel.startswith(_TECHNICAL_PREVIEW_PREFIXES):
+            continue
+        html = path.read_text(encoding="utf-8")
+        html = html.replace('href="/preview-states/"', 'href="/"')
+        path.write_text(html, encoding="utf-8")
 
 
 def _assert_owner_surface(out_dir: Path) -> None:
@@ -128,24 +75,28 @@ def _assert_owner_surface(out_dir: Path) -> None:
     guide = (out_dir / "guide" / "index.html").read_text(encoding="utf-8")
 
     required_root = (
-        "b1-personal-edition-v3-454",
+        'data-art-direction="b1-image-led-v5"',
         "흩어진 기록이",
         "v3-assembly-stage",
         "/guide/",
     )
     for marker in required_root:
         if marker not in root:
-            raise RuntimeError(f"missing B1 V3 Production marker: {marker}")
+            raise RuntimeError(f"missing B1 V5 Production marker: {marker}")
 
+    # These are stable user-journey markers rather than copy from a superseded
+    # art-direction pass. V5 intentionally reduced the Guide to four actions.
     required_guide = (
         "Guide · 30 seconds",
-        "Personal Edition은",
-        "Gather · 시작",
-        "Read & Recut",
+        "기록 하나가",
+        "Write · 기록",
+        "Review · 사람의 확인",
+        "Read · 완성본",
+        "Recut · 다음 호",
     )
     for marker in required_guide:
         if marker not in guide:
-            raise RuntimeError(f"missing B1 guide marker: {marker}")
+            raise RuntimeError(f"missing B1 V5 guide marker: {marker}")
 
     forbidden = (
         "UI Preview · Synthetic data · No persistence",
@@ -157,9 +108,9 @@ def _assert_owner_surface(out_dir: Path) -> None:
             raise RuntimeError(f"owner-facing QA chrome leaked into Production: {marker}")
 
     if "v3-write" not in writing:
-        raise RuntimeError("V3 Writing surface was not generated")
+        raise RuntimeError("Personal Edition Writing surface was not generated")
     if "v3-workflow" not in library:
-        raise RuntimeError("V3 Private Library workflow surface was not generated")
+        raise RuntimeError("Personal Edition Private Library workflow surface was not generated")
     if not (out_dir / "preview-states" / "index.html").is_file():
         raise RuntimeError("technical preview-state index was not preserved")
 
@@ -173,7 +124,8 @@ def main() -> None:
     _write_guide(out_dir)
     _clean_static_navigation(out_dir)
     _assert_owner_surface(out_dir)
-    print(f"Static Production review built at {out_dir}")
+
+    print(f"Production static preview built at {out_dir}")
 
 
 if __name__ == "__main__":
