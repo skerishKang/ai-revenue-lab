@@ -92,10 +92,14 @@ jobs:
               for vp,w,h in vps:
                 context=browser.new_context(viewport={'width':w,'height':h},reduced_motion='reduce')
                 for name,path in routes:
-                  page=context.new_page(); errors=[]; failed=[]; external=[]
+                  page=context.new_page(); errors=[]; failed=[]; external=[]; requested=[]
                   page.on('console',lambda m: errors.append('console:'+m.text) if m.type=='error' else None)
                   page.on('pageerror',lambda e: errors.append('page:'+str(e)))
-                  page.on('request',lambda r: external.append(r.url) if not r.url.startswith(base) and not r.url.startswith(('data:','blob:')) else None)
+                  def on_request(r):
+                    requested.append(r.url)
+                    if not r.url.startswith(base) and not r.url.startswith(('data:','blob:')):
+                      external.append(r.url)
+                  page.on('request',on_request)
                   page.on('response',lambda r: failed.append(f'{r.status} {r.url}') if r.url.startswith(base) and r.status>=400 and not r.url.endswith('/favicon.ico') else None)
                   try:
                     response=page.goto(base+path,wait_until='networkidle',timeout=25000)
@@ -118,7 +122,8 @@ jobs:
                         text:document.body.innerText.replace(/\s+/g,' ').slice(0,900)
                       }
                     }""")
-                    checks=[('art',m['art']=='b1-image-led-v5'),('overflow',m['sw']<=m['cw']),('console',not errors),('failed-local',not failed),('external',not external)]
+                    v4_requests=[u for u in requested if '/static/images/v4/' in u and u.lower().endswith('.svg')]
+                    checks=[('art',m['art']=='b1-image-led-v5'),('overflow',m['sw']<=m['cw']),('console',not errors),('failed-local',not failed),('external',not external),('no-v4-svg-runtime-request',not v4_requests)]
                     if m['h1'] and any('\uac00'<=x<='\ud7a3' for x in m['h1']) and m['ratio'] is not None: checks.append(('korean-line-height',m['ratio']>=1.0))
                     if name=='root':
                       checks += [('hero-raster','hero-private-edition.webp' in (m['heroBg'] or '')),('hero-no-v4-svg','images/v4/' not in (m['heroBg'] or '')),('cta-visible',m['primaryRect'] is not None)]
@@ -128,10 +133,10 @@ jobs:
                     if name=='library': checks += [('library-raster','library-edition-stack.webp' in (m['libraryBg'] or '')),('library-no-v4-svg','images/v4/' not in (m['libraryBg'] or ''))]
                     if name=='read': checks += [('read-opening-raster','edition-opening.webp' in (m['readOpeningBg'] or '')),('read-break',m['readBreak']),('read-break-raster','hero-private-edition.webp' in (m['readBreakBg'] or '')),('read-no-v4-svg','images/v4/' not in ((m['readOpeningBg'] or '')+(m['readBreakBg'] or '')))]
                     for key,ok in checks:
-                      if not ok: failures.append({'screen':name,'viewport':vp,'check':key,'metrics':m,'errors':errors,'failed':failed,'external':external})
+                      if not ok: failures.append({'screen':name,'viewport':vp,'check':key,'metrics':m,'errors':errors,'failed':failed,'external':external,'v4_requests':v4_requests})
                     page.screenshot(path=str(shots/f'{name}-{vp}.png'),full_page=False)
                     page.screenshot(path=str(shots/f'{name}-{vp}-full.png'),full_page=True)
-                    rows.append({'screen':name,'viewport':vp,'metrics':m,'checks':checks})
+                    rows.append({'screen':name,'viewport':vp,'metrics':m,'checks':checks,'v4_requests':v4_requests})
                   except Exception as exc:
                     failures.append({'screen':name,'viewport':vp,'check':'exception','error':repr(exc)})
                     try: page.screenshot(path=str(shots/f'{name}-{vp}-exception.png'),full_page=False)
