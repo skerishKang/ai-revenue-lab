@@ -1,0 +1,237 @@
+name: Deploy B01 Image-led V5 Exact Main 20260811
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/deploy-b01-image-led-v5-20260811.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-and-verify:
+    if: github.event.pull_request.head.ref == 'ops/deploy-b01-image-led-v5-20260811'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EXPECTED_SHA: 80c974b2687dc3d2b52b0c87563d9dc6321877cb
+      APP_DIR: apps/personal-edition
+      PROJECT: ai-revenue-personal-edition
+      CANONICAL: https://ai-revenue-personal-edition.pages.dev
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Assert exact authoritative main and existing Pages project
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          latest=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+          echo "authoritative_main=$latest"
+          test "$latest" = "$EXPECTED_SHA"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          code=$(curl -sS -o /tmp/project.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}")
+          test "$code" = 200
+          jq -e '.success == true and .result.name == "ai-revenue-personal-edition"' /tmp/project.json >/dev/null
+
+      - name: Build B01 V5 owner Production bytes from exact main
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install .
+          python -m scripts.build_static_production
+          test -f dist-preview/index.html
+          test -f dist-preview/guide/index.html
+          test -f dist-preview/static/ui-v5-image-led.css
+          test -f dist-preview/static/ui-v5-image-led-fix.css
+          for f in hero-private-edition.webp human-proof-review.webp library-edition-stack.webp edition-opening.webp; do
+            test -s "dist-preview/static/images/v5/$f"
+          done
+          grep -q 'data-art-direction="b1-image-led-v5"' dist-preview/index.html
+          grep -q 'ui-v5-image-led.css' dist-preview/index.html
+          grep -q 'ui-v5-image-led-fix.css' dist-preview/index.html
+          grep -q '첫 기록 맡기기' dist-preview/index.html
+          grep -q '30초 사용법' dist-preview/index.html
+          grep -q 'v5-read-visual-break' dist-preview/preview/participant/editions/modal-preview-edition/index.html
+          ! grep -q 'UI Preview · Synthetic data · No persistence' dist-preview/index.html
+
+      - name: Deploy exact-main V5 bytes to canonical B01 Production
+        working-directory: apps/personal-edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy dist-preview \
+            --project-name "$PROJECT" \
+            --branch main \
+            --commit-hash "$EXPECTED_SHA" \
+            --commit-message 'B01 Image-led V5 exact main'
+
+      - name: Confirm Cloudflare recorded exact main commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          for i in $(seq 1 30); do
+            code=$(curl -sS -o /tmp/deployments.json -w '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}/deployments?env=production&per_page=10")
+            if [[ "$code" == 200 ]] && jq -e --arg sha "$EXPECTED_SHA" '.result[] | select(.deployment_trigger.metadata.commit_hash == $sha)' /tmp/deployments.json >/dev/null; then
+              found=1
+              jq -r --arg sha "$EXPECTED_SHA" '.result[] | select(.deployment_trigger.metadata.commit_hash == $sha) | "deployment_id=\(.id) url=\(.url) commit=\(.deployment_trigger.metadata.commit_hash)"' /tmp/deployments.json | head -1
+              break
+            fi
+            sleep 2
+          done
+          test "$found" = 1
+
+      - name: Require three consecutive canonical byte matches
+        shell: bash
+        run: |
+          set -euo pipefail
+          verify() {
+            local url="$1" source="$2" label="$3"
+            local expected actual code consecutive=0
+            expected=$(sha256sum "$source" | cut -d' ' -f1)
+            for i in $(seq 1 50); do
+              code=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' -o /tmp/public -w '%{http_code}' "${url}?verify=${EXPECTED_SHA}-${label}-${i}" || true)
+              actual=$(sha256sum /tmp/public 2>/dev/null | cut -d' ' -f1 || true)
+              echo "$label attempt=$i code=$code expected=$expected actual=$actual consecutive=$consecutive"
+              if [[ "$code" == 200 && "$actual" == "$expected" ]]; then
+                consecutive=$((consecutive+1))
+                [[ "$consecutive" -ge 3 ]] && return 0
+              else
+                consecutive=0
+              fi
+              sleep 2
+            done
+            return 1
+          }
+
+          verify "$CANONICAL/" "$APP_DIR/dist-preview/index.html" root
+          verify "$CANONICAL/guide/" "$APP_DIR/dist-preview/guide/index.html" guide
+          verify "$CANONICAL/preview/participant/published/" "$APP_DIR/dist-preview/preview/participant/published/index.html" library
+          verify "$CANONICAL/preview/participant/input/" "$APP_DIR/dist-preview/preview/participant/input/index.html" write
+          verify "$CANONICAL/preview/participant/editions/modal-preview-edition/" "$APP_DIR/dist-preview/preview/participant/editions/modal-preview-edition/index.html" read
+          verify "$CANONICAL/static/ui-v5-image-led.css" "$APP_DIR/dist-preview/static/ui-v5-image-led.css" v5css
+          verify "$CANONICAL/static/ui-v5-image-led-fix.css" "$APP_DIR/dist-preview/static/ui-v5-image-led-fix.css" v5fix
+          verify "$CANONICAL/static/images/v5/hero-private-edition.webp" "$APP_DIR/dist-preview/static/images/v5/hero-private-edition.webp" hero
+          verify "$CANONICAL/static/images/v5/human-proof-review.webp" "$APP_DIR/dist-preview/static/images/v5/human-proof-review.webp" proof
+          verify "$CANONICAL/static/images/v5/library-edition-stack.webp" "$APP_DIR/dist-preview/static/images/v5/library-edition-stack.webp" libraryart
+          verify "$CANONICAL/static/images/v5/edition-opening.webp" "$APP_DIR/dist-preview/static/images/v5/edition-opening.webp" readart
+
+      - name: Install Production Chromium QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Verify canonical Production Desktop and Mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b01-v5-production-evidence
+          cat > /tmp/b01-v5-production.cjs <<'NODE'
+          const { chromium } = require(process.cwd() + '/node_modules/playwright');
+          const fs = require('fs');
+          const base = 'https://ai-revenue-personal-edition.pages.dev';
+          const expectedSha = '80c974b2687dc3d2b52b0c87563d9dc6321877cb';
+          const surfaces = [
+            ['root','/'],['guide','/guide/'],['library','/preview/participant/published/'],
+            ['review','/preview/participant/editing/'],['write','/preview/participant/input/'],
+            ['read','/preview/participant/editions/modal-preview-edition/'],
+            ['feedback','/preview/participant/editions/modal-preview-edition/feedback/'],
+            ['adaptation','/preview/participant/editions/modal-preview-edition/adaptation/'],
+            ['history','/preview/participant/history/'],
+            ['operator-review','/admin/review/modal-preview-edition/content/']
+          ];
+          const viewports = {desktop:{width:1440,height:1100}, mobile:{width:390,height:844}};
+          const failures = [], results = [];
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            for (const [mode, viewport] of Object.entries(viewports)) {
+              const context = await browser.newContext({viewport, deviceScaleFactor:1, reducedMotion:'reduce'});
+              for (const [name,path] of surfaces) {
+                const page = await context.newPage();
+                const errors=[], failedRequests=[], external=[], requested=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push('console:'+m.text())});
+                page.on('pageerror',e=>errors.push('page:'+e.message));
+                page.on('requestfailed',r=>failedRequests.push(r.url()));
+                page.on('request',r=>{requested.push(r.url()); if(!r.url().startsWith(base)&&!r.url().startsWith('data:')&&!r.url().startsWith('blob:'))external.push(r.url())});
+                const response=await page.goto(base+path+'?production='+expectedSha+'-'+mode+'-'+name,{waitUntil:'networkidle',timeout:30000});
+                if(!response||!response.ok())failures.push(`${mode}/${name}: bad HTTP ${response&&response.status()}`);
+                const m=await page.evaluate(()=>{
+                  const root=document.documentElement,body=document.body,h1=document.querySelector('h1'),hs=h1?getComputedStyle(h1):null;
+                  const fs=hs?parseFloat(hs.fontSize):null,lh=hs&&hs.lineHeight!=='normal'?parseFloat(hs.lineHeight):null;
+                  const bg=sel=>{const e=document.querySelector(sel);return e?getComputedStyle(e).backgroundImage:null};
+                  return {art:body.dataset.artDirection||null,overflowX:Math.max(root.scrollWidth,body.scrollWidth)-innerWidth,h1Text:h1?.innerText?.trim()||'',h1Ratio:(fs&&lh)?lh/fs:null,heroBg:bg('.v3-assembly-stage'),reviewBg:bg('.v3-status-composition'),libraryBg:bg('.v3-library-object-zone'),readOpeningBg:bg('.v3-read-cover-zone'),readBreakBg:bg('.v5-read-visual-break'),readBreak:!!document.querySelector('.v5-read-visual-break'),recutPreview:!!document.querySelector('.v4-feedback-preview')};
+                });
+                const v4Requests=requested.filter(u=>u.includes('/static/images/v4/')&&u.toLowerCase().endsWith('.svg'));
+                if(m.art!=='b1-image-led-v5')failures.push(`${mode}/${name}: art marker ${m.art}`);
+                if(m.overflowX>1)failures.push(`${mode}/${name}: overflow ${m.overflowX}`);
+                if(/[가-힣]/.test(m.h1Text)&&m.h1Ratio!==null&&m.h1Ratio<1.0)failures.push(`${mode}/${name}: Korean ratio ${m.h1Ratio}`);
+                if(v4Requests.length)failures.push(`${mode}/${name}: V4 SVG requests ${v4Requests.join('|')}`);
+                if(name==='root'&&!(m.heroBg||'').includes('hero-private-edition.webp'))failures.push(`${mode}/root: missing V5 hero raster`);
+                if(name==='review'&&!(m.reviewBg||'').includes('human-proof-review.webp'))failures.push(`${mode}/review: missing V5 proof raster`);
+                if(name==='library'&&!(m.libraryBg||'').includes('library-edition-stack.webp'))failures.push(`${mode}/library: missing V5 library raster`);
+                if(name==='read'){
+                  if(!(m.readOpeningBg||'').includes('edition-opening.webp'))failures.push(`${mode}/read: missing opening raster`);
+                  if(!m.readBreak||!(m.readBreakBg||'').includes('hero-private-edition.webp'))failures.push(`${mode}/read: missing editorial image break`);
+                }
+                if(name==='feedback'&&!m.recutPreview)failures.push(`${mode}/feedback: missing RECUT preview`);
+                if(errors.length)failures.push(`${mode}/${name}: errors ${errors.join('|')}`);
+                if(failedRequests.length)failures.push(`${mode}/${name}: failed ${failedRequests.join('|')}`);
+                if(external.length)failures.push(`${mode}/${name}: external ${external.join('|')}`);
+                await page.screenshot({path:`/tmp/b01-v5-production-evidence/${mode}-${name}.png`});
+                await page.screenshot({path:`/tmp/b01-v5-production-evidence/${mode}-${name}-full.png`,fullPage:true});
+                results.push({mode,name,metrics:m,v4Requests,errors,failedRequests,external});
+                await page.close();
+              }
+              await context.close();
+            }
+            await browser.close();
+            fs.writeFileSync('/tmp/b01-v5-production-evidence/metrics.json',JSON.stringify({expectedSha,results,failures},null,2));
+            console.log(JSON.stringify({expectedSha,failures},null,2));
+            if(failures.length)process.exit(1);
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/b01-v5-production.cjs
+
+      - name: Reconfirm exact authoritative main after Production verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+          test "$latest" = "$EXPECTED_SHA"
+          echo "B01_V5_PRODUCTION_EXACT_MAIN_PASS=$EXPECTED_SHA"
+
+      - name: Upload Production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b01-v5-production-exact-main-evidence-${{ github.run_attempt }}
+          path: /tmp/b01-v5-production-evidence
+          if-no-files-found: warn
+          retention-days: 7
