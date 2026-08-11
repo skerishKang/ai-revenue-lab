@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Personal Edition{% endblock %}
 {% block content %}
-{% set _cta = cta_href if cta_href is defined else ('/preview/participant/input/' if is_preview is defined and is_preview else '/p/access') %}
+{% set _cta = cta_href if cta_href is defined else ('/preview/participant/access/' if is_preview is defined and is_preview else '/p/access') %}
 <div class="v3-intro">
   <section class="v3-hero" aria-labelledby="intro-title">
     <div class="v3-hero-copy">

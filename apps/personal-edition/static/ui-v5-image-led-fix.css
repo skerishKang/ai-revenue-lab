@@ -1,0 +1,15 @@
+/* B01 V5 screenshot/network correction.
+   Prevent legacy V4 pseudo-elements from requesting SVG focal art. */
+.v3-guide-mini.is-source::before,
+.v3-guide-mini.is-proof::before,
+.v3-guide-mini.is-layered::before {
+  background-image: none !important;
+  background: linear-gradient(180deg, rgba(23,25,21,.03), rgba(23,25,21,.36)) !important;
+  opacity: 1 !important;
+}
+
+/* Decorative proof imagery is aria-hidden and must never intercept workflow actions. */
+.v3-status-composition[aria-hidden="true"],
+.v3-status-composition[aria-hidden="true"] .v3-status-fragment {
+  pointer-events: none !important;
+}

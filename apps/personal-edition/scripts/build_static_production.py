@@ -66,7 +66,7 @@ def _production_post_process(html: str) -> str:
 
 
 def _rewrite_root(out_dir: Path) -> None:
-    """Promote the V3 intro to / and preserve the technical state index."""
+    """Promote the V5 intro to / and preserve the technical state index."""
     qa_dir = out_dir / "preview-states"
     qa_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(out_dir / "index.html", qa_dir / "index.html")
@@ -128,24 +128,26 @@ def _assert_owner_surface(out_dir: Path) -> None:
     guide = (out_dir / "guide" / "index.html").read_text(encoding="utf-8")
 
     required_root = (
-        "b1-personal-edition-v3-454",
+        'data-art-direction="b1-image-led-v5"',
         "흩어진 기록이",
         "v3-assembly-stage",
         "/guide/",
     )
     for marker in required_root:
         if marker not in root:
-            raise RuntimeError(f"missing B1 V3 Production marker: {marker}")
+            raise RuntimeError(f"missing B1 V5 Production marker: {marker}")
 
     required_guide = (
         "Guide · 30 seconds",
-        "Personal Edition은",
-        "Gather · 시작",
-        "Read & Recut",
+        "기록 하나가",
+        "Write · 기록",
+        "Review · 사람의 확인",
+        "Read · 완성본",
+        "Recut · 다음 호",
     )
     for marker in required_guide:
         if marker not in guide:
-            raise RuntimeError(f"missing B1 guide marker: {marker}")
+            raise RuntimeError(f"missing B1 V5 guide marker: {marker}")
 
     forbidden = (
         "UI Preview · Synthetic data · No persistence",
@@ -157,9 +159,9 @@ def _assert_owner_surface(out_dir: Path) -> None:
             raise RuntimeError(f"owner-facing QA chrome leaked into Production: {marker}")
 
     if "v3-write" not in writing:
-        raise RuntimeError("V3 Writing surface was not generated")
+        raise RuntimeError("Personal Edition Writing surface was not generated")
     if "v3-workflow" not in library:
-        raise RuntimeError("V3 Private Library workflow surface was not generated")
+        raise RuntimeError("Personal Edition Private Library workflow surface was not generated")
     if not (out_dir / "preview-states" / "index.html").is_file():
         raise RuntimeError("technical preview-state index was not preserved")
 

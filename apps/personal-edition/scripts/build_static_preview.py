@@ -482,6 +482,13 @@ def main() -> None:
         "admin/review/modal-preview-edition/content/index.html",
     )
 
+    _write_page(
+        env, "guide.html",
+        {"edition": edition_published},
+        "/guide/",
+        "guide/index.html",
+    )
+
     _copy_static()
     _write_headers()
     _write_robots_txt()

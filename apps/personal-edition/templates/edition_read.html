@@ -4,7 +4,7 @@
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <article class="v3-read">
   <header class="v3-read-opening">
-    <div class="v3-read-cover-zone" aria-label="에디션 커버">
+    <div class="v3-read-cover-zone" aria-label="에디션 커버와 실제 인쇄물의 여는 장면">
       <div class="edition-cover v3-read-cover" aria-hidden="true">
         <span class="cover-pub">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
         <strong class="cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</strong>
@@ -24,6 +24,11 @@
     <div class="v3-reading-main">
       <div class="edition-opening">{{ content.opening if content else '' }}</div>
       {% if content and content.highlighted_insight %}<aside class="edition-insight">{{ content.highlighted_insight }}</aside>{% endif %}
+
+      <figure class="v5-read-visual-break" aria-label="기록 조각이 한 권의 편집물로 모인 인쇄물 장면">
+        <figcaption><small>Material shift · Edited from source</small>원본의 조각은 사라지지 않고, 한 호의 리듬 안에서 다시 배치됩니다. 사진은 물성을 만들고, 실제 제목과 문장은 선택 가능한 본문으로 남습니다.</figcaption>
+      </figure>
+
       {% if content and content.sections %}{% for section in content.sections %}<section class="edition-section" id="section-{{ section.section_id }}"><h3>{{ '%02d'|format(loop.index) }} · {{ section.title }}</h3><div class="section-copy-v3">{% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}</div></section>{% endfor %}{% endif %}
       {% if content and content.continuity_note %}<aside class="edition-continuity">{{ content.continuity_note }}</aside>{% endif %}
       {% if prior_feedback_summary %}<aside class="edition-feedback-applied"><strong>이전 편집 메모 반영</strong><p>{{ prior_feedback_summary.action }}</p>{% if prior_feedback_summary.evidence %}<p class="feedback-evidence">{{ prior_feedback_summary.evidence }}</p>{% endif %}</aside>{% endif %}
