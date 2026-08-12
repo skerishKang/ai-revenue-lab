@@ -1,0 +1,25 @@
+{
+  "phase": "B01 V6 Phase A",
+  "issue": 613,
+  "cases": 18,
+  "failures": 0,
+  "directions": ["A - Signal Ledger", "B - Living Index", "C - Night Reader"],
+  "surfaces": ["Entry", "Private Library", "Edition Read opening"],
+  "viewports": {
+    "desktop": [1440, 1100],
+    "mobile": [390, 844]
+  },
+  "checks": [
+    "horizontal overflow = 0",
+    "correct visible surface",
+    "correct active direction",
+    "console errors = 0",
+    "page errors = 0",
+    "external/runtime requests = 0",
+    "Korean H1 line-height >= 1.0"
+  ],
+  "render_method": "Playwright Chromium page.set_content with the exact static HTML/CSS/JS bytes. Local/file navigation is blocked by the sandbox, so the browser was fed those exact bytes without network substitution.",
+  "owner_ui_approved": false,
+  "production_deployed": false,
+  "backend_unchanged": true
+}
