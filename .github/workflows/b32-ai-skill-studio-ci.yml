@@ -1,0 +1,22 @@
+name: B32 AI Skill Studio CI
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-32-ai-skill-studio-ux/**'
+      - '.github/workflows/b32-ai-skill-studio-ci.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run B32 deterministic contract tests
+        run: bash reference/business-32-ai-skill-studio-ux/tests/run_tests.sh
+      - name: Validate guide wiring
+        run: |
+          test -f reference/business-32-ai-skill-studio-ux/guide.html
+          grep -q '30초 사용법' reference/business-32-ai-skill-studio-ux/index.html
+          grep -q 'TASK → EVIDENCE → REVIEW → APPROVE → SAVE' reference/business-32-ai-skill-studio-ux/guide.html

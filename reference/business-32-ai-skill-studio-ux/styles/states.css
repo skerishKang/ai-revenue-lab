@@ -1,0 +1,97 @@
+/* State and responsive behavior. Mobile 390px core actions + reduced motion. */
+
+@media (max-width: 520px) {
+  .app-bar {
+    display: block;
+  }
+
+  .app-bar-left {
+    margin-bottom: 10px;
+  }
+
+  .trust-label {
+    display: block;
+    line-height: 1.5;
+  }
+
+  .scenario-controls {
+    overflow-x: auto;
+  }
+
+  .scenario-btn {
+    flex: 1 0 auto;
+  }
+
+  .quote-rack {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-rack .quote-card:nth-child(n + 2) {
+    display: none;
+  }
+
+  .step-ledger li {
+    grid-template-columns: 52px 1fr;
+    padding: 15px;
+  }
+
+  .stop-board img {
+    display: none;
+  }
+
+  .skill-output {
+    grid-template-columns: 1fr;
+  }
+
+  .inputs-list li {
+    grid-template-columns: 72px 1fr;
+  }
+
+  .inputs-list li .bench-btn.small {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .bench-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bench-btn {
+    justify-content: center;
+  }
+
+  .footer {
+    display: block;
+  }
+
+  .footer span {
+    display: block;
+    margin: 5px 0;
+  }
+
+  .run-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 900px) {
+  .quote-rack {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .evidence-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
