@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>30초 사용법 · AI 업무 실습실</title>
+<link rel="stylesheet" href="styles/tokens.css?v=b32-guide-v1">
+<link rel="stylesheet" href="styles/base.css?v=b32-guide-v1">
+<link rel="stylesheet" href="styles/layout.css?v=b32-guide-v1">
+<link rel="stylesheet" href="styles/components.css?v=b32-guide-v1">
+<style>
+.guide-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;max-width:1320px;margin:auto}.guide-step{background:var(--white);border-top:6px solid var(--orange);padding:22px;box-shadow:var(--shadow);min-height:220px}.guide-step span{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--orange)}.guide-step h2{font:700 25px/1.2 Georgia,serif;margin:12px 0}.guide-step p{color:var(--steel);line-height:1.6;margin:0}.guide-note{max-width:1320px;margin:24px auto 0;border:3px solid var(--green);background:var(--white);padding:18px}.guide-note b{display:block;margin-bottom:6px}.guide-actions{max-width:1320px;margin:24px auto 0;display:flex;gap:10px;flex-wrap:wrap}.guide-actions a{text-decoration:none}@media(max-width:900px){.guide-grid{grid-template-columns:1fr}.guide-step{min-height:0}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#guide">본문으로 이동</a>
+<header class="masthead">
+  <div>
+    <p class="kicker">BUSINESS 32 · FIRST-USE GUIDE</p>
+    <h1>30초 사용법</h1>
+    <p>한 번의 합성 업무를 사람 검토까지 통과시켜 재사용 가능한 조직 기술로 남기는 흐름입니다.</p>
+  </div>
+  <div class="authority">
+    <b>GUIDED SYNTHETIC DEMO</b>
+    <span>실제 기업 연결·실제 AI 실행·자동 승인 없음</span>
+    <small>승인은 반드시 사람 검토자가 수행합니다.</small>
+  </div>
+</header>
+<div class="app-bar">
+  <div class="app-bar-left"><span class="state-chip">GUIDE · TASK → EVIDENCE → REVIEW → APPROVE → SAVE</span></div>
+  <div class="scenario-controls"><a class="scenario-btn" href="index.html">실습대로 돌아가기</a></div>
+</div>
+<main id="guide" class="stage">
+  <section class="guide-grid" aria-label="첫 사용 5단계">
+    <article class="guide-step"><span>01 · TASK</span><h2>업무를 고릅니다</h2><p>구매 업무 카드를 열고 범위·입력·금지사항을 확인합니다. 빈 업무대와 오류 시나리오는 복구 동작 확인용입니다.</p></article>
+    <article class="guide-step"><span>02 · EVIDENCE</span><h2>근거를 확인합니다</h2><p>단계별 실행 중 견적 근거를 열어 누락·충돌을 직접 확인합니다. 없는 근거를 AI가 추정하거나 최저가를 자동 정답으로 고르지 않습니다.</p></article>
+    <article class="guide-step"><span>03 · REVIEW</span><h2>검토자에게 넘깁니다</h2><p>초안이 만들어지면 실행자가 검토자에게 명시적으로 인계합니다. 검토자는 수정 요청 또는 사람 승인을 수행하고, 실행 업무를 대신하지 않습니다.</p></article>
+    <article class="guide-step"><span>04 · APPROVE</span><h2>사람이 승인합니다</h2><p>수정과 재실행 뒤에도 남은 예외가 표시됩니다. 최종 승인은 검토자 역할에서만 가능하며 승인 전 결과는 계속 DRAFT 상태입니다.</p></article>
+    <article class="guide-step"><span>05 · SAVE</span><h2>기술로 저장합니다</h2><p>승인 후 다시 실행자에게 반환해 스킬을 저장합니다. 저장된 카드에는 버전과 미해결 예외가 함께 남아 재사용 경계를 보여줍니다.</p></article>
+  </section>
+  <section class="guide-note"><b>처음 볼 때 확인할 것</b><span>역할 인계, 근거 drawer, 누락/충돌 처리, 수정 후 재실행, 사람 승인, 승인 뒤 실행자 저장까지 한 번 이어서 보십시오. 이 데모의 목적은 자동화보다 검증 가능한 업무 학습 경계를 보여주는 것입니다.</span></section>
+  <div class="guide-actions"><a class="bench-btn" href="index.html">기본 업무 시작</a><a class="bench-btn ghost" href="index.html">실습대 열기</a></div>
+</main>
+<footer class="footer"><span>AI SKILL STUDIO · FIRST-USE GUIDE</span><span>OWNER_UI_APPROVED unchanged</span></footer>
+</body>
+</html>
