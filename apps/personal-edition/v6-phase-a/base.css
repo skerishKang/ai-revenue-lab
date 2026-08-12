@@ -1,0 +1,31 @@
+:root {
+  --sans: Inter, Pretendard, "Noto Sans KR", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: "Iowan Old Style", "Noto Serif KR", Georgia, serif;
+  --radius: 22px;
+}
+* { box-sizing: border-box; }
+html { min-width: 320px; }
+body { margin: 0; min-height: 100vh; font-family: var(--sans); text-rendering: optimizeLegibility; }
+a { color: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+.skip-link { position: fixed; z-index: 100; left: 12px; top: -60px; padding: 10px 14px; border-radius: 10px; background: #fff; color: #111; }
+.skip-link:focus { top: 12px; }
+[hidden] { display: none !important; }
+.lab-bar { position: sticky; top: 0; z-index: 20; min-height: 66px; display: grid; grid-template-columns: 1fr auto auto auto; gap: 14px; align-items: center; padding: 12px clamp(18px, 3vw, 44px); backdrop-filter: blur(22px); }
+.lab-brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; font-weight: 800; letter-spacing: -0.03em; }
+.lab-brand small { font-size: 10px; letter-spacing: .12em; font-weight: 700; opacity: .55; }
+.lab-directions, .lab-screens { display: flex; gap: 4px; padding: 4px; border-radius: 999px; }
+.lab-directions a, .lab-screens a { display: grid; place-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; text-decoration: none; font-size: 12px; font-weight: 750; white-space: nowrap; }
+.lab-directions a { min-width: 34px; padding: 0; }
+.lab-status { font-size: 10px; letter-spacing: .1em; font-weight: 800; opacity: .5; white-space: nowrap; }
+main { min-height: calc(100vh - 66px); }
+.screen { width: min(1440px, 100%); margin: 0 auto; }
+.eyebrow { margin: 0 0 14px; font-size: 11px; line-height: 1.4; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+h1,h2,p { overflow-wrap: anywhere; }
+h1 { margin: 0; letter-spacing: -.055em; }
+h2 { margin: 0; letter-spacing: -.045em; }
+.lede { max-width: 640px; font-size: 18px; line-height: 1.72; letter-spacing: -.02em; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.actions a, .primary, .secondary { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border-radius: 14px; font-size: 13px; font-weight: 800; text-decoration: none; }
+.trust { font-size: 11px; line-height: 1.6; font-weight: 720; letter-spacing: .04em; opacity: .64; }
