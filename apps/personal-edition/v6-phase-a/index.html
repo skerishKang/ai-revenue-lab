@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>B01 V6 Phase A — Personal Edition concept lab</title>
+  <link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./direction-a.css">
+<link rel="stylesheet" href="./direction-b.css">
+<link rel="stylesheet" href="./direction-c.css">
+<link rel="stylesheet" href="./responsive.css">
+</head>
+<body data-direction="a" data-screen="entry">
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="lab-bar" aria-label="B01 V6 concept navigation">
+    <a class="lab-brand" href="?direction=a&screen=entry"><span>Personal Edition</span><small>B01 · V6 Phase A</small></a>
+    <nav class="lab-directions" aria-label="디자인 방향">
+      <a data-dir="a" href="?direction=a&screen=entry">A</a>
+      <a data-dir="b" href="?direction=b&screen=entry">B</a>
+      <a data-dir="c" href="?direction=c&screen=entry">C</a>
+    </nav>
+    <nav class="lab-screens" aria-label="화면">
+      <a data-view="entry" href="?direction=a&screen=entry">Entry</a>
+      <a data-view="library" href="?direction=a&screen=library">Library</a>
+      <a data-view="read" href="?direction=a&screen=read">Edition Read</a>
+    </nav>
+    <span class="lab-status">STATIC CONCEPT · NO BACKEND</span>
+  </header>
+
+  <main id="main">
+    <section class="screen screen-entry" data-screen-panel="entry" aria-labelledby="entry-title">
+      <div class="entry-copy">
+        <p class="eyebrow">Private archive · Edition 01</p>
+        <h1 id="entry-title">흩어진 기록을,<br><span>읽을 수 있는 나의 한 권으로.</span></h1>
+        <p class="lede">메모와 대화의 조각을 비공개로 모읍니다. 맥락을 정리한 뒤 사람이 다시 읽고, 오래 남길 개인 에디션으로 발행합니다.</p>
+        <div class="actions">
+          <a class="primary" href="#concept-action">첫 기록 맡기기</a>
+          <a class="secondary" href="?direction=a&screen=library">완성된 모습 보기</a>
+        </div>
+        <p class="trust">Private by default · Human reviewed · No automatic publish</p>
+      </div>
+
+      <div class="entry-visual" aria-label="세 개의 기록 조각과 하나의 완성된 에디션">
+        <article class="fragment fragment-1"><small>09:42 · conversation</small><p>처음에는 속도가 가장 중요하다고 생각했습니다.</p></article>
+        <article class="fragment fragment-2"><small>note · 02</small><p>더 빠른 답보다 나를 이해하는 제안이 필요했다.</p></article>
+        <article class="fragment fragment-3"><small>18:10 · reflection</small><p>방향을 바꾼 순간부터 기록의 의미도 달라졌다.</p></article>
+        <article class="edition-object">
+          <small>PERSONAL EDITION · 01</small>
+          <strong>속도에서<br>개인화로</strong>
+          <span>human reviewed</span>
+        </article>
+      </div>
+
+      <aside class="entry-now" id="concept-action" aria-label="지금 할 일">
+        <span>NOW</span><strong>첫 조각을 남기세요.</strong><p>완성된 글이 아니어도 됩니다. 한 문장부터 시작합니다.</p>
+      </aside>
+    </section>
+
+    <section class="screen screen-library" data-screen-panel="library" aria-labelledby="library-title" hidden>
+      <header class="library-head">
+        <div><p class="eyebrow">Rin’s private archive</p><h1 id="library-title">Private Library</h1></div>
+        <div class="library-summary"><span>3 editions</span><span>12 source fragments</span><span>Private</span></div>
+      </header>
+      <div class="latest-edition">
+        <div class="latest-mark"><span>03</span><small>LATEST</small></div>
+        <div class="latest-copy"><p class="eyebrow">Published · 2026.08.08</p><h2>나를 설명하는 방식이 바뀐 날</h2><p>일을 더 잘 설명하려던 기록이, 결국 내가 무엇을 중요하게 여기는지 보여주는 이야기로 이어졌습니다.</p><div class="actions"><a class="primary" href="?direction=a&screen=read">최신 에디션 읽기</a><a class="secondary" href="#">편집 메모 남기기</a></div></div>
+        <div class="latest-object"><small>PERSONAL EDITION</small><strong>나를 설명하는 방식이 바뀐 날</strong><span>03 / PRIVATE</span></div>
+      </div>
+      <section class="collection" aria-labelledby="collection-title">
+        <div class="collection-title"><p class="eyebrow">Collected editions</p><h2 id="collection-title">기록이 한 권씩 쌓입니다.</h2></div>
+        <div class="edition-list">
+          <a href="#" class="edition-row is-current"><span class="edition-no">03</span><strong>나를 설명하는 방식이 바뀐 날</strong><time>2026.08.08</time><span class="row-arrow">↗</span></a>
+          <a href="#" class="edition-row"><span class="edition-no">02</span><strong>속도보다 맥락을 먼저 보기</strong><time>2026.07.22</time><span class="row-arrow">↗</span></a>
+          <a href="#" class="edition-row"><span class="edition-no">01</span><strong>처음 남긴 작은 전환점</strong><time>2026.07.04</time><span class="row-arrow">↗</span></a>
+        </div>
+      </section>
+      <aside class="library-next"><small>NEXT</small><strong>새 기록을 더하면 Edition 04가 시작됩니다.</strong><a href="#">새 기록 추가하기 →</a></aside>
+    </section>
+
+    <article class="screen screen-read" data-screen-panel="read" aria-labelledby="read-title" hidden>
+      <header class="read-head">
+        <div class="read-meta"><span>PERSONAL EDITION</span><span>03</span><span>2026.08.08</span></div>
+        <div class="read-title-wrap"><p class="eyebrow">Human-reviewed narrative</p><h1 id="read-title">나를 설명하는 방식이 바뀐 날</h1><p>일을 잘 설명하려고 모은 기록은, 어느 순간 내가 무엇을 중요하게 여기는지 보여주는 개인적인 서사가 되었습니다.</p></div>
+        <div class="read-tools"><button type="button">Aa</button><button type="button">목차</button><a href="?direction=a&screen=library">Library</a></div>
+      </header>
+      <div class="read-body">
+        <aside class="source-margin"><span>SOURCE 02</span><blockquote>“더 빠른 답보다, 나를 이해하는 제안이 필요했다.”</blockquote><small>conversation · 09:42</small></aside>
+        <section class="chapter"><p class="chapter-no">01 / 전환</p><p class="drop">처음에는 결과를 빨리 만드는 일이 곧 좋은 일이라고 믿었습니다. 기록을 돌아보니 중요한 변화는 속도를 높인 순간이 아니라, 같은 질문을 다른 방식으로 보기 시작한 순간에 생겼습니다.</p><p>고객에게 필요한 것은 가장 빠른 답이 아니었습니다. 자신이 처한 맥락을 누군가 정확히 읽고 있다는 감각이었습니다. 그 사실을 알아차린 뒤부터 제가 남긴 메모의 문장도 달라졌습니다.</p><p>이 에디션은 그 전환을 보여주는 세 개의 기록을 묶었습니다. 원문의 말투는 남기되 반복을 덜어내고, 서로 멀리 떨어져 있던 장면 사이에 사람이 확인한 맥락을 연결했습니다.</p></section>
+        <aside class="editor-note"><span>HUMAN NOTE</span><p>원문의 “속도”를 성과가 아니라 관점 변화의 대비축으로 유지했습니다.</p><small>reviewed 2026.08.07</small></aside>
+      </div>
+      <footer class="read-next"><span>다 읽은 뒤</span><strong>다음 호에서 더 보고 싶은 방향을 남겨주세요.</strong><a href="#">편집 메모 남기기 →</a></footer>
+    </article>
+  </main>
+  <script src="./phase-a.js"></script>
+</body>
+</html>
