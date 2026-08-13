@@ -1,0 +1,55 @@
+{
+  "browser": "chromium headless (Playwright)",
+  "run_at": "2026-08-01T10:12:26.312Z",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "size": "1440x900",
+      "httpStatus": 200,
+      "title": "방림명지로드힐 우리단지 운영실",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "externalRequests": [],
+      "horizontal_overflow": false,
+      "text_overflow_elements": [],
+      "chapter_count": 7,
+      "scenario_count": 7,
+      "word_splits": [],
+      "pass": true
+    },
+    {
+      "viewport": "tablet",
+      "size": "768x1024",
+      "httpStatus": 200,
+      "title": "방림명지로드힐 우리단지 운영실",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "externalRequests": [],
+      "horizontal_overflow": false,
+      "text_overflow_elements": [],
+      "chapter_count": 7,
+      "scenario_count": 7,
+      "word_splits": [],
+      "pass": true
+    },
+    {
+      "viewport": "mobile",
+      "size": "390x844",
+      "httpStatus": 200,
+      "title": "방림명지로드힐 우리단지 운영실",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "externalRequests": [],
+      "horizontal_overflow": false,
+      "text_overflow_elements": [],
+      "chapter_count": 7,
+      "scenario_count": 7,
+      "word_splits": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

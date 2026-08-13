@@ -1,0 +1,44 @@
+{
+  "workspace": "reference/business-29-apartment-governance-tutorial",
+  "kind": "guided tutorial — 방림명지로드힐 운영 데모 (실제 단지 적용형 시연)",
+  "fixture": {
+    "community": "방림명지로드힐아파트",
+    "communityEn": "Bangnim Myeongji Roadhill Apartment",
+    "region": "광주광역시 남구",
+    "buildings": "101동 · 102동",
+    "households": 192,
+    "council": "제5기 입주자대표회의",
+    "chair": "회장 김경애",
+    "authorized": true,
+    "demo_examples_marked": "데모 예시"
+  },
+  "chapters": 7,
+  "scenarios": 7,
+  "legal_judgement": "NONE",
+  "guide_vocabulary": ["확인 필요", "자료 부족", "절차 보완 필요", "공개 보류", "전문 검토 필요", "기록 유지"],
+  "synthetic_identity": "REMOVED (0 references in shipped UI files)",
+  "backend": "NONE",
+  "database": "NONE",
+  "authentication": "NONE",
+  "deployment": "NONE",
+  "tests": {
+    "runner": "node tests/validate_tutorial.test.js",
+    "total": 12,
+    "results": [
+      "fixture completeness (7 chapters, 7 scenarios)",
+      "forbidden legal judgement terms absent",
+      "required guide expressions present",
+      "real apartment identity applied",
+      "no synthetic apartment identity remains",
+      "tutorial-data.js mirrors data/tutorial-data.json",
+      "external runtime dependency 0",
+      "JavaScript syntax",
+      "index.html semantics",
+      "390px CSS contract marker",
+      "allowed-scope check",
+      "git diff --check clean"
+    ]
+  },
+  "browser_validation": "BROWSER_VALIDATION_PASS (re-run after identity change)",
+  "recorded_at": "2026-08-01"
+}
