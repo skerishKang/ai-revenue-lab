@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1ea">
+  <title>한국형 AI 모델 플랫폼 · Visual Upgrade v2</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <a class="brand" href="#" data-view-link="start" aria-label="한국형 AI 모델 플랫폼 시작 화면">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="brand-copy">
+          <strong>모델 연결판</strong>
+          <small>Korean AI Platform</small>
+        </span>
+      </a>
+
+      <nav class="primary-nav" aria-label="주요 화면">
+        <button class="nav-item is-active" data-view-link="start" type="button">시작</button>
+        <button class="nav-item" data-view-link="models" type="button">모델</button>
+        <button class="nav-item" data-view-link="activity" type="button">활동</button>
+        <button class="nav-item" data-view-link="developer" type="button">개발자</button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="key-status" id="open-key-drawer" type="button" aria-haspopup="dialog">
+          <span class="key-status-dot" aria-hidden="true"></span>
+          <span><strong>2개 연결됨</strong><small>Provider 키</small></span>
+        </button>
+        <button class="avatar-button" type="button" aria-label="계정 메뉴">RK</button>
+      </div>
+    </header>
+
+    <main id="main" class="main-area">
+      <section class="view is-active" data-view="start" aria-labelledby="start-title">
+        <div class="start-layout">
+          <div class="start-main">
+            <div class="eyebrow">나의 첫 요청</div>
+            <h1 id="start-title">무엇을 하려는지 적으세요.<br>맞는 AI 경로를 먼저 보여드립니다.</h1>
+            <p class="lead">모델 이름을 몰라도 됩니다. 직접 고르거나, 비용·속도·한국어·처리 위치를 기준으로 자동 선택할 수 있습니다.</p>
+
+            <div class="task-composer" data-composer>
+              <label for="task-input" class="sr-only">AI에게 요청할 작업</label>
+              <textarea id="task-input" rows="4">이 저장소의 로그인 오류 원인을 찾고 수정 계획을 한국어로 정리해줘.</textarea>
+              <div class="composer-foot">
+                <div class="preset-list" aria-label="작업 예시">
+                  <button type="button" data-preset="code" class="preset is-selected">코드 작업</button>
+                  <button type="button" data-preset="korean" class="preset">한국어 문서</button>
+                  <button type="button" data-preset="batch" class="preset">저비용 대량</button>
+                </div>
+                <span class="keyboard-hint">Ctrl + Enter</span>
+              </div>
+            </div>
+
+            <div class="choice-row" aria-label="모델 선택 방식">
+              <button type="button" class="choice-card is-active" data-mode="auto">
+                <span class="choice-radio" aria-hidden="true"></span>
+                <span><strong>Business 14 자동 선택</strong><small>조건에 맞는 모델과 Provider를 고릅니다.</small></span>
+                <span class="choice-tag">추천</span>
+              </button>
+              <button type="button" class="choice-card" data-mode="manual">
+                <span class="choice-radio" aria-hidden="true"></span>
+                <span><strong>모델 직접 선택</strong><small>항상 같은 모델을 사용합니다.</small></span>
+              </button>
+            </div>
+
+            <div class="preference-bar" id="preference-bar">
+              <button type="button" class="preference-control" id="scope-control">
+                <span>처리 범위</span><strong id="scope-label">국내·로컬 우선</strong><span aria-hidden="true">⌄</span>
+              </button>
+              <button type="button" class="preference-control" id="optimize-control">
+                <span>우선 기준</span><strong id="optimize-label">균형</strong><span aria-hidden="true">⌄</span>
+              </button>
+              <label class="toggle-control">
+                <input type="checkbox" id="fallback-toggle" checked>
+                <span class="toggle-ui" aria-hidden="true"></span>
+                <span><strong>외부 fallback</strong><small>국내 경로 실패 시에만</small></span>
+              </label>
+            </div>
+
+            <div class="primary-actions">
+              <button class="primary-button" type="button" id="resolve-route">경로 확인하고 시험하기 <span aria-hidden="true">→</span></button>
+              <button class="text-button" type="button" data-view-link="models">모델부터 둘러보기</button>
+            </div>
+          </div>
+
+          <aside class="route-stage" aria-labelledby="route-title">
+            <div class="route-stage-head">
+              <div>
+                <span class="section-label">Route Trace</span>
+                <h2 id="route-title">이 요청이 이동할 경로</h2>
+              </div>
+              <button class="icon-text-button" id="replay-route" type="button">다시 보기</button>
+            </div>
+
+            <div class="route-canvas" id="route-canvas" data-state="ready">
+              <div class="route-request route-node">
+                <span class="node-index">01</span>
+                <span><strong>코드 작업</strong><small>한국어 응답 · 도구 추론</small></span>
+              </div>
+
+              <div class="route-line route-line-a" aria-hidden="true"></div>
+              <div class="route-line route-line-b" aria-hidden="true"></div>
+              <div class="route-line route-line-c" aria-hidden="true"></div>
+
+              <div class="candidate-stack" aria-label="경로 후보">
+                <div class="candidate route-node is-selected" data-candidate="kanana">
+                  <span class="provider-initial">K</span>
+                  <span><strong>Kanana Code</strong><small>Kakao · 국내</small></span>
+                  <span class="candidate-state">선택</span>
+                </div>
+                <div class="candidate route-node" data-candidate="local">
+                  <span class="provider-initial">L</span>
+                  <span><strong>Qwen Coder 32B</strong><small>내 PC · 로컬</small></span>
+                  <span class="candidate-state">대기</span>
+                </div>
+                <div class="candidate route-node is-excluded" data-candidate="external">
+                  <span class="provider-initial">C</span>
+                  <span><strong>Claude Sonnet</strong><small>Anthropic · 외부</small></span>
+                  <span class="candidate-state">fallback</span>
+                </div>
+              </div>
+
+              <div class="route-result route-node">
+                <span class="node-index">03</span>
+                <span><strong id="route-result-model">Kanana Code</strong><small id="route-result-reason">한국어·코드 적합성, 국내 처리</small></span>
+              </div>
+            </div>
+
+            <div class="route-summary" id="route-summary">
+              <div><span>선택 근거</span><strong>한국어 + 코드 · 국내 우선</strong></div>
+              <div><span>비용 근거</span><strong>설정값 · 약 ₩0.42</strong></div>
+              <div><span>Provider 키</span><strong class="status-good">연결됨</strong></div>
+            </div>
+
+            <div class="route-response" id="route-response" hidden>
+              <div class="response-head">
+                <span class="response-status"><span></span> 응답 완료</span>
+                <span>1.8초 · 624 tokens</span>
+              </div>
+              <p>로그인 콜백에서 세션 복원보다 사용자 프로필 조회가 먼저 실행되는 순서 문제가 의심됩니다. 우선 인증 초기화 순서를 분리하고 실패 재현 테스트를 추가하겠습니다.</p>
+              <button type="button" class="secondary-button" data-view-link="detail">선택 모델과 코드 보기</button>
+            </div>
+          </aside>
+        </div>
+
+        <section class="quick-start" aria-labelledby="quick-title">
+          <div class="quick-copy">
+            <span class="section-label">한 번만 연결하면</span>
+            <h2 id="quick-title">앱과 에이전트에서는 endpoint 하나만 바꾸세요.</h2>
+            <p>Business 14가 모델과 Provider 차이를 뒤에서 정리합니다. BYOK로 시작하고, 로컬 모델도 같은 형식으로 연결할 수 있습니다.</p>
+          </div>
+          <div class="endpoint-card">
+            <div class="endpoint-tabs" role="tablist" aria-label="코드 언어">
+              <button class="is-active" type="button" data-code-tab="python" role="tab">Python</button>
+              <button type="button" data-code-tab="node" role="tab">Node.js</button>
+              <button type="button" data-code-tab="curl" role="tab">cURL</button>
+            </div>
+            <pre id="quick-code"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.business14.kr/v1",
+    api_key=os.environ["BUSINESS14_API_KEY"]
+)
+
+response = client.chat.completions.create(
+    model="b14/auto",
+    messages=[{"role": "user", "content": task}]
+)</code></pre>
+            <button class="copy-button" type="button" data-copy-target="quick-code">코드 복사</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" data-view="models" aria-labelledby="models-title">
+        <div class="page-heading models-heading">
+          <div>
+            <span class="eyebrow">Model explorer</span>
+            <h1 id="models-title">필요한 모델을 목적부터 찾아보세요.</h1>
+            <p>가격표보다 먼저 실제 용도, 처리 위치, 기능 지원과 근거 상태를 비교합니다.</p>
+          </div>
+          <button class="primary-button compact" type="button" data-view-link="start">자동 선택으로 시작</button>
+        </div>
+
+        <div class="model-toolbar">
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="model-search" type="search" placeholder="모델, Provider, 용도 검색" autocomplete="off">
+            <kbd>⌘ K</kbd>
+          </label>
+          <div class="filter-row" id="model-filters">
+            <button class="filter-chip is-active" type="button" data-filter="all">전체</button>
+            <button class="filter-chip" type="button" data-filter="code">코딩</button>
+            <button class="filter-chip" type="button" data-filter="korean">한국어</button>
+            <button class="filter-chip" type="button" data-filter="local">로컬</button>
+            <button class="filter-chip" type="button" data-filter="lowcost">저비용</button>
+            <button class="filter-chip" type="button" data-filter="vision">이미지</button>
+          </div>
+        </div>
+
+        <div class="model-list-head" aria-hidden="true">
+          <span>모델</span><span>잘하는 일</span><span>경로</span><span>근거</span><span>예상 비용</span><span></span>
+        </div>
+        <div class="model-list" id="model-list">
+          <article class="model-row" data-tags="code korean domestic">
+            <div class="model-identity"><span class="provider-initial tone-red">K</span><span><strong>Kanana Code</strong><small>kakao/kanana-code</small></span></div>
+            <div class="model-purpose"><strong>한국어 코드 설명과 수정 계획</strong><small>도구 추론 · 128K context</small></div>
+            <div><span class="route-class domestic">국내</span></div>
+            <div><span class="evidence-label measured">최근 측정</span><small class="evidence-time">7월 31일</small></div>
+            <div class="price-cell"><strong>₩0.42</strong><small>예상 / 요청</small></div>
+            <div class="row-actions"><button type="button" data-model-detail="kanana">상세</button><button type="button" data-use-model="Kanana Code">사용</button></div>
+          </article>
+
+          <article class="model-row" data-tags="code local lowcost korean">
+            <div class="model-identity"><span class="provider-initial tone-ink">Q</span><span><strong>Qwen Coder 32B</strong><small>local/qwen-coder-32b</small></span></div>
+            <div class="model-purpose"><strong>저장소 탐색과 반복 수정</strong><small>로컬 · 64K context</small></div>
+            <div><span class="route-class local">로컬</span></div>
+            <div><span class="evidence-label configured">장비 설정값</span><small class="evidence-time">RTX 5090</small></div>
+            <div class="price-cell"><strong>₩0</strong><small>API 비용</small></div>
+            <div class="row-actions"><button type="button" data-model-detail="qwen">상세</button><button type="button" data-use-model="Qwen Coder 32B">사용</button></div>
+          </article>
+
+          <article class="model-row" data-tags="code external vision">
+            <div class="model-identity"><span class="provider-initial tone-blue">C</span><span><strong>Claude Sonnet</strong><small>anthropic/claude-sonnet</small></span></div>
+            <div class="model-purpose"><strong>복잡한 구현과 긴 코드 검토</strong><small>도구 · 이미지 · 200K context</small></div>
+            <div><span class="route-class external">외부</span></div>
+            <div><span class="evidence-label measured">최근 측정</span><small class="evidence-time">8월 1일</small></div>
+            <div class="price-cell"><strong>₩7.84</strong><small>예상 / 요청</small></div>
+            <div class="row-actions"><button type="button" data-model-detail="claude">상세</button><button type="button" data-use-model="Claude Sonnet">사용</button></div>
+          </article>
+
+          <article class="model-row" data-tags="korean domestic lowcost">
+            <div class="model-identity"><span class="provider-initial tone-green">H</span><span><strong>HyperCLOVA X Seed</strong><small>naver/hcx-seed</small></span></div>
+            <div class="model-purpose"><strong>한국어 문서와 고객 응답</strong><small>구조화 출력 · 128K context</small></div>
+            <div><span class="route-class domestic">국내</span></div>
+            <div><span class="evidence-label configured">Provider 공개값</span><small class="evidence-time">가격 확인</small></div>
+            <div class="price-cell"><strong>₩1.16</strong><small>예상 / 요청</small></div>
+            <div class="row-actions"><button type="button" data-model-detail="hcx">상세</button><button type="button" data-use-model="HyperCLOVA X Seed">사용</button></div>
+          </article>
+
+          <article class="model-row" data-tags="external lowcost vision">
+            <div class="model-identity"><span class="provider-initial tone-gold">G</span><span><strong>Gemini Flash</strong><small>google/gemini-flash</small></span></div>
+            <div class="model-purpose"><strong>빠른 분류와 대량 처리</strong><small>이미지 · 1M context</small></div>
+            <div><span class="route-class external">외부</span></div>
+            <div><span class="evidence-label measured">최근 측정</span><small class="evidence-time">8월 1일</small></div>
+            <div class="price-cell"><strong>₩0.31</strong><small>예상 / 요청</small></div>
+            <div class="row-actions"><button type="button" data-model-detail="gemini">상세</button><button type="button" data-use-model="Gemini Flash">사용</button></div>
+          </article>
+        </div>
+        <div class="empty-filter" id="empty-filter" hidden>조건에 맞는 모델이 없습니다. 필터를 줄이거나 자동 선택을 사용하세요.</div>
+      </section>
+
+      <section class="view" data-view="detail" aria-labelledby="detail-title">
+        <button class="back-button" type="button" data-view-link="models">← 모델 목록</button>
+        <div class="detail-grid">
+          <div class="detail-main">
+            <div class="model-title-row">
+              <span class="provider-initial tone-red large">K</span>
+              <div><span class="eyebrow">Kakao · 국내 경로</span><h1 id="detail-title">Kanana Code</h1><code>kakao/kanana-code</code></div>
+            </div>
+            <p class="model-description">한국어로 코드의 의도를 설명하고, 수정 범위를 좁혀 계획을 만드는 데 강한 경로입니다. 작은 저장소 작업에서는 외부 고비용 모델보다 먼저 시험하도록 설정했습니다.</p>
+            <div class="capability-row"><span>코드</span><span>도구 추론</span><span>한국어 강함</span><span>128K</span></div>
+
+            <div class="evidence-table">
+              <div><span>입력 단가</span><strong>₩0.35 / 1K</strong><small>Provider 공개값</small></div>
+              <div><span>출력 단가</span><strong>₩0.90 / 1K</strong><small>Provider 공개값</small></div>
+              <div><span>첫 토큰</span><strong>0.8초</strong><small>최근 측정 · 7월 31일</small></div>
+              <div><span>성공률</span><strong>96.2%</strong><small>합성 코드 과제 240건</small></div>
+            </div>
+
+            <section class="provider-routes" aria-labelledby="provider-routes-title">
+              <div class="section-heading-row"><div><span class="section-label">Provider routes</span><h2 id="provider-routes-title">이 모델을 호출할 수 있는 경로</h2></div><button type="button" class="text-button">경로 비교</button></div>
+              <div class="provider-route is-recommended"><span class="provider-initial tone-red">K</span><span><strong>Kakao Cloud</strong><small>Seoul · Provider 키 연결됨</small></span><span class="route-quality">추천 경로</span><strong>0.8초</strong></div>
+              <div class="provider-route"><span class="provider-initial tone-ink">P</span><span><strong>Private Endpoint</strong><small>사용자 전용 · 연결 안 됨</small></span><span class="route-quality muted-tag">설정 필요</span><strong>—</strong></div>
+            </section>
+          </div>
+
+          <aside class="detail-playground">
+            <div class="panel-heading"><div><span class="section-label">Try this model</span><h2>바로 시험하기</h2></div><span class="connection-pill"><span></span> 키 연결됨</span></div>
+            <textarea rows="6">이 함수의 오류 가능성을 찾아 한국어로 설명해줘.</textarea>
+            <div class="mini-settings"><button type="button">Temperature <strong>0.2</strong></button><button type="button">최대 출력 <strong>1,024</strong></button></div>
+            <button class="primary-button full" type="button" id="detail-run">Kanana Code로 실행</button>
+            <div class="inline-result" id="detail-result" hidden>
+              <div><span class="response-status"><span></span> 응답 완료</span><span>₩0.38 · 1.2초</span></div>
+              <p>현재 함수는 빈 세션 객체를 정상 사용자로 처리할 수 있습니다. 사용자 ID 존재 여부를 먼저 확인하고, 실패 케이스 테스트를 추가하는 편이 안전합니다.</p>
+            </div>
+            <div class="code-snippet compact-code"><div><span>Python</span><button type="button" data-copy-target="detail-code">복사</button></div><pre id="detail-code"><code>client.chat.completions.create(
+  model="kakao/kanana-code",
+  messages=messages
+)</code></pre></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" data-view="activity" aria-labelledby="activity-title">
+        <div class="page-heading">
+          <div><span class="eyebrow">Personal activity</span><h1 id="activity-title">어떤 모델이 실제로 선택됐는지 확인하세요.</h1><p>합계보다 요청 단위 기록을 먼저 보여줍니다. 비용을 확인할 수 없는 요청은 추정하지 않습니다.</p></div>
+          <div class="period-selector"><button class="is-active" type="button">7일</button><button type="button">30일</button><button type="button">전체</button></div>
+        </div>
+
+        <div class="activity-summary">
+          <div><span>요청</span><strong>48</strong><small>지난 7일</small></div>
+          <div><span>자동 선택</span><strong>31</strong><small>64.6%</small></div>
+          <div><span>로컬 처리</span><strong>19</strong><small>API 비용 ₩0</small></div>
+          <div><span>확인된 비용</span><strong>₩18,420</strong><small>미확인 4건 제외</small></div>
+        </div>
+
+        <div class="activity-toolbar"><label class="search-box small"><span aria-hidden="true">⌕</span><input type="search" placeholder="요청 ID 또는 모델 검색"></label><button type="button" class="filter-chip">모든 경로</button><button type="button" class="filter-chip">성공</button><button type="button" class="filter-chip">오류</button></div>
+
+        <div class="activity-list">
+          <button class="activity-row" type="button"><span class="activity-status success"></span><span><strong>로그인 오류 원인 분석</strong><small>오늘 11:42 · b14req_7ad02f</small></span><span><strong>Kanana Code</strong><small>Kakao · 국내</small></span><span><strong>1.8초</strong><small>624 tokens</small></span><span><strong>₩0.42</strong><small>설정값</small></span><span aria-hidden="true">›</span></button>
+          <button class="activity-row" type="button"><span class="activity-status success"></span><span><strong>회의록 핵심 쟁점 요약</strong><small>오늘 09:18 · b14req_41c983</small></span><span><strong>HyperCLOVA X Seed</strong><small>Naver · 국내</small></span><span><strong>2.2초</strong><small>1,284 tokens</small></span><span><strong>₩1.62</strong><small>공개 단가</small></span><span aria-hidden="true">›</span></button>
+          <button class="activity-row" type="button"><span class="activity-status success"></span><span><strong>테스트 실패 14건 분류</strong><small>어제 22:03 · b14req_90de11</small></span><span><strong>Qwen Coder 32B</strong><small>내 PC · 로컬</small></span><span><strong>8.9초</strong><small>3,442 tokens</small></span><span><strong>₩0</strong><small>API 비용</small></span><span aria-hidden="true">›</span></button>
+          <button class="activity-row" type="button"><span class="activity-status warning"></span><span><strong>이미지 포함 보고서 분석</strong><small>어제 15:26 · b14req_8adf77</small></span><span><strong>Gemini Flash</strong><small>Google · 외부 fallback</small></span><span><strong>4.1초</strong><small>2,079 tokens</small></span><span><strong>확인 불가</strong><small>단가 미연결</small></span><span aria-hidden="true">›</span></button>
+          <button class="activity-row" type="button"><span class="activity-status error"></span><span><strong>비공개 저장소 코드 검토</strong><small>7월 31일 · b14req_009ba4</small></span><span><strong>NO SAFE ROUTE</strong><small>로컬 전용 · 키 없음</small></span><span><strong>호출 안 함</strong><small>0 tokens</small></span><span><strong>₩0</strong><small>차단됨</small></span><span aria-hidden="true">›</span></button>
+        </div>
+      </section>
+
+      <section class="view" data-view="developer" aria-labelledby="developer-title">
+        <div class="developer-layout">
+          <div class="developer-copy">
+            <span class="eyebrow">One compatible endpoint</span>
+            <h1 id="developer-title">쓰던 SDK를 바꾸지 말고<br>base URL만 연결하세요.</h1>
+            <p>모델은 직접 지정하거나 `b14/auto`를 사용합니다. 응답에는 실제 선택된 모델과 Provider, fallback 여부가 함께 돌아옵니다.</p>
+            <div class="endpoint-display"><span>Base URL</span><code>https://api.business14.kr/v1</code><button type="button" data-copy-text="https://api.business14.kr/v1">복사</button></div>
+            <div class="developer-links"><button type="button">API 키 만들기</button><button type="button">OpenAI 호환 문서</button><button type="button">Router 응답 형식</button></div>
+          </div>
+          <div class="developer-code">
+            <div class="endpoint-tabs" role="tablist"><button class="is-active" type="button" data-dev-code="python">Python</button><button type="button" data-dev-code="typescript">TypeScript</button><button type="button" data-dev-code="curl">cURL</button></div>
+            <pre id="developer-code"><code>from openai import OpenAI
+import os
+
+client = OpenAI(
+    base_url="https://api.business14.kr/v1",
+    api_key=os.environ["BUSINESS14_API_KEY"]
+)
+
+response = client.chat.completions.create(
+    model="b14/auto",
+    messages=[{
+        "role": "user",
+        "content": "한국어 계약서를 핵심 쟁점별로 정리해줘"
+    }],
+    extra_body={
+        "business14": {
+            "route_scope": "domestic_preferred",
+            "optimize_for": "balanced"
+        }
+    }
+)
+
+print(response.model)
+print(response.business14.selected_provider)</code></pre>
+            <button class="copy-button" type="button" data-copy-target="developer-code">전체 복사</button>
+          </div>
+        </div>
+
+        <section class="developer-steps"><div><span>01</span><strong>Provider 키 연결</strong><p>필요한 회사의 키만 요청 범위에서 사용합니다.</p></div><div><span>02</span><strong>Business 14 키 생성</strong><p>앱에는 통합 키 하나만 넣습니다.</p></div><div><span>03</span><strong>첫 요청 확인</strong><p>선택된 모델과 Provider를 응답에서 검증합니다.</p></div></section>
+      </section>
+    </main>
+
+    <nav class="mobile-nav" aria-label="모바일 주요 화면">
+      <button class="is-active" type="button" data-view-link="start"><span>↗</span>시작</button>
+      <button type="button" data-view-link="models"><span>⌕</span>모델</button>
+      <button type="button" data-view-link="activity"><span>≡</span>활동</button>
+      <button type="button" data-view-link="developer"><span>&lt;/&gt;</span>개발자</button>
+    </nav>
+  </div>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="key-drawer" id="key-drawer" role="dialog" aria-modal="true" aria-labelledby="key-drawer-title" hidden>
+    <div class="drawer-head"><div><span class="section-label">BYOK</span><h2 id="key-drawer-title">Provider 키 연결</h2></div><button type="button" id="close-key-drawer" aria-label="닫기">×</button></div>
+    <p class="drawer-intro">사용할 Provider의 키만 연결하세요. 이 데모는 키를 저장하거나 실제 전송하지 않습니다.</p>
+
+    <div class="provider-key-list">
+      <div class="provider-key-row is-connected"><span class="provider-initial tone-red">K</span><span><strong>Kakao Cloud</strong><small>Kanana 모델 3개 사용 가능</small></span><span class="connected-label">연결됨</span><button type="button">관리</button></div>
+      <div class="provider-key-row is-connected"><span class="provider-initial tone-green">N</span><span><strong>Naver Cloud</strong><small>HyperCLOVA 모델 2개 사용 가능</small></span><span class="connected-label">연결됨</span><button type="button">관리</button></div>
+      <div class="provider-key-row"><span class="provider-initial tone-blue">A</span><span><strong>Anthropic</strong><small>Claude 모델 4개</small></span><button type="button" data-connect-provider="Anthropic">키 연결</button></div>
+      <div class="provider-key-row"><span class="provider-initial tone-gold">G</span><span><strong>Google AI</strong><small>Gemini 모델 5개</small></span><button type="button" data-connect-provider="Google AI">키 연결</button></div>
+      <div class="provider-key-row"><span class="provider-initial tone-ink">L</span><span><strong>내 로컬 endpoint</strong><small>OpenAI-compatible URL</small></span><button type="button" data-connect-provider="로컬 endpoint">설정</button></div>
+    </div>
+
+    <form class="key-form" id="key-form" hidden>
+      <div class="key-form-heading"><button type="button" id="key-form-back">←</button><strong id="key-provider-title">Anthropic 키</strong></div>
+      <label>API 키<input id="provider-key-input" type="password" placeholder="sk-..." autocomplete="off"></label>
+      <div class="key-help"><strong>현재 화면에서만 사용</strong><p>실제 제품에서는 요청 범위 전달과 별도 키 보관 방식을 선택할 수 있습니다.</p></div>
+      <button class="primary-button full" type="submit">키 확인하고 연결</button>
+    </form>
+  </aside>
+
+  <div class="popover" id="scope-popover" hidden>
+    <button type="button" data-scope="preferred" class="is-active"><strong>국내·로컬 우선</strong><small>가능하면 국내 또는 내 장비를 먼저 사용</small></button>
+    <button type="button" data-scope="local"><strong>로컬 전용</strong><small>외부 전송 없이 내 endpoint만 사용</small></button>
+    <button type="button" data-scope="domestic"><strong>국내 전용</strong><small>국내 처리 경로만 허용</small></button>
+    <button type="button" data-scope="any"><strong>모든 경로</strong><small>외부 Provider까지 비교</small></button>
+  </div>
+
+  <div class="popover" id="optimize-popover" hidden>
+    <button type="button" data-optimize="balanced" class="is-active"><strong>균형</strong><small>품질·속도·비용을 함께 고려</small></button>
+    <button type="button" data-optimize="korean"><strong>한국어</strong><small>한국어 적합성을 우선</small></button>
+    <button type="button" data-optimize="cost"><strong>비용</strong><small>조건 안에서 가장 낮은 비용</small></button>
+    <button type="button" data-optimize="latency"><strong>속도</strong><small>최근 지연시간이 낮은 경로</small></button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>복사했습니다.</div>
+
+  <script src="scripts/app.js" defer></script>
+</body>
+</html>
