@@ -69,7 +69,7 @@ B6–B12 were promoted from proposed/candidate operational labels to canonical a
 | 11 | `language-learning-magazine` | Language Learning Magazine / 나의 언어학습 매거진 | canonical | Produce daily reading, vocabulary, questions, and feedback from the learner’s level and interests. |
 | 12 | `creator-mini-media` | Creator Mini-Media / 크리에이터 미니미디어 | canonical | Give a solo creator a small parallel newsroom for articles, newsletters, posts, and video scripts. |
 | 13 | `personal-video-archive` | Personal Video Archive / 나의 영상 아카이브 | canonical | Discover videos by durable personal topics and preserve private viewing states, ratings, notes, and plans. |
-| 14 | `korean-ai-platform` | Korean AI Platform / 한국형 AI 플랫폼 | canonical | Provide Korean-first access to external, domestic, and self-hosted models with controlled execution and BYOK capabilities. |
+| 14 | `korean-ai-platform` | Korean AI Platform / 한국형 AI 모델 플랫폼 | canonical | Provide Korean-first access to external, domestic, and self-hosted models through one platform, with controlled execution, BYOK, and an internal Router Core for explicit selection and fallback. |
 | 15 | `global-ai-newsroom` | Global AI Newsroom / 글로벌 AI 뉴스룸 | candidate | Operate country, topic, editing, and verification agents concurrently for large-scale current-information production. |
 | 16 | `personal-sports` | Personal Sports / 나의 스포츠 채널 | candidate | Produce match previews, recaps, player analysis, and viewing guidance for one fan’s teams and athletes. |
 | 17 | `local-shop-magazine` | Local Shop Magazine / 우리 가게 매거진 | candidate | Continuously turn one local shop’s products, people, customer stories, and events into publishable media. |
@@ -109,8 +109,10 @@ B6–B12 were promoted from proposed/candidate operational labels to canonical a
 | 51 | `ai-workflow-marketplace` | AI Workflow Marketplace / AI 워크플로우 마켓 | candidate | Publish, distribute, and potentially sell verified task procedures, prompts, tools, and workflow packages. |
 | 52 | `scheduled-agent-operations` | Scheduled Agent Operations / 예약형 AI 운영 | spin-out | Execute recurring reports, searches, generation, checks, and alerts while preserving evidence and run history. |
 | 53 | `embedded-ai-sdk` | Embedded AI SDK / 임베드 AI SDK | spin-out | Add approved AI functions to existing sites, apps, and institutional systems without rebuilding the host product. |
-| 54 | `ai-model-router` | AI Model Router / AI 모델 라우터 | spin-out | Select and route domestic, external, and local models according to task, quality, cost, privacy, and availability. |
+| 54 | `korean-ai-code-agent` | Korean AI Code Agent / 한국형 AI 코드 에이전트 | proposed-number | Run a Korean-first CLI/TUI coding agent inside a repository, consuming Business 14 for model access and routing while keeping edits, commands, and Git actions permission-bounded. |
 | 55 | `local-ai-fleet` | Local AI Fleet / 로컬 AI 플릿 | spin-out | Operate multiple free or local models concurrently with job distribution, status, evidence, and cost controls. |
+
+The former B54 `ai-model-router / AI Model Router` identity is superseded historical terminology. Its routing responsibility is now the internal **Router Core** of Business 14; B54 is the first-party Korean AI Code Agent that consumes Business 14.
 
 ## 5. Relationship rule
 
