@@ -56,7 +56,7 @@
     identity({ n:12, s:"creator-mini-media", t:"Creator Mini-Media", k:"크리에이터 미니미디어", a:NA.PROPOSED, l:"visual_reference", st:"review", p:52, w:"reference/business-12-creator-mini-media-v1/" }),
     // ═══ 13–14: CANONICAL ═══
     identity({ n:13, s:"personal-video-archive", t:"Personal Video Archive", k:"나의 영상 아카이브", a:NA.CANONICAL, l:"private_preview", st:"review", p:42, su:"https://ai-revenue-personal-video-archive.pages.dev/", w:"apps/personal-video-archive/" }),
-    identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 실행 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:92, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
+    identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 모델 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:92, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
     // ═══ 15–22: PROPOSED ═══
     identity({ n:15, s:"global-ai-newsroom", t:"Global AI Newsroom", k:"글로벌 AI 뉴스룸", a:NA.PROPOSED, l:"visual_reference", st:"review", p:40, w:"reference/business-15-global-ai-newsroom-v1/" }),
     identity({ n:16, s:"personal-sports", t:"Personal Sports", k:"나의 스포츠 채널", a:NA.PROPOSED, l:"visual_reference", st:"review", p:38, w:"reference/business-16-personal-sports-v1/" }),
