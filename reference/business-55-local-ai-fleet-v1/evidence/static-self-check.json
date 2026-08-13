@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "checks": {
+    "exact_states": true,
+    "tabs_7": true,
+    "panels_7": true,
+    "unique_tab_ids": true,
+    "unique_panel_ids": true,
+    "reciprocal_aria": true,
+    "keyboard_contract": true,
+    "asset_count_at_least_8": true,
+    "local_assets_exist": true,
+    "external_runtime_zero": true,
+    "required_labels": true,
+    "persistent_7": true,
+    "final_animationend": true,
+    "no_timeout_completion": true,
+    "nominal_760": true,
+    "reduced_motion": true,
+    "mobile_390": true,
+    "manifest_columns": true
+  },
+  "missing": [],
+  "states": [
+    "cover",
+    "fleet",
+    "jobs",
+    "capacity",
+    "incidents",
+    "decision",
+    "mobile"
+  ],
+  "asset_count": 10
+}
