@@ -184,8 +184,8 @@ def verify_comments_file(
     return authority
 
 
-def build_patch_payload(source_directory: str) -> dict[str, Any]:
-    source_root = source_directory.rstrip("/")
+def build_patch_payload(business_id: str, source_directory: str) -> dict[str, Any]:
+    source_root = validate_source_path(business_id, source_directory)
     return {
         "build_config": {"root_dir": source_root},
         "source": {
@@ -226,6 +226,7 @@ def build_parser() -> argparse.ArgumentParser:
     authority.add_argument("--approved-sha", required=True)
 
     payload = subparsers.add_parser("patch-payload")
+    payload.add_argument("--business-id", required=True)
     payload.add_argument("--source-directory", required=True)
     payload.add_argument("--output", required=True, type=Path)
     return parser
@@ -256,7 +257,10 @@ def main() -> int:
             )
             print(f"source migration owner authority verified: comment {authority.get('id')}")
         elif args.command == "patch-payload":
-            write_json(args.output, build_patch_payload(args.source_directory))
+            write_json(
+                args.output,
+                build_patch_payload(args.business_id, args.source_directory),
+            )
         else:  # pragma: no cover
             raise ValidationError("unknown command")
     except (ValidationError, OSError, json.JSONDecodeError) as exc:
