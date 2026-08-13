@@ -19,19 +19,30 @@ Canonical references:
 | `living-travel` | 2 | Implemented private MVP; production foundation and pre-staging security contracts merged | Travel content becomes more valuable when each edition adapts to the traveler's latest interests and situation. | Shared Firebase identity foundation is specified; portal integration is not implemented. |
 | `living-fiction` | 3 | Implemented private reader/editorial MVP; production infrastructure open | Shared fictional worlds can support rapid feedback-responsive and optionally personal narrative branches. | Not integrated. |
 | `living-learning` | 4 | Adaptive-learning MVP and static adaptive UI preview | A recurring short learning publication becomes more useful when it adapts to the learner's responses. | Not integrated. |
-| `world-feed` | Unresolved | Synthetic source-to-microbrief MVP and research track | Abundant AI can turn global-local information into a different personal world edition for each user. | Number reconciliation and portal integration both required. |
+| `world-feed` | 6 | Existing technical/research workspace; current commercial thesis narrowed to Personal World Discovery and current numbered review implementation lives under `reference/business-06-world-feed-v1/` | A finite, source-forward personal edition can help a reader discover meaningful world changes and connect selected discoveries to nearby relevance without becoming an infinite generic news feed. | Not integrated; current concierge validation remains separate from runtime expansion. |
 | `personal-video-archive` | 13 | Incubation MVP; bilingual redesign and portal shell in Draft PR #78 | Users will return to user-controlled topic feeds when video discovery is cleaner and watched videos become durable private reflections and plans. | Global portal shell code and visual review accepted in Draft PR #78 at head 989d0056605e091a2fa842e49dc92f29aed68fbb; PR #78 remains unmerged pending latest-main integration and final merge review. Actual portal production integration is not completed by the PR #78 merge alone. |
 | `korean-ai-platform` | 14 | Private governed-execution console MVP in Draft PR #79 | Users can trust AI execution more when worker, validator, and human approval stages expose evidence, cost, and data-processing context. | Authentication and portal integration are not implemented. |
 
-## Assigned but not yet created workspaces
+## Canonical Businesses currently represented by review workspaces
 
-| Workspace | Canonical Business number | Current state | Primary product hypothesis | Portal state |
-|---|---:|---|---|---|
-| `neighbor-market` | 5 | concept; workspace not yet created | Residents will discover and support resident-operated work when current-apartment and nearby-apartment relationships are prioritized before general neighborhood businesses. | Not implemented. |
+B7–B12 are canonical portfolio assignments after Issue #617, but their current implementation authority remains the existing reviewed `reference/` workspace. Canonical numbering does not require creating duplicate `apps/` placeholders.
 
-Business 5 is assigned but its workspace is not yet created. Business 6–12 remain reserved or unresolved. Do not assign them from folder order, issue order, conversation order, or product ranking.
+| Canonical Business | Stable slug | Current authoritative review workspace | Current boundary |
+|---:|---|---|---|
+| 7 | `personal-meaning-map` | `../reference/business-07-personal-meaning-map-v1/` | Synthetic/review UI/UX evidence; no product runtime or backend authorization implied. |
+| 8 | `family-newspaper` | `../reference/business-08-family-newspaper-v1/` | Synthetic/review UI/UX evidence; no family-data runtime, sharing, or persistence implied. |
+| 9 | `personalized-childrens-story` | `../reference/business-09-personalized-childrens-story-v1/` | Synthetic/review UI/UX evidence; no child-data runtime or generation backend implied. |
+| 10 | `fan-magazine` | `../reference/business-10-fan-magazine-v1/` | Synthetic/review UI/UX evidence; no live ingestion or public-figure data pipeline implied. |
+| 11 | `language-learning-magazine` | `../reference/business-11-language-learning-magazine-v1/` | Synthetic/review UI/UX evidence; no learner evaluation or persistence backend implied. |
+| 12 | `creator-mini-media` | `../reference/business-12-creator-mini-media-v1/` | Synthetic/review UI/UX evidence; no publishing integration, persistence, or analytics implied. |
 
-`docs/portfolio/BUSINESS_REGISTRY.md` is the sole canonical number-to-product source after Issue #83 is merged.
+## External successor workspace boundary
+
+Business 5 remains the canonical Neighbor Market portfolio identity, but actual product implementation continues in the external DanjiOn successor repository `skerishKang/02-danji-on`.
+
+Do not create `apps/neighbor-market/` as a parallel implementation. AI Revenue Lab may preserve numbering, lineage, and links, while the external successor owns live product development, authorization, and records.
+
+`docs/portfolio/BUSINESS_REGISTRY.md` is the sole canonical number-to-product source. Historical issue text that called B6–B12 proposed, candidate, reserved, or unresolved remains historical evidence rather than current numbering authority.
 
 ## Future portal workspace
 
@@ -47,7 +58,7 @@ It is not created by the documentation issue alone.
 
 ## Workspace boundary
 
-A Business workspace may contain its own:
+A Business runtime workspace may contain its own:
 
 ```text
 apps/<product>/
@@ -63,7 +74,9 @@ apps/<product>/
 └─ product-local fixtures
 ```
 
-A product may not place implementation files in the repository root.
+A product may not place runtime implementation files in the repository root.
+
+A canonical Business may temporarily remain represented by a `reference/business-XX-.../` review workspace when no separate runtime implementation has been authorized. Number assignment alone is not authority to create an `apps/` product.
 
 ## Shared identity boundary
 
@@ -134,3 +147,5 @@ When creating or renumbering a Business:
 4. update `BUSINESS_REGISTRY.md` in a reviewed PR;
 5. update this workspace table and the root README;
 6. do not treat deployment success as evidence of active production status.
+
+Issue #617 is the reconciliation record that promoted the established B6–B12 operational assignments into the canonical registry while preserving their earlier proposed/candidate history and existing workspace boundaries.
