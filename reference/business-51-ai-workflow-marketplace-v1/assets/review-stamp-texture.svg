@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" role="img" aria-label="procedural review stamp texture">
+  <rect width="480" height="320" fill="#efe4cc"/>
+  <g fill="none" stroke="#7d2b27" stroke-opacity=".28">
+    <circle cx="240" cy="160" r="118" stroke-width="8" stroke-dasharray="10 7"/>
+    <circle cx="240" cy="160" r="94" stroke-width="3"/>
+    <path d="M105 160h270M240 42v236" stroke-width="2" stroke-dasharray="5 8"/>
+  </g>
+  <g fill="#7d2b27" fill-opacity=".14">
+    <circle cx="78" cy="64" r="3"/><circle cx="401" cy="91" r="2"/><circle cx="118" cy="266" r="4"/>
+    <circle cx="350" cy="252" r="3"/><circle cx="286" cy="73" r="2"/>
+  </g>
+</svg>

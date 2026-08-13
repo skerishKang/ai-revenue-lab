@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-label="procedural compatibility ticket texture">
+  <defs>
+    <pattern id="lines" width="28" height="28" patternUnits="userSpaceOnUse">
+      <rect width="28" height="28" fill="#f7e8ad"/>
+      <path d="M0 27.5h28M27.5 0v28" stroke="#1b1a14" stroke-opacity=".035"/>
+      <circle cx="7" cy="8" r=".9" fill="#1b1a14" fill-opacity=".1"/>
+    </pattern>
+  </defs>
+  <rect width="560" height="360" fill="url(#lines)"/>
+  <path d="M20 40h520M20 320h520" stroke="#1b1a14" stroke-opacity=".08" stroke-dasharray="8 8"/>
+</svg>
