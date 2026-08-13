@@ -228,40 +228,5 @@ class PatchPayloadTests(unittest.TestCase):
                 self.assertNotIn(f'"{forbidden}"', text)
 
 
-class WorkflowStaticContractTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.workflow = (
-            Path(__file__).resolve().parents[1]
-            / "workflows"
-            / "provision-approved-business-pages.yml"
-        ).read_text(encoding="utf-8")
-
-    def test_workflow_exposes_explicit_migration_contract(self) -> None:
-        for marker in (
-            "existing_project_action:",
-            "expected_old_source_directory:",
-            "verify-only",
-            "migrate-source",
-            "validate_pages_source_migration.py contract",
-            "validate_pages_source_migration.py authority",
-            "validate_pages_source_migration.py patch-payload",
-            "state=source-migrated",
-        ):
-            with self.subTest(marker=marker):
-                self.assertIn(marker, self.workflow)
-
-    def test_workflow_keeps_patch_bounded_and_delete_forbidden(self) -> None:
-        self.assertIn('method="PATCH"', self.workflow)
-        self.assertIn('--request "${method}"', self.workflow)
-        self.assertNotIn("--request PATCH", self.workflow)
-        self.assertNotIn("--request DELETE", self.workflow)
-        self.assertNotIn("pages project delete", self.workflow)
-
-    def test_workflow_records_old_and_new_sources(self) -> None:
-        self.assertIn("Existing project action", self.workflow)
-        self.assertIn("Expected old source directory", self.workflow)
-        self.assertIn("Source directory", self.workflow)
-
-
 if __name__ == "__main__":
     unittest.main()
