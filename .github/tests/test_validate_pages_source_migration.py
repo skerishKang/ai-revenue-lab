@@ -203,7 +203,7 @@ class AuthorityTests(unittest.TestCase):
 
 class PatchPayloadTests(unittest.TestCase):
     def test_patch_payload_is_source_only_and_bounded(self) -> None:
-        payload = migration.build_patch_payload(NEW_SOURCE)
+        payload = migration.build_patch_payload(BUSINESS_ID, NEW_SOURCE)
         self.assertEqual(
             payload,
             {
@@ -226,6 +226,17 @@ class PatchPayloadTests(unittest.TestCase):
         ):
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(f'"{forbidden}"', text)
+
+    def test_patch_payload_revalidates_same_business_source(self) -> None:
+        for business_id, source in (
+            ("14", "reference/business-18-personal-audio-channel-v1"),
+            ("14", "../reference/business-14-korean-ai-platform-v3"),
+            ("00", NEW_SOURCE),
+        ):
+            with self.subTest(business_id=business_id, source=source), self.assertRaises(
+                migration.ValidationError
+            ):
+                migration.build_patch_payload(business_id, source)
 
 
 if __name__ == "__main__":
