@@ -47,23 +47,31 @@ Secrets, database URLs, Firebase service-account material, API keys, private hos
 | 3 | `living-fiction` | Living Fiction / 리빙 픽션 | `apps/living-fiction/` | Implemented private reader/editorial MVP; production infrastructure open | Product-local invite, reader, and editorial authorization; shared identity integration not yet accepted as a completed portal flow. | Not yet integrated | Issues #34, #55, #75, #77 |
 | 4 | `living-learning` | Living Learning / 리빙 러닝 | `apps/living-learning/` | Isolated adaptive-learning MVP and static adaptive UI preview | Current product-local/synthetic access contract; portfolio identity integration not yet implemented. | Not yet integrated | Issue #37 and current Business 4 project direction |
 | 5 | `neighbor-market` | Neighbor Market / 우리단지 이웃가게 | **External successor: DanjiOn / 단지온 — `skerishKang/02-danji-on`; `NO_INTERNAL_IMPLEMENTATION`** | `private_preview`; B5 number preserved as `EXPANDED_SUCCESSOR` lineage | DanjiOn external source owns resident verification, listing eligibility, operator/moderator/admin roles, Auth and product records. AI Revenue Lab does not create a parallel authorization implementation. | List/link only inside AI Revenue Lab; actual product work stays in DanjiOn | Owner decision 2026-08-09; `BUSINESS_EXPANSION_LINEAGE.md`; prior Issues #89 and #99 |
-| 6 | `reserved-06` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
-| 7 | `reserved-07` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
-| 8 | `reserved-08` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
-| 9 | `reserved-09` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
-| 10 | `reserved-10` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
-| 11 | `reserved-11` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
-| 12 | `reserved-12` | Reserved — assignment unresolved | None canonically assigned | Reserved | Not applicable | Not applicable | Requires explicit portfolio decision |
+| 6 | `world-feed` | World Feed / 월드 피드 — current commercial positioning: Personal World Discovery / 나만의 세계 발견 편집자 | `apps/world-feed/` with current review implementation in `reference/business-06-world-feed-v1/` | `private_preview`; commercial thesis narrowed for concierge validation | Current repository work is synthetic/frontend evidence only; no accepted live account or recommendation-service authorization is implied by numbering. | Not integrated | Issues #98, #155, #165, #562, #616, #617; numbered execution #396/#465 |
+| 7 | `personal-meaning-map` | Personal Meaning Map / 개인 의미 지도 | `reference/business-07-personal-meaning-map-v1/` | `private_preview`; reviewable UI/UX evidence | Synthetic/reference-only state; no product authentication, private-data import, persistence, or backend authorization is implied by numbering. | Not integrated | Issue #166; later numbered UI/UX execution under #396/#465; #617 reconciliation |
+| 8 | `family-newspaper` | Family Newspaper / 우리 가족 신문 | `reference/business-08-family-newspaper-v1/` | `private_preview`; reviewable UI/UX evidence | Synthetic/reference-only state; no family-data import, account, sharing, persistence, or backend authorization is implied by numbering. | Not integrated | Issue #168; later numbered UI/UX execution under #396/#465; #617 reconciliation |
+| 9 | `personalized-childrens-story` | Personalized Children’s Story / 우리 아이 이야기 | `reference/business-09-personalized-childrens-story-v1/` | `private_preview`; reviewable UI/UX evidence | Synthetic/reference-only state; no child-data import, account, generation service, persistence, or backend authorization is implied by numbering. | Not integrated | Issue #170; later numbered UI/UX execution under #396/#465; #617 reconciliation |
+| 10 | `fan-magazine` | Fan Magazine / 나만의 팬 매거진 | `reference/business-10-fan-magazine-v1/` | `private_preview`; reviewable UI/UX evidence | Synthetic/reference-only state; no live ingestion, public-figure data pipeline, account, persistence, or backend authorization is implied by numbering. | Not integrated | Issue #171; later numbered UI/UX execution under #396/#465; #617 reconciliation |
+| 11 | `language-learning-magazine` | Language Learning Magazine / 나의 언어학습 매거진 | `reference/business-11-language-learning-magazine-v1/` | `private_preview`; reviewable UI/UX evidence | Synthetic/reference-only state; no learner-data import, evaluation service, account, persistence, or backend authorization is implied by numbering. | Not integrated | Issue #172; later numbered UI/UX execution under #396/#465; #617 reconciliation |
+| 12 | `creator-mini-media` | Creator Mini-Media / 크리에이터 미니미디어 | `reference/business-12-creator-mini-media-v1/` | `private_preview`; reviewable UI/UX evidence | Synthetic/reference-only state; no creator account connection, publishing, persistence, analytics, or backend authorization is implied by numbering. | Not integrated | Issue #173; later numbered UI/UX execution under #396/#465; #617 reconciliation |
 | 13 | `personal-video-archive` | Personal Video Archive / 나의 영상 아카이브 | `apps/personal-video-archive/` | Incubation MVP; Korean-first bilingual redesign in Draft PR #78 | Current MVP is synthetic/local and has no accepted production authentication. Product must own private viewing-record authorization when integrated. | Global portal shell code and visual review accepted in Draft PR #78 at head 989d0056605e091a2fa842e49dc92f29aed68fbb; PR #78 remains unmerged pending latest-main integration and final merge review; actual portal production integration is not completed by the PR #78 merge alone | Issues #60, #62, #72, #76; PR #78 |
 | 14 | `korean-ai-platform` | Korean AI Platform / 한국형 AI 실행 플랫폼 | `apps/korean-ai-platform/` | Private governed-execution console MVP in Draft PR #79 | Authentication, CSRF, and persistence are current limitations. Future integration must keep execution permissions and secrets product-local. | Not yet integrated | Issue #80; PR #79 |
 
-## 4. Implemented or researched products awaiting number reconciliation
+## 4. Reconciled numbering history for B6–B12
 
-These products exist in the repository or portfolio record but do not receive an invented Business number in this registry.
+Before Issue #617, the canonical registry still showed B6–B12 as reserved even though later portfolio execution repeatedly used stable B6–B12 product labels. The historical Phase 1 issues intentionally described those numbers as proposed/noncanonical because they were not authorized to rewrite the registry.
 
-| Stable slug | Product | Workspace | Current state | Number status | Required action |
-|---|---|---|---|---|---|
-| `world-feed` | World Feed / 월드 피드 | `apps/world-feed/` | Synthetic source-to-microbrief MVP and research track | Historic documents conflict: older repository tables assigned numbers inconsistently, while later Business 3 is explicitly Living Fiction and Business 4 is Living Learning. | Open an explicit numbering decision before displaying a Business number in the portal. |
+Issue #617 completed the duplicate/conflict review and found no competing product claiming the same B6–B12 slots. The canonical assignments above therefore preserve the existing stable slugs and workspaces rather than creating new products, duplicate folders, or silent renumbering.
+
+Important history and boundaries:
+
+- B6 preserves `world-feed` as the stable product identity. `Personal World Discovery` is the current narrowed commercial positioning, not a second Business or a replacement slug.
+- B6 preserves `apps/world-feed/` as the existing technical/research workspace and `reference/business-06-world-feed-v1/` as the current numbered review implementation.
+- B7–B12 preserve their existing `reference/business-XX-...-v1/` workspaces as the current implementation authority. Canonical numbering does not require creating duplicate `apps/` placeholders.
+- Historical Issues #166, #168, #170, #171, #172 and #173 remain truthful evidence that their numbers were proposed at the time those issues were authored.
+- Canonical assignment does not imply owner UI approval, backend authorization, live data, authentication, persistence, billing, or Production readiness.
+- B6 product and validation boundaries in #98 and #616 remain separate from the numbering decision.
+- External/successor boundaries governed by #393 and merged lineage policy remain unchanged.
 
 ## 5. Candidate concepts without a canonical workspace or number
 
@@ -158,7 +166,7 @@ A Business that expands to an external successor keeps its original number. Expa
 
 ## 10. Current reconciliation findings
 
-The following mappings are treated as verified because current project work or issue evidence explicitly identifies them:
+The following mappings are verified through the registry procedure and preserved as canonical portfolio identities:
 
 ```text
 Business 1  Personal Edition
@@ -166,10 +174,15 @@ Business 2  Living Travel
 Business 3  Living Fiction
 Business 4  Living Learning
 Business 5  Neighbor Market → DanjiOn successor implementation
+Business 6  World Feed / Personal World Discovery
+Business 7  Personal Meaning Map
+Business 8  Family Newspaper
+Business 9  Personalized Children’s Story
+Business 10 Fan Magazine
+Business 11 Language Learning Magazine
+Business 12 Creator Mini-Media
 Business 13 Personal Video Archive
 Business 14 Korean AI Platform
 ```
 
-Business 1–5 are assigned as verified mappings. B5 now preserves its original Neighbor Market number while actual implementation continues in the external DanjiOn successor. Business 6–12 remain reserved. Business 13–14 remain assigned. World Feed remains unnumbered / number_reconciliation_required.
-
-This is preferable to preserving contradictory historic tables, deleting successful Business lineage, or inventing assignments without evidence.
+B6–B12 were reconciled under Issue #617 after their earlier proposed/operational use had outpaced the older reserved registry. This assignment preserves the historical evidence and existing workspaces; it does not retroactively convert old proposed-number records into claims that the numbers were canonical at the time.

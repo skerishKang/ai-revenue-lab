@@ -65,7 +65,7 @@ Automation supplies Issue, PR, SHA, CI, deployment, health, and synchronization 
 
 ## Repository model
 
-This repository is the portfolio-level workspace. Each revenue experiment has an independent product directory under `apps/`.
+This repository is the portfolio-level workspace. Each revenue experiment has an independent product directory under `apps/` when a product runtime workspace exists. Some currently canonical Businesses remain represented by reviewed `reference/` workspaces until a separate product-runtime decision creates an `apps/` implementation.
 
 ```text
 apps/
@@ -73,13 +73,22 @@ apps/
 ├─ living-travel/             # Business 2
 ├─ living-fiction/            # Business 3
 ├─ living-learning/           # Business 4
-├─ world-feed/                # number reconciliation required
+├─ world-feed/                # Business 6 technical/research workspace
 ├─ personal-video-archive/    # Business 13
 └─ korean-ai-platform/        # Business 14
+
+reference/
+├─ business-06-world-feed-v1/                   # Business 6 current review implementation
+├─ business-07-personal-meaning-map-v1/         # Business 7
+├─ business-08-family-newspaper-v1/             # Business 8
+├─ business-09-personalized-childrens-story-v1/ # Business 9
+├─ business-10-fan-magazine-v1/                 # Business 10
+├─ business-11-language-learning-magazine-v1/   # Business 11
+└─ business-12-creator-mini-media-v1/            # Business 12
 ```
 
 Business 5 is assigned to Neighbor Market.
-Business 6–12 remain reserved or unresolved until an explicit registry decision assigns them. Workspace existence does not by itself assign a Business number.
+Business 6–12 are canonically assigned through the reviewed registry reconciliation in Issue #617. Their canonical numbers do not imply backend authorization, owner UI approval, authentication, persistence, billing, or Production readiness. B7–B12 do not require duplicate `apps/` placeholders merely because their numbers are now canonical.
 
 ### Business 5 — Neighbor Market (assigned, not yet created)
 
@@ -130,10 +139,17 @@ Routine inspection and authorized configuration should use authenticated APIs, c
 - **Business 3 — Living Fiction** — shared canon with optional reader-responsive private narrative branches.
 - **Business 4 — Living Learning** — recurring short personalized learning experiences.
 - **Business 5 — Neighbor Market** — residents discover and support resident-operated businesses and services, prioritizing current-apartment and nearby-apartment relationships before general neighborhood businesses. Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
+- **Business 6 — World Feed / Personal World Discovery** — a finite, source-forward personal discovery product connecting meaningful world discoveries with nearby relevance; `world-feed` remains the stable slug and Personal World Discovery is the current narrowed commercial positioning.
+- **Business 7 — Personal Meaning Map** — places, people, events, and objects organized into an evolving map of personal meaning.
+- **Business 8 — Family Newspaper** — family photos, schedules, conversations, and milestones edited into a recurring family publication.
+- **Business 9 — Personalized Children’s Story** — continuing stories shaped by a child’s experiences, interests, choices, and a parent’s learning goals.
+- **Business 10 — Fan Magazine** — personal editorial issues built around a favorite creator, performer, or athlete.
+- **Business 11 — Language Learning Magazine** — recurring reading, vocabulary, questions, and feedback shaped by learner level and interests.
+- **Business 12 — Creator Mini-Media** — a compact solo editorial desk turning one source idea into coordinated article, newsletter, short-form, and video-script outputs.
 - **Business 13 — Personal Video Archive** — user-controlled video topic feeds combined with private viewing reflections, plans, ratings, tags, and records.
 - **Business 14 — Korean AI Platform** — governed AI execution with worker, validator, and human approval stages.
 
-**World Feed** has an implemented workspace and research history, but its Business number is not canonical until the numbering conflict is reconciled through the registry process.
+The canonical numbering authority is `docs/portfolio/BUSINESS_REGISTRY.md`. Historical issues that described B6–B12 as proposed or candidate remain valid historical evidence of their state before the registry reconciliation.
 
 ## Identity and product access
 
@@ -171,6 +187,8 @@ Personal Edition is the first planned portal integration target. Its current inv
 - shared Firebase identity infrastructure exists for the portfolio;
 - portal implementation under `apps/portal/` is not yet authorized by this documentation alone;
 - Personal Edition is the first portal integration target;
+- B6–B12 canonical numbering is reconciled through Issue #617 without creating duplicate product workspaces;
+- B6 commercial validation remains governed separately by its current concierge-validation authority;
 - Personal Video Archive is undergoing a Korean-first bilingual visual redesign in Draft PR #78;
 - Korean AI Platform private MVP is tracked through Issue #80 and Draft PR #79;
 - Portfolio Console has a merged Business 1–55 static-authority and automatic GitHub-fact mapping foundation; live Production activation remains separately authorized and verified;
