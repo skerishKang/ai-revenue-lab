@@ -78,28 +78,29 @@ apps/
 └─ korean-ai-platform/        # Business 14
 
 reference/
-├─ business-06-world-feed-v1/                  # Business 6 current review implementation
-├─ business-07-personal-meaning-map-v1/        # Business 7
-├─ business-08-family-newspaper-v1/            # Business 8
-├─ business-09-personalized-childrens-story-v1/# Business 9
-├─ business-10-fan-magazine-v1/                # Business 10
-├─ business-11-language-learning-magazine-v1/  # Business 11
-└─ business-12-creator-mini-media-v1/           # Business 12
+├─ business-06-world-feed-v1/                   # Business 6 current review implementation
+├─ business-07-personal-meaning-map-v1/         # Business 7
+├─ business-08-family-newspaper-v1/             # Business 8
+├─ business-09-personalized-childrens-story-v1/ # Business 9
+├─ business-10-fan-magazine-v1/                 # Business 10
+├─ business-11-language-learning-magazine-v1/   # Business 11
+└─ business-12-creator-mini-media-v1/            # Business 12
 ```
 
-Business 5 remains canonically assigned to Neighbor Market, with actual implementation continuing in its DanjiOn external successor under the portfolio expansion-lineage policy.
-
+Business 5 is assigned to Neighbor Market.
 Business 6–12 are canonically assigned through the reviewed registry reconciliation in Issue #617. Their canonical numbers do not imply backend authorization, owner UI approval, authentication, persistence, billing, or Production readiness. B7–B12 do not require duplicate `apps/` placeholders merely because their numbers are now canonical.
 
-### Business 5 — Neighbor Market / DanjiOn successor
+### Business 5 — Neighbor Market (assigned, not yet created)
 
-Business 5 preserves the canonical **Neighbor Market / 우리단지 이웃가게** portfolio identity while actual product implementation continues in **DanjiOn / 단지온** at `skerishKang/02-danji-on`.
+Business 5 is canonically assigned to **Neighbor Market / 우리단지 이웃가게**.
 
-- AI Revenue Lab must not create a parallel B5 product implementation.
-- Current lifecycle and implementation truth are maintained through `docs/portfolio/BUSINESS_EXPANSION_LINEAGE.md` and `docs/portfolio/BUSINESS_REGISTRY.md`.
-- Portfolio surfaces may list and link the successor but do not own its product runtime.
+- Planned workspace: `apps/neighbor-market/`
+- The workspace has not yet been created.
+- Current lifecycle: `concept`
+- Portal integration: not implemented
+- Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
 
-Product-specific code, tests, configuration, migrations, scripts, fixtures, and private data boundaries remain inside the corresponding workspace or explicitly recorded external successor. Shared code is extracted only after demonstrated reuse.
+Product-specific code, tests, configuration, migrations, scripts, fixtures, and private data boundaries remain inside the corresponding workspace. Shared code is extracted only after demonstrated reuse.
 
 See:
 
@@ -137,7 +138,7 @@ Routine inspection and authorized configuration should use authenticated APIs, c
 - **Business 2 — Living Travel** — adaptive travel letters shaped by a traveler's feedback and situation.
 - **Business 3 — Living Fiction** — shared canon with optional reader-responsive private narrative branches.
 - **Business 4 — Living Learning** — recurring short personalized learning experiences.
-- **Business 5 — Neighbor Market** — canonical portfolio identity preserved while actual implementation continues in the external DanjiOn successor.
+- **Business 5 — Neighbor Market** — residents discover and support resident-operated businesses and services, prioritizing current-apartment and nearby-apartment relationships before general neighborhood businesses. Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
 - **Business 6 — World Feed / Personal World Discovery** — a finite, source-forward personal discovery product connecting meaningful world discoveries with nearby relevance; `world-feed` remains the stable slug and Personal World Discovery is the current narrowed commercial positioning.
 - **Business 7 — Personal Meaning Map** — places, people, events, and objects organized into an evolving map of personal meaning.
 - **Business 8 — Family Newspaper** — family photos, schedules, conversations, and milestones edited into a recurring family publication.
