@@ -52,6 +52,8 @@ Candidate selection is guided by the AI Revenue Lab thesis:
 
 The numbers below preserve the working map discussed in portfolio planning. Only rows marked `canonical` are authoritative numbers today.
 
+B6–B12 were promoted from proposed/candidate operational labels to canonical assignments through the reviewed reconciliation procedure in Issue #617. Their earlier issue text remains truthful historical evidence of the state before that registry decision.
+
 | Proposed No. | Stable slug | Product | Status | Product promise |
 |---:|---|---|---|---|
 | 1 | `personal-edition` | Personal Edition / 퍼스널 에디션 | canonical | Turn private records and feedback into recurring personal editions, letters, magazines, and books. |
@@ -59,13 +61,13 @@ The numbers below preserve the working map discussed in portfolio planning. Only
 | 3 | `living-fiction` | Living Fiction / 리빙 픽션 | canonical | Create shared and private narrative branches that respond to reader choices and feedback. |
 | 4 | `living-learning` | Living Learning / 리빙 러닝 | canonical | Generate the next lesson according to each learner’s responses and understanding. |
 | 5 | `neighbor-market` | Neighbor Market / 우리단지 이웃가게 | proposed-number | Connect apartment residents with resident-operated and nearby local businesses and services. |
-| 6 | `world-feed` | World Feed / 월드 피드 | proposed-number | Create a lightweight personal stream of culture, entertainment, places, travel, neighborhoods, local life, and carefully scoped sports. |
-| 7 | `personal-meaning-map` | Personal Meaning Map / 개인 의미 지도 | candidate | Turn a person’s places, people, events, and objects into an evolving map of personal meaning. |
-| 8 | `family-newspaper` | Family Newspaper / 우리 가족 신문 | candidate | Convert family photos, schedules, conversations, and milestones into a recurring family newspaper. |
-| 9 | `personalized-childrens-story` | Personalized Children’s Story / 우리 아이 이야기 | candidate | Produce continuing stories shaped by a child’s experiences, interests, choices, and a parent’s learning goals. |
-| 10 | `fan-magazine` | Fan Magazine / 나만의 팬 매거진 | candidate | Edit global and historical material about a favorite creator, performer, or athlete into a personal fan publication. |
-| 11 | `language-learning-magazine` | Language Learning Magazine / 나의 언어학습 매거진 | candidate | Produce daily reading, vocabulary, questions, and feedback from the learner’s level and interests. |
-| 12 | `creator-mini-media` | Creator Mini-Media / 크리에이터 미니미디어 | candidate | Give a solo creator a small parallel newsroom for articles, newsletters, posts, and video scripts. |
+| 6 | `world-feed` | World Feed / 월드 피드 | canonical | Create a finite, source-forward personal discovery edition connecting meaningful world changes with selected nearby relevance; Personal World Discovery is the current narrowed commercial positioning. |
+| 7 | `personal-meaning-map` | Personal Meaning Map / 개인 의미 지도 | canonical | Turn a person’s places, people, events, and objects into an evolving map of personal meaning. |
+| 8 | `family-newspaper` | Family Newspaper / 우리 가족 신문 | canonical | Convert family photos, schedules, conversations, and milestones into a recurring family newspaper. |
+| 9 | `personalized-childrens-story` | Personalized Children’s Story / 우리 아이 이야기 | canonical | Produce continuing stories shaped by a child’s experiences, interests, choices, and a parent’s learning goals. |
+| 10 | `fan-magazine` | Fan Magazine / 나만의 팬 매거진 | canonical | Edit global and historical material about a favorite creator, performer, or athlete into a personal fan publication. |
+| 11 | `language-learning-magazine` | Language Learning Magazine / 나의 언어학습 매거진 | canonical | Produce daily reading, vocabulary, questions, and feedback from the learner’s level and interests. |
+| 12 | `creator-mini-media` | Creator Mini-Media / 크리에이터 미니미디어 | canonical | Give a solo creator a small parallel newsroom for articles, newsletters, posts, and video scripts. |
 | 13 | `personal-video-archive` | Personal Video Archive / 나의 영상 아카이브 | canonical | Discover videos by durable personal topics and preserve private viewing states, ratings, notes, and plans. |
 | 14 | `korean-ai-platform` | Korean AI Platform / 한국형 AI 플랫폼 | canonical | Provide Korean-first access to external, domestic, and self-hosted models with controlled execution and BYOK capabilities. |
 | 15 | `global-ai-newsroom` | Global AI Newsroom / 글로벌 AI 뉴스룸 | candidate | Operate country, topic, editing, and verification agents concurrently for large-scale current-information production. |
@@ -137,6 +139,8 @@ The Phase 1 result is a polished visual reference using synthetic data and local
 
 After `UI_APPROVED`, a separate UX issue may be opened. Backend remains frozen until `UX_APPROVED` and explicit user authorization.
 
+Historical phase vocabulary in this backlog does not override newer Business-specific or portfolio-level authority. Canonical numbering and implementation-stage authority are separate decisions.
+
 ## 7. Promotion to the canonical registry
 
 Before promoting any candidate:
@@ -150,4 +154,4 @@ Before promoting any candidate:
 7. update portfolio and app documentation;
 8. preserve old aliases and migration consequences when renumbering.
 
-Until these steps are complete, the number in this backlog is a working proposal only.
+Until these steps are complete, the number in this backlog is a working proposal only. B6–B12 are no longer working proposals because Issue #617 completed this reconciliation and the canonical registry records those assignments.
