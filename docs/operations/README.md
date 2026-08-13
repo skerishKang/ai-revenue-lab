@@ -3,6 +3,7 @@
 - `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md` — canonical reason the Lab and Portfolio Console exist.
 - `UI_UX_BACKEND_PHASE_GATES.md` — mandatory scope and approval separation: product framing → UI → UX → backend decision → backend implementation.
 - `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — reusable Phase 1 visual-UI policy for every new or revived Business.
+- `EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md` — external-development projects are list/link only inside AI Revenue Lab; do not create internal placeholder, anchor, UI/UX, or backend folders unless the owner explicitly authorizes source migration.
 - `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected automatic Production execution, smoke acceptance, explicitly owner-authorized Preview exceptions, and reviewed fix/revert recovery.
 - `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — owner decision #451: internal web UI changes are technically validated, merged to Production, reviewed on the actual live screen, then accepted, fixed, or restored; Preview is not the normal owner-review gate.
 - `../portfolio/BUSINESS_CANDIDATE_BACKLOG.md` — idea-preservation backlog and proposed Business map.
