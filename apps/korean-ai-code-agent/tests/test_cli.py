@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -95,6 +96,10 @@ class CliTests(unittest.TestCase):
                 "        self.assertEqual(2, 2)\n",
                 encoding="utf-8",
             )
+            # The purpose of this fixture is to prove the corrected source, not
+            # a cached .pyc. Remove bytecode explicitly so both fast Linux and
+            # Windows filesystems execute the rewritten test source.
+            shutil.rmtree(root / "__pycache__", ignore_errors=True)
             passing = run_allowed_test(command, root)
             self.assertEqual(passing.returncode, 0)
             self.assertIn("OK", passing.stderr + passing.stdout)
