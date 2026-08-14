@@ -1032,11 +1032,21 @@ class TestNoExternalNetwork:
         test_dir = os.path.dirname(__file__)
         this_file = os.path.basename(__file__)
         for f in glob.glob(os.path.join(test_dir, "test_*.py")):
-            if os.path.basename(f) == this_file:
+            basename = os.path.basename(f)
+            if basename == this_file:
                 continue  # self-references in this file's assertions are not network usage
             with open(f, encoding="utf-8") as fh:
                 content = fh.read()
-            # No real network clients used at runtime in tests
+            if basename == "test_owner_startup_command.py":
+                # This regression intentionally probes the subprocess over loopback only.
+                # Keep the exception narrow so it can never become an upstream-network test.
+                assert "http://127.0.0.1:" in content
+                assert "https://" not in content
+                assert "openrouter.ai" not in content
+                assert "requests." not in content
+                assert "httpx." not in content
+                continue
+            # All other tests remain transport-mocked/network-free.
             assert "urllib.request.urlopen(" not in content, f"{f} uses urllib"
             assert "requests.get(" not in content, f"{f} uses requests.get"
             assert "httpx.Client(" not in content, f"{f} uses httpx.Client"
@@ -1458,7 +1468,9 @@ class TestOwnerEnvWorkflow:
         from pathlib import Path
         readme = Path(__file__).resolve().parent.parent / "README.md"
         text = readme.read_text(encoding="utf-8")
-        assert "python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000" in text
+        assert "python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000" in text
+        assert "python3 -m uvicorn app.main:app --env-file .env" not in text
+        assert "app.main` loads working-directory `.env`" in text
 
     def test_secret_not_exposed_when_key_configured(self, client):
         secret = "sk-or-v1-super-secret-abcdef1234567890"
