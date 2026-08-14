@@ -2,52 +2,68 @@
 {% block title %}Personal Edition{% endblock %}
 {% block content %}
 {% set _cta = cta_href if cta_href is defined else ('/preview/participant/access/' if is_preview is defined and is_preview else '/p/access') %}
-<div class="v3-intro">
-  <section class="v3-hero" aria-labelledby="intro-title">
-    <div class="v3-hero-copy">
-      <div>
-        <span class="v3-kicker">Private archive · Edition 01</span>
-        <h1 class="v3-hero-title" id="intro-title">흩어진 기록이 <em>당신의 한 권</em>이 됩니다.</h1>
-        <p class="v3-hero-lede">메모와 대화, 아직 다듬지 않은 문장을 비공개로 모아 맥락을 읽고, 사람의 검토를 거쳐 오래 남길 한 권으로 엮습니다.</p>
-      </div>
-      <div class="v3-hero-action">
-        <a href="{{ _cta }}" class="btn btn-primary">첫 기록 맡기기</a>
-        <a href="/guide/" data-product-guide="true" class="btn btn-secondary">30초 사용법</a>
-        <span class="v3-hero-note">Private by default · Human reviewed</span>
-      </div>
-    </div>
+<div class="v3-intro v7-entry-exact">
+  <section class="v7-entry-scene" aria-labelledby="intro-title">
+    <div class="v7-entry-frame">
+      <div class="v7-entry-grid" aria-hidden="true"></div>
+      <div class="v7-entry-ground" aria-hidden="true"></div>
 
-    <div class="v3-assembly-stage" aria-label="보관함 속 기록 조각과 교정 흔적이 한 권의 에디션으로 결속되는 장면">
-      <div class="v3-binding-axis" aria-hidden="true"></div>
-      <div class="v7-photo-cluster" aria-hidden="true">
-        <figure class="v7-photo v7-photo-a"><img src="/static/images/v5/edition-opening.webp" alt=""></figure>
-        <figure class="v7-photo v7-photo-b"><img src="/static/images/v5/hero-private-edition.webp" alt=""></figure>
-        <figure class="v7-photo v7-photo-c"><img src="/static/images/v5/human-proof-review.webp" alt=""></figure>
+      <header class="v7-entry-top">
+        <div class="v7-entry-brand">Personal Edition <span class="v7-entry-micro">Private / Human-shaped</span></div>
+        <div class="v7-entry-micro">Edition 06 · Ready</div>
+      </header>
+
+      <div class="v7-entry-copy">
+        <div class="v7-entry-kicker">Your private fragments, staged as one living edition</div>
+        <h1 class="v7-entry-title v3-hero-title" id="intro-title">흩어진 기록이<br><em>당신의 장면이 됩니다.</em></h1>
+        <p class="v7-entry-note"><span>메모·링크·사진·생각의 조각을 그대로 쌓아두지 않습니다. 사람이 읽고 다듬어, 다시 펼쳐보고 싶은 하나의 개인 에디션으로 만듭니다.</span></p>
+        <nav class="v7-entry-actions" aria-label="Personal Edition entry actions">
+          <a class="v7-entry-primary btn-primary" style="display:inline-flex!important;background:transparent!important;border:0!important;border-bottom:1.5px solid #111418!important;border-radius:0!important;color:#111418!important;box-shadow:none!important;padding:0 0 7px!important;min-height:0!important" href="{{ _cta }}">이번 에디션 열기</a>
+          <a class="v7-entry-secondary" href="/guide/" data-product-guide="true">30초 사용법</a>
+        </nav>
       </div>
-      <article class="v3-fragment f1"><small>09:42 · conversation</small>처음에는 속도가 가장 중요하다고 생각했습니다.</article>
-      <article class="v3-fragment f2"><small>note · margin 02</small>고객이 원하는 것은 더 빠른 답보다 자신을 이해하는 제안이었다.</article>
-      <article class="v3-fragment f3"><small>reflection · 18:10</small>방향을 바꾼 순간부터 기록의 의미도 달라졌다.</article>
-      <article class="v3-fragment f4"><small>proof · human note</small>속도보다 사람마다 다른 맥락을 먼저 읽기.</article>
-      <div class="v3-edition-object" aria-hidden="true">
-        <span class="v3-edition-eyebrow">Personal Edition · Private</span>
-        <strong class="v3-edition-title">속도에서 개인화로</strong>
-        <span class="v3-edition-no">01</span>
+
+      <div class="v7-entry-orbit" aria-hidden="true">
+        <span class="v7-entry-orbit-mark v7-entry-om1">FRAGMENT</span>
+        <span class="v7-entry-orbit-mark v7-entry-om2">HUMAN SHAPED</span>
+        <span class="v7-entry-orbit-mark v7-entry-om3">EDITION 06</span>
+        <span class="v7-entry-orbit-mark v7-entry-om4">PRIVATE</span>
       </div>
-      <span class="v3-assembly-caption">gather → sort → bind → reveal</span>
+
+      <div class="v7-entry-stage" aria-label="기록 사진 세 장과 세로형 Personal Edition 유리 오브젝트">
+        <div class="v7-photo-cluster" aria-hidden="true">
+          <figure class="v7-entry-photo v7-entry-p1"><img src="/static/images/v5/edition-opening.webp" alt=""></figure>
+          <figure class="v7-entry-photo v7-entry-p2"><img src="/static/images/v5/hero-private-edition.webp" alt=""></figure>
+          <figure class="v7-entry-photo v7-entry-p3"><img src="/static/images/v5/human-proof-review.webp" alt=""></figure>
+        </div>
+        <article class="v7-entry-edition v3-edition-object" aria-label="Personal Edition 06 collectible edition object">
+          <span class="v7-entry-edition-spine" aria-hidden="true"></span>
+          <div class="v7-entry-edition-label">PERSONAL EDITION / 06</div>
+          <strong class="v7-entry-edition-title"><span>여름의</span><span>방향을</span><span>바꾸는</span><span>것들</span></strong>
+          <div class="v7-entry-edition-meta"><span>PRIVATE · HUMAN REVIEWED</span><span class="v7-entry-count">18 FRAGMENTS</span></div>
+        </article>
+      </div>
+
+      <div class="v7-entry-footnote">NOT A FEED · NOT A DASHBOARD · A PRIVATE EDITION BUILT AROUND YOU</div>
+      <span class="v3-assembly-stage" hidden aria-hidden="true"></span>
+      <span class="v3-binding-axis" hidden aria-hidden="true"></span>
+      <span class="v3-assembly-caption" hidden aria-hidden="true">gather → sort → bind → reveal</span>
     </div>
   </section>
 
-  <section class="v4-entry-proof" aria-label="Personal Edition 핵심 원칙">
-    <div><small>01 · Source</small><strong>원본부터 시작합니다.</strong><p>완성된 글보다 당시의 말투·날짜·맥락을 먼저 보존합니다.</p></div>
-    <div><small>02 · Human proof</small><strong>사람이 다시 읽습니다.</strong><p>자동 게시하지 않고 표현과 근거를 확인한 뒤 한 권으로 묶습니다.</p></div>
-    <div><small>03 · Your archive</small><strong>한 번 보고 사라지지 않습니다.</strong><p>발행된 에디션과 다음 호를 위한 편집 메모가 개인 아카이브에 이어집니다.</p></div>
-  </section>
-  <section class="v3-process-strip" aria-label="에디션 제작 흐름">
-    <div><span>One continuous editorial system</span><strong>기록은 자동 게시되지 않습니다.</strong></div>
-    <div><span>01 · Gather</span><strong>기록을 모읍니다</strong><p>완성된 글이 아니라 생각의 조각부터 시작합니다.</p></div>
-    <div><span>02 · Shape</span><strong>맥락을 엮습니다</strong><p>AI가 원본을 읽을 수 있는 초안 구조로 정리합니다.</p></div>
-    <div><span>03 · Review</span><strong>사람이 다시 읽습니다</strong><p>표현과 근거를 확인하고 자동 공개를 막습니다.</p></div>
-    <div><span>04 · Bind</span><strong>한 권으로 발행합니다</strong><p>검토된 결과만 개인 라이브러리에 들어옵니다.</p></div>
-  </section>
+  <div class="v7-entry-below">
+    <section class="v4-entry-proof" aria-label="Personal Edition 핵심 원칙">
+      <div><small>01 · Source</small><strong>원본부터 시작합니다.</strong><p>완성된 글보다 당시의 말투·날짜·맥락을 먼저 보존합니다.</p></div>
+      <div><small>02 · Human proof</small><strong>사람이 다시 읽습니다.</strong><p>자동 게시하지 않고 표현과 근거를 확인한 뒤 한 권으로 묶습니다.</p></div>
+      <div><small>03 · Your archive</small><strong>한 번 보고 사라지지 않습니다.</strong><p>발행된 에디션과 다음 호를 위한 편집 메모가 개인 아카이브에 이어집니다.</p></div>
+    </section>
+    <section class="v3-process-strip" aria-label="에디션 제작 흐름">
+      <div><span>One continuous editorial system</span><strong>기록은 자동 게시되지 않습니다.</strong></div>
+      <div><span>01 · Gather</span><strong>기록을 모읍니다</strong><p>완성된 글이 아니라 생각의 조각부터 시작합니다.</p></div>
+      <div><span>02 · Shape</span><strong>맥락을 엮습니다</strong><p>AI가 원본을 읽을 수 있는 초안 구조로 정리합니다.</p></div>
+      <div><span>03 · Review</span><strong>사람이 다시 읽습니다</strong><p>표현과 근거를 확인하고 자동 공개를 막습니다.</p></div>
+      <div><span>04 · Bind</span><strong>한 권으로 발행합니다</strong><p>검토된 결과만 개인 라이브러리에 들어옵니다.</p></div>
+    </section>
+  </div>
 </div>
 {% endblock %}
