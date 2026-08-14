@@ -1,0 +1,59 @@
+name: Validate B01 V6 Living Index
+
+on:
+  pull_request:
+    paths:
+      - 'apps/personal-edition/**'
+      - '.github/workflows/validate-b01-v6-living-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    name: Living Index exact-head browser gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/personal-edition
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Korean fonts and Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Install Playwright Chromium
+        run: python -m playwright install chromium
+
+      - name: Run V6 Living Index browser gate
+        run: python -m pytest tests/test_ui_v6_living_index_613.py -q
+
+      - name: Check changed-source whitespace
+        working-directory: ${{ github.workspace }}
+        run: git diff --check
+
+      - name: Upload exact-head V6 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b01-v6-living-index-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/b01-v6-living-index-613/
+          if-no-files-found: error
+          retention-days: 7
