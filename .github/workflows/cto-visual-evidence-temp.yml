@@ -39,6 +39,30 @@ jobs:
           set -euo pipefail
           npx --yes playwright@1.52.0 install chromium
 
+      - name: Capture B01 exact-head A/B/C screens
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p captured/b01-rendered
+          python3 -m http.server 8101 --bind 127.0.0.1 --directory b01/apps/personal-edition/v6-phase-a > /tmp/b01-http.log 2>&1 &
+          B01_PID=$!
+          trap 'kill "${B01_PID}" 2>/dev/null || true' EXIT
+          sleep 1
+
+          for direction in a b c; do
+            for screen in entry library read; do
+              npx --yes playwright@1.52.0 screenshot \
+                --browser chromium --viewport-size="1440,1100" --wait-for-timeout=700 \
+                "http://127.0.0.1:8101/index.html?direction=${direction}&screen=${screen}" \
+                "captured/b01-rendered/${direction}-${screen}-desktop.png"
+              npx --yes playwright@1.52.0 screenshot \
+                --browser chromium --viewport-size="390,844" --wait-for-timeout=700 \
+                "http://127.0.0.1:8101/index.html?direction=${direction}&screen=${screen}" \
+                "captured/b01-rendered/${direction}-${screen}-mobile.png"
+            done
+          done
+          test "$(find captured/b01-rendered -type f -name '*.png' | wc -l)" -eq 18
+
       - name: Capture B35 and B59 exact-head entry screens
         shell: bash
         run: |
@@ -66,18 +90,18 @@ jobs:
             --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 \
             http://127.0.0.1:8159/ captured/b59-mobile.png
 
-      - name: Collect B01 exact-head committed screenshots
+      - name: Collect B01 committed evidence for corruption comparison
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p captured/b01
-          cp b01/apps/personal-edition/v6-phase-a/evidence/screenshots/*.webp captured/b01/
-          test "$(find captured/b01 -type f -name '*.webp' | wc -l)" -eq 18
+          mkdir -p captured/b01-committed
+          cp b01/apps/personal-edition/v6-phase-a/evidence/screenshots/*.webp captured/b01-committed/
+          test "$(find captured/b01-committed -type f -name '*.webp' | wc -l)" -eq 18
 
       - name: Upload visual evidence artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cto-visual-evidence-20260814
+          name: cto-visual-evidence-20260814-rerendered
           path: captured/
           if-no-files-found: error
           retention-days: 1
