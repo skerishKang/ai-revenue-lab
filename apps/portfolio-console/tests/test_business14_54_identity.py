@@ -35,6 +35,14 @@ class Business14And54IdentityTests(unittest.TestCase):
             ),
         )
 
+    def test_manifest_does_not_claim_unmerged_b54_workspace_as_current(self) -> None:
+        match = re.search(r'identity\(\{[^\n]*n:54,[^\n]*\}\)', self.manifest)
+        self.assertIsNotNone(match)
+        entry = match.group(0)
+        self.assertIn('l:"concept"', entry)
+        self.assertIn('st:"planning"', entry)
+        self.assertNotIn('w:"apps/korean-ai-code-agent/"', entry)
+
     def test_apps_readme_keeps_router_inside_b14_and_b54_as_client(self) -> None:
         self.assertIn("Business 14 is the public model-access platform.", self.apps_readme)
         self.assertIn("routing is an internal Business 14 capability", self.apps_readme)
@@ -43,6 +51,8 @@ class Business14And54IdentityTests(unittest.TestCase):
             self.apps_readme,
         )
         self.assertIn("consumes Business 14", self.apps_readme)
+        self.assertIn("`apps/korean-ai-code-agent/` is not present on current `main`", self.apps_readme)
+        self.assertIn("Draft implementation work does not make it a current workspace", self.apps_readme)
 
     def test_candidate_backlog_uses_current_b54_slug_and_preserves_old_alias_only_as_history(self) -> None:
         self.assertRegex(
