@@ -1,6 +1,6 @@
-/* B02 Living Travel — place-first Entry anchor scaffold
+/* B02 Living Travel — place-first Entry anchor
    Authority: Issues #638 / #640
-   Gate: COMPOSITION_SCAFFOLD_READY only. Final place asset is tracked in #639. */
+   Real focal asset provenance: apps/living-travel/pages-preview/IMAGE_SOURCES.md */
 
 body.lt-v2.lt-anchor-scaffold {
   --anchor-ink: #17201f;
@@ -10,7 +10,6 @@ body.lt-v2.lt-anchor-scaffold {
   --anchor-line: rgba(23, 32, 31, .18);
   --anchor-route: #e86435;
   --anchor-sea: #2f6970;
-  --anchor-moss: #68755b;
   background: var(--anchor-ivory);
   color: var(--anchor-ink);
 }
@@ -21,20 +20,22 @@ body.lt-v2.lt-anchor-scaffold .lt-topbar {
   z-index: 20;
   min-height: 66px;
   padding: 0 clamp(1rem, 3.3vw, 3.4rem);
-  color: var(--anchor-ivory-strong);
   border: 0;
-  background: linear-gradient(180deg, rgba(12, 20, 20, .52), rgba(12, 20, 20, 0));
+  background: transparent;
   backdrop-filter: none;
 }
 
 body.lt-v2.lt-anchor-scaffold .lt-wordmark {
+  color: var(--anchor-ivory-strong);
   font-size: .72rem;
   letter-spacing: .15em;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, .32);
 }
 
 body.lt-v2.lt-anchor-scaffold .lt-wordmark::before {
+  border-color: rgba(255, 253, 247, .72);
   border-radius: 999px;
-  background: rgba(255, 253, 247, .08);
+  background: rgba(9, 20, 20, .12);
 }
 
 body.lt-v2.lt-anchor-scaffold .lt-nav {
@@ -42,14 +43,14 @@ body.lt-v2.lt-anchor-scaffold .lt-nav {
 }
 
 body.lt-v2.lt-anchor-scaffold .lt-nav a {
-  color: inherit;
-  opacity: .94;
+  color: var(--anchor-ink);
+  opacity: .86;
 }
 
 .lt-place-anchor {
   min-height: 100svh;
   display: grid;
-  grid-template-columns: minmax(0, 1.42fr) minmax(360px, .78fr);
+  grid-template-columns: minmax(0, 1.38fr) minmax(390px, .82fr);
   background: var(--anchor-ivory);
   overflow: hidden;
 }
@@ -58,41 +59,30 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   position: relative;
   min-height: 100svh;
   overflow: hidden;
-  background: #c8cfca;
+  background: #6e9eb1;
   isolation: isolate;
 }
 
-/* This is intentionally not fake destination art. It is a visible internal
-   asset slot until Issue #639 lands a rights-documented local photograph. */
-.lt-place-anchor__asset-pending {
+.lt-place-anchor__visual::after {
+  content: "";
   position: absolute;
   inset: 0;
-  display: grid;
-  align-content: end;
-  padding: clamp(2rem, 5vw, 5.5rem);
-  color: rgba(23, 32, 31, .72);
-  background-color: #c8cfca;
-  background-image:
-    linear-gradient(90deg, rgba(23, 32, 31, .08) 1px, transparent 1px),
-    linear-gradient(rgba(23, 32, 31, .08) 1px, transparent 1px);
-  background-size: 64px 64px;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 18, 21, .24) 0%, rgba(6, 18, 21, 0) 22%, rgba(6, 18, 21, .02) 64%, rgba(6, 18, 21, .52) 100%),
+    linear-gradient(90deg, rgba(6, 18, 21, .04), transparent 42%);
 }
 
-.lt-place-anchor__asset-pending strong {
-  display: block;
-  max-width: 26rem;
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
-  line-height: 1.4;
-  letter-spacing: -.02em;
-}
-
-.lt-place-anchor__asset-pending span {
-  display: block;
-  margin-top: .45rem;
-  font-size: .66rem;
-  font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
+.lt-place-anchor__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 52% 50%;
+  filter: saturate(.94) contrast(1.02);
 }
 
 .lt-place-anchor__route {
@@ -103,8 +93,8 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   z-index: 5;
   padding: .75rem 0 0;
   color: var(--anchor-ivory-strong);
-  border-top: 1px solid rgba(255, 253, 247, .5);
-  filter: drop-shadow(0 1px 12px rgba(0, 0, 0, .18));
+  border-top: 1px solid rgba(255, 253, 247, .58);
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, .32));
 }
 
 .lt-place-anchor__route-line {
@@ -120,19 +110,20 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   right: 1%;
   top: 9px;
   height: 2px;
-  background: rgba(255, 253, 247, .78);
+  background: rgba(255, 253, 247, .82);
   transform: rotate(-1.2deg);
   transform-origin: center;
 }
 
 .lt-place-anchor__route-line i {
   position: absolute;
-  top: 5px;
-  width: 10px;
-  height: 10px;
+  top: 4px;
+  width: 11px;
+  height: 11px;
   border: 2px solid var(--anchor-ivory-strong);
   border-radius: 999px;
   background: var(--anchor-route);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, .18);
 }
 
 .lt-place-anchor__route-line i:nth-child(1) { left: 1%; }
@@ -155,7 +146,7 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: clamp(6.9rem, 11vh, 8.2rem) clamp(1.5rem, 4.3vw, 4.5rem) clamp(2rem, 4vw, 3.8rem);
+  padding: clamp(7rem, 11vh, 8.5rem) clamp(1.6rem, 4.3vw, 4.6rem) clamp(2rem, 4vw, 3.8rem);
   border-left: 1px solid var(--anchor-line);
 }
 
@@ -182,9 +173,9 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   max-width: 8.4em;
   margin: 0;
   font-family: var(--lt-ui);
-  font-size: clamp(3.25rem, 5.15vw, 5.9rem);
-  line-height: 1.01;
-  letter-spacing: -.067em;
+  font-size: clamp(3.15rem, 4.85vw, 5.55rem);
+  line-height: 1.02;
+  letter-spacing: -.064em;
   font-weight: 760;
   word-break: keep-all;
 }
@@ -277,8 +268,8 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
 
 .lt-place-anchor__attribution {
   margin: 1.15rem 0 0;
-  color: #7a817e;
-  font-size: .61rem;
+  color: #737b78;
+  font-size: .59rem;
   line-height: 1.45;
 }
 
@@ -286,6 +277,11 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   body.lt-v2.lt-anchor-scaffold .lt-topbar {
     min-height: 56px;
     padding-inline: 1rem;
+  }
+
+  body.lt-v2.lt-anchor-scaffold .lt-nav a {
+    color: var(--anchor-ivory-strong);
+    text-shadow: 0 1px 14px rgba(0, 0, 0, .3);
   }
 
   body.lt-v2.lt-anchor-scaffold .lt-nav a:nth-child(n+3) {
@@ -296,21 +292,20 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    overflow: visible;
   }
 
   .lt-place-anchor__visual {
-    min-height: clamp(330px, 45svh, 390px);
-    flex: 0 0 clamp(330px, 45svh, 390px);
+    min-height: clamp(320px, 43svh, 380px);
+    flex: 0 0 clamp(320px, 43svh, 380px);
   }
 
-  .lt-place-anchor__asset-pending {
-    padding: 1.25rem 1rem 4.7rem;
-    background-size: 48px 48px;
+  .lt-place-anchor__photo {
+    object-position: 50% 58%;
   }
 
-  .lt-place-anchor__asset-pending strong {
-    max-width: 19rem;
-    font-size: .95rem;
+  .lt-place-anchor__visual::after {
+    background: linear-gradient(180deg, rgba(6, 18, 21, .3) 0%, rgba(6, 18, 21, .02) 42%, rgba(6, 18, 21, .56) 100%);
   }
 
   .lt-place-anchor__route {
@@ -327,30 +322,30 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   .lt-place-anchor__content {
     min-height: 0;
     flex: 1 0 auto;
-    padding: 1.55rem 1.15rem 1.4rem;
+    padding: 1.45rem 1.15rem 1.35rem;
     border-left: 0;
   }
 
   .lt-place-anchor__eyebrow {
-    margin-bottom: .9rem;
+    margin-bottom: .85rem;
     font-size: .59rem;
   }
 
   .lt-place-anchor h1 {
     max-width: 8em;
-    font-size: clamp(2.5rem, 12.2vw, 3.35rem);
-    line-height: 1.03;
-    letter-spacing: -.058em;
+    font-size: clamp(2.45rem, 11.9vw, 3.25rem);
+    line-height: 1.035;
+    letter-spacing: -.056em;
   }
 
   .lt-place-anchor__lead {
-    margin-top: .85rem;
-    font-size: .9rem;
-    line-height: 1.58;
+    margin-top: .82rem;
+    font-size: .89rem;
+    line-height: 1.57;
   }
 
   .lt-place-anchor__actions {
-    margin-top: 1.15rem;
+    margin-top: 1.05rem;
     gap: .8rem;
   }
 
@@ -365,8 +360,8 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   }
 
   .lt-place-anchor__signature {
-    margin-top: 1.35rem;
-    padding-top: .9rem;
+    margin-top: 1.2rem;
+    padding-top: .82rem;
   }
 
   .lt-place-anchor__meta {
@@ -379,7 +374,7 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
 
   .lt-place-anchor__meta span,
   .lt-place-anchor__attribution {
-    font-size: .54rem;
+    font-size: .53rem;
   }
 }
 
@@ -399,16 +394,16 @@ body.lt-v2.lt-anchor-scaffold .lt-nav a {
   }
 
   .lt-place-anchor__visual {
-    min-height: 350px;
-    flex-basis: 350px;
+    min-height: 340px;
+    flex-basis: 340px;
   }
 
   .lt-place-anchor__content {
-    padding-top: 1.25rem;
+    padding-top: 1.15rem;
   }
 
   .lt-place-anchor h1 {
-    font-size: 2.7rem;
+    font-size: 2.62rem;
   }
 
   .lt-place-anchor__lead {
