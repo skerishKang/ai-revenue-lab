@@ -1,0 +1,130 @@
+name: Validate B35 V3.1 Customer Package
+
+on:
+  pull_request:
+    paths:
+      - 'docs/commercial/business-35-ai-media-education-dx/**'
+      - '.github/workflows/validate-b35-v3-customer-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-render-validate:
+    name: Generate + render V3.1 draft artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install document runtime and Korean fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            fonts-noto-cjk libreoffice-impress libreoffice-writer libreoffice-calc \
+            poppler-utils
+          fc-cache -f
+          python -m pip install --upgrade pip
+          python -m pip install python-pptx python-docx openpyxl
+
+      - name: Generate V3.1 review package
+        run: python3 docs/commercial/business-35-ai-media-education-dx/customer-package/validation/build_v3_1_package.py
+
+      - name: Convert editable sources to PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated'
+          mkdir -p /tmp/lo-profile "$out/pdf" "$out/renders/proposal" "$out/renders/onepage" "$out/renders/questionnaire" "$out/renders/quote"
+          export HOME="$RUNNER_TEMP/lo-home"
+          mkdir -p "$HOME"
+          lo=(libreoffice --headless "-env:UserInstallation=file:///tmp/lo-profile")
+          "${lo[@]}" --convert-to pdf --outdir "$out/pdf" "$out/Business35_V3_1_Master_Proposal_10p.pptx"
+          "${lo[@]}" --convert-to pdf --outdir "$out/pdf" "$out/Business35_V3_1_OnePage_Offer_Source.pptx"
+          "${lo[@]}" --convert-to pdf --outdir "$out/pdf" "$out/Business35_V3_1_Diagnostic_Questionnaire.docx"
+          "${lo[@]}" --convert-to pdf --outdir "$out/pdf" "$out/Business35_V3_1_Pilot_Quote_Template.xlsx"
+
+      - name: Structural checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated'
+          python3 - <<'PY'
+          from pathlib import Path
+          from pptx import Presentation
+          from docx import Document
+          from openpyxl import load_workbook
+          root=Path('docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated')
+          proposal=Presentation(root/'Business35_V3_1_Master_Proposal_10p.pptx')
+          assert len(proposal.slides)==10, len(proposal.slides)
+          one=Presentation(root/'Business35_V3_1_OnePage_Offer_Source.pptx')
+          assert len(one.slides)==1
+          doc=Document(root/'Business35_V3_1_Diagnostic_Questionnaire.docx')
+          text='\n'.join(p.text for p in doc.paragraphs)
+          assert '파디엠 AI 미디어 업무전환 스튜디오' in text
+          assert 'V3.1 DRAFT' in text
+          wb=load_workbook(root/'Business35_V3_1_Pilot_Quote_Template.xlsx', data_only=False)
+          assert wb.sheetnames==['Quote','Terms'], wb.sheetnames
+          assert wb['Quote']['A1'].value=='파디엠 AI 미디어 업무전환 스튜디오 · 견적 검토표'
+          PY
+          test "$(pdfinfo "$out/pdf/Business35_V3_1_Master_Proposal_10p.pdf" | awk '/^Pages:/ {print $2}')" -eq 10
+          test "$(pdfinfo "$out/pdf/Business35_V3_1_OnePage_Offer_Source.pdf" | awk '/^Pages:/ {print $2}')" -eq 1
+          questionnaire_pages="$(pdfinfo "$out/pdf/Business35_V3_1_Diagnostic_Questionnaire.pdf" | awk '/^Pages:/ {print $2}')"
+          test "$questionnaire_pages" -ge 2
+          test "$questionnaire_pages" -le 5
+          quote_pages="$(pdfinfo "$out/pdf/Business35_V3_1_Pilot_Quote_Template.pdf" | awk '/^Pages:/ {print $2}')"
+          test "$quote_pages" -ge 2
+          test "$quote_pages" -le 4
+          grep -Fq '파디엠 AI 미디어 업무전환 스튜디오' docs/commercial/business-35-ai-media-education-dx/01-one-page-offer.md
+          grep -Fq '조직별 진단 + 새 업무 흐름 + 추천 파일럿' docs/commercial/business-35-ai-media-education-dx/CURRENT_PRODUCT_AUTHORITY.md
+          git diff --check
+
+      - name: Render every PDF page to PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated'
+          pdftoppm -png -r 150 "$out/pdf/Business35_V3_1_Master_Proposal_10p.pdf" "$out/renders/proposal/page"
+          pdftoppm -png -r 150 "$out/pdf/Business35_V3_1_OnePage_Offer_Source.pdf" "$out/renders/onepage/page"
+          pdftoppm -png -r 150 "$out/pdf/Business35_V3_1_Diagnostic_Questionnaire.pdf" "$out/renders/questionnaire/page"
+          pdftoppm -png -r 150 "$out/pdf/Business35_V3_1_Pilot_Quote_Template.pdf" "$out/renders/quote/page"
+          test "$(find "$out/renders/proposal" -name '*.png' | wc -l)" -eq 10
+          test "$(find "$out/renders/onepage" -name '*.png' | wc -l)" -eq 1
+          test "$(find "$out/renders/questionnaire" -name '*.png' | wc -l)" -ge 2
+          test "$(find "$out/renders/quote" -name '*.png' | wc -l)" -ge 2
+
+      - name: Artifact manifest and forbidden-current-claim scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated'
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          root=Path('docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated')
+          files=[]
+          for p in sorted(root.rglob('*')):
+              if p.is_file():
+                  files.append({'path':str(p.relative_to(root)),'size':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+          (root/'MANIFEST_V3_1.json').write_text(json.dumps({'status':'REVIEW_DRAFT_NOT_SEND_READY','files':files},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          ! grep -R -nE '성과 보장|정부 지원금 수령 가능|법적으로 안전|저작권 문제 없음|개인정보 문제 없음' docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated --include='*.txt' --include='*.md' || false
+
+      - name: Upload generated review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: b35-v3-1-customer-package-${{ github.event.pull_request.head.sha || github.sha }}
+          path: docs/commercial/business-35-ai-media-education-dx/customer-package/v3-regenerated/
+          if-no-files-found: error
+          retention-days: 7
