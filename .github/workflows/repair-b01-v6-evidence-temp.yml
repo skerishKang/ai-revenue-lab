@@ -32,13 +32,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "f4336ce73a5147fc8230ca0326d7704f1e0ed7c1" || {
+          test "$(git rev-parse HEAD)" = "a515996ac1cae0ae7ee78130f310124876cd2b66" || {
             echo "B01 branch moved; refusing stale evidence repair." >&2
             exit 1
           }
 
-      - name: Install Chromium
-        run: npx --yes playwright@1.52.0 install chromium
+      - name: Install Korean fonts and Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          npx --yes playwright@1.52.0 install chromium
 
       - name: Render all 18 exact-source PNG screenshots
         shell: bash
@@ -61,7 +67,7 @@ jobs:
           done
           test "$(find rendered -type f -name '*.png' | wc -l)" -eq 18
 
-      - name: Replace corrupt WebP evidence and update metadata
+      - name: Replace screenshot evidence and update metadata
         shell: bash
         run: |
           set -euo pipefail
@@ -72,22 +78,24 @@ jobs:
           from pathlib import Path
           import json
           root = Path('target/apps/personal-edition/v6-phase-a')
-          readme = root.joinpath('README.md')
+          readme = root / 'README.md'
           text = readme.read_text(encoding='utf-8')
           text = text.replace('Naming: `{a|b|c}-{entry|library|read}-{desktop|mobile}.webp`.',
                               'Naming: `{a|b|c}-{entry|library|read}-{desktop|mobile}.png`.')
           text = text.replace('The sandbox blocks local/file navigation, so evidence was rendered in Chromium with the exact self-contained HTML/CSS/JS bytes via Playwright `set_content`;',
                               'Evidence was re-rendered from the exact static source head through a localhost Chromium server after CTO audit found corrupt committed WebP binaries;')
+          if 'Noto CJK' not in text:
+              text += '\n- CTO evidence repair uses runner-installed Noto CJK fonts so Korean glyphs are visible in the committed screenshots.\n'
           readme.write_text(text, encoding='utf-8')
           summary_path = root / 'evidence/qa-summary.json'
           data = json.loads(summary_path.read_text(encoding='utf-8'))
           data['evidence_format'] = 'png'
-          data['render_method'] = 'Playwright Chromium against a localhost server serving exact B01 V6 Phase A source head f4336ce73a5147fc8230ca0326d7704f1e0ed7c1. All 18 replacement PNG files were freshly rendered at the required viewports after corrupt WebP evidence was detected.'
-          data['evidence_repair_reason'] = 'CTO audit found 8 of the 18 previously committed WebP screenshot binaries were truncated/corrupt. Product source was not changed.'
+          data['render_method'] = 'Playwright Chromium against a localhost server serving exact B01 V6 Phase A source head f4336ce73a5147fc8230ca0326d7704f1e0ed7c1 with runner-installed Noto CJK fonts. All 18 replacement PNG files were freshly rendered at the required viewports.'
+          data['evidence_repair_reason'] = 'CTO audit found 8 previously committed WebP binaries were truncated/corrupt; the first PNG repair also exposed missing Korean runner fonts. The second repair installs Noto CJK before capture. Product source is unchanged.'
           summary_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
 
-      - name: Commit evidence-only repair
+      - name: Commit evidence-only Korean-font repair
         working-directory: target
         shell: bash
         run: |
@@ -96,5 +104,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/personal-edition/v6-phase-a/evidence apps/personal-edition/v6-phase-a/README.md
           test -n "$(git status --porcelain)"
-          git commit -m "fix(B01): replace corrupt Phase A screenshot evidence"
+          git commit -m "fix(B01): render Phase A evidence with Korean fonts"
           git push origin HEAD:agent/b01-v6-phase-a-613
