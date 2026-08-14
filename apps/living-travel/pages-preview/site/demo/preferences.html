@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../assets/b2-shell-20260810.css">
   <link rel="stylesheet" href="../assets/b2-archetype-foundation.css">
   <link rel="stylesheet" href="../assets/b2-archetype-preferences.css">
+  <link rel="stylesheet" href="../assets/b2-archetype-contrast.css">
 </head>
 <body class="lt-v2 lt-b2-system lt-b2-preferences">
   <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Demo · Synthetic data · No booking</span>
@@ -33,7 +34,7 @@
           <strong id="previewMood">조용하고 로컬하게</strong>
         </div>
         <h2 id="previewTitle">오래 머물고,<br>적게 이동하는 부산.</h2>
-        <p class="b2-pref-preview__summary" id="previewSummary">골목 · 현지 음식 · 바다를 중심으로 세 동네에 오래 머물고, 혼잡한 유명지 중심의 동선은 줄입니다.</p>
+        <p class="b2-pref-preview__summary" id="previewSummary">관심: 골목 · 현지 음식 · 바다. 이 결을 중심으로 여행을 엮고, 혼잡 · 유명지 위주 동선은 줄입니다.</p>
         <div class="b2-route-line" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="b2-route-names"><span>Choryang</span><span>Yeongdo</span><span>Songdo</span></div>
         <div class="b2-pref-preview__metrics" aria-label="현재 여행 성격 요약">
@@ -140,8 +141,8 @@
       document.getElementById('metricMoves').textContent=config.moves;
       document.getElementById('previewMood').textContent=mood;
       var focusText=focuses.length?focuses.join(' · '):'동네의 리듬';
-      var avoidText=avoids.length?avoids.join(' · ')+'은 줄입니다.':'회피 조건 없이 넓게 봅니다.';
-      document.getElementById('previewSummary').textContent=focusText+'을 중심으로 여행을 엮고, '+avoidText;
+      var avoidText=avoids.length?avoids.join(' · '):'없음';
+      document.getElementById('previewSummary').textContent='관심: '+focusText+'. 이 결을 중심으로 여행을 엮습니다. 줄일 조건: '+avoidText+'.';
       document.getElementById('metricAvoid').textContent=avoids.length?('회피 '+avoids.length):'회피 없음';
     }
     function simulateGeneration(e){e.preventDefault();window.location.href='generation.html';return false;}
