@@ -1,0 +1,64 @@
+name: Validate B14 Alpha
+
+on:
+  pull_request:
+    paths:
+      - 'apps/korean-ai-platform/**'
+      - '.github/workflows/validate-b14-alpha.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alpha:
+    name: Locked Alpha contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install exact locked dependencies
+        run: uv sync --group dev --frozen
+
+      - name: Install Chromium
+        run: uv run playwright install chromium
+
+      - name: Run full tests
+        run: uv run pytest -q
+
+      - name: Run warning-strict tests
+        env:
+          PYTHONWARNINGS: error
+        run: uv run pytest -q
+
+      - name: Compile app and tests
+        run: uv run python -m compileall -q app tests
+
+      - name: Execute documented owner startup regression
+        run: uv run pytest -q tests/test_owner_startup_command.py
+
+      - name: Run real Chromium mock user journeys
+        run: uv run python browser_tests/alpha1_start_screen_smoke.py
+
+      - name: Verify keyless live smoke makes no live chat call
+        env:
+          OPENROUTER_API_KEY: ''
+          B14_PROVIDER_MODE: live
+        run: |
+          output="$(uv run python -m app.pilot.smoke_live)"
+          test "${output}" = "LIVE_SMOKE_READY_NOT_EXECUTED"
