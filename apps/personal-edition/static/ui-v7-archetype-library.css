@@ -10,10 +10,9 @@
 .v7a-library-stage { position:relative; min-height:570px; border:0; background:none; box-shadow:none; }
 .v7a-library-orbit { position:absolute; inset:6% 0 2% 6%; border:1px solid rgba(17,20,24,.1); border-radius:50%; transform:rotate(-9deg); }
 .v7a-library-orbit::after { content:""; position:absolute; inset:19% -7% 18% 8%; border:1px solid rgba(17,20,24,.065); border-radius:50%; transform:rotate(14deg); }
-.v7a-photo-fragment { position:absolute; overflow:hidden; border-radius:16px; background:#c8c5bd; box-shadow:0 20px 48px rgba(25,25,23,.13); }
-.v7a-photo-fragment img { display:block; width:100%; height:100%; object-fit:cover; filter:saturate(.72) contrast(.92) brightness(.96); }
-.v7a-library-photo-a { left:4%; top:15%; width:27%; aspect-ratio:.82; transform:rotate(-6deg); }
-.v7a-library-photo-b { right:4%; bottom:10%; width:25%; aspect-ratio:1.05; transform:rotate(7deg); opacity:.82; }
+.v7a-photo-fragment { position:absolute; overflow:hidden; border-radius:16px; background-color:#c8c5bd; background-size:cover; background-position:center; background-repeat:no-repeat; box-shadow:0 20px 48px rgba(25,25,23,.13); filter:saturate(.72) contrast(.92) brightness(.96); }
+.v7a-library-photo-a { left:4%; top:15%; width:27%; aspect-ratio:.82; transform:rotate(-6deg); background-image:url("/static/images/private-library-hero.webp"); }
+.v7a-library-photo-b { right:4%; bottom:10%; width:25%; aspect-ratio:1.05; transform:rotate(7deg); opacity:.82; background-image:url("/static/images/edition-library-history.webp"); }
 
 .v7a-edition-object { position:absolute; z-index:12; width:clamp(218px,18vw,286px); aspect-ratio:.68; border:1px solid rgba(255,255,255,.9); border-radius:20px 20px 17px 17px; background:linear-gradient(118deg,rgba(255,255,255,.8),rgba(238,239,234,.88) 34%,rgba(208,211,207,.79) 100%); -webkit-backdrop-filter:blur(32px) saturate(.72); backdrop-filter:blur(32px) saturate(.72); box-shadow:0 36px 70px rgba(27,29,28,.18),inset 0 1px 0 rgba(255,255,255,.98),inset 0 0 0 1px rgba(22,25,25,.035); color:var(--v7a-ink); text-decoration:none; }
 .v7a-library-object { left:38%; top:7%; transform:rotate(2deg); }
