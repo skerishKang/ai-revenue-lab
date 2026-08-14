@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Check out B01 V6 exact head
+      - name: Check out B01 V6 exact source head
         uses: actions/checkout@v4
         with:
           ref: f4336ce73a5147fc8230ca0326d7704f1e0ed7c1
@@ -34,9 +34,13 @@ jobs:
           path: b59
           persist-credentials: false
 
-      - name: Install Chromium capture runtime
+      - name: Install Korean fonts and Chromium
+        shell: bash
         run: |
           set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
           npx --yes playwright@1.52.0 install chromium
 
       - name: Capture B01 exact-head A/B/C screens
@@ -48,15 +52,12 @@ jobs:
           B01_PID=$!
           trap 'kill "${B01_PID}" 2>/dev/null || true' EXIT
           sleep 1
-
           for direction in a b c; do
             for screen in entry library read; do
-              npx --yes playwright@1.52.0 screenshot \
-                --browser chromium --viewport-size="1440,1100" --wait-for-timeout=700 \
+              npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="1440,1100" --wait-for-timeout=700 \
                 "http://127.0.0.1:8101/index.html?direction=${direction}&screen=${screen}" \
                 "captured/b01-rendered/${direction}-${screen}-desktop.png"
-              npx --yes playwright@1.52.0 screenshot \
-                --browser chromium --viewport-size="390,844" --wait-for-timeout=700 \
+              npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=700 \
                 "http://127.0.0.1:8101/index.html?direction=${direction}&screen=${screen}" \
                 "captured/b01-rendered/${direction}-${screen}-mobile.png"
             done
@@ -75,33 +76,19 @@ jobs:
           cleanup() { kill "${B35_PID}" "${B59_PID}" 2>/dev/null || true; }
           trap cleanup EXIT
           sleep 1
-
-          npx --yes playwright@1.52.0 screenshot \
-            --browser chromium --viewport-size="1600,1000" --wait-for-timeout=1200 \
+          npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="1600,1000" --wait-for-timeout=1200 \
             http://127.0.0.1:8135/ captured/b35-desktop.png
-          npx --yes playwright@1.52.0 screenshot \
-            --browser chromium --viewport-size="390,844" --wait-for-timeout=1200 \
+          npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1200 \
             http://127.0.0.1:8135/ captured/b35-mobile.png
-
-          npx --yes playwright@1.52.0 screenshot \
-            --browser chromium --viewport-size="1440,1100" --wait-for-timeout=1800 \
+          npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="1440,1100" --wait-for-timeout=1800 \
             http://127.0.0.1:8159/ captured/b59-desktop.png
-          npx --yes playwright@1.52.0 screenshot \
-            --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 \
+          npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 \
             http://127.0.0.1:8159/ captured/b59-mobile.png
 
-      - name: Collect B01 committed evidence for corruption comparison
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p captured/b01-committed
-          cp b01/apps/personal-edition/v6-phase-a/evidence/screenshots/*.webp captured/b01-committed/
-          test "$(find captured/b01-committed -type f -name '*.webp' | wc -l)" -eq 18
-
-      - name: Upload visual evidence artifact
+      - name: Upload Korean-font visual evidence artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cto-visual-evidence-20260814-rerendered
+          name: cto-visual-evidence-20260814-korean-fonts
           path: captured/
           if-no-files-found: error
           retention-days: 1
