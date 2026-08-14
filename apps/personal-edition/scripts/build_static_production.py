@@ -66,7 +66,7 @@ def _production_post_process(html: str) -> str:
 
 
 def _rewrite_root(out_dir: Path) -> None:
-    """Promote the V6 Living Index intro to / and preserve the QA state index."""
+    """Promote the V7 Collectible Glass intro to / and preserve the QA state index."""
     qa_dir = out_dir / "preview-states"
     qa_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(out_dir / "index.html", qa_dir / "index.html")
@@ -80,7 +80,7 @@ def _rewrite_root(out_dir: Path) -> None:
     )
     intro = intro.replace(
         '<body ',
-        '<body data-static-production-review="b1-v6-living-index" ',
+        '<body data-static-production-review="b1-v7-collectible-glass" ',
         1,
     )
     (out_dir / "index.html").write_text(intro, encoding="utf-8")
@@ -129,15 +129,19 @@ def _assert_owner_surface(out_dir: Path) -> None:
 
     required_root = (
         'data-art-direction="b1-living-index-v6"',
-        'data-ui-version="b1-personal-edition-v6-living-index"',
-        'data-static-production-review="b1-v6-living-index"',
+        'data-design-system="b1-collectible-glass-v7"',
+        'data-ui-version="b1-personal-edition-v7-collectible-glass"',
+        'data-owner-ui-approved="false"',
+        'data-static-production-review="b1-v7-collectible-glass"',
+        "/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814",
         "흩어진 기록이",
         "v3-assembly-stage",
+        "v7-photo-cluster",
         "/guide/",
     )
     for marker in required_root:
         if marker not in root:
-            raise RuntimeError(f"missing B1 V6 Production marker: {marker}")
+            raise RuntimeError(f"missing B1 V7 Production marker: {marker}")
 
     required_guide = (
         "Guide · 30 seconds",
@@ -149,7 +153,7 @@ def _assert_owner_surface(out_dir: Path) -> None:
     )
     for marker in required_guide:
         if marker not in guide:
-            raise RuntimeError(f"missing B1 V6 guide marker: {marker}")
+            raise RuntimeError(f"missing B1 V7 guide marker: {marker}")
 
     forbidden = (
         "UI Preview · Synthetic data · No persistence",
