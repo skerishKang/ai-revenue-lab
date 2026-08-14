@@ -1,0 +1,123 @@
+name: Validate B59 Living Archive
+
+on:
+  pull_request:
+    paths:
+      - 'reference/business-59-living-archive-v1/**'
+      - '.github/workflows/validate-b59-living-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    name: Hybrid reader browser contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Korean fonts and browser runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          mkdir -p /tmp/b59-playwright
+          cd /tmp/b59-playwright
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.52.0
+          npx playwright install chromium
+
+      - name: Static JavaScript checks
+        working-directory: reference/business-59-living-archive-v1
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/fixtures.js
+          node --check scripts/living-archive.js
+          ! grep -R -nE 'fetch\(|XMLHttpRequest|WebSocket|https?://' scripts index.html styles --exclude='README.md'
+
+      - name: Run exact-head browser contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8159 --bind 127.0.0.1 --directory reference/business-59-living-archive-v1 >/tmp/b59-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" 2>/dev/null || true' EXIT
+          sleep 1
+          cat >/tmp/b59-playwright/validate.mjs <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({headless: true});
+          const failures = [];
+          const results = [];
+          for (const spec of [
+            {name: 'desktop', width: 1440, height: 1100},
+            {name: 'mobile', width: 390, height: 844},
+          ]) {
+            const context = await browser.newContext({viewport: {width: spec.width, height: spec.height}, reducedMotion: 'reduce'});
+            const page = await context.newPage();
+            const consoleErrors = [];
+            const pageErrors = [];
+            const failedRequests = [];
+            const externalRequests = [];
+            page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
+            page.on('pageerror', err => pageErrors.push(String(err)));
+            page.on('requestfailed', req => failedRequests.push(req.url()));
+            page.on('request', req => {
+              const url = new URL(req.url());
+              if (!['127.0.0.1', 'localhost'].includes(url.hostname)) externalRequests.push(req.url());
+            });
+            await page.goto('http://127.0.0.1:8159/', {waitUntil: 'networkidle'});
+            await page.waitForTimeout(250);
+
+            const metrics = await page.evaluate(() => {
+              const viewport = document.querySelector('.shelf-viewport');
+              const direct = document.querySelector('[data-action="direct-reader"]');
+              const books = [...document.querySelectorAll('.book3d')];
+              const bodyOverflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+              return {
+                bodyOverflow,
+                shelfClientWidth: viewport?.clientWidth ?? 0,
+                shelfScrollWidth: viewport?.scrollWidth ?? 0,
+                shelfOverflowX: viewport ? getComputedStyle(viewport).overflowX : '',
+                directVisible: !!direct && !!(direct.offsetWidth || direct.offsetHeight || direct.getClientRects().length),
+                bookCount: books.length,
+                bookRects: books.map(el => {
+                  const r = el.getBoundingClientRect();
+                  return {left: r.left, right: r.right, width: r.width};
+                }),
+              };
+            });
+
+            if (metrics.bodyOverflow > 1) failures.push(`${spec.name}: document overflow ${metrics.bodyOverflow}`);
+            if (!metrics.directVisible) failures.push(`${spec.name}: direct 2D reader action is not visible`);
+            if (metrics.bookCount < 3) failures.push(`${spec.name}: expected at least 3 books`);
+            if (consoleErrors.length) failures.push(`${spec.name}: console errors ${consoleErrors.join(' | ')}`);
+            if (pageErrors.length) failures.push(`${spec.name}: page errors ${pageErrors.join(' | ')}`);
+            if (failedRequests.length) failures.push(`${spec.name}: failed requests ${failedRequests.join(' | ')}`);
+            if (externalRequests.length) failures.push(`${spec.name}: external requests ${externalRequests.join(' | ')}`);
+
+            if (spec.name === 'mobile') {
+              if (metrics.shelfOverflowX !== 'auto') failures.push(`mobile: shelf overflow-x=${metrics.shelfOverflowX}`);
+              if (!(metrics.shelfScrollWidth > metrics.shelfClientWidth)) failures.push('mobile: shelf is not internally scrollable');
+              // The body must stay within the viewport even though the shelf itself scrolls.
+              const first = metrics.bookRects[0];
+              if (!first || first.left < -2 || first.left > spec.width) failures.push('mobile: first book is not initially discoverable');
+            }
+
+            results.push({name: spec.name, ...metrics, consoleErrors, pageErrors, failedRequests, externalRequests});
+            await context.close();
+          }
+          await browser.close();
+          console.log(JSON.stringify({results, failures}, null, 2));
+          if (failures.length) process.exit(1);
+          NODE
+          cd /tmp/b59-playwright
+          node validate.mjs
