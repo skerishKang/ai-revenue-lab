@@ -1,45 +1,28 @@
-# AI Revenue Lab — Visual Audit → Documentation → Implementation → Conformance Protocol
+# AI Revenue Lab — Visual Audit → Anchor → System → Expansion Protocol
 
-Status: `AUTHORITATIVE_DRAFT_FOR_OWNER_REVIEW`
+- Status: **CANONICAL**
+- Effective: 2026-08-14
+- Parent authority: `../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 
-This protocol replaces the prior habit of opening each numbered Business and immediately deciding `KEEP / polish / redesign` while implementation is still in motion.
+This protocol replaces the prior portfolio-wide `audit → direction document freeze → full implementation → conformance` sequence.
 
-The new sequence is intentionally separated into four gates.
+The old sequence failed to distinguish a **written direction** from a **proven design system**. Business 01 showed that an attractive Entry can still be followed by generic/legacy internal routes.
+
+The current sequence is:
 
 ```text
-GATE A — READ-ONLY PORTFOLIO AUDIT
-        ↓
-GATE B — VISUAL DIRECTION DOCUMENT FREEZE
-        ↓
-GATE C — NUMBERED IMPLEMENTATION
-        ↓
-GATE D — INDEPENDENT VISUAL CONFORMANCE QA
+GATE A — CURRENT PRODUCT / AUTHORITY AUDIT
+GATE B — VISUAL THESIS + REFERENCE TRANSLATION
+GATE C — ANCHOR SCREEN
+GATE D — ARCHETYPE SYSTEM TEST
+GATE E — FULL EXPANSION
+GATE F — FULL-SURFACE CONFORMANCE
+GATE G — OWNER CURRENT-RESULT REVIEW
 ```
 
-No Business proceeds to implementation merely because its automated QA is green.
+## GATE A — Current product / authority audit
 
----
-
-## 1. Global pause rule
-
-While Gate A/B is active for the portfolio:
-
-- do not continue numbered product redesign implementation;
-- do not merge visual changes merely to keep sequence momentum;
-- do not reinterpret `OWNER_UI_APPROVED=false` as approval;
-- do not alter external / integrated-successor products from this repository;
-- do not leave temporary audit/deploy workflows in main;
-- do not restart already-known functional/backend work unless a visual audit identifies a real contract conflict.
-
-Existing live surfaces remain review evidence, not automatic baselines to preserve.
-
----
-
-# GATE A — Read-only portfolio audit
-
-## 2. Scope resolution before visual judgment
-
-For each numbered Business, first classify authority:
+Before visual judgment classify the Business:
 
 ```text
 INTERNAL_LIVE_PRODUCT
@@ -51,327 +34,171 @@ NON_WEB
 UNKNOWN_REQUIRES_RESOLUTION
 ```
 
-Use the current repository truth layer, current review-surface registry, authoritative PR/Issue lineage and actual live URL.
+External/successor/non-web items are documented, not redesigned internally without separate authority.
 
-External/successor/non-web items are documented but are not redesigned internally.
+For an internal web product, inspect enough real current surfaces to understand the product and legacy debt. For an existing multi-screen product this normally includes root/Entry, Guide/onboarding when present, primary action, primary result/detail, an important feedback/recovery/history surface, and Desktop plus 390px Mobile evidence.
 
----
+Record exact revision/URL/evidence identity.
 
-## 3. Mandatory evidence per internal web Business
+## GATE B — Visual thesis + reference translation
 
-Audit the real rendered surface at minimum:
+Read existing Business direction docs and reference work. They are input, not automatic current implementation authority.
 
-- Desktop: `1440 × 1100` or the product's established desktop QA viewport;
-- Mobile: `390 × 844`;
-- canonical root;
-- Guide/onboarding when present;
-- primary action state;
-- primary result/payoff state;
-- one important recovery/error/feedback state when applicable.
+Refresh or create `B##_VISUAL_DIRECTION.md` only as needed to state current product job/transformation, visual world/core object, typography/asset/motion roles, Desktop/Mobile intent, anti-patterns/differentiation, reference translations and legacy reuse/replace decision.
 
-The reviewer must inspect screenshots directly.
-
-Automation may collect geometry and errors, but a numeric pass is insufficient.
-
-Record:
-
-- exact `origin/main` FULL SHA at audit start;
-- exact product/review authority SHA if not current main;
-- canonical Production/review URL;
-- whether live bytes match the expected authority where required;
-- screenshots examined;
-- visual observations;
-- interaction/state observations;
-- Desktop vs Mobile differences.
-
----
-
-## 4. Audit questions
-
-Every Business audit must answer:
-
-### Product identity
-
-- What is the product's actual job?
-- What is the core transformation?
-- Is that transformation visible, or only explained in text?
-
-### First viewport
-
-- What dominates the first 3–5 seconds?
-- Is the core object visible?
-- Is the first action clear?
-- Could this first viewport plausibly belong to another numbered Business?
-
-### References
-
-- What references were originally provided or researched?
-- Which reference qualities are visible now?
-- Which were diluted, lost or incorrectly generalized?
-
-### Visual system
-
-- Is there one coherent world across states?
-- Is the hierarchy authored or templated?
-- Is imagery/material meaningful or decorative?
-- Are repeated portfolio motifs making this product generic?
-
-### Utility
-
-- Is the core interaction visually obvious?
-- Is useful information subordinate to decoration or whitespace?
-- Does a new user understand `START → ACTION → RESULT`?
-
-### Typography
-
-- Are Korean display sizes and line breaks controlled?
-- Is line-height visually safe?
-- Does Mobile retain readable hierarchy?
-
-### Mobile
-
-- Does chrome cover/push content?
-- Is the first real work/action visible soon enough?
-- Does the composition re-author rather than merely stack?
-
-### Verdict
-
-Choose only after viewing actual evidence:
+Every meaningful reference uses:
 
 ```text
-KEEP
-FOCUSED_POLISH
-REDESIGN
-EXTERNAL_NO_INTERNAL_BUILD
-NON_WEB
+REFERENCE
+OBSERVE
+ADOPT
+REJECT
+TRANSLATE
+SURFACE
+VERIFY
 ```
 
----
+Business 06 World Feed is the methodology example for explicit adopted/rejected reference reasoning.
 
-# GATE B — Visual Direction document freeze
+## GATE C — Anchor Screen
 
-## 5. Required output
+Choose one representative screen and build it first at Desktop and 390px Mobile.
 
-Every internal web Business must receive:
+Required judgment:
+
+- product identity in first five seconds;
+- first action/result hierarchy;
+- Korean typography;
+- visual world/material;
+- core object/asset quality;
+- responsive composition;
+- product-specific distinction.
+
+Use:
 
 ```text
-docs/operations/ui-ux/businesses/B##_VISUAL_DIRECTION.md
+ANCHOR_NOT_READY
+ANCHOR_REVIEW_READY
+ANCHOR_DIRECTION_LOCKED
 ```
 
-before implementation.
+Do not style all routes while the anchor remains undecided.
 
-The document becomes the implementation contract for visual work.
+## GATE D — Archetype System Test
 
-It must contain:
-
-- authority/evidence snapshot;
-- current diagnosis;
-- Product Visual Thesis;
-- Reference Translation Sheet;
-- preserved functional/state contracts;
-- explicit visual territory;
-- key screens and desired composition;
-- focal asset plan;
-- typography plan;
-- Mobile composition plan;
-- motion grammar;
-- How-to-use path;
-- anti-patterns;
-- differentiation against related Businesses;
-- `KEEP / FOCUSED_POLISH / REDESIGN` decision;
-- observable acceptance criteria.
-
-Do not freeze vague prose such as “make it premium and cinematic.”
-
-Acceptance criteria must be screenshot-observable.
-
----
-
-## 6. Portfolio collision review
-
-After the individual documents are drafted and before implementation begins, update:
+Select 2–3 structurally different screens. Typical set:
 
 ```text
-PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md
+COLLECTION / DISCOVERY / OBJECT
+INPUT / WRITE / CONFIGURE
+READ / DETAIL / RESULT
 ```
 
-Check for collisions in:
+Substitute feedback/recovery/comparison when more representative.
 
-- dark/light visual world;
-- editorial/archive metaphor;
-- terminal/control-room metaphor;
-- magazine/feed metaphor;
-- left-rail/right-workspace composition;
-- card grids;
-- oversized condensed type;
-- color palettes;
-- motion patterns;
-- numbered ledger/navigation motifs.
+Capture each on Desktop and Mobile and review them **beside the anchor**.
 
-If several products converge, revise their direction documents before code is changed.
+Judge whether typography is one system, materials/assets belong together, hierarchy changes appropriately without losing identity, controls/interactions feel related, generic SaaS/card/form fallback is absent, and Mobile is re-authored rather than merely stacked.
 
----
-
-# GATE C — Numbered implementation
-
-## 7. Required reading order for implementers
-
-Every UI implementer must read, in order:
-
-1. `UI_UX_VISUAL_DIRECTION_STANDARD.md`
-2. `VISUAL_AUDIT_AND_IMPLEMENTATION_PROTOCOL.md`
-3. `PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md`
-4. the target `B##_VISUAL_DIRECTION.md`
-5. authoritative target Issue/PR/product contract
-6. actual current Desktop/Mobile screenshots or live surface
-
-Implementation instructions should explicitly say that the Business direction document is authoritative for art direction while functional/backend/state contracts remain preserved unless separately authorized.
-
----
-
-## 8. Implementation boundaries
-
-### KEEP
-
-No cosmetic churn. Change only if required to preserve or document current quality.
-
-### FOCUSED_POLISH
-
-Touch only the documented bounded defects. Do not accidentally redesign the whole product.
-
-### REDESIGN
-
-A genuine redesign may replace visual shells, assets, layout systems and motion grammar, but must preserve required feature/state/backend contracts.
-
-A redesign is not complete because the diff is large. It is complete only if the promised perceptual difference is visible.
-
----
-
-## 9. Reference implementation ledger
-
-The implementation PR must include a compact ledger:
-
-| Reference translation | Target surface | Implemented evidence |
-|---|---|---|
-| Example pattern | Entry | screenshot/artifact path |
-
-This prevents reference work from disappearing between research and implementation.
-
----
-
-## 10. Technical QA remains mandatory
-
-Depending on the Business, verify:
-
-- expected routes/states;
-- no unexpected backend/Auth/DB/API changes;
-- no horizontal overflow;
-- no console/page errors;
-- no broken required assets;
-- no unauthorized external runtime requests;
-- keyboard operation and visible focus;
-- reduced-motion behavior;
-- Desktop and Mobile viewport behavior;
-- product-specific state/recovery contracts.
-
-But do not mark visual completion from these checks alone.
-
----
-
-# GATE D — Independent visual conformance QA
-
-## 11. Reviewer independence
-
-The post-implementation reviewer should evaluate the result against the frozen direction document, not against the implementer's PR description.
-
-The reviewer must answer: **Did the promised design actually appear on screen?**
-
----
-
-## 12. Conformance matrix
-
-For each load-bearing criterion, assign:
+Use:
 
 ```text
-MATCH
-PARTIAL
-MISS
-NOT_APPLICABLE
+ARCHETYPE_SYSTEM_FAIL
+ARCHETYPE_SYSTEM_PARTIAL
+ARCHETYPE_SYSTEM_PASS
 ```
 
-Required dimensions:
+Only PASS authorizes `FULL_EXPANSION_ALLOWED`.
 
-| Dimension | What to inspect |
+## GATE E — Full Expansion
+
+After system pass, record the Design System Lock and expand remaining routes in bounded batches.
+
+A REDESIGN may replace weak visual shells, assets, layout systems and motion grammar while preserving required functional/backend/state contracts.
+
+Do not clone the anchor layout across every route, preserve generic legacy shells for convenience, create route-by-route art directions, or solve old CSS conflicts by adding another generation of global overrides.
+
+Follow `../CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`.
+
+## GATE F — Full-Surface Conformance
+
+Before visual completion, capture all core user-facing routes/states on Desktop and Mobile and build one reviewable contact-sheet artifact.
+
+Conformance dimensions:
+
+| Dimension | Verdict |
 |---|---|
-| Reference fidelity | Are the translated reference qualities actually visible? |
-| Product distinctiveness | Does it clearly differ from neighboring Businesses? |
-| First viewport | Identity + core object + first action within 3–5 seconds |
-| Hierarchy | Does the eye move through the intended product sequence? |
-| Asset quality | Are focal visuals product-grade and meaningful? |
-| Korean typography | Scale, wrapping, tracking, line-height, body readability |
-| Interaction clarity | Is the current task/action obvious? |
-| Mobile composition | Proper reorder/crop/chrome/action hierarchy at 390px |
-| Cross-state coherence | One authored product world across routes/states |
-| How-to-use clarity | `START → ACTION → RESULT` is understandable |
+| Reference fidelity | MATCH / PARTIAL / MISS |
+| Product distinctiveness | MATCH / PARTIAL / MISS |
+| First-viewport clarity | MATCH / PARTIAL / MISS |
+| Hierarchy/density | MATCH / PARTIAL / MISS |
+| Korean typography | MATCH / PARTIAL / MISS |
+| Asset/material quality | MATCH / PARTIAL / MISS |
+| Interaction clarity | MATCH / PARTIAL / MISS |
+| Mobile composition | MATCH / PARTIAL / MISS |
+| Cross-state coherence | MATCH / PARTIAL / MISS |
+| How-to-use clarity | MATCH / PARTIAL / MISS |
 
-Any load-bearing `MISS` means the implementation is not visually complete.
+A load-bearing `MISS` blocks `FULL_SURFACE_VISUAL_PASS` unless explicitly accepted by the owner.
 
----
+Also inspect active style/source authority for obvious legacy generation leakage when relevant.
 
-## 13. Before/After perceptual check
+## GATE G — Owner current-result review
 
-For `REDESIGN`, the reviewer must compare old vs new evidence side by side conceptually and answer:
+Owner review occurs on the applicable current result under `../LIVE_PRODUCTION_UI_REVIEW_POLICY.md`.
 
-- Is the difference obvious without reading the PR?
-- Did the redesign change visual material/hierarchy, not only CSS values?
-- Does the new version better express the product's unique job?
-- Are provided references more visible after the redesign?
-
-If substantial code changed but the user would reasonably ask “what changed?”, classify the redesign as insufficient.
-
----
-
-## 14. Production review
-
-Where project policy requires Production review:
-
-```text
-validated implementation
-→ merge
-→ exact-main deploy
-→ verify live bytes/state
-→ inspect actual Production Desktop/Mobile
-→ owner review
-```
-
-The owner alone may provide final visual approval.
+Technical/design reviewers may lock anchor/system gates and reject objective defects. They may not manufacture final owner aesthetic acceptance.
 
 ```text
 OWNER_UI_APPROVED=false
 ```
 
-must not be changed by automation or reviewer inference.
+remains until explicit owner acceptance.
 
----
+## Failure protocol
 
-# Portfolio execution order after this protocol
-
-## 15. Current transition plan
-
-The prior numbered implementation/audit sequence is paused.
-
-The next program sequence is:
+Before naming another version or art direction, classify:
 
 ```text
-1. establish common visual governance documents
-2. re-audit all internal web Businesses read-only
-3. write/freeze every B##_VISUAL_DIRECTION.md
-4. complete portfolio differentiation review
-5. begin implementation again at B01
-6. independently verify B01 against its document
-7. proceed number-by-number only after conformance is proven
+CONCEPT_FAILURE
+REFERENCE_TRANSLATION_FAILURE
+ANCHOR_COMPOSITION_FAILURE
+ARCHETYPE_SYSTEM_FAILURE
+TYPOGRAPHY_FAILURE
+ASSET_FAILURE
+LEGACY_SHELL_FAILURE
+IMPLEMENTATION_CASCADE_FAILURE
+MOBILE_COMPOSITION_FAILURE
 ```
 
-Business 01 is the first redesign candidate under the new protocol.
+If the anchor is liked and later routes fail, preserve the anchor and repair the system/translation/cascade unless evidence shows the anchor concept itself is the root cause.
 
-Business 06 is retained as a positive methodology case study, not as a universal visual template.
+## B01 current application
+
+B01 is currently in system recovery:
+
+```text
+Entry → ANCHOR_DIRECTION_LOCKED for system testing
+Library → archetype candidate
+Write → archetype candidate
+Read → archetype candidate
+other participant routes → wait for archetype decision
+```
+
+The current failure is not evidence that B01 needs another new concept. It is evidence that the accepted Entry has not yet been translated into a canonical cross-state system.
+
+## Portfolio execution rule
+
+Do not block the whole portfolio until every Business has a perfect direction document, and do not blindly implement the whole portfolio from old frozen documents.
+
+When a Business becomes the active visual target:
+
+```text
+read current truth + old direction/reference
+→ anchor
+→ archetypes
+→ system decision
+→ broad expansion only on pass
+```
+
+This is the reusable process intended to make 50+ Businesses tractable.

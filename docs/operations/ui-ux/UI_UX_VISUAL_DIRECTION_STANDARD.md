@@ -1,348 +1,298 @@
 # AI Revenue Lab — UI/UX Visual Direction Standard
 
-Status: `AUTHORITATIVE_DRAFT_FOR_OWNER_REVIEW`
+- Status: **CANONICAL**
+- Effective: 2026-08-14
+- Parent authority: `../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
+- Methodology case: `CASE_STUDY_B06_WORLD_FEED.md`
+- Failure cases: B01 case studies in this directory
 
-Baseline main at creation:
+This standard governs visual analysis, redesign, focused polish, implementation and visual QA for numbered internal user-facing web products.
 
-```text
-a631122888d30c5a8a62f4b27e192967da331898
-```
-
-This document governs future visual analysis, redesign, focused polish, implementation and visual QA for the numbered AI Revenue Lab web products.
-
-It does **not** grant owner approval to any product.
+It never creates product-level owner approval by itself.
 
 ```text
 OWNER_UI_APPROVED=false
 ```
 
-remains separate for every product unless the owner explicitly decides otherwise.
-
----
+remains separate until explicit owner acceptance.
 
 ## 1. Core principle
 
-Every Business must look and feel like a distinct product, but every Business must be designed with the same level of visual rigor.
+Every Business must be a distinct authored product. Portfolio consistency means **consistent decision quality and evidence discipline**, not shared art direction.
 
-Do **not** copy Business 06's dark visual style across the portfolio.
+Do not copy Business 06's look, Business 01's glass/material system, or any other successful Business across unrelated products. Reuse methodology, accessibility conventions, implementation discipline and QA rigor.
 
-Copy the **quality of its design decisions**:
+## 2. Mandatory visual gates
 
-- identify the product's real user transformation;
-- translate that transformation into a visible spatial and motion system;
-- use references concretely rather than as vague mood words;
-- allow weak legacy visual assets and shells to be replaced;
-- make the first viewport communicate product identity and first action;
-- make every core state belong to one authored product world;
-- verify the real rendered Desktop and Mobile screens after implementation.
+For a new art direction or substantial redesign:
 
-The portfolio must not converge on one fashionable visual pattern such as dark backgrounds, giant condensed titles, beige editorial layouts, generic card grids, glassmorphism, or decorative AI illustrations.
+```text
+VISUAL_THESIS_READY
+→ REFERENCE_TRANSLATION_READY
+→ ANCHOR_REVIEW_READY
+→ ANCHOR_DIRECTION_LOCKED
+→ ARCHETYPE_SYSTEM_PASS
+→ FULL_EXPANSION_ALLOWED
+→ FULL_SURFACE_VISUAL_PASS
+→ OWNER_REVIEW_REQUIRED
+```
 
----
+The first four gates exist to prevent expensive whole-site redesigns around an unproven idea.
 
-## 2. Required Product Visual Thesis before implementation
+### Hard prohibition
 
-No UI implementation may begin until the target Business has an approved-for-implementation `B##_VISUAL_DIRECTION.md` containing at least:
+Do not implement/style every route before `ARCHETYPE_SYSTEM_PASS`.
 
-1. **Product job** — what the user is actually trying to accomplish.
-2. **Core transformation** — a short visible journey such as `SIGNAL → OPEN → WHY → ADJUST → RETURN`.
-3. **Emotional territory** — 3–5 concrete qualities, not generic adjectives.
-4. **Primary visual world** — the spatial/material environment the product belongs to.
-5. **Core object** — the thing that should visually dominate the experience.
-6. **Information density** — low / mid / high with justification.
-7. **Motion grammar** — what moves, why it moves, and what meaning the motion communicates.
-8. **Reference Translation Sheet**.
-9. **Desktop composition**.
-10. **390px Mobile composition**.
-11. **How-to-use path** — how a new user understands `START → CORE ACTION → RESULT` within roughly 30 seconds.
-12. **Anti-patterns** — what the product must not become.
-13. **Differentiation check** — which nearby numbered products it could accidentally resemble and how that overlap is prevented.
-14. **Expected Before → After difference**.
-15. **Implementation verdict** — `KEEP`, `FOCUSED_POLISH`, or `REDESIGN`.
+A work order that asks for broad redesign must still stage the implementation so the anchor and archetypes can be visually judged before the remaining routes are propagated.
 
-Implementation must follow the thesis; the thesis must not be retrofitted after implementation to justify whatever was built.
+## 3. Product Visual Thesis
 
----
+Before visual implementation, the Business direction document must state:
 
-## 3. Reference Translation Sheet is mandatory
+1. product job;
+2. target user and use moment;
+3. core transformation;
+4. first action and primary result;
+5. emotional territory;
+6. visual world;
+7. core visual object or interaction;
+8. density;
+9. typography role plan;
+10. image/asset role;
+11. motion grammar;
+12. Desktop composition;
+13. 390px Mobile composition;
+14. how-to-use path;
+15. anti-patterns;
+16. differentiation against nearby Businesses;
+17. reuse/replace verdict for legacy UI;
+18. implementation verdict: `KEEP`, `FOCUSED_POLISH`, or `REDESIGN`.
 
-A reference is not considered used because it was named in a prompt, issue, README, mood board or research note.
+The thesis must precede implementation. Do not retrofit it afterward.
 
-Every meaningful reference must be translated through this table:
+## 4. Reference Translation Sheet
+
+Every load-bearing reference must answer:
 
 | Field | Required question |
 |---|---|
-| `REFERENCE` | What exact product/site/editorial work is being studied? |
-| `OBSERVE` | What specific visual/interaction quality matters? |
-| `ADOPT` | What pattern will be carried forward? |
-| `REJECT` | What will explicitly not be copied? |
-| `TRANSLATE` | What does the pattern become in this Business? |
-| `SURFACE` | On which concrete screen/state will it appear? |
-| `VERIFY` | What screenshot evidence would prove the translation actually happened? |
+| REFERENCE | What exact work/surface is studied? |
+| OBSERVE | What precise quality matters? |
+| ADOPT | What pattern is useful? |
+| REJECT | What will not be copied? |
+| TRANSLATE | What does it become for this product? |
+| SURFACE | Where will it appear? |
+| VERIFY | What rendered evidence proves it? |
 
-Rules:
+The Business 06 `REFERENCE_NOTES.md` pattern is the preferred methodological example: multiple sources were studied, useful patterns and rejected patterns were recorded, and the product difference was stated explicitly.
 
-- `premium`, `cinematic`, `editorial`, `immersive`, `modern`, `luxury`, `playful` and similar adjectives are **not** reference translations.
-- A reference with no target surface is not implementation guidance.
-- A reference translation that cannot be seen in post-implementation screenshots is a `MISS`.
-- References should inform hierarchy, rhythm, material, interaction or motion; do not blindly copy complete third-party screens or identities.
+Generic words such as `premium`, `cinematic`, `editorial`, `immersive`, `modern`, `luxury`, `minimal`, and `playful` are not sufficient reference translation.
 
----
+## 5. Anchor Screen standard
 
-## 4. First Five Seconds Rule
+The anchor is the one screen that best proves identity and the core product promise. It must be reviewed at Desktop and 390px Mobile before broad expansion.
 
-The first viewport must let a new user answer three questions without reading a long explanation:
+It must make the user understand within roughly five seconds:
 
-1. **What kind of product is this?**
-2. **Why is this product visually/experientially different from the other products?**
-3. **What should I do first?**
+- what kind of product this is;
+- what visually distinguishes it;
+- what to do first.
 
-Failure signals include:
+The anchor also establishes the first real typography/material/spacing/asset relationship. It is more authoritative than a mood board.
 
-- the first viewport is mostly explanatory copy;
-- the dominant object has no relationship to the product's core action;
-- debug/preview chrome is visible;
-- the CTA is visually secondary to decoration;
-- the user sees a generic dashboard, card wall or landing-page hero that could belong to another Business;
-- the main visual is only a large title plus generic rectangles/gradients without product meaning.
+## 6. Archetype System standard
 
----
+The anchor is not proof of a system.
 
-## 5. Product utility outranks decoration
+Choose 2–3 materially different surfaces and prove that the same visual language survives different demands. Prefer a combination such as:
 
-The strongest visual element should usually be the core product action or core result.
+- collection/discovery/object surface;
+- input/write/configuration surface;
+- long-form read/detail/result surface.
+
+Substitute feedback/recovery/comparison when those better represent the product.
+
+Review the anchor plus archetypes side-by-side. Failure to look like one authored product is `ARCHETYPE_SYSTEM_FAIL` even if every individual screen looks acceptable in isolation.
+
+## 7. First Five Seconds Rule
+
+The first viewport fails when:
+
+- it is mostly explanation;
+- the dominant visual is unrelated to the core action/result;
+- tiny controls are stranded inside oversized decoration;
+- a generic dashboard/card wall could belong to any Business;
+- a giant title is doing the work that product composition should do;
+- debug/preview chrome dominates;
+- the first action is visually unclear.
+
+## 8. Product utility outranks decoration
+
+The strongest element should usually be the core action or result.
 
 Examples:
 
-- a writing product: the writing surface must have real visual authority;
-- a feed product: the signal/story/feed hierarchy must dominate;
-- a verification product: evidence and claim relationships must dominate;
-- an archive/publication product: the collectible/readable object must dominate;
-- a workflow tool: the current decision/action state must dominate.
+- writing product → writing/fragment surface has authority;
+- feed product → signal/story hierarchy dominates;
+- verification product → claim/evidence relationship dominates;
+- archive/publication product → collectible/readable object dominates;
+- workflow product → current decision/action dominates.
 
-Do not strand tiny controls inside oversized decorative compositions.
+Negative space is valid only when it improves hierarchy, reading, pacing or emotional meaning. Empty area that makes a route look unfinished is not successful minimalism.
 
-Negative space is valid only when it improves hierarchy, reading, pacing or emotional meaning.
+## 9. Korean typography standard
 
----
+Korean display typography is not a Latin display system with Hangul substituted into it.
 
-## 6. Asset Quality Rule
+Rules:
+
+- actual rendered/loaded family must be understood; naming an unavailable font is not typography control;
+- Korean display `line-height < 1.0` is prohibited unless a screenshot-reviewed exception is recorded;
+- avoid severe negative tracking that compresses Hangul blocks;
+- control line shape before maximizing font size;
+- avoid arbitrary `<br>` poster shapes;
+- body copy requires comfortable width and line-height;
+- serif/sans switching must have a semantic role;
+- adjacent routes must not silently use different typography systems;
+- Desktop and 390px Mobile titles must both be visually reviewed.
+
+Typography QA is rendered-screen QA, not only CSS-token inspection.
+
+## 10. Asset quality standard
 
 Repository-local does not mean visually acceptable.
 
-Existing SVGs, CSS illustrations, placeholder assets or raster images may be replaced when they weaken the product.
+Replace weak CSS illustrations, generic placeholders, stale imagery or low-authority assets when the product needs stronger material. A focal asset must express the real product state/transformation and survive intentional Desktop/Mobile cropping.
 
-Use a focal visual asset when the product needs one. Do not force imagery into data/tool products that are stronger without it.
+Do not introduce imagery merely to decorate a tool that is stronger without it.
 
-A focal asset must:
+## 11. Mobile is a separate composition
 
-- express the product's actual state/transformation;
-- occupy sufficient visual authority to matter;
-- work with typography and layout rather than appear dropped into a card;
-- remain legible/cropped intentionally across Desktop and Mobile;
-- respect licensing/source requirements;
-- avoid readable text baked into raster imagery unless explicitly authorized and accessibility-safe.
+390px Mobile is not a shrunk Desktop layout.
 
-A CSS rectangle, gradient blob or generic abstract diagram is not automatically an adequate substitute for art direction.
+For every anchor/archetype/core route decide:
 
----
+- first viewport priority;
+- reordering;
+- sticky/non-sticky behavior;
+- type scale;
+- crop/removal of decorative objects;
+- visibility of the primary action;
+- reading measure and control density.
 
-## 7. Korean typography standard
+A technically responsive screen can still fail visual QA.
 
-Korean display typography must be designed as Korean typography, not inherited from Latin-first display rules.
+## 12. Cross-state coherence
 
-Default rules:
+A product fails cross-state coherence when it has, for example:
 
-- Korean display `line-height < 1.0` is prohibited unless an explicit screenshot-reviewed exception is recorded.
-- Prefer controlled line shape over maximal font size.
-- Avoid over-compressed tracking that makes Hangul blocks collide visually.
-- Avoid arbitrary `<br>` line breaks that create poster-like awkward shapes.
-- Check the actual rendered title at Desktop and 390px Mobile.
-- Do not assume `text-wrap: balance` alone produces acceptable Korean composition.
-- Body copy must preserve comfortable measure and line-height even when display typography is expressive.
-- Condensed Latin display faces must not silently become the Korean visual default.
+- a cinematic/art-directed landing page followed by generic forms/cards;
+- one typography language on Entry and another on Read;
+- unrelated image treatment per route;
+- old shell structures merely recolored to match a new palette;
+- one-off hero concepts that disappear after Entry;
+- mobile states that lose the product's hierarchy.
 
-Typography QA is visual, not only computed-style QA.
+Density can change by route. Identity must persist.
 
----
+## 13. Design-system translation, not layout cloning
 
-## 8. Mobile is a separate composition
+After archetype pass, record the actual transferable grammar: typography, spacing, materials, color, image treatment, core objects, controls, motion and responsive rules.
 
-390px Mobile is not a shrunk Desktop screenshot.
+Full expansion uses this grammar to solve each route's job. Do not clone the exact anchor layout across every page.
 
-For every core surface, explicitly decide:
+## 14. Redesign means replacement when necessary
 
-- what appears in the first viewport;
-- what becomes primary vs secondary;
-- what reorders;
-- what becomes sticky or stops being sticky;
-- whether product chrome pushes/overlays content;
-- whether large display type remains proportional;
-- whether the core action is visible without excessive scroll;
-- whether decorative objects should be cropped, simplified or removed.
-
-A technically responsive layout can still fail visual QA.
-
----
-
-## 9. How-to-use requirement
-
-Every product needs a legible `START → CORE ACTION → RESULT` path.
-
-This does not require a separate Guide page for every product.
-
-Use one of:
-
-- self-explanatory first-run product flow;
-- compact embedded onboarding;
-- a persistent `30초 사용법` entry;
-- a dedicated Guide when the product has several states or non-obvious interaction rules.
-
-A process description such as `Gather / Shape / Review / Bind` is not automatically a usage tutorial. The user must understand what **they** click, enter, inspect and receive.
-
----
-
-## 10. Cross-state coherence
-
-Entry, core action, result, feedback, archive/history, recovery/error and operator states must look like one product unless a deliberate role distinction is documented.
-
-Do not permit:
-
-- a cinematic landing page followed by generic forms/cards;
-- one-off visual concepts that disappear after the first screen;
-- different typography systems on adjacent routes;
-- unrelated imagery per state;
-- operator screens that look like a separate product without a justified utilitarian variant.
-
-The visual grammar may change density by state, but identity must persist.
-
----
-
-## 11. Portfolio differentiation rule
-
-Before implementation, compare the Business against the portfolio matrix.
-
-Every product must reserve its own combination of:
-
-- visual world;
-- core object;
-- dominant material;
-- density;
-- motion grammar;
-- color temperature;
-- typography behavior;
-- primary interaction pattern.
-
-If two Businesses overlap strongly, the newer redesign must explain how they diverge.
-
-Do not solve every product with:
-
-- dark background + oversized display title;
-- beige editorial paper;
-- left rail + right workspace;
-- generic three-card grids;
-- faux terminal/console visuals;
-- identical pill navigation;
-- the same `01/02/03` ledger treatment.
-
-Shared accessibility and interaction conventions are good; shared art direction across unrelated products is not.
-
----
-
-## 12. Definition of visual quality
-
-Technical QA and Visual Direction QA are separate gates.
-
-Technical QA may assert:
-
-- no overflow;
-- no console/page errors;
-- routes and state transitions work;
-- keyboard/focus/reduced-motion behavior;
-- assets load;
-- backend/state contracts are preserved.
-
-Technical GREEN does **not** imply visual acceptance.
-
-Visual Direction QA must judge:
-
-1. Reference fidelity
-2. Product distinctiveness
-3. First-viewport impact
-4. Hierarchy
-5. Asset quality
-6. Korean typography
-7. Interaction clarity
-8. Mobile composition
-9. Cross-state coherence
-10. How-to-use clarity
-
-Each is recorded as:
-
-```text
-MATCH
-PARTIAL
-MISS
-```
-
-A load-bearing `MISS` blocks completion until corrected or explicitly accepted by the owner.
-
----
-
-## 13. KEEP / FOCUSED_POLISH / REDESIGN definitions
+Use:
 
 ### KEEP
-
-Use only when the current live screen already satisfies the product thesis and major references. Do not use KEEP merely because QA is green.
+Current live structure already expresses the visual thesis and references.
 
 ### FOCUSED_POLISH
-
-Use when the visual system is correct but a bounded issue materially reduces quality, for example:
-
-- Korean title rhythm;
-- mobile ordering;
-- weak CTA hierarchy;
-- localized spacing/density issue;
-- one inconsistent state.
+The system is correct and a bounded defect—type rhythm, spacing, hierarchy, one state, mobile ordering—needs repair.
 
 ### REDESIGN
+The product identity, reference translation, cross-state system, core utility hierarchy, asset quality or owner direction is materially wrong.
 
-Use when one or more of the following is true:
+When REDESIGN is appropriate, preserving a weak legacy shell for implementation convenience is not a virtue.
 
-- references are materially absent from the rendered product;
-- product identity is generic or confused with another Business;
-- the first viewport fails the Five Seconds Rule;
-- the visual system changes arbitrarily between routes;
-- core utility is visually subordinate to decoration;
-- focal assets are clearly below product quality;
-- the owner rejects the live art direction;
-- large implementation changes produced little perceptual change.
+## 15. No version-number escape hatch
 
----
+A visual failure must be diagnosed before another version is named.
 
-## 14. Owner authority and deployment boundary
-
-Automated QA, visual reviewers, implementers and web models must never convert technical evidence into owner approval.
+Use one or more:
 
 ```text
-OWNER_UI_APPROVED=false
+CONCEPT_FAILURE
+REFERENCE_TRANSLATION_FAILURE
+ANCHOR_COMPOSITION_FAILURE
+ARCHETYPE_SYSTEM_FAILURE
+TYPOGRAPHY_FAILURE
+ASSET_FAILURE
+LEGACY_SHELL_FAILURE
+IMPLEMENTATION_CASCADE_FAILURE
+MOBILE_COMPOSITION_FAILURE
 ```
 
-remains unchanged unless the owner explicitly approves the live visual result.
+If the anchor succeeds and later routes fail, do not discard the anchor or invent a new concept automatically. Repair translation/system/cascade.
 
-Production review should use the exact merged main SHA when the product's deployment policy requires it.
+## 16. Technical QA and Visual QA are separate
 
-Temporary QA/deployment workflows must not remain in product main after their one-off purpose is complete.
+Technical QA covers overflow, errors, routes, controls, keyboard/focus, reduced motion, assets and runtime contracts.
 
-External / integrated-successor Businesses remain outside internal implementation according to the authoritative portfolio truth layer.
+Visual Direction QA judges:
 
----
+1. reference fidelity;
+2. product distinctiveness;
+3. first-viewport clarity;
+4. hierarchy;
+5. typography;
+6. asset quality;
+7. interaction clarity;
+8. mobile composition;
+9. cross-state coherence;
+10. how-to-use clarity.
 
-## 15. Positive and negative case studies
+Use `MATCH`, `PARTIAL`, `MISS` for each. A load-bearing `MISS` blocks the applicable visual gate.
 
-This standard is anchored by two portfolio lessons:
+## 17. Full-surface evidence
 
-- `CASE_STUDY_B06_WORLD_FEED.md` — positive example of changing product-facing visual material and hierarchy around the real product behavior.
-- `CASE_STUDY_B01_PERSONAL_EDITION_V3_FAILURE.md` — example where substantial code/art-direction work still produced insufficient perceptual/reference fidelity.
+A multi-screen redesign is not complete until all core user-facing routes are captured on Desktop and Mobile and reviewed together as a contact sheet.
 
-These are methodology references, not reusable stylesheets.
+The reviewer must be able to spot routes that look like another product, routes that reverted to generic UI, typography drift, density discontinuity, stale asset treatment and visual cascade leakage.
+
+## 18. Portfolio differentiation
+
+Every Business reserves its own combination of visual world, core object, material, density, motion grammar, temperature, typography behavior and interaction pattern.
+
+Do not solve the portfolio with one repeated fashion such as:
+
+- dark background + giant title;
+- beige editorial paper;
+- glassmorphism;
+- left rail + right workspace;
+- three-card grids;
+- identical pill navigation;
+- repeated `01/02/03` ledger treatment.
+
+## 19. Owner authority
+
+The workflow may lock an anchor and pass a system without final owner approval.
+
+Only explicit owner acceptance creates `OWNER_UI_APPROVED=true` or equivalent owner-approved state.
+
+## 20. Current B01 interpretation
+
+The 2026-08-14 B01 Entry is the local anchor direction because the owner stated the first page is satisfactory/more balanced, while the remaining pages are not satisfactory.
+
+Therefore the correct action is **system recovery**, not another new B01 concept:
+
+```text
+Entry anchor KEEP
+→ Library / Write / Read archetype rebuild
+→ archetype system review
+→ canonical style consolidation
+→ remaining participant-route expansion
+→ full contact sheet
+→ owner review
+```

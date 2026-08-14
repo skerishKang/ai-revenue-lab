@@ -1,104 +1,113 @@
 # AI Revenue Lab — UI/UX Visual Governance
 
-This directory is the operating entrypoint for the portfolio-wide visual reset program started on 2026-08-11.
+- Status: **CANONICAL INDEX**
+- Effective reset: 2026-08-14
+- Parent authority: `../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 
-Current program state:
+The portfolio no longer treats a written/frozen direction document as proof that a full product can be implemented coherently.
 
-```text
-PORTFOLIO_PREIMPLEMENTATION_DIRECTION_PASS_COMPLETE
-B01_NEXT_IMPLEMENTATION_TARGET
-OWNER_UI_APPROVED=false remains product-specific and unchanged
-```
-
-Creation baseline:
+The current visual program is:
 
 ```text
-origin/main = a631122888d30c5a8a62f4b27e192967da331898
+CURRENT PRODUCT AUDIT
+→ VISUAL THESIS + REFERENCE TRANSLATION
+→ ANCHOR SCREEN
+→ ARCHETYPE SYSTEM TEST
+→ FULL EXPANSION
+→ FULL-SURFACE CONTACT SHEET
+→ OWNER CURRENT-RESULT REVIEW
 ```
 
 ## Required reading order
 
-Before any numbered UI implementation:
+Before material UI redesign of a numbered internal web Business:
 
-1. [`UI_UX_VISUAL_DIRECTION_STANDARD.md`](./UI_UX_VISUAL_DIRECTION_STANDARD.md)
-2. [`VISUAL_AUDIT_AND_IMPLEMENTATION_PROTOCOL.md`](./VISUAL_AUDIT_AND_IMPLEMENTATION_PROTOCOL.md)
-3. [`PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md`](./PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md)
-4. target [`businesses/B##_VISUAL_DIRECTION.md`](./businesses/)
-5. authoritative target Issue/PR/product contracts
-6. real current Desktop/Mobile surface
+1. [`../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`](../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md)
+2. [`UI_UX_VISUAL_DIRECTION_STANDARD.md`](./UI_UX_VISUAL_DIRECTION_STANDARD.md)
+3. [`VISUAL_AUDIT_AND_IMPLEMENTATION_PROTOCOL.md`](./VISUAL_AUDIT_AND_IMPLEMENTATION_PROTOCOL.md)
+4. target [`businesses/B##_VISUAL_DIRECTION.md`](./businesses/) as an existing hypothesis/input
+5. [`PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md`](./PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md)
+6. authoritative current product/Issue/PR contracts
+7. current real Desktop/Mobile surfaces
 
-Then implement, run technical QA, and independently judge `MATCH / PARTIAL / MISS` against the frozen direction.
+The implementer must know the current visual gate before changing broad route sets.
 
-## Program tracker and evidence
+## Current gate rule
 
-- [`PORTFOLIO_VISUAL_AUDIT_TRACKER.md`](./PORTFOLIO_VISUAL_AUDIT_TRACKER.md) — complete verdict map and evidence run IDs.
-- [`AUDIT_EVIDENCE_INDEX.md`](./AUDIT_EVIDENCE_INDEX.md) — screenshot collection provenance/digests and known B44 blocker.
+```text
+ANCHOR_DIRECTION_LOCKED
+```
+
+permits archetype testing only.
+
+```text
+ARCHETYPE_SYSTEM_PASS
+```
+
+is required before:
+
+```text
+FULL_EXPANSION_ALLOWED
+```
+
+for a material redesign.
+
+## Tracker and evidence
+
+- [`PORTFOLIO_VISUAL_AUDIT_TRACKER.md`](./PORTFOLIO_VISUAL_AUDIT_TRACKER.md) — current implementation-readiness interpretation.
+- [`AUDIT_EVIDENCE_INDEX.md`](./AUDIT_EVIDENCE_INDEX.md) — historical/current screenshot provenance where applicable.
 - [`PORTFOLIO_IMPLEMENTATION_BOUNDARIES.md`](./PORTFOLIO_IMPLEMENTATION_BOUNDARIES.md) — external/successor/non-web/gap boundaries.
+- [`PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md`](./PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md) — collision/differentiation input, not automatic implementation authority.
+
+## Business direction documents
+
+Existing `businesses/B##_VISUAL_DIRECTION.md` files remain valuable research and hypotheses.
+
+They are **not deleted and not automatically rewritten**. When a Business becomes active, refresh only what current product evidence contradicts, then prove the direction through anchor/archetype screens.
+
+This prevents another portfolio-wide documentation pass from becoming stale before implementation reaches the later Businesses.
 
 ## Case studies
 
-- [`CASE_STUDY_B06_WORLD_FEED.md`](./CASE_STUDY_B06_WORLD_FEED.md) — positive methodology example. Copy the rigor, **not the dark signal-room style**.
-- [`CASE_STUDY_B01_PERSONAL_EDITION_V3_FAILURE.md`](./CASE_STUDY_B01_PERSONAL_EDITION_V3_FAILURE.md) — failure lesson: large code changes can still miss perceptual/reference fidelity.
+- [`CASE_STUDY_B06_WORLD_FEED.md`](./CASE_STUDY_B06_WORLD_FEED.md) — positive methodology: accepted visual baseline, explicit reference translation, then UX expansion. Copy rigor, not visual style.
+- [`CASE_STUDY_B01_PERSONAL_EDITION_V3_FAILURE.md`](./CASE_STUDY_B01_PERSONAL_EDITION_V3_FAILURE.md) — earlier lesson: large implementation can still miss perceptual/reference fidelity.
+- [`CASE_STUDY_B01_V7_ANCHOR_SYSTEM_FAILURE.md`](./CASE_STUDY_B01_V7_ANCHOR_SYSTEM_FAILURE.md) — current lesson: a successful Entry does not prove internal-route design-system coherence.
 
-## Business direction coverage
+## Key portfolio anti-patterns
 
-Direction documents now exist for every current internal web implementation/review target:
+Actively reject:
 
-```text
-B01 B02 B04 B06 B07
-B08 B09 B10 B11 B12 B13
-B14 B15 B16 B17 B18 B19 B20 B21 B22
-B29
-B32 B33 B34 B35 B36 B37 B38 B39 B40 B41 B42 B43 B44
-B45 B46 B47 B48 B49
-B51 B52 B53 B55
-B57 B58 B59
-```
+- dark giant-title convergence across unrelated products;
+- generic light-card prototype convergence;
+- cinematic landing page followed by SaaS forms/cards;
+- old layout shells recolored under a new art-direction name;
+- repeated left-rail/right-workspace composition without product reason;
+- Korean titles scaled with Latin-first metrics;
+- one new CSS visual generation layered on every prior generation;
+- version-number churn instead of failure diagnosis.
 
-They live under [`businesses/`](./businesses/).
-
-Entries deliberately without internal web direction documents are explained in `PORTFOLIO_IMPLEMENTATION_BOUNDARIES.md`:
+## B01 current state
 
 ```text
-B03 B05
-B23–B28
-B30–B31
-B50
-B54 (CLI/TUI)
-B56 (intentional numbering gap)
+Entry     = local anchor / KEEP
+Library   = collection/object archetype to rebuild/test
+Write     = interaction archetype to rebuild/test
+Read      = long-form archetype to rebuild/test
+Other participant routes = wait for archetype system decision
+Whole-product OWNER_UI_APPROVED = false
 ```
 
-## Key portfolio conclusions
+B01 should not move to a new V8 concept merely because non-Entry surfaces currently fail.
 
-Fresh same-condition Desktop/Mobile evidence exposed two recurring problems that future implementations must actively undo:
+## Portfolio scaling principle
 
-1. **dark giant-title convergence** across otherwise unrelated editorial/media products;
-2. **generic light-card prototype convergence** across safety/engine/operations products.
-
-The differentiation matrix now reserves a product-specific core object and visual world for every internal web target.
-
-## Known limitation
-
-B44 Portfolio Console authority is resolved, but the automated live screenshot attempt hit a Cloudflare `dash.cloudflare.com` security-verification challenge. That challenge screenshot is not accepted as product evidence. B44 remains `LIVE_CONFORMANCE_PENDING`; this does not block B01 from beginning because B44's role/boundary is documented and B44 is not the current redesign target.
-
-## Program rule
+The 50+ Business problem is solved by reusing the **decision process**, not one visual template:
 
 ```text
-ANALYZE REAL SCREEN
-→ WRITE/FREEZE DIRECTION
-→ CHECK PORTFOLIO COLLISION
-→ IMPLEMENT
-→ TECHNICAL QA
-→ INDEPENDENT VISUAL CONFORMANCE QA
-→ LIVE OWNER REVIEW
+one anchor
+→ three hard archetypes
+→ system pass/fail
+→ broad expansion only after pass
 ```
 
-Never implement first and write the design rationale afterward.
-
-## Next target
-
-```text
-B01 Personal Edition
-```
-
-B01 must implement `businesses/B01_VISUAL_DIRECTION.md`, then be independently verified against that document before B02 work begins.
+This lets weak directions fail after a few screens instead of after a whole site.

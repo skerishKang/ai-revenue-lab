@@ -1,165 +1,159 @@
 # AI Revenue Lab — Portfolio Visual Audit Tracker
 
-Status: `PORTFOLIO_PREIMPLEMENTATION_DIRECTION_PASS_COMPLETE`
+- Status: **IMPLEMENTATION_READINESS_REVALIDATION_REQUIRED**
+- Effective reset: 2026-08-14
+- Parent authority: `../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 
-Creation baseline:
+## 1. Why the tracker changed
 
-```text
-origin/main = a631122888d30c5a8a62f4b27e192967da331898
-```
+The previous portfolio pass classified many Business directions as `frozen`, `KEEP`, `FOCUSED_POLISH`, `REDESIGN`, or `REDESIGN_ART_LAYER` before implementation.
 
-The prior sequential implementation/audit pass is superseded by the new program:
+Business 01 demonstrated that a direction document and successful technical QA are not enough to prove that a visual concept survives multiple real product surfaces. A strong Entry can coexist with weak/generic internal routes when legacy shells and visual generations remain active.
 
-```text
-READ-ONLY AUDIT
-→ DIRECTION FREEZE
-→ PORTFOLIO DIFFERENTIATION
-→ IMPLEMENT
-→ INDEPENDENT CONFORMANCE QA
-```
+Therefore the previous preimplementation direction pass remains **historical research/evidence**, but its `frozen` wording no longer means `FULL_EXPANSION_ALLOWED`.
 
-## Evidence batches completed
+## 2. New portfolio interpretation
 
-### A — B01/B02/B04/B06/B07
+For every internal user-facing web Business with material visual work pending:
 
 ```text
-run 31421541852
-artifact 9075565375
-sha256 cacecf7ab056a7c3478f3cd078bf8edb080780a3e8ab7afbb960fd6bee58f0e2
+EXISTING DIRECTION DOC = HYPOTHESIS / RESEARCH INPUT
+EXISTING REFERENCE WORK = INPUT
+HISTORICAL TECHNICAL UI PASS = ENGINEERING EVIDENCE
+HISTORICAL OWNER ACCEPTANCE = VALID ONLY FOR THE EXACT ACCEPTED RESULT
 ```
 
-### Publication / archive family
+Before broad new visual implementation, each Business must obtain current gate evidence:
 
 ```text
-B08–B13, B17–B20, B57–B59
-run 31422640921
-artifact 9076026735
-sha256 0c150fbe6b9f81e8ddd8c523c2b87fe8cdaa772b3e49ac0f6716cc8d3f3e47dd
+VISUAL_THESIS_READY
+REFERENCE_TRANSLATION_READY
+ANCHOR_DIRECTION_LOCKED
+ARCHETYPE_SYSTEM_PASS
+FULL_EXPANSION_ALLOWED
 ```
 
-### Platform / verification / creator family
+## 3. Portfolio implementation rule
+
+Do not run the portfolio as:
 
 ```text
-B14–B16, B21–B22, B29, B32–B35, B45–B49
-run 31422928265
-artifact 9076118820
-sha256 8aab8065188547d1059b24cfcaf03aba6aa73d61e91110a58fea74ed9d7a5b6b
+B01 full redesign
+→ B02 full redesign
+→ B04 full redesign
+→ ...
 ```
 
-### Safety / systems / operations family
+when each design direction is still unproven as a system.
+
+Run each substantial redesign as:
 
 ```text
-B36–B43, B51–B53, B55
-run 31422952294
-artifact 9076111540
-sha256 88261ba57afbfd3e2d26993b4c66f50547734e7f23a16a0920294c1404fdd18a
+Business N: anchor
+→ Business N: archetypes
+→ system decision
+→ only then broad expansion
 ```
 
-### B44 special live attempt
+If the anchor/archetypes fail early, the failure cost stays bounded.
+
+## 4. Current B01 state
+
+As of current owner feedback on 2026-08-14:
 
 ```text
-run 31424158017
-artifact 9076523288
-sha256 28b69985d24cf6022ffe20f1d6136e60dff52b7fbf343f21ed1f10885ed2f7d2
+Business: B01 Personal Edition
+Entry: KEEP AS LOCAL ANCHOR
+Anchor status: ANCHOR_DIRECTION_LOCKED for system testing
+Whole-product owner approval: NO
+Other participant surfaces: REDESIGN / SYSTEM RECOVERY REQUIRED
+Admin/operator: out of current visual recovery scope unless separately reviewed
 ```
 
-B44's canonical URL was redirected to a Cloudflare `dash.cloudflare.com` security-verification challenge in the headless runner. The captured challenge is **not product visual evidence**. B44 authority/product role is resolved from current main, but live visual conformance remains `BLOCKED_BY_SECURITY_CHALLENGE`.
+Next B01 gate set:
 
-All temporary audit workflows were removed from the documentation branch after evidence collection.
+```text
+Library = collection/object archetype
+Write   = interaction archetype
+Read    = long-form archetype
+```
 
-## Final new-standard verdicts
+Required next decision:
 
-| B# | Product | Direction status | Verdict / boundary |
-|---:|---|---|---|
-| 01 | Personal Edition | frozen | **REDESIGN** — Private Archive Editorial |
-| 02 | Living Travel | frozen | **REDESIGN** — Cinematic Personal Journey |
-| 03 | External / Parallel | boundary | **EXTERNAL_NO_BUILD** |
-| 04 | Adaptive Learning | frozen | **FOCUSED_POLISH** — Adaptive Learning Studio |
-| 05 | DanjiOn | boundary | **EXTERNAL_NO_BUILD** |
-| 06 | World Feed | frozen | **KEEP / METHODOLOGY CASE** — World Signal Room |
-| 07 | Personal Meaning Map | frozen | **REDESIGN_ART_LAYER** — Relational Meaning Field |
-| 08 | Family Newspaper | frozen | **KEEP** — Domestic Pressroom |
-| 09 | Children's Story | frozen | **REDESIGN_ART_LAYER** — Living Picture Book |
-| 10 | Fan Magazine | frozen | **REDESIGN** — Personal Cover Story |
-| 11 | Language Learning Magazine | frozen | **FOCUSED_POLISH** — Bilingual Field Journal |
-| 12 | Creator Mini Media | frozen | **REDESIGN** — Solo Editorial Desk |
-| 13 | Private Cinema Ledger | frozen | **KEEP** |
-| 14 | Korean AI Platform | frozen | **KEEP** — Execution Workspace |
-| 15 | Global AI Newsroom | frozen | **REDESIGN_ART_LAYER** — Evidence Newsroom |
-| 16 | Personal Sports | frozen | **REDESIGN_ART_LAYER** — Matchday Broadcast Journal |
-| 17 | Local Shop Magazine | frozen | **FOCUSED_POLISH** — Counter Journal |
-| 18 | Personal Audio Channel | frozen | **REDESIGN_ART_LAYER** — Listening Room |
-| 19 | Personal Memory Book | frozen | **REDESIGN** — Memory Provenance Table |
-| 20 | Personal Memory Novel | frozen | **REDESIGN_ART_LAYER** — Narrative Draft Room |
-| 21 | Founder Strategy Letter | frozen | **REDESIGN_ART_LAYER** — Decision Memo |
-| 22 | Personal Media Studio | frozen | **REDESIGN_ART_LAYER** — Story Spine Loom |
-| 23–28 | external / integrated successors | boundary | **EXTERNAL_NO_BUILD** |
-| 29 | Apartment Governance | frozen / protected | **KEEP · PROTECTED_AUTHORITY** |
-| 30–31 | successors | boundary | **EXTERNAL_NO_BUILD** |
-| 32 | AI Skill Studio | frozen / review authority | **REDESIGN_ART_LAYER** — Skill Evidence Bench |
-| 33 | Research Memory | frozen / review authority | **REDESIGN_ART_LAYER** — Research Trace Desk |
-| 34 | AI Dubbing Studio | frozen / review authority | **REDESIGN_ART_LAYER** — Rights-First Dubbing Suite |
-| 35 | AI Media Education DX | frozen | **KEEP_CORE** |
-| 36 | AI Women Safety | frozen | **REDESIGN** — Personal Safety Plan Board |
-| 37 | AI Safe Route | frozen | **REDESIGN** — Evidence Route Map |
-| 38 | AI Exercise Coach | frozen | **REDESIGN** — Movement Session Canvas |
-| 39 | 112 Interpretation | frozen | **REDESIGN** — Bilingual Call Console |
-| 40 | Emergency Urgency AI | frozen | **REDESIGN** — Known/Unknown Triage Board |
-| 41 | Foreign Emergency Assistant | frozen | **REDESIGN** — Emergency Phrase Builder |
-| 42 | Development Control Tower | frozen | **REDESIGN** — true Development Control Tower |
-| 43 | AI Software Factory | frozen | **REDESIGN** — Work Contract Assembly Line |
-| 44 | Portfolio Console | frozen with blocker | **KEEP_PRODUCT_ROLE · LIVE_CONFORMANCE_PENDING** |
-| 45 | AI Content Engine | frozen | **REDESIGN** — Content Lineage Engine |
-| 46 | AI Personalization Engine | frozen | **REDESIGN** — Preference Control Mixer |
-| 47 | Real-Time Feedback Engine | frozen | **REDESIGN** — Feedback Signal Basin |
-| 48 | AI Verification Engine | frozen | **REDESIGN** — Claim-Evidence Gate |
-| 49 | Public Data Connector Hub | frozen | **REDESIGN** — Schema Connector Blueprint |
-| 50 | Ieeon successor | boundary | **EXTERNAL_NO_BUILD** |
-| 51 | AI Workflow Marketplace | frozen | **REDESIGN** — Workflow Package Shelf |
-| 52 | Scheduled Agent Operations | frozen | **REDESIGN** — Time Rail Runbook |
-| 53 | Embedded AI SDK | frozen | **REDESIGN** — Host Insertion Frame |
-| 54 | AI Model Router | boundary | **NON_WEB CLI/TUI** |
-| 55 | Local AI Fleet | frozen | **REDESIGN** — Local Hardware Topology |
-| 56 | numbering gap | boundary | **DO_NOT_INVENT_PRODUCT** |
-| 57 | Classic Literature Translation | frozen | **REDESIGN** — Translation Proof Workshop |
-| 58 | Personal Writing Voice | frozen | **REDESIGN** — Writing Voice Studio |
-| 59 | Living Archive | frozen | **KEEP_CORE** — Spatial Living Library |
+```text
+ARCHETYPE_SYSTEM_PASS
+or
+ARCHETYPE_SYSTEM_FAIL/PARTIAL with diagnosed cause
+```
 
-## Documentation completion
+Only after a pass:
 
-Every current internal web implementation/review target now has a Business-specific direction document under:
+```text
+consolidate canonical B01 visual source
+→ expand remaining participant routes
+→ full Desktop/Mobile contact sheet
+→ owner whole-product review
+```
+
+Do not create V8 simply because the current non-Entry pages are weak.
+
+## 5. Business 06 state
+
+Business 06 World Feed remains the strongest **methodology reference**:
+
+- accepted visual baseline before later UX expansion;
+- explicit reference `ADOPT / REJECT / product difference` notes;
+- source separated into tokens/base/layout/components/states/journeys;
+- visual system extended into a deterministic journey.
+
+This does not mean B06's current visual style should be copied or that every current B06 surface is permanently exempt from future review.
+
+## 6. Existing Business-specific direction documents
+
+All existing files under:
 
 ```text
 docs/operations/ui-ux/businesses/B##_VISUAL_DIRECTION.md
 ```
 
-External/successor/non-web/gap handling is frozen in:
+remain useful. Their role is now:
 
 ```text
-PORTFOLIO_IMPLEMENTATION_BOUNDARIES.md
+VISUAL HYPOTHESIS
++ REFERENCE/DIFFERENTIATION INPUT
++ LEGACY AUDIT INPUT
 ```
 
-## Next implementation sequence
+Before implementation, refresh only what current evidence contradicts. Do not rewrite every direction document for ceremony.
 
-The preimplementation direction pass is complete enough to begin numbered implementation while preserving the one known B44 live-capture blocker.
+## 7. Boundary Businesses
 
-Implementation order restarts at:
+External, successor, integrated, protected-authority, non-web, and numbering-gap boundaries remain governed by:
 
-```text
-B01
-```
+- `PORTFOLIO_IMPLEMENTATION_BOUNDARIES.md`
+- `../../portfolio/BUSINESS_REGISTRY.md`
+- `../../portfolio/BUSINESS_EXPANSION_LINEAGE.md`
 
-Required B01 sequence:
+This visual-policy reset does not authorize internal implementation where repository authority excludes it.
 
-```text
-read common standard + B01 direction
-→ implement only B01
-→ technical/browser QA
-→ independent MATCH/PARTIAL/MISS conformance against B01 document
-→ merge/deploy exact-main only if technically valid
-→ owner judges actual live result
-```
+## 8. Historical evidence preservation
 
-Do not proceed to B02 until B01 has completed its independent conformance cycle.
+The previous tracker revision, audit runs/artifacts and old verdict table remain available in Git history. Do not reinterpret those artifacts as fabricated or invalid; they represent the evidence and methodology used at that time.
 
-`OWNER_UI_APPROVED=false` remains unchanged unless the owner explicitly decides otherwise.
+The change is forward-looking:
+
+> historical direction freeze no longer equals current system-proof or full-expansion authority.
+
+## 9. Current portfolio queue rule
+
+For the next internal Business selected for visual work, the work order must record:
+
+- current product truth;
+- existing direction/reference material read;
+- anchor route;
+- 2–3 planned archetypes;
+- current visual gate;
+- full-expansion authorization status;
+- owner-review status.
+
+The portfolio can still progress quickly, but it must fail cheaply at the anchor/system stage instead of expensively after a complete site rebuild.
