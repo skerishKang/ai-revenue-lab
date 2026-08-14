@@ -1,45 +1,95 @@
+## Authority / revision
+
+- Issue / work order:
+- Exact starting base SHA:
+- Branch:
+- Exact current head SHA:
+- Product-evidence stage:
+
 ## Purpose
 
-Describe the business or experimental purpose of this change.
+State the smallest product/business question this change is intended to answer.
 
 ## Scope
 
-- In scope:
-- Out of scope:
+- Allowed paths:
+- Forbidden/out-of-scope paths:
+- Exact changed files:
+- Diff statistics:
+- Explicit non-goals:
 
-## Changes
+## Evidence dimensions
 
-List the exact files or modules changed and why.
+Mark `REQUIRED`, `NOT_REQUIRED`, or `PENDING` and link evidence.
 
-## Evidence
+- Technical implementation:
+- UI / visual:
+- UX / journey:
+- Backend / runtime:
+- Security / privacy:
+- Market / reference:
+- Commercial / business:
+- Production:
 
-- Tests run:
-- Test results and exit codes:
-- Lint/type-check results:
-- Screenshots or sample outputs:
+## Implementation evidence
 
-## AI production record
+- Commands/checks run against this head:
+- Exit/status and pass/fail/skip counts:
+- CI/check runs:
+- Implementation self-check limitations:
 
-- Implementation model/provider:
-- Free calls or quota used:
-- Paid-model use and reason:
-- Human review time:
+Do not present implementer-run local/browser checks as independent Local Validation.
+
+## Independent validation
+
+- Required? yes/no + reason:
+- Validator actor:
+- Exact tested head:
+- Same actor as implementation? yes/no:
+- Source modified during validation? yes/no:
+- Result / artifacts:
+
+If the same actor implemented and executed the checks, label them implementation self-check/non-independent verification.
+
+## Owner-only decisions
+
+- Required? yes/no:
+- Decision/status:
+- `OWNER_UI_APPROVED` or equivalent must not be inferred when the contract reserves that decision to the owner.
 
 ## Risks and limitations
 
-List known risks, assumptions, and remaining work.
+- Known defects:
+- Deferred items:
+- Environment limitations:
+- Data/secret boundary:
+
+## CTO final status
+
+```text
+NOT_REVIEWED / NOT_READY / CONDITIONALLY_READY / READY
+```
+
+Only the Web CTO assigns the final technical/review status.
+
+## Merge / deployment
+
+- Merge authority:
+- Expected head for merge:
+- Deployment target/risk level when applicable:
+- Last known-good Production source/configuration:
+- Recovery fix/revert path:
+- Preview/staging/manual deployment exception: none unless explicitly authorized.
+
+For Git-connected projects, an authorized merge to the configured Production branch is the deployment action; do not create a second manual deployment path.
 
 ## Completion checklist
 
-- [ ] Acceptance criteria are demonstrated.
-- [ ] No secrets, tokens, credentials, or personal data were committed.
-- [ ] Model/provider configuration remains replaceable where applicable.
-- [ ] Documentation was updated when behavior or decisions changed.
-- [ ] Exact changed files and validation evidence are included.
-- [ ] Last known-good Production source/configuration and the reviewed fix-or-revert recovery path are recorded when applicable (see `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`).
-
-### Deployment (when applicable)
-
-- [ ] Git-connected project: the approved merge is the deployment action; no manual deployment was created.
-- [ ] Automatic Production deployment ID/status and resulting main SHA are recorded.
-- [ ] Preview, staging, or manual-deployment exception: none, or a new explicit owner decision is linked.
+- [ ] Current remote main/head/diff were re-read before final review.
+- [ ] Acceptance criteria are demonstrated for the exact reviewed revision.
+- [ ] No unrelated files are included.
+- [ ] Failed/skipped/unexecuted checks are reported truthfully.
+- [ ] No secrets, tokens, credentials, personal data, or private evidence were committed.
+- [ ] Independent validation claims satisfy the actor-separation rule.
+- [ ] Owner-only decisions are not inferred.
+- [ ] Production claims, when applicable, are tied to the actual deployed revision.
