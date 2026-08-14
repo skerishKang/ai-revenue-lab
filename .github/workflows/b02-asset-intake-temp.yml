@@ -64,13 +64,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          command -v ffmpeg >/dev/null
+          python -m pip install --disable-pip-version-check --quiet pillow
           mkdir -p apps/living-travel/pages-preview/site/assets/images
-          ffmpeg -hide_banner -loglevel error -y \
-            -i "$RUNNER_TEMP/b02-asset/songdo-beach-source.png" \
-            -c:v libwebp -q:v 82 -compression_level 6 \
-            apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp
-          test -s apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          src = Path('${{ runner.temp }}/b02-asset/songdo-beach-source.png')
+          dst = Path('apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp')
+          with Image.open(src) as im:
+              im = im.convert('RGB')
+              im.save(dst, 'WEBP', quality=84, method=6)
+          if not dst.is_file() or dst.stat().st_size <= 0:
+              raise SystemExit('WebP derivative missing')
+          with Image.open(dst) as check:
+              if check.size != (1400, 1045):
+                  raise SystemExit(f'unexpected derivative dimensions: {check.size}')
+          print(f'derivative bytes={dst.stat().st_size}')
+          PY
           sha256sum apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp
 
       - name: Write source and derivative record
@@ -97,7 +107,7 @@ jobs:
           - Source dimensions: 1400 × 1045
           - Source bytes: 2664495
           - Source SHA256: \`ad9522edde033960b7ca9f41b7343d8467e39c4969a6b014158a76299dc53fdd\`
-          - Derivative operation: PNG → WebP with ffmpeg/libwebp, quality 82, compression level 6; no compositing or content alteration.
+          - Derivative operation: PNG → WebP with Pillow, quality 84, method 6; no compositing or content alteration.
           - Derivative bytes: ${DERIVATIVE_BYTES}
           - Derivative SHA256: \`${DERIVATIVE_SHA}\`
           - Acquisition: temporary exact-branch GitHub Action under Issues #638/#639; workflow removed after bounded intake.
