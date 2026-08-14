@@ -8,33 +8,146 @@
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="stylesheet" href="../assets/demo.css">
   <link rel="stylesheet" href="../assets/b2-v2-457.css">
-<link rel="stylesheet" href="../assets/b2-shell-20260810.css">
+  <link rel="stylesheet" href="../assets/b2-shell-20260810.css">
+  <link rel="stylesheet" href="../assets/b2-archetype-foundation.css">
+  <link rel="stylesheet" href="../assets/b2-archetype-preferences.css">
+  <link rel="stylesheet" href="../assets/b2-archetype-contrast.css">
 </head>
-<body class="lt-v2">
+<body class="lt-v2 lt-b2-system lt-b2-preferences" data-shell-mode="preserve-page-nav">
   <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">Demo · Synthetic data · No booking</span>
+
   <header class="lt-topbar">
     <a class="lt-wordmark" href="../index.html">Living Travel</a>
-    <nav class="lt-nav" aria-label="주요 메뉴"><a href="preferences.html">Preferences</a><a href="history.html">Archive</a><a href="../operator/login.html">Operator</a></nav>
+    <nav class="lt-nav" aria-label="주요 메뉴">
+      <a href="../index.html">Home</a>
+      <a href="traveler-home.html">Current trip</a>
+      <a href="history.html">Archive</a>
+    </nav>
   </header>
-  <main class="lt-pref-layout">
-    <aside class="lt-pref-aside">
-      <div class="lt-kicker">Shape the trip</div>
-      <h1>같은 부산도<br>당신의 속도로.</h1>
-      <p>어디를 많이 가는지보다 어떤 시간과 동네에 오래 머물고 싶은지를 먼저 정합니다. 선택이 바뀌면 다음 화면의 경로 밀도와 하루 리듬도 달라집니다.</p>
-      <div class="lt-trip-signature"><span>BUSAN / KR</span><span>JOURNEY 01</span><span>2N · 3D</span></div>
-    </aside>
-    <section class="lt-pref-main">
+
+  <main class="b2-pref-shell">
+    <section class="b2-pref-preview" data-pace="slow" aria-live="polite">
+      <img src="../assets/images/songdo-beach-2023.webp" alt="부산 송도해수욕장과 해안, 도심이 함께 보이는 전경" width="1400" height="1045" onerror="this.style.display='none'">
+      <div class="b2-pref-preview__readout">
+        <div class="b2-pref-preview__status">
+          <span>Live trip character</span>
+          <strong id="previewMood">조용하고 로컬하게</strong>
+        </div>
+        <h2 id="previewTitle">오래 머물고,<br>적게 이동하는 부산.</h2>
+        <p class="b2-pref-preview__summary" id="previewSummary">관심: 골목 · 현지 음식 · 바다. 이 결을 중심으로 여행을 엮고, 혼잡 · 유명지 위주 동선은 줄입니다.</p>
+        <div class="b2-route-line" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="b2-route-names"><span>Choryang</span><span>Yeongdo</span><span>Songdo</span></div>
+        <div class="b2-pref-preview__metrics" aria-label="현재 여행 성격 요약">
+          <div><strong id="metricDwell">65%</strong><span>머무는 시간</span></div>
+          <div><strong id="metricMoves">3회</strong><span>큰 이동</span></div>
+          <div><strong id="metricAvoid">혼잡 회피</strong><span>route bias</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="b2-pref-panel">
+      <div class="b2-pref-panel__intro">
+        <p class="b2-system-kicker">Shape the trip · Busan</p>
+        <h1>어디를 갈지보다<br>어떻게 머물지부터.</h1>
+        <p>선택은 오른쪽 목록에서 끝나지 않습니다. 속도와 관심사를 바꾸면 왼쪽 여행의 체류 시간과 이동 밀도, 강조하는 장소가 즉시 달라집니다.</p>
+      </div>
+
       <form method="get" action="generation.html" onsubmit="return simulateGeneration(event)">
-        <div class="lt-pref-section"><div class="lt-pref-section-label">01 · Destination</div><div class="lt-pref-options"><button type="button" class="lt-pref-choice selected" disabled>부산 · Busan</button><button type="button" class="lt-pref-choice selected" disabled>2박 3일 · 3 days</button></div></div>
-        <div class="lt-pref-section"><div class="lt-pref-section-label">02 · Pace</div><div class="lt-pref-options"><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">천천히 · 오래 머물기</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">보통 · 균형 있게</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">빠르게 · 넓게 보기</button></div></div>
-        <div class="lt-pref-section"><div class="lt-pref-section-label">03 · Drawn to</div><div class="lt-pref-options"><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">골목 · 동네의 결</button><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">현지 음식 · 오래된 가게</button><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">바다 · 산책</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">문화 · 역사</button></div></div>
-        <div class="lt-pref-section"><div class="lt-pref-section-label">04 · Avoid</div><div class="lt-pref-options"><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">사람 많은 곳</button><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">유명 관광지 위주</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">늦은 야간 일정</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">긴 이동</button></div></div>
-        <div class="lt-pref-section"><div class="lt-pref-section-label">05 · Mood</div><div class="lt-pref-options"><button type="button" class="lt-pref-choice selected" onclick="togglePref(this)">조용하고 로컬하게</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">활기차고 새로운 곳</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">자연과 회복 중심</button><button type="button" class="lt-pref-choice" onclick="togglePref(this)">음식과 밤 중심</button></div></div>
-        <div class="lt-pref-action"><small>현재 화면은 고정 부산 시나리오를 사용합니다. 선택은 브라우저 내부 데모 흐름에만 사용되며 외부 전송·예약·결제는 없습니다.</small><button type="submit" class="lt-primary">이 취향으로 여행판 만들기 →</button></div>
+        <div class="b2-pref-groups">
+          <section class="b2-pref-group">
+            <div class="b2-pref-group__label">01 · Trip</div>
+            <div class="b2-pref-options">
+              <button type="button" class="b2-pref-choice selected" disabled>부산 · Busan</button>
+              <button type="button" class="b2-pref-choice selected" disabled>2박 3일 · 3 days</button>
+            </div>
+          </section>
+
+          <section class="b2-pref-group">
+            <div class="b2-pref-group__label">02 · Pace</div>
+            <div class="b2-pref-options" data-single-group="pace">
+              <button type="button" class="b2-pref-choice selected" data-group="pace" data-value="slow" onclick="choosePref(this)">천천히 · 오래 머물기</button>
+              <button type="button" class="b2-pref-choice" data-group="pace" data-value="balanced" onclick="choosePref(this)">보통 · 균형 있게</button>
+              <button type="button" class="b2-pref-choice" data-group="pace" data-value="fast" onclick="choosePref(this)">빠르게 · 넓게 보기</button>
+            </div>
+          </section>
+
+          <section class="b2-pref-group">
+            <div class="b2-pref-group__label">03 · Drawn to</div>
+            <div class="b2-pref-options">
+              <button type="button" class="b2-pref-choice selected" data-group="focus" data-label="골목" onclick="choosePref(this)">골목 · 동네의 결</button>
+              <button type="button" class="b2-pref-choice selected" data-group="focus" data-label="현지 음식" onclick="choosePref(this)">현지 음식 · 오래된 가게</button>
+              <button type="button" class="b2-pref-choice selected" data-group="focus" data-label="바다" onclick="choosePref(this)">바다 · 산책</button>
+              <button type="button" class="b2-pref-choice" data-group="focus" data-label="문화 · 역사" onclick="choosePref(this)">문화 · 역사</button>
+            </div>
+          </section>
+
+          <section class="b2-pref-group">
+            <div class="b2-pref-group__label">04 · Avoid</div>
+            <div class="b2-pref-options">
+              <button type="button" class="b2-pref-choice selected" data-group="avoid" data-label="혼잡" onclick="choosePref(this)">사람 많은 곳</button>
+              <button type="button" class="b2-pref-choice selected" data-group="avoid" data-label="유명지 위주" onclick="choosePref(this)">유명 관광지 위주</button>
+              <button type="button" class="b2-pref-choice" data-group="avoid" data-label="늦은 야간" onclick="choosePref(this)">늦은 야간 일정</button>
+              <button type="button" class="b2-pref-choice" data-group="avoid" data-label="긴 이동" onclick="choosePref(this)">긴 이동</button>
+            </div>
+          </section>
+
+          <section class="b2-pref-group">
+            <div class="b2-pref-group__label">05 · Mood</div>
+            <div class="b2-pref-options" data-single-group="mood">
+              <button type="button" class="b2-pref-choice selected" data-group="mood" data-value="local" onclick="choosePref(this)">조용하고 로컬하게</button>
+              <button type="button" class="b2-pref-choice" data-group="mood" data-value="lively" onclick="choosePref(this)">활기차고 새로운 곳</button>
+              <button type="button" class="b2-pref-choice" data-group="mood" data-value="restore" onclick="choosePref(this)">자연과 회복 중심</button>
+              <button type="button" class="b2-pref-choice" data-group="mood" data-value="night" onclick="choosePref(this)">음식과 밤 중심</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="b2-pref-action">
+          <small>고정 부산 시나리오를 사용하는 브라우저 내부 데모입니다. 선택은 외부 전송·예약·결제로 이어지지 않습니다.</small>
+          <button type="submit" class="b2-system-primary b2-pref-submit">이 취향으로 여행판 만들기</button>
+        </div>
       </form>
     </section>
   </main>
-  <script>function togglePref(el){if(el.disabled)return;el.classList.toggle('selected');}function simulateGeneration(e){e.preventDefault();window.location.href='generation.html';return false;}</script>
-<script src="../assets/b2-shell-20260810.js"></script>
+
+  <script>
+    function selected(group){return Array.from(document.querySelectorAll('[data-group="'+group+'"].selected'));}
+    function choosePref(el){
+      if(el.disabled)return;
+      var group=el.dataset.group;
+      if(group==='pace'||group==='mood'){
+        document.querySelectorAll('[data-group="'+group+'"]').forEach(function(node){node.classList.remove('selected');});
+        el.classList.add('selected');
+      }else{
+        el.classList.toggle('selected');
+      }
+      updateTripPreview();
+    }
+    function updateTripPreview(){
+      var pace=(selected('pace')[0]||{}).dataset?.value||'slow';
+      var moodNode=selected('mood')[0];
+      var mood=moodNode?moodNode.textContent.trim():'조용하고 로컬하게';
+      var focuses=selected('focus').map(function(node){return node.dataset.label;});
+      var avoids=selected('avoid').map(function(node){return node.dataset.label;});
+      var preview=document.querySelector('.b2-pref-preview');
+      preview.dataset.pace=pace;
+      var config={
+        slow:{title:'오래 머물고,<br>적게 이동하는 부산.',dwell:'65%',moves:'3회'},
+        balanced:{title:'동네와 바다를<br>균형 있게 잇는 부산.',dwell:'52%',moves:'5회'},
+        fast:{title:'더 넓게 움직이며<br>장면을 많이 만나는 부산.',dwell:'38%',moves:'7회'}
+      }[pace];
+      document.getElementById('previewTitle').innerHTML=config.title;
+      document.getElementById('metricDwell').textContent=config.dwell;
+      document.getElementById('metricMoves').textContent=config.moves;
+      document.getElementById('previewMood').textContent=mood;
+      var focusText=focuses.length?focuses.join(' · '):'동네의 리듬';
+      var avoidText=avoids.length?avoids.join(' · '):'없음';
+      document.getElementById('previewSummary').textContent='관심: '+focusText+'. 이 결을 중심으로 여행을 엮습니다. 줄일 조건: '+avoidText+'.';
+      document.getElementById('metricAvoid').textContent=avoids.length?('회피 '+avoids.length):'회피 없음';
+    }
+    function simulateGeneration(e){e.preventDefault();window.location.href='generation.html';return false;}
+    updateTripPreview();
+  </script>
+  <script src="../assets/b2-shell-20260810.js"></script>
 </body>
 </html>

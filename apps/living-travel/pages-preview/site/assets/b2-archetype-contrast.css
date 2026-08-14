@@ -1,0 +1,43 @@
+/* B02 archetype system — shared contrast/chrome contract
+   This is a bounded shared rule set, not a new visual generation.
+   It prevents legacy B2 selectors from overriding text placed on photography
+   and keeps customer navigation legible across split photo/ivory layouts. */
+
+.b2-pref-preview h2,
+.b2-pref-preview__status strong,
+.b2-home-scene h2 {
+  color: var(--b2-ivory-hi) !important;
+  text-shadow: 0 2px 20px rgba(7, 20, 23, .34);
+}
+
+.b2-pref-preview__status span,
+.b2-pref-preview__summary,
+.b2-home-scene__label,
+.b2-home-scene .b2-route-names,
+.b2-read-opening__route-head,
+.b2-read-opening__scene .b2-route-names {
+  color: var(--b2-ivory-hi) !important;
+}
+
+/* Home has a descriptive image caption, not a second hero. */
+.b2-home-scene h2 {
+  max-width: 12em;
+  font-size: clamp(2.25rem, 3.5vw, 3.95rem) !important;
+  line-height: 1.03 !important;
+}
+
+@media (min-width: 821px) {
+  body.lt-b2-home .lt-nav a,
+  body.lt-b2-read .lt-nav a {
+    color: var(--b2-ink) !important;
+    text-shadow: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .b2-home-scene h2 {
+    max-width: 13em;
+    font-size: 1.5rem !important;
+    line-height: 1.05 !important;
+  }
+}

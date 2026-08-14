@@ -15,14 +15,29 @@
   function url(rel) { return new URL(rel, siteRoot).href; }
   function here(name) { return window.location.pathname.toLowerCase().endsWith(name.toLowerCase()); }
 
+  brand.href = url('index.html');
+  brand.setAttribute('aria-label', 'Living Travel 홈');
+
+  /*
+   * New place-led customer surfaces still load this external script so the
+   * repository's CSP/persistent-shell contract remains real and testable.
+   * They deliberately own their own bounded customer navigation, however.
+   * In preserve-page-nav mode the shell may normalize the home link and mark
+   * itself ready, but it must not replace page navigation or inject operator
+   * / editor controls into the participant experience.
+   */
+  var preservePageNav = document.body && document.body.getAttribute('data-shell-mode') === 'preserve-page-nav';
+  if (preservePageNav) {
+    header.classList.add('lt-topbar--persistent');
+    document.documentElement.classList.add('lt-shell-ready', 'lt-shell-local-nav');
+    return;
+  }
+
   var active = 'edition';
   if (here('/guide.html')) active = 'guide';
   else if (here('/preferences.html') || here('/intro.html') || here('/generation.html') || here('/pending.html') || here('/traveler/enter.html')) active = 'taste';
   else if (here('/history.html')) active = 'archive';
   else if (here('/index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) active = 'home';
-
-  brand.href = url('index.html');
-  brand.setAttribute('aria-label', 'Living Travel 홈');
 
   var items = [
     { key: 'guide', label: '30초 사용법', href: 'guide.html', guide: true },
