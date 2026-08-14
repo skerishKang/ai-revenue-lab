@@ -1,0 +1,46 @@
+name: Validate B35 Commercial Source
+
+on:
+  pull_request:
+    paths:
+      - 'docs/commercial/business-35-ai-media-education-dx/**'
+      - '.github/workflows/validate-b35-commercial-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Commercial source contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run legacy commercial consistency validator
+        run: python3 docs/commercial/business-35-ai-media-education-dx/tests/validate_sales_package.py
+
+      - name: Validate V3.1 authority markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='docs/commercial/business-35-ai-media-education-dx'
+          grep -Fq 'PRODUCT: 파디엠 AI 미디어 업무전환 스튜디오' "$root/CURRENT_PRODUCT_AUTHORITY.md"
+          grep -Fq 'V3_1_MERGED_PR: #370' "$root/CURRENT_PRODUCT_AUTHORITY.md"
+          grep -Fq '파디엠 AI 미디어 업무전환 스튜디오' "$root/01-one-page-offer.md"
+          grep -Fq '파디엠 AI 미디어 업무전환 스튜디오' "$root/02-ten-page-proposal.md"
+          grep -Fq '조직별 진단 + 새 업무 흐름 + 추천 파일럿' "$root/CURRENT_PRODUCT_AUTHORITY.md"
+          ! grep -Fq 'Current state: `UI_DEPLOYED_VERIFIED`' "$root/README.md"
+          test "$(grep -c '^## Page [0-9][0-9]* —' "$root/02-ten-page-proposal.md")" -eq 10
+
+      - name: Whitespace check
+        run: git diff --check
