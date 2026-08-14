@@ -1,0 +1,624 @@
+/*
+ * B01 Personal Edition V7 — Collectible Glass
+ * Owner-directed visual completion after V6 exploration.
+ * Participant visual layer only. Existing routes, content, backend/auth/DB/state remain unchanged.
+ */
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] {
+  --v7-outer: #0d0f11;
+  --v7-bg: #f1eee7;
+  --v7-bg-deep: #e6e1d8;
+  --v7-paper: #f8f6f1;
+  --v7-ink: #111418;
+  --v7-ink-2: #303638;
+  --v7-muted: #686d6b;
+  --v7-hair: rgba(17, 20, 24, .14);
+  --v7-hair-strong: rgba(17, 20, 24, .22);
+  --v7-glass-hi: rgba(252, 252, 248, .92);
+  --v7-glass-mid: rgba(233, 234, 229, .83);
+  --v7-glass-low: rgba(213, 215, 211, .76);
+  --v7-shadow: 0 34px 90px rgba(18, 20, 22, .14), 0 9px 28px rgba(18, 20, 22, .07);
+  --v7-shadow-soft: 0 22px 54px rgba(18, 20, 22, .09);
+  min-width: 320px;
+  background: var(--v7-outer);
+  color: var(--v7-ink);
+  font-family: Inter, Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+}
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"]::before,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"]::after {
+  display: none !important;
+}
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] a { color: inherit; }
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .site-header,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-site-header {
+  position: sticky; top: 0; z-index: 90; border: 0;
+  background: rgba(13, 15, 17, .88); box-shadow: none;
+  backdrop-filter: blur(22px) saturate(.72);
+}
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-site-nav {
+  width: min(1510px, calc(100% - 38px)); min-height: 60px; margin: auto; padding: 9px 0;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-brand {
+  gap: 9px; color: #f2efe8; font-size: 14px; font-weight: 880; letter-spacing: -.035em;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-brand-mark {
+  display: grid; width: 28px; height: 34px; place-items: center;
+  border: 1px solid rgba(255,255,255,.46); border-radius: 5px;
+  background: linear-gradient(155deg, rgba(255,255,255,.26), rgba(255,255,255,.08));
+  color: #f4f1ea; box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+  font-size: 8px; font-weight: 900; letter-spacing: .04em;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-caption {
+  display: flex; align-items: center; gap: 0; padding: 0; border: 0; border-radius: 0;
+  background: transparent; color: rgba(244,241,234,.66);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links a,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-caption a,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links .btn-link {
+  min-height: 34px; padding: 8px 11px; border: 0; border-radius: 0; background: transparent;
+  color: inherit; font-size: 10px; font-weight: 760; letter-spacing: .02em; text-decoration: none;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links > * + *,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-caption > * + * { border-left: 1px solid rgba(255,255,255,.12); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links a:hover,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-caption a:hover,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links .btn-link:hover { background: transparent; color: #fff; }
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .container,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-main {
+  position: relative; width: min(1580px, calc(100% - 28px)); max-width: none;
+  min-height: calc(100svh - 112px); margin: 0 auto 14px; padding: clamp(22px, 3vw, 46px);
+  overflow: hidden; border: 1px solid rgba(255,255,255,.26); border-radius: 30px;
+  background: radial-gradient(circle at 84% 9%, rgba(255,255,255,.78), transparent 25%),
+              linear-gradient(118deg, #f5f2eb 0%, #efebe3 59%, #e7e2d9 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .container::before,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-main::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .36;
+  background-image: linear-gradient(to right, rgba(17,20,24,.026) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(17,20,24,.022) 1px, transparent 1px);
+  background-size: 76px 76px; mask-image: linear-gradient(90deg, transparent, #000 44%, #000 100%);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .container > *,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-main > * { position: relative; z-index: 1; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .site-footer,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-site-footer {
+  width: min(1510px, calc(100% - 38px)); margin: 0 auto; padding: 8px 0 15px; border: 0;
+  background: transparent; color: rgba(244,241,234,.46); font-size: 9px; letter-spacing: .08em;
+}
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-kicker,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-state-label,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-issue,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .cover-pub {
+  color: #4f5654; font-size: 9px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] h1,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] h2,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] h3 {
+  color: var(--v7-ink); font-family: inherit; letter-spacing: -.055em;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .btn {
+  min-height: 42px; padding: 10px 14px; border: 1px solid var(--v7-hair-strong); border-radius: 7px;
+  background: rgba(248,247,242,.62); box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+  color: var(--v7-ink); font-size: 11px; font-weight: 850;
+  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .btn:hover {
+  transform: translateY(-1px); border-color: rgba(17,20,24,.42); box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .btn-primary { border-color: #16191c; background: #16191c; color: #f8f5ee; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .btn-secondary { border-color: var(--v7-hair); background: rgba(248,247,242,.48); color: var(--v7-ink-2); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(a,button,input,textarea,select):focus-visible {
+  outline: 2px solid #15181a; outline-offset: 4px; box-shadow: 0 0 0 4px rgba(247,244,237,.88);
+}
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(.v3-stage-ledger,.v3-write-form,.v3-feedback-form,.v3-reader-note,.edition-insight,.edition-continuity,.edition-feedback-applied,.edition-prompt,.v3-guide-map,.v3-guide-finish) {
+  border: 1px solid rgba(255,255,255,.75);
+  background: linear-gradient(145deg, var(--v7-glass-hi), var(--v7-glass-mid) 60%, var(--v7-glass-low));
+  box-shadow: var(--v7-shadow-soft), inset 0 1px 0 rgba(255,255,255,.94), inset 0 -1px 0 rgba(66,70,69,.08);
+  backdrop-filter: blur(28px) saturate(.72);
+}
+
+/* Entry */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-intro { display: grid; gap: clamp(46px, 7vw, 96px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero {
+  display: grid; grid-template-columns: minmax(300px,.78fr) minmax(540px,1.35fr); gap: clamp(18px,2vw,38px);
+  min-height: min(780px, calc(100svh - 135px)); padding: 0; border: 0; border-radius: 0; background: transparent; overflow: visible;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-copy {
+  display: flex; min-width: 0; padding: clamp(28px,5vw,72px) 0 clamp(28px,4vw,64px) clamp(6px,1vw,14px);
+  flex-direction: column; justify-content: center; gap: 28px; background: transparent;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-title {
+  max-width: 8.4ch; margin: 13px 0 0; color: var(--v7-ink) !important;
+  font-size: clamp(48px,5.1vw,74px); line-height: 1.01; font-weight: 900; letter-spacing: -.067em;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-title em { display:block; color:#666c68; font-style:normal; font-weight:850; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-lede {
+  max-width: 410px; margin: 22px 0 0; padding: 16px 18px 17px; border: 1px solid rgba(255,255,255,.82);
+  border-radius: 12px; background: linear-gradient(145deg,rgba(250,250,246,.82),rgba(221,224,219,.70));
+  box-shadow: var(--v7-shadow-soft), inset 0 1px 0 rgba(255,255,255,.96); backdrop-filter: blur(28px) saturate(.74);
+  color: #2b3031; font-size: 13px; line-height: 1.7; font-weight: 620;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-action { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-note { flex-basis:100%; color:rgba(17,20,24,.47); font-size:8px; font-weight:860; letter-spacing:.12em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-assembly-stage {
+  position:relative; min-height:670px; margin:0; border:0; border-radius:0; overflow:visible; background:transparent !important;
+  box-shadow:none; perspective:1300px;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-assembly-stage::before {
+  content:""; position:absolute; z-index:0; left:2%; top:7%; width:94%; height:83%; border:1px solid rgba(17,20,24,.12);
+  border-radius:50%; transform:rotate(-12deg);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-binding-axis,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-assembly-caption { display:none; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-cluster { position:absolute; z-index:2; inset:5% 0 4% 0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo {
+  position:absolute; margin:0; overflow:hidden; border-radius:20px; background:#cbc5bb;
+  box-shadow:0 35px 82px rgba(16,18,21,.22),0 8px 22px rgba(16,18,21,.08);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo img { width:100%; height:100%; display:block; object-fit:cover; filter:saturate(.82) contrast(1.02) brightness(.98); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-a { z-index:1; width:37%; height:60%; left:0; top:25%; transform:rotate(-8deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-b { z-index:3; width:43%; height:75%; left:27%; top:0; transform:rotate(4deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-c { z-index:2; width:37%; height:59%; right:0; top:31%; transform:rotate(9deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment {
+  z-index:8; width:clamp(135px,23%,205px); min-height:0; padding:11px 12px; border:1px solid rgba(255,255,255,.72);
+  border-radius:8px; background:linear-gradient(145deg,rgba(250,250,246,.83),rgba(220,223,218,.73));
+  box-shadow:0 18px 44px rgba(15,17,19,.12),inset 0 1px 0 rgba(255,255,255,.90); backdrop-filter:blur(20px) saturate(.72);
+  color:#333838; font-size:9px; line-height:1.45; font-weight:700;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment small { display:block; margin-bottom:6px; color:rgba(17,20,24,.46); font-size:7px; letter-spacing:.09em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f1 { left:2%; top:16%; transform:rotate(-5deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f2 { left:7%; bottom:6%; transform:rotate(2deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f3 { right:2%; top:14%; transform:rotate(3deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f4 { right:6%; bottom:7%; transform:rotate(-3deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-object {
+  position:absolute; z-index:12; left:42%; top:11%; display:flex; width:clamp(245px,29%,345px); height:70%; min-height:455px;
+  padding:30px 24px 24px; flex-direction:column; justify-content:space-between; overflow:hidden;
+  border:1px solid rgba(255,255,255,.88); border-radius:10px;
+  background:linear-gradient(160deg,rgba(251,251,247,.94),rgba(243,243,238,.90) 23%,rgba(232,233,228,.86) 63%,rgba(211,214,210,.79));
+  box-shadow:var(--v7-shadow),inset 1px 1px 0 rgba(255,255,255,.99),inset -1px -1px 0 rgba(84,88,87,.11),inset 0 0 42px rgba(255,255,255,.13);
+  backdrop-filter:blur(42px) saturate(.62); color:#202527; transform:rotate(-1.1deg) translateZ(28px);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-object::before {
+  content:""; position:absolute; inset:1px; pointer-events:none; border-radius:8px;
+  background:linear-gradient(105deg,rgba(255,255,255,.68),rgba(255,255,255,.20) 18%,transparent 38%,transparent 70%,rgba(255,255,255,.22));
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-object > * { position:relative; z-index:1; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-eyebrow { color:#2d3233; font-size:8px; font-weight:900; letter-spacing:.12em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-title { max-width:7ch; margin:auto 0; color:#1b2021; font-size:clamp(34px,3.1vw,47px); line-height:.98; font-weight:900; letter-spacing:-.06em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-no { padding-top:15px; border-top:1px solid rgba(35,40,41,.16); color:#343a3b; font-size:12px; font-weight:900; letter-spacing:.12em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof {
+  display:grid; grid-template-columns:repeat(3,1fr); overflow:hidden; border:1px solid rgba(255,255,255,.68); border-radius:16px;
+  background:rgba(247,246,241,.48); box-shadow:var(--v7-shadow-soft),inset 0 1px 0 rgba(255,255,255,.72); backdrop-filter:blur(20px);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof > div { min-height:150px; padding:25px; border:0; border-right:1px solid var(--v7-hair); background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof > div:last-child { border-right:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof small { color:var(--v7-muted); font-size:8px; letter-spacing:.12em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof strong { display:block; margin:9px 0; color:var(--v7-ink); font-size:16px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof p { margin:0; color:var(--v7-muted); font-size:12px; line-height:1.65; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip { display:grid; grid-template-columns:1.2fr repeat(4,1fr); gap:0; border:0; background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip > div { min-height:122px; padding:18px 16px; border:0; border-top:1px solid var(--v7-hair); border-right:1px solid var(--v7-hair); background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip > div:last-child { border-right:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip span { color:var(--v7-muted); font-size:7px; letter-spacing:.10em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip strong { display:block; margin:7px 0; font-size:13px; color:var(--v7-ink); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip p { margin:0; color:var(--v7-muted); font-size:10px; line-height:1.55; }
+
+/* Workflow / access */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow {
+  display:grid; grid-template-columns:minmax(275px,.68fr) minmax(0,1.55fr); min-height:min(760px,calc(100svh - 150px)); overflow:hidden;
+  border:1px solid rgba(255,255,255,.66); border-radius:24px; background:rgba(247,245,239,.43);
+  box-shadow:var(--v7-shadow-soft),inset 0 1px 0 rgba(255,255,255,.78);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-rail {
+  position:relative; z-index:2; display:flex; padding:clamp(28px,4vw,56px); flex-direction:column; justify-content:space-between;
+  border:0; border-right:1px solid var(--v7-hair); background:linear-gradient(155deg,rgba(247,246,241,.72),rgba(218,220,216,.66));
+  color:var(--v7-ink); backdrop-filter:blur(24px);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-rail h1 { max-width:9ch; margin:14px 0 28px; color:var(--v7-ink); font-size:clamp(42px,5vw,69px); line-height:1; font-weight:880; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-ledger { overflow:hidden; border-radius:9px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row {
+  display:grid; grid-template-columns:39px 1fr; min-height:45px; padding:9px 12px; border:0; border-bottom:1px solid rgba(17,20,24,.11);
+  background:transparent; color:#6b706e; font-size:10px;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row:last-child { border-bottom:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row.is-current { background:rgba(20,23,25,.92); color:#f5f2eb; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row.is-done { background:rgba(255,255,255,.24); color:var(--v7-ink); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene {
+  position:relative; display:flex; min-width:0; padding:clamp(42px,6vw,88px) clamp(40px,6vw,90px); flex-direction:column; justify-content:center;
+  overflow:hidden; background:rgba(250,249,245,.42); color:var(--v7-ink);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene::before {
+  content:"PRIVATE EDITION / HUMAN SHAPED"; position:absolute; top:25px; right:27px; color:rgba(17,20,24,.40); font-size:7px; font-weight:900; letter-spacing:.15em;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene h2 { position:relative; z-index:2; max-width:10ch; margin:13px 0 20px; color:var(--v7-ink); font-size:clamp(45px,6vw,84px); line-height:1; font-weight:880; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene > p,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene > form,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-state-actions,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .preview-journey-nav,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-state-label { position:relative; z-index:2; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene > p { max-width:560px; color:var(--v7-muted); font-size:14px; line-height:1.72; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-composition {
+  position:relative; z-index:1; width:min(650px,100%); min-height:245px; margin-top:clamp(32px,5vw,62px); overflow:hidden;
+  border:1px solid rgba(255,255,255,.45); border-radius:18px;
+  background:linear-gradient(90deg,rgba(12,14,16,.11),rgba(12,14,16,.02)),url('/static/images/editorial-process-layers.webp') center/cover no-repeat;
+  box-shadow:var(--v7-shadow);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-composition::after { content:""; position:absolute; inset:0; background:linear-gradient(150deg,rgba(255,255,255,.05),transparent 36%,rgba(10,12,14,.10)); pointer-events:none; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-fragment {
+  z-index:2; width:clamp(145px,33%,220px); padding:12px 13px; border:1px solid rgba(255,255,255,.76); border-radius:8px;
+  background:linear-gradient(145deg,rgba(249,249,245,.88),rgba(217,220,216,.78)); color:#303536;
+  box-shadow:0 17px 38px rgba(14,16,18,.16),inset 0 1px 0 rgba(255,255,255,.90); backdrop-filter:blur(18px); font-size:9px; font-weight:800;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-fragment:nth-child(1) { left:5%; top:12%; transform:rotate(-3deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-fragment:nth-child(2) { left:35%; top:45%; transform:rotate(1deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-fragment:nth-child(3) { right:5%; bottom:10%; transform:rotate(-2deg); }
+
+/* Library */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library { overflow:visible; border:0; border-radius:0; background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-head {
+  display:grid; grid-template-columns:1fr auto; gap:28px; align-items:end; padding:clamp(12px,2vw,28px) 0 clamp(28px,4vw,50px);
+  border:0; border-bottom:1px solid var(--v7-hair); background:transparent;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-head h1 { margin:8px 0 0; color:var(--v7-ink); font-size:clamp(52px,7vw,92px); line-height:.91; font-weight:900; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-meta { display:flex; flex-wrap:wrap; gap:0; color:var(--v7-muted); font-size:9px; font-weight:760; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-meta > span { padding:8px 10px; border:0; border-left:1px solid var(--v7-hair); background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-meta > span:first-child { border-left:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-stage {
+  display:grid; grid-template-columns:minmax(340px,.9fr) minmax(0,1.1fr); gap:clamp(24px,4vw,60px); padding:clamp(36px,5vw,70px) 0;
+  border:0; border-bottom:1px solid var(--v7-hair); background:transparent;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-object-zone {
+  position:relative; display:grid; min-height:520px; padding:38px; place-items:center; overflow:hidden;
+  border:1px solid rgba(255,255,255,.44); border-radius:22px;
+  background:linear-gradient(150deg,rgba(12,14,16,.02),rgba(12,14,16,.13)),url('/static/images/v5/library-edition-stack.webp') center/cover no-repeat;
+  box-shadow:var(--v7-shadow);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-object-zone::after,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover-zone::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(140deg,rgba(255,255,255,.08),transparent 42%,rgba(13,15,17,.09)); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-cover,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover {
+  position:relative; z-index:2; display:flex; width:min(275px,72%); aspect-ratio:.69; padding:24px 22px; flex-direction:column; justify-content:space-between;
+  border:1px solid rgba(255,255,255,.90); border-radius:9px;
+  background:linear-gradient(160deg,rgba(251,251,247,.94),rgba(237,238,233,.88) 56%,rgba(209,212,208,.80));
+  box-shadow:0 38px 90px rgba(12,14,16,.26),inset 1px 1px 0 rgba(255,255,255,.98),inset -1px -1px 0 rgba(60,65,64,.10);
+  backdrop-filter:blur(36px) saturate(.62); color:#202527; transform:rotate(-1.8deg);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-cover .cover-name,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover .cover-title { color:#1e2324; font-size:clamp(28px,3vw,40px); line-height:1.02; font-weight:890; letter-spacing:-.055em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-cover :is(.cover-kicker,.cover-index),
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover :is(.cover-pub,.cover-no) { color:#343a3b; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-story {
+  align-self:center; max-width:620px; padding:clamp(26px,4vw,48px); border:1px solid rgba(255,255,255,.72); border-radius:15px;
+  background:linear-gradient(145deg,rgba(250,250,246,.76),rgba(222,224,220,.66)); box-shadow:var(--v7-shadow-soft),inset 0 1px 0 rgba(255,255,255,.88); backdrop-filter:blur(24px);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-story h2 { margin:12px 0 16px; font-size:clamp(38px,4.6vw,62px); line-height:1; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-story p { color:var(--v7-muted); font-size:13px; line-height:1.72; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-sequence { padding:clamp(32px,4vw,54px) 0 8px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-sequence-head { border:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-spines { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-spine {
+  min-height:230px; padding:17px 15px; border:1px solid rgba(255,255,255,.62); border-radius:8px;
+  background:linear-gradient(160deg,rgba(248,248,244,.72),rgba(215,218,214,.62));
+  box-shadow:0 16px 38px rgba(18,20,22,.08),inset 0 1px 0 rgba(255,255,255,.80); backdrop-filter:blur(18px); color:var(--v7-ink);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-spine:hover { transform:translateY(-3px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-privacy-line { color:var(--v7-muted); border-top:1px solid var(--v7-hair); }
+
+/* Write */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write { display:grid; grid-template-columns:minmax(300px,.72fr) minmax(0,1.35fr); gap:clamp(24px,4vw,62px); min-height:min(760px,calc(100svh - 150px)); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-margin {
+  position:relative; display:flex; padding:clamp(28px,4vw,54px) clamp(22px,3vw,42px) 280px; flex-direction:column; justify-content:space-between;
+  overflow:hidden; border:1px solid rgba(255,255,255,.56); border-radius:22px; background:rgba(248,247,242,.40);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-margin::after {
+  content:""; position:absolute; left:22px; right:22px; bottom:22px; height:225px; border-radius:16px;
+  background:linear-gradient(150deg,rgba(12,14,16,.02),rgba(12,14,16,.12)),url('/static/images/v5/human-proof-review.webp') center/cover no-repeat;
+  box-shadow:var(--v7-shadow-soft);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-margin h1 { max-width:9ch; margin:12px 0 14px; font-size:clamp(44px,5vw,69px); line-height:1; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-margin p { max-width:360px; color:var(--v7-muted); font-size:13px; line-height:1.65; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-prompt-notes { position:relative; z-index:2; display:grid; gap:8px; margin-top:25px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-prompt-note { padding:10px 11px; border:1px solid rgba(255,255,255,.72); border-radius:7px; background:linear-gradient(145deg,rgba(249,249,245,.82),rgba(221,223,219,.72)); box-shadow:0 10px 24px rgba(16,18,20,.07); color:#3a4040; font-size:10px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-desk { display:flex; align-items:center; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-form { width:100%; padding:clamp(26px,4vw,48px); border-radius:16px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-label-row { color:var(--v7-muted); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-label-row label { color:var(--v7-ink); font-size:11px; font-weight:850; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-form textarea,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-form input[type="text"],
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-form textarea,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-form select {
+  width:100%; border:0 !important; border-bottom:1px solid rgba(17,20,24,.22) !important; border-radius:0 !important;
+  background:transparent !important; color:var(--v7-ink) !important; box-shadow:none !important;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-form textarea { min-height:360px; padding:18px 0; font-size:16px; line-height:1.8; resize:vertical; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-footer { border-top:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-consent { color:var(--v7-muted); font-size:10px; line-height:1.6; }
+
+/* Read */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read { color:var(--v7-ink); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-opening {
+  display:grid; grid-template-columns:minmax(340px,.85fr) minmax(0,1.15fr); gap:clamp(28px,5vw,72px); align-items:center;
+  min-height:650px; padding:clamp(14px,2vw,28px) 0 clamp(44px,5vw,70px); border-bottom:1px solid var(--v7-hair);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover-zone {
+  position:relative; display:grid; min-height:540px; place-items:center; overflow:hidden; border:1px solid rgba(255,255,255,.46); border-radius:22px;
+  background:linear-gradient(145deg,rgba(12,14,16,.02),rgba(12,14,16,.13)),url('/static/images/v5/edition-opening.webp') center/cover no-repeat; box-shadow:var(--v7-shadow);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-title h1 { max-width:10ch; margin:13px 0 18px; color:var(--v7-ink) !important; font-size:clamp(50px,6.2vw,86px); line-height:.98; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-deck { max-width:600px; color:var(--v7-muted); font-size:15px; line-height:1.72; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-title time { color:rgba(17,20,24,.46); font-size:8px; letter-spacing:.10em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-shell { display:grid; grid-template-columns:145px minmax(0,760px) minmax(120px,1fr); gap:clamp(22px,4vw,54px); justify-content:center; padding:clamp(52px,7vw,96px) 0; background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-margin,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-tail { color:rgba(17,20,24,.44); font-size:8px; line-height:1.8; letter-spacing:.08em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-main { min-width:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-opening { color:#24292a; font-size:clamp(20px,2vw,27px); line-height:1.65; letter-spacing:-.025em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-section { padding:42px 0; border-top:1px solid var(--v7-hair); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-section h3 { margin:0 0 20px; font-size:clamp(25px,2.7vw,36px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .section-copy-v3 p { color:#363c3c; font-size:16px; line-height:1.9; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-insight,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-continuity,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-feedback-applied,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-prompt { margin:28px 0; padding:22px 24px; border-radius:12px; color:#2e3434; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v5-read-visual-break {
+  min-height:330px; margin:44px 0; padding:0; overflow:hidden; border:1px solid rgba(255,255,255,.48); border-radius:18px;
+  background:linear-gradient(145deg,rgba(11,13,15,.01),rgba(11,13,15,.15)),url('/static/images/v5/hero-private-edition.webp') center/cover no-repeat; box-shadow:var(--v7-shadow-soft);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v5-read-visual-break figcaption { width:min(410px,88%); margin:22px; padding:16px 17px; border:1px solid rgba(255,255,255,.76); border-radius:10px; background:linear-gradient(145deg,rgba(249,249,245,.88),rgba(217,220,216,.79)); box-shadow:0 17px 38px rgba(14,16,18,.13); backdrop-filter:blur(22px); color:#2d3333; font-size:11px; line-height:1.65; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-actions { display:flex; flex-wrap:wrap; gap:8px; padding-top:30px; border-top:1px solid var(--v7-hair); }
+
+/* Archive */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history { background:transparent; border:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head {
+  position:relative; display:grid; grid-template-columns:minmax(0,.8fr) minmax(320px,.58fr); min-height:390px; padding:clamp(28px,4vw,52px);
+  overflow:hidden; border:1px solid rgba(255,255,255,.46); border-radius:22px; background:linear-gradient(145deg,rgba(248,247,242,.55),rgba(222,223,219,.50)); box-shadow:var(--v7-shadow-soft);
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head::after { content:""; position:absolute; top:20px; right:20px; bottom:20px; width:43%; border-radius:16px; background:linear-gradient(145deg,rgba(12,14,16,.02),rgba(12,14,16,.12)),url('/static/images/edition-library-history.webp') center/cover no-repeat; box-shadow:0 22px 52px rgba(15,17,19,.13); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head > * { position:relative; z-index:2; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head h1 { margin:12px 0 0; font-size:clamp(58px,8vw,104px); line-height:.9; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head p { align-self:end; padding-right:46%; color:var(--v7-muted); font-size:11px; line-height:1.65; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-list { margin-top:34px; border-top:1px solid var(--v7-hair); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-item { display:grid; grid-template-columns:90px minmax(0,1fr) 120px; align-items:center; min-height:92px; padding:14px 4px; border:0; border-bottom:1px solid var(--v7-hair); background:transparent; color:var(--v7-ink); transition:padding 150ms ease,background 150ms ease; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-item:hover { padding-left:14px; padding-right:14px; background:rgba(255,255,255,.24); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-no,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-date { color:var(--v7-muted); font-size:9px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-title { font-size:clamp(20px,2.3vw,31px); }
+
+/* Feedback */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback { display:grid; grid-template-columns:minmax(300px,.72fr) minmax(0,1.35fr); gap:clamp(24px,4vw,62px); min-height:min(760px,calc(100svh - 150px)); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-brief { position:relative; padding:clamp(30px,4vw,54px) clamp(24px,3vw,42px) 285px; overflow:hidden; border:1px solid rgba(255,255,255,.56); border-radius:22px; background:rgba(248,247,242,.40); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-brief::after { content:""; position:absolute; left:22px; right:22px; bottom:22px; height:225px; border-radius:16px; background:linear-gradient(145deg,rgba(12,14,16,.02),rgba(12,14,16,.13)),url('/static/images/v5/human-proof-review.webp') center/cover no-repeat; box-shadow:var(--v7-shadow-soft); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-brief h1 { max-width:9ch; margin:12px 0 16px; font-size:clamp(44px,5vw,68px); line-height:1; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-brief p { color:var(--v7-muted); font-size:13px; line-height:1.65; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-num-badge { position:relative; z-index:2; display:inline-block; margin-top:18px; padding:8px 10px; border:1px solid var(--v7-hair); border-radius:6px; color:var(--v7-muted); font-size:9px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-form { align-self:center; padding:clamp(26px,4vw,48px); border-radius:16px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-preview { display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center; margin-bottom:30px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-preview article { min-height:170px; padding:18px; border:1px solid rgba(17,20,24,.10); border-radius:10px; background:rgba(255,255,255,.25); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-preview article strong { display:block; margin:9px 0; font-size:16px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-preview article span { color:var(--v7-muted); font-size:10px; line-height:1.55; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-arrow { color:var(--v7-muted); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-direction-set { border:0; padding:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-directions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-direction { border:1px solid var(--v7-hair); border-radius:7px; background:rgba(255,255,255,.22); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-direction:has(input:checked) { border-color:#171a1c; background:#171a1c; color:#f7f4ed; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-field { margin-top:22px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-field label { color:var(--v7-ink); font-size:10px; font-weight:850; }
+
+/* Thanks */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks { display:grid; grid-template-columns:minmax(180px,.42fr) minmax(0,1.2fr); gap:clamp(34px,6vw,90px); align-items:center; min-height:min(690px,calc(100svh - 150px)); padding:clamp(24px,5vw,76px); border:0; background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-mark { display:grid; width:min(230px,100%); aspect-ratio:.68; place-items:end start; padding:24px; border:1px solid rgba(255,255,255,.88); border-radius:10px; background:linear-gradient(160deg,rgba(251,251,247,.94),rgba(236,237,232,.88) 57%,rgba(211,214,210,.80)) !important; box-shadow:var(--v7-shadow),inset 1px 1px 0 rgba(255,255,255,.98); color:#222728; font-size:48px; transform:rotate(-2deg); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-copy h1 { max-width:12ch; margin:13px 0 20px; font-size:clamp(48px,6.2vw,86px); line-height:.98; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-copy p { max-width:650px; color:var(--v7-muted); font-size:14px; line-height:1.7; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+
+/* Adaptation */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adaptation { background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-head { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(300px,.7fr); gap:clamp(30px,5vw,68px); align-items:end; padding:clamp(34px,5vw,66px); border:1px solid rgba(255,255,255,.60); border-radius:20px; background:linear-gradient(145deg,rgba(249,248,243,.66),rgba(220,222,218,.58)) !important; box-shadow:var(--v7-shadow-soft),inset 0 1px 0 rgba(255,255,255,.76); backdrop-filter:blur(22px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-head h1 { max-width:11ch; margin:0; font-size:clamp(48px,6vw,82px); line-height:.98; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reader-note { padding:22px; border-radius:12px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reader-note span { color:var(--v7-muted); font-size:8px; letter-spacing:.12em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reader-note blockquote { margin:13px 0 0; color:#2b3131; font-size:16px; line-height:1.55; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-stage { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:stretch; margin:36px 0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(.v3-recut-current,.v3-recut-next) { min-height:310px; padding:clamp(24px,3vw,38px); border:1px solid rgba(255,255,255,.62); border-radius:14px; background:linear-gradient(145deg,rgba(249,248,243,.58),rgba(222,224,220,.50)); box-shadow:0 16px 38px rgba(16,18,20,.07); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-next { background:linear-gradient(145deg,rgba(251,250,246,.82),rgba(215,218,214,.70)); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-mark { align-self:center; color:var(--v7-muted); font-size:9px; letter-spacing:.12em; writing-mode:vertical-rl; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-label { color:var(--v7-muted); font-size:8px; letter-spacing:.10em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-stage h2 { margin:18px 0; font-size:clamp(27px,3vw,40px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-copy { color:#3b4141; font-size:14px; line-height:1.75; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--v7-hair); border-bottom:1px solid var(--v7-hair); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line > div { padding:22px; border-right:1px solid var(--v7-hair); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line > div:last-child { border-right:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line strong { font-size:10px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line p { color:var(--v7-muted); font-size:10px; line-height:1.6; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:24px; }
+
+/* Guide */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide { background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-hero { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(300px,.58fr); gap:clamp(36px,6vw,84px); align-items:center; min-height:600px; padding:clamp(18px,3vw,42px) 0 clamp(48px,6vw,80px); border-bottom:1px solid var(--v7-hair); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-hero-copy h1 { max-width:9ch; margin:13px 0 18px; font-size:clamp(52px,6.5vw,88px); line-height:.98; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-hero-copy h1 em { color:#666c68; font-style:normal; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-hero-copy p { max-width:630px; color:var(--v7-muted); font-size:14px; line-height:1.72; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-map { position:relative; overflow:hidden; padding:24px; border-radius:12px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-map::after { content:""; display:block; height:190px; margin-top:18px; border-radius:10px; background:linear-gradient(145deg,rgba(12,14,16,.02),rgba(12,14,16,.10)),url('/static/images/edition-cover-archive.webp') center/cover no-repeat; box-shadow:0 18px 44px rgba(16,18,20,.12); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-map-label { color:var(--v7-muted); font-size:8px; letter-spacing:.12em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-map-row { display:grid; grid-template-columns:28px 1fr auto; gap:8px; align-items:center; min-height:42px; border:0; border-bottom:1px solid var(--v7-hair); background:transparent; color:var(--v7-muted); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-map-row.is-now { background:transparent; color:var(--v7-ink); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-steps { border:0; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-step { display:grid; grid-template-columns:80px minmax(0,1fr) minmax(220px,.5fr); gap:clamp(20px,4vw,60px); align-items:center; min-height:360px; padding:42px 0; border:0; border-bottom:1px solid var(--v7-hair); background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-step-no { color:rgba(17,20,24,.34); font-size:13px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-step-copy h2 { max-width:16ch; margin:11px 0 16px; font-size:clamp(31px,3.8vw,50px); line-height:1.05; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-step-copy p { color:var(--v7-muted); font-size:13px; line-height:1.7; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-step-copy > a { display:inline-block; margin-top:12px; padding-bottom:4px; border-bottom:1px solid var(--v7-ink); font-size:10px; font-weight:850; text-decoration:none; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(.v3-guide-mini,.v3-guide-cover) { min-height:230px; padding:20px; border:1px solid rgba(255,255,255,.68); border-radius:10px; background:linear-gradient(155deg,rgba(249,249,245,.78),rgba(214,217,213,.68)); box-shadow:var(--v7-shadow-soft),inset 0 1px 0 rgba(255,255,255,.86); backdrop-filter:blur(20px); color:#2d3333; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-cover { aspect-ratio:.7; max-width:220px; justify-self:center; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-finish { margin-top:52px; padding:clamp(30px,5vw,62px); border-radius:16px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-finish h2 { max-width:15ch; margin:12px 0 16px; font-size:clamp(35px,4.5vw,58px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-finish p { max-width:650px; color:var(--v7-muted); font-size:13px; line-height:1.7; }
+
+/* Transformation */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-page { max-width:1180px; margin:0 auto; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-page > h1 { margin:12px 0 34px; font-size:clamp(52px,7vw,94px); line-height:.95; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-hero { min-height:390px; padding:22px; overflow:hidden; border:1px solid rgba(255,255,255,.56); border-radius:22px; background:linear-gradient(145deg,rgba(248,247,242,.55),rgba(219,221,217,.48)); box-shadow:var(--v7-shadow-soft); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-hero img { width:100%; height:100%; max-height:350px; object-fit:contain; opacity:.88; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-detail { margin-top:52px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-detail > h2 { margin-bottom:26px; font-size:clamp(29px,3.5vw,44px); }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step { display:grid; grid-template-columns:70px minmax(0,1fr) minmax(180px,.35fr); gap:24px; align-items:center; min-height:190px; padding:26px 0; border:0; border-top:1px solid var(--v7-hair); background:transparent; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step .step-number { color:rgba(17,20,24,.34); font-size:13px; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step .step-label { font-size:24px; font-weight:850; letter-spacing:-.04em; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step p { color:var(--v7-muted); font-size:13px; line-height:1.65; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step img { max-width:180px; justify-self:end; opacity:.78; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-nav { display:flex; justify-content:flex-end; padding-top:28px; border-top:1px solid var(--v7-hair); }
+
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .alert { border-radius:8px; box-shadow:none; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .alert-error { border:1px solid rgba(120,35,35,.24); background:rgba(120,35,35,.07); color:#622b2b; }
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .alert-success { border:1px solid rgba(35,95,64,.22); background:rgba(35,95,64,.07); color:#2f6149; }
+
+@media (max-width:1020px) {
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero { grid-template-columns:minmax(280px,.82fr) minmax(460px,1.18fr); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-object { left:39%; width:32%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-shell { grid-template-columns:110px minmax(0,700px); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-tail { display:none; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head p { padding-right:0; padding-left:10px; }
+}
+
+@media (max-width:820px) {
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-site-nav { width:calc(100% - 24px); min-height:54px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-brand { font-size:12px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-brand-mark { width:24px; height:29px; font-size:7px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links a,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-caption a,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links .btn-link { padding:7px 8px; font-size:9px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-caption span { display:none; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .container,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-main { width:calc(100% - 12px); min-height:calc(100svh - 92px); margin-bottom:6px; padding:18px; border-radius:20px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .site-footer,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-site-footer { width:calc(100% - 24px); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero { display:block; min-height:980px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-copy { position:relative; z-index:20; padding:22px 2px 0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-title { max-width:8.7ch; font-size:clamp(39px,10.2vw,50px); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-lede { max-width:345px; margin-top:14px; padding:12px 13px; font-size:11px; line-height:1.58; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-action { gap:7px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-assembly-stage { position:absolute; left:0; right:-10vw; bottom:6px; min-height:485px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-assembly-stage::before { left:8%; top:12%; width:102%; height:80%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-cluster { inset:8% 0 2%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-a { width:31%; height:58%; left:1%; top:28%; border-radius:13px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-b { width:42%; height:74%; left:27%; top:3%; border-radius:15px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v7-photo-c { width:32%; height:56%; right:0; top:31%; border-radius:12px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-object { left:37%; top:10%; width:38%; height:75%; min-height:0; padding:17px 14px 14px; border-radius:8px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-title { font-size:clamp(23px,6.8vw,30px); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-eyebrow { font-size:6px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-no { font-size:7px; padding-top:8px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment { width:115px; padding:8px; font-size:7px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment small { font-size:5px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f1 { left:0; top:18%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f2 { display:none; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f3 { right:2%; top:12%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment.f4 { right:1%; bottom:5%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof { grid-template-columns:1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof > div { min-height:0; border-right:0; border-bottom:1px solid var(--v7-hair); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-entry-proof > div:last-child { border-bottom:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip { grid-template-columns:1fr 1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-process-strip > div { min-height:105px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(.v3-workflow,.v3-write,.v3-feedback,.v3-read-opening,.v3-library-stage,.v3-guide-hero,.v3-adapt-head) { grid-template-columns:1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow { min-height:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-rail { padding:25px; border-right:0; border-bottom:1px solid var(--v7-hair); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-rail h1 { max-width:10ch; font-size:42px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-ledger { display:grid; grid-template-columns:repeat(4,1fr); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row { display:block; min-height:56px; padding:9px 8px; border-bottom:0; border-right:1px solid var(--v7-hair); font-size:8px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row:last-child { border-right:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row span { display:block; margin-bottom:4px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene { min-height:610px; padding:34px 25px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-workflow-scene h2 { font-size:45px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-status-composition { min-height:210px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-head { grid-template-columns:1fr; align-items:start; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-head h1 { font-size:59px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-stage { gap:24px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-object-zone { min-height:390px; padding:25px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-cover { width:min(220px,63%); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-story { padding:24px 20px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-spines { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-spine { min-height:170px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback { min-height:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-margin,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-brief { min-height:520px; padding:28px 22px 245px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-margin::after,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-brief::after { left:14px; right:14px; bottom:14px; height:205px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-form,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-feedback-form { padding:23px 18px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-write-form textarea { min-height:300px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-opening { min-height:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover-zone { min-height:390px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-cover { width:min(220px,62%); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-read-title h1 { font-size:48px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-shell { grid-template-columns:1fr; padding:48px 2px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-reading-margin { padding-bottom:18px; border-bottom:1px solid var(--v7-hair); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .edition-opening { font-size:19px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .section-copy-v3 p { font-size:15px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v5-read-visual-break { min-height:275px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head { display:block; min-height:530px; padding:24px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head::after { left:16px; right:16px; top:auto; bottom:16px; width:auto; height:245px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head h1 { font-size:62px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-head p { max-width:310px; margin-top:12px; padding:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-item { grid-template-columns:48px 1fr; gap:8px; min-height:80px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-history-date { grid-column:2; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-preview,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-stage { grid-template-columns:1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v4-feedback-arrow { transform:rotate(90deg); justify-self:center; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-directions { grid-template-columns:1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks { grid-template-columns:1fr; min-height:0; padding:35px 8px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-mark { width:150px; justify-self:center; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-copy h1 { font-size:46px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-head { padding:28px 22px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-head h1 { font-size:46px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-recut-mark { writing-mode:horizontal-tb; justify-self:center; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line { grid-template-columns:1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line > div { border-right:0; border-bottom:1px solid var(--v7-hair); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-proof-line > div:last-child { border-bottom:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-hero { min-height:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-hero-copy h1 { font-size:49px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-guide-step { grid-template-columns:44px 1fr; min-height:0; padding:35px 0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(.v3-guide-mini,.v3-guide-cover) { grid-column:2; width:100%; min-height:190px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-page > h1 { font-size:55px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-hero { min-height:280px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step { grid-template-columns:42px 1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .transformation-step img { grid-column:2; justify-self:start; max-width:140px; }
+}
+
+@media (max-width:430px) {
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links a:nth-of-type(1) { display:none; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links a,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-nav-links .btn-link { padding-inline:6px; font-size:8px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero { min-height:950px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-hero-title { font-size:39px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-assembly-stage { bottom:-2px; min-height:455px; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-edition-object { left:36%; width:39%; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-ledger { grid-template-columns:1fr 1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row:nth-child(2) { border-right:0; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-stage-row:nth-child(-n+2) { border-bottom:1px solid var(--v7-hair); }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-spines { grid-template-columns:1fr 1fr; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-actions,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-actions,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-actions { align-items:stretch; flex-direction:column; }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-library-actions .btn,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-thanks-actions .btn,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-adapt-actions .btn { width:100%; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] *,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] *::before,
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] *::after {
+    scroll-behavior:auto !important; animation:none !important; transition:none !important;
+  }
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] :is(.v7-photo,.v3-edition-object,.v3-library-cover,.v3-read-cover,.v3-fragment,.v3-status-fragment,.v3-thanks-mark) { transform:none !important; }
+}
