@@ -1,31 +1,29 @@
 # AI Revenue Lab
 
-AI Revenue Lab is a private product and research repository for proving a specific business hypothesis:
+AI Revenue Lab is a private product and research repository for testing a specific business hypothesis:
 
-> AI can do more than reduce cost. Abundant free and high-volume AI inference can create new personalized digital products and generate direct revenue.
+> Abundant AI production can do more than reduce cost; it can make new personalized digital products and revenue models economically viable.
 
 ## Core thesis
 
-Industrial production made one product cheap enough for millions of people. AI-native production can make millions of different editions, one for each person.
+The Lab focuses on:
 
-The project therefore focuses on six capabilities:
+1. **Volume** — produce information/content at a scale human teams cannot economically sustain.
+2. **Speed** — react to events and user feedback quickly.
+3. **Concurrency** — coordinate implementation, research, validation, and operations in parallel.
+4. **Real-time reaction** — let current events and product state change the next output.
+5. **Personalization** — turn common source material into different products for different users.
+6. **Revenue evidence** — measure user behavior, operating cost, direct/attributable revenue, and willingness to pay.
 
-1. **Volume** — produce information and content at a scale that human teams cannot economically sustain.
-2. **Speed** — react to events and user feedback within minutes or hours.
-3. **Concurrency** — coordinate multiple implementation, research, validation, and operations workers in parallel.
-4. **Real-time reaction** — let current events, operating state, and user feedback change the next output quickly.
-5. **Personalization** — turn common source material into a different product edition for each user.
-6. **Revenue evidence** — measure whether AI-produced outputs create traffic, subscriptions, purchases, or other direct or attributable revenue.
-
-The canonical portfolio intent is documented in:
+Canonical intent:
 
 - `docs/portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
 
-The repository is successful only when product hypotheses move toward working services, user behavior, operating cost, and business evidence. More files, screens, agents, or deployments are not success by themselves.
+More files, screens, agents, or deployments are not success by themselves. A Business advances when product, operating, user, and commercial evidence improve.
 
-## Portfolio product direction
+## Portfolio architecture
 
-AI Revenue Lab is intended to become one user-facing **AI Revenue Lab Portal** containing multiple independently operated Businesses.
+AI Revenue Lab is a portfolio of independently operated Businesses, not one monolithic application.
 
 ```text
 shared Firebase identity
@@ -42,177 +40,193 @@ own roles   own roles   own roles
 own DB      own DB      own DB
 ```
 
-The shared identity provider establishes who authenticated. Each Business remains responsible for admission, internal identities, roles, records, databases, deployments, secrets, deletion, and evidence.
+Shared authentication proves who authenticated; each Business remains responsible for admission, internal identities, roles, records, databases, secrets, deletion, deployment, and evidence.
 
-This is one portfolio experience, not one monolithic application or one shared product database.
-
-Canonical portal documents:
+Canonical architecture/numbering documents:
 
 - `docs/decisions/ADR-0003-shared-portal-isolated-products.md`
 - `docs/product/AI_REVENUE_LAB_PORTAL_CONTRACT.md`
 - `docs/portfolio/BUSINESS_REGISTRY.md`
+- `docs/portfolio/BUSINESS_EXPANSION_LINEAGE.md`
 - `docs/architecture/PORTAL_PRODUCT_INTEGRATION_CONTRACT.md`
 
-The future user-facing portal belongs in `apps/portal/`. Reusable code belongs in `platform/` only after at least two implemented products prove the same stable requirement and a separate architecture decision approves extraction.
+## Portfolio Console
 
-## Portfolio Console direction
+`apps/portfolio-console/` is the private owner/operator control tower, not the user-facing Portal.
 
-`apps/portfolio-console/` is the private owner and operator control tower. It is not the user-facing Portal.
-
-The Console combines deliberate Business authority with automatically synchronized operational facts so the owner can determine what exists, what is deployed, what is being built, what is blocked, and what should happen next without repeatedly re-auditing every repository by hand.
-
-Automation supplies Issue, PR, SHA, CI, deployment, health, and synchronization facts. Humans retain product priority, phase approval, and business judgment.
+Its static Business identity must agree with the registry and successor lineage. Volatile facts such as Issue/PR/SHA/CI/deployment/health are synchronized separately. Owner/product decisions remain human-governed evidence, not derived from green automation alone.
 
 ## Repository model
 
-This repository is the portfolio-level workspace. Each revenue experiment has an independent product directory under `apps/` when a product runtime workspace exists. Some currently canonical Businesses remain represented by reviewed `reference/` workspaces until a separate product-runtime decision creates an `apps/` implementation.
+Product/runtime workspaces live under `apps/` when a runtime is authorized. Bounded visual/product-evidence work may remain under `reference/`.
 
 ```text
 apps/
-├─ personal-edition/          # Business 1
-├─ living-travel/             # Business 2
-├─ living-fiction/            # Business 3
-├─ living-learning/           # Business 4
-├─ world-feed/                # Business 6 technical/research workspace
-├─ personal-video-archive/    # Business 13
-└─ korean-ai-platform/        # Business 14
+├─ personal-edition/          # B1
+├─ living-travel/             # B2
+├─ living-learning/           # B4
+├─ world-feed/                # B6 technical/research workspace
+├─ personal-video-archive/    # B13
+├─ korean-ai-platform/        # B14
+└─ portfolio-console/         # B44 private control tower
 
 reference/
-├─ business-06-world-feed-v1/                   # Business 6 current review implementation
-├─ business-07-personal-meaning-map-v1/         # Business 7
-├─ business-08-family-newspaper-v1/             # Business 8
-├─ business-09-personalized-childrens-story-v1/ # Business 9
-├─ business-10-fan-magazine-v1/                 # Business 10
-├─ business-11-language-learning-magazine-v1/   # Business 11
-└─ business-12-creator-mini-media-v1/            # Business 12
+├─ business-06-world-feed-v1/
+├─ business-07-personal-meaning-map-v1/
+├─ business-08-family-newspaper-v1/
+├─ business-09-personalized-childrens-story-v1/
+├─ business-10-fan-magazine-v1/
+├─ business-11-language-learning-magazine-v1/
+└─ business-12-creator-mini-media-v1/
 ```
 
-Business 5 is assigned to Neighbor Market.
-Business 6–12 are canonically assigned through the reviewed registry reconciliation in Issue #617. Their canonical numbers do not imply backend authorization, owner UI approval, authentication, persistence, billing, or Production readiness. B7–B12 do not require duplicate `apps/` placeholders merely because their numbers are now canonical.
+Workspace existence does not itself create canonical numbering, owner approval, backend authorization, or Production readiness.
 
-### Business 5 — Neighbor Market (assigned, not yet created)
+## Canonical / expanded Business truth
 
-Business 5 is canonically assigned to **Neighbor Market / 우리단지 이웃가게**.
+Numbering authority is only `docs/portfolio/BUSINESS_REGISTRY.md`.
 
-- Planned workspace: `apps/neighbor-market/`
-- The workspace has not yet been created.
-- Current lifecycle: `concept`
-- Portal integration: not implemented
-- Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
+Current high-level mapping includes:
 
-Product-specific code, tests, configuration, migrations, scripts, fixtures, and private data boundaries remain inside the corresponding workspace. Shared code is extracted only after demonstrated reuse.
+- **B1 — Personal Edition** — recurring personal letters/magazines/books from private fragments and records.
+- **B2 — Living Travel** — adaptive travel editions shaped by feedback and current situation.
+- **B3 — Living Fiction** — canonical Business identity retained; current implementation is treated as external/parallel under successor policy, with no invented repository link.
+- **B4 — Living Learning** — recurring personalized learning experiences.
+- **B5 — Neighbor Market** — canonical Business retained; implementation expanded to **DanjiOn / 단지온** at `skerishKang/02-danji-on`. Do not create a duplicate internal `apps/neighbor-market/` implementation.
+- **B6 — World Feed / Personal World Discovery** — stable slug `world-feed`; finite source-forward discovery connecting world changes with nearby relevance. Concierge validation remains separate from runtime expansion.
+- **B7 — Personal Meaning Map** — canonical number; current reviewed reference workspace retained.
+- **B8 — Family Newspaper** — canonical number; current reviewed reference workspace retained.
+- **B9 — Personalized Children’s Story** — canonical number; current reviewed reference workspace retained.
+- **B10 — Fan Magazine** — canonical number; current reviewed reference workspace retained.
+- **B11 — Language Learning Magazine** — canonical number; current reviewed reference workspace retained.
+- **B12 — Creator Mini-Media** — canonical number; current reviewed reference workspace retained.
+- **B13 — Personal Video Archive** — user-controlled video discovery plus durable private viewing records.
+- **B14 — Korean AI Platform** — Korean-first model-access platform; Router Core is an internal B14 capability.
+- **B54 — Korean AI Code Agent** — proposed-number first-party client of B14; a Draft implementation does not become a current-main workspace until integration is accepted.
 
-See:
+External/integrated successor mappings for B23/B24/B25/B26/B27/B28/B30/B31/B50 are maintained in `BUSINESS_EXPANSION_LINEAGE.md` and the Portfolio Console static manifest. Do not recreate prohibited internal placeholders.
 
-- `apps/README.md`
-- `docs/decisions/ADR-0002-product-workspaces.md`
-- `docs/portfolio/BUSINESS_REGISTRY.md`
+Historical Issues/PRs may contain older proposed/candidate/phase wording. They remain historical evidence; current authority comes from current canonical documents and merged source.
 
-## Default execution loop
+## Development operating model
 
-After a product decision fixes scope and acceptance, the default operating loop is:
+Canonical entry point:
+
+- `AGENTS.md`
+
+Supporting policy:
+
+- `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/WORKFLOW_STATUS_MODEL.md`
+- `docs/operations/EVIDENCE_REQUIREMENTS.md`
+- `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
+- `docs/operations/NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
+- `docs/operations/BACKEND_MVP_OPERATING_POLICY.md`
+- `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
+
+### Current mode
 
 ```text
-smallest useful scope
-→ AI implementation
-→ independent validation
-→ exact-head approval
-→ merge to the configured Production branch
-→ automatic Production deployment by the existing Git integration
-→ immediate Production acceptance
-→ retain or merge a reviewed fix/revert PR
-→ record product and business evidence
+MVP_AND_VISUAL_UPGRADE
+ROLE_SEPARATED_EVIDENCE
+NO_MANDATORY_UI_UX_BACKEND_SEQUENCE
 ```
 
-UI, UX, backend, deployment, and business verdicts remain separate so one type of evidence is not misrepresented as another. These gates control scope and risk; they are not intended to create ceremony or delay an authorized deployment.
+The Web CTO chooses the smallest evidence slice that answers the current uncertainty. Product work may begin with visual design, UX, deterministic simulation, service-led delivery, local runtime, a live backend/provider vertical slice, or commercial hardening when that is the right evidence target.
 
-For Git-connected Cloudflare Pages projects, approving a merge to the configured Production branch is the deployment action. Operators observe and verify the automatic Production deployment. They do not create a second deployment manually.
+UI, UX, backend/runtime, security, market-reference, investor-demo, deployment, owner-visual, and commercial verdicts remain separate.
 
-Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. Before the authorized merge, record the last known-good Production source and configuration plus the required smoke checks.
+### Responsibility flow
 
-Routine inspection and authorized configuration should use authenticated APIs, connectors, or CLI automation rather than repeated owner Dashboard work. APIs and CLI must not be used to create, retry, promote, or directly upload a deployment on Git-connected Pages projects. Owner action is reserved for product, risk, and genuinely owner-only decisions.
+```text
+User request / portfolio authority
+→ Web CTO exact work contract
+→ Web Developer implementation
+→ implementation self-check + configured CI
+→ independent validation when required
+→ Web CTO final review
+→ owner decision when materially reserved
+→ merge
+→ configured Production deployment/acceptance when authorized
+```
 
-## Verified product tracks
+One actor may perform multiple non-independent stages, but the same actor must not claim both implementation and **independent Local Validation** for the same revision.
 
-- **Business 1 — Personal Edition** — conversations and life records edited into recurring letters, magazines, and books.
-- **Business 2 — Living Travel** — adaptive travel letters shaped by a traveler's feedback and situation.
-- **Business 3 — Living Fiction** — shared canon with optional reader-responsive private narrative branches.
-- **Business 4 — Living Learning** — recurring short personalized learning experiences.
-- **Business 5 — Neighbor Market** — residents discover and support resident-operated businesses and services, prioritizing current-apartment and nearby-apartment relationships before general neighborhood businesses. Reference and static demonstration work exist in Draft PRs; the product workspace, authentication, resident verification, persistence, and portal integration are not implemented.
-- **Business 6 — World Feed / Personal World Discovery** — a finite, source-forward personal discovery product connecting meaningful world discoveries with nearby relevance; `world-feed` remains the stable slug and Personal World Discovery is the current narrowed commercial positioning.
-- **Business 7 — Personal Meaning Map** — places, people, events, and objects organized into an evolving map of personal meaning.
-- **Business 8 — Family Newspaper** — family photos, schedules, conversations, and milestones edited into a recurring family publication.
-- **Business 9 — Personalized Children’s Story** — continuing stories shaped by a child’s experiences, interests, choices, and a parent’s learning goals.
-- **Business 10 — Fan Magazine** — personal editorial issues built around a favorite creator, performer, or athlete.
-- **Business 11 — Language Learning Magazine** — recurring reading, vocabulary, questions, and feedback shaped by learner level and interests.
-- **Business 12 — Creator Mini-Media** — a compact solo editorial desk turning one source idea into coordinated article, newsletter, short-form, and video-script outputs.
-- **Business 13 — Personal Video Archive** — user-controlled video topic feeds combined with private viewing reflections, plans, ratings, tags, and records.
-- **Business 14 — Korean AI Platform** — governed AI execution with worker, validator, and human approval stages.
+## Evidence standard
 
-The canonical numbering authority is `docs/portfolio/BUSINESS_REGISTRY.md`. Historical issues that described B6–B12 as proposed or candidate remain valid historical evidence of their state before the registry reconciliation.
+Before implementation/review/merge, record and re-read:
+
+- repository and current `main`;
+- exact base/head SHA;
+- target branch;
+- allowed/forbidden paths;
+- changed files/diff;
+- acceptance criteria/non-goals;
+- CI/check status;
+- exact-head local/browser/runtime evidence when required;
+- owner-only decisions still pending.
+
+CI proves only what it actually executes. Wrong-project Preview deployments, accessible URLs, or HTTP 200 responses do not prove the intended reviewed revision.
+
+## Backend evidence modes
+
+Choose explicitly when runtime work is relevant:
+
+```text
+NO_BACKEND
+DETERMINISTIC_SIMULATION
+SERVICE_LED
+LOCAL_RUNTIME
+LIVE_VERTICAL_SLICE
+PILOT_RUNTIME
+COMMERCIAL_HARDENING
+```
+
+Backend is not frozen by default. Build it early when it is necessary to prove the product and keep it bounded to the evidence goal. Do not add infrastructure for ceremony.
+
+## Deployment model
+
+For Git-connected Production targets, after the required source/evidence/authority gates:
+
+```text
+validated exact head
+→ authorized expected-head merge
+→ configured automatic Production deployment
+→ Production acceptance against resulting revision
+→ reviewed fix/revert recovery when required
+```
+
+Preview/staging/manual deployment is not an operator fallback. It requires explicit authority under `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` or a stricter Business-specific contract.
+
+A green deployment under an unrelated project is invalid product evidence.
 
 ## Identity and product access
 
-The portfolio identity project is `ai-revenue-lab-identity`.
+Portfolio identity project: `ai-revenue-lab-identity`.
 
-Shared authentication does not mean universal product access:
+Shared identity does not imply universal access:
 
 ```text
 verified Firebase identity
-        → stable portal identity
-        → product-local identity mapping
-        → product-local role and record authorization
+→ stable portal identity
+→ product-local identity mapping
+→ product-local role and record authorization
 ```
 
-A Firebase account alone must not grant participant, traveler, reader, operator, editor, or administrator access.
+Every portal-integrated Business must define authentication mode, product-local authorization owner, deployment lifecycle, deletion/revocation behavior, and evidence that authenticated-but-unauthorized users are denied.
 
-Personal Edition is the first planned portal integration target. Its current invitation/token and administrator controls remain authoritative until a separate reversible migration is implemented and accepted.
+## Governance / business evidence
 
-## Operating model
-
-- Product vision, architecture, issue decomposition, acceptance criteria, documentation, and final review use the strongest available reasoning and review capability.
-- Free and high-volume models are the default implementation workforce once tasks are precisely specified.
-- Runtime content production should prefer replaceable free or low-cost models.
-- Strong paid models may be used for exceptional design, diagnosis, or final audit, but the project records where and why they were used.
-- Models remain replaceable through provider adapters rather than being embedded directly into product code.
-- Each Business is reviewed, deployed, measured, and continued or stopped independently.
-- The Portal does not weaken product-local authorization, privacy, or test gates.
-- The Console must reduce manual operating work rather than become another reporting burden.
-- Platform-specific Preview failures do not block the normal Git-connected automatic Production path. Operators must not create Preview or another deployment mechanism without new explicit owner authority.
-
-## Current portfolio status
-
-- independent product workspace architecture is established;
-- shared-portal and isolated-product architecture is documented under Issue #83;
-- shared Firebase identity infrastructure exists for the portfolio;
-- portal implementation under `apps/portal/` is not yet authorized by this documentation alone;
-- Personal Edition is the first portal integration target;
-- B6–B12 canonical numbering is reconciled through Issue #617 without creating duplicate product workspaces;
-- B6 commercial validation remains governed separately by its current concierge-validation authority;
-- Personal Video Archive is undergoing a Korean-first bilingual visual redesign in Draft PR #78;
-- Korean AI Platform private MVP is tracked through Issue #80 and Draft PR #79;
-- Portfolio Console has a merged Business 1–55 static-authority and automatic GitHub-fact mapping foundation; live Production activation remains separately authorized and verified;
-- Business numbering is canonical only through `docs/portfolio/BUSINESS_REGISTRY.md`.
-
-## Governance rule
-
-Every experiment must record:
+Every experiment should record the relevant subset of:
 
 - cash infrastructure cost;
-- paid AI cost;
+- paid AI/model/provider cost;
 - free-model usage;
-- human work time;
+- human/operator time;
 - generated outputs;
-- user engagement;
-- direct or attributable revenue.
+- user engagement/retention;
+- direct or attributable revenue;
+- willingness to pay;
+- service-led workload and margin.
 
-Every portal-integrated Business must additionally record:
-
-- authentication mode;
-- product-local authorization owner;
-- portal integration state;
-- deployment lifecycle;
-- deletion and revocation behavior;
-- evidence that authenticated but unauthorized users are denied.
-
-The goal is not to prove that one model is best. The goal is to determine whether abundant AI production can create economically valuable products that would not be viable with human production alone.
+The goal is not to prove that one model is best. The goal is to determine whether AI-native production can create products and economics that would not be viable with conventional human production alone.
