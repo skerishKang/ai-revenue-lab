@@ -1,21 +1,36 @@
 # AI Revenue Lab — Portfolio Visual Differentiation Matrix
 
-Status: `DIRECTION_MATRIX_COMPLETE`
+- Status: **TERRITORY_HYPOTHESIS_MATRIX**
+- Effective interpretation: 2026-08-14
+- Parent authority: `../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 
-Purpose: reserve a distinct visual territory for each internal web Business before numbered implementation restarts.
+## Purpose
 
-This matrix is a direction contract, not owner approval.
+Reserve enough visual/product territory to prevent unrelated Businesses from converging on the same template.
 
-## Final territory matrix
+This matrix is **collision-prevention input**, not proof that a direction works and not `FULL_EXPANSION_ALLOWED` authority.
 
-| B# | Reserved visual world | Core object | Verdict |
+Every internal Business undergoing material visual work must still prove its own:
+
+```text
+ANCHOR_DIRECTION_LOCKED
+→ ARCHETYPE_SYSTEM_PASS
+```
+
+before broad expansion.
+
+Existing territory names may be refined when real anchor/archetype evidence shows a better product-specific solution. Do not rewrite the matrix merely to justify an implementation after the fact.
+
+## Territory hypotheses
+
+| B# | Reserved / hypothesized visual world | Core object | Historical direction verdict |
 |---:|---|---|---|
-| 01 | Private Archive Editorial | collectible private Edition + source fragments | REDESIGN |
+| 01 | Collectible Private Edition / spatial memory fragments | collectible private Edition + source fragments | CURRENT ANCHOR: Entry; system recovery required |
 | 02 | Cinematic Personal Journey | place-first travel Edition + route/time layer | REDESIGN |
 | 03 | external / parallel | — | NO BUILD |
 | 04 | Adaptive Learning Studio | lesson + visible adaptation trace | FOCUSED POLISH |
 | 05 | DanjiOn successor | — | NO BUILD |
-| 06 | Personal World Signal Room / Editorial Dispatch | lead story + feed signal | KEEP / case study |
+| 06 | Personal World Signal Room / Editorial Dispatch | lead story + feed signal | KEEP / methodology case |
 | 07 | Relational Meaning Field | relationship between personal memories | REDESIGN ART LAYER |
 | 08 | Domestic Pressroom | family newspaper issue | KEEP |
 | 09 | Living Picture Book | illustrated child story spread | REDESIGN ART LAYER |
@@ -64,52 +79,42 @@ This matrix is a direction contract, not owner approval.
 | 58 | Writing Voice Studio | textual voice fingerprint + draft comparison | REDESIGN |
 | 59 | Spatial Living Library | synchronized 3D volume + 2D source reader | KEEP CORE |
 
-## Portfolio collision findings from fresh same-condition screenshots
+## Known portfolio collision families
 
-### 1. Dark giant-title family was overused
+### Dark giant-title convergence
 
-Fresh contact sheets showed B01/B02/B06/B07 and especially B10/B12/B15/B16/B18/B21/B22 converging on combinations of:
+Avoid repeating:
 
 ```text
 dark field
-+ oversized condensed title
++ oversized display title
 + one bright accent
 + thin abstract geometry
-+ small metadata
++ tiny metadata
 ```
 
-Direction split:
+unless that combination is demonstrably product-specific.
 
-- B06 keeps Signal Room because it fits the product.
-- B01 moves tactile/archive.
-- B02 becomes place/image-first travel.
-- B07 becomes quiet relational field.
-- B10 becomes subject/image-led cover story.
-- B12 returns to physical editorial desk.
-- B15 becomes evidence newsroom.
-- B16 becomes matchday timeline.
-- B18 becomes playback/listening room.
-- B21 becomes decision memo.
-- B22 becomes story-spine loom.
+### Generic light-card convergence
 
-### 2. Generic light-card prototype family was more severe
-
-Fresh screenshots showed B36–B43, B45–B49 and B51–B55 using nearly interchangeable:
+Avoid repeating:
 
 ```text
 light beige/gray page
 + dark top bar
-+ ~64px heading
-+ 2–3 white cards
++ giant heading
++ two or three white cards
 ```
 
-This is now explicitly rejected. Each Business has a different core object in its own direction document.
+as a default for safety/engine/operations products.
 
-### 3. Publication/archive family required separation
+### Publication/archive convergence
 
-B01/B08/B09/B10/B11/B12/B13/B17/B19/B20/B57/B58/B59 must not all use “paper + issue number + large serif title”. The matrix assigns distinct jobs/materials: newspaper, picture book, cover story, field journal, creator desk, cinema contact sheet, shop counter journal, provenance table, manuscript room, translation proof, writing voice, spatial library.
+B01/B08/B09/B10/B11/B12/B13/B17/B19/B20/B57/B58/B59 must not all reduce to `paper + issue number + serif title`. Their core objects/jobs must produce different composition and interaction.
 
-### 4. Evidence products required role separation
+### Evidence products
+
+Keep distinct:
 
 ```text
 B15 = newsroom briefing
@@ -117,25 +122,23 @@ B33 = durable research memory
 B48 = reusable verification gate
 ```
 
-A shared claim/source card UI would erase the different user jobs.
+### Emergency products
 
-### 5. Emergency products required task separation
+Keep distinct:
 
 ```text
-B36 = personal plan
+B36 = personal safety plan
 B37 = route evidence map
 B39 = live bilingual call trace
 B40 = known/unknown triage
 B41 = emergency statement builder
 ```
 
-Do not reuse one red alert dashboard.
-
 ## Implementation collision gate
 
-Before implementing a Business, reviewers must compare the proposed first viewport against at least its nearest two collision neighbors in this matrix.
+Before locking an anchor, compare it with at least the two nearest collision neighbors.
 
-A redesign fails before merge if it reproduces another Business's combination of:
+A proposed direction should be reconsidered if it reproduces another Business's combination of:
 
 - dominant background/material;
 - headline behavior;
@@ -145,4 +148,8 @@ A redesign fails before merge if it reproduces another Business's combination of
 - primary accent system;
 - interaction metaphor.
 
-Shared accessibility/UI conventions are allowed. Shared art direction without product justification is not.
+Shared accessibility and UI conventions are desirable. Shared art direction without product justification is not.
+
+## Important limitation
+
+A distinct territory name does not prove a good product. `Memory Provenance Table`, `Evidence Newsroom`, `Movement Session Canvas`, etc. are hypotheses until actual anchor and archetype screens demonstrate them convincingly.
