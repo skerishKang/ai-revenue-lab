@@ -148,7 +148,6 @@ jobs:
           for page in $(seq 1 100); do
             page_file="$(mktemp)"
             merged_file="$(mktemp)"
-            trap 'rm -f "${page_file}" "${merged_file}"' RETURN
             status="$({
               curl --silent --show-error \
                 --output "${page_file}" \
@@ -233,7 +232,7 @@ jobs:
           }
           jq -e '.success == true and (.result | type == "array")' "${response_file}" >/dev/null
 
-      - name: Ensure exact GitHub-integrated Pages project and source contract
+      - name: Ensure the exact GitHub-integrated Pages project exists
         id: project
         shell: bash
         run: |
@@ -288,7 +287,7 @@ jobs:
 
                 patch_status="$({
                   curl --silent --show-error \
-                    --request PATCH \
+                    -X PATCH \
                     --output "${post_file}" \
                     --write-out '%{http_code}' \
                     --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
@@ -302,8 +301,6 @@ jobs:
                 }
                 jq -e '.success == true' "${post_file}" >/dev/null
 
-                # Never trust PATCH response shape as final state. Read the project
-                # again and verify new source + unchanged repository/branch/config.
                 post_status="$({
                   curl --silent --show-error \
                     --output "${post_file}" \
