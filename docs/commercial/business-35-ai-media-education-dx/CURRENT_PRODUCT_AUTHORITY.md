@@ -1,5 +1,11 @@
 # Business 35 — Current Product Authority
 
+```text
+INTERNAL COMMERCIAL DRAFT
+OWNER APPROVAL REQUIRED FOR CUSTOMER SEND
+NOT YET SENT TO A CUSTOMER
+```
+
 This file prevents the commercial package from drifting away from the current product.
 
 ## Current product source of truth
