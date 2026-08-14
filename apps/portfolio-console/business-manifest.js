@@ -56,7 +56,7 @@
     identity({ n:12, s:"creator-mini-media", t:"Creator Mini-Media", k:"크리에이터 미니미디어", a:NA.PROPOSED, l:"visual_reference", st:"review", p:52, w:"reference/business-12-creator-mini-media-v1/" }),
     // ═══ 13–14: CANONICAL ═══
     identity({ n:13, s:"personal-video-archive", t:"Personal Video Archive", k:"나의 영상 아카이브", a:NA.CANONICAL, l:"private_preview", st:"review", p:42, su:"https://ai-revenue-personal-video-archive.pages.dev/", w:"apps/personal-video-archive/" }),
-    identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 실행 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:92, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
+    identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 모델 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:92, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
     // ═══ 15–22: PROPOSED ═══
     identity({ n:15, s:"global-ai-newsroom", t:"Global AI Newsroom", k:"글로벌 AI 뉴스룸", a:NA.PROPOSED, l:"visual_reference", st:"review", p:40, w:"reference/business-15-global-ai-newsroom-v1/" }),
     identity({ n:16, s:"personal-sports", t:"Personal Sports", k:"나의 스포츠 채널", a:NA.PROPOSED, l:"visual_reference", st:"review", p:38, w:"reference/business-16-personal-sports-v1/" }),
@@ -102,7 +102,7 @@
     identity({ n:51, s:"ai-workflow-marketplace", t:"AI Workflow Marketplace", k:"AI 워크플로우 마켓", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-51-ai-workflow-marketplace-v1/" }),
     identity({ n:52, s:"scheduled-agent-operations", t:"Scheduled Agent Operations", k:"예약형 AI 운영", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-52-scheduled-agent-operations-v1/" }),
     identity({ n:53, s:"embedded-ai-sdk", t:"Embedded AI SDK", k:"임베드 AI SDK", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-53-embedded-ai-sdk-v1/" }),
-    identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.CANDIDATE, l:"mvp_vertical_slice", st:"review", p:5, w:"apps/korean-ai-code-agent/" }),
+    identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.PROPOSED, l:"concept", st:"planning", p:5 }),
     identity({ n:55, s:"local-ai-fleet", t:"Local AI Fleet", k:"로컬 AI 플릿", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-55-local-ai-fleet-v1/" }),
     // B56 is intentionally unused.
     identity({ n:57, s:"classic-literature-translation-studio", t:"Classic Literature Translation Studio", k:"고전문학 번역 스튜디오", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-57-classic-literature-translation-studio-v1/" }),
