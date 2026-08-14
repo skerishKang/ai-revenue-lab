@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#171915">
+<meta name="theme-color" content="#f5f6f8">
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <title>{% block title %}Personal Edition{% endblock %}</title>
 <link rel="stylesheet" href="/static/app.css?v=pe-ui51-20260722-3">
@@ -15,10 +15,11 @@
 <link rel="stylesheet" href="/static/ui-v4-private-archive-visual-fix.css?v=b1-private-archive-v4-visual-fix-20260811">
 <link rel="stylesheet" href="/static/ui-v5-image-led.css?v=b1-image-led-v5-20260811">
 <link rel="stylesheet" href="/static/ui-v5-image-led-fix.css?v=b1-image-led-v5-fix-20260811">
+<link rel="stylesheet" href="/static/ui-v6-living-index.css?v=b1-living-index-v6-20260814">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
 {% set _guide_href = '/guide/' %}
-<body data-ui-version="b1-personal-edition-v3-454" data-art-direction="b1-image-led-v5" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
+<body data-ui-version="{% if request.url.path.startswith('/admin') %}b1-personal-edition-v3-454{% else %}b1-personal-edition-v6-living-index{% endif %}" data-art-direction="{% if request.url.path.startswith('/admin') %}b1-image-led-v5{% else %}b1-living-index-v6{% endif %}" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
 {% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
 <header class="site-header v3-site-header">
   <nav class="v3-site-nav" aria-label="주요 탐색">
