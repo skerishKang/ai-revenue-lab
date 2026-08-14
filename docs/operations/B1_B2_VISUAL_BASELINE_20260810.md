@@ -1,31 +1,49 @@
-# B1 / B2 visual baseline polish — 2026-08-10
+# B1 / B2 Visual Baseline — Historical Record
 
-Owner review changed the portfolio visual baseline.
+- Original date: 2026-08-10
+- Current status: **SUPERSEDED AS FORWARD IMPLEMENTATION AUTHORITY**
+- Superseded by: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md` (2026-08-14)
 
-## New minimum bar
+## 1. Historical value
 
-B1 Personal Edition and B2 Living Travel are the minimum visual-quality reference for numbered internal web Businesses. Historical technical UI approval does not override a fresh owner visual rejection.
+This document previously treated B01/B02 as a portfolio minimum visual bar and instructed B01 to keep the V3 `ASSEMBLY → BIND → READ → RECUT` direction with typography repair.
 
-## B1
+That instruction is no longer current for B01. Subsequent owner review and implementation moved B01 beyond that direction, and the 2026-08-14 review established a more important lesson: **one satisfactory Entry does not prove a coherent whole-product system.**
 
-Keep the V3 `ASSEMBLY → BIND → READ → RECUT` art direction. Repair typography only:
-- Korean-first display font stack;
-- separate sans-serif body / micro-label layer;
-- less aggressive Korean title compression;
-- no external font CDN or bundled font binary.
+The old record remains useful historical evidence. Do not delete or reinterpret prior work as if it never happened.
 
-## B2
+## 2. Current B01 authority
 
-Keep the `PLACE → ROUTE → DAY → ADAPT` art direction. Repair product shell only:
-- one persistent traveler information architecture on every traveler-facing surface;
-- `30초 사용법 → 취향 → 현재 여행판 → 기록 → 편집실` in the same order;
-- current location changes active state only;
-- Guide remains visibly available on desktop and mobile.
+Current B01 visual interpretation is:
 
-## Portfolio consequence
+```text
+Entry = local anchor direction to KEEP
+Other participant routes = system recovery / redesign required
+Whole-product OWNER_UI_APPROVED = false unless explicitly changed later
+```
 
-Businesses 04–22 must be visually re-audited against this owner bar. SVG-heavy static-reference / Visual-Atlas presentation is not considered sufficient merely because historical validators passed. Functional UX work may be reused as a foundation, but weak art direction must be redesigned rather than preserved.
+B01 must next prove Library, Write and Read as distinct archetypes under `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md` before broad participant-route expansion.
 
-Owner UI approval remains a separate live-Production decision.
+Do not restore the V3 direction merely because this historical file once said to keep it.
 
-Validation checkpoint: the shared B2 shell was materialized onto all traveler-facing static HTML files before the final CI/browser pass.
+## 3. Current B02 interpretation
+
+B02's historical work and product-specific direction remain inputs to its next work order, but B02 is not an automatic universal portfolio visual baseline and must satisfy the current anchor/archetype gates when a material redesign is undertaken.
+
+## 4. Portfolio consequence
+
+No single Business is the portfolio style template.
+
+The shared baseline is now **process quality**:
+
+- explicit product visual thesis;
+- concrete reference translation;
+- one anchor before broad implementation;
+- 2–3 archetypes before full expansion;
+- Korean typography review;
+- Desktop/Mobile system proof;
+- full-surface contact sheet;
+- one canonical active visual source after redesign;
+- owner approval kept separate.
+
+Business 06 may be used as a methodology case. B01's accepted Entry may be used as a B01-local anchor. Neither should be visually cloned across the portfolio.
