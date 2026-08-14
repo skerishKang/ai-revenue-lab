@@ -1,4 +1,4 @@
-"""Exact browser gate for B01 Personal Edition V6 Living Index / Issue #613."""
+"""Exact browser gate for B01 Personal Edition V7 Collectible Glass / Issue #613 continuity."""
 from __future__ import annotations
 
 import hashlib
@@ -73,7 +73,7 @@ def server() -> tuple[str, Path]:
     thread = threading.Thread(target=http.serve_forever, daemon=True)
     thread.start()
     host, port = http.server_address
-    evidence = Path(os.getenv("RUNNER_TEMP", tempfile.gettempdir())) / "b01-v6-living-index-613"
+    evidence = Path(os.getenv("RUNNER_TEMP", tempfile.gettempdir())) / "b01-v7-collectible-glass"
     (evidence / "screenshots").mkdir(parents=True, exist_ok=True)
     try:
         yield f"http://{host}:{port}", evidence
@@ -83,26 +83,27 @@ def server() -> tuple[str, Path]:
         thread.join(timeout=3)
 
 
-def test_v6_static_authority_and_admin_boundary() -> None:
+def test_v7_static_authority_and_admin_boundary() -> None:
     base = (BASE_DIR / "templates" / "base.html").read_text(encoding="utf-8")
     required = (
         "/static/ui-v6-living-index.css?v=b1-living-index-v6-20260814",
-        "/static/ui-v6-living-index-polish.css?v=b1-living-index-v6-polish-20260814",
-        "/static/ui-v6-living-index-authority.css?v=b1-living-index-v6-authority-20260814",
         "/static/ui-v6-living-index-completion.css?v=b1-living-index-v6-completion-20260814",
+        "/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814",
     )
     for marker in required:
         assert marker in base
-    assert base.index("ui-v6-living-index-authority.css") > base.index("ui-v5-image-led-fix.css")
-    assert base.index("ui-v6-living-index-completion.css") > base.index("ui-v6-living-index-authority.css")
-    assert 'b1-personal-edition-v6-living-index' in base
+    assert base.index("ui-v7-collectible-glass.css") > base.index("ui-v6-living-index-completion.css")
+    assert 'b1-personal-edition-v7-collectible-glass' in base
+    assert 'data-design-system="b1-collectible-glass-v7"' in base
+    assert 'data-owner-ui-approved="false"' in base
+    # V6 art-direction marker is intentionally retained as the compatibility layer selector.
     assert 'b1-living-index-v6' in base
     # Operator workspace intentionally keeps the existing visual authority.
     assert 'b1-personal-edition-v3-454' in base
     assert 'b1-image-led-v5' in base
 
 
-def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
+def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
     base, evidence = server
     shots: list[dict[str, object]] = []
     failures: list[str] = []
@@ -148,7 +149,9 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                     assert response is not None and response.status == 200, (screen_name, path)
                     assert page.locator(marker).count() > 0, (screen_name, marker)
                     assert page.locator("body").get_attribute("data-art-direction") == "b1-living-index-v6"
-                    assert page.locator("body").get_attribute("data-ui-version") == "b1-personal-edition-v6-living-index"
+                    assert page.locator("body").get_attribute("data-design-system") == "b1-collectible-glass-v7"
+                    assert page.locator("body").get_attribute("data-ui-version") == "b1-personal-edition-v7-collectible-glass"
+                    assert page.locator("body").get_attribute("data-owner-ui-approved") == "false"
 
                     metrics = page.evaluate(
                         """() => ({
@@ -178,34 +181,49 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                     assert focus_visible, (screen_name, viewport_name, "focus-visible")
 
                     if screen_name == "entry":
+                        assert page.locator(".v7-photo-cluster img").count() == 3
                         assert page.locator(".v3-hero-title").evaluate(
                             "el => getComputedStyle(el).color"
-                        ) == "rgb(39, 87, 255)"
-                        assert page.locator(".v3-assembly-stage").evaluate(
-                            "el => getComputedStyle(el).backgroundColor"
-                        ) == "rgb(255, 217, 47)"
-                        assert "hero-private-edition.webp" not in page.locator(".v3-assembly-stage").evaluate(
-                            "el => getComputedStyle(el).backgroundImage"
+                        ) == "rgb(17, 20, 24)"
+                        glass = page.locator(".v3-edition-object").evaluate(
+                            "el => ({bg:getComputedStyle(el).backgroundImage, bf:getComputedStyle(el).backdropFilter})"
                         )
+                        assert "linear-gradient" in glass["bg"]
+                        assert glass["bf"] != "none"
                     elif screen_name == "library":
-                        assert page.locator(".v3-library-head h1").evaluate(
-                            "el => getComputedStyle(el).color"
-                        ) == "rgb(39, 87, 255)"
-                        assert "library-edition-stack.webp" not in page.locator(".v3-library-object-zone").evaluate(
+                        background = page.locator(".v3-library-object-zone").evaluate(
                             "el => getComputedStyle(el).backgroundImage"
                         )
+                        assert "library-edition-stack.webp" in background
+                    elif screen_name == "write":
+                        background = page.locator(".v3-write-margin").evaluate(
+                            "el => getComputedStyle(el, '::after').backgroundImage"
+                        )
+                        assert "human-proof-review.webp" in background
                     elif screen_name == "read":
+                        background = page.locator(".v3-read-cover-zone").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        assert "edition-opening.webp" in background
                         assert page.locator(".v3-read-title h1").evaluate(
                             "el => getComputedStyle(el).color"
-                        ) == "rgb(39, 87, 255)"
+                        ) == "rgb(17, 20, 24)"
+                    elif screen_name == "history":
+                        background = page.locator(".v3-history-head").evaluate(
+                            "el => getComputedStyle(el, '::after').backgroundImage"
+                        )
+                        assert "edition-library-history.webp" in background
                     elif screen_name == "thanks":
-                        assert page.locator(".v3-thanks-mark").evaluate(
-                            "el => getComputedStyle(el).backgroundColor"
-                        ) == "rgb(39, 87, 255)"
+                        mark = page.locator(".v3-thanks-mark").evaluate(
+                            "el => ({bg:getComputedStyle(el).backgroundImage, color:getComputedStyle(el).color})"
+                        )
+                        assert "linear-gradient" in mark["bg"]
+                        assert mark["color"] == "rgb(34, 39, 40)"
                     elif screen_name == "adaptation":
-                        assert page.locator(".v3-adapt-head").evaluate(
-                            "el => getComputedStyle(el).backgroundColor"
-                        ) == "rgb(255, 217, 47)"
+                        background = page.locator(".v3-adapt-head").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        assert "linear-gradient" in background
 
                     shot = evidence / "screenshots" / f"{screen_name}-{viewport_name}.png"
                     page.screenshot(path=str(shot), full_page=False)
@@ -234,7 +252,7 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
         json.dumps(
             {
                 "issue": 613,
-                "direction": "B — Living Index",
+                "direction": "V7 — Collectible Glass",
                 "status": "pass",
                 "screenshots": shots,
             },
@@ -245,7 +263,7 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
     )
 
 
-def test_v6_admin_surface_remains_operator_v5(server: tuple[str, Path]) -> None:
+def test_v7_admin_surface_remains_operator_v5(server: tuple[str, Path]) -> None:
     base, _ = server
     with sync_playwright() as pw:
         browser = launch_browser(pw)
@@ -255,5 +273,6 @@ def test_v6_admin_surface_remains_operator_v5(server: tuple[str, Path]) -> None:
             assert response is not None and response.status == 200
             assert page.locator("body").get_attribute("data-art-direction") == "b1-image-led-v5"
             assert page.locator("body").get_attribute("data-ui-version") == "b1-personal-edition-v3-454"
+            assert page.locator("body").get_attribute("data-design-system") is None
         finally:
             browser.close()
