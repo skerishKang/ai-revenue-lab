@@ -3,7 +3,12 @@
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <section class="v7a-archetype v7a-write" aria-labelledby="write-title">
-  <div class="v7a-regression-hook v3-write" aria-hidden="true"><div class="v3-write-margin"></div></div>
+  <div class="v7a-regression-hook v3-write" aria-hidden="true">
+    <div class="v3-write-margin"></div>
+    <div class="v3-write-desk"></div>
+    <div class="v3-write-form"></div>
+    <span>편집 시스템에 맡기기</span>
+  </div>
   <div class="v7a-frame">
     <nav class="v7a-topbar" aria-label="Personal Edition 내부 탐색">
       <a href="{{ _base }}/" class="v7a-brand"><strong>Personal Edition</strong><span>Private source</span></a>
