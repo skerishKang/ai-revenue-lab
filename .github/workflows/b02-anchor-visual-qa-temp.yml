@@ -1,0 +1,129 @@
+name: B02 temporary Entry anchor visual QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/b02-anchor-visual-qa-temp.yml'
+      - 'apps/living-travel/pages-preview/site/index.html'
+      - 'apps/living-travel/pages-preview/site/assets/b2-anchor-638.css'
+      - 'apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp'
+
+permissions:
+  contents: read
+
+jobs:
+  capture-entry-anchor:
+    if: github.event.pull_request.head.ref == 'design/b02-place-first-anchor-scaffold'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Chromium harness
+        run: |
+          python -m pip install --disable-pip-version-check --quiet playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Serve exact static preview
+        working-directory: apps/living-travel/pages-preview/site
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/b02-http.log 2>&1 &
+          echo $! > /tmp/b02-http.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b02-http.log
+          exit 1
+
+      - name: Capture Desktop and Mobile with hard browser checks
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p /tmp/b02-anchor-evidence
+          python - <<'PY'
+          import asyncio, json, os
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+
+          OUT = Path('/tmp/b02-anchor-evidence')
+          URL = 'http://127.0.0.1:4173/index.html'
+          cases = [
+              ('desktop', 1440, 1100),
+              ('mobile', 390, 844),
+          ]
+
+          async def main():
+              report = {'head': os.environ['EXPECTED_HEAD'], 'url': URL, 'cases': []}
+              async with async_playwright() as p:
+                  browser = await p.chromium.launch()
+                  for name, width, height in cases:
+                      page = await browser.new_page(viewport={'width': width, 'height': height}, device_scale_factor=1)
+                      console_errors = []
+                      page_errors = []
+                      failed = []
+                      page.on('console', lambda msg: console_errors.append(msg.text) if msg.type == 'error' else None)
+                      page.on('pageerror', lambda exc: page_errors.append(str(exc)))
+                      page.on('requestfailed', lambda req: failed.append({'url': req.url, 'failure': req.failure}))
+                      response = await page.goto(URL, wait_until='networkidle')
+                      if response is None or response.status != 200:
+                          raise RuntimeError(f'{name}: document status {None if response is None else response.status}')
+                      await page.wait_for_selector('.lt-place-anchor__photo')
+                      metrics = await page.evaluate('''() => {
+                        const img = document.querySelector('.lt-place-anchor__photo');
+                        const primary = document.querySelector('.lt-place-anchor__primary');
+                        const title = document.querySelector('.lt-place-anchor h1');
+                        const r = primary.getBoundingClientRect();
+                        const t = title.getBoundingClientRect();
+                        return {
+                          scrollWidth: document.documentElement.scrollWidth,
+                          clientWidth: document.documentElement.clientWidth,
+                          scrollHeight: document.documentElement.scrollHeight,
+                          clientHeight: document.documentElement.clientHeight,
+                          imageComplete: img.complete,
+                          imageNaturalWidth: img.naturalWidth,
+                          imageNaturalHeight: img.naturalHeight,
+                          primaryTop: r.top,
+                          primaryBottom: r.bottom,
+                          titleTop: t.top,
+                          titleBottom: t.bottom,
+                          bodyFont: getComputedStyle(document.body).fontFamily,
+                        };
+                      }''')
+                      if metrics['scrollWidth'] > metrics['clientWidth'] + 1:
+                          raise RuntimeError(f'{name}: horizontal overflow {metrics}')
+                      if not metrics['imageComplete'] or metrics['imageNaturalWidth'] != 1400 or metrics['imageNaturalHeight'] != 1045:
+                          raise RuntimeError(f'{name}: focal image not rendered {metrics}')
+                      if console_errors or page_errors or failed:
+                          raise RuntimeError(f'{name}: browser errors console={console_errors} page={page_errors} failed={failed}')
+                      if name == 'mobile' and metrics['primaryTop'] >= height:
+                          raise RuntimeError(f'{name}: primary CTA below first viewport {metrics}')
+                      await page.screenshot(path=str(OUT / f'entry-{name}.png'), full_page=True)
+                      report['cases'].append({
+                          'name': name, 'viewport': [width, height], 'metrics': metrics,
+                          'console_errors': console_errors, 'page_errors': page_errors, 'failed_requests': failed,
+                      })
+                      await page.close()
+                  await browser.close()
+              (OUT / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
+              print(json.dumps(report, ensure_ascii=False, indent=2))
+
+          asyncio.run(main())
+          PY
+
+      - name: Upload exact-head evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: b02-entry-anchor-${{ github.event.pull_request.head.sha }}
+          path: /tmp/b02-anchor-evidence/
+          if-no-files-found: error
+          retention-days: 7
