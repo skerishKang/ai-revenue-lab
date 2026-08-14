@@ -1,0 +1,100 @@
+name: Repair B01 V6 evidence temporary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/repair-b01-v6-evidence-temp.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out immutable B01 source head
+        uses: actions/checkout@v4
+        with:
+          ref: f4336ce73a5147fc8230ca0326d7704f1e0ed7c1
+          path: source
+          persist-credentials: false
+
+      - name: Check out B01 evidence branch for repair
+        uses: actions/checkout@v4
+        with:
+          ref: agent/b01-v6-phase-a-613
+          path: target
+          fetch-depth: 1
+
+      - name: Require expected starting head
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "f4336ce73a5147fc8230ca0326d7704f1e0ed7c1" || {
+            echo "B01 branch moved; refusing stale evidence repair." >&2
+            exit 1
+          }
+
+      - name: Install Chromium
+        run: npx --yes playwright@1.52.0 install chromium
+
+      - name: Render all 18 exact-source PNG screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p rendered
+          python3 -m http.server 8101 --bind 127.0.0.1 --directory source/apps/personal-edition/v6-phase-a >/tmp/b01-http.log 2>&1 &
+          pid=$!
+          trap 'kill "${pid}" 2>/dev/null || true' EXIT
+          sleep 1
+          for direction in a b c; do
+            for screen in entry library read; do
+              npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="1440,1100" --wait-for-timeout=700 \
+                "http://127.0.0.1:8101/index.html?direction=${direction}&screen=${screen}" \
+                "rendered/${direction}-${screen}-desktop.png"
+              npx --yes playwright@1.52.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=700 \
+                "http://127.0.0.1:8101/index.html?direction=${direction}&screen=${screen}" \
+                "rendered/${direction}-${screen}-mobile.png"
+            done
+          done
+          test "$(find rendered -type f -name '*.png' | wc -l)" -eq 18
+
+      - name: Replace corrupt WebP evidence and update metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="target/apps/personal-edition/v6-phase-a/evidence/screenshots"
+          rm -f "${evidence}"/*.webp "${evidence}"/*.png
+          cp rendered/*.png "${evidence}/"
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          root = Path('target/apps/personal-edition/v6-phase-a')
+          readme = root.joinpath('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text = text.replace('Naming: `{a|b|c}-{entry|library|read}-{desktop|mobile}.webp`.',
+                              'Naming: `{a|b|c}-{entry|library|read}-{desktop|mobile}.png`.')
+          text = text.replace('The sandbox blocks local/file navigation, so evidence was rendered in Chromium with the exact self-contained HTML/CSS/JS bytes via Playwright `set_content`;',
+                              'Evidence was re-rendered from the exact static source head through a localhost Chromium server after CTO audit found corrupt committed WebP binaries;')
+          readme.write_text(text, encoding='utf-8')
+          summary_path = root / 'evidence/qa-summary.json'
+          data = json.loads(summary_path.read_text(encoding='utf-8'))
+          data['evidence_format'] = 'png'
+          data['render_method'] = 'Playwright Chromium against a localhost server serving exact B01 V6 Phase A source head f4336ce73a5147fc8230ca0326d7704f1e0ed7c1. All 18 replacement PNG files were freshly rendered at the required viewports after corrupt WebP evidence was detected.'
+          data['evidence_repair_reason'] = 'CTO audit found 8 of the 18 previously committed WebP screenshot binaries were truncated/corrupt. Product source was not changed.'
+          summary_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Commit evidence-only repair
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/personal-edition/v6-phase-a/evidence apps/personal-edition/v6-phase-a/README.md
+          test -n "$(git status --porcelain)"
+          git commit -m "fix(B01): replace corrupt Phase A screenshot evidence"
+          git push origin HEAD:agent/b01-v6-phase-a-613
