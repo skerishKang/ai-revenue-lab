@@ -10,6 +10,8 @@ on:
 permissions:
   contents: read
 
+# Exact-head gate: product tests remain network-free except the documented
+# localhost-only startup regression, which never reaches an upstream provider.
 jobs:
   alpha:
     name: Locked Alpha contract
