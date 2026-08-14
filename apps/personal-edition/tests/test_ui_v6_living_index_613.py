@@ -100,13 +100,10 @@ def test_v7_static_authority_and_admin_boundary() -> None:
     assert 'b1-personal-edition-v7-collectible-glass' in base
     assert 'data-design-system="b1-collectible-glass-v7"' in base
     assert 'data-owner-ui-approved="false"' in base
-    # V6 art-direction marker is intentionally retained as the compatibility layer selector.
     assert 'b1-living-index-v6' in base
-    # Operator workspace intentionally keeps the existing visual authority.
     assert 'b1-personal-edition-v3-454' in base
     assert 'b1-image-led-v5' in base
 
-    # Archetype System Test is deliberately limited to Library / Write / Read.
     intro = (BASE_DIR / "templates" / "intro.html").read_text(encoding="utf-8")
     library = (BASE_DIR / "templates" / "participant_dashboard.html").read_text(encoding="utf-8")
     write = (BASE_DIR / "templates" / "input_form.html").read_text(encoding="utf-8")
@@ -195,7 +192,6 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                     assert focus_visible, (screen_name, viewport_name, "focus-visible")
 
                     if screen_name == "entry":
-                        # Entry remains the locked anchor and must not be converted to archetype markup.
                         assert page.locator(".v7a-archetype").count() == 0
                         assert page.locator(".v7-photo-cluster img").count() == 3
                         assert page.locator(".v3-hero-title").evaluate(
@@ -209,7 +205,15 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                     elif screen_name == "library":
                         assert page.locator(".v7a-library.v7a-archetype").count() == 1
                         assert page.locator(".v7a-edition-object").count() >= 1
-                        assert page.locator(".v7a-photo-fragment img").count() >= 2
+                        assert page.locator(".v7a-photo-fragment").count() >= 2
+                        photo_a = page.locator(".v7a-library-photo-a").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        photo_b = page.locator(".v7a-library-photo-b").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        assert "private-library-hero.webp" in photo_a
+                        assert "edition-library-history.webp" in photo_b
                         assert page.locator(".site-header").evaluate(
                             "el => getComputedStyle(el).display"
                         ) == "none"
@@ -230,7 +234,15 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                     elif screen_name == "read":
                         assert page.locator(".v7a-read.v7a-archetype").count() == 1
                         assert page.locator(".v7a-read-cover").count() == 1
-                        assert page.locator(".v7a-visual-break img").count() == 1
+                        assert page.locator(".v7a-visual-break-image").count() == 1
+                        read_photo = page.locator(".v7a-read-photo").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        visual_break = page.locator(".v7a-visual-break-image").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        assert "edition-opening.webp" in read_photo
+                        assert "edition-opening.webp" in visual_break
                         assert page.locator(".site-header").evaluate(
                             "el => getComputedStyle(el).display"
                         ) == "none"
