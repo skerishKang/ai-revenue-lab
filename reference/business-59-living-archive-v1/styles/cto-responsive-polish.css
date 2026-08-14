@@ -1,0 +1,226 @@
+/* CTO delegated responsive/product-hierarchy correction — 2026-08-14.
+ * Preserves the B59 hybrid 3D shelf ↔ 2D precision-reader contract while
+ * correcting mobile clipping and desktop information density.
+ */
+
+/* Desktop: keep the spatial shelf, but reduce decorative dead space and make
+ * the selected-record/reading actions feel like the product rather than a demo.
+ */
+.shelf-view {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  grid-template-columns: minmax(250px, .9fr) minmax(440px, 1.28fr) minmax(300px, .92fr);
+  gap: clamp(22px, 3vw, 44px);
+  padding-top: 96px;
+  padding-bottom: 40px;
+}
+
+.shelf-copy h2 {
+  font-size: clamp(2.35rem, 4.2vw, 4.9rem);
+  line-height: .98;
+}
+
+.shelf-stage {
+  min-height: 500px;
+}
+
+.volume-summary h3 {
+  font-size: clamp(2rem, 3vw, 3.35rem);
+  line-height: 1;
+}
+
+.summary-actions {
+  gap: 10px;
+}
+
+/* Reading is the authoritative precision path in the product contract. */
+#open-2d-direct {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--ink-dark);
+  font-weight: 800;
+}
+
+#open-3d {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 1120px) {
+  .shelf-view {
+    grid-template-columns: minmax(240px, .85fr) minmax(420px, 1.15fr);
+  }
+
+  .volume-summary {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: 14px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 1.35rem;
+  }
+
+  .topbar__actions {
+    gap: 6px;
+  }
+
+  .topbar__actions .quiet-button {
+    min-height: 36px;
+    padding-inline: 11px;
+    font-size: .7rem;
+  }
+
+  .shelf-view {
+    width: 100%;
+    padding: 104px 16px 34px;
+  }
+
+  .shelf-copy {
+    max-width: 36rem;
+  }
+
+  .shelf-copy h2 {
+    margin: 10px 0 14px;
+    font-size: clamp(2.25rem, 10.8vw, 3.25rem);
+    line-height: .98;
+  }
+
+  .shelf-copy > p:last-child {
+    font-size: .86rem;
+    line-height: 1.62;
+  }
+
+  /* Mobile intentionally becomes a bounded horizontal shelf. The shelf may
+   * scroll internally; the document itself must not overflow the viewport. */
+  .shelf-stage {
+    width: 100%;
+    max-width: 100%;
+    min-height: 318px;
+    margin: 18px 0 14px;
+    padding: 0 2px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 18px;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+    place-items: end start;
+  }
+
+  .shelf {
+    width: max-content;
+    min-width: max-content;
+    gap: 14px;
+    padding: 0 18px;
+    justify-content: flex-start;
+    transform: none;
+  }
+
+  .volume {
+    flex: 0 0 124px;
+    width: 124px;
+    height: clamp(230px, 62vw, 260px);
+    padding: 18px 12px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .volume:first-child {
+    scroll-snap-align: start;
+  }
+
+  .volume:last-child {
+    scroll-snap-align: end;
+  }
+
+  .volume strong {
+    font-size: 1.08rem;
+    line-height: 1.08;
+  }
+
+  .volume:hover,
+  .volume[aria-pressed="true"] {
+    transform: translateY(-8px) scale(1.01);
+  }
+
+  .shelf-plank {
+    width: 480px;
+    min-width: 480px;
+    height: 20px;
+    transform: none;
+  }
+
+  .volume-summary {
+    display: block;
+    max-width: none;
+    padding-top: 8px;
+  }
+
+  .volume-summary h3 {
+    margin: 8px 0 10px;
+    font-size: clamp(1.85rem, 8.4vw, 2.55rem);
+    line-height: 1.02;
+  }
+
+  .volume-summary > p:not(.kicker) {
+    margin-block: 8px 14px;
+    font-size: .86rem;
+    line-height: 1.6;
+  }
+
+  .summary-meta {
+    margin: 16px 0;
+    padding: 14px 0;
+    gap: 10px;
+  }
+
+  .summary-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    position: sticky;
+    bottom: 10px;
+    z-index: 8;
+    padding: 8px;
+    margin-inline: -4px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(16, 19, 25, .9);
+    backdrop-filter: blur(12px);
+  }
+
+  #open-2d-direct {
+    order: -1;
+    min-height: 46px;
+  }
+
+  #open-3d {
+    min-height: 46px;
+  }
+
+  .book-view {
+    padding-top: 88px;
+  }
+
+  .book-toolbar > :last-child {
+    min-height: 46px;
+  }
+
+  .reader-view {
+    padding-top: 76px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volume:hover,
+  .volume[aria-pressed="true"] {
+    transform: none;
+  }
+}
