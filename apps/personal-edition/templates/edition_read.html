@@ -4,10 +4,13 @@
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
 <article class="v7a-archetype v7a-read">
   <div class="v7a-regression-hook v3-read" aria-hidden="true">
+    <div class="v3-read-opening"></div>
     <div class="v3-read-cover-zone"></div>
     <div class="v3-read-title"><h1>{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</h1></div>
+    <div class="v3-reading-shell"></div>
+    <div class="v3-reading-main"></div>
     <div class="section-copy-v3"><p>Typography regression hook</p></div>
-    <div class="edition-cover"></div>
+    <div class="edition-cover v3-read-cover"></div>
   </div>
 
   <div class="v7a-frame">
@@ -22,7 +25,7 @@
 
     <header class="v7a-read-opening">
       <div class="v7a-read-stage" aria-label="에디션 커버와 기록 조각의 여는 장면">
-        <figure class="v7a-photo-fragment v7a-read-photo" aria-hidden="true"><img src="/static/images/v5/edition-opening.webp" alt="" width="1536" height="1024"></figure>
+        <figure class="v7a-photo-fragment v7a-read-photo" aria-hidden="true"></figure>
         <div class="v7a-read-cover" aria-hidden="true">
           <span class="v7a-cover-pub">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
           <strong class="v7a-cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</strong>
@@ -47,7 +50,7 @@
       {% if content and content.highlighted_insight %}<aside class="v7a-edition-note v7a-insight">{{ content.highlighted_insight }}</aside>{% endif %}
 
       <figure class="v7a-visual-break" aria-label="기록 조각이 한 권의 편집물로 모인 인쇄물 장면">
-        <img src="/static/images/v5/edition-opening.webp" alt="에디션을 펼쳐 읽는 물성의 장면" width="1536" height="1024">
+        <div class="v7a-visual-break-image" role="img" aria-label="에디션을 펼쳐 읽는 물성의 장면"></div>
         <figcaption><small>Material shift · Edited from source</small>원본의 조각은 사라지지 않고 한 호의 리듬 안에서 다시 배치됩니다. 사진은 물성을 만들고 실제 제목과 문장은 선택 가능한 본문으로 남습니다.</figcaption>
       </figure>
 
