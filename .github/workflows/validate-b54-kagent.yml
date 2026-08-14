@@ -1,0 +1,47 @@
+name: Validate B54 KAgent
+
+on:
+  pull_request:
+    paths:
+      - 'apps/korean-ai-code-agent/**'
+      - '.github/workflows/validate-b54-kagent.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: KAgent ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile source and tests
+        working-directory: apps/korean-ai-code-agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q src tests
+
+      - name: Run KAgent contract tests
+        working-directory: apps/korean-ai-code-agent
+        shell: bash
+        env:
+          PYTHONPATH: src
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -v
