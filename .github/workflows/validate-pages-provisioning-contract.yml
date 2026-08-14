@@ -1,0 +1,58 @@
+name: Validate Pages provisioning contract
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/validate_pages_provisioning.py'
+      - '.github/scripts/validate_pages_source_migration.py'
+      - '.github/tests/test_validate_pages_provisioning.py'
+      - '.github/tests/test_validate_pages_source_migration.py'
+      - '.github/tests/test_provision_pages_source_migration_wiring.py'
+      - '.github/workflows/provision-approved-business-pages.yml'
+      - '.github/workflows/validate-pages-provisioning-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Offline provisioning guards
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Compile validators
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            .github/scripts/validate_pages_provisioning.py \
+            .github/scripts/validate_pages_source_migration.py
+
+      - name: Run existing provisioning validator tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover \
+            -s .github/tests \
+            -p 'test_validate_pages_provisioning.py' \
+            -v
+
+      - name: Run source-migration validator tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover \
+            -s .github/tests \
+            -p 'test_validate_pages_source_migration.py' \
+            -v
+
+      - name: Run protected-workflow wiring tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover \
+            -s .github/tests \
+            -p 'test_provision_pages_source_migration_wiring.py' \
+            -v
