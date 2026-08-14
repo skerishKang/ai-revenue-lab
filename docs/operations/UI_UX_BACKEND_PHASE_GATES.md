@@ -1,325 +1,186 @@
-# UI → UX → Backend Phase Gates
+# UI / UX / Backend Evidence Gates
 
-- Status: portfolio operating policy
+- Status: canonical portfolio operating policy
 - Owner: Web CTO
-- Permanent tracking issue: #154
-- Current portfolio mode: `UI_ONLY`
-- Applies to: every new or revived AI Revenue Lab Business unless a separate approved issue explicitly states otherwise
-- Portfolio intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+- Authority: Issue #148 + current portfolio governance
+- Portfolio mode: `MVP_AND_VISUAL_UPGRADE`
 - Deployment policy: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 
 ## 1. Decision
 
-For the current portfolio expansion period, AI Revenue Lab builds and reviews new Businesses in this strict order:
+UI, UX, backend/runtime, deployment, and business evidence remain **separate verdicts**, but they are not a mandatory sequential ceremony.
+
+The old repository-wide rule:
 
 ```text
-Phase 0 — product framing
-→ Phase 1 — UI visual design
-→ UI approval gate
-→ Phase 2 — UX and interaction design
-→ UX approval gate
-→ Phase 3 — backend authorization decision
-→ Phase 4 — backend and runtime implementation
+UI only
+→ UI approval
+→ UX only
+→ UX approval
+→ backend decision
+→ backend implementation
 ```
 
-A later phase must not begin merely because a worker has capacity or because the technology is easy to add. Each phase begins only after the previous gate is explicitly accepted.
+is historical policy for the revisions that used it. It is not the default contract for new work.
 
-The current default is **Phase 1 UI work only**. New Business work must not expand into UX or backend scope unless the user and Web CTO authorize the next phase for that specific Business.
+Current rule:
 
-### 1.1 Purpose of the gates
+> Select the smallest evidence slice that proves the current product question, while keeping each evidence dimension independently truthful.
 
-These gates prevent scope, evidence, privacy, and authorization confusion. They do not exist to maximize ceremony or slow an authorized experiment.
+## 2. Product-evidence stages
 
-The gates preserve truthful distinctions:
-
-- a polished UI is not an accepted end-to-end UX;
-- an accepted UX is not backend authorization;
-- a merged PR is not a human phase verdict;
-- a deployment is not product completion or revenue evidence.
-
-Within an explicitly authorized phase and deployment scope, operators should proceed without repeated minor approval questions. Deployment execution follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
-
-## 2. Phase 0 — Product framing
-
-Phase 0 is intentionally small. It exists only to prevent a beautiful interface from representing an undefined or duplicate product.
-
-Required:
-
-- proposed or canonical Business number;
-- stable slug and Korean/English name;
-- one-sentence product promise;
-- target user and primary use moment;
-- primary visual result or artifact;
-- overlap and boundary with existing Businesses;
-- explicit UI-only non-goals.
-
-Phase 0 does not authorize application architecture, databases, authentication, providers, deployment, or final UX flows.
-
-## 3. Phase 1 — UI visual design
-
-### 3.1 Goal
-
-Produce a visually convincing product identity and representative screen system before optimizing task flow or implementing runtime behavior.
-
-UI answers:
-
-- What does this product look and feel like?
-- What is the visual hierarchy?
-- What imagery, typography, color, spacing, density, and composition define it?
-- What makes it look like this product rather than a generic AI service?
-- What signature motion communicates the concept?
-- Does the product remain coherent on desktop and mobile?
-
-### 3.2 Required UI scope
-
-Normally create 4–7 representative visual states, such as:
-
-- landing or home;
-- primary feed, workspace, publication, map, story, or dashboard;
-- item or result detail;
-- personalization, evidence, transformation, or comparison state;
-- collection, archive, or secondary surface when visually central;
-- mobile composition;
-- one signature-motion state.
-
-The exact states vary by Business. They are selected to prove the visual system, not to simulate every use case.
-
-### 3.3 Permitted interaction
-
-Minimal interaction is permitted only to review visual composition and motion:
-
-- next/previous state;
-- tab or view switching;
-- opening and closing a visual panel;
-- hover, focus, scroll, or reveal behavior;
-- deterministic motion preview;
-- switching between desktop-like visual states in a static prototype.
-
-These interactions do **not** constitute UX approval. A visually clickable reference is still a Phase 1 UI artifact.
-
-### 3.4 Prohibited UI-phase expansion
-
-Do not implement or finalize:
-
-- complete onboarding or end-to-end task journeys;
-- final information architecture or navigation semantics;
-- comprehensive loading, empty, validation, error, recovery, and permission states;
-- real forms or durable user input;
-- real personalization or recommendation logic;
-- authentication or authorization;
-- API contracts or network calls;
-- databases or persistence;
-- live AI providers or model routing;
-- crawling or live-data ingestion;
-- payments, billing, notifications, or runtime backend deployment.
-
-Synthetic content and static local assets are the default.
-
-A separately authorized publication of an already accepted static UI is governed by Section 3.6 and does not expand the UI issue into UX or backend work.
-
-### 3.5 UI approval gate
-
-Phase 1 passes only when all of the following are accepted:
-
-- reference research is documented;
-- imagery is repository-local and source-documented;
-- Korean-first product copy is credible;
-- desktop and mobile visual evidence is complete;
-- signature motion is reviewable;
-- the product avoids generic AI-generated visual language;
-- major states share one coherent visual system;
-- no obvious overflow, broken asset, console error, or inaccessible primary visual control remains;
-- the Web CTO reviews the exact head;
-- the user explicitly approves the visual direction.
-
-Approval status vocabulary:
-
-- `UI_NOT_READY`
-- `UI_CONDITIONALLY_READY`
-- `UI_APPROVED`
-
-Only `UI_APPROVED` authorizes a separate UX child issue.
-
-After approval, the accepted UI becomes the visual baseline. Material changes to typography, color, image direction, layout grammar, or signature motion must be documented rather than silently introduced during UX work.
-
-### 3.6 Publication of an approved Phase 1 UI
-
-`UI_APPROVED` does not itself authorize merge or deployment. The user must separately authorize publication of the accepted static UI.
-
-After that separate authorization, merge the accepted expected head to the configured Production branch. The existing Git integration performs the Production deployment automatically.
-
-Preview and staging are disabled by default. They may be introduced only by a new explicit owner decision or an already approved Business-specific contract that names the exception. An operator may not create an exception merely by adding a reason to an issue.
-
-Before the authorized merge:
-
-- verify the latest source and accepted exact head;
-- verify the dedicated project, root, branch, and hostname;
-- record the last known-good Production source and configuration as recovery evidence;
-- determine the required static and responsive smoke checks.
-
-After the automatic Production deployment completes:
-
-- verify the actual deployed SHA or bytes;
-- verify TLS, required assets, desktop, mobile, console, and overflow;
-- retain the deployment when accepted or merge a reviewed fix/revert PR on a critical source failure;
-- restore configuration separately only when configuration itself caused the failure;
-- record deployment evidence separately from UI, UX, backend, and business verdicts.
-
-An approved Phase 1 UI publication:
-
-- publishes only the already accepted static UI reference and its repository-local assets;
-- does not authorize unreviewed source changes, a new feature commit, PR Ready status, UX work, or backend work;
-- does not convert review controls or synthetic states into accepted UX;
-- does not authorize authentication, persistence, APIs, databases, live AI, analytics, billing, or other backend work;
-- must report the exact deployed source and preserve the accepted visual baseline.
-
-A deployment is not proof of UX approval, backend authorization, product completion, or revenue evidence.
-
-## 4. Phase 2 — UX and interaction design
-
-### 4.1 Entry condition
-
-Phase 2 may begin only after the same Business has `UI_APPROVED` evidence.
-
-### 4.2 Goal
-
-Turn the accepted visual system into an understandable, efficient, accessible, and complete user experience using synthetic data and frontend-only behavior.
-
-UX answers:
-
-- What does the user do first?
-- What is the shortest successful path?
-- How does navigation preserve context?
-- What happens during loading, emptiness, errors, recovery, and completion?
-- What feedback follows each action?
-- What information is shown now versus progressively disclosed?
-- Can the main task be completed with keyboard and mobile input?
-
-### 4.3 Required UX scope
-
-Depending on the Business:
-
-- information architecture;
-- primary and secondary journeys;
-- navigation and back behavior;
-- form and selection behavior;
-- loading, empty, validation, error, retry, and completion states;
-- progressive disclosure;
-- accessibility semantics and keyboard behavior;
-- mobile interaction behavior;
-- synthetic feedback and personalization loop;
-- usability evidence for the main journey.
-
-Use static fixtures, browser memory, and deterministic mock behavior. UX work still does not require a backend.
-
-### 4.4 UX approval gate
-
-Phase 2 passes only when:
-
-- the primary journey is complete and understandable;
-- all required states are inventoried and represented;
-- navigation and interaction semantics are consistent;
-- keyboard and mobile behavior are verified;
-- critical error and recovery paths are present;
-- the accepted UI visual baseline is preserved or approved changes are documented;
-- the Web CTO reviews the exact head;
-- the user explicitly approves the experience.
-
-Approval status vocabulary:
-
-- `UX_NOT_READY`
-- `UX_CONDITIONALLY_READY`
-- `UX_APPROVED`
-
-Only `UX_APPROVED` permits a backend authorization decision.
-
-## 5. Phase 3 — Backend authorization decision
-
-Phase 3 is a decision gate, not automatic implementation.
-
-After UX approval, the Web CTO prepares a short backend decision that answers:
-
-- Does this Business need a backend for the next evidence goal?
-- What is the smallest required backend slice?
-- Which data must persist?
-- Is authentication required now?
-- Is a live AI provider required now?
-- Can the next business test still use static or local-only behavior?
-- What privacy, security, cost, and operational risks are introduced?
-- Which Web and Local models should implement and validate it?
-
-Possible decisions:
-
-- `BACKEND_DEFERRED`
-- `FRONTEND_ONLY_PILOT`
-- `LOCAL_RUNTIME_ONLY`
-- `BACKEND_AUTHORIZED`
-
-No backend implementation issue is opened until the user explicitly approves `BACKEND_AUTHORIZED` or another narrowly defined runtime decision.
-
-## 6. Phase 4 — Backend and runtime implementation
-
-Only after authorization may work include:
-
-- authentication and product-local authorization;
-- APIs and server-side validation;
-- databases and migrations;
-- uploads and private records;
-- live AI providers and model routing;
-- crawling or current-data ingestion;
-- persistence and audit history;
-- billing and payments;
-- authorized runtime and Production deployment via the Git-connected automatic deployment path.
-
-Preview or staging may be used only under a new explicit owner decision or an already approved Business-specific contract that names the exception.
-
-Backend work must preserve the approved UI and UX contracts. It must not redesign the product as an incidental consequence of implementation.
-
-Runtime deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`. For Git-connected Pages, merge to the configured Production branch is the deployment action — operators do not manually create a deployment.
-
-## 7. Current portfolio freeze
-
-Until this policy is explicitly changed:
-
-- new Business work is limited to Phase 0 and Phase 1;
-- UI issues are processed one by one or in controlled parallel batches;
-- a Business that receives `UI_APPROVED` may move to a separate UX issue;
-- backend work for newly introduced Businesses remains frozen;
-- separately authorized publication of accepted UI or existing runtime work may continue under the deployment policy;
-- existing production or backend maintenance may continue only through already authorized product-specific issues;
-- the permanent Issue #154 remains open and records each Business phase and gate result.
-
-## 8. Issue structure
-
-Use separate issues for separate gates:
+A work item may target one or more stages:
 
 ```text
-Product/number decision issue
-UI-only issue
-UX-only issue after UI approval
-Backend decision issue after UX approval
-Backend implementation issues only after authorization
-Automatic Production observation/verification issue when not already included in an authorized implementation issue
+PRODUCT_FRAMED
+COMPETITIVE_DEMO
+INVESTOR_DEMO
+MVP_VERTICAL_SLICE
+SERVICE_LED_PILOT
+RUNTIME_PILOT
+COMMERCIAL_HARDENING
+OPERATING_PRODUCT
 ```
 
-Do not create one issue titled “UI/UX/MVP” that mixes visual design, interaction design, databases, authentication, deployment, and business acceptance.
+These stages are not mandatory sequential gates.
 
-## 9. Phase evidence in Issue #154
+## 3. Evidence dimensions
 
-Record each Business in the permanent queue using this format:
+Record each independently when relevant:
+
+### UI / visual
+
+Answers whether the visual system is coherent, readable, responsive, distinctive, and technically sound.
+
+Possible verdicts:
 
 ```text
-Business XX — <Product>
-Product status: proposed / canonical
-UI: NOT_STARTED / IN_PROGRESS / UI_NOT_READY / UI_CONDITIONALLY_READY / UI_APPROVED
-UX: BLOCKED_BY_UI / NOT_STARTED / IN_PROGRESS / UX_NOT_READY / UX_CONDITIONALLY_READY / UX_APPROVED
-Backend: FROZEN / DECISION_PENDING / DEFERRED / AUTHORIZED / IN_PROGRESS
-Deployment: NOT_AUTHORIZED / AUTHORIZED / AUTOMATIC_PENDING / PRODUCTION_VERIFIED / REVERTED / BLOCKED
-Current child issue: #...
-Accepted visual head: <SHA or none>
-Accepted UX head: <SHA or none>
-Deployed Production head: <SHA or none>
-Next action: ...
+UI_NOT_READY
+UI_CONDITIONALLY_READY
+UI_APPROVED
 ```
 
-This keeps visual approval, experience approval, runtime implementation, deployment, and business evidence from being confused.
+Historical `UI_APPROVED` evidence remains valid for its exact revision. It does not imply UX, backend, merge, Production, commercial, or current-owner approval unless those were separately recorded.
+
+### UX / interaction
+
+Answers whether the intended journey, navigation, feedback, errors/recovery, accessibility, and mobile/keyboard behavior are understandable and usable.
+
+```text
+UX_NOT_READY
+UX_CONDITIONALLY_READY
+UX_APPROVED
+```
+
+UX may be designed in the same vertical slice as UI when that is the smallest useful product evidence. The verdicts still remain separate.
+
+### Backend / runtime
+
+Answers whether the required runtime behavior, data contracts, provider/local-model integration, persistence, authorization, failure handling, observability, and cost boundaries work.
+
+Select a backend mode:
+
+```text
+NO_BACKEND
+DETERMINISTIC_SIMULATION
+SERVICE_LED
+LOCAL_RUNTIME
+LIVE_VERTICAL_SLICE
+PILOT_RUNTIME
+COMMERCIAL_HARDENING
+```
+
+Backend is not frozen by default. It may begin early when it is the key product uncertainty and is explicitly included in the work contract.
+
+### Deployment
+
+Deployment proves only that an authorized revision is operating at the intended target. It does not manufacture UI, UX, backend, owner, or commercial approval.
+
+### Business evidence
+
+Record user behavior, willingness to pay, operating cost, revenue, retention, service-led workload, or other evidence appropriate to the experiment.
+
+## 4. Scope selection examples
+
+### Visual-first
+
+Use when the product is understood but desirability/identity is not.
+
+```text
+product framing
+→ competitive visual reference
+→ representative desktop/mobile screens
+→ technical + visual review
+```
+
+No backend is required unless the visual/product question depends on live behavior.
+
+### UX-first or combined UI/UX vertical slice
+
+Use when the product journey is the main uncertainty.
+
+```text
+bounded product surface
+→ primary journey
+→ loading/error/recovery
+→ browser/usability validation
+```
+
+### Service-led MVP
+
+Use when demand can be tested faster with a human-operated backend boundary.
+
+```text
+customer-facing surface
+→ explicit operator step
+→ AI-assisted/manual delivery
+→ quality control
+→ response-time + workload + price evidence
+```
+
+### Runtime-first
+
+Use when the product value depends on local processing, model execution, ingestion, API behavior, or persistence.
+
+```text
+minimal interface/fixture
+→ bounded runtime
+→ deterministic failure/security tests
+→ real-environment validation
+```
+
+### Commercial hardening
+
+Use only after demand/usage/operating evidence justifies reliability, tenant isolation, billing, migrations, support, or provider redundancy.
+
+## 5. Owner and CTO authority
+
+The Web CTO may reject objective visual/UX defects and assign technical readiness statuses.
+
+If a work contract explicitly requires owner aesthetic approval, only an explicit owner decision creates `OWNER_UI_APPROVED`.
+
+If the owner explicitly delegates design selection to the CTO, the CTO may select the direction and record `CTO_DELEGATED_DECISION`; this does not rewrite historical owner-approval records.
+
+## 6. Evidence and independence
+
+Follow:
+
+- `AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `EVIDENCE_REQUIREMENTS.md`
+- `WORKFLOW_STATUS_MODEL.md`
+
+Implementation self-check and independent validation are different evidence types. The same actor must not claim implementation and independent Local Validation for the same revision.
+
+## 7. Merge and Production
+
+A passed evidence dimension does not itself authorize merge or Production.
+
+For Git-connected Production targets, follow the expected-head review and automatic deployment contract in `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
+Preview/staging/manual deployment remains disabled unless separately authorized.
+
+## 8. Historical records
+
+Do not rewrite old Issues/PRs simply because the repository-wide policy changed. Historical UI-only, phase-gate, backend-frozen, or Preview records remain evidence of the rules and decisions that applied to those revisions.
+
+New work follows this current policy unless a Business-specific authority is stricter.
