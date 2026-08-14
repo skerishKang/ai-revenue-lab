@@ -35,6 +35,6 @@ Screenshots are in `evidence/screenshots/` for every direction × surface at exa
 - Desktop `1440×1100`
 - Mobile `390×844`
 
-Naming: `{a|b|c}-{entry|library|read}-{desktop|mobile}.webp`.
+Naming: `{a|b|c}-{entry|library|read}-{desktop|mobile}.png`.
 
-Browser QA: 18/18 rendered cases passed horizontal-overflow, console/page-error, runtime-request, visible-panel, active-navigation, and H1 line-height checks. The sandbox blocks local/file navigation, so evidence was rendered in Chromium with the exact self-contained HTML/CSS/JS bytes via Playwright `set_content`; the committed concept itself is ordinary static HTML and uses no external runtime dependencies.
+Browser QA: 18/18 rendered cases passed horizontal-overflow, console/page-error, runtime-request, visible-panel, active-navigation, and H1 line-height checks. Evidence was re-rendered from the exact static source head through a localhost Chromium server after CTO audit found corrupt committed WebP binaries; the committed concept itself is ordinary static HTML and uses no external runtime dependencies.
