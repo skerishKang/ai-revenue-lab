@@ -29,6 +29,9 @@ class B6B12CanonicalIdentityTests(unittest.TestCase):
         cls.manifest = MANIFEST.read_text(encoding="utf-8")
         cls.registry = REGISTRY.read_text(encoding="utf-8")
         cls.apps_readme = APPS_README.read_text(encoding="utf-8")
+        cls.canonical_registry = cls.registry.split(
+            "## 3. Canonical numbered Businesses", 1
+        )[1].split("## 4. Reconciled numbering history for B6–B12", 1)[0]
 
     def manifest_entry(self, number: int) -> str:
         match = re.search(rf'identity\(\{{[^\n]*n:{number},[^\n]*\}}\)', self.manifest)
@@ -56,7 +59,7 @@ class B6B12CanonicalIdentityTests(unittest.TestCase):
         self.assertIn('w:"apps/world-feed/"', entry)
         self.assertIn('l:"research"', entry)
         self.assertIn("Personal World Discovery", self.apps_readme)
-        self.assertIn("current narrowed commercial positioning", self.apps_readme)
+        self.assertIn("current commercial thesis narrowed", self.apps_readme)
 
     def test_b7_b12_keep_reference_workspaces_without_duplicate_apps_placeholders(self) -> None:
         for number, (_, _, workspace, _) in EXPECTED.items():
@@ -64,13 +67,13 @@ class B6B12CanonicalIdentityTests(unittest.TestCase):
                 continue
             entry = self.manifest_entry(number)
             self.assertIn(f'w:"{workspace}"', entry)
-            self.assertNotIn(f'w:"apps/', entry)
+            self.assertNotIn('w:"apps/', entry)
 
     def test_registry_and_manifest_agree_on_canonical_number_authority(self) -> None:
         for number, (slug, _, _, _) in EXPECTED.items():
             self.assertRegex(
-                self.registry,
-                re.compile(rf'\|\s*{number}\s*\|\s*`{re.escape(slug)}`\s*\|[^\n]*\|\s*canonical\s*\|'),
+                self.canonical_registry,
+                re.compile(rf'^\|\s*{number}\s*\|\s*`{re.escape(slug)}`\s*\|', re.MULTILINE),
             )
             self.assertIn('a:NA.CANONICAL', self.manifest_entry(number))
 
