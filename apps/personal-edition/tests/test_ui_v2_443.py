@@ -1,7 +1,8 @@
-"""Issue #454 regression contracts for the Personal Edition V3 art-direction reset.
+"""Historical participant UI regression contracts, reconciled for B01 V7.
 
-The filename is retained to avoid breaking historical CI references, but V2 visual
-assertions are deliberately removed: #454 explicitly rejects the V2 art direction.
+The filename is retained to avoid breaking historical CI references. Contracts that
+belonged to rejected art directions are updated when the owner explicitly selects a
+new direction; product behavior and operator boundaries remain regression-protected.
 """
 from __future__ import annotations
 
@@ -98,8 +99,30 @@ def test_feedback_and_adaptation_are_editorial_direction_and_recut() -> None:
     assert "변경된 이유" in adaptation
     assert "고객마다 원하는 속도와 방식이 다르다는 것을 깨달았습니다" in adaptation
 
-def test_participant_art_direction_has_no_visible_decorative_raster_photos() -> None:
-    for name in ["intro.html", "participant_dashboard.html", "input_form.html", "edition_read.html", "participant_history.html"]:
+def test_v7_participant_photography_is_local_approved_and_entry_scoped() -> None:
+    intro = (BASE_DIR / "templates" / "intro.html").read_text(encoding="utf-8")
+    visible_intro = re.sub(
+        r'<template data-legacy-visual-contract>.*?</template>',
+        '',
+        intro,
+        flags=re.S,
+    )
+    approved = {
+        "/static/images/v5/edition-opening.webp",
+        "/static/images/v5/hero-private-edition.webp",
+        "/static/images/v5/human-proof-review.webp",
+    }
+    found = set(re.findall(r'<img[^>]+src="([^"]+\.webp)"', visible_intro))
+    assert found == approved
+    assert visible_intro.count("<img") == 3
+    assert "http://" not in visible_intro
+    assert "https://" not in visible_intro
+    assert 'class="v7-photo-cluster"' in visible_intro
+
+    # Direct template photography remains deliberately limited to the cinematic
+    # Entry stage. Other core reading/writing surfaces get repository imagery via
+    # the V7 CSS staging layer so important copy is not placed directly on photos.
+    for name in ["participant_dashboard.html", "input_form.html", "edition_read.html", "participant_history.html"]:
         source = (BASE_DIR / "templates" / name).read_text(encoding="utf-8")
         visible_source = re.sub(
             r'<template data-legacy-visual-contract>.*?</template>',

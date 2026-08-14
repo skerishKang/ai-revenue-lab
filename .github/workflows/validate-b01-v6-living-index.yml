@@ -1,4 +1,4 @@
-name: Validate B01 V6 Living Index
+name: Validate B01 V7 Collectible Glass
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   browser:
-    name: Living Index exact-head browser gate
+    name: Collectible Glass exact-head browser gate
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -42,18 +42,18 @@ jobs:
       - name: Install Playwright Chromium
         run: python -m playwright install chromium
 
-      - name: Run V6 Living Index browser gate
+      - name: Run V7 Collectible Glass browser gate
         run: python -m pytest tests/test_ui_v6_living_index_613.py -q
 
       - name: Check changed-source whitespace
         working-directory: ${{ github.workspace }}
         run: git diff --check
 
-      - name: Upload exact-head V6 visual evidence
+      - name: Upload exact-head V7 visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: b01-v6-living-index-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/b01-v6-living-index-613/
+          name: b01-v7-collectible-glass-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/b01-v7-collectible-glass/
           if-no-files-found: error
           retention-days: 7

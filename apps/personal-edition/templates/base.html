@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f5f6f8">
+<meta name="theme-color" content="#111315">
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <title>{% block title %}Personal Edition{% endblock %}</title>
 <link rel="stylesheet" href="/static/app.css?v=pe-ui51-20260722-3">
@@ -19,11 +19,14 @@
 <link rel="stylesheet" href="/static/ui-v6-living-index-polish.css?v=b1-living-index-v6-polish-20260814">
 <link rel="stylesheet" href="/static/ui-v6-living-index-authority.css?v=b1-living-index-v6-authority-20260814">
 <link rel="stylesheet" href="/static/ui-v6-living-index-completion.css?v=b1-living-index-v6-completion-20260814">
+<link rel="stylesheet" href="/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814">
+<link rel="stylesheet" href="/static/ui-v7-collectible-glass-authority.css?v=b1-collectible-glass-v7-authority-20260814">
+<link rel="stylesheet" href="/static/ui-v7-collectible-glass-polish.css?v=b1-collectible-glass-v7-polish-20260814">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
 {% set _guide_href = '/guide/' %}
-<body data-ui-version="{% if request.url.path.startswith('/admin') %}b1-personal-edition-v3-454{% else %}b1-personal-edition-v6-living-index{% endif %}" data-art-direction="{% if request.url.path.startswith('/admin') %}b1-image-led-v5{% else %}b1-living-index-v6{% endif %}" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
-{# Historical operator regression authority only; participant surfaces are V6. #}
+<body data-ui-version="{% if request.url.path.startswith('/admin') %}b1-personal-edition-v3-454{% else %}b1-personal-edition-v7-collectible-glass{% endif %}" data-art-direction="{% if request.url.path.startswith('/admin') %}b1-image-led-v5{% else %}b1-living-index-v6{% endif %}"{% if not request.url.path.startswith('/admin') %} data-design-system="b1-collectible-glass-v7" data-owner-ui-approved="false"{% endif %} class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
+{# Historical operator regression authority only; participant surfaces use V7 over the V6 compatibility layer. #}
 <!-- operator-regression data-ui-version="b1-personal-edition-v3-454" data-art-direction="b1-image-led-v5" -->
 {% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
 <header class="site-header v3-site-header">

@@ -9,7 +9,7 @@ APP_DIR = Path(__file__).resolve().parents[1]
 OUT_DIR = APP_DIR / "dist-preview"
 
 
-def test_owner_production_build_is_v6_without_preview_chrome() -> None:
+def test_owner_production_build_is_v7_without_preview_chrome() -> None:
     subprocess.run(
         [sys.executable, "-m", "scripts.build_static_production"],
         cwd=APP_DIR,
@@ -29,10 +29,18 @@ def test_owner_production_build_is_v6_without_preview_chrome() -> None:
         encoding="utf-8"
     )
 
-    assert 'data-ui-version="b1-personal-edition-v6-living-index"' in root
+    assert 'data-ui-version="b1-personal-edition-v7-collectible-glass"' in root
+    # V6 remains the compatibility selector for historical participant CSS, while
+    # the V7 design-system marker is the current visual authority.
     assert 'data-art-direction="b1-living-index-v6"' in root
-    assert 'data-static-production-review="b1-v6-living-index"' in root
+    assert 'data-design-system="b1-collectible-glass-v7"' in root
+    assert 'data-owner-ui-approved="false"' in root
+    assert 'data-static-production-review="b1-v7-collectible-glass"' in root
+    assert "/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814" in root
+    assert "/static/ui-v7-collectible-glass-authority.css?v=b1-collectible-glass-v7-authority-20260814" in root
+    assert "/static/ui-v7-collectible-glass-polish.css?v=b1-collectible-glass-v7-polish-20260814" in root
     assert "흩어진 기록이" in root
+    assert "v7-photo-cluster" in root
     assert 'href="/preview/participant/empty/"' in root
     assert "v3-workflow" in library
     assert "v3-write" in writing
