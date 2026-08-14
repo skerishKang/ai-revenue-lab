@@ -38,7 +38,8 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
         for text in (agents, policy):
             self.assertIn("ONE_ACTOR_MAY_PERFORM_MULTIPLE_NON_INDEPENDENT_STAGES", text)
             self.assertIn("independent Local Validation", text)
-            self.assertIn("same actor", text.lower())
+            self.assertIn("MUST", text)
+            self.assertIn("SAME_REVISION", text)
 
     def test_active_policy_does_not_restore_mandatory_ui_ux_backend_sequence(self) -> None:
         files = [
