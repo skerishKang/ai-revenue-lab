@@ -1,0 +1,74 @@
+name: B02 temporary place asset intake
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/b02-asset-intake-temp.yml'
+      - 'apps/living-travel/pages-preview/site/**'
+
+permissions:
+  contents: read
+
+jobs:
+  fetch-songdo-source:
+    if: github.event.pull_request.head.ref == 'design/b02-place-first-anchor-scaffold'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch official Songdo archive image
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/b02-asset"
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 90 \
+            'https://visitbusan.net/archive/upload/2025/12/01/20251201153408969195_m.png' \
+            --output "$RUNNER_TEMP/b02-asset/songdo-beach-source.png"
+
+      - name: Verify bytes and write manifest
+        shell: python
+        run: |
+          from pathlib import Path
+          import hashlib, struct
+          p = Path('${{ runner.temp }}/b02-asset/songdo-beach-source.png')
+          b = p.read_bytes()
+          if not b.startswith(b'\x89PNG\r\n\x1a\n'):
+              raise SystemExit('not a PNG')
+          if len(b) < 24:
+              raise SystemExit('PNG too short')
+          width, height = struct.unpack('>II', b[16:24])
+          if width < 400 or height < 300:
+              raise SystemExit(f'image unexpectedly small: {width}x{height}')
+          sha = hashlib.sha256(b).hexdigest()
+          manifest = Path('${{ runner.temp }}/b02-asset/MANIFEST.txt')
+          manifest.write_text(
+              '\n'.join([
+                  'source_page=https://visitbusan.net/archive/dataSearch/view.nm?dataSid=METADATA017860',
+                  'source_asset=https://visitbusan.net/archive/upload/2025/12/01/20251201153408969195_m.png',
+                  'subject=송도해수욕장 전경',
+                  'producer=서구',
+                  'publisher=서구 문화관광과',
+                  'production_date=2023-08',
+                  'license=공공누리 제1유형 (출처표시)',
+                  f'width={width}',
+                  f'height={height}',
+                  f'bytes={len(b)}',
+                  f'sha256={sha}',
+                  f'pr_head=${{ github.event.pull_request.head.sha }}',
+              ]) + '\n',
+              encoding='utf-8',
+          )
+          print(manifest.read_text(encoding='utf-8'))
+
+      - name: Upload bounded asset artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: b02-songdo-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/b02-asset/
+          if-no-files-found: error
+          retention-days: 1
