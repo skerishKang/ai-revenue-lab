@@ -1,0 +1,31 @@
+/* B01 V7 direct visual-QA polish. */
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment {
+  width: clamp(135px,23%,205px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 120px !important;
+  padding: 11px 12px !important;
+  overflow: hidden !important;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-direction,
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-direction span {
+  font-family: inherit !important;
+}
+body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-direction span {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+}
+@media (max-width: 820px) {
+  body.participant-surface[data-design-system="b1-collectible-glass-v7"] .v3-fragment {
+    width: 115px !important;
+    max-height: 88px !important;
+    padding: 8px !important;
+  }
+}
