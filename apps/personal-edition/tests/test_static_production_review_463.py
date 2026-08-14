@@ -9,7 +9,7 @@ APP_DIR = Path(__file__).resolve().parents[1]
 OUT_DIR = APP_DIR / "dist-preview"
 
 
-def test_owner_production_build_is_v3_without_preview_chrome() -> None:
+def test_owner_production_build_is_v6_without_preview_chrome() -> None:
     subprocess.run(
         [sys.executable, "-m", "scripts.build_static_production"],
         cwd=APP_DIR,
@@ -29,8 +29,9 @@ def test_owner_production_build_is_v3_without_preview_chrome() -> None:
         encoding="utf-8"
     )
 
-    assert 'data-ui-version="b1-personal-edition-v3-454"' in root
-    assert 'data-static-production-review="b1-v3-454"' in root
+    assert 'data-ui-version="b1-personal-edition-v6-living-index"' in root
+    assert 'data-art-direction="b1-living-index-v6"' in root
+    assert 'data-static-production-review="b1-v6-living-index"' in root
     assert "흩어진 기록이" in root
     assert 'href="/preview/participant/empty/"' in root
     assert "v3-workflow" in library
@@ -46,7 +47,7 @@ def test_owner_production_build_is_v3_without_preview_chrome() -> None:
     assert 'data-owner-review-root="true"' in state_index
 
 
-def test_private_access_uses_v3_visually_with_inert_legacy_contract() -> None:
+def test_private_access_keeps_visually_active_contract_and_inert_legacy_evidence() -> None:
     template = (APP_DIR / "templates" / "token_entry.html").read_text(encoding="utf-8")
     assert 'class="v3-workflow"' in template
     assert "Private invitation · Entry" in template
