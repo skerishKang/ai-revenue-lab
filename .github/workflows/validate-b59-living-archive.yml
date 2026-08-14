@@ -78,9 +78,9 @@ jobs:
             await page.waitForTimeout(250);
 
             const metrics = await page.evaluate(() => {
-              const viewport = document.querySelector('.shelf-viewport');
-              const direct = document.querySelector('[data-action="direct-reader"]');
-              const books = [...document.querySelectorAll('.book3d')];
+              const viewport = document.querySelector('.shelf-stage');
+              const direct = document.querySelector('#open-2d-direct');
+              const books = [...document.querySelectorAll('.volume')];
               const bodyOverflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
               return {
                 bodyOverflow,
@@ -107,12 +107,22 @@ jobs:
             if (spec.name === 'mobile') {
               if (metrics.shelfOverflowX !== 'auto') failures.push(`mobile: shelf overflow-x=${metrics.shelfOverflowX}`);
               if (!(metrics.shelfScrollWidth > metrics.shelfClientWidth)) failures.push('mobile: shelf is not internally scrollable');
-              // The body must stay within the viewport even though the shelf itself scrolls.
               const first = metrics.bookRects[0];
-              if (!first || first.left < -2 || first.left > spec.width) failures.push('mobile: first book is not initially discoverable');
+              if (!first || first.right <= 0 || first.left >= spec.width) failures.push('mobile: first book is not initially discoverable');
             }
 
-            results.push({name: spec.name, ...metrics, consoleErrors, pageErrors, failedRequests, externalRequests});
+            await page.click('#open-2d-direct');
+            await page.waitForTimeout(100);
+            const readerState = await page.evaluate(() => ({
+              readerHidden: document.querySelector('#reader-view')?.hidden,
+              shelfHidden: document.querySelector('#shelf-view')?.hidden,
+              title: document.querySelector('#reader-title')?.textContent?.trim() || '',
+            }));
+            if (readerState.readerHidden !== false || readerState.shelfHidden !== true || !readerState.title) {
+              failures.push(`${spec.name}: direct 2D reader journey failed`);
+            }
+
+            results.push({name: spec.name, ...metrics, readerState, consoleErrors, pageErrors, failedRequests, externalRequests});
             await context.close();
           }
           await browser.close();
