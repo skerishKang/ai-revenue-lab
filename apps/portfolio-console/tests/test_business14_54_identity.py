@@ -35,14 +35,14 @@ class Business14And54IdentityTests(unittest.TestCase):
             ),
         )
 
-    def test_manifest_keeps_b54_proposed_and_non_current_until_integration(self) -> None:
+    def test_manifest_keeps_b54_proposed_while_integrated_workspace_is_current(self) -> None:
         match = re.search(r'identity\(\{[^\n]*n:54,[^\n]*\}\)', self.manifest)
         self.assertIsNotNone(match)
         entry = match.group(0)
         self.assertIn('a:NA.PROPOSED', entry)
-        self.assertIn('l:"concept"', entry)
-        self.assertIn('st:"planning"', entry)
-        self.assertNotIn('w:"apps/korean-ai-code-agent/"', entry)
+        self.assertIn('l:"mvp_vertical_slice"', entry)
+        self.assertIn('st:"review"', entry)
+        self.assertIn('w:"apps/korean-ai-code-agent/"', entry)
 
     def test_apps_readme_keeps_router_inside_b14_and_b54_as_client(self) -> None:
         self.assertIn("Business 14 is the public model-access platform.", self.apps_readme)

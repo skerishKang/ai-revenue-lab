@@ -102,7 +102,7 @@ Current high-level mapping includes:
 - **B12 — Creator Mini-Media** — canonical number; current reviewed reference workspace retained.
 - **B13 — Personal Video Archive** — user-controlled video discovery plus durable private viewing records.
 - **B14 — Korean AI Platform** — Korean-first model-access platform; Router Core is an internal B14 capability.
-- **B54 — Korean AI Code Agent** — proposed-number first-party client of B14; a Draft implementation does not become a current-main workspace until integration is accepted.
+- **B54 — Korean AI Code Agent** — proposed-number first-party client of B14; the hardened CLI/TUI vertical slice is integrated at `apps/korean-ai-code-agent/`, while canonical-number promotion remains a separate registry decision.
 
 External/integrated successor mappings for B23/B24/B25/B26/B27/B28/B30/B31/B50 are maintained in `BUSINESS_EXPANSION_LINEAGE.md` and the Portfolio Console static manifest. Do not recreate prohibited internal placeholders.
 

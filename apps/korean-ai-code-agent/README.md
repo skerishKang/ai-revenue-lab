@@ -92,7 +92,7 @@ Committed tests cover:
 - a disposable failing unittest followed by a corrected passing unittest;
 - stdout/stderr secret redaction.
 
-These tests are committed contracts. This Web/connector implementation does **not** claim fresh Windows exact-head execution. Issue #376 still requires final independent Windows/local validation of the exact final head before merge readiness.
+These tests are committed contracts. Exact-head CI for the current-main restack passed on both `ubuntu-latest` and `windows-latest` with Python 3.12, `compileall`, and the full stdlib unittest suite before merge. This validates the bounded CLI contract without making a live B14/provider call.
 
 ## Non-goals / hard boundaries
 
@@ -118,6 +118,6 @@ WORKTREE_STATE_READ_ONLY
 SECRET_OUTPUT_REDACTED
 NETWORK_OFF
 GIT_MUTATION_OFF
-WINDOWS_EXACT_HEAD_VALIDATION_PENDING
+WINDOWS_EXACT_HEAD_VALIDATED
 DO_NOT_MERGE
 ```
