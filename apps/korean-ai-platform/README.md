@@ -197,8 +197,9 @@ cp .env.example .env
 #    B14_PROVIDER_MODE=live
 #    OPENROUTER_API_KEY=sk-or-v1-...
 
-# 3. Start with the documented command (loads .env; mock mode needs no key)
-python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000
+# 3. Start with the documented command.
+#    app.main loads .env itself before creating the application; mock mode needs no key.
+python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
 Visit `http://localhost:8000/workspace` — the Start screen shows the
@@ -208,8 +209,8 @@ prompt input, model selection, optimization options, and route preview.
 
 | Command | Description |
 |---------|-------------|
-| `python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000` | Documented owner start command (loads `.env`; mode comes from `B14_PROVIDER_MODE`) |
-| `python3 -m app.pilot.catalog validate-model-catalog` | Check the configured catalog snapshot against the public OpenRouter Models API (may require a key for full access; anonymous check attempted by default) |
+| `python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000` | Documented owner start command; `app.main` loads working-directory `.env` with no optional `python-dotenv` dependency. |
+| `python3 -m app.pilot.catalog validate-model-catalog` | Check the configured catalog snapshot against the OpenRouter Models API (anonymous access is attempted; upstream may require authentication) |
 | `python3 -m app.pilot.smoke_live` | Run a single live smoke test with `openrouter/free` (only when a real key is present); without a key it prints `LIVE_SMOKE_READY_NOT_EXECUTED` and makes zero chat API calls |
 
 ### Mock Mode
@@ -269,7 +270,7 @@ The chat completions response includes bounded `business14` metadata:
   "selected_model": "google/gemini-2.5-flash",
   "selected_upstream_model": "google/gemini-2.5-flash",
   "actual_response_model": "google/gemini-2.5-flash",
-  "selected_route_id": "b14route_...",
+  "selected_route_id": "openrouter:google/gemini-2.5-flash",
   "reason_codes": ["optimize_for:balanced", "capabilities:chat"],
   "fallback_allowed": true,
   "fallback_used": false,
@@ -325,9 +326,10 @@ Model IDs and snapshot prices are checked against the live OpenRouter Models API
 python3 -m app.pilot.catalog validate-model-catalog
 ```
 
-This command calls the public Models API; no API key or live provider mode
-is required. Without network access it reports `SKIPPED` and the catalog
-remains a configured snapshot.
+This command attempts the Models API with no key first unless a key is configured.
+Upstream authentication requirements may change; HTTP 401/403 is reported as
+`authentication_required`. Without network access it reports `NETWORK_SKIPPED`
+and the catalog remains a configured snapshot.
 
 ### Limitations
 
