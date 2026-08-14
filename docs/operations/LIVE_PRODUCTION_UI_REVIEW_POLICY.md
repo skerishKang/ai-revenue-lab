@@ -1,153 +1,173 @@
 # Live Production UI Review Policy
 
-- Status: portfolio operating policy
-- Owner: Web CTO
-- Authority: Issue #451
-- Applies from: 2026-08-09
-- Related deployment policy: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
+- Status: **CANONICAL**
+- Effective reset: 2026-08-14
+- Parent design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
+- Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 
 ## 1. Decision
 
-For AI Revenue Lab internal web Businesses that are already authorized for internal development, owner visual review uses the **actual Production surface** by default.
+Owner review may still use the actual Production surface for internal web Businesses, but **Production must not be used as a substitute for proving a new art direction across an entire site.**
 
-A separate Preview or staging review is not required before the owner sees a UI change.
+Two lanes now exist:
 
-The default UI loop is:
+```text
+A. FOCUSED_CHANGE_INSIDE_LOCKED_SYSTEM
+B. NEW_ART_DIRECTION_OR_MATERIAL_REDESIGN
+```
+
+## 2. Lane A — focused change inside an established system
+
+For a small UI-only change inside a design system whose current visual direction is already stable, the normal live loop remains:
 
 ```text
 implementation
-→ CTO exact-head / scope / regression validation
-→ merge to the configured Production branch
-→ existing Git integration deploys Production automatically
-→ owner reviews the actual Production screen
-→ accept, fix, or restore
+→ exact-head technical/visual validation
+→ authorized merge
+→ Git-connected Production deploy
+→ owner reviews live result
+→ retain / focused fix / restore
 ```
 
-This policy changes the **owner visual-review sequence**. It does not weaken technical validation, security, privacy, or product-local authorization gates.
+Examples:
 
-## 2. Standing merge authority for UI-only changes
+- spacing correction;
+- localized typography fix;
+- one responsive defect;
+- bounded component polish;
+- visual bug with no art-direction change.
 
-For UI-only or frontend visual changes in an internal, non-excluded AI Revenue Lab web Business, successful CTO technical validation is sufficient authority to merge the reviewed change for live Production owner review.
+Standing UI-only merge authority may apply when the work contract and repository policy allow it.
 
-The CTO must verify at minimum:
+## 3. Lane B — new art direction or material redesign
 
-- exact current `main` / Production branch;
-- exact proposed head and changed-file scope;
-- no unintended backend, Auth, DB, secret, persistence, billing, migration, or destructive change;
-- applicable static, browser, responsive, accessibility, and regression tests;
-- no unresolved review thread or known critical runtime defect;
-- last known-good source or a clear source-recovery point.
+For a new product visual system, owner-rejected redesign, or broad multi-route visual reset, the sequence is:
 
-A separate owner confirmation such as "merge it" is not required for each qualifying UI-only revision while this standing policy remains in force.
+```text
+visual thesis + references
+→ anchor Desktop/Mobile
+→ ANCHOR_DIRECTION_LOCKED
+→ 2–3 archetypes Desktop/Mobile
+→ ARCHETYPE_SYSTEM_PASS
+→ FULL_EXPANSION_ALLOWED
+→ remaining-route implementation
+→ full-surface Desktop/Mobile contact sheet
+→ technical + visual review
+→ authorized merge
+→ Git-connected Production deploy
+→ owner reviews live whole-product result
+```
 
-## 3. Final owner UI approval remains separate
+### Hard rule
 
-Technical validation and successful Production deployment do **not** mean the owner approved the design.
+Do not merge a broad, unproven multi-route art direction merely so the owner can discover on Production whether the first concept works.
 
-The owner-facing UI verdict may be set to `OWNER_APPROVED` only after the owner actually views the current Production UI and explicitly accepts it.
+The expensive part of the failure must happen before full propagation.
 
-Before that decision, the correct state is one of:
+## 4. Anchor review is not whole-site approval
+
+An owner may like an anchor screen while rejecting the rest of the product. Record that honestly.
+
+```text
+ANCHOR_DIRECTION_LOCKED
+```
+
+means the direction is suitable for system testing. It does not imply:
+
+```text
+ARCHETYPE_SYSTEM_PASS
+FULL_SURFACE_VISUAL_PASS
+OWNER_UI_APPROVED
+```
+
+## 5. Owner review mechanism
+
+The owner may review an anchor/archetype through exact-head rendered evidence, an authorized limited surface, or current product tooling appropriate to the work order. A separate public Preview/staging deployment is not automatically required.
+
+Do not create an unrelated Cloudflare Preview simply for convenience. If a Business-specific risk requires Preview/staging, record the explicit exception.
+
+## 6. Final owner UI approval
+
+Technical validation, design-system pass, merge and deployment do not equal owner approval.
+
+Only after the owner actually reviews the applicable current result and explicitly accepts it may the product be recorded as:
+
+```text
+OWNER_UI_APPROVED
+```
+
+Otherwise use:
 
 ```text
 OWNER_REVIEW_REQUIRED
-OWNER_REJECTED / REDESIGN_REQUIRED
+OWNER_UI_REJECTED
+REDESIGN_REQUIRED
 ```
 
-Models, CI, validators, and the Web CTO may declare technical readiness, but they must not promote that evidence to final owner visual approval.
+## 7. Rejection handling
 
-## 4. Rejection handling: fix or restore
+Diagnose before choosing the recovery level.
 
-If the owner reviews Production and does not like the UI:
+If the anchor itself is rejected:
 
-1. record the owner verdict as rejected / redesign required;
-2. if the direction is mostly correct, prepare the smallest focused UI correction;
-3. if the direction is broadly unsatisfactory, unstable, or difficult to repair safely, restore the last known-good source with a reviewed revert/restoration change;
-4. merge the reviewed correction or restoration to the configured Production branch;
-5. let the existing Git integration deploy it automatically;
-6. re-check the actual Production screen.
+- return to visual thesis/reference/anchor work;
+- do not expand that direction.
 
-Do not create a separate manual Cloudflare deployment to recover source code. Source recovery follows the Git-connected recovery policy.
+If the anchor is liked but later surfaces fail:
 
-## 5. Preview and staging
+- keep the anchor;
+- classify archetype/system/typography/legacy/cascade failure;
+- rebuild the weak system translation;
+- do not invent a new concept by default.
 
-Preview/staging is not part of the normal owner UI-review loop.
+If a focused Production change is rejected:
 
-Do not create Preview or staging merely so the owner can decide whether a design looks good.
+- prepare a bounded fix or reviewed restoration to last known good.
 
-Preview or staging may be used only when a new explicit owner decision or an already approved Business-specific contract requires it for a concrete risk, such as:
+## 8. Standing merge authority exclusions
 
-- destructive migration rehearsal;
-- payment or billing verification;
-- high-risk authentication/authorization work;
-- regulated/compliance-sensitive review;
-- external stakeholder access that must not touch Production.
+Standing UI-only live-review merge authority does **not** by itself cover:
 
-A model, worker, or CTO cannot invent this exception on its own.
+- new art-direction resets before required design gates;
+- broad visual refactors with unreviewed cross-state impact;
+- backend/database changes;
+- auth/authz changes;
+- secrets/bindings/infrastructure;
+- persistence/billing/destructive migration;
+- external/successor Businesses;
+- material security/trust-boundary changes.
 
-## 6. Scope exclusions
+## 9. Production evidence
 
-This standing UI merge authority does not apply to:
+After an authorized merge, verify:
 
-- Businesses classified as external, successor, integrated, or excluded from this repository's internal development authority;
-- backend or database changes;
-- authentication or authorization changes;
-- secrets, credentials, bindings, or infrastructure mutations;
-- persistence changes;
-- billing or payment behavior;
-- destructive migration or irreversible external action;
-- security-sensitive changes that materially alter trust boundaries.
-
-Those changes keep their own authorization and risk gates.
-
-## 7. Portfolio Console behavior
-
-For an internal web Business under owner review, Portfolio Console should link to the **current canonical Production URL**, not a stale branch Preview URL.
-
-The Console should distinguish:
-
-- `UI · 사용자 승인` — explicit owner acceptance of the current accepted visual baseline;
-- `UI · 검토 필요` — live Production screen exists but owner has not accepted it;
-- `UI · 재설계` — owner rejected the current direction and a correction/rebuild is required;
-- external/successor/non-web cases — owner UI gate is not applicable in this portfolio.
-
-Historical technical `UI_APPROVED` evidence remains useful engineering history but must not be displayed as owner approval unless explicit owner evidence exists.
-
-## 8. First application — Business 1
-
-Business 1 · Personal Edition PR #448 is the first change governed by this policy.
-
-The intended sequence is:
-
-```text
-PR #448 exact-head validation against current main
-→ merge without a separate Preview approval
-→ automatic Personal Edition Production deployment
-→ Portfolio Console B1 opens canonical Production
-→ owner visually reviews B1
-→ approve, request focused changes, or restore previous source
-```
-
-Until the owner views and accepts the new Production UI, B1 remains `UI · 재설계` or `UI · 검토 필요`; the merge itself does not set `OWNER_APPROVED`.
-
-## 9. Evidence record
-
-For each live owner UI review, record:
-
-- Business number and name;
-- source PR and reviewed exact head;
-- resulting Production-branch SHA;
-- automatic deployment status when available;
+- resulting exact main/release SHA;
+- correct Cloudflare/project identity;
+- deployment success/version;
 - canonical Production URL;
-- last known-good source/recovery point;
-- owner verdict;
-- follow-up: retain, focused fix, or restore.
+- intended user-facing surface;
+- primary browser journey when applicable;
+- known-good recovery source.
 
-Canonical markers:
+Wrong-project Preview checks never count as intended Business deployment evidence.
+
+## 10. B01 transition example
+
+The 2026-08-14 B01 live review is the reason for this reset:
+
+- the owner is satisfied with the current Entry direction;
+- the remaining participant pages are not visually satisfactory;
+- therefore Entry is treated as B01's local anchor, not whole-site approval;
+- B01 must now prove Library, Write and Read as distinct archetypes before another broad participant-route expansion;
+- the active V3/V4/V5/V6/V7 cascade should be consolidated during system recovery rather than extended with a new V8 concept.
+
+## 11. Canonical markers
 
 ```text
-OWNER_LIVE_PRODUCTION_UI_REVIEW
-PREVIEW_NOT_REQUIRED_FOR_OWNER_VISUAL_REVIEW
-TECHNICAL_VALIDATION_BEFORE_MERGE
-FINAL_OWNER_APPROVAL_AFTER_LIVE_VIEW
-FIX_OR_RESTORE_ON_REJECTION
+FOCUSED_LIVE_REVIEW_ALLOWED
+ART_DIRECTION_GATE_BEFORE_FULL_EXPANSION
+ANCHOR_IS_NOT_WHOLE_SITE_APPROVAL
+ARCHETYPE_PASS_BEFORE_BROAD_PROPAGATION
+FINAL_OWNER_APPROVAL_AFTER_APPLICABLE_CURRENT_REVIEW
+FIX_SYSTEM_TRANSLATION_BEFORE_INVENTING_NEW_CONCEPT
 ```
