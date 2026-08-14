@@ -9,6 +9,7 @@
 {% if request.url.path == '/workspace' %}
 <link rel="stylesheet" href="/workspace-console.css?v=console-1">
 <link rel="stylesheet" href="/workspace-console-responsive.css?v=console-2">
+<link rel="stylesheet" href="/start.css?v=alpha-1">
 {% endif %}
 </head>
 {% set path = request.url.path %}
@@ -107,6 +108,23 @@
     </footer>
   </div>
 </div>
+<nav class="mobile-nav" aria-label="{{ 'Mobile navigation' if path == '/workspace' and lang == 'en' else '모바일 내비게이션' }}">
+  <a href="/workspace" class="mobile-nav-link {{ 'active' if path == '/workspace' }}">
+    <span aria-hidden="true">⌂</span>{{ _("nav.start") if path == '/workspace' else '시작' }}
+  </a>
+  <a href="/models" class="mobile-nav-link {{ 'active' if path.startswith('/models') }}">
+    <span aria-hidden="true">≡</span>{{ _("nav.models") if path == '/workspace' else '모델·가격' }}
+  </a>
+  <a href="/pricing" class="mobile-nav-link {{ 'active' if path == '/pricing' }}">
+    <span aria-hidden="true">₩</span>{{ _("nav.plans") if path == '/workspace' else '요금제' }}
+  </a>
+  <a href="/usage" class="mobile-nav-link {{ 'active' if path == '/usage' }}">
+    <span aria-hidden="true">◔</span>{{ _("nav.usage") if path == '/workspace' else '사용량' }}
+  </a>
+  <a href="/pilot" class="mobile-nav-link {{ 'active' if path == '/pilot' }}">
+    <span aria-hidden="true">&lt;/&gt;</span>{{ _("nav.developer") if path == '/workspace' else '개발자' }}
+  </a>
+</nav>
 <script src="/app.js?v=phase0-2" defer></script>
 {% block scripts %}{% endblock %}
 </body>
