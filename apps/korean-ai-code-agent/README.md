@@ -9,8 +9,9 @@ terminal launch
 → repository selection
 → Korean task
 → read-only inspection
+→ clean/dirty Git status report (read-only)
 → bounded plan
-→ Business 14 route marker
+→ deterministic Business 14 mock-adapter evidence
 → unified diff preview
 → explicit write permission
 → explicit allowlisted command permission
@@ -30,7 +31,9 @@ kagent . plan "인증 흐름을 분석해줘"
 kagent . run "저장 버튼 오류를 찾아 테스트까지 고쳐줘"
 ```
 
-The current route adapter is a deterministic UX contract marker. `BUSINESS14_BASE_URL` and `BUSINESS14_MODEL` are read as configuration presence/identity only; this slice does not make a live model call.
+Phase 1 requires the task text to contain Korean. English code/file names may be mixed into the Korean task.
+
+The Business 14 adapter is a **deterministic mock contract** in this slice. It emits a stable request ID, normalized route marker, `resolved_not_called`, and `network_called=false`; it does not duplicate Business 14 Provider selection, BYOK, catalog, fallback, or live model execution. `BUSINESS14_BASE_URL` and `BUSINESS14_MODEL` are reported only as configuration presence/identity.
 
 ## Permission defaults
 
@@ -43,7 +46,29 @@ git mutation: off
 push / merge / deploy: absent
 ```
 
-The patch preview is deliberately deterministic and bounded. It is not an autonomous coding implementation. It exists to prove the correct terminal interaction and permission sequence before a live Business 14 adapter is authorized.
+The patch preview is deliberately deterministic and bounded. Before apply, KAgent verifies that the selected file still matches the previewed original text. If the file changed after preview, apply fails closed instead of overwriting another change.
+
+Repository inspection skips symbolic links. Path resolution rejects any symlink or relative path that resolves outside the selected repository root.
+
+Git status reporting runs only:
+
+```text
+git status --porcelain=v1 --untracked-files=all
+```
+
+It never runs `git add`, `reset`, `clean`, `checkout`, `commit`, `push`, `merge`, or deployment commands.
+
+## Allowed test commands
+
+Only these exact command shapes are accepted:
+
+```text
+python -m unittest
+python -m unittest discover
+python -m compileall .
+```
+
+Captured stdout/stderr is redacted before display for Bearer tokens, `sk-*` key shapes, and common `api_key` / `token` / `secret` / `password` assignments.
 
 ## Tests
 
@@ -52,9 +77,22 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 python -m compileall -q src tests
 ```
 
-Tests cover help startup, plan-only no-write behavior, repository-root containment, denied writes, bounded approved writes, reject behavior, and command allowlist rejection of arbitrary shell/Git commands.
+Committed tests cover:
 
-These tests are committed contracts. This connector-only implementation does **not** claim they were freshly executed in a local runtime; exact-head local terminal validation remains required by Issue #376.
+- help startup;
+- Korean task contract and normal run journey;
+- plan-only no-write behavior;
+- repository-root and symlink-escape containment;
+- clean/dirty Git status detection using read-only Git commands;
+- deterministic, network-free Business 14 mock-adapter evidence;
+- denied writes and bounded approved writes;
+- concurrent-change fail-closed behavior;
+- reject preserving the original file;
+- arbitrary shell/Git/network command rejection;
+- a disposable failing unittest followed by a corrected passing unittest;
+- stdout/stderr secret redaction.
+
+These tests are committed contracts. This Web/connector implementation does **not** claim fresh Windows exact-head execution. Issue #376 still requires final independent Windows/local validation of the exact final head before merge readiness.
 
 ## Non-goals / hard boundaries
 
@@ -72,10 +110,14 @@ These tests are committed contracts. This connector-only implementation does **n
 CLI_TUI_FIRST
 DETERMINISTIC_VERTICAL_SLICE
 BUSINESS_14_DEPENDENT
+B14_MOCK_ADAPTER_NETWORK_FREE
 WRITE_PERMISSION_REQUIRED
 COMMAND_ALLOWLIST_REQUIRED
+SYMLINK_ESCAPE_BLOCKED
+WORKTREE_STATE_READ_ONLY
+SECRET_OUTPUT_REDACTED
 NETWORK_OFF
 GIT_MUTATION_OFF
-LOCAL_RUNTIME_VALIDATION_PENDING
+WINDOWS_EXACT_HEAD_VALIDATION_PENDING
 DO_NOT_MERGE
 ```
