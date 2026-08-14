@@ -1,0 +1,85 @@
+name: B54 workspace truth sync temporary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b54-workspace-sync-temp.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out sync branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/b54-integrated-workspace-truth-376
+          fetch-depth: 1
+
+      - name: Apply fail-closed post-merge truth replacements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_exact(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected exactly one match, got {count}')
+              p.write_text(text.replace(old, new), encoding='utf-8')
+
+          replace_exact(
+              'apps/portfolio-console/business-manifest.js',
+              'identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.PROPOSED, l:"concept", st:"planning", p:5 })',
+              'identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.PROPOSED, l:"mvp_vertical_slice", st:"review", p:5, w:"apps/korean-ai-code-agent/" })'
+          )
+
+          test_path = Path('apps/portfolio-console/tests/test_business14_54_identity.py')
+          test_text = test_path.read_text(encoding='utf-8')
+          old_block = '''    def test_manifest_keeps_b54_proposed_and_non_current_until_integration(self) -> None:\n        match = re.search(r'identity\\(\\{[^\\n]*n:54,[^\\n]*\\}\\)', self.manifest)\n        self.assertIsNotNone(match)\n        entry = match.group(0)\n        self.assertIn('a:NA.PROPOSED', entry)\n        self.assertIn('l:\"concept\"', entry)\n        self.assertIn('st:\"planning\"', entry)\n        self.assertNotIn('w:\"apps/korean-ai-code-agent/\"', entry)\n'''
+          new_block = '''    def test_manifest_keeps_b54_proposed_while_integrated_workspace_is_current(self) -> None:\n        match = re.search(r'identity\\(\\{[^\\n]*n:54,[^\\n]*\\}\\)', self.manifest)\n        self.assertIsNotNone(match)\n        entry = match.group(0)\n        self.assertIn('a:NA.PROPOSED', entry)\n        self.assertIn('l:\"mvp_vertical_slice\"', entry)\n        self.assertIn('st:\"review\"', entry)\n        self.assertIn('w:\"apps/korean-ai-code-agent/\"', entry)\n'''
+          if test_text.count(old_block) != 1:
+              raise SystemExit('identity test block did not match exactly once')
+          test_path.write_text(test_text.replace(old_block, new_block), encoding='utf-8')
+
+          replace_exact(
+              'apps/README.md',
+              '`apps/korean-ai-code-agent/` is not present on current `main`; Draft implementation work does not make it a current workspace.',
+              '`apps/korean-ai-code-agent/` is now present on current `main` after the hardened CLI/TUI vertical slice passed Linux and Windows exact-head CI; B54 remains proposed-number authority rather than a canonical numbered Business.'
+          )
+          replace_exact(
+              'README.md',
+              '**B54 — Korean AI Code Agent** — proposed-number first-party client of B14; a Draft implementation does not become a current-main workspace until integration is accepted.',
+              '**B54 — Korean AI Code Agent** — proposed-number first-party client of B14; the hardened CLI/TUI vertical slice is integrated at `apps/korean-ai-code-agent/`, while canonical-number promotion remains a separate registry decision.'
+          )
+          replace_exact(
+              'apps/korean-ai-code-agent/README.md',
+              'This Web/connector implementation does **not** claim fresh Windows exact-head execution. Issue #376 still requires final independent Windows/local validation of the exact final head before merge readiness.',
+              'Exact-head CI for the current-main restack passed on both `ubuntu-latest` and `windows-latest` with Python 3.12, `compileall`, and the full stdlib unittest suite before merge. This validates the bounded CLI contract without making a live B14/provider call.'
+          )
+          replace_exact(
+              'apps/korean-ai-code-agent/README.md',
+              'WINDOWS_EXACT_HEAD_VALIDATION_PENDING',
+              'WINDOWS_EXACT_HEAD_VALIDATED'
+          )
+          PY
+
+      - name: Remove temporary workflow and commit only truth changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/b54-workspace-sync-temp.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/portfolio-console/business-manifest.js \
+                  apps/portfolio-console/tests/test_business14_54_identity.py \
+                  apps/README.md README.md apps/korean-ai-code-agent/README.md
+          git diff --cached --check
+          git commit -m "docs(B54): sync integrated workspace authority"
+          git push origin HEAD:docs/b54-integrated-workspace-truth-376
