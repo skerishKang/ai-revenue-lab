@@ -134,6 +134,7 @@ def _assert_owner_surface(out_dir: Path) -> None:
         'data-owner-ui-approved="false"',
         'data-static-production-review="b1-v7-collectible-glass"',
         "/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814",
+        "/static/ui-v7-collectible-glass-authority.css?v=b1-collectible-glass-v7-authority-20260814",
         "흩어진 기록이",
         "v3-assembly-stage",
         "v7-photo-cluster",
