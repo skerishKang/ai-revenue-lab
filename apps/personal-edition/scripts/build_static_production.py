@@ -66,7 +66,7 @@ def _production_post_process(html: str) -> str:
 
 
 def _rewrite_root(out_dir: Path) -> None:
-    """Promote the V5 intro to / and preserve the technical state index."""
+    """Promote the V6 Living Index intro to / and preserve the QA state index."""
     qa_dir = out_dir / "preview-states"
     qa_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(out_dir / "index.html", qa_dir / "index.html")
@@ -80,7 +80,7 @@ def _rewrite_root(out_dir: Path) -> None:
     )
     intro = intro.replace(
         '<body ',
-        '<body data-static-production-review="b1-v3-454" ',
+        '<body data-static-production-review="b1-v6-living-index" ',
         1,
     )
     (out_dir / "index.html").write_text(intro, encoding="utf-8")
@@ -128,14 +128,16 @@ def _assert_owner_surface(out_dir: Path) -> None:
     guide = (out_dir / "guide" / "index.html").read_text(encoding="utf-8")
 
     required_root = (
-        'data-art-direction="b1-image-led-v5"',
+        'data-art-direction="b1-living-index-v6"',
+        'data-ui-version="b1-personal-edition-v6-living-index"',
+        'data-static-production-review="b1-v6-living-index"',
         "흩어진 기록이",
         "v3-assembly-stage",
         "/guide/",
     )
     for marker in required_root:
         if marker not in root:
-            raise RuntimeError(f"missing B1 V5 Production marker: {marker}")
+            raise RuntimeError(f"missing B1 V6 Production marker: {marker}")
 
     required_guide = (
         "Guide · 30 seconds",
@@ -147,7 +149,7 @@ def _assert_owner_surface(out_dir: Path) -> None:
     )
     for marker in required_guide:
         if marker not in guide:
-            raise RuntimeError(f"missing B1 V5 guide marker: {marker}")
+            raise RuntimeError(f"missing B1 V6 guide marker: {marker}")
 
     forbidden = (
         "UI Preview · Synthetic data · No persistence",
