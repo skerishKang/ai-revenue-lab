@@ -89,10 +89,12 @@ def test_v7_static_authority_and_admin_boundary() -> None:
         "/static/ui-v6-living-index.css?v=b1-living-index-v6-20260814",
         "/static/ui-v6-living-index-completion.css?v=b1-living-index-v6-completion-20260814",
         "/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814",
+        "/static/ui-v7-collectible-glass-authority.css?v=b1-collectible-glass-v7-authority-20260814",
     )
     for marker in required:
         assert marker in base
     assert base.index("ui-v7-collectible-glass.css") > base.index("ui-v6-living-index-completion.css")
+    assert base.index("ui-v7-collectible-glass-authority.css") > base.index("ui-v7-collectible-glass.css")
     assert 'b1-personal-edition-v7-collectible-glass' in base
     assert 'data-design-system="b1-collectible-glass-v7"' in base
     assert 'data-owner-ui-approved="false"' in base
