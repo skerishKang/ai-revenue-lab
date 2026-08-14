@@ -1,0 +1,330 @@
+{
+  "mode": "inline-exact-bytes-fallback",
+  "localhost_url": "http://127.0.0.1:38449/index.html",
+  "localhost_navigation_error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:38449/index.html",
+  "viewports": {
+    "1440x1100": {
+      "states": {
+        "cover": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "source": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "transcript": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "translation": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "voice": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "sync-review": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "mobile": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        }
+      },
+      "console_errors": [],
+      "page_errors": [],
+      "failed_requests": [],
+      "external_requests": [],
+      "mobile_timecode_pronunciation_readable": true
+    },
+    "768x1024": {
+      "states": {
+        "cover": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "source": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "transcript": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "translation": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "voice": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "sync-review": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "mobile": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        }
+      },
+      "console_errors": [],
+      "page_errors": [],
+      "failed_requests": [],
+      "external_requests": [],
+      "mobile_timecode_pronunciation_readable": true
+    },
+    "390x844": {
+      "states": {
+        "cover": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "source": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "transcript": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "translation": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "voice": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "sync-review": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        },
+        "mobile": {
+          "selected": true,
+          "visible": true,
+          "others_hidden": true,
+          "roving": true,
+          "overflow": 0,
+          "clipping": 0,
+          "overlap": 0,
+          "assets_rendered": true
+        }
+      },
+      "console_errors": [],
+      "page_errors": [],
+      "failed_requests": [],
+      "external_requests": [],
+      "mobile_timecode_pronunciation_readable": true
+    }
+  },
+  "motion": {
+    "1440x1100": {
+      "replays": [
+        {
+          "opacity": "1",
+          "transform": "matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0)",
+          "state": "complete"
+        },
+        {
+          "opacity": "1",
+          "transform": "matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0)",
+          "state": "complete"
+        }
+      ],
+      "equal": true,
+      "geometry_stable": true,
+      "scroll_stable": true,
+      "focus_stable": true,
+      "computed_end_ms": 780,
+      "keyboard": {
+        "focus": "tab-source",
+        "selected": "true",
+        "panel": true,
+        "outline": "3px solid"
+      }
+    },
+    "768x1024": {
+      "replays": [
+        {
+          "opacity": "1",
+          "transform": "matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0)",
+          "state": "complete"
+        },
+        {
+          "opacity": "1",
+          "transform": "matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0)",
+          "state": "complete"
+        }
+      ],
+      "equal": true,
+      "geometry_stable": true,
+      "scroll_stable": true,
+      "focus_stable": true,
+      "computed_end_ms": 780,
+      "keyboard": {
+        "focus": "tab-source",
+        "selected": "true",
+        "panel": true,
+        "outline": "3px solid"
+      }
+    },
+    "390x844": {
+      "replays": [
+        {
+          "opacity": "1",
+          "transform": "matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0)",
+          "state": "complete"
+        },
+        {
+          "opacity": "1",
+          "transform": "matrix(0.999391, -0.0348995, 0.0348995, 0.999391, 0, 0)",
+          "state": "complete"
+        }
+      ],
+      "equal": true,
+      "geometry_stable": true,
+      "scroll_stable": true,
+      "focus_stable": true,
+      "computed_end_ms": 780,
+      "keyboard": {
+        "focus": "tab-source",
+        "selected": "true",
+        "panel": true,
+        "outline": "3px solid"
+      }
+    }
+  },
+  "errors": [],
+  "reduced_motion": {
+    "state": "complete",
+    "drift_visible": true,
+    "exception_visible": true,
+    "voice_disclosure": true
+  },
+  "result": "BROWSER_SELF_CHECK_PASS",
+  "failed": []
+}
