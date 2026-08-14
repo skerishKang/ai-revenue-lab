@@ -2,41 +2,70 @@
 {% block title %}{{ content.publication_title if content else '에디션' }} — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
-<article class="v3-read">
-  <header class="v3-read-opening">
-    <div class="v3-read-cover-zone" aria-label="에디션 커버와 실제 인쇄물의 여는 장면">
-      <div class="edition-cover v3-read-cover" aria-hidden="true">
-        <span class="cover-pub">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
-        <strong class="cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</strong>
-        <span class="cover-no">{{ '%02d'|format(edition.edition_number) }}</span>
+<article class="v3-read v7a-archetype v7a-read">
+  <div class="v7a-frame">
+    <nav class="v7a-topbar" aria-label="Personal Edition 내부 탐색">
+      <a href="{{ _base }}/" class="v7a-brand"><strong>Personal Edition</strong><span>Private reading</span></a>
+      <div class="v7a-toplinks">
+        <a href="{{ _base }}/">Library</a>
+        <a href="{{ _base }}/input">Write</a>
+        <a href="{{ _base }}/history">Archive</a>
       </div>
-    </div>
-    <div class="v3-read-title">
-      <span class="edition-issue">Personal Edition · 제{{ edition.edition_number }}호</span>
-      <h1>{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</h1>
-      <p class="edition-deck">{{ content.deck if content else '' }}</p>
-      {% if edition.published_at %}<time datetime="{{ edition.published_at[:10] }}">Published {{ edition.published_at[:10] }} · Human reviewed</time>{% endif %}
-    </div>
-  </header>
+    </nav>
 
-  <div class="v3-reading-shell">
-    <aside class="v3-reading-margin" aria-label="에디션 여백 정보">Edition {{ '%02d'|format(edition.edition_number) }}<br>Private archive<br>Original context preserved</aside>
-    <div class="v3-reading-main">
+    <header class="v3-read-opening v7a-read-opening">
+      <div class="v3-read-cover-zone v7a-read-stage" aria-label="에디션 커버와 기록 조각의 여는 장면">
+        <figure class="v7a-photo-fragment v7a-read-photo" aria-hidden="true">
+          <img src="/static/images/v5/edition-opening.webp" alt="" width="1536" height="1024">
+        </figure>
+        <div class="edition-cover v3-read-cover v7a-read-cover" aria-hidden="true">
+          <span class="cover-pub">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
+          <strong class="cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</strong>
+          <span class="cover-no">{{ '%02d'|format(edition.edition_number) }}</span>
+        </div>
+      </div>
+
+      <div class="v3-read-title v7a-read-title">
+        <span class="edition-issue">Personal Edition · 제{{ edition.edition_number }}호</span>
+        <h1>{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</h1>
+        <p class="edition-deck">{{ content.deck if content else '' }}</p>
+        {% if edition.published_at %}<time datetime="{{ edition.published_at[:10] }}">Published {{ edition.published_at[:10] }} · Human reviewed</time>{% endif %}
+      </div>
+    </header>
+  </div>
+
+  <div class="v3-reading-shell v7a-reading-shell">
+    <aside class="v3-reading-margin v7a-reading-margin" aria-label="에디션 여백 정보">Edition {{ '%02d'|format(edition.edition_number) }}<br>Private archive<br>Original context preserved</aside>
+
+    <div class="v3-reading-main v7a-reading-main">
       <div class="edition-opening">{{ content.opening if content else '' }}</div>
       {% if content and content.highlighted_insight %}<aside class="edition-insight">{{ content.highlighted_insight }}</aside>{% endif %}
 
-      <figure class="v5-read-visual-break" aria-label="기록 조각이 한 권의 편집물로 모인 인쇄물 장면">
-        <figcaption><small>Material shift · Edited from source</small>원본의 조각은 사라지지 않고, 한 호의 리듬 안에서 다시 배치됩니다. 사진은 물성을 만들고, 실제 제목과 문장은 선택 가능한 본문으로 남습니다.</figcaption>
+      <figure class="v5-read-visual-break v7a-visual-break" aria-label="기록 조각이 한 권의 편집물로 모인 인쇄물 장면">
+        <img src="/static/images/v5/edition-opening.webp" alt="에디션을 펼쳐 읽는 물성의 장면" width="1536" height="1024">
+        <figcaption><small>Material shift · Edited from source</small>원본의 조각은 사라지지 않고 한 호의 리듬 안에서 다시 배치됩니다. 사진은 물성을 만들고 실제 제목과 문장은 선택 가능한 본문으로 남습니다.</figcaption>
       </figure>
 
-      {% if content and content.sections %}{% for section in content.sections %}<section class="edition-section" id="section-{{ section.section_id }}"><h3>{{ '%02d'|format(loop.index) }} · {{ section.title }}</h3><div class="section-copy-v3">{% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}</div></section>{% endfor %}{% endif %}
+      {% if content and content.sections %}{% for section in content.sections %}
+      <section class="edition-section" id="section-{{ section.section_id }}">
+        <h3>{{ '%02d'|format(loop.index) }} · {{ section.title }}</h3>
+        <div class="section-copy-v3">{% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}</div>
+      </section>
+      {% endfor %}{% endif %}
+
       {% if content and content.continuity_note %}<aside class="edition-continuity">{{ content.continuity_note }}</aside>{% endif %}
       {% if prior_feedback_summary %}<aside class="edition-feedback-applied"><strong>이전 편집 메모 반영</strong><p>{{ prior_feedback_summary.action }}</p>{% if prior_feedback_summary.evidence %}<p class="feedback-evidence">{{ prior_feedback_summary.evidence }}</p>{% endif %}</aside>{% endif %}
       {% if content and content.next_edition_prompt %}<aside class="edition-prompt"><strong>{{ content.next_edition_prompt.question }}</strong></aside>{% endif %}
+
       <footer class="edition-footer"><p class="provenance">{{ content.provenance_note if content else '' }}</p></footer>
-      <nav class="edition-actions" aria-label="에디션 다음 작업">{% if not has_given_feedback %}<a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback" class="btn btn-primary">다음 호를 위한 편집 메모</a>{% else %}<p class="feedback-submitted">이미 편집 메모를 전달했습니다.</p>{% endif %}<a href="{{ _base }}/history" class="btn btn-secondary">라이브러리 기록</a>{% if next_edition_number %}<a href="{{ _base }}/editions/{{ next_edition_number }}" class="btn btn-secondary">다음 에디션</a>{% endif %}</nav>
+      <nav class="edition-actions" aria-label="에디션 다음 작업">
+        {% if not has_given_feedback %}<a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback" class="btn btn-primary">다음 호를 위한 편집 메모</a>{% else %}<p class="feedback-submitted">이미 편집 메모를 전달했습니다.</p>{% endif %}
+        <a href="{{ _base }}/history" class="btn btn-secondary">라이브러리 기록</a>
+        {% if next_edition_number %}<a href="{{ _base }}/editions/{{ next_edition_number }}" class="btn btn-secondary">다음 에디션</a>{% endif %}
+      </nav>
     </div>
-    <aside class="v3-reading-tail" aria-hidden="true"><strong>READING NOTE</strong><br><br>한 호의 끝은 다음 기록의 시작입니다.<br><br>남긴 피드백은 다음 편집에 연결됩니다.</aside>
+
+    <aside class="v3-reading-tail v7a-reading-tail" aria-hidden="true"><strong>READING NOTE</strong><br><br>한 호의 끝은 다음 기록의 시작입니다.<br><br>남긴 피드백은 다음 편집에 연결됩니다.</aside>
   </div>
 </article>
 {% endblock %}
