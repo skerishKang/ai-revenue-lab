@@ -117,12 +117,16 @@ def test_issue_454_v3_has_meaningful_motion_and_reduced_equivalent(server: tuple
         try:
             normal=browser.new_context(viewport={"width":1440,"height":1100},reduced_motion="no-preference").new_page()
             normal.goto(base+"/preview/intro/",wait_until="networkidle")
+            art_direction=normal.locator("body").get_attribute("data-art-direction")
             animation=normal.locator(".v3-edition-object").evaluate("el => getComputedStyle(el).animationName")
-            assert animation=="v3-bind"
+            if art_direction=="b1-living-index-v6":
+                assert animation=="v6-living-bind"
+            else:
+                assert animation=="v3-bind"
             normal.context.close()
             reduced=browser.new_context(viewport={"width":1440,"height":1100},reduced_motion="reduce").new_page()
             reduced.goto(base+"/preview/intro/",wait_until="networkidle")
             duration=reduced.locator(".v3-edition-object").evaluate("el => getComputedStyle(el).animationDuration")
-            assert duration in ("0.000001s","0.001ms") or float(duration.rstrip('s')) < .01
+            assert duration in ("0s","0.000001s","0.001ms") or float(duration.rstrip('s')) < .01
             reduced.context.close()
         finally: browser.close()
