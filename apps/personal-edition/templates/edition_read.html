@@ -24,16 +24,16 @@
       <div class="v7a-read-stage" aria-label="에디션 커버와 기록 조각의 여는 장면">
         <figure class="v7a-photo-fragment v7a-read-photo" aria-hidden="true"><img src="/static/images/v5/edition-opening.webp" alt="" width="1536" height="1024"></figure>
         <div class="v7a-read-cover" aria-hidden="true">
-          <span class="cover-pub">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
-          <strong class="cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</strong>
-          <span class="cover-no">{{ '%02d'|format(edition.edition_number) }}</span>
+          <span class="v7a-cover-pub">{{ content.publication_title if content else 'Personal Edition' }} · Private</span>
+          <strong class="v7a-cover-title">{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</strong>
+          <span class="v7a-cover-no">{{ '%02d'|format(edition.edition_number) }}</span>
         </div>
       </div>
 
       <div class="v7a-read-title">
-        <span class="edition-issue">Personal Edition · 제{{ edition.edition_number }}호</span>
+        <span class="v7a-edition-issue">Personal Edition · 제{{ edition.edition_number }}호</span>
         <h1>{{ content.edition_title if content and content.edition_title else edition.rendered_title }}</h1>
-        <p class="edition-deck">{{ content.deck if content else '' }}</p>
+        <p class="v7a-edition-deck">{{ content.deck if content else '' }}</p>
         {% if edition.published_at %}<time datetime="{{ edition.published_at[:10] }}">Published {{ edition.published_at[:10] }} · Human reviewed</time>{% endif %}
       </div>
     </header>
@@ -59,12 +59,12 @@
       {% endfor %}{% endif %}
 
       {% if content and content.continuity_note %}<aside class="v7a-edition-note v7a-continuity">{{ content.continuity_note }}</aside>{% endif %}
-      {% if prior_feedback_summary %}<aside class="v7a-edition-note v7a-feedback-applied"><strong>이전 편집 메모 반영</strong><p>{{ prior_feedback_summary.action }}</p>{% if prior_feedback_summary.evidence %}<p class="feedback-evidence">{{ prior_feedback_summary.evidence }}</p>{% endif %}</aside>{% endif %}
+      {% if prior_feedback_summary %}<aside class="v7a-edition-note v7a-feedback-applied"><strong>이전 편집 메모 반영</strong><p>{{ prior_feedback_summary.action }}</p>{% if prior_feedback_summary.evidence %}<p class="v7a-feedback-evidence">{{ prior_feedback_summary.evidence }}</p>{% endif %}</aside>{% endif %}
       {% if content and content.next_edition_prompt %}<aside class="v7a-edition-note v7a-prompt"><strong>{{ content.next_edition_prompt.question }}</strong></aside>{% endif %}
 
       <footer class="v7a-read-footer"><p class="v7a-provenance">{{ content.provenance_note if content else '' }}</p></footer>
       <nav class="v7a-edition-actions" aria-label="에디션 다음 작업">
-        {% if not has_given_feedback %}<a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback" class="btn btn-primary">다음 호를 위한 편집 메모</a>{% else %}<p class="feedback-submitted">이미 편집 메모를 전달했습니다.</p>{% endif %}
+        {% if not has_given_feedback %}<a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}/feedback" class="btn btn-primary">다음 호를 위한 편집 메모</a>{% else %}<p class="v7a-feedback-submitted">이미 편집 메모를 전달했습니다.</p>{% endif %}
         <a href="{{ _base }}/history" class="btn btn-secondary">라이브러리 기록</a>
         {% if next_edition_number %}<a href="{{ _base }}/editions/{{ next_edition_number }}" class="btn btn-secondary">다음 에디션</a>{% endif %}
       </nav>
