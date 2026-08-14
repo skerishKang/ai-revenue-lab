@@ -35,7 +35,9 @@
 .v7a-read-footer { margin-top:38px; padding-top:23px; border-top:1px solid rgba(17,20,24,.1); }
 .v7a-provenance { color:rgba(17,20,24,.48); font-size:10px; line-height:1.7; }
 .v7a-edition-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:28px; }
-.v7a-edition-actions .btn { min-height:42px; padding:0 16px; border-radius:999px; font-family:var(--v7a-sans); font-size:10.5px; font-weight:820; box-shadow:none; }
+.v7a-edition-actions .btn { min-height:42px; padding:0 16px; border-radius:999px; border:1px solid rgba(17,20,24,.15); background:rgba(255,255,255,.5); color:#262c2d; font-family:var(--v7a-sans); font-size:10.5px; font-weight:820; box-shadow:none; }
+.v7a-edition-actions .btn-primary { border-color:#15191a; background:#15191a; color:#fff; }
+.v7a-edition-actions .btn-secondary { border-color:rgba(17,20,24,.15); background:rgba(255,255,255,.5); color:#262c2d; }
 
 @media (max-width:760px) {
   .v7a-read-opening { display:flex; flex-direction:column; align-items:stretch; gap:10px; min-height:0; width:calc(100% - 30px); padding:26px 0 42px; }
