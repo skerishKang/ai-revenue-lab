@@ -2,13 +2,13 @@
 
 The documented start command is:
 
-    python3 -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8000
+    python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
-This bootstrap is a safety net: if ``.env`` exists and the process
-environment does not already contain a variable, it is loaded before the
-app factory and configuration singletons are imported. Existing environment
-variables always win, so real deployment secrets are never overwritten by a
-local file. The loader never logs values and never exposes secrets.
+If ``.env`` exists in the working directory and the process environment does
+not already contain a variable, it is loaded before the app factory and
+configuration singletons are imported. Existing environment variables always
+win, so real deployment secrets are never overwritten by a local file. The
+loader never logs values and never exposes secrets.
 """
 
 from __future__ import annotations
