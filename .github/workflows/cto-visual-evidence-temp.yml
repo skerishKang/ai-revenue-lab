@@ -1,0 +1,83 @@
+name: CTO visual evidence temporary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/cto-visual-evidence-temp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out B01 V6 exact head
+        uses: actions/checkout@v4
+        with:
+          ref: f4336ce73a5147fc8230ca0326d7704f1e0ed7c1
+          path: b01
+          persist-credentials: false
+
+      - name: Check out B35 V3.1 exact head
+        uses: actions/checkout@v4
+        with:
+          ref: 1bc3469baae6ac7d4a1ff362a4a2b4b0af8079d2
+          path: b35
+          persist-credentials: false
+
+      - name: Check out B59 exact head
+        uses: actions/checkout@v4
+        with:
+          ref: f327093a445086d4efb79452b1bc62ba53ff8a9b
+          path: b59
+          persist-credentials: false
+
+      - name: Install Chromium capture runtime
+        run: |
+          set -euo pipefail
+          npx --yes playwright@1.52.0 install chromium
+
+      - name: Capture B35 and B59 exact-head entry screens
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p captured
+          python3 -m http.server 8135 --bind 127.0.0.1 --directory b35/reference/business-35-ai-media-education-dx-v3 > /tmp/b35-http.log 2>&1 &
+          B35_PID=$!
+          python3 -m http.server 8159 --bind 127.0.0.1 --directory b59/reference/business-59-living-archive-v1 > /tmp/b59-http.log 2>&1 &
+          B59_PID=$!
+          cleanup() { kill "${B35_PID}" "${B59_PID}" 2>/dev/null || true; }
+          trap cleanup EXIT
+          sleep 1
+
+          npx --yes playwright@1.52.0 screenshot \
+            --browser chromium --viewport-size="1600,1000" --wait-for-timeout=1200 \
+            http://127.0.0.1:8135/ captured/b35-desktop.png
+          npx --yes playwright@1.52.0 screenshot \
+            --browser chromium --viewport-size="390,844" --wait-for-timeout=1200 \
+            http://127.0.0.1:8135/ captured/b35-mobile.png
+
+          npx --yes playwright@1.52.0 screenshot \
+            --browser chromium --viewport-size="1440,1100" --wait-for-timeout=1800 \
+            http://127.0.0.1:8159/ captured/b59-desktop.png
+          npx --yes playwright@1.52.0 screenshot \
+            --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 \
+            http://127.0.0.1:8159/ captured/b59-mobile.png
+
+      - name: Collect B01 exact-head committed screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p captured/b01
+          cp b01/apps/personal-edition/v6-phase-a/evidence/screenshots/*.webp captured/b01/
+          test "$(find captured/b01 -type f -name '*.webp' | wc -l)" -eq 18
+
+      - name: Upload visual evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cto-visual-evidence-20260814
+          path: captured/
+          if-no-files-found: error
+          retention-days: 1
