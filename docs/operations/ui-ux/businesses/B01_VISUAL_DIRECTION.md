@@ -1,372 +1,356 @@
 # B01 — Personal Edition Visual Direction
 
-Status: `V5_IMAGE_LED_DIRECTION_FROZEN`
+- Status: **V7_ENTRY_ANCHOR_LOCKED / SYSTEM_RECOVERY_REQUIRED**
+- Effective: 2026-08-14
+- Parent design authority: `../../PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
+- Methodology context: `../CASE_STUDY_B01_V7_ANCHOR_SYSTEM_FAILURE.md`
 
 Current owner judgment:
 
 ```text
-V4_OWNER_VISUAL_REJECTED=true
-V5_REDESIGN_REQUIRED=true
-OWNER_UI_APPROVED=false
+CURRENT_ENTRY_DIRECTION = SATISFACTORY / KEEP AS B01 ANCHOR
+OTHER_PARTICIPANT_SURFACES = NOT_SATISFACTORY
+WHOLE_PRODUCT_OWNER_UI_APPROVED = false
 ```
 
-This document supersedes the B01 V4 visual implementation direction while preserving the product/state/backend contracts.
-
----
+This document supersedes the prior B01 V5 direction as forward implementation authority. Historical V3/V4/V5/V6/V7 work remains useful evidence and source material but does not override this current direction.
 
 ## 1. Product job
 
-Personal Edition turns scattered private records into a human-reviewed private publication the participant wants to read, keep, revisit, and influence over time.
+Personal Edition turns scattered private records into a human-shaped, human-reviewed private publication the participant wants to read, keep, revisit and influence over time.
 
 ```text
-FRAGMENT → EDIT → BIND → READ → RECUT
+PRIVATE FRAGMENTS
+→ HUMAN-SHAPED NARRATIVE
+→ COLLECTIBLE PERSONAL EDITION
+→ READ / KEEP / RECUT
 ```
 
-The core result is an **authored private Edition**, not a dashboard card, notes database, scrapbook, AI chat, or generic article.
+The result is an authored collectible Edition, not a notes database, AI chat, process dashboard, scrapbook or SaaS card collection.
 
----
+## 2. Current anchor — Entry
 
-## 2. V4 rejection lesson — binding implementation constraint
+The corrected 2026-08-14 Entry is the **B01 local design anchor**.
 
-The V4 implementation was technically valid but visually rejected by the owner.
+Its successful grammar is not just `glass` or `photos`. The anchor is the relationship between:
 
-Why:
+- dark outer stage;
+- warm ivory inner scene;
+- asymmetric spatial composition;
+- restrained large Korean sans display typography;
+- small milk/frosted-glass explanatory surface;
+- meaningful overlapping photo fragments;
+- one tall collectible vertical Edition object;
+- orbital/spatial depth used as composition, not process diagram;
+- clear negative space;
+- one dominant visual object and one clear first action.
 
-1. Main focal visuals were SVG tableaux that illustrated archive/paper metaphors instead of providing convincing material/image authority.
-2. Deep forest green spread across too many large surfaces and flattened the palette into a green/ivory theme.
-3. Asset presence was incorrectly treated as evidence of reference fidelity; **asset quality and perceptual effect** are the actual acceptance criteria.
-4. Entry received more art-direction emphasis than Edition Read, even though Read is the product payoff.
-5. The result still felt like a designed explanation of an archive rather than a private publication worth keeping.
+Do not reduce this anchor to a color/material skin.
+
+## 3. What is locked versus what is not
+
+Locked for B01 system testing:
+
+```text
+visual world
+material relationship
+photo-fragment behavior
+dominant Edition object
+spatial asymmetry
+typography attitude
+negative-space discipline
+```
+
+Not yet approved/proven:
+
+```text
+Library composition
+Write composition
+Read typography/long-form rhythm
+Guide
+Access
+Feedback
+History/Archive
+Adaptation/Recut
+other participant states
+whole-product cross-state system
+```
+
+## 4. Current failure diagnosis
+
+The non-Entry problem is primarily:
+
+```text
+ARCHETYPE_SYSTEM_FAILURE
+LEGACY_SHELL_FAILURE
+TYPOGRAPHY_FAILURE
+IMPLEMENTATION_CASCADE_FAILURE
+```
+
+Do **not** classify the current situation as `CONCEPT_FAILURE` unless new evidence shows the Entry concept itself is the root cause.
 
 Therefore:
 
 ```text
-MAIN_FOCAL_ART_AS_SVG = FORBIDDEN
-ASSET_EXISTS = NOT_A_VISUAL_PASS
-EDITION_READ_MUST_BE_STRONGEST_SURFACE = REQUIRED
+NO V8 CONCEPT HUNT
+KEEP ENTRY
+REBUILD SYSTEM TRANSLATION
+CONSOLIDATE ACTIVE VISUAL AUTHORITY
 ```
 
-SVG may be used only for minor UI marks, icons, rules, proof lines, or geometry. It must not be the Hero, Human Review, Library/Edition focal visual, or the primary Read visual break.
+## 5. Mandatory next archetypes
 
----
+Before touching all remaining routes, rebuild/test exactly these different surface classes first.
 
-## 3. V5 visual thesis — Image-led Private Archive Editorial
+### A. Library — collection/object archetype
 
-Target response:
+Purpose: prove that multiple Editions can feel collectible without becoming CRUD cards or a generic product grid.
 
-> “My scattered private records become a beautiful, authored publication that feels real enough to keep.”
+Required direction:
 
-Target qualities:
+- Edition objects are the hierarchy, not a giant `Private Library` title;
+- photo/material fragments support ownership/provenance rather than act as rectangular hero backgrounds;
+- latest/past Editions feel like a spatial collection;
+- metadata remains quiet and legible;
+- Desktop composition uses authored asymmetry/negative space;
+- Mobile preserves object hierarchy rather than simply stacking two columns.
+
+Automatic miss:
+
+- large heading + photo panel + white detail card;
+- dashboard/grid language;
+- multiple generic glass cards as the main composition.
+
+### B. Write — interaction archetype
+
+Purpose: prove that B01's visual language can support a real input task without collapsing into a SaaS form.
+
+Required direction:
+
+- the raw record/writing act has visual authority;
+- prompts behave like editorial/marginal guidance, not disabled input cards;
+- the writing surface feels private and authored, not like an admin textarea;
+- typography is quieter than Entry but clearly the same product;
+- privacy/consent/status remain accessible and secondary;
+- Mobile reaches the writing action quickly.
+
+Automatic miss:
+
+- oversized marketing headline on the left + enormous blank form box on the right;
+- generic field/card stack;
+- decorative photography competing with typing.
+
+### C. Read — long-form archetype
+
+Purpose: prove that the collectible Edition becomes a convincing reading experience.
+
+Required direction:
+
+- opening/Edition object connects visibly to the Entry anchor;
+- reading hierarchy uses deliberate sans/serif roles if both are used;
+- body type has comfortable Korean measure/line-height;
+- image/type pacing supports reading, not a generic article template;
+- source/proof/margin material appears as quiet editorial evidence;
+- the Edition remains collectible while the text remains readable/selectable;
+- Mobile is independently composed.
+
+Automatic miss:
+
+- attractive cover followed by a plain blog/article column;
+- unexplained typography switch;
+- giant heading overwhelming the actual reading content.
+
+## 6. Archetype gate
+
+Capture:
 
 ```text
-intimate
-tactile
-authored
-contemporary editorial
-quietly luxurious
-image-led
-collectible
-human-reviewed
+Entry + Library + Write + Read
+× Desktop
+× 390px Mobile
 ```
 
-The product should feel closer to a carefully photographed independent publication / editorial campaign than to a vector concept illustration or SaaS prototype.
+Review all eight views together.
 
----
-
-## 4. V5 palette — restore the stronger earlier color tension
-
-Use the earlier B01 palette as the starting tonal system:
+Required verdict:
 
 ```text
-ink / near-black      #171915  — structural frame and typography
-warm paper            #f2eee4  — primary field
-bright paper          #fbf8f1  — reading surfaces
-paper depth           #ded6c7  — secondary material
-editorial coral       #b7462d  — proof / intervention / authored accent
-soft coral            #e9b9a4  — secondary editorial mark
-muted olive           #53644a  — limited supporting material
-slate / muted blue    ~#40597a — limited visual counterpoint
+ARCHETYPE_SYSTEM_PASS
 ```
 
-Deep forest green is **not** a default canvas. It may appear only in a limited archive object/folder/material role when it materially improves the composition.
-
-Required palette behavior:
-
-- warm paper + deep ink carry most of the experience;
-- coral provides authored editorial tension;
-- olive/slate appear sparingly;
-- do not allow any single green family to dominate multiple routes;
-- avoid beige-on-beige monotony.
-
----
-
-## 5. Image policy — mandatory for V5
-
-### 5.1 Main focal art
-
-The following surfaces require **raster photographic/image-led material** (`WebP`/`PNG` or equivalent local raster asset):
-
-- Entry / first viewport;
-- Human Review;
-- Private Library / Edition collection;
-- Edition Read opening and/or major visual break.
-
-The imagery must be stored locally in the product build. Do not depend on runtime third-party CDN requests.
-
-### 5.2 Raster text rule
-
-Issue #454 explicitly forbids readable text baked into raster imagery.
-
-Therefore source photography containing printed text must be cropped, defocused, masked, or blurred enough that the raster acts as **material/image**, while all meaningful titles, source text, annotations, issue numbers, proof decisions, and controls remain real HTML.
-
-### 5.3 Stock-photo rule
-
-Do not use recognizable stock-photo people as the product identity.
-
-Hands or partial human presence may appear only when they directly communicate **human editorial review**, and must remain secondary to the proof/source material.
-
-### 5.4 Narrative rule
-
-A photograph is not accepted merely because it contains books, paper, or stationery.
-
-Every image must serve one of these product meanings:
+before:
 
 ```text
-raw material
-human editorial intervention
-collectible Edition
-reading / opening / keeping
+FULL_EXPANSION_ALLOWED
 ```
 
-Decorative stationery mood photography unrelated to state is a MISS.
+The set must look like one product even when route names/logos are mentally removed.
 
----
+## 7. Typography system to establish during archetypes
 
-## 6. Reference translation
+Do not solve B01 by selecting another font name without controlling how it renders.
 
-### Private Archive / independent publication
+The archetype work must define:
 
-**Adopt**
-- tactile paper and printed-object relationships;
-- image-led still life with real light/shadow;
-- controlled marginalia and proof intervention;
-- collectible issue identity.
+- current actual display sans delivery/fallback;
+- UI/body sans role;
+- reading serif role only if it materially improves long-form reading;
+- Korean display max scales by surface type;
+- line-height/tracking rules;
+- body measure/line-height;
+- micro-label scale;
+- Desktop→Mobile title transformations.
 
-**Reject**
-- antique nostalgia;
-- scrapbook collage;
-- fake vector paper scenes;
-- stationery mood boards.
+Rules:
 
-**Surfaces**
-- Entry, Review, Library, Edition Read.
+- Entry-level title drama is not required on every route;
+- Korean display line-height `<1.0` needs explicit visual exception;
+- avoid severe Hangul tracking compression;
+- adjacent routes must not look as if different typography systems were installed.
 
-### The Gentlewoman
+## 8. Material / color system
 
-**Adopt**
-- singular issue identity;
-- confident cover hierarchy;
-- previous issues as a collection.
-
-**Reject**
-- celebrity/fashion-magazine dependency.
-
-**Surfaces**
-- Library, cover/opening, history.
-
-### MUBI Notebook
-
-**Adopt**
-- decisive image/type rhythm;
-- strong editorial crops;
-- macro-to-detail pacing;
-- visual moments that punctuate reading.
-
-**Reject**
-- film-specific identity;
-- generic blog/article template.
-
-**Surfaces**
-- Edition Read is the primary translation surface.
-
-### Are.na
-
-**Adopt**
-- fragments remain distinct before accumulating into meaning;
-- source relationship remains visible.
-
-**Reject**
-- neutral research-board grid.
-
-**Surfaces**
-- Entry, source capture, Human Review.
-
----
-
-## 7. Surface contracts
-
-### 7.1 Entry / first viewport
-
-Required:
-
-- image-led focal composition has at least equal visual authority to the headline;
-- short Korean thesis;
-- one primary CTA: `첫 기록 맡기기`;
-- secondary `30초 사용법`;
-- actual image material communicates fragment → Edition transformation;
-- no generic process-card strip as the first explanation;
-- on 390px, the headline must not push the focal image entirely below the meaningful first viewport.
-
-Failure conditions:
-
-- focal art still looks like vector/SVG illustration;
-- green canvas dominates;
-- image behaves as a decorative rectangle unrelated to transformation.
-
-### 7.2 Guide / 30초 사용법
-
-Show four real user steps:
+B01 keeps the current Entry relationship as the starting authority:
 
 ```text
-1. 기록 남기기
-2. 사람 검토 확인
-3. 완성된 Edition 읽기
-4. 편집 메모로 다음 호 바꾸기
+near-black outer stage
+warm ivory / stone inner field
+graphite ink
+milk / frosted glass
+muted photographic fragments
 ```
 
-Use actual product-screen/image-preview rhythm. Do not return to generic `how it works` cards or icon explainers.
+Material rules:
 
-### 7.3 Writing
+- glass is an object/material, not a universal card decoration;
+- do not make every panel glass;
+- avoid shiny neon/Vision-Pro glass;
+- avoid generic beige editorial paper simulation;
+- avoid dark AI/neon aesthetics;
+- use contrast and spatial depth to distinguish roles before adding more borders/cards.
 
-Textarea remains the hero interaction.
+## 9. Image system
 
-- calm warm-paper writing field;
-- prompts as restrained marginalia;
-- privacy/consent visible but secondary;
-- image decoration must not compete with typing.
+Photography represents meaningful private memory/source fragments.
 
-### 7.4 Human Review
+Use:
 
-This is a proof surface, not a loading/status illustration.
-
-The user should understand:
-
-```text
-original fragment
-→ editorial intervention
-→ human-reviewed decision
-→ emerging Edition structure
-```
-
-Use raster editorial/proof material as supporting evidence, while actual source/proof labels remain HTML.
-
-### 7.5 Private Library
-
-- latest Edition is the dominant collectible object;
-- previous issues read as a coherent but non-identical series;
-- image/cover material has real depth;
-- avoid CRUD cards and dashboard grids.
-
-### 7.6 Edition Read — highest visual priority
-
-**Edition Read must be the strongest surface in B01 V5.**
-
-Required:
-
-- authentic opening/cover moment;
-- image/type editorial pacing;
-- at least one major raster visual break inside the reading journey;
-- pull quote / source/proof fragment / section shifts where appropriate;
-- readable long-form Korean body rhythm;
-- HTML text remains authoritative and selectable;
-- Mobile is independently composed, not just stacked Desktop.
-
-A plain article column after an attractive cover is a MISS.
-
-### 7.7 Feedback / RECUT
-
-The user must visibly understand:
-
-```text
-current treatment
-→ my editorial note
-→ next treatment
-```
-
-Use HTML before/after treatment differences. Do not bake explanation into imagery.
-
-### 7.8 History
-
-Past Editions should feel accumulated and collectible, with controlled cover/image variation rather than a CRUD list.
-
----
-
-## 8. Typography
-
-- Korean display line-height `<1.0` is not allowed by default;
-- do not use giant type merely to signal premium quality;
-- image and type share the visual burden;
-- body reading comfort outranks display drama;
-- manual line breaks must be compositionally intentional;
-- Latin microcopy remains metadata, not brand dominance.
-
----
-
-## 9. Motion
-
-Allowed:
-
-- image mask/opening reveal;
-- source fragment arrival;
-- proof mark appearance;
-- cover/opening transition;
-- restrained recut comparison transition.
+- intentional rotation/crop/overlap;
+- partial fragment relationships;
+- quiet desaturated/controlled treatment consistent with Entry;
+- local, rights-cleared assets.
 
 Avoid:
 
-- decorative orbit/radar motion;
-- endless floating;
-- parallax with no state meaning;
-- motion that delays reading or writing.
+- unrelated stock-photo decoration;
+- readable important Korean text over busy imagery;
+- one large rectangular photo hero followed by generic UI;
+- imagery merely to make a screen look `premium`.
 
-Full reduced-motion equivalence required.
+## 10. Core object
 
----
+The collectible vertical Edition remains B01's most important recurring object.
 
-## 10. V5 conformance gate
+It may transform by context—cover, spine, stack, opened reading object, prior/next edition—but should keep enough visual DNA to connect Entry, Library, Read, History and RecUT states.
 
-Technical QA is necessary but insufficient.
+Do not turn the Edition into a generic rounded SaaS card.
 
-A reviewer must directly inspect Desktop `1440×1100` and Mobile `390×844` screenshots and score:
+## 11. Remaining-route expansion after archetype pass
+
+Only after `ARCHETYPE_SYSTEM_PASS`:
 
 ```text
-IMAGE AUTHORITY
-REFERENCE FIDELITY
-PALETTE QUALITY
-FIRST VIEWPORT
-ASSET QUALITY
-EDITION READ PAYOFF
-HUMAN REVIEW CLARITY
-LIBRARY COLLECTIBILITY
-KOREAN TYPOGRAPHY
-MOBILE COMPOSITION
-CROSS-STATE COHERENCE
-DIFFERENTIATION FROM B06 / B19 / B20
+Guide
+Access
+Feedback
+History / Archive
+Adaptation / Recut
+Transformation / Thanks / other participant states
 ```
 
-Each item is `MATCH / PARTIAL / MISS`.
+should be redesigned using the locked system.
 
-### Automatic rejection conditions
+Each route gets a composition appropriate to its job; do not clone Entry layout everywhere.
 
-V5 is not merge-ready if any of the following are true:
+Key guidance:
 
-- Hero/Review/Library/Read focal art is still SVG-led;
-- a main raster asset contains readable baked-in UI/product text;
-- green dominates the overall product palette again;
-- Entry looks stronger/more authored than Edition Read;
-- Read collapses into a plain article after the opening;
-- Mobile headline pushes the focal image out of the meaningful first experience;
-- asset quality looks like placeholder/prototype art;
-- the screen looks materially similar to B06, B19, or B20.
+- Guide: teach real user action, not a giant-title/process-card poster.
+- Access: quiet/private threshold, not two competing hero headlines plus a process rail.
+- Feedback: editorial direction/recut decision, not a settings checkbox dashboard.
+- History: accumulated collectible Editions, not oversized `Archive` + CRUD list.
+- Adaptation: previous→next Edition relationship as an authored spatial comparison, not a PPT before/after panel.
 
-`OWNER_UI_APPROVED=false` remains unchanged after technical merge/deploy until the owner explicitly accepts the actual live V5.
+## 12. Source consolidation requirement
+
+The current participant path has accumulated multiple historical visual generations. During archetype/system recovery:
+
+- identify active V3/V4/V5/V6/V7 visual entrypoints;
+- preserve behavior hooks where needed;
+- move current rules into a canonical B01 system;
+- remove superseded visual layers from the active rendering path once replacement is proven;
+- stop escalating `!important` overrides;
+- do not add V8 as another top-layer stylesheet.
+
+Follow `../../CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`.
+
+## 13. Motion grammar
+
+Motion is secondary and meaningful:
+
+- fragment/object travel;
+- subtle Edition opening/transition;
+- restrained recut/change comparison;
+- no endless floating/orbits for decoration;
+- no heavy parallax that delays writing/reading;
+- full reduced-motion equivalence.
+
+## 14. Anti-patterns
+
+B01 must not become:
+
+```text
+generic SaaS cards
+big Korean title as the whole design
+left marketing column + right form panel
+process diagram centerpiece
+beige editorial simulation
+neon/dark AI aesthetic
+glass on every rectangle
+stock-photo landing page
+scrapbook collage
+one impressive Entry followed by ordinary forms
+```
+
+## 15. Full-surface completion gate
+
+After remaining-route expansion, capture every core participant route on Desktop and Mobile and review one contact sheet for:
+
+- cross-state identity;
+- typography;
+- Edition-object continuity;
+- photo/material continuity;
+- hierarchy/density;
+- interaction clarity;
+- Mobile composition;
+- old-generation leakage;
+- generic UI regression.
+
+Only then may `FULL_SURFACE_VISUAL_PASS` be assigned.
+
+## 16. Owner boundary
+
+Current positive Entry feedback means:
+
+```text
+ANCHOR_DIRECTION_LOCKED
+```
+
+for B01 system testing.
+
+It does **not** mean:
+
+```text
+OWNER_UI_APPROVED=true
+```
+
+for the whole Personal Edition product. Final owner approval remains a separate decision after the applicable current whole-product result is reviewed.
