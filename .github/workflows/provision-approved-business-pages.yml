@@ -12,7 +12,7 @@ on:
         required: true
         type: string
       source_directory:
-        description: Isolated Business reference directory
+        description: Isolated approved Business reference directory
         required: true
         type: string
       approved_sha:
@@ -20,13 +20,26 @@ on:
         required: true
         type: string
       approval_pr:
-        description: Draft approval PR number
+        description: Draft/merged approval PR number
         required: true
         type: string
       production_branch:
         description: Cloudflare Pages production branch
         required: true
         default: main
+        type: string
+      existing_project_action:
+        description: Verify existing project or migrate its approved source directory
+        required: true
+        default: verify-only
+        type: choice
+        options:
+          - verify-only
+          - migrate-source
+      expected_old_source_directory:
+        description: Required only for migrate-source; exact currently configured old Business reference directory
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -50,6 +63,8 @@ jobs:
       APPROVED_SHA: ${{ inputs.approved_sha }}
       APPROVAL_PR: ${{ inputs.approval_pr }}
       PRODUCTION_BRANCH: ${{ inputs.production_branch }}
+      EXISTING_PROJECT_ACTION: ${{ inputs.existing_project_action }}
+      EXPECTED_OLD_SOURCE_DIRECTORY: ${{ inputs.expected_old_source_directory }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
@@ -71,6 +86,8 @@ jobs:
         run: |
           set -euo pipefail
           echo "REPOSITORY_METADATA_FILE=${RUNNER_TEMP}/pages-repository-metadata.json" >> "${GITHUB_ENV}"
+          echo "MIGRATION_COMMENTS_FILE=${RUNNER_TEMP}/pages-source-migration-comments.json" >> "${GITHUB_ENV}"
+          echo "MIGRATION_PATCH_FILE=${RUNNER_TEMP}/pages-source-migration-patch.json" >> "${GITHUB_ENV}"
 
       - name: Check out trusted workflow authority
         uses: actions/checkout@v4
@@ -79,10 +96,26 @@ jobs:
           path: .workflow-authority
           persist-credentials: false
           fetch-depth: 1
-          sparse-checkout: .github/scripts/validate_pages_provisioning.py
+          sparse-checkout: |
+            .github/scripts/validate_pages_provisioning.py
+            .github/scripts/validate_pages_source_migration.py
           sparse-checkout-cone-mode: false
 
-      - name: Validate inputs and repository-owner approval authority
+      - name: Validate source-migration mode contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .workflow-authority/.github/scripts/validate_pages_source_migration.py contract \
+            --existing-project-action "${EXISTING_PROJECT_ACTION}" \
+            --business-id "${BUSINESS_ID}" \
+            --project-name "${PROJECT_NAME}" \
+            --source-directory "${SOURCE_DIRECTORY}" \
+            --expected-old-source-directory "${EXPECTED_OLD_SOURCE_DIRECTORY}" \
+            --approved-sha "${APPROVED_SHA}" \
+            --approval-pr "${APPROVAL_PR}" \
+            --production-branch "${PRODUCTION_BRANCH}"
+
+      - name: Validate inputs and repository-owner UI approval authority
         env:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash
@@ -96,6 +129,60 @@ jobs:
             --approval-pr "${APPROVAL_PR}" \
             --production-branch "${PRODUCTION_BRANCH}" \
             --repository-metadata-output "${REPOSITORY_METADATA_FILE}"
+
+      - name: Verify exact source-migration owner authority
+        if: ${{ inputs.existing_project_action == 'migrate-source' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GITHUB_TOKEN}" || {
+            echo "GITHUB_TOKEN is unavailable." >&2
+            exit 1
+          }
+
+          comments_file="${MIGRATION_COMMENTS_FILE}"
+          printf '[]\n' > "${comments_file}"
+          complete=false
+          for page in $(seq 1 100); do
+            page_file="$(mktemp)"
+            merged_file="$(mktemp)"
+            status="$({
+              curl --silent --show-error \
+                --output "${page_file}" \
+                --write-out '%{http_code}' \
+                --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+                --header 'Accept: application/vnd.github+json' \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${APPROVAL_PR}/comments?per_page=100&page=${page}"
+            })"
+            test "${status}" = "200" || {
+              echo "GitHub approval comments request failed with HTTP ${status}." >&2
+              exit 1
+            }
+            jq -e 'type == "array"' "${page_file}" >/dev/null
+            count="$(jq 'length' "${page_file}")"
+            jq -s '.[0] + .[1]' "${comments_file}" "${page_file}" > "${merged_file}"
+            mv "${merged_file}" "${comments_file}"
+            rm -f "${page_file}"
+            if test "${count}" -lt 100; then
+              complete=true
+              break
+            fi
+          done
+          test "${complete}" = true || {
+            echo "GitHub approval comment pagination exceeded the safety bound." >&2
+            exit 1
+          }
+
+          python3 .workflow-authority/.github/scripts/validate_pages_source_migration.py authority \
+            --comments-file "${MIGRATION_COMMENTS_FILE}" \
+            --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+            --project-name "${PROJECT_NAME}" \
+            --old-source-directory "${EXPECTED_OLD_SOURCE_DIRECTORY}" \
+            --new-source-directory "${SOURCE_DIRECTORY}" \
+            --approved-sha "${APPROVED_SHA}"
 
       - name: Check out approved UI exact head
         uses: actions/checkout@v4
@@ -152,7 +239,8 @@ jobs:
           set -euo pipefail
           response_file="$(mktemp)"
           request_file="$(mktemp)"
-          trap 'rm -f "${response_file}" "${request_file}"' EXIT
+          post_file="$(mktemp)"
+          trap 'rm -f "${response_file}" "${request_file}" "${post_file}"' EXIT
           project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
 
           status="$({
@@ -164,17 +252,84 @@ jobs:
               "${project_url}"
           })"
 
+          migration_result="not-requested"
+          old_source=""
+
           case "${status}" in
             200)
-              python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
-                --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
-                --project-name "${PROJECT_NAME}" \
-                --source-directory "${SOURCE_DIRECTORY}" \
-                --production-branch "${PRODUCTION_BRANCH}" \
-                --response-file "${response_file}"
-              echo "state=already-existed" >> "${GITHUB_OUTPUT}"
+              if test "${EXISTING_PROJECT_ACTION}" = "verify-only"; then
+                python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                  --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                  --project-name "${PROJECT_NAME}" \
+                  --source-directory "${SOURCE_DIRECTORY}" \
+                  --production-branch "${PRODUCTION_BRANCH}" \
+                  --response-file "${response_file}"
+                project_state="already-existed"
+                migration_result="verify-only-no-mutation"
+              else
+                old_source="${EXPECTED_OLD_SOURCE_DIRECTORY%/}"
+
+                # Pre-mutation GET must match the exact old source AND every
+                # repository/branch/deployment flag checked by the existing validator.
+                python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                  --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                  --project-name "${PROJECT_NAME}" \
+                  --source-directory "${EXPECTED_OLD_SOURCE_DIRECTORY}" \
+                  --production-branch "${PRODUCTION_BRANCH}" \
+                  --response-file "${response_file}"
+
+                python3 .workflow-authority/.github/scripts/validate_pages_source_migration.py patch-payload \
+                  --business-id "${BUSINESS_ID}" \
+                  --source-directory "${SOURCE_DIRECTORY}" \
+                  --production-branch "${PRODUCTION_BRANCH}" \
+                  --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                  --output "${MIGRATION_PATCH_FILE}"
+
+                patch_status="$({
+                  curl --silent --show-error \
+                    -X PATCH \
+                    --output "${post_file}" \
+                    --write-out '%{http_code}' \
+                    --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                    --header 'Content-Type: application/json' \
+                    --data-binary "@${MIGRATION_PATCH_FILE}" \
+                    "${project_url}"
+                })"
+                test "${patch_status}" = "200" || {
+                  echo "Cloudflare Pages source migration failed with HTTP ${patch_status}." >&2
+                  exit 1
+                }
+                jq -e '.success == true' "${post_file}" >/dev/null
+
+                post_status="$({
+                  curl --silent --show-error \
+                    --output "${post_file}" \
+                    --write-out '%{http_code}' \
+                    --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                    --header 'Content-Type: application/json' \
+                    "${project_url}"
+                })"
+                test "${post_status}" = "200" || {
+                  echo "Cloudflare Pages post-migration lookup failed with HTTP ${post_status}." >&2
+                  exit 1
+                }
+                python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-project \
+                  --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
+                  --project-name "${PROJECT_NAME}" \
+                  --source-directory "${SOURCE_DIRECTORY}" \
+                  --production-branch "${PRODUCTION_BRANCH}" \
+                  --response-file "${post_file}"
+
+                project_state="migrated"
+                migration_result="source-migrated-and-identity-verified"
+              fi
               ;;
             404)
+              if test "${EXISTING_PROJECT_ACTION}" = "migrate-source"; then
+                echo "migrate-source requires an existing Pages project; refusing create/recreate." >&2
+                exit 1
+              fi
+
               python3 .workflow-authority/.github/scripts/validate_pages_provisioning.py cloudflare-payload \
                 --repository-metadata-file "${REPOSITORY_METADATA_FILE}" \
                 --project-name "${PROJECT_NAME}" \
@@ -204,13 +359,20 @@ jobs:
                 --source-directory "${SOURCE_DIRECTORY}" \
                 --production-branch "${PRODUCTION_BRANCH}" \
                 --response-file "${response_file}"
-              echo "state=created" >> "${GITHUB_OUTPUT}"
+              project_state="created"
+              migration_result="verify-only-created-project"
               ;;
             *)
               echo "Cloudflare Pages project lookup failed with HTTP ${status}." >&2
               exit 1
               ;;
           esac
+
+          echo "state=${project_state}" >> "${GITHUB_OUTPUT}"
+          echo "action=${EXISTING_PROJECT_ACTION}" >> "${GITHUB_OUTPUT}"
+          echo "old_source=${old_source}" >> "${GITHUB_OUTPUT}"
+          echo "new_source=${SOURCE_DIRECTORY%/}" >> "${GITHUB_OUTPUT}"
+          echo "migration_result=${migration_result}" >> "${GITHUB_OUTPUT}"
 
       - name: Deploy the approved exact head
         id: deploy
@@ -341,6 +503,10 @@ jobs:
       - name: Publish provisioning summary
         env:
           PROJECT_STATE: ${{ steps.project.outputs.state }}
+          EXISTING_ACTION: ${{ steps.project.outputs.action }}
+          OLD_SOURCE: ${{ steps.project.outputs.old_source }}
+          NEW_SOURCE: ${{ steps.project.outputs.new_source }}
+          MIGRATION_RESULT: ${{ steps.project.outputs.migration_result }}
           DEPLOYMENT_ID: ${{ steps.verify.outputs.deployment_id }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
           PRODUCTION_URL: ${{ steps.verify.outputs.production_url }}
@@ -355,9 +521,12 @@ jobs:
             echo "- Business ID: \`${BUSINESS_ID}\`"
             echo "- Approval PR: \`#${APPROVAL_PR}\`"
             echo "- Approved exact SHA: \`${APPROVED_SHA}\`"
-            echo "- Source directory: \`${SOURCE_DIRECTORY}\`"
+            echo "- Existing-project action: \`${EXISTING_ACTION}\`"
+            echo "- Expected old source: \`${OLD_SOURCE:-not-applicable}\`"
+            echo "- Approved new source: \`${NEW_SOURCE}\`"
             echo "- Pages project: \`${PROJECT_NAME}\`"
             echo "- Project state: \`${PROJECT_STATE}\`"
+            echo "- Source migration result: \`${MIGRATION_RESULT}\`"
             echo "- Repository: \`${GITHUB_REPOSITORY}\`"
             echo "- Production branch: \`${PRODUCTION_BRANCH}\`"
             echo "- Deployment ID: \`${DEPLOYMENT_ID}\`"
