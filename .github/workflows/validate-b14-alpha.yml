@@ -57,10 +57,16 @@ jobs:
       - name: Run real Chromium mock user journeys
         run: uv run python browser_tests/alpha1_start_screen_smoke.py
 
-      - name: Verify keyless live smoke makes no live chat call
+      - name: Verify keyless live smoke is ready but never executes chat
         env:
           OPENROUTER_API_KEY: ''
           B14_PROVIDER_MODE: live
+        shell: bash
         run: |
+          set -euo pipefail
           output="$(uv run python -m app.pilot.smoke_live)"
-          test "${output}" = "LIVE_SMOKE_READY_NOT_EXECUTED"
+          printf '%s\n' "${output}"
+          test "$(printf '%s\n' "${output}" | grep -cx 'LIVE_SMOKE_READY_NOT_EXECUTED')" -eq 1
+          ! printf '%s\n' "${output}" | grep -q 'Sending request'
+          ! printf '%s\n' "${output}" | grep -q 'SMOKE_TEST_OK'
+          printf '%s\n' "${output}" | grep -q 'Has key: no'
