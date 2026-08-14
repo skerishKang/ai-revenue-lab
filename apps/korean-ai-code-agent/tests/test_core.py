@@ -86,7 +86,7 @@ class AgentSessionTests(unittest.TestCase):
         session.prepare_demo_patch("README.md")
         session.permissions.write = True
         changed = session.apply()
-        self.assertEqual(changed, root / "README.md")
+        self.assertEqual(changed.resolve(), (root / "README.md").resolve())
         self.assertIn("KAGENT SYNTHETIC PREVIEW", changed.read_text(encoding="utf-8"))
         self.assertEqual(other.read_text(encoding="utf-8"), "keep\n")
 
@@ -137,7 +137,7 @@ class AgentSessionTests(unittest.TestCase):
             status = session.git_worktree_status()
         run.assert_called_once_with(
             ["git", "status", "--porcelain=v1", "--untracked-files=all"],
-            cwd=root,
+            cwd=session.root,
             text=True,
             capture_output=True,
             check=False,
