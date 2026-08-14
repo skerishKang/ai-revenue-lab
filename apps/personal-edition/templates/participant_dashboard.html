@@ -18,61 +18,89 @@
 </template>
 
 {% if workflow_stage == 'published' %}
-<section class="v3-library" aria-labelledby="library-title">
-  <header class="v3-library-head">
-    <div>
-      <span class="v3-kicker">Private archive · {{ participant.display_name }}</span>
-      <h1 id="library-title">Private<br>Library</h1>
-    </div>
-    <div class="v3-library-meta">
-      <span>발행 완료 · Human reviewed</span>
-      <span>{{ published_editions|length }} edition{% if published_editions|length != 1 %}s{% endif %} in archive</span>
-      <span>Private by default</span>
-    </div>
-  </header>
+<section class="v3-library v7a-archetype v7a-library" aria-labelledby="library-title">
+  <div class="v7a-frame">
+    <nav class="v7a-topbar" aria-label="Personal Edition 내부 탐색">
+      <a href="{{ _base }}/" class="v7a-brand"><strong>Personal Edition</strong><span>Private collection</span></a>
+      <div class="v7a-toplinks">
+        <a href="{{ _base }}/" aria-current="page">Library</a>
+        <a href="{{ _base }}/input">Write</a>
+        <a href="{{ _base }}/history">Archive</a>
+      </div>
+    </nav>
 
-  {% if published_editions %}
-  <div class="v3-library-stage">
-    <div class="v3-library-object-zone" aria-label="최신 에디션 오브젝트">
-      <div class="v3-library-cover" aria-hidden="true">
-        <span class="cover-kicker">Personal Edition · Private</span>
-        <strong class="cover-name">{{ published_editions[0].rendered_title or '제목 없음' }}</strong>
-        <span class="cover-index">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
+    <div class="v7a-shell">
+      {% if published_editions %}
+      <div class="v7a-library-hero">
+        <div class="v7a-library-copy">
+          <span class="v7a-kicker">Private Library · {{ participant.display_name }}</span>
+          <h1 class="v7a-display" id="library-title">당신의 기록은<br><em>한 권씩 남습니다.</em></h1>
+          <p class="v7a-deck">흩어진 조각은 사람의 편집을 거쳐 하나의 에디션이 됩니다. 읽고 남긴 편집 메모는 다음 호의 초점과 리듬으로 이어집니다.</p>
+          <div class="v7a-library-status" aria-label="라이브러리 상태">
+            <span>Edition {{ '%02d'|format(published_editions[0].edition_number) }} · Latest</span>
+            <span>{{ published_editions|length }} collected</span>
+            <span>Human reviewed</span>
+            <span>Private by default</span>
+          </div>
+          <div class="v7a-actions">
+            <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-primary latest-edition">최신 에디션 읽기</a>
+            <a href="{{ _base }}/input" class="btn btn-secondary">새 기록 추가</a>
+            {% if not has_feedback_on_latest %}<a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}/feedback" class="btn btn-secondary" aria-label="피드백 보내기">편집 메모</a>{% endif %}
+          </div>
+        </div>
+
+        <div class="v3-library-object-zone v7a-library-stage" aria-label="최신 에디션과 기록 조각">
+          <div class="v7a-library-orbit" aria-hidden="true"></div>
+          <figure class="v7a-photo-fragment v7a-library-photo-a" aria-hidden="true">
+            <img src="/static/images/private-library-hero.webp" alt="" width="1536" height="1024">
+          </figure>
+          <figure class="v7a-photo-fragment v7a-library-photo-b" aria-hidden="true">
+            <img src="/static/images/edition-library-history.webp" alt="" width="1536" height="1024">
+          </figure>
+          <a class="v7a-edition-object v7a-library-object" href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" aria-label="제{{ published_editions[0].edition_number }}호 {{ published_editions[0].rendered_title or '제목 없음' }} 읽기">
+            <span class="v7a-edition-spine" aria-hidden="true"></span>
+            <span class="v7a-edition-inner">
+              <span class="v7a-edition-kicker">Personal Edition · Private</span>
+              <strong class="v7a-edition-title">{{ published_editions[0].rendered_title or '제목 없음' }}</strong>
+              <span class="v7a-edition-foot">Human reviewed · {{ published_editions|length }} in archive</span>
+              <span class="v7a-edition-number">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
+            </span>
+          </a>
+          <div class="v7a-library-note v7a-glass">
+            <span class="v7a-index-label">Latest edition</span><br>
+            {% if published_editions[0].published_at %}{{ published_editions[0].published_at[:10] }} · {% endif %}원본 맥락을 보존한 개인 에디션
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="v3-library-story">
-      <span class="v3-kicker">Latest edition · 제{{ published_editions[0].edition_number }}호</span>
-      <h2>{{ published_editions[0].rendered_title or '제목 없음' }}</h2>
-      <p>흩어진 기록이 편집 검토를 거쳐 하나의 읽을거리로 결속되었습니다. 이번 호를 읽은 뒤 남기는 편집 메모는 다음 에디션의 리듬과 초점을 실제로 바꿉니다.</p>
-      <div class="v3-library-meta" style="margin-top:1rem">
-        {% if published_editions[0].published_at %}<span>{{ published_editions[0].published_at[:10] }}</span>{% endif %}
-        <span>Edition {{ '%02d'|format(published_editions[0].edition_number) }}</span>
+
+      <section class="v7a-collection v3-edition-sequence" aria-labelledby="edition-sequence-title">
+        <div class="v7a-collection-head v3-edition-sequence-head">
+          <h2 id="edition-sequence-title">Collected editions</h2>
+          <span class="v7a-micro">한 권씩 쌓이는 개인 기록</span>
+        </div>
+        <div class="v3-spines v7a-spine-row">
+          {% for edition in published_editions %}
+          <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v3-spine v7a-spine{% if loop.first %} is-current{% endif %}">
+            <span class="v3-spine-no">Edition {{ '%02d'|format(edition.edition_number) }}</span>
+            <strong class="v3-spine-title">{{ edition.rendered_title or '제목 없음' }}</strong>
+            <span class="v3-spine-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
+          </a>
+          {% endfor %}
+        </div>
+        <p class="v7a-privacy v3-privacy-line">이 라이브러리는 비공개입니다. 기록은 자동 게시되지 않으며 사람의 검토를 마친 에디션만 이곳에 쌓입니다.</p>
+      </section>
+      {% else %}
+      <div class="v7a-library-hero">
+        <div class="v7a-library-copy">
+          <span class="v7a-kicker">Private Library · Empty</span>
+          <h1 class="v7a-display" id="library-title">첫 에디션을 위한<br><em>한 조각부터.</em></h1>
+          <p class="v7a-deck">완성된 글이 아니어도 됩니다. 지금 남기고 싶은 문장 하나가 첫 에디션의 시작입니다.</p>
+          <div class="v7a-actions"><a href="{{ _base }}/input" class="btn btn-primary">첫 기록 시작하기</a></div>
+        </div>
       </div>
-      <div class="v3-library-actions">
-        <a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-primary latest-edition">최신 에디션 읽기</a>
-        {% if not has_feedback_on_latest %}<a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}/feedback" class="btn btn-secondary" aria-label="피드백 보내기">편집 메모 남기기</a>{% endif %}
-        <a href="{{ _base }}/input" class="btn btn-secondary">새 기록 추가하기</a>
-      </div>
+      {% endif %}
     </div>
   </div>
-  {% endif %}
-
-  <section class="v3-edition-sequence" aria-labelledby="edition-sequence-title">
-    <div class="v3-edition-sequence-head">
-      <h2 id="edition-sequence-title">Collected editions</h2>
-      <span class="v3-library-meta">한 권씩 쌓이는 개인 기록</span>
-    </div>
-    <div class="v3-spines">
-      {% for edition in published_editions %}
-      <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v3-spine{% if loop.first %} is-current{% endif %}">
-        <span class="v3-spine-no">{{ '%02d'|format(edition.edition_number) }}</span>
-        <strong class="v3-spine-title">{{ edition.rendered_title or '제목 없음' }}</strong>
-        <span class="v3-spine-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
-      </a>
-      {% endfor %}
-    </div>
-  </section>
-  <p class="v3-privacy-line">이 라이브러리는 비공개입니다. 기록은 자동 게시되지 않으며, 사람의 검토를 마친 에디션만 추가됩니다.</p>
 </section>
 
 {% else %}
