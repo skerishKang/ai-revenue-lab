@@ -1,0 +1,243 @@
+/* B02 Living Travel — archetype system foundation
+   Authority: Issue #644
+   Loaded only by Preferences / Traveler Home / Edition Read under test. */
+
+body.lt-v2.lt-b2-system {
+  --b2-ink: #17201f;
+  --b2-ivory: #f5f1e8;
+  --b2-ivory-hi: #fffdf7;
+  --b2-sea: #2f6970;
+  --b2-route: #e86435;
+  --b2-muted: #68716e;
+  --b2-line: rgba(23, 32, 31, .17);
+  --b2-soft-line: rgba(23, 32, 31, .09);
+  --b2-shadow: 0 18px 50px rgba(18, 30, 29, .08);
+  margin: 0;
+  background: var(--b2-ivory);
+  color: var(--b2-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+}
+
+body.lt-v2.lt-b2-system .lt-topbar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 50;
+  min-height: 64px;
+  padding: 0 clamp(1rem, 3.3vw, 3.4rem);
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+body.lt-v2.lt-b2-system .lt-wordmark {
+  color: inherit;
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+body.lt-v2.lt-b2-system .lt-wordmark::before {
+  border-radius: 999px;
+}
+
+body.lt-v2.lt-b2-system .lt-nav {
+  gap: clamp(.85rem, 1.8vw, 1.5rem);
+}
+
+body.lt-v2.lt-b2-system .lt-nav a {
+  color: inherit;
+  font-size: .68rem;
+  font-weight: 760;
+  text-decoration: none;
+}
+
+body.lt-v2.lt-b2-system .lt-nav a[aria-current="page"] {
+  border-bottom: 1px solid currentColor;
+}
+
+.b2-system-kicker {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin: 0 0 1rem;
+  color: var(--b2-sea);
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.b2-system-kicker::before {
+  content: "";
+  width: 30px;
+  height: 1px;
+  background: currentColor;
+}
+
+.b2-system-primary,
+.b2-system-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  font-size: .8rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.b2-system-primary {
+  padding: .82rem 1.18rem;
+  color: var(--b2-ivory-hi) !important;
+  border: 1px solid var(--b2-ink);
+  background: var(--b2-ink);
+}
+
+.b2-system-primary::after {
+  content: "↗";
+  margin-left: .72rem;
+  font-size: .95rem;
+}
+
+.b2-system-secondary {
+  min-height: 40px;
+  padding: .55rem 0;
+  color: var(--b2-ink);
+  border-bottom: 1px solid currentColor;
+}
+
+.b2-route-line {
+  position: relative;
+  height: 18px;
+}
+
+.b2-route-line::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 8px;
+  height: 1px;
+  background: currentColor;
+  opacity: .72;
+}
+
+.b2-route-line i {
+  position: absolute;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: var(--b2-route);
+}
+
+.b2-route-line i:nth-child(1) { left: 0; }
+.b2-route-line i:nth-child(2) { left: 48%; }
+.b2-route-line i:nth-child(3) { right: 0; }
+
+.b2-route-names {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-top: .35rem;
+  font-size: .56rem;
+  font-weight: 850;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.b2-photo-source {
+  margin: .75rem 0 0;
+  color: rgba(23, 32, 31, .6);
+  font-size: .55rem;
+  line-height: 1.45;
+}
+
+.b2-trip-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .8rem;
+}
+
+.b2-trip-facts div {
+  min-width: 0;
+}
+
+.b2-trip-facts strong {
+  display: block;
+  font-size: .78rem;
+  line-height: 1.35;
+}
+
+.b2-trip-facts span {
+  display: block;
+  margin-top: .2rem;
+  color: var(--b2-muted);
+  font-size: .54rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.b2-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 820px) {
+  body.lt-v2.lt-b2-system .lt-topbar {
+    min-height: 54px;
+    padding-inline: 1rem;
+  }
+
+  body.lt-v2.lt-b2-system .lt-wordmark {
+    font-size: .61rem;
+  }
+
+  body.lt-v2.lt-b2-system .lt-wordmark::before {
+    width: 27px;
+    height: 27px;
+  }
+
+  body.lt-v2.lt-b2-system .lt-nav {
+    gap: .8rem;
+  }
+
+  body.lt-v2.lt-b2-system .lt-nav a {
+    font-size: .62rem;
+  }
+
+  body.lt-v2.lt-b2-system .lt-nav a:nth-child(n+3) {
+    display: none;
+  }
+
+  .b2-system-kicker {
+    font-size: .57rem;
+    margin-bottom: .75rem;
+  }
+
+  .b2-system-primary {
+    min-height: 46px;
+  }
+
+  .b2-trip-facts strong {
+    font-size: .7rem;
+  }
+
+  .b2-trip-facts span,
+  .b2-photo-source {
+    font-size: .5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.lt-v2.lt-b2-system *,
+  body.lt-v2.lt-b2-system *::before,
+  body.lt-v2.lt-b2-system *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
