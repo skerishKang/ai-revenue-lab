@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from .core import AgentBoundaryError, AgentSession
+from .core import AgentBoundaryError, AgentSession, redact_secrets
 
 
 def yes(prompt: str) -> bool:
@@ -18,6 +18,12 @@ def print_header(session: AgentSession) -> None:
     print(f"작업: {session.task}")
     print(f"모델 경로: {session.route}")
     print("권한 기본값: read=yes · write=ask · command=ask · network=off · git=off")
+    git_state = session.git_worktree_status()
+    print(
+        "Git 상태: "
+        f"{git_state['status']} · changed={git_state['changed_count']} · "
+        "mutation=off"
+    )
 
 
 def allowed_test_command(raw: str) -> list[str]:
@@ -32,8 +38,41 @@ def allowed_test_command(raw: str) -> list[str]:
     return allowed[normalized]
 
 
+def run_allowed_test(command: list[str], root: Path) -> subprocess.CompletedProcess[str]:
+    """Execute one pre-built allowlisted command with redacted captured output."""
+    allowed_shapes = {
+        (sys.executable, "-m", "unittest"),
+        (sys.executable, "-m", "unittest", "discover"),
+        (sys.executable, "-m", "compileall", "."),
+    }
+    if tuple(command) not in allowed_shapes:
+        raise AgentBoundaryError("검증된 allowlist 명령만 실행할 수 있습니다.")
+    result = subprocess.run(
+        command,
+        cwd=root,
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=120,
+    )
+    return subprocess.CompletedProcess(
+        args=result.args,
+        returncode=result.returncode,
+        stdout=redact_secrets(result.stdout or ""),
+        stderr=redact_secrets(result.stderr or ""),
+    )
+
+
 def run_interactive(session: AgentSession) -> int:
     print_header(session)
+    print("\n[B14 MOCK ADAPTER]")
+    preview = session.business14_mock_response()
+    print(
+        f"adapter={preview['adapter']} route={preview['route']} "
+        f"request_id={preview['request_id']} status={preview['status']} "
+        f"network_called={preview['network_called']}"
+    )
+
     print("\n[PLAN]")
     files = session.inspect()
     print("읽기 후보:", ", ".join(files[:8]) if files else "텍스트 파일 없음")
@@ -55,7 +94,7 @@ def run_interactive(session: AgentSession) -> int:
         raw = input("명령 [기본: python -m unittest discover]: ").strip() or "python -m unittest discover"
         command = allowed_test_command(raw)
         session.permissions.command = True
-        result = subprocess.run(command, cwd=session.root, text=True, capture_output=True, check=False)
+        result = run_allowed_test(command, session.root)
         print(result.stdout[-4000:])
         if result.stderr:
             print(result.stderr[-2000:], file=sys.stderr)
@@ -67,12 +106,17 @@ def run_interactive(session: AgentSession) -> int:
     contract = session.runtime_contract()
     print(f"Business 14 endpoint configured: {contract['business14_base_url_configured']}")
     print(f"Network enabled: {contract['network']} · Git mutation enabled: {contract['git_mutation']}")
+    git_state = contract["git_worktree"]
+    print(f"Git worktree: {git_state['status']} · changed={git_state['changed_count']}")
     print("최종 결정은 사용자에게 남습니다. 자동 commit/push/merge/deploy는 없습니다.")
     return 0
 
 
 def parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="kagent", description="한국어 개인 개발자를 위한 permission-gated coding-agent CLI vertical slice")
+    p = argparse.ArgumentParser(
+        prog="kagent",
+        description="한국어 개인 개발자를 위한 permission-gated coding-agent CLI vertical slice",
+    )
     p.add_argument("repository", nargs="?", default=".", help="작업 저장소 경로")
     p.add_argument("--route", default="business14/auto", help="Business 14 route 또는 manual model marker")
     sub = p.add_subparsers(dest="mode")
@@ -93,12 +137,17 @@ def main(argv: list[str] | None = None) -> int:
         if args.mode == "plan":
             print_header(session)
             session.inspect()
+            preview = session.business14_mock_response()
+            print(
+                f"B14 MOCK · route={preview['route']} · request_id={preview['request_id']} · "
+                f"network_called={preview['network_called']}"
+            )
             print("\n".join(f"- {step}" for step in session.plan()))
             print("PLAN MODE · no writes · no commands · no network · no git mutation")
             return 0
         return run_interactive(session)
     except AgentBoundaryError as exc:
-        print(f"KAGENT_BOUNDARY: {exc}", file=sys.stderr)
+        print(f"KAGENT_BOUNDARY: {redact_secrets(str(exc))}", file=sys.stderr)
         return 2
 
 
