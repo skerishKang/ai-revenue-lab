@@ -24,6 +24,7 @@ If product source was modified, stop and return the new revision to implementati
 - Runtime/toolchain:
 - Browser/version:
 - Hardware/local service/provider when relevant:
+- Font/runtime conditions relevant to rendered typography:
 
 ## Commands and results
 
@@ -31,10 +32,23 @@ If product source was modified, stop and return the new revision to implementati
 |---|---|---|
 | | | |
 
-## Browser / visual evidence when applicable
+## Visual gate under validation
 
-- Desktop viewport/state:
-- Mobile viewport/state:
+- N/A / ANCHOR / ARCHETYPE_SYSTEM / FULL_SURFACE / FOCUSED_POLISH:
+- Product Visual Thesis/reference evidence supplied:
+- Expected anchor route/state:
+- Expected archetypes:
+
+## Browser / visual evidence
+
+For applicable visual work record:
+
+- Desktop viewport(s)/states:
+- 390px Mobile states:
+- Anchor screenshots:
+- Archetype screenshots:
+- Side-by-side/contact-sheet artifact:
+- Full-surface contact sheet, if applicable:
 - Reduced motion:
 - Keyboard/focus:
 - Horizontal overflow:
@@ -42,7 +56,30 @@ If product source was modified, stop and return the new revision to implementati
 - Page errors:
 - Failed required requests/assets:
 - External requests:
-- Screenshot/recording identifiers:
+
+## Visual conformance matrix
+
+| Criterion | Verdict | Notes/evidence |
+|---|---|---|
+| Reference translation | MATCH / PARTIAL / MISS / N/A | |
+| Product identity | MATCH / PARTIAL / MISS / N/A | |
+| First-viewport hierarchy | MATCH / PARTIAL / MISS / N/A | |
+| Korean typography | MATCH / PARTIAL / MISS / N/A | |
+| Asset/material quality | MATCH / PARTIAL / MISS / N/A | |
+| Interaction clarity | MATCH / PARTIAL / MISS / N/A | |
+| Mobile composition | MATCH / PARTIAL / MISS / N/A | |
+| Cross-state coherence | MATCH / PARTIAL / MISS / N/A | |
+| Generic UI fallback absent | MATCH / PARTIAL / MISS / N/A | |
+| Legacy/cascade leakage absent | MATCH / PARTIAL / MISS / N/A | |
+
+If validating an archetype/full-surface gate, individual screens that look acceptable in isolation do not pass when the set visibly belongs to different design systems.
+
+## Source/cascade observations when supplied
+
+- Active visual entrypoints consistent with expected current system? yes/no/N/A:
+- Visible evidence of old-generation leakage:
+- Suspicious typography fallback:
+- Broken/missing asset source:
 
 ## Failure reproduction
 
@@ -53,6 +90,9 @@ For each failure:
 - exact action:
 - error/status:
 - reproduction:
+- likely failure class if visual: concept / reference / anchor / archetype / typography / asset / legacy shell / cascade / mobile:
+
+Do not prescribe a new art direction merely because a later surface failed; report the observation and evidence.
 
 ## Secret/private-data check
 
@@ -66,4 +106,6 @@ For each failure:
 PASSED / FAILED / BLOCKED / INVALIDATED_BY_NEW_REVISION
 ```
 
-This disposition is evidence for Web CTO review; it is not the final CTO readiness verdict.
+Also record the evidence-supported visual gate verdict when applicable, but do not claim owner approval.
+
+This report is evidence for Web CTO review; it is not the final CTO readiness verdict.
