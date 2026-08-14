@@ -1,0 +1,232 @@
+/* CTO delegated responsive/product-hierarchy correction — 2026-08-14.
+ * Preserves the B59 hybrid 3D shelf ↔ 2D precision-reader contract while
+ * correcting mobile clipping and desktop information density.
+ */
+
+.shelf-intro {
+  max-width: 1120px;
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 32px;
+  align-items: end;
+}
+
+.shelf-intro h1 {
+  max-width: 760px;
+  font-size: clamp(42px, 5.1vw, 72px);
+  line-height: .94;
+}
+
+.shelf-intro p {
+  max-width: 720px;
+  margin-bottom: 2px;
+}
+
+.shelf-direct-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.shelf-direct-actions .button[data-action="direct-reader"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 10px 28px rgba(21, 26, 20, .14);
+}
+
+.shelf-direct-actions .button[data-action="direct-reader"]:hover {
+  transform: translateY(-1px);
+}
+
+.shelf-viewport {
+  min-height: 430px;
+}
+
+.shelf {
+  height: 370px;
+}
+
+.shelf-card {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .shelf-intro {
+    display: block;
+    max-width: 760px;
+  }
+
+  .shelf-direct-actions {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 680px) {
+  .shell {
+    width: min(100%, 100vw);
+    padding: 14px 14px 36px;
+  }
+
+  .topbar {
+    margin-bottom: 18px;
+  }
+
+  .shelf-intro {
+    margin-bottom: 12px;
+  }
+
+  .shelf-intro h1 {
+    max-width: 340px;
+    margin-bottom: 10px;
+    font-size: clamp(36px, 12vw, 50px);
+    line-height: .95;
+    letter-spacing: -.055em;
+  }
+
+  .shelf-intro p {
+    font-size: 14px;
+    line-height: 1.62;
+  }
+
+  .shelf-direct-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    position: sticky;
+    top: 8px;
+    z-index: 12;
+    padding: 8px;
+    margin: 12px -4px 14px;
+    border: 1px solid rgba(37, 44, 35, .1);
+    border-radius: 14px;
+    background: rgba(246, 241, 229, .94);
+    backdrop-filter: blur(12px);
+  }
+
+  .shelf-direct-actions .button[data-action="direct-reader"] {
+    min-height: 44px;
+    justify-content: center;
+    font-weight: 800;
+  }
+
+  .shelf-direct-actions .button[data-action="import"] {
+    min-height: 44px;
+  }
+
+  .shelf-viewport {
+    width: 100%;
+    min-height: 326px;
+    height: 326px;
+    margin: 0;
+    padding: 0 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 18px;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .shelf-viewport::after {
+    content: "옆으로 넘겨 다른 기록 보기";
+    position: sticky;
+    left: 18px;
+    bottom: 8px;
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: rgba(246, 241, 229, .88);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    pointer-events: none;
+  }
+
+  .shelf {
+    width: max-content;
+    min-width: max-content;
+    height: 300px;
+    padding: 20px 6px 50px;
+    justify-content: flex-start;
+    gap: 18px;
+    transform: none;
+  }
+
+  .book3d {
+    flex: 0 0 174px;
+    width: 174px;
+    height: 238px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .book3d:first-child {
+    scroll-snap-align: start;
+  }
+
+  .book3d:last-child {
+    scroll-snap-align: end;
+  }
+
+  .book3d:nth-child(1),
+  .book3d:nth-child(2),
+  .book3d:nth-child(3) {
+    transform: none;
+  }
+
+  .book3d.is-selected {
+    transform: translateY(-6px) scale(1.015);
+  }
+
+  .book-cover {
+    box-shadow: 0 18px 34px rgba(28, 31, 23, .2);
+  }
+
+  .shelf-meta {
+    margin-top: 14px;
+    padding: 14px;
+  }
+
+  .shelf-meta .meta-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .shelf-meta .meta-actions .button {
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .shelf-meta .meta-actions .button[data-action="direct-reader"] {
+    grid-column: 1 / -1;
+    order: -1;
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .open-layout,
+  .reader-layout {
+    margin-top: 12px;
+  }
+
+  .reader-toolbar .toolbar-group:first-child {
+    width: 100%;
+  }
+
+  .reader-toolbar .toolbar-group:first-child .button[data-action="back-shelf"] {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book3d.is-selected,
+  .shelf-direct-actions .button[data-action="direct-reader"]:hover {
+    transform: none;
+  }
+}
