@@ -102,7 +102,7 @@
     identity({ n:51, s:"ai-workflow-marketplace", t:"AI Workflow Marketplace", k:"AI 워크플로우 마켓", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-51-ai-workflow-marketplace-v1/" }),
     identity({ n:52, s:"scheduled-agent-operations", t:"Scheduled Agent Operations", k:"예약형 AI 운영", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-52-scheduled-agent-operations-v1/" }),
     identity({ n:53, s:"embedded-ai-sdk", t:"Embedded AI SDK", k:"임베드 AI SDK", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-53-embedded-ai-sdk-v1/" }),
-    identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.CANDIDATE, l:"concept", st:"planning", p:5 }),
+    identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.PROPOSED, l:"concept", st:"planning", p:5 }),
     identity({ n:55, s:"local-ai-fleet", t:"Local AI Fleet", k:"로컬 AI 플릿", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-55-local-ai-fleet-v1/" }),
     // B56 is intentionally unused.
     identity({ n:57, s:"classic-literature-translation-studio", t:"Classic Literature Translation Studio", k:"고전문학 번역 스튜디오", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-57-classic-literature-translation-studio-v1/" }),
