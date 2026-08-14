@@ -44,16 +44,15 @@
     identity({ n:2, s:"living-travel", t:"Living Travel", k:"리빙 트래블", a:NA.CANONICAL, l:"private_preview", st:"running", p:35, su:"https://ops-living-travel-external-s.ai-revenue-living-travel.pages.dev", w:"apps/living-travel/" }),
     identity({ n:3, s:"living-fiction", t:"Living Fiction", k:"리빙 픽션", a:NA.CANONICAL, l:"private_preview", st:"review", p:32, w:"apps/living-fiction/" }),
     identity({ n:4, s:"living-learning", t:"Living Learning", k:"리빙 러닝", a:NA.CANONICAL, l:"private_preview", st:"running", p:30, su:"https://ai-revenue-living-learning.pages.dev/", w:"apps/living-learning/" }),
-    // ═══ 5–6 ═══
+    // ═══ 5–12 ═══
     identity({ n:5, s:"neighbor-market", t:"Neighbor Market", k:"우리단지 이웃가게", a:NA.PROPOSED, l:"expanded_successor", st:"external", p:95, w:"skerishKang/02-danji-on", pc:"expanded-successor", sn:"DanjiOn", sk:"단지온", sr:"https://github.com/skerishKang/02-danji-on" }),
-    identity({ n:6, s:"world-feed", t:"World Feed", k:"월드 피드", a:NA.RECONCILIATION, l:"research", st:"review", p:88, su:"https://ai-revenue-world-feed.pages.dev/", w:"apps/world-feed/" }),
-    // ═══ 7–12: PROPOSED ═══
-    identity({ n:7, s:"personal-meaning-map", t:"Personal Meaning Map", k:"개인 의미 지도", a:NA.PROPOSED, l:"visual_reference", st:"review", p:65, w:"reference/business-07-personal-meaning-map-v1/" }),
-    identity({ n:8, s:"family-newspaper", t:"Family Newspaper", k:"우리 가족 신문", a:NA.PROPOSED, l:"visual_reference", st:"review", p:60, w:"reference/business-08-family-newspaper-v1/" }),
-    identity({ n:9, s:"personalized-childrens-story", t:"Personalized Children’s Story", k:"우리 아이 이야기", a:NA.PROPOSED, l:"visual_reference", st:"review", p:58, w:"reference/business-09-personalized-childrens-story-v1/" }),
-    identity({ n:10, s:"fan-magazine", t:"Fan Magazine", k:"나만의 팬 매거진", a:NA.PROPOSED, l:"visual_reference", st:"review", p:56, w:"reference/business-10-fan-magazine-v1/" }),
-    identity({ n:11, s:"language-learning-magazine", t:"Language Learning Magazine", k:"나의 언어학습 매거진", a:NA.PROPOSED, l:"visual_reference", st:"review", p:54, w:"reference/business-11-language-learning-magazine-v1/" }),
-    identity({ n:12, s:"creator-mini-media", t:"Creator Mini-Media", k:"크리에이터 미니미디어", a:NA.PROPOSED, l:"visual_reference", st:"review", p:52, w:"reference/business-12-creator-mini-media-v1/" }),
+    identity({ n:6, s:"world-feed", t:"World Feed", k:"월드 피드", a:NA.CANONICAL, l:"research", st:"review", p:88, su:"https://ai-revenue-world-feed.pages.dev/", w:"apps/world-feed/" }),
+    identity({ n:7, s:"personal-meaning-map", t:"Personal Meaning Map", k:"개인 의미 지도", a:NA.CANONICAL, l:"visual_reference", st:"review", p:65, w:"reference/business-07-personal-meaning-map-v1/" }),
+    identity({ n:8, s:"family-newspaper", t:"Family Newspaper", k:"우리 가족 신문", a:NA.CANONICAL, l:"visual_reference", st:"review", p:60, w:"reference/business-08-family-newspaper-v1/" }),
+    identity({ n:9, s:"personalized-childrens-story", t:"Personalized Children’s Story", k:"우리 아이 이야기", a:NA.CANONICAL, l:"visual_reference", st:"review", p:58, w:"reference/business-09-personalized-childrens-story-v1/" }),
+    identity({ n:10, s:"fan-magazine", t:"Fan Magazine", k:"나만의 팬 매거진", a:NA.CANONICAL, l:"visual_reference", st:"review", p:56, w:"reference/business-10-fan-magazine-v1/" }),
+    identity({ n:11, s:"language-learning-magazine", t:"Language Learning Magazine", k:"나의 언어학습 매거진", a:NA.CANONICAL, l:"visual_reference", st:"review", p:54, w:"reference/business-11-language-learning-magazine-v1/" }),
+    identity({ n:12, s:"creator-mini-media", t:"Creator Mini-Media", k:"크리에이터 미니미디어", a:NA.CANONICAL, l:"visual_reference", st:"review", p:52, w:"reference/business-12-creator-mini-media-v1/" }),
     // ═══ 13–14: CANONICAL ═══
     identity({ n:13, s:"personal-video-archive", t:"Personal Video Archive", k:"나의 영상 아카이브", a:NA.CANONICAL, l:"private_preview", st:"review", p:42, su:"https://ai-revenue-personal-video-archive.pages.dev/", w:"apps/personal-video-archive/" }),
     identity({ n:14, s:"korean-ai-platform", t:"Korean AI Platform", k:"한국형 AI 모델 플랫폼", a:NA.CANONICAL, l:"private_preview", st:"running", p:92, su:"https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace", w:"apps/korean-ai-platform/" }),
