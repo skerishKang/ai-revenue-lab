@@ -38,6 +38,11 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
     configuration is a non-secret .env file. PYTHONPATH points at the checked
     out application source, so app.main must load the working-directory .env
     before the factory is created. No external network request is made.
+
+    The surrounding test suite may run with PYTHONWARNINGS=error. That variable
+    is deliberately not part of the documented owner startup command, so it is
+    removed from the child environment instead of turning third-party
+    deprecation warnings into a false startup failure.
     """
 
     python3 = shutil.which("python3")
@@ -52,6 +57,7 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
     env = os.environ.copy()
     env.pop("B14_PROVIDER_MODE", None)
     env.pop("OPENROUTER_API_KEY", None)
+    env.pop("PYTHONWARNINGS", None)
     existing_pythonpath = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = (
         str(PROJECT_ROOT)
@@ -116,6 +122,7 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
                 process.wait(timeout=5)
         if process.stdout is not None:
             output += process.stdout.read()
+            process.stdout.close()
 
     assert "OPENROUTER_API_KEY" not in output
     assert "sk-or-v1" not in output
