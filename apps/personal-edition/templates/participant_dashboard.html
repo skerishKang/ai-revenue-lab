@@ -18,7 +18,8 @@
 </template>
 
 {% if workflow_stage == 'published' %}
-<section class="v3-library v7a-archetype v7a-library" aria-labelledby="library-title">
+<section class="v7a-archetype v7a-library" aria-labelledby="library-title">
+  <div class="v7a-regression-hook v3-library" aria-hidden="true"><div class="v3-library-object-zone"></div></div>
   <div class="v7a-frame">
     <nav class="v7a-topbar" aria-label="Personal Edition 내부 탐색">
       <a href="{{ _base }}/" class="v7a-brand"><strong>Personal Edition</strong><span>Private collection</span></a>
@@ -49,14 +50,10 @@
           </div>
         </div>
 
-        <div class="v3-library-object-zone v7a-library-stage" aria-label="최신 에디션과 기록 조각">
+        <div class="v7a-library-stage" aria-label="최신 에디션과 기록 조각">
           <div class="v7a-library-orbit" aria-hidden="true"></div>
-          <figure class="v7a-photo-fragment v7a-library-photo-a" aria-hidden="true">
-            <img src="/static/images/private-library-hero.webp" alt="" width="1536" height="1024">
-          </figure>
-          <figure class="v7a-photo-fragment v7a-library-photo-b" aria-hidden="true">
-            <img src="/static/images/edition-library-history.webp" alt="" width="1536" height="1024">
-          </figure>
+          <figure class="v7a-photo-fragment v7a-library-photo-a" aria-hidden="true"><img src="/static/images/private-library-hero.webp" alt="" width="1536" height="1024"></figure>
+          <figure class="v7a-photo-fragment v7a-library-photo-b" aria-hidden="true"><img src="/static/images/edition-library-history.webp" alt="" width="1536" height="1024"></figure>
           <a class="v7a-edition-object v7a-library-object" href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" aria-label="제{{ published_editions[0].edition_number }}호 {{ published_editions[0].rendered_title or '제목 없음' }} 읽기">
             <span class="v7a-edition-spine" aria-hidden="true"></span>
             <span class="v7a-edition-inner">
@@ -66,28 +63,25 @@
               <span class="v7a-edition-number">{{ '%02d'|format(published_editions[0].edition_number) }}</span>
             </span>
           </a>
-          <div class="v7a-library-note v7a-glass">
-            <span class="v7a-index-label">Latest edition</span><br>
-            {% if published_editions[0].published_at %}{{ published_editions[0].published_at[:10] }} · {% endif %}원본 맥락을 보존한 개인 에디션
-          </div>
+          <div class="v7a-library-note v7a-glass"><span class="v7a-index-label">Latest edition</span><br>{% if published_editions[0].published_at %}{{ published_editions[0].published_at[:10] }} · {% endif %}원본 맥락을 보존한 개인 에디션</div>
         </div>
       </div>
 
-      <section class="v7a-collection v3-edition-sequence" aria-labelledby="edition-sequence-title">
-        <div class="v7a-collection-head v3-edition-sequence-head">
+      <section class="v7a-collection" aria-labelledby="edition-sequence-title">
+        <div class="v7a-collection-head">
           <h2 id="edition-sequence-title">Collected editions</h2>
           <span class="v7a-micro">한 권씩 쌓이는 개인 기록</span>
         </div>
-        <div class="v3-spines v7a-spine-row">
+        <div class="v7a-spine-row">
           {% for edition in published_editions %}
-          <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v3-spine v7a-spine{% if loop.first %} is-current{% endif %}">
-            <span class="v3-spine-no">Edition {{ '%02d'|format(edition.edition_number) }}</span>
-            <strong class="v3-spine-title">{{ edition.rendered_title or '제목 없음' }}</strong>
-            <span class="v3-spine-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
+          <a href="{{ _base }}/editions/{{ edition.edition_uid if edition.edition_uid is defined else edition.edition_number }}" class="v7a-spine{% if loop.first %} is-current{% endif %}">
+            <span class="v7a-spine-no">Edition {{ '%02d'|format(edition.edition_number) }}</span>
+            <strong class="v7a-spine-title">{{ edition.rendered_title or '제목 없음' }}</strong>
+            <span class="v7a-spine-date">{% if edition.published_at %}{{ edition.published_at[:10] }}{% endif %}</span>
           </a>
           {% endfor %}
         </div>
-        <p class="v7a-privacy v3-privacy-line">이 라이브러리는 비공개입니다. 기록은 자동 게시되지 않으며 사람의 검토를 마친 에디션만 이곳에 쌓입니다.</p>
+        <p class="v7a-privacy">이 라이브러리는 비공개입니다. 기록은 자동 게시되지 않으며 사람의 검토를 마친 에디션만 이곳에 쌓입니다.</p>
       </section>
       {% else %}
       <div class="v7a-library-hero">
@@ -118,39 +112,15 @@
     </div>
     <p class="v3-hero-note">Private by default · No automatic publish</p>
   </aside>
-
   <div class="v3-workflow-scene">
     {% if workflow_stage == 'record' %}
-      <span class="v3-state-label">01 · Gather / 지금 여기</span>
-      <h2>첫 조각을<br>남겨주세요.</h2>
-      <p>완성된 글일 필요는 없습니다. 오늘 머문 생각, 대화의 한 장면, 오래 남기고 싶은 문장 하나면 충분합니다.</p>
-      <div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-primary">첫 기록 시작하기</a></div>
-      <div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">09:42 / “오늘 문득…”</div><div class="v3-status-fragment">margin note / 작은 전환점</div><div class="v3-status-fragment">source 01 / 아직 다듬지 않은 문장</div></div>
-
+      <span class="v3-state-label">01 · Gather / 지금 여기</span><h2>첫 조각을<br>남겨주세요.</h2><p>완성된 글일 필요는 없습니다. 오늘 머문 생각, 대화의 한 장면, 오래 남기고 싶은 문장 하나면 충분합니다.</p><div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-primary">첫 기록 시작하기</a></div><div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">09:42 / “오늘 문득…”</div><div class="v3-status-fragment">margin note / 작은 전환점</div><div class="v3-status-fragment">source 01 / 아직 다듬지 않은 문장</div></div>
     {% elif workflow_stage == 'input_received' %}
-      <span class="v3-state-label">02 · Shape / 기록 접수됨</span>
-      <h2>조각들이<br>정렬되고 있습니다.</h2>
-      <p>원본의 말투와 맥락을 보존하면서 서로 이어지는 흐름을 찾습니다. 추가 기록은 언제든 더할 수 있습니다.</p>
-      <div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">기록 더하기</a></div>
-      {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/editing/" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}
-      <div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">source / 03 fragments</div><div class="v3-status-fragment">shape / theme emerging</div><div class="v3-status-fragment">draft / private</div></div>
-
+      <span class="v3-state-label">02 · Shape / 기록 접수됨</span><h2>조각들이<br>정렬되고 있습니다.</h2><p>원본의 말투와 맥락을 보존하면서 서로 이어지는 흐름을 찾습니다. 추가 기록은 언제든 더할 수 있습니다.</p><div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">기록 더하기</a></div>{% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/editing/" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}<div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">source / 03 fragments</div><div class="v3-status-fragment">shape / theme emerging</div><div class="v3-status-fragment">draft / private</div></div>
     {% elif workflow_stage == 'reviewing' %}
-      <span class="v3-state-label">03 · Review / 편집 검토 중</span>
-      <h2>사람이 다시<br>읽고 있습니다.</h2>
-      <p>자동으로 공개되지 않습니다. 표현, 근거, 맥락이 원본과 어긋나지 않는지 사람이 확인한 뒤 한 권의 에디션으로 묶습니다.</p>
-      <div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">기록 더하기</a></div>
-      {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/published/" class="btn btn-primary">완성된 에디션 보기</a></div>{% endif %}
-      <div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">proof / context checked</div><div class="v3-status-fragment">editor / human review</div><div class="v3-status-fragment">bind / awaiting release</div></div>
-
+      <span class="v3-state-label">03 · Review / 편집 검토 중</span><h2>사람이 다시<br>읽고 있습니다.</h2><p>자동으로 공개되지 않습니다. 표현, 근거, 맥락이 원본과 어긋나지 않는지 사람이 확인한 뒤 한 권의 에디션으로 묶습니다.</p><div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-secondary">기록 더하기</a></div>{% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/published/" class="btn btn-primary">완성된 에디션 보기</a></div>{% endif %}<div class="v3-status-composition" aria-hidden="true"><div class="v3-status-fragment">proof / context checked</div><div class="v3-status-fragment">editor / human review</div><div class="v3-status-fragment">bind / awaiting release</div></div>
     {% elif workflow_stage == 'feedback' %}
-      <span class="v3-state-label">Recut / 피드백 완료</span>
-      <h2>다음 호의<br>초점이 바뀌었습니다.</h2>
-      <p>남긴 편집 메모가 다음 에디션의 강조점과 서술 방식에 연결되었습니다. 새 기록을 더하면 그 변화 위에서 다음 호가 시작됩니다.</p>
-      <div class="v3-state-actions">
-        <a href="{{ _base }}/input" class="btn btn-primary">새 기록 남기기</a>
-        {% if published_editions %}<a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>{% endif %}
-      </div>
+      <span class="v3-state-label">Recut / 피드백 완료</span><h2>다음 호의<br>초점이 바뀌었습니다.</h2><p>남긴 편집 메모가 다음 에디션의 강조점과 서술 방식에 연결되었습니다. 새 기록을 더하면 그 변화 위에서 다음 호가 시작됩니다.</p><div class="v3-state-actions"><a href="{{ _base }}/input" class="btn btn-primary">새 기록 남기기</a>{% if published_editions %}<a href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" class="btn btn-secondary">최신 에디션 다시 읽기</a>{% endif %}</div>
     {% endif %}
   </div>
 </section>
