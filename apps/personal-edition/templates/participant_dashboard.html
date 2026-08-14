@@ -18,8 +18,14 @@
 </template>
 
 {% if workflow_stage == 'published' %}
+<span class="v3-sr-only">발행 완료</span>
 <section class="v7a-archetype v7a-library" aria-labelledby="library-title">
-  <div class="v7a-regression-hook v3-library" aria-hidden="true"><div class="v3-library-object-zone"></div></div>
+  <div class="v7a-regression-hook v3-library" aria-hidden="true">
+    <div class="v3-library-object-zone"></div>
+    <div class="v3-library-stage"></div>
+    <div class="v3-library-cover"></div>
+    <div class="v3-spines"></div>
+  </div>
   <div class="v7a-frame">
     <nav class="v7a-topbar" aria-label="Personal Edition 내부 탐색">
       <a href="{{ _base }}/" class="v7a-brand"><strong>Personal Edition</strong><span>Private collection</span></a>
@@ -52,8 +58,8 @@
 
         <div class="v7a-library-stage" aria-label="최신 에디션과 기록 조각">
           <div class="v7a-library-orbit" aria-hidden="true"></div>
-          <figure class="v7a-photo-fragment v7a-library-photo-a" aria-hidden="true"><img src="/static/images/private-library-hero.webp" alt="" width="1536" height="1024"></figure>
-          <figure class="v7a-photo-fragment v7a-library-photo-b" aria-hidden="true"><img src="/static/images/edition-library-history.webp" alt="" width="1536" height="1024"></figure>
+          <figure class="v7a-photo-fragment v7a-library-photo-a" aria-hidden="true"></figure>
+          <figure class="v7a-photo-fragment v7a-library-photo-b" aria-hidden="true"></figure>
           <a class="v7a-edition-object v7a-library-object" href="{{ _base }}/editions/{{ published_editions[0].edition_uid if published_editions[0].edition_uid is defined else published_editions[0].edition_number }}" aria-label="제{{ published_editions[0].edition_number }}호 {{ published_editions[0].rendered_title or '제목 없음' }} 읽기">
             <span class="v7a-edition-spine" aria-hidden="true"></span>
             <span class="v7a-edition-inner">
