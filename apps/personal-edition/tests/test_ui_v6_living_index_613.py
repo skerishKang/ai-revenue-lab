@@ -20,12 +20,16 @@ DIST = BASE_DIR / "dist-preview"
 VIEWPORTS = (("desktop", 1440, 1100), ("mobile", 390, 844))
 SCREENS = (
     ("entry", "/preview/intro/", ".v3-intro"),
+    ("guide", "/guide/", ".v3-guide"),
     ("access", "/preview/participant/access/", ".v3-workflow"),
     ("library", "/preview/participant/published/", ".v3-library"),
     ("write", "/preview/participant/input/", ".v3-write"),
     ("read", "/preview/participant/editions/modal-preview-edition/", ".v3-read"),
+    ("transformation", "/preview/participant/transformation/", ".transformation-page"),
     ("history", "/preview/participant/history/", ".v3-history"),
     ("feedback", "/preview/participant/editions/modal-preview-edition/feedback/", ".v3-feedback"),
+    ("thanks", "/preview/participant/editions/modal-preview-edition/feedback/thanks/", ".v3-thanks"),
+    ("adaptation", "/preview/participant/editions/modal-preview-edition/adaptation/", ".v3-adaptation"),
 )
 
 
@@ -38,6 +42,27 @@ def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     digest.update(path.read_bytes())
     return digest.hexdigest()
+
+
+def system_browser() -> str | None:
+    for candidate in (
+        os.getenv("CHROME_PATH"),
+        "/usr/bin/google-chrome",
+        "/usr/bin/google-chrome-stable",
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser",
+    ):
+        if candidate and Path(candidate).is_file():
+            return candidate
+    return None
+
+
+def launch_browser(pw):
+    kwargs: dict[str, object] = {"headless": True, "args": ["--no-sandbox"]}
+    executable = system_browser()
+    if executable:
+        kwargs["executable_path"] = executable
+    return pw.chromium.launch(**kwargs)
 
 
 @pytest.fixture(scope="module")
@@ -60,9 +85,16 @@ def server() -> tuple[str, Path]:
 
 def test_v6_static_authority_and_admin_boundary() -> None:
     base = (BASE_DIR / "templates" / "base.html").read_text(encoding="utf-8")
-    assert '/static/ui-v6-living-index.css?v=b1-living-index-v6-20260814' in base
-    assert '/static/ui-v6-living-index-polish.css?v=b1-living-index-v6-polish-20260814' in base
-    assert base.index("ui-v6-living-index-polish.css") > base.index("ui-v5-image-led-fix.css")
+    required = (
+        "/static/ui-v6-living-index.css?v=b1-living-index-v6-20260814",
+        "/static/ui-v6-living-index-polish.css?v=b1-living-index-v6-polish-20260814",
+        "/static/ui-v6-living-index-authority.css?v=b1-living-index-v6-authority-20260814",
+        "/static/ui-v6-living-index-completion.css?v=b1-living-index-v6-completion-20260814",
+    )
+    for marker in required:
+        assert marker in base
+    assert base.index("ui-v6-living-index-authority.css") > base.index("ui-v5-image-led-fix.css")
+    assert base.index("ui-v6-living-index-completion.css") > base.index("ui-v6-living-index-authority.css")
     assert 'b1-personal-edition-v6-living-index' in base
     assert 'b1-living-index-v6' in base
     # Operator workspace intentionally keeps the existing visual authority.
@@ -76,7 +108,7 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
     failures: list[str] = []
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True, args=["--no-sandbox"])
+        browser = launch_browser(pw)
         try:
             for viewport_name, width, height in VIEWPORTS:
                 context = browser.new_context(
@@ -152,14 +184,28 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                         assert page.locator(".v3-assembly-stage").evaluate(
                             "el => getComputedStyle(el).backgroundColor"
                         ) == "rgb(255, 217, 47)"
+                        assert "hero-private-edition.webp" not in page.locator(".v3-assembly-stage").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
                     elif screen_name == "library":
                         assert page.locator(".v3-library-head h1").evaluate(
                             "el => getComputedStyle(el).color"
                         ) == "rgb(39, 87, 255)"
+                        assert "library-edition-stack.webp" not in page.locator(".v3-library-object-zone").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
                     elif screen_name == "read":
                         assert page.locator(".v3-read-title h1").evaluate(
                             "el => getComputedStyle(el).color"
                         ) == "rgb(39, 87, 255)"
+                    elif screen_name == "thanks":
+                        assert page.locator(".v3-thanks-mark").evaluate(
+                            "el => getComputedStyle(el).backgroundColor"
+                        ) == "rgb(39, 87, 255)"
+                    elif screen_name == "adaptation":
+                        assert page.locator(".v3-adapt-head").evaluate(
+                            "el => getComputedStyle(el).backgroundColor"
+                        ) == "rgb(255, 217, 47)"
 
                     shot = evidence / "screenshots" / f"{screen_name}-{viewport_name}.png"
                     page.screenshot(path=str(shot), full_page=False)
@@ -182,8 +228,8 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
             browser.close()
 
     assert failures == [], failures
-    assert len(shots) == 14
-    assert len({str(item["sha256"]) for item in shots}) == 14
+    assert len(shots) == 22
+    assert len({str(item["sha256"]) for item in shots}) == 22
     (evidence / "manifest.json").write_text(
         json.dumps(
             {
@@ -202,7 +248,7 @@ def test_v6_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
 def test_v6_admin_surface_remains_operator_v5(server: tuple[str, Path]) -> None:
     base, _ = server
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True, args=["--no-sandbox"])
+        browser = launch_browser(pw)
         try:
             page = browser.new_page(viewport={"width": 1440, "height": 1100})
             response = page.goto(base + "/admin/", wait_until="networkidle", timeout=15000)
