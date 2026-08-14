@@ -32,10 +32,10 @@
     "external/runtime requests = 0",
     "Korean H1 line-height >= 1.0"
   ],
-  "render_method": "Playwright Chromium against a localhost server serving exact B01 V6 Phase A source head f4336ce73a5147fc8230ca0326d7704f1e0ed7c1. All 18 replacement PNG files were freshly rendered at the required viewports after corrupt WebP evidence was detected.",
+  "render_method": "Playwright Chromium against a localhost server serving exact B01 V6 Phase A source head f4336ce73a5147fc8230ca0326d7704f1e0ed7c1 with runner-installed Noto CJK fonts. All 18 replacement PNG files were freshly rendered at the required viewports.",
   "owner_ui_approved": false,
   "production_deployed": false,
   "backend_unchanged": true,
   "evidence_format": "png",
-  "evidence_repair_reason": "CTO audit found 8 of the 18 previously committed WebP screenshot binaries were truncated/corrupt. Product source was not changed."
+  "evidence_repair_reason": "CTO audit found 8 previously committed WebP binaries were truncated/corrupt; the first PNG repair also exposed missing Korean runner fonts. The second repair installs Noto CJK before capture. Product source is unchanged."
 }
