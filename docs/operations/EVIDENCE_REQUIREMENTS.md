@@ -1,165 +1,201 @@
 # Development Evidence Requirements
 
-- Status: canonical
-- Authority: Issue #148
+- Status: **CANONICAL**
+- Parent design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 
 ## 1. Revision identity
 
-Every implementation, validation, and final-review report records:
+Every implementation, validation and final-review report records:
 
-- repository and default branch;
+- repository/default branch;
 - exact starting base SHA;
 - target branch;
 - exact reported/tested/reviewed head SHA;
-- merge-base or ahead/behind relationship when relevant;
-- clean/dirty worktree state, or that work was performed through branch-only GitHub writes.
+- base/head relationship where relevant;
+- repository/worktree state or branch-only write method.
 
-Use full SHAs when available. Evidence for an older head is not automatically evidence for a newer head.
+Evidence belongs to the exact revision it tested unless applicability to a newer revision is explicitly reviewed.
 
 ## 2. Scope evidence
 
 Record:
 
-- selected evidence stage;
-- allowed paths;
-- forbidden paths;
+- selected evidence stage and visual gate if applicable;
+- allowed/forbidden paths;
 - exact changed-file list;
 - reason for each changed file;
-- diff statistics and compare/diff reference;
-- explicit non-goals preserved;
-- confirmation that unrelated files are absent.
+- diff statistics/reference;
+- explicit non-goals;
+- unrelated-change absence.
 
-A scope mismatch is a blocker until reviewed.
+## 3. Visual thesis and reference evidence
 
-## 3. Implementation evidence
+For a new art direction/material redesign, record before broad implementation:
+
+- current `B##_VISUAL_DIRECTION.md` or equivalent visual thesis;
+- product job/core transformation;
+- reference list;
+- for each load-bearing reference: `OBSERVE / ADOPT / REJECT / TRANSLATE / SURFACE / VERIFY`;
+- anti-patterns;
+- legacy reuse/replace decision.
+
+A mood word or reference URL list alone is insufficient.
+
+## 4. Anchor evidence
+
+`ANCHOR_DIRECTION_LOCKED` requires at minimum:
+
+- exact anchor route/state;
+- Desktop screenshot (normally 1440px-class viewport unless product-specific evidence says otherwise);
+- 390px Mobile screenshot;
+- direct visual review notes;
+- actual typography/fallback behavior where material;
+- focal asset/core-object evidence where applicable;
+- primary action/result hierarchy;
+- overflow/clipping/load failures;
+- responsive composition verdict.
+
+The evidence must make clear what was accepted/locked and what remains unproven.
+
+## 5. Archetype system evidence
+
+`ARCHETYPE_SYSTEM_PASS` requires:
+
+- anchor plus 2–3 structurally different archetype screens, or every distinct type for a smaller product;
+- Desktop and Mobile screenshots for each;
+- side-by-side/contact-sheet review;
+- cross-state typography verdict;
+- hierarchy/density verdict;
+- material/color/asset continuity verdict;
+- interaction-language verdict;
+- explicit generic-SaaS/card/form fallback check;
+- `MATCH / PARTIAL / MISS` against the Product Visual Thesis.
+
+A set of individually acceptable screenshots does not pass if they do not look like one product together.
+
+## 6. Full-surface visual evidence
+
+For a multi-screen redesign, `FULL_SURFACE_VISUAL_PASS` requires an artifact containing every core user-facing route/state on Desktop and Mobile.
+
+Review the contact sheet for:
+
+- product identity continuity;
+- typography consistency;
+- hierarchy and density;
+- core-object/component grammar;
+- image/asset treatment;
+- old-version/cascade leakage;
+- mobile composition;
+- unfinished-looking empty space;
+- inaccessible or obscured controls;
+- routes that revert to generic UI.
+
+A load-bearing `MISS` blocks the pass unless the owner explicitly accepts it.
+
+## 7. Typography evidence
+
+When typography is material, record:
+
+- intended display/body/reading roles;
+- actual delivery/fallback strategy;
+- rendered Desktop/Mobile screenshots;
+- suspicious font fallback or mixed serif/sans behavior;
+- Korean title line-height/tracking/line-shape review;
+- body measure/line-height review.
+
+Do not claim a family is rendered only because it appears first in `font-family`.
+
+## 8. Visual cascade/source evidence
+
+For a substantial redesign, record the active style entrypoints/load order and identify:
+
+- superseded visual generations still active;
+- duplicate typography/component authorities;
+- material `!important` escalation;
+- route-specific emergency layers;
+- external font/image dependencies;
+- planned/actual consolidation.
+
+This is required when implementation-cascade debt could explain visual inconsistency.
+
+## 9. Implementation evidence
 
 The Web Developer report includes:
 
 - exact base/head and branch;
-- changed behavior/contracts;
-- automated commands and target revision;
-- exit/status and pass/fail/skip counts;
-- CI/check references when configured;
-- self-check/browser/local evidence clearly labelled non-independent when run by the implementer;
-- known defects, deferred items, environment limits, and remaining validation.
+- behavior/contracts changed;
+- current visual gate and whether expansion was authorized;
+- automated commands, status and pass/fail/skip counts;
+- CI references when configured;
+- self-check/browser evidence clearly labelled non-independent;
+- known defects/deferred work/environment limits.
 
-Do not report an unexecuted, unavailable, failed, or skipped check as passing.
+## 10. Independent validation evidence
 
-## 4. Independent validation evidence
+When required, record:
 
-When the work contract requires independent validation, record:
+- expected/actual tested head;
+- validator role relative to implementation;
+- OS/runtime/browser/hardware environment;
+- source-modification status;
+- commands/exits;
+- required journeys/results;
+- Desktop/Mobile/reduced-motion/focus evidence when relevant;
+- console/page/request/overflow/asset failures;
+- artifacts and reproducible failure evidence.
 
-- expected and actual tested head;
-- validator identity/role relative to implementation;
-- OS/runtime/browser/hardware/local-service environment;
-- repository state before validation;
-- whether source was modified;
-- setup/build/run/test commands and exits;
-- required journeys and actual results;
-- desktop/mobile/reduced-motion/focus evidence when applicable;
-- console, page, failed-request, overflow, asset, and external-request counts when applicable;
-- artifacts such as screenshots/recordings/logs;
-- reproducible failure evidence.
+If the validator changes product source, the run is not independent validation of the resulting revision.
 
-If the validator changes product source, the resulting run is not independent validation of the new revision.
+## 11. Runtime/provider evidence
 
-## 5. Visual evidence
+Distinguish deterministic mock, source-equivalent local execution, exact-head local execution, live provider/API, Preview/staging and Production.
 
-For visual/UI claims, prefer real rendered evidence at the exact tested revision.
+Record provider/runtime identity, request/route evidence, timeout/retry/fallback boundaries, cost/security basis and whether secrets were required. Never expose credentials.
 
-Record as applicable:
+## 12. Production evidence
 
-- viewport dimensions;
-- route/state;
-- screenshot or video artifact;
-- text readability/contrast issues;
-- clipping and horizontal overflow;
-- mobile hierarchy;
-- keyboard/focus behavior;
-- reduced-motion state;
-- console/page/network failures.
-
-A screenshot generated from the wrong project or unrelated deployment is not product evidence.
-
-## 6. Runtime/provider evidence
-
-For live or local runtime claims, distinguish:
-
-- deterministic mock;
-- source-equivalent local execution;
-- exact-head local execution;
-- live provider/API call;
-- Preview/staging;
-- Production.
-
-Record provider/model/runtime identity, request/route evidence, timeout/retry/fallback boundaries, cost basis, and whether secrets were required. Never expose credentials.
-
-## 7. Production evidence
-
-Production evidence follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` and records the relevant subset of:
+Follow `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` and record the relevant subset of:
 
 - resulting main/release SHA;
 - deployment/version ID;
 - project/Worker identity;
 - root/source directory;
-- hostname/TLS;
-- critical HTTP/API behavior;
-- browser journey;
+- canonical hostname;
+- critical browser/API journey;
 - console/page/network failures;
-- Access/authentication behavior;
-- public-byte or commit metadata linkage when available;
-- known-good recovery source/configuration.
+- auth/access behavior;
+- revision linkage;
+- known-good recovery source.
 
 HTTP 200 alone is not revision identity.
 
-## 8. CTO final-review evidence
+## 13. CTO final-review evidence
 
 The final review records:
 
-- exact reviewed head;
-- current main/base relationship;
-- actual changed files and scope verdict;
-- acceptance criterion by criterion result;
-- automated evidence sufficiency;
-- independent validation requirement/status and exact-head match;
+- exact reviewed head and current main/base relationship;
+- changed files/scope verdict;
+- acceptance matrix;
+- current visual gate;
+- anchor/archetype/contact-sheet evidence as applicable;
+- CI/independent-validation sufficiency;
 - security/privacy/regression considerations;
-- owner-only decisions still required, if any;
-- remaining limitations/conditions;
-- final `READY`, `CONDITIONALLY_READY`, or `NOT_READY`.
+- owner-only decisions;
+- remaining conditions;
+- final technical `READY / CONDITIONALLY_READY / NOT_READY`.
 
-Only the Web CTO assigns those final technical/review statuses.
+## 14. Evidence rejection conditions
 
-## 9. Failure evidence
-
-Good failure evidence separates observation from hypothesis and includes:
-
-- expected result;
-- actual result;
-- exact action/command;
-- exact tested SHA;
-- exit/status;
-- relevant error output;
-- minimal reproduction;
-- environment;
-- source-modification status.
-
-## 10. Evidence rejection conditions
-
-Do not rely on these as sole completion evidence:
+Do not rely on these as completion evidence:
 
 - test results without revision identity;
-- another head's result without applicability review;
-- “passed” statements without command/status evidence;
-- implementer self-check presented as independent validation;
-- hidden source edits during validation;
-- report/diff mismatch;
-- missing failed/skipped counts;
-- wrong-project Preview/deployment;
+- another head's screenshots without applicability review;
+- automated GREEN without direct visual review for a visual claim;
+- only the Entry screenshot for a multi-screen redesign;
+- screenshots from the wrong project/deployment;
+- a list of reference names with no translation/verification;
+- implementer self-check represented as independent validation;
+- a strong anchor represented as whole-product design-system proof;
+- hidden failed/skipped counts;
 - unverified Production claims;
-- evidence containing secrets or private data.
-
-## Templates
-
-- `templates/WEB_DEVELOPER_REPORT.md`
-- `templates/LOCAL_VALIDATION_REPORT.md`
-- `templates/CTO_FINAL_REVIEW.md`
+- evidence containing secrets/private data.
