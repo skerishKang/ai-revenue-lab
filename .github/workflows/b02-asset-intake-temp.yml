@@ -8,20 +8,33 @@ on:
       - 'apps/living-travel/pages-preview/site/**'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  fetch-songdo-source:
+  ingest-songdo-asset:
     if: github.event.pull_request.head.ref == 'design/b02-place-first-anchor-scaffold'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout exact PR head
+      - name: Checkout bounded PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: design/b02-place-first-anchor-scaffold
+          fetch-depth: 0
 
-      - name: Fetch official Songdo archive image
+      - name: Stop when bounded asset already exists
+        id: existing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp ]]; then
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'skip=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fetch and verify official Songdo source
+        if: steps.existing.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -29,46 +42,79 @@ jobs:
           curl --fail --location --retry 2 --connect-timeout 15 --max-time 90 \
             'https://visitbusan.net/archive/upload/2025/12/01/20251201153408969195_m.png' \
             --output "$RUNNER_TEMP/b02-asset/songdo-beach-source.png"
-
-      - name: Verify bytes and write manifest
-        shell: python
-        run: |
+          python - <<'PY'
           from pathlib import Path
           import hashlib, struct
           p = Path('${{ runner.temp }}/b02-asset/songdo-beach-source.png')
           b = p.read_bytes()
-          if not b.startswith(b'\x89PNG\r\n\x1a\n'):
-              raise SystemExit('not a PNG')
-          if len(b) < 24:
-              raise SystemExit('PNG too short')
+          if not b.startswith(b'\x89PNG\r\n\x1a\n') or len(b) < 24:
+              raise SystemExit('invalid PNG')
           width, height = struct.unpack('>II', b[16:24])
-          if width < 400 or height < 300:
-              raise SystemExit(f'image unexpectedly small: {width}x{height}')
           sha = hashlib.sha256(b).hexdigest()
-          manifest = Path('${{ runner.temp }}/b02-asset/MANIFEST.txt')
-          manifest.write_text(
-              '\n'.join([
-                  'source_page=https://visitbusan.net/archive/dataSearch/view.nm?dataSid=METADATA017860',
-                  'source_asset=https://visitbusan.net/archive/upload/2025/12/01/20251201153408969195_m.png',
-                  'subject=송도해수욕장 전경',
-                  'producer=서구',
-                  'publisher=서구 문화관광과',
-                  'production_date=2023-08',
-                  'license=공공누리 제1유형 (출처표시)',
-                  f'width={width}',
-                  f'height={height}',
-                  f'bytes={len(b)}',
-                  f'sha256={sha}',
-                  f'pr_head=${{ github.event.pull_request.head.sha }}',
-              ]) + '\n',
-              encoding='utf-8',
-          )
-          print(manifest.read_text(encoding='utf-8'))
+          expected = 'ad9522edde033960b7ca9f41b7343d8467e39c4969a6b014158a76299dc53fdd'
+          if (width, height) != (1400, 1045):
+              raise SystemExit(f'unexpected dimensions: {width}x{height}')
+          if sha != expected:
+              raise SystemExit(f'source SHA mismatch: {sha}')
+          print(f'validated source: {width}x{height} {len(b)} bytes sha256={sha}')
+          PY
 
-      - name: Upload bounded asset artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: b02-songdo-source-${{ github.event.pull_request.head.sha }}
-          path: ${{ runner.temp }}/b02-asset/
-          if-no-files-found: error
-          retention-days: 1
+      - name: Produce repository-local WebP derivative
+        if: steps.existing.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ffmpeg >/dev/null
+          mkdir -p apps/living-travel/pages-preview/site/assets/images
+          ffmpeg -hide_banner -loglevel error -y \
+            -i "$RUNNER_TEMP/b02-asset/songdo-beach-source.png" \
+            -c:v libwebp -q:v 82 -compression_level 6 \
+            apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp
+          test -s apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp
+          sha256sum apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp
+
+      - name: Write source and derivative record
+        if: steps.existing.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DERIVATIVE_SHA="$(sha256sum apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp | awk '{print $1}')"
+          DERIVATIVE_BYTES="$(wc -c < apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp | tr -d ' ')"
+          cat > apps/living-travel/pages-preview/IMAGE_SOURCES.md <<EOF
+          # Living Travel image sources
+
+          ## Songdo Beach focal image — B02 Entry anchor
+
+          - Local derivative: \`site/assets/images/songdo-beach-2023.webp\`
+          - Source page: \`https://visitbusan.net/archive/dataSearch/view.nm?dataSid=METADATA017860\`
+          - Source asset: \`https://visitbusan.net/archive/upload/2025/12/01/20251201153408969195_m.png\`
+          - Subject: 송도해수욕장 전경
+          - Producer: 서구
+          - Publisher: 서구 문화관광과
+          - Production date: 2023-08
+          - License: 공공누리 제1유형 — 출처표시
+          - Intended use: B02 Living Travel place-first Entry anchor; later reuse requires the same attribution/provenance boundary.
+          - Source dimensions: 1400 × 1045
+          - Source bytes: 2664495
+          - Source SHA256: \`ad9522edde033960b7ca9f41b7343d8467e39c4969a6b014158a76299dc53fdd\`
+          - Derivative operation: PNG → WebP with ffmpeg/libwebp, quality 82, compression level 6; no compositing or content alteration.
+          - Derivative bytes: ${DERIVATIVE_BYTES}
+          - Derivative SHA256: \`${DERIVATIVE_SHA}\`
+          - Acquisition: temporary exact-branch GitHub Action under Issues #638/#639; workflow removed after bounded intake.
+
+          Attribution required when the image is shown: **출처: 부산관광아카이브 / 서구 문화관광과 (공공누리 제1유형)**.
+          EOF
+
+      - name: Commit bounded asset intake to PR branch
+        if: steps.existing.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            apps/living-travel/pages-preview/site/assets/images/songdo-beach-2023.webp \
+            apps/living-travel/pages-preview/IMAGE_SOURCES.md
+          git diff --cached --check
+          git commit -m 'assets(B02): add attributed Songdo focal image'
+          git push origin HEAD:design/b02-place-first-anchor-scaffold
