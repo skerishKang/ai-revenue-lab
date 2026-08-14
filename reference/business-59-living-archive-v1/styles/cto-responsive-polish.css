@@ -3,230 +3,224 @@
  * correcting mobile clipping and desktop information density.
  */
 
-.shelf-intro {
-  max-width: 1120px;
-  margin-bottom: 18px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: 32px;
-  align-items: end;
+/* Desktop: keep the spatial shelf, but reduce decorative dead space and make
+ * the selected-record/reading actions feel like the product rather than a demo.
+ */
+.shelf-view {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  grid-template-columns: minmax(250px, .9fr) minmax(440px, 1.28fr) minmax(300px, .92fr);
+  gap: clamp(22px, 3vw, 44px);
+  padding-top: 96px;
+  padding-bottom: 40px;
 }
 
-.shelf-intro h1 {
-  max-width: 760px;
-  font-size: clamp(42px, 5.1vw, 72px);
-  line-height: .94;
+.shelf-copy h2 {
+  font-size: clamp(2.35rem, 4.2vw, 4.9rem);
+  line-height: .98;
 }
 
-.shelf-intro p {
-  max-width: 720px;
-  margin-bottom: 2px;
+.shelf-stage {
+  min-height: 500px;
 }
 
-.shelf-direct-actions {
-  display: flex;
-  align-items: center;
+.volume-summary h3 {
+  font-size: clamp(2rem, 3vw, 3.35rem);
+  line-height: 1;
+}
+
+.summary-actions {
   gap: 10px;
-  margin-top: 14px;
 }
 
-.shelf-direct-actions .button[data-action="direct-reader"] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-  box-shadow: 0 10px 28px rgba(21, 26, 20, .14);
+/* Reading is the authoritative precision path in the product contract. */
+#open-2d-direct {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--ink-dark);
+  font-weight: 800;
 }
 
-.shelf-direct-actions .button[data-action="direct-reader"]:hover {
-  transform: translateY(-1px);
+#open-3d {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
 }
 
-.shelf-viewport {
-  min-height: 430px;
-}
-
-.shelf {
-  height: 370px;
-}
-
-.shelf-card {
-  min-width: 0;
-}
-
-@media (max-width: 900px) {
-  .shelf-intro {
-    display: block;
-    max-width: 760px;
+@media (max-width: 1120px) {
+  .shelf-view {
+    grid-template-columns: minmax(240px, .85fr) minmax(420px, 1.15fr);
   }
 
-  .shelf-direct-actions {
-    margin-top: 16px;
+  .volume-summary {
+    grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 680px) {
-  .shell {
-    width: min(100%, 100vw);
-    padding: 14px 14px 36px;
-  }
-
+@media (max-width: 760px) {
   .topbar {
-    margin-bottom: 18px;
+    padding: 14px 16px;
   }
 
-  .shelf-intro {
-    margin-bottom: 12px;
+  .topbar h1 {
+    font-size: 1.35rem;
   }
 
-  .shelf-intro h1 {
-    max-width: 340px;
-    margin-bottom: 10px;
-    font-size: clamp(36px, 12vw, 50px);
-    line-height: .95;
-    letter-spacing: -.055em;
+  .topbar__actions {
+    gap: 6px;
   }
 
-  .shelf-intro p {
-    font-size: 14px;
+  .topbar__actions .quiet-button {
+    min-height: 36px;
+    padding-inline: 11px;
+    font-size: .7rem;
+  }
+
+  .shelf-view {
+    width: 100%;
+    padding: 104px 16px 34px;
+  }
+
+  .shelf-copy {
+    max-width: 36rem;
+  }
+
+  .shelf-copy h2 {
+    margin: 10px 0 14px;
+    font-size: clamp(2.25rem, 10.8vw, 3.25rem);
+    line-height: .98;
+  }
+
+  .shelf-copy > p:last-child {
+    font-size: .86rem;
     line-height: 1.62;
   }
 
-  .shelf-direct-actions {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    position: sticky;
-    top: 8px;
-    z-index: 12;
-    padding: 8px;
-    margin: 12px -4px 14px;
-    border: 1px solid rgba(37, 44, 35, .1);
-    border-radius: 14px;
-    background: rgba(246, 241, 229, .94);
-    backdrop-filter: blur(12px);
-  }
-
-  .shelf-direct-actions .button[data-action="direct-reader"] {
-    min-height: 44px;
-    justify-content: center;
-    font-weight: 800;
-  }
-
-  .shelf-direct-actions .button[data-action="import"] {
-    min-height: 44px;
-  }
-
-  .shelf-viewport {
+  /* Mobile intentionally becomes a bounded horizontal shelf. The shelf may
+   * scroll internally; the document itself must not overflow the viewport. */
+  .shelf-stage {
     width: 100%;
-    min-height: 326px;
-    height: 326px;
-    margin: 0;
-    padding: 0 18px;
+    max-width: 100%;
+    min-height: 318px;
+    margin: 18px 0 14px;
+    padding: 0 2px 12px;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: 18px;
     overscroll-behavior-inline: contain;
     -webkit-overflow-scrolling: touch;
-  }
-
-  .shelf-viewport::after {
-    content: "옆으로 넘겨 다른 기록 보기";
-    position: sticky;
-    left: 18px;
-    bottom: 8px;
-    display: inline-block;
-    padding: 5px 8px;
-    border-radius: 999px;
-    background: rgba(246, 241, 229, .88);
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    pointer-events: none;
+    place-items: end start;
   }
 
   .shelf {
     width: max-content;
     min-width: max-content;
-    height: 300px;
-    padding: 20px 6px 50px;
+    gap: 14px;
+    padding: 0 18px;
     justify-content: flex-start;
-    gap: 18px;
     transform: none;
   }
 
-  .book3d {
-    flex: 0 0 174px;
-    width: 174px;
-    height: 238px;
+  .volume {
+    flex: 0 0 124px;
+    width: 124px;
+    height: clamp(230px, 62vw, 260px);
+    padding: 18px 12px;
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
 
-  .book3d:first-child {
+  .volume:first-child {
     scroll-snap-align: start;
   }
 
-  .book3d:last-child {
+  .volume:last-child {
     scroll-snap-align: end;
   }
 
-  .book3d:nth-child(1),
-  .book3d:nth-child(2),
-  .book3d:nth-child(3) {
+  .volume strong {
+    font-size: 1.08rem;
+    line-height: 1.08;
+  }
+
+  .volume:hover,
+  .volume[aria-pressed="true"] {
+    transform: translateY(-8px) scale(1.01);
+  }
+
+  .shelf-plank {
+    width: 480px;
+    min-width: 480px;
+    height: 20px;
     transform: none;
   }
 
-  .book3d.is-selected {
-    transform: translateY(-6px) scale(1.015);
+  .volume-summary {
+    display: block;
+    max-width: none;
+    padding-top: 8px;
   }
 
-  .book-cover {
-    box-shadow: 0 18px 34px rgba(28, 31, 23, .2);
+  .volume-summary h3 {
+    margin: 8px 0 10px;
+    font-size: clamp(1.85rem, 8.4vw, 2.55rem);
+    line-height: 1.02;
   }
 
-  .shelf-meta {
-    margin-top: 14px;
-    padding: 14px;
+  .volume-summary > p:not(.kicker) {
+    margin-block: 8px 14px;
+    font-size: .86rem;
+    line-height: 1.6;
   }
 
-  .shelf-meta .meta-actions {
+  .summary-meta {
+    margin: 16px 0;
+    padding: 14px 0;
+    gap: 10px;
+  }
+
+  .summary-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    position: sticky;
+    bottom: 10px;
+    z-index: 8;
+    padding: 8px;
+    margin-inline: -4px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(16, 19, 25, .9);
+    backdrop-filter: blur(12px);
   }
 
-  .shelf-meta .meta-actions .button {
-    justify-content: center;
-    min-width: 0;
-  }
-
-  .shelf-meta .meta-actions .button[data-action="direct-reader"] {
-    grid-column: 1 / -1;
+  #open-2d-direct {
     order: -1;
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
+    min-height: 46px;
   }
 
-  .open-layout,
-  .reader-layout {
-    margin-top: 12px;
+  #open-3d {
+    min-height: 46px;
   }
 
-  .reader-toolbar .toolbar-group:first-child {
-    width: 100%;
+  .book-view {
+    padding-top: 88px;
   }
 
-  .reader-toolbar .toolbar-group:first-child .button[data-action="back-shelf"] {
-    flex: 1;
+  .book-toolbar > :last-child {
+    min-height: 46px;
+  }
+
+  .reader-view {
+    padding-top: 76px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .book3d.is-selected,
-  .shelf-direct-actions .button[data-action="direct-reader"]:hover {
+  .volume:hover,
+  .volume[aria-pressed="true"] {
     transform: none;
   }
 }
