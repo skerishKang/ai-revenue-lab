@@ -3,11 +3,32 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 import difflib
+import hashlib
 import os
+import re
+import subprocess
 
 
 class AgentBoundaryError(RuntimeError):
     pass
+
+
+_KOREAN_TASK_RE = re.compile(r"[가-힣]")
+_SECRET_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"(?i)(authorization\s*:\s*bearer\s+)[^\s]+"), r"\1[REDACTED]"),
+    (re.compile(r"\bsk-(?:or-v1-)?[A-Za-z0-9._-]{8,}\b"), "[REDACTED_KEY]"),
+    (
+        re.compile(r"(?i)((?:api[_-]?key|token|secret|password)\s*[=:]\s*)[^\s]+"),
+        r"\1[REDACTED]",
+    ),
+)
+
+
+def redact_secrets(text: str) -> str:
+    redacted = text
+    for pattern, replacement in _SECRET_PATTERNS:
+        redacted = pattern.sub(replacement, redacted)
+    return redacted
 
 
 @dataclass
@@ -34,9 +55,12 @@ class AgentSession:
         resolved = Path(root).expanduser().resolve()
         if not resolved.is_dir():
             raise AgentBoundaryError("저장소 경로가 존재하지 않습니다.")
-        if not task.strip():
+        normalized_task = task.strip()
+        if not normalized_task:
             raise AgentBoundaryError("한국어 작업 설명이 필요합니다.")
-        return cls(root=resolved, task=task.strip(), route=route)
+        if not _KOREAN_TASK_RE.search(normalized_task):
+            raise AgentBoundaryError("Phase 1에서는 한국어 작업 설명을 한 글자 이상 포함해야 합니다.")
+        return cls(root=resolved, task=normalized_task, route=route)
 
     def contained(self, relative: str | Path) -> Path:
         candidate = (self.root / relative).resolve()
@@ -52,10 +76,16 @@ class AgentSession:
         for path in sorted(self.root.rglob("*")):
             if any(part in ignored for part in path.parts):
                 continue
+            if path.is_symlink():
+                # Phase 1 does not inspect or mutate symlink targets. This also
+                # prevents a repository-local link from becoming an escape path.
+                continue
             if path.is_file():
                 try:
+                    resolved = path.resolve()
+                    resolved.relative_to(self.root)
                     rel = str(path.relative_to(self.root))
-                except ValueError:
+                except (OSError, ValueError):
                     continue
                 files.append(rel)
                 if len(files) >= limit:
@@ -73,10 +103,75 @@ class AgentSession:
             "최종 apply / reject / revise 판단은 사용자에게 남김",
         ]
 
+    def git_worktree_status(self) -> dict[str, object]:
+        """Read Git worktree state without modifying Git or repository files."""
+        command = ["git", "status", "--porcelain=v1", "--untracked-files=all"]
+        try:
+            result = subprocess.run(
+                command,
+                cwd=self.root,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=5,
+            )
+        except FileNotFoundError:
+            return {
+                "available": False,
+                "is_git_repository": False,
+                "clean": None,
+                "changed_count": 0,
+                "status": "git_unavailable",
+            }
+        except subprocess.TimeoutExpired:
+            return {
+                "available": True,
+                "is_git_repository": False,
+                "clean": None,
+                "changed_count": 0,
+                "status": "git_status_timeout",
+            }
+
+        if result.returncode != 0:
+            return {
+                "available": True,
+                "is_git_repository": False,
+                "clean": None,
+                "changed_count": 0,
+                "status": "not_git_repository",
+            }
+
+        entries = [line for line in result.stdout.splitlines() if line.strip()]
+        return {
+            "available": True,
+            "is_git_repository": True,
+            "clean": not entries,
+            "changed_count": len(entries),
+            "status": "clean" if not entries else "dirty",
+        }
+
+    def business14_mock_response(self) -> dict[str, object]:
+        """Deterministic adapter contract preview; never performs network I/O."""
+        canonical_route = "b14/auto" if self.route in {"business14/auto", "b14/auto"} else self.route
+        digest = hashlib.sha256(
+            f"{canonical_route}\0{self.task}".encode("utf-8")
+        ).hexdigest()[:12]
+        return {
+            "adapter": "business14-deterministic-mock",
+            "route": canonical_route,
+            "request_id": f"kagent_{digest}",
+            "status": "resolved_not_called",
+            "provider_mode": "mock",
+            "network_called": False,
+        }
+
     def prepare_demo_patch(self, relative: str | None = None) -> str:
         if not self.read_files:
             self.inspect()
-        target = relative or next((p for p in self.read_files if p.endswith((".py", ".js", ".ts", ".md", ".txt"))), None)
+        target = relative or next(
+            (p for p in self.read_files if p.endswith((".py", ".js", ".ts", ".md", ".txt"))),
+            None,
+        )
         if target is None:
             self.proposed_path = "KAGENT_DEMO_NOTE.md"
             self.original_text = ""
@@ -110,11 +205,22 @@ class AgentSession:
     def apply(self) -> Path:
         if not self.permissions.write:
             raise AgentBoundaryError("쓰기 권한이 승인되지 않았습니다.")
-        if self.proposed_path is None or self.proposed_text is None:
+        if self.proposed_path is None or self.proposed_text is None or self.original_text is None:
             raise AgentBoundaryError("적용할 변경 미리보기가 없습니다.")
         target = self.contained(self.proposed_path)
         if target.exists() and target.is_symlink():
             raise AgentBoundaryError("심볼릭 링크 쓰기가 차단되었습니다.")
+
+        if target.exists():
+            try:
+                current = target.read_text(encoding="utf-8")
+            except (UnicodeDecodeError, OSError) as exc:
+                raise AgentBoundaryError("적용 직전 원본 상태를 확인할 수 없습니다.") from exc
+            if current != self.original_text:
+                raise AgentBoundaryError("미리보기 이후 파일이 변경되어 적용을 중단합니다.")
+        elif self.original_text != "":
+            raise AgentBoundaryError("미리보기 이후 원본 파일이 사라져 적용을 중단합니다.")
+
         target.write_text(self.proposed_text, encoding="utf-8")
         return target
 
@@ -124,11 +230,13 @@ class AgentSession:
         self.proposed_text = None
         self.permissions.write = False
 
-    def runtime_contract(self) -> dict[str, str | bool]:
+    def runtime_contract(self) -> dict[str, object]:
         return {
             "route": self.route,
             "network": self.permissions.network,
             "git_mutation": self.permissions.git_mutation,
             "business14_base_url_configured": bool(os.getenv("BUSINESS14_BASE_URL")),
             "business14_model": os.getenv("BUSINESS14_MODEL", "automatic-route"),
+            "business14_preview": self.business14_mock_response(),
+            "git_worktree": self.git_worktree_status(),
         }
