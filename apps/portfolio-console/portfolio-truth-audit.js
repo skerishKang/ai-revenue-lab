@@ -2,9 +2,8 @@
  *
  * Owner-facing truth layer for Portfolio Console.
  *
- * Separates historical technical phase evidence from final owner visual review,
- * and applies the #396 external / successor boundary without modifying any
- * external repository or product implementation.
+ * Stable external/successor identity is owned by business-manifest.js.
+ * This layer only applies owner-review and phase-presentation semantics.
  */
 (function (root) {
   "use strict";
@@ -16,24 +15,11 @@
     NOT_APPLICABLE: "NOT_APPLICABLE"
   });
 
-  // #396 hard exclusions. Repository links are supplied only where an
-  // authoritative source is recorded. Missing links remain intentionally null.
-  var BOUNDARIES = Object.freeze({
-    3:  { kind:"external-parallel",       title:"External / Parallel Track", korean:"외부·병렬 작업", repository:null },
-    5:  { kind:"expanded-successor",      title:"DanjiOn", korean:"단지온", repository:"https://github.com/skerishKang/02-danji-on" },
-    23: { kind:"external-implementation", title:"LoveBud", korean:"LoveBud", repository:"https://github.com/skerishKang/LoveBud" },
-    24: { kind:"external-implementation", title:"LoveTree 3.0", korean:"LoveTree 3.0", repository:"https://github.com/skerishKang/lovetree3.0" },
-    25: { kind:"external-implementation", title:"Love Matchmaking", korean:"러브 매치메이킹", repository:"https://github.com/skerishKang/401-love-match-making" },
-    26: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null },
-    27: { kind:"integrated-successor",     title:"Sasillo", korean:"사실로", repository:null },
-    28: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null },
-    30: { kind:"expanded-successor",       title:"400 AI Finder", korean:"400-ai-finder", repository:"https://github.com/skerishKang/400-ai-finder" },
-    31: { kind:"integrated-successor",     title:"Sasillo", korean:"사실로", repository:null },
-    50: { kind:"integrated-successor",     title:"Ieeon", korean:"이어온", repository:null }
+  var HARD_EXCLUSIONS = Object.freeze({
+    3:true, 5:true, 23:true, 24:true, 25:true,
+    26:true, 27:true, 28:true, 30:true, 31:true, 50:true
   });
 
-  // Explicit owner visual decisions only. This is intentionally much narrower
-  // than historical technical UI_APPROVED evidence.
   var OWNER_APPROVED = Object.freeze({
     6: {
       source: "PR #158 issuecomment-5082096357",
@@ -42,11 +28,6 @@
     }
   });
 
-  // B1/B2 were previously owner-rejected, then materially redesigned and
-  // technically merged under the #451 live-Production review policy. They are
-  // now review-ready, not owner-approved. Keep their canonical Production
-  // surfaces explicit so the Portfolio Console never routes the owner to a
-  // stale branch-preview hostname.
   var OWNER_REVIEW_READY = Object.freeze({
     1: {
       source: "PR #456",
@@ -60,8 +41,24 @@
     }
   });
 
+  function businessByNumber(number) {
+    var n = Number(number);
+    return (root.ARL_BUSINESSES || []).find(function (item) {
+      return Number(item.number) === n;
+    }) || null;
+  }
+
   function boundaryFor(number) {
-    return BOUNDARIES[Number(number)] || null;
+    var n = Number(number);
+    if (!HARD_EXCLUSIONS[n]) return null;
+    var business = businessByNumber(n);
+    if (!business || !business.boundaryKind) return null;
+    return {
+      kind: business.boundaryKind,
+      title: business.successorTitle,
+      korean: business.successorKoreanTitle,
+      repository: business.successorRepository || null
+    };
   }
 
   function ownerUiStatusFor(number) {
@@ -84,30 +81,13 @@
         business.surfaceUrl = OWNER_REVIEW_READY[business.number].surfaceUrl;
       }
 
-      var boundary = boundaryFor(business.number);
-      if (!boundary) return;
-
-      // Reuse the launcher's existing lineage presentation contract. This is a
-      // presentation class only; the exact boundary kind remains separately set.
-      business.portfolioClass = "expanded-successor";
-      business.boundaryKind = boundary.kind;
-      business.lifecycle = boundary.kind === "integrated-successor"
-        ? "integrated_successor"
-        : boundary.kind === "expanded-successor"
-          ? "expanded_successor"
-          : "external_implementation";
-      business.state = "external";
-      business.uiStatus = "NOT_APPLICABLE";
-      business.uxStatus = "NOT_APPLICABLE";
-      business.backendStatus = "NOT_APPLICABLE";
-      business.successorTitle = boundary.title;
-      business.successorKoreanTitle = boundary.korean;
-      business.successorRepository = boundary.repository;
-
-      if (boundary.repository) {
-        business.workspace = boundary.repository.replace("https://github.com/", "");
-      } else {
-        business.workspace = "외부 원본 · 링크 확인 필요";
+      // Stable lineage, workspace, lifecycle, state and successor metadata are
+      // already authoritative in business-manifest.js. Only phase presentation
+      // becomes not-applicable for hard-excluded external/successor Businesses.
+      if (boundaryFor(business.number)) {
+        business.uiStatus = "NOT_APPLICABLE";
+        business.uxStatus = "NOT_APPLICABLE";
+        business.backendStatus = "NOT_APPLICABLE";
       }
     });
   }
@@ -118,8 +98,7 @@
 
   function businessForRow(row) {
     if (!row) return null;
-    var n = Number(row.dataset.bizNumber);
-    return (root.ARL_BUSINESSES || []).find(function (item) { return item.number === n; }) || null;
+    return businessByNumber(Number(row.dataset.bizNumber));
   }
 
   function ownerUiCopy(business) {
@@ -145,7 +124,9 @@
         : "외부 개발 · " + boundary.korean;
     }
     if (boundary.kind === "external-parallel") {
-      return lang === "en" ? "External / parallel expansion · internal work excluded" : "외부·병렬 확장 · 내부 개발 제외";
+      return lang === "en"
+        ? "External / parallel expansion · internal work excluded"
+        : "외부·병렬 확장 · 내부 개발 제외";
     }
     return lang === "en"
       ? "Expanded to " + boundary.title + " · external development"
@@ -181,7 +162,7 @@
     var boundary = boundaryFor(business.number);
     if (!boundary) return;
 
-    row.dataset.portfolioClass = "expanded-successor";
+    row.dataset.portfolioClass = business.portfolioClass || "expanded-successor";
     row.dataset.boundaryKind = boundary.kind;
 
     var authority = row.querySelector(".biz-auth");
@@ -198,9 +179,6 @@
 
     var action = row.querySelector(".biz-launch-external");
     var state = row.querySelector(".biz-launch-state");
-
-    // Existing external live sites remain directly reviewable. The detail dialog
-    // continues to expose the authoritative repository link when one is known.
     if (business.surfaceUrl && action) {
       action.href = business.surfaceUrl;
       action.textContent = language() === "en" ? "Open site ↗" : "사이트 열기 ↗";
@@ -217,8 +195,6 @@
     decorateAll();
     var list = document.querySelector("#biz-list");
     if (list) {
-      // Observe direct row replacement only. Badge text mutations are descendants
-      // and therefore cannot feed back into this observer.
       new MutationObserver(decorateAll).observe(list, { childList: true });
     }
     new MutationObserver(decorateAll).observe(document.documentElement, {
@@ -231,7 +207,7 @@
 
   root.ARL_PORTFOLIO_TRUTH = Object.freeze({
     OWNER: OWNER,
-    BOUNDARIES: BOUNDARIES,
+    HARD_EXCLUSIONS: HARD_EXCLUSIONS,
     OWNER_APPROVED: OWNER_APPROVED,
     OWNER_REVIEW_READY: OWNER_REVIEW_READY,
     boundaryFor: boundaryFor,
