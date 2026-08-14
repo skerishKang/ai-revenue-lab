@@ -35,10 +35,11 @@ class Business14And54IdentityTests(unittest.TestCase):
             ),
         )
 
-    def test_manifest_does_not_claim_unmerged_b54_workspace_as_current(self) -> None:
+    def test_manifest_keeps_b54_proposed_and_non_current_until_integration(self) -> None:
         match = re.search(r'identity\(\{[^\n]*n:54,[^\n]*\}\)', self.manifest)
         self.assertIsNotNone(match)
         entry = match.group(0)
+        self.assertIn('a:NA.PROPOSED', entry)
         self.assertIn('l:"concept"', entry)
         self.assertIn('st:"planning"', entry)
         self.assertNotIn('w:"apps/korean-ai-code-agent/"', entry)
