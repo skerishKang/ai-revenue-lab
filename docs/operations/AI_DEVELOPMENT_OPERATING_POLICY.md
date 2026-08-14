@@ -1,36 +1,39 @@
 # AI Development Operating Policy
 
-- Status: canonical repository operating policy
-- Scope: repository-wide implementation, validation, review, merge, and Production verification
-- Authority: Issue #148
+- Status: **CANONICAL REPOSITORY OPERATING POLICY**
+- Effective reset: 2026-08-14
+- Design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
+- Evidence authority: `EVIDENCE_REQUIREMENTS.md`
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 
 ## 1. Purpose
 
-AI Revenue Lab separates product authority, implementation, independent validation, and final technical review so that completion claims are tied to reproducible exact-revision evidence rather than worker self-report.
+AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
 
-The policy is designed for rapid AI-assisted product development. It does not require a fixed UI → UX → backend sequence. The Web CTO chooses the smallest bounded evidence slice that can answer the current product question.
+The repository does not require a fixed `UI → UX → backend` product sequence. The Web CTO selects the smallest evidence slice that answers the current uncertainty.
+
+A separate rule applies when the work contains a **new art direction or material visual redesign**: prove the visual direction cheaply before propagating it broadly.
 
 ## 2. Required roles
 
-1. **User / Product Owner** — product goal, priority, material product/UX/business decisions, and owner-only merge or Production authority when required by the work contract.
-2. **Web CTO** — exact work contract, architecture/safety boundary, acceptance criteria, remote audit, independent final review.
-3. **Web Developer** — authorized implementation, implementation tests/self-checks, Draft PR, CI response, implementation report.
-4. **Local Validator** — independent exact-head execution in a real browser/OS/hardware/local-service environment when the work contract requires it.
+1. **User / Product Owner** — product goal, priorities, material product/business decisions, explicit owner visual acceptance where applicable.
+2. **Web CTO** — current remote audit, work contract, architecture/safety boundaries, visual/evidence gates, final technical review.
+3. **Web Developer** — authorized implementation, implementation self-check, Draft PR/report.
+4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required.
 
-A person or model may perform several non-independent stages. However:
+One actor may perform several non-independent stages, but:
 
 ```text
-ONE_ACTOR_MAY_PERFORM_MULTIPLE_NON_INDEPENDENT_STAGES,
-BUT IMPLEMENTATION AND INDEPENDENT LOCAL VALIDATION
-MUST NOT BE CLAIMED BY THE SAME ACTOR FOR THE SAME REVISION.
+IMPLEMENTATION_ACTOR
+!=
+INDEPENDENT_LOCAL_VALIDATOR
 ```
 
-When the implementer also runs local/browser checks because no independent validator is available, those checks are implementation self-checks or non-independent verification. They may be useful evidence but do not satisfy an explicitly required independent validation gate.
+for the same revision when independent validation is required.
 
 ## 3. Product-evidence model
 
-Product work is organized around the evidence goal, not a mandatory ceremony. A work contract may use one or more of these stages:
+Possible evidence targets include:
 
 ```text
 PRODUCT_FRAMED
@@ -43,124 +46,138 @@ COMMERCIAL_HARDENING
 OPERATING_PRODUCT
 ```
 
-These stages are not required to occur in order for every Business.
+The work order identifies what is needed now: visual desirability, UX, deterministic simulation, service-led operation, local runtime, live backend/provider, auth/persistence, security or commercial hardening.
 
-The contract must identify what is needed now:
+UI, UX, backend/runtime, security, deployment, market-reference, commercial and owner-visual verdicts remain separate.
 
-- visual desirability/UI;
-- end-to-end UX;
-- deterministic simulation;
-- service-led operation;
-- local runtime;
-- live backend/API/provider slice;
-- authentication/persistence;
-- commercial/reliability hardening.
+## 4. Mandatory design-gate overlay for visual redesign
 
-Backend work is not frozen by default. Build the smallest observable, reversible runtime slice when it is necessary to prove the primary product journey. Conversely, do not add backend, accounts, providers, or persistence when a static/deterministic/service-led slice answers the current question faster and more truthfully.
-
-UI, UX, backend/runtime, deployment, market-reference, investor-demo, commercial, and owner-visual verdicts remain separate evidence dimensions.
-
-## 4. Default responsibility flow
+When the work is a new visual system, owner-rejected redesign or broad multi-route visual reset, use:
 
 ```text
-User request / portfolio authority
-→ Web CTO work contract
-→ Web Developer implementation
-→ implementation self-check and configured CI
-→ independent validation when required
-→ Web CTO final review
-→ owner decision when the contract reserves one
-→ merge
-→ configured Production deployment and acceptance when authorized
+PRODUCT FRAME
+→ REFERENCE TRANSLATION
+→ ANCHOR SCREEN
+→ ANCHOR_DIRECTION_LOCKED
+→ 2–3 ARCHETYPES
+→ ARCHETYPE_SYSTEM_PASS
+→ FULL_EXPANSION_ALLOWED
+→ FULL-SURFACE CONTACT SHEET
+→ FULL_SURFACE_VISUAL_PASS
 ```
 
-This is a responsibility and evidence flow, not a mandatory product-stage ordering rule.
+UX/backend work may proceed separately when authorized, but an unproven art direction must not be applied across the whole product.
 
-A step may be marked `NOT_REQUIRED` only when the work contract or final review records the reason. Do not silently skip a required gate.
+The Web CTO must reject a work order that says, in effect, “redesign all pages now and we will see if the concept works afterward,” unless the product is so small that all distinct surfaces are themselves the archetype set.
 
-## 5. Work identity before implementation
+## 5. Reference discipline
+
+For material visual work, references are implementation inputs only after they are translated into:
+
+```text
+OBSERVE
+ADOPT
+REJECT
+TRANSLATE
+TARGET SURFACE
+VERIFY
+```
+
+Business 06 World Feed is the positive portfolio methodology reference because it established a visual baseline and explicit adopted/rejected patterns before UX expansion. Its actual look is not a portfolio template.
+
+## 6. Work identity before implementation
 
 Record:
 
-- repository and default branch;
-- current exact base SHA;
-- branch name;
-- Issue/work-order authority;
-- selected product-evidence stage;
-- allowed paths;
-- forbidden paths;
-- explicit non-goals;
+- repository/default branch;
+- exact current base SHA;
+- branch;
+- Issue/owner/work-order authority;
+- selected evidence stage;
+- current visual gate if applicable;
+- allowed/forbidden paths;
+- non-goals;
 - required automated checks;
 - independent validation requirement;
-- owner-only decision requirement, if any;
-- deployment lane/risk level, if applicable;
+- owner-only decision requirement;
+- merge/deployment authority;
 - acceptance criteria.
 
-“Latest main” alone is not revision identity.
+`latest main` is not revision identity.
 
-## 6. Web CTO responsibilities
+## 7. Web CTO responsibilities
 
 The Web CTO:
 
 - reads current remote state rather than trusting previous reports;
-- fixes the exact work contract and smallest useful scope;
+- fixes exact scope and evidence target;
+- enforces reference/anchor/archetype gates for material visual work;
 - defines data/security/deployment/non-goal boundaries;
-- separates evidence dimensions and approval authorities;
-- inspects the actual diff and current exact head;
+- inspects actual diff and current exact head;
 - checks CI and validation sufficiency;
-- rejects stale-head evidence unless applicability is explicitly justified;
-- assigns the final technical/review status.
+- reviews rendered visual evidence rather than treating CI as taste evidence;
+- rejects stale-head evidence unless applicability is documented;
+- prevents legacy visual debt from being mislabeled as a new design system;
+- assigns final technical `READY / CONDITIONALLY_READY / NOT_READY`.
 
-Only the Web CTO assigns:
+These statuses never manufacture owner approval or commercial approval.
 
-```text
-READY
-CONDITIONALLY_READY
-NOT_READY
-```
+## 8. Web Developer responsibilities
 
-These statuses do not manufacture owner visual approval, commercial approval, merge authority, or Production authority that the work contract reserves separately.
+The developer:
 
-## 7. Web Developer responsibilities
-
-The Web Developer:
-
-- starts from the authorized exact base or reports drift before proceeding;
+- starts from the authorized exact base or reports drift;
 - changes only authorized paths;
-- implements product behavior, tests, and documentation in scope;
-- creates/updates a Draft PR;
-- records exact base/head, changed files, diff, commands, exit statuses, pass/fail/skip counts, CI, and limitations;
-- distinguishes implementation self-check from independent validation;
-- never self-assigns final CTO status.
+- implements only up to the current authorized visual/product gate;
+- does not expand all routes when the work order authorizes only an anchor/archetype slice;
+- runs implementation self-checks and configured CI;
+- records exact base/head, files, diff, commands, exits, pass/fail/skip counts and limitations;
+- identifies legacy/cascade debt encountered;
+- does not self-assign independent validation or final CTO readiness.
 
-## 8. Local Validator responsibilities
+## 9. Visual implementation discipline
 
-When independent Local Validation is required, the validator:
+For a redesign:
 
-- checks out or otherwise executes the exact remote PR head;
-- records expected and actual tested SHA;
-- records OS/runtime/browser/hardware/local-service environment;
-- records repository cleanliness and whether source was modified;
-- runs required user journeys, tests, browser checks, provider/local-runtime checks, or hardware/OS-specific checks;
-- records commands, exits, relevant logs, screenshots/artifacts, console/page/network failures, and reproduction evidence.
+- weak legacy shells may be replaced when the visual thesis requires it;
+- redesign is not synonymous with recoloring/material skinning;
+- a successful landing page does not prove inner-route coherence;
+- a later-route failure must be diagnosed before a new version/concept is created;
+- superseded visual generations should leave the active rendering path once the new system is proven;
+- repeated `!important` override escalation is a debt signal, not completion.
 
-If the validator changes product source, that creates a new implementation revision. The modified run cannot be labelled independent validation of that new revision.
+Follow `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`.
 
-## 9. CI and automated checks
+## 10. Local Validator responsibilities
 
-CI is required when configured and relevant to the scope, but CI is not universal completion evidence.
+When independent validation is required, the validator records:
 
-- Never claim a nonexistent CI run passed.
-- A static/lint test does not prove browser UX.
-- A browser test does not prove Production revision identity.
-- A mocked provider test does not prove a live provider contract.
-- A successful URL/HTTP 200 does not prove the reviewed SHA is deployed.
+- expected/actual exact head;
+- environment;
+- repository/source-modification state;
+- commands/exits;
+- journeys/results;
+- browser/device evidence;
+- console/page/network/asset/overflow failures;
+- artifacts and reproduction evidence.
 
-Missing coverage must be stated and supplemented by the evidence required by the work contract.
+If the validator changes product source, the modified run is not independent validation of that new revision.
 
-## 10. Revision invalidation
+## 11. CI and automated checks
 
-Evidence belongs to the exact revision it tested. A new commit invalidates prior-head evidence for changed behavior unless the Web CTO explicitly documents why an item remains applicable.
+CI is required when configured/relevant but is never universal completion evidence.
+
+- static/lint tests do not prove visual hierarchy;
+- browser mechanics do not prove cross-state art direction;
+- screenshots of Entry do not prove a whole site;
+- mock/provider tests do not prove live provider behavior;
+- HTTP 200 does not prove reviewed Production revision.
+
+Use the evidence type that matches the claim.
+
+## 12. Revision invalidation
+
+Evidence belongs to the exact tested revision. A new commit affecting the judged behavior/surface may invalidate prior evidence.
 
 Before merge, re-read:
 
@@ -169,41 +186,40 @@ Before merge, re-read:
 - changed files/diff;
 - CI/checks;
 - comments/review threads;
-- exact-head validation evidence.
+- required visual/UX/runtime/security evidence;
+- applicable anchor/archetype/full-surface status.
 
-Use expected-head merge protection where available.
+Use expected-head protection where available.
 
-## 11. Scope and safety rules
+## 13. Safety and scope rules
 
-- No direct `main` mutation for ordinary feature work.
-- No unrelated dirty-file inclusion.
-- No out-of-scope file changes without contract update.
-- No acceptance/test/assertion/safety weakening merely to obtain a pass.
-- No hidden failure, skip, warning, or untested state.
-- No secrets, credentials, personal data, or private evidence in source/logs/PRs/screenshots/reports.
-- No hidden source edits by a validator.
-- No wrong-project deployment/Preview as acceptance evidence.
-- No unverified claim that a live site represents a reviewed revision.
+- no ordinary direct `main` feature mutation;
+- no unrelated dirty-file inclusion;
+- no out-of-scope mutation without contract update;
+- no test/assertion/security weakening merely to pass;
+- no hidden failure/skip/warning;
+- no secrets, credentials, private evidence or personal data in public source/logs/artifacts;
+- no hidden validator source edits;
+- no wrong-project Preview/deployment as product evidence;
+- no unverified live-revision claim.
 
-## 12. UI and owner visual decisions
+## 14. Owner visual authority
 
-The Web CTO may independently reject objective visual defects such as:
+The CTO may reject objective defects: overflow, clipping, unreadable contrast, broken hierarchy, functional controls, responsive breakage, inconsistent typography/cross-state system, visible legacy leakage and product-contract mismatch.
 
-- clipping/overflow;
-- unreadable contrast;
-- broken hierarchy;
-- nonfunctional controls;
-- inconsistent responsive behavior;
-- console/page/runtime errors;
-- obvious product-contract mismatch.
+Only explicit current owner acceptance creates `OWNER_UI_APPROVED`.
 
-When a work contract explicitly reserves aesthetic/taste approval to the owner, a model/CTO must not convert its own judgment into `OWNER_UI_APPROVED`.
+```text
+ANCHOR_DIRECTION_LOCKED != OWNER_UI_APPROVED
+ARCHETYPE_SYSTEM_PASS != OWNER_UI_APPROVED
+FULL_SURFACE_VISUAL_PASS != OWNER_UI_APPROVED
+READY != OWNER_UI_APPROVED
+DEPLOYED != OWNER_UI_APPROVED
+```
 
-When the owner delegates design selection to the CTO, the CTO may choose a direction, but the decision must be recorded explicitly as a CTO-delegated product decision rather than rewriting historical owner-approval evidence.
+## 15. Backend and service-led evidence
 
-## 13. Backend and service-led evidence
-
-Select an explicit backend mode when relevant:
+Select the smallest appropriate mode:
 
 ```text
 NO_BACKEND
@@ -215,30 +231,32 @@ PILOT_RUNTIME
 COMMERCIAL_HARDENING
 ```
 
-Use real backend capability early when it is necessary to prove product value. Keep it bounded to the primary evidence journey and concrete data/security/cost risk.
+Backend may start early when it proves product value. Do not build it as ceremony.
 
-Authentication is not mandatory for every MVP; authorization is mandatory whenever private records can be read or mutated.
+Authentication is not mandatory for every MVP; authorization is mandatory whenever private records can be read/mutated.
 
-Service-led MVPs are legitimate when the manual operator boundary is disclosed and measured.
+## 16. Merge and Production
 
-## 14. Merge and Production
+For focused changes inside a stable design system, the live Production owner-review loop may be appropriate after exact-head validation.
 
-Deployment behavior is governed by `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+For a new art direction/material redesign, follow `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`: anchor and archetype proof precede broad expansion/whole-product live review.
 
-For Git-connected projects, an explicitly authorized merge to the configured Production branch is the deployment action. Do not create an alternate manual/Preview/staging deployment merely because a Git-triggered deployment is inconvenient.
+After authorized merge, verify the configured Git-connected Production against the resulting main/release revision.
 
-Before merge, require the evidence and authority defined by the work contract. After merge, Production-capable work is complete only after the configured Production surface is verified against the resulting main/release revision and the relevant primary journey.
+## 17. Historical records
 
-## 15. Prohibited interpretation of historical phase records
+Historical phase, UI approval, direction-freeze and audit records remain truthful evidence of their time. They do not override this current operating policy.
 
-Historical `UI_ONLY`, UI→UX→backend, approval, Preview, or backend-frozen records remain truthful evidence of the policy that applied to those revisions. They do not override this current repository-wide policy for new work.
+In particular, a historical product direction document is now an implementation input/hypothesis until it satisfies the current anchor/archetype process for new material visual work.
 
-## 16. Templates and supporting documents
+## 18. Supporting documents
 
+- Design OS: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
+- Visual standard: `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md`
 - Workflow states: `WORKFLOW_STATUS_MODEL.md`
 - Evidence: `EVIDENCE_REQUIREMENTS.md`
-- Product evidence / phase separation: `UI_UX_BACKEND_PHASE_GATES.md`
-- CTO work order: `templates/CTO_WORK_ORDER.md`
-- Developer report: `templates/WEB_DEVELOPER_REPORT.md`
-- Local Validation report: `templates/LOCAL_VALIDATION_REPORT.md`
-- CTO final review: `templates/CTO_FINAL_REVIEW.md`
+- UI/UX/backend dimensions: `UI_UX_BACKEND_PHASE_GATES.md`
+- Frontend structure: `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`
+- New/rebuilt Business playbook: `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
+- Live visual review: `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`
+- Templates: `templates/`
