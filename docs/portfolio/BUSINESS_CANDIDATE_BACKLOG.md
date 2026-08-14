@@ -111,6 +111,10 @@ B6–B12 were promoted from proposed/candidate operational labels to canonical a
 | 53 | `embedded-ai-sdk` | Embedded AI SDK / 임베드 AI SDK | spin-out | Add approved AI functions to existing sites, apps, and institutional systems without rebuilding the host product. |
 | 54 | `ai-model-router` | AI Model Router / AI 모델 라우터 | spin-out | Select and route domestic, external, and local models according to task, quality, cost, privacy, and availability. |
 | 55 | `local-ai-fleet` | Local AI Fleet / 로컬 AI 플릿 | spin-out | Operate multiple free or local models concurrently with job distribution, status, evidence, and cost controls. |
+| 57 | `classic-literature-translation-studio` | Classic Literature Translation Studio / 고전문학 번역실 | proposed-number | Produce source-accountable classic-literature editions that compare original-fidelity, modern-reading and reviewable translation decisions from public-domain or licensed works. |
+| 58 | `personal-writing-voice-studio` | Personal Writing Voice Studio / 나의 문체 스튜디오 | proposed-number | Learn an inspectable, consented writing voice from user-owned or contract-authorized texts and apply it to translation, drafting and editing without cross-customer corpus mixing. |
+
+Proposed Business 56 remains intentionally unassigned. Existing Issue #162 records that an earlier Business 56 suggestion duplicated the Business 25 Resonance / Love Matchmaking boundary; a new product must not occupy 56 without a separate reconciliation decision.
 
 ## 5. Relationship rule
 
@@ -121,6 +125,7 @@ Related products remain separate candidates when their primary output differs. E
 - Local Shop Magazine is related to Neighbor Market, but it produces media for one shop rather than discovering nearby shops.
 - AI Verification Engine is related to Korean AI Platform, but it can be sold or embedded as an independent approval and evidence component.
 - Personal Memory Book and Personal Memory Novel use similar source material but produce fact-oriented and literary outputs respectively.
+- Classic Literature Translation Studio and Personal Writing Voice Studio may interoperate, but the former owns source-accountable literary editions while the latter owns the consented personal-voice layer and its rights lifecycle.
 
 Relationship is recorded as metadata; it is not a reason to erase the smaller idea.
 
