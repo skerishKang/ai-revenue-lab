@@ -27,21 +27,21 @@ class ProvisionPagesSourceMigrationWiringTests(unittest.TestCase):
 
     def test_exact_migration_owner_authority_is_required_before_cloudflare_mutation(self) -> None:
         authority_index = self.text.index("Verify exact source-migration owner authority")
-        patch_index = self.text.index("--request PATCH")
+        patch_index = self.text.index("-X PATCH")
         self.assertLess(authority_index, patch_index)
         self.assertIn("SOURCE_MIGRATION_APPROVED", (
             Path(__file__).resolve().parents[1] / "scripts" / "validate_pages_source_migration.py"
         ).read_text(encoding="utf-8"))
 
     def test_migration_prechecks_old_contract_before_patch(self) -> None:
-        patch_index = self.text.index("--request PATCH")
+        patch_index = self.text.index("-X PATCH")
         before_patch = self.text[:patch_index]
         self.assertIn('--source-directory "${EXPECTED_OLD_SOURCE_DIRECTORY}"', before_patch)
         self.assertIn("validate_pages_provisioning.py cloudflare-project", before_patch)
         self.assertIn("validate_pages_source_migration.py patch-payload", before_patch)
 
     def test_patch_is_followed_by_get_and_new_contract_verification(self) -> None:
-        patch_index = self.text.index("--request PATCH")
+        patch_index = self.text.index("-X PATCH")
         after_patch = self.text[patch_index:]
         self.assertIn("post-migration lookup failed", after_patch)
         self.assertIn("validate_pages_provisioning.py cloudflare-project", after_patch)
