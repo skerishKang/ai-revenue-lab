@@ -17,10 +17,13 @@
 <link rel="stylesheet" href="/static/ui-v5-image-led-fix.css?v=b1-image-led-v5-fix-20260811">
 <link rel="stylesheet" href="/static/ui-v6-living-index.css?v=b1-living-index-v6-20260814">
 <link rel="stylesheet" href="/static/ui-v6-living-index-polish.css?v=b1-living-index-v6-polish-20260814">
+<link rel="stylesheet" href="/static/ui-v6-living-index-authority.css?v=b1-living-index-v6-authority-20260814">
 </head>
 {% set _nav_base = _link_prefix if _link_prefix is defined else ('/p/' ~ participant.id if participant is defined and participant else '') %}
 {% set _guide_href = '/guide/' %}
 <body data-ui-version="{% if request.url.path.startswith('/admin') %}b1-personal-edition-v3-454{% else %}b1-personal-edition-v6-living-index{% endif %}" data-art-direction="{% if request.url.path.startswith('/admin') %}b1-image-led-v5{% else %}b1-living-index-v6{% endif %}" class="{% if request.url.path.startswith('/admin') %}admin-surface v3-operator-surface{% else %}participant-surface v3-participant-surface{% endif %}">
+{# Historical operator regression authority only; participant surfaces are V6. #}
+<!-- operator-regression data-ui-version="b1-personal-edition-v3-454" data-art-direction="b1-image-led-v5" -->
 {% if request.url.path.startswith('/admin') %}<!-- regression-contract class="admin-surface" -->{% else %}<!-- regression-contract class="participant-surface" -->{% endif %}
 <header class="site-header v3-site-header">
   <nav class="v3-site-nav" aria-label="주요 탐색">
