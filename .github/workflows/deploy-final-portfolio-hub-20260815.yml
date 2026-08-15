@@ -51,12 +51,13 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy exact Portfolio Console
+      - name: Deploy exact Portfolio Console to production branch
         shell: bash
         run: |
           set -euo pipefail
           npx --yes wrangler@4 pages deploy apps/portfolio-console \
             --project-name "$PROJECT_NAME" \
+            --branch main \
             --commit-hash "$MAIN_SHA" \
             --commit-message "Final reviewed Portfolio #646" \
             --commit-dirty=false
@@ -65,7 +66,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?finalhub=20260815"
+          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?finalhub=20260815b"
           ok=0
           for attempt in $(seq 1 18); do
             if curl --fail --silent --show-error --location --connect-timeout 10 --max-time 30 "$url" -o /tmp/live.js; then
