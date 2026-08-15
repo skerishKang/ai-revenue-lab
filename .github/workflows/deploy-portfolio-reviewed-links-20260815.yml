@@ -1,0 +1,104 @@
+name: Deploy Portfolio reviewed links 2026-08-15
+
+on:
+  push:
+    branches:
+      - agent/deploy-portfolio-reviewed-links-20260815
+    paths:
+      - .github/workflows/deploy-portfolio-reviewed-links-20260815.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-portfolio-reviewed-links-20260815
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      MAIN_SHA: 8df3ace6dbfb58e121bcc39070f38ba40ee251be
+      PROJECT_NAME: ai-revenue-portfolio-console
+    steps:
+      - name: Check out exact reviewed main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.MAIN_SHA }}
+          persist-credentials: false
+
+      - name: Verify exact main and review link registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${MAIN_SHA}"
+          node --check apps/portfolio-console/review-surfaces-396.js
+          node <<'NODE'
+          const fs = require('fs');
+          global.window = {};
+          for (const p of [
+            'apps/portfolio-console/business-manifest.js',
+            'apps/portfolio-console/businesses.js',
+            'apps/portfolio-console/review-surfaces-396.js',
+          ]) {
+            eval(fs.readFileSync(p, 'utf8'));
+          }
+          const expected = {
+            7: 'https://ai-revenue-final-b07.pages.dev/',
+            8: 'https://ai-revenue-final-b08.pages.dev/',
+            9: 'https://ai-revenue-final-b09.pages.dev/',
+            11: 'https://ai-revenue-final-b11.pages.dev/',
+          };
+          for (const [number, url] of Object.entries(expected)) {
+            const b = window.ARL_BUSINESSES.find(x => x.number === Number(number));
+            if (!b || b.surfaceUrl !== url) {
+              throw new Error(`B${number} expected ${url}, got ${b && b.surfaceUrl}`);
+            }
+          }
+          console.log('Portfolio reviewed links verified');
+          NODE
+
+      - name: Verify Portfolio Pages project exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl --silent --show-error --output /tmp/project.json --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}")"
+          test "$status" = "200"
+
+      - name: Deploy exact main Portfolio Console
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy apps/portfolio-console \
+            --project-name "${PROJECT_NAME}" \
+            --branch main \
+            --commit-hash "${MAIN_SHA}" \
+            --commit-message "Portfolio reviewed links #646" \
+            --commit-dirty=false
+
+      - name: Verify public Portfolio registry contains final review URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js"
+          ok=0
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --location --connect-timeout 10 --max-time 30 "$url" -o /tmp/live-review.js; then
+              if grep -Fq 'ai-revenue-final-b07' /tmp/live-review.js \
+                && grep -Fq 'ai-revenue-final-b08' /tmp/live-review.js \
+                && grep -Fq 'ai-revenue-final-b09' /tmp/live-review.js \
+                && grep -Fq 'ai-revenue-final-b11' /tmp/live-review.js; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          echo "Portfolio live registry verified at https://${PROJECT_NAME}.pages.dev/" >> "$GITHUB_STEP_SUMMARY"
