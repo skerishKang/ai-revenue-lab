@@ -44,9 +44,7 @@ jobs:
             'apps/portfolio-console/business-manifest.js',
             'apps/portfolio-console/businesses.js',
             'apps/portfolio-console/review-surfaces-396.js',
-          ]) {
-            eval(fs.readFileSync(p, 'utf8'));
-          }
+          ]) eval(fs.readFileSync(p, 'utf8'));
           const expected = {
             7: 'https://ai-revenue-final-b07.pages.dev/',
             8: 'https://ai-revenue-final-b08.pages.dev/',
@@ -55,14 +53,13 @@ jobs:
           };
           for (const [number, url] of Object.entries(expected)) {
             const b = window.ARL_BUSINESSES.find(x => x.number === Number(number));
-            if (!b || b.surfaceUrl !== url) {
-              throw new Error(`B${number} expected ${url}, got ${b && b.surfaceUrl}`);
-            }
+            if (!b || b.surfaceUrl !== url) throw new Error(`B${number} expected ${url}, got ${b && b.surfaceUrl}`);
           }
           console.log('Portfolio reviewed links verified');
           NODE
 
-      - name: Verify Portfolio Pages project exists
+      - name: Read Portfolio Pages production branch
+        id: project
         shell: bash
         run: |
           set -euo pipefail
@@ -70,14 +67,18 @@ jobs:
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}")"
           test "$status" = "200"
+          production_branch="$(jq -r '.result.production_branch' /tmp/project.json)"
+          test -n "$production_branch"
+          test "$production_branch" != "null"
+          echo "production_branch=$production_branch" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy exact main Portfolio Console
+      - name: Deploy exact main Portfolio Console to actual production branch
         shell: bash
         run: |
           set -euo pipefail
           npx --yes wrangler@4 pages deploy apps/portfolio-console \
             --project-name "${PROJECT_NAME}" \
-            --branch main \
+            --branch "${{ steps.project.outputs.production_branch }}" \
             --commit-hash "${MAIN_SHA}" \
             --commit-message "Portfolio reviewed links #646" \
             --commit-dirty=false
@@ -88,7 +89,7 @@ jobs:
           set -euo pipefail
           url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js"
           ok=0
-          for attempt in $(seq 1 12); do
+          for attempt in $(seq 1 18); do
             if curl --fail --silent --show-error --location --connect-timeout 10 --max-time 30 "$url" -o /tmp/live-review.js; then
               if grep -Fq 'ai-revenue-final-b07' /tmp/live-review.js \
                 && grep -Fq 'ai-revenue-final-b08' /tmp/live-review.js \
