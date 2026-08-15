@@ -80,7 +80,24 @@ jobs:
             --commit-message "${{ matrix.business }} independent final review 2026-08-15" \
             --commit-dirty=false
 
+      - name: Verify live Pages bytes match reviewed canonical
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${{ matrix.project }}.pages.dev/"
+          ok=0
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --location --connect-timeout 10 --max-time 30 "$url" --output /tmp/live.html; then
+              if echo "${{ matrix.sha256 }}  /tmp/live.html" | sha256sum -c -; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+
       - name: Publish review URL
         shell: bash
         run: |
-          echo "- ${{ matrix.business }}: https://${{ matrix.project }}.pages.dev/" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ${{ matrix.business }}: https://${{ matrix.project }}.pages.dev/ (live SHA verified)" >> "$GITHUB_STEP_SUMMARY"
