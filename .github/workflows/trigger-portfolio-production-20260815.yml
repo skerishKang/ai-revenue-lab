@@ -1,0 +1,104 @@
+name: Trigger Portfolio production rebuild 2026-08-15
+
+on:
+  push:
+    branches:
+      - agent/trigger-portfolio-production-20260815
+    paths:
+      - .github/workflows/trigger-portfolio-production-20260815.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: ai-revenue-portfolio-console
+      EXPECTED_MAIN_SHA: 8df3ace6dbfb58e121bcc39070f38ba40ee251be
+    steps:
+      - name: Verify GitHub main is expected source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_MAIN_SHA }}
+          persist-credentials: false
+
+      - name: Validate expected final review links
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_MAIN_SHA"
+          grep -Fq 'ai-revenue-final-b07' apps/portfolio-console/review-surfaces-396.js
+          grep -Fq 'ai-revenue-final-b08' apps/portfolio-console/review-surfaces-396.js
+          grep -Fq 'ai-revenue-final-b09' apps/portfolio-console/review-surfaces-396.js
+          grep -Fq 'ai-revenue-final-b11' apps/portfolio-console/review-surfaces-396.js
+
+      - name: Trigger Git-integrated production deployment from current production source
+        id: trigger
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl --silent --show-error --output /tmp/deploy.json --write-out '%{http_code}' \
+            --request POST \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments")"
+          test "$status" = "200" || test "$status" = "201"
+          jq '{success, result: {id, url, environment, deployment_trigger, latest_stage}}' /tmp/deploy.json
+          deployment_id="$(jq -r '.result.id' /tmp/deploy.json)"
+          test -n "$deployment_id"
+          test "$deployment_id" != "null"
+          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for production deployment success
+        shell: bash
+        run: |
+          set -euo pipefail
+          id="${{ steps.trigger.outputs.deployment_id }}"
+          ok=0
+          for attempt in $(seq 1 60); do
+            curl --fail --silent --show-error \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments/${id}" \
+              -o /tmp/status.json
+            environment="$(jq -r '.result.environment' /tmp/status.json)"
+            stage="$(jq -r '.result.latest_stage.status' /tmp/status.json)"
+            commit="$(jq -r '.result.deployment_trigger.metadata.commit_hash // empty' /tmp/status.json)"
+            echo "attempt=$attempt environment=$environment stage=$stage commit=$commit"
+            if [ "$stage" = "success" ]; then
+              test "$environment" = "production"
+              test "$commit" = "$EXPECTED_MAIN_SHA"
+              ok=1
+              break
+            fi
+            if [ "$stage" = "failure" ] || [ "$stage" = "canceled" ]; then
+              cat /tmp/status.json
+              exit 1
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+
+      - name: Verify canonical Portfolio now contains final review links
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?final=20260815"
+          ok=0
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error --location --connect-timeout 10 --max-time 30 "$url" -o /tmp/live.js; then
+              if grep -Fq 'ai-revenue-final-b07' /tmp/live.js \
+                && grep -Fq 'ai-revenue-final-b08' /tmp/live.js \
+                && grep -Fq 'ai-revenue-final-b09' /tmp/live.js \
+                && grep -Fq 'ai-revenue-final-b11' /tmp/live.js; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          echo "Canonical Portfolio updated: https://${PROJECT_NAME}.pages.dev/" >> "$GITHUB_STEP_SUMMARY"
