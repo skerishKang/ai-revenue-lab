@@ -1,4 +1,4 @@
-name: Trigger Portfolio production rebuild 2026-08-15
+name: Retry Portfolio canonical production 2026-08-15
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  trigger:
+  retry:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -21,13 +21,13 @@ jobs:
       PROJECT_NAME: ai-revenue-portfolio-console
       EXPECTED_MAIN_SHA: 8df3ace6dbfb58e121bcc39070f38ba40ee251be
     steps:
-      - name: Verify GitHub main is expected source
+      - name: Verify exact GitHub main source
         uses: actions/checkout@v4
         with:
           ref: ${{ env.EXPECTED_MAIN_SHA }}
           persist-credentials: false
 
-      - name: Validate expected final review links
+      - name: Validate reviewed link source
         shell: bash
         run: |
           set -euo pipefail
@@ -37,33 +37,48 @@ jobs:
           grep -Fq 'ai-revenue-final-b09' apps/portfolio-console/review-surfaces-396.js
           grep -Fq 'ai-revenue-final-b11' apps/portfolio-console/review-surfaces-396.js
 
-      - name: Trigger Git-integrated production deployment from main
-        id: trigger
+      - name: Read canonical production deployment
+        id: canonical
         shell: bash
         run: |
           set -euo pipefail
-          status="$(curl --silent --show-error --output /tmp/deploy.json --write-out '%{http_code}' \
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
+            -o /tmp/project.json
+          id="$(jq -r '.result.canonical_deployment.id' /tmp/project.json)"
+          env="$(jq -r '.result.canonical_deployment.environment' /tmp/project.json)"
+          commit="$(jq -r '.result.canonical_deployment.deployment_trigger.metadata.commit_hash // empty' /tmp/project.json)"
+          test -n "$id"
+          test "$env" = "production"
+          test "$commit" = "$EXPECTED_MAIN_SHA"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          echo "Retrying canonical production deployment $id at $commit"
+
+      - name: Retry canonical production deployment
+        id: retry
+        shell: bash
+        run: |
+          set -euo pipefail
+          canonical_id="${{ steps.canonical.outputs.id }}"
+          status="$(curl --silent --show-error --output /tmp/retry.json --write-out '%{http_code}' \
             --request POST \
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            --form branch=main \
-            --form commit_dirty=false \
-            --form commit_hash="${EXPECTED_MAIN_SHA}" \
-            --form commit_message='Portfolio reviewed links #646' \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments")"
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments/${canonical_id}/retry")"
           echo "HTTP=$status"
-          jq '{success, errors, messages, result: (.result | if . == null then null else {id, url, environment, deployment_trigger, latest_stage} end)}' /tmp/deploy.json
-          test "$status" = "200" || test "$status" = "201"
-          test "$(jq -r '.success' /tmp/deploy.json)" = "true"
-          deployment_id="$(jq -r '.result.id' /tmp/deploy.json)"
-          test -n "$deployment_id"
-          test "$deployment_id" != "null"
-          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+          cat /tmp/retry.json | jq '{success, errors, messages, result:(.result | if . == null then null else {id,url,environment,deployment_trigger,latest_stage} end)}'
+          test "$status" = "200"
+          test "$(jq -r '.success' /tmp/retry.json)" = "true"
+          id="$(jq -r '.result.id' /tmp/retry.json)"
+          test -n "$id"
+          test "$id" != "null"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for production deployment success
+      - name: Wait for retried production deployment
         shell: bash
         run: |
           set -euo pipefail
-          id="${{ steps.trigger.outputs.deployment_id }}"
+          id="${{ steps.retry.outputs.id }}"
           ok=0
           for attempt in $(seq 1 60); do
             curl --fail --silent --show-error \
@@ -83,18 +98,18 @@ jobs:
               break
             fi
             if [ "$stage" = "failure" ] || [ "$stage" = "canceled" ]; then
-              jq '{success, result:{environment, deployment_trigger, latest_stage, stages, skip_reason}}' /tmp/status.json
+              jq '{success,result:{environment,deployment_trigger,latest_stage,stages,skip_reason}}' /tmp/status.json
               exit 1
             fi
             sleep 5
           done
           test "$ok" = "1"
 
-      - name: Verify canonical Portfolio now contains final review links
+      - name: Verify canonical Portfolio alias
         shell: bash
         run: |
           set -euo pipefail
-          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?final=20260815"
+          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?retry=20260815"
           ok=0
           for attempt in $(seq 1 24); do
             if curl --fail --silent --show-error --location --connect-timeout 10 --max-time 30 "$url" -o /tmp/live.js; then
@@ -109,4 +124,4 @@ jobs:
             sleep 5
           done
           test "$ok" = "1"
-          echo "Canonical Portfolio updated: https://${PROJECT_NAME}.pages.dev/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Canonical Portfolio alias updated: https://${PROJECT_NAME}.pages.dev/" >> "$GITHUB_STEP_SUMMARY"
