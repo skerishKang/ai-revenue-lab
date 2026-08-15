@@ -37,7 +37,7 @@ jobs:
           grep -Fq 'ai-revenue-final-b09' apps/portfolio-console/review-surfaces-396.js
           grep -Fq 'ai-revenue-final-b11' apps/portfolio-console/review-surfaces-396.js
 
-      - name: Trigger Git-integrated production deployment from current production source
+      - name: Trigger Git-integrated production deployment from main
         id: trigger
         shell: bash
         run: |
@@ -45,9 +45,15 @@ jobs:
           status="$(curl --silent --show-error --output /tmp/deploy.json --write-out '%{http_code}' \
             --request POST \
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --form branch=main \
+            --form commit_dirty=false \
+            --form commit_hash="${EXPECTED_MAIN_SHA}" \
+            --form commit_message='Portfolio reviewed links #646' \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments")"
+          echo "HTTP=$status"
+          jq '{success, errors, messages, result: (.result | if . == null then null else {id, url, environment, deployment_trigger, latest_stage} end)}' /tmp/deploy.json
           test "$status" = "200" || test "$status" = "201"
-          jq '{success, result: {id, url, environment, deployment_trigger, latest_stage}}' /tmp/deploy.json
+          test "$(jq -r '.success' /tmp/deploy.json)" = "true"
           deployment_id="$(jq -r '.result.id' /tmp/deploy.json)"
           test -n "$deployment_id"
           test "$deployment_id" != "null"
@@ -67,15 +73,17 @@ jobs:
             environment="$(jq -r '.result.environment' /tmp/status.json)"
             stage="$(jq -r '.result.latest_stage.status' /tmp/status.json)"
             commit="$(jq -r '.result.deployment_trigger.metadata.commit_hash // empty' /tmp/status.json)"
-            echo "attempt=$attempt environment=$environment stage=$stage commit=$commit"
+            branch="$(jq -r '.result.deployment_trigger.metadata.branch // empty' /tmp/status.json)"
+            echo "attempt=$attempt environment=$environment stage=$stage branch=$branch commit=$commit"
             if [ "$stage" = "success" ]; then
               test "$environment" = "production"
+              test "$branch" = "main"
               test "$commit" = "$EXPECTED_MAIN_SHA"
               ok=1
               break
             fi
             if [ "$stage" = "failure" ] || [ "$stage" = "canceled" ]; then
-              cat /tmp/status.json
+              jq '{success, result:{environment, deployment_trigger, latest_stage, stages, skip_reason}}' /tmp/status.json
               exit 1
             fi
             sleep 5
