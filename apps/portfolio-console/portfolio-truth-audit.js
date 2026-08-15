@@ -32,12 +32,12 @@
     1: {
       source: "PR #456",
       mergedCommit: "dc129b0a2768ec8aaae0d7517e182311d7b80422",
-      surfaceUrl: "https://ai-revenue-personal-edition.pages.dev/"
+      surfaceUrl: "https://ai-revenue-final-review-b01.pages.dev/"
     },
     2: {
       source: "PR #460",
       mergedCommit: "d2fcd03dc696c451fa1ab31a690249fa37c82a21",
-      surfaceUrl: "https://ai-revenue-living-travel.pages.dev/"
+      surfaceUrl: "https://ai-revenue-final-review-b02.pages.dev/"
     }
   });
 

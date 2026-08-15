@@ -10,7 +10,7 @@ test('B1 owner review routes to canonical Production and remains unapproved', as
 
   const link = row.locator('.biz-launch-open');
   await expect(link).toHaveCount(1);
-  await expect(link).toHaveAttribute('href', 'https://ai-revenue-personal-edition.pages.dev/');
+  await expect(link).toHaveAttribute('href', 'https://ai-revenue-final-review-b01.pages.dev/');
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
 
@@ -23,7 +23,7 @@ test('B1 owner review routes to canonical Production and remains unapproved', as
   });
 
   expect(identity).toEqual({
-    surfaceUrl: 'https://ai-revenue-personal-edition.pages.dev/',
+    surfaceUrl: 'https://ai-revenue-final-review-b01.pages.dev/',
     ownerUiStatus: 'OWNER_REJECTED',
   });
 });

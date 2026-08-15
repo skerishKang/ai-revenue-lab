@@ -71,14 +71,17 @@ assert.equal(verified.length, 39, 'All 39 numbered web surfaces are byte-verifie
 assert.equal(webReviews.some((entry) => entry.status === 'CLOUDFLARE_REVIEW_DEPLOY_PENDING'), false);
 
 const finalReviewed = new Map([
-  [7, ['ai-revenue-final-b07', 'b4c055f23e1b9b488ed2d6dd2b31d8ef5c0451de71bcf4851ff5982766463d89']],
-  [8, ['ai-revenue-final-b08', 'fce0b556f32ec27787cad9f1827e4daa7027ad538b7cebb75dcc967df5334919']],
-  [9, ['ai-revenue-final-b09', '81ee4dfe890f04631b2ec3fffae6d4f450ce21d9913917baf2522aac0d4e49db']],
-  [11, ['ai-revenue-final-b11', '416b8c8c85014195912554b5a327c3975d4c2844841bf95248eb5003bc83a358']],
+  [6, ['ai-revenue-final-review-b06', '888e91e45c9d02d214cd8a7fef6b710586d09f4b02e07ae3f82e717ed02c634e']],
+  [7, ['ai-revenue-final-review-b07', 'b4c055f23e1b9b488ed2d6dd2b31d8ef5c0451de71bcf4851ff5982766463d89']],
+  [8, ['ai-revenue-final-review-b08', 'fce0b556f32ec27787cad9f1827e4daa7027ad538b7cebb75dcc967df5334919']],
+  [9, ['ai-revenue-final-review-b09', '81ee4dfe890f04631b2ec3fffae6d4f450ce21d9913917baf2522aac0d4e49db']],
+  [11, ['ai-revenue-final-review-b11', '416b8c8c85014195912554b5a327c3975d4c2844841bf95248eb5003bc83a358']],
 ]);
 
 for (const entry of webReviews) {
   assert.match(entry.exactHead, /^[0-9a-f]{40}$/);
+  // Numbered projects keep the historical NN-slug contract; independently
+  // reviewed 2026-08-15 final surfaces use dedicated ai-revenue-final(-review)-bNN pages.
   const final = finalReviewed.get(entry.number);
   if (final) {
     assert.equal(entry.project, final[0]);
@@ -105,11 +108,11 @@ for (const number of [6, 32, 35, 59]) {
   assert.equal(review[number].entry, 'index.html');
 }
 
-assert.equal(review[6].surfaceUrl, 'https://06-world-feed.pages.dev/');
-assert.equal(review[7].surfaceUrl, 'https://ai-revenue-final-b07.pages.dev/');
-assert.equal(review[8].surfaceUrl, 'https://ai-revenue-final-b08.pages.dev/');
-assert.equal(review[9].surfaceUrl, 'https://ai-revenue-final-b09.pages.dev/');
-assert.equal(review[11].surfaceUrl, 'https://ai-revenue-final-b11.pages.dev/');
+assert.equal(review[6].surfaceUrl, 'https://ai-revenue-final-review-b06.pages.dev/');
+assert.equal(review[7].surfaceUrl, 'https://ai-revenue-final-review-b07.pages.dev/');
+assert.equal(review[8].surfaceUrl, 'https://ai-revenue-final-review-b08.pages.dev/');
+assert.equal(review[9].surfaceUrl, 'https://ai-revenue-final-review-b09.pages.dev/');
+assert.equal(review[11].surfaceUrl, 'https://ai-revenue-final-review-b11.pages.dev/');
 assert.equal(review[32].surfaceUrl, 'https://32-ai-skill-studio.pages.dev/');
 assert.equal(review[35].surfaceUrl, 'https://35-ai-media-education-dx.pages.dev/');
 assert.equal(review[59].surfaceUrl, 'https://59-living-archive.pages.dev/');

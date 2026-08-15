@@ -54,20 +54,24 @@
   ];
 
   var finalReviewed = {
+    6: {
+      project: "ai-revenue-final-review-b06",
+      sha256: "888e91e45c9d02d214cd8a7fef6b710586d09f4b02e07ae3f82e717ed02c634e",
+    },
     7: {
-      project: "ai-revenue-final-b07",
+      project: "ai-revenue-final-review-b07",
       sha256: "b4c055f23e1b9b488ed2d6dd2b31d8ef5c0451de71bcf4851ff5982766463d89",
     },
     8: {
-      project: "ai-revenue-final-b08",
+      project: "ai-revenue-final-review-b08",
       sha256: "fce0b556f32ec27787cad9f1827e4daa7027ad538b7cebb75dcc967df5334919",
     },
     9: {
-      project: "ai-revenue-final-b09",
+      project: "ai-revenue-final-review-b09",
       sha256: "81ee4dfe890f04631b2ec3fffae6d4f450ce21d9913917baf2522aac0d4e49db",
     },
     11: {
-      project: "ai-revenue-final-b11",
+      project: "ai-revenue-final-review-b11",
       sha256: "416b8c8c85014195912554b5a327c3975d4c2844841bf95248eb5003bc83a358",
     },
   };
