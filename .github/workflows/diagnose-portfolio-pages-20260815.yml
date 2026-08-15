@@ -19,7 +19,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PROJECT_NAME: ai-revenue-portfolio-console
     steps:
-      - name: Read non-secret Pages project metadata
+      - name: Read Pages project and canonical deployment metadata
         shell: bash
         run: |
           set -euo pipefail
@@ -27,29 +27,36 @@ jobs:
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
             -o /tmp/project.json
-          jq '{success, result: {name: .result.name, subdomain: .result.subdomain, production_branch: .result.production_branch, build_config: .result.build_config, source: .result.source, deployment_configs: .result.deployment_configs, canonical_deployment: (.result.canonical_deployment | {id, url, environment, created_on, source, latest_stage}), latest_deployment: (.result.latest_deployment | {id, url, environment, created_on, source, latest_stage})}}' /tmp/project.json
-
-      - name: List recent deployment sources
-        shell: bash
-        run: |
-          set -euo pipefail
+          canonical_id="$(jq -r '.result.canonical_deployment.id' /tmp/project.json)"
+          canonical_url="$(jq -r '.result.canonical_deployment.url' /tmp/project.json)"
           curl --fail --silent --show-error \
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments?per_page=10" \
-            | jq '.result[] | {id, url, environment, created_on, source, latest_stage}'
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments/${canonical_id}" \
+            -o /tmp/canonical.json
+          jq '{project:{subdomain:.result.subdomain,production_branch:.result.production_branch,build_config:.result.build_config,source:.result.source},canonical:{id:.result.canonical_deployment.id,url:.result.canonical_deployment.url}}' /tmp/project.json
+          jq '{canonical_detail:{id:.result.id,url:.result.url,environment:.result.environment,is_skipped:.result.is_skipped,skip_reason:.result.skip_reason,deployment_trigger:.result.deployment_trigger,latest_stage:.result.latest_stage,stages:.result.stages}}' /tmp/canonical.json
+          echo "CANONICAL_URL=$canonical_url"
 
-      - name: Probe canonical host
+      - name: Compare canonical deployment URL with project root
         shell: bash
         run: |
           set -euo pipefail
-          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?audit=20260815"
-          status="$(curl --silent --show-error --location --output /tmp/probe --write-out '%{http_code}' "$url" || true)"
-          echo "PROBE=$url"
-          echo "HTTP=$status"
-          if [ "$status" = "200" ]; then
-            echo "B07_FINAL=$(grep -c 'ai-revenue-final-b07' /tmp/probe || true)"
-            echo "B08_FINAL=$(grep -c 'ai-revenue-final-b08' /tmp/probe || true)"
-            echo "B09_FINAL=$(grep -c 'ai-revenue-final-b09' /tmp/probe || true)"
-            echo "B11_FINAL=$(grep -c 'ai-revenue-final-b11' /tmp/probe || true)"
-            sha256sum /tmp/probe
+          canonical_url="$(jq -r '.result.canonical_deployment.url' /tmp/project.json)"
+          for spec in \
+            "root|https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?audit=20260815c" \
+            "deployment|${canonical_url}/review-surfaces-396.js?audit=20260815c"; do
+            label="${spec%%|*}"
+            url="${spec#*|}"
+            status="$(curl --silent --show-error --location --output "/tmp/${label}.js" --write-out '%{http_code}' "$url" || true)"
+            echo "$label HTTP=$status URL=$url"
+            if [ "$status" = "200" ]; then
+              echo "$label B07_FINAL=$(grep -c 'ai-revenue-final-b07' "/tmp/${label}.js" || true)"
+              echo "$label B08_FINAL=$(grep -c 'ai-revenue-final-b08' "/tmp/${label}.js" || true)"
+              echo "$label B09_FINAL=$(grep -c 'ai-revenue-final-b09' "/tmp/${label}.js" || true)"
+              echo "$label B11_FINAL=$(grep -c 'ai-revenue-final-b11' "/tmp/${label}.js" || true)"
+              sha256sum "/tmp/${label}.js"
+            fi
+          done
+          if [ -f /tmp/root.js ] && [ -f /tmp/deployment.js ]; then
+            cmp -s /tmp/root.js /tmp/deployment.js && echo 'ROOT_EQUALS_CANONICAL_DEPLOYMENT=YES' || echo 'ROOT_EQUALS_CANONICAL_DEPLOYMENT=NO'
           fi
