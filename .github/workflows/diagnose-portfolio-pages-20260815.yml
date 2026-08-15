@@ -27,25 +27,29 @@ jobs:
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
             -o /tmp/project.json
-          jq '{success, result: {name: .result.name, subdomain: .result.subdomain, production_branch: .result.production_branch, source: .result.source, canonical_deployment: (.result.canonical_deployment | {id, url, environment, created_on, latest_stage}), latest_deployment: (.result.latest_deployment | {id, url, environment, created_on, latest_stage})}}' /tmp/project.json
+          jq '{success, result: {name: .result.name, subdomain: .result.subdomain, production_branch: .result.production_branch, build_config: .result.build_config, source: .result.source, deployment_configs: .result.deployment_configs, canonical_deployment: (.result.canonical_deployment | {id, url, environment, created_on, source, latest_stage}), latest_deployment: (.result.latest_deployment | {id, url, environment, created_on, source, latest_stage})}}' /tmp/project.json
 
-      - name: Probe canonical host and deployment URLs
+      - name: List recent deployment sources
         shell: bash
         run: |
           set -euo pipefail
-          for url in \
-            "https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js" \
-            "$(jq -r '.result.canonical_deployment.url // empty' /tmp/project.json)/review-surfaces-396.js" \
-            "$(jq -r '.result.latest_deployment.url // empty' /tmp/project.json)/review-surfaces-396.js"; do
-            [ -n "$url" ] || continue
-            echo "PROBE=$url"
-            status="$(curl --silent --show-error --location --output /tmp/probe --write-out '%{http_code}' "$url" || true)"
-            echo "HTTP=$status"
-            if [ "$status" = "200" ]; then
-              echo "B07_FINAL=$(grep -c 'ai-revenue-final-b07' /tmp/probe || true)"
-              echo "B08_FINAL=$(grep -c 'ai-revenue-final-b08' /tmp/probe || true)"
-              echo "B09_FINAL=$(grep -c 'ai-revenue-final-b09' /tmp/probe || true)"
-              echo "B11_FINAL=$(grep -c 'ai-revenue-final-b11' /tmp/probe || true)"
-              sha256sum /tmp/probe
-            fi
-          done
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments?per_page=10" \
+            | jq '.result[] | {id, url, environment, created_on, source, latest_stage}'
+
+      - name: Probe canonical host
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${PROJECT_NAME}.pages.dev/review-surfaces-396.js?audit=20260815"
+          status="$(curl --silent --show-error --location --output /tmp/probe --write-out '%{http_code}' "$url" || true)"
+          echo "PROBE=$url"
+          echo "HTTP=$status"
+          if [ "$status" = "200" ]; then
+            echo "B07_FINAL=$(grep -c 'ai-revenue-final-b07' /tmp/probe || true)"
+            echo "B08_FINAL=$(grep -c 'ai-revenue-final-b08' /tmp/probe || true)"
+            echo "B09_FINAL=$(grep -c 'ai-revenue-final-b09' /tmp/probe || true)"
+            echo "B11_FINAL=$(grep -c 'ai-revenue-final-b11' /tmp/probe || true)"
+            sha256sum /tmp/probe
+          fi
