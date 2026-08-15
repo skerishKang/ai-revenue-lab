@@ -72,11 +72,17 @@ assert.equal(webReviews.some((entry) => entry.status === 'CLOUDFLARE_REVIEW_DEPL
 
 for (const entry of webReviews) {
   assert.match(entry.exactHead, /^[0-9a-f]{40}$/);
-  assert.match(entry.project, /^\d{2}-[a-z0-9-]+$/);
+  // Numbered projects keep the historical NN-slug contract; independently
+  // reviewed 2026-08-15 final surfaces use dedicated ai-revenue-final(-review)-bNN pages.
+  assert.match(entry.project, /^(?:\d{2}-[a-z0-9-]+|ai-revenue-final(-review)?-b\d{2})$/);
   assert.equal(entry.entry, 'index.html');
   assert.equal(entry.plannedUrl, `https://${entry.project}.pages.dev/`);
   assert.equal(entry.surfaceUrl, entry.plannedUrl);
-  assert.doesNotMatch(entry.surfaceUrl, /arl-review|ai-revenue/);
+  if (entry.finalReviewDate) {
+    assert.match(entry.surfaceUrl, /^https:\/\/ai-revenue-final(-review)?-b\d{2}\.pages\.dev\/$/);
+  } else {
+    assert.doesNotMatch(entry.surfaceUrl, /arl-review|ai-revenue/);
+  }
 }
 
 for (const business of businesses) {
@@ -89,7 +95,7 @@ for (const number of [6, 32, 35, 59]) {
   assert.equal(review[number].entry, 'index.html');
 }
 
-assert.equal(review[6].surfaceUrl, 'https://06-world-feed.pages.dev/');
+assert.equal(review[6].surfaceUrl, 'https://ai-revenue-final-review-b06.pages.dev/');
 assert.equal(review[32].surfaceUrl, 'https://32-ai-skill-studio.pages.dev/');
 assert.equal(review[35].surfaceUrl, 'https://35-ai-media-education-dx.pages.dev/');
 assert.equal(review[59].surfaceUrl, 'https://59-living-archive.pages.dev/');

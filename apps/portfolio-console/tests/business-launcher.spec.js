@@ -230,7 +230,7 @@ test.describe('Portfolio Console Business Launcher', () => {
 
   test('canonical numbered review surfaces are linked directly', async ({ page }) => {
     const expectations = [
-      [6, 'https://06-world-feed.pages.dev/'],
+      [6, 'https://ai-revenue-final-review-b06.pages.dev/'],
       [32, 'https://32-ai-skill-studio.pages.dev/'],
       [35, 'https://35-ai-media-education-dx.pages.dev/'],
       [59, 'https://59-living-archive.pages.dev/'],
@@ -272,7 +272,7 @@ test.describe('Portfolio Console Business Launcher', () => {
     await page.locator('.biz-item[data-biz-number="6"] .biz-title-group').click();
     const opened = await page.evaluate(() => window.__launcherOpened);
     expect(opened).toHaveLength(1);
-    expect(opened[0][0]).toBe('https://06-world-feed.pages.dev/');
+    expect(opened[0][0]).toBe('https://ai-revenue-final-review-b06.pages.dev/');
     expect(opened[0][1]).toBe('_blank');
   });
 

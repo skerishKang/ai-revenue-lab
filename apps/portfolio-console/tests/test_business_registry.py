@@ -37,10 +37,12 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertEqual(len(numbers), len(set(numbers)))
         self.assertNotIn(56, numbers)
 
-    def test_reserved_slots_seven_through_twelve_exist_as_proposed(self) -> None:
+    def test_reserved_slots_seven_through_twelve_exist_as_canonical(self) -> None:
+        # B7-B12 were promoted from PROPOSED to CANONICAL in the 2026-08-15
+        # final-surface wiring (PR #646); the authority must stay CANONICAL.
         for number in range(7, 13):
             block = self.business_block(number)
-            self.assertIn("PROPOSED", block)
+            self.assertIn("CANONICAL", block)
 
     def test_businesses_seven_through_twelve_use_correct_mappings(self) -> None:
         expected = {
