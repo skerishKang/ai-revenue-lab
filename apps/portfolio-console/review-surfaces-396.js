@@ -1,8 +1,9 @@
 /* Canonical review-surface registry for owner program #396.
  *
- * All 39 web targets below were migrated to numbered Cloudflare Pages projects
- * and byte-verified against their exact PR heads. The canonical public naming
- * contract is `NN-name.pages.dev`; obsolete `arl-review-*` URLs are not used.
+ * Web targets were migrated to numbered Cloudflare Pages projects and
+ * byte-verified against their exact PR heads. A small set of independently
+ * reviewed 2026-08-15 Drive canonicals is routed to dedicated Final Review
+ * Pages without rewriting historical PR/SHA lineage.
  */
 (function () {
   "use strict";
@@ -52,10 +53,30 @@
     [59, 392, "f327093a445086d4efb79452b1bc62ba53ff8a9b", "59-living-archive"],
   ];
 
+  var finalReviewed = {
+    7: {
+      project: "ai-revenue-final-b07",
+      sha256: "b4c055f23e1b9b488ed2d6dd2b31d8ef5c0451de71bcf4851ff5982766463d89",
+    },
+    8: {
+      project: "ai-revenue-final-b08",
+      sha256: "fce0b556f32ec27787cad9f1827e4daa7027ad538b7cebb75dcc967df5334919",
+    },
+    9: {
+      project: "ai-revenue-final-b09",
+      sha256: "81ee4dfe890f04631b2ec3fffae6d4f450ce21d9913917baf2522aac0d4e49db",
+    },
+    11: {
+      project: "ai-revenue-final-b11",
+      sha256: "416b8c8c85014195912554b5a327c3975d4c2844841bf95248eb5003bc83a358",
+    },
+  };
+
   var map = {};
   rows.forEach(function (row) {
     var number = row[0];
-    var project = row[3];
+    var finalReview = finalReviewed[number] || null;
+    var project = finalReview ? finalReview.project : row[3];
     var url = "https://" + project + ".pages.dev/";
     map[number] = {
       number: number,
@@ -67,6 +88,8 @@
       entry: "index.html",
       plannedUrl: url,
       surfaceUrl: url,
+      finalReviewDate: finalReview ? "2026-08-15" : null,
+      finalReviewSha256: finalReview ? finalReview.sha256 : null,
     };
   });
 
