@@ -1,0 +1,86 @@
+name: Deploy final reviewed Business surfaces 2026-08-15
+
+on:
+  push:
+    branches:
+      - agent/portfolio-final-review-links-20260815
+    paths:
+      - .github/workflows/deploy-final-review-surfaces-20260815.yml
+      - review/final-surfaces-20260815/payloads/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-final-review-surfaces-20260815
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - business: B07
+            payload: b07.html.xz.b64
+            sha256: b4c055f23e1b9b488ed2d6dd2b31d8ef5c0451de71bcf4851ff5982766463d89
+            project: ai-revenue-final-b07
+          - business: B08
+            payload: b08.html.xz.b64
+            sha256: fce0b556f32ec27787cad9f1827e4daa7027ad538b7cebb75dcc967df5334919
+            project: ai-revenue-final-b08
+          - business: B09
+            payload: b09.html.xz.b64
+            sha256: 81ee4dfe890f04631b2ec3fffae6d4f450ce21d9913917baf2522aac0d4e49db
+            project: ai-revenue-final-b09
+          - business: B11
+            payload: b11.html.xz.b64
+            sha256: 416b8c8c85014195912554b5a327c3975d4c2844841bf95248eb5003bc83a358
+            project: ai-revenue-final-b11
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct exact reviewed standalone
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site
+          base64 -d "review/final-surfaces-20260815/payloads/${{ matrix.payload }}" | xz -d > site/index.html
+          echo "${{ matrix.sha256 }}  site/index.html" | sha256sum -c -
+          test -s site/index.html
+
+      - name: Ensure dedicated Final Review Pages project exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl --silent --show-error --output /tmp/pages-project.json --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${{ matrix.project }}")"
+          if [ "${status}" = "404" ]; then
+            npx --yes wrangler@4 pages project create "${{ matrix.project }}" --production-branch final-review
+          elif [ "${status}" != "200" ]; then
+            cat /tmp/pages-project.json || true
+            exit 1
+          fi
+
+      - name: Deploy reviewed standalone without changing product Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy site \
+            --project-name "${{ matrix.project }}" \
+            --branch final-review \
+            --commit-hash "${GITHUB_SHA}" \
+            --commit-message "${{ matrix.business }} independent final review 2026-08-15" \
+            --commit-dirty=false
+
+      - name: Publish review URL
+        shell: bash
+        run: |
+          echo "- ${{ matrix.business }}: https://${{ matrix.project }}.pages.dev/" >> "$GITHUB_STEP_SUMMARY"
