@@ -58,8 +58,7 @@ jobs:
           console.log('Portfolio reviewed links verified');
           NODE
 
-      - name: Read Portfolio Pages production branch
-        id: project
+      - name: Verify Portfolio Pages project exists
         shell: bash
         run: |
           set -euo pipefail
@@ -67,18 +66,13 @@ jobs:
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}")"
           test "$status" = "200"
-          production_branch="$(jq -r '.result.production_branch' /tmp/project.json)"
-          test -n "$production_branch"
-          test "$production_branch" != "null"
-          echo "production_branch=$production_branch" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy exact main Portfolio Console to actual production branch
+      - name: Deploy exact main Portfolio Console to Production
         shell: bash
         run: |
           set -euo pipefail
           npx --yes wrangler@4 pages deploy apps/portfolio-console \
             --project-name "${PROJECT_NAME}" \
-            --branch "${{ steps.project.outputs.production_branch }}" \
             --commit-hash "${MAIN_SHA}" \
             --commit-message "Portfolio reviewed links #646" \
             --commit-dirty=false
