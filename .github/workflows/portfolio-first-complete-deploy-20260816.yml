@@ -1,0 +1,127 @@
+name: Deploy B01-B15 First Complete Portfolio
+
+on:
+  push:
+    branches:
+      - portfolio/first-complete-20260816
+    paths:
+      - portfolio/first-complete/**
+      - .github/workflows/portfolio-first-complete-deploy-20260816.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-first-complete-20260816
+  cancel-in-progress: false
+
+jobs:
+  deploy-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: ai-revenue-final-portfolio
+      SOURCE_DIR: portfolio/first-complete
+      PUBLIC_URL: https://ai-revenue-final-portfolio.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify source contract
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path("portfolio/first-complete/index.html")
+          text = p.read_text(encoding="utf-8")
+          required = [
+              "B01–B15 First Complete Edition",
+              "BUSINESS 01",
+              "BUSINESS 15",
+              "BLOCKED · INTEGRATION ONLY",
+              "OWNER ADOPTED · V4",
+              "DESIGN COMPLETE · CANDIDATE",
+              "https://danjion.pages.dev",
+          ]
+          missing = [x for x in required if x not in text]
+          if missing:
+              raise SystemExit(f"missing required markers: {missing}")
+          if text.count('class="product"') != 15:
+              raise SystemExit(f"expected 15 product sections, found {text.count('class=\"product\"')}")
+          print("SOURCE_CONTRACT=PASS")
+
+      - name: Record prior production deployment for rollback
+        shell: python
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          import json, os, urllib.request
+          url=f"https://api.cloudflare.com/client/v4/accounts/{os.environ['ACCOUNT']}/pages/projects/ai-revenue-final-portfolio/deployments"
+          req=urllib.request.Request(url,headers={"Authorization":f"Bearer {os.environ['TOKEN']}","Accept":"application/json"})
+          with urllib.request.urlopen(req,timeout=30) as r:data=json.load(r)
+          prod=[x for x in data.get('result',[]) if x.get('environment')=='production']
+          prior=prod[0] if prod else {}
+          print("PRIOR_PRODUCTION_DEPLOYMENT_ID="+str(prior.get('id','NONE')))
+          print("PRIOR_PRODUCTION_CREATED_ON="+str(prior.get('created_on','NONE')))
+
+      - name: Deploy first complete edition to portfolio project
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy "${SOURCE_DIR}" \
+            --project-name "${PROJECT_NAME}" \
+            --branch main \
+            --commit-hash "${GITHUB_SHA}" \
+            --commit-message "B01-B15 first complete portfolio 2026-08-16" \
+            --commit-dirty=false
+
+      - name: Wait for production edge and verify content
+        shell: python
+        run: |
+          import time, urllib.request
+          url="https://ai-revenue-final-portfolio.pages.dev/"
+          last=""
+          for i in range(30):
+              try:
+                  req=urllib.request.Request(url,headers={"User-Agent":"portfolio-qa/1.0"})
+                  with urllib.request.urlopen(req,timeout=15) as r:
+                      last=r.read().decode("utf-8","replace")
+                  if "B01–B15 First Complete Edition" in last and "BUSINESS 15" in last:
+                      break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit("production did not expose first-complete content")
+          checks={
+            "http_content": "AI Revenue Lab" in last,
+            "b01": "BUSINESS 01" in last,
+            "b09_blocked": "BLOCKED · INTEGRATION ONLY" in last,
+            "b14_adopted": "OWNER ADOPTED · V4" in last,
+            "b15_candidate": "DESIGN COMPLETE · CANDIDATE" in last,
+          }
+          print("PRODUCTION_BYTES="+str(len(last.encode('utf-8'))))
+          print("CHECKS="+str(checks))
+          if not all(checks.values()): raise SystemExit("production content verification failed")
+          print("PRODUCTION_CONTENT_QA=PASS")
+
+      - name: Capture desktop and mobile review evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes playwright@1.55.0 install chromium >/dev/null
+          npx --yes playwright@1.55.0 screenshot --viewport-size="1440,1100" --full-page "${PUBLIC_URL}" portfolio-desktop.png
+          npx --yes playwright@1.55.0 screenshot --device="iPhone 13" --full-page "${PUBLIC_URL}" portfolio-mobile.png
+          test -s portfolio-desktop.png
+          test -s portfolio-mobile.png
+          echo "SCREENSHOT_QA=PASS"
+
+      - name: Upload portfolio review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-first-complete-review-20260816
+          path: |
+            portfolio-desktop.png
+            portfolio-mobile.png
+          if-no-files-found: error
