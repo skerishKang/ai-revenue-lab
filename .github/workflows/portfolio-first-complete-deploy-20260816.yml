@@ -18,7 +18,7 @@ concurrency:
 jobs:
   deploy-and-verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -50,6 +50,98 @@ jobs:
               raise SystemExit(f"expected 15 product sections, found {text.count('class=\"product\"')}")
           print("SOURCE_CONTRACT=PASS")
 
+      - name: Install browser capture runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/portfolio-pw
+          cd /tmp/portfolio-pw
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium >/dev/null
+
+      - name: Capture actual product surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${GITHUB_WORKSPACE}/${SOURCE_DIR}/previews"
+          cat >/tmp/portfolio-pw/capture.mjs <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'fs';
+          import path from 'path';
+          const out = path.join(process.env.GITHUB_WORKSPACE, 'portfolio/first-complete/previews');
+          const targets = {
+            b01:'https://ai-revenue-personal-edition.pages.dev',
+            b02:'https://ai-revenue-living-travel.pages.dev',
+            b04:'https://ai-revenue-living-learning.pages.dev',
+            b05:'https://danjion.pages.dev',
+            b06:'https://06-world-feed.pages.dev',
+            b07:'https://07-personal-meaning-map.pages.dev',
+            b08:'https://08-family-newspaper.pages.dev',
+            b09:'https://09-personalized-childrens-story.pages.dev',
+            b10:'https://10-fan-magazine.pages.dev',
+            b11:'https://11-language-learning-magazine.pages.dev',
+            b12:'https://12-creator-mini-media.pages.dev',
+            b13:'https://ai-revenue-personal-video-archive.pages.dev',
+            b15:'https://15-global-ai-newsroom.pages.dev'
+          };
+          const browser = await chromium.launch({headless:true});
+          const context = await browser.newContext({viewport:{width:1440,height:900}, deviceScaleFactor:1});
+          const failures=[];
+          for (const [id,url] of Object.entries(targets)) {
+            const page = await context.newPage();
+            try {
+              await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+              await page.waitForTimeout(1800);
+              await page.screenshot({path:path.join(out,`${id}.jpg`),type:'jpeg',quality:82,fullPage:false});
+              console.log(`PREVIEW_CAPTURE=${id}:PASS`);
+            } catch (e) {
+              failures.push(`${id}:${e.message}`);
+              console.log(`PREVIEW_CAPTURE=${id}:FAIL`);
+            } finally { await page.close(); }
+          }
+          await browser.close();
+          if (failures.length) {
+            console.error(failures.join('\n'));
+            process.exit(1);
+          }
+          for (const id of Object.keys(targets)) {
+            const f=path.join(out,`${id}.jpg`);
+            if (!fs.existsSync(f) || fs.statSync(f).size < 1000) throw new Error(`bad preview ${id}`);
+          }
+          NODE
+          cd /tmp/portfolio-pw
+          node capture.mjs
+
+      - name: Replace lazy iframe previews with captured product evidence in deploy bundle
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+          p=Path("portfolio/first-complete/index.html")
+          text=p.read_text(encoding="utf-8")
+          mapping={k:f"previews/{k}.jpg" for k in ["b01","b02","b04","b05","b06","b07","b08","b09","b10","b11","b12","b13","b15"]}
+          patch=f'''<script>
+          (()=>{{
+            const shots={json.dumps(mapping,separators=(',',':'))};
+            for(const [id,src] of Object.entries(shots)){{
+              const article=document.getElementById(id); if(!article) continue;
+              const viewport=article.querySelector('.preview .viewport'); if(!viewport) continue;
+              const img=document.createElement('img');
+              img.src=src; img.alt=id.toUpperCase()+' product preview';
+              img.style.cssText='width:100%;height:100%;display:block;object-fit:cover;object-position:top;background:#0e0e0e';
+              viewport.replaceChildren(img);
+              const loading=article.querySelector('.preview-loading'); if(loading) loading.remove();
+            }}
+          }})();
+          </script>'''
+          if "</body>" not in text: raise SystemExit("body close missing")
+          p.write_text(text.replace("</body>",patch+"\n</body>"),encoding="utf-8")
+          for src in mapping.values():
+            f=Path("portfolio/first-complete")/src
+            if not f.exists() or f.stat().st_size < 1000: raise SystemExit(f"missing preview {f}")
+          print("STATIC_PREVIEW_PATCH=PASS")
+
       - name: Record prior production deployment for rollback
         shell: python
         env:
@@ -73,7 +165,7 @@ jobs:
             --project-name "${PROJECT_NAME}" \
             --branch main \
             --commit-hash "${GITHUB_SHA}" \
-            --commit-message "B01-B15 first complete portfolio 2026-08-16" \
+            --commit-message "B01-B15 first complete portfolio with product evidence 2026-08-16" \
             --commit-dirty=false
 
       - name: Wait for production edge and verify content
@@ -87,19 +179,20 @@ jobs:
                   req=urllib.request.Request(url,headers={"User-Agent":"portfolio-qa/1.0"})
                   with urllib.request.urlopen(req,timeout=15) as r:
                       last=r.read().decode("utf-8","replace")
-                  if "B01–B15 First Complete Edition" in last and "BUSINESS 15" in last:
+                  if "B01–B15 First Complete Edition" in last and "previews/b01.jpg" in last:
                       break
               except Exception:
                   pass
               time.sleep(2)
           else:
-              raise SystemExit("production did not expose first-complete content")
+              raise SystemExit("production did not expose first-complete product-evidence content")
           checks={
             "http_content": "AI Revenue Lab" in last,
             "b01": "BUSINESS 01" in last,
             "b09_blocked": "BLOCKED · INTEGRATION ONLY" in last,
             "b14_adopted": "OWNER ADOPTED · V4" in last,
             "b15_candidate": "DESIGN COMPLETE · CANDIDATE" in last,
+            "static_previews": "previews/b15.jpg" in last,
           }
           print("PRODUCTION_BYTES="+str(len(last.encode('utf-8'))))
           print("CHECKS="+str(checks))
@@ -110,11 +203,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes playwright@1.55.0 install chromium >/dev/null
-          npx --yes playwright@1.55.0 screenshot --browser=chromium --viewport-size="1440,1100" --full-page "${PUBLIC_URL}" portfolio-desktop.png
-          npx --yes playwright@1.55.0 screenshot --browser=chromium --viewport-size="390,844" --full-page "${PUBLIC_URL}" portfolio-mobile.png
-          test -s portfolio-desktop.png
-          test -s portfolio-mobile.png
+          cd /tmp/portfolio-pw
+          npx playwright screenshot --browser=chromium --viewport-size="1440,1100" --full-page "${PUBLIC_URL}" "${GITHUB_WORKSPACE}/portfolio-desktop.png"
+          npx playwright screenshot --browser=chromium --viewport-size="390,844" --full-page "${PUBLIC_URL}" "${GITHUB_WORKSPACE}/portfolio-mobile.png"
+          test -s "${GITHUB_WORKSPACE}/portfolio-desktop.png"
+          test -s "${GITHUB_WORKSPACE}/portfolio-mobile.png"
           echo "SCREENSHOT_QA=PASS"
 
       - name: Upload portfolio review evidence
@@ -124,4 +217,5 @@ jobs:
           path: |
             portfolio-desktop.png
             portfolio-mobile.png
+            portfolio/first-complete/previews/*.jpg
           if-no-files-found: error
