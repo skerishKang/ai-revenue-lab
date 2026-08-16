@@ -1,4 +1,4 @@
-name: Cloudflare Pages cleanup inventory 2026-08-16
+name: Cloudflare Pages cleanup 2026-08-16
 
 on:
   push:
@@ -9,74 +9,119 @@ permissions:
   contents: read
 
 jobs:
-  inventory:
+  cleanup:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
-      - name: Inventory Cloudflare Pages projects
+      - name: Delete exact superseded review projects only
         shell: python
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          import json, os, urllib.request
+          import json, os, urllib.error, urllib.parse, urllib.request
 
           token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
           account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
           if not token or not account:
               raise SystemExit("Cloudflare credential secret missing")
 
-          base = f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects"
+          delete_names = [
+              "ai-revenue-final-b07",
+              "ai-revenue-final-b08",
+              "ai-revenue-final-b11",
+              "ai-revenue-final-review-b01",
+              "ai-revenue-final-review-b02",
+              "ai-revenue-final-review-b04",
+              "ai-revenue-final-review-b06",
+              "ai-revenue-final-review-b07",
+              "ai-revenue-final-review-b08",
+              "ai-revenue-final-review-b11",
+          ]
 
-          def fetch(page=None):
-              url = base if page is None else f"{base}?page={page}"
-              req = urllib.request.Request(url)
+          protected = {
+              "ai-revenue-final-b09",
+              "ai-revenue-final-review-b09",
+              "ai-revenue-business-14-korean-ai-platform",
+              "ai-revenue-final-portfolio",
+              "ai-revenue-personal-edition",
+              "ai-revenue-living-travel",
+              "ai-revenue-living-learning",
+              "ai-revenue-personal-video-archive",
+              "ai-revenue-world-feed",
+              "ai-revenue-neighbor-market",
+              "06-world-feed",
+              "07-personal-meaning-map",
+              "08-family-newspaper",
+              "09-personalized-childrens-story",
+              "10-fan-magazine",
+              "11-language-learning-magazine",
+              "12-creator-mini-media",
+              "15-global-ai-newsroom",
+              "401-love-match-making",
+              "cgbukku",
+              "fmindex",
+              "fmindex-integration-preview",
+              "fmindex-ui-preview",
+              "lovebud",
+              "lovetree3",
+              "ai-revenue-portfolio-console",
+          }
+
+          overlap = sorted(set(delete_names) & protected)
+          if overlap:
+              raise SystemExit("Refusing cleanup: protected/delete overlap")
+
+          api = "https://api.cloudflare.com/client/v4"
+
+          def request(method, path):
+              req = urllib.request.Request(f"{api}{path}", method=method)
               req.add_header("Authorization", f"Bearer {token}")
               req.add_header("Accept", "application/json")
-              with urllib.request.urlopen(req, timeout=30) as resp:
-                  data = json.load(resp)
-              if not data.get("success"):
-                  raise SystemExit("Cloudflare Pages API returned success=false")
-              return data
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      body = resp.read()
+                      return resp.status, json.loads(body.decode("utf-8")) if body else {}
+              except urllib.error.HTTPError as exc:
+                  body = exc.read()
+                  data = json.loads(body.decode("utf-8")) if body else {}
+                  return exc.code, data
 
-          first = fetch()
-          pages = [first]
-          info = first.get("result_info") or {}
-          total_pages = int(info.get("total_pages") or 1)
-          for page in range(2, total_pages + 1):
-              pages.append(fetch(page))
+          deleted = []
+          skipped = []
+          failed = []
 
-          rows = []
-          seen = set()
-          for data in pages:
-              for p in data.get("result", []):
-                  name = p.get("name")
-                  if not name or name in seen:
-                      continue
-                  seen.add(name)
-                  source = p.get("source") or {}
-                  config = source.get("config") or {}
-                  rows.append({
-                      "name": name,
-                      "subdomain": p.get("subdomain"),
-                      "created_on": p.get("created_on"),
-                      "production_branch": p.get("production_branch"),
-                      "source_type": source.get("type"),
-                      "source_owner": config.get("owner"),
-                      "source_repo": config.get("repo_name"),
-                  })
+          for name in delete_names:
+              encoded = urllib.parse.quote(name, safe="")
+              get_status, get_data = request("GET", f"/accounts/{account}/pages/projects/{encoded}")
+              if get_status == 404:
+                  skipped.append({"name": name, "reason": "already_missing"})
+                  continue
+              if get_status != 200 or not get_data.get("success"):
+                  failed.append({"name": name, "stage": "precheck", "http": get_status})
+                  continue
 
-          rows.sort(key=lambda x: x["name"])
-          with open("cloudflare-pages-inventory-20260816.json", "w", encoding="utf-8") as f:
-              json.dump(rows, f, ensure_ascii=False, indent=2)
+              status, data = request("DELETE", f"/accounts/{account}/pages/projects/{encoded}")
+              if status in (200, 202) and data.get("success") is not False:
+                  deleted.append(name)
+              else:
+                  failed.append({"name": name, "stage": "delete", "http": status})
 
-          print(f"PROJECT_COUNT={len(rows)}")
-          for r in rows:
-              print("PROJECT=" + json.dumps(r, ensure_ascii=False, separators=(",", ":")))
+          result = {"deleted": deleted, "skipped": skipped, "failed": failed}
+          with open("cloudflare-pages-cleanup-result-20260816.json", "w", encoding="utf-8") as f:
+              json.dump(result, f, ensure_ascii=False, indent=2)
 
-      - name: Upload inventory artifact
+          print("DELETED_COUNT=" + str(len(deleted)))
+          print("DELETED=" + json.dumps(deleted, ensure_ascii=False))
+          print("SKIPPED=" + json.dumps(skipped, ensure_ascii=False))
+          print("FAILED=" + json.dumps(failed, ensure_ascii=False))
+          if failed:
+              raise SystemExit("One or more exact cleanup targets failed")
+
+      - name: Upload cleanup result
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cloudflare-pages-inventory-20260816
-          path: cloudflare-pages-inventory-20260816.json
-          if-no-files-found: error
+          name: cloudflare-pages-cleanup-result-20260816
+          path: cloudflare-pages-cleanup-result-20260816.json
+          if-no-files-found: warn
