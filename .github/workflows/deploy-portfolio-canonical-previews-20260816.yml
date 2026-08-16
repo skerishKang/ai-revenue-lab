@@ -36,7 +36,7 @@ jobs:
           root = Path('portfolio/first-complete')
           index = root / 'index.html'
           text = index.read_text(encoding='utf-8')
-          script = '<script src="./canonical-preview-authority.js?v=20260816-2"></script>'
+          script = '<script src="./canonical-preview-authority.js?v=20260816-3"></script>'
           if 'canonical-preview-authority.js' not in text:
               if '</body>' not in text:
                   raise SystemExit('index.html has no </body>')
@@ -66,29 +66,57 @@ jobs:
       - name: Verify production assets and authority loader
         shell: python
         run: |
-          import time, urllib.request
+          import time, urllib.request, urllib.error
           base = 'https://ai-revenue-final-portfolio.pages.dev'
+          cache = '?canonical=20260816-3'
+
           def get(path):
-              req = urllib.request.Request(base + path, headers={'User-Agent':'portfolio-canonical-qa/1.0'})
+              url = base + path
+              req = urllib.request.Request(url, headers={
+                  'User-Agent':'portfolio-canonical-qa/2.0',
+                  'Cache-Control':'no-cache',
+                  'Pragma':'no-cache'
+              })
               with urllib.request.urlopen(req, timeout=20) as r:
-                  return r.read()
-          last = b''
-          for _ in range(30):
-              try:
-                  last = get('/')
-                  if b'canonical-preview-authority.js?v=20260816-2' in last:
-                      break
-              except Exception:
-                  pass
-              time.sleep(2)
-          else:
-              raise SystemExit('canonical authority loader not visible in production')
-          js = get('/canonical-preview-authority.js?v=20260816-2').decode('utf-8', 'replace')
-          for marker in ['drive-canonical-20260816', 'B09 · INTEGRATION BLOCKER', 'canonical-previews/b02.jpg']:
-              if marker not in js:
-                  raise SystemExit(f'production loader missing marker: {marker}')
+                  body = r.read()
+                  return r.status, r.headers.get('content-type',''), body
+
+          def wait_for(label, check, attempts=30):
+              last = 'not-run'
+              for i in range(attempts):
+                  try:
+                      ok, detail = check()
+                      last = detail
+                      print(f'{label} attempt={i+1} {detail}')
+                      if ok:
+                          return
+                  except Exception as e:
+                      last = repr(e)
+                      print(f'{label} attempt={i+1} error={last}')
+                  time.sleep(2)
+              print(f'::error title=Portfolio production QA::{label} failed: {last}')
+              raise SystemExit(1)
+
+          def index_check():
+              status, ctype, body = get('/' + cache)
+              marker = b'canonical-preview-authority.js?v=20260816-3'
+              return marker in body, f'status={status} type={ctype} bytes={len(body)} marker={marker in body}'
+          wait_for('INDEX', index_check)
+
+          def loader_check():
+              status, ctype, body = get('/canonical-preview-authority.js' + cache)
+              text = body.decode('utf-8','replace')
+              markers = ['drive-canonical-20260816','B09 · INTEGRATION BLOCKER','canonical-previews/b02.jpg']
+              ok = status == 200 and all(m in text for m in markers)
+              return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]}'
+          wait_for('LOADER', loader_check)
+
           for bid in ['b02','b08','b10','b11','b13','b14','b15']:
-              data = get(f'/canonical-previews/{bid}.jpg')
-              if len(data) < 2500 or not data.startswith(b'\xff\xd8'):
-                  raise SystemExit(f'bad production preview asset: {bid} ({len(data)} bytes)')
+              def asset_check(bid=bid):
+                  status, ctype, body = get(f'/canonical-previews/{bid}.jpg' + cache)
+                  jpg = body.startswith(b'\xff\xd8')
+                  ok = status == 200 and len(body) >= 2000 and jpg
+                  return ok, f'{bid} status={status} type={ctype} bytes={len(body)} jpg={jpg}'
+              wait_for(f'ASSET-{bid}', asset_check, attempts=15)
+
           print('CANONICAL_PRODUCTION_QA=PASS')
