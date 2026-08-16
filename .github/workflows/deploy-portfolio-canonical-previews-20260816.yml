@@ -30,15 +30,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build canonical-authority deployment bundle
+      - name: Build corrected preview bundle
         shell: python
         run: |
           from pathlib import Path
+          import re
           root = Path('portfolio/first-complete')
           index = root / 'index.html'
           text = index.read_text(encoding='utf-8')
-          style = '<link rel="stylesheet" href="./canonical-preview-scale.css?v=20260816-5" />'
-          script = '<script src="./canonical-preview-authority.js?v=20260816-5"></script>'
+          style = '<link rel="stylesheet" href="./canonical-preview-scale.css?v=20260816-6" />'
+          script = '<script src="./canonical-preview-authority.js?v=20260816-6"></script>'
           if 'canonical-preview-scale.css' not in text:
               if '</head>' not in text:
                   raise SystemExit('index.html has no </head>')
@@ -47,29 +48,41 @@ jobs:
               if '</body>' not in text:
                   raise SystemExit('index.html has no </body>')
               text = text.replace('</body>', script + '\n</body>')
-          # Normalize any older cache-busted loader references in the deployment bundle.
-          import re
-          text = re.sub(r'canonical-preview-scale\.css\?v=[^"\']+', 'canonical-preview-scale.css?v=20260816-5', text)
-          text = re.sub(r'canonical-preview-authority\.js\?v=[^"\']+', 'canonical-preview-authority.js?v=20260816-5', text)
+          text = re.sub(r'canonical-preview-scale\.css\?v=[^"\']+', 'canonical-preview-scale.css?v=20260816-6', text)
+          text = re.sub(r'canonical-preview-authority\.js\?v=[^"\']+', 'canonical-preview-authority.js?v=20260816-6', text)
           index.write_text(text, encoding='utf-8')
 
-          required = ['b01','b02','b03','b04','b06','b07','b08','b10','b11','b12','b13','b14','b15']
+          required = ['b01','b02','b04','b06','b07','b08','b10','b11','b12','b13','b15']
           missing = [bid for bid in required if not (root / 'canonical-previews' / f'{bid}.jpg').is_file()]
           if missing:
-              raise SystemExit(f'missing canonical previews: {missing}')
+              raise SystemExit(f'missing approved card previews: {missing}')
+
           js = (root / 'canonical-preview-authority.js').read_text(encoding='utf-8')
-          for marker in ['drive-canonical-20260816', 'B09 · INTEGRATION BLOCKER', '승인본 크게 보기']:
+          required_js = [
+              'drive-canonical-highres-20260816',
+              'B09 · INTEGRATION BLOCKER',
+              'drive.google.com/thumbnail',
+              '원본 승인본 열기',
+              'Do NOT change .viewport position',
+          ]
+          for marker in required_js:
               if marker not in js:
-                  raise SystemExit(f'missing authority marker: {marker}')
+                  raise SystemExit(f'missing corrected authority marker: {marker}')
+          forbidden_js = ["host.style.position = 'relative'", 'b03: { card:', 'b14: { card:']
+          for marker in forbidden_js:
+              if marker in js:
+                  raise SystemExit(f'forbidden preview override remains: {marker}')
+
           css = (root / 'canonical-preview-scale.css').read_text(encoding='utf-8')
-          for marker in ['preserve the original portfolio layout', 'transform: scale(2.08)', 'object-position: top left']:
+          required_css = ['Preserve the portfolio layout', 'object-fit: cover', 'object-position: center top', 'transform: none']
+          for marker in required_css:
               if marker not in css:
-                  raise SystemExit(f'missing cell-fill marker: {marker}')
-          forbidden = ['grid-template-columns: minmax(260px, 290px)', 'min-height: clamp(720px, 50vw, 860px)']
-          for marker in forbidden:
+                  raise SystemExit(f'missing original-layout marker: {marker}')
+          forbidden_css = ['scale(2.08)', 'scale(1.72)', 'grid-template-columns: minmax(260px, 290px)', 'min-height: clamp(720px, 50vw, 860px)']
+          for marker in forbidden_css:
               if marker in css:
-                  raise SystemExit(f'old enlarged-layout marker still present: {marker}')
-          print('CANONICAL_CELL_FILL_BUNDLE=PASS')
+                  raise SystemExit(f'old broken scaling/layout marker remains: {marker}')
+          print('PREVIEW_GEOMETRY_AND_HIGHRES_LINKS=PASS')
 
       - name: Deploy portfolio only
         shell: bash
@@ -79,26 +92,24 @@ jobs:
             --project-name "${PROJECT_NAME}" \
             --branch main \
             --commit-hash "${GITHUB_SHA}" \
-            --commit-message "Portfolio original-layout preview cell fill correction" \
+            --commit-message "Portfolio preview geometry and high-res evidence correction" \
             --commit-dirty=true
 
-      - name: Verify production assets and cell-fill loader
+      - name: Verify production bundle
         shell: python
         run: |
           import time, urllib.request
           base = 'https://ai-revenue-final-portfolio.pages.dev'
-          cache = '?canonical=20260816-5'
+          cache = '?canonical=20260816-6'
 
           def get(path):
-              url = base + path
-              req = urllib.request.Request(url, headers={
-                  'User-Agent':'portfolio-canonical-qa/4.0',
+              req = urllib.request.Request(base + path, headers={
+                  'User-Agent':'portfolio-canonical-qa/5.0',
                   'Cache-Control':'no-cache',
                   'Pragma':'no-cache'
               })
               with urllib.request.urlopen(req, timeout=20) as r:
-                  body = r.read()
-                  return r.status, r.headers.get('content-type',''), body
+                  return r.status, r.headers.get('content-type',''), r.read()
 
           def wait_for(label, check, attempts=30):
               last = 'not-run'
@@ -118,35 +129,36 @@ jobs:
 
           def index_check():
               status, ctype, body = get('/' + cache)
-              js_marker = b'canonical-preview-authority.js?v=20260816-5'
-              css_marker = b'canonical-preview-scale.css?v=20260816-5'
+              js_marker = b'canonical-preview-authority.js?v=20260816-6'
+              css_marker = b'canonical-preview-scale.css?v=20260816-6'
               ok = js_marker in body and css_marker in body
-              return ok, f'status={status} type={ctype} bytes={len(body)} js={js_marker in body} css={css_marker in body}'
+              return ok, f'status={status} bytes={len(body)} js={js_marker in body} css={css_marker in body}'
           wait_for('INDEX', index_check)
 
           def loader_check():
               status, ctype, body = get('/canonical-preview-authority.js' + cache)
               text = body.decode('utf-8','replace')
-              markers = ['drive-canonical-20260816','B09 · INTEGRATION BLOCKER','canonical-previews/b02.jpg']
-              ok = status == 200 and all(m in text for m in markers)
-              return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]}'
+              required = ['drive-canonical-highres-20260816','drive.google.com/thumbnail','Do NOT change .viewport position','1MKU3xRACFclsOIMEeXJx5hqPbPKLfUYk']
+              forbidden = ["host.style.position = 'relative'", 'b03: { card:', 'b14: { card:']
+              ok = status == 200 and all(m in text for m in required) and not any(m in text for m in forbidden)
+              return ok, f'status={status} bytes={len(body)} required={[(m,m in text) for m in required]} forbidden={[(m,m in text) for m in forbidden]}'
           wait_for('LOADER', loader_check)
 
-          def fill_check():
+          def css_check():
               status, ctype, body = get('/canonical-preview-scale.css' + cache)
               text = body.decode('utf-8','replace')
-              markers = ['preserve the original portfolio layout','transform: scale(2.08)','object-position: top left']
-              forbidden = ['grid-template-columns: minmax(260px, 290px)','min-height: clamp(720px, 50vw, 860px)']
-              ok = status == 200 and all(m in text for m in markers) and not any(m in text for m in forbidden)
-              return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]} forbidden={[(m, m in text) for m in forbidden]}'
-          wait_for('CELL-FILL', fill_check)
+              required = ['object-fit: cover','object-position: center top','transform: none']
+              forbidden = ['scale(2.08)','scale(1.72)','grid-template-columns: minmax(260px, 290px)']
+              ok = status == 200 and all(m in text for m in required) and not any(m in text for m in forbidden)
+              return ok, f'status={status} bytes={len(body)} required={[(m,m in text) for m in required]} forbidden={[(m,m in text) for m in forbidden]}'
+          wait_for('CELL-FILL', css_check)
 
-          for bid in ['b02','b08','b10','b11','b13','b14','b15']:
+          for bid in ['b01','b02','b04','b06','b07','b08','b10','b11','b12','b13','b15']:
               def asset_check(bid=bid):
                   status, ctype, body = get(f'/canonical-previews/{bid}.jpg' + cache)
                   jpg = body.startswith(b'\xff\xd8')
                   ok = status == 200 and len(body) >= 2000 and jpg
-                  return ok, f'{bid} status={status} type={ctype} bytes={len(body)} jpg={jpg}'
-              wait_for(f'ASSET-{bid}', asset_check, attempts=15)
+                  return ok, f'{bid} status={status} bytes={len(body)} jpg={jpg}'
+              wait_for(f'CARD-{bid}', asset_check, attempts=15)
 
-          print('CANONICAL_PRODUCTION_QA=PASS')
+          print('PRODUCTION_PREVIEW_GEOMETRY=PASS')
