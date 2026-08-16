@@ -111,8 +111,8 @@ jobs:
         run: |
           set -euo pipefail
           npx --yes playwright@1.55.0 install chromium >/dev/null
-          npx --yes playwright@1.55.0 screenshot --viewport-size="1440,1100" --full-page "${PUBLIC_URL}" portfolio-desktop.png
-          npx --yes playwright@1.55.0 screenshot --device="iPhone 13" --full-page "${PUBLIC_URL}" portfolio-mobile.png
+          npx --yes playwright@1.55.0 screenshot --browser=chromium --viewport-size="1440,1100" --full-page "${PUBLIC_URL}" portfolio-desktop.png
+          npx --yes playwright@1.55.0 screenshot --browser=chromium --viewport-size="390,844" --full-page "${PUBLIC_URL}" portfolio-mobile.png
           test -s portfolio-desktop.png
           test -s portfolio-mobile.png
           echo "SCREENSHOT_QA=PASS"
