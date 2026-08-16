@@ -1,0 +1,66 @@
+name: Cloudflare Pages cleanup inventory 2026-08-16
+
+on:
+  push:
+    branches:
+      - ops/cloudflare-cleanup-20260816
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Inventory Cloudflare Pages projects
+        shell: python
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          import json, os, urllib.request
+
+          token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+          if not token or not account:
+              raise SystemExit("Cloudflare credential secret missing")
+
+          url = f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects?per_page=100"
+          req = urllib.request.Request(url)
+          req.add_header("Authorization", f"Bearer {token}")
+          req.add_header("Accept", "application/json")
+          with urllib.request.urlopen(req, timeout=30) as resp:
+              data = json.load(resp)
+
+          if not data.get("success"):
+              raise SystemExit("Cloudflare Pages API returned success=false")
+
+          rows = []
+          for p in data.get("result", []):
+              source = p.get("source") or {}
+              config = source.get("config") or {}
+              rows.append({
+                  "name": p.get("name"),
+                  "subdomain": p.get("subdomain"),
+                  "created_on": p.get("created_on"),
+                  "production_branch": p.get("production_branch"),
+                  "source_type": source.get("type"),
+                  "source_owner": config.get("owner"),
+                  "source_repo": config.get("repo_name"),
+              })
+
+          rows.sort(key=lambda x: (x.get("name") or ""))
+          with open("cloudflare-pages-inventory-20260816.json", "w", encoding="utf-8") as f:
+              json.dump(rows, f, ensure_ascii=False, indent=2)
+
+          print(f"PROJECT_COUNT={len(rows)}")
+          for r in rows:
+              print("PROJECT=" + json.dumps(r, ensure_ascii=False, separators=(",", ":")))
+
+      - name: Upload inventory artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-pages-inventory-20260816
+          path: cloudflare-pages-inventory-20260816.json
+          if-no-files-found: error
