@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/deploy-portfolio-canonical-previews-20260816.yml
       - portfolio/first-complete/canonical-preview-authority.js
+      - portfolio/first-complete/canonical-preview-scale.css
       - portfolio/first-complete/canonical-previews/**
 
 permissions:
@@ -36,12 +37,18 @@ jobs:
           root = Path('portfolio/first-complete')
           index = root / 'index.html'
           text = index.read_text(encoding='utf-8')
-          script = '<script src="./canonical-preview-authority.js?v=20260816-3"></script>'
+          style = '<link rel="stylesheet" href="./canonical-preview-scale.css?v=20260816-4" />'
+          script = '<script src="./canonical-preview-authority.js?v=20260816-4"></script>'
+          if 'canonical-preview-scale.css' not in text:
+              if '</head>' not in text:
+                  raise SystemExit('index.html has no </head>')
+              text = text.replace('</head>', style + '\n</head>')
           if 'canonical-preview-authority.js' not in text:
               if '</body>' not in text:
                   raise SystemExit('index.html has no </body>')
               text = text.replace('</body>', script + '\n</body>')
-              index.write_text(text, encoding='utf-8')
+          index.write_text(text, encoding='utf-8')
+
           required = ['b01','b02','b03','b04','b06','b07','b08','b10','b11','b12','b13','b14','b15']
           missing = [bid for bid in required if not (root / 'canonical-previews' / f'{bid}.jpg').is_file()]
           if missing:
@@ -50,6 +57,10 @@ jobs:
           for marker in ['drive-canonical-20260816', 'B09 · INTEGRATION BLOCKER', '승인본 크게 보기']:
               if marker not in js:
                   raise SystemExit(f'missing authority marker: {marker}')
+          css = (root / 'canonical-preview-scale.css').read_text(encoding='utf-8')
+          for marker in ['grid-template-columns: minmax(260px, 290px) minmax(0, 1fr)', 'min-height: clamp(720px, 50vw, 860px)', 'object-position: top center']:
+              if marker not in css:
+                  raise SystemExit(f'missing preview-scale marker: {marker}')
           print('CANONICAL_AUTHORITY_BUNDLE=PASS')
 
       - name: Deploy portfolio only
@@ -60,20 +71,20 @@ jobs:
             --project-name "${PROJECT_NAME}" \
             --branch main \
             --commit-hash "${GITHUB_SHA}" \
-            --commit-message "Portfolio canonical preview authority correction" \
+            --commit-message "Portfolio canonical preview scale correction" \
             --commit-dirty=true
 
       - name: Verify production assets and authority loader
         shell: python
         run: |
-          import time, urllib.request, urllib.error
+          import time, urllib.request
           base = 'https://ai-revenue-final-portfolio.pages.dev'
-          cache = '?canonical=20260816-3'
+          cache = '?canonical=20260816-4'
 
           def get(path):
               url = base + path
               req = urllib.request.Request(url, headers={
-                  'User-Agent':'portfolio-canonical-qa/2.0',
+                  'User-Agent':'portfolio-canonical-qa/3.0',
                   'Cache-Control':'no-cache',
                   'Pragma':'no-cache'
               })
@@ -99,8 +110,10 @@ jobs:
 
           def index_check():
               status, ctype, body = get('/' + cache)
-              marker = b'canonical-preview-authority.js?v=20260816-3'
-              return marker in body, f'status={status} type={ctype} bytes={len(body)} marker={marker in body}'
+              js_marker = b'canonical-preview-authority.js?v=20260816-4'
+              css_marker = b'canonical-preview-scale.css?v=20260816-4'
+              ok = js_marker in body and css_marker in body
+              return ok, f'status={status} type={ctype} bytes={len(body)} js={js_marker in body} css={css_marker in body}'
           wait_for('INDEX', index_check)
 
           def loader_check():
@@ -110,6 +123,14 @@ jobs:
               ok = status == 200 and all(m in text for m in markers)
               return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]}'
           wait_for('LOADER', loader_check)
+
+          def scale_check():
+              status, ctype, body = get('/canonical-preview-scale.css' + cache)
+              text = body.decode('utf-8','replace')
+              markers = ['grid-template-columns: minmax(260px, 290px) minmax(0, 1fr)','min-height: clamp(720px, 50vw, 860px)','object-position: top center']
+              ok = status == 200 and all(m in text for m in markers)
+              return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]}'
+          wait_for('PREVIEW-SCALE', scale_check)
 
           for bid in ['b02','b08','b10','b11','b13','b14','b15']:
               def asset_check(bid=bid):
