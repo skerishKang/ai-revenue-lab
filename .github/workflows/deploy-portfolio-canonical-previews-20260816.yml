@@ -1,4 +1,4 @@
-name: Deploy portfolio canonical previews 2026-08-16
+name: Deploy portfolio approved high-res previews 2026-08-17
 
 on:
   push:
@@ -11,16 +11,16 @@ on:
       - portfolio/first-complete/canonical-previews/**
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: portfolio-canonical-previews-20260816
+  group: portfolio-approved-highres-20260817
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -29,17 +29,138 @@ jobs:
       PUBLIC_URL: https://ai-revenue-final-portfolio.pages.dev
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Materialize approved high-resolution evidence
+        shell: python
+        env:
+          B01_URL: https://at.adobe.com/qYVmHrfSI9p1RMcp
+          B02_URL: https://at.adobe.com/KMpLBqa1nA39PSpd
+          B03_URL: https://at.adobe.com/nUjzlN31cqktt2gr
+          B04_URL: https://at.adobe.com/jYIKmpcIrCpHqeW9
+          B06_URL: https://at.adobe.com/W8r19bvgmknoOUFN
+          B07_URL: https://at.adobe.com/kr22qeugy0jLKJdE
+          B08_URL: https://at.adobe.com/61HRl9YvnUMls2rv
+          B09_URL: https://at.adobe.com/1hDRD88sAiAurr58
+          B10_URL: https://at.adobe.com/DZADtAxh0ZMaT7UK
+          B11_URL: https://at.adobe.com/ZA8d7xUda4fA1l5O
+          B12_URL: https://at.adobe.com/TmG3pv91P5ALaJCI
+          B13_URL: https://at.adobe.com/SECgLqxk5L7XU2OR
+          B14_URL: https://at.adobe.com/kFUqXmf46YkOY6kA
+          B15_URL: https://at.adobe.com/SMADwIjaSgiD3nvW
+        run: |
+          from pathlib import Path
+          import os, shutil, struct, subprocess, urllib.request
+
+          root = Path('portfolio/first-complete/canonical-previews/highres')
+          root.mkdir(parents=True, exist_ok=True)
+
+          def png_info(path):
+              p = Path(path)
+              if not p.is_file() or p.stat().st_size < 50000:
+                  return None
+              data = p.read_bytes()[:32]
+              if not data.startswith(b'\x89PNG\r\n\x1a\n') or len(data) < 24:
+                  return None
+              width, height = struct.unpack('>II', data[16:24])
+              if width < 1000 or height < 700:
+                  return None
+              return width, height, p.stat().st_size
+
+          ids = [f'b{i:02d}' for i in range(1, 16)]
+          existing = {bid: png_info(root / f'{bid}.png') for bid in ids}
+          if all(existing.values()):
+              print('HIGHRES_ASSETS_ALREADY_MATERIALIZED=PASS')
+              for bid in ids:
+                  print(bid, existing[bid])
+              raise SystemExit(0)
+
+          staging = {
+              'b01': os.environ['B01_URL'], 'b02': os.environ['B02_URL'],
+              'b03': os.environ['B03_URL'], 'b04': os.environ['B04_URL'],
+              'b06': os.environ['B06_URL'], 'b07': os.environ['B07_URL'],
+              'b08': os.environ['B08_URL'], 'b09': os.environ['B09_URL'],
+              'b10': os.environ['B10_URL'], 'b11': os.environ['B11_URL'],
+              'b12': os.environ['B12_URL'], 'b13': os.environ['B13_URL'],
+              'b14': os.environ['B14_URL'], 'b15': os.environ['B15_URL'],
+          }
+
+          for bid, url in staging.items():
+              dest = root / f'{bid}.png'
+              if png_info(dest):
+                  continue
+              req = urllib.request.Request(url, headers={'User-Agent':'portfolio-approved-evidence/1.0'})
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  dest.write_bytes(r.read())
+              info = png_info(dest)
+              if not info:
+                  raise SystemExit(f'{bid}: staged approved evidence is not a >=1000x700 PNG')
+              print(f'{bid}: STAGED_APPROVED_EVIDENCE={info}')
+
+          # B05 is the independent DanjiOn product. Capture its existing public UI only;
+          # do not mutate or redeploy the DanjiOn project.
+          b05 = root / 'b05.png'
+          if not png_info(b05):
+              chrome = None
+              for candidate in ['google-chrome-stable','google-chrome','chromium','chromium-browser']:
+                  found = shutil.which(candidate)
+                  if found:
+                      chrome = found
+                      break
+              if not chrome:
+                  for candidate in ['/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium']:
+                      if Path(candidate).is_file():
+                          chrome = candidate
+                          break
+              if not chrome:
+                  raise SystemExit('B05: no Chrome/Chromium available for approved live-product capture')
+
+              cmd = [chrome, '--headless=new', '--no-sandbox', '--disable-dev-shm-usage',
+                     '--hide-scrollbars', '--force-device-scale-factor=1', '--window-size=1440,1100',
+                     '--virtual-time-budget=8000', f'--screenshot={b05.resolve()}',
+                     'https://danjion.pages.dev/?portfolio_capture=20260817']
+              print('B05_CAPTURE_CMD=', ' '.join(cmd[:-1]), '<DANJION_URL>')
+              subprocess.run(cmd, check=True, timeout=90)
+              info = png_info(b05)
+              if not info:
+                  raise SystemExit('B05: live DanjiOn capture did not produce >=1000x700 PNG evidence')
+              print(f'b05: LIVE_DANJION_CAPTURE={info}')
+
+          final = {bid: png_info(root / f'{bid}.png') for bid in ids}
+          missing = [bid for bid, info in final.items() if not info]
+          if missing:
+              raise SystemExit(f'high-res materialization failed: {missing}')
+          for bid in ids:
+              print(f'HIGHRES {bid} {final[bid]}')
+          print('PORTFOLIO_HIGHRES_MATERIALIZATION=PASS')
+
+      - name: Persist high-resolution evidence in portfolio branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add portfolio/first-complete/canonical-previews/highres/*.png
+          if git diff --cached --quiet; then
+            echo "HIGHRES_BRANCH_PERSISTENCE=ALREADY_PRESENT"
+          else
+            git commit -m "assets: persist approved portfolio high-res evidence"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+            echo "HIGHRES_BRANCH_PERSISTENCE=COMMITTED"
+          fi
 
       - name: Build corrected preview bundle
         shell: python
         run: |
           from pathlib import Path
-          import re
+          import re, struct
           root = Path('portfolio/first-complete')
           index = root / 'index.html'
           text = index.read_text(encoding='utf-8')
-          style = '<link rel="stylesheet" href="./canonical-preview-scale.css?v=20260816-6" />'
-          script = '<script src="./canonical-preview-authority.js?v=20260816-6"></script>'
+          version = '20260817-1'
+          style = f'<link rel="stylesheet" href="./canonical-preview-scale.css?v={version}" />'
+          script = f'<script src="./canonical-preview-authority.js?v={version}"></script>'
           if 'canonical-preview-scale.css' not in text:
               if '</head>' not in text:
                   raise SystemExit('index.html has no </head>')
@@ -48,70 +169,92 @@ jobs:
               if '</body>' not in text:
                   raise SystemExit('index.html has no </body>')
               text = text.replace('</body>', script + '\n</body>')
-          text = re.sub(r'canonical-preview-scale\.css\?v=[^"\']+', 'canonical-preview-scale.css?v=20260816-6', text)
-          text = re.sub(r'canonical-preview-authority\.js\?v=[^"\']+', 'canonical-preview-authority.js?v=20260816-6', text)
+          text = re.sub(r'canonical-preview-scale\.css\?v=[^"\']+', f'canonical-preview-scale.css?v={version}', text)
+          text = re.sub(r'canonical-preview-authority\.js\?v=[^"\']+', f'canonical-preview-authority.js?v={version}', text)
           index.write_text(text, encoding='utf-8')
 
-          required = ['b01','b02','b04','b06','b07','b08','b10','b11','b12','b13','b15']
-          missing = [bid for bid in required if not (root / 'canonical-previews' / f'{bid}.jpg').is_file()]
-          if missing:
-              raise SystemExit(f'missing approved card previews: {missing}')
+          def png_info(path):
+              p = Path(path)
+              data = p.read_bytes()[:32] if p.is_file() else b''
+              if len(data) < 24 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                  return None
+              w, h = struct.unpack('>II', data[16:24])
+              return w, h, p.stat().st_size
+
+          expected = [f'b{i:02d}' for i in range(1,16)]
+          bad = []
+          for bid in expected:
+              info = png_info(root / 'canonical-previews' / 'highres' / f'{bid}.png')
+              if not info or info[0] < 1000 or info[1] < 700 or info[2] < 50000:
+                  bad.append((bid, info))
+          if bad:
+              raise SystemExit(f'bad/missing high-res assets: {bad}')
 
           js = (root / 'canonical-preview-authority.js').read_text(encoding='utf-8')
           required_js = [
-              'drive-canonical-highres-20260816',
-              'B09 · INTEGRATION BLOCKER',
-              'drive.google.com/thumbnail',
+              'local-highres-approved-20260817',
+              'canonical-previews/highres/b09.png',
+              'canonical-previews/highres/b11.png',
+              'FINAL RASTER AUTHORITY',
+              'LANGUAGE LEARNING MAGAZINE · KEEP CANONICAL',
+              'V4 MASTER PRODUCT',
               '원본 승인본 열기',
-              'Do NOT change .viewport position',
+              'Never change .viewport positioning',
+          ]
+          forbidden_js = [
+              "host.style.position = 'relative'",
+              'installB09Blocker',
+              'drive.google.com/thumbnail',
+              "canonical-previews/b01.jpg",
+              'B09 · INTEGRATION BLOCKER',
+              'scale(2.08)', 'scale(1.72)',
           ]
           for marker in required_js:
               if marker not in js:
-                  raise SystemExit(f'missing corrected authority marker: {marker}')
-          forbidden_js = ["host.style.position = 'relative'", 'b03: { card:', 'b14: { card:']
+                  raise SystemExit(f'missing high-res authority marker: {marker}')
           for marker in forbidden_js:
               if marker in js:
-                  raise SystemExit(f'forbidden preview override remains: {marker}')
+                  raise SystemExit(f'forbidden old preview marker remains: {marker}')
 
           css = (root / 'canonical-preview-scale.css').read_text(encoding='utf-8')
-          required_css = ['Preserve the portfolio layout', 'object-fit: cover', 'object-position: center top', 'transform: none']
+          required_css = ['Preserve the portfolio layout', 'object-fit: cover', 'transform: none']
+          forbidden_css = ['scale(2.08)', 'scale(1.72)', 'grid-template-columns: minmax(260px, 290px)', 'min-height: clamp(720px, 50vw, 860px)']
           for marker in required_css:
               if marker not in css:
                   raise SystemExit(f'missing original-layout marker: {marker}')
-          forbidden_css = ['scale(2.08)', 'scale(1.72)', 'grid-template-columns: minmax(260px, 290px)', 'min-height: clamp(720px, 50vw, 860px)']
           for marker in forbidden_css:
               if marker in css:
                   raise SystemExit(f'old broken scaling/layout marker remains: {marker}')
-          print('PREVIEW_GEOMETRY_AND_HIGHRES_LINKS=PASS')
+          print('PREVIEW_GEOMETRY_AND_LOCAL_HIGHRES=PASS')
 
       - name: Deploy portfolio only
         shell: bash
         run: |
           set -euo pipefail
+          DEPLOY_SHA="$(git rev-parse HEAD)"
           npx --yes wrangler@4 pages deploy "${SOURCE_DIR}" \
             --project-name "${PROJECT_NAME}" \
             --branch main \
-            --commit-hash "${GITHUB_SHA}" \
-            --commit-message "Portfolio preview geometry and high-res evidence correction" \
+            --commit-hash "${DEPLOY_SHA}" \
+            --commit-message "Portfolio latest approved high-resolution previews" \
             --commit-dirty=true
 
-      - name: Verify production bundle
+      - name: Verify production static bundle
         shell: python
         run: |
-          import time, urllib.request
+          import struct, time, urllib.request
           base = 'https://ai-revenue-final-portfolio.pages.dev'
-          cache = '?canonical=20260816-6'
+          cache = '?canonical=20260817-1'
 
           def get(path):
               req = urllib.request.Request(base + path, headers={
-                  'User-Agent':'portfolio-canonical-qa/5.0',
-                  'Cache-Control':'no-cache',
-                  'Pragma':'no-cache'
+                  'User-Agent':'portfolio-highres-qa/6.0',
+                  'Cache-Control':'no-cache', 'Pragma':'no-cache'
               })
-              with urllib.request.urlopen(req, timeout=20) as r:
+              with urllib.request.urlopen(req, timeout=25) as r:
                   return r.status, r.headers.get('content-type',''), r.read()
 
-          def wait_for(label, check, attempts=30):
+          def wait_for(label, check, attempts=35):
               last = 'not-run'
               for i in range(attempts):
                   try:
@@ -124,41 +267,152 @@ jobs:
                       last = repr(e)
                       print(f'{label} attempt={i+1} error={last}')
                   time.sleep(2)
-              print(f'::error title=Portfolio production QA::{label} failed: {last}')
-              raise SystemExit(1)
+              raise SystemExit(f'{label} failed: {last}')
 
           def index_check():
               status, ctype, body = get('/' + cache)
-              js_marker = b'canonical-preview-authority.js?v=20260816-6'
-              css_marker = b'canonical-preview-scale.css?v=20260816-6'
-              ok = js_marker in body and css_marker in body
-              return ok, f'status={status} bytes={len(body)} js={js_marker in body} css={css_marker in body}'
+              js = b'canonical-preview-authority.js?v=20260817-1' in body
+              css = b'canonical-preview-scale.css?v=20260817-1' in body
+              return status == 200 and js and css, f'status={status} bytes={len(body)} js={js} css={css}'
           wait_for('INDEX', index_check)
 
           def loader_check():
               status, ctype, body = get('/canonical-preview-authority.js' + cache)
               text = body.decode('utf-8','replace')
-              required = ['drive-canonical-highres-20260816','drive.google.com/thumbnail','Do NOT change .viewport position','1MKU3xRACFclsOIMEeXJx5hqPbPKLfUYk']
-              forbidden = ["host.style.position = 'relative'", 'b03: { card:', 'b14: { card:']
+              required = ['local-highres-approved-20260817','canonical-previews/highres/b09.png','canonical-previews/highres/b11.png','V4 MASTER PRODUCT']
+              forbidden = ['installB09Blocker','drive.google.com/thumbnail',"host.style.position = 'relative'"]
               ok = status == 200 and all(m in text for m in required) and not any(m in text for m in forbidden)
               return ok, f'status={status} bytes={len(body)} required={[(m,m in text) for m in required]} forbidden={[(m,m in text) for m in forbidden]}'
           wait_for('LOADER', loader_check)
 
-          def css_check():
-              status, ctype, body = get('/canonical-preview-scale.css' + cache)
-              text = body.decode('utf-8','replace')
-              required = ['object-fit: cover','object-position: center top','transform: none']
-              forbidden = ['scale(2.08)','scale(1.72)','grid-template-columns: minmax(260px, 290px)']
-              ok = status == 200 and all(m in text for m in required) and not any(m in text for m in forbidden)
-              return ok, f'status={status} bytes={len(body)} required={[(m,m in text) for m in required]} forbidden={[(m,m in text) for m in forbidden]}'
-          wait_for('CELL-FILL', css_check)
-
-          for bid in ['b01','b02','b04','b06','b07','b08','b10','b11','b12','b13','b15']:
+          for i in range(1,16):
+              bid = f'b{i:02d}'
               def asset_check(bid=bid):
-                  status, ctype, body = get(f'/canonical-previews/{bid}.jpg' + cache)
-                  jpg = body.startswith(b'\xff\xd8')
-                  ok = status == 200 and len(body) >= 2000 and jpg
-                  return ok, f'{bid} status={status} bytes={len(body)} jpg={jpg}'
-              wait_for(f'CARD-{bid}', asset_check, attempts=15)
+                  status, ctype, body = get(f'/canonical-previews/highres/{bid}.png' + cache)
+                  png = body.startswith(b'\x89PNG\r\n\x1a\n') and len(body) >= 24
+                  dims = struct.unpack('>II', body[16:24]) if png else (0,0)
+                  ok = status == 200 and png and len(body) >= 50000 and dims[0] >= 1000 and dims[1] >= 700
+                  return ok, f'{bid} status={status} bytes={len(body)} dims={dims} png={png}'
+              wait_for(f'ASSET-{bid}', asset_check, attempts=15)
+          print('PRODUCTION_HIGHRES_STATIC_BUNDLE=PASS')
 
-          print('PRODUCTION_PREVIEW_GEOMETRY=PASS')
+      - name: Install browser QA dependency
+        run: python -m pip install --disable-pip-version-check "playwright>=1.55,<1.56"
+
+      - name: Desktop and mobile browser QA
+        shell: python
+        run: |
+          from pathlib import Path
+          import json, shutil
+          from playwright.sync_api import sync_playwright
+
+          out = Path('portfolio-qa')
+          out.mkdir(exist_ok=True)
+          url = 'https://ai-revenue-final-portfolio.pages.dev/?visualqa=20260817-1'
+          target_ids = ['b01','b02','b08','b09','b10','b11','b13','b14','b15']
+          report = {'url': url, 'runs': {}}
+
+          chrome = None
+          for candidate in ['google-chrome-stable','google-chrome','chromium','chromium-browser']:
+              found = shutil.which(candidate)
+              if found:
+                  chrome = found
+                  break
+          if not chrome:
+              raise SystemExit('browser QA: system Chrome/Chromium missing')
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch(executable_path=chrome, headless=True, args=['--no-sandbox','--disable-dev-shm-usage'])
+              for label, width, height in [('desktop',1440,1100),('mobile',390,844)]:
+                  page = browser.new_page(viewport={'width':width,'height':height}, device_scale_factor=1)
+                  failures = []
+                  page.goto(url, wait_until='networkidle', timeout=90000)
+                  page.wait_for_function("document.documentElement.dataset.portfolioPreviewAuthority === 'local-highres-approved-20260817'", timeout=30000)
+
+                  overflow = page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')
+                  if overflow > 1:
+                      failures.append(f'horizontal overflow={overflow}px')
+
+                  broken = page.evaluate("""[...document.images].filter(img => img.complete && img.naturalWidth === 0).map(img => img.src)""")
+                  if broken:
+                      failures.append(f'broken images={broken}')
+
+                  product_rows = {}
+                  for i in range(1,16):
+                      bid = f'b{i:02d}'
+                      data = page.locator(f'#{bid}').evaluate("""article => {
+                        const img = article.querySelector('img.canonical-preview-image');
+                        if (!img) return {exists:false};
+                        const r = img.getBoundingClientRect();
+                        const s = getComputedStyle(img);
+                        return {exists:true,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,width:r.width,height:r.height,objectFit:s.objectFit,objectPosition:s.objectPosition,transform:s.transform};
+                      }""")
+                      product_rows[bid] = data
+                      if not data.get('exists'):
+                          failures.append(f'{bid}: canonical preview missing')
+                      elif data['naturalWidth'] < 1000 or data['naturalHeight'] < 700:
+                          failures.append(f"{bid}: low-res {data['naturalWidth']}x{data['naturalHeight']}")
+                      elif data['width'] < 250 or data['height'] < 250:
+                          failures.append(f"{bid}: card too small {data['width']}x{data['height']}")
+                      elif data['objectFit'] != 'cover' or data['transform'] not in ('none','matrix(1, 0, 0, 1, 0, 0)'):
+                          failures.append(f"{bid}: geometry fit={data['objectFit']} transform={data['transform']}")
+
+                  b09_status = page.locator('#b09 .status').inner_text()
+                  b11_status = page.locator('#b11 .status').inner_text()
+                  b15_status = page.locator('#b15 .status').inner_text()
+                  if 'INTEGRATION BLOCKED' not in b09_status:
+                      failures.append(f'B09 status wrong: {b09_status}')
+                  if 'BLOCK' in b11_status.upper():
+                      failures.append(f'B11 incorrectly blocked: {b11_status}')
+                  if 'PASS / FREEZE' not in b15_status:
+                      failures.append(f'B15 status wrong: {b15_status}')
+                  if page.locator('#b09 .preview.blocked').count():
+                      failures.append('B09 whole-card blocker class remains')
+
+                  modal_checks = {}
+                  for bid in ['b09','b11']:
+                      page.locator(f'#{bid} img.canonical-preview-image').click()
+                      page.locator('#canonical-preview-modal:not([hidden])').wait_for(timeout=10000)
+                      m = page.locator('#canonical-preview-modal .canonical-modal-image').evaluate("""img => ({naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,width:img.getBoundingClientRect().width,transform:getComputedStyle(img).transform})""")
+                      modal_checks[bid] = m
+                      if m['naturalWidth'] < 1000 or m['naturalHeight'] < 700:
+                          failures.append(f'{bid}: modal low-res {m}')
+                      if m['transform'] not in ('none','matrix(1, 0, 0, 1, 0, 0)'):
+                          failures.append(f'{bid}: modal transformed {m}')
+                      page.locator('#canonical-preview-modal .canonical-modal-close').click()
+
+                  for bid in target_ids:
+                      row = page.locator(f'#{bid}')
+                      row.scroll_into_view_if_needed()
+                      page.wait_for_timeout(250)
+                      row.screenshot(path=str(out / f'{label}_{bid}.png'))
+
+                  page.screenshot(path=str(out / f'{label}_portfolio_full.png'), full_page=True)
+                  report['runs'][label] = {
+                      'viewport':[width,height], 'horizontalOverflow':overflow,
+                      'brokenImages':broken, 'products':product_rows,
+                      'b09Status':b09_status, 'b11Status':b11_status, 'b15Status':b15_status,
+                      'modalChecks':modal_checks, 'failures':failures,
+                  }
+                  page.close()
+                  if failures:
+                      print(label, 'FAILURES', failures)
+                  else:
+                      print(label, 'BROWSER_QA=PASS')
+              browser.close()
+
+          (out / 'qa-report.json').write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding='utf-8')
+          all_failures = [f'{label}: {failure}' for label, run in report['runs'].items() for failure in run['failures']]
+          if all_failures:
+              raise SystemExit('BROWSER_QA_FAIL: ' + ' | '.join(all_failures))
+          print('DESKTOP_QA=PASS')
+          print('MOBILE_QA=PASS')
+
+      - name: Upload portfolio QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-highres-qa-${{ github.sha }}
+          path: portfolio-qa/
+          if-no-files-found: warn
+          retention-days: 14
