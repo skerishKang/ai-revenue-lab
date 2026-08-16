@@ -26,31 +26,47 @@ jobs:
           if not token or not account:
               raise SystemExit("Cloudflare credential secret missing")
 
-          url = f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects?per_page=100"
-          req = urllib.request.Request(url)
-          req.add_header("Authorization", f"Bearer {token}")
-          req.add_header("Accept", "application/json")
-          with urllib.request.urlopen(req, timeout=30) as resp:
-              data = json.load(resp)
+          base = f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects"
 
-          if not data.get("success"):
-              raise SystemExit("Cloudflare Pages API returned success=false")
+          def fetch(page=None):
+              url = base if page is None else f"{base}?page={page}"
+              req = urllib.request.Request(url)
+              req.add_header("Authorization", f"Bearer {token}")
+              req.add_header("Accept", "application/json")
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  data = json.load(resp)
+              if not data.get("success"):
+                  raise SystemExit("Cloudflare Pages API returned success=false")
+              return data
+
+          first = fetch()
+          pages = [first]
+          info = first.get("result_info") or {}
+          total_pages = int(info.get("total_pages") or 1)
+          for page in range(2, total_pages + 1):
+              pages.append(fetch(page))
 
           rows = []
-          for p in data.get("result", []):
-              source = p.get("source") or {}
-              config = source.get("config") or {}
-              rows.append({
-                  "name": p.get("name"),
-                  "subdomain": p.get("subdomain"),
-                  "created_on": p.get("created_on"),
-                  "production_branch": p.get("production_branch"),
-                  "source_type": source.get("type"),
-                  "source_owner": config.get("owner"),
-                  "source_repo": config.get("repo_name"),
-              })
+          seen = set()
+          for data in pages:
+              for p in data.get("result", []):
+                  name = p.get("name")
+                  if not name or name in seen:
+                      continue
+                  seen.add(name)
+                  source = p.get("source") or {}
+                  config = source.get("config") or {}
+                  rows.append({
+                      "name": name,
+                      "subdomain": p.get("subdomain"),
+                      "created_on": p.get("created_on"),
+                      "production_branch": p.get("production_branch"),
+                      "source_type": source.get("type"),
+                      "source_owner": config.get("owner"),
+                      "source_repo": config.get("repo_name"),
+                  })
 
-          rows.sort(key=lambda x: (x.get("name") or ""))
+          rows.sort(key=lambda x: x["name"])
           with open("cloudflare-pages-inventory-20260816.json", "w", encoding="utf-8") as f:
               json.dump(rows, f, ensure_ascii=False, indent=2)
 
