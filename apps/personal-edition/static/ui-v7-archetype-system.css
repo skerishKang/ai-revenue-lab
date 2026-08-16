@@ -1,0 +1,5 @@
+/* B01 V7 Archetype System Test — modular entrypoint. */
+@import url("/static/ui-v7-archetype-foundation.css?v=b1-v7-archetype-system-20260814");
+@import url("/static/ui-v7-archetype-library.css?v=b1-v7-archetype-system-20260814");
+@import url("/static/ui-v7-archetype-write.css?v=b1-v7-archetype-system-20260814");
+@import url("/static/ui-v7-archetype-read.css?v=b1-v7-archetype-system-20260814");

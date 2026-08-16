@@ -90,19 +90,28 @@ def test_v7_static_authority_and_admin_boundary() -> None:
         "/static/ui-v6-living-index-completion.css?v=b1-living-index-v6-completion-20260814",
         "/static/ui-v7-collectible-glass.css?v=b1-collectible-glass-v7-20260814",
         "/static/ui-v7-collectible-glass-authority.css?v=b1-collectible-glass-v7-authority-20260814",
+        "/static/ui-v7-archetype-system.css?v=b1-v7-archetype-system-20260814",
     )
     for marker in required:
         assert marker in base
     assert base.index("ui-v7-collectible-glass.css") > base.index("ui-v6-living-index-completion.css")
     assert base.index("ui-v7-collectible-glass-authority.css") > base.index("ui-v7-collectible-glass.css")
+    assert base.index("ui-v7-archetype-system.css") > base.index("ui-v7-entry-fidelity.css")
     assert 'b1-personal-edition-v7-collectible-glass' in base
     assert 'data-design-system="b1-collectible-glass-v7"' in base
     assert 'data-owner-ui-approved="false"' in base
-    # V6 art-direction marker is intentionally retained as the compatibility layer selector.
     assert 'b1-living-index-v6' in base
-    # Operator workspace intentionally keeps the existing visual authority.
     assert 'b1-personal-edition-v3-454' in base
     assert 'b1-image-led-v5' in base
+
+    intro = (BASE_DIR / "templates" / "intro.html").read_text(encoding="utf-8")
+    library = (BASE_DIR / "templates" / "participant_dashboard.html").read_text(encoding="utf-8")
+    write = (BASE_DIR / "templates" / "input_form.html").read_text(encoding="utf-8")
+    read = (BASE_DIR / "templates" / "edition_read.html").read_text(encoding="utf-8")
+    assert "v7a-archetype" not in intro
+    assert "v7a-archetype" in library
+    assert "v7a-archetype" in write
+    assert "v7a-archetype" in read
 
 
 def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
@@ -183,6 +192,7 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                     assert focus_visible, (screen_name, viewport_name, "focus-visible")
 
                     if screen_name == "entry":
+                        assert page.locator(".v7a-archetype").count() == 0
                         assert page.locator(".v7-photo-cluster img").count() == 3
                         assert page.locator(".v3-hero-title").evaluate(
                             "el => getComputedStyle(el).color"
@@ -193,16 +203,49 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                         assert "linear-gradient" in glass["bg"]
                         assert glass["bf"] != "none"
                     elif screen_name == "library":
+                        assert page.locator(".v7a-library.v7a-archetype").count() == 1
+                        assert page.locator(".v7a-edition-object").count() >= 1
+                        assert page.locator(".v7a-photo-fragment").count() >= 2
+                        photo_a = page.locator(".v7a-library-photo-a").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        photo_b = page.locator(".v7a-library-photo-b").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        assert "private-library-hero.webp" in photo_a
+                        assert "edition-library-history.webp" in photo_b
+                        assert page.locator(".site-header").evaluate(
+                            "el => getComputedStyle(el).display"
+                        ) == "none"
                         background = page.locator(".v3-library-object-zone").evaluate(
                             "el => getComputedStyle(el).backgroundImage"
                         )
                         assert "library-edition-stack.webp" in background
                     elif screen_name == "write":
+                        assert page.locator(".v7a-write.v7a-archetype").count() == 1
+                        assert page.locator(".v7a-write-sheet textarea").count() == 1
+                        assert page.locator(".site-header").evaluate(
+                            "el => getComputedStyle(el).display"
+                        ) == "none"
                         background = page.locator(".v3-write-margin").evaluate(
                             "el => getComputedStyle(el, '::after').backgroundImage"
                         )
                         assert "human-proof-review.webp" in background
                     elif screen_name == "read":
+                        assert page.locator(".v7a-read.v7a-archetype").count() == 1
+                        assert page.locator(".v7a-read-cover").count() == 1
+                        assert page.locator(".v7a-visual-break-image").count() == 1
+                        read_photo = page.locator(".v7a-read-photo").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        visual_break = page.locator(".v7a-visual-break-image").evaluate(
+                            "el => getComputedStyle(el).backgroundImage"
+                        )
+                        assert "edition-opening.webp" in read_photo
+                        assert "edition-opening.webp" in visual_break
+                        assert page.locator(".site-header").evaluate(
+                            "el => getComputedStyle(el).display"
+                        ) == "none"
                         background = page.locator(".v3-read-cover-zone").evaluate(
                             "el => getComputedStyle(el).backgroundImage"
                         )
@@ -210,6 +253,13 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                         assert page.locator(".v3-read-title h1").evaluate(
                             "el => getComputedStyle(el).color"
                         ) == "rgb(17, 20, 24)"
+                        body_family = page.locator(".section-copy-v3 p").first.evaluate(
+                            "el => getComputedStyle(el).fontFamily"
+                        )
+                        heading_family = page.locator(".v3-read-title h1").evaluate(
+                            "el => getComputedStyle(el).fontFamily"
+                        )
+                        assert body_family == heading_family
                     elif screen_name == "history":
                         background = page.locator(".v3-history-head").evaluate(
                             "el => getComputedStyle(el, '::after').backgroundImage"
@@ -254,8 +304,9 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
         json.dumps(
             {
                 "issue": 613,
-                "direction": "V7 — Collectible Glass",
+                "direction": "V7 — Collectible Glass / Archetype System Test",
                 "status": "pass",
+                "archetype_scope": ["entry-anchor", "library", "write", "read"],
                 "screenshots": shots,
             },
             ensure_ascii=False,

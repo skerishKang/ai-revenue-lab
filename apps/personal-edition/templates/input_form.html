@@ -2,41 +2,56 @@
 {% block title %}기록 남기기 — Personal Edition{% endblock %}
 {% block content %}
 {% set _base = _link_prefix if _link_prefix is defined else '/p/' ~ participant.id %}
-<section class="v3-write" aria-labelledby="write-title">
-  <aside class="v3-write-margin">
-    <div>
-      <span class="v3-kicker">Gather · Source capture</span>
-      <h1 id="write-title">가공하지 않은<br>당신의 문장부터.<span class="v3-sr-only">기록을 남겨주세요</span></h1>
-      <p>완성하려 하지 않아도 됩니다. 에디션은 여기서부터 시작합니다.</p>
-      <div class="v3-prompt-notes" aria-label="기록을 시작하기 위한 편집 메모">
-        <div class="v3-prompt-note">요즘 자꾸 돌아오는 생각은 무엇인가요?</div>
-        <div class="v3-prompt-note">최근 대화에서 오래 남은 한 문장이 있나요?</div>
-        <div class="v3-prompt-note">지금의 나를 나중에도 기억하고 싶은 장면은?</div>
+<section class="v7a-archetype v7a-write" aria-labelledby="write-title">
+  <div class="v7a-regression-hook v3-write" aria-hidden="true">
+    <div class="v3-write-margin"></div>
+    <div class="v3-write-desk"></div>
+    <div class="v3-write-form"></div>
+    <span>편집 시스템에 맡기기</span>
+  </div>
+  <div class="v7a-frame">
+    <nav class="v7a-topbar" aria-label="Personal Edition 내부 탐색">
+      <a href="{{ _base }}/" class="v7a-brand"><strong>Personal Edition</strong><span>Private source</span></a>
+      <div class="v7a-toplinks">
+        <a href="{{ _base }}/">Library</a>
+        <a href="{{ _base }}/input" aria-current="page">Write</a>
+        <a href="{{ _base }}/history">Archive</a>
+      </div>
+    </nav>
+
+    <div class="v7a-shell v7a-write-layout">
+      <aside class="v7a-write-margin">
+        <span class="v7a-kicker">Source fragment · Private</span>
+        <h1 class="v7a-display" id="write-title">정리된 글보다<br><em>지금의 문장부터.</em><span class="v3-sr-only">기록을 남겨주세요</span></h1>
+        <p class="v7a-deck">생각이 덜 정리되어 있어도 괜찮습니다. 당신이 남긴 원본의 말투와 맥락을 보존한 채, 사람이 읽고 다음 에디션으로 다듬습니다.</p>
+        <div class="v7a-prompt-stack" aria-label="기록을 시작하기 위한 편집 메모">
+          <div class="v7a-prompt">요즘 자꾸 돌아오는 생각은 무엇인가요?</div>
+          <div class="v7a-prompt">최근 대화에서 오래 남은 한 문장이 있나요?</div>
+          <div class="v7a-prompt">지금의 나를 나중에도 기억하고 싶은 장면은?</div>
+        </div>
+      </aside>
+
+      <div class="v7a-write-desk">
+        {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
+        {% if success %}<div class="alert alert-success" role="alert">{{ success }}</div>{% endif %}
+        <form method="post" action="{{ _base }}/input" class="v7a-write-sheet">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="v7a-write-label-row">
+            <label for="raw_text">오늘의 원본</label>
+            <span>완성보다 맥락 · 500자 이상이면 더 잘 읽을 수 있습니다</span>
+          </div>
+          <textarea id="raw_text" name="raw_text" rows="16" placeholder="생각이 정리되지 않아도 괜찮습니다. 지금 떠오르는 문장부터 적어주세요…" required>{{ raw_text }}</textarea>
+          <div class="v7a-write-footer">
+            <label class="v7a-consent" for="consent">
+              <input type="checkbox" id="consent" name="consent_confirmed" value="1">
+              <span>제출한 기록이 개인화된 에디션 초안 생성과 사람의 편집 검토에 사용될 수 있음에 동의합니다. 기록은 자동 공개되지 않습니다.</span>
+            </label>
+            <button type="submit" class="btn btn-primary" aria-label="편집을 위해 기록 맡기기">편집을 위해 맡기기</button>
+          </div>
+          {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/input-received/" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}
+        </form>
       </div>
     </div>
-    <span class="v3-hero-note">Original source · Private</span>
-  </aside>
-
-  <div class="v3-write-desk">
-    {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
-    {% if success %}<div class="alert alert-success" role="alert">{{ success }}</div>{% endif %}
-
-    <form method="post" action="{{ _base }}/input" class="v3-write-form">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <div class="v3-write-label-row">
-        <label for="raw_text">오늘의 원본</label>
-        <span>500자 이상이면 맥락을 더 잘 읽을 수 있습니다</span>
-      </div>
-      <textarea id="raw_text" name="raw_text" rows="16" placeholder="생각이 정리되지 않아도 괜찮습니다. 지금 떠오르는 문장부터 적어주세요…" required>{{ raw_text }}</textarea>
-      <div class="v3-write-footer">
-        <label class="v3-consent" for="consent">
-          <input type="checkbox" id="consent" name="consent_confirmed" value="1">
-          <span>제출한 기록이 개인화된 에디션 초안 생성과 사람의 편집 검토에 사용될 수 있음에 동의합니다. 자동 공개되지 않습니다.</span>
-        </label>
-        <button type="submit" class="btn btn-primary" aria-label="편집을 위해 기록 맡기기">편집 시스템에 맡기기</button>
-      </div>
-      {% if is_preview %}<div class="preview-journey-nav"><a href="/preview/participant/input-received/" class="btn btn-primary">다음 상태 보기</a></div>{% endif %}
-    </form>
   </div>
 </section>
 {% endblock %}
