@@ -1,0 +1,30 @@
+name: Portfolio remediation workflow cleanup 2026-08-16
+
+on:
+  push:
+    branches:
+      - portfolio/first-complete-20260816
+    paths:
+      - .github/workflows/portfolio-preview-remediation-cleanup-20260816.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: portfolio/first-complete-20260816
+          fetch-depth: 1
+      - name: Remove temporary portfolio remediation workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/workflows/portfolio-preview-remediation-20260816.yml
+          git rm -f .github/workflows/portfolio-preview-remediation-cleanup-20260816.yml
+          git commit -m "portfolio: remove temporary remediation workflows"
+          git push origin HEAD:portfolio/first-complete-20260816
