@@ -1,6 +1,6 @@
-/* Cell-fill correction — 2026-08-16
-   IMPORTANT: preserve the original portfolio layout.
-   Only zoom the already-approved preview raster inside the existing black viewport. */
+/* Original-layout cell fill correction — 2026-08-16
+   Preserve the portfolio layout and the preview cell geometry.
+   The viewport itself already occupies the full black cell; do not scale the raster. */
 
 .viewport {
   overflow: hidden !important;
@@ -17,14 +17,17 @@
   padding: 0 !important;
   display: block !important;
   object-fit: cover !important;
-  object-position: top left !important;
-  transform: scale(2.08) !important;
-  transform-origin: top left !important;
+  object-position: center top !important;
+  transform: none !important;
+  transform-origin: center !important;
+  image-rendering: auto !important;
 }
 
-/* Keep the phone composition stable; use a lighter crop there. */
-@media (max-width: 700px) {
-  .canonical-preview-image {
-    transform: scale(1.72) !important;
-  }
+.canonical-modal-image {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  transform: none !important;
+  image-rendering: auto !important;
 }
