@@ -37,8 +37,8 @@ jobs:
           root = Path('portfolio/first-complete')
           index = root / 'index.html'
           text = index.read_text(encoding='utf-8')
-          style = '<link rel="stylesheet" href="./canonical-preview-scale.css?v=20260816-4" />'
-          script = '<script src="./canonical-preview-authority.js?v=20260816-4"></script>'
+          style = '<link rel="stylesheet" href="./canonical-preview-scale.css?v=20260816-5" />'
+          script = '<script src="./canonical-preview-authority.js?v=20260816-5"></script>'
           if 'canonical-preview-scale.css' not in text:
               if '</head>' not in text:
                   raise SystemExit('index.html has no </head>')
@@ -47,6 +47,10 @@ jobs:
               if '</body>' not in text:
                   raise SystemExit('index.html has no </body>')
               text = text.replace('</body>', script + '\n</body>')
+          # Normalize any older cache-busted loader references in the deployment bundle.
+          import re
+          text = re.sub(r'canonical-preview-scale\.css\?v=[^"\']+', 'canonical-preview-scale.css?v=20260816-5', text)
+          text = re.sub(r'canonical-preview-authority\.js\?v=[^"\']+', 'canonical-preview-authority.js?v=20260816-5', text)
           index.write_text(text, encoding='utf-8')
 
           required = ['b01','b02','b03','b04','b06','b07','b08','b10','b11','b12','b13','b14','b15']
@@ -58,10 +62,14 @@ jobs:
               if marker not in js:
                   raise SystemExit(f'missing authority marker: {marker}')
           css = (root / 'canonical-preview-scale.css').read_text(encoding='utf-8')
-          for marker in ['grid-template-columns: minmax(260px, 290px) minmax(0, 1fr)', 'min-height: clamp(720px, 50vw, 860px)', 'object-position: top center']:
+          for marker in ['preserve the original portfolio layout', 'transform: scale(2.08)', 'object-position: top left']:
               if marker not in css:
-                  raise SystemExit(f'missing preview-scale marker: {marker}')
-          print('CANONICAL_AUTHORITY_BUNDLE=PASS')
+                  raise SystemExit(f'missing cell-fill marker: {marker}')
+          forbidden = ['grid-template-columns: minmax(260px, 290px)', 'min-height: clamp(720px, 50vw, 860px)']
+          for marker in forbidden:
+              if marker in css:
+                  raise SystemExit(f'old enlarged-layout marker still present: {marker}')
+          print('CANONICAL_CELL_FILL_BUNDLE=PASS')
 
       - name: Deploy portfolio only
         shell: bash
@@ -71,20 +79,20 @@ jobs:
             --project-name "${PROJECT_NAME}" \
             --branch main \
             --commit-hash "${GITHUB_SHA}" \
-            --commit-message "Portfolio canonical preview scale correction" \
+            --commit-message "Portfolio original-layout preview cell fill correction" \
             --commit-dirty=true
 
-      - name: Verify production assets and authority loader
+      - name: Verify production assets and cell-fill loader
         shell: python
         run: |
           import time, urllib.request
           base = 'https://ai-revenue-final-portfolio.pages.dev'
-          cache = '?canonical=20260816-4'
+          cache = '?canonical=20260816-5'
 
           def get(path):
               url = base + path
               req = urllib.request.Request(url, headers={
-                  'User-Agent':'portfolio-canonical-qa/3.0',
+                  'User-Agent':'portfolio-canonical-qa/4.0',
                   'Cache-Control':'no-cache',
                   'Pragma':'no-cache'
               })
@@ -110,8 +118,8 @@ jobs:
 
           def index_check():
               status, ctype, body = get('/' + cache)
-              js_marker = b'canonical-preview-authority.js?v=20260816-4'
-              css_marker = b'canonical-preview-scale.css?v=20260816-4'
+              js_marker = b'canonical-preview-authority.js?v=20260816-5'
+              css_marker = b'canonical-preview-scale.css?v=20260816-5'
               ok = js_marker in body and css_marker in body
               return ok, f'status={status} type={ctype} bytes={len(body)} js={js_marker in body} css={css_marker in body}'
           wait_for('INDEX', index_check)
@@ -124,13 +132,14 @@ jobs:
               return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]}'
           wait_for('LOADER', loader_check)
 
-          def scale_check():
+          def fill_check():
               status, ctype, body = get('/canonical-preview-scale.css' + cache)
               text = body.decode('utf-8','replace')
-              markers = ['grid-template-columns: minmax(260px, 290px) minmax(0, 1fr)','min-height: clamp(720px, 50vw, 860px)','object-position: top center']
-              ok = status == 200 and all(m in text for m in markers)
-              return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]}'
-          wait_for('PREVIEW-SCALE', scale_check)
+              markers = ['preserve the original portfolio layout','transform: scale(2.08)','object-position: top left']
+              forbidden = ['grid-template-columns: minmax(260px, 290px)','min-height: clamp(720px, 50vw, 860px)']
+              ok = status == 200 and all(m in text for m in markers) and not any(m in text for m in forbidden)
+              return ok, f'status={status} type={ctype} bytes={len(body)} markers={[(m, m in text) for m in markers]} forbidden={[(m, m in text) for m in forbidden]}'
+          wait_for('CELL-FILL', fill_check)
 
           for bid in ['b02','b08','b10','b11','b13','b14','b15']:
               def asset_check(bid=bid):
