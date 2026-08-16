@@ -1,99 +1,30 @@
-/* Preview-first correction — 2026-08-16
-   Keeps the approved imagery untouched; only changes portfolio presentation scale. */
+/* Cell-fill correction — 2026-08-16
+   IMPORTANT: preserve the original portfolio layout.
+   Only zoom the already-approved preview raster inside the existing black viewport. */
 
-@media (min-width: 1081px) {
-  #portfolio {
-    width: min(1720px, calc(100vw - 48px));
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+.viewport {
+  overflow: hidden !important;
+}
 
-  .product {
-    grid-template-columns: minmax(260px, 290px) minmax(0, 1fr) !important;
-    gap: clamp(34px, 3vw, 54px) !important;
-    padding: 38px 0 96px !important;
-    align-items: stretch;
-  }
+.canonical-preview-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  transform: scale(2.08) !important;
+  transform-origin: top left !important;
+}
 
-  .product-left {
-    min-height: clamp(720px, 50vw, 860px) !important;
-    padding: 8px 0 18px !important;
-  }
-
-  .product-no {
-    margin-bottom: 28px !important;
-  }
-
-  .product h3 {
-    font-size: clamp(34px, 3vw, 56px) !important;
-    line-height: .96 !important;
-  }
-
-  .product .ko {
-    margin-top: 10px !important;
-  }
-
-  .promise {
-    margin-top: 22px !important;
-    font-size: 15px !important;
-    line-height: 1.64 !important;
-  }
-
-  .tags {
-    margin-top: 20px !important;
-  }
-
-  .product-links {
-    padding-top: 26px !important;
-  }
-
-  .preview,
-  .evidence {
-    min-height: clamp(720px, 50vw, 860px) !important;
-  }
-
-  .preview {
-    border-radius: 20px !important;
-    box-shadow: 0 44px 110px rgba(0, 0, 0, .34) !important;
-  }
-
-  .preview-bar {
-    height: 46px !important;
-  }
-
-  .viewport {
-    top: 46px !important;
-  }
-
+/* Keep the phone composition stable; use a lighter crop there. */
+@media (max-width: 700px) {
   .canonical-preview-image {
-    object-fit: cover !important;
-    object-position: top center !important;
-  }
-
-  .canonical-authority-badge {
-    left: 14px !important;
-    bottom: 14px !important;
-    font-size: 10px !important;
-    padding: 7px 10px !important;
-  }
-}
-
-@media (min-width: 1600px) {
-  .product {
-    grid-template-columns: 300px minmax(0, 1fr) !important;
-  }
-
-  .preview,
-  .evidence,
-  .product-left {
-    min-height: 860px !important;
-  }
-}
-
-@media (max-width: 1080px) and (min-width: 701px) {
-  .preview,
-  .evidence {
-    min-height: 620px !important;
+    transform: scale(1.72) !important;
   }
 }
