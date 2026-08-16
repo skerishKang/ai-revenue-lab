@@ -162,6 +162,16 @@
     const candidate = document.querySelector('.metric.candidate strong');
     if (ready) ready.textContent = '13';
     if (candidate) candidate.textContent = '00';
+
+    const b15 = document.getElementById('b15');
+    if (b15) {
+      [...b15.querySelectorAll('.tag')].forEach((tag) => {
+        if (tag.textContent.trim().toUpperCase() === 'CANDIDATE') tag.textContent = 'VISUAL FROZEN';
+      });
+      [...b15.querySelectorAll('.btn.disabled')].forEach((button) => {
+        if (/canonical promotion pending/i.test(button.textContent)) button.remove();
+      });
+    }
   }
 
   function boot() {
