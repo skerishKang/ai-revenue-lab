@@ -6,30 +6,77 @@ on:
       - .github/workflows/qa-b60-live-browser.yml
 
 permissions:
+  actions: write
   contents: read
 
 jobs:
   live-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET: https://ai-revenue-business-60-ai-api.pages.dev/
+      APPROVED_SHA: 401d959b0905c67e513381d0379a042940dbcd25
+      APPROVAL_PR: '661'
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install browser
+
+      - name: Dispatch guarded B60 Cloudflare redeploy
+        id: provision
+        shell: bash
+        run: |
+          set -euo pipefail
+          previous="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'Provision approved Business Pages' --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+
+          gh workflow run provision-approved-business-pages.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f business_id=60 \
+            -f project_name=ai-revenue-business-60-ai-api \
+            -f source_directory=reference/business-60-ai-api-v1 \
+            -f approved_sha="$APPROVED_SHA" \
+            -f approval_pr="$APPROVAL_PR" \
+            -f production_branch=main \
+            -f existing_project_action=verify-only \
+            -f expected_old_source_directory=''
+
+          run_id=''
+          for i in $(seq 1 40); do
+            candidate="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'Provision approved Business Pages' --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+            if test "$candidate" != "0" && test "$candidate" != "$previous"; then
+              run_id="$candidate"
+              break
+            fi
+            sleep 2
+          done
+          test -n "$run_id"
+          echo "PROVISION_RUN_ID=$run_id"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+          gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
+          conclusion="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json conclusion --jq '.conclusion')"
+          echo "PROVISION_CONCLUSION=$conclusion"
+          test "$conclusion" = success
+
+      - name: Install Playwright Chromium
         run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-      - name: Wait for Cloudflare hotfix and exercise live site
-        env:
-          TARGET: https://ai-revenue-business-60-ai-api.pages.dev/
+
+      - name: Wait for exact hotfix bytes and exercise live site
+        shell: bash
         run: |
           set -euo pipefail
           ready=false
-          for i in $(seq 1 30); do
-            body="$(curl -fsSL --max-time 10 "${TARGET}product-v7.js" || true)"
-            if printf '%s' "$body" | grep -q 'Observe only direct grid replacement' && ! printf '%s' "$body" | grep -q 'subtree:true'; then
+          for i in $(seq 1 50); do
+            js="$(curl -fsSL --max-time 10 "${TARGET}product-v7.js" || true)"
+            autoplay="$(curl -fsSL --max-time 10 "${TARGET}cinematic-autoplay.js" || true)"
+            if printf '%s' "$js" | grep -q 'Observe only direct grid replacement' \
+              && ! printf '%s' "$js" | grep -q 'subtree:true' \
+              && printf '%s' "$autoplay" | grep -q "scrollBehavior = 'auto'"; then
               echo "LIVE_HOTFIX=VISIBLE attempt=$i"
               ready=true
               break
@@ -49,6 +96,7 @@ jobs:
             page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); });
             page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
             page.on('requestfailed',r=>failed.push({url:r.url(),error:r.failure()?.errorText}));
+
             const response=await page.goto(process.env.TARGET,{waitUntil:'domcontentloaded',timeout:20000});
             const state=async label=>({
               label,
@@ -58,6 +106,7 @@ jobs:
               stage:await page.locator('#stage').getAttribute('class'),
               connectOpacity:await page.locator('#connect').evaluate(el=>getComputedStyle(el).opacity)
             });
+
             const states=[];
             states.push(await state('loaded'));
             await page.screenshot({path:'01-loaded.png'});
@@ -67,19 +116,22 @@ jobs:
             await page.waitForTimeout(4800);
             states.push(await state('connect-gate'));
             await page.screenshot({path:'03-connect-gate.png'});
+
             const beforeClick=await page.evaluate(()=>scrollY);
             await page.locator('#connect').click({timeout:8000});
-            await page.waitForTimeout(1600);
+            await page.waitForTimeout(1800);
             states.push(await state('post-connect'));
             await page.screenshot({path:'04-post-connect.png'});
+
             const connected=await page.locator('#stage').evaluate(el=>el.classList.contains('connected'));
-            const afterClick=await page.evaluate(()=>scrollY);
+            const afterClick=Math.round(await page.evaluate(()=>scrollY));
             const cards=await page.locator('.access-card').count();
             const saveButtons=await page.locator('.save-v7').count();
             const bodyMarker=(await page.locator('body').innerText()).includes('LIVE ACCESS SIGNAL');
-            const out={http:response?.status(),states,beforeClick:Math.round(beforeClick),afterClick:Math.round(afterClick),connected,cards,saveButtons,bodyMarker,errors,failed};
+            const out={http:response?.status(),states,beforeClick:Math.round(beforeClick),afterClick,connected,cards,saveButtons,bodyMarker,errors,failed};
             fs.writeFileSync('qa-result.json',JSON.stringify(out,null,2));
             console.log('QA_RESULT='+JSON.stringify(out));
+
             if(response?.status()!==200) throw new Error('HTTP_NOT_200');
             if(errors.length || failed.length) throw new Error('BROWSER_ERRORS');
             if(states[1].scrollY<=states[0].scrollY) throw new Error('AUTOPLAY_DID_NOT_ADVANCE');
@@ -93,6 +145,7 @@ jobs:
           }
           JS
           node qa.mjs
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
