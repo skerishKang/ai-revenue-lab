@@ -56,38 +56,42 @@
   mask-image:radial-gradient(ellipse 25% 67% at 34% 51%,#000 0 55%,rgba(0,0,0,.9) 67%,rgba(0,0,0,.32) 81%,transparent 95%);
 }
 
-/* Render-evidence correction for the hard CONNECT gate. cinematic-polish.css
-   already carries the locally background-isolated transparent hand derivative
-   as the figure background. Size that derivative explicitly and hide the old
-   full raster child so the actual hand silhouette is what reaches the screen. */
+/* Hard CONNECT gate: use the verified existing gesture-touch.webp child.
+   The prior embedded data-URI derivative computed opacity but rendered no hand.
+   Fade the source plate at the wrist edge and screen-blend the dark field into
+   the cinematic background so only the existing hand/light gesture reads. */
 .gesture-hand{
   left:65%!important;
   right:auto!important;
   top:48%!important;
   width:min(38vw,580px)!important;
   transform-origin:50% 50%!important;
-  background-size:100% 100%!important;
-  background-repeat:no-repeat!important;
-  background-position:center!important;
+  background:none!important;
+  overflow:visible!important;
   mix-blend-mode:screen!important;
-  -webkit-mask-image:none!important;
-  mask-image:none!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.18) 13%,rgba(0,0,0,.72) 30%,#000 48%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.18) 13%,rgba(0,0,0,.72) 30%,#000 48%,#000 100%)!important;
 }
-.gesture-hand img{opacity:0!important}
+.gesture-hand img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  opacity:1!important;
+}
 .sticky.hand-ready .gesture-hand{
-  opacity:.82!important;
+  opacity:.72!important;
   transform:translate(-42%,-50%) rotate(-2deg) scaleX(-1) scale(.96)!important;
-  filter:grayscale(.42) sepia(.24) hue-rotate(138deg) saturate(1.95) brightness(1.38) contrast(1.04) drop-shadow(0 0 38px rgba(139,244,255,.58))!important;
+  filter:grayscale(.48) sepia(.22) hue-rotate(138deg) saturate(1.72) brightness(.82) contrast(1.04) drop-shadow(0 0 32px rgba(139,244,255,.44))!important;
 }
 .sticky.contact-armed .gesture-hand{
-  opacity:.94!important;
+  opacity:.88!important;
   transform:translate(-48%,-50%) rotate(-1deg) scaleX(-1) scale(1.02)!important;
-  filter:grayscale(.38) sepia(.26) hue-rotate(138deg) saturate(2.05) brightness(1.52) contrast(1.04) drop-shadow(0 0 50px rgba(145,248,255,.72))!important;
+  filter:grayscale(.42) sepia(.24) hue-rotate(138deg) saturate(1.82) brightness(.94) contrast(1.04) drop-shadow(0 0 44px rgba(145,248,255,.62))!important;
 }
 .sticky.hand-touching .gesture-hand{
-  opacity:1!important;
+  opacity:.98!important;
   transform:translate(-53%,-50%) rotate(0deg) scaleX(-1) scale(1.07)!important;
-  filter:grayscale(.34) sepia(.28) hue-rotate(138deg) saturate(2.1) brightness(1.65) contrast(1.02) drop-shadow(0 0 68px rgba(158,250,255,.9))!important;
+  filter:grayscale(.38) sepia(.26) hue-rotate(138deg) saturate(1.9) brightness(1.08) contrast(1.02) drop-shadow(0 0 62px rgba(158,250,255,.82))!important;
 }
 
 @media(max-width:760px){
