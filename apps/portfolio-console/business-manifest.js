@@ -1,4 +1,4 @@
-/*  business-manifest.js  —  SOLE static identity source for B1-59 (Phase 2A+)
+/*  business-manifest.js  —  SOLE static identity source for B1-60 (Phase 2A+)
  *
  * This is the ONLY file defining Business display identity (slug, title,
  * koreanTitle, authority, lifecycle, state, workspace, surfaceUrl, priority).
@@ -107,6 +107,8 @@
     identity({ n:57, s:"classic-literature-translation-studio", t:"Classic Literature Translation Studio", k:"고전문학 번역 스튜디오", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-57-classic-literature-translation-studio-v1/" }),
     identity({ n:58, s:"personal-writing-voice-studio", t:"Personal Writing Voice Studio", k:"개인 문체 스튜디오", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-58-personal-writing-voice-studio-v1/" }),
     identity({ n:59, s:"living-archive", t:"Living Archive", k:"나의 기록서재", a:NA.CANDIDATE, l:"mvp_vertical_slice", st:"review", p:5, w:"reference/business-59-living-archive-v1/" }),
+    // ═══ 60 ═══
+    identity({ n:60, s:"ai-api", t:"AI API", k:"AI API 탐색 허브", a:NA.PROPOSED, l:"concept", st:"planned", p:90 }),
   ];
 
   (function () {
