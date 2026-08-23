@@ -131,12 +131,14 @@
     document.getElementById('deal-headline').textContent=deal.headline;
     document.getElementById('deal-claim').textContent=deal.promoClaim;
     const facts=document.getElementById('verified-facts');
+    const labels=['VERIFIED','MODEL ID','CONTEXT','PRICE','FREE CREDIT'];
     deal.verifiedFacts.forEach((fact,index)=>{
       const row=document.createElement('div'); const dt=document.createElement('dt'); const dd=document.createElement('dd');
-      dt.textContent=index===0?'VERIFIED':index===1?'MODEL ID':index===2?'CONTEXT':'ACCESS'; dd.textContent=fact; row.append(dt,dd); facts.appendChild(row);
+      dt.textContent=labels[index] || 'FACT'; dd.textContent=fact; row.append(dt,dd); facts.appendChild(row);
     });
     document.getElementById('source-note').textContent=deal.note;
-    const link=document.getElementById('official-link'); link.href=deal.officialModelUrl;
+    const modelLink=document.getElementById('official-link'); modelLink.href=deal.officialModelUrl;
+    const fxLink=document.getElementById('fx-link'); fxLink.href=deal.officialFxUrl;
   }
   document.getElementById('reveal-source').addEventListener('click',()=>document.getElementById('source').scrollIntoView({behavior:'smooth'}));
 
