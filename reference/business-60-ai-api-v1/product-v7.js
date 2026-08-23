@@ -99,10 +99,6 @@
     });
   }
 
-  // Observe only direct grid replacement. V6 re-renders the grid by replacing
-  // its direct children. SAVE decoration mutates descendants inside each card;
-  // observing the whole subtree would feed those mutations back into
-  // decorateCards() indefinitely and can pin the browser main thread.
   const observer = new MutationObserver(() => decorateCards());
   observer.observe(grid, { childList:true });
 
@@ -166,6 +162,13 @@
     if (save && (e.key==='Enter' || e.key===' ')) {
       e.preventDefault(); e.stopPropagation(); toggleSave(save.dataset.saveId);
     }
+  });
+
+  window.B60_WATCH_STATE = Object.freeze({
+    ids: () => [...saved],
+    has: id => saved.has(id),
+    toggle: id => toggleSave(id),
+    storageAvailable: () => storageAvailable
   });
 
   updateBadge();
