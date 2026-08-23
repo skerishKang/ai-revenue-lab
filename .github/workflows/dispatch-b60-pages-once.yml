@@ -1,0 +1,45 @@
+name: Dispatch B60 Pages provisioning once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/dispatch-b60-pages-once.yml
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    name: Dispatch guarded B60 Cloudflare Pages provisioning
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch existing guarded provisioning workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/actions/workflows/provision-approved-business-pages.yml/dispatches" \
+            --input - <<'JSON'
+          {
+            "ref": "main",
+            "inputs": {
+              "business_id": "60",
+              "project_name": "ai-revenue-business-60-ai-api",
+              "source_directory": "reference/business-60-ai-api-v1",
+              "approved_sha": "4a3b24e22a5c9b3ca6f33a724b485f01fcd81e82",
+              "approval_pr": "659",
+              "production_branch": "main",
+              "existing_project_action": "verify-only",
+              "expected_old_source_directory": ""
+            }
+          }
+          JSON
+
+          echo 'B60 guarded Pages provisioning dispatch accepted by GitHub API.'
