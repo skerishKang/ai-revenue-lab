@@ -211,9 +211,14 @@
 
   const initialRoute = new URL(location.href).searchParams.get('route');
   if (initialRoute && byId.has(initialRoute)) {
-    setTimeout(() => {
+    const landOnRoute = () => {
       explore.scrollIntoView({ block: 'start' });
-      openRoute(initialRoute, { sync: false });
-    }, 0);
+      requestAnimationFrame(() => {
+        explore.scrollIntoView({ block: 'start' });
+        openRoute(initialRoute, { sync: false });
+      });
+    };
+    if (document.readyState === 'complete') landOnRoute();
+    else addEventListener('load', landOnRoute, { once: true });
   }
 })();
