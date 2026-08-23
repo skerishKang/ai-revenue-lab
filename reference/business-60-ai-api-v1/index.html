@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#02040a">
   <title>AI API — Cinematic Anchor</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="cinematic-v2.css">
 </head>
 <body>
   <header class="shell" aria-label="AI API navigation">
@@ -41,17 +42,31 @@
           <path d="M634 416 C684 379 703 340 688 291"/>
         </svg>
 
+        <div class="contact-vector" aria-hidden="true"><i></i><b></b></div>
+        <div class="contact-ripple" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="world-flash" aria-hidden="true"></div>
+
         <div class="vision-ring" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="scan-beam" aria-hidden="true"></div>
 
         <button class="access-core" id="connect" type="button" aria-describedby="connect-note"><span>API</span><b>CONNECT</b></button>
         <p class="connect-note" id="connect-note">touch the access layer</p>
 
+        <div class="capability-world" aria-hidden="true">
+          <div class="capability capability-code">
+            <span>route()</span><span>generate()</span><span>verify()</span><span>deploy()</span>
+            <span>auth</span><span>model</span><span>context</span>
+          </div>
+          <div class="capability capability-vision"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="capability capability-voice"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
+        </div>
+
         <div class="spatial" id="spatial" aria-label="Spatial AI surfaces">
           <button class="surface surface-model" type="button" data-depth="1.1"><small>MODEL</small><strong>GLM 5.2</strong><em>available route</em></button>
           <button class="surface surface-route" type="button" data-depth="-.7"><small>ROUTE</small><strong>PROVIDERS</strong><em>cost · speed · access</em></button>
           <button class="surface surface-action" type="button" data-depth=".55"><small>ACTION</small><strong>CREATE</strong><em>intent → code</em></button>
         </div>
+        <div class="gesture-cursor" id="gesture-cursor" aria-hidden="true"><i></i><span>GESTURE</span></div>
 
         <div class="voice" id="voice" aria-live="polite">
           <div class="wave" aria-hidden="true"></div>
@@ -99,5 +114,6 @@
 
   <script src="data/deals.js"></script>
   <script src="app.js"></script>
+  <script src="cinematic-v2.js"></script>
 </body>
 </html>
