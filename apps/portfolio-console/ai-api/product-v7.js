@@ -168,6 +168,13 @@
     }
   });
 
+  window.B60_WATCH_STATE = Object.freeze({
+    ids: () => [...saved],
+    has: id => saved.has(id),
+    toggle: id => toggleSave(id),
+    storageAvailable: () => storageAvailable
+  });
+
   updateBadge();
   decorateCards();
 })();
