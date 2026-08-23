@@ -1,0 +1,60 @@
+name: QA B60 asset diagnostics
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/qa-b60-asset-diagnostics.yml
+
+permissions:
+  contents: read
+
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TARGET_REF: fix/b60-protagonist-visibility-20260824
+      TARGET_SHA: ab4f6efc935c8500ed67b7e58172bdcb8837f39e
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_REF }}
+          path: target
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Inspect exact visual asset bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=target/reference/business-60-ai-api-v1/assets
+          test "$(git -C target rev-parse HEAD)" = "$TARGET_SHA"
+          for f in woman-alone.webp woman-close.webp woman-connection.webp woman-field.webp gesture-touch.webp; do
+            echo "=== $f ==="
+            wc -c "$root/$f"
+            file "$root/$f"
+            sha256sum "$root/$f"
+            head -c 96 "$root/$f" | xxd -g 1
+            if grep -a -q 'git-lfs.github.com/spec' "$root/$f"; then echo "LFS_POINTER=YES"; else echo "LFS_POINTER=NO"; fi
+          done
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Decode with Pillow
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pillow >/dev/null
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          root=Path('target/reference/business-60-ai-api-v1/assets')
+          for name in ['woman-alone.webp','woman-close.webp','woman-connection.webp','woman-field.webp','gesture-touch.webp']:
+              p=root/name
+              try:
+                  with Image.open(p) as im:
+                      im.load()
+                      print(f'PIL_DECODE {name} format={im.format} size={im.size} mode={im.mode}')
+              except Exception as e:
+                  print(f'PIL_FAIL {name} {type(e).__name__}: {e}')
+                  raise
+          PY
