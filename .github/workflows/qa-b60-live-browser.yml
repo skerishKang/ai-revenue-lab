@@ -6,140 +6,145 @@ on:
       - .github/workflows/qa-b60-live-browser.yml
 
 permissions:
-  actions: write
   contents: read
 
 jobs:
-  live-browser:
+  rendered-visibility:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     env:
-      GH_TOKEN: ${{ github.token }}
-      TARGET: https://ai-revenue-business-60-ai-api.pages.dev/
-      APPROVED_SHA: 401d959b0905c67e513381d0379a042940dbcd25
-      APPROVAL_PR: '661'
+      TARGET_REF: fix/b60-protagonist-visibility-20260824
+      TARGET_SHA: ab4f6efc935c8500ed67b7e58172bdcb8837f39e
+      TARGET_URL: http://127.0.0.1:4173/
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_REF }}
+          path: target
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Require exact target head
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git -C target rev-parse HEAD)"
+          echo "TARGET_HEAD=$actual"
+          test "$actual" = "$TARGET_SHA"
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Dispatch guarded B60 Cloudflare redeploy
-        id: provision
+      - name: Install Chromium and start isolated reference server
         shell: bash
         run: |
           set -euo pipefail
-          previous="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'Provision approved Business Pages' --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
-
-          gh workflow run provision-approved-business-pages.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f business_id=60 \
-            -f project_name=ai-revenue-business-60-ai-api \
-            -f source_directory=reference/business-60-ai-api-v1 \
-            -f approved_sha="$APPROVED_SHA" \
-            -f approval_pr="$APPROVAL_PR" \
-            -f production_branch=main \
-            -f existing_project_action=verify-only \
-            -f expected_old_source_directory=''
-
-          run_id=''
-          for i in $(seq 1 40); do
-            candidate="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'Provision approved Business Pages' --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
-            if test "$candidate" != "0" && test "$candidate" != "$previous"; then
-              run_id="$candidate"
-              break
-            fi
-            sleep 2
-          done
-          test -n "$run_id"
-          echo "PROVISION_RUN_ID=$run_id"
-          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-
-          gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
-          conclusion="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json conclusion --jq '.conclusion')"
-          echo "PROVISION_CONCLUSION=$conclusion"
-          test "$conclusion" = success
-
-      - name: Install Playwright Chromium
-        run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory target/reference/business-60-ai-api-v1 >/tmp/b60-server.log 2>&1 &
+          echo $! > /tmp/b60-server.pid
+          for i in $(seq 1 30); do
+            if curl -fsS "$TARGET_URL" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b60-server.log
+          exit 1
 
-      - name: Wait for exact hotfix bytes and exercise live site
+      - name: Render desktop and mobile visibility evidence
         shell: bash
         run: |
           set -euo pipefail
-          ready=false
-          for i in $(seq 1 50); do
-            js="$(curl -fsSL --max-time 10 "${TARGET}product-v7.js" || true)"
-            autoplay="$(curl -fsSL --max-time 10 "${TARGET}cinematic-autoplay.js" || true)"
-            if printf '%s' "$js" | grep -q 'Observe only direct grid replacement' \
-              && ! printf '%s' "$js" | grep -q 'subtree:true' \
-              && printf '%s' "$autoplay" | grep -q "scrollBehavior = 'auto'"; then
-              echo "LIVE_HOTFIX=VISIBLE attempt=$i"
-              ready=true
-              break
-            fi
-            echo "LIVE_HOTFIX=WAIT attempt=$i"
-            sleep 3
-          done
-          test "$ready" = true
-
           cat > qa.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'fs';
+
           const browser = await chromium.launch({headless:true});
-          try {
-            const page = await browser.newPage({viewport:{width:1440,height:1000}});
-            const errors=[]; const failed=[];
+          const all = [];
+
+          async function runScenario(name, viewport) {
+            const page = await browser.newPage({ viewport });
+            const errors = [];
+            const badResponses = [];
             page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); });
             page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
-            page.on('requestfailed',r=>failed.push({url:r.url(),error:r.failure()?.errorText}));
+            page.on('response',r=>{ if(r.status()>=400) badResponses.push({status:r.status(),url:r.url()}); });
 
-            const response=await page.goto(process.env.TARGET,{waitUntil:'domcontentloaded',timeout:20000});
-            const state=async label=>({
-              label,
-              readyState:await page.evaluate(()=>document.readyState),
-              scrollY:Math.round(await page.evaluate(()=>scrollY)),
-              cue:(await page.locator('.scroll-cue').textContent())?.trim(),
-              stage:await page.locator('#stage').getAttribute('class'),
-              connectOpacity:await page.locator('#connect').evaluate(el=>getComputedStyle(el).opacity)
-            });
+            const response = await page.goto(process.env.TARGET_URL,{waitUntil:'domcontentloaded',timeout:20000});
+            const visual = async (label) => page.evaluate((label) => {
+              const stage = document.querySelector('#stage');
+              const alone = document.querySelector('.shot-alone');
+              const close = document.querySelector('.shot-close');
+              const hand = document.querySelector('.gesture-hand');
+              const grade = document.querySelector('.world-grade');
+              const connect = document.querySelector('#connect');
+              const info = (el) => {
+                const cs = getComputedStyle(el);
+                const r = el.getBoundingClientRect();
+                return {
+                  opacity:Number(cs.opacity), filter:cs.filter, mixBlendMode:cs.mixBlendMode,
+                  mask:cs.maskImage || cs.webkitMaskImage || '',
+                  rect:{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height)}
+                };
+              };
+              const imgInfo = (selector) => {
+                const img = document.querySelector(selector);
+                return img ? {complete:img.complete,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight} : null;
+              };
+              return {
+                label,
+                readyState:document.readyState,
+                scrollY:Math.round(scrollY),
+                stageClass:stage?.className || '',
+                cue:document.querySelector('.scroll-cue')?.textContent?.trim() || '',
+                alone:info(alone), close:info(close), hand:info(hand), grade:info(grade), connect:info(connect),
+                images:{alone:imgInfo('.shot-alone img'),close:imgInfo('.shot-close img'),hand:imgInfo('.gesture-hand img')}
+              };
+            }, label);
 
             const states=[];
-            states.push(await state('loaded'));
-            await page.screenshot({path:'01-loaded.png'});
-            await page.waitForTimeout(1800);
-            states.push(await state('autoplay-1.8s'));
-            await page.screenshot({path:'02-autoplay.png'});
-            await page.waitForTimeout(4800);
-            states.push(await state('connect-gate'));
-            await page.screenshot({path:'03-connect-gate.png'});
+            states.push(await visual('loaded'));
+            await page.screenshot({path:`${name}-01-loaded.png`});
 
-            const beforeClick=await page.evaluate(()=>scrollY);
+            await page.waitForTimeout(1800);
+            states.push(await visual('autoplay-1.8s'));
+            await page.screenshot({path:`${name}-02-autoplay.png`});
+
+            await page.waitForTimeout(4800);
+            states.push(await visual('connect-gate'));
+            await page.screenshot({path:`${name}-03-connect-gate.png`});
+
             await page.locator('#connect').click({timeout:8000});
             await page.waitForTimeout(1800);
-            states.push(await state('post-connect'));
-            await page.screenshot({path:'04-post-connect.png'});
+            states.push(await visual('post-connect'));
+            await page.screenshot({path:`${name}-04-post-connect.png`});
 
-            const connected=await page.locator('#stage').evaluate(el=>el.classList.contains('connected'));
-            const afterClick=Math.round(await page.evaluate(()=>scrollY));
-            const cards=await page.locator('.access-card').count();
-            const saveButtons=await page.locator('.save-v7').count();
-            const bodyMarker=(await page.locator('body').innerText()).includes('LIVE ACCESS SIGNAL');
-            const out={http:response?.status(),states,beforeClick:Math.round(beforeClick),afterClick,connected,cards,saveButtons,bodyMarker,errors,failed};
-            fs.writeFileSync('qa-result.json',JSON.stringify(out,null,2));
-            console.log('QA_RESULT='+JSON.stringify(out));
+            const gate=states[2], post=states[3];
+            const result={name,http:response?.status(),states,errors,badResponses};
+            all.push(result);
 
-            if(response?.status()!==200) throw new Error('HTTP_NOT_200');
-            if(errors.length || failed.length) throw new Error('BROWSER_ERRORS');
-            if(states[1].scrollY<=states[0].scrollY) throw new Error('AUTOPLAY_DID_NOT_ADVANCE');
-            if(states[2].scrollY<=states[1].scrollY) throw new Error('AUTOPLAY_DID_NOT_REACH_GATE');
-            if(!connected) throw new Error('CONNECT_DID_NOT_ACTIVATE');
-            if(afterClick<=beforeClick) throw new Error('POST_CONNECT_DID_NOT_ADVANCE');
-            if(cards<5 || saveButtons<5) throw new Error('PRODUCT_LAYER_NOT_READY');
-            if(!bodyMarker) throw new Error('BODY_MARKER_MISSING');
+            if(response?.status()!==200) throw new Error(`${name}:HTTP_NOT_200`);
+            if(errors.length || badResponses.length) throw new Error(`${name}:BROWSER_RESOURCE_ERRORS`);
+            if(gate.images.alone?.naturalWidth<=0 || gate.images.hand?.naturalWidth<=0 || post.images.close?.naturalWidth<=0) throw new Error(`${name}:IMAGE_NOT_DECODED`);
+            if(gate.alone.opacity<.5) throw new Error(`${name}:PROTAGONIST_TOO_TRANSPARENT_AT_GATE`);
+            if(gate.hand.opacity<.55) throw new Error(`${name}:HAND_TOO_TRANSPARENT_AT_GATE`);
+            if(gate.grade.mixBlendMode!=='normal') throw new Error(`${name}:DARK_MULTIPLY_GRADE_STILL_ACTIVE`);
+            if(post.close.opacity<.5) throw new Error(`${name}:POST_CONNECT_PROTAGONIST_TOO_TRANSPARENT`);
+            if(!post.stageClass.includes('connected')) throw new Error(`${name}:CONNECT_DID_NOT_ACTIVATE`);
+            await page.close();
+          }
+
+          try {
+            await runScenario('desktop',{width:1440,height:1000});
+            await runScenario('mobile',{width:390,height:844});
+            fs.writeFileSync('qa-visibility.json',JSON.stringify({target:process.env.TARGET_SHA,results:all},null,2));
+            console.log('VISIBILITY_QA='+JSON.stringify(all.map(r=>({
+              name:r.name,
+              gate:{scrollY:r.states[2].scrollY,aloneOpacity:r.states[2].alone.opacity,handOpacity:r.states[2].hand.opacity,handRect:r.states[2].hand.rect,grade:r.states[2].grade.mixBlendMode},
+              post:{closeOpacity:r.states[3].close.opacity,connected:r.states[3].stageClass.includes('connected')},
+              errors:r.errors.length,badResponses:r.badResponses.length
+            }))));
           } finally {
             await browser.close();
           }
@@ -149,7 +154,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: b60-live-browser-fixed
+          name: b60-protagonist-visibility-qa
           path: |
-            *.png
-            qa-result.json
+            desktop-*.png
+            mobile-*.png
+            qa-visibility.json
