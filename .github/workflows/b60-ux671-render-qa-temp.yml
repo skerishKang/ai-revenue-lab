@@ -64,7 +64,7 @@ jobs:
             assert(await page.locator('.ux4-saved-route').count()===2,`${prefix}: expected 2 saved routes`);
             assert(await page.locator('.watch-card-v7').count()===0,`${prefix}: legacy Watch cards visible`);
             assert(await page.locator('.ux4-runtime.is-mapped').count()===1,`${prefix}: mapped saved-route count not 1`);
-            const stats=await page.locator('#explore-stats').innerText();
+            const stats=(await page.locator('#explore-stats').innerText()).toLowerCase();
             assert(stats.includes('2\nsaved routes')||stats.includes('2 saved routes'),`${prefix}: saved stats wrong ${stats}`);
             assert(stats.includes('1\nrouter mapped')||stats.includes('1 router mapped'),`${prefix}: mapped stats wrong ${stats}`);
             const vercel=page.locator('.ux4-saved-route[data-watch-route-id="vercel-glm52"]');

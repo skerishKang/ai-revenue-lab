@@ -9,6 +9,8 @@
   const WATCH_KEY = 'b60.ai-api.watchlist.v1';
   const matchingAction = (selector, id) => [...document.querySelectorAll(selector)].find(button => button.dataset.saveId === id || button.dataset.compareId === id);
   const isSaved = id => {
+    const watchState = window.B60_WATCH_STATE;
+    if (watchState?.has) return watchState.has(id);
     const peer = matchingAction('[data-save-id]', id);
     if (peer?.getAttribute('aria-pressed') === 'true') return true;
     try {

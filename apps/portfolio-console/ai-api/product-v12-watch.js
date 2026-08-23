@@ -21,9 +21,10 @@
   const eventKind = type => type === 'FIRST_SEEN' ? 'BASELINE' : type === 'PENDING_CLAIM_RECORDED' ? 'PENDING' : 'CHANGED';
   const routeState = signal => mappings[signal.id] ? 'ROUTER MAPPED' : 'INFO ONLY';
   const savedSignals = () => watchState.ids().map(id => byId.get(id)).filter(Boolean);
-  const eventsFor = id => (historyById.get(id)?.events || []).map(event => ({...event, id, signal: byId.get(id)})).filter(event => event.signal);
-  const allEvents = () => signalHistory.flatMap(item => eventsFor(item.id)).sort((a, b) => b.date.localeCompare(a.date));
-  const latestEvent = id => [...eventsFor(id)].sort((a, b) => b.date.localeCompare(a.date))[0] || null;
+  const eventsFor = id => (historyById.get(id)?.events || []).map((event, eventIndex) => ({...event, eventIndex, id, signal: byId.get(id)})).filter(event => event.signal);
+  const eventSort = (a, b) => b.date.localeCompare(a.date) || b.eventIndex - a.eventIndex;
+  const allEvents = () => signalHistory.flatMap(item => eventsFor(item.id)).sort(eventSort);
+  const latestEvent = id => [...eventsFor(id)].sort(eventSort)[0] || null;
   const query = () => search.value.trim().toLowerCase();
 
   let watchActive = false;
