@@ -34,3 +34,8 @@
   .sticky.contact-armed .gesture-hand{opacity:.98!important;transform:translate(-51%,-50%) rotate(-1deg) scaleX(-1) scale(1)!important}
   .sticky.hand-touching .gesture-hand{opacity:1!important;transform:translate(-56%,-50%) rotate(0deg) scaleX(-1) scale(1.05)!important}
 }
+
+/* Once CONNECT is activated the touch plate must leave the composition. The
+   connected state can coexist with hand-touching, so this terminal rule wins
+   the cascade and prevents the source raster from leaking into later scenes. */
+.sticky.connected .gesture-hand{opacity:0!important;visibility:hidden!important;animation:none!important;filter:none!important;pointer-events:none!important}
