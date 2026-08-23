@@ -1,0 +1,16 @@
+/* Final identity cleanup after rendered desktop/mobile QA. */
+.sticky.identity-clean .voice,
+.sticky.identity-clean .voice-build,
+.sticky.identity-clean .spatial,
+.sticky.identity-clean .gesture-control-hand,
+.sticky.identity-clean .gesture-cursor,
+.sticky.identity-clean .capability-world,
+.sticky.identity-clean .world-split,
+.sticky.identity-clean .world-transition-wash{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.sticky.identity-clean .cinema-title{z-index:88}
+@media(max-width:760px){
+  .sticky.identity-clean .cinema-title{left:6vw;bottom:11vh}
+}

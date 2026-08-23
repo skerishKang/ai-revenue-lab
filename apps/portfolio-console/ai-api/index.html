@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#02040a">
+  <title>AI API — Cinematic Anchor</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="cinematic-v2.css">
+  <link rel="stylesheet" href="cinematic-v3.css">
+  <link rel="stylesheet" href="cinematic-v4.css">
+  <link rel="stylesheet" href="cinematic-v5.css">
+  <link rel="stylesheet" href="cinematic-polish.css">
+  <link rel="stylesheet" href="cinematic-polish-final.css">
+  <link rel="stylesheet" href="product-v6.css">
+  <link rel="stylesheet" href="product-v7.css">
+  <link rel="stylesheet" href="product-v8.css">
+</head>
+<body>
+  <header class="shell" aria-label="AI API navigation">
+    <a class="brand" href="#top">AI / API</a>
+    <nav><a href="#signal">SIGNAL</a><a href="#source">SOURCE</a></nav>
+  </header>
+
+  <main id="top">
+    <section class="cinematic" id="cinematic" aria-label="AI API cinematic entry">
+      <div class="sticky" id="stage">
+        <canvas id="particles" aria-hidden="true"></canvas>
+        <div class="planet" aria-hidden="true"></div>
+        <div class="orbit orbit-a" aria-hidden="true"></div>
+        <div class="orbit orbit-b" aria-hidden="true"></div>
+
+        <figure class="shot shot-alone" aria-hidden="true"><img src="assets/woman-alone.webp" alt=""></figure>
+        <figure class="shot shot-connection" aria-hidden="true"><img src="assets/woman-connection.webp" alt=""></figure>
+        <figure class="shot shot-close" aria-hidden="true"><img src="assets/woman-close.webp" alt=""></figure>
+        <figure class="shot shot-field" aria-hidden="true"><img src="assets/woman-field.webp" alt=""></figure>
+
+        <div class="world-grade" aria-hidden="true"></div>
+        <svg class="neural" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="pulse" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#6d7dff"/><stop offset=".5" stop-color="#77f7ff"/><stop offset="1" stop-color="#f3ffff"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M635 820 C630 720 605 655 627 570 C646 498 650 425 634 335"/>
+          <path d="M629 570 C571 547 537 500 526 445"/>
+          <path d="M631 570 C694 546 730 506 744 444"/>
+          <path d="M635 416 C597 376 602 334 628 286"/>
+          <path d="M634 416 C684 379 703 340 688 291"/>
+        </svg>
+
+        <figure class="gesture-hand" id="gesture-hand" aria-hidden="true"><img src="assets/gesture-touch.webp" alt=""></figure>
+        <div class="contact-vector" aria-hidden="true"><i></i><b></b></div>
+        <div class="contact-ripple" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="world-flash" aria-hidden="true"></div>
+
+        <div class="vision-ring" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="scan-beam" aria-hidden="true"></div>
+
+        <button class="access-core" id="connect" type="button" aria-describedby="connect-note"><span>API</span><b>CONNECT</b></button>
+        <p class="connect-note" id="connect-note">touch the access layer</p>
+
+        <div class="capability-world" aria-hidden="true">
+          <div class="capability capability-code">
+            <span>route()</span><span>generate()</span><span>verify()</span><span>deploy()</span>
+            <span>auth</span><span>model</span><span>context</span>
+          </div>
+          <div class="capability capability-vision"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="capability capability-voice"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
+        </div>
+
+        <div class="spatial" id="spatial" aria-label="Spatial AI surfaces">
+          <button class="surface surface-model" type="button" data-depth="1.1"><small>MODEL</small><strong>GLM 5.2</strong><em>available route</em></button>
+          <button class="surface surface-route" type="button" data-depth="-.7"><small>ROUTE</small><strong>PROVIDERS</strong><em>cost · speed · access</em></button>
+          <button class="surface surface-action" type="button" data-depth=".55"><small>ACTION</small><strong>CREATE</strong><em>intent → code</em></button>
+        </div>
+        <div class="gesture-cursor" id="gesture-cursor" aria-hidden="true"><i></i><span>GESTURE</span></div>
+
+        <div class="voice" id="voice" aria-live="polite">
+          <div class="wave" aria-hidden="true"></div>
+          <p>“가장 저렴하게 쓸 수 있는 경로로 로그인 API를 만들어줘.”</p>
+          <pre id="code"><code></code></pre>
+        </div>
+
+        <div class="cinema-title" id="cinema-title"><span>ACCESS CHANGES THE WORLD</span><h1>AI<br>API</h1><p>AI로 들어가는 모든 길.</p></div>
+        <div class="scroll-cue" aria-hidden="true">SCROLL <i></i></div>
+      </div>
+    </section>
+
+    <section class="signal" id="signal" aria-labelledby="signal-title">
+      <div class="signal-intro">
+        <span class="eyebrow">LIVE ACCESS SIGNAL / 001</span>
+        <h2 id="signal-title">영화가 끝나면,<br>정보가 시작됩니다.</h2>
+        <p>프로모션을 예쁘게 포장하는 대신, 무엇이 공식 확인됐고 무엇이 아직 확인 중인지 분리합니다.</p>
+      </div>
+
+      <article class="signal-object" id="deal-card">
+        <div class="halo" aria-hidden="true"></div>
+        <div class="signal-meta"><span>VERCEL</span><span>GLM 5.2</span></div>
+        <div class="signal-core">
+          <span class="state pending" id="promo-state">PENDING WEB VERIFICATION</span>
+          <h3 id="deal-headline">GLM 5.2 access signal</h3>
+          <p class="claim" id="deal-claim"></p>
+          <dl class="facts" id="verified-facts"></dl>
+        </div>
+        <button class="reveal-source" id="reveal-source" type="button">OPEN SOURCE LAYER</button>
+      </article>
+    </section>
+
+    <section class="source" id="source" aria-labelledby="source-title">
+      <div><span class="eyebrow">SOURCE CONFIDENCE</span><h2 id="source-title">멋있어도,<br>검증 상태는 흐리지 않습니다.</h2></div>
+      <div class="source-panel" id="source-panel">
+        <p class="source-status"><span>VERIFIED_OFFICIAL_WEB</span> GLM 5.2 official model facts</p>
+        <p class="source-status"><span>VERIFIED_OFFICIAL_WEB</span> Vercel Labs fx product identity</p>
+        <p class="source-status warning"><span>PENDING_WEB_VERIFICATION</span> exact fx promotion / end-date claim</p>
+        <p id="source-note"></p>
+        <a id="official-link" href="#" target="_blank" rel="noopener noreferrer">VERCEL OFFICIAL MODEL PAGE ↗</a>
+        <a id="fx-link" href="#" target="_blank" rel="noopener noreferrer">VERCEL LABS FX REPOSITORY ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/deals.js"></script>
+  <script src="data/access-signals.js"></script>
+  <script src="data/signal-history.js"></script>
+  <script src="data/snapshots.js"></script>
+  <script src="snapshot-diff-v8.js"></script>
+  <script src="app.js"></script>
+  <script src="cinematic-v2.js"></script>
+  <script src="cinematic-v3.js"></script>
+  <script src="cinematic-v4.js"></script>
+  <script src="cinematic-v5.js"></script>
+  <script src="cinematic-polish.js"></script>
+  <script src="product-v6.js"></script>
+  <script src="product-v7.js"></script>
+  <script src="product-v8.js"></script>
+</body>
+</html>

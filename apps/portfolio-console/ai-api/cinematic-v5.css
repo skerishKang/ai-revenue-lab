@@ -1,0 +1,190 @@
+/* B60 cinematic motion pass 5 — spoken intent physically morphs into route, code, and API structure. */
+.voice-build{
+  --vb-x:0deg;
+  --vb-y:0deg;
+  position:absolute;
+  z-index:66;
+  inset:0;
+  pointer-events:none;
+  perspective:1500px;
+  opacity:0;
+  transition:opacity .28s ease;
+}
+.sticky.voice-build-on .voice-build{opacity:1}
+.voice-listen{
+  position:absolute;
+  left:50%;
+  top:51%;
+  width:min(70vw,980px);
+  height:180px;
+  transform:translate(-50%,-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(5px,.7vw,11px);
+  transition:opacity .35s ease,transform .5s cubic-bezier(.16,.78,.15,1),filter .35s ease;
+}
+.voice-listen i{
+  display:block;
+  width:2px;
+  height:18px;
+  border-radius:999px;
+  background:linear-gradient(180deg,transparent,#dfffff 34%,#7ef7ff 68%,transparent);
+  box-shadow:0 0 16px rgba(120,242,255,.66);
+  transform:scaleY(var(--amp,.45));
+  animation:voiceBuildWave .78s ease-in-out infinite alternate;
+}
+.voice-listen i:nth-child(3n){animation-delay:-.24s}.voice-listen i:nth-child(4n){animation-delay:-.42s}.voice-listen i:nth-child(5n){animation-delay:-.6s}
+@keyframes voiceBuildWave{to{transform:scaleY(calc(var(--amp,.45)*3.9));opacity:.34}}
+.voice-transcript{
+  position:absolute;
+  left:50%;
+  top:62%;
+  transform:translate(-50%,12px);
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+  width:min(80vw,900px);
+  opacity:0;
+  transition:opacity .35s ease,transform .45s cubic-bezier(.16,.78,.15,1);
+}
+.voice-transcript b{
+  padding:7px 10px;
+  border:1px solid rgba(151,246,255,.22);
+  border-radius:999px;
+  background:rgba(4,17,30,.44);
+  backdrop-filter:blur(14px);
+  font:700 8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.14em;
+  color:rgba(222,253,255,.75);
+  box-shadow:0 8px 35px rgba(0,0,0,.22);
+}
+.voice-route{
+  position:absolute;
+  left:50%;
+  top:49%;
+  width:min(72vw,1020px);
+  height:min(54vh,520px);
+  transform:translate(-50%,-50%) rotateX(var(--vb-x)) rotateY(var(--vb-y));
+  transform-style:preserve-3d;
+  opacity:0;
+  transition:opacity .38s ease,transform .14s linear;
+}
+.voice-route:before,.voice-route:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  height:1px;
+  transform-origin:left;
+  background:linear-gradient(90deg,rgba(132,247,255,.1),rgba(132,247,255,.75),rgba(132,247,255,.08));
+  box-shadow:0 0 18px rgba(111,235,255,.35);
+}
+.voice-route:before{width:36%;transform:rotate(-19deg)}
+.voice-route:after{width:34%;transform:rotate(22deg)}
+.route-node{
+  position:absolute;
+  width:130px;
+  height:130px;
+  border:1px solid rgba(145,244,255,.25);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  background:radial-gradient(circle,rgba(88,225,255,.12),rgba(2,8,18,.26) 66%,transparent 68%);
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 45px rgba(95,223,255,.09),inset 0 0 38px rgba(142,245,255,.04);
+  font:750 8px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.13em;
+  color:rgba(224,254,255,.7);
+  transform:scale(.35) translateZ(-160px);
+  opacity:0;
+  transition:opacity .35s ease,transform .65s cubic-bezier(.16,.78,.15,1),border-color .3s ease;
+}
+.route-node strong{display:block;font-size:12px;letter-spacing:.05em;color:#efffff}
+.route-intent{left:4%;top:38%}.route-access{left:35%;top:12%}.route-model{right:6%;top:38%}.route-api{left:38%;bottom:0}
+.voice-code-field{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transform-style:preserve-3d;
+  transition:opacity .4s ease;
+}
+.code-strip{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(64vw,860px);
+  padding:12px 16px;
+  border-left:1px solid rgba(141,246,255,.48);
+  background:linear-gradient(90deg,rgba(5,20,35,.62),rgba(5,20,35,.08),transparent);
+  font:650 clamp(10px,1.05vw,15px)/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.02em;
+  color:rgba(202,252,255,.72);
+  white-space:nowrap;
+  opacity:0;
+  transform:translate3d(-50%,80px,-120px) rotateX(17deg) scale(.84);
+  transition:opacity .35s ease,transform .62s cubic-bezier(.16,.78,.15,1);
+  box-shadow:-12px 0 35px rgba(91,229,255,.08);
+}
+.code-strip:nth-child(1){margin-top:-150px}.code-strip:nth-child(2){margin-top:-78px}.code-strip:nth-child(3){margin-top:-6px}.code-strip:nth-child(4){margin-top:66px}
+.api-construct{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(23vw,320px);
+  aspect-ratio:.72;
+  transform:translate3d(-50%,-48%,180px) rotateX(10deg) rotateY(-13deg) scale(.2);
+  opacity:0;
+  border:1px solid rgba(162,249,255,.42);
+  border-radius:28px;
+  background:linear-gradient(155deg,rgba(125,243,255,.15),rgba(7,18,40,.44) 44%,rgba(103,88,255,.13));
+  backdrop-filter:blur(24px);
+  box-shadow:0 55px 140px rgba(0,0,0,.48),0 0 85px rgba(99,235,255,.16),inset 0 1px rgba(255,255,255,.16);
+  display:grid;
+  place-items:center;
+  text-align:center;
+  transition:opacity .32s ease,transform .7s cubic-bezier(.13,.84,.12,1),filter .3s ease;
+}
+.api-construct:before,.api-construct:after{
+  content:"";position:absolute;inset:9%;border:1px solid rgba(149,245,255,.13);border-radius:22px;
+}
+.api-construct:after{inset:19%;border-radius:50%;animation:apiConstructSpin 7s linear infinite}
+@keyframes apiConstructSpin{to{transform:rotate(360deg)}}
+.api-construct small{display:block;font:750 8px ui-monospace,monospace;letter-spacing:.2em;color:rgba(217,251,255,.45)}
+.api-construct strong{display:block;margin-top:10px;font-size:clamp(42px,5vw,75px);line-height:.75;letter-spacing:-.08em;color:#efffff;text-shadow:0 0 32px rgba(122,239,255,.28)}
+.api-construct em{display:block;margin-top:18px;font:700 8px ui-monospace,monospace;letter-spacing:.14em;color:#88f7ff;font-style:normal}
+.voice-build-status{
+  position:absolute;
+  left:50%;
+  bottom:10vh;
+  transform:translateX(-50%);
+  font:750 8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.22em;
+  color:rgba(211,251,255,.55);
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.sticky.vb-listen .voice-listen{opacity:1;transform:translate(-50%,-50%) scale(1);filter:brightness(1.15)}
+.sticky.vb-capture .voice-listen{opacity:.25;transform:translate(-50%,-50%) scaleX(.28) scaleY(.7);filter:blur(2px)}
+.sticky.vb-capture .voice-transcript{opacity:1;transform:translate(-50%,0)}
+.sticky.vb-route .voice-transcript{opacity:.28;transform:translate(-50%,-14vh) scale(.84)}
+.sticky.vb-route .voice-route{opacity:1}
+.sticky.vb-route .route-node{opacity:1;transform:scale(1) translateZ(0)}
+.sticky.vb-route .route-access{transform:scale(1.08) translateZ(80px);border-color:rgba(159,249,255,.7)}
+.sticky.vb-code .voice-route{opacity:.3;filter:blur(2px)}
+.sticky.vb-code .voice-code-field{opacity:1}
+.sticky.vb-code .code-strip{opacity:1;transform:translate3d(-50%,0,60px) rotateX(0) scale(1)}
+.sticky.vb-code .code-strip:nth-child(2){transition-delay:.07s}.sticky.vb-code .code-strip:nth-child(3){transition-delay:.14s}.sticky.vb-code .code-strip:nth-child(4){transition-delay:.21s}
+.sticky.vb-ready .voice-listen,.sticky.vb-ready .voice-transcript,.sticky.vb-ready .voice-route,.sticky.vb-ready .voice-code-field{opacity:.08;filter:blur(6px)}
+.sticky.vb-ready .api-construct{opacity:1;transform:translate3d(-50%,-48%,220px) rotateX(2deg) rotateY(-4deg) scale(1);filter:brightness(1.12)}
+.sticky.vb-ready .voice-build-status{opacity:1}
+.sticky.vb-ready .api-construct{animation:apiReadyPulse 1.5s ease-in-out infinite alternate}
+@keyframes apiReadyPulse{to{box-shadow:0 55px 140px rgba(0,0,0,.48),0 0 125px rgba(99,235,255,.28),inset 0 1px rgba(255,255,255,.18);transform:translate3d(-50%,-49%,230px) rotateX(1deg) rotateY(2deg) scale(1.025)}}
+@media(max-width:760px){
+  .voice-listen{width:88vw}.voice-transcript{width:92vw}.voice-route{width:94vw;height:58vh}.route-node{width:92px;height:92px}.route-intent{left:0}.route-model{right:0}.route-access{left:34%;top:15%}.route-api{left:34%;bottom:4%}.code-strip{width:88vw;font-size:9px}.api-construct{width:46vw}.voice-build-status{bottom:7vh}
+}
+@media(prefers-reduced-motion:reduce){
+  .voice-build{display:none!important}
+}

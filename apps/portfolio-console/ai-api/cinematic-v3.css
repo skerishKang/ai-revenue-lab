@@ -1,0 +1,107 @@
+/* B60 cinematic motion pass 3 — existing LoveTree hand gesture staged as physical API touch + spatial control. */
+.gesture-hand{
+  --hand-dx:0px;
+  --hand-dy:0px;
+  position:absolute;
+  z-index:58;
+  right:-5vw;
+  top:42%;
+  width:min(42vw,680px);
+  margin:0;
+  opacity:0;
+  pointer-events:none;
+  transform-origin:100% 52%;
+  transform:translate3d(calc(9vw + var(--hand-dx)),calc(3vh + var(--hand-dy)),220px) rotate(7deg) scaleX(-1) scale(.76);
+  filter:brightness(.78) saturate(.82) contrast(1.06) blur(.35px);
+  mix-blend-mode:screen;
+  -webkit-mask-image:radial-gradient(ellipse 72% 84% at 50% 49%,#000 34%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.48) 78%,transparent 100%);
+  mask-image:radial-gradient(ellipse 72% 84% at 50% 49%,#000 34%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.48) 78%,transparent 100%);
+  transition:opacity .32s ease,transform .62s cubic-bezier(.15,.82,.16,1),filter .38s ease;
+  will-change:transform,opacity,filter;
+}
+.gesture-hand img{display:block;width:100%;height:auto}
+.sticky.hand-ready .gesture-hand{
+  opacity:.48;
+  transform:translate3d(calc(6.7vw + var(--hand-dx)),calc(2vh + var(--hand-dy)),235px) rotate(5deg) scaleX(-1) scale(.84);
+  filter:brightness(.88) saturate(.88) contrast(1.08) blur(.2px);
+}
+.sticky.contact-armed .gesture-hand{
+  opacity:.82;
+  transform:translate3d(calc(2.2vw + var(--hand-dx)),calc(.3vh + var(--hand-dy)),270px) rotate(1.8deg) scaleX(-1) scale(.96);
+  filter:brightness(1.08) saturate(.9) contrast(1.08) drop-shadow(0 0 24px rgba(126,242,255,.36));
+}
+.sticky.hand-touching .gesture-hand{
+  opacity:.98;
+  transform:translate3d(calc(.1vw + var(--hand-dx)),calc(-.2vh + var(--hand-dy)),300px) rotate(.4deg) scaleX(-1) scale(1.04);
+  filter:brightness(1.35) saturate(.75) contrast(1.05) drop-shadow(0 0 42px rgba(143,247,255,.62));
+  transition-duration:.11s;
+}
+.sticky.hand-touching .access-core{
+  box-shadow:0 0 0 28px rgba(119,241,255,.08),0 0 104px rgba(111,234,255,.62),inset 0 0 34px rgba(225,255,255,.18);
+}
+.sticky.hand-ready .contact-vector:before{opacity:.18}
+.sticky.hand-ready .contact-vector i{opacity:.18}
+.sticky.contact-armed .contact-vector:before{opacity:.42}
+.sticky.contact-armed .contact-vector i{opacity:.4}
+.sticky.connected .gesture-hand{animation:gestureHandExit .72s cubic-bezier(.18,.77,.18,1) forwards}
+@keyframes gestureHandExit{
+  0%{opacity:.94;transform:translate3d(0,-.2vh,300px) rotate(.4deg) scaleX(-1) scale(1.04);filter:brightness(1.4) saturate(.72) drop-shadow(0 0 50px rgba(143,247,255,.68))}
+  32%{opacity:.72;transform:translate3d(-1.5vw,-1.6vh,340px) rotate(-2deg) scaleX(-1) scale(1.12);filter:brightness(1.62) saturate(.62) blur(.5px)}
+  100%{opacity:0;transform:translate3d(-7vw,-4vh,420px) rotate(-8deg) scaleX(-1) scale(1.32);filter:brightness(1.8) saturate(.5) blur(4px)}
+}
+.sticky.hand-ready .world-grade:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 64% 48%,rgba(137,248,255,.12),transparent 12%);
+  mix-blend-mode:screen;
+  pointer-events:none;
+  animation:contactBreath 1.4s ease-in-out infinite alternate;
+}
+@keyframes contactBreath{to{opacity:.35;transform:scale(1.045)}}
+
+/* After activation the same face-free hand returns as the spatial controller. */
+.gesture-control-hand{
+  position:absolute;
+  z-index:69;
+  left:var(--control-x,50%);
+  top:var(--control-y,55%);
+  width:min(37vw,570px);
+  margin:0;
+  opacity:0;
+  pointer-events:none;
+  transform-origin:92% 52%;
+  transform:translate3d(-91%,-53%,340px) rotate(-4deg) scale(.72);
+  filter:brightness(.68) saturate(.62) contrast(1.1) blur(.45px);
+  mix-blend-mode:screen;
+  -webkit-mask-image:radial-gradient(ellipse 72% 84% at 50% 49%,#000 32%,rgba(0,0,0,.9) 57%,rgba(0,0,0,.45) 78%,transparent 100%);
+  mask-image:radial-gradient(ellipse 72% 84% at 50% 49%,#000 32%,rgba(0,0,0,.9) 57%,rgba(0,0,0,.45) 78%,transparent 100%);
+  transition:opacity .25s ease,filter .14s ease,transform .1s ease;
+  will-change:left,top,transform,opacity;
+}
+.gesture-control-hand img{display:block;width:100%;height:auto}
+.sticky.physical-control .gesture-control-hand{
+  opacity:.34;
+  transform:translate3d(-91%,-53%,340px) rotate(-4deg) scale(.76);
+  filter:brightness(.88) saturate(.7) contrast(1.08) drop-shadow(0 0 24px rgba(126,241,255,.26));
+}
+.sticky.physical-control .gesture-cursor{opacity:.24}
+.sticky.physical-grab .gesture-control-hand{
+  opacity:.58;
+  transform:translate3d(-89%,-51%,390px) rotate(-1deg) scale(.83);
+  filter:brightness(1.18) saturate(.66) contrast(1.06) drop-shadow(0 0 40px rgba(133,244,255,.48));
+}
+.sticky.physical-grab .gesture-cursor{opacity:.62;transform:translate(-50%,-50%) scale(.66)}
+.sticky.physical-grab .spatial{filter:brightness(1.22) saturate(1.28)}
+
+@media(max-width:760px){
+  .gesture-hand{right:-22vw;top:44%;width:72vw;transform:translate3d(calc(17vw + var(--hand-dx)),calc(3vh + var(--hand-dy)),220px) rotate(8deg) scaleX(-1) scale(.72)}
+  .sticky.hand-ready .gesture-hand{transform:translate3d(calc(12vw + var(--hand-dx)),calc(2vh + var(--hand-dy)),235px) rotate(5deg) scaleX(-1) scale(.8)}
+  .sticky.contact-armed .gesture-hand{transform:translate3d(calc(5vw + var(--hand-dx)),calc(.5vh + var(--hand-dy)),270px) rotate(2deg) scaleX(-1) scale(.9)}
+  .sticky.hand-touching .gesture-hand{transform:translate3d(calc(2vw + var(--hand-dx)),calc(0vh + var(--hand-dy)),300px) rotate(.5deg) scaleX(-1) scale(.98)}
+  .gesture-control-hand{width:64vw;transform:translate3d(-91%,-52%,330px) rotate(-4deg) scale(.67)}
+  .sticky.physical-control .gesture-control-hand{transform:translate3d(-91%,-52%,330px) rotate(-4deg) scale(.7)}
+}
+@media(prefers-reduced-motion:reduce){
+  .gesture-hand,.gesture-control-hand{display:none!important}
+}
