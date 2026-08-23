@@ -6,17 +6,18 @@ window.B60_ACCESS_SIGNALS = [
     category: 'NOW',
     dealType: 'RECURRING_CREDIT',
     verification: 'VERIFIED_OFFICIAL_WEB',
-    verifiedAt: '2026-08-23',
+    verifiedAt: '2026-08-24',
     freeLabel: '$5 credits / 30 days',
     summary: 'Free Vercel users who have not made a payment receive $5 of AI Gateway credits every 30 days.',
     model: 'zai/glm-5.2',
     context: '1M tokens',
-    price: '$1.40/M input · $4.40/M output',
+    price: 'Varies by routed provider',
     access: ['API', 'AI GATEWAY', 'CLI/AGENT'],
     facts: [
       'GLM 5.2 is available through Vercel AI Gateway.',
       'Model identifier: zai/glm-5.2.',
       'Context window: 1.0M tokens.',
+      'AI Gateway routes GLM 5.2 across multiple providers with provider-specific rates.',
       'Free users who have not made a payment get $5 credits every 30 days.'
     ],
     sources: [
