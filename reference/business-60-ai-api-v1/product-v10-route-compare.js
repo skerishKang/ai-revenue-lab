@@ -186,7 +186,7 @@
     scheduled = true;
     requestAnimationFrame(() => { scheduled = false; decorate(); });
   });
-  observer.observe(grid, { childList: true, subtree: true });
+  observer.observe(grid, { childList: true });
 
   document.addEventListener('click', event => {
     const compare = event.target.closest('[data-compare-id]');
