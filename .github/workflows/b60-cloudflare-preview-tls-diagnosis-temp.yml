@@ -1,17 +1,15 @@
 name: B60 Cloudflare Preview TLS Diagnosis Temp
 
 on:
-  push:
-    branches:
-      - fix/b60-protagonist-visibility-20260824
-    paths:
-      - .github/workflows/b60-cloudflare-preview-tls-diagnosis-temp.yml
+  pull_request:
+    types: [synchronize]
 
 permissions:
   contents: read
 
 jobs:
   diagnose:
+    if: github.event.pull_request.number == 662
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
