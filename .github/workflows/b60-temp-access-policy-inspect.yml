@@ -42,7 +42,36 @@ jobs:
           cp "${app_json}" "${RUNNER_TEMP}/source-app.json"
           cp "${policies_json}" "${RUNNER_TEMP}/source-policies.json"
 
-      - name: Ensure protected Access application exists before deploy
+      - name: Ensure empty temporary Pages project exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${TEMP_PROJECT}"
+          response="$(mktemp)"
+          status="$(curl --silent --show-error \
+            --output "${response}" \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "${project_url}")"
+          if [ "${status}" = 404 ]; then
+            create_payload="$(mktemp)"
+            create_response="$(mktemp)"
+            jq -n --arg name "${TEMP_PROJECT}" --arg branch "${TEMP_BRANCH}" '{name:$name,production_branch:$branch}' > "${create_payload}"
+            create_status="$(curl --silent --show-error \
+              --request POST \
+              --output "${create_response}" \
+              --write-out '%{http_code}' \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              --data-binary "@${create_payload}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects")"
+            test "${create_status}" = 200 || test "${create_status}" = 201 || { cat "${create_response}"; exit 1; }
+          else
+            test "${status}" = 200 || { cat "${response}"; exit 1; }
+          fi
+
+      - name: Attach cloned Access protection before file deployment
         shell: bash
         run: |
           set -euo pipefail
@@ -94,35 +123,6 @@ jobs:
               --data-binary "@${policy_payload}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/access/apps/${app_id}/policies")"
             test "${status}" = 201 || test "${status}" = 200 || { cat "${policy_response}"; exit 1; }
-          fi
-
-      - name: Ensure temporary direct-upload Pages project exists
-        shell: bash
-        run: |
-          set -euo pipefail
-          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${TEMP_PROJECT}"
-          response="$(mktemp)"
-          status="$(curl --silent --show-error \
-            --output "${response}" \
-            --write-out '%{http_code}' \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            --header 'Content-Type: application/json' \
-            "${project_url}")"
-          if [ "${status}" = 404 ]; then
-            create_payload="$(mktemp)"
-            create_response="$(mktemp)"
-            jq -n --arg name "${TEMP_PROJECT}" --arg branch "${TEMP_BRANCH}" '{name:$name,production_branch:$branch}' > "${create_payload}"
-            create_status="$(curl --silent --show-error \
-              --request POST \
-              --output "${create_response}" \
-              --write-out '%{http_code}' \
-              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              --header 'Content-Type: application/json' \
-              --data-binary "@${create_payload}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects")"
-            test "${create_status}" = 200 || test "${create_status}" = 201 || { cat "${create_response}"; exit 1; }
-          else
-            test "${status}" = 200 || { cat "${response}"; exit 1; }
           fi
 
       - name: Check out exact PR head
