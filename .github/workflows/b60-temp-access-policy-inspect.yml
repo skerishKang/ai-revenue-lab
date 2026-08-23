@@ -1,17 +1,15 @@
 name: B60 Temp Access Policy Inspect
 
 on:
-  push:
-    branches:
-      - fix/b60-protagonist-visibility-20260824
-    paths:
-      - .github/workflows/b60-temp-access-policy-inspect.yml
+  pull_request:
+    types: [synchronize]
 
 permissions:
   contents: read
 
 jobs:
   inspect:
+    if: github.event.pull_request.number == 662
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
