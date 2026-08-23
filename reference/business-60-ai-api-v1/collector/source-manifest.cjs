@@ -7,7 +7,7 @@ module.exports = [
     claims: [
       { field: 'model', pattern: 'zai\\/glm-5\\.2', flags: 'i', value: 'zai/glm-5.2', required: true },
       { field: 'context', pattern: '(?:1\\.0M|1M|1,000,000)', flags: 'i', value: '1M tokens' },
-      { field: 'price', pattern: '\\$1\\.40[\\s\\S]{0,120}\\$4\\.40', flags: 'i', value: '$1.40/M input · $4.40/M output' },
+      { field: 'price', pattern: 'Route requests across multiple providers', flags: 'i', value: 'Varies by routed provider' },
       { field: 'freeLabel', pattern: '\\$5[\\s\\S]{0,160}(?:30 days|30-day)', flags: 'i', value: '$5 credits / 30 days' }
     ]
   },
