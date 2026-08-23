@@ -19,24 +19,44 @@ The prototype follows one continuous narrative axis:
 4. an existing LoveTree hand-only gesture enters from the protagonist side;
 5. deliberate physical `CONNECT` contact;
 6. contact ripple + world-scale flash + short camera impulse;
-7. continuing neural/electric flow;
-8. eye/vision interface activation;
-9. CODE / VISION / VOICE capability worlds emerge;
-10. pointer/touch-responsive spatial AI surfaces;
-11. surfaces can be thrown with inertial gesture motion;
-12. spoken intent becomes routed code;
-13. cinematic world dissolves into a practical deal/source view.
+7. API-core energy visibly tethers into the body;
+8. continuing neural/electric flow through the protagonist;
+9. eye/vision interface activation;
+10. the environment splits vertically into CODE / VISION / VOICE capability worlds;
+11. the three worlds fold/collapse into the spatial-control scene;
+12. the face-free hand returns as a physical spatial controller;
+13. pointer/touch-responsive AI surfaces can be grabbed and thrown with inertia;
+14. spoken intent becomes routed code;
+15. the cinematic world dissolves into a practical deal/source view.
 
 Motion layers are isolated so they can be reviewed or removed without rewriting the base anchor:
 
 - `cinematic-v2.css/js` = contact/world/gesture/inertia system;
-- `cinematic-v3.css/js` = physical foreground hand approach/contact/exit system.
+- `cinematic-v3.css/js` = physical foreground hand contact + post-connect spatial-control hand;
+- `cinematic-v4.css/js` = API-to-body charge, neural current and CODE/VISION/VOICE split-world transition.
+
+## Cinematic timing contract
+
+The current scroll timeline is intentionally explicit so later visual revisions can tune one beat without rewriting the full sequence.
+
+```text
+0.00–0.27  distant protagonist → camera approach
+0.235–0.445 physical hand / API contact window
+0.345–0.545 API tether → body charge
+0.49–0.73  eye / vision activation
+0.625–0.815 CODE / VISION / VOICE split-world transition
+0.715–0.915 physical spatial-control hand + draggable/throwable surfaces
+0.80–0.94  voice → intent → code
+0.90+      AI API identity → information handoff
+```
+
+`CONNECT` remains a hard interaction gate: the post-contact sequence does not become active until the user deliberately activates the access core.
 
 ## Gesture asset boundary
 
-The physical contact layer does **not** introduce a newly generated B60 image. `assets/gesture-touch.webp` is a cropped/optimized derivative of an existing LoveTree storyboard hand-only shot labelled `Touch the feeling`.
+The physical contact/control layer does **not** introduce a newly generated B60 image. `assets/gesture-touch.webp` is a cropped/optimized derivative of an existing LoveTree storyboard hand-only shot labelled `Touch the feeling`.
 
-Because the source contains no face, it can sell the foreground touch without visibly swapping the protagonist. The hand is shown only around the API contact window, then disappears immediately after activation.
+Because the source contains no face, it can sell foreground touch/control without visibly swapping the protagonist. The hand is used only as a short foreground layer around API contact and spatial-control moments.
 
 LoveTree's existing `Supernova` benchmark was also consulted for camera/edit grammar. Its S10 reference describes a ~0.625s forward hand gesture toward the lens. The separate-person S10 image is **not** copied into this runtime.
 
