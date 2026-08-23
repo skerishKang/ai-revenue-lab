@@ -1,1 +1,1 @@
-B60 PR #662 asset-repair QA retrigger. Temporary; remove after rendered gate.
+B60 PR #662 exact-head rendered QA after semantic woman-alone restoration. Temporary; remove after rendered gate.
