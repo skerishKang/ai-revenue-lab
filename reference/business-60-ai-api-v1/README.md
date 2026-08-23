@@ -2,7 +2,7 @@
 
 Issue: #652  
 Parent registration: #650 / Draft PR #651  
-Evidence lane: `VISUAL_DIRECTION` + practical discovery/retention surface  
+Evidence lane: `VISUAL_DIRECTION` + practical discovery/retention/freshness surface  
 Target gate: `ANCHOR_REVIEW_READY`
 
 ## Evidence question
@@ -43,7 +43,10 @@ Motion/product layers are isolated so each pass can be reviewed or removed indep
 - `product-v6.css/js` = post-cinematic `NOW / EXPIRING / MODELS / ACCESS` discovery surface;
 - `data/access-signals.js` = current official-source access catalog used by v6;
 - `product-v7.css/js` = local SAVE / WATCHLIST / CHANGES retention layer;
-- `data/signal-history.js` = append-only-style history baseline for truth-preserving change tracking.
+- `data/signal-history.js` = append-only-style history baseline;
+- `data/snapshots.js` = immutable official-source snapshot series;
+- `snapshot-diff-v8.js` = field-level snapshot comparison engine;
+- `product-v8.css/js` = `NEW TODAY / ENDING SOON` + automatic snapshot-backed `CHANGES` rendering.
 
 ## Cinematic timing contract
 
@@ -67,12 +70,14 @@ Motion/product layers are isolated so each pass can be reviewed or removed indep
 ## Post-cinematic product surface
 
 ```text
-NOW       = currently usable verified free/credit/access paths
-EXPIRING  = only offers with a primary-source-confirmed expiry date
-MODELS    = model/access rows with context, price/access summary
-ACCESS    = grouped API / gateway / playground / router / cloud paths
-WATCHLIST = locally saved access signals in the current browser
-CHANGES   = baseline + later verified before→after history events
+NOW         = currently usable verified free/credit/access paths
+EXPIRING    = only offers with a primary-source-confirmed expiry date
+MODELS      = model/access rows with context, price/access summary
+ACCESS      = grouped API / gateway / playground / router / cloud paths
+WATCHLIST   = locally saved access signals in the current browser
+CHANGES     = automatic before→after snapshot diffs; baseline-only until snapshot #2
+NEW TODAY   = signals whose FIRST_SEEN equals the current snapshot date
+ENDING SOON = only officially verified expiries within the next seven days
 ```
 
 ### V7 retention behavior
@@ -81,25 +86,58 @@ CHANGES   = baseline + later verified before→after history events
 - saved ids are persisted in `localStorage` under `b60.ai-api.watchlist.v1`;
 - if browser storage is blocked/corrupt, the discovery UI stays alive and the watchlist degrades to session-only behavior;
 - `WATCHLIST` is deliberately local-only at this phase: no auth/account/database has been introduced;
-- the browser records a last-visit timestamp only for future “since your last visit” UX; it is not sent anywhere;
-- `CHANGES` reads `data/signal-history.js` and distinguishes baseline/pending records from actual verified change events.
+- the browser records a last-visit timestamp only for future “since your last visit” UX; it is not sent anywhere.
 
-### Truth boundary for history
+### V8 snapshot / diff behavior
 
-2026-08-23 is the first B60 access-catalog snapshot. V7 does **not** fabricate yesterday-vs-today changes.
+2026-08-23 is the first immutable B60 official-source snapshot.
 
-Current history types:
+`data/snapshots.js` stores the normalized facts required for future comparison rather than reusing marketing prose as historical evidence. The current baseline contains five records.
+
+`snapshot-diff-v8.js` compares adjacent snapshots by stable signal id and emits typed events:
+
+```text
+NEW
+REMOVED
+PRICE_CHANGED
+FREE_TIER_CHANGED
+ACCESS_CHANGED
+EXPIRES_AT_CHANGED
+MODEL_CHANGED
+VERIFICATION_CHANGED
+```
+
+Rules:
+
+- array fields such as access methods are normalized before comparison;
+- multiple field changes of the same semantic type are grouped into one event;
+- an event is marked verified only when the relevant before/after records are official-web verified;
+- `ENDING SOON` requires both a real `expiresAt` and `expiryVerification = VERIFIED_OFFICIAL_WEB`;
+- pending promotion claims never generate a countdown;
+- with only one snapshot, `CHANGES` explicitly displays `BASELINE ONLY` rather than manufacturing a delta.
+
+The first snapshot therefore yields:
+
+```text
+SNAPSHOTS = 1
+CURRENT_RECORDS = 5
+NEW_TODAY = 5
+ENDING_SOON = 0
+VERIFIED_DIFFS = 0
+```
+
+Once snapshot #2 is added, `CHANGES` automatically reads the engine output without requiring hand-authored before→after events.
+
+## Initial history boundary
+
+Current history types remain useful as provenance/audit metadata:
 
 ```text
 FIRST_SEEN               = initial baseline capture, not a change
 PENDING_CLAIM_RECORDED   = an unverified promotion claim was recorded separately
-PRICE_CHANGED            = reserved for future verified before→after price change
-FREE_TIER_CHANGED        = reserved for future verified free-allocation change
-EXPIRES_AT_CHANGED       = reserved for future verified expiry change
-ACCESS_CHANGED           = reserved for future verified access-method change
 ```
 
-Only events with a real prior snapshot can become `CHANGED` in the UI.
+Future verified deltas are generated from snapshot comparison rather than guessed from prose.
 
 ## Initial official-source catalog
 
@@ -136,7 +174,19 @@ No provider calls, API-key storage, auth, database, model execution, billing, or
 
 ## Information truth boundary
 
-Verified facts are shown as `VERIFIED_OFFICIAL_WEB`. Promotion/end-date claims without captured primary evidence stay visibly pending. `EXPIRING` intentionally shows no verified expiry when none exists rather than guessing a deadline. `CHANGES` likewise refuses to invent historical deltas without a prior verified snapshot.
+Verified facts are shown as `VERIFIED_OFFICIAL_WEB`. Promotion/end-date claims without captured primary evidence stay visibly pending. `EXPIRING` and `ENDING SOON` intentionally show no verified expiry when none exists rather than guessing a deadline. `CHANGES` refuses to invent historical deltas without a prior verified snapshot.
+
+## Test
+
+```bash
+node --test snapshot-diff-v8.test.cjs
+```
+
+Current contract tests cover:
+
+- NEW / REMOVED / PRICE / FREE_TIER / ACCESS classification;
+- official-expiry-only `ENDING SOON` behavior;
+- `NEW TODAY` based strictly on `firstSeen`.
 
 ## Run locally
 
@@ -148,7 +198,7 @@ Then open `http://127.0.0.1:4173/`.
 
 ## Verification boundary
 
-Static source review covers local script/style wiring, source-confidence markers, isolated diff scope, interaction ownership, and storage-failure fallback. Independent rendered browser visual QA is still required before direction lock.
+Static source review covers local script/style wiring, source-confidence markers, isolated diff scope, interaction ownership, storage-failure fallback, and snapshot-diff contract tests. Independent rendered browser visual QA is still required before direction lock.
 
 ## Review status
 
@@ -161,5 +211,6 @@ BACKEND = none
 PROVIDER_CALLS = 0
 AUTH = none
 WATCHLIST_STORAGE = browser-local only
+SNAPSHOT_COUNT = 1
 CHANGE_HISTORY = baseline only until a later verified snapshot exists
 ```
