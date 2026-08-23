@@ -12,6 +12,7 @@ function loadEngine(snapshots = []) {
   return context.window.B60_DIFF_ENGINE;
 }
 
+const hostArray = value => Array.from(value);
 const record = (overrides = {}) => ({
   id: 'a', provider: 'Provider', title: 'A', dealType: 'PERMANENT_FREE',
   verification: 'VERIFIED_OFFICIAL_WEB', freeLabel: 'Free', model: 'm1',
@@ -28,7 +29,7 @@ test('classifies new, removed and grouped field changes', () => {
   ] };
 
   const result = engine.compareSnapshots(previous, current);
-  const types = result.events.map(e=>e.type).sort();
+  const types = hostArray(result.events).map(e=>e.type).sort();
   assert.deepEqual(types, ['ACCESS_CHANGED','FREE_TIER_CHANGED','NEW','PRICE_CHANGED','REMOVED'].sort());
   assert.equal(result.summary.new, 1);
   assert.equal(result.summary.removed, 1);
@@ -42,7 +43,7 @@ test('requires official expiry verification for ending soon', () => {
     record({id:'pending', expiresAt:'2026-08-26', expiryVerification:'PENDING_WEB_VERIFICATION'}),
     record({id:'later', expiresAt:'2026-09-30', expiryVerification:'VERIFIED_OFFICIAL_WEB'})
   ] };
-  const ending = engine.endingSoon(snapshot, new Date('2026-08-23T00:00:00Z'), 7);
+  const ending = hostArray(engine.endingSoon(snapshot, new Date('2026-08-23T00:00:00Z'), 7));
   assert.deepEqual(ending.map(x=>x.id), ['verified']);
 });
 
@@ -52,5 +53,5 @@ test('newToday is based only on firstSeen', () => {
     { id:'a', firstSeen:'2026-08-23' },
     { id:'b', firstSeen:'2026-08-22' }
   ];
-  assert.deepEqual(engine.newToday(history, '2026-08-23'), ['a']);
+  assert.deepEqual(hostArray(engine.newToday(history, '2026-08-23')), ['a']);
 });
