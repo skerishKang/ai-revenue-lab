@@ -26,31 +26,60 @@ The prototype follows one continuous narrative axis:
 11. the three worlds fold/collapse into the spatial-control scene;
 12. the face-free hand returns as a physical spatial controller;
 13. pointer/touch-responsive AI surfaces can be grabbed and thrown with inertia;
-14. spoken intent becomes routed code;
-15. the cinematic world dissolves into a practical deal/source view.
+14. the protagonist's spoken command becomes a live waveform;
+15. the waveform contracts into extracted intent tokens;
+16. intent tokens physically assemble into an INTENT → ACCESS → MODEL → API route graph;
+17. the route graph dissolves into floating code strips;
+18. code strips collapse into a single constructed API object;
+19. the cinematic world dissolves into a practical deal/source view.
 
 Motion layers are isolated so they can be reviewed or removed without rewriting the base anchor:
 
 - `cinematic-v2.css/js` = contact/world/gesture/inertia system;
 - `cinematic-v3.css/js` = physical foreground hand contact + post-connect spatial-control hand;
-- `cinematic-v4.css/js` = API-to-body charge, neural current and CODE/VISION/VOICE split-world transition.
+- `cinematic-v4.css/js` = API-to-body charge, neural current and CODE/VISION/VOICE split-world transition;
+- `cinematic-v5.css/js` = spoken waveform → intent extraction → route graph → code strips → constructed API object.
 
 ## Cinematic timing contract
 
 The current scroll timeline is intentionally explicit so later visual revisions can tune one beat without rewriting the full sequence.
 
 ```text
-0.00–0.27  distant protagonist → camera approach
+0.00–0.27   distant protagonist → camera approach
 0.235–0.445 physical hand / API contact window
 0.345–0.545 API tether → body charge
-0.49–0.73  eye / vision activation
+0.49–0.73   eye / vision activation
 0.625–0.815 CODE / VISION / VOICE split-world transition
 0.715–0.915 physical spatial-control hand + draggable/throwable surfaces
-0.80–0.94  voice → intent → code
-0.90+      AI API identity → information handoff
+0.785–0.820 voice waveform / listening
+0.820–0.850 spoken intent extraction
+0.850–0.885 INTENT → ACCESS → MODEL → API route assembly
+0.885–0.925 route → code-strip construction
+0.925–0.955 code → constructed API object
+0.90+       AI API identity → information handoff
 ```
 
 `CONNECT` remains a hard interaction gate: the post-contact sequence does not become active until the user deliberately activates the access core.
+
+## Voice-build visual contract
+
+The voice sequence is not meant to imply that B60 itself executes provider calls. It is a cinematic explanation of what API access enables.
+
+```text
+VOICE
+  ↓
+INTENT
+  ↓
+ACCESS ROUTE
+  ↓
+MODEL
+  ↓
+CODE
+  ↓
+CONSTRUCTED API
+```
+
+The practical B60 information layer remains discovery/verification only.
 
 ## Gesture asset boundary
 
