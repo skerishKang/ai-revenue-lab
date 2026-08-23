@@ -103,6 +103,7 @@ Current high-level mapping includes:
 - **B13 — Personal Video Archive** — user-controlled video discovery plus durable private viewing records.
 - **B14 — Korean AI Platform** — Korean-first model-access platform; Router Core is an internal B14 capability.
 - **B54 — Korean AI Code Agent** — proposed-number first-party client of B14; the hardened CLI/TUI vertical slice is integrated at `apps/korean-ai-code-agent/`, while canonical-number promotion remains a separate registry decision.
+- **B60 — AI API / AI API 탐색 허브** — proposed-number discovery/deal-intelligence product for current AI API access paths, free tiers, credits, promotions, low-cost routes and source verification. B60 remains separate from B14 execution/routing; runtime workspace and Production surface are not yet authorized. See Issue #650 and `docs/portfolio/BUSINESS_60_AI_API_PROPOSAL.md`.
 
 External/integrated successor mappings for B23/B24/B25/B26/B27/B28/B30/B31/B50 are maintained in `BUSINESS_EXPANSION_LINEAGE.md` and the Portfolio Console static manifest. Do not recreate prohibited internal placeholders.
 
