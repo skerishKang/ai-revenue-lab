@@ -1,0 +1,90 @@
+name: B60 Raw Asset Render Audit Temp
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  raw-asset-render-audit:
+    if: github.event.pull_request.number == 662
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install Chromium
+        shell: bash
+        run: |
+          mkdir -p /tmp/b60-assets
+          cd /tmp/b60-assets
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Start exact-head static server
+        shell: bash
+        run: |
+          cd apps/portfolio-console/ai-api
+          python3 -m http.server 4174 --bind 127.0.0.1 >/tmp/b60-assets-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4174/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b60-assets-http.log
+          exit 1
+
+      - name: Capture raw assets without scene CSS
+        shell: bash
+        run: |
+          mkdir -p raw-asset-output
+          cat > /tmp/b60-assets/capture.cjs <<'NODE'
+          const { chromium } = require('/tmp/b60-assets/node_modules/playwright');
+          const fs = require('fs');
+          const names = [
+            'woman-alone.webp',
+            'woman-close.webp',
+            'woman-connection.webp',
+            'woman-field.webp',
+            'gesture-touch.webp'
+          ];
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            const results = [];
+            for (const name of names) {
+              const page = await browser.newPage({viewport:{width:1200,height:800}, deviceScaleFactor:1});
+              const target = `http://127.0.0.1:4174/assets/${name}`;
+              const response = await page.goto(target, {waitUntil:'load'});
+              await page.waitForTimeout(250);
+              const info = await page.evaluate(() => {
+                const img = document.querySelector('img');
+                return img ? {
+                  naturalWidth: img.naturalWidth,
+                  naturalHeight: img.naturalHeight,
+                  width: img.getBoundingClientRect().width,
+                  height: img.getBoundingClientRect().height
+                } : null;
+              });
+              results.push({name,status:response && response.status(),info});
+              await page.screenshot({path:`raw-asset-output/${name}.png`, fullPage:true});
+              await page.close();
+            }
+            fs.writeFileSync('raw-asset-output/assets.json', JSON.stringify(results,null,2));
+            console.log(JSON.stringify(results,null,2));
+            await browser.close();
+          })().catch(err => { console.error(err); process.exit(1); });
+          NODE
+          node /tmp/b60-assets/capture.cjs
+
+      - name: Upload raw asset evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-raw-assets-${{ github.event.pull_request.head.sha }}
+          path: raw-asset-output/
+          if-no-files-found: error
