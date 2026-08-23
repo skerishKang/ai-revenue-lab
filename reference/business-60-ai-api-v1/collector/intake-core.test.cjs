@@ -27,13 +27,15 @@ test('fetch envelope records immutable evidence metadata and sha256', async () =
 
 test('extraction never auto-verifies a primary-source candidate', async () => {
   const source = manifest.find(x => x.id === 'vercel-glm52-model');
-  const body = 'zai/glm-5.2 context 1M. $1.40 input and $4.40 output. Free accounts receive $5 credits every 30 days.';
+  const body = 'zai/glm-5.2 context 1M. Route requests across multiple providers. Z.AI $1.40 input and $4.40 output; DeepInfra $0.95 input and $3 output. Free accounts receive $5 credits every 30 days.';
   const envelope = await fetchEvidence(source, { fetchImpl: async () => mockResponse(body) });
   const candidate = extractCandidate(source, envelope);
   assert.equal(candidate.state, STATES.NEEDS_REVIEW);
   assert.equal(candidate.review, null);
   assert.equal(candidate.missingRequired.length, 0);
-  assert.ok(candidate.observations.length >= 3);
+  assert.ok(candidate.observations.length >= 4);
+  assert.equal(candidate.observations.find(x => x.field === 'price')?.value, 'Varies by routed provider');
+  assert.notEqual(candidate.observations.find(x => x.field === 'price')?.value, '$1.40/M input · $4.40/M output');
   assert.equal(candidate.verification, undefined);
 });
 
