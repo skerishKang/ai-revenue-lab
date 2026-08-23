@@ -60,7 +60,7 @@ jobs:
 
           async function exercise(viewport, prefix) {
             const browser = await chromium.launch({headless:true});
-            const page = await browser.newPage({viewportSize:viewport});
+            const page = await browser.newPage({viewport});
             const consoleErrors = [];
             const requestFailures = [];
             page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
@@ -68,6 +68,9 @@ jobs:
             await page.goto('http://127.0.0.1:4173/ai-api/', {waitUntil:'networkidle'});
             await page.locator('#explore').scrollIntoViewIfNeeded();
             await page.waitForSelector('.ia-primary');
+
+            const actualViewport = await page.evaluate(() => ({innerWidth, innerHeight, clientWidth: document.documentElement.clientWidth}));
+            assert(actualViewport.innerWidth === viewport.width, `${prefix}: viewport width mismatch ${JSON.stringify(actualViewport)} expected ${viewport.width}`);
 
             const primary = await page.locator('.ia-primary [data-ia-view]').allTextContents();
             assert(JSON.stringify(primary) === JSON.stringify(['Discover','Providers','Models','Connect','Watch']), `${prefix}: primary nav mismatch ${JSON.stringify(primary)}`);
@@ -121,7 +124,7 @@ jobs:
             if (prefix === 'mobile') assert(overflow.scrollWidth <= overflow.clientWidth + 1, `${prefix}: horizontal overflow ${JSON.stringify(overflow)}`);
             assert(consoleErrors.length === 0, `${prefix}: console errors ${consoleErrors.join(' | ')}`);
             assert(requestFailures.length === 0, `${prefix}: failed requests ${requestFailures.join(' | ')}`);
-            evidence.push({prefix, primary, consoleErrors, requestFailures, overflow});
+            evidence.push({prefix, viewport: actualViewport, primary, consoleErrors, requestFailures, overflow});
             await browser.close();
           }
 
