@@ -13,9 +13,24 @@
   const KEY = 'b60.ai-api.watchlist.v1';
   const VISIT_KEY = 'b60.ai-api.last-visit.v1';
   const esc = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const saved = new Set(JSON.parse(localStorage.getItem(KEY) || '[]'));
-  const previousVisit = localStorage.getItem(VISIT_KEY);
-  localStorage.setItem(VISIT_KEY, new Date().toISOString());
+
+  let storageAvailable = true;
+  const safeGet = (key, fallback=null) => {
+    try { return localStorage.getItem(key) ?? fallback; }
+    catch { storageAvailable = false; return fallback; }
+  };
+  const safeSet = (key, value) => {
+    try { localStorage.setItem(key, value); return true; }
+    catch { storageAvailable = false; return false; }
+  };
+  const safeArray = raw => {
+    try { const value = JSON.parse(raw || '[]'); return Array.isArray(value) ? value : []; }
+    catch { return []; }
+  };
+
+  const saved = new Set(safeArray(safeGet(KEY, '[]')));
+  const previousVisit = safeGet(VISIT_KEY, null);
+  safeSet(VISIT_KEY, new Date().toISOString());
 
   let mode = 'v6';
 
@@ -41,8 +56,7 @@
   toolbar?.appendChild(watchBadge);
 
   const signalById = id => signals.find(s => s.id === id);
-  const historyById = id => history.find(h => h.id === id);
-  const persist = () => localStorage.setItem(KEY, JSON.stringify([...saved]));
+  const persist = () => safeSet(KEY, JSON.stringify([...saved]));
   const setActive = btn => {
     document.querySelectorAll('.explore-tab').forEach(b => b.classList.remove('is-active'));
     btn?.classList.add('is-active');
@@ -51,6 +65,7 @@
   function updateBadge(){
     watchBadge.querySelector('b').textContent = String(saved.size);
     watchBadge.classList.toggle('has-items', saved.size > 0);
+    watchBadge.title = storageAvailable ? 'Saved in this browser' : 'Browser storage unavailable; session only';
   }
 
   function toggleSave(id){
@@ -91,9 +106,9 @@
     mode = 'watchlist';
     const q = search.value.trim().toLowerCase();
     const list = [...saved].map(signalById).filter(Boolean).filter(s => !q || [s.provider,s.title,s.model,s.summary,...(s.access||[])].join(' ').toLowerCase().includes(q));
-    stats.innerHTML = `<span><b>${list.length}</b> watched</span><span><b>${saved.size}</b> saved total</span><span><b>LOCAL</b> browser storage</span>`;
+    stats.innerHTML = `<span><b>${list.length}</b> watched</span><span><b>${saved.size}</b> saved total</span><span><b>${storageAvailable?'LOCAL':'SESSION'}</b> ${storageAvailable?'browser storage':'storage unavailable'}</span>`;
     if (!list.length) {
-      grid.innerHTML = `<div class="v7-empty"><span>WATCHLIST</span><h3>${saved.size ? '검색 결과가 없습니다.' : '아직 저장한 경로가 없습니다.'}</h3><p>${saved.size ? '검색어를 지워보세요.' : 'NOW에서 관심 있는 경로의 SAVE를 누르면 이곳에 모입니다. 현재 단계에서는 계정 없이 이 브라우저에만 저장됩니다.'}</p></div>`;
+      grid.innerHTML = `<div class="v7-empty"><span>WATCHLIST</span><h3>${saved.size ? '검색 결과가 없습니다.' : '아직 저장한 경로가 없습니다.'}</h3><p>${saved.size ? '검색어를 지워보세요.' : `NOW에서 관심 있는 경로의 SAVE를 누르면 이곳에 모입니다. ${storageAvailable?'현재 단계에서는 계정 없이 이 브라우저에만 저장됩니다.':'현재 브라우저 저장소가 차단되어 이 세션에서만 유지됩니다.'}`}</p></div>`;
       return;
     }
     grid.innerHTML = list.map(s => `<article class="watch-card-v7" data-id="${esc(s.id)}">
