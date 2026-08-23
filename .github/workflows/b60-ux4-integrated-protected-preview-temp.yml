@@ -115,6 +115,8 @@ jobs:
             await page.screenshot({ path: path.join(out, `${prefix}-vercel-detail.png`), fullPage: false });
             await page.locator('[data-close-route]').click();
             await page.evaluate(() => localStorage.setItem('b60.ai-api.watchlist.v1', JSON.stringify(['vercel-glm52','openrouter-free-router'])));
+            await page.reload({ waitUntil: 'networkidle' });
+            await page.locator('#explore').scrollIntoViewIfNeeded();
             await page.locator('.ia-primary [data-ia-view="watch"]').click();
             await page.waitForSelector('.ux4-saved-list');
             assert(await page.locator('.ux4-saved-route').count() === 2, `${prefix}: Watch saved-route count not 2`);
