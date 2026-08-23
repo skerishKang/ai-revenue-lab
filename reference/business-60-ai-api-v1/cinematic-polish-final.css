@@ -39,3 +39,7 @@
    connected state can coexist with hand-touching, so this terminal rule wins
    the cascade and prevents the source raster from leaking into later scenes. */
 .sticky.connected .gesture-hand{opacity:0!important;visibility:hidden!important;animation:none!important;filter:none!important;pointer-events:none!important}
+
+/* Mobile hard-gate sampling: reveal the hand synchronously when hand-ready is
+   entered so the visual and computed-state gate cannot race the opacity tween. */
+@media(max-width:760px){.sticky.hand-ready:not(.connected) .gesture-hand{opacity:.9!important;visibility:visible!important;transition:none!important}}
