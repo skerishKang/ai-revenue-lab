@@ -99,8 +99,12 @@
     });
   }
 
+  // Observe only direct grid replacement. V6 re-renders the grid by replacing
+  // its direct children. SAVE decoration mutates descendants inside each card;
+  // observing the whole subtree would feed those mutations back into
+  // decorateCards() indefinitely and can pin the browser main thread.
   const observer = new MutationObserver(() => decorateCards());
-  observer.observe(grid, { childList:true, subtree:true });
+  observer.observe(grid, { childList:true });
 
   function renderWatchlist(){
     mode = 'watchlist';
