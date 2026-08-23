@@ -2,7 +2,7 @@
 
 Issue: #652  
 Parent registration: #650 / Draft PR #651  
-Evidence lane: `VISUAL_DIRECTION` + minimal information handoff  
+Evidence lane: `VISUAL_DIRECTION` + practical discovery surface  
 Target gate: `ANCHOR_REVIEW_READY`
 
 ## Evidence question
@@ -41,7 +41,9 @@ Motion/product layers are isolated so each pass can be reviewed or removed indep
 - `cinematic-v4.css/js` = API-to-body charge, neural current and CODE/VISION/VOICE split-world transition;
 - `cinematic-v5.css/js` = spoken waveform → intent extraction → route graph → code strips → constructed API object;
 - `product-v6.css/js` = post-cinematic `NOW / EXPIRING / MODELS / ACCESS` discovery surface;
-- `data/access-signals.js` = current official-source access catalog used by v6.
+- `data/access-signals.js` = current official-source access catalog used by v6;
+- `product-v7.css/js` = local SAVE / WATCHLIST / CHANGES retention layer;
+- `data/signal-history.js` = append-only-style history baseline for truth-preserving change tracking.
 
 ## Cinematic timing contract
 
@@ -64,16 +66,46 @@ Motion/product layers are isolated so each pass can be reviewed or removed indep
 
 ## Post-cinematic product surface
 
-The v6 product layer deliberately stops behaving like a cinematic demo and becomes a usable discovery index while keeping the same visual language.
+The product layer stops behaving like a cinematic demo and becomes a usable discovery/retention index while keeping the same visual language.
 
 ```text
-NOW      = currently usable verified free/credit/access paths
-EXPIRING = only offers with a primary-source-confirmed expiry date
-MODELS   = model/access rows with context, price/access summary
-ACCESS   = grouped API / gateway / playground / router / cloud paths
+NOW       = currently usable verified free/credit/access paths
+EXPIRING  = only offers with a primary-source-confirmed expiry date
+MODELS    = model/access rows with context, price/access summary
+ACCESS    = grouped API / gateway / playground / router / cloud paths
+WATCHLIST = locally saved access signals in the current browser
+CHANGES   = baseline + later verified before→after history events
 ```
 
-Initial official-source catalog captured on 2026-08-23:
+### V7 retention behavior
+
+- `SAVE` is available on current access cards;
+- saved ids are persisted in `localStorage` under `b60.ai-api.watchlist.v1`;
+- if browser storage is blocked/corrupt, the discovery UI stays alive and the watchlist degrades to session-only behavior;
+- `WATCHLIST` is deliberately local-only at this phase: no auth/account/database has been introduced;
+- the browser records a last-visit timestamp only for future “since your last visit” UX; it is not sent anywhere;
+- `CHANGES` reads `data/signal-history.js` and distinguishes baseline/pending records from actual verified change events.
+
+### Truth boundary for history
+
+2026-08-23 is the first B60 access-catalog snapshot. Therefore V7 does **not** fabricate yesterday-vs-today changes.
+
+Current history types:
+
+```text
+FIRST_SEEN               = initial baseline capture, not a change
+PENDING_CLAIM_RECORDED   = an unverified promotion claim was recorded separately
+PRICE_CHANGED            = reserved for future verified before→after price change
+FREE_TIER_CHANGED        = reserved for future verified free-allocation change
+EXPIRES_AT_CHANGED       = reserved for future verified expiry change
+ACCESS_CHANGED           = reserved for future verified access-method change
+```
+
+Only events with a real prior snapshot can become `CHANGED` in the UI.
+
+## Initial official-source catalog
+
+Captured on 2026-08-23:
 
 - Vercel AI Gateway / GLM 5.2 — free users who have not made a payment get $5 credits every 30 days; GLM 5.2 model id `zai/glm-5.2`, 1M context;
 - Google Gemini Developer API — official Free tier with limited eligible-model access, free input/output tokens and AI Studio access;
@@ -81,7 +113,7 @@ Initial official-source catalog captured on 2026-08-23:
 - Groq API — official Free Plan with model-specific rate limits;
 - OpenRouter — Free plan and `openrouter/free` free-model router.
 
-The owner-reported `fx` free-through-2026-08-27 claim remains `PENDING_WEB_VERIFICATION`; v6 does not fabricate an expiry countdown for it.
+The owner-reported `fx` free-through-2026-08-27 claim remains `PENDING_WEB_VERIFICATION`; the product does not fabricate an expiry countdown for it.
 
 ## Voice-build visual contract
 
@@ -106,7 +138,7 @@ No provider calls, API-key storage, auth, database, model execution, billing, or
 
 ## Information truth boundary
 
-Verified facts are shown as `VERIFIED_OFFICIAL_WEB`. Promotion/end-date claims without captured primary evidence stay visibly pending. `EXPIRING` intentionally shows no verified expiry when none exists rather than guessing a deadline.
+Verified facts are shown as `VERIFIED_OFFICIAL_WEB`. Promotion/end-date claims without captured primary evidence stay visibly pending. `EXPIRING` intentionally shows no verified expiry when none exists rather than guessing a deadline. `CHANGES` likewise refuses to invent historical deltas without a prior verified snapshot.
 
 ## Run locally
 
@@ -118,7 +150,7 @@ Then open `http://127.0.0.1:4173/`.
 
 ## Verification boundary
 
-Static verification covers JS syntax, local asset/script/style references, source-confidence markers, and isolated diff scope. Independent rendered browser visual QA is still required before direction lock.
+Static source review covers local script/style wiring, source-confidence markers, isolated diff scope, and interaction ownership. Independent rendered browser visual QA is still required before direction lock.
 
 ## Review status
 
@@ -129,4 +161,7 @@ ARCHETYPE_SYSTEM_PASS = no
 FULL_EXPANSION_ALLOWED = no
 BACKEND = none
 PROVIDER_CALLS = 0
+AUTH = none
+WATCHLIST_STORAGE = browser-local only
+CHANGE_HISTORY = baseline only until a later verified snapshot exists
 ```
