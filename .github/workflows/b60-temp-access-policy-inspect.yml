@@ -86,7 +86,7 @@ jobs:
             payload="$(mktemp)"
             response="$(mktemp)"
             jq --arg name "B60 PR662 Review Temp" --arg domain "${TEMP_DOMAIN}" \
-              '.result | {type,session_duration,auto_redirect_to_identity,app_launcher_visible,enable_binding_cookie,http_only_cookie_attribute,options_preflight_bypass} + {name:$name,domain:$domain}' \
+              '.result | {type,session_duration,auto_redirect_to_identity,allowed_idps,app_launcher_visible,enable_binding_cookie,http_only_cookie_attribute,options_preflight_bypass} + {name:$name,domain:$domain}' \
               "${RUNNER_TEMP}/source-app.json" > "${payload}"
             status="$(curl --silent --show-error \
               --request POST \
