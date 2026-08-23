@@ -1,13 +1,281 @@
 name: B60 Visual QA Temp
 
 on:
-  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  paused:
+  repair-assets:
+    if: github.event.pull_request.number == 662
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      changed: ${{ steps.repair.outputs.changed }}
     steps:
-      - run: echo "Temporary QA paused while exact B60 raster assets are repaired."
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Install image codec
+        run: python3 -m pip install --quiet pillow
+
+      - name: Repair exact historical B60 assets when decode is broken
+        id: repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          names = ['woman-close.webp','woman-connection.webp','woman-field.webp','gesture-touch.webp']
+          for root in [Path('reference/business-60-ai-api-v1/assets'), Path('apps/portfolio-console/ai-api/assets')]:
+              for name in names:
+                  p = root / name
+                  with Image.open(p) as im:
+                      im.load()
+                      if im.width <= 0 or im.height <= 0:
+                          raise SystemExit(1)
+          PY
+          then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Assets already decode correctly; no repair commit required."
+            exit 0
+          fi
+
+          mkdir -p /tmp/b60-repair
+          curl -L --fail --retry 3 --retry-delay 2 \
+            'https://drive.usercontent.google.com/download?id=1cz-EFhIzo1kgxim_ThahOnarSzeo_9xp&export=download&confirm=t' \
+            -o /tmp/b60-repair/06-connection-female.png
+          curl -L --fail --retry 3 --retry-delay 2 \
+            'https://drive.usercontent.google.com/download?id=1yRDBQtEt4n3eNxAt5qiyhWZVl19qRE7a&export=download&confirm=t' \
+            -o /tmp/b60-repair/03-person-reveal-female.png
+          curl -L --fail --retry 3 --retry-delay 2 \
+            'https://drive.usercontent.google.com/download?id=1aREljLPRpcG9555trRnZXjgGLwqVjlBo&export=download&confirm=t' \
+            -o /tmp/b60-repair/08-memory-field-female.png
+
+          cat .github/b60-temp/gesture.part*.b64 | tr -d '\n\r ' | base64 -d > /tmp/b60-repair/gesture-touch.webp
+
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import hashlib
+
+          root = Path('/tmp/b60-repair')
+          jobs = {
+              'woman-connection.webp': root / '06-connection-female.png',
+              'woman-close.webp': root / '03-person-reveal-female.png',
+              'woman-field.webp': root / '08-memory-field-female.png',
+          }
+          expected = {
+              'woman-connection.webp': '243ff4c1c919150db656273dcddac064544ee1dd21be7576bbe51c2724c6f707',
+              'woman-close.webp': '0cb5524d9521425ee83d81030a6280c1155072886c9739c6e0f34e208e3bfe86',
+              'woman-field.webp': 'b255961466cd803f4710d82547f342dfe038645c2bad448872f0cb2f6c2b4648',
+              'gesture-touch.webp': 'e3967c4d15ff9633a5afee993280b401821a34c538f66401288e987a7a2da3af',
+          }
+
+          for out_name, source in jobs.items():
+              with Image.open(source) as im:
+                  im = im.convert('RGB').resize((1600, 900), Image.Resampling.LANCZOS)
+                  im.save(root / out_name, 'WEBP', quality=82, method=6)
+
+          with Image.open(root / 'gesture-touch.webp') as im:
+              im.load()
+              assert im.size == (968, 452), im.size
+
+          for name, sha in expected.items():
+              data = (root / name).read_bytes()
+              got = hashlib.sha256(data).hexdigest()
+              print(name, len(data), got)
+              if got != sha:
+                  raise SystemExit(f'{name}: expected {sha}, got {got}')
+
+          for dest_root in [Path('reference/business-60-ai-api-v1/assets'), Path('apps/portfolio-console/ai-api/assets')]:
+              for name in expected:
+                  (dest_root / name).write_bytes((root / name).read_bytes())
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add reference/business-60-ai-api-v1/assets/woman-close.webp \
+                  reference/business-60-ai-api-v1/assets/woman-connection.webp \
+                  reference/business-60-ai-api-v1/assets/woman-field.webp \
+                  reference/business-60-ai-api-v1/assets/gesture-touch.webp \
+                  apps/portfolio-console/ai-api/assets/woman-close.webp \
+                  apps/portfolio-console/ai-api/assets/woman-connection.webp \
+                  apps/portfolio-console/ai-api/assets/woman-field.webp \
+                  apps/portfolio-console/ai-api/assets/gesture-touch.webp
+          git diff --cached --stat
+          git commit -m 'fix(b60): restore decodable cinematic raster assets'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  b60-visual-qa:
+    if: github.event.pull_request.number == 662 && needs.repair-assets.outputs.changed == 'false'
+    needs: repair-assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install Chromium harness
+        shell: bash
+        run: |
+          mkdir -p /tmp/b60qa
+          cd /tmp/b60qa
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Start exact-head static server
+        shell: bash
+        run: |
+          cd apps/portfolio-console/ai-api
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/b60-http.log 2>&1 &
+          echo $! >/tmp/b60-http.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/b60-http.log
+          exit 1
+
+      - name: Render desktop and mobile cinematic gates
+        shell: bash
+        run: |
+          mkdir -p qa-output
+          cat > /tmp/b60qa/qa.cjs <<'NODE'
+          const fs = require('fs');
+          const { chromium } = require('/tmp/b60qa/node_modules/playwright');
+          const out = 'qa-output';
+          const url = 'http://127.0.0.1:4173/';
+          const failures = [];
+          const consoleErrors = [];
+          const failedRequests = [];
+
+          function attach(page) {
+            page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
+            page.on('requestfailed', req => failedRequests.push(`${req.url()} :: ${req.failure()?.errorText || 'failed'}`));
+          }
+          async function assetState(page) {
+            return page.evaluate(() => Array.from(document.querySelectorAll('.shot img, .gesture-hand img')).map(img => ({
+              src: img.getAttribute('src'), naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight, complete: img.complete
+            })));
+          }
+          async function stageState(page) {
+            return page.evaluate(() => {
+              const stage = document.querySelector('#stage');
+              const opacity = sel => Number(getComputedStyle(document.querySelector(sel)).opacity || 0);
+              return {
+                scrollY: window.scrollY,
+                progress: getComputedStyle(document.documentElement).getPropertyValue('--progress').trim(),
+                stageClass: stage?.className || '',
+                connected: stage?.classList.contains('connected') || false,
+                aloneOpacity: opacity('.shot-alone'),
+                closeOpacity: opacity('.shot-close'),
+                handOpacity: opacity('.gesture-hand'),
+                connectOpacity: opacity('#connect'),
+                visionOpacity: opacity('.vision-ring'),
+                bodyWidth: document.body.scrollWidth,
+                viewportWidth: innerWidth
+              };
+            });
+          }
+          async function waitConnect(page) {
+            await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('#connect')).opacity) > .8, null, { timeout: 12000 });
+          }
+          async function scrollProgress(page, p) {
+            await page.evaluate((p) => {
+              const c = document.querySelector('#cinematic');
+              const max = Math.max(1, c.offsetHeight - innerHeight);
+              window.scrollTo({ top: max * p, behavior: 'instant' });
+            }, p);
+            await page.waitForTimeout(700);
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const result = { url, desktop: {}, mobile: {}, consoleErrors, failedRequests };
+
+            const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+            attach(desktop);
+            await desktop.goto(url, { waitUntil: 'networkidle' });
+            await desktop.waitForTimeout(250);
+            result.desktop.initialAssets = await assetState(desktop);
+            result.desktop.initial = await stageState(desktop);
+            await desktop.screenshot({ path: `${out}/desktop-00-initial.png` });
+            await desktop.waitForTimeout(1700);
+            result.desktop.approach = await stageState(desktop);
+            await desktop.screenshot({ path: `${out}/desktop-01-approach.png` });
+            await waitConnect(desktop);
+            result.desktop.connect = await stageState(desktop);
+            await desktop.screenshot({ path: `${out}/desktop-02-connect.png` });
+            await desktop.locator('#connect').click();
+            await desktop.waitForTimeout(800);
+            result.desktop.postConnect = await stageState(desktop);
+            await desktop.screenshot({ path: `${out}/desktop-03-post-connect.png` });
+            await scrollProgress(desktop, .58);
+            result.desktop.vision = await stageState(desktop);
+            await desktop.screenshot({ path: `${out}/desktop-04-vision.png` });
+            await scrollProgress(desktop, .75);
+            result.desktop.spatial = await stageState(desktop);
+            await desktop.screenshot({ path: `${out}/desktop-05-spatial.png` });
+
+            const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+            attach(mobile);
+            await mobile.goto(url, { waitUntil: 'networkidle' });
+            await mobile.waitForTimeout(1800);
+            result.mobile.approachAssets = await assetState(mobile);
+            result.mobile.approach = await stageState(mobile);
+            await mobile.screenshot({ path: `${out}/mobile-00-approach.png` });
+            await waitConnect(mobile);
+            result.mobile.connect = await stageState(mobile);
+            await mobile.screenshot({ path: `${out}/mobile-01-connect.png` });
+            await mobile.locator('#connect').click();
+            await mobile.waitForTimeout(800);
+            await scrollProgress(mobile, .58);
+            result.mobile.vision = await stageState(mobile);
+            await mobile.screenshot({ path: `${out}/mobile-02-vision.png` });
+            await scrollProgress(mobile, .75);
+            result.mobile.spatial = await stageState(mobile);
+            await mobile.screenshot({ path: `${out}/mobile-03-spatial.png` });
+
+            const allAssets = [...result.desktop.initialAssets, ...result.mobile.approachAssets];
+            if (allAssets.some(x => !x.complete || x.naturalWidth <= 0 || x.naturalHeight <= 0)) failures.push('IMAGE_DECODE');
+            if (result.desktop.approach.aloneOpacity < .45) failures.push('DESKTOP_PROTAGONIST_VISIBILITY');
+            if (result.desktop.connect.handOpacity < .45) failures.push('DESKTOP_HAND_VISIBILITY');
+            if (!result.desktop.postConnect.connected) failures.push('DESKTOP_CONNECT_STATE');
+            if (result.mobile.approach.aloneOpacity < .45) failures.push('MOBILE_PROTAGONIST_VISIBILITY');
+            if (result.mobile.connect.handOpacity < .45) failures.push('MOBILE_HAND_VISIBILITY');
+            if (result.mobile.spatial.bodyWidth > result.mobile.spatial.viewportWidth + 1) failures.push('MOBILE_HORIZONTAL_OVERFLOW');
+            if (consoleErrors.length) failures.push('CONSOLE_ERRORS');
+            if (failedRequests.length) failures.push('FAILED_REQUESTS');
+
+            result.failures = [...new Set(failures)];
+            result.pass = result.failures.length === 0;
+            fs.writeFileSync(`${out}/result.json`, JSON.stringify(result, null, 2));
+            console.log(JSON.stringify(result, null, 2));
+            await browser.close();
+            if (!result.pass) process.exit(1);
+          })().catch(err => {
+            fs.writeFileSync(`${out}/fatal.txt`, String(err && err.stack || err));
+            console.error(err);
+            process.exit(1);
+          });
+          NODE
+          node /tmp/b60qa/qa.cjs
+
+      - name: Upload rendered QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-visual-qa-${{ github.event.pull_request.head.sha }}
+          path: qa-output/
+          if-no-files-found: warn
