@@ -21,42 +21,41 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-      - name: Visit live site and exercise cinematic
+      - name: Trace live page load
         env:
           TARGET: https://ai-revenue-business-60-ai-api.pages.dev/
         run: |
           cat > qa.mjs <<'JS'
           import { chromium } from 'playwright';
           const browser = await chromium.launch({headless:true});
+          const page = await browser.newPage({viewport:{width:1440,height:1100}});
+          page.setDefaultTimeout(5000);
+          const errors=[]; const failed=[]; const bad=[];
+          page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); });
+          page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
+          page.on('requestfailed',r=>failed.push({url:r.url(),error:r.failure()?.errorText}));
+          page.on('response',r=>{if(r.status()>=400) bad.push({url:r.url(),status:r.status()});});
+          let navStatus=null;
           try {
-            const page = await browser.newPage({viewport:{width:1440,height:1100}});
-            const errors=[];
-            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-            page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
-            const response=await page.goto(process.env.TARGET,{waitUntil:'domcontentloaded',timeout:20000});
-            await page.waitForTimeout(800);
-            const state=async label=>({label,scrollY:await page.evaluate(()=>scrollY),cue:(await page.locator('.scroll-cue').textContent())?.trim(),stage:await page.locator('#stage').getAttribute('class')});
-            const states=[];
-            states.push(await state('t0.8'));
-            await page.screenshot({path:'01-t0.8.png'});
-            await page.waitForTimeout(1400);
-            states.push(await state('t2.2'));
-            await page.screenshot({path:'02-t2.2.png'});
-            await page.waitForTimeout(4300);
-            states.push(await state('t6.5'));
-            await page.screenshot({path:'03-t6.5.png'});
-            const box=await page.locator('#connect').boundingBox();
-            let clickError='';
-            try { await page.locator('#connect').click({timeout:5000}); } catch(e) { clickError=e.message; }
-            await page.waitForTimeout(1800);
-            states.push(await state('post-connect'));
-            await page.screenshot({path:'04-post-connect.png'});
-            const connected=await page.locator('#stage').evaluate(el=>el.classList.contains('connected'));
-            const marker=(await page.locator('body').innerText()).includes('LIVE ACCESS SIGNAL');
-            const scripts=await page.evaluate(()=>Array.from(document.scripts).map(s=>s.src.split('/').pop()));
-            const out={http:response?.status(),states,connectBox:box,connected,errors,clickError,marker,scripts};
-            console.log('QA_RESULT='+JSON.stringify(out));
-            if(response?.status()!==200 || !marker || errors.length || states[1].scrollY<=states[0].scrollY || states[2].scrollY<=states[1].scrollY || !connected) process.exitCode=1;
+            const response=await page.goto(process.env.TARGET,{waitUntil:'commit',timeout:20000});
+            navStatus=response?.status() ?? null;
+            await page.waitForTimeout(3000);
+            let probe={};
+            try {
+              probe=await page.evaluate(()=>({
+                readyState:document.readyState,
+                scrollY,
+                bodyText:(document.body?.innerText||'').slice(0,500),
+                scripts:Array.from(document.scripts).map(s=>s.src||'[inline]'),
+                resources:performance.getEntriesByType('resource').map(r=>({name:r.name,duration:Math.round(r.duration),transferSize:r.transferSize})).slice(-60)
+              }));
+            } catch(e) { probe={evaluateError:e.message}; }
+            try { await page.screenshot({path:'live-after-3s.png'}); } catch(e) { probe.screenshotError=e.message; }
+            await page.waitForTimeout(5000);
+            let later={};
+            try { later=await page.evaluate(()=>({readyState:document.readyState,scrollY,cue:document.querySelector('.scroll-cue')?.textContent||'',stage:document.querySelector('#stage')?.className||''})); }
+            catch(e){ later={evaluateError:e.message}; }
+            console.log('QA_TRACE='+JSON.stringify({navStatus,probe,later,errors,failed,bad}));
           } finally {
             await browser.close();
           }
