@@ -2,7 +2,7 @@
 
 Issue: #652  
 Parent registration: #650 / Draft PR #651  
-Evidence lane: `VISUAL_DIRECTION` + practical discovery surface  
+Evidence lane: `VISUAL_DIRECTION` + practical discovery/retention surface  
 Target gate: `ANCHOR_REVIEW_READY`
 
 ## Evidence question
@@ -66,8 +66,6 @@ Motion/product layers are isolated so each pass can be reviewed or removed indep
 
 ## Post-cinematic product surface
 
-The product layer stops behaving like a cinematic demo and becomes a usable discovery/retention index while keeping the same visual language.
-
 ```text
 NOW       = currently usable verified free/credit/access paths
 EXPIRING  = only offers with a primary-source-confirmed expiry date
@@ -88,7 +86,7 @@ CHANGES   = baseline + later verified before→after history events
 
 ### Truth boundary for history
 
-2026-08-23 is the first B60 access-catalog snapshot. Therefore V7 does **not** fabricate yesterday-vs-today changes.
+2026-08-23 is the first B60 access-catalog snapshot. V7 does **not** fabricate yesterday-vs-today changes.
 
 Current history types:
 
@@ -117,11 +115,11 @@ The owner-reported `fx` free-through-2026-08-27 claim remains `PENDING_WEB_VERIF
 
 ## Voice-build visual contract
 
-The voice sequence is a cinematic explanation of what API access enables; it does not mean B60 itself executes provider calls.
-
 ```text
 VOICE → INTENT → ACCESS ROUTE → MODEL → CODE → CONSTRUCTED API
 ```
+
+The sequence explains what API access enables; it does not mean B60 itself executes provider calls.
 
 ## Gesture asset boundary
 
@@ -150,7 +148,7 @@ Then open `http://127.0.0.1:4173/`.
 
 ## Verification boundary
 
-Static source review covers local script/style wiring, source-confidence markers, isolated diff scope, and interaction ownership. Independent rendered browser visual QA is still required before direction lock.
+Static source review covers local script/style wiring, source-confidence markers, isolated diff scope, interaction ownership, and storage-failure fallback. Independent rendered browser visual QA is still required before direction lock.
 
 ## Review status
 
