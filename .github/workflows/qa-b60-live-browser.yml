@@ -11,7 +11,7 @@ permissions:
 jobs:
   live-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -21,30 +21,39 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-      - name: Trace live network
+      - name: Isolate blocking script group
         env:
           TARGET: https://ai-revenue-business-60-ai-api.pages.dev/
         run: |
-          cat > qa.mjs <<'JS'
+          cat > scenario.mjs <<'JS'
           import { chromium } from 'playwright';
-          const browser = await chromium.launch({headless:true});
-          const page = await browser.newPage({viewport:{width:1440,height:1100}});
-          const requests=[]; const responses=[]; const failed=[]; const errors=[];
-          page.on('request',r=>requests.push({url:r.url(),type:r.resourceType()}));
-          page.on('response',r=>responses.push({url:r.url(),status:r.status()}));
-          page.on('requestfailed',r=>failed.push({url:r.url(),error:r.failure()?.errorText}));
-          page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-          page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
-          let navStatus=null; let navError='';
-          try {
-            try {
-              const response=await page.goto(process.env.TARGET,{waitUntil:'commit',timeout:20000});
-              navStatus=response?.status() ?? null;
-            } catch(e) { navError=e.message; }
-            await new Promise(r=>setTimeout(r,12000));
-            console.log('QA_NETWORK='+JSON.stringify({navStatus,navError,requests,responses,failed,errors}));
-          } finally {
-            await browser.close();
+          const group=process.argv[2];
+          const sets={
+            none:[],
+            core:['app.js'],
+            cinematic:['cinematic-v2.js','cinematic-v3.js','cinematic-v4.js','cinematic-v5.js','cinematic-polish.js','cinematic-autoplay.js'],
+            product:['snapshot-diff-v8.js','product-v6.js','product-v7.js','product-v8.js'],
+            data:['data/deals.js','data/access-signals.js','data/signal-history.js','data/snapshots.js']
+          };
+          const blocked=sets[group]||[];
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          if(blocked.length){
+            await p.route('**/*', async route=>{
+              const u=route.request().url();
+              if(blocked.some(x=>u.endsWith('/'+x))) return route.fulfill({status:200,contentType:'application/javascript',body:''});
+              return route.continue();
+            });
           }
+          let result='UNKNOWN'; let error='';
+          try{
+            await p.goto(process.env.TARGET,{waitUntil:'domcontentloaded',timeout:7000});
+            result='DOMCONTENTLOADED';
+          }catch(e){ result='TIMEOUT'; error=e.message.split('\n')[0]; }
+          console.log(`GROUP_RESULT=${group}|${result}|${error}`);
+          await b.close();
           JS
-          node qa.mjs
+          for group in none core cinematic product data; do
+            echo "--- $group ---"
+            timeout 12s node scenario.mjs "$group" || echo "GROUP_PROCESS_TIMEOUT=$group"
+          done
