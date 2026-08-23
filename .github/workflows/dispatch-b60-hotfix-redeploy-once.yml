@@ -1,0 +1,119 @@
+name: Dispatch B60 hotfix redeploy once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/dispatch-b60-hotfix-redeploy-once.yml
+
+permissions:
+  actions: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      APPROVED_SHA: 401d959b0905c67e513381d0379a042940dbcd25
+      APPROVAL_PR: '661'
+      PUBLIC_URL: https://ai-revenue-business-60-ai-api.pages.dev/
+      SELF_PATH: .github/workflows/dispatch-b60-hotfix-redeploy-once.yml
+    steps:
+      - name: Dispatch guarded Cloudflare provisioning
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          previous="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'Provision approved Business Pages' --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+          gh workflow run provision-approved-business-pages.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f business_id=60 \
+            -f project_name=ai-revenue-business-60-ai-api \
+            -f source_directory=reference/business-60-ai-api-v1 \
+            -f approved_sha="$APPROVED_SHA" \
+            -f approval_pr="$APPROVAL_PR" \
+            -f production_branch=main \
+            -f existing_project_action=verify-only \
+            -f expected_old_source_directory=''
+
+          run_id=''
+          for i in $(seq 1 30); do
+            candidate="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow 'Provision approved Business Pages' --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+            if test "$candidate" != "0" && test "$candidate" != "$previous"; then
+              run_id="$candidate"
+              break
+            fi
+            sleep 2
+          done
+          test -n "$run_id"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+          set +e
+          gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
+          watch_code=$?
+          set -e
+          conclusion="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json conclusion --jq '.conclusion')"
+          run_url="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json url --jq '.url')"
+          echo "conclusion=$conclusion" >> "$GITHUB_OUTPUT"
+          echo "run_url=$run_url" >> "$GITHUB_OUTPUT"
+          test "$watch_code" = 0
+          test "$conclusion" = success
+
+      - name: Verify live public hotfix bytes and HTTP
+        id: live
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=false
+          for i in $(seq 1 40); do
+            js="$(curl -fsSL --max-time 10 "${PUBLIC_URL}product-v7.js" || true)"
+            if printf '%s' "$js" | grep -q 'Observe only direct grid replacement' && ! printf '%s' "$js" | grep -q 'subtree:true'; then
+              ready=true
+              echo "HOTFIX_VISIBLE_ATTEMPT=$i"
+              break
+            fi
+            sleep 3
+          done
+          test "$ready" = true
+          status="$(curl -sS -o /tmp/b60.html -w '%{http_code}' --max-time 15 "$PUBLIC_URL")"
+          test "$status" = 200
+          grep -q 'LIVE ACCESS SIGNAL' /tmp/b60.html
+          echo "http=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Report result to approval PR
+        if: always()
+        shell: bash
+        env:
+          RUN_ID: ${{ steps.deploy.outputs.run_id }}
+          CONCLUSION: ${{ steps.deploy.outputs.conclusion }}
+          RUN_URL: ${{ steps.deploy.outputs.run_url }}
+          HTTP_STATUS: ${{ steps.live.outputs.http }}
+        run: |
+          verdict=FAIL
+          if test "${CONCLUSION:-}" = success && test "${HTTP_STATUS:-}" = 200; then verdict=SUCCESS; fi
+          gh pr comment "$APPROVAL_PR" --repo "$GITHUB_REPOSITORY" --body "B60_HOTFIX_REDEPLOY_RESULT
+
+RESULT=${verdict}
+PROVISION_RUN_ID=${RUN_ID:-unknown}
+PROVISION_RUN_URL=${RUN_URL:-unknown}
+CONCLUSION=${CONCLUSION:-unknown}
+PUBLIC_URL=${PUBLIC_URL}
+HTTP_STATUS=${HTTP_STATUS:-unknown}
+HOTFIX_BYTES=product-v7 observer direct-child only
+APPROVED_SHA=${APPROVED_SHA}"
+
+      - name: Remove this one-shot dispatcher
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          file_sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${SELF_PATH}?ref=main" --jq '.sha')"
+          gh api --method DELETE "repos/${GITHUB_REPOSITORY}/contents/${SELF_PATH}" \
+            -f message='chore(b60): remove one-shot hotfix redeploy dispatcher' \
+            -f sha="$file_sha" \
+            -f branch=main >/dev/null
