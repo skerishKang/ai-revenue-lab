@@ -10,22 +10,35 @@ on:
 permissions:
   contents: read
   actions: write
+  issues: write
 
 jobs:
   dispatch:
-    name: Dispatch guarded B60 Cloudflare Pages provisioning
+    name: Dispatch and verify guarded B60 Cloudflare Pages provisioning
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 25
     steps:
-      - name: Dispatch existing guarded provisioning workflow
+      - name: Dispatch, monitor, and verify public surface
+        id: probe
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGET_WORKFLOW: provision-approved-business-pages.yml
+          PUBLIC_URL: https://ai-revenue-business-60-ai-api.pages.dev/
         shell: bash
         run: |
-          set -euo pipefail
-          gh api --method POST \
+          set -uo pipefail
+
+          started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          result="DISPATCH_FAILED"
+          run_id=""
+          run_url=""
+          conclusion=""
+          http_status=""
+          marker="NOT_CHECKED"
+
+          if gh api --method POST \
             -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/actions/workflows/provision-approved-business-pages.yml/dispatches" \
+            "/repos/${GITHUB_REPOSITORY}/actions/workflows/${TARGET_WORKFLOW}/dispatches" \
             --input - <<'JSON'
           {
             "ref": "main",
@@ -41,5 +54,91 @@ jobs:
             }
           }
           JSON
+          then
+            result="DISPATCH_ACCEPTED"
 
-          echo 'B60 guarded Pages provisioning dispatch accepted by GitHub API.'
+            for _ in $(seq 1 30); do
+              runs_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/${TARGET_WORKFLOW}/runs?event=workflow_dispatch&branch=main&per_page=20" 2>/dev/null || printf '{"workflow_runs":[]}')"
+              run_id="$(jq -r --arg started "${started_at}" '[.workflow_runs[] | select(.created_at >= $started)] | sort_by(.created_at) | last | .id // empty' <<<"${runs_json}")"
+              if test -n "${run_id}"; then
+                run_url="$(jq -r --argjson id "${run_id}" '.workflow_runs[] | select(.id == $id) | .html_url' <<<"${runs_json}" | head -n1)"
+                break
+              fi
+              sleep 2
+            done
+
+            if test -z "${run_id}"; then
+              result="RUN_NOT_FOUND"
+            else
+              result="RUN_IN_PROGRESS"
+              for _ in $(seq 1 120); do
+                run_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" 2>/dev/null || printf '{}')"
+                status="$(jq -r '.status // empty' <<<"${run_json}")"
+                conclusion="$(jq -r '.conclusion // empty' <<<"${run_json}")"
+                if test "${status}" = "completed"; then
+                  if test "${conclusion}" = "success"; then
+                    result="PROVISION_SUCCESS"
+                  else
+                    result="PROVISION_FAILED"
+                  fi
+                  break
+                fi
+                sleep 5
+              done
+
+              if test "${result}" = "PROVISION_SUCCESS"; then
+                http_status="$(curl --silent --show-error --max-time 25 --output /tmp/b60-public.html --write-out '%{http_code}' "${PUBLIC_URL}" 2>/tmp/b60-curl.err || true)"
+                if test "${http_status}" = "200" && grep -Eqi 'AI[[:space:]/-]*API|ACCESS CHANGES THE WORLD|LIVE ACCESS SIGNAL' /tmp/b60-public.html; then
+                  marker="PASS"
+                  result="SUCCESS"
+                else
+                  marker="FAIL"
+                  result="PUBLIC_VERIFY_FAILED"
+                fi
+              fi
+            fi
+          fi
+
+          {
+            echo "result=${result}"
+            echo "run_id=${run_id}"
+            echo "run_url=${run_url}"
+            echo "conclusion=${conclusion}"
+            echo "http_status=${http_status}"
+            echo "marker=${marker}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Record result on deployment issue
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ steps.probe.outputs.result }}
+          RUN_ID: ${{ steps.probe.outputs.run_id }}
+          RUN_URL: ${{ steps.probe.outputs.run_url }}
+          CONCLUSION: ${{ steps.probe.outputs.conclusion }}
+          HTTP_STATUS: ${{ steps.probe.outputs.http_status }}
+          MARKER: ${{ steps.probe.outputs.marker }}
+        shell: bash
+        run: |
+          body="$(cat <<EOF
+          B60_CLOUDFLARE_PROVISION_RESULT
+
+          RESULT=${RESULT}
+          RUN_ID=${RUN_ID}
+          RUN_URL=${RUN_URL}
+          CONCLUSION=${CONCLUSION}
+          PUBLIC_URL=https://ai-revenue-business-60-ai-api.pages.dev/
+          HTTP_STATUS=${HTTP_STATUS}
+          BODY_MARKER=${MARKER}
+          APPROVED_SHA=4a3b24e22a5c9b3ca6f33a724b485f01fcd81e82
+          APPROVAL_PR=659
+          EOF
+          )"
+          gh issue comment 658 --repo "${GITHUB_REPOSITORY}" --body "${body}"
+
+      - name: Require successful public verification
+        if: ${{ steps.probe.outputs.result != 'SUCCESS' }}
+        shell: bash
+        run: |
+          echo "B60 Pages provisioning/public verification did not complete successfully: ${{ steps.probe.outputs.result }}" >&2
+          exit 1
