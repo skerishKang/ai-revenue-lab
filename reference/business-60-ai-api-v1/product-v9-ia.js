@@ -161,7 +161,7 @@
 
   function showProviders() {
     setPrimaryActive('providers');
-    setHead('어디를 통해<br>AI에 접근할 수 있나.', 'Provider·Gateway·Router를 하나의 탐색축으로 보되, 현재 데이터가 확인해 주는 사실만 표시합니다.');
+    setHead('어디를 통해<br>AI에 접근할 수 있나.', 'API 제공사·게이트웨이·라우터를 한곳에서 보고, 확인된 접근 조건과 모델을 비교합니다.');
     setSearchVisible(true, 'search providers / models');
     setSecondary([], '');
     renderProviders();
@@ -174,7 +174,7 @@
     stats.innerHTML = `<span><b>${items.length}</b> routes</span><span><b>${new Set(items.map(item => item.model).filter(Boolean)).size}</b> model entries</span><span><b>${items.filter(freeLike).length}</b> free/credit</span><span><b>${esc(latestDate(items))}</b> latest verify</span>`;
     grid.innerHTML = `<section class="ia-entity-detail">
       <button type="button" class="ia-back" data-ia-back="providers">← ALL PROVIDERS</button>
-      <div class="ia-entity-hero"><div><span>PROVIDER</span><h3>${esc(provider)}</h3><p>현재 B60 catalog에 검증된 접근 signal만 모았습니다. Provider 유형·지역·런타임 연결 가능성은 근거 데이터가 있을 때 별도 상태로 표시합니다.</p></div><strong>VERIFIED ACCESS</strong></div>
+      <div class="ia-entity-hero"><div><span>PROVIDER</span><h3>${esc(provider)}</h3><p>현재 확인된 접근 경로와 공식 출처를 모았습니다. 실제 연결 가능 여부는 실행 경로가 준비된 경우에만 별도로 표시합니다.</p></div><strong>VERIFIED ACCESS</strong></div>
       <div class="ia-route-list">${items.map(item => routeDetail(item)).join('')}</div>
     </section>`;
   }
@@ -234,7 +234,7 @@
       <p>${esc(signal.summary)}</p>
       <strong>${esc(signal.freeLabel)}</strong>
       <div class="ia-chip-row">${(signal.access || []).map(item => `<span>${esc(item)}</span>`).join('')}<span>${esc(signal.dealType)}</span></div>
-      <dl class="ia-route-facts"><div><dt>PRICE</dt><dd>${esc(signal.price || 'Unknown')}</dd></div><div><dt>CONTEXT</dt><dd>${esc(signal.context || 'Unknown')}</dd></div><div><dt>VERIFIED</dt><dd>${esc(signal.verifiedAt || 'Unknown')}</dd></div><div><dt>RUNTIME</dt><dd>DISCOVERABLE_ONLY</dd></div></dl>
+      <dl class="ia-route-facts"><div><dt>PRICE</dt><dd>${esc(signal.price || 'Unknown')}</dd></div><div><dt>CONTEXT</dt><dd>${esc(signal.context || 'Unknown')}</dd></div><div><dt>VERIFIED</dt><dd>${esc(signal.verifiedAt || 'Unknown')}</dd></div><div><dt>RUNTIME</dt><dd data-runtime-state="DISCOVERABLE_ONLY">INFO ONLY</dd></div></dl>
       ${signal.pending ? `<div class="ia-pending"><b>${esc(signal.pending.state)}</b><span>${esc(signal.pending.label)}</span><p>${esc(signal.pending.note)}</p></div>` : ''}
       <div class="ia-source-row">${sourceLinks(signal)}</div>
       ${showProviderJump ? `<button type="button" class="ia-inline-action" data-provider-open="${esc(signal.provider)}">VIEW PROVIDER</button>` : ''}
@@ -244,14 +244,14 @@
   function showConnect() {
     entityDetail = null;
     setPrimaryActive('connect');
-    setHead('찾은 경로를,<br>실제로 쓰는 곳으로.', 'B60은 어떤 접근 경로가 존재하는지 설명하고, 실행·BYOK·Router·사용량은 B14로 넘깁니다. 지금은 그 경계를 먼저 정확히 보여줍니다.');
+    setHead('찾은 경로를,<br>실제로 쓰는 곳으로.', '접근 조건을 확인한 뒤 실제 연결과 실행으로 이어집니다. 연결이 준비된 경로와 정보만 확인 가능한 경로를 분명히 구분합니다.');
     setSearchVisible(false);
     setSecondary([], '');
     const list = signals.filter(matches);
-    stats.innerHTML = `<span><b>${list.length}</b> discoverable routes</span><span><b>0</b> declared B14 mappings</span><span><b>B14</b> execution authority</span>`;
+    stats.innerHTML = `<span><b>${list.length}</b> known routes</span><span><b>0</b> connectable now</span><span><b>${list.length}</b> info-only routes</span>`;
     grid.innerHTML = `<section class="ia-connect-boundary">
-      <div class="ia-connect-summary"><span>DISCOVERY → EXECUTION</span><h3>Connect는 B60이 키를 받는 화면이 아닙니다.</h3><p>Provider adapter, API key/BYOK, 실제 호출, routing, fallback, usage는 Business 14가 소유합니다. B14 mapping이 명시되기 전에는 아래 경로를 실행 가능하다고 표시하지 않습니다.</p><div class="ia-state-key"><b class="ia-state discoverable">DISCOVERABLE_ONLY</b><b class="ia-state connectable">CONNECTABLE · future explicit mapping</b><b class="ia-state connected">CONNECTED · B14-owned</b></div></div>
-      <div class="ia-connect-routes">${list.map(signal => `<article><div><small>${esc(signal.provider)}</small><h4>${esc(signal.model || signal.title)}</h4><p>${esc(signal.freeLabel)}</p></div><div><b class="ia-state discoverable">DISCOVERABLE_ONLY</b><button type="button" data-provider-open="${esc(signal.provider)}">VIEW PROVIDER</button></div></article>`).join('')}</div>
+      <div class="ia-connect-summary"><span>DISCOVERY → EXECUTION</span><h3>연결 가능한 경로를 한곳에서 시작합니다.</h3><p>현재는 5개의 접근 경로를 확인했습니다. 실행 연결이 준비된 경로에는 CONNECT가 열리고, 준비 전 경로는 정보만 확인할 수 있습니다.</p><div class="ia-state-key"><b class="ia-state discoverable">INFO ONLY</b><b class="ia-state connectable">CONNECTABLE</b><b class="ia-state connected">CONNECTED</b></div></div>
+      <div class="ia-connect-routes">${list.map(signal => `<article><div><small>${esc(signal.provider)}</small><h4>${esc(signal.model || signal.title)}</h4><p>${esc(signal.freeLabel)}</p></div><div><b class="ia-state discoverable" data-runtime-state="DISCOVERABLE_ONLY">INFO ONLY</b><button type="button" data-provider-open="${esc(signal.provider)}">VIEW PROVIDER</button></div></article>`).join('')}</div>
     </section>`;
   }
 
