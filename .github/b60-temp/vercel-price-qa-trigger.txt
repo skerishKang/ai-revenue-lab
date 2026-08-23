@@ -1,1 +1,0 @@
-temporary exact-head trigger for PR #676 Vercel route price truth QA
