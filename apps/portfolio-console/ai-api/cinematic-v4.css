@@ -1,0 +1,39 @@
+/* B60 cinematic motion pass 4 — body charge → capability split → spatial control. */
+.sticky{--bio-charge:0;--split-open:0;--split-depth:0px;--world-roll:0deg}
+.api-tether{position:absolute;inset:0;z-index:56;width:100%;height:100%;pointer-events:none;opacity:calc(var(--bio-charge)*.95);mix-blend-mode:screen;filter:drop-shadow(0 0 14px rgba(117,241,255,.35))}
+.api-tether path{fill:none;stroke:url(#tetherPulse);stroke-linecap:round;filter:url(#tetherGlow)}
+.api-tether .tether-main{stroke-width:2.1;stroke-dasharray:15 20;stroke-dashoffset:calc((1 - var(--bio-charge))*240)}
+.api-tether .tether-echo{stroke-width:1;opacity:.45;stroke-dasharray:5 18;stroke-dashoffset:calc((1 - var(--bio-charge))*310)}
+.sticky.neural-sequence .api-tether .tether-main{animation:tetherFlow .72s linear infinite}
+.sticky.neural-sequence .api-tether .tether-echo{animation:tetherFlow 1.08s linear infinite reverse}
+@keyframes tetherFlow{to{stroke-dashoffset:-70}}
+.sticky.neural-sequence .neural path{stroke-dasharray:10 19;animation:bodyCurrent 1s linear infinite;opacity:calc(.32 + var(--bio-charge)*.68)}
+.sticky.neural-sequence .neural path:nth-of-type(2){animation-delay:-.18s}.sticky.neural-sequence .neural path:nth-of-type(3){animation-delay:-.36s}.sticky.neural-sequence .neural path:nth-of-type(4){animation-delay:-.54s}.sticky.neural-sequence .neural path:nth-of-type(5){animation-delay:-.72s}
+@keyframes bodyCurrent{to{stroke-dashoffset:-58}}
+.world-split{position:absolute;z-index:43;inset:0;display:grid;grid-template-columns:repeat(3,1fr);pointer-events:none;opacity:0;transform:perspective(1300px) rotateZ(var(--world-roll));transition:opacity .15s linear;overflow:hidden}
+.sticky.world-split-on .world-split{opacity:1}
+.world-slice{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;padding:8vh 3vw 10vh;border-left:1px solid rgba(166,245,255,.13);border-right:1px solid rgba(166,245,255,.05);overflow:hidden;backdrop-filter:blur(calc(var(--split-open)*7px));transform-style:preserve-3d;will-change:transform,clip-path,filter}
+.world-slice:before{content:"";position:absolute;inset:-15%;z-index:-2;opacity:calc(.15 + var(--split-open)*.55);transition:opacity .2s linear}
+.slice-code:before{background:radial-gradient(circle at 75% 38%,rgba(86,242,255,.24),transparent 30%),linear-gradient(145deg,rgba(0,7,21,.82),rgba(12,34,59,.2))}
+.slice-vision:before{background:radial-gradient(circle at 50% 38%,rgba(143,104,255,.25),transparent 30%),linear-gradient(180deg,rgba(5,5,22,.8),rgba(35,18,68,.22))}
+.slice-voice:before{background:radial-gradient(circle at 27% 38%,rgba(91,172,255,.26),transparent 31%),linear-gradient(215deg,rgba(0,7,19,.82),rgba(9,35,67,.22))}
+.world-slice:nth-child(1){transform:translate3d(calc((1 - var(--split-open))*-22vw),0,var(--split-depth)) rotateY(calc((1 - var(--split-open))*-18deg))}
+.world-slice:nth-child(2){transform:translate3d(0,calc((1 - var(--split-open))*10vh),calc(var(--split-depth)*1.1)) scale(calc(.9 + var(--split-open)*.1))}
+.world-slice:nth-child(3){transform:translate3d(calc((1 - var(--split-open))*22vw),0,var(--split-depth)) rotateY(calc((1 - var(--split-open))*18deg))}
+.world-slice small{font:700 8px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.19em;color:rgba(222,251,255,.48)}
+.world-slice strong{margin-top:10px;font-size:clamp(38px,6vw,95px);line-height:.78;letter-spacing:-.07em;color:rgba(232,254,255,.72);text-shadow:0 0 32px rgba(114,235,255,.14)}
+.world-slice span{margin-top:14px;font:650 9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;color:rgba(218,247,255,.39)}
+.world-slice i{position:absolute;border:1px solid rgba(150,241,255,.14);border-radius:50%;width:12vw;height:12vw;right:-4vw;top:15%;animation:sliceOrbit 5s ease-in-out infinite alternate;box-shadow:0 0 35px rgba(109,230,255,.07)}
+.world-slice i:nth-of-type(2){width:7vw;height:7vw;right:22%;top:38%;animation-delay:-1.7s}.world-slice i:nth-of-type(3){width:3.5vw;height:3.5vw;right:46%;top:19%;animation-delay:-3s}
+@keyframes sliceOrbit{to{transform:translate3d(-2vw,2vh,70px) scale(1.15);border-color:rgba(163,247,255,.32)}}
+.world-slice.active{filter:brightness(1.2) saturate(1.25)}
+.world-slice.active strong{color:#efffff;text-shadow:0 0 35px rgba(127,244,255,.36)}
+.sticky.world-split-collapse .world-slice:nth-child(1){clip-path:inset(0 100% 0 0);transform:translate3d(-12vw,0,180px) rotateY(-25deg)}
+.sticky.world-split-collapse .world-slice:nth-child(2){clip-path:inset(0 50% 0 50%);transform:translate3d(0,0,260px) scale(1.08)}
+.sticky.world-split-collapse .world-slice:nth-child(3){clip-path:inset(0 0 0 100%);transform:translate3d(12vw,0,180px) rotateY(25deg)}
+.world-transition-wash{position:absolute;z-index:44;inset:-12%;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent 0 31%,rgba(154,247,255,.19) 33%,transparent 35% 65%,rgba(137,111,255,.2) 67%,transparent 69%);mix-blend-mode:screen;transform:translateX(-10%)}
+.sticky.world-split-on .world-transition-wash{opacity:calc(var(--split-open)*.8);animation:splitScan 1.05s linear infinite}
+@keyframes splitScan{to{transform:translateX(10%)}}
+.sticky.post-split .world-transition-wash{opacity:0}
+@media(max-width:760px){.world-slice{padding:8vh 2.4vw 12vh}.world-slice strong{font-size:clamp(28px,11vw,56px);writing-mode:vertical-rl}.world-slice span{display:none}.world-slice small{font-size:6px}.world-slice i:nth-of-type(n+2){display:none}}
+@media(prefers-reduced-motion:reduce){.api-tether,.world-split,.world-transition-wash{display:none!important}.sticky.neural-sequence .neural path{animation:none!important}}
