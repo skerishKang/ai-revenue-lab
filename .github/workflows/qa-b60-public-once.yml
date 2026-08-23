@@ -1,0 +1,86 @@
+name: QA B60 public site once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/qa-b60-public-once.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Audit live public surface
+        id: audit
+        env:
+          URL: https://ai-revenue-business-60-ai-api.pages.dev/
+        run: |
+          cat > /tmp/qa.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'fs';
+          const url = process.env.URL;
+          const browser = await chromium.launch({headless:true});
+          const page = await browser.newPage({viewport:{width:1440,height:1100}});
+          const errors=[]; const logs=[];
+          page.on('console', m => { if(m.type()==='error') errors.push(m.text()); logs.push(`${m.type()}: ${m.text()}`); });
+          page.on('pageerror', e => errors.push(`PAGEERROR: ${e.message}`));
+          const response = await page.goto(url,{waitUntil:'networkidle',timeout:60000});
+          const sample = async label => ({label, scrollY: await page.evaluate(()=>scrollY), stageClass: await page.locator('#stage').getAttribute('class'), cue: await page.locator('.scroll-cue').textContent(), connectVisible: await page.locator('#connect').isVisible()});
+          const states=[];
+          states.push(await sample('t0'));
+          await page.screenshot({path:'/tmp/01-t0.png',fullPage:false});
+          await page.waitForTimeout(1200);
+          states.push(await sample('t1.2'));
+          await page.screenshot({path:'/tmp/02-t1.png',fullPage:false});
+          await page.waitForTimeout(5200);
+          states.push(await sample('t6.4'));
+          await page.screenshot({path:'/tmp/03-t6.png',fullPage:false});
+          const beforeClick=await page.evaluate(()=>scrollY);
+          await page.locator('#connect').click({timeout:10000});
+          await page.waitForTimeout(1800);
+          states.push(await sample('post-connect'));
+          await page.screenshot({path:'/tmp/04-post-connect.png',fullPage:false});
+          const connected=await page.locator('#stage').evaluate(el=>el.classList.contains('connected'));
+          const bodyText=await page.locator('body').innerText();
+          const result={http:response?.status(),states,beforeClick,connected,errors,bodyMarker:bodyText.includes('LIVE ACCESS SIGNAL')&&bodyText.includes('AI API')};
+          fs.writeFileSync('/tmp/result.json',JSON.stringify(result,null,2));
+          console.log(JSON.stringify(result,null,2));
+          await browser.close();
+          if(response?.status()!==200 || !result.bodyMarker || errors.length || states[1].scrollY<=states[0].scrollY || states[2].scrollY<=states[1].scrollY || !connected) process.exitCode=1;
+          JS
+          set +e
+          node /tmp/qa.mjs | tee /tmp/qa.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-public-live-qa
+          path: |
+            /tmp/*.png
+            /tmp/result.json
+            /tmp/qa.log
+      - name: Report result to issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.audit.outputs.exit_code }}
+        run: |
+          result=$(cat /tmp/result.json)
+          summary=$(jq -r '["HTTP="+(.http|tostring),"T0_SCROLL="+(.states[0].scrollY|tostring),"T1_SCROLL="+(.states[1].scrollY|tostring),"T6_SCROLL="+(.states[2].scrollY|tostring),"CONNECTED="+(.connected|tostring),"ERRORS="+(.errors|length|tostring)]|join("\n")' /tmp/result.json)
+          if [ "$EXIT_CODE" = "0" ]; then verdict=PASS; else verdict=FAIL; fi
+          gh issue comment 658 --repo "$GITHUB_REPOSITORY" --body "B60_LIVE_CHROMIUM_QA\n\nVERDICT=$verdict\nRUN_ID=$GITHUB_RUN_ID\n$summary\n\nArtifact: b60-public-live-qa"
+          test "$EXIT_CODE" = "0"
