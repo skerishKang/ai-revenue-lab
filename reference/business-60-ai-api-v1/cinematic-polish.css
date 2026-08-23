@@ -1,0 +1,44 @@
+/* B60 final visual polish — protagonist continuity, contact hierarchy, eye registration. */
+
+/* Make the human readable immediately without turning the opening into a bright hero banner. */
+.sticky:not(.connected) .shot-alone{
+  filter:brightness(.30) saturate(.62) contrast(1.13) hue-rotate(180deg)!important;
+}
+.sticky:not(.connected) .world-grade{
+  background:linear-gradient(90deg,rgba(0,2,8,.78),rgba(0,3,10,.09) 44%,rgba(0,1,5,.34)),radial-gradient(circle at 63% 36%,rgba(122,242,255,.16),transparent 19%);
+}
+
+/* The hand is the event. CONNECT stays secondary until the hand arrives. */
+.gesture-hand{left:60%!important;right:auto!important;top:47%!important;width:min(44vw,690px)!important;transform-origin:50% 50%!important;transform:translate(-18%,-50%) rotate(4deg) scaleX(-1) scale(.84)!important;mix-blend-mode:screen!important}
+.sticky.hand-ready .gesture-hand{opacity:.46!important;transform:translate(-23%,-50%) rotate(3deg) scaleX(-1) scale(.9)!important;filter:grayscale(1) sepia(.65) hue-rotate(132deg) saturate(3.2) brightness(.78) contrast(1.14) drop-shadow(0 0 30px rgba(139,244,255,.42))!important}
+.sticky.contact-armed .gesture-hand{opacity:.72!important;transform:translate(-31%,-50%) rotate(1deg) scaleX(-1) scale(.98)!important;filter:grayscale(1) sepia(.7) hue-rotate(132deg) saturate(3.4) brightness(.9) contrast(1.12) drop-shadow(0 0 42px rgba(145,248,255,.64))!important}
+.sticky.hand-touching .gesture-hand{opacity:.92!important;transform:translate(-38%,-50%) rotate(0deg) scaleX(-1) scale(1.04)!important;filter:grayscale(1) sepia(.72) hue-rotate(132deg) saturate(3.6) brightness(1.06) contrast(1.08) drop-shadow(0 0 62px rgba(158,250,255,.86))!important}
+.sticky.hand-ready:not(.contact-armed) .access-core{filter:brightness(.72);box-shadow:0 0 0 12px rgba(102,235,255,.02),0 0 34px rgba(96,228,255,.12)}
+.sticky.contact-armed .access-core{filter:brightness(1.08)}
+
+/* Keep one protagonist image after activation. The old connection/field assets are montage frames. */
+.sticky.connected .shot-connection,.sticky.connected .shot-field{opacity:0!important}
+.sticky.connected .shot-close img{object-position:30% 34%!important}
+.sticky.connected .shot-close{filter:brightness(.37) saturate(.56) contrast(1.13) hue-rotate(180deg)!important}
+
+/* Register the vision HUD to the protagonist eye instead of the screen center. */
+.vision-ring{left:29%!important;top:26%!important;width:62px!important;height:62px!important}
+.scan-beam{left:29%!important;top:26%!important;transform:rotate(-5deg)!important}
+.vision-ring i:first-child{box-shadow:0 0 24px rgba(119,238,255,.48),inset 0 0 16px rgba(204,255,255,.12)}
+.vision-ring i:nth-child(2){inset:-12px!important}.vision-ring i:nth-child(3){inset:-25px!important}
+
+/* Reduce interface noise around the protagonist. */
+.sticky.connected .orbit{opacity:.52}
+.sticky.physical-control .gesture-control-hand{opacity:.27!important}
+.sticky.physical-grab .gesture-control-hand{opacity:.48!important}
+.sticky.voice-build-on .spatial{opacity:.16!important;filter:blur(1.2px) brightness(.82)!important}
+
+@media(max-width:760px){
+  .sticky:not(.connected) .shot-alone{filter:brightness(.32) saturate(.62) contrast(1.12) hue-rotate(180deg)!important}
+  .gesture-hand{left:57%!important;right:auto!important;top:48%!important;width:78vw!important}
+  .vision-ring{left:31%!important;top:28%!important;width:52px!important;height:52px!important}
+  .scan-beam{left:31%!important;top:28%!important}
+}
+
+/* Fade the derived hand asset into the scene so the cropped forearm never reads as a rectangle. */
+.gesture-hand{-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.42) 15%,#000 34%,#000 100%)!important;mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.42) 15%,#000 34%,#000 100%)!important}
