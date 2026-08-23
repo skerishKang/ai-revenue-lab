@@ -1,1 +1,0 @@
-Trigger settled-state visual gate for PR #678.
