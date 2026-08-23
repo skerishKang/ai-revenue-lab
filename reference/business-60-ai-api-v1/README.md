@@ -31,7 +31,8 @@ The prototype follows one continuous narrative axis:
 16. intent tokens physically assemble into an INTENT → ACCESS → MODEL → API route graph;
 17. the route graph dissolves into floating code strips;
 18. code strips collapse into a single constructed API object;
-19. the cinematic world dissolves into a practical deal/source view.
+19. the constructed object yields to the `AI API` identity;
+20. the cinematic world dissolves into a practical deal/source view.
 
 Motion layers are isolated so they can be reviewed or removed without rewriting the base anchor:
 
@@ -56,7 +57,7 @@ The current scroll timeline is intentionally explicit so later visual revisions 
 0.850–0.885 INTENT → ACCESS → MODEL → API route assembly
 0.885–0.925 route → code-strip construction
 0.925–0.955 code → constructed API object
-0.90+       AI API identity → information handoff
+0.955+       AI API identity → information handoff
 ```
 
 `CONNECT` remains a hard interaction gate: the post-contact sequence does not become active until the user deliberately activates the access core.
