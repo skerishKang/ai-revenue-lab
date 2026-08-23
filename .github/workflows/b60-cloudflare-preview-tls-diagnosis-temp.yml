@@ -43,6 +43,24 @@ jobs:
           echo '=== LATEST DEPLOYMENTS ==='
           jq '[.result[] | {id,short_id,url,environment,created_on,latest_stage,aliases,source}] | .[:10]' "${deployments_json}"
 
+      - name: Inspect Cloudflare Access applications for this Pages project
+        shell: bash
+        run: |
+          set +e
+          access_json="$(mktemp)"
+          status="$(curl --silent --show-error \
+            --output "${access_json}" \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/access/apps")"
+          echo "ACCESS_API_HTTP=${status}"
+          if [ "${status}" = 200 ]; then
+            jq '[.result[] | select(((.domain // "") | contains("ai-revenue-portfolio-console.pages.dev"))) | {id,name,domain,type,session_duration,auto_redirect_to_identity,app_launcher_visible}]' "${access_json}"
+          else
+            jq '{success,errors,messages}' "${access_json}" 2>/dev/null || true
+          fi
+
       - name: Diagnose DNS and TLS for Pages hostnames
         shell: bash
         run: |
