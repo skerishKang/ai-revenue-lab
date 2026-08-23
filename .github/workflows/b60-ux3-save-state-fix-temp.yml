@@ -1,22 +1,22 @@
-name: B60 UX3 Save State Fix Temp
+name: B60 UX3 State Fix Temp
 
 on:
-  pull_request:
-    types: [synchronize]
+  push:
+    branches: [feat/b60-ux3-route-detail-669]
 
 permissions:
   contents: write
 
 jobs:
   patch:
-    if: github.event.pull_request.number == 670 && github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: feat/b60-ux3-route-detail-669
           fetch-depth: 1
-      - name: Align detail SAVE state with existing Watch storage
+      - name: Align route-detail state with existing Watch and Compare controllers
         shell: bash
         run: |
           set -euo pipefail
@@ -27,15 +27,18 @@ jobs:
               text=p.read_text()
               anchor="  const byId = new Map(signals.map(signal => [signal.id, signal]));\n"
               insert="""  const WATCH_KEY = 'b60.ai-api.watchlist.v1';
-  const readSaved = () => {
+  const matchingAction = (selector, id) => [...document.querySelectorAll(selector)].find(button => button.dataset.saveId === id || button.dataset.compareId === id);
+  const isSaved = id => {
+    const peer = matchingAction('[data-save-id]', id);
+    if (peer?.getAttribute('aria-pressed') === 'true') return true;
     try {
       const value = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]');
-      return new Set(Array.isArray(value) ? value : []);
+      return Array.isArray(value) && value.includes(id);
     } catch {
-      return new Set();
+      return false;
     }
   };
-  const isSaved = id => readSaved().has(id);
+  const isCompared = id => matchingAction('[data-compare-id]', id)?.getAttribute('aria-pressed') === 'true';
 """
               if insert not in text:
                   if anchor not in text: raise SystemExit(f'missing byId anchor: {p}')
@@ -43,7 +46,7 @@ jobs:
               old="""      <button type=\"button\" data-save-id=\"${esc(signal.id)}\">SAVE</button>
       <button type=\"button\" data-compare-id=\"${esc(signal.id)}\" aria-pressed=\"false\">COMPARE</button>"""
               new="""      <button type=\"button\" data-save-id=\"${esc(signal.id)}\" aria-pressed=\"${isSaved(signal.id) ? 'true' : 'false'}\">${isSaved(signal.id) ? 'SAVED' : 'SAVE'}</button>
-      <button type=\"button\" data-compare-id=\"${esc(signal.id)}\" aria-pressed=\"false\">COMPARE</button>"""
+      <button type=\"button\" data-compare-id=\"${esc(signal.id)}\" aria-pressed=\"${isCompared(signal.id) ? 'true' : 'false'}\">${isCompared(signal.id) ? 'SELECTED' : 'COMPARE'}</button>"""
               if old not in text: raise SystemExit(f'missing render action anchor: {p}')
               text=text.replace(old,new,1)
               anchor2="""  function closeRoute({ sync = true } = {}) {
@@ -86,5 +89,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add apps/portfolio-console/ai-api/product-v11-route-detail.js reference/business-60-ai-api-v1/product-v11-route-detail.js
-          git commit -m "fix(b60): reflect Watch state in route detail"
+          git commit -m "fix(b60): synchronize route-detail action states"
           git push origin HEAD:feat/b60-ux3-route-detail-669
