@@ -1,0 +1,128 @@
+window.B60_ACCESS_SIGNALS = [
+  {
+    id: 'vercel-glm52',
+    provider: 'Vercel AI Gateway',
+    title: 'GLM 5.2 on AI Gateway',
+    category: 'NOW',
+    dealType: 'RECURRING_CREDIT',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    verifiedAt: '2026-08-23',
+    freeLabel: '$5 credits / 30 days',
+    summary: 'Free Vercel users who have not made a payment receive $5 of AI Gateway credits every 30 days.',
+    model: 'zai/glm-5.2',
+    context: '1M tokens',
+    price: '$1.40/M input · $4.40/M output',
+    access: ['API', 'AI GATEWAY', 'CLI/AGENT'],
+    facts: [
+      'GLM 5.2 is available through Vercel AI Gateway.',
+      'Model identifier: zai/glm-5.2.',
+      'Context window: 1.0M tokens.',
+      'Free users who have not made a payment get $5 credits every 30 days.'
+    ],
+    sources: [
+      { label: 'Vercel · GLM 5.2', url: 'https://vercel.com/ai-gateway/models/glm-5.2' }
+    ],
+    pending: {
+      label: 'Free on fx through Aug 27',
+      state: 'PENDING_WEB_VERIFICATION',
+      note: 'Exact promotion end-date claim remains unpublished in the primary web evidence captured for B60.'
+    }
+  },
+  {
+    id: 'google-gemini-free',
+    provider: 'Google AI for Developers',
+    title: 'Gemini Developer API · Free tier',
+    category: 'NOW',
+    dealType: 'PERMANENT_FREE',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    verifiedAt: '2026-08-23',
+    freeLabel: 'Free tier',
+    summary: 'Limited access to eligible Gemini models with free input/output tokens and Google AI Studio access.',
+    model: 'Gemini API',
+    context: 'Varies by model',
+    price: 'Free tier available',
+    access: ['API', 'PLAYGROUND'],
+    facts: [
+      'Google lists a Free tier for developers and small projects.',
+      'The Free tier includes limited access to certain models.',
+      'Eligible free-tier requests have free input and output tokens.',
+      'Google AI Studio access is included.'
+    ],
+    sources: [
+      { label: 'Google · Gemini API pricing', url: 'https://ai.google.dev/gemini-api/docs/pricing' }
+    ]
+  },
+  {
+    id: 'cloudflare-workers-ai-free',
+    provider: 'Cloudflare',
+    title: 'Workers AI · Free allocation',
+    category: 'NOW',
+    dealType: 'PERMANENT_FREE',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    verifiedAt: '2026-08-23',
+    freeLabel: '10,000 neurons / day',
+    summary: 'Workers AI includes a daily no-charge allocation before paid usage is required.',
+    model: 'Workers AI catalog',
+    context: 'Varies by model',
+    price: '10,000 neurons/day free',
+    access: ['API', 'CLOUD CONSOLE', 'WORKERS'],
+    facts: [
+      'Workers AI is included in Free and Paid Workers plans.',
+      'The free allocation is 10,000 neurons per day.',
+      'Usage above the free allocation requires Workers Paid.',
+      'Cloudflare currently lists $0.011 per 1,000 neurons above the free allocation.'
+    ],
+    sources: [
+      { label: 'Cloudflare · Workers AI pricing', url: 'https://developers.cloudflare.com/workers-ai/platform/pricing/' }
+    ]
+  },
+  {
+    id: 'groq-free-plan',
+    provider: 'Groq',
+    title: 'Groq API · Free plan',
+    category: 'NOW',
+    dealType: 'PERMANENT_FREE',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    verifiedAt: '2026-08-23',
+    freeLabel: 'Free plan',
+    summary: 'Groq publishes model-specific Free Plan limits and lets users upgrade separately to higher-capacity Developer billing.',
+    model: 'Groq model catalog',
+    context: 'Varies by model',
+    price: 'Free plan limits',
+    access: ['API'],
+    facts: [
+      'Groq publishes a dedicated Free Plan rate-limit table.',
+      'Limits vary by model and include RPM/RPD/TPM/TPD dimensions.',
+      'Developer tier is a separate upgrade with a payment method.'
+    ],
+    sources: [
+      { label: 'Groq · Free Plan limits', url: 'https://console.groq.com/docs/rate-limits' },
+      { label: 'Groq · Billing FAQ', url: 'https://console.groq.com/docs/billing-faqs' }
+    ]
+  },
+  {
+    id: 'openrouter-free-router',
+    provider: 'OpenRouter',
+    title: 'OpenRouter · Free model access',
+    category: 'NOW',
+    dealType: 'FREE_MODEL',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    verifiedAt: '2026-08-23',
+    freeLabel: '50 requests / day',
+    summary: 'The Free plan supports free-model API access, and openrouter/free can route requests across available free models.',
+    model: 'openrouter/free',
+    context: '200K router context',
+    price: '$0 prompt · $0 completion on free router',
+    access: ['API', 'ROUTER'],
+    facts: [
+      'OpenRouter lists a Free plan with 50 requests per day.',
+      'The openrouter/free router selects from currently available free models.',
+      'The free router page lists a 200K-token context window.',
+      'Prompt and completion token pricing for openrouter/free is $0.'
+    ],
+    sources: [
+      { label: 'OpenRouter · Pricing', url: 'https://openrouter.ai/pricing' },
+      { label: 'OpenRouter · Free Models Router', url: 'https://openrouter.ai/openrouter/free/' }
+    ]
+  }
+];
