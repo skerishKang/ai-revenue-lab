@@ -25,6 +25,25 @@ Canonical references:
 
 Business 14 is the public model-access platform. The former independent `ai-model-router` identity is superseded; routing is an internal Business 14 capability. Proposed Business 54 is **Korean AI Code Agent / 한국형 AI 코드 에이전트**, a terminal-first first-party client that consumes Business 14. `apps/korean-ai-code-agent/` is now present on current `main` after the hardened CLI/TUI vertical slice passed Linux and Windows exact-head CI; B54 remains proposed-number authority rather than a canonical numbered Business.
 
+## Proposed Business 60 workspace
+
+Business 60 is proposed as **AI API / AI API 탐색 허브** under Issue #650.
+
+```text
+proposed number: B60
+stable slug: ai-api
+future workspace: apps/ai-api/
+workspace currently created: no
+current runtime: none
+current public surface: none
+```
+
+B60 is the discovery/deal-intelligence product for current AI API access paths, free tiers, credits, launch promotions, low-cost provider routes, eligibility, expiry, setup guidance, official sources and verification freshness. Its public frontdoor is intentionally cinematic rather than a generic SaaS directory.
+
+B60 must remain separate from Business 14: B60 discovers/verifies/explains access; B14 executes/routes/meters model calls. A future handoff between them does not merge their product identities or authorization boundaries.
+
+See `../docs/portfolio/BUSINESS_60_AI_API_PROPOSAL.md`. Number registration alone does not authorize creation of `apps/ai-api/`, Neon schema, credentials, API-key persistence, domain/DNS changes, or Production deployment.
+
 ## Assigned but not yet created workspaces
 
 | Workspace | Canonical Business number | Current state | Primary product hypothesis | Portal state |
