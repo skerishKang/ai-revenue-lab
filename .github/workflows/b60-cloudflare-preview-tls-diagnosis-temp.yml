@@ -1,0 +1,64 @@
+name: B60 Cloudflare Preview TLS Diagnosis Temp
+
+on:
+  push:
+    branches:
+      - fix/b60-protagonist-visibility-20260824
+    paths:
+      - .github/workflows/b60-cloudflare-preview-tls-diagnosis-temp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: ai-revenue-portfolio-console
+      UNIQUE_HOST: 9142f2f4.ai-revenue-portfolio-console.pages.dev
+      BRANCH_HOST: fix-b60-protagonist-visibili.ai-revenue-portfolio-console.pages.dev
+      PROJECT_HOST: ai-revenue-portfolio-console.pages.dev
+    steps:
+      - name: Query Cloudflare Pages project metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          project_json="$(mktemp)"
+          deployments_json="$(mktemp)"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
+            -o "${project_json}"
+          echo '=== PROJECT ==='
+          jq '{success, result:{name:.result.name, subdomain:.result.subdomain, domains:.result.domains, production_branch:.result.production_branch, source:.result.source, canonical_deployment:(.result.canonical_deployment|{id,short_id,url,environment,created_on,latest_stage})}}' "${project_json}"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments?per_page=10" \
+            -o "${deployments_json}"
+          echo '=== LATEST DEPLOYMENTS ==='
+          jq '[.result[] | {id,short_id,url,environment,created_on,latest_stage,aliases,source}] | .[:10]' "${deployments_json}"
+
+      - name: Diagnose DNS and TLS for Pages hostnames
+        shell: bash
+        run: |
+          set +e
+          for host in "${PROJECT_HOST}" "${UNIQUE_HOST}" "${BRANCH_HOST}"; do
+            echo
+            echo "===== ${host} ====="
+            echo '--- DNS getent ---'
+            getent ahosts "${host}"
+            echo '--- TLS openssl ---'
+            timeout 15 openssl s_client -connect "${host}:443" -servername "${host}" -brief </dev/null
+            echo "openssl_exit=$?"
+            echo '--- HTTPS curl ---'
+            curl -vkIsS --max-time 15 "https://${host}/" 2>&1 | sed -n '1,120p'
+            echo "curl_exit=${PIPESTATUS[0]}"
+          done
+          exit 0
