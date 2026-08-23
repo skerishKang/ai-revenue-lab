@@ -57,6 +57,14 @@ Secrets, database URLs, Firebase service-account material, API keys, private hos
 | 13 | `personal-video-archive` | Personal Video Archive / 나의 영상 아카이브 | `apps/personal-video-archive/` | Incubation MVP; Korean-first bilingual redesign in Draft PR #78 | Current MVP is synthetic/local and has no accepted production authentication. Product must own private viewing-record authorization when integrated. | Global portal shell code and visual review accepted in Draft PR #78 at head 989d0056605e091a2fa842e49dc92f29aed68fbb; PR #78 remains unmerged pending latest-main integration and final merge review; actual portal production integration is not completed by the PR #78 merge alone | Issues #60, #62, #72, #76; PR #78 |
 | 14 | `korean-ai-platform` | Korean AI Platform / 한국형 AI 실행 플랫폼 | `apps/korean-ai-platform/` | Private governed-execution console MVP in Draft PR #79 | Authentication, CSRF, and persistence are current limitations. Future integration must keep execution permissions and secrets product-local. | Not yet integrated | Issue #80; PR #79 |
 
+### 3A. Proposed-number portfolio entries
+
+The following entries are intentionally **not canonical**. They are recorded so the portfolio can review an evidenced product identity without pretending that a conversation or local prototype already completed canonical-number promotion.
+
+| Proposed No. | Stable slug | Product | Proposed workspace | Current lifecycle | Boundary | Evidence |
+|---:|---|---|---|---|---|---|
+| 60 | `ai-api` | AI API / AI API 탐색 허브 | `apps/ai-api/` — not created by registration alone | `concept`; UI exploration in progress; backend frozen | Discovery/deal intelligence owns current API/provider/model offers, source verification, expiry/eligibility and cinematic discovery. Business 14 remains the execution/routing platform. | Issue #650; `BUSINESS_60_AI_API_PROPOSAL.md` |
+
 ## 4. Reconciled numbering history for B6–B12
 
 Before Issue #617, the canonical registry still showed B6–B12 as reserved even though later portfolio execution repeatedly used stable B6–B12 product labels. The historical Phase 1 issues intentionally described those numbers as proposed/noncanonical because they were not authorized to rewrite the registry.
@@ -184,5 +192,7 @@ Business 12 Creator Mini-Media
 Business 13 Personal Video Archive
 Business 14 Korean AI Platform
 ```
+
+Proposed-number entries are reviewed separately and do not join the canonical list merely by appearing in Portfolio Console metadata. B60 `ai-api` is currently proposed under Issue #650.
 
 B6–B12 were reconciled under Issue #617 after their earlier proposed/operational use had outpaced the older reserved registry. This assignment preserves the historical evidence and existing workspaces; it does not retroactively convert old proposed-number records into claims that the numbers were canonical at the time.
