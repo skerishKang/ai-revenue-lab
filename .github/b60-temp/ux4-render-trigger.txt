@@ -1,1 +1,0 @@
-Trigger PR #672 UX-4 rendered QA after workflow registration.
