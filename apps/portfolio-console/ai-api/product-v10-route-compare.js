@@ -87,16 +87,16 @@
     const signal = byId.get(id);
     const mapping = signal && mappingFor(signal);
     if (!signal || !mapping) return;
-    handoff.querySelector('[data-handoff-body]').innerHTML = `<header class="ux2-sheet-head"><span>EXECUTION HANDOFF</span><h2>${esc(signal.model || signal.title)}</h2><p>이 경로는 현재 Business 14 Router Core의 정확한 모델 ID와 매핑됩니다. 실행과 자격증명 처리는 B60이 아니라 실행 계층에서 담당합니다.</p></header>
+    handoff.querySelector('[data-handoff-body]').innerHTML = `<header class="ux2-sheet-head"><span>EXECUTION HANDOFF</span><h2>${esc(signal.model || signal.title)}</h2><p>이 경로는 현재 실행 라우터의 정확한 모델 ID와 매핑되어 있습니다. 실제 실행과 API Key 처리는 연결된 실행 계층에서 담당합니다.</p></header>
       <div class="ux2-handoff-route"><b>ROUTER MAPPED</b><dl>
         <div><dt>DISCOVERY ROUTE</dt><dd>${esc(signal.provider)} → ${esc(signal.model || signal.title)}</dd></div>
-        <div><dt>B14 MODEL</dt><dd><code>${esc(mapping.b14ModelId)}</code></dd></div>
-        <div><dt>B14 ROUTE</dt><dd><code>${esc(mapping.b14RouteId)}</code></dd></div>
-        <div><dt>CREDENTIAL</dt><dd>${esc(mapping.credentialMode)}</dd></div>
-        <div><dt>WORKSPACE</dt><dd><code>${esc(mapping.workspacePath)}</code></dd></div>
-        <div><dt>LIVE TARGET</dt><dd>${mapping.targetUrl ? 'BOUND' : 'NOT BOUND'}</dd></div>
+        <div><dt>MODEL ID</dt><dd><code>${esc(mapping.b14ModelId)}</code></dd></div>
+        <div><dt>ROUTE ID</dt><dd><code>${esc(mapping.b14RouteId)}</code></dd></div>
+        <div><dt>API KEY</dt><dd>실행 계층에서 처리 · 이 사이트에 저장하지 않음</dd></div>
+        <div><dt>EXECUTION PATH</dt><dd><code>${esc(mapping.workspacePath)}</code></dd></div>
+        <div><dt>EXECUTION TARGET</dt><dd>${mapping.targetUrl ? 'BOUND' : 'NOT BOUND'}</dd></div>
       </dl></div>
-      <div class="ux2-handoff-boundary"><strong>지금은 연결 계약까지만 열려 있습니다.</strong><p>승인된 B14 배포 대상 URL이 설정되기 전에는 외부 실행 버튼을 만들지 않습니다. API Key도 이 사이트에서 받거나 저장하지 않습니다.</p></div>`;
+      <div class="ux2-handoff-boundary"><strong>지금은 실행 경로까지만 확인된 상태입니다.</strong><p>승인된 실행 대상이 연결되기 전에는 실행 버튼을 열지 않습니다. API Key도 이 사이트에서 받거나 저장하지 않습니다.</p></div>`;
     handoff.classList.add('is-open');
     handoff.setAttribute('aria-hidden', 'false');
   }
