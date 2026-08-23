@@ -1,0 +1,41 @@
+name: B60 Temp Access Policy Inspect
+
+on:
+  push:
+    branches:
+      - fix/b60-protagonist-visibility-20260824
+    paths:
+      - .github/workflows/b60-temp-access-policy-inspect.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      SOURCE_APP_ID: 845d1802-9458-46c8-8685-448538f0511a
+    steps:
+      - name: Inspect source Access application and policies
+        shell: bash
+        run: |
+          set -euo pipefail
+          app_json="$(mktemp)"
+          policies_json="$(mktemp)"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/access/apps/${SOURCE_APP_ID}" \
+            -o "${app_json}"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/access/apps/${SOURCE_APP_ID}/policies" \
+            -o "${policies_json}"
+          echo '=== APP ==='
+          jq '{success,result:{name:.result.name,domain:.result.domain,type:.result.type,session_duration:.result.session_duration,auto_redirect_to_identity:.result.auto_redirect_to_identity,app_launcher_visible:.result.app_launcher_visible,enable_binding_cookie:.result.enable_binding_cookie,http_only_cookie_attribute:.result.http_only_cookie_attribute,options_preflight_bypass:.result.options_preflight_bypass}}' "${app_json}"
+          echo '=== POLICIES ==='
+          jq '[.result[] | {name,precedence,decision,include,exclude,require,isolation_required,purpose_justification_required,purpose_justification_prompt,approval_required,approval_groups}]' "${policies_json}"
