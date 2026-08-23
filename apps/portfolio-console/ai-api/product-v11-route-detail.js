@@ -6,6 +6,19 @@
   if (!signals.length || !explore || !grid) return;
 
   const byId = new Map(signals.map(signal => [signal.id, signal]));
+  const WATCH_KEY = 'b60.ai-api.watchlist.v1';
+  const matchingAction = (selector, id) => [...document.querySelectorAll(selector)].find(button => button.dataset.saveId === id || button.dataset.compareId === id);
+  const isSaved = id => {
+    const peer = matchingAction('[data-save-id]', id);
+    if (peer?.getAttribute('aria-pressed') === 'true') return true;
+    try {
+      const value = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]');
+      return Array.isArray(value) && value.includes(id);
+    } catch {
+      return false;
+    }
+  };
+  const isCompared = id => matchingAction('[data-compare-id]', id)?.getAttribute('aria-pressed') === 'true';
   const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const legacyDrawer = document.querySelector('.signal-drawer-v6');
   if (legacyDrawer) {
@@ -56,8 +69,8 @@
   function renderActions(signal) {
     const mapped = mappingFor(signal);
     return `<div class="ux3-actions">
-      <button type="button" data-save-id="${esc(signal.id)}">SAVE</button>
-      <button type="button" data-compare-id="${esc(signal.id)}" aria-pressed="false">COMPARE</button>
+      <button type="button" data-save-id="${esc(signal.id)}" aria-pressed="${isSaved(signal.id) ? 'true' : 'false'}">${isSaved(signal.id) ? 'SAVED' : 'SAVE'}</button>
+      <button type="button" data-compare-id="${esc(signal.id)}" aria-pressed="${isCompared(signal.id) ? 'true' : 'false'}">${isCompared(signal.id) ? 'SELECTED' : 'COMPARE'}</button>
       <button type="button" data-provider-open="${esc(signal.provider)}">PROVIDER</button>
       ${signal.model ? `<button type="button" data-model-open="${esc(signal.model)}">MODEL</button>` : ''}
       ${mapped ? `<button type="button" class="ux3-mapped-action" data-handoff-id="${esc(signal.id)}">HANDOFF DETAILS</button>` : ''}
@@ -103,8 +116,17 @@
     detail.classList.add('is-open');
     detail.setAttribute('aria-hidden', 'false');
     document.body.classList.add('ux3-route-open');
+    syncDetailSave();
     if (sync) syncUrl(id);
     return true;
+  }
+
+  function syncDetailSave() {
+    const button = detail.querySelector('.ux3-actions [data-save-id]');
+    if (!button) return;
+    const active = isSaved(button.dataset.saveId);
+    button.textContent = active ? 'SAVED' : 'SAVE';
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
   }
 
   function closeRoute({ sync = true } = {}) {
@@ -126,6 +148,12 @@
     if (event.target.closest('[data-close-route]') || event.target === detail) {
       event.preventDefault();
       closeRoute();
+      return;
+    }
+
+    const detailSave = event.target.closest('.ux3-actions [data-save-id]');
+    if (detailSave) {
+      setTimeout(syncDetailSave, 0);
       return;
     }
 
