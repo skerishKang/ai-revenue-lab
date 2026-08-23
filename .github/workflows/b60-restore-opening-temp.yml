@@ -1,0 +1,86 @@
+name: B60 Restore Opening Temp
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  restore-opening:
+    if: github.event.pull_request.number == 662
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Install image codec
+        run: python3 -m pip install --quiet pillow==12.3.0
+
+      - name: Restore semantic opening frame when placeholder is present
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python3 - <<'PY'
+          from PIL import Image, ImageStat
+          from pathlib import Path
+          roots = [Path('reference/business-60-ai-api-v1/assets'), Path('apps/portfolio-console/ai-api/assets')]
+          for root in roots:
+              p = root / 'woman-alone.webp'
+              with Image.open(p) as im:
+                  im.load()
+                  stat = ImageStat.Stat(im.convert('L'))
+                  if im.width <= 0 or im.height <= 0 or stat.stddev[0] < 8:
+                      raise SystemExit(1)
+          PY
+          then
+            echo 'Opening frame is already non-placeholder; no repair required.'
+            exit 0
+          fi
+
+          mkdir -p /tmp/b60-opening
+          curl -L --fail --retry 3 --retry-delay 2 \
+            'https://drive.usercontent.google.com/download?id=1y3Qm9WlSH11iKphOwwfAVAYGkoeaGevo&export=download&confirm=t' \
+            -o /tmp/b60-opening/01-first-glimpse-female.png
+
+          python3 - <<'PY'
+          from PIL import Image, ImageStat
+          from pathlib import Path
+          import hashlib
+
+          src = Path('/tmp/b60-opening/01-first-glimpse-female.png')
+          out = Path('/tmp/b60-opening/woman-alone.webp')
+          with Image.open(src) as im:
+              im = im.convert('RGB').resize((1600, 900), Image.Resampling.LANCZOS)
+              im.save(out, 'WEBP', quality=82, method=6)
+
+          expected = '3fcc2c6b3a7a8038585612bd252188f08103fa48726575c49ecc515c7075194e'
+          got = hashlib.sha256(out.read_bytes()).hexdigest()
+          if got != expected:
+              raise SystemExit(f'opening asset digest mismatch: expected {expected}, got {got}')
+
+          with Image.open(out) as im:
+              im.load()
+              assert im.size == (1600, 900), im.size
+              assert ImageStat.Stat(im.convert('L')).stddev[0] >= 8
+
+          for root in [Path('reference/business-60-ai-api-v1/assets'), Path('apps/portfolio-console/ai-api/assets')]:
+              (root / 'woman-alone.webp').write_bytes(out.read_bytes())
+          print('woman-alone.webp', out.stat().st_size, got)
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add reference/business-60-ai-api-v1/assets/woman-alone.webp \
+                  apps/portfolio-console/ai-api/assets/woman-alone.webp
+          if git diff --cached --quiet; then
+            echo 'No opening-frame delta after deterministic conversion.'
+            exit 0
+          fi
+          git commit -m 'fix(b60): restore semantic opening protagonist frame'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
