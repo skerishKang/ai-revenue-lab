@@ -8,6 +8,13 @@ All protagonist images in this review workspace are optimized derivatives of pre
 | `assets/woman-connection.webp` | `06-connection-female.png` | resized to max 1600px width, WebP quality 82 |
 | `assets/woman-field.webp` | `08-memory-field-female.png` | resized to max 1600px width, WebP quality 82 |
 | `assets/woman-close.webp` | `03-person-reveal-female.png` | resized to max 1600px width, WebP quality 82 |
+| `assets/gesture-touch.webp` | existing LoveTree storyboard hand-only shot labelled `Touch the feeling` inside `ChatGPT Image 2026년 8월 9일 오전 08_16_54 (4).png` | hand-only interior crop; enlarged with Lanczos; WebP quality 88; no new visual content generated |
+
+## Gesture continuity rule
+
+`gesture-touch.webp` contains no face and is used only as a brief foreground hand/contact layer. This avoids replacing the selected protagonist with a visibly different person while still allowing the `CONNECT` event to read as a physical touch rather than a floating cursor click.
+
+The hand layer is masked and screen-blended in CSS, approaches from the protagonist side, reaches the API core only inside the contact window, and exits immediately after activation.
 
 ## Reviewed but intentionally not copied into runtime
 
@@ -19,7 +26,7 @@ These non-runtime references must not be silently inserted merely to simulate ha
 
 ## Motion reference boundary
 
-The existing LoveTree `Supernova` benchmark shot map describes S10 as a bright medium close with a graphic hand gesture toward camera lasting about 0.625 seconds. B60 translates only that camera/gesture grammar into CSS/JS contact, flash, depth, and inertial spatial motion. It does not copy the benchmark source video or the different-person S10 image.
+The existing LoveTree `Supernova` benchmark shot map describes S10 as a bright medium close with a graphic hand gesture toward camera lasting about 0.625 seconds. B60 translates that camera/gesture grammar into contact timing, flash, depth, and inertial spatial motion. It does not copy the benchmark source video or the different-person S10 image.
 
 The derivatives exist only to make repository review lightweight enough for the anchor. Their presence does not imply final B60 art approval.
 
