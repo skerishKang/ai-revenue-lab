@@ -1,0 +1,1 @@
+Trigger UX-4 temporary Watch controller patch after workflow registration.
