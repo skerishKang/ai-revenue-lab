@@ -1,0 +1,55 @@
+name: B60 UX665 Copy Refine Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    if: github.event.pull_request.number == 666
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 1
+      - name: Refine end-user IA copy without changing architecture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [
+              Path('apps/portfolio-console/ai-api/product-v9-ia.js'),
+              Path('reference/business-60-ai-api-v1/product-v9-ia.js'),
+          ]
+          replacements = {
+            "Provider·Gateway·Router를 하나의 탐색축으로 보되, 현재 데이터가 확인해 주는 사실만 표시합니다.": "API 제공사·게이트웨이·라우터를 한곳에서 보고, 확인된 접근 조건과 모델을 비교합니다.",
+            "현재 B60 catalog에 검증된 접근 signal만 모았습니다. Provider 유형·지역·런타임 연결 가능성은 근거 데이터가 있을 때 별도 상태로 표시합니다.": "현재 확인된 접근 경로와 공식 출처를 모았습니다. 실제 연결 가능 여부는 실행 경로가 준비된 경우에만 별도로 표시합니다.",
+            "B60은 어떤 접근 경로가 존재하는지 설명하고, 실행·BYOK·Router·사용량은 B14로 넘깁니다. 지금은 그 경계를 먼저 정확히 보여줍니다.": "접근 조건을 확인한 뒤 실제 연결과 실행으로 이어집니다. 연결이 준비된 경로와 정보만 확인 가능한 경로를 분명히 구분합니다.",
+            "<span><b>${list.length}</b> discoverable routes</span><span><b>0</b> declared B14 mappings</span><span><b>B14</b> execution authority</span>": "<span><b>${list.length}</b> known routes</span><span><b>0</b> connectable now</span><span><b>${list.length}</b> info-only routes</span>",
+            "Connect는 B60이 키를 받는 화면이 아닙니다.": "연결 가능한 경로를 한곳에서 시작합니다.",
+            "Provider adapter, API key/BYOK, 실제 호출, routing, fallback, usage는 Business 14가 소유합니다. B14 mapping이 명시되기 전에는 아래 경로를 실행 가능하다고 표시하지 않습니다.": "현재는 5개의 접근 경로를 확인했습니다. 실행 연결이 준비된 경로에는 CONNECT가 열리고, 준비 전 경로는 정보만 확인할 수 있습니다.",
+            "DISCOVERABLE_ONLY</b><b class=\"ia-state connectable\">CONNECTABLE · future explicit mapping</b><b class=\"ia-state connected\">CONNECTED · B14-owned": "INFO ONLY</b><b class=\"ia-state connectable\">CONNECTABLE</b><b class=\"ia-state connected\">CONNECTED",
+            "<b class=\"ia-state discoverable\">DISCOVERABLE_ONLY</b><button": "<b class=\"ia-state discoverable\" data-runtime-state=\"DISCOVERABLE_ONLY\">INFO ONLY</b><button",
+            "<dd>DISCOVERABLE_ONLY</dd>": "<dd data-runtime-state=\"DISCOVERABLE_ONLY\">INFO ONLY</dd>",
+          }
+          for path in paths:
+              text = path.read_text(encoding='utf-8')
+              for old, new in replacements.items():
+                  if old not in text:
+                      raise SystemExit(f'missing expected text in {path}: {old[:80]}')
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+          if paths[0].read_bytes() != paths[1].read_bytes():
+              raise SystemExit('runtime/reference JS parity failed')
+          PY
+          git diff --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add apps/portfolio-console/ai-api/product-v9-ia.js reference/business-60-ai-api-v1/product-v9-ia.js
+          git commit -m 'refactor(b60): make Connect UX user-facing'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
