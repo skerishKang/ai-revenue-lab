@@ -1,0 +1,182 @@
+name: B60 UX4 Integrated Protected Preview Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    if: github.event.pull_request.number == 678
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TEMP_PROJECT: b60-ux669-review-20260824
+      TEMP_DOMAIN: b60-ux669-review-20260824.pages.dev
+      TEMP_BRANCH: review
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check protected Preview target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          project_json="$(mktemp)"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${TEMP_PROJECT}" \
+            -o "${project_json}"
+          jq -e --arg name "${TEMP_PROJECT}" '.success == true and .result.name == $name' "${project_json}" >/dev/null
+          apps_json="$(mktemp)"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/access/apps" \
+            -o "${apps_json}"
+          app_id="$(jq -r --arg domain "${TEMP_DOMAIN}" '.result[] | select(.domain==$domain) | .id' "${apps_json}" | head -n1)"
+          test -n "${app_id}"
+          policies_json="$(mktemp)"
+          curl --silent --show-error --fail \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/access/apps/${app_id}/policies" \
+            -o "${policies_json}"
+          jq -e '.success == true and (.result|length) >= 1' "${policies_json}" >/dev/null
+          echo "ACCESS_APP_ID=${app_id}" >> "${GITHUB_ENV}"
+
+      - name: Check out exact integrated head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify integration contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${PR_HEAD_SHA}"
+          test -f apps/portfolio-console/ai-api/product-v12-watch.js
+          test -f apps/portfolio-console/ai-api/product-v12-watch.css
+          test -f apps/portfolio-console/ai-api/product-v11-route-detail.js
+          test -f apps/portfolio-console/ai-api/product-v10-route-compare.js
+          cmp apps/portfolio-console/ai-api/data/access-signals.js reference/business-60-ai-api-v1/data/access-signals.js
+          grep -F "price: 'Varies by routed provider'" apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
+          ! grep -F '$1.40/M input · $4.40/M output' apps/portfolio-console/ai-api/data/access-signals.js
+
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pw"
+          npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
+          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
+
+      - name: Local exact-head browser smoke
+        shell: bash
+        env:
+          PW: ${{ runner.temp }}/pw/node_modules/playwright
+          OUT: ${{ runner.temp }}/b60-preview-evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "${OUT}"
+          python3 -m http.server 4173 --directory apps/portfolio-console >"${RUNNER_TEMP}/server.log" 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ai-api/ >/dev/null && break; sleep 1; done
+          cat > "${OUT}/smoke.cjs" <<'NODE'
+          const { chromium } = require(process.env.PW);
+          const fs = require('fs');
+          const path = require('path');
+          const out = process.env.OUT;
+          const failures = [];
+          const assert = (condition, message) => { if (!condition) failures.push(message); };
+
+          async function check(viewport, prefix) {
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({ viewport });
+            const page = await context.newPage();
+            const errors = [], failedRequests = [];
+            page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+            page.on('requestfailed', request => failedRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText || ''}`));
+            await page.goto('http://127.0.0.1:4173/ai-api/', { waitUntil: 'networkidle' });
+            await page.locator('#explore').scrollIntoViewIfNeeded();
+            const vercel = page.locator('.access-card[data-id="vercel-glm52"]');
+            assert(await vercel.count() === 1, `${prefix}: Vercel card missing`);
+            await vercel.click();
+            await page.waitForSelector('.ux3-route-detail.is-open');
+            const detailText = await page.locator('.ux3-route-panel').innerText();
+            assert(detailText.includes('Varies by routed provider'), `${prefix}: provider-dependent Vercel price missing`);
+            assert(detailText.includes('$5 credits / 30 days'), `${prefix}: recurring credit missing`);
+            await page.screenshot({ path: path.join(out, `${prefix}-vercel-detail.png`), fullPage: false });
+            await page.locator('[data-close-route]').click();
+            await page.evaluate(() => localStorage.setItem('b60.ai-api.watchlist.v1', JSON.stringify(['vercel-glm52','openrouter-free-router'])));
+            await page.locator('.ia-primary [data-ia-view="watch"]').click();
+            await page.waitForSelector('.ux4-saved-list');
+            assert(await page.locator('.ux4-saved-route').count() === 2, `${prefix}: Watch saved-route count not 2`);
+            assert((await page.locator('.ux4-saved-route[data-watch-route-id="vercel-glm52"]').innerText()).includes('PENDING'), `${prefix}: Vercel pending history missing`);
+            const metrics = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }));
+            assert(metrics.scrollWidth <= metrics.clientWidth + 1, `${prefix}: horizontal overflow ${JSON.stringify(metrics)}`);
+            assert(errors.length === 0, `${prefix}: console errors ${errors.join(' | ')}`);
+            assert(failedRequests.length === 0, `${prefix}: failed requests ${failedRequests.join(' | ')}`);
+            await page.screenshot({ path: path.join(out, `${prefix}-watch.png`), fullPage: false });
+            await browser.close();
+            return { prefix, metrics, errors, failedRequests };
+          }
+
+          (async () => {
+            const evidence = [];
+            evidence.push(await check({ width: 1440, height: 1000 }, 'desktop'));
+            evidence.push(await check({ width: 390, height: 844 }, 'mobile'));
+            const result = { pass: failures.length === 0, failures, evidence };
+            fs.writeFileSync(path.join(out, 'browser-result.json'), JSON.stringify(result, null, 2));
+            console.log(JSON.stringify(result, null, 2));
+            if (failures.length) process.exit(1);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+          node "${OUT}/smoke.cjs"
+
+      - name: Deploy exact integrated Preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${PR_HEAD_SHA}"
+          npx --yes wrangler@4 pages deploy apps/portfolio-console \
+            --project-name "${TEMP_PROJECT}" \
+            --branch "${TEMP_BRANCH}" \
+            --commit-hash "${PR_HEAD_SHA}" \
+            --commit-message "B60 UX4 integrated protected preview" \
+            --commit-dirty=false | tee "${RUNNER_TEMP}/wrangler-deploy.log"
+
+      - name: Verify protected apex after deploy
+        shell: bash
+        env:
+          OUT: ${{ runner.temp }}/b60-preview-evidence
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            if timeout 10 openssl s_client -connect "${TEMP_DOMAIN}:443" -servername "${TEMP_DOMAIN}" -brief </dev/null >"${OUT}/tls.txt" 2>&1; then break; fi
+            if [ "${attempt}" -eq 12 ]; then cat "${OUT}/tls.txt"; exit 1; fi
+            sleep 10
+          done
+          headers="${OUT}/access-headers.txt"
+          curl --silent --show-error --head --max-time 15 "https://${TEMP_DOMAIN}/ai-api/" -o "${headers}"
+          cat "${headers}"
+          grep -qi '^HTTP/.* 302' "${headers}"
+          grep -qi '^location: https://.*cloudflareaccess.com/' "${headers}"
+          cp "${RUNNER_TEMP}/wrangler-deploy.log" "${OUT}/wrangler-deploy.log"
+          printf '%s\n' "${PR_HEAD_SHA}" > "${OUT}/deployed-head.txt"
+          printf '%s\n' "https://${TEMP_DOMAIN}/ai-api/" > "${OUT}/review-url.txt"
+          echo "PROTECTED_UX4_PREVIEW=https://${TEMP_DOMAIN}/ai-api/"
+
+      - name: Upload Preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-ux4-integrated-protected-preview
+          path: ${{ runner.temp }}/b60-preview-evidence
+          if-no-files-found: error
