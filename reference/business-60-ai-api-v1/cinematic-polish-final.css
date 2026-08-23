@@ -15,12 +15,7 @@
   .sticky.identity-clean .cinema-title{left:6vw;bottom:11vh}
 }
 
-/* B60 protagonist visibility correction.
-   Reuses existing raster assets only; no generated imagery. */
-
-/* The previous near-black multiply grade erased the protagonist along with the
-   photographic background. Keep the scene dark with a normal translucent grade
-   so the human layer remains legible against the planet/star field. */
+/* B60 protagonist visibility correction. Reuses existing raster assets only. */
 .world-grade{
   mix-blend-mode:normal!important;
   background:
@@ -33,10 +28,6 @@
     radial-gradient(circle at 32% 31%,rgba(126,244,255,.12),transparent 22%)!important;
 }
 
-/* Render-evidence correction: opacity alone was a false-positive gate because
-   the narrow mask still left the opening protagonist visually absent. Let the
-   existing dark plate screen into the space scene and use a wider feather so
-   the human pixels, not the photographic rectangle, survive the composite. */
 .sticky:not(.connected) .shot-alone{
   z-index:6;
   opacity:clamp(.68,calc(1.02 - var(--progress)),.98)!important;
@@ -47,19 +38,15 @@
 }
 .sticky:not(.connected) .shot-alone img{object-position:65% center!important}
 
-/* After CONNECT the close portrait becomes the continuity anchor. The mask
-   removes the bright room plate, leaving the face/upper body registered with
-   the existing vision HUD. */
 .sticky.connected .shot-close{
   filter:grayscale(.66) sepia(.22) hue-rotate(145deg) saturate(1.5) brightness(.72) contrast(1.1)!important;
   -webkit-mask-image:radial-gradient(ellipse 25% 67% at 34% 51%,#000 0 55%,rgba(0,0,0,.9) 67%,rgba(0,0,0,.32) 81%,transparent 95%);
   mask-image:radial-gradient(ellipse 25% 67% at 34% 51%,#000 0 55%,rgba(0,0,0,.9) 67%,rgba(0,0,0,.32) 81%,transparent 95%);
 }
 
-/* Hard CONNECT gate: use the verified existing gesture-touch.webp child.
-   The prior embedded data-URI derivative computed opacity but rendered no hand.
-   Fade the source plate at the wrist edge and screen-blend the dark field into
-   the cinematic background so only the existing hand/light gesture reads. */
+/* Use the verified gesture-touch.webp child. Multiple soft masks follow the
+   palm/finger regions while the high-contrast screen grade pushes the source
+   background toward black (therefore visually transparent under screen). */
 .gesture-hand{
   left:65%!important;
   right:auto!important;
@@ -69,8 +56,14 @@
   background:none!important;
   overflow:visible!important;
   mix-blend-mode:screen!important;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.18) 13%,rgba(0,0,0,.72) 30%,#000 48%,#000 100%)!important;
-  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.18) 13%,rgba(0,0,0,.72) 30%,#000 48%,#000 100%)!important;
+  -webkit-mask-image:
+    radial-gradient(ellipse 43% 56% at 56% 70%,#000 0 48%,rgba(0,0,0,.9) 60%,rgba(0,0,0,.45) 76%,transparent 92%),
+    radial-gradient(ellipse 38% 34% at 77% 43%,#000 0 45%,rgba(0,0,0,.88) 58%,rgba(0,0,0,.38) 72%,transparent 88%)!important;
+  mask-image:
+    radial-gradient(ellipse 43% 56% at 56% 70%,#000 0 48%,rgba(0,0,0,.9) 60%,rgba(0,0,0,.45) 76%,transparent 92%),
+    radial-gradient(ellipse 38% 34% at 77% 43%,#000 0 45%,rgba(0,0,0,.88) 58%,rgba(0,0,0,.38) 72%,transparent 88%)!important;
+  -webkit-mask-composite:source-over!important;
+  mask-composite:add!important;
 }
 .gesture-hand img{
   display:block!important;
@@ -79,19 +72,19 @@
   opacity:1!important;
 }
 .sticky.hand-ready .gesture-hand{
-  opacity:.72!important;
+  opacity:.82!important;
   transform:translate(-42%,-50%) rotate(-2deg) scaleX(-1) scale(.96)!important;
-  filter:grayscale(.48) sepia(.22) hue-rotate(138deg) saturate(1.72) brightness(.82) contrast(1.04) drop-shadow(0 0 32px rgba(139,244,255,.44))!important;
+  filter:grayscale(1) sepia(.42) hue-rotate(138deg) saturate(2.25) brightness(.40) contrast(2.25) drop-shadow(0 0 28px rgba(139,244,255,.36))!important;
 }
 .sticky.contact-armed .gesture-hand{
-  opacity:.88!important;
+  opacity:.94!important;
   transform:translate(-48%,-50%) rotate(-1deg) scaleX(-1) scale(1.02)!important;
-  filter:grayscale(.42) sepia(.24) hue-rotate(138deg) saturate(1.82) brightness(.94) contrast(1.04) drop-shadow(0 0 44px rgba(145,248,255,.62))!important;
+  filter:grayscale(1) sepia(.46) hue-rotate(138deg) saturate(2.35) brightness(.49) contrast(2.3) drop-shadow(0 0 38px rgba(145,248,255,.54))!important;
 }
 .sticky.hand-touching .gesture-hand{
-  opacity:.98!important;
+  opacity:1!important;
   transform:translate(-53%,-50%) rotate(0deg) scaleX(-1) scale(1.07)!important;
-  filter:grayscale(.38) sepia(.26) hue-rotate(138deg) saturate(1.9) brightness(1.08) contrast(1.02) drop-shadow(0 0 62px rgba(158,250,255,.82))!important;
+  filter:grayscale(1) sepia(.48) hue-rotate(138deg) saturate(2.45) brightness(.58) contrast(2.35) drop-shadow(0 0 52px rgba(158,250,255,.72))!important;
 }
 
 @media(max-width:760px){
