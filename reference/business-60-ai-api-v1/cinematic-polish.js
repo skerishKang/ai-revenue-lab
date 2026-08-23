@@ -18,6 +18,7 @@
   function sync(){
     const p=progress();
     const connected=stage.classList.contains('connected');
+    stage.classList.toggle('identity-clean', connected && p>.905);
 
     if(!connected){
       const b=mix(.30,.35,range(p,0,.27));
