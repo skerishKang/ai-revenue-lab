@@ -88,6 +88,12 @@ ENDING SOON = only officially verified expiries within the next seven days
 - `WATCHLIST` is deliberately local-only at this phase: no auth/account/database has been introduced;
 - the browser records a last-visit timestamp only for future “since your last visit” UX; it is not sent anywhere.
 
+### Runtime hotfix boundary — 2026-08-23
+
+Live Chromium QA isolated a main-thread lock to the V7 card-decoration observer. `product-v7.js` now observes only direct `signal-grid-v6` child replacement rather than the entire subtree, so SAVE-button decoration does not recursively trigger itself. The cinematic autoplay also temporarily disables the base smooth-scroll behavior while `requestAnimationFrame` owns scroll position, then restores it when autoplay stops.
+
+These are runtime-stability fixes only; no visual direction, product taxonomy, backend, provider execution, or data truth boundary changed.
+
 ### V8 snapshot / diff behavior
 
 2026-08-23 is the first immutable B60 official-source snapshot.
