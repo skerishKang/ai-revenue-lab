@@ -11,7 +11,7 @@ permissions:
 jobs:
   live-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 8
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -28,38 +28,42 @@ jobs:
           cat > qa.mjs <<'JS'
           import { chromium } from 'playwright';
           const browser = await chromium.launch({headless:true});
-          const page = await browser.newPage({viewport:{width:1440,height:1100}});
-          const errors=[];
-          page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-          page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
-          const response=await page.goto(process.env.TARGET,{waitUntil:'networkidle',timeout:60000});
-          const state=async label=>({label,scrollY:await page.evaluate(()=>scrollY),cue:(await page.locator('.scroll-cue').textContent())?.trim(),stage:await page.locator('#stage').getAttribute('class')});
-          const states=[];
-          states.push(await state('t0'));
-          await page.screenshot({path:'01-t0.png'});
-          await page.waitForTimeout(1200);
-          states.push(await state('t1.2'));
-          await page.screenshot({path:'02-t1.2.png'});
-          await page.waitForTimeout(5200);
-          states.push(await state('t6.4'));
-          await page.screenshot({path:'03-t6.4.png'});
-          const box=await page.locator('#connect').boundingBox();
-          let clickError='';
-          try { await page.locator('#connect').click({timeout:10000}); } catch(e) { clickError=e.message; }
-          await page.waitForTimeout(1800);
-          states.push(await state('post-connect'));
-          await page.screenshot({path:'04-post-connect.png'});
-          const connected=await page.locator('#stage').evaluate(el=>el.classList.contains('connected'));
-          const marker=(await page.locator('body').innerText()).includes('LIVE ACCESS SIGNAL');
-          const out={http:response?.status(),states,connectBox:box,connected,errors,clickError,marker};
-          console.log('QA_RESULT='+JSON.stringify(out));
-          await browser.close();
-          if(response?.status()!==200 || !marker || errors.length || states[1].scrollY<=states[0].scrollY || states[2].scrollY<=states[1].scrollY || !connected) process.exit(1);
+          try {
+            const page = await browser.newPage({viewport:{width:1440,height:1100}});
+            const errors=[];
+            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            page.on('pageerror',e=>errors.push('PAGEERROR '+e.message));
+            const response=await page.goto(process.env.TARGET,{waitUntil:'domcontentloaded',timeout:20000});
+            await page.waitForTimeout(800);
+            const state=async label=>({label,scrollY:await page.evaluate(()=>scrollY),cue:(await page.locator('.scroll-cue').textContent())?.trim(),stage:await page.locator('#stage').getAttribute('class')});
+            const states=[];
+            states.push(await state('t0.8'));
+            await page.screenshot({path:'01-t0.8.png'});
+            await page.waitForTimeout(1400);
+            states.push(await state('t2.2'));
+            await page.screenshot({path:'02-t2.2.png'});
+            await page.waitForTimeout(4300);
+            states.push(await state('t6.5'));
+            await page.screenshot({path:'03-t6.5.png'});
+            const box=await page.locator('#connect').boundingBox();
+            let clickError='';
+            try { await page.locator('#connect').click({timeout:5000}); } catch(e) { clickError=e.message; }
+            await page.waitForTimeout(1800);
+            states.push(await state('post-connect'));
+            await page.screenshot({path:'04-post-connect.png'});
+            const connected=await page.locator('#stage').evaluate(el=>el.classList.contains('connected'));
+            const marker=(await page.locator('body').innerText()).includes('LIVE ACCESS SIGNAL');
+            const scripts=await page.evaluate(()=>Array.from(document.scripts).map(s=>s.src.split('/').pop()));
+            const out={http:response?.status(),states,connectBox:box,connected,errors,clickError,marker,scripts};
+            console.log('QA_RESULT='+JSON.stringify(out));
+            if(response?.status()!==200 || !marker || errors.length || states[1].scrollY<=states[0].scrollY || states[2].scrollY<=states[1].scrollY || !connected) process.exitCode=1;
+          } finally {
+            await browser.close();
+          }
           JS
           node qa.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: b60-live-browser
-          path: |
-            *.png
+          path: '*.png'
