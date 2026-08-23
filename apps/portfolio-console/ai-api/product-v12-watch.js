@@ -1,6 +1,6 @@
 (() => {
   const signals = window.B60_ACCESS_SIGNALS || [];
-  const history = window.B60_SIGNAL_HISTORY || [];
+  const signalHistory = window.B60_SIGNAL_HISTORY || [];
   const mappings = window.B60_EXECUTION_HANDOFF?.mappings || {};
   const watchState = window.B60_WATCH_STATE;
   const explore = document.getElementById('explore');
@@ -15,14 +15,14 @@
   if (!signals.length || !watchState || !explore || !grid || !stats || !search || !secondary || !headTitle || !headCopy) return;
 
   const byId = new Map(signals.map(signal => [signal.id, signal]));
-  const historyById = new Map(history.map(item => [item.id, item]));
+  const historyById = new Map(signalHistory.map(item => [item.id, item]));
   const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const searchable = signal => [signal.provider, signal.title, signal.model, signal.summary, signal.freeLabel, ...(signal.access || [])].join(' ').toLowerCase();
   const eventKind = type => type === 'FIRST_SEEN' ? 'BASELINE' : type === 'PENDING_CLAIM_RECORDED' ? 'PENDING' : 'CHANGED';
   const routeState = signal => mappings[signal.id] ? 'ROUTER MAPPED' : 'INFO ONLY';
   const savedSignals = () => watchState.ids().map(id => byId.get(id)).filter(Boolean);
   const eventsFor = id => (historyById.get(id)?.events || []).map(event => ({...event, id, signal: byId.get(id)})).filter(event => event.signal);
-  const allEvents = () => history.flatMap(item => eventsFor(item.id)).sort((a, b) => b.date.localeCompare(a.date));
+  const allEvents = () => signalHistory.flatMap(item => eventsFor(item.id)).sort((a, b) => b.date.localeCompare(a.date));
   const latestEvent = id => [...eventsFor(id)].sort((a, b) => b.date.localeCompare(a.date))[0] || null;
   const query = () => search.value.trim().toLowerCase();
 
@@ -132,7 +132,7 @@
     const url = new URL(location.href);
     url.searchParams.set('route', id);
     url.hash = 'explore';
-    history.pushState({ b60Route: id }, '', url);
+    window.history.pushState({ b60Route: id }, '', url);
     dispatchEvent(new PopStateEvent('popstate', { state: { b60Route: id } }));
   }
 
