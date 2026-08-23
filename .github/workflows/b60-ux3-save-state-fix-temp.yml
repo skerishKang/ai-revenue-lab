@@ -1,0 +1,91 @@
+name: B60 UX3 Save State Fix Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.pull_request.number == 670 && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/b60-ux3-route-detail-669
+          fetch-depth: 1
+      - name: Align detail SAVE state with existing Watch storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          paths=[Path('apps/portfolio-console/ai-api/product-v11-route-detail.js'),Path('reference/business-60-ai-api-v1/product-v11-route-detail.js')]
+          for p in paths:
+              text=p.read_text()
+              anchor="  const byId = new Map(signals.map(signal => [signal.id, signal]));\n"
+              insert="""  const WATCH_KEY = 'b60.ai-api.watchlist.v1';
+  const readSaved = () => {
+    try {
+      const value = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]');
+      return new Set(Array.isArray(value) ? value : []);
+    } catch {
+      return new Set();
+    }
+  };
+  const isSaved = id => readSaved().has(id);
+"""
+              if insert not in text:
+                  if anchor not in text: raise SystemExit(f'missing byId anchor: {p}')
+                  text=text.replace(anchor,anchor+insert,1)
+              old="""      <button type=\"button\" data-save-id=\"${esc(signal.id)}\">SAVE</button>
+      <button type=\"button\" data-compare-id=\"${esc(signal.id)}\" aria-pressed=\"false\">COMPARE</button>"""
+              new="""      <button type=\"button\" data-save-id=\"${esc(signal.id)}\" aria-pressed=\"${isSaved(signal.id) ? 'true' : 'false'}\">${isSaved(signal.id) ? 'SAVED' : 'SAVE'}</button>
+      <button type=\"button\" data-compare-id=\"${esc(signal.id)}\" aria-pressed=\"false\">COMPARE</button>"""
+              if old not in text: raise SystemExit(f'missing render action anchor: {p}')
+              text=text.replace(old,new,1)
+              anchor2="""  function closeRoute({ sync = true } = {}) {
+"""
+              sync="""  function syncDetailSave() {
+    const button = detail.querySelector('.ux3-actions [data-save-id]');
+    if (!button) return;
+    const active = isSaved(button.dataset.saveId);
+    button.textContent = active ? 'SAVED' : 'SAVE';
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+
+"""
+              if sync not in text:
+                  if anchor2 not in text: raise SystemExit(f'missing close anchor: {p}')
+                  text=text.replace(anchor2,sync+anchor2,1)
+              open_anchor="""    if (sync) syncUrl(id);
+    return true;
+"""
+              open_new="""    syncDetailSave();
+    if (sync) syncUrl(id);
+    return true;
+"""
+              if open_anchor not in text: raise SystemExit(f'missing open tail: {p}')
+              text=text.replace(open_anchor,open_new,1)
+              click_anchor="""    const copy = event.target.closest('[data-copy-route]');
+"""
+              click_insert="""    const detailSave = event.target.closest('.ux3-actions [data-save-id]');
+    if (detailSave) {
+      setTimeout(syncDetailSave, 0);
+      return;
+    }
+
+"""
+              if click_insert not in text:
+                  if click_anchor not in text: raise SystemExit(f'missing copy anchor: {p}')
+                  text=text.replace(click_anchor,click_insert+click_anchor,1)
+              p.write_text(text)
+          PY
+          git rm .github/workflows/b60-ux3-save-state-fix-temp.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add apps/portfolio-console/ai-api/product-v11-route-detail.js reference/business-60-ai-api-v1/product-v11-route-detail.js
+          git commit -m "fix(b60): reflect Watch state in route detail"
+          git push origin HEAD:feat/b60-ux3-route-detail-669
