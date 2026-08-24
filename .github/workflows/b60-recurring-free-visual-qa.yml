@@ -32,7 +32,7 @@ jobs:
           echo "actual=$actual"
           test "$expected" = "$actual"
 
-      - name: Prepare Korean font and recurring-only fixture
+      - name: Prepare Korean font and recurring-only fixtures
         shell: bash
         run: |
           set -euo pipefail
@@ -42,7 +42,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           html = Path('index.html').read_text(encoding='utf-8')
-          qa_css = '''<style>
+          base_css = '''<style>
           .editorial-radar-v13 > .radar-masthead,
           .editorial-radar-v13 > .radar-rule,
           #radar-live,
@@ -51,8 +51,23 @@ jobs:
           #signup-benefits { display:none !important; }
           .editorial-radar-v13 { padding-top: 28px !important; }
           </style>'''
-          html = html.replace('</head>', qa_css + '</head>')
-          Path('recurring-qa.html').write_text(html, encoding='utf-8')
+          Path('recurring-qa.html').write_text(html.replace('</head>', base_css + '</head>'), encoding='utf-8')
+
+          for name, nth in [('cloudflare', 2), ('openrouter', 3)]:
+              single_css = f'''<style>
+              .editorial-radar-v13 > .radar-masthead,
+              .editorial-radar-v13 > .radar-rule,
+              #radar-live,
+              #just-dropped,
+              .radar-expiring,
+              #signup-benefits,
+              #always-free,
+              #just-checked {{ display:none !important; }}
+              .editorial-radar-v13 {{ padding-top: 20px !important; }}
+              #recurring-free .radar-recurring-card:not(:nth-child({nth})) {{ display:none !important; }}
+              #recurring-free .radar-recurring-grid {{ grid-template-columns: 1fr !important; }}
+              </style>'''
+              Path(f'recurring-{name}-qa.html').write_text(html.replace('</head>', single_css + '</head>'), encoding='utf-8')
           PY
 
       - name: Render top and recurring surfaces
@@ -82,6 +97,16 @@ jobs:
             --screenshot="$GITHUB_WORKSPACE/b60-recurring-mobile.png" \
             http://127.0.0.1:4173/recurring-qa.html
 
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=7000 --window-size=390,1300 \
+            --screenshot="$GITHUB_WORKSPACE/b60-recurring-cloudflare-mobile.png" \
+            http://127.0.0.1:4173/recurring-cloudflare-qa.html
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=7000 --window-size=390,1300 \
+            --screenshot="$GITHUB_WORKSPACE/b60-recurring-openrouter-mobile.png" \
+            http://127.0.0.1:4173/recurring-openrouter-qa.html
+
           "$browser" --headless=new --no-sandbox --disable-gpu \
             --virtual-time-budget=5000 --dump-dom http://127.0.0.1:4173/ \
             > "$GITHUB_WORKSPACE/b60-recurring-dom.html"
@@ -98,6 +123,8 @@ jobs:
           test -s "$GITHUB_WORKSPACE/b60-recurring-top-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-recurring-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-recurring-mobile.png"
+          test -s "$GITHUB_WORKSPACE/b60-recurring-cloudflare-mobile.png"
+          test -s "$GITHUB_WORKSPACE/b60-recurring-openrouter-mobile.png"
 
       - name: Upload rendered evidence
         uses: actions/upload-artifact@v4
@@ -107,6 +134,8 @@ jobs:
             b60-recurring-top-desktop.png
             b60-recurring-desktop.png
             b60-recurring-mobile.png
+            b60-recurring-cloudflare-mobile.png
+            b60-recurring-openrouter-mobile.png
             b60-recurring-dom.html
           retention-days: 7
           if-no-files-found: error
