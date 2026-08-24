@@ -106,6 +106,15 @@ test('recurring free requires an explicit cadence and preserves refill metadata'
   assert.equal(ready.candidate.recurrence.label, '50 requests / 매일');
 });
 
+test('recurring-only fields remain hidden unless the recurring mechanic is selected', () => {
+  const html = read('index.html');
+  const css = read('styles.css');
+  const app = read('app.js');
+  assert.match(html, /class="form-block recurring-fields" hidden/);
+  assert.match(css, /\.recurring-fields\[hidden\]\s*\{\s*display:\s*none\s*!important/);
+  assert.match(app, /recurringFields\.hidden\s*=\s*!recurring/);
+});
+
 test('expired opportunity is classified EXPIRED instead of publishable', () => {
   const result = core.validateDraft(validBase({
     expiresAt: '2026-08-20',
