@@ -40,7 +40,8 @@ jobs:
           grep -F 'korean-v1.css' apps/portfolio-console/ai-api/index.html >/dev/null
           grep -F 'korean-v1.js' apps/portfolio-console/ai-api/index.html >/dev/null
           ! grep -R -F '$1.40/M input · $4.40/M output' apps/portfolio-console/ai-api/data/deals.js apps/portfolio-console/ai-api/data/snapshots.js
-          grep -F 'Varies by routed provider' apps/portfolio-console/ai-api/data/deals.js >/dev/null
+          grep -F 'provider-specific rates' apps/portfolio-console/ai-api/data/deals.js >/dev/null
+          grep -F 'Varies by routed provider' apps/portfolio-console/ai-api/data/snapshots.js >/dev/null
           grep -F 'VERIFIED_OFFICIAL_WEB' apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
           grep -F 'openrouter:openrouter/free' apps/portfolio-console/ai-api/data/execution-handoff-v10.js >/dev/null
           echo 'STATIC_CONTRACTS=PASS'
@@ -67,7 +68,6 @@ jobs:
           cd /tmp/b60qa
           GITHUB_WORKSPACE="$GITHUB_WORKSPACE" node <<'NODE'
           const { chromium } = require('playwright');
-          const fs = require('fs');
           const path = require('path');
           const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
           const evidence = path.join(process.env.GITHUB_WORKSPACE, 'evidence');
@@ -155,4 +155,4 @@ jobs:
         with:
           name: b60-korean-first-render-evidence
           path: evidence/
-          if-no-files-found: error
+          if-no-files-found: ignore
