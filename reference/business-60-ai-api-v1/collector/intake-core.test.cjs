@@ -50,8 +50,61 @@ test('approval is explicit and only approved candidates can become snapshot reco
   assert.equal(approved.state, STATES.APPROVED_FOR_SNAPSHOT);
   const record = promoteApprovedCandidates({ id: source.signalId, provider: source.provider }, [approved], { snapshotDate: '2026-08-23' });
   assert.equal(record.verification, 'VERIFIED_OFFICIAL_WEB');
+  assert.equal(record.verificationScope, 'FULL_RECORD');
   assert.equal(record.freeLabel, '10,000 neurons / day');
+  assert.equal(record.fieldVerification.freeLabel.status, 'VERIFIED_OFFICIAL_WEB');
+  assert.deepEqual(record.carriedForwardFields, []);
   assert.equal(record.evidence[0].sha256, envelope.evidenceSha256);
+});
+
+test('unobserved historical fields are carried forward without becoming freshly verified', () => {
+  const approved = {
+    state: STATES.APPROVED_FOR_SNAPSHOT,
+    sourceId: 'official-free-plan',
+    signalId: 'signal-1',
+    observedAt: '2026-08-24T01:00:00.000Z',
+    evidence: {
+      requestedUrl: 'https://official.example/free',
+      finalUrl: 'https://official.example/free',
+      observedAt: '2026-08-24T01:00:00.000Z',
+      httpStatus: 200,
+      contentType: 'text/html',
+      contentLength: 100,
+      sha256: 'evidence-hash'
+    },
+    observations: [
+      {
+        field: 'freeLabel',
+        value: '50 requests / day',
+        status: 'OBSERVED_PRIMARY_SOURCE',
+        evidenceSha256: 'evidence-hash',
+        excerpt: '50 requests per day'
+      }
+    ],
+    missingRequired: [],
+    review: {
+      decision: 'approve',
+      reviewer: 'human-reviewer',
+      reviewedAt: '2026-08-24T01:05:00.000Z',
+      reason: null
+    }
+  };
+
+  const record = promoteApprovedCandidates({
+    id: 'signal-1',
+    provider: 'Example',
+    price: '$0 historical price',
+    freeLabel: '10 requests / day'
+  }, [approved], { snapshotDate: '2026-08-24' });
+
+  assert.equal(record.freeLabel, '50 requests / day');
+  assert.equal(record.price, '$0 historical price');
+  assert.equal(record.verification, 'PARTIALLY_VERIFIED_OFFICIAL_WEB');
+  assert.equal(record.verificationScope, 'OBSERVED_FIELDS_ONLY');
+  assert.deepEqual(record.carriedForwardFields, ['price']);
+  assert.equal(record.fieldVerification.freeLabel.status, 'VERIFIED_OFFICIAL_WEB');
+  assert.equal(record.fieldVerification.freeLabel.evidenceSha256, 'evidence-hash');
+  assert.equal(record.fieldVerification.price, undefined);
 });
 
 test('required missing evidence blocks approval', async () => {
