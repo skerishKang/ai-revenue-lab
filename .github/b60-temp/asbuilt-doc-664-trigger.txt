@@ -1,1 +1,0 @@
-Trigger B60 #664 as-built documentation QA against product head d9e305b325954ad4cc663238ee490b070dc03f45 and main 43afa2410ee5c5bd9a8f74290964b1f8d3603462. Remove after validation.
