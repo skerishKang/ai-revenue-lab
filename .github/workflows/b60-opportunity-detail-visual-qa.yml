@@ -1,0 +1,107 @@
+name: B60 Opportunity Detail Visual QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-60-ai-api-v1/**'
+      - '.github/workflows/b60-opportunity-detail-visual-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Prepare Korean font and click fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+          cd reference/business-60-ai-api-v1
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('index.html').read_text(encoding='utf-8')
+          fixture = r'''<script>
+          setTimeout(() => {
+            const primary = document.querySelector('.radar-feature [data-radar-url]');
+            if (primary) primary.click();
+            setTimeout(() => {
+              document.documentElement.dataset.qaDeal = window.B60_OPPORTUNITY_DETAIL?.activeId || '';
+              document.documentElement.dataset.qaHref = location.href;
+            }, 120);
+          }, 120);
+          </script>'''
+          Path('qa-detail-click.html').write_text(html.replace('</body>', fixture + '</body>'), encoding='utf-8')
+          PY
+
+      - name: Render desktop and mobile detail states
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd reference/business-60-ai-api-v1
+          python3 -m http.server 4173 >/tmp/b60-detail-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 2
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser"
+
+          desktop='http://127.0.0.1:4173/qa-detail-click.html'
+          mobile='http://127.0.0.1:4173/index.html?deal=gmi-minimax-free-fortnight'
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --virtual-time-budget=6000 --window-size=1440,2200 \
+            --screenshot="$GITHUB_WORKSPACE/b60-detail-desktop.png" "$desktop"
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=6000 --window-size=390,2200 \
+            --screenshot="$GITHUB_WORKSPACE/b60-detail-mobile.png" "$mobile"
+
+          "$browser" --headless=new --no-sandbox --disable-gpu \
+            --virtual-time-budget=6000 --dump-dom "$desktop" > "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+
+          "$browser" --headless=new --no-sandbox --disable-gpu \
+            --virtual-time-budget=6000 --dump-dom "$mobile" > "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+
+          grep -q 'data-qa-deal="opencode-ox-alpha-free"' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          grep -q 'deal=opencode-ox-alpha-free' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          grep -q '실제 사용하기 ↗' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          grep -q '기간 한정 · 종료일 공식 미공개' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          grep -q '4 models · unlimited' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+          grep -q '2026.09.06까지' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+          grep -q '공식 발표' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+          test -s "$GITHUB_WORKSPACE/b60-detail-desktop.png"
+          test -s "$GITHUB_WORKSPACE/b60-detail-mobile.png"
+
+      - name: Upload rendered evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-opportunity-detail-visual-evidence
+          path: |
+            b60-detail-desktop.png
+            b60-detail-mobile.png
+            b60-detail-desktop-dom.html
+            b60-detail-mobile-dom.html
+          retention-days: 7
+          if-no-files-found: error
