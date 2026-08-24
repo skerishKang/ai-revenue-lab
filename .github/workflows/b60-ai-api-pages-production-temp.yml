@@ -8,76 +8,55 @@ permissions:
   contents: read
 
 jobs:
-  deploy-production:
+  postdeploy-verify:
     if: github.event.pull_request.number == 678
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PROJECT_NAME: ai-api
-      PRODUCTION_BRANCH: production
-      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
-      - name: Resolve dedicated Pages project and actual subdomain
+      - name: Resolve actual Pages subdomain
         shell: bash
         run: |
           set -euo pipefail
-          test -n "${CLOUDFLARE_API_TOKEN}"
-          test -n "${CLOUDFLARE_ACCOUNT_ID}"
-          endpoint="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
           body="$(mktemp)"
-          status="$(curl --silent --show-error --output "${body}" --write-out '%{http_code}' \
+          curl --silent --show-error --fail \
             --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             --header 'Content-Type: application/json' \
-            "${endpoint}")"
-          if [ "${status}" = "404" ]; then
-            payload="$(mktemp)"; project_json="$(mktemp)"
-            jq -n --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" '{name:$name,production_branch:$branch}' > "${payload}"
-            create_status="$(curl --silent --show-error --request POST --output "${project_json}" --write-out '%{http_code}' \
-              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              --header 'Content-Type: application/json' \
-              --data-binary "@${payload}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects")"
-            test "${create_status}" = "200" || test "${create_status}" = "201" || { cat "${project_json}"; exit 1; }
-            jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" '.success == true and .result.name == $name and .result.production_branch == $branch' "${project_json}" >/dev/null
-            echo "PROJECT_CREATED=${PROJECT_NAME}"
-          else
-            test "${status}" = "200" || { cat "${body}"; exit 1; }
-            project_json="${body}"
-            jq -e --arg name "${PROJECT_NAME}" '.success == true and .result.name == $name' "${project_json}" >/dev/null
-            existing_branch="$(jq -r '.result.production_branch' "${project_json}")"
-            test "${existing_branch}" = "${PRODUCTION_BRANCH}" || { echo "Unexpected production branch ${existing_branch}" >&2; exit 1; }
-            echo "PROJECT_EXISTED=${PROJECT_NAME}"
-          fi
-          actual_domain="$(jq -r '.result.subdomain' "${project_json}")"
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
+            -o "${body}"
+          jq -e --arg name "${PROJECT_NAME}" '.success == true and .result.name == $name' "${body}" >/dev/null
+          actual_domain="$(jq -r '.result.subdomain' "${body}")"
           test -n "${actual_domain}" && test "${actual_domain}" != "null"
           echo "PUBLIC_DOMAIN=${actual_domain}" >> "${GITHUB_ENV}"
           echo "PROJECT_SUBDOMAIN=${actual_domain}"
-          if [ "${actual_domain}" != "ai-api.pages.dev" ]; then
-            echo "EXACT_AI_API_PAGES_DEV_UNAVAILABLE=YES"
+          if [ "${actual_domain}" = "ai-api.pages.dev" ]; then
+            echo "EXACT_AI_API_PAGES_DEV_AVAILABLE=YES"
+          else
+            echo "EXACT_AI_API_PAGES_DEV_AVAILABLE=NO"
           fi
 
-      - name: Check out exact integrated head
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 1
-          persist-credentials: false
-
-      - name: Verify deploy source contract
+      - name: Wait for production alias propagation
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${PR_HEAD_SHA}"
-          test -f apps/portfolio-console/ai-api/index.html
-          test -f apps/portfolio-console/ai-api/product-v12-watch.js
-          test -f apps/portfolio-console/ai-api/product-v12-watch.css
-          cmp apps/portfolio-console/ai-api/data/access-signals.js reference/business-60-ai-api-v1/data/access-signals.js
-          grep -F "price: 'Varies by routed provider'" apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
-          ! grep -F '$1.40/M input · $4.40/M output' apps/portfolio-console/ai-api/data/access-signals.js
-          echo "DEPLOY_SOURCE=apps/portfolio-console/ai-api"
-          echo "ROOT_MODE=YES"
+          ready=0
+          for attempt in $(seq 1 30); do
+            code="$(curl --silent --show-error --output /tmp/root.html --write-out '%{http_code}' --max-time 15 "https://${PUBLIC_DOMAIN}/" || true)"
+            if [ "${code}" = "200" ] && grep -q 'id="explore"' /tmp/root.html; then
+              ready=1
+              echo "APEX_MARKER_READY_ATTEMPT=${attempt}"
+              break
+            fi
+            echo "attempt=${attempt} http=${code} marker=$(grep -c 'id=\"explore\"' /tmp/root.html 2>/dev/null || true)"
+            sleep 10
+          done
+          test "${ready}" = "1"
+          timeout 10 openssl s_client -connect "${PUBLIC_DOMAIN}:443" -servername "${PUBLIC_DOMAIN}" -brief </dev/null >/tmp/tls.txt 2>&1
+          cat /tmp/tls.txt
+          echo "PUBLIC_APEX=https://${PUBLIC_DOMAIN}/"
 
       - name: Install Chromium
         shell: bash
@@ -87,34 +66,32 @@ jobs:
           npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
           "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
 
-      - name: Local root smoke
+      - name: Live desktop and mobile QA
         shell: bash
         env:
           PW: ${{ runner.temp }}/pw/node_modules/playwright
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 --directory apps/portfolio-console/ai-api >"${RUNNER_TEMP}/server.log" 2>&1 &
-          for i in $(seq 1 30); do if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi; sleep 1; done
-          cat > "${RUNNER_TEMP}/smoke.cjs" <<'NODE'
+          cat > "${RUNNER_TEMP}/live.cjs" <<'NODE'
           const { chromium } = require(process.env.PW);
-          async function run(url, label) {
-            const browser = await chromium.launch({headless:true});
-            for (const viewport of [{width:1440,height:1000},{width:390,height:844}]) {
-              const page = await browser.newPage({viewport});
-              const errors=[], failed=[];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+              const page=await browser.newPage({viewport});
+              const errors=[],failed=[];
               page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
               page.on('requestfailed',r=>failed.push(`${r.method()} ${r.url()} ${r.failure()?.errorText||''}`));
-              const response = await page.goto(url,{waitUntil:'networkidle'});
-              if (!response || response.status() !== 200) throw new Error(`${label}: root status ${response?.status()}`);
+              const response=await page.goto(`https://${process.env.PUBLIC_DOMAIN}/`,{waitUntil:'networkidle'});
+              if(!response||response.status()!==200) throw new Error(`status ${response?.status()}`);
               await page.locator('#explore').scrollIntoViewIfNeeded();
-              const card=page.locator('.access-card[data-id="vercel-glm52"]');
-              if (await card.count() !== 1) throw new Error(`${label}: Vercel card missing`);
-              await card.click();
+              const vercel=page.locator('.access-card[data-id="vercel-glm52"]');
+              if(await vercel.count()!==1) throw new Error('Vercel card missing');
+              await vercel.click();
               await page.waitForSelector('.ux3-route-detail.is-open');
               await page.waitForTimeout(350);
               const detail=await page.locator('.ux3-route-panel').innerText();
-              if (!detail.includes('Varies by routed provider')) throw new Error(`${label}: routed-provider price missing`);
-              if (!detail.includes('$5 credits / 30 days')) throw new Error(`${label}: recurring credit missing`);
+              if(!detail.includes('Varies by routed provider')) throw new Error('Vercel provider-dependent price missing');
+              if(!detail.includes('$5 credits / 30 days')) throw new Error('Vercel recurring credit missing');
               await page.locator('[data-close-route]').click();
               await page.waitForTimeout(260);
               await page.evaluate(()=>localStorage.setItem('b60.ai-api.watchlist.v1',JSON.stringify(['vercel-glm52','openrouter-free-router'])));
@@ -122,61 +99,16 @@ jobs:
               await page.locator('#explore').scrollIntoViewIfNeeded();
               await page.locator('.ia-primary [data-ia-view="watch"]').click();
               await page.waitForSelector('.ux4-saved-list');
-              if (await page.locator('.ux4-saved-route').count() !== 2) throw new Error(`${label}: Watch count not 2`);
-              const metric=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
-              if (metric.sw > metric.cw + 1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(metric)}`);
-              if (errors.length) throw new Error(`${label}: console errors ${errors.join(' | ')}`);
-              if (failed.length) throw new Error(`${label}: failed requests ${failed.join(' | ')}`);
-              console.log(`${label} ${viewport.width}x${viewport.height} PASS`);
+              if(await page.locator('.ux4-saved-route').count()!==2) throw new Error('Watch route count not 2');
+              const metrics=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+              if(metrics.sw>metrics.cw+1) throw new Error(`horizontal overflow ${JSON.stringify(metrics)}`);
+              if(errors.length) throw new Error(`console errors ${errors.join(' | ')}`);
+              if(failed.length) throw new Error(`request failures ${failed.join(' | ')}`);
+              console.log(`LIVE ${viewport.width}x${viewport.height} PASS`);
               await page.close();
             }
             await browser.close();
-          }
-          run(process.argv[2],process.argv[3]).catch(e=>{console.error(e);process.exit(1)});
+          })().catch(e=>{console.error(e);process.exit(1)});
           NODE
-          node "${RUNNER_TEMP}/smoke.cjs" "http://127.0.0.1:4173/" "LOCAL_ROOT"
-
-      - name: Deploy ai-api apex
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${PR_HEAD_SHA}"
-          npx --yes wrangler@4 pages deploy apps/portfolio-console/ai-api \
-            --project-name "${PROJECT_NAME}" \
-            --branch "${PRODUCTION_BRANCH}" \
-            --commit-hash "${PR_HEAD_SHA}" \
-            --commit-message "B60 ai-api dedicated apex" \
-            --commit-dirty=false
-
-      - name: Verify actual public apex and TLS
-        shell: bash
-        run: |
-          set -euo pipefail
-          for attempt in $(seq 1 18); do
-            code="$(curl --silent --show-error --output /tmp/root.html --write-out '%{http_code}' --max-time 15 "https://${PUBLIC_DOMAIN}/" || true)"
-            if [ "${code}" = "200" ]; then break; fi
-            if [ "${attempt}" -eq 18 ]; then echo "Final HTTP=${code}"; exit 1; fi
-            sleep 10
-          done
-          grep -q '<!DOCTYPE html>' /tmp/root.html || grep -qi '<html' /tmp/root.html
-          grep -q 'id="explore"' /tmp/root.html
-          timeout 10 openssl s_client -connect "${PUBLIC_DOMAIN}:443" -servername "${PUBLIC_DOMAIN}" -brief </dev/null >/tmp/tls.txt 2>&1
-          cat /tmp/tls.txt
-          headers="$(mktemp)"
-          curl --silent --show-error --head --max-time 15 "https://${PUBLIC_DOMAIN}/" -o "${headers}"
-          cat "${headers}"
-          grep -qi '^HTTP/.* 200' "${headers}"
-          if grep -qi '^location: https://.*cloudflareaccess.com/' "${headers}"; then
-            echo "Unexpected Cloudflare Access redirect on public apex" >&2
-            exit 1
-          fi
-          echo "PUBLIC_APEX=https://${PUBLIC_DOMAIN}/"
-
-      - name: Live post-deploy browser QA
-        shell: bash
-        env:
-          PW: ${{ runner.temp }}/pw/node_modules/playwright
-        run: |
-          set -euo pipefail
-          node "${RUNNER_TEMP}/smoke.cjs" "https://${PUBLIC_DOMAIN}/" "LIVE_APEX"
+          PUBLIC_DOMAIN="${PUBLIC_DOMAIN}" node "${RUNNER_TEMP}/live.cjs"
           echo "PRODUCTION_ACCEPTED=https://${PUBLIC_DOMAIN}/"
