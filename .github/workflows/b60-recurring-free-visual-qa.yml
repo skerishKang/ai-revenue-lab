@@ -1,0 +1,112 @@
+name: B60 Recurring Free Visual QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-60-ai-api-v1/**'
+      - '.github/workflows/b60-recurring-free-visual-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Prepare Korean font and recurring-only fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+          cd reference/business-60-ai-api-v1
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('index.html').read_text(encoding='utf-8')
+          qa_css = '''<style>
+          .editorial-radar-v13 > .radar-masthead,
+          .editorial-radar-v13 > .radar-rule,
+          #radar-live,
+          #just-dropped,
+          .radar-expiring,
+          #signup-benefits { display:none !important; }
+          .editorial-radar-v13 { padding-top: 28px !important; }
+          </style>'''
+          html = html.replace('</head>', qa_css + '</head>')
+          Path('recurring-qa.html').write_text(html, encoding='utf-8')
+          PY
+
+      - name: Render top and recurring surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd reference/business-60-ai-api-v1
+          python3 -m http.server 4173 >/tmp/b60-recurring-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 2
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser"
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --virtual-time-budget=6000 --window-size=1440,2200 \
+            --screenshot="$GITHUB_WORKSPACE/b60-recurring-top-desktop.png" \
+            http://127.0.0.1:4173/
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --virtual-time-budget=7000 --window-size=1440,2200 \
+            --screenshot="$GITHUB_WORKSPACE/b60-recurring-desktop.png" \
+            http://127.0.0.1:4173/recurring-qa.html
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=8000 --window-size=390,2600 \
+            --screenshot="$GITHUB_WORKSPACE/b60-recurring-mobile.png" \
+            http://127.0.0.1:4173/recurring-qa.html
+
+          "$browser" --headless=new --no-sandbox --disable-gpu \
+            --virtual-time-budget=5000 --dump-dom http://127.0.0.1:4173/ \
+            > "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+
+          grep -q '지금 가장 핫함' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '방금 뜬 무료' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '가입해야 받는 혜택' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '다시 채워지는 무료' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '\$5 / 30일' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '10,000 neurons / 매일' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '50 requests / 매일' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q '00:00 UTC' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          grep -q 'no reset clock is claimed' "$GITHUB_WORKSPACE/b60-recurring-dom.html"
+          test -s "$GITHUB_WORKSPACE/b60-recurring-top-desktop.png"
+          test -s "$GITHUB_WORKSPACE/b60-recurring-desktop.png"
+          test -s "$GITHUB_WORKSPACE/b60-recurring-mobile.png"
+
+      - name: Upload rendered evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-recurring-free-visual-evidence
+          path: |
+            b60-recurring-top-desktop.png
+            b60-recurring-desktop.png
+            b60-recurring-mobile.png
+            b60-recurring-dom.html
+          retention-days: 7
+          if-no-files-found: error
