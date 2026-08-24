@@ -1,1 +1,0 @@
-Trigger one-time approved B60 official-source promotion audit for issue #688. This carrier file must be deleted before closing PR #691.
