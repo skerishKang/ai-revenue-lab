@@ -1,4 +1,18 @@
 window.B60_EDITORIAL_MEDIA = Object.freeze({
+  'opencode-ox-alpha-free': {
+    image: 'assets/editorial-vercel.webp',
+    alt: '코드가 열린 노트북과 개발 도구가 놓인 실제 작업 공간',
+    source: 'Unsplash · editorial context',
+    credit: 'Bayu Syaits',
+    sourcePage: 'https://unsplash.com/photos/laptop-and-phone-on-a-desk-with-coding-software-open-oYzjGQ7LCVE'
+  },
+  'gmi-minimax-free-fortnight': {
+    image: 'assets/editorial-cloudflare.webp',
+    alt: 'AI 추론 인프라를 연상시키는 실제 서버 랙과 데이터센터 장비',
+    source: 'Unsplash · editorial context',
+    credit: 'Data Servers collection',
+    sourcePage: 'https://unsplash.com/photos/server-racks-in-data-center-klWUhr-wPJ8'
+  },
   'vercel-glm52': {
     image: 'assets/editorial-vercel.webp',
     alt: '소스 코드가 열린 노트북이 놓인 실제 개발 작업 공간',
