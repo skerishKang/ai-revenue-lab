@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Padiem Chat — Phase 1 Preview</title>
+  <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스 Phase 1 프리뷰" />
+  <link rel="stylesheet" href="./styles.css" />
+  <style>[hidden] { display: none !important; }</style>
+</head>
+<body>
+  <div class="app-shell" data-state="home">
+    <aside class="sidebar" id="sidebar" aria-label="주요 메뉴">
+      <div class="brand-row">
+        <button class="mobile-close" id="mobileClose" aria-label="메뉴 닫기">×</button>
+        <a class="brand" href="./" aria-label="Padiem Chat 홈">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span>Padiem Chat</span>
+        </a>
+      </div>
+
+      <button class="new-chat" id="newChatButton" type="button">
+        <span aria-hidden="true">＋</span>
+        <span>새 채팅</span>
+      </button>
+
+      <nav class="side-nav" aria-label="채팅 메뉴">
+        <button class="side-item" type="button" data-action="focus-search">
+          <span class="side-icon" aria-hidden="true">⌕</span>
+          <span>검색</span>
+        </button>
+        <button class="side-item" type="button" disabled aria-disabled="true">
+          <span class="side-icon" aria-hidden="true">▦</span>
+          <span>프로젝트</span>
+          <span class="mini-badge">준비 중</span>
+        </button>
+      </nav>
+
+      <section class="recent-section" aria-labelledby="recentTitle">
+        <h2 id="recentTitle">최근 대화</h2>
+        <button class="recent-item" type="button" data-demo-prompt="부모님께 AI를 아주 쉽게 설명해줘">부모님께 AI 설명하기</button>
+        <button class="recent-item" type="button" data-demo-prompt="3박 4일 제주도 여행 계획을 짜줘">제주도 여행 계획</button>
+        <button class="recent-item" type="button" data-demo-prompt="긴 문서를 핵심만 정리하는 방법을 알려줘">문서 핵심 정리</button>
+      </section>
+
+      <div class="sidebar-footer">
+        <span class="preview-dot" aria-hidden="true"></span>
+        <span>Phase 1 미리보기</span>
+      </div>
+    </aside>
+
+    <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
+        <div class="model-pill" aria-label="현재 모델 선택">
+          <span class="status-spark" aria-hidden="true">✦</span>
+          <span>자동 추천</span>
+          <span aria-hidden="true">⌄</span>
+        </div>
+        <button class="login-button" type="button">로그인</button>
+      </header>
+
+      <section class="conversation" aria-live="polite">
+        <div class="empty-state" id="emptyState">
+          <p class="eyebrow">PADIEM AI</p>
+          <h1>안녕하세요.<br />무엇을 도와드릴까요?</h1>
+          <p class="empty-copy">궁금한 것부터 문서 정리까지, 평소 말하듯 편하게 물어보세요.</p>
+
+          <div class="starter-grid" aria-label="추천 질문">
+            <button type="button" class="starter" data-demo-prompt="부모님께 AI를 아주 쉽게 설명해줘">
+              <span class="starter-icon" aria-hidden="true">☺</span>
+              <span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span>
+            </button>
+            <button type="button" class="starter" data-demo-prompt="이번 주말 가족과 할 만한 일을 추천해줘">
+              <span class="starter-icon" aria-hidden="true">⌂</span>
+              <span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span>
+            </button>
+            <button type="button" class="starter" data-demo-prompt="이 문서의 중요한 내용만 정리해줘" data-needs-attachment="true">
+              <span class="starter-icon" aria-hidden="true">▤</span>
+              <span><strong>문서 요약</strong><small>파일을 올리고 핵심만 보기</small></span>
+            </button>
+            <button type="button" class="starter" data-demo-prompt="오늘 중요한 AI 뉴스를 찾아줘" data-search="true">
+              <span class="starter-icon" aria-hidden="true">⌕</span>
+              <span><strong>웹에서 찾아줘</strong><small>최신 정보와 출처 함께 보기</small></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="message-list" id="messageList" hidden></div>
+      </section>
+
+      <section class="composer-wrap" aria-label="메시지 작성">
+        <div class="attachment-chip" id="attachmentChip" hidden>
+          <span class="file-icon" aria-hidden="true">▤</span>
+          <span>
+            <strong>가족여행_메모.pdf</strong>
+            <small>예시 파일 · 실제 업로드 아님</small>
+          </span>
+          <button type="button" id="removeAttachment" aria-label="첨부 제거">×</button>
+        </div>
+
+        <form class="composer" id="composerForm">
+          <label for="messageInput" class="sr-only">메시지 입력</label>
+          <textarea id="messageInput" rows="1" placeholder="무엇이든 물어보세요" autocomplete="off"></textarea>
+
+          <div class="composer-actions">
+            <div class="composer-tools">
+              <button type="button" class="tool-button" id="attachButton">
+                <span aria-hidden="true">＋</span>
+                <span>파일</span>
+              </button>
+              <button type="button" class="tool-button" id="searchButton" aria-pressed="false">
+                <span aria-hidden="true">⌕</span>
+                <span>웹 검색</span>
+              </button>
+            </div>
+
+            <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled>
+              <span aria-hidden="true">↑</span>
+            </button>
+          </div>
+        </form>
+        <p class="composer-note">이 화면은 실제 AI 연결 전 UX 검토용 미리보기입니다. 데모 응답은 실제 모델 호출이 아닙니다.</p>
+      </section>
+    </main>
+  </div>
+
+  <template id="userMessageTemplate">
+    <article class="message user-message">
+      <div class="message-bubble"></div>
+    </article>
+  </template>
+
+  <template id="assistantMessageTemplate">
+    <article class="message assistant-message">
+      <div class="assistant-avatar" aria-hidden="true">P</div>
+      <div class="assistant-body">
+        <div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label">데모 응답</span></div>
+        <div class="assistant-content"></div>
+      </div>
+    </article>
+  </template>
+
+  <script src="./app.js"></script>
+</body>
+</html>
