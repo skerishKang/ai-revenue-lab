@@ -30,7 +30,9 @@ test('editorial surface uses raster photography and no new SVG filler', () => {
   const js = read('product-v13-editorial-radar.js');
   assert.doesNotMatch(media, /\.svg(?:[?'"\s]|$)/i);
   assert.doesNotMatch(js, /<svg\b/i);
-  assert.ok((media.match(/sourcePage:/g) || []).length >= 7);
+  assert.ok((media.match(/sourcePage:/g) || []).length >= 9);
+  assert.match(media, /fireworks-starter-credit/);
+  assert.match(media, /aws-free-tier-signup-credit/);
 });
 
 test('canonical mechanics separate temporary access, signup, recurring and always free', () => {
@@ -70,12 +72,51 @@ test('GMI MiniMax is JUST_DROPPED with official-social promotion dates', () => {
   assert.match(gmi.productOrModel, /Music 3\.0/);
 });
 
-test('benefit-first information architecture distinguishes hottest and just dropped', () => {
+test('Fireworks starter credit is a verified signup benefit with no fabricated expiry', () => {
+  const items = editorialOpportunities();
+  const fireworks = items.find(item => item.id === 'fireworks-starter-credit');
+  assert.ok(fireworks);
+  assert.equal(fireworks.editorialRole, 'SIGNUP_BENEFIT');
+  assert.equal(fireworks.opportunityType, 'SIGNUP_CREDIT');
+  assert.equal(fireworks.eligibility, 'ACCOUNT_REQUIRED');
+  assert.equal(fireworks.benefitLabel, '$1 free credit');
+  assert.equal(fireworks.expiresAt, null);
+  assert.equal(fireworks.verification, 'VERIFIED_OFFICIAL_WEB');
+  assert.match(fireworks.sources[0].url, /fireworks\.ai\/pricing/);
+});
+
+test('AWS signup credit stays broad AWS credit while preserving Bedrock relevance', () => {
+  const items = editorialOpportunities();
+  const aws = items.find(item => item.id === 'aws-free-tier-signup-credit');
+  assert.ok(aws);
+  assert.equal(aws.editorialRole, 'SIGNUP_BENEFIT');
+  assert.equal(aws.opportunityType, 'SIGNUP_CREDIT');
+  assert.equal(aws.eligibility, 'NEW_USER_ONLY');
+  assert.equal(aws.benefitLabel, '$100 + up to $100');
+  assert.equal(aws.expiresAt, null);
+  assert.match(aws.planWindow, /6개월/);
+  assert.match(aws.summary, /Bedrock/);
+  assert.match(aws.summary, /Bedrock 전용이 아니라 AWS Free Tier 크레딧/);
+  assert.ok(aws.sources.some(source => /free-tier-plans-activities/.test(source.url)));
+});
+
+test('benefit-first information architecture distinguishes hottest, just dropped and signup benefits', () => {
   const js = read('product-v13-editorial-radar.js');
-  for (const label of ['지금 가장 핫함', '방금 뜬 무료', '종료 임박', '계속 무료', '최근 확인', '확인 중']) {
+  for (const label of ['지금 가장 핫함', '방금 뜬 무료', '가입해야 받는 혜택', '종료 임박', '계속 무료', '최근 확인', '확인 중']) {
     assert.match(js, new RegExp(label));
   }
   assert.match(js, /AI 무료 레이더/);
+});
+
+test('signup credits cannot displace HOTTEST, JUST_DROPPED or ENDING SOON lanes', () => {
+  const js = read('product-v13-editorial-radar.js');
+  assert.match(js, /const signupCredits = activeOpportunities\.filter\(item => item\.opportunityType === 'SIGNUP_CREDIT'\)/);
+  assert.match(js, /const liveOpportunities = activeOpportunities\.filter\(item => item\.opportunityType !== 'SIGNUP_CREDIT'\)/);
+  assert.match(js, /const hottest = liveOpportunities\.find\(item => item\.editorialRole === 'HOTTEST'\)/);
+  assert.match(js, /const justDropped = liveOpportunities\.filter/);
+  assert.match(js, /const expiring = \[\.\.\.liveOpportunities, \.\.\.signals\]\.filter\(verifiedExpiring\)/);
+  assert.doesNotMatch(js, /\|\| activeOpportunities\[0\]/);
+  assert.match(js, /가입 크레딧만으로 메인 HOT 영역을 채우지 않습니다/);
 });
 
 test('ending soon requires authoritative expiry and a seven-day urgency window', () => {
@@ -87,12 +128,18 @@ test('ending soon requires authoritative expiry and a seven-day urgency window',
   assert.match(js, /7일 안에 끝나는 것으로 공식 확인된 혜택/);
 });
 
-test('signup credits are conditionally separated from temporary free access', () => {
+test('signup credits render as image-led cards with eligibility and source details', () => {
   const js = read('product-v13-editorial-radar.js');
-  assert.match(js, /item\.opportunityType === 'SIGNUP_CREDIT'/);
+  const css = read('product-v13-editorial-radar-polish.css');
   assert.match(js, /id=\"signup-benefits\"/);
   assert.match(js, /가입하면 받는 것/);
   assert.match(js, /한시 무료와는 따로/);
+  assert.match(js, /eligibilityLabel\(item\)/);
+  assert.match(js, /imageFigure\(item, 'is-signup'\)/);
+  assert.match(js, /creditScope/);
+  assert.match(js, /planWindow/);
+  assert.match(css, /\.radar-photo\.is-signup/);
+  assert.match(css, /\.radar-signup-facts/);
 });
 
 test('legacy cinematic is visually dormant while deep explore remains available', () => {

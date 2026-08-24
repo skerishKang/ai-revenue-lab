@@ -62,5 +62,73 @@ window.B60_EDITORIAL_OPPORTUNITIES = Object.freeze([
       { label: 'GMI Cloud · MiniMax M2.7 model page', url: 'https://console.gmicloud.ai/model/llm/minimax-m2-7/b55d47ed-0d1e-467e-ae93-f1500402d184', authority: 'OFFICIAL_WEB' },
       { label: 'GMI Cloud · model console', url: 'https://console.gmicloud.ai/', authority: 'OFFICIAL_WEB' }
     ]
+  },
+  {
+    id: 'fireworks-starter-credit',
+    editorialRole: 'SIGNUP_BENEFIT',
+    opportunityType: 'SIGNUP_CREDIT',
+    eligibility: 'ACCOUNT_REQUIRED',
+    provider: 'Fireworks AI',
+    title: 'Serverless inference starter credit',
+    headline: 'Fireworks AI를 $1 무료 크레딧으로 시작',
+    benefitLabel: '$1 free credit',
+    summary: 'Fireworks 공식 가격 페이지는 Serverless Inference를 “$1 in free credits”로 시작할 수 있다고 안내합니다. 이 혜택은 현재 열려 있는 무료 모델이 아니라 계정을 만들고 시작할 때 쓰는 크레딧이므로 HOT/방금 뜸 영역과 분리합니다.',
+    productOrModel: 'Fireworks Serverless Inference',
+    categories: ['API', 'LLM', 'VISION', 'AUDIO'],
+    access: ['Fireworks account', 'Serverless Inference'],
+    priceOrCredit: '$1 starter credit',
+    creditScope: 'Fireworks AI inference',
+    limit: 'Credit balance is consumed by usage; standard pricing applies after the free credit is exhausted',
+    planWindow: '공식 고정 만료일 미표기',
+    startAt: null,
+    expiresAt: null,
+    expiryVerification: null,
+    conditions: [
+      'Fireworks 계정이 필요함',
+      '무료 크레딧 소진 후에는 현재 요금제가 적용됨'
+    ],
+    ctaUrl: 'https://fireworks.ai/pricing',
+    observedAt: '2026-08-25T07:10:00+09:00',
+    verifiedAt: '2026-08-25',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    sources: [
+      { label: 'Fireworks · Pricing', url: 'https://fireworks.ai/pricing', authority: 'OFFICIAL_WEB' },
+      { label: 'Fireworks · Prepaid billing', url: 'https://fireworks.ai/blog/billing-migration-to-prepaid', authority: 'OFFICIAL_WEB' }
+    ]
+  },
+  {
+    id: 'aws-free-tier-signup-credit',
+    editorialRole: 'SIGNUP_BENEFIT',
+    opportunityType: 'SIGNUP_CREDIT',
+    eligibility: 'NEW_USER_ONLY',
+    provider: 'AWS',
+    title: 'AWS Free Tier new-customer credits',
+    headline: '신규 AWS 고객 $100 즉시 + 최대 $100 추가',
+    benefitLabel: '$100 + up to $100',
+    summary: 'AWS 신규 고객은 가입 시 $100 크레딧을 받고, 지정된 활동을 완료하면 최대 $100를 추가로 받을 수 있습니다. 무료 플랜은 최대 6개월이며 Amazon Bedrock playground 사용도 추가 크레딧 활동에 포함됩니다. 다만 이 크레딧은 Bedrock 전용이 아니라 AWS Free Tier 크레딧입니다.',
+    productOrModel: 'AWS Free Tier · Amazon Bedrock included in earning activities',
+    categories: ['CLOUD', 'API', 'AI', 'BEDROCK'],
+    access: ['New AWS account', 'AWS Free Tier'],
+    priceOrCredit: '$100 at signup + up to $100 earned',
+    creditScope: 'AWS credits · Bedrock activity included',
+    limit: 'Free plan ends six months after signup or when credits are depleted, whichever comes first',
+    planWindow: 'Free plan · 최대 6개월',
+    startAt: null,
+    expiresAt: null,
+    expiryVerification: null,
+    conditions: [
+      '신규 AWS 고객 대상',
+      '추가 최대 $100는 Explore AWS 활동 완료형',
+      '무료 플랜은 6개월 또는 크레딧 소진 시 종료'
+    ],
+    ctaUrl: 'https://aws.amazon.com/free/',
+    observedAt: '2026-08-25T07:10:00+09:00',
+    verifiedAt: '2026-08-25',
+    verification: 'VERIFIED_OFFICIAL_WEB',
+    sources: [
+      { label: 'AWS · Free Tier', url: 'https://aws.amazon.com/free/', authority: 'OFFICIAL_WEB' },
+      { label: 'AWS Billing · Free Tier', url: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier.html', authority: 'OFFICIAL_WEB' },
+      { label: 'AWS Billing · Earning additional credits', url: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans-activities.html', authority: 'OFFICIAL_WEB' }
+    ]
   }
 ]);
