@@ -17,7 +17,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PROJECT_NAME: ai-api
       PRODUCTION_BRANCH: production
-      TARGET_SHA: 263120b46c99ec8b87a1e480cc3b8c8f030f5b2d
+      TARGET_SHA: 3698bc040af05de5a7f9121216efcd2c50e8fe46
     steps:
       - name: Verify Cloudflare target
         shell: bash
@@ -38,11 +38,11 @@ jobs:
       - name: Checkout exact canonical main
         uses: actions/checkout@v4
         with:
-          ref: 263120b46c99ec8b87a1e480cc3b8c8f030f5b2d
+          ref: 3698bc040af05de5a7f9121216efcd2c50e8fe46
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Verify deploy source and published data
+      - name: Verify deploy source and localization contract
         shell: bash
         run: |
           set -euo pipefail
@@ -52,10 +52,14 @@ jobs:
           grep -F '10,000 neurons/day free; $0.011/1,000 above allocation' apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
           grep -F '"type": "VERIFIED_CHANGE"' apps/portfolio-console/ai-api/data/signal-history.js >/dev/null
           grep -F 'b60rp_bbc9abfd5761d4c518f3' apps/portfolio-console/ai-api/data/snapshots.js >/dev/null
+          grep -F '초과분 1,000 neurons당 $0.011' apps/portfolio-console/ai-api/korean-v1.js >/dev/null
+          grep -F "['VERIFIED_CHANGE','확인된 변경']" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
+          grep -F "['REVIEWED_SOURCE_SNAPSHOT','검토 승인 스냅샷']" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
           cmp apps/portfolio-console/ai-api/data/access-signals.js reference/business-60-ai-api-v1/data/access-signals.js
           cmp apps/portfolio-console/ai-api/data/signal-history.js reference/business-60-ai-api-v1/data/signal-history.js
           cmp apps/portfolio-console/ai-api/data/snapshots.js reference/business-60-ai-api-v1/data/snapshots.js
-          echo 'DEPLOY_SOURCE_DATA=PASS'
+          cmp apps/portfolio-console/ai-api/korean-v1.js reference/business-60-ai-api-v1/korean-v1.js
+          echo 'DEPLOY_SOURCE_CONTRACT=PASS'
 
       - name: Install Chromium smoke runtime
         shell: bash
@@ -76,7 +80,7 @@ jobs:
             for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
               const page=await browser.newPage({viewport});
               const errors=[],failed=[];
-              page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+              page.on('console',m=>{if(m.type()==='error') errors.push(m.text())});
               page.on('requestfailed',r=>failed.push(`${r.method()} ${r.url()} ${r.failure()?.errorText||''}`));
               const res=await page.goto(url,{waitUntil:'networkidle'});
               if(!res||res.status()!==200) throw new Error(`${label}: HTTP ${res?.status()}`);
@@ -85,24 +89,26 @@ jobs:
                 cf:window.B60_ACCESS_SIGNALS?.find(x=>x.id==='cloudflare-workers-ai-free'),
                 gem:window.B60_ACCESS_SIGNALS?.find(x=>x.id==='google-gemini-free'),
                 snaps:window.B60_SNAPSHOTS,
-                hist:window.B60_SIGNAL_HISTORY?.find(x=>x.id==='cloudflare-workers-ai-free')
+                hist:window.B60_SIGNAL_HISTORY?.find(x=>x.id==='cloudflare-workers-ai-free'),
+                verifiedChange:window.B60_KO_UI?.translate('VERIFIED_CHANGE'),
+                reviewedSnapshot:window.B60_KO_UI?.translate('REVIEWED_SOURCE_SNAPSHOT')
               }));
-              if(data.cf?.price!=='10,000 neurons/day free; $0.011/1,000 above allocation'||data.cf?.verifiedAt!=='2026-08-24') throw new Error(`${label}: Cloudflare published data mismatch`);
+              if(data.cf?.price!=='하루 10,000 neurons 무료 · 초과분 1,000 neurons당 $0.011'||data.cf?.verifiedAt!=='2026-08-24') throw new Error(`${label}: localized Cloudflare data mismatch ${JSON.stringify(data.cf)}`);
               if(data.gem?.verifiedAt!=='2026-08-23') throw new Error(`${label}: Gemini falsely reverified`);
               if(data.snaps?.length!==2||data.snaps[1]?.date!=='2026-08-24') throw new Error(`${label}: snapshot history mismatch`);
               if(!data.hist?.events?.some(x=>x.type==='VERIFIED_CHANGE'&&x.date==='2026-08-24')) throw new Error(`${label}: Cloudflare history event missing`);
+              if(data.verifiedChange!=='확인된 변경'||data.reviewedSnapshot!=='검토 승인 스냅샷') throw new Error(`${label}: enum localization mismatch`);
               const signalTitle=(await page.locator('#signal-title').innerText()).replace(/\s+/g,' ');
               if(!signalTitle.includes('확실한 것과')||!signalTitle.includes('확인 중인 것을 섞지 않습니다')) throw new Error(`${label}: Korean title missing`);
-              const sourceText=await page.locator('#source').innerText();
-              if(sourceText.includes('VERIFIED_OFFICIAL_WEB')||sourceText.includes('PENDING_WEB_VERIFICATION')) throw new Error(`${label}: raw enum visible`);
               await page.locator('#explore').scrollIntoViewIfNeeded();
               await page.locator('.ia-primary [data-ia-view="watch"]').click();
               await page.locator('[data-ux4-watch="changes"]').click();
               await page.waitForSelector('.ux4-changes');
               const changes=await page.locator('.ux4-changes').innerText();
               if(!changes.includes('Cloudflare')||!changes.includes('$0.011/1,000 Neurons')) throw new Error(`${label}: verified Cloudflare change not visible in Watch`);
+              if(changes.includes('VERIFIED_CHANGE')||changes.includes('REVIEWED_SOURCE_SNAPSHOT')) throw new Error(`${label}: raw enum visible`);
               const metrics=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
-              if(metrics.sw>metrics.cw+1) throw new Error(`${label}: horizontal overflow`);
+              if(metrics.sw>metrics.cw+1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(metrics)}`);
               if(errors.length) throw new Error(`${label}: console ${errors.join(' | ')}`);
               if(failed.length) throw new Error(`${label}: request failures ${failed.join(' | ')}`);
               console.log(`${label} ${viewport.width}x${viewport.height} PASS`);
@@ -128,7 +134,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           npx --yes wrangler@4 pages deploy apps/portfolio-console/ai-api \
             --project-name "${PROJECT_NAME}" --branch "${PRODUCTION_BRANCH}" \
-            --commit-hash "${TARGET_SHA}" --commit-message "B60 reviewed snapshot 2026-08-24" --commit-dirty=false
+            --commit-hash "${TARGET_SHA}" --commit-message "B60 reviewed snapshot + Korean price fix 2026-08-24" --commit-dirty=false
 
       - name: Verify canonical Cloudflare deployment
         shell: bash
