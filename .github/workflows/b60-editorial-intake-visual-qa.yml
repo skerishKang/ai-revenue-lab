@@ -33,7 +33,7 @@ jobs:
           echo "actual=$actual"
           test "$expected" = "$actual"
 
-      - name: Prepare Korean font and filled fixture
+      - name: Prepare Korean font and filled fixtures
         shell: bash
         run: |
           set -euo pipefail
@@ -59,10 +59,19 @@ jobs:
               if (f.elements[name]) f.elements[name].value = value;
             }
             f.dispatchEvent(new Event('submit', {bubbles:true, cancelable:true}));
+            const recurring = document.querySelector('.recurring-fields');
+            document.documentElement.dataset.recurringHidden = getComputedStyle(recurring).display === 'none' ? 'true' : 'false';
           })();
           </script>'''
           html = html.replace('</body>', fixture + '</body>')
           Path('qa.html').write_text(html, encoding='utf-8')
+          review_css = '''<style>
+          .intake-form { display:none !important; }
+          .desk-grid { grid-template-columns:1fr !important; }
+          .review-sticky { position:static !important; grid-template-columns:1fr !important; }
+          .review-rail { max-width:720px; margin:0 auto; width:100%; }
+          </style>'''
+          Path('qa-review.html').write_text(html.replace('</head>', review_css + '</head>'), encoding='utf-8')
           PY
 
       - name: Render desktop and mobile
@@ -77,6 +86,7 @@ jobs:
           browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$browser"
           url='http://127.0.0.1:4173/operator/editorial-intake/qa.html'
+          review_url='http://127.0.0.1:4173/operator/editorial-intake/qa-review.html'
 
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
             --virtual-time-budget=5000 --window-size=1440,2200 \
@@ -85,6 +95,10 @@ jobs:
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
             --force-device-scale-factor=1 --virtual-time-budget=6000 --window-size=390,2600 \
             --screenshot="$GITHUB_WORKSPACE/b60-intake-mobile.png" "$url"
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=6000 --window-size=390,1900 \
+            --screenshot="$GITHUB_WORKSPACE/b60-intake-review-mobile.png" "$review_url"
 
           "$browser" --headless=new --no-sandbox --disable-gpu \
             --virtual-time-budget=4000 --dump-dom "$url" > "$GITHUB_WORKSPACE/b60-intake-dom.html"
@@ -95,8 +109,10 @@ jobs:
           grep -q 'PUBLISH_NOW' "$GITHUB_WORKSPACE/b60-intake-dom.html"
           grep -q 'Example Model이 이번 주 무료' "$GITHUB_WORKSPACE/b60-intake-dom.html"
           grep -q 'editorial-opportunities.js snippet' "$GITHUB_WORKSPACE/b60-intake-dom.html"
+          grep -q 'data-recurring-hidden="true"' "$GITHUB_WORKSPACE/b60-intake-dom.html"
           test -s "$GITHUB_WORKSPACE/b60-intake-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-intake-mobile.png"
+          test -s "$GITHUB_WORKSPACE/b60-intake-review-mobile.png"
 
       - name: Upload rendered evidence
         uses: actions/upload-artifact@v4
@@ -105,6 +121,7 @@ jobs:
           path: |
             b60-intake-desktop.png
             b60-intake-mobile.png
+            b60-intake-review-mobile.png
             b60-intake-dom.html
           retention-days: 7
           if-no-files-found: error
