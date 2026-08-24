@@ -5,6 +5,11 @@
   const cue = document.querySelector('.scroll-cue');
   if (!cinematic || !stage || !connect) return;
 
+  // V13 keeps the cinematic DOM as a rollback-safe legacy layer but makes the
+  // editorial opportunity radar the first-view product. Do not let the legacy
+  // autoplay seize scroll position while that presentation layer is active.
+  if (document.querySelector('link[href$="product-v13-editorial-radar.css"]')) return;
+
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hashTargetsLaterSection = location.hash && location.hash !== '#top';
   if (reduceMotion || hashTargetsLaterSection) return;
