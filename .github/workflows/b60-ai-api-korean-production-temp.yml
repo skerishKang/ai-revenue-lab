@@ -1,15 +1,15 @@
 name: B60 ai-api Korean Production Temp
 
 on:
-  push:
-    branches:
-      - ops/b60-ai-api-korean-prod-20260824
+  pull_request:
+    types: [synchronize]
 
 permissions:
   contents: read
 
 jobs:
   deploy-production:
+    if: github.event.pull_request.number == 681
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
