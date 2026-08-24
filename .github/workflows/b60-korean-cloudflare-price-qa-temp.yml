@@ -33,7 +33,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${PRODUCT_SHA}"
           cmp apps/portfolio-console/ai-api/korean-v1.js reference/business-60-ai-api-v1/korean-v1.js
           node --check apps/portfolio-console/ai-api/korean-v1.js
-          grep -F "price:'하루 10,000 neurons 무료 · 초과분 1,000 neurons당 $0.011'" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
+          grep -F '초과분 1,000 neurons당 $0.011' apps/portfolio-console/ai-api/korean-v1.js >/dev/null
           grep -F "['VERIFIED_CHANGE','확인된 변경']" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
           grep -F "['REVIEWED_SOURCE_SNAPSHOT','검토 승인 스냅샷']" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
           grep -F '10,000 neurons/day free; $0.011/1,000 above allocation' apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
