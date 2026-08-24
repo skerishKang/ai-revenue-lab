@@ -37,11 +37,15 @@
   };
 
   const activeOpportunities = opportunities.filter(item => !isExpired(item));
-  const hottest = activeOpportunities.find(item => item.editorialRole === 'HOTTEST') || activeOpportunities[0] || signals[0];
-  const justDropped = activeOpportunities.filter(item => item.editorialRole === 'JUST_DROPPED' && item.id !== hottest?.id);
   const signupCredits = activeOpportunities.filter(item => item.opportunityType === 'SIGNUP_CREDIT');
+  const liveOpportunities = activeOpportunities.filter(item => item.opportunityType !== 'SIGNUP_CREDIT');
+  const hottest = liveOpportunities.find(item => item.editorialRole === 'HOTTEST')
+    || liveOpportunities.find(item => item.opportunityType === 'TEMP_FREE_ACCESS')
+    || signals[0]
+    || null;
+  const justDropped = liveOpportunities.filter(item => item.editorialRole === 'JUST_DROPPED' && item.id !== hottest?.id);
   const durable = signals.filter(signal => ['PERMANENT_FREE', 'FREE_MODEL', 'RECURRING_CREDIT'].includes(signal.dealType));
-  const expiring = [...activeOpportunities, ...signals].filter(verifiedExpiring);
+  const expiring = [...liveOpportunities, ...signals].filter(verifiedExpiring);
   const checkedItems = [...activeOpportunities, ...signals].sort((a, b) => String(b.verifiedAt || '').localeCompare(String(a.verifiedAt || '')));
   const pending = [...activeOpportunities, ...signals].filter(item => item.pending);
 
@@ -84,6 +88,13 @@
     if (item.verification === 'VERIFIED_OFFICIAL_WEB') return '공식 웹 확인';
     if (item.verification === 'VERIFIED_OFFICIAL_SOCIAL') return '공식 발표 확인';
     return '검토 필요';
+  }
+
+  function eligibilityLabel(item) {
+    if (item.eligibility === 'NEW_USER_ONLY') return '신규 고객 전용';
+    if (item.eligibility === 'ACCOUNT_REQUIRED') return '계정 필요';
+    if (item.eligibility === 'ANY_USER') return '누구나';
+    return '자격 조건 확인';
   }
 
   const benefit = item => item.benefitLabel || item.freeLabel || '무료';
@@ -168,12 +179,27 @@
   }
 
   function signupCard(item) {
-    return `<article class="radar-signup-card">
-      <span>신규 가입 혜택</span>
-      <strong>${esc(benefit(item))}</strong>
-      <h3>${esc(item.provider)}</h3>
-      <p>${esc(item.summary)}</p>
-      ${itemAction(item, '가입 조건 보기')}
+    const facts = [
+      item.creditScope ? `<div><span>사용 범위</span><strong>${esc(item.creditScope)}</strong></div>` : '',
+      item.planWindow ? `<div><span>기간</span><strong>${esc(item.planWindow)}</strong></div>` : ''
+    ].filter(Boolean).join('');
+
+    return `<article class="radar-signup-card" data-signup-id="${esc(item.id)}">
+      ${imageFigure(item, 'is-signup')}
+      <div class="radar-signup-copy">
+        <div class="radar-signup-top"><span>가입해야 받는 혜택</span><b>${esc(eligibilityLabel(item))}</b></div>
+        <div class="radar-meta"><b>${esc(mechanicLabel(item))}</b><span>${esc(item.provider)}</span></div>
+        <strong class="radar-signup-benefit">${esc(benefit(item))}</strong>
+        <h3>${esc(headline(item))}</h3>
+        ${facts ? `<div class="radar-signup-facts">${facts}</div>` : ''}
+        <p>${esc(item.summary)}</p>
+        <div class="radar-condition-line">${(item.conditions || []).slice(0, 3).map(condition => `<span>${esc(condition)}</span>`).join('')}</div>
+        <div class="radar-actions">
+          ${itemAction(item, '가입 조건 보기')}
+          <a href="${esc(sourceLink(item))}" target="_blank" rel="noopener noreferrer">${esc(sourceName(item))} ↗</a>
+        </div>
+        <div class="radar-trust"><span>${verificationLabel(item)}</span><time>${esc(item.verifiedAt || '날짜 미확인')}</time></div>
+      </div>
     </article>`;
   }
 
@@ -194,13 +220,13 @@
     <div class="radar-masthead">
       <a class="radar-wordmark" href="#radar">AI 무료 레이더</a>
       <p>오늘 쓸 수 있는 무료 AI를 먼저 보고, 가입 혜택과 상시 무료는 따로 비교합니다.</p>
-      <span>${activeOpportunities.length}개 라이브 기회 · ${durable.length}개 지속 경로 · 수동 큐레이션</span>
+      <span>${liveOpportunities.length}개 지금 무료 · ${signupCredits.length}개 가입 혜택 · ${durable.length}개 지속 경로</span>
     </div>
 
     <div class="radar-rule"><span>지금 무료</span><time>${todayKey}</time></div>
 
     <div class="radar-lead" id="radar-live">
-      ${featureCard(hottest)}
+      ${hottest ? featureCard(hottest) : '<div class="radar-expiry-empty"><span>지금 무료</span><strong>현재 우선 노출할 라이브 무료 기회를 확인 중입니다.</strong><p>가입 크레딧만으로 메인 HOT 영역을 채우지 않습니다.</p></div>'}
       <aside class="radar-board" aria-label="오늘의 무료 보드">
         <header><span>오늘의 보드</span><strong>계속 쓸 수 있는 것</strong></header>
         ${durable.slice(0, 3).map(boardItem).join('')}
@@ -212,7 +238,7 @@
 
     <section class="radar-expiring" aria-label="종료 임박 혜택">${expiringBlock()}</section>
 
-    ${signupCredits.length ? `<section class="radar-signups" id="signup-benefits"><header class="radar-section-head"><div><span>가입 혜택</span><h2>가입하면 받는 것,<br>한시 무료와는 따로.</h2></div><p>신규 계정 크레딧은 유용하지만 ‘지금 열린 무료 모델’과 같은 종류로 취급하지 않습니다.</p></header><div class="radar-signup-grid">${signupCredits.map(signupCard).join('')}</div></section>` : ''}
+    ${signupCredits.length ? `<section class="radar-signups" id="signup-benefits"><header class="radar-section-head"><div><span>가입 혜택</span><h2>가입하면 받는 것,<br>한시 무료와는 따로.</h2></div><p>신규 계정 크레딧은 유용하지만 ‘지금 열린 무료 모델’과 같은 종류로 취급하지 않습니다. 금액이 커도 HOT/방금 뜬 무료 자리를 자동으로 차지하지 않습니다.</p></header><div class="radar-signup-grid">${signupCredits.map(signupCard).join('')}</div></section>` : ''}
 
     <section class="radar-always" id="always-free">
       <header class="radar-section-head"><div><span>계속 무료</span><h2>오늘만이 아니라,<br>다시 쓸 수 있는 것들.</h2></div><p>상시 무료 티어·무료 모델·반복 크레딧처럼 지속적으로 이용할 수 있는 경로를 모았습니다.</p></header>
@@ -255,12 +281,13 @@
 
   const nav = document.querySelector('.shell nav');
   if (nav) {
-    nav.innerHTML = `<a href="#radar-live">가장 핫함</a>${justDropped.length ? '<a href="#just-dropped">방금 뜸</a>' : ''}<a href="#always-free">계속 무료</a><a href="#just-checked">확인 기록</a>`;
+    nav.innerHTML = `<a href="#radar-live">가장 핫함</a>${justDropped.length ? '<a href="#just-dropped">방금 뜸</a>' : ''}${signupCredits.length ? '<a href="#signup-benefits">가입 혜택</a>' : ''}<a href="#always-free">계속 무료</a><a href="#just-checked">확인 기록</a>`;
   }
 
   window.B60_EDITORIAL_RADAR = Object.freeze({
     openRoute,
     hottestId: hottest?.id || null,
+    liveOpportunityIds: liveOpportunities.map(item => item.id),
     justDroppedIds: justDropped.map(item => item.id),
     signupCreditIds: signupCredits.map(item => item.id),
     durableIds: durable.map(item => item.id),
