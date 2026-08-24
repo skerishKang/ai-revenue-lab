@@ -1,0 +1,44 @@
+name: B60 Product CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-60-ai-api-v1/**'
+      - '.github/workflows/b60-product-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Run B60 contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test reference/business-60-ai-api-v1/*.test.cjs reference/business-60-ai-api-v1/collector/*.test.cjs
