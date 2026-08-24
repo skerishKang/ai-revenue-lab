@@ -15,6 +15,12 @@ function editorialOpportunities() {
   return Array.from(sandbox.window.B60_EDITORIAL_OPPORTUNITIES);
 }
 
+function accessSignals() {
+  const sandbox = { window: {} };
+  vm.runInNewContext(read('data/access-signals.js'), sandbox);
+  return Array.from(sandbox.window.B60_ACCESS_SIGNALS);
+}
+
 test('v13 loads editorial opportunities before the final presentation layer', () => {
   const html = read('index.html');
   assert.match(html, /product-v13-editorial-radar\.css/);
@@ -100,9 +106,32 @@ test('AWS signup credit stays broad AWS credit while preserving Bedrock relevanc
   assert.ok(aws.sources.some(source => /free-tier-plans-activities/.test(source.url)));
 });
 
-test('benefit-first information architecture distinguishes hottest, just dropped and signup benefits', () => {
+test('verified recurring set encodes cadence without invented reset clocks', () => {
+  const signals = accessSignals();
+  const vercel = signals.find(item => item.id === 'vercel-glm52');
+  const cloudflare = signals.find(item => item.id === 'cloudflare-workers-ai-free');
+  const openrouter = signals.find(item => item.id === 'openrouter-free-router');
+
+  assert.equal(vercel.verifiedAt, '2026-08-25');
+  assert.equal(vercel.recurrence.cadence, '30_DAYS');
+  assert.equal(vercel.recurrence.display, '$5 / 30일');
+  assert.match(vercel.recurrence.resetDetail, /every 30 days/i);
+
+  assert.equal(cloudflare.verifiedAt, '2026-08-25');
+  assert.equal(cloudflare.recurrence.cadence, 'DAILY');
+  assert.equal(cloudflare.recurrence.display, '10,000 neurons / 매일');
+  assert.match(cloudflare.recurrence.resetDetail, /00:00 UTC/);
+
+  assert.equal(openrouter.verifiedAt, '2026-08-25');
+  assert.equal(openrouter.recurrence.cadence, 'DAILY');
+  assert.equal(openrouter.recurrence.display, '50 requests / 매일');
+  assert.match(openrouter.recurrence.resetDetail, /no reset clock is claimed/i);
+  assert.doesNotMatch(openrouter.recurrence.resetDetail, /00:00/);
+});
+
+test('benefit-first information architecture distinguishes hottest, dropped, signup and recurring benefits', () => {
   const js = read('product-v13-editorial-radar.js');
-  for (const label of ['지금 가장 핫함', '방금 뜬 무료', '가입해야 받는 혜택', '종료 임박', '계속 무료', '최근 확인', '확인 중']) {
+  for (const label of ['지금 가장 핫함', '방금 뜬 무료', '가입해야 받는 혜택', '다시 채워지는 무료', '다시 채워짐', '종료 임박', '계속 무료', '최근 확인', '확인 중']) {
     assert.match(js, new RegExp(label));
   }
   assert.match(js, /AI 무료 레이더/);
@@ -117,6 +146,20 @@ test('signup credits cannot displace HOTTEST, JUST_DROPPED or ENDING SOON lanes'
   assert.match(js, /const expiring = \[\.\.\.liveOpportunities, \.\.\.signals\]\.filter\(verifiedExpiring\)/);
   assert.doesNotMatch(js, /\|\| activeOpportunities\[0\]/);
   assert.match(js, /가입 크레딧만으로 메인 HOT 영역을 채우지 않습니다/);
+});
+
+test('recurring signals are rendered once and excluded from generic durable grid', () => {
+  const js = read('product-v13-editorial-radar.js');
+  const css = read('product-v13-editorial-radar-polish.css');
+  assert.match(js, /const recurring = signals\.filter\(signal => signal\.recurrence && authoritativeVerification\(signal\.verification\)\)/);
+  assert.match(js, /const recurringIds = new Set\(recurring\.map\(signal => signal\.id\)\)/);
+  assert.match(js, /&& !recurringIds\.has\(signal\.id\)/);
+  assert.match(js, /id=\"recurring-free\"/);
+  assert.match(js, /recurring\.map\(recurringCard\)/);
+  assert.match(js, /recurringIds: recurring\.map\(item => item\.id\)/);
+  assert.match(css, /\.radar-recurring-grid/);
+  assert.match(css, /\.radar-recurring-card/);
+  assert.match(css, /\.radar-photo\.is-recurring/);
 });
 
 test('ending soon requires authoritative expiry and a seven-day urgency window', () => {
