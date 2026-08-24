@@ -13,6 +13,20 @@ window.B60_EDITORIAL_MEDIA = Object.freeze({
     credit: 'Data Servers collection',
     sourcePage: 'https://unsplash.com/photos/server-racks-in-data-center-klWUhr-wPJ8'
   },
+  'fireworks-starter-credit': {
+    image: 'assets/editorial-groq.webp',
+    alt: '코드와 터미널이 열린 노트북, 헤드폰과 작업 도구가 놓인 실제 개발 작업 공간',
+    source: 'Unsplash · editorial context',
+    credit: 'Daniil Komov',
+    sourcePage: 'https://unsplash.com/photos/laptop-with-code-headphones-phone-and-mouse-on-desk-41cG8-U74lc'
+  },
+  'aws-free-tier-signup-credit': {
+    image: 'assets/editorial-cloudflare.webp',
+    alt: '클라우드와 AI 인프라를 연상시키는 실제 서버 랙과 데이터센터 장비',
+    source: 'Unsplash · editorial context',
+    credit: 'Data Servers collection',
+    sourcePage: 'https://unsplash.com/photos/server-racks-in-data-center-klWUhr-wPJ8'
+  },
   'vercel-glm52': {
     image: 'assets/editorial-vercel.webp',
     alt: '소스 코드가 열린 노트북이 놓인 실제 개발 작업 공간',
