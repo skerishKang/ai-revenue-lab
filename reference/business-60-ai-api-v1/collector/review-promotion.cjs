@@ -7,6 +7,11 @@ const RECORD_META_FIELDS = new Set([
   'evidence', 'fieldVerification', 'carriedForwardFields'
 ]);
 
+const ONBOARDING_TYPES = Object.freeze({
+  EXISTING_SIGNAL: 'EXISTING_SIGNAL',
+  NEW_SIGNAL: 'NEW_SIGNAL'
+});
+
 function sameValue(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
@@ -29,6 +34,18 @@ function candidateId(candidate) {
   return `${identity.signalId || 'unknown'}::${identity.sourceId || 'unknown'}::${sha256(JSON.stringify(identity)).slice(0, 16)}`;
 }
 
+function newSignalEvidenceBlockers(candidate) {
+  const blockers = [];
+  if (!candidate?.signalId) blockers.push('NEW_SIGNAL_ID_REQUIRED');
+  if (!candidate?.provider) blockers.push('NEW_SIGNAL_PROVIDER_REQUIRED');
+  if (candidate?.authority !== 'PRIMARY_OFFICIAL') blockers.push('PRIMARY_OFFICIAL_REQUIRED');
+  if (!candidate?.sourceId) blockers.push('SOURCE_ID_REQUIRED');
+  if (!candidate?.evidence?.sha256) blockers.push('EVIDENCE_SHA256_REQUIRED');
+  if (!(candidate?.evidence?.finalUrl || candidate?.evidence?.requestedUrl)) blockers.push('OFFICIAL_SOURCE_URL_REQUIRED');
+  if (!(candidate?.observedAt || candidate?.evidence?.observedAt)) blockers.push('OBSERVED_AT_REQUIRED');
+  return blockers;
+}
+
 function buildReviewPacket(candidates, baseSnapshot, meta = {}) {
   assertSnapshot(baseSnapshot);
   if (!Array.isArray(candidates)) throw new Error('candidates array is required');
@@ -37,18 +54,23 @@ function buildReviewPacket(candidates, baseSnapshot, meta = {}) {
   const entries = candidates.map(candidate => {
     const id = candidateId(candidate);
     const baseRecord = baseById.get(candidate?.signalId) || null;
+    const onboardingType = baseRecord ? ONBOARDING_TYPES.EXISTING_SIGNAL : ONBOARDING_TYPES.NEW_SIGNAL;
     const reviewRequired = candidate?.state === STATES.NEEDS_REVIEW;
     const observations = candidate?.observations || [];
     const observedFields = new Set(observations.map(x => x.field).filter(Boolean));
     const blockers = [];
-    if (reviewRequired && !baseRecord) blockers.push('BASE_RECORD_MISSING');
+
+    if (reviewRequired && onboardingType === ONBOARDING_TYPES.NEW_SIGNAL) {
+      blockers.push(...newSignalEvidenceBlockers(candidate));
+    }
     if (reviewRequired && !observations.length) blockers.push('NO_OBSERVATIONS');
     for (const field of candidate?.missingRequired || []) blockers.push(`MISSING_REQUIRED:${field}`);
     if (!reviewRequired) blockers.push(`NOT_REVIEWABLE_STATE:${candidate?.state || 'UNKNOWN'}`);
 
     const fields = observations.map(observation => ({
       field: observation.field,
-      previousValue: baseRecord ? baseRecord[observation.field] : undefined,
+      previousValue: baseRecord ? baseRecord[observation.field] : null,
+      previousValueState: baseRecord ? 'PRESENT_OR_UNDEFINED' : 'NONE',
       proposedValue: observation.value,
       changed: baseRecord ? !sameValue(baseRecord[observation.field], observation.value) : true,
       observationStatus: observation.status || null,
@@ -64,6 +86,7 @@ function buildReviewPacket(candidates, baseSnapshot, meta = {}) {
 
     return {
       candidateId: id,
+      onboardingType,
       state: candidate?.state || null,
       reviewRequired,
       canApprove: reviewRequired && blockers.length === 0,
@@ -81,9 +104,12 @@ function buildReviewPacket(candidates, baseSnapshot, meta = {}) {
     };
   }).sort((a, b) => `${a.signalId}\0${a.sourceId}\0${a.candidateId}`.localeCompare(`${b.signalId}\0${b.sourceId}\0${b.candidateId}`));
 
+  const candidateIds = entries.map(entry => entry.candidateId);
+  if (new Set(candidateIds).size !== candidateIds.length) throw new Error('duplicate review candidate id');
+
   const packetBasis = {
     sourceSnapshotDate: baseSnapshot.date || null,
-    candidateIds: entries.map(entry => entry.candidateId)
+    candidateIds
   };
 
   return {
@@ -98,7 +124,8 @@ function buildReviewPacket(candidates, baseSnapshot, meta = {}) {
       reviewRequired: entries.filter(x => x.reviewRequired).length,
       approvable: entries.filter(x => x.canApprove).length,
       blocked: entries.filter(x => x.reviewRequired && !x.canApprove).length,
-      preRejected: entries.filter(x => !x.reviewRequired).length
+      preRejected: entries.filter(x => !x.reviewRequired).length,
+      newSignals: entries.filter(x => x.onboardingType === ONBOARDING_TYPES.NEW_SIGNAL).length
     }
   };
 }
@@ -113,6 +140,7 @@ function renderReviewMarkdown(packet) {
     `- 검토 필요: **${packet.summary.reviewRequired}**`,
     `- 승인 가능: **${packet.summary.approvable}**`,
     `- 승인 차단: **${packet.summary.blocked}**`,
+    `- 신규 signal: **${packet.summary.newSignals || 0}**`,
     '',
     '> 이 문서는 검토용입니다. 이 패킷 자체에는 게시 권한이 없습니다.',
     ''
@@ -122,9 +150,11 @@ function renderReviewMarkdown(packet) {
     lines.push(`## ${entry.provider || entry.signalId || 'Unknown'} · ${entry.sourceId || 'unknown-source'}`);
     lines.push('');
     lines.push(`- Candidate ID: \`${entry.candidateId}\``);
+    lines.push(`- Onboarding: \`${entry.onboardingType}\``);
     lines.push(`- 상태: \`${entry.state}\``);
     lines.push(`- 승인 가능: **${entry.canApprove ? 'YES' : 'NO'}**`);
     lines.push(`- 관측 시각: \`${entry.observedAt || 'UNKNOWN'}\``);
+    if (entry.onboardingType === ONBOARDING_TYPES.NEW_SIGNAL) lines.push('- 기존 snapshot 값: `NONE` (first-time onboarding)');
     if (entry.evidence?.finalUrl || entry.evidence?.requestedUrl) lines.push(`- 공식 근거: ${entry.evidence.finalUrl || entry.evidence.requestedUrl}`);
     if (entry.evidence?.sha256) lines.push(`- Evidence SHA-256: \`${entry.evidence.sha256}\``);
     if (entry.blockers.length) lines.push(`- 차단 사유: ${entry.blockers.map(x => `\`${x}\``).join(', ')}`);
@@ -134,7 +164,9 @@ function renderReviewMarkdown(packet) {
       lines.push('| 필드 | 기존 값 | 관측 값 | 변경 |');
       lines.push('|---|---|---|---|');
       for (const field of entry.fields) {
-        const before = field.previousValue === undefined ? '—' : String(field.previousValue).replace(/\|/g, '\\|');
+        const before = field.previousValueState === 'NONE'
+          ? 'NONE'
+          : field.previousValue === undefined ? '—' : String(field.previousValue).replace(/\|/g, '\\|');
         const after = field.proposedValue === undefined ? '—' : String(field.proposedValue).replace(/\|/g, '\\|');
         lines.push(`| \`${field.field}\` | ${before} | ${after} | ${field.changed ? 'YES' : 'NO'} |`);
       }
@@ -195,13 +227,64 @@ function applyReviewDecisions(candidates, packet, decisionDoc) {
     if (!packetEntry) throw new Error(`candidate missing from packet: ${id}`);
     const decision = byId.get(id);
     if (decision.decision === 'approve' && !packetEntry.canApprove) throw new Error(`candidate approval blocked: ${id}`);
-    return reviewCandidate(candidate, {
+    const reviewed = reviewCandidate(candidate, {
       decision: decision.decision,
       reviewer: decisionDoc.reviewer,
       reviewedAt: decisionDoc.reviewedAt,
       reason: decision.reason || null
     });
+    return { ...reviewed, onboardingType: packetEntry.onboardingType };
   });
+}
+
+function provenanceForCandidate(candidate, field, evidenceSha256 = null) {
+  return {
+    status: 'VERIFIED_OFFICIAL_WEB',
+    sourceId: candidate.sourceId,
+    observedAt: candidate.observedAt || candidate.evidence?.observedAt || null,
+    reviewedAt: candidate.review?.reviewedAt || null,
+    evidenceSha256: evidenceSha256 || candidate.evidence?.sha256 || null
+  };
+}
+
+function promoteNewApprovedCandidates(signalId, candidates, snapshotMeta = {}) {
+  const approved = (candidates || []).filter(c => c?.state === STATES.APPROVED_FOR_SNAPSHOT);
+  if (!approved.length) throw new Error('no approved candidates');
+  if (approved.some(c => c.onboardingType !== ONBOARDING_TYPES.NEW_SIGNAL)) throw new Error(`new signal onboarding classification required: ${signalId}`);
+  if (approved.some(c => c.review?.decision !== 'approve' || !c.review?.reviewer || !c.review?.reviewedAt)) throw new Error(`explicit human approval required for new signal: ${signalId}`);
+  if (approved.some(c => c.authority !== 'PRIMARY_OFFICIAL')) throw new Error(`PRIMARY_OFFICIAL evidence required for new signal: ${signalId}`);
+  if (approved.some(c => !c.evidence?.sha256 || !(c.evidence?.finalUrl || c.evidence?.requestedUrl))) throw new Error(`official evidence required for new signal: ${signalId}`);
+  if (new Set(approved.map(c => c.signalId)).size !== 1 || approved[0].signalId !== signalId) throw new Error('candidate signal mismatch');
+
+  const providers = new Set(approved.map(c => c.provider).filter(Boolean));
+  if (providers.size !== 1) throw new Error(`new signal provider identity must be unique: ${signalId}`);
+
+  const provider = [...providers][0];
+  const next = { id: signalId, provider };
+  const evidence = [];
+  const fieldVerification = {};
+  const identityCandidate = approved[0];
+  fieldVerification.id = provenanceForCandidate(identityCandidate, 'id');
+  fieldVerification.provider = provenanceForCandidate(identityCandidate, 'provider');
+
+  for (const candidate of approved) {
+    if (!candidate.observations?.length) throw new Error(`new signal observations required: ${signalId}`);
+    for (const observation of candidate.observations) {
+      if (!observation?.field) throw new Error('approved observation field is required');
+      if (RECORD_META_FIELDS.has(observation.field)) throw new Error(`new signal observation cannot overwrite metadata field: ${observation.field}`);
+      next[observation.field] = observation.value;
+      fieldVerification[observation.field] = provenanceForCandidate(candidate, observation.field, observation.evidenceSha256);
+    }
+    evidence.push({ sourceId: candidate.sourceId, ...candidate.evidence, review: candidate.review });
+  }
+
+  next.verification = 'VERIFIED_OFFICIAL_WEB';
+  next.verificationScope = 'FULL_RECORD';
+  next.verifiedAt = snapshotMeta.snapshotDate || approved.map(c => c.review.reviewedAt.slice(0, 10)).sort().at(-1);
+  next.fieldVerification = fieldVerification;
+  next.carriedForwardFields = [];
+  next.evidence = evidence;
+  return next;
 }
 
 function buildSnapshotProposal(baseSnapshot, reviewedCandidates, meta = {}) {
@@ -212,16 +295,29 @@ function buildSnapshotProposal(baseSnapshot, reviewedCandidates, meta = {}) {
 
   const approved = reviewedCandidates.filter(candidate => candidate?.state === STATES.APPROVED_FOR_SNAPSHOT);
   if (!approved.length) throw new Error('no approved candidates for snapshot proposal');
+  if (approved.some(candidate => candidate?.review?.decision !== 'approve' || !candidate?.review?.reviewer || !candidate?.review?.reviewedAt)) {
+    throw new Error('approved candidate missing explicit human review');
+  }
 
   const groups = new Map();
   for (const candidate of approved) {
+    if (!candidate.signalId) throw new Error('approved candidate signalId is required');
     if (!groups.has(candidate.signalId)) groups.set(candidate.signalId, []);
     groups.get(candidate.signalId).push(candidate);
   }
 
   const baseIds = new Set(baseSnapshot.records.map(record => record.id));
-  for (const signalId of groups.keys()) {
-    if (!baseIds.has(signalId)) throw new Error(`base snapshot record missing: ${signalId}`);
+  const newRecords = [];
+  for (const [signalId, group] of groups.entries()) {
+    const onboardingTypes = new Set(group.map(candidate => candidate.onboardingType).filter(Boolean));
+    if (baseIds.has(signalId)) {
+      if (onboardingTypes.has(ONBOARDING_TYPES.NEW_SIGNAL)) throw new Error(`duplicate signal id: ${signalId}`);
+    } else {
+      if (onboardingTypes.size !== 1 || !onboardingTypes.has(ONBOARDING_TYPES.NEW_SIGNAL)) {
+        throw new Error(`new signal requires reviewed onboarding contract: ${signalId}`);
+      }
+      newRecords.push(promoteNewApprovedCandidates(signalId, group, { snapshotDate: meta.snapshotDate }));
+    }
   }
 
   const records = baseSnapshot.records.map(record => {
@@ -229,6 +325,8 @@ function buildSnapshotProposal(baseSnapshot, reviewedCandidates, meta = {}) {
     if (!group) return record;
     return promoteApprovedCandidates(record, group, { snapshotDate: meta.snapshotDate });
   });
+  records.push(...newRecords.sort((a, b) => a.id.localeCompare(b.id)));
+  assertSnapshot({ records });
 
   return {
     schemaVersion: 'b60-snapshot-proposal-v1',
@@ -252,10 +350,27 @@ function buildChangeLedger(baseSnapshot, snapshotProposal, meta = {}) {
   const beforeById = new Map(baseSnapshot.records.map(record => [record.id, record]));
   const changes = [];
   const reverifiedUnchanged = [];
+  const firstSeen = [];
 
   for (const after of nextSnapshot.records) {
     const before = beforeById.get(after.id);
-    if (!before) continue;
+    if (!before) {
+      for (const [field, verification] of Object.entries(after.fieldVerification || {})) {
+        firstSeen.push({
+          signalId: after.id,
+          provider: after.provider || null,
+          field,
+          before: null,
+          after: after[field],
+          sourceId: verification.sourceId || null,
+          observedAt: verification.observedAt || null,
+          reviewedAt: verification.reviewedAt || null,
+          evidenceSha256: verification.evidenceSha256 || null,
+          status: 'FIRST_SEEN'
+        });
+      }
+      continue;
+    }
     for (const [field, verification] of Object.entries(after.fieldVerification || {})) {
       const entry = {
         signalId: after.id,
@@ -275,6 +390,7 @@ function buildChangeLedger(baseSnapshot, snapshotProposal, meta = {}) {
 
   changes.sort((a, b) => `${a.signalId}\0${a.field}`.localeCompare(`${b.signalId}\0${b.field}`));
   reverifiedUnchanged.sort((a, b) => `${a.signalId}\0${a.field}`.localeCompare(`${b.signalId}\0${b.field}`));
+  firstSeen.sort((a, b) => `${a.signalId}\0${a.field}`.localeCompare(`${b.signalId}\0${b.field}`));
 
   return {
     schemaVersion: 'b60-change-ledger-v1',
@@ -285,9 +401,11 @@ function buildChangeLedger(baseSnapshot, snapshotProposal, meta = {}) {
     publishAuthorized: false,
     changes,
     reverifiedUnchanged,
+    firstSeen,
     summary: {
       verifiedChanges: changes.length,
-      reverifiedUnchanged: reverifiedUnchanged.length
+      reverifiedUnchanged: reverifiedUnchanged.length,
+      firstSeen: firstSeen.length
     }
   };
 }
@@ -301,10 +419,12 @@ function generatePromotionArtifacts(candidates, baseSnapshot, decisionDoc, meta 
 }
 
 module.exports = {
+  ONBOARDING_TYPES,
   candidateId,
   buildReviewPacket,
   renderReviewMarkdown,
   applyReviewDecisions,
+  promoteNewApprovedCandidates,
   buildSnapshotProposal,
   buildChangeLedger,
   generatePromotionArtifacts
