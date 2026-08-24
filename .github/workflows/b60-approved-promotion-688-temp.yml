@@ -46,7 +46,7 @@ jobs:
             --markdown "${RUNNER_TEMP}/b60-approved/review-packet.md" \
             --generated-at "${NOW}"
 
-      - name: Record owner standing approval for every reviewable candidate
+      - name: Record owner approval while preserving evidence blockers
         shell: bash
         run: |
           set -euo pipefail
@@ -55,20 +55,29 @@ jobs:
           const root=process.env.RUNNER_TEMP+'/b60-approved';
           const packet=JSON.parse(fs.readFileSync(root+'/review-packet.json','utf8'));
           if(packet.summary.reviewRequired!==7) throw new Error(`expected 7 reviewable candidates, got ${packet.summary.reviewRequired}`);
-          if(packet.summary.approvable!==7) throw new Error(`expected 7 approvable candidates, got ${packet.summary.approvable}`);
-          const notApprovable=packet.candidates.filter(x=>!x.canApprove);
-          if(notApprovable.length) throw new Error('approval blocked: '+notApprovable.map(x=>x.candidateId).join(','));
           const reviewedAt=new Date().toISOString();
           const decisions={
             packetId:packet.packetId,
             reviewer:'owner-cto-standing-approval-2026-08-24',
             reviewedAt,
-            authorityNote:'Owner explicitly authorized CTO to proceed and approved all candidates on 2026-08-24.',
-            decisions:packet.candidates.map(x=>({candidateId:x.candidateId,decision:'approve',reason:'Owner standing approval; CTO reviewed official-source packet.'}))
+            authorityNote:'Owner explicitly authorized CTO to proceed. CTO approves candidates that satisfy evidence gates and rejects candidates blocked by required-evidence rules.',
+            decisions:packet.candidates.map(x=>({
+              candidateId:x.candidateId,
+              decision:x.canApprove?'approve':'reject',
+              reason:x.canApprove
+                ? 'Owner standing approval; CTO reviewed official-source packet.'
+                : `Rejected by CTO because evidence gate is blocked: ${(x.blockers||[]).join('; ')||'required evidence missing'}`
+            }))
           };
+          const approved=decisions.decisions.filter(x=>x.decision==='approve');
+          const rejected=decisions.decisions.filter(x=>x.decision==='reject');
           fs.writeFileSync(root+'/decisions.json',JSON.stringify(decisions,null,2)+'\n');
           console.log(`PACKET_ID=${packet.packetId}`);
-          console.log(`APPROVED_DECISIONS=${decisions.decisions.length}`);
+          console.log(`APPROVED_DECISIONS=${approved.length}`);
+          console.log(`REJECTED_DECISIONS=${rejected.length}`);
+          for(const x of packet.candidates.filter(x=>!x.canApprove)) {
+            console.log(`BLOCKED candidate=${x.candidateId} source=${x.sourceId} signal=${x.signalId} blockers=${(x.blockers||[]).join('|')||'none'} missing=${(x.missingRequired||[]).join('|')||'none'}`);
+          }
           NODE
 
       - name: Generate proposal and field-level change ledger
@@ -90,12 +99,15 @@ jobs:
           node - <<'NODE'
           const fs=require('node:fs');
           const root=process.env.RUNNER_TEMP+'/b60-approved';
+          const decisions=JSON.parse(fs.readFileSync(root+'/decisions.json','utf8'));
           const proposal=JSON.parse(fs.readFileSync(root+'/promotion/snapshot-proposal.json','utf8'));
           const ledger=JSON.parse(fs.readFileSync(root+'/promotion/change-ledger.json','utf8'));
           if(proposal.publishAuthorized!==false) throw new Error('proposal must remain non-publishing');
           if(ledger.publishAuthorized!==false) throw new Error('ledger must remain non-publishing');
           const summary={
             packetId:proposal.packetId,
+            approved:decisions.decisions.filter(x=>x.decision==='approve').length,
+            rejected:decisions.decisions.filter(x=>x.decision==='reject').length,
             proposalPublicationAuthority:proposal.publicationAuthority,
             ledgerPublicationAuthority:ledger.publicationAuthority,
             verifiedChanges:ledger.summary.verifiedChanges,
