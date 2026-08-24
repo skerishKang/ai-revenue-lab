@@ -39,12 +39,15 @@
   const activeOpportunities = opportunities.filter(item => !isExpired(item));
   const signupCredits = activeOpportunities.filter(item => item.opportunityType === 'SIGNUP_CREDIT');
   const liveOpportunities = activeOpportunities.filter(item => item.opportunityType !== 'SIGNUP_CREDIT');
+  const recurring = signals.filter(signal => signal.recurrence && authoritativeVerification(signal.verification));
+  const recurringIds = new Set(recurring.map(signal => signal.id));
+  const durable = signals.filter(signal => ['PERMANENT_FREE', 'FREE_MODEL', 'RECURRING_CREDIT'].includes(signal.dealType) && !recurringIds.has(signal.id));
   const hottest = liveOpportunities.find(item => item.editorialRole === 'HOTTEST')
     || liveOpportunities.find(item => item.opportunityType === 'TEMP_FREE_ACCESS')
-    || signals[0]
+    || recurring[0]
+    || durable[0]
     || null;
   const justDropped = liveOpportunities.filter(item => item.editorialRole === 'JUST_DROPPED' && item.id !== hottest?.id);
-  const durable = signals.filter(signal => ['PERMANENT_FREE', 'FREE_MODEL', 'RECURRING_CREDIT'].includes(signal.dealType));
   const expiring = [...liveOpportunities, ...signals].filter(verifiedExpiring);
   const checkedItems = [...activeOpportunities, ...signals].sort((a, b) => String(b.verifiedAt || '').localeCompare(String(a.verifiedAt || '')));
   const pending = [...activeOpportunities, ...signals].filter(item => item.pending);
@@ -79,7 +82,7 @@
   function mechanicLabel(item) {
     if (item.opportunityType === 'TEMP_FREE_ACCESS') return '한시 무료 개방';
     if (item.opportunityType === 'SIGNUP_CREDIT') return '가입 크레딧';
-    if (item.opportunityType === 'RECURRING_FREE' || item.dealType === 'RECURRING_CREDIT') return '반복 무료';
+    if (item.recurrence || item.opportunityType === 'RECURRING_FREE' || item.dealType === 'RECURRING_CREDIT') return '반복 무료';
     if (item.opportunityType === 'ALWAYS_FREE' || ['PERMANENT_FREE', 'FREE_MODEL'].includes(item.dealType)) return '상시 무료';
     return verifiedExpiring(item) ? '기간 한정 무료' : '무료 기회';
   }
@@ -142,7 +145,7 @@
     return `<button class="radar-board-item" type="button" ${action}>
       <img src="${esc(visual.image)}" alt="" loading="eager" decoding="async">
       <span class="radar-board-no">0${index + 1}</span>
-      <span class="radar-board-copy"><small>${esc(mechanicLabel(item))} · ${esc(item.provider)}</small><strong>${esc(benefit(item))}</strong><em>${esc(item.title || headline(item))}</em></span>
+      <span class="radar-board-copy"><small>${esc(mechanicLabel(item))} · ${esc(item.provider)}</small><strong>${esc(item.recurrence?.display || benefit(item))}</strong><em>${esc(item.title || headline(item))}</em></span>
     </button>`;
   }
 
@@ -162,6 +165,25 @@
           <a href="${esc(sourceLink(item))}" target="_blank" rel="noopener noreferrer">공식 발표 ↗</a>
         </div>
         <div class="radar-trust"><span>${verificationLabel(item)}</span><time>${esc(item.verifiedAt || '날짜 미확인')}</time></div>
+      </div>
+    </article>`;
+  }
+
+  function recurringCard(item, index) {
+    const cadence = item.recurrence || {};
+    return `<article class="radar-recurring-card ${index === 0 ? 'is-lead' : ''}" data-recurring-id="${esc(item.id)}">
+      ${imageFigure(item, 'is-recurring')}
+      <div class="radar-recurring-copy">
+        <div class="radar-recurring-top"><span>다시 채워짐</span><time>${esc(item.verifiedAt || '—')}</time></div>
+        <div class="radar-meta"><b>반복 무료</b><span>${esc(item.provider)}</span></div>
+        <strong class="radar-recurring-benefit">${esc(cadence.display || benefit(item))}</strong>
+        <h3>${esc(headline(item))}</h3>
+        <p>${esc(item.summary)}</p>
+        <div class="radar-recurring-reset"><span>리셋 규칙</span><strong>${esc(cadence.resetDetail || '공식 리셋 규칙 확인 필요')}</strong></div>
+        <div class="radar-actions">
+          ${itemAction(item, '조건 자세히 보기')}
+          <a href="${esc(sourceLink(item))}" target="_blank" rel="noopener noreferrer">${esc(sourceName(item))} ↗</a>
+        </div>
       </div>
     </article>`;
   }
@@ -219,8 +241,8 @@
   radar.innerHTML = `
     <div class="radar-masthead">
       <a class="radar-wordmark" href="#radar">AI 무료 레이더</a>
-      <p>오늘 쓸 수 있는 무료 AI를 먼저 보고, 가입 혜택과 상시 무료는 따로 비교합니다.</p>
-      <span>${liveOpportunities.length}개 지금 무료 · ${signupCredits.length}개 가입 혜택 · ${durable.length}개 지속 경로 · 수동 큐레이션</span>
+      <p>오늘 쓸 수 있는 무료 AI를 먼저 보고, 가입 혜택·다시 채워지는 무료·상시 무료를 따로 비교합니다.</p>
+      <span>${liveOpportunities.length}개 지금 무료 · ${signupCredits.length}개 가입 혜택 · ${recurring.length}개 반복 무료 · ${durable.length}개 상시 경로 · 수동 큐레이션</span>
     </div>
 
     <div class="radar-rule"><span>지금 무료</span><time>${todayKey}</time></div>
@@ -228,8 +250,8 @@
     <div class="radar-lead" id="radar-live">
       ${hottest ? featureCard(hottest) : '<div class="radar-expiry-empty"><span>지금 무료</span><strong>현재 우선 노출할 라이브 무료 기회를 확인 중입니다.</strong><p>가입 크레딧만으로 메인 HOT 영역을 채우지 않습니다.</p></div>'}
       <aside class="radar-board" aria-label="오늘의 무료 보드">
-        <header><span>오늘의 보드</span><strong>계속 쓸 수 있는 것</strong></header>
-        ${durable.slice(0, 3).map(boardItem).join('')}
+        <header><span>오늘의 보드</span><strong>다시 채워지는 것</strong></header>
+        ${recurring.slice(0, 3).map(boardItem).join('')}
         <button class="radar-directory-link" type="button" data-radar-scroll="explore">전체 조건 비교 →</button>
       </aside>
     </div>
@@ -240,17 +262,19 @@
 
     ${signupCredits.length ? `<section class="radar-signups" id="signup-benefits"><header class="radar-section-head"><div><span>가입 혜택</span><h2>가입하면 받는 것,<br>한시 무료와는 따로.</h2></div><p>신규 계정 크레딧은 유용하지만 ‘지금 열린 무료 모델’과 같은 종류로 취급하지 않습니다. 금액이 커도 HOT/방금 뜬 무료 자리를 자동으로 차지하지 않습니다.</p></header><div class="radar-signup-grid">${signupCredits.map(signupCard).join('')}</div></section>` : ''}
 
+    ${recurring.length ? `<section class="radar-recurring" id="recurring-free"><header class="radar-section-head"><div><span>다시 채워지는 무료</span><h2>한 번 받고 끝이 아니라,<br>다시 생기는 것들.</h2></div><p>매일 또는 일정 주기로 무료 사용량이 다시 주어지는 경로만 모았습니다. 공식 문서에 없는 리셋 시각은 추측하지 않습니다.</p></header><div class="radar-recurring-grid">${recurring.map(recurringCard).join('')}</div></section>` : ''}
+
     <section class="radar-always" id="always-free">
-      <header class="radar-section-head"><div><span>계속 무료</span><h2>오늘만이 아니라,<br>다시 쓸 수 있는 것들.</h2></div><p>상시 무료 티어·무료 모델·반복 크레딧처럼 지속적으로 이용할 수 있는 경로를 모았습니다.</p></header>
+      <header class="radar-section-head"><div><span>계속 무료</span><h2>리셋 규칙 없이도,<br>계속 열려 있는 것들.</h2></div><p>반복 보충되는 무료량과 분리해, 지속적인 무료 티어·무료 모델처럼 상시 접근 가능한 경로만 남겼습니다.</p></header>
       <div class="radar-free-grid">${durable.map(durableCard).join('')}</div>
     </section>
 
     <section class="radar-checked" id="just-checked">
-      <header class="radar-section-head"><div><span>최근 확인</span><h2>광고 문구보다<br>확인 날짜를 봅니다.</h2></div><p>웹 문서와 공식 브랜드 발표를 구분해 기록하고, 종료일·제한을 추측하지 않습니다.</p></header>
+      <header class="radar-section-head"><div><span>최근 확인</span><h2>광고 문구보다<br>확인 날짜를 봅니다.</h2></div><p>웹 문서와 공식 브랜드 발표를 구분해 기록하고, 종료일·제한·리셋 시각을 추측하지 않습니다.</p></header>
       <div class="radar-check-list">
         ${checkedItems.map(item => {
           const action = isEditorial(item) ? `data-radar-url="${esc(item.ctaUrl || sourceLink(item))}"` : `data-radar-open="${esc(item.id)}"`;
-          return `<button type="button" ${action}><time>${esc(item.verifiedAt || '—')}</time><span>${esc(item.provider)}</span><strong>${esc(benefit(item))}</strong><em>${esc(verificationLabel(item))}</em></button>`;
+          return `<button type="button" ${action}><time>${esc(item.verifiedAt || '—')}</time><span>${esc(item.provider)}</span><strong>${esc(item.recurrence?.display || benefit(item))}</strong><em>${esc(verificationLabel(item))}</em></button>`;
         }).join('')}
       </div>
       ${pending.length ? `<div class="radar-pending"><span>확인 중</span>${pending.map(item => `<p><b>${esc(item.provider)}</b> · ${esc(item.pending.label)} <em>${esc(item.pending.state)}</em></p>`).join('')}<small>확인되지 않은 종료일이나 프로모션 문구는 종료 임박으로 승격하지 않습니다.</small></div>` : ''}
@@ -281,7 +305,7 @@
 
   const nav = document.querySelector('.shell nav');
   if (nav) {
-    nav.innerHTML = `<a href="#radar-live">가장 핫함</a>${justDropped.length ? '<a href="#just-dropped">방금 뜸</a>' : ''}${signupCredits.length ? '<a href="#signup-benefits">가입 혜택</a>' : ''}<a href="#always-free">계속 무료</a><a href="#just-checked">확인 기록</a>`;
+    nav.innerHTML = `<a href="#radar-live">가장 핫함</a>${justDropped.length ? '<a href="#just-dropped">방금 뜸</a>' : ''}${signupCredits.length ? '<a href="#signup-benefits">가입 혜택</a>' : ''}${recurring.length ? '<a href="#recurring-free">다시 채움</a>' : ''}<a href="#always-free">계속 무료</a><a href="#just-checked">확인 기록</a>`;
   }
 
   window.B60_EDITORIAL_RADAR = Object.freeze({
@@ -290,6 +314,7 @@
     liveOpportunityIds: liveOpportunities.map(item => item.id),
     justDroppedIds: justDropped.map(item => item.id),
     signupCreditIds: signupCredits.map(item => item.id),
+    recurringIds: recurring.map(item => item.id),
     durableIds: durable.map(item => item.id),
     verifiedExpiringIds: expiring.map(item => item.id)
   });
