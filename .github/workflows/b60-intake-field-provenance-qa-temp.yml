@@ -1,0 +1,56 @@
+name: B60 Intake Field Provenance QA Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  field-provenance:
+    if: github.event.pull_request.number == 655
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact head and collector boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -f reference/business-60-ai-api-v1/collector/intake-core.cjs
+          test -f reference/business-60-ai-api-v1/collector/intake-core.test.cjs
+          grep -F "PARTIALLY_VERIFIED_OFFICIAL_WEB" reference/business-60-ai-api-v1/collector/intake-core.cjs >/dev/null
+          grep -F "carriedForwardFields" reference/business-60-ai-api-v1/collector/intake-core.cjs >/dev/null
+          grep -F "unobserved historical fields are carried forward without becoming freshly verified" reference/business-60-ai-api-v1/collector/intake-core.test.cjs >/dev/null
+
+      - name: Run deterministic contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          node --test reference/business-60-ai-api-v1/collector/intake-core.test.cjs
+
+      - name: Verify manifest and no publication shortcut
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const manifest = require('./reference/business-60-ai-api-v1/collector/source-manifest.cjs');
+          if (manifest.length !== 7) throw new Error(`manifest length ${manifest.length}`);
+          if (new Set(manifest.map(x => x.id)).size !== manifest.length) throw new Error('duplicate source id');
+          if (!manifest.every(x => x.authority === 'PRIMARY_OFFICIAL')) throw new Error('non-primary authority');
+          if (!manifest.every(x => /^https:\/\//.test(x.url))) throw new Error('non-https source');
+          console.log('MANIFEST_ENTRIES=7');
+          console.log('ALL_AUTHORITY=PRIMARY_OFFICIAL');
+          console.log('ALL_URLS_HTTPS=YES');
+          NODE
+          ! grep -R "state:.*VERIFIED_OFFICIAL_WEB" reference/business-60-ai-api-v1/collector/run-intake.cjs reference/business-60-ai-api-v1/collector/source-manifest.cjs
+          echo "AUTO_PUBLICATION=NO"
