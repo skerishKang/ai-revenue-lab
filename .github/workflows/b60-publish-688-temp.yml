@@ -1,0 +1,94 @@
+name: B60 Publish 688 Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  publish-contract:
+    if: github.event.pull_request.number == 692
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PRODUCT_SHA: 551d57f6e0f40c6d046942378fcb64c5b0d87167
+    steps:
+      - name: Checkout carrier
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout exact product head
+        uses: actions/checkout@v4
+        with:
+          ref: 551d57f6e0f40c6d046942378fcb64c5b0d87167
+          path: product
+          persist-credentials: false
+      - name: Validate mirrors and snapshot semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          test "$(git rev-parse HEAD)" = "${PRODUCT_SHA}"
+          cmp apps/portfolio-console/ai-api/data/snapshots.js reference/business-60-ai-api-v1/data/snapshots.js
+          cmp apps/portfolio-console/ai-api/data/signal-history.js reference/business-60-ai-api-v1/data/signal-history.js
+          cmp apps/portfolio-console/ai-api/data/access-signals.js reference/business-60-ai-api-v1/data/access-signals.js
+          node --check apps/portfolio-console/ai-api/data/snapshots.js
+          node --check apps/portfolio-console/ai-api/data/signal-history.js
+          node --check apps/portfolio-console/ai-api/data/access-signals.js
+          node - <<'NODE'
+          const fs=require('node:fs'), vm=require('node:vm');
+          const load=(file,key)=>{const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync(file,'utf8'),ctx);return ctx.window[key]};
+          const snaps=load('apps/portfolio-console/ai-api/data/snapshots.js','B60_SNAPSHOTS');
+          const history=load('apps/portfolio-console/ai-api/data/signal-history.js','B60_SIGNAL_HISTORY');
+          const signals=load('apps/portfolio-console/ai-api/data/access-signals.js','B60_ACCESS_SIGNALS');
+          if(snaps.length!==2) throw new Error(`expected 2 snapshots, got ${snaps.length}`);
+          if(snaps[0].date!=='2026-08-23'||snaps[1].date!=='2026-08-24') throw new Error('snapshot dates/order mismatch');
+          if(snaps[1].verification!=='REVIEWED_SOURCE_SNAPSHOT') throw new Error('new snapshot is not published state');
+          if(snaps[1].publication?.approvedCandidates!==6||snaps[1].publication?.rejectedCandidates!==1) throw new Error('publish decision counts mismatch');
+          if(!snaps[1].publication?.rejectedSourceIds?.includes('google-gemini-pricing')) throw new Error('Gemini reject provenance missing');
+          const oldMap=new Map(snaps[0].records.map(x=>[x.id,x]));
+          const newMap=new Map(snaps[1].records.map(x=>[x.id,x]));
+          const semantic=['title','dealType','freeLabel','model','context','price','access','expiresAt','expiryVerification'];
+          const changes=[];
+          for(const [id,before] of oldMap){const after=newMap.get(id); if(!after) throw new Error(`record removed: ${id}`); for(const f of semantic){if(JSON.stringify(before[f])!==JSON.stringify(after[f])) changes.push(`${id}.${f}`)}}
+          if(JSON.stringify(changes)!==JSON.stringify(['cloudflare-workers-ai-free.price'])) throw new Error(`unexpected semantic changes: ${changes.join(',')}`);
+          const cf=newMap.get('cloudflare-workers-ai-free');
+          if(cf.price!=='10,000 neurons/day free; $0.011/1,000 above allocation') throw new Error('Cloudflare price mismatch');
+          if(cf.fieldVerification?.price?.evidenceSha256!=='ba2d25798a6c594a8ac11e894863345a392b41f8baf98008de0243c3d43e520f') throw new Error('Cloudflare price provenance mismatch');
+          const gem=newMap.get('google-gemini-free');
+          if(gem.verifiedAt!==undefined||gem.fieldVerification!==undefined||gem.verificationScope!==undefined) throw new Error('Gemini was falsely freshly verified');
+          const or=newMap.get('openrouter-free-router');
+          if(!or.carriedForwardFields?.includes('price')||or.fieldVerification?.price!==undefined) throw new Error('OpenRouter carried-forward price boundary failed');
+          const h=new Map(history.map(x=>[x.id,x]));
+          if(h.get('google-gemini-free')?.lastVerified!=='2026-08-23') throw new Error('Gemini history falsely advanced');
+          for(const id of ['vercel-glm52','cloudflare-workers-ai-free','groq-free-plan','openrouter-free-router']) if(h.get(id)?.lastVerified!=='2026-08-24') throw new Error(`${id} lastVerified mismatch`);
+          const cfEvents=h.get('cloudflare-workers-ai-free').events.filter(x=>x.type==='VERIFIED_CHANGE');
+          if(cfEvents.length!==1||cfEvents[0].date!=='2026-08-24') throw new Error('Cloudflare verified-change history mismatch');
+          const s=new Map(signals.map(x=>[x.id,x]));
+          if(s.get('cloudflare-workers-ai-free')?.price!==cf.price) throw new Error('access signal Cloudflare price mismatch');
+          if(s.get('google-gemini-free')?.verifiedAt!=='2026-08-23') throw new Error('access signal Gemini date falsely advanced');
+          for(const id of ['vercel-glm52','cloudflare-workers-ai-free','groq-free-plan','openrouter-free-router']) if(s.get(id)?.verifiedAt!=='2026-08-24') throw new Error(`${id} access verifiedAt mismatch`);
+          console.log('SEMANTIC_CHANGES='+changes.join(','));
+          console.log('GEMINI_FRESH_REVERIFIED=NO');
+          console.log('OPENROUTER_PRICE_FRESH_VERIFIED=NO');
+          console.log('MIRRORS=PASS');
+          NODE
+      - name: Validate persisted audit record
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const base='reference/business-60-ai-api-v1/reviews/2026-08-24';
+          const d=JSON.parse(fs.readFileSync(base+'/decisions.json','utf8'));
+          const l=JSON.parse(fs.readFileSync(base+'/change-ledger.json','utf8'));
+          if(d.decisions.filter(x=>x.decision==='approve').length!==6) throw new Error('decision approve count mismatch');
+          if(d.decisions.filter(x=>x.decision==='reject').length!==1) throw new Error('decision reject count mismatch');
+          if(l.changes.length!==1||l.changes[0].signalId!=='cloudflare-workers-ai-free'||l.changes[0].field!=='price') throw new Error('ledger change mismatch');
+          if(l.reverifiedUnchanged.length!==10) throw new Error('ledger reverified count mismatch');
+          if(!fs.readFileSync(base+'/PUBLISH_RECORD.md','utf8').includes('MISSING_REQUIRED:freeLabel')) throw new Error('publish record missing Gemini block');
+          console.log('AUDIT_RECORD=PASS');
+          NODE
