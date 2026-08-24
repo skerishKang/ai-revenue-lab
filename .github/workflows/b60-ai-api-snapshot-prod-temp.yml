@@ -1,0 +1,157 @@
+name: B60 AI API Snapshot Production Temp
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production:
+    if: github.head_ref == 'ops/b60-ai-api-snapshot-prod-20260824'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: ai-api
+      PRODUCTION_BRANCH: production
+      TARGET_SHA: 263120b46c99ec8b87a1e480cc3b8c8f030f5b2d
+    steps:
+      - name: Verify Cloudflare target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          project="$(mktemp)"
+          curl -fsS --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" -o "${project}"
+          jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" \
+            '.success == true and .result.name == $name and .result.production_branch == $branch and .result.source == null' "${project}" >/dev/null
+          domain="$(jq -r '.result.subdomain' "${project}")"
+          test -n "${domain}" && test "${domain}" != "null"
+          echo "PUBLIC_DOMAIN=${domain}" >> "${GITHUB_ENV}"
+          echo "PROJECT_SUBDOMAIN=${domain}"
+
+      - name: Checkout exact canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: 263120b46c99ec8b87a1e480cc3b8c8f030f5b2d
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify deploy source and published data
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test -f apps/portfolio-console/ai-api/index.html
+          grep -F '<html lang="ko">' apps/portfolio-console/ai-api/index.html >/dev/null
+          grep -F '10,000 neurons/day free; $0.011/1,000 above allocation' apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
+          grep -F '"type": "VERIFIED_CHANGE"' apps/portfolio-console/ai-api/data/signal-history.js >/dev/null
+          grep -F 'b60rp_bbc9abfd5761d4c518f3' apps/portfolio-console/ai-api/data/snapshots.js >/dev/null
+          cmp apps/portfolio-console/ai-api/data/access-signals.js reference/business-60-ai-api-v1/data/access-signals.js
+          cmp apps/portfolio-console/ai-api/data/signal-history.js reference/business-60-ai-api-v1/data/signal-history.js
+          cmp apps/portfolio-console/ai-api/data/snapshots.js reference/business-60-ai-api-v1/data/snapshots.js
+          echo 'DEPLOY_SOURCE_DATA=PASS'
+
+      - name: Install Chromium smoke runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pw"
+          npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
+          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
+          echo "PW=${RUNNER_TEMP}/pw/node_modules/playwright" >> "${GITHUB_ENV}"
+
+      - name: Write product smoke
+        shell: bash
+        run: |
+          cat > "${RUNNER_TEMP}/b60-smoke.cjs" <<'NODE'
+          const { chromium } = require(process.env.PW);
+          async function run(url,label){
+            const browser=await chromium.launch({headless:true});
+            for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+              const page=await browser.newPage({viewport});
+              const errors=[],failed=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+              page.on('requestfailed',r=>failed.push(`${r.method()} ${r.url()} ${r.failure()?.errorText||''}`));
+              const res=await page.goto(url,{waitUntil:'networkidle'});
+              if(!res||res.status()!==200) throw new Error(`${label}: HTTP ${res?.status()}`);
+              await page.waitForSelector('#explore');
+              const data=await page.evaluate(()=>({
+                cf:window.B60_ACCESS_SIGNALS?.find(x=>x.id==='cloudflare-workers-ai-free'),
+                gem:window.B60_ACCESS_SIGNALS?.find(x=>x.id==='google-gemini-free'),
+                snaps:window.B60_SNAPSHOTS,
+                hist:window.B60_SIGNAL_HISTORY?.find(x=>x.id==='cloudflare-workers-ai-free')
+              }));
+              if(data.cf?.price!=='10,000 neurons/day free; $0.011/1,000 above allocation'||data.cf?.verifiedAt!=='2026-08-24') throw new Error(`${label}: Cloudflare published data mismatch`);
+              if(data.gem?.verifiedAt!=='2026-08-23') throw new Error(`${label}: Gemini falsely reverified`);
+              if(data.snaps?.length!==2||data.snaps[1]?.date!=='2026-08-24') throw new Error(`${label}: snapshot history mismatch`);
+              if(!data.hist?.events?.some(x=>x.type==='VERIFIED_CHANGE'&&x.date==='2026-08-24')) throw new Error(`${label}: Cloudflare history event missing`);
+              const signalTitle=(await page.locator('#signal-title').innerText()).replace(/\s+/g,' ');
+              if(!signalTitle.includes('확실한 것과')||!signalTitle.includes('확인 중인 것을 섞지 않습니다')) throw new Error(`${label}: Korean title missing`);
+              const sourceText=await page.locator('#source').innerText();
+              if(sourceText.includes('VERIFIED_OFFICIAL_WEB')||sourceText.includes('PENDING_WEB_VERIFICATION')) throw new Error(`${label}: raw enum visible`);
+              await page.locator('#explore').scrollIntoViewIfNeeded();
+              await page.locator('.ia-primary [data-ia-view="watch"]').click();
+              await page.locator('[data-ux4-watch="changes"]').click();
+              await page.waitForSelector('.ux4-changes');
+              const changes=await page.locator('.ux4-changes').innerText();
+              if(!changes.includes('Cloudflare')||!changes.includes('$0.011/1,000 Neurons')) throw new Error(`${label}: verified Cloudflare change not visible in Watch`);
+              const metrics=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+              if(metrics.sw>metrics.cw+1) throw new Error(`${label}: horizontal overflow`);
+              if(errors.length) throw new Error(`${label}: console ${errors.join(' | ')}`);
+              if(failed.length) throw new Error(`${label}: request failures ${failed.join(' | ')}`);
+              console.log(`${label} ${viewport.width}x${viewport.height} PASS`);
+              await page.close();
+            }
+            await browser.close();
+          }
+          run(process.argv[2],process.argv[3]).catch(e=>{console.error(e);process.exit(1)});
+          NODE
+
+      - name: Local browser QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory apps/portfolio-console/ai-api >"${RUNNER_TEMP}/server.log" 2>&1 &
+          for i in $(seq 1 30); do if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi; sleep 1; done
+          node "${RUNNER_TEMP}/b60-smoke.cjs" http://127.0.0.1:4173/ LOCAL_PUBLISH
+
+      - name: Deploy exact main to Cloudflare Pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          npx --yes wrangler@4 pages deploy apps/portfolio-console/ai-api \
+            --project-name "${PROJECT_NAME}" --branch "${PRODUCTION_BRANCH}" \
+            --commit-hash "${TARGET_SHA}" --commit-message "B60 reviewed snapshot 2026-08-24" --commit-dirty=false
+
+      - name: Verify canonical Cloudflare deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          project="$(mktemp)"
+          for attempt in $(seq 1 18); do
+            curl -fsS --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" --header 'Content-Type: application/json' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" -o "${project}"
+            hash="$(jq -r '.result.canonical_deployment.deployment_trigger.metadata.commit_hash // empty' "${project}")"
+            status="$(jq -r '.result.canonical_deployment.latest_stage.status // empty' "${project}")"
+            if [ "${hash}" = "${TARGET_SHA}" ] && [ "${status}" = "success" ]; then break; fi
+            if [ "${attempt}" -eq 18 ]; then exit 1; fi
+            sleep 10
+          done
+          jq -e --arg sha "${TARGET_SHA}" --arg branch "${PRODUCTION_BRANCH}" '.result.canonical_deployment.environment == "production" and .result.canonical_deployment.deployment_trigger.metadata.branch == $branch and .result.canonical_deployment.deployment_trigger.metadata.commit_hash == $sha and .result.canonical_deployment.latest_stage.status == "success"' "${project}" >/dev/null
+          echo "CANONICAL_DEPLOYMENT=$(jq -r '.result.canonical_deployment.id' "${project}")"
+          echo "CANONICAL_URL=$(jq -r '.result.canonical_deployment.url' "${project}")"
+          echo "PUBLIC_APEX=https://${PUBLIC_DOMAIN}/"
+
+      - name: Live production QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "${RUNNER_TEMP}/b60-smoke.cjs" "https://${PUBLIC_DOMAIN}/" LIVE_PUBLISH
+          echo "PRODUCTION_ACCEPTED=https://${PUBLIC_DOMAIN}/"
