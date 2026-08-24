@@ -1,0 +1,36 @@
+name: B62 Padiem Chat CI
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-chat/**"
+      - "reference/business-62-padiem-chat-v1/**"
+      - ".github/workflows/b62-padiem-chat-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Compile
+        run: python -m compileall -q app worker.py
+      - name: JavaScript syntax
+        run: node --check static/app.js
+      - name: Tests
+        run: python -m pytest -q

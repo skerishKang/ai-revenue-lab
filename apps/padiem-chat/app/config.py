@@ -31,22 +31,34 @@ class Settings:
     timeout_seconds: float = 20.0
 
     @classmethod
-    def from_env(cls) -> "Settings":
-        mode = os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock").strip().lower()
+    def from_values(
+        cls,
+        runtime_mode: object = "mock",
+        b14_base_url: object = None,
+        timeout_seconds: object = 20.0,
+    ) -> "Settings":
+        mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
             raise ConfigError("PADIEM_CHAT_RUNTIME_MODE must be mock or b14")
 
-        raw_base = os.getenv("PADIEM_CHAT_B14_BASE_URL", "").strip()
+        raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
         if mode == "b14" and base is None:
             raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
 
-        raw_timeout = os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20").strip()
         try:
-            timeout = float(raw_timeout)
-        except ValueError as exc:
+            timeout = float(timeout_seconds)
+        except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be numeric") from exc
         if not 1 <= timeout <= 60:
             raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 60")
 
         return cls(runtime_mode=mode, b14_base_url=base, timeout_seconds=timeout)
+
+    @classmethod
+    def from_env(cls) -> "Settings":
+        return cls.from_values(
+            runtime_mode=os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock"),
+            b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
+            timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
+        )

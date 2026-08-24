@@ -31,9 +31,33 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
 
 The browser never supplies a provider key or an upstream URL. B62 calls the fixed Business 14 endpoint using `model=b14/auto` and lets Business 14 choose the actual route.
 
-## Phase 2 scope
+## Cloudflare Python Worker package
 
-Live chat transport only. Search, file upload, login/history, Projects, image, voice, billing and public Production deployment are not part of this phase.
+`worker.py` is the Cloudflare Worker entrypoint and `wrangler.toml` deliberately defaults the deployment to:
+
+```text
+PADIEM_CHAT_RUNTIME_MODE=mock
+```
+
+The deployed Worker creates the Starlette app from immutable Worker bindings through `settings_from_worker_bindings(self.env)`. It does not depend on browser-provided upstream configuration and it does not define an OpenRouter/provider-key binding.
+
+Supported deployment-owned bindings:
+
+```text
+PADIEM_CHAT_RUNTIME_MODE
+PADIEM_CHAT_B14_BASE_URL
+PADIEM_CHAT_TIMEOUT_SECONDS
+```
+
+`b14` mode without a valid B14 URL fails closed instead of silently falling back to mock.
+
+All responses receive `nosniff`, `DENY` frame policy and `no-referrer`; API and health responses additionally receive `Cache-Control: no-store`.
+
+## Public-release boundary
+
+A deployed Worker is not automatically a public live-AI release. Anonymous live-provider access requires a separate abuse/cost gate with Cloudflare-side rate limiting or equivalent globally reliable controls, quota/spend limits and an emergency disable path. A per-isolate Python counter must not be treated as the public security boundary.
+
+No DNS/custom-domain mutation is part of Phase 3.
 
 ## Tests
 
