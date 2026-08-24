@@ -1,0 +1,33 @@
+name: B60 New Signal Onboarding QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-60-ai-api-v1/collector/**'
+      - '.github/workflows/b60-new-signal-onboarding-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  collector-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact head
+        shell: bash
+        run: |
+          echo "EXPECTED=${{ github.event.pull_request.head.sha }}"
+          echo "ACTUAL=$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Run B60 collector contract tests
+        run: node --test reference/business-60-ai-api-v1/collector/*.test.cjs
