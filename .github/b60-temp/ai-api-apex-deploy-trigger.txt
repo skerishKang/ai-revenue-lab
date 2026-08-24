@@ -1,0 +1,1 @@
+Trigger dedicated ai-api.pages.dev apex deployment after workflow registration.
