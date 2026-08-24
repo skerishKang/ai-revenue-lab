@@ -20,7 +20,8 @@ test('first screen is a simple Padiem Chat entry point', () => {
 
 test('required deterministic Phase 1 states are reviewable', () => {
   for (const state of ['home', 'chat', 'search', 'attachment', 'error']) {
-    assert.match(js, new RegExp(`state === \\"${state}\\"|dataset\\.state = \\"${state}\\"|targetState === \\"${state}\\"`));
+    const statePattern = new RegExp(`(?:state ===|dataset\\.state =|targetState ===) "${state}"`);
+    assert.match(js, statePattern);
   }
   assert.match(readme, /mobile uses the same states through responsive CSS/);
 });
@@ -47,6 +48,12 @@ test('parent-generation accessibility basics are explicit', () => {
   assert.match(css, /min-height:\s*4[0248]px/);
   assert.match(html, /aria-label="메시지 입력"/);
   assert.match(html, /aria-label="메시지 보내기"/);
+});
+
+test('hidden review states remain visually hidden until activated', () => {
+  assert.match(html, /id="messageList" hidden/);
+  assert.match(html, /id="attachmentChip" hidden/);
+  assert.match(html, /\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}/);
 });
 
 test('Projects are visible only as a future capability', () => {
