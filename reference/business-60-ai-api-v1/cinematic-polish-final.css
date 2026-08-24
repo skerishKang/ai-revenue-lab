@@ -6,11 +6,40 @@
 .sticky.identity-clean .gesture-cursor,
 .sticky.identity-clean .capability-world,
 .sticky.identity-clean .world-split,
-.sticky.identity-clean .world-transition-wash{
-  opacity:0!important;
-  pointer-events:none!important;
-}
+.sticky.identity-clean .world-transition-wash{opacity:0!important;pointer-events:none!important}
 .sticky.identity-clean .cinema-title{z-index:88}
+@media(max-width:760px){.sticky.identity-clean .cinema-title{left:6vw;bottom:11vh}}
+
+/* B60 protagonist visibility correction. Reuses existing raster assets only. */
+.world-grade{mix-blend-mode:normal!important;background:linear-gradient(90deg,rgba(0,2,8,.30),rgba(2,8,18,.018) 48%,rgba(0,2,8,.14)),radial-gradient(circle at 64% 40%,rgba(111,240,255,.13),transparent 27%)!important}
+.sticky.connected .world-grade{background:linear-gradient(90deg,rgba(0,2,8,.25),rgba(2,9,20,.015) 52%,rgba(0,2,8,.13)),radial-gradient(circle at 32% 31%,rgba(126,244,255,.12),transparent 22%)!important}
+
+.sticky:not(.connected) .shot-alone{z-index:6;opacity:clamp(.68,calc(1.02 - var(--progress)),.98)!important;mix-blend-mode:screen!important;filter:grayscale(.46) sepia(.18) hue-rotate(145deg) saturate(1.72) brightness(1.28) contrast(1.04)!important;-webkit-mask-image:radial-gradient(ellipse 43% 78% at 66% 53%,#000 0 55%,rgba(0,0,0,.94) 67%,rgba(0,0,0,.58) 82%,rgba(0,0,0,.18) 92%,transparent 100%)!important;mask-image:radial-gradient(ellipse 43% 78% at 66% 53%,#000 0 55%,rgba(0,0,0,.94) 67%,rgba(0,0,0,.58) 82%,rgba(0,0,0,.18) 92%,transparent 100%)!important}
+.sticky:not(.connected) .shot-alone img{object-position:65% center!important}
+.sticky.connected .shot-close{filter:grayscale(.66) sepia(.22) hue-rotate(145deg) saturate(1.5) brightness(.72) contrast(1.1)!important;-webkit-mask-image:radial-gradient(ellipse 25% 67% at 34% 51%,#000 0 55%,rgba(0,0,0,.9) 67%,rgba(0,0,0,.32) 81%,transparent 95%);mask-image:radial-gradient(ellipse 25% 67% at 34% 51%,#000 0 55%,rgba(0,0,0,.9) 67%,rgba(0,0,0,.32) 81%,transparent 95%)}
+
+/* Verified gesture-touch.webp only. Soft masks follow palm/fingers; the source
+   plate is pushed toward black so screen blending removes the rectangular field. */
+.gesture-hand{left:65%!important;right:auto!important;top:48%!important;width:min(38vw,580px)!important;transform-origin:50% 50%!important;background:none!important;overflow:visible!important;mix-blend-mode:screen!important;-webkit-mask-image:radial-gradient(ellipse 43% 56% at 56% 70%,#000 0 48%,rgba(0,0,0,.9) 60%,rgba(0,0,0,.45) 76%,transparent 92%),radial-gradient(ellipse 38% 34% at 77% 43%,#000 0 45%,rgba(0,0,0,.88) 58%,rgba(0,0,0,.38) 72%,transparent 88%)!important;mask-image:radial-gradient(ellipse 43% 56% at 56% 70%,#000 0 48%,rgba(0,0,0,.9) 60%,rgba(0,0,0,.45) 76%,transparent 92%),radial-gradient(ellipse 38% 34% at 77% 43%,#000 0 45%,rgba(0,0,0,.88) 58%,rgba(0,0,0,.38) 72%,transparent 88%)!important;-webkit-mask-composite:source-over!important;mask-composite:add!important}
+.gesture-hand img{display:block!important;width:100%!important;height:auto!important;opacity:1!important}
+.sticky.hand-ready .gesture-hand{opacity:.9!important;transform:translate(-42%,-50%) rotate(-2deg) scaleX(-1) scale(.96)!important;filter:grayscale(1) sepia(.42) hue-rotate(138deg) saturate(2.25) brightness(.58) contrast(1.9) drop-shadow(0 0 30px rgba(139,244,255,.42))!important}
+.sticky.contact-armed .gesture-hand{opacity:.98!important;transform:translate(-48%,-50%) rotate(-1deg) scaleX(-1) scale(1.02)!important;filter:grayscale(1) sepia(.46) hue-rotate(138deg) saturate(2.35) brightness(.7) contrast(1.95) drop-shadow(0 0 42px rgba(145,248,255,.62))!important}
+.sticky.hand-touching .gesture-hand{opacity:1!important;transform:translate(-53%,-50%) rotate(0deg) scaleX(-1) scale(1.07)!important;filter:grayscale(1) sepia(.48) hue-rotate(138deg) saturate(2.45) brightness(.84) contrast(2) drop-shadow(0 0 56px rgba(158,250,255,.8))!important}
+
 @media(max-width:760px){
-  .sticky.identity-clean .cinema-title{left:6vw;bottom:11vh}
+  .sticky:not(.connected) .shot-alone{opacity:clamp(.74,calc(1.04 - var(--progress)),1)!important;filter:grayscale(.42) sepia(.18) hue-rotate(145deg) saturate(1.68) brightness(1.34) contrast(1.03)!important;-webkit-mask-image:radial-gradient(ellipse 56% 75% at 65% 53%,#000 0 55%,rgba(0,0,0,.94) 68%,rgba(0,0,0,.56) 83%,rgba(0,0,0,.18) 93%,transparent 100%)!important;mask-image:radial-gradient(ellipse 56% 75% at 65% 53%,#000 0 55%,rgba(0,0,0,.94) 68%,rgba(0,0,0,.56) 83%,rgba(0,0,0,.18) 93%,transparent 100%)!important}
+  .sticky.connected .shot-close{filter:grayscale(.64) sepia(.22) hue-rotate(145deg) saturate(1.48) brightness(.76) contrast(1.08)!important;-webkit-mask-image:radial-gradient(ellipse 35% 66% at 34% 51%,#000 0 55%,rgba(0,0,0,.88) 68%,rgba(0,0,0,.3) 83%,transparent 96%);mask-image:radial-gradient(ellipse 35% 66% at 34% 51%,#000 0 55%,rgba(0,0,0,.88) 68%,rgba(0,0,0,.3) 83%,transparent 96%)}
+  .gesture-hand{left:66%!important;top:49%!important;width:64vw!important}
+  .sticky.hand-ready .gesture-hand{opacity:.9!important;transform:translate(-46%,-50%) rotate(-2deg) scaleX(-1) scale(.94)!important}
+  .sticky.contact-armed .gesture-hand{opacity:.98!important;transform:translate(-51%,-50%) rotate(-1deg) scaleX(-1) scale(1)!important}
+  .sticky.hand-touching .gesture-hand{opacity:1!important;transform:translate(-56%,-50%) rotate(0deg) scaleX(-1) scale(1.05)!important}
 }
+
+/* Once CONNECT is activated the touch plate must leave the composition. The
+   connected state can coexist with hand-touching, so this terminal rule wins
+   the cascade and prevents the source raster from leaking into later scenes. */
+.sticky.connected .gesture-hand{opacity:0!important;visibility:hidden!important;animation:none!important;filter:none!important;pointer-events:none!important}
+
+/* Mobile hard-gate sampling: reveal the hand synchronously when hand-ready is
+   entered so the visual and computed-state gate cannot race the opacity tween. */
+@media(max-width:760px){.sticky.hand-ready:not(.connected) .gesture-hand{opacity:.9!important;visibility:visible!important;transition:none!important}}
