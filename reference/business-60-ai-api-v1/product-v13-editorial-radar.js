@@ -220,7 +220,7 @@
     <div class="radar-masthead">
       <a class="radar-wordmark" href="#radar">AI 무료 레이더</a>
       <p>오늘 쓸 수 있는 무료 AI를 먼저 보고, 가입 혜택과 상시 무료는 따로 비교합니다.</p>
-      <span>${liveOpportunities.length}개 지금 무료 · ${signupCredits.length}개 가입 혜택 · ${durable.length}개 지속 경로</span>
+      <span>${liveOpportunities.length}개 지금 무료 · ${signupCredits.length}개 가입 혜택 · ${durable.length}개 지속 경로 · 수동 큐레이션</span>
     </div>
 
     <div class="radar-rule"><span>지금 무료</span><time>${todayKey}</time></div>
