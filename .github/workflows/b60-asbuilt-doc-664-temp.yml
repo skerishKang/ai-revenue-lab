@@ -1,0 +1,82 @@
+name: B60 As-Built Doc 664 Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  asbuilt-contract:
+    if: github.event.pull_request.number == 664
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      PRODUCT_SHA: d9e305b325954ad4cc663238ee490b070dc03f45
+      BASE_SHA: 43afa2410ee5c5bd9a8f74290964b1f8d3603462
+      DOC: docs/product/B60_PRODUCT_IA_AND_B14_HANDOFF_ARCHITECTURE.md
+    steps:
+      - name: Checkout carrier
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact product head
+        uses: actions/checkout@v4
+        with:
+          ref: d9e305b325954ad4cc663238ee490b070dc03f45
+          path: product
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact current main
+        uses: actions/checkout@v4
+        with:
+          ref: 43afa2410ee5c5bd9a8f74290964b1f8d3603462
+          path: base
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate isolated documentation delta and synthetic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C product rev-parse HEAD)" = "${PRODUCT_SHA}"
+          test "$(git -C base rev-parse HEAD)" = "${BASE_SHA}"
+          delta="$(git -C product diff --name-only "${BASE_SHA}...${PRODUCT_SHA}")"
+          test "${delta}" = "${DOC}"
+          git -C product config user.email "b60-qa@invalid.local"
+          git -C product config user.name "B60 QA"
+          git -C product merge --no-commit --no-ff "${BASE_SHA}"
+          merged_delta="$(git -C product diff --cached --name-only "${BASE_SHA}")"
+          test "${merged_delta}" = "${DOC}"
+          echo 'SYNTHETIC_MERGE=CLEAN'
+          echo 'SEMANTIC_DELTA=DOC_ONLY'
+      - name: Validate as-built authority markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          f="product/${DOC}"
+          grep -F 'Status: `AS_BUILT_AUTHORITY`' "$f"
+          grep -F 'PRIMARY_IA = DISCOVER_PROVIDERS_MODELS_CONNECT_WATCH' "$f"
+          grep -F 'ROUTE_COMPARE_MAX = 3' "$f"
+          grep -F 'EXACT_B14_MAPPING_COUNT = 1' "$f"
+          grep -F 'target URL        = null' "$f"
+          grep -F 'HUMAN_PUBLICATION_AUTHORITY_REQUIRED = YES' "$f"
+          grep -F 'CANONICAL_PUBLIC_SURFACE = https://ai-api-a9x.pages.dev/' "$f"
+          ! grep -F 'UI_UX_IMPLEMENTATION_NEXT = YES' "$f"
+          echo 'AS_BUILT_MARKERS=PASS'
+      - name: Cross-check current main runtime contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'product-v9-ia.js' base/apps/portfolio-console/ai-api/index.html
+          grep -F 'product-v10-route-compare.js' base/apps/portfolio-console/ai-api/index.html
+          grep -F 'product-v11-route-detail.js' base/apps/portfolio-console/ai-api/index.html
+          grep -F 'product-v12-watch.js' base/apps/portfolio-console/ai-api/index.html
+          grep -F 'korean-v1.js' base/apps/portfolio-console/ai-api/index.html
+          grep -F "'openrouter-free-router'" base/apps/portfolio-console/ai-api/data/execution-handoff-v10.js
+          grep -F "b14RouteId: 'openrouter:openrouter/free'" base/apps/portfolio-console/ai-api/data/execution-handoff-v10.js
+          grep -F 'targetUrl: null' base/apps/portfolio-console/ai-api/data/execution-handoff-v10.js
+          grep -F 'HUMAN_EXPLICIT_PUBLISH_REQUIRED' base/reference/business-60-ai-api-v1/collector/README.md
+          grep -F 'su:"https://ai-api-a9x.pages.dev/"' base/apps/portfolio-console/business-manifest.js
+          echo 'CURRENT_MAIN_RUNTIME_CROSSCHECK=PASS'
