@@ -102,6 +102,7 @@
 .radar-signup-card {
   display: grid;
   grid-template-columns: minmax(300px, .9fr) minmax(0, 1.1fr);
+  grid-template-areas: 'image copy';
   min-height: 440px;
   background: #fff;
   border-left: 1px solid var(--ink);
@@ -109,22 +110,27 @@
   border-bottom: 1px solid var(--ink);
 }
 
+.radar-signup-card:nth-child(even) {
+  grid-template-areas: 'copy image';
+}
+
 .radar-signup-card:last-child {
   border-bottom: 0;
 }
 
 .radar-photo.is-signup {
+  grid-area: image;
   min-height: 440px;
   border-right: 1px solid var(--ink);
 }
 
 .radar-signup-card:nth-child(even) .radar-photo.is-signup {
-  order: 2;
   border-right: 0;
   border-left: 1px solid var(--ink);
 }
 
 .radar-signup-copy {
+  grid-area: copy;
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -258,14 +264,15 @@
     padding-top: 54px;
   }
 
-  .radar-signup-card {
+  .radar-signup-card,
+  .radar-signup-card:nth-child(even) {
     grid-template-columns: 1fr;
+    grid-template-areas: 'image' 'copy';
     min-height: 0;
   }
 
   .radar-signup-card:nth-child(even) .radar-photo.is-signup,
   .radar-photo.is-signup {
-    order: 0;
     height: 250px;
     min-height: 250px;
     border-left: 0;
