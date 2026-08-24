@@ -108,7 +108,7 @@
     identity({ n:58, s:"personal-writing-voice-studio", t:"Personal Writing Voice Studio", k:"개인 문체 스튜디오", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-58-personal-writing-voice-studio-v1/" }),
     identity({ n:59, s:"living-archive", t:"Living Archive", k:"나의 기록서재", a:NA.CANDIDATE, l:"mvp_vertical_slice", st:"review", p:5, w:"reference/business-59-living-archive-v1/" }),
     // ═══ 60 ═══
-    identity({ n:60, s:"ai-api", t:"AI API", k:"AI API 탐색 허브", a:NA.PROPOSED, l:"private_preview", st:"review", p:90, su:"https://ai-revenue-business-60-ai-api.pages.dev/", w:"reference/business-60-ai-api-v1/" }),
+    identity({ n:60, s:"ai-api", t:"AI API", k:"AI API 탐색 허브", a:NA.PROPOSED, l:"private_preview", st:"review", p:90, su:"https://ai-api-a9x.pages.dev/", w:"reference/business-60-ai-api-v1/" }),
   ];
 
   (function () {
