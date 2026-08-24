@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#02040a">
-  <title>AI API — Cinematic Anchor</title>
+  <title>AI API — 검증된 AI 접근 경로</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="cinematic-v2.css">
   <link rel="stylesheet" href="cinematic-v3.css">
@@ -19,15 +19,16 @@
   <link rel="stylesheet" href="product-v10-route-compare.css">
   <link rel="stylesheet" href="product-v11-route-detail.css">
   <link rel="stylesheet" href="product-v12-watch.css">
+  <link rel="stylesheet" href="korean-v1.css">
 </head>
 <body>
-  <header class="shell" aria-label="AI API navigation">
+  <header class="shell" aria-label="AI API 탐색">
     <a class="brand" href="#top">AI / API</a>
-    <nav><a href="#signal">SIGNAL</a><a href="#source">SOURCE</a></nav>
+    <nav><a href="#signal">정보</a><a href="#source">출처</a></nav>
   </header>
 
   <main id="top">
-    <section class="cinematic" id="cinematic" aria-label="AI API cinematic entry">
+    <section class="cinematic" id="cinematic" aria-label="AI API 시작 화면">
       <div class="sticky" id="stage">
         <canvas id="particles" aria-hidden="true"></canvas>
         <div class="planet" aria-hidden="true"></div>
@@ -62,8 +63,8 @@
         <div class="vision-ring" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="scan-beam" aria-hidden="true"></div>
 
-        <button class="access-core" id="connect" type="button" aria-describedby="connect-note"><span>API</span><b>CONNECT</b></button>
-        <p class="connect-note" id="connect-note">touch the access layer</p>
+        <button class="access-core" id="connect" type="button" aria-describedby="connect-note"><span>API</span><b>연결</b></button>
+        <p class="connect-note" id="connect-note">접근 지점을 눌러 연결</p>
 
         <div class="capability-world" aria-hidden="true">
           <div class="capability capability-code">
@@ -74,12 +75,12 @@
           <div class="capability capability-voice"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
         </div>
 
-        <div class="spatial" id="spatial" aria-label="Spatial AI surfaces">
-          <button class="surface surface-model" type="button" data-depth="1.1"><small>MODEL</small><strong>GLM 5.2</strong><em>available route</em></button>
-          <button class="surface surface-route" type="button" data-depth="-.7"><small>ROUTE</small><strong>PROVIDERS</strong><em>cost · speed · access</em></button>
-          <button class="surface surface-action" type="button" data-depth=".55"><small>ACTION</small><strong>CREATE</strong><em>intent → code</em></button>
+        <div class="spatial" id="spatial" aria-label="AI 기능 화면">
+          <button class="surface surface-model" type="button" data-depth="1.1"><small>모델</small><strong>GLM 5.2</strong><em>이용 가능 경로</em></button>
+          <button class="surface surface-route" type="button" data-depth="-.7"><small>경로</small><strong>제공사</strong><em>비용 · 속도 · 접근</em></button>
+          <button class="surface surface-action" type="button" data-depth=".55"><small>실행</small><strong>만들기</strong><em>요청 → 코드</em></button>
         </div>
-        <div class="gesture-cursor" id="gesture-cursor" aria-hidden="true"><i></i><span>GESTURE</span></div>
+        <div class="gesture-cursor" id="gesture-cursor" aria-hidden="true"><i></i><span>제스처</span></div>
 
         <div class="voice" id="voice" aria-live="polite">
           <div class="wave" aria-hidden="true"></div>
@@ -87,40 +88,40 @@
           <pre id="code"><code></code></pre>
         </div>
 
-        <div class="cinema-title" id="cinema-title"><span>ACCESS CHANGES THE WORLD</span><h1>AI<br>API</h1><p>AI로 들어가는 모든 길.</p></div>
-        <div class="scroll-cue" aria-hidden="true">SCROLL <i></i></div>
+        <div class="cinema-title" id="cinema-title"><span>AI 접근의 모든 경로</span><h1>AI<br>API</h1><p>AI로 들어가는 모든 길.</p></div>
+        <div class="scroll-cue" aria-hidden="true">스크롤 <i></i></div>
       </div>
     </section>
 
     <section class="signal" id="signal" aria-labelledby="signal-title">
       <div class="signal-intro">
-        <span class="eyebrow">LIVE ACCESS SIGNAL / 001</span>
-        <h2 id="signal-title">영화가 끝나면,<br>정보가 시작됩니다.</h2>
-        <p>프로모션을 예쁘게 포장하는 대신, 무엇이 공식 확인됐고 무엇이 아직 확인 중인지 분리합니다.</p>
+        <span class="eyebrow">현재 접근 정보 / 001</span>
+        <h2 id="signal-title">확실한 것과,<br>확인 중인 것을 섞지 않습니다.</h2>
+        <p>프로모션 문구를 그대로 옮기지 않고, 공식 확인된 사실과 아직 확인 중인 내용을 분리해 보여드립니다.</p>
       </div>
 
       <article class="signal-object" id="deal-card">
         <div class="halo" aria-hidden="true"></div>
         <div class="signal-meta"><span>VERCEL</span><span>GLM 5.2</span></div>
         <div class="signal-core">
-          <span class="state pending" id="promo-state">PENDING WEB VERIFICATION</span>
-          <h3 id="deal-headline">GLM 5.2 access signal</h3>
+          <span class="state pending" id="promo-state">추가 확인 필요</span>
+          <h3 id="deal-headline">GLM 5.2 접근 정보</h3>
           <p class="claim" id="deal-claim"></p>
           <dl class="facts" id="verified-facts"></dl>
         </div>
-        <button class="reveal-source" id="reveal-source" type="button">OPEN SOURCE LAYER</button>
+        <button class="reveal-source" id="reveal-source" type="button">출처와 근거 보기</button>
       </article>
     </section>
 
     <section class="source" id="source" aria-labelledby="source-title">
-      <div><span class="eyebrow">SOURCE CONFIDENCE</span><h2 id="source-title">멋있어도,<br>검증 상태는 흐리지 않습니다.</h2></div>
+      <div><span class="eyebrow">출처 신뢰도</span><h2 id="source-title">출처를 확인하고,<br>검증 상태를 구분합니다.</h2></div>
       <div class="source-panel" id="source-panel">
-        <p class="source-status"><span>VERIFIED_OFFICIAL_WEB</span> GLM 5.2 official model facts</p>
-        <p class="source-status"><span>VERIFIED_OFFICIAL_WEB</span> Vercel Labs fx product identity</p>
-        <p class="source-status warning"><span>PENDING_WEB_VERIFICATION</span> exact fx promotion / end-date claim</p>
+        <p class="source-status"><span>공식 확인 완료</span> GLM 5.2 공식 모델 정보</p>
+        <p class="source-status"><span>공식 확인 완료</span> Vercel Labs fx 제품 정보</p>
+        <p class="source-status warning"><span>추가 확인 필요</span> fx 프로모션 종료일 주장</p>
         <p id="source-note"></p>
-        <a id="official-link" href="#" target="_blank" rel="noopener noreferrer">VERCEL OFFICIAL MODEL PAGE ↗</a>
-        <a id="fx-link" href="#" target="_blank" rel="noopener noreferrer">VERCEL LABS FX REPOSITORY ↗</a>
+        <a id="official-link" href="#" target="_blank" rel="noopener noreferrer">VERCEL 공식 모델 페이지 ↗</a>
+        <a id="fx-link" href="#" target="_blank" rel="noopener noreferrer">VERCEL LABS FX 저장소 ↗</a>
       </div>
     </section>
   </main>
@@ -145,5 +146,6 @@
   <script src="product-v10-route-compare.js"></script>
   <script src="product-v11-route-detail.js"></script>
   <script src="product-v12-watch.js"></script>
+  <script src="korean-v1.js"></script>
 </body>
 </html>

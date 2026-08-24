@@ -8,7 +8,7 @@ window.B60_SNAPSHOTS = [
         id: 'vercel-glm52', provider: 'Vercel AI Gateway', title: 'GLM 5.2 on AI Gateway',
         dealType: 'RECURRING_CREDIT', verification: 'VERIFIED_OFFICIAL_WEB',
         freeLabel: '$5 credits / 30 days', model: 'zai/glm-5.2', context: '1M tokens',
-        price: '$1.40/M input · $4.40/M output', access: ['API','AI GATEWAY','CLI/AGENT'],
+        price: 'Varies by routed provider', access: ['API','AI GATEWAY','CLI/AGENT'],
         expiresAt: null, expiryVerification: null
       },
       {
