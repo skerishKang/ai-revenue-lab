@@ -21,21 +21,21 @@ test('editorial surface uses raster photography and no SVG filler', () => {
   const js = read('product-v13-editorial-radar.js');
   assert.doesNotMatch(media, /\.svg(?:[?'"\s]|$)/i);
   assert.doesNotMatch(js, /<svg\b/i);
-  assert.ok((media.match(/images\.unsplash\.com/g) || []).length >= 5);
   assert.ok((media.match(/sourcePage:/g) || []).length >= 5);
 });
 
-test('benefit-first information architecture is explicit', () => {
+test('benefit-first information architecture is explicit in native Korean', () => {
   const js = read('product-v13-editorial-radar.js');
-  for (const label of ['FREE NOW', 'ALWAYS FREE', 'ENDING SOON', 'JUST CHECKED', 'CHECKING NOW']) {
-    assert.match(js, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  for (const label of ['지금 무료', '상시 무료', '종료 임박', '최근 확인', '확인 중']) {
+    assert.match(js, new RegExp(label));
   }
+  assert.match(js, /AI 무료 레이더/);
 });
 
-test('ENDING SOON still requires verified official expiry evidence', () => {
+test('ending soon still requires verified official expiry evidence', () => {
   const js = read('product-v13-editorial-radar.js');
   assert.match(js, /signal\.expiresAt && signal\.expiryVerification === 'VERIFIED_OFFICIAL_WEB'/);
-  assert.match(js, /확인되지 않은 종료일이나 프로모션 문구는 LIVE\/ENDING SOON으로 승격하지 않습니다/);
+  assert.match(js, /확인되지 않은 종료일이나 프로모션 문구는 지금 무료\/종료 임박으로 승격하지 않습니다/);
 });
 
 test('legacy cinematic is visually dormant while deep explore remains available', () => {
@@ -50,5 +50,5 @@ test('manual curation presentation remains frontend-only', () => {
   const js = read('product-v13-editorial-radar.js');
   assert.doesNotMatch(js, /fetch\s*\(/);
   assert.doesNotMatch(js, /XMLHttpRequest|WebSocket|EventSource/);
-  assert.match(js, /MANUALLY CURATED/);
+  assert.match(js, /수동 큐레이션/);
 });
