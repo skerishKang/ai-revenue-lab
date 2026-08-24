@@ -8,7 +8,7 @@
 
   document.documentElement.dataset.b60V13 = 'editorial';
 
-  const esc = (value = '') => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]));
+  const esc = (value = '') => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const official = signal => signal.verification === 'VERIFIED_OFFICIAL_WEB';
   const verifiedExpiring = signal => Boolean(signal.expiresAt && signal.expiryVerification === 'VERIFIED_OFFICIAL_WEB');
   const alwaysFree = signal => ['PERMANENT_FREE', 'FREE_MODEL'].includes(signal.dealType) && !verifiedExpiring(signal);
@@ -53,7 +53,7 @@
   function imageFigure(signal, className = '') {
     const visual = visualFor(signal);
     return `<figure class="radar-photo ${className}">
-      <img src="${esc(visual.image)}" alt="${esc(visual.alt)}" loading="${signal.id === featured.id ? 'eager' : 'lazy'}" decoding="async">
+      <img src="${esc(visual.image)}" alt="${esc(visual.alt)}" loading="eager" decoding="async">
       <figcaption><span>${esc(visual.source)}</span><span>${esc(visual.credit)}</span></figcaption>
     </figure>`;
   }
@@ -78,7 +78,7 @@
   function boardItem(signal, index) {
     const visual = visualFor(signal);
     return `<button class="radar-board-item" type="button" data-radar-open="${esc(signal.id)}">
-      <img src="${esc(visual.image)}" alt="" loading="lazy" decoding="async">
+      <img src="${esc(visual.image)}" alt="" loading="eager" decoding="async">
       <span class="radar-board-no">0${index + 1}</span>
       <span class="radar-board-copy"><small>${benefitLabel(signal)} · ${esc(signal.provider)}</small><strong>${esc(signal.freeLabel)}</strong><em>${esc(signal.title)}</em></span>
     </button>`;
