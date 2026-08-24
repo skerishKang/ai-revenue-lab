@@ -10,6 +10,7 @@ from .config import Settings
 from .skills import Skill, get_skill, skill_public_metadata
 
 MAX_B14_RESPONSE_BYTES = 1_048_576
+MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
 
 
 @dataclass
@@ -31,10 +32,21 @@ class B14Client:
         self,
         messages: list[dict[str, str]],
         skill: Skill | None = None,
+        additional_system_context: str | None = None,
     ) -> dict[str, Any]:
         resolved_skill = skill or get_skill()
+        system_content = resolved_skill.system_instruction
+        if additional_system_context is not None:
+            if not isinstance(additional_system_context, str):
+                raise ValueError("additional system context must be a string")
+            extra = additional_system_context.strip()
+            if len(extra) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+                raise ValueError("additional system context is too large")
+            if extra:
+                system_content = f"{system_content}\n\n{extra}"
+
         upstream_messages = [
-            {"role": "system", "content": resolved_skill.system_instruction},
+            {"role": "system", "content": system_content},
             *messages,
         ]
 

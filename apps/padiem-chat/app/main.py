@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -12,8 +13,10 @@ from starlette.staticfiles import StaticFiles
 
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
+from .grounding import GroundedChatService, GroundingError
 from .skills import Skill, get_skill
-from .web_tools import create_web_provider
+from .tools import ToolSpec, get_tool
+from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 MAX_BROWSER_BODY_BYTES = 65_536
@@ -27,10 +30,53 @@ class BrowserRequestError(ValueError):
     pass
 
 
-def _validate_payload(raw: Any) -> tuple[list[dict[str, str]], Skill]:
+@dataclass(frozen=True, slots=True)
+class BrowserToolRequest:
+    tool: ToolSpec
+    tool_input: str | None
+
+
+def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
+    tool_value = raw.get("tool")
+    has_tool_input = "tool_input" in raw
+    if tool_value is None:
+        if has_tool_input:
+            raise BrowserRequestError("도구 입력을 사용하려면 도구를 함께 선택해 주세요.")
+        return None
+    if not isinstance(tool_value, str) or not tool_value.strip():
+        raise BrowserRequestError("도구 형식이 올바르지 않습니다.")
+    try:
+        tool = get_tool(tool_value.strip())
+    except ValueError as exc:
+        raise BrowserRequestError(str(exc)) from exc
+
+    value = raw.get("tool_input")
+    if tool.id == "web_search":
+        if value is None:
+            return BrowserToolRequest(tool=tool, tool_input=None)
+        if not isinstance(value, str):
+            raise BrowserRequestError("검색어 형식이 올바르지 않습니다.")
+        query = value.strip()
+        if not query or len(query) > MAX_QUERY_CHARS:
+            raise BrowserRequestError("검색어는 1자 이상 2000자 이하로 입력해 주세요.")
+        return BrowserToolRequest(tool=tool, tool_input=query)
+
+    if tool.id == "web_fetch":
+        if not isinstance(value, str) or not value.strip():
+            raise BrowserRequestError("읽을 공개 웹 주소가 필요합니다.")
+        try:
+            safe_url = normalize_public_url(value)
+        except ValueError as exc:
+            raise BrowserRequestError(str(exc)) from exc
+        return BrowserToolRequest(tool=tool, tool_input=safe_url)
+
+    raise BrowserRequestError("지원하지 않는 도구입니다.")
+
+
+def _validate_payload(raw: Any) -> tuple[list[dict[str, str]], Skill, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "skill"}:
+    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
@@ -68,7 +114,8 @@ def _validate_payload(raw: Any) -> tuple[list[dict[str, str]], Skill]:
 
     if not any(item["role"] == "user" for item in out):
         raise BrowserRequestError("사용자 질문이 필요합니다.")
-    return out, skill
+    tool_request = _validate_tool_request(raw)
+    return out, skill, tool_request
 
 
 async def health(request: Request) -> JSONResponse:
@@ -92,7 +139,7 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages, skill = _validate_payload(raw)
+        messages, skill, tool_request = _validate_payload(raw)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse(
@@ -100,10 +147,19 @@ async def api_chat(request: Request) -> JSONResponse:
             status_code=422,
         )
 
-    client: B14Client = request.app.state.b14_client
     try:
-        result = await client.complete(messages, skill=skill)
-    except ChatRuntimeError as exc:
+        if tool_request is None:
+            client: B14Client = request.app.state.b14_client
+            result = await client.complete(messages, skill=skill)
+        else:
+            grounded: GroundedChatService = request.app.state.grounded_chat
+            result = await grounded.complete(
+                messages,
+                skill=skill,
+                tool=tool_request.tool,
+                tool_input=tool_request.tool_input,
+            )
+    except (ChatRuntimeError, GroundingError, WebToolError) as exc:
         return JSONResponse(
             {"error": {"code": exc.code, "message": exc.user_message}},
             status_code=exc.status_code,
@@ -127,6 +183,7 @@ def create_app(
     app.state.settings = resolved
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
+    app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
     return app
 
 
