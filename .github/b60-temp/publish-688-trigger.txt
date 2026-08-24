@@ -1,1 +1,0 @@
-Trigger exact-head QA for B60 issue #688 product head 551d57f6e0f40c6d046942378fcb64c5b0d87167. Remove after validation.
