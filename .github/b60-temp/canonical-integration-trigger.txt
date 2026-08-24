@@ -1,1 +1,1 @@
-Trigger B60 canonical integration exact-head validation for PR #678.
+Trigger final B60 canonical main composition validation for PR #678.
