@@ -1,1 +1,0 @@
-Trigger final B60 canonical main composition validation for PR #678.
