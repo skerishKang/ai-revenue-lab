@@ -8,7 +8,7 @@ on:
       - '.github/workflows/b60-editorial-radar-qa.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   qa:
@@ -58,6 +58,24 @@ jobs:
 
           test "$(find "$GITHUB_WORKSPACE/b60-raster-source" -name '*.webp' -type f | wc -l)" -eq 5
           du -h "$GITHUB_WORKSPACE/b60-raster-source"/*.webp
+
+      - name: Vendor raster assets when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset_dir='reference/business-60-ai-api-v1/assets'
+          mkdir -p "$asset_dir"
+          cp "$GITHUB_WORKSPACE"/b60-raster-source/*.webp "$asset_dir"/
+          git add "$asset_dir"/editorial-*.webp
+          if git diff --cached --quiet; then
+            echo 'Raster assets already match the PR branch.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'assets(b60): vendor editorial raster photography'
+          head_branch='${{ github.event.pull_request.head.ref }}'
+          git push origin HEAD:"$head_branch"
 
       - name: Run B60 contracts
         shell: bash
