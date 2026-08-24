@@ -9,6 +9,9 @@ WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
     "PADIEM_CHAT_B14_BASE_URL",
     "PADIEM_CHAT_TIMEOUT_SECONDS",
+    "PADIEM_CHAT_WEB_PROVIDER",
+    "FIRECRAWL_API_KEY",
+    "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
 })
 
 BASE_SECURITY_HEADERS = {
@@ -29,6 +32,9 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         runtime_mode=_binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
         b14_base_url=_binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         timeout_seconds=_binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
+        web_provider=_binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
+        firecrawl_api_key=_binding_value(env, "FIRECRAWL_API_KEY"),
+        web_timeout_seconds=_binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
     )
 
 

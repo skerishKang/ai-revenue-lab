@@ -20,14 +20,19 @@ def test_settings_from_values_and_env_share_validation(monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "b14")
     monkeypatch.setenv("PADIEM_CHAT_B14_BASE_URL", "https://example.com/root/")
     monkeypatch.setenv("PADIEM_CHAT_TIMEOUT_SECONDS", "12")
+    monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
     assert Settings.from_env() == direct
 
 
-def test_worker_bindings_default_to_mock():
+def test_worker_bindings_default_to_mock_and_web_off():
     settings = settings_from_worker_bindings({})
     assert settings.runtime_mode == "mock"
     assert settings.b14_base_url is None
     assert settings.timeout_seconds == 20.0
+    assert settings.web_provider == "off"
+    assert settings.firecrawl_api_key is None
+    assert settings.web_timeout_seconds == 15.0
 
 
 def test_worker_b14_mode_requires_valid_fixed_url():
@@ -47,16 +52,31 @@ def test_worker_b14_mode_requires_valid_fixed_url():
     assert settings == Settings(runtime_mode="b14", b14_base_url="https://b14.example", timeout_seconds=15.0)
 
 
-def test_worker_binding_contract_contains_no_provider_secret():
+def test_firecrawl_worker_binding_is_server_only_and_model_provider_keys_stay_absent():
     assert WORKER_BINDING_NAMES == {
         "PADIEM_CHAT_RUNTIME_MODE",
         "PADIEM_CHAT_B14_BASE_URL",
         "PADIEM_CHAT_TIMEOUT_SECONDS",
+        "PADIEM_CHAT_WEB_PROVIDER",
+        "FIRECRAWL_API_KEY",
+        "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
     }
     joined = " ".join(sorted(WORKER_BINDING_NAMES)).upper()
     assert "OPENROUTER" not in joined
-    assert "API_KEY" not in joined
-    assert "PROVIDER_KEY" not in joined
+    assert "BUSINESS14_PROVIDER_KEY" not in joined
+    assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
+
+    with pytest.raises(ConfigError):
+        settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
+    configured = settings_from_worker_bindings({
+        "PADIEM_CHAT_WEB_PROVIDER": "firecrawl",
+        "FIRECRAWL_API_KEY": "fc-server-only-test",
+        "PADIEM_CHAT_WEB_TIMEOUT_SECONDS": "11",
+    })
+    assert configured.web_provider == "firecrawl"
+    assert configured.firecrawl_api_key == "fc-server-only-test"
+    assert configured.web_timeout_seconds == 11.0
+    assert "fc-server-only-test" not in repr(configured)
 
 
 def test_security_headers_and_api_no_store():
@@ -85,6 +105,7 @@ def test_worker_package_is_mock_first_and_static_assets_are_bound():
     assert "create_app(settings=settings)" in worker
     assert "OPENROUTER_API_KEY" not in worker
     assert "PADIEM_CHAT_B14_BASE_URL" not in worker
+    assert "FIRECRAWL_API_KEY" not in worker
 
 
 def test_phase1_css_blob_content_remains_byte_equal():
