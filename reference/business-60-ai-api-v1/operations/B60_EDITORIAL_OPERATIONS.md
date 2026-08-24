@@ -2,7 +2,7 @@
 
 Status: **CANONICAL OPERATING PLAYBOOK**  
 Effective: **2026-08-25**  
-Tracks: #704, #707
+Tracks: #704, #707, #726
 
 This playbook defines what to do when the owner brings one or more X/web links into any future session.
 
@@ -185,7 +185,7 @@ A lower-tier source must not silently overwrite stronger contradictory evidence.
 
 ## 8. Manual curation workflow is acceptable
 
-The owner does not need a CMS at this stage.
+The owner does not need a large CMS at this stage.
 
 A normal operating loop is:
 
@@ -203,6 +203,28 @@ Owner finds link
 Do not build a large admin panel or automated ingestion system merely because the workflow is manual.
 
 Build tooling only when the repeated manual burden becomes material.
+
+### Lightweight intake helper
+
+A lightweight **편집 인입 워크벤치** is allowed as an operator convenience after repeated manual intake work. Its role is limited to:
+
+```text
+operator-entered facts
+→ field normalization
+→ truth-gate warnings
+→ publication disposition suggestion
+→ candidate JSON / repo-compatible snippet
+```
+
+The workbench **게시 권한을 갖지 않는다**. It must not hold GitHub credentials, write to the repository, call provider APIs, scrape social sources, or autonomously promote a candidate. Verification still happens outside the helper using the source hierarchy in this playbook, and final repository mutation remains an explicit human/assistant-reviewed step.
+
+The canonical helper location is:
+
+```text
+operator/editorial-intake/
+```
+
+It is not linked from the public B60 consumer navigation.
 
 ## 9. Batch intake
 

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B60 Editorial Intake Workbench</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="desk-shell">
+    <header class="desk-head">
+      <div>
+        <p class="eyebrow">B60 · OPERATOR ONLY</p>
+        <h1>편집 인입 워크벤치</h1>
+        <p class="lede">링크를 검증 가능한 B60 후보 레코드로 정리합니다. 이 도구는 <strong>게시하지 않습니다.</strong></p>
+      </div>
+      <div class="boundary-card" aria-label="publication boundary">
+        <span>PUBLICATION BOUNDARY</span>
+        <strong>후보 생성만</strong>
+        <p>GitHub 쓰기 · 자동 게시 · API 호출 없음</p>
+      </div>
+    </header>
+
+    <section class="desk-grid">
+      <form id="intake-form" class="intake-form" autocomplete="off">
+        <section class="form-block is-source">
+          <header><span>01</span><div><b>발견 출처</b><small>먼저 어디서 발견했는지 고정합니다.</small></div></header>
+          <label class="span-2">출처 URL<input name="sourceUrl" type="url" placeholder="https://x.com/... 또는 공식 문서 URL" required></label>
+          <label>출처 이름<input name="sourceLabel" placeholder="예: GMI Cloud · official X"></label>
+          <label>출처 권위<select name="sourceAuthority">
+            <option value="">선택</option>
+            <option>OFFICIAL_WEB</option><option>OFFICIAL_SOCIAL</option><option>OFFICIAL_GITHUB</option><option>PARTNER</option><option>COMMUNITY_SOCIAL</option>
+          </select></label>
+          <a id="source-open" class="text-link is-disabled" href="#" target="_blank" rel="noopener noreferrer">출처 새 창에서 확인 ↗</a>
+        </section>
+
+        <section class="form-block">
+          <header><span>02</span><div><b>혜택 정체</b><small>회사명보다 사용자가 얻는 것을 먼저 씁니다.</small></div></header>
+          <label>Provider<input name="provider" placeholder="OpenCode / GMI Cloud / ..."></label>
+          <label>제품 · 모델<input name="productOrModel" placeholder="Ox Alpha / MiniMax M3 / ..."></label>
+          <label class="span-2">헤드라인<input name="headline" placeholder="사용자가 한 번에 이해할 문장"></label>
+          <label>혜택 표시<input name="benefitLabel" placeholder="$0 · 1M context / $100 credit"></label>
+          <label>내부 title<input name="title" placeholder="짧은 영문/한글 제목"></label>
+          <label class="span-2">요약<textarea name="summary" rows="4" placeholder="무엇이 무료이고 어떤 조건인지, 확인된 사실만 정리"></textarea></label>
+        </section>
+
+        <section class="form-block">
+          <header><span>03</span><div><b>분류</b><small>무료 방식과 편집 중요도는 별개입니다.</small></div></header>
+          <label>혜택 유형<select name="opportunityType">
+            <option value="">선택</option>
+            <option>TEMP_FREE_ACCESS</option><option>SIGNUP_CREDIT</option><option>RECURRING_FREE</option><option>ALWAYS_FREE</option>
+          </select></label>
+          <label>편집 역할<select name="editorialRole"><option>STANDARD</option><option>HOTTEST</option><option>JUST_DROPPED</option><option>REFERENCE</option></select></label>
+          <label>자격<select name="eligibility"><option>UNKNOWN</option><option>ANY_USER</option><option>NEW_USER_ONLY</option><option>ACCOUNT_REQUIRED</option></select></label>
+          <label>검증 상태<select name="verification"><option>PENDING_VERIFICATION</option><option>VERIFIED_OFFICIAL_WEB</option><option>VERIFIED_OFFICIAL_SOCIAL</option></select></label>
+          <label>카테고리<input name="categories" placeholder="API, CODING, VOICE"></label>
+          <label>접근 경로<input name="access" placeholder="OpenRouter, API key, Console"></label>
+        </section>
+
+        <section class="form-block">
+          <header><span>04</span><div><b>기간 · 사용 조건</b><small>모르는 날짜와 제한은 만들지 않습니다.</small></div></header>
+          <label>시작일<input name="startAt" type="date"></label>
+          <label>종료일<input name="expiresAt" type="date"></label>
+          <label>종료일 검증<select name="expiryVerification"><option value="">미확인 / 없음</option><option>VERIFIED_OFFICIAL_WEB</option><option>VERIFIED_OFFICIAL_SOCIAL</option></select></label>
+          <label>가격 · 크레딧<input name="priceOrCredit" placeholder="$0 / $5 credit / ..."></label>
+          <label class="span-2">제한<textarea name="limit" rows="2" placeholder="요청량, 소진 후 과금, 지역 제한 등"></textarea></label>
+          <label class="span-2">조건<textarea name="conditions" rows="3" placeholder="한 줄에 하나씩 또는 쉼표로 구분"></textarea></label>
+        </section>
+
+        <section class="form-block recurring-fields" hidden>
+          <header><span>05</span><div><b>반복 무료</b><small>RECURRING_FREE일 때만 필요합니다.</small></div></header>
+          <label>리필 주기<input name="recurrenceCadence" placeholder="DAILY / 30_DAYS / MONTHLY"></label>
+          <label>표시 문구<input name="recurrenceLabel" placeholder="$5 / 30일"></label>
+          <label class="span-2">리셋 규칙<input name="resetRule" placeholder="00:00 UTC 또는 공식 시각 미표기"></label>
+        </section>
+
+        <section class="form-block">
+          <header><span>06</span><div><b>사용 경로 · 확인 시각</b><small>실제 어디서 쓰는지와 언제 확인했는지 남깁니다.</small></div></header>
+          <label class="span-2">CTA URL<input name="ctaUrl" type="url" placeholder="https://..."></label>
+          <label>확인일<input name="verifiedAt" type="date"></label>
+          <label>관찰 시각<input name="observedAt" placeholder="2026-08-25T08:30:00+09:00"></label>
+        </section>
+
+        <section class="form-block is-optional">
+          <header><span>07</span><div><b>이미지 출처</b><small>이미지를 쓸 때만 채웁니다. 출처 없는 이미지는 쓰지 않습니다.</small></div></header>
+          <label class="span-2">로컬 이미지 경로<input name="image" placeholder="assets/editorial-example.webp"></label>
+          <label class="span-2">대체텍스트<input name="imageAlt" placeholder="사진 내용을 사실적으로 설명"></label>
+          <label>이미지 출처<input name="imageSource" placeholder="Unsplash / Official media"></label>
+          <label>크레딧<input name="imageCredit" placeholder="Photographer / Brand"></label>
+          <label class="span-2">원본 페이지<input name="imageSourcePage" type="url" placeholder="https://..."></label>
+        </section>
+
+        <div class="form-actions">
+          <button type="submit" class="primary">검증하고 후보 만들기</button>
+          <button type="button" id="reset-form">초기화</button>
+        </div>
+      </form>
+
+      <aside class="review-rail" aria-live="polite">
+        <div class="review-sticky">
+          <section class="verdict-card" id="verdict-card" data-verdict="EMPTY">
+            <span>검증 결과</span>
+            <strong id="verdict-text">입력 대기</strong>
+            <p id="disposition-text">아직 후보를 만들지 않았습니다.</p>
+          </section>
+
+          <section class="issue-panel">
+            <header><b>Truth Gate</b><small>오류 · 보류 · 경고</small></header>
+            <div id="issue-list" class="issue-list"><p class="muted">검증 후 여기에 표시됩니다.</p></div>
+          </section>
+
+          <section class="output-panel">
+            <header><b>Opportunity JSON</b><button type="button" data-copy="json">복사</button></header>
+            <pre id="json-output">{}</pre>
+          </section>
+
+          <section class="output-panel">
+            <header><b>editorial-opportunities.js snippet</b><button type="button" data-copy="opportunityJs">복사</button></header>
+            <pre id="js-output">// 검증 후 생성됩니다.</pre>
+          </section>
+
+          <section class="output-panel" id="media-panel" hidden>
+            <header><b>editorial-media.js candidate</b><button type="button" data-copy="mediaJs">복사</button></header>
+            <pre id="media-output"></pre>
+          </section>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="./intake-core.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
