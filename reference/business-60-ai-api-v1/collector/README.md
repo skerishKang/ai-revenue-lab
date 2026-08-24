@@ -18,10 +18,23 @@ NEEDS_REVIEW candidate
   ↓ explicit reviewer decision
 APPROVED_FOR_SNAPSHOT | REJECTED
   ↓ approved candidates only
-snapshot record with VERIFIED_OFFICIAL_WEB
+snapshot record with field-level verification provenance
 ```
 
 There is no code path from network fetch directly to `VERIFIED_OFFICIAL_WEB`.
+
+A promotion may preserve older fields from the base record so the snapshot shape remains usable, but those carried-forward fields are never fresh-stamped merely because another field was observed and approved.
+
+## Field-level verification provenance
+
+Promotion records exactly which fields were supported by the approved evidence:
+
+- `fieldVerification.<field>` contains the official-source status, source id, observed time, review time, and evidence SHA-256 for each newly verified field;
+- `carriedForwardFields` lists pre-existing non-metadata fields that were not observed in the approved candidates;
+- `verificationScope = FULL_RECORD` only when no claim-bearing base fields were carried forward;
+- otherwise `verificationScope = OBSERVED_FIELDS_ONLY` and the record-level status is `PARTIALLY_VERIFIED_OFFICIAL_WEB`.
+
+Example: if a fresh official page confirms `freeLabel` but does not expose the historical `price`, the old price may remain in the snapshot for continuity, but `price` appears in `carriedForwardFields`, has no `fieldVerification.price`, and the whole record cannot claim fresh `VERIFIED_OFFICIAL_WEB` status.
 
 ## Evidence envelope
 
@@ -80,7 +93,7 @@ It never promotes them into the product catalog.
 node --test collector/intake-core.test.cjs
 ```
 
-Tests are deterministic and use mocked HTTP responses; they do not need live network access.
+Tests are deterministic and use mocked HTTP responses; they do not need live network access. The contract suite includes a regression proving that an unobserved historical price cannot become freshly verified when only another field is approved.
 
 ## Non-goals
 
