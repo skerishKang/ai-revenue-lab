@@ -5,7 +5,7 @@
     ['SIGNAL','정보'],['SOURCE','출처'],
     ['Discover','탐색'],['DISCOVER','탐색'],['Providers','제공사'],['PROVIDERS','제공사'],['Models','모델'],['MODELS','모델'],['Connect','연결'],['CONNECT','연결'],['Watch','관심 목록'],['WATCH','관심 목록'],['WATCHLIST','관심 목록'],['WATCHING','관심 목록'],
     ['FREE NOW','지금 무료'],['NEW TODAY','오늘 추가'],['ENDING SOON','종료 임박'],['CHANGES','변경 기록'],['ALL ACCESS','전체 경로'],['NOW','현재'],['EXPIRING','종료 임박'],['ACCESS','접근 방식'],
-    ['OFFICIAL','공식 확인'],['VERIFIED','확인 완료'],['VERIFIED_OFFICIAL_WEB','공식 확인 완료'],['PENDING WEB VERIFICATION','추가 확인 필요'],['PENDING_WEB_VERIFICATION','추가 확인 필요'],['OFFICIAL_SOURCE_SNAPSHOT','공식 출처 스냅샷'],
+    ['OFFICIAL','공식 확인'],['VERIFIED','확인 완료'],['VERIFIED_OFFICIAL_WEB','공식 확인 완료'],['PENDING WEB VERIFICATION','추가 확인 필요'],['PENDING_WEB_VERIFICATION','추가 확인 필요'],['OFFICIAL_SOURCE_SNAPSHOT','공식 출처 스냅샷'],['REVIEWED_SOURCE_SNAPSHOT','검토 승인 스냅샷'],['VERIFIED_CHANGE','확인된 변경'],
     ['RECURRING_CREDIT','정기 크레딧'],['PERMANENT_FREE','상시 무료'],['FREE_MODEL','무료 모델'],
     ['PROVIDER','제공사'],['MODEL','모델'],['MODEL ID','모델 ID'],['ROUTE ID','경로 ID'],['ACCESS ROUTE','접근 경로'],['ROUTE','경로'],['ROUTE COMPARE','경로 비교'],['COMPARE ACCESS ROUTES','접근 경로 비교'],
     ['PRICE','가격'],['CONTEXT','컨텍스트'],['RUNTIME','실행 상태'],['EXECUTION','실행 상태'],['CURRENT ACCESS','현재 이용 조건'],['SOURCE CONFIDENCE','출처 신뢰도'],['SOURCE STATE','출처 상태'],['ENTITY CONTEXT','제공사·모델 정보'],['LATEST RECORDED ACTIVITY','최근 기록'],
@@ -43,7 +43,7 @@
       facts:['Google은 개발자와 소규모 프로젝트를 위한 무료 티어를 제공합니다.','무료 티어에서는 일부 모델을 제한된 한도로 사용할 수 있습니다.','대상 무료 티어 요청의 입력·출력 토큰은 무료입니다.','Google AI Studio를 함께 이용할 수 있습니다.'], sources:['Google · Gemini API 요금']
     },
     'cloudflare-workers-ai-free': {
-      title:'Workers AI · 무료 할당량', freeLabel:'매일 10,000 neurons', summary:'Workers AI는 유료 사용량이 시작되기 전에 매일 무료 사용량을 제공합니다.', model:'Workers AI 카탈로그', context:'모델별 상이', price:'하루 10,000 neurons 무료', access:['API','클라우드 콘솔','Workers'],
+      title:'Workers AI · 무료 할당량', freeLabel:'매일 10,000 neurons', summary:'Workers AI는 유료 사용량이 시작되기 전에 매일 무료 사용량을 제공합니다.', model:'Workers AI 카탈로그', context:'모델별 상이', price:'하루 10,000 neurons 무료 · 초과분 1,000 neurons당 $0.011', access:['API','클라우드 콘솔','Workers'],
       facts:['Workers AI는 Free 및 Paid Workers 플랜에 포함됩니다.','무료 할당량은 하루 10,000 neurons입니다.','무료 할당량을 초과하면 Workers Paid가 필요합니다.','Cloudflare는 현재 무료 할당량 초과분을 1,000 neurons당 $0.011로 안내합니다.'], sources:['Cloudflare · Workers AI 요금']
     },
     'groq-free-plan': {
