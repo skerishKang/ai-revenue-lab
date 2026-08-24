@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 
 from .config import Settings
+from .skills import Skill, get_skill, skill_public_metadata
 
 MAX_B14_RESPONSE_BYTES = 1_048_576
 
@@ -26,31 +27,42 @@ class B14Client:
         self.settings = settings
         self.transport = transport
 
-    async def complete(self, messages: list[dict[str, str]]) -> dict[str, Any]:
+    async def complete(
+        self,
+        messages: list[dict[str, str]],
+        skill: Skill | None = None,
+    ) -> dict[str, Any]:
+        resolved_skill = skill or get_skill()
+        upstream_messages = [
+            {"role": "system", "content": resolved_skill.system_instruction},
+            *messages,
+        ]
+
         if self.settings.runtime_mode == "mock":
             prompt = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
             answer = (
                 "모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
-                f"입력하신 질문은 ‘{prompt[:120]}’입니다. "
-                "B14 연결 모드에서는 같은 화면에서 자동 추천 경로로 실제 답변을 받습니다."
+                f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 입력하신 질문은 ‘{prompt[:120]}’입니다. "
+                "B14 연결 모드에서는 같은 작업 방식으로 자동 추천 경로의 실제 답변을 받습니다."
             )
             return {
                 "answer": answer,
                 "request_id": "mock_b62",
                 "runtime": "mock",
                 "route": {"mode": "auto", "model": None, "provider": None},
+                "skill": skill_public_metadata(resolved_skill),
             }
 
         assert self.settings.b14_base_url is not None
         url = self.settings.b14_base_url.rstrip("/") + "/api/pilot/v1/chat/completions"
         payload = {
             "model": "b14/auto",
-            "messages": messages,
+            "messages": upstream_messages,
             "temperature": 0.2,
-            "max_tokens": 700,
+            "max_tokens": resolved_skill.max_tokens,
             "business14": {
-                "task_type": "general",
-                "optimize_for": "korean",
+                "task_type": resolved_skill.task_type,
+                "optimize_for": resolved_skill.optimize_for,
                 "allow_external_fallback": True,
                 "max_attempts": 3,
             },
@@ -73,7 +85,8 @@ class B14Client:
                     async for chunk in response.aiter_bytes():
                         if len(raw) + len(chunk) > MAX_B14_RESPONSE_BYTES:
                             raise ChatRuntimeError(
-                                502, "upstream_response_too_large",
+                                502,
+                                "upstream_response_too_large",
                                 "답변이 너무 커서 안전하게 표시할 수 없습니다.",
                             )
                         raw.extend(chunk)
@@ -82,23 +95,27 @@ class B14Client:
             raise
         except httpx.TimeoutException as exc:
             raise ChatRuntimeError(
-                504, "upstream_timeout",
+                504,
+                "upstream_timeout",
                 "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
             ) from exc
         except httpx.HTTPError as exc:
             raise ChatRuntimeError(
-                502, "upstream_unavailable",
+                502,
+                "upstream_unavailable",
                 "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
             ) from exc
 
         if status_code < 200 or status_code >= 300:
             if status_code == 429:
                 raise ChatRuntimeError(
-                    503, "upstream_busy",
+                    503,
+                    "upstream_busy",
                     "지금 사용자가 많습니다. 잠시 후 다시 시도해 주세요.",
                 )
             raise ChatRuntimeError(
-                502, "upstream_error",
+                502,
+                "upstream_error",
                 "답변을 불러오지 못했습니다. 다시 시도해 주세요.",
             )
 
@@ -106,7 +123,8 @@ class B14Client:
             data = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise ChatRuntimeError(
-                502, "malformed_upstream",
+                502,
+                "malformed_upstream",
                 "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
             ) from exc
 
@@ -114,13 +132,15 @@ class B14Client:
             answer = data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise ChatRuntimeError(
-                502, "malformed_upstream",
+                502,
+                "malformed_upstream",
                 "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
             ) from exc
 
         if not isinstance(answer, str) or not answer.strip():
             raise ChatRuntimeError(
-                502, "empty_upstream_answer",
+                502,
+                "empty_upstream_answer",
                 "AI가 빈 답변을 반환했습니다. 다시 시도해 주세요.",
             )
 
@@ -145,4 +165,5 @@ class B14Client:
                 "model": selected_model if isinstance(selected_model, str) else None,
                 "provider": selected_provider if isinstance(selected_provider, str) else None,
             },
+            "skill": skill_public_metadata(resolved_skill),
         }

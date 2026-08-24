@@ -23,9 +23,9 @@
       </nav>
       <section class="recent-section" aria-labelledby="recentTitle">
         <h2 id="recentTitle">추천 질문</h2>
-        <button class="recent-item" type="button" data-prompt="AI를 아주 쉽게 설명해줘">AI를 쉽게 설명해줘</button>
-        <button class="recent-item" type="button" data-prompt="3박 4일 제주도 가족 여행 계획을 짜줘">제주도 여행 계획</button>
-        <button class="recent-item" type="button" data-prompt="오늘 저녁 메뉴를 세 가지 추천해줘">저녁 메뉴 추천</button>
+        <button class="recent-item" type="button" data-prompt="AI를 아주 쉽게 설명해줘" data-skill="explain">AI를 쉽게 설명해줘</button>
+        <button class="recent-item" type="button" data-prompt="3박 4일 제주도 가족 여행 계획을 짜줘" data-skill="plan">제주도 여행 계획</button>
+        <button class="recent-item" type="button" data-prompt="오늘 저녁 메뉴를 세 가지 추천해줘" data-skill="brainstorm">저녁 메뉴 추천</button>
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>자동 추천으로 답변합니다</span></div>
     </aside>
@@ -42,8 +42,8 @@
           <h1>안녕하세요.<br />무엇을 도와드릴까요?</h1>
           <p class="empty-copy">궁금한 것을 평소 말하듯 편하게 물어보세요. 어떤 AI를 쓸지는 파디엠이 자동으로 고릅니다.</p>
           <div class="starter-grid" aria-label="추천 질문">
-            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
-            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
+            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
+            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
             <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서 요약</strong><small>파일 기능 · 준비 중</small></span></button>
             <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
           </div>
