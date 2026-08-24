@@ -1,0 +1,134 @@
+name: B60 Review Promotion 682 Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  review-promotion:
+    if: github.event.pull_request.number == 686
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PRODUCT_SHA: e373d86c08fce68d4918f4836da3ce1b1c2e8471
+    steps:
+      - name: Checkout carrier
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout exact product head
+        uses: actions/checkout@v4
+        with:
+          ref: e373d86c08fce68d4918f4836da3ce1b1c2e8471
+          path: product
+          persist-credentials: false
+
+      - name: Exact-head contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          test "$(git rev-parse HEAD)" = "${PRODUCT_SHA}"
+          node --check reference/business-60-ai-api-v1/collector/review-promotion.cjs
+          node --check reference/business-60-ai-api-v1/collector/run-review.cjs
+          node --test \
+            reference/business-60-ai-api-v1/collector/intake-core.test.cjs \
+            reference/business-60-ai-api-v1/collector/review-promotion.test.cjs
+          echo 'CONTRACT_TESTS=PASS'
+
+      - name: CLI proposal and ledger integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          mkdir -p /tmp/b60-682
+          SNAPSHOT=apps/portfolio-console/ai-api/data/snapshots.js
+          BEFORE_SHA="$(sha256sum "${SNAPSHOT}" | awk '{print $1}')"
+
+          cat > /tmp/b60-682/candidates.json <<'JSON'
+          {
+            "generatedAt": "2026-08-24T06:15:00.000Z",
+            "publicationAuthority": "REVIEW_REQUIRED",
+            "candidates": [
+              {
+                "state": "NEEDS_REVIEW",
+                "sourceId": "openrouter-official-fixture",
+                "signalId": "openrouter-free-router",
+                "provider": "OpenRouter",
+                "authority": "PRIMARY_OFFICIAL",
+                "observedAt": "2026-08-24T06:15:00.000Z",
+                "evidence": {
+                  "requestedUrl": "https://openrouter.ai/docs/api-reference/limits",
+                  "finalUrl": "https://openrouter.ai/docs/api-reference/limits",
+                  "observedAt": "2026-08-24T06:15:00.000Z",
+                  "httpStatus": 200,
+                  "contentType": "text/html",
+                  "contentLength": 100,
+                  "sha256": "fixture-openrouter-682"
+                },
+                "observations": [
+                  {
+                    "field": "freeLabel",
+                    "value": "75 requests / day",
+                    "status": "OBSERVED_PRIMARY_SOURCE",
+                    "evidenceSha256": "fixture-openrouter-682",
+                    "excerpt": "Fixture: 75 requests per day"
+                  }
+                ],
+                "missingRequired": [],
+                "review": null
+              }
+            ]
+          }
+          JSON
+
+          node reference/business-60-ai-api-v1/collector/run-review.cjs packet \
+            --candidates /tmp/b60-682/candidates.json \
+            --snapshot "${SNAPSHOT}" \
+            --out /tmp/b60-682/review-packet.json \
+            --markdown /tmp/b60-682/review-packet.md \
+            --generated-at 2026-08-24T06:16:00.000Z
+
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const p=JSON.parse(fs.readFileSync('/tmp/b60-682/review-packet.json','utf8'));
+          if(p.summary.reviewRequired!==1||p.summary.approvable!==1) throw new Error('review packet summary mismatch');
+          const e=p.candidates[0];
+          if(!e.fields.some(x=>x.field==='freeLabel'&&x.previousValue==='50 requests / day'&&x.proposedValue==='75 requests / day'&&x.changed===true)) throw new Error('old/new diff missing');
+          if(!e.carriedForwardPreview.includes('price')) throw new Error('price carry-forward preview missing');
+          fs.writeFileSync('/tmp/b60-682/decisions.json',JSON.stringify({packetId:p.packetId,reviewer:'owner-review-fixture',reviewedAt:'2026-08-24T06:17:00.000Z',decisions:[{candidateId:e.candidateId,decision:'approve',reason:'fixture approval'}]},null,2)+'\n');
+          NODE
+
+          node reference/business-60-ai-api-v1/collector/run-review.cjs promote \
+            --candidates /tmp/b60-682/candidates.json \
+            --snapshot "${SNAPSHOT}" \
+            --decisions /tmp/b60-682/decisions.json \
+            --out-dir /tmp/b60-682/promotion \
+            --date 2026-08-24 \
+            --captured-at 2026-08-24T06:18:00.000Z \
+            --generated-at 2026-08-24T06:18:00.000Z
+
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const proposal=JSON.parse(fs.readFileSync('/tmp/b60-682/promotion/snapshot-proposal.json','utf8'));
+          const ledger=JSON.parse(fs.readFileSync('/tmp/b60-682/promotion/change-ledger.json','utf8'));
+          if(proposal.publishAuthorized!==false||proposal.publicationAuthority!=='HUMAN_EXPLICIT_PUBLISH_REQUIRED') throw new Error('proposal publication boundary failed');
+          if(ledger.publishAuthorized!==false||ledger.publicationAuthority!=='HUMAN_EXPLICIT_PUBLISH_REQUIRED') throw new Error('ledger publication boundary failed');
+          const r=proposal.snapshot.records.find(x=>x.id==='openrouter-free-router');
+          if(r.freeLabel!=='75 requests / day') throw new Error('approved field not promoted');
+          if(r.price!=='$0 prompt · $0 completion on free router') throw new Error('historical price not carried forward');
+          if(!r.carriedForwardFields.includes('price')||r.fieldVerification.price!==undefined) throw new Error('price provenance boundary failed');
+          if(ledger.changes.length!==1||ledger.changes[0].field!=='freeLabel') throw new Error('verified ledger change mismatch');
+          if(ledger.changes.some(x=>x.field==='price')) throw new Error('carried-forward price became verified change');
+          if(!fs.readFileSync('/tmp/b60-682/promotion/review-packet.md','utf8').includes('게시 권한이 없습니다')) throw new Error('human packet warning missing');
+          NODE
+
+          AFTER_SHA="$(sha256sum "${SNAPSHOT}" | awk '{print $1}')"
+          test "${BEFORE_SHA}" = "${AFTER_SHA}"
+          echo "SNAPSHOTS_JS_UNCHANGED=YES"
+          echo "CARRIED_FORWARD_PRICE_LEDGER_CHANGE=NO"
+          echo "AUTO_PUBLICATION=NO"
