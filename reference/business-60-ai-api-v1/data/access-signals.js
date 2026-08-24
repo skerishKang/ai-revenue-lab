@@ -6,13 +6,19 @@ window.B60_ACCESS_SIGNALS = [
     "category": "NOW",
     "dealType": "RECURRING_CREDIT",
     "verification": "VERIFIED_OFFICIAL_WEB",
-    "verifiedAt": "2026-08-24",
+    "verifiedAt": "2026-08-25",
     "freeLabel": "$5 credits / 30 days",
     "summary": "Free Vercel users who have not made a payment receive $5 of AI Gateway credits every 30 days.",
     "model": "zai/glm-5.2",
     "context": "1M tokens",
     "price": "Varies by routed provider",
     "access": ["API", "AI GATEWAY", "CLI/AGENT"],
+    "recurrence": {
+      "cadence": "30_DAYS",
+      "benefit": "$5 credits",
+      "display": "$5 / 30일",
+      "resetDetail": "Free users who have not made a payment get $5 of credits every 30 days."
+    },
     "facts": ["GLM 5.2 is available through Vercel AI Gateway.", "Model identifier: zai/glm-5.2.", "Context window: 1.0M tokens.", "AI Gateway routes GLM 5.2 across multiple providers with provider-specific rates.", "Free users who have not made a payment get $5 credits every 30 days."],
     "sources": [{"label": "Vercel · GLM 5.2", "url": "https://vercel.com/ai-gateway/models/glm-5.2"}],
     "pending": {"label": "Free on fx through Aug 27", "state": "PENDING_WEB_VERIFICATION", "note": "Exact promotion end-date claim remains unpublished in the primary web evidence captured for B60."}
@@ -41,14 +47,20 @@ window.B60_ACCESS_SIGNALS = [
     "category": "NOW",
     "dealType": "PERMANENT_FREE",
     "verification": "VERIFIED_OFFICIAL_WEB",
-    "verifiedAt": "2026-08-24",
+    "verifiedAt": "2026-08-25",
     "freeLabel": "10,000 neurons / day",
-    "summary": "Workers AI includes a daily no-charge allocation before paid usage is required.",
+    "summary": "Workers AI includes 10,000 Neurons per day at no charge, with the free allocation resetting daily at 00:00 UTC.",
     "model": "Workers AI catalog",
     "context": "Varies by model",
     "price": "10,000 neurons/day free; $0.011/1,000 above allocation",
     "access": ["API", "CLOUD CONSOLE", "WORKERS"],
-    "facts": ["Workers AI is included in Free and Paid Workers plans.", "The free allocation is 10,000 neurons per day.", "Usage above the free allocation requires Workers Paid.", "Cloudflare currently lists $0.011 per 1,000 neurons above the free allocation."],
+    "recurrence": {
+      "cadence": "DAILY",
+      "benefit": "10,000 neurons",
+      "display": "10,000 neurons / 매일",
+      "resetDetail": "Resets daily at 00:00 UTC."
+    },
+    "facts": ["Workers AI is included in Free and Paid Workers plans.", "The free allocation is 10,000 neurons per day.", "All limits reset daily at 00:00 UTC.", "Usage above the free allocation requires Workers Paid.", "Cloudflare currently lists $0.011 per 1,000 neurons above the free allocation."],
     "sources": [{"label": "Cloudflare · Workers AI pricing", "url": "https://developers.cloudflare.com/workers-ai/platform/pricing/"}]
   },
   {
@@ -75,14 +87,20 @@ window.B60_ACCESS_SIGNALS = [
     "category": "NOW",
     "dealType": "FREE_MODEL",
     "verification": "VERIFIED_OFFICIAL_WEB",
-    "verifiedAt": "2026-08-24",
+    "verifiedAt": "2026-08-25",
     "freeLabel": "50 requests / day",
-    "summary": "The Free plan supports free-model API access, and openrouter/free can route requests across available free models.",
+    "summary": "The Free plan supports free-model API access at 50 requests per day, while openrouter/free routes requests across currently available free models.",
     "model": "openrouter/free",
     "context": "200K router context",
     "price": "$0 prompt · $0 completion on free router",
     "access": ["API", "ROUTER"],
-    "facts": ["OpenRouter lists a Free plan with 50 requests per day.", "The openrouter/free router selects from currently available free models.", "The free router page lists a 200K-token context window.", "Prompt and completion token pricing for openrouter/free is $0."],
+    "recurrence": {
+      "cadence": "DAILY",
+      "benefit": "50 requests",
+      "display": "50 requests / 매일",
+      "resetDetail": "Official pricing states a 50 requests/day Free-plan limit; no reset clock is claimed here."
+    },
+    "facts": ["OpenRouter lists a Free plan with 50 requests per day.", "The openrouter/free router selects from currently available free models.", "The free router page lists a 200K-token context window.", "Prompt and completion token pricing for openrouter/free is $0.", "B60 does not infer a daily reset clock because the primary pricing evidence does not state one."],
     "sources": [{"label": "OpenRouter · Pricing", "url": "https://openrouter.ai/pricing"}, {"label": "OpenRouter · Free Models Router", "url": "https://openrouter.ai/openrouter/free/"}]
   }
 ];
