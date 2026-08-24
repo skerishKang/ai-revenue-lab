@@ -1,0 +1,11 @@
+@media (max-width: 760px) {
+  .radar-photo.is-feature {
+    height: min(54vh, 520px);
+    min-height: 360px;
+    max-height: 520px;
+  }
+
+  .radar-feature-copy {
+    min-height: 390px;
+  }
+}
