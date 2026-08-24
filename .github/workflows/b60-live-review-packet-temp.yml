@@ -1,0 +1,148 @@
+name: B60 Live Official Review Packet Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  live-review-packet:
+    if: github.event.pull_request.number == 687
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PRODUCT_SHA: 5e4625c89dc954a87ed245bba89a1ba822e596ec
+    steps:
+      - name: Checkout carrier
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout exact canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: 5e4625c89dc954a87ed245bba89a1ba822e596ec
+          path: product
+          persist-credentials: false
+
+      - name: Verify read-only source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          test "$(git rev-parse HEAD)" = "${PRODUCT_SHA}"
+          test -f reference/business-60-ai-api-v1/collector/run-intake.cjs
+          test -f reference/business-60-ai-api-v1/collector/run-review.cjs
+          test -f apps/portfolio-console/ai-api/data/snapshots.js
+          node --check reference/business-60-ai-api-v1/collector/run-intake.cjs
+          node --check reference/business-60-ai-api-v1/collector/run-review.cjs
+          echo 'READ_ONLY_SOURCE_CONTRACT=PASS'
+
+      - name: Live official-source intake
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/b60-live"
+          cd product
+          SNAPSHOT=apps/portfolio-console/ai-api/data/snapshots.js
+          sha256sum "${SNAPSHOT}" | awk '{print $1}' > "${RUNNER_TEMP}/b60-live/snapshot-before.sha256"
+          node reference/business-60-ai-api-v1/collector/run-intake.cjs \
+            --out "${RUNNER_TEMP}/b60-live/candidates.json"
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const p=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/b60-live/candidates.json','utf8'));
+          if(p.publicationAuthority!=='REVIEW_REQUIRED') throw new Error('unexpected intake publication authority');
+          if(!Array.isArray(p.candidates)||!p.candidates.length) throw new Error('no intake candidates');
+          console.log(`LIVE_CANDIDATES=${p.candidates.length}`);
+          for(const c of p.candidates){
+            console.log(`INTAKE source=${c.sourceId} signal=${c.signalId} state=${c.state} http=${c.evidence?.httpStatus??'n/a'} observations=${(c.observations||[]).map(x=>x.field).join(',')||'none'} missing=${(c.missingRequired||[]).join(',')||'none'}`);
+          }
+          NODE
+
+      - name: Generate human review packet only
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          node reference/business-60-ai-api-v1/collector/run-review.cjs packet \
+            --candidates "${RUNNER_TEMP}/b60-live/candidates.json" \
+            --snapshot apps/portfolio-console/ai-api/data/snapshots.js \
+            --out "${RUNNER_TEMP}/b60-live/review-packet.json" \
+            --markdown "${RUNNER_TEMP}/b60-live/review-packet.md" \
+            --generated-at "${NOW}"
+
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const root=process.env.RUNNER_TEMP+'/b60-live';
+          const intake=JSON.parse(fs.readFileSync(root+'/candidates.json','utf8'));
+          const packet=JSON.parse(fs.readFileSync(root+'/review-packet.json','utf8'));
+          const byId=new Map(packet.candidates.map(x=>[`${x.sourceId}\0${x.signalId}`,x]));
+          const rows=intake.candidates.map(c=>{
+            const p=byId.get(`${c.sourceId}\0${c.signalId}`);
+            return {
+              sourceId:c.sourceId||null,
+              signalId:c.signalId||null,
+              provider:c.provider||null,
+              state:c.state||null,
+              httpStatus:c.evidence?.httpStatus??null,
+              evidenceUrl:c.evidence?.finalUrl||c.evidence?.requestedUrl||null,
+              evidenceSha256:c.evidence?.sha256||null,
+              observationFields:(c.observations||[]).map(x=>x.field),
+              missingRequired:c.missingRequired||[],
+              canApprove:p?.canApprove??false,
+              blockers:p?.blockers||[],
+              changedFields:(p?.fields||[]).filter(x=>x.changed).map(x=>x.field),
+              unchangedFields:(p?.fields||[]).filter(x=>!x.changed).map(x=>x.field),
+              carriedForwardPreview:p?.carriedForwardPreview||[]
+            };
+          });
+          const summary={
+            generatedAt:packet.generatedAt,
+            packetId:packet.packetId,
+            publicationAuthority:packet.publicationAuthority,
+            totals:{
+              candidates:rows.length,
+              needsReview:rows.filter(x=>x.state==='NEEDS_REVIEW').length,
+              rejected:rows.filter(x=>x.state==='REJECTED').length,
+              approvable:rows.filter(x=>x.canApprove).length,
+              blocked:rows.filter(x=>x.state==='NEEDS_REVIEW'&&!x.canApprove).length,
+              changedCandidateSources:rows.filter(x=>x.changedFields.length).length
+            },
+            sources:rows
+          };
+          fs.writeFileSync(root+'/summary.json',JSON.stringify(summary,null,2)+'\n');
+          console.log(JSON.stringify(summary,null,2));
+          NODE
+
+      - name: Assert no decision, promotion, publication or snapshot mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          SNAPSHOT=apps/portfolio-console/ai-api/data/snapshots.js
+          sha256sum "${SNAPSHOT}" | awk '{print $1}' > "${RUNNER_TEMP}/b60-live/snapshot-after.sha256"
+          cmp "${RUNNER_TEMP}/b60-live/snapshot-before.sha256" "${RUNNER_TEMP}/b60-live/snapshot-after.sha256"
+          test ! -e "${RUNNER_TEMP}/b60-live/decisions.json"
+          test ! -e "${RUNNER_TEMP}/b60-live/snapshot-proposal.json"
+          test ! -e "${RUNNER_TEMP}/b60-live/change-ledger.json"
+          grep -F '"publicationAuthority": "REVIEW_REQUIRED"' "${RUNNER_TEMP}/b60-live/review-packet.json" >/dev/null
+          echo 'SNAPSHOTS_JS_UNCHANGED=YES'
+          echo 'DECISIONS_CREATED=NO'
+          echo 'SNAPSHOT_PROPOSAL_CREATED=NO'
+          echo 'CHANGE_LEDGER_CREATED=NO'
+          echo 'AUTO_PUBLICATION=NO'
+
+      - name: Upload review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-live-official-review-packet-20260824
+          path: |
+            ${{ runner.temp }}/b60-live/candidates.json
+            ${{ runner.temp }}/b60-live/review-packet.json
+            ${{ runner.temp }}/b60-live/review-packet.md
+            ${{ runner.temp }}/b60-live/summary.json
+          if-no-files-found: error
+          retention-days: 30
