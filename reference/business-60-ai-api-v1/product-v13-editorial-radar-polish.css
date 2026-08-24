@@ -233,6 +233,140 @@
   transform: scale(1.018);
 }
 
+.radar-recurring {
+  padding: 70px 0 0;
+}
+
+.radar-recurring-grid {
+  display: grid;
+  grid-template-columns: 1.15fr .925fr .925fr;
+  border-left: 1px solid var(--ink);
+}
+
+.radar-recurring-card {
+  display: grid;
+  grid-template-rows: 230px 1fr;
+  min-width: 0;
+  min-height: 620px;
+  background: #fff;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.radar-recurring-card.is-lead {
+  grid-template-rows: 320px 1fr;
+}
+
+.radar-photo.is-recurring {
+  min-height: 0;
+  border-bottom: 1px solid var(--ink);
+}
+
+.radar-photo.is-recurring img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.radar-photo.is-recurring figcaption {
+  z-index: 1;
+}
+
+.radar-recurring-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 26px;
+}
+
+.radar-recurring-top {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(23,23,21,.55);
+  font: 850 9px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .06em;
+}
+
+.radar-recurring-top span {
+  color: var(--hot);
+}
+
+.radar-recurring-benefit {
+  display: block;
+  margin-top: 16px;
+  max-width: 12ch;
+  font: 900 clamp(34px, 3.4vw, 58px)/.88 Arial, Helvetica, sans-serif;
+  letter-spacing: -.06em;
+}
+
+.radar-recurring-card.is-lead .radar-recurring-benefit {
+  font-size: clamp(42px, 4.2vw, 72px);
+}
+
+.radar-recurring-copy h3 {
+  margin: 18px 0 10px;
+  font: 850 clamp(19px, 1.8vw, 28px)/1.04 system-ui, sans-serif;
+  letter-spacing: -.035em;
+}
+
+.radar-recurring-copy > p {
+  margin: 0;
+  font: 540 13px/1.55 system-ui, sans-serif;
+}
+
+.radar-recurring-reset {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(23,23,21,.4);
+  border-bottom: 1px solid rgba(23,23,21,.4);
+}
+
+.radar-recurring-reset span {
+  font: 800 9px/1 system-ui, sans-serif;
+  letter-spacing: .08em;
+  opacity: .58;
+}
+
+.radar-recurring-reset strong {
+  font: 720 11px/1.4 system-ui, sans-serif;
+}
+
+.radar-recurring-card .radar-actions {
+  margin-top: auto;
+  padding-top: 22px;
+}
+
+.radar-recurring-card:hover .radar-photo img {
+  transform: scale(1.018);
+}
+
+@media (max-width: 980px) {
+  .radar-recurring-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .radar-recurring-card.is-lead {
+    grid-column: span 2;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 430px;
+  }
+
+  .radar-recurring-card.is-lead .radar-photo.is-recurring {
+    border-right: 1px solid var(--ink);
+    border-bottom: 0;
+  }
+}
+
 @media (max-width: 760px) {
   .radar-photo.is-feature {
     height: min(54vh, 520px);
@@ -272,7 +406,8 @@
     font-size: clamp(44px, 15vw, 72px);
   }
 
-  .radar-signups {
+  .radar-signups,
+  .radar-recurring {
     padding-top: 54px;
   }
 
@@ -312,5 +447,33 @@
     padding-left: 0;
     border-top: 1px solid rgba(23,23,21,.3);
     border-left: 0;
+  }
+
+  .radar-recurring-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .radar-recurring-card,
+  .radar-recurring-card.is-lead {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: 240px auto;
+    min-height: 0;
+  }
+
+  .radar-recurring-card.is-lead .radar-photo.is-recurring,
+  .radar-photo.is-recurring {
+    min-height: 240px;
+    border-right: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .radar-recurring-copy {
+    padding: 26px 22px 30px;
+  }
+
+  .radar-recurring-benefit,
+  .radar-recurring-card.is-lead .radar-recurring-benefit {
+    font-size: clamp(38px, 12vw, 58px);
   }
 }
