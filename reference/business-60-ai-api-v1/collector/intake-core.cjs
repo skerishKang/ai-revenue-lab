@@ -10,6 +10,17 @@ const STATES = Object.freeze({
   REJECTED: 'REJECTED'
 });
 
+const RECORD_META_FIELDS = new Set([
+  'id',
+  'provider',
+  'verification',
+  'verifiedAt',
+  'verificationScope',
+  'evidence',
+  'fieldVerification',
+  'carriedForwardFields'
+]);
+
 function sha256(text) {
   return crypto.createHash('sha256').update(String(text)).digest('hex');
 }
@@ -128,13 +139,38 @@ function promoteApprovedCandidates(baseRecord, candidates, snapshotMeta = {}) {
 
   const next = { ...baseRecord };
   const evidence = [];
+  const fieldVerification = {};
+  const verifiedFields = new Set();
+
   for (const candidate of approved) {
-    for (const observation of candidate.observations) next[observation.field] = observation.value;
+    for (const observation of candidate.observations) {
+      if (!observation?.field) throw new Error('approved observation field is required');
+      next[observation.field] = observation.value;
+      verifiedFields.add(observation.field);
+      fieldVerification[observation.field] = {
+        status: 'VERIFIED_OFFICIAL_WEB',
+        sourceId: candidate.sourceId,
+        observedAt: candidate.observedAt || candidate.evidence?.observedAt || null,
+        reviewedAt: candidate.review?.reviewedAt || null,
+        evidenceSha256: observation.evidenceSha256 || candidate.evidence?.sha256 || null
+      };
+    }
     evidence.push({ sourceId: candidate.sourceId, ...candidate.evidence, review: candidate.review });
   }
 
-  next.verification = 'VERIFIED_OFFICIAL_WEB';
+  const carriedForwardFields = Object.keys(baseRecord)
+    .filter(field => !RECORD_META_FIELDS.has(field) && !verifiedFields.has(field))
+    .sort();
+
+  next.verification = carriedForwardFields.length
+    ? 'PARTIALLY_VERIFIED_OFFICIAL_WEB'
+    : 'VERIFIED_OFFICIAL_WEB';
+  next.verificationScope = carriedForwardFields.length
+    ? 'OBSERVED_FIELDS_ONLY'
+    : 'FULL_RECORD';
   next.verifiedAt = snapshotMeta.snapshotDate || approved.map(c => c.review.reviewedAt.slice(0, 10)).sort().at(-1);
+  next.fieldVerification = fieldVerification;
+  next.carriedForwardFields = carriedForwardFields;
   next.evidence = evidence;
   return next;
 }
