@@ -13,14 +13,17 @@
   const authoritativeVerification = value => ['VERIFIED_OFFICIAL_WEB', 'VERIFIED_OFFICIAL_SOCIAL'].includes(value);
   const isEditorial = item => Boolean(item.editorialRole || item.opportunityType);
   const today = new Date();
-  const todayKey = today.toISOString().slice(0, 10);
+  const todayKey = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(today);
   const dayMs = 24 * 60 * 60 * 1000;
+  const todayEpoch = Date.parse(`${todayKey}T00:00:00Z`);
 
   function daysUntil(dateString) {
     if (!dateString) return null;
-    const end = new Date(`${dateString}T23:59:59Z`);
-    if (Number.isNaN(end.getTime())) return null;
-    return Math.ceil((end.getTime() - today.getTime()) / dayMs);
+    const endEpoch = Date.parse(`${dateString}T00:00:00Z`);
+    if (Number.isNaN(endEpoch)) return null;
+    return Math.ceil((endEpoch - todayEpoch) / dayMs);
   }
 
   const isExpired = item => {
