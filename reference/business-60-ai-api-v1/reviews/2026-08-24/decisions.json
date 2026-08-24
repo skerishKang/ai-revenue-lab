@@ -1,0 +1,15 @@
+{
+  "packetId": "b60rp_bbc9abfd5761d4c518f3",
+  "reviewer": "owner-cto-standing-approval-2026-08-24",
+  "reviewedAt": "2026-08-24T07:37:36.313Z",
+  "authorityNote": "Owner explicitly authorized CTO to proceed. CTO approves candidates that satisfy evidence gates and rejects candidates blocked by required-evidence rules.",
+  "decisions": [
+    {"candidateId": "cloudflare-workers-ai-free::cloudflare-workers-ai-pricing::ca4441ee839a8201", "decision": "approve", "reason": "Owner standing approval; CTO reviewed official-source packet."},
+    {"candidateId": "google-gemini-free::google-gemini-pricing::b612786d1ec0300e", "decision": "reject", "reason": "Rejected by CTO because evidence gate is blocked: NO_OBSERVATIONS; MISSING_REQUIRED:freeLabel"},
+    {"candidateId": "groq-free-plan::groq-billing-faq::a57bbb6c7a4d1280", "decision": "approve", "reason": "Owner standing approval; CTO reviewed official-source packet."},
+    {"candidateId": "groq-free-plan::groq-free-rate-limits::ecb6cd6e493283c1", "decision": "approve", "reason": "Owner standing approval; CTO reviewed official-source packet."},
+    {"candidateId": "openrouter-free-router::openrouter-free-router::3764f22b94d2c021", "decision": "approve", "reason": "Owner standing approval; CTO reviewed official-source packet."},
+    {"candidateId": "openrouter-free-router::openrouter-pricing::922171199d3db264", "decision": "approve", "reason": "Owner standing approval; CTO reviewed official-source packet."},
+    {"candidateId": "vercel-glm52::vercel-glm52-model::b838104d227ad914", "decision": "approve", "reason": "Owner standing approval; CTO reviewed official-source packet."}
+  ]
+}

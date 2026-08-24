@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "b60-change-ledger-v1",
+  "generatedAt": "2026-08-24T07:37:36Z",
+  "fromSnapshotDate": "2026-08-23",
+  "toSnapshotDate": "2026-08-24",
+  "publicationAuthority": "HUMAN_EXPLICIT_PUBLISH_REQUIRED",
+  "publishAuthorized": false,
+  "changes": [
+    {
+      "signalId": "cloudflare-workers-ai-free",
+      "provider": "Cloudflare",
+      "field": "price",
+      "before": "10,000 neurons/day free",
+      "after": "10,000 neurons/day free; $0.011/1,000 above allocation",
+      "sourceId": "cloudflare-workers-ai-pricing",
+      "observedAt": "2026-08-24T07:37:35.260Z",
+      "reviewedAt": "2026-08-24T07:37:36.313Z",
+      "evidenceSha256": "ba2d25798a6c594a8ac11e894863345a392b41f8baf98008de0243c3d43e520f",
+      "status": "VERIFIED_CHANGE"
+    }
+  ],
+  "reverifiedUnchanged": [
+    {"signalId":"cloudflare-workers-ai-free","provider":"Cloudflare","field":"freeLabel","before":"10,000 neurons / day","after":"10,000 neurons / day","sourceId":"cloudflare-workers-ai-pricing","observedAt":"2026-08-24T07:37:35.260Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"ba2d25798a6c594a8ac11e894863345a392b41f8baf98008de0243c3d43e520f"},
+    {"signalId":"groq-free-plan","provider":"Groq","field":"dealType","before":"PERMANENT_FREE","after":"PERMANENT_FREE","sourceId":"groq-billing-faq","observedAt":"2026-08-24T07:37:35.540Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"52e2bf6f5e53b56d029a1aeb6d47b6b5a6253f6584411004096224ce7bb14b50"},
+    {"signalId":"groq-free-plan","provider":"Groq","field":"freeLabel","before":"Free plan","after":"Free plan","sourceId":"groq-free-rate-limits","observedAt":"2026-08-24T07:37:35.331Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"7efe30715ae3f9afd089bd0959d5c8f3ef9bc351e1262aa75d96925f9b14702c"},
+    {"signalId":"openrouter-free-router","provider":"OpenRouter","field":"context","before":"200K router context","after":"200K router context","sourceId":"openrouter-free-router","observedAt":"2026-08-24T07:37:35.949Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"8ed3aae19754da364eb7dd79ea4dbf8c470b53a025040668151b52d4b437aa64"},
+    {"signalId":"openrouter-free-router","provider":"OpenRouter","field":"freeLabel","before":"50 requests / day","after":"50 requests / day","sourceId":"openrouter-pricing","observedAt":"2026-08-24T07:37:35.668Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"220ca577a2a1fa60f77402e0986033ce626964a83a12b37df30e209427beb665"},
+    {"signalId":"openrouter-free-router","provider":"OpenRouter","field":"model","before":"openrouter/free","after":"openrouter/free","sourceId":"openrouter-free-router","observedAt":"2026-08-24T07:37:35.949Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"8ed3aae19754da364eb7dd79ea4dbf8c470b53a025040668151b52d4b437aa64"},
+    {"signalId":"vercel-glm52","provider":"Vercel AI Gateway","field":"context","before":"1M tokens","after":"1M tokens","sourceId":"vercel-glm52-model","observedAt":"2026-08-24T07:37:33.758Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"80c9893e7c847b583cc5a54ea6bc4497b9f733702e96c4953c876c92ce0ccfec"},
+    {"signalId":"vercel-glm52","provider":"Vercel AI Gateway","field":"freeLabel","before":"$5 credits / 30 days","after":"$5 credits / 30 days","sourceId":"vercel-glm52-model","observedAt":"2026-08-24T07:37:33.758Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"80c9893e7c847b583cc5a54ea6bc4497b9f733702e96c4953c876c92ce0ccfec"},
+    {"signalId":"vercel-glm52","provider":"Vercel AI Gateway","field":"model","before":"zai/glm-5.2","after":"zai/glm-5.2","sourceId":"vercel-glm52-model","observedAt":"2026-08-24T07:37:33.758Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"80c9893e7c847b583cc5a54ea6bc4497b9f733702e96c4953c876c92ce0ccfec"},
+    {"signalId":"vercel-glm52","provider":"Vercel AI Gateway","field":"price","before":"Varies by routed provider","after":"Varies by routed provider","sourceId":"vercel-glm52-model","observedAt":"2026-08-24T07:37:33.758Z","reviewedAt":"2026-08-24T07:37:36.313Z","evidenceSha256":"80c9893e7c847b583cc5a54ea6bc4497b9f733702e96c4953c876c92ce0ccfec"}
+  ],
+  "summary": {"verifiedChanges": 1, "reverifiedUnchanged": 10}
+}
