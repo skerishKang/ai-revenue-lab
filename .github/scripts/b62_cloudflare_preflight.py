@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import sys
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -75,7 +74,45 @@ def append_summary(lines: list[str]) -> None:
         handle.write("\n".join(lines) + "\n")
 
 
+def read_b14_health() -> dict[str, str]:
+    state = {
+        "b14_http": "0",
+        "b14_status": "unavailable",
+        "b14_provider_mode": "unknown",
+        "b14_has_key": "unknown",
+        "b14_catalog_models": "unknown",
+    }
+    try:
+        status, payload = get_json(B14_HEALTH)
+        state["b14_http"] = str(status)
+        if status == 200:
+            state["b14_status"] = str(payload.get("status", "unknown"))
+            info = payload.get("business14") if isinstance(payload.get("business14"), dict) else {}
+            state["b14_provider_mode"] = str(info.get("provider_mode", "unknown"))
+            key_value = info.get("has_key")
+            if isinstance(key_value, bool):
+                state["b14_has_key"] = "true" if key_value else "false"
+            state["b14_catalog_models"] = str(info.get("catalog_models", "unknown"))
+    except Exception:
+        pass
+    return state
+
+
+def emit_b14(state: dict[str, str]) -> None:
+    for key, value in state.items():
+        write_output(key, value)
+    print(f"B14_HEALTH_HTTP={state['b14_http']}")
+    print(f"B14_STATUS={state['b14_status']}")
+    print(f"B14_PROVIDER_MODE={state['b14_provider_mode']}")
+    print(f"B14_HAS_KEY={state['b14_has_key']}")
+    print(f"B14_CATALOG_MODELS={state['b14_catalog_models']}")
+    print("REAL_PROVIDER_CALLS=0")
+
+
 def main() -> int:
+    b14 = read_b14_health()
+    emit_b14(b14)
+
     try:
         token = required_env("CLOUDFLARE_API_TOKEN")
         account_id = required_env("CLOUDFLARE_ACCOUNT_ID")
@@ -93,6 +130,22 @@ def main() -> int:
         elif worker_status == 404:
             worker_state = "absent"
         elif worker_status in {401, 403}:
+            worker_state = "permission_denied"
+            write_output("worker_state", worker_state)
+            append_summary([
+                "## B62 Cloudflare read-only preflight",
+                "",
+                "| Check | Result |",
+                "|---|---|",
+                "| Cloudflare token verify | PASS |",
+                f"| Workers script read | `HTTP {worker_status} — permission denied` |",
+                f"| B14 health HTTP | `{b14['b14_http']}` |",
+                f"| B14 status | `{b14['b14_status']}` |",
+                f"| B14 provider mode | `{b14['b14_provider_mode']}` |",
+                f"| B14 has server key | `{b14['b14_has_key']}` |",
+                f"| B14 catalog models | `{b14['b14_catalog_models']}` |",
+                "| Provider/model calls | `0` |",
+            ])
             raise RuntimeError(
                 f"Cloudflare token lacks Workers script read permission (HTTP {worker_status})"
             )
@@ -108,46 +161,12 @@ def main() -> int:
         if not subdomain:
             raise RuntimeError("workers.dev subdomain is empty")
 
-        b14_status = 0
-        b14_product_status = "unavailable"
-        b14_provider_mode = "unknown"
-        b14_has_key = "unknown"
-        b14_catalog_models = "unknown"
-        try:
-            b14_status, b14 = get_json(B14_HEALTH)
-            if b14_status == 200:
-                b14_product_status = str(b14.get("status", "unknown"))
-                info = b14.get("business14") if isinstance(b14.get("business14"), dict) else {}
-                b14_provider_mode = str(info.get("provider_mode", "unknown"))
-                key_value = info.get("has_key")
-                if isinstance(key_value, bool):
-                    b14_has_key = "true" if key_value else "false"
-                b14_catalog_models = str(info.get("catalog_models", "unknown"))
-        except Exception:
-            # B14 availability does not block a mock-only B62 deployment.
-            b14_status = 0
-
-        outputs = {
-            "worker_state": worker_state,
-            "subdomain": subdomain,
-            "b14_http": str(b14_status),
-            "b14_status": b14_product_status,
-            "b14_provider_mode": b14_provider_mode,
-            "b14_has_key": b14_has_key,
-            "b14_catalog_models": b14_catalog_models,
-        }
-        for key, value in outputs.items():
-            write_output(key, value)
+        write_output("worker_state", worker_state)
+        write_output("subdomain", subdomain)
 
         print("CLOUDFLARE_TOKEN_VERIFY=PASS")
         print(f"PADIEM_CHAT_WORKER_STATE={worker_state}")
         print(f"WORKERS_DEV_SUBDOMAIN={subdomain}")
-        print(f"B14_HEALTH_HTTP={b14_status}")
-        print(f"B14_STATUS={b14_product_status}")
-        print(f"B14_PROVIDER_MODE={b14_provider_mode}")
-        print(f"B14_HAS_KEY={b14_has_key}")
-        print(f"B14_CATALOG_MODELS={b14_catalog_models}")
-        print("REAL_PROVIDER_CALLS=0")
 
         append_summary([
             "## B62 Cloudflare read-only preflight",
@@ -157,11 +176,11 @@ def main() -> int:
             "| Cloudflare token verify | PASS |",
             f"| `padiem-chat` Worker | `{worker_state}` |",
             f"| workers.dev subdomain | `{subdomain}` |",
-            f"| B14 health HTTP | `{b14_status}` |",
-            f"| B14 status | `{b14_product_status}` |",
-            f"| B14 provider mode | `{b14_provider_mode}` |",
-            f"| B14 has server key | `{b14_has_key}` |",
-            f"| B14 catalog models | `{b14_catalog_models}` |",
+            f"| B14 health HTTP | `{b14['b14_http']}` |",
+            f"| B14 status | `{b14['b14_status']}` |",
+            f"| B14 provider mode | `{b14['b14_provider_mode']}` |",
+            f"| B14 has server key | `{b14['b14_has_key']}` |",
+            f"| B14 catalog models | `{b14['b14_catalog_models']}` |",
             "| Provider/model calls | `0` |",
         ])
         return 0
