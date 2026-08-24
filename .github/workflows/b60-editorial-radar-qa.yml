@@ -36,6 +36,29 @@ jobs:
           echo "actual=$actual"
           test "$expected" = "$actual"
 
+      - name: Prepare Korean fonts and raster candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk webp
+          mkdir -p "$GITHUB_WORKSPACE/b60-raster-source"
+
+          curl -fL --retry 3 --retry-delay 1 'https://images.unsplash.com/photo-1778146476147-5f8d4bd03c79?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=2200' -o /tmp/vercel.jpg
+          curl -fL --retry 3 --retry-delay 1 'https://images.unsplash.com/photo-1743796055651-41c743ff2465?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1800' -o /tmp/gemini.jpg
+          curl -fL --retry 3 --retry-delay 1 'https://images.unsplash.com/photo-1584169417032-d34e8d805e8b?auto=format&fit=crop&fm=jpg&q=82&w=1800' -o /tmp/cloudflare.jpg
+          curl -fL --retry 3 --retry-delay 1 'https://images.unsplash.com/photo-1763568258320-c954a19683e3?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1800' -o /tmp/groq.jpg
+          curl -fL --retry 3 --retry-delay 1 'https://images.unsplash.com/photo-1782012505157-aca188bd6921?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1800' -o /tmp/openrouter.jpg
+
+          cwebp -quiet -q 80 -resize 1600 0 /tmp/vercel.jpg -o "$GITHUB_WORKSPACE/b60-raster-source/editorial-vercel.webp"
+          cwebp -quiet -q 80 -resize 1400 0 /tmp/gemini.jpg -o "$GITHUB_WORKSPACE/b60-raster-source/editorial-gemini.webp"
+          cwebp -quiet -q 80 -resize 1400 0 /tmp/cloudflare.jpg -o "$GITHUB_WORKSPACE/b60-raster-source/editorial-cloudflare.webp"
+          cwebp -quiet -q 80 -resize 1400 0 /tmp/groq.jpg -o "$GITHUB_WORKSPACE/b60-raster-source/editorial-groq.webp"
+          cwebp -quiet -q 80 -resize 1400 0 /tmp/openrouter.jpg -o "$GITHUB_WORKSPACE/b60-raster-source/editorial-openrouter.webp"
+
+          test "$(find "$GITHUB_WORKSPACE/b60-raster-source" -name '*.webp' -type f | wc -l)" -eq 5
+          du -h "$GITHUB_WORKSPACE/b60-raster-source"/*.webp
+
       - name: Run B60 contracts
         shell: bash
         run: |
@@ -70,20 +93,16 @@ jobs:
             --screenshot="$GITHUB_WORKSPACE/b60-editorial-mobile.png" \
             http://127.0.0.1:4173/
 
-          set +e
           "$browser" --headless=new --no-sandbox --disable-gpu \
             --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4173/ \
             > "$GITHUB_WORKSPACE/b60-editorial-dom.html"
-          dump_status=$?
-          set -e
-          echo "chrome_dump_status=$dump_status"
 
           test -s "$GITHUB_WORKSPACE/b60-editorial-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-editorial-mobile.png"
           test -s "$GITHUB_WORKSPACE/b60-editorial-dom.html"
-          grep -q 'AI FREE RADAR' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
-          grep -q 'ALWAYS FREE' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
-          grep -q 'JUST CHECKED' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
+          grep -q 'id="radar"' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
+          grep -q 'id="always-free"' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
+          grep -q 'id="just-checked"' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
           grep -q 'data-b60-v13="editorial"' "$GITHUB_WORKSPACE/b60-editorial-dom.html"
 
       - name: Upload visual evidence
@@ -96,4 +115,13 @@ jobs:
             b60-editorial-mobile.png
             b60-editorial-dom.html
           if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload raster candidates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b60-editorial-raster-candidates
+          path: b60-raster-source/*.webp
+          if-no-files-found: error
           retention-days: 7
