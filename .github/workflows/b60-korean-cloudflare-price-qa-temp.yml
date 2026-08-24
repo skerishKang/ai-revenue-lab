@@ -1,0 +1,92 @@
+name: B60 Korean Cloudflare Price QA Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  korean-price:
+    if: github.event.pull_request.number == 694
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PRODUCT_SHA: 2592f617e975209285b0ad030af8df53fc42b988
+    steps:
+      - name: Checkout carrier
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout exact product head
+        uses: actions/checkout@v4
+        with:
+          ref: 2592f617e975209285b0ad030af8df53fc42b988
+          path: product
+          persist-credentials: false
+      - name: Static localization contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          test "$(git rev-parse HEAD)" = "${PRODUCT_SHA}"
+          cmp apps/portfolio-console/ai-api/korean-v1.js reference/business-60-ai-api-v1/korean-v1.js
+          node --check apps/portfolio-console/ai-api/korean-v1.js
+          grep -F "price:'하루 10,000 neurons 무료 · 초과분 1,000 neurons당 $0.011'" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
+          grep -F "['VERIFIED_CHANGE','확인된 변경']" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
+          grep -F "['REVIEWED_SOURCE_SNAPSHOT','검토 승인 스냅샷']" apps/portfolio-console/ai-api/korean-v1.js >/dev/null
+          grep -F '10,000 neurons/day free; $0.011/1,000 above allocation' apps/portfolio-console/ai-api/data/access-signals.js >/dev/null
+          echo 'STATIC_KO_LOCALIZATION=PASS'
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pw"
+          npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
+          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
+          echo "PW=${RUNNER_TEMP}/pw/node_modules/playwright" >> "${GITHUB_ENV}"
+      - name: Browser localization QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd product
+          python3 -m http.server 4173 --directory apps/portfolio-console/ai-api >"${RUNNER_TEMP}/server.log" 2>&1 &
+          for i in $(seq 1 30); do if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi; sleep 1; done
+          cat > "${RUNNER_TEMP}/qa.cjs" <<'NODE'
+          const { chromium }=require(process.env.PW);
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+              const page=await browser.newPage({viewport});
+              const errors=[], failed=[];
+              page.on('console',m=>{if(m.type()==='error') errors.push(m.text())});
+              page.on('requestfailed',r=>failed.push(`${r.method()} ${r.url()} ${r.failure()?.errorText||''}`));
+              const res=await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
+              if(!res||res.status()!==200) throw new Error(`HTTP ${res?.status()}`);
+              await page.waitForSelector('#explore');
+              const data=await page.evaluate(()=>({
+                cf:window.B60_ACCESS_SIGNALS.find(x=>x.id==='cloudflare-workers-ai-free'),
+                t1:window.B60_KO_UI.translate('VERIFIED_CHANGE'),
+                t2:window.B60_KO_UI.translate('REVIEWED_SOURCE_SNAPSHOT')
+              }));
+              if(data.cf.price!=='하루 10,000 neurons 무료 · 초과분 1,000 neurons당 $0.011') throw new Error(`localized price mismatch: ${data.cf.price}`);
+              if(data.t1!=='확인된 변경'||data.t2!=='검토 승인 스냅샷') throw new Error(`enum localization mismatch ${JSON.stringify(data)}`);
+              await page.locator('#explore').scrollIntoViewIfNeeded();
+              await page.locator('.ia-primary [data-ia-view="watch"]').click();
+              await page.locator('[data-ux4-watch="changes"]').click();
+              await page.waitForSelector('.ux4-changes');
+              const text=await page.locator('.ux4-changes').innerText();
+              if(!text.includes('Cloudflare')||!text.includes('$0.011/1,000 Neurons')) throw new Error('Cloudflare verified change missing');
+              if(text.includes('VERIFIED_CHANGE')||text.includes('REVIEWED_SOURCE_SNAPSHOT')) throw new Error('raw enum visible');
+              const metrics=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+              if(metrics.sw>metrics.cw+1) throw new Error(`overflow ${JSON.stringify(metrics)}`);
+              if(errors.length) throw new Error(`console ${errors.join(' | ')}`);
+              if(failed.length) throw new Error(`requests ${failed.join(' | ')}`);
+              console.log(`KO_PRICE ${viewport.width}x${viewport.height} PASS`);
+              await page.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node "${RUNNER_TEMP}/qa.cjs"
