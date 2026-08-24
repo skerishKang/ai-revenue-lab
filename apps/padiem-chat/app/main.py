@@ -12,26 +12,35 @@ from starlette.staticfiles import StaticFiles
 
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
+from .skills import Skill, get_skill
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 MAX_BROWSER_BODY_BYTES = 65_536
 MAX_MESSAGES = 20
 MAX_MESSAGE_CHARS = 8_000
 MAX_TOTAL_MESSAGE_CHARS = 32_000
-_ALLOWED_ROLES = {"system", "user", "assistant"}
+_ALLOWED_ROLES = {"user", "assistant"}
 
 
 class BrowserRequestError(ValueError):
     pass
 
 
-def _validate_payload(raw: Any) -> list[dict[str, str]]:
+def _validate_payload(raw: Any) -> tuple[list[dict[str, str]], Skill]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode"}:
+    if set(raw) - {"messages", "mode", "skill"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
+
+    skill_id = raw.get("skill", "auto")
+    if not isinstance(skill_id, str) or not skill_id.strip():
+        raise BrowserRequestError("작업 모드 형식이 올바르지 않습니다.")
+    try:
+        skill = get_skill(skill_id.strip())
+    except ValueError as exc:
+        raise BrowserRequestError(str(exc)) from exc
 
     messages = raw.get("messages")
     if not isinstance(messages, list) or not 1 <= len(messages) <= MAX_MESSAGES:
@@ -45,7 +54,7 @@ def _validate_payload(raw: Any) -> list[dict[str, str]]:
         role = item.get("role")
         content = item.get("content")
         if role not in _ALLOWED_ROLES:
-            raise BrowserRequestError("지원하지 않는 대화 역할입니다.")
+            raise BrowserRequestError("브라우저에서는 사용자와 AI 대화만 보낼 수 있습니다.")
         if not isinstance(content, str) or not content.strip():
             raise BrowserRequestError("빈 메시지는 보낼 수 없습니다.")
         text = content.strip()
@@ -58,7 +67,7 @@ def _validate_payload(raw: Any) -> list[dict[str, str]]:
 
     if not any(item["role"] == "user" for item in out):
         raise BrowserRequestError("사용자 질문이 필요합니다.")
-    return out
+    return out, skill
 
 
 async def health(request: Request) -> JSONResponse:
@@ -81,7 +90,7 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages = _validate_payload(raw)
+        messages, skill = _validate_payload(raw)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse(
@@ -91,7 +100,7 @@ async def api_chat(request: Request) -> JSONResponse:
 
     client: B14Client = request.app.state.b14_client
     try:
-        result = await client.complete(messages)
+        result = await client.complete(messages, skill=skill)
     except ChatRuntimeError as exc:
         return JSONResponse(
             {"error": {"code": exc.code, "message": exc.user_message}},
