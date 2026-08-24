@@ -1,0 +1,76 @@
+name: B60 Surface URL 695 Temp
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  surface-contract:
+    if: github.event.pull_request.number == 696
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      PRODUCT_SHA: 8f0fa25ba69f6a6331e48bba6b654c540af38393
+      BASE_SHA: 3698bc040af05de5a7f9121216efcd2c50e8fe46
+    steps:
+      - name: Checkout carrier
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout exact product head
+        uses: actions/checkout@v4
+        with:
+          ref: 8f0fa25ba69f6a6331e48bba6b654c540af38393
+          path: product
+          persist-credentials: false
+      - name: Checkout exact base
+        uses: actions/checkout@v4
+        with:
+          ref: 3698bc040af05de5a7f9121216efcd2c50e8fe46
+          path: base
+          persist-credentials: false
+      - name: Validate B60-only manifest delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C product rev-parse HEAD)" = "${PRODUCT_SHA}"
+          test "$(git -C base rev-parse HEAD)" = "${BASE_SHA}"
+          node --check product/apps/portfolio-console/business-manifest.js
+          node - <<'NODE'
+          const fs=require('node:fs'), vm=require('node:vm');
+          function load(root){
+            const window={ARL_IDENTITY_CORE:{phaseStatusFor(){return {ui:'X',ux:'Y',be:'Z'}}}};
+            const ctx={window}; vm.createContext(ctx);
+            vm.runInContext(fs.readFileSync(`${root}/apps/portfolio-console/business-manifest.js`,'utf8'),ctx);
+            return ctx.window.ARL_MANIFEST;
+          }
+          const before=load('base'), after=load('product');
+          if(before.length!==after.length) throw new Error('manifest length changed');
+          const diffs=[];
+          for(let i=0;i<before.length;i++){
+            if(JSON.stringify(before[i])!==JSON.stringify(after[i])) diffs.push({before:before[i],after:after[i]});
+          }
+          if(diffs.length!==1) throw new Error(`expected one identity delta, got ${diffs.length}`);
+          const d=diffs[0];
+          if(d.before.number!==60||d.after.number!==60) throw new Error('non-B60 identity changed');
+          const allowed=new Set(['surfaceUrl']);
+          const fields=new Set([...Object.keys(d.before),...Object.keys(d.after)]);
+          const changed=[...fields].filter(k=>JSON.stringify(d.before[k])!==JSON.stringify(d.after[k]));
+          if(changed.length!==1||!allowed.has(changed[0])) throw new Error(`unexpected B60 fields changed: ${changed}`);
+          if(d.after.surfaceUrl!=='https://ai-api-a9x.pages.dev/') throw new Error('canonical surface URL mismatch');
+          if(fs.readFileSync('product/apps/portfolio-console/business-manifest.js','utf8').includes('https://ai-revenue-business-60-ai-api.pages.dev/')) throw new Error('superseded B60 URL remains');
+          console.log('MANIFEST_IDENTITY_DELTA=B60.surfaceUrl_ONLY');
+          console.log('B60_SURFACE=https://ai-api-a9x.pages.dev/');
+          NODE
+      - name: Verify canonical public surface responds
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(mktemp)"
+          code="$(curl -L -sS -o "${body}" -w '%{http_code}' https://ai-api-a9x.pages.dev/)"
+          test "${code}" = "200"
+          grep -F '<html lang="ko">' "${body}" >/dev/null
+          echo 'PUBLIC_SURFACE_HTTP=200'
