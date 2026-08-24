@@ -63,6 +63,7 @@ button { cursor: pointer; }
   border: 1px solid var(--ink);
   background: rgba(255,255,255,.66);
 }
+.recurring-fields[hidden] { display: none !important; }
 .form-block > header { grid-column: 1 / -1; display: flex; gap: 14px; align-items: flex-start; padding-bottom: 16px; border-bottom: 1px solid var(--ink); }
 .form-block > header > span { display: inline-grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--ink); font: 900 11px/1 system-ui, sans-serif; }
 .form-block > header b { display: block; font-size: 18px; letter-spacing: -.03em; }
