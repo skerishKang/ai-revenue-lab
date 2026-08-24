@@ -12,7 +12,7 @@ window.B60_DEALS = [
       'GLM 5.2 is available on Vercel AI Gateway.',
       'Official model identifier: zai/glm-5.2.',
       'Context window: 1M tokens.',
-      'Published standard Gateway price: $1.40/M input and $4.40/M output.',
+      'AI Gateway routes GLM 5.2 across multiple providers with provider-specific rates.',
       'Free users who have not made a payment receive $5 of AI Gateway credits every 30 days.'
     ],
     fxFacts: [
@@ -21,7 +21,7 @@ window.B60_DEALS = [
     ],
     officialModelUrl: 'https://vercel.com/ai-gateway/models/glm-5.2',
     officialFxUrl: 'https://github.com/vercel-labs/fx',
-    verifiedAt: '2026-08-23',
+    verifiedAt: '2026-08-24',
     sourceState: 'VERIFIED_OFFICIAL_WEB',
     note: 'The exact fx promotion/end-date claim is intentionally separated from the web-verified GLM 5.2 and fx product facts until a primary source for that promotion is captured.'
   }
