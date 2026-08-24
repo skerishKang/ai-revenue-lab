@@ -21,7 +21,7 @@ jobs:
       - name: Checkout exact product head
         uses: actions/checkout@v4
         with:
-          ref: 46e64becd67671e2e5cdd90df39a81c1634e9033
+          ref: 7169bbbfda5820bee604c7e36abf524655e8a0e1
           path: product
           persist-credentials: false
 
@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           cd product
-          test "$(git rev-parse HEAD)" = "46e64becd67671e2e5cdd90df39a81c1634e9033"
+          test "$(git rev-parse HEAD)" = "7169bbbfda5820bee604c7e36abf524655e8a0e1"
           node --check apps/portfolio-console/ai-api/korean-v1.js
           cmp apps/portfolio-console/ai-api/index.html reference/business-60-ai-api-v1/index.html
           cmp apps/portfolio-console/ai-api/korean-v1.js reference/business-60-ai-api-v1/korean-v1.js
@@ -71,6 +71,7 @@ jobs:
           const path = require('path');
           const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
           const evidence = path.join(process.env.GITHUB_WORKSPACE, 'evidence');
+          const forbiddenUi = ['VIEW PROVIDER','VIEW ROUTES','VERIFIED ACCESS','FREE ROUTE FOUND','ACCESS FOUND','CURRENT ACCESS','SOURCE CONFIDENCE','INFO ONLY','ROUTER MAPPED'];
           const cases = [
             { name:'desktop', viewport:{width:1440,height:1000} },
             { name:'mobile', viewport:{width:390,height:844} }
@@ -116,19 +117,22 @@ jobs:
               assert(nav.includes('탐색') && nav.includes('제공사') && nav.includes('모델') && nav.includes('연결') && nav.includes('관심 목록'), `primary nav mixed language: ${nav}`);
 
               await page.locator('[data-ia-view="providers"]').first().click();
-              await page.waitForTimeout(120);
+              await page.waitForTimeout(160);
               const providerText = await page.locator('#explore').innerText();
-              assert(providerText.includes('제공사') && !providerText.includes('VIEW PROVIDER'), 'provider surface not fully localized');
+              assert(providerText.includes('제공사'), 'provider heading missing');
+              for (const token of forbiddenUi) assert(!providerText.includes(token), `provider surface still exposes ${token}`);
+              assert(!/\bmodel entries\b|\bfree\/credit paths\b|\blatest verify\b/i.test(providerText), `provider surface has mixed English UI: ${providerText}`);
 
               await page.locator('[data-ia-view="discover"]').first().click();
-              await page.waitForTimeout(120);
+              await page.waitForTimeout(160);
               await page.locator('[data-id="vercel-glm52"]').first().click();
               await page.waitForSelector('.ux3-route-detail.is-open');
-              await page.waitForTimeout(120);
+              await page.waitForTimeout(160);
               const detailText = await page.locator('.ux3-route-detail.is-open').innerText();
               assert(detailText.includes('현재 이용 조건') && detailText.includes('출처 신뢰도'), 'route detail labels not Korean');
               assert(detailText.includes('정보만 제공') || detailText.includes('실행 경로 연결됨'), 'execution state not Korean');
               assert(!detailText.includes('VERIFIED_OFFICIAL_WEB'), 'raw verification enum visible in route detail');
+              for (const token of forbiddenUi) assert(!detailText.includes(token), `route detail still exposes ${token}`);
               await page.keyboard.press('Escape');
 
               const width = await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth}));
