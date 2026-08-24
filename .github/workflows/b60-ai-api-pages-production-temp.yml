@@ -17,10 +17,9 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PROJECT_NAME: ai-api
       PRODUCTION_BRANCH: production
-      PUBLIC_DOMAIN: ai-api.pages.dev
       PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
-      - name: Ensure dedicated Pages project
+      - name: Resolve dedicated Pages project and actual subdomain
         shell: bash
         run: |
           set -euo pipefail
@@ -33,25 +32,30 @@ jobs:
             --header 'Content-Type: application/json' \
             "${endpoint}")"
           if [ "${status}" = "404" ]; then
-            payload="$(mktemp)"; created="$(mktemp)"
+            payload="$(mktemp)"; project_json="$(mktemp)"
             jq -n --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" '{name:$name,production_branch:$branch}' > "${payload}"
-            create_status="$(curl --silent --show-error --request POST --output "${created}" --write-out '%{http_code}' \
+            create_status="$(curl --silent --show-error --request POST --output "${project_json}" --write-out '%{http_code}' \
               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
               --header 'Content-Type: application/json' \
               --data-binary "@${payload}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects")"
-            test "${create_status}" = "200" || test "${create_status}" = "201" || { cat "${created}"; exit 1; }
-            jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" '.success == true and .result.name == $name and .result.production_branch == $branch' "${created}" >/dev/null
+            test "${create_status}" = "200" || test "${create_status}" = "201" || { cat "${project_json}"; exit 1; }
+            jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" '.success == true and .result.name == $name and .result.production_branch == $branch' "${project_json}" >/dev/null
             echo "PROJECT_CREATED=${PROJECT_NAME}"
           else
             test "${status}" = "200" || { cat "${body}"; exit 1; }
-            jq -e --arg name "${PROJECT_NAME}" '.success == true and .result.name == $name' "${body}" >/dev/null
-            existing_branch="$(jq -r '.result.production_branch' "${body}")"
-            if [ "${existing_branch}" != "${PRODUCTION_BRANCH}" ]; then
-              echo "Existing project ${PROJECT_NAME} has production_branch=${existing_branch}; refusing to overwrite an unknown project." >&2
-              exit 1
-            fi
+            project_json="${body}"
+            jq -e --arg name "${PROJECT_NAME}" '.success == true and .result.name == $name' "${project_json}" >/dev/null
+            existing_branch="$(jq -r '.result.production_branch' "${project_json}")"
+            test "${existing_branch}" = "${PRODUCTION_BRANCH}" || { echo "Unexpected production branch ${existing_branch}" >&2; exit 1; }
             echo "PROJECT_EXISTED=${PROJECT_NAME}"
+          fi
+          actual_domain="$(jq -r '.result.subdomain' "${project_json}")"
+          test -n "${actual_domain}" && test "${actual_domain}" != "null"
+          echo "PUBLIC_DOMAIN=${actual_domain}" >> "${GITHUB_ENV}"
+          echo "PROJECT_SUBDOMAIN=${actual_domain}"
+          if [ "${actual_domain}" != "ai-api.pages.dev" ]; then
+            echo "EXACT_AI_API_PAGES_DEV_UNAVAILABLE=YES"
           fi
 
       - name: Check out exact integrated head
@@ -144,7 +148,7 @@ jobs:
             --commit-message "B60 ai-api dedicated apex" \
             --commit-dirty=false
 
-      - name: Verify public apex and TLS
+      - name: Verify actual public apex and TLS
         shell: bash
         run: |
           set -euo pipefail
@@ -155,6 +159,7 @@ jobs:
             sleep 10
           done
           grep -q '<!DOCTYPE html>' /tmp/root.html || grep -qi '<html' /tmp/root.html
+          grep -q 'id="explore"' /tmp/root.html
           timeout 10 openssl s_client -connect "${PUBLIC_DOMAIN}:443" -servername "${PUBLIC_DOMAIN}" -brief </dev/null >/tmp/tls.txt 2>&1
           cat /tmp/tls.txt
           headers="$(mktemp)"
