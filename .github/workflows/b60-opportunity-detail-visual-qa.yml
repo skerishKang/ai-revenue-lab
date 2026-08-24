@@ -84,17 +84,33 @@ jobs:
           "$browser" --headless=new --no-sandbox --disable-gpu \
             --virtual-time-budget=6000 --dump-dom "$mobile" > "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
 
-          grep -q 'data-qa-deal="opencode-ox-alpha-free"' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
-          grep -q 'deal=opencode-ox-alpha-free' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
-          grep -q '실제 사용하기 ↗' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
-          grep -q '기간 한정 · 종료일 공식 미공개' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
-          grep -q '4 models · unlimited' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
-          grep -q '2026.09.06까지' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
-          grep -q '공식 발표' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
           test -s "$GITHUB_WORKSPACE/b60-detail-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-detail-mobile.png"
 
+      - name: Assert rendered detail behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() {
+            local needle="$1"
+            local file="$2"
+            if ! grep -Fq "$needle" "$file"; then
+              echo "ASSERTION FAILED: $needle"
+              echo "FILE: $file"
+              exit 1
+            fi
+            echo "PASS: $needle"
+          }
+          check 'data-qa-deal="opencode-ox-alpha-free"' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          check 'deal=opencode-ox-alpha-free' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          check '실제 사용하기 ↗' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          check '기간 한정 · 종료일 공식 미공개' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
+          check '4 models · unlimited' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+          check '2026.09.06까지' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+          check '공식 발표' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+
       - name: Upload rendered evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: b60-opportunity-detail-visual-evidence
