@@ -13,6 +13,7 @@ from starlette.staticfiles import StaticFiles
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
 from .skills import Skill, get_skill
+from .web_tools import create_web_provider
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 MAX_BROWSER_BODY_BYTES = 65_536
@@ -77,6 +78,7 @@ async def health(request: Request) -> JSONResponse:
         "app": "padiem-chat",
         "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
+        "web_tools_ready": settings.web_provider in {"mock", "firecrawl"},
     })
 
 
@@ -113,6 +115,7 @@ async def api_chat(request: Request) -> JSONResponse:
 def create_app(
     settings: Settings | None = None,
     transport=None,
+    web_transport=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -123,6 +126,7 @@ def create_app(
     app = Starlette(routes=routes)
     app.state.settings = resolved
     app.state.b14_client = B14Client(resolved, transport=transport)
+    app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     return app
 
 
