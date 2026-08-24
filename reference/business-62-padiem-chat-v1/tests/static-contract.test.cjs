@@ -46,7 +46,7 @@ test('parent-generation accessibility basics are explicit', () => {
   assert.match(css, /focus-visible/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /min-height:\s*4[0248]px/);
-  assert.match(html, /aria-label="메시지 입력"/);
+  assert.match(html, /<label for="messageInput"[^>]*>메시지 입력<\/label>/);
   assert.match(html, /aria-label="메시지 보내기"/);
 });
 
@@ -60,5 +60,5 @@ test('Projects are visible only as a future capability', () => {
   assert.match(html, /프로젝트/);
   assert.match(html, /준비 중/);
   assert.match(html, /disabled aria-disabled="true"/);
-  assert.match(readme, /Projects/);
+  assert.match(readme, /consumer-facing conversation \/ projects \/ UX/i);
 });
