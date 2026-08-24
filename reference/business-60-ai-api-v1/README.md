@@ -1,4 +1,31 @@
-# Business 60 · AI API — Cinematic Anchor v1
+# Business 60 · AI Free Radar
+
+> **CURRENT START HERE — 2026-08-25**
+>
+> B60 is now governed by the canonical operating documents below. Future sessions must read these before using the older cinematic/prototype notes as product direction.
+
+## Canonical operating documents
+
+1. [`operations/B60_PRODUCT_CANON.md`](operations/B60_PRODUCT_CANON.md) — product mission, priority 1/2/3, scope and truth boundary
+2. [`operations/B60_EDITORIAL_OPERATIONS.md`](operations/B60_EDITORIAL_OPERATIONS.md) — what to do when the owner sends X/web links; manual editorial intake workflow
+3. [`operations/B60_VISUAL_RULES.md`](operations/B60_VISUAL_RULES.md) — image-led editorial design rules, no decorative simple-SVG/generic AI-SaaS drift
+4. [`operations/B60_SESSION_START.md`](operations/B60_SESSION_START.md) — required startup/read order and cross-session handoff contract
+
+Current product framing:
+
+```text
+Priority 1 = timely free / credit / promotion opportunities
+Priority 2 = ongoing always-free access
+Priority 3 = provider/API execution in a separate product boundary
+```
+
+Manual discovery and curation by the owner is a supported first-class workflow. Automation is optional and secondary. An incoming X/web link should normally be treated as an **editorial opportunity intake**, not as an instruction to expand a provider directory.
+
+Current presentation direction is the image-led editorial radar in PR #703 / issue #702. The historical cinematic/prototype documentation below remains useful technical context, but it is **not the current product-direction source of truth** when it conflicts with the canonical documents above.
+
+---
+
+# Historical technical context — Cinematic Anchor v1
 
 Issue: #652  
 Parent registration: #650 / Draft PR #651  
