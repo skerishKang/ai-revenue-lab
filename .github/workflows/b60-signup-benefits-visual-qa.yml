@@ -49,20 +49,33 @@ jobs:
           browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$browser"
 
+          # First preserve the real top-of-page composition for regression review.
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
             --virtual-time-budget=5000 --window-size=1440,2100 \
             --screenshot="$GITHUB_WORKSPACE/b60-signup-top-desktop.png" \
             http://127.0.0.1:4173/
 
-          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-            --virtual-time-budget=5000 --window-size=1440,1600 \
-            --screenshot="$GITHUB_WORKSPACE/b60-signup-desktop.png" \
-            'http://127.0.0.1:4173/#signup-benefits'
+          # The signup section is injected after initial navigation, so a URL fragment does not
+          # reliably re-scroll headless Chrome. Hide preceding sections only inside this disposable
+          # QA checkout so the real signup composition can be captured without product mutations.
+          cat >> product-v13-editorial-radar-polish.css <<'EOF'
+          .radar-masthead,
+          .radar-rule,
+          .radar-lead,
+          .radar-dropped,
+          .radar-expiring { display: none !important; }
+          .radar-signups { padding-top: 22px !important; }
+          EOF
 
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-            --force-device-scale-factor=1 --virtual-time-budget=5000 --window-size=390,1800 \
+            --virtual-time-budget=5000 --window-size=1440,1650 \
+            --screenshot="$GITHUB_WORKSPACE/b60-signup-desktop.png" \
+            http://127.0.0.1:4173/
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=5000 --window-size=390,3000 \
             --screenshot="$GITHUB_WORKSPACE/b60-signup-mobile.png" \
-            'http://127.0.0.1:4173/#signup-benefits'
+            http://127.0.0.1:4173/
 
           "$browser" --headless=new --no-sandbox --disable-gpu \
             --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4173/ \
@@ -76,6 +89,7 @@ jobs:
           grep -q '신규 고객 전용' "$GITHUB_WORKSPACE/b60-signup-dom.html"
           grep -q '지금 가장 핫함' "$GITHUB_WORKSPACE/b60-signup-dom.html"
           grep -q '방금 뜬 무료' "$GITHUB_WORKSPACE/b60-signup-dom.html"
+          grep -q '수동 큐레이션' "$GITHUB_WORKSPACE/b60-signup-dom.html"
           test -s "$GITHUB_WORKSPACE/b60-signup-top-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-signup-desktop.png"
           test -s "$GITHUB_WORKSPACE/b60-signup-mobile.png"
