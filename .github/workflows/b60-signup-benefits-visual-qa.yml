@@ -49,15 +49,11 @@ jobs:
           browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$browser"
 
-          # First preserve the real top-of-page composition for regression review.
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-            --virtual-time-budget=5000 --window-size=1440,2100 \
+            --virtual-time-budget=8000 --window-size=1440,2100 \
             --screenshot="$GITHUB_WORKSPACE/b60-signup-top-desktop.png" \
             http://127.0.0.1:4173/
 
-          # The signup section is injected after initial navigation, so a URL fragment does not
-          # reliably re-scroll headless Chrome. Hide preceding sections only inside this disposable
-          # QA checkout so the real signup composition can be captured without product mutations.
           cat >> product-v13-editorial-radar-polish.css <<'EOF'
           .radar-masthead,
           .radar-rule,
@@ -68,17 +64,23 @@ jobs:
           EOF
 
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-            --virtual-time-budget=5000 --window-size=1440,1650 \
+            --virtual-time-budget=10000 --window-size=1440,1650 \
             --screenshot="$GITHUB_WORKSPACE/b60-signup-desktop.png" \
             http://127.0.0.1:4173/
 
+          # Warm a mobile paint first; some hosted Chrome runs defer large WebP decode until the first mobile paint.
           "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-            --force-device-scale-factor=1 --virtual-time-budget=5000 --window-size=390,3000 \
+            --force-device-scale-factor=1 --virtual-time-budget=10000 --window-size=390,3000 \
+            --screenshot="$GITHUB_WORKSPACE/b60-signup-mobile-warm.png" \
+            http://127.0.0.1:4173/
+
+          "$browser" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --force-device-scale-factor=1 --virtual-time-budget=15000 --window-size=390,3000 \
             --screenshot="$GITHUB_WORKSPACE/b60-signup-mobile.png" \
             http://127.0.0.1:4173/
 
           "$browser" --headless=new --no-sandbox --disable-gpu \
-            --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4173/ \
+            --virtual-time-budget=6000 --dump-dom http://127.0.0.1:4173/ \
             > "$GITHUB_WORKSPACE/b60-signup-dom.html"
 
           grep -q 'Ox Alpha' "$GITHUB_WORKSPACE/b60-signup-dom.html"
