@@ -8,16 +8,16 @@ permissions:
   contents: read
 
 jobs:
-  audit-pages-routing:
+  live-final:
     if: github.event.pull_request.number == 678
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       PROJECT_NAME: ai-api
     steps:
-      - name: Audit project deployment routing
+      - name: Resolve canonical production deployment
         shell: bash
         run: |
           set -euo pipefail
@@ -27,29 +27,72 @@ jobs:
             --header 'Content-Type: application/json' \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
             -o "${project}"
-          jq '{success, result:{name:.result.name,subdomain:.result.subdomain,production_branch:.result.production_branch,source:.result.source,canonical_deployment:(.result.canonical_deployment|if . then {id,url,environment,aliases,deployment_trigger,latest_stage} else null end),latest_deployment:(.result.latest_deployment|if . then {id,url,environment,aliases,deployment_trigger,latest_stage} else null end)}}' "${project}"
-          subdomain="$(jq -r '.result.subdomain' "${project}")"
-          canonical_url="$(jq -r '.result.canonical_deployment.url // empty' "${project}")"
-          latest_url="$(jq -r '.result.latest_deployment.url // empty' "${project}")"
-          printf 'PROJECT_SUBDOMAIN=%s\nCANONICAL_URL=%s\nLATEST_URL=%s\n' "${subdomain}" "${canonical_url}" "${latest_url}"
-          for pair in "subdomain|https://${subdomain}/" "canonical|${canonical_url}" "latest|${latest_url}" "branch|https://production.${subdomain}/"; do
-            label="${pair%%|*}"; url="${pair#*|}"
-            [ -n "${url}" ] || continue
-            body="$(mktemp)"
-            code="$(curl --silent --show-error --location --output "${body}" --write-out '%{http_code}' --max-time 20 "${url}" || true)"
-            marker="$(grep -c 'id=\"explore\"' "${body}" 2>/dev/null || true)"
-            title="$(sed -n 's:.*<title>\(.*\)</title>.*:\1:p' "${body}" | head -n1)"
-            printf 'CHECK_%s url=%s http=%s marker=%s title=%s bytes=%s\n' "${label}" "${url}" "${code}" "${marker}" "${title}" "$(wc -c < "${body}")"
-          done
+          domain="$(jq -r '.result.subdomain' "${project}")"
+          environment="$(jq -r '.result.canonical_deployment.environment' "${project}")"
+          branch="$(jq -r '.result.canonical_deployment.deployment_trigger.metadata.branch' "${project}")"
+          deploy_status="$(jq -r '.result.canonical_deployment.latest_stage.status' "${project}")"
+          test "${environment}" = "production"
+          test "${branch}" = "production"
+          test "${deploy_status}" = "success"
+          echo "PUBLIC_DOMAIN=${domain}" >> "${GITHUB_ENV}"
+          echo "CANONICAL_DEPLOYMENT=$(jq -r '.result.canonical_deployment.id' "${project}")"
+          echo "CANONICAL_URL=$(jq -r '.result.canonical_deployment.url' "${project}")"
+          echo "PUBLIC_APEX=https://${domain}/"
+          echo "EXACT_AI_API_PAGES_DEV_AVAILABLE=$([ "${domain}" = "ai-api.pages.dev" ] && echo YES || echo NO)"
 
-      - name: List recent deployments
+      - name: Install Chromium
         shell: bash
         run: |
           set -euo pipefail
-          deployments="$(mktemp)"
-          curl --silent --show-error --fail \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            --header 'Content-Type: application/json' \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments" \
-            -o "${deployments}"
-          jq '[.result[:8][] | {id,url,environment,aliases,created_on,deployment_trigger,latest_stage}]' "${deployments}"
+          mkdir -p "${RUNNER_TEMP}/pw"
+          npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
+          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
+
+      - name: Live desktop and mobile QA
+        shell: bash
+        env:
+          PW: ${{ runner.temp }}/pw/node_modules/playwright
+        run: |
+          set -euo pipefail
+          cat > "${RUNNER_TEMP}/live.cjs" <<'NODE'
+          const { chromium } = require(process.env.PW);
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+              const page=await browser.newPage({viewport});
+              const errors=[],failed=[];
+              page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+              page.on('requestfailed',r=>failed.push(`${r.method()} ${r.url()} ${r.failure()?.errorText||''}`));
+              const response=await page.goto(`https://${process.env.PUBLIC_DOMAIN}/`,{waitUntil:'networkidle'});
+              if(!response||response.status()!==200) throw new Error(`status ${response?.status()}`);
+              await page.waitForSelector('#explore');
+              await page.locator('#explore').scrollIntoViewIfNeeded();
+              const vercel=page.locator('.access-card[data-id="vercel-glm52"]');
+              if(await vercel.count()!==1) throw new Error('Vercel card missing');
+              await vercel.click();
+              await page.waitForSelector('.ux3-route-detail.is-open');
+              await page.waitForTimeout(350);
+              const detail=await page.locator('.ux3-route-panel').innerText();
+              if(!detail.includes('Varies by routed provider')) throw new Error('Vercel provider-dependent price missing');
+              if(!detail.includes('$5 credits / 30 days')) throw new Error('Vercel recurring credit missing');
+              await page.locator('[data-close-route]').click();
+              await page.waitForTimeout(260);
+              await page.evaluate(()=>localStorage.setItem('b60.ai-api.watchlist.v1',JSON.stringify(['vercel-glm52','openrouter-free-router'])));
+              await page.reload({waitUntil:'networkidle'});
+              await page.waitForSelector('#explore');
+              await page.locator('#explore').scrollIntoViewIfNeeded();
+              await page.locator('.ia-primary [data-ia-view="watch"]').click();
+              await page.waitForSelector('.ux4-saved-list');
+              if(await page.locator('.ux4-saved-route').count()!==2) throw new Error('Watch route count not 2');
+              const metrics=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+              if(metrics.sw>metrics.cw+1) throw new Error(`horizontal overflow ${JSON.stringify(metrics)}`);
+              if(errors.length) throw new Error(`console errors ${errors.join(' | ')}`);
+              if(failed.length) throw new Error(`request failures ${failed.join(' | ')}`);
+              console.log(`LIVE ${viewport.width}x${viewport.height} PASS`);
+              await page.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          PUBLIC_DOMAIN="${PUBLIC_DOMAIN}" node "${RUNNER_TEMP}/live.cjs"
+          echo "PRODUCTION_ACCEPTED=https://${PUBLIC_DOMAIN}/"
