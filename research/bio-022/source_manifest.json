@@ -1,0 +1,46 @@
+{
+  "schema_version": "0.1",
+  "purpose": "Public sources motivating the controlled-health-data model-export workflow and privacy-audit caution. These sources are not a machine-readable legal rulebook.",
+  "sources": [
+    {
+      "id": "HIRA-OPEN-DATA-MEDICAL-IMAGE",
+      "authority": "HIRA",
+      "title": "보건의료빅데이터개방시스템 의료영상 데이터 분석 지원 안내",
+      "url": "https://opendata.hira.or.kr/op/opb/selectHelhMedDataInfoView.do?divId=cust",
+      "supported_use": "Medical-image analysis can occur in a controlled GPU environment without exporting source image data.",
+      "unsupported_use": "Proof that BIO-022 methodology is accepted for export approval."
+    },
+    {
+      "id": "HIRA-2026-ROLE-FUNCTIONS",
+      "authority": "HIRA",
+      "title": "2026 HIRA role/functions public material",
+      "url": "https://www.hira.or.kr/ebooksc/2025/12/BZ202512232703963.pdf",
+      "supported_use": "Public workflow signal that AI models/algorithms may be exported while image data remain non-exportable and export review can involve external expertise.",
+      "unsupported_use": "A legal conclusion about any specific artifact."
+    },
+    {
+      "id": "PRIVACY-METER",
+      "authority": "Privacy Research Tooling",
+      "title": "ML Privacy Meter",
+      "url": "https://github.com/privacytrustlab/ml_privacy_meter",
+      "supported_use": "Membership-inference-based privacy auditing is an existing technique/tooling category.",
+      "unsupported_use": "Claim that this benchmark invents membership inference or that one attack is sufficient."
+    },
+    {
+      "id": "MIA-MEDICAL-AI-2026",
+      "authority": "Peer-reviewed research index",
+      "title": "2026 medical-AI membership-inference research",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13442007/",
+      "supported_use": "Patient/record-level membership privacy risk can differ materially from aggregate privacy summaries.",
+      "unsupported_use": "Transfer of reported numerical risk to the synthetic BIO-022 fixture."
+    },
+    {
+      "id": "MIA-CONTROL-CAUTION-2026",
+      "authority": "PubMed-indexed research",
+      "title": "2026 membership-inference audit false-positive / data-split caution",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42174933/",
+      "supported_use": "Control experiments and split-bias checks are important when interpreting membership-inference audit signals.",
+      "unsupported_use": "A universal numeric threshold for privacy safety or export."
+    }
+  ]
+}
