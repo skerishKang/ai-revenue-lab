@@ -23,7 +23,7 @@ concurrency:
 jobs:
   validate-and-release:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 15
     env:
       PROJECT_NAME: ai-api
       PRODUCTION_BRANCH: production
@@ -232,16 +232,65 @@ jobs:
           jq -e --arg sha "${TARGET_SHA}" --arg branch "${PRODUCTION_BRANCH}" \
             '.result.canonical_deployment.environment == "production" and .result.canonical_deployment.deployment_trigger.metadata.branch == $branch and .result.canonical_deployment.deployment_trigger.metadata.commit_hash == $sha and .result.canonical_deployment.latest_stage.status == "success"' \
             "${project}" >/dev/null
-          echo "CANONICAL_DEPLOYMENT=$(jq -r '.result.canonical_deployment.id' "${project}")"
-          echo "CANONICAL_URL=$(jq -r '.result.canonical_deployment.url' "${project}")"
+          deployment_id="$(jq -r '.result.canonical_deployment.id' "${project}")"
+          deployment_url="$(jq -r '.result.canonical_deployment.url' "${project}")"
+          test -n "${deployment_url}" && test "${deployment_url}" != "null"
+          echo "CANONICAL_DEPLOYMENT=${deployment_id}" >> "${GITHUB_ENV}"
+          echo "CANONICAL_URL=${deployment_url}" >> "${GITHUB_ENV}"
+          echo "CANONICAL_DEPLOYMENT=${deployment_id}"
+          echo "CANONICAL_URL=${deployment_url}"
           echo "PUBLIC_APEX=https://${PUBLIC_DOMAIN}/"
+
+      - name: Exact deployment browser QA
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "${RUNNER_TEMP}/b60-production-smoke.cjs" "${CANONICAL_URL}/?release=${TARGET_SHA}" EXACT_DEPLOYMENT
+
+      - name: Wait for public apex release propagation
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          html="$(mktemp)"
+          v13="$(mktemp)"
+          v14="$(mktemp)"
+          trap 'rm -f "${html}" "${v13}" "${v14}"' EXIT
+
+          for attempt in $(seq 1 36); do
+            bust="${TARGET_SHA}-${attempt}-$(date +%s)"
+            root="https://${PUBLIC_DOMAIN}/?release=${bust}"
+            if curl -fsS --connect-timeout 5 --max-time 15 \
+                -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+                "${root}" -o "${html}" \
+              && grep -F 'product-v13-editorial-radar.js' "${html}" >/dev/null \
+              && grep -F 'product-v14-opportunity-detail.js' "${html}" >/dev/null \
+              && curl -fsS --connect-timeout 5 --max-time 15 \
+                -H 'Cache-Control: no-cache' \
+                "https://${PUBLIC_DOMAIN}/product-v13-editorial-radar.js?release=${bust}" -o "${v13}" \
+              && grep -F 'B60_EDITORIAL_RADAR' "${v13}" >/dev/null \
+              && curl -fsS --connect-timeout 5 --max-time 15 \
+                -H 'Cache-Control: no-cache' \
+                "https://${PUBLIC_DOMAIN}/product-v14-opportunity-detail.js?release=${bust}" -o "${v14}" \
+              && grep -F 'B60_OPPORTUNITY_DETAIL' "${v14}" >/dev/null; then
+              echo "PUBLIC_APEX_RELEASE=PASS attempt=${attempt}"
+              echo "PUBLIC_RELEASE_URL=https://${PUBLIC_DOMAIN}/?release=${TARGET_SHA}" >> "${GITHUB_ENV}"
+              exit 0
+            fi
+            echo "PUBLIC_APEX_RELEASE=pending attempt=${attempt}"
+            sleep 5
+          done
+
+          echo "Public apex did not converge to the V13/V14 release" >&2
+          exit 1
 
       - name: Live production browser QA
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
-          node "${RUNNER_TEMP}/b60-production-smoke.cjs" "https://${PUBLIC_DOMAIN}/" LIVE_B60
+          node "${RUNNER_TEMP}/b60-production-smoke.cjs" "${PUBLIC_RELEASE_URL}" LIVE_B60
           echo "PRODUCTION_ACCEPTED=https://${PUBLIC_DOMAIN}/"
 
       - name: Publish summary
@@ -258,6 +307,7 @@ jobs:
               echo "- project: \`${PROJECT_NAME}\`"
               echo "- production branch: \`${PRODUCTION_BRANCH}\`"
               echo "- public URL: \`https://${PUBLIC_DOMAIN}/\`"
+              echo "- canonical deployment: \`${CANONICAL_DEPLOYMENT:-not-reached}\`"
             else
               echo "- production deploy: skipped on PR head"
             fi
