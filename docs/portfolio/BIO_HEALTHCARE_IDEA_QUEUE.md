@@ -32,10 +32,13 @@ A new session must not skip directly to inventing a replacement idea merely beca
    - Technical direction narrowed to strong generic PII + clinical-context/quasi-identifier layer + false-positive reduction.
    - Next evidence: real hospital/HIS buyer and deployment validation.
 
-2. **NIR Vein Intelligence / 근적외선 혈관 가시화·주사실습 보조** — `LEGACY_ASSET_REVALIDATION`
-   - Based on actual PADIEM 2015–2017 technology/IP/businessization history.
-   - Must revalidate current sensor stack, data, algorithmic contribution, certification and medical-device boundaries.
-   - Do not claim current efficacy from historical patent/business evidence alone.
+2. **NIR Vein Intelligence → AI Venipuncture Training & Assessment / AI 정맥주사 실습·평가** — `RESEARCHING / NARROW`
+   - 2026 revalidation completed in `research/BIO_001_NIR_VEIN_REVALIDATION_2026-08-26.md`.
+   - PADIEM's 2015–2017 NIR vein / injection-assistance asset and patent-registration history are verified in current company records.
+   - Generic patient-use clinical vein finder is **killed as the primary product thesis** because AccuVein / VeinViewer / iiSM VeinProbe and broad patent prior art already occupy the category.
+   - Surviving wedge: education/research-first NIR venipuncture training, difficult-case visualization and objective learner assessment.
+   - Public-data benchmark is feasible now using CUBITAL-style annotated forearm NIR data and nurse-selected access regions.
+   - Next work: software-only segmentation / access-zone / subgroup-performance benchmark. No hardware build and no clinical efficacy claim yet.
 
 ### B. Unscreened / screening candidates
 
@@ -55,6 +58,32 @@ A new session must not skip directly to inventing a replacement idea merely beca
 13. **Genomics AI** — `DEPRIORITIZED`
 
 Deprioritized does not mean impossible. It means the queue should not repeatedly restart from these broad categories until a new PADIEM asset, partner, dataset, grant call, or distinct product wedge changes the evidence.
+
+## BIO-001 next benchmark gate
+
+The next technical slice for BIO-001 is deliberately software-only.
+
+```text
+PUBLIC NIR FOREARM DATA
+→ preprocessing baseline
+→ U-Net-style published baseline
+→ lightweight PADIEM candidate
+→ vein mask / access-zone ranking / confidence
+→ nurse-reference agreement
+→ subgroup performance where metadata supports it
+```
+
+Required evaluation dimensions:
+
+- Dice / segmentation F1;
+- IoU;
+- precision / recall;
+- inference latency;
+- nurse-selected access-region agreement where the dataset provides it;
+- abstention / low-confidence failure rate;
+- available complexion / demographic subgroup results without overclaiming fairness.
+
+Do not promote BIO-001 to a numbered Business merely because the benchmark can be built. Promotion requires a technical advantage or a commercially meaningful education/evaluation workflow that survives the benchmark and buyer screen.
 
 ## Screening dimensions
 
