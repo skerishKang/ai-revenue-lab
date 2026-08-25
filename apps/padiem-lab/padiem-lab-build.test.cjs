@@ -34,7 +34,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 60]);
+  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 16, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
@@ -66,20 +66,36 @@ test('aggregate build contains Lab shell and every registered Business route', (
   assert.match(notFound, /noindex/);
 });
 
-test('static reference routes publish only runtime allowlists', () => {
+test('static reference routes publish exactly their route-specific runtime allowlists', () => {
   build();
   for (const route of routes.filter(route => route.mode === 'STATIC_REFERENCE')) {
     const target = routeOut(route);
-    for (const file of ['index.html', 'guide.html', 'ux.html']) {
+    for (const file of route.includeFiles || []) {
       assert.equal(fs.existsSync(path.join(target, file)), true, `${route.route} missing ${file}`);
     }
-    for (const directory of ['assets', 'scripts', 'styles']) {
+    for (const directory of route.includeDirs || []) {
       assert.equal(fs.existsSync(path.join(target, directory)), true, `${route.route} missing ${directory}/`);
+    }
+    for (const excluded of route.excludePaths || []) {
+      assert.equal(fs.existsSync(path.join(target, excluded)), false, `${route.route} leaked excluded path ${excluded}`);
     }
     for (const forbidden of ['README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md', 'evidence']) {
       assert.equal(fs.existsSync(path.join(target, forbidden)), false, `${route.route} leaked ${forbidden}`);
     }
   }
+});
+
+test('B16 publishes the current Matchday executable without legacy review-state files', () => {
+  build();
+  const b16 = path.join(out, 'b16');
+  for (const file of ['index.html', 'guide.html', 'ux.html']) {
+    assert.equal(fs.existsSync(path.join(b16, file)), true, `b16 missing ${file}`);
+  }
+  assert.equal(fs.existsSync(path.join(b16, 'assets')), true);
+  assert.equal(fs.existsSync(path.join(b16, 'styles')), true);
+  assert.equal(fs.existsSync(path.join(b16, 'app.js')), false, 'b16 leaked root legacy app.js');
+  assert.equal(fs.existsSync(path.join(b16, 'docs')), false, 'b16 leaked docs');
+  assert.equal(fs.existsSync(path.join(b16, 'scripts')), false, 'b16 invented a scripts directory');
 });
 
 test('aggregate runtime excludes repository-only and private paths recursively', () => {
