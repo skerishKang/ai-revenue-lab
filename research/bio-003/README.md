@@ -12,7 +12,7 @@ This pack does not test diagnosis, treatment, medication decisions, emergency cl
 
 ## Conditions
 
-Each synthetic case uses the same atomic facts in three representations:
+Each synthetic case uses the same canonical facts in three representations:
 
 - `summary` — conventional patient-facing after-visit summary;
 - `timeline` — chronological event cards;
@@ -20,37 +20,42 @@ Each synthetic case uses the same atomic facts in three representations:
 
 The first test deliberately minimizes cinematic/physical-book effects. It tests information architecture and trust/memory, not visual preference.
 
-## Information-parity contract
+### Information-parity contract
 
-An audit found that the original Case B timeline omitted two canonical facts that were present in the summary/story conditions:
+An audit found an original parity defect in Case B: the timeline omitted facts that existed in summary/story. The missing facts were restored and the fixture now has a machine-checkable parity contract.
 
-- discomfort when gripping/twisting;
-- the plan to review the prior X-ray and symptom log together at follow-up.
+Read:
 
-That would have confounded presentation-format effects with unequal information exposure, so the timeline was corrected before any participant pilot.
+- `PARITY_AUDIT_2026-08-26.md`
+- `fact_coverage.json`
+- `question_fact_map.json`
 
-Parity is now explicit and machine-checkable:
+Current contract:
 
-- `fact_coverage.json` defines the canonical fact IDs for each case and a minimum visible text anchor for every fact in every condition;
-- `question_fact_map.json` maps every validation question to the minimum canonical facts required to answer it;
-- tests require each condition to expose exactly the canonical fact set;
-- tests verify each claimed fact anchor is actually present in the rendered text;
-- tests require every question's supporting facts to be available under summary, timeline and story alike.
+```text
+3 cases
+× 8 canonical facts each
+× summary / timeline / story
+→ every canonical fact must be visibly present in every condition
+→ every validation question maps to minimum required facts
+→ every required fact must exist in every condition
+```
 
-This contract prevents a condition from appearing superior merely because it contains facts that another condition omits. It does **not** prove semantic equivalence of wording, reading difficulty, salience, layout or cognitive load; those remain empirical/human-pilot concerns.
+Explicit provenance labels are intentionally **not** equalized across conditions because provenance presentation is part of the My Health Story treatment under test. Factual availability is the parity requirement.
 
 ## Files
 
 - `cases.json` — three fictional source bundles plus information-equivalent A/B/C renderings;
-- `fact_coverage.json` — canonical fact-set and rendering-anchor parity contract;
-- `question_fact_map.json` — question → required canonical fact mapping;
+- `fact_coverage.json` — canonical fact set and per-condition text anchors;
+- `question_fact_map.json` — question → minimum fact dependency contract;
 - `questions.json` — deterministic task/question bank and answer keys;
 - `counterbalancing.json` — three-group case/condition rotation;
 - `responses.schema.csv` — question-response capture schema;
 - `case_ratings.schema.csv` — cognitive-load/usefulness capture schema;
 - `score.py` — deterministic item scorer;
 - `analyze.py` — condition-level descriptive analysis;
-- `tests/test_score.py` — scorer, information-parity and counterbalancing contract tests.
+- `tests/test_score.py` — scorer, parity, question dependency and counterbalancing contract tests;
+- `PARITY_AUDIT_2026-08-26.md` — defect discovery, correction and independent mechanics evidence.
 
 ## Synthetic cases
 
@@ -81,6 +86,21 @@ python score.py --questions questions.json --responses responses.csv --out score
 python analyze.py --scored scored.csv --ratings case_ratings.csv
 ```
 
+## Verification state
+
+Independent fixture/scoring mechanics after parity repair:
+
+```text
+TOTAL_CANONICAL_FACTS = 24
+QUESTION_FACT_MAP_ENTRIES = 18
+ALL_CONDITION_FACT_ANCHORS_PRESENT = YES
+ALL_QUESTION_FACT_DEPENDENCIES_PRESENT = YES
+SCORER_PRIMITIVES = PASS
+COUNTERBALANCING = PASS
+```
+
+This is not exact-head GitHub Actions CI and not evidence of human benefit. At the checked head, no PR workflow run was configured for this research branch.
+
 ## Pilot decision vocabulary
 
 ```text
@@ -91,6 +111,10 @@ KILL_AS_STANDALONE
 ```
 
 Preference alone is never a GO criterion. The primary signals are source-attribution accuracy and follow-up-action recall, with factual errors/false recall treated as a hard counter-signal.
+
+## Next gate
+
+The information-parity blocker is closed. The next valid step is a bounded participant pilot using synthetic cases only, with immediate and delayed recall separated from simple visual preference.
 
 ## Safety
 
