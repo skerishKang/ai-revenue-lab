@@ -17,7 +17,14 @@ from .auth_routes import auth_ready, auth_status, current_user_id, google_callba
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
 from .grounding import GroundedChatService, GroundingError
-from .history import HistoryForbidden, HistoryStore, validate_conversation_id
+from .history import (
+    HistoryForbidden,
+    HistoryStore,
+    build_project_context,
+    validate_conversation_id,
+    validate_project_id,
+)
+from .project_routes import project_detail, projects_collection
 from .skills import Skill, get_skill
 from .tools import ToolSpec, get_tool
 from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
@@ -64,7 +71,6 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
         if not query or len(query) > MAX_QUERY_CHARS:
             raise BrowserRequestError("검색어는 1자 이상 2000자 이하로 입력해 주세요.")
         return BrowserToolRequest(tool=tool, tool_input=query)
-
     if tool.id == "web_fetch":
         if not isinstance(value, str) or not value.strip():
             raise BrowserRequestError("읽을 공개 웹 주소가 필요합니다.")
@@ -73,22 +79,15 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
         except ValueError as exc:
             raise BrowserRequestError(str(exc)) from exc
         return BrowserToolRequest(tool=tool, tool_input=safe_url)
-
     raise BrowserRequestError("지원하지 않는 도구입니다.")
 
 
 def _validate_payload(
     raw: Any,
-) -> tuple[
-    list[dict[str, str]],
-    Skill,
-    BrowserToolRequest | None,
-    tuple[ImageAttachment, ...],
-    str | None,
-]:
+) -> tuple[list[dict[str, str]], Skill, BrowserToolRequest | None, tuple[ImageAttachment, ...], str | None, str | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments", "conversation_id"}:
+    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
@@ -104,7 +103,6 @@ def _validate_payload(
     messages = raw.get("messages")
     if not isinstance(messages, list) or not 1 <= len(messages) <= MAX_MESSAGES:
         raise BrowserRequestError("대화 내용은 1개 이상 20개 이하로 보내 주세요.")
-
     out: list[dict[str, str]] = []
     total = 0
     for item in messages:
@@ -123,7 +121,6 @@ def _validate_payload(
         if total > MAX_TOTAL_MESSAGE_CHARS:
             raise BrowserRequestError("한 번에 보낸 대화가 너무 깁니다.")
         out.append({"role": role, "content": text})
-
     if not any(item["role"] == "user" for item in out):
         raise BrowserRequestError("사용자 질문이 필요합니다.")
 
@@ -136,38 +133,39 @@ def _validate_payload(
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
     try:
         conversation_id = validate_conversation_id(raw.get("conversation_id"))
+        project_id = validate_project_id(raw.get("project_id"))
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
-
-    return out, skill, tool_request, attachments, conversation_id
+    return out, skill, tool_request, attachments, conversation_id, project_id
 
 
 async def health(request: Request) -> JSONResponse:
     settings: Settings = request.app.state.settings
     return JSONResponse({
-        "status": "ok",
-        "app": "padiem-chat",
-        "runtime": settings.runtime_mode,
+        "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": settings.web_provider in {"mock", "firecrawl"},
         "image_attachment_ready": True,
         "auth_configured": settings.auth_mode == "google",
         "history_store_bound": request.app.state.history_store is not None,
+        "projects_code_ready": True,
     })
 
 
 def _too_large_response() -> JSONResponse:
-    return JSONResponse(
-        {"error": {"code": "request_too_large", "message": "요청이 너무 큽니다."}},
-        status_code=413,
-    )
+    return JSONResponse({"error": {"code": "request_too_large", "message": "요청이 너무 큽니다."}}, status_code=413)
 
 
 def _history_unavailable() -> JSONResponse:
-    return JSONResponse(
-        {"error": {"code": "history_unavailable", "message": "저장된 대화를 현재 사용할 수 없습니다."}},
-        status_code=503,
-    )
+    return JSONResponse({"error": {"code": "history_unavailable", "message": "저장된 대화를 현재 사용할 수 없습니다."}}, status_code=503)
+
+
+def _conversation_not_found() -> JSONResponse:
+    return JSONResponse({"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}}, status_code=404)
+
+
+def _project_not_found() -> JSONResponse:
+    return JSONResponse({"error": {"code": "project_not_found", "message": "프로젝트를 찾을 수 없습니다."}}, status_code=404)
 
 
 async def api_conversations(request: Request) -> JSONResponse:
@@ -213,41 +211,62 @@ async def api_chat(request: Request) -> JSONResponse:
             if int(content_length) > MAX_BROWSER_BODY_BYTES:
                 return _too_large_response()
         except ValueError:
-            return JSONResponse(
-                {"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}},
-                status_code=422,
-            )
-
+            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
     body = await request.body()
     if len(body) > MAX_BROWSER_BODY_BYTES:
         return _too_large_response()
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages, skill, tool_request, attachments, conversation_id = _validate_payload(raw)
+        messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse(
-            {"error": {"code": "invalid_request", "message": message}},
-            status_code=422,
-        )
+        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
     uid = current_user_id(request) if auth_ready(request) else None
     store: HistoryStore | None = request.app.state.history_store
+    if browser_project_id is not None and uid is None:
+        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+
+    existing_conversation = None
+    effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
-            if await store.get_conversation(uid, conversation_id) is None:
-                return JSONResponse(
-                    {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
-                    status_code=404,
-                )
+            existing_conversation = await store.get_conversation(uid, conversation_id)
         except Exception:
             return _history_unavailable()
+        if existing_conversation is None:
+            return _conversation_not_found()
+        stored_project_id = existing_conversation.get("project_id")
+        if stored_project_id is not None and not isinstance(stored_project_id, str):
+            return _conversation_not_found()
+        if browser_project_id is not None and browser_project_id != stored_project_id:
+            return _conversation_not_found()
+        if browser_project_id is None:
+            effective_project_id = stored_project_id
+
+    project = None
+    project_context = None
+    if effective_project_id is not None:
+        if uid is None or store is None:
+            return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+        try:
+            project = await store.get_project(uid, effective_project_id)
+        except Exception:
+            return _history_unavailable()
+        if project is None:
+            return _project_not_found()
+        project_context = build_project_context(project)
 
     try:
         if tool_request is None:
             client: B14Client = request.app.state.b14_client
-            result = await client.complete(messages, skill=skill, attachments=attachments)
+            result = await client.complete(
+                messages,
+                skill=skill,
+                additional_system_context=project_context,
+                attachments=attachments,
+            )
         else:
             grounded: GroundedChatService = request.app.state.grounded_chat
             result = await grounded.complete(
@@ -255,28 +274,30 @@ async def api_chat(request: Request) -> JSONResponse:
                 skill=skill,
                 tool=tool_request.tool,
                 tool_input=tool_request.tool_input,
+                additional_system_context=project_context,
             )
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
-        return JSONResponse(
-            {"error": {"code": exc.code, "message": exc.user_message}},
-            status_code=exc.status_code,
-        )
+        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
 
     if uid is not None and store is not None:
         latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
         if latest_user:
             try:
-                saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"])
+                if effective_project_id is None:
+                    saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"])
+                else:
+                    saved_id = await store.append_exchange(
+                        uid, conversation_id, latest_user, result["answer"], project_id=effective_project_id
+                    )
             except HistoryForbidden:
-                return JSONResponse(
-                    {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
-                    status_code=404,
-                )
+                return _conversation_not_found()
             except Exception:
                 saved_id = None
             if saved_id is not None:
                 result["conversation_id"] = saved_id
-
+                if effective_project_id is not None:
+                    result["project_id"] = effective_project_id
+                    result["project"] = {"id": project.id, "name": project.name} if project is not None else None
     return JSONResponse(result)
 
 
@@ -294,6 +315,8 @@ def create_app(
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
+        Route("/api/projects", projects_collection, methods=["GET", "POST"]),
+        Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET"]),
         Route("/api/chat", api_chat, methods=["POST"]),

@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./attachments.css" />
   <link rel="stylesheet" href="./history.css" />
+  <link rel="stylesheet" href="./projects.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -21,8 +22,16 @@
       <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>새 채팅</span></button>
       <nav class="side-nav" aria-label="채팅 메뉴">
         <button class="side-item" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span><span class="mini-badge">준비 중</span></button>
-        <button class="side-item" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge">준비 중</span></button>
+        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge" id="projectsBadge">로그인 후</span></button>
       </nav>
+      <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
+        <div class="section-heading-row">
+          <h2 id="projectsTitle">프로젝트</h2>
+          <button class="section-add-button" id="projectCreateButton" type="button" aria-label="새 프로젝트 만들기">＋</button>
+        </div>
+        <div id="projectsList"></div>
+        <p class="history-empty" id="projectsEmpty" hidden>아직 프로젝트가 없습니다.</p>
+      </section>
       <section class="recent-section" id="historySection" aria-labelledby="historyTitle" hidden>
         <h2 id="historyTitle">최근 대화</h2>
         <div id="historyList"></div>
@@ -61,6 +70,13 @@
         <div class="message-list" id="messageList" hidden></div>
       </section>
       <section class="composer-wrap" aria-label="메시지 작성">
+        <div class="project-banner" id="projectBanner" hidden>
+          <div class="project-banner-copy"><span>프로젝트</span><strong id="activeProjectName"></strong></div>
+          <div class="project-banner-actions">
+            <button id="editProjectButton" type="button">지침</button>
+            <button id="exitProjectButton" type="button">나가기</button>
+          </div>
+        </div>
         <form class="composer" id="composerForm">
           <div class="attachment-tray" id="attachmentTray" hidden>
             <div class="attachment-preview">
@@ -80,10 +96,30 @@
             <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. 로그인은 설정된 환경에서 최근 대화를 저장합니다.</p>
+        <p class="composer-note" id="runtimeNote">일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. 로그인한 환경에서는 최근 대화와 프로젝트를 이어갈 수 있습니다.</p>
       </section>
     </main>
   </div>
+
+  <dialog class="project-dialog" id="projectDialog" aria-labelledby="projectDialogTitle">
+    <form class="project-form" id="projectForm">
+      <div class="project-dialog-header">
+        <div><p>PROJECT</p><h2 id="projectDialogTitle">새 프로젝트</h2></div>
+        <button id="projectDialogClose" class="project-dialog-close" type="button" aria-label="프로젝트 창 닫기">×</button>
+      </div>
+      <label for="projectNameInput">프로젝트 이름</label>
+      <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required placeholder="예: 제주 가족여행" />
+      <label for="projectInstructionsInput">프로젝트 지침 <span>선택</span></label>
+      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
+      <p class="project-form-note">이 지침은 이 프로젝트의 대화에만 적용됩니다. AI 모델이나 제공 경로는 파디엠이 자동으로 선택합니다.</p>
+      <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
+      <div class="project-form-actions">
+        <button id="projectDialogCancel" type="button" class="project-secondary">취소</button>
+        <button id="projectSaveButton" type="submit" class="project-primary">저장</button>
+      </div>
+    </form>
+  </dialog>
+
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label>답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./app.js"></script>
