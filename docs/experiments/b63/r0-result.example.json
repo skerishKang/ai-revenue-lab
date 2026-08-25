@@ -1,0 +1,49 @@
+{
+  "schema_version": "b63.r0-result.v1",
+  "business": {
+    "number": 63,
+    "status": "proposed"
+  },
+  "dataset": {
+    "real_patient_data_used": false,
+    "synthetic_public_only": true,
+    "synthetic_identifier_collision_safe": true,
+    "base_cases": 130
+  },
+  "systems": {
+    "s0_ipu_current": true,
+    "s1_generic_pii_baseline": true,
+    "s2_clinical_baseline": false,
+    "s3_b63_hybrid_r0": true
+  },
+  "tests": {
+    "passed": true,
+    "changed_file_secret_scan_passed": true,
+    "synthetic_identifier_safety_passed": true
+  },
+  "evaluation_design": {
+    "holdout_independent": true,
+    "holdout_base_cases": 30,
+    "unseen_holdout_templates": true,
+    "unseen_holdout_lexicon": true,
+    "s3_frozen_before_holdout_evaluation": true
+  },
+  "reproducibility": {
+    "fixed_seed": true,
+    "corpus_version": "example-only",
+    "schema_version": "example-only",
+    "git_sha": "REPLACE_WITH_EVALUATED_EXACT_HEAD",
+    "runtime_version": "REPLACE_WITH_RUNTIME",
+    "deterministic_ordering": true,
+    "git_dirty": false,
+    "exact_head_benchmark_evidence": true
+  },
+  "result": {
+    "measurable_advantage": "INCONCLUSIVE",
+    "holdout_measurable_advantage": "INCONCLUSIVE",
+    "r0_decision": "INCOMPLETE",
+    "catastrophic_recall_collapse": false,
+    "clinical_utility_measured": true,
+    "utility_measurement_level": "VERBATIM_RETENTION"
+  }
+}
