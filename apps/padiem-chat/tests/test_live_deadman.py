@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib.util
+import json
 from pathlib import Path
 
 import httpx
@@ -118,3 +120,63 @@ def test_worker_and_wrangler_wire_the_deadman_switch_before_bootstrap():
     assert apply_line in worker
     assert worker.index(apply_line) < worker.index("create_app(settings=settings")
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
+
+
+def _load_mock_smoke_module():
+    repo_root = Path(__file__).resolve().parents[3]
+    script = repo_root / ".github/scripts/b62_cloudflare_mock_smoke.py"
+    spec = importlib.util.spec_from_file_location("b62_cloudflare_mock_smoke_contract", script)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _mock_smoke_transport(*, live_enabled: bool):
+    api_headers = {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "no-referrer",
+        "Cache-Control": "no-store",
+    }
+
+    def fake_request(url: str, *, method: str = "GET", payload: dict | None = None):
+        if url.endswith("/health"):
+            body = {
+                "status": "ok",
+                "app": "padiem-chat",
+                "runtime": "mock",
+                "b14_configured": False,
+                "live_enabled": live_enabled,
+                "deep_research_ready": False,
+            }
+            return 200, api_headers, json.dumps(body).encode("utf-8")
+        if url.endswith("/api/chat"):
+            body = {
+                "runtime": "mock",
+                "answer": "현재는 데모 모드이며 실제 모델을 호출하지 않았습니다.",
+            }
+            return 200, api_headers, json.dumps(body, ensure_ascii=False).encode("utf-8")
+        return 200, {}, "Padiem Chat 무엇을 도와드릴까요".encode("utf-8")
+
+    return fake_request
+
+
+def test_mock_deploy_smoke_requires_http_live_enabled_false(monkeypatch, capsys):
+    module = _load_mock_smoke_module()
+    monkeypatch.setenv("B62_BASE_URL", "https://padiem-chat.example.test")
+    monkeypatch.setattr(module, "request_with_retry", _mock_smoke_transport(live_enabled=False))
+
+    assert module.main() == 0
+    output = capsys.readouterr().out
+    assert "LIVE_ENABLED=false" in output
+    assert "DEEP_RESEARCH_READY=false" in output
+    assert "REAL_PROVIDER_CALLS=0" in output
+
+
+def test_mock_deploy_smoke_fails_closed_if_http_reports_live_enabled(monkeypatch):
+    module = _load_mock_smoke_module()
+    monkeypatch.setenv("B62_BASE_URL", "https://padiem-chat.example.test")
+    monkeypatch.setattr(module, "request_with_retry", _mock_smoke_transport(live_enabled=True))
+
+    assert module.main() == 1
