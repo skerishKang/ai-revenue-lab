@@ -5,12 +5,20 @@ on:
     branches: [main]
     paths:
       - 'apps/padiem-lab/**'
+      - 'reference/business-07-personal-meaning-map-v1/**'
+      - 'reference/business-08-family-newspaper-v1/**'
+      - 'reference/business-09-personalized-childrens-story-v1/**'
+      - 'reference/business-10-fan-magazine-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
   push:
     branches: [main]
     paths:
       - 'apps/padiem-lab/**'
+      - 'reference/business-07-personal-meaning-map-v1/**'
+      - 'reference/business-08-family-newspaper-v1/**'
+      - 'reference/business-09-personalized-childrens-story-v1/**'
+      - 'reference/business-10-fan-magazine-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
 
@@ -43,7 +51,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
 
-      - name: Run Lab and B60 contracts
+      - name: Run Lab and routed Business contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -56,13 +64,16 @@ jobs:
           set -euo pipefail
           node apps/padiem-lab/build-site.cjs
           test -f dist/padiem-lab/index.html
-          test -f dist/padiem-lab/b60/index.html
+          test -f dist/padiem-lab/404.html
+          for route in b07 b08 b09 b10 b60; do
+            test -f "dist/padiem-lab/${route}/index.html"
+          done
           test ! -e dist/padiem-lab/b60/operator
           test ! -e dist/padiem-lab/b60/operations
           test ! -e dist/padiem-lab/b60/collector
           test ! -e dist/padiem-lab/b60/reviews
-          if find dist/padiem-lab/b60 -maxdepth 1 \( -name '*.test.cjs' -o -name '*.md' \) -print -quit | grep -q .; then
-            echo 'Repository-only B60 files entered the public artifact.' >&2
+          if find dist/padiem-lab -type f \( -name '*.test.cjs' -o -name '*.md' \) -print -quit | grep -q .; then
+            echo 'Repository-only files entered the public aggregate artifact.' >&2
             exit 1
           fi
 
@@ -79,93 +90,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat > "${RUNNER_TEMP}/padiem-lab-smoke.cjs" <<'NODE'
-          const { chromium } = require(process.env.PW);
-
-          function localFailure(url) {
-            try {
-              const parsed = new URL(url);
-              return parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost';
-            } catch (_) {
-              return false;
-            }
-          }
-
-          async function inspect(page, url, kind, viewportName) {
-            const consoleErrors = [];
-            const localFailures = [];
-            page.on('console', message => {
-              if (message.type() === 'error') consoleErrors.push(message.text());
-            });
-            page.on('requestfailed', request => {
-              if (localFailure(request.url())) localFailures.push(request.url());
-            });
-
-            const response = await page.goto(url, { waitUntil: 'networkidle' });
-            if (!response || response.status() !== 200) throw new Error(`${kind} HTTP ${response?.status()}`);
-
-            let state;
-            if (kind === 'root') {
-              await page.waitForSelector('.business-card');
-              state = await page.evaluate(() => ({
-                title: document.title,
-                brand: document.querySelector('.brand')?.textContent?.replace(/\s+/g, ' ').trim(),
-                cards: document.querySelectorAll('.business-card').length,
-                b60: document.body.textContent.includes('AI 무료 레이더'),
-                storyMemory: document.body.textContent.includes('StoryMemory') || document.body.textContent.includes('스토리메모리'),
-                internalOps: /프로젝트 현황|작업 중|백엔드|Pull Request|GitHub CI/.test(document.body.textContent),
-                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
-              }));
-              if (!state.title.startsWith('Padiem Lab')) throw new Error(`bad Lab title ${JSON.stringify(state)}`);
-              if (!state.brand.includes('PADIEM LAB')) throw new Error(`bad Lab brand ${JSON.stringify(state)}`);
-              if (state.cards < 4 || !state.b60) throw new Error(`public work missing ${JSON.stringify(state)}`);
-              if (state.storyMemory || state.internalOps) throw new Error(`private data exposed ${JSON.stringify(state)}`);
-            } else {
-              await page.waitForFunction(() => Boolean(window.B60_EDITORIAL_RADAR && window.B60_OPPORTUNITY_DETAIL));
-              state = await page.evaluate(() => ({
-                title: document.title,
-                radar: Boolean(window.B60_EDITORIAL_RADAR),
-                detail: Boolean(window.B60_OPPORTUNITY_DETAIL),
-                masthead: document.body.textContent.includes('AI 무료 레이더'),
-                operatorText: /PUBLICATION BOUNDARY|후보 생성만|GitHub 쓰기/.test(document.body.textContent),
-                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
-              }));
-              if (!state.title.includes('AI')) throw new Error(`bad B60 title ${JSON.stringify(state)}`);
-              if (!state.radar || !state.detail || !state.masthead) throw new Error(`B60 runtime incomplete ${JSON.stringify(state)}`);
-              if (state.operatorText) throw new Error(`operator surface leaked ${JSON.stringify(state)}`);
-            }
-
-            if (state.overflow) throw new Error(`${kind} horizontal overflow ${JSON.stringify(state)}`);
-            if (consoleErrors.length) throw new Error(`${kind} console errors ${consoleErrors.join(' | ')}`);
-            if (localFailures.length) throw new Error(`${kind} local request failures ${localFailures.join(' | ')}`);
-
-            const file = `${process.env.RUNNER_TEMP}/padiem-lab-${kind}-${viewportName}.png`;
-            await page.screenshot({ path: file, fullPage: true });
-            console.log(`${kind}/${viewportName} PASS`);
-          }
-
-          (async () => {
-            const browser = await chromium.launch({ headless: true });
-            const viewports = [
-              { name: 'desktop', width: 1440, height: 1000 },
-              { name: 'mobile', width: 390, height: 844 }
-            ];
-            for (const viewport of viewports) {
-              const root = await browser.newPage({ viewport });
-              await inspect(root, 'http://127.0.0.1:4173/', 'root', viewport.name);
-              await root.close();
-
-              const b60 = await browser.newPage({ viewport });
-              await inspect(b60, 'http://127.0.0.1:4173/b60/', 'b60', viewport.name);
-              await b60.close();
-            }
-            await browser.close();
-          })().catch(error => {
-            console.error(error);
-            process.exit(1);
-          });
-          NODE
-
           python3 -m http.server 4173 --directory dist/padiem-lab >"${RUNNER_TEMP}/padiem-lab-server.log" 2>&1 &
           server_pid=$!
           trap 'kill "${server_pid}" || true' EXIT
@@ -173,18 +97,14 @@ jobs:
             if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
             sleep 1
           done
-          node "${RUNNER_TEMP}/padiem-lab-smoke.cjs"
+          BASE_URL=http://127.0.0.1:4173 SCREENSHOT_DIR="${RUNNER_TEMP}" node apps/padiem-lab/browser-qa.cjs
 
       - name: Upload aggregate visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: padiem-lab-aggregate-visual-${{ env.TARGET_SHA }}
-          path: |
-            ${{ runner.temp }}/padiem-lab-root-desktop.png
-            ${{ runner.temp }}/padiem-lab-root-mobile.png
-            ${{ runner.temp }}/padiem-lab-b60-desktop.png
-            ${{ runner.temp }}/padiem-lab-b60-mobile.png
+          path: ${{ runner.temp }}/padiem-lab-*.png
           if-no-files-found: warn
           retention-days: 7
 
@@ -217,8 +137,9 @@ jobs:
         run: |
           set -euo pipefail
           node apps/padiem-lab/build-site.cjs
-          test -f dist/padiem-lab/index.html
-          test -f dist/padiem-lab/b60/index.html
+          for route in b07 b08 b09 b10 b60; do
+            test -f "dist/padiem-lab/${route}/index.html"
+          done
           test ! -e dist/padiem-lab/b60/operator
           test ! -e dist/padiem-lab/b60/operations
 
@@ -260,7 +181,7 @@ jobs:
             --project-name "${PAGES_PROJECT}" \
             --branch main \
             --commit-hash "${TARGET_SHA}" \
-            --commit-message "Padiem Lab aggregate B60 canary ${TARGET_SHA}" \
+            --commit-message "Padiem Lab aggregate ${TARGET_SHA}" \
             --commit-dirty=false
 
       - name: Install live browser runtime
@@ -272,12 +193,12 @@ jobs:
           "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
           echo "PW=${RUNNER_TEMP}/pw/node_modules/playwright" >> "${GITHUB_ENV}"
 
-      - name: Live root and B60 gate
+      - name: Live aggregate route gate
         shell: bash
         run: |
           set -euo pipefail
           base="https://${PAGES_PROJECT}.pages.dev"
-          for path in / /b60/; do
+          for path in / /b07/ /b08/ /b09/ /b10/ /b60/; do
             ok=false
             for i in $(seq 1 18); do
               if curl -fsS "${base}${path}" >/dev/null; then ok=true; break; fi
@@ -292,41 +213,4 @@ jobs:
             exit 1
           }
 
-          cat > "${RUNNER_TEMP}/padiem-lab-live.cjs" <<'NODE'
-          const { chromium } = require(process.env.PW);
-          (async () => {
-            const base = `https://${process.env.PAGES_PROJECT}.pages.dev`;
-            const browser = await chromium.launch({ headless: true });
-            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-            const failed = [];
-            page.on('requestfailed', request => {
-              if (request.url().startsWith(base)) failed.push(request.url());
-            });
-            let response = await page.goto(`${base}/`, { waitUntil: 'networkidle' });
-            if (!response || response.status() !== 200) throw new Error(`root HTTP ${response?.status()}`);
-            await page.waitForSelector('.business-card');
-            if (!await page.locator('body').innerText().then(text => text.includes('PADIEM') && text.includes('AI 무료 레이더'))) {
-              throw new Error('Live Lab root content mismatch');
-            }
-
-            response = await page.goto(`${base}/b60/`, { waitUntil: 'networkidle' });
-            if (!response || response.status() !== 200) throw new Error(`b60 HTTP ${response?.status()}`);
-            await page.waitForFunction(() => Boolean(window.B60_EDITORIAL_RADAR && window.B60_OPPORTUNITY_DETAIL));
-            const state = await page.evaluate(() => ({
-              title: document.title,
-              radar: Boolean(window.B60_EDITORIAL_RADAR),
-              detail: Boolean(window.B60_OPPORTUNITY_DETAIL),
-              masthead: document.body.textContent.includes('AI 무료 레이더')
-            }));
-            if (!state.title.includes('AI') || !state.radar || !state.detail || !state.masthead) {
-              throw new Error(`Live B60 mismatch ${JSON.stringify(state)}`);
-            }
-            if (failed.length) throw new Error(`Live local asset failures ${failed.join(' | ')}`);
-            await browser.close();
-            console.log(`LIVE PASS ${base}/ ${base}/b60/`);
-          })().catch(error => {
-            console.error(error);
-            process.exit(1);
-          });
-          NODE
-          node "${RUNNER_TEMP}/padiem-lab-live.cjs"
+          BASE_URL="${base}" QA_MODE=live node apps/padiem-lab/browser-qa.cjs
