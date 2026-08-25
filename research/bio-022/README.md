@@ -1,55 +1,106 @@
-# BIO-022 Health Model Egress Privacy Auditor — Synthetic Benchmark
+# BIO-022 Health Model Egress Privacy Auditor — Synthetic Validation Pack
 
-Issue: #790
+Status: **synthetic / research-only / no export clearance authority**
 
-Status: **research scaffold only**. This is not legal/privacy advice, not an export approval engine, and not proof that an artifact is safe.
+Issue: #790  
+Draft PR: #792
 
-## Research question
+## Product question
 
-When sensitive health-like source data remain inside a controlled environment but a trained AI artifact is proposed for export, can a reproducible pre-export evidence gate:
+Can a controlled-health-data environment produce a useful, reproducible privacy evidence packet before exporting a trained model/artifact, while keeping the final export/privacy decision with a qualified human reviewer?
 
-1. fingerprint the exact synthetic dataset, split and model artifact;
-2. run a bounded membership-inference-style audit;
-3. compare an intentionally overfit condition with a regularized condition;
-4. run a negative/control experiment that can expose split/difficulty bias and false-positive susceptibility;
-5. surface uncertainty and limitations rather than reduce privacy to one scalar score;
-6. leave the final export/privacy decision to a human reviewer?
+The possible product wedge is **not** a new membership-inference algorithm. Existing attack primitives are used as evidence inside an artifact-export workflow.
 
-## Fixture
-
-`HEALTHLIKE-SYNTH-001` is wholly synthetic and contains no patient, hospital, HIRA, proprietary or restricted data. A synthetic difficulty subgroup is included only to create a controlled false-positive demonstration; it is not a real demographic attribute.
-
-Three benchmark roles are used:
+## Workflow under test
 
 ```text
-A. intentionally overfit RandomForest model
-B. regularized LogisticRegression model
-C. negative/control comparison where both sides are non-members but synthetic difficulty composition differs
+controlled source data stays inside
+→ exact model/data/split fingerprint
+→ declared threat model
+→ privacy attack(s)
+→ exchangeable null control
+→ covariate-shift false-positive control
+→ record-level score distributions + uncertainty
+→ evidence packet
+→ HUMAN_EXPORT_REVIEW_REQUIRED
 ```
 
-## Threat model
+## v0.2 methodological repair
 
-The first gate assumes black-box `predict_proba`-like confidence access and uses a simple true-label-confidence membership ranking attack. This is intentionally narrow. It does not claim coverage of all membership, inversion, memorization, extraction or property-inference attacks.
+Read `AUDIT_REVIEW_2026-08-26.md`.
 
-A subgroup confidence-separation metric is included only as a **bias/control proxy** to explain why an apparently elevated attack score can arise from distribution/difficulty differences. It is not presented as an attribute-inference attack.
+The original v0.1 comparison was confounded because the overfit and regularized conditions used different model families and different training-set sizes.
 
-## Expected synthetic behavior
-
-With the pinned environment used during implementation-level validation:
+v0.2 now uses:
 
 ```text
-overfit membership ROC-AUC      ≈ 0.906
-regularized membership ROC-AUC ≈ 0.511
-non-member control ROC-AUC     ≈ 0.596
+same 600 training records
+same RandomForestClassifier family
+same n_estimators / random_state
+only capacity/regularization differs
 ```
 
-The control comparison is deliberately misleading if interpreted naively: both groups are non-members, but synthetic difficulty imbalance creates an elevated score. The correct support output therefore includes `CONTROL_EXPERIMENT_SUSPECTS_FALSE_POSITIVE` rather than treating every elevated AUC as privacy leakage.
+Two all-nonmember controls are separated:
 
-These values validate benchmark mechanics only; they are not regulatory or privacy thresholds.
+```text
+exchangeable null
+= random split from one held-out distribution
 
-## Output labels
+covariate-shift control
+= synthetic easy holdout vs synthetic hard holdout
+```
 
-Allowed decision-support labels:
+This distinction is essential: an elevated attack score under covariate shift must not be treated automatically as true membership leakage.
+
+## Current synthetic v0.2 result
+
+Local execution of the exact staged v0.2 code:
+
+```text
+overfit membership ROC-AUC      ≈ 0.8822
+regularized membership ROC-AUC ≈ 0.5886
+exchangeable null ROC-AUC      ≈ 0.4552
+covariate-shift control AUC    ≈ 0.6537
+pytest                          = 8 passed
+```
+
+The report also includes deterministic bootstrap 95% ROC-AUC intervals, TPR at FPR <= 0.10, and record-level score distributions summarized as quantiles and decile histograms.
+
+These values are **fixture behavior only**. They are not universal privacy thresholds.
+
+## Files
+
+- `fixture.py` — wholly synthetic health-like fixture and disjoint split fingerprints;
+- `models.py` — paired RandomForest conditions using identical training indices;
+- `control_experiment.py` — attack metrics, bootstrap CI, score distributions, null/shift controls;
+- `audit.py` — bounded evidence packet and support labels;
+- `report.py` — JSON report writer;
+- `tests/test_privacy_gate.py` — 8 benchmark/safety contracts;
+- `source_manifest.json` — public workflow/research motivation;
+- `AUDIT_REVIEW_2026-08-26.md` — methodological defect and correction record.
+
+## Threat-model boundary
+
+Current first attack assumes:
+
+```text
+black-box predict_proba-like confidence access
++
+true label known to the synthetic attacker
+```
+
+Limitations are explicit:
+
+- wholly synthetic fixture;
+- one membership-attack family;
+- true-label knowledge assumption;
+- subgroup separation is only a bias/control proxy;
+- no legal/privacy compliance inference;
+- no claim that absence of current signal means absence of leakage.
+
+## Support labels
+
+Allowed:
 
 ```text
 ATTACK_SIGNAL_DETECTED
@@ -60,7 +111,7 @@ NO_MATERIAL_SIGNAL_IDENTIFIED_BY_CURRENT_TESTS
 HUMAN_EXPORT_REVIEW_REQUIRED
 ```
 
-Forbidden conclusions:
+Forbidden:
 
 ```text
 PRIVACY_SAFE
@@ -70,57 +121,37 @@ ANONYMIZED
 NO_PRIVACY_RISK
 ```
 
-## Files
-
-- `fixture.py` — deterministic wholly synthetic health-like fixture and split fingerprints.
-- `models.py` — intentionally overfit and regularized model conditions plus model fingerprinting.
-- `control_experiment.py` — membership score metrics and deliberate non-member split-bias control.
-- `audit.py` — bounded audit orchestration, support labels and limitations.
-- `report.py` — emits a reproducible JSON evidence packet.
-- `source_manifest.json` — public sources motivating the workflow and methodological caution.
-- `requirements.txt` — pinned research environment.
-- `tests/test_privacy_gate.py` — deterministic synthetic benchmark assertions.
-
 ## Run
 
 ```bash
 python -m pip install -r requirements.txt
-python report.py --out evidence_report.json
 python -m pytest -q
+python report.py --out evidence_packet.json
 ```
 
-## What this can prove
+## Current gate
 
-- the artifact/data/split identity can be fingerprinted;
-- a deliberately overfit condition can be distinguished from a regularized condition by this narrow attack;
-- a deliberately biased non-member control can expose false-positive susceptibility;
-- evidence packets carry threat-model assumptions, metrics, limitations and mandatory human review;
-- forbidden clearance language is not emitted.
+```text
+SYNTHETIC_TECHNICAL_MECHANICS = PASS LOCALLY
+PAIRED_MODEL_CONFOUND = CLOSED
+EXCHANGEABLE_NULL_CONTROL = PRESENT
+COVARIATE_SHIFT_FALSE_POSITIVE_CONTROL = PRESENT
+RECORD_LEVEL_DISTRIBUTION_EVIDENCE = PRESENT
+EXACT_HEAD_GITHUB_ACTIONS = NOT CONFIGURED
+REAL_PATIENT_DATA = NONE
+REAL_EXPORT_WORKFLOW_VALIDATION = PENDING
+BUYER / BUDGET OWNER = NOT PROVEN
+```
 
-## What this cannot prove
+## Decision path
 
-- that a real medical-AI model is privacy-safe;
-- that one attack family is sufficient for export review;
-- that absence of a detected signal means absence of privacy leakage;
-- that HIRA, a hospital or another controlled-data operator would accept this methodology;
-- legal compliance, anonymization or export approval;
-- commercial value.
+BIO-022 is not promoted to a Business from synthetic performance alone.
 
-## Decision gate
-
-After this synthetic gate and later buyer/domain review:
+Next decision after workflow/buyer validation:
 
 ```text
 CONTINUE_STANDALONE_SCREEN
 ABSORB_AS_B63_MODEL_ARTIFACT_EGRESS_PROFILE
 ABSORB_AS_B48_AI_SECURITY_VERIFICATION_PROFILE
 KILL
-```
-
-```text
-BUSINESS_NUMBER = NONE
-REAL_PATIENT_DATA = FORBIDDEN
-PRODUCTION = NO
-DEPLOYMENT = NONE
-ISSUE_778_PORTAL_MUTATION = NO
 ```
