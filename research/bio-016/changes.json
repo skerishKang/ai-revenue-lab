@@ -1,0 +1,26 @@
+{
+  "schema_version":"1.0",
+  "synthetic_only":true,
+  "changes":[
+    {"id":"C01","type":"MODEL_UPDATE","summary":"classifier-1.0 → classifier-1.1; architecture unchanged, weights updated","changed":{"classifier_model":["classifier-1.0","classifier-1.1"]},"tags":["model","performance"]},
+    {"id":"C02","type":"THRESHOLD_CHANGE","summary":"decision threshold 0.65 → 0.70","changed":{"decision_threshold":[0.65,0.70]},"tags":["threshold","performance"]},
+    {"id":"C03","type":"DATASET_REFRESH","summary":"retraining dataset dataset-2026-01 → dataset-2026-07; same stated adult population","changed":{"training_dataset":["dataset-2026-01","dataset-2026-07"]},"tags":["data","retraining","performance"]},
+    {"id":"C04","type":"POPULATION_EXPANSION","summary":"population expands from adults 18+ to adults and adolescents 12+","changed":{"population":["adults-18plus","age-12plus"]},"tags":["population","intended_use","data","clinical"]},
+    {"id":"C05","type":"INTENDED_USE_EXPANSION","summary":"output role expands from prioritization/review cue to treatment recommendation draft","changed":{"intended_use":["review-support-v1","recommendation-draft-v2"]},"tags":["intended_use","clinical","human_factors","labeling"]},
+    {"id":"C06","type":"LLM_PROVIDER_MODEL_SWAP","summary":"provider-A / llm-A-1 → provider-B / llm-B-2","changed":{"llm_provider":["provider-A","provider-B"],"llm_model":["llm-A-1","llm-B-2"]},"tags":["llm","provider","generative","software","cybersecurity"]},
+    {"id":"C07","type":"PROMPT_CHANGE","summary":"system prompt prompt-1.0 → prompt-1.1; adds new explanation formatting and refusal instruction","changed":{"system_prompt":["prompt-1.0","prompt-1.1"]},"tags":["prompt","generative"]},
+    {"id":"C08","type":"RUNTIME_PATCH","summary":"runtime 3.2 → 3.2.1 bugfix; no intended algorithm change","changed":{"runtime":["runtime-3.2","runtime-3.2.1"]},"tags":["software"]},
+    {"id":"C09","type":"CYBERSECURITY_PATCH","summary":"security library patch for disclosed vulnerability","changed":{"security_component":["sec-lib-4.1","sec-lib-4.1.2"]},"tags":["cybersecurity","software"]},
+    {"id":"C10","type":"UI_COPY_ONLY","summary":"fix Korean typo in non-clinical settings help text","changed":{"ui_copy":["오타 문구","교정 문구"]},"tags":["ui","documentation"]},
+    {"id":"C11","type":"INPUT_DEVICE_CHANGE","summary":"add second synthetic input-device vendor through device-adapter-2.0","changed":{"input_interface":["device-adapter-1.0","device-adapter-1.0+2.0"]},"tags":["hardware_interface","integration","performance"]},
+    {"id":"C12","type":"INTEGRATION_API_CHANGE","summary":"integration-1.0 → integration-2.0 with changed field mapping","changed":{"integration_api":["integration-1.0","integration-2.0"]},"tags":["integration","software"]},
+    {"id":"C13","type":"MODEL_QUANTIZATION","summary":"classifier-1.0 converted to quantized classifier-1.0-q8 for edge inference","changed":{"classifier_model":["classifier-1.0","classifier-1.0-q8"]},"tags":["model","performance","software"]},
+    {"id":"C14","type":"INFERENCE_HARDWARE_CHANGE","summary":"runtime moves from GPU execution profile to CPU execution profile","changed":{"inference_hardware":["gpu-profile-1","cpu-profile-1"]},"tags":["performance","software","latency"]},
+    {"id":"C15","type":"DEPENDENCY_CVE_UPDATE","summary":"third-party dependency updated due to CVE; API unchanged","changed":{"dependency":["dep-5.0","dep-5.1"]},"tags":["cybersecurity","software"]},
+    {"id":"C16","type":"DRIFT_ALERT_NO_CODE_CHANGE","summary":"post-market synthetic monitoring detects performance drift signal; deployed product bits unchanged","changed":{"monitoring_state":["nominal","drift-alert"]},"tags":["monitoring","performance","data"]},
+    {"id":"C17","type":"MODEL_REVERT","summary":"deployment reverts classifier-1.1 back to previously validated classifier-1.0","changed":{"classifier_model":["classifier-1.1","classifier-1.0"]},"tags":["model","deployment","performance"]},
+    {"id":"C18","type":"AUDIT_LOG_FORMAT_CHANGE","summary":"audit export JSON gains timestamp timezone field; clinical output unchanged","changed":{"audit_schema":["audit-1.0","audit-1.1"]},"tags":["software","audit"]},
+    {"id":"C19","type":"ENCRYPTION_KEY_ROTATION","summary":"routine encryption-key rotation with no software/model change","changed":{"encryption_key":["key-epoch-1","key-epoch-2"]},"tags":["cybersecurity","operations"]},
+    {"id":"C20","type":"DOCUMENT_TYPO_ONLY","summary":"correct non-substantive spelling error in internal maintenance note","changed":{"internal_document":["note-1.0","note-1.0.1"]},"tags":["documentation"]}
+  ]
+}
