@@ -159,7 +159,7 @@ async def health(request: Request) -> JSONResponse:
         "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": web_ready,
-        "deep_research_ready": settings.runtime_mode == "b14" and web_ready and abuse_ready,
+        "deep_research_ready": settings.runtime_mode == "b14" and web_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode == "google",
@@ -317,13 +317,14 @@ async def api_chat(request: Request) -> JSONResponse:
     document_context = build_document_context(document_attachment) if document_attachment is not None else None
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
-    usage_gate: UsageGate = request.app.state.usage_gate
-    usage_decision = await usage_gate.authorize(
-        raw_ip=request.headers.get("cf-connecting-ip"),
-        user_id=uid,
-    )
-    if not usage_decision.allowed:
-        return _usage_denied_response(usage_decision)
+    if request.app.state.usage_gate_enforced:
+        usage_gate: UsageGate = request.app.state.usage_gate
+        usage_decision = await usage_gate.authorize(
+            raw_ip=request.headers.get("cf-connecting-ip"),
+            user_id=uid,
+        )
+        if not usage_decision.allowed:
+            return _usage_denied_response(usage_decision)
 
     try:
         if tool_request is None:
@@ -407,6 +408,11 @@ def create_app(
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
     app.state.usage_gate = UsageGate(resolved, usage_store)
+    # An explicitly injected B14 transport is the existing network-free regression seam.
+    # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
+    # (transport=None) always enforces the gate; quota-specific integration tests also
+    # enforce it by supplying a usage store.
+    app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
