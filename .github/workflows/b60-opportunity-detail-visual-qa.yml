@@ -105,7 +105,7 @@ jobs:
           check 'deal=opencode-ox-alpha-free' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
           check '실제 사용하기 ↗' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
           check '기간 한정 · 종료일 공식 미공개' "$GITHUB_WORKSPACE/b60-detail-desktop-dom.html"
-          check '4 models · unlimited' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
+          check '4 모델 · unlimited' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
           check '2026.09.06까지' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
           check '공식 발표' "$GITHUB_WORKSPACE/b60-detail-mobile-dom.html"
 
