@@ -84,6 +84,36 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 18,
+    route: "b18",
+    sourcePath: "reference/business-18-personal-audio-channel-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Listening Room",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "styles"],
+    excludePaths: ["app.js", "docs"]
+  },
+  {
+    number: 19,
+    route: "b19",
+    sourcePath: "reference/business-19-personal-memory-book-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Memory Binding Table",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "styles"],
+    excludePaths: ["app.js", "docs"]
+  },
+  {
+    number: 20,
+    route: "b20",
+    sourcePath: "reference/business-20-personal-memory-novel-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Memory Manuscript Studio",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "styles"],
+    excludePaths: ["app.js", "docs"]
+  },
+  {
     number: 21,
     route: "b21",
     sourcePath: "reference/business-21-founder-strategy-letter-v1",
@@ -91,6 +121,16 @@ const routes = [
     marker: "Decision Corridor",
     includeFiles: ["index.html", "guide.html", "ux.html"],
     includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 22,
+    route: "b22",
+    sourcePath: "reference/business-22-personal-media-studio-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Story Spine Loom",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "styles"],
+    excludePaths: ["app.js", "docs"]
   },
   {
     number: 60,
