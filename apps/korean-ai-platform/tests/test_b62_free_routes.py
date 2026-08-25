@@ -100,7 +100,7 @@ def test_no_matching_free_route_fails_before_upstream():
 
 
 @pytest.mark.asyncio
-async def test_free_catalog_route_adds_openrouter_zero_price_ceiling():
+async def test_ox_alpha_free_route_adds_zero_price_ceiling_and_low_reasoning():
     seen = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -131,10 +131,44 @@ async def test_free_catalog_route_adds_openrouter_zero_price_ceiling():
     assert seen["body"]["provider"] == {
         "max_price": {"prompt": 0, "completion": 0}
     }
+    assert seen["body"]["reasoning"] == {"effort": "low"}
 
 
 @pytest.mark.asyncio
-async def test_paid_catalog_route_does_not_receive_free_price_ceiling():
+async def test_other_routes_do_not_receive_ox_reasoning_profile():
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen[request.url.path] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "id": "resp_other",
+                "model": "openrouter/free",
+                "choices": [{"message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+            },
+        )
+
+    openrouter_config.provider_mode = "live"
+    openrouter_config.api_key = "sk-or-v1-b62-other-route-credential-48392017"
+    await call_openrouter_chat_completions(
+        messages=[{"role": "user", "content": "hi"}],
+        temperature=0.2,
+        max_tokens=700,
+        model_id="openrouter/free",
+        upstream_model="openrouter/free",
+        provider="OpenRouter (free router)",
+        transport=httpx.MockTransport(handler),
+    )
+
+    body = seen["/api/v1/chat/completions"]
+    assert body["provider"] == {"max_price": {"prompt": 0, "completion": 0}}
+    assert "reasoning" not in body
+
+
+@pytest.mark.asyncio
+async def test_paid_catalog_route_does_not_receive_free_price_ceiling_or_ox_reasoning():
     seen = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -163,3 +197,4 @@ async def test_paid_catalog_route_does_not_receive_free_price_ceiling():
 
     assert seen["body"]["model"] == "google/gemini-2.5-flash"
     assert "provider" not in seen["body"]
+    assert "reasoning" not in seen["body"]
