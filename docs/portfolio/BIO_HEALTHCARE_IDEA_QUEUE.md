@@ -2,110 +2,187 @@
 
 - Updated: 2026-08-26
 - Parent portfolio ledger: `docs/portfolio/IDEA_LEDGER.md`
+- Recovery note: `docs/portfolio/research/BIO_HEALTHCARE_IDEA_RECOVERY_AND_PRIORITY_2026-08-26.md`
 - Project lineage: `07_BioR&D`
 - Business-number authority: `docs/portfolio/BUSINESS_REGISTRY.md`
 
 ## Operating principle
 
-Bio R&D is not a one-idea project. The goal is to preserve and test a continuing queue of research/product hypotheses while grounding each one in PADIEM's real technology, IP, R&D history and reusable software capability.
+This Bio/Healthcare track exists to learn an unfamiliar domain by testing **present-day product hypotheses** against PADIEM's actual capabilities. Historical IP is supporting evidence, not an automatic priority signal.
 
 ```text
-PADIEM assets / prior R&D
-→ research question
-→ technical hypothesis
-→ public/synthetic validation
-→ competitive/FTO/grant screen
-→ bounded demo or PoC
-→ GO / NARROW / PAUSE / KILL
+recover recent owner ideas + existing prototypes
+→ duplicate / absorption check
+→ current market / buyer / regulatory screen
+→ smallest truthful validation
+→ GO / NARROW / PAUSE / KILL / ABSORB
 → product promotion only when warranted
 ```
 
-A new session must not skip directly to inventing a replacement idea merely because the prior candidate is paused.
+## Current priority queue
 
-## Current queue
+### P1 — My Health Story / 병원 스토리북 — `DEMO → VALIDATION`
 
-### A. Active / evidence-bearing
+This is the strongest current next candidate because a real sample-only prototype already exists.
 
-1. **Clinical AI Egress Control Plane** — `PROMOTED / PAUSED`
-   - Current proposed identity: B63 under Issue #731.
-   - Concept demo complete.
-   - Technical direction narrowed to strong generic PII + clinical-context/quasi-identifier layer + false-positive reduction.
-   - Next evidence: real hospital/HIS buyer and deployment validation.
-
-2. **NIR Vein Intelligence → AI Venipuncture Training & Assessment / AI 정맥주사 실습·평가** — `RESEARCHING / NARROW`
-   - 2026 revalidation completed in `research/BIO_001_NIR_VEIN_REVALIDATION_2026-08-26.md`.
-   - PADIEM's 2015–2017 NIR vein / injection-assistance asset and patent-registration history are verified in current company records.
-   - Generic patient-use clinical vein finder is **killed as the primary product thesis** because AccuVein / VeinViewer / iiSM VeinProbe and broad patent prior art already occupy the category.
-   - Surviving wedge: education/research-first NIR venipuncture training, difficult-case visualization and objective learner assessment.
-   - Public-data benchmark is feasible now using CUBITAL-style annotated forearm NIR data and nurse-selected access regions.
-   - Next work: software-only segmentation / access-zone / subgroup-performance benchmark. No hardware build and no clinical efficacy claim yet.
-
-### B. Unscreened / screening candidates
-
-3. **Longitudinal Patient CareGraph** — `IDEA`
-4. **Patient Communication AI** — `IDEA`
-5. **Health-check Trend AI** — `IDEA`
-6. **Rehab / Pose AI** — `SCREENING`; check overlap with Business 38 AI Exercise Coach.
-7. **Medical Record Intelligence Workspace** — `IDEA`; check overlap with Living Archive / Research Memory / B63.
-8. **Foreign Patient Medical Coordination** — `IDEA`; investigate reuse of PADIEM multilingual speech/translation/dubbing assets.
-9. **Bio Evidence Graph / R&D Reproducibility Copilot** — `IDEA`; investigate ELN/LIMS/scientific-data-management competition and evidence-traceability wedge.
-
-### C. Preserved but currently deprioritized
-
-10. **Ambient Medical AI / Scribe** — `DEPRIORITIZED`
-11. **AI Drug Discovery** — `DEPRIORITIZED`
-12. **Radiology Diagnosis AI** — `DEPRIORITIZED`
-13. **Genomics AI** — `DEPRIORITIZED`
-
-Deprioritized does not mean impossible. It means the queue should not repeatedly restart from these broad categories until a new PADIEM asset, partner, dataset, grant call, or distinct product wedge changes the evidence.
-
-## BIO-001 next benchmark gate
-
-The next technical slice for BIO-001 is deliberately software-only.
+Core product grammar:
 
 ```text
-PUBLIC NIR FOREARM DATA
-→ preprocessing baseline
-→ U-Net-style published baseline
-→ lightweight PADIEM candidate
-→ vein mask / access-zone ranking / confidence
-→ nurse-reference agreement
-→ subgroup performance where metadata supports it
+one hospital visit = one story book
+
+why I went
+→ what I told the doctor
+→ what the doctor said
+→ exams / tests
+→ medication / prescription source
+→ what I need to remember
+→ my note
+→ what happens next
 ```
 
-Required evaluation dimensions:
+Trust grammar:
 
-- Dice / segmentation F1;
-- IoU;
-- precision / recall;
-- inference latency;
-- nurse-selected access-region agreement where the dataset provides it;
-- abstention / low-confidence failure rate;
-- available complexion / demographic subgroup results without overclaiming fairness.
+```text
+SOURCE
+AI SUMMARY
+MY NOTE
+NEEDS REVIEW
+```
 
-Do not promote BIO-001 to a numbered Business merely because the benchmark can be built. Promotion requires a technical advantage or a commercially meaningful education/evaluation workflow that survives the benchmark and buyer screen.
+Existing ASTERIVE prototype includes bookshelf entry, physical book interaction, Story ON, timeline, related records, Add Visit, search and mobile behavior. It is explicitly patient/guardian-facing and does not replace diagnosis/treatment.
+
+Current market screen says the broad category is crowded:
+
+- MyHealthWay / 나의건강기록 already provides national personal medical-record access;
+- Guava Health provides records, longitudinal views and AI summaries;
+- PicnicHealth provides visit timelines, trends and patient-centered record organization;
+- Abridge provides patient visit summaries from clinical conversations.
+
+Therefore the product thesis is **not** `another PHR or medical-record organizer`.
+
+Surviving wedge:
+
+> source-grounded episodic reconstruction of each hospital visit so the patient/guardian can accurately remember what happened, why the next step happened, what came from the doctor/document, what AI only organized, and what must be remembered for the next visit.
+
+Next gate: compare My Health Story against conventional summary/timeline using synthetic cases. Measure factual recall, source attribution, follow-up recall, retrieval time, cognitive load and delayed preference/recall.
+
+### P2 — Home Rehab Observer Coach / 혼자 재활할 때 보는 AI 코치 — `SCREENING`
+
+Owner-originated idea:
+
+- observe a person exercising or rehabilitating alone;
+- detect movement problems;
+- guide/correct the movement;
+- adapt/design the exercise sequence.
+
+Do not create a new Business before checking existing PADIEM AI Exercise Coach / Business 38. A distinct product would need a rehabilitation-specific boundary such as prescribed-plan adherence, recovery progression, safe abstention, or clinician handoff.
+
+### P3 — Foreign Patient Medical Coordination — `IDEA`
+
+Potential separate lane leveraging PADIEM multilingual speech/translation/dubbing assets.
+
+Product boundary must be workflow coordination across:
+
+- intake documents;
+- appointments;
+- consultation explanations;
+- follow-up instructions;
+- institution handoffs;
+- source-grounded multilingual records.
+
+Generic translation alone is not enough.
+
+### P4 — Event Story Engine / 사건·병원 여정 스토리 엔진 — `PLATFORM SCREENING`
+
+Recovered common grammar across My Health Story and 사실로:
+
+```text
+recordings / documents / evidence
+→ event chronology
+→ source-grounded chapters
+→ why-next transitions
+→ current state
+→ next required action
+→ longitudinal volumes
+```
+
+Treat this as a reusable PADIEM capability before treating it as a standalone Business.
+
+## Existing / paused
+
+### Clinical AI Egress Control Plane — `PROMOTED / PAUSED`
+
+- proposed B63 under Issue #731;
+- concept demo complete;
+- next evidence requires real hospital/HIS validation.
+
+## Modules / likely absorbed directions
+
+### Longitudinal Patient CareGraph
+
+Treat as the future relation/data layer under My Health Story unless a distinct B2B product/buyer emerges.
+
+### Patient Communication AI
+
+Likely capability inside My Health Story, discharge/follow-up or foreign-patient coordination. Keep source boundaries explicit.
+
+### Health-check Trend AI
+
+Likely longitudinal module; avoid creating a separate product until a unique user/buyer problem is proven.
+
+### Medical Record Intelligence Workspace
+
+Likely overlaps ASTERIVE document search/source/relationship capabilities and My Health Story. New standalone workspace requires a materially different workflow/buyer.
+
+## Preserved but not current priority
+
+### NIR / vein-finder / venipuncture training — `DEPRIORITIZED HISTORICAL`
+
+- historical PADIEM technical/IP lineage preserved;
+- generic vein-finder thesis already weak in 2026 market;
+- owner clarified this roughly decade-old idea should not lead current discovery;
+- Issue #769 closed `not_planned`;
+- PR #770 closed unmerged.
+
+### Ambient Medical AI / Scribe — `DEPRIORITIZED`
+
+Crowded clinician workflow category.
+
+### AI Drug Discovery — `DEPRIORITIZED`
+
+Too broad/domain-capital intensive for current first entry.
+
+### Radiology Diagnosis AI — `DEPRIORITIZED`
+
+Crowded/high-regulatory; weak current PADIEM differentiation.
+
+### Genomics AI — `DEPRIORITIZED`
+
+Specialized data/domain capability not yet established.
+
+### Bio Evidence Graph — `DEPRIORITIZED`
+
+Preserve as later biotech R&D-operations candidate; do not let later assistant-generated ideas displace recovered owner-originated 2026 ideas.
 
 ## Screening dimensions
 
-Every candidate should be scored or at least explicitly assessed on these dimensions before product build:
+Every standalone candidate should be assessed on:
 
-1. **Existing market / prior art** — Is the category already commoditized or dominated?
-2. **PADIEM-specific wedge** — What can PADIEM do that is more than generic LLM/RAG packaging?
-3. **Reusable asset fit** — Existing IP, multimodal AI, speech/translation, connectors, verification, source grounding, workflow, local/runtime assets.
-4. **Data accessibility** — Can meaningful validation be done with public/synthetic data before asking a hospital/lab partner for private data?
-5. **Regulatory / safety boundary** — Medical device, diagnosis/treatment, PHI/privacy, research-only or workflow-software boundaries.
-6. **Commercial buyer** — Named buyer/owner and plausible budget or PoC route.
-7. **Government R&D fit** — Credible fit to national/regional R&D, demonstration, commercialization or healthcare-AI programs without distorting the product.
-8. **Demo feasibility** — Can a truthful, useful visual/technical demo be built without pretending unresolved clinical evidence exists?
+1. current market / prior art;
+2. PADIEM-specific wedge;
+3. reusable asset fit;
+4. data accessibility;
+5. regulatory/safety boundary;
+6. actual user/buyer;
+7. government R&D / demonstration fit;
+8. truthful demo/validation feasibility.
 
 ## Next-candidate rule
 
-When the owner asks for the next Bio/Healthcare idea:
+When the owner asks for the next Bio/Healthcare task:
 
-1. Read this queue first.
-2. Select an existing unscreened candidate unless there is a specific reason to generate a new one.
-3. Check Business Registry, GitHub repositories/issues, Drive/File Library and prior-session evidence for duplicates.
-4. Research the candidate deeply enough to reach `GO`, `NARROW`, `PAUSE`, `KILL`, or `DUPLICATE`.
-5. Update this queue and `IDEA_LEDGER.md` before moving to another candidate.
-
-This prevents session-by-session re-invention and makes negative findings reusable R&D assets.
+1. read this queue first;
+2. continue the highest-priority existing candidate unless evidence says to stop;
+3. recover recent conversation/prototype evidence before inventing a new idea;
+4. check Business Registry, GitHub, Drive/File Library and prior sessions for overlap;
+5. record GO / NARROW / PAUSE / KILL / DUPLICATE / ABSORB before moving on.
