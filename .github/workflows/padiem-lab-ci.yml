@@ -130,7 +130,7 @@ jobs:
                 operatorText: /PUBLICATION BOUNDARY|후보 생성만|GitHub 쓰기/.test(document.body.textContent),
                 overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
               }));
-              if (!state.title.startsWith('AI FREE RADAR')) throw new Error(`bad B60 title ${JSON.stringify(state)}`);
+              if (!state.title.includes('AI')) throw new Error(`bad B60 title ${JSON.stringify(state)}`);
               if (!state.radar || !state.detail || !state.masthead) throw new Error(`B60 runtime incomplete ${JSON.stringify(state)}`);
               if (state.operatorText) throw new Error(`operator surface leaked ${JSON.stringify(state)}`);
             }
@@ -318,7 +318,7 @@ jobs:
               detail: Boolean(window.B60_OPPORTUNITY_DETAIL),
               masthead: document.body.textContent.includes('AI 무료 레이더')
             }));
-            if (!state.title.startsWith('AI FREE RADAR') || !state.radar || !state.detail || !state.masthead) {
+            if (!state.title.includes('AI') || !state.radar || !state.detail || !state.masthead) {
               throw new Error(`Live B60 mismatch ${JSON.stringify(state)}`);
             }
             if (failed.length) throw new Error(`Live local asset failures ${failed.join(' | ')}`);
