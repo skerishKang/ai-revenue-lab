@@ -6,6 +6,7 @@ from typing import Any
 
 import httpx
 
+from .attachments import ImageAttachment
 from .config import Settings
 from .skills import Skill, get_skill, skill_public_metadata
 
@@ -23,6 +24,33 @@ class ChatRuntimeError(Exception):
         return self.user_message
 
 
+def _messages_with_attachment(
+    messages: list[dict[str, str]],
+    attachment: ImageAttachment,
+) -> list[dict[str, Any]]:
+    latest_user_index = None
+    for index in range(len(messages) - 1, -1, -1):
+        if messages[index].get("role") == "user":
+            latest_user_index = index
+            break
+    if latest_user_index is None:
+        raise ValueError("image attachment requires a user message")
+
+    out: list[dict[str, Any]] = [dict(message) for message in messages]
+    text = out[latest_user_index]["content"]
+    out[latest_user_index] = {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": text},
+            {
+                "type": "image_url",
+                "image_url": {"url": attachment.data_url},
+            },
+        ],
+    }
+    return out
+
+
 class B14Client:
     def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
         self.settings = settings
@@ -33,7 +61,11 @@ class B14Client:
         messages: list[dict[str, str]],
         skill: Skill | None = None,
         additional_system_context: str | None = None,
+        attachments: tuple[ImageAttachment, ...] = (),
     ) -> dict[str, Any]:
+        if len(attachments) > 1:
+            raise ValueError("only one image attachment is supported")
+
         resolved_skill = skill or get_skill()
         system_content = resolved_skill.system_instruction
         if additional_system_context is not None:
@@ -45,39 +77,60 @@ class B14Client:
             if extra:
                 system_content = f"{system_content}\n\n{extra}"
 
-        upstream_messages = [
-            {"role": "system", "content": system_content},
-            *messages,
-        ]
+        attachment = attachments[0] if attachments else None
 
         if self.settings.runtime_mode == "mock":
             prompt = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-            answer = (
-                "모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
-                f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 입력하신 질문은 ‘{prompt[:120]}’입니다. "
-                "B14 연결 모드에서는 같은 작업 방식으로 자동 추천 경로의 실제 답변을 받습니다."
-            )
-            return {
+            if attachment is None:
+                answer = (
+                    "모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 입력하신 질문은 ‘{prompt[:120]}’입니다. "
+                    "B14 연결 모드에서는 같은 작업 방식으로 자동 추천 경로의 실제 답변을 받습니다."
+                )
+            else:
+                answer = (
+                    "모의 실행 상태입니다. 사진 1장을 첨부받았지만 실제 모델 호출이나 이미지 분석은 하지 않았습니다. "
+                    f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 질문은 ‘{prompt[:120]}’입니다. "
+                    "B14 연결 모드에서는 이미지 입력을 지원하는 모델 경로로 분석합니다."
+                )
+            result: dict[str, Any] = {
                 "answer": answer,
                 "request_id": "mock_b62",
                 "runtime": "mock",
                 "route": {"mode": "auto", "model": None, "provider": None},
                 "skill": skill_public_metadata(resolved_skill),
             }
+            if attachment is not None:
+                result["attachments"] = [attachment.public_dict()]
+            return result
+
+        if attachment is None:
+            user_messages: list[dict[str, Any]] = [dict(message) for message in messages]
+        else:
+            user_messages = _messages_with_attachment(messages, attachment)
+
+        upstream_messages: list[dict[str, Any]] = [
+            {"role": "system", "content": system_content},
+            *user_messages,
+        ]
 
         assert self.settings.b14_base_url is not None
         url = self.settings.b14_base_url.rstrip("/") + "/api/pilot/v1/chat/completions"
+        business14: dict[str, Any] = {
+            "task_type": resolved_skill.task_type,
+            "optimize_for": resolved_skill.optimize_for,
+            "allow_external_fallback": True,
+            "max_attempts": 3,
+        }
+        if attachment is not None:
+            business14["required_capabilities"] = ["image"]
+
         payload = {
             "model": "b14/auto",
             "messages": upstream_messages,
             "temperature": 0.2,
             "max_tokens": resolved_skill.max_tokens,
-            "business14": {
-                "task_type": resolved_skill.task_type,
-                "optimize_for": resolved_skill.optimize_for,
-                "allow_external_fallback": True,
-                "max_attempts": 3,
-            },
+            "business14": business14,
         }
 
         timeout = httpx.Timeout(
@@ -168,7 +221,7 @@ class B14Client:
         selected_provider = meta.get("selected_provider")
         route_mode = meta.get("route_mode", "auto")
 
-        return {
+        result = {
             "answer": answer.strip(),
             "request_id": request_id,
             "runtime": "b14",
@@ -179,3 +232,6 @@ class B14Client:
             },
             "skill": skill_public_metadata(resolved_skill),
         }
+        if attachment is not None:
+            result["attachments"] = [attachment.public_dict()]
+        return result
