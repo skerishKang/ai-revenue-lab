@@ -34,7 +34,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 16, 60]);
+  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 16, 17, 21, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);

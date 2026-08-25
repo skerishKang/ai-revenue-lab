@@ -110,6 +110,28 @@
       sourcePath: "reference/business-16-personal-sports-v1/"
     }),
     Object.freeze({
+      number: 17,
+      slug: "local-shop-magazine",
+      title: "Local Shop Magazine",
+      koreanTitle: "로컬 숍 매거진",
+      summary: "가게의 작은 장면과 점주의 한 문장을 짧은 기사로 편집하고 가격·사람·과장 표현을 교정하는 로컬 매거진입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b17/",
+      sourcePath: "reference/business-17-local-shop-magazine-v1/"
+    }),
+    Object.freeze({
+      number: 21,
+      slug: "founder-strategy-letter",
+      title: "Founder Strategy Letter",
+      koreanTitle: "창업자 전략 편지",
+      summary: "주간 신호와 반론을 함께 비교하고 현재 결정을 고른 뒤 재검토 조건까지 남기는 전략 판단 편지입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b21/",
+      sourcePath: "reference/business-21-founder-strategy-letter-v1/"
+    }),
+    Object.freeze({
       number: 23,
       slug: "lovebud",
       title: "LoveBud",

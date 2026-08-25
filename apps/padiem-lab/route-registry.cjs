@@ -75,6 +75,24 @@ const routes = [
     excludePaths: ["app.js", "docs"]
   },
   {
+    number: 17,
+    route: "b17",
+    sourcePath: "reference/business-17-local-shop-magazine-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Counter Journal",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 21,
+    route: "b21",
+    sourcePath: "reference/business-21-founder-strategy-letter-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Decision Corridor",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
