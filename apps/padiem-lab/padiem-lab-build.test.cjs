@@ -34,7 +34,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 16, 17, 21, 60]);
+  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
@@ -85,17 +85,20 @@ test('static reference routes publish exactly their route-specific runtime allow
   }
 });
 
-test('B16 publishes the current Matchday executable without legacy review-state files', () => {
+test('explicit current-executable routes omit legacy root app and docs surfaces', () => {
   build();
-  const b16 = path.join(out, 'b16');
-  for (const file of ['index.html', 'guide.html', 'ux.html']) {
-    assert.equal(fs.existsSync(path.join(b16, file)), true, `b16 missing ${file}`);
+  for (const number of [16, 18, 19, 20, 22]) {
+    const route = routes.find(candidate => candidate.number === number);
+    assert.ok(route, `missing B${number} route`);
+    const target = routeOut(route);
+    for (const file of ['index.html', 'guide.html', 'ux.html']) {
+      assert.equal(fs.existsSync(path.join(target, file)), true, `${route.route} missing ${file}`);
+    }
+    assert.equal(fs.existsSync(path.join(target, 'assets')), true, `${route.route} missing assets`);
+    assert.equal(fs.existsSync(path.join(target, 'styles')), true, `${route.route} missing styles`);
+    assert.equal(fs.existsSync(path.join(target, 'app.js')), false, `${route.route} leaked root legacy app.js`);
+    assert.equal(fs.existsSync(path.join(target, 'docs')), false, `${route.route} leaked docs`);
   }
-  assert.equal(fs.existsSync(path.join(b16, 'assets')), true);
-  assert.equal(fs.existsSync(path.join(b16, 'styles')), true);
-  assert.equal(fs.existsSync(path.join(b16, 'app.js')), false, 'b16 leaked root legacy app.js');
-  assert.equal(fs.existsSync(path.join(b16, 'docs')), false, 'b16 leaked docs');
-  assert.equal(fs.existsSync(path.join(b16, 'scripts')), false, 'b16 invented a scripts directory');
 });
 
 test('aggregate runtime excludes repository-only and private paths recursively', () => {
