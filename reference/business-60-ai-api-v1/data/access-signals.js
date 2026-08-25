@@ -102,5 +102,22 @@ window.B60_ACCESS_SIGNALS = [
     },
     "facts": ["OpenRouter lists a Free plan with 50 requests per day.", "The openrouter/free router selects from currently available free models.", "The free router page lists a 200K-token context window.", "Prompt and completion token pricing for openrouter/free is $0.", "B60 does not infer a daily reset clock because the primary pricing evidence does not state one."],
     "sources": [{"label": "OpenRouter · Pricing", "url": "https://openrouter.ai/pricing"}, {"label": "OpenRouter · Free Models Router", "url": "https://openrouter.ai/openrouter/free/"}]
+  },
+  {
+    "id": "nvidia-nim-dev-free",
+    "provider": "NVIDIA",
+    "title": "NVIDIA NIM · Developer prototyping access",
+    "category": "NOW",
+    "dealType": "PERMANENT_FREE",
+    "verification": "VERIFIED_OFFICIAL_WEB",
+    "verifiedAt": "2026-08-25",
+    "freeLabel": "Free prototyping",
+    "summary": "NVIDIA Developer Program members can use NVIDIA-hosted NIM API endpoints for prototyping at no charge and can use downloadable NIM microservices for research, application development, experimentation, and testing on up to 16 GPUs.",
+    "model": "NVIDIA NIM catalog",
+    "context": "Varies by NIM/model",
+    "price": "Free for prototyping/development via NVIDIA Developer Program",
+    "access": ["API", "HOSTED NIM", "SELF-HOST"],
+    "facts": ["NVIDIA Developer Program membership provides free access to hosted NIM API endpoints for prototyping.", "Downloadable NIM microservices are free for research, application development, experimentation, and testing.", "Developer Program access covers development and testing on up to 16 GPUs.", "Production use has separate NVIDIA AI Enterprise or licensing requirements."],
+    "sources": [{"label": "NVIDIA · Run NIM Anywhere", "url": "https://docs.api.nvidia.com/nim/docs/run-anywhere"}, {"label": "NVIDIA · NIM for Developers", "url": "https://developer.nvidia.com/nim"}, {"label": "NVIDIA · NIM microservices", "url": "https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/"}]
   }
 ];
