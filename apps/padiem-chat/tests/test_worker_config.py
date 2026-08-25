@@ -21,6 +21,7 @@ def test_settings_from_values_and_env_share_validation(monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "b14")
     monkeypatch.setenv("PADIEM_CHAT_B14_BASE_URL", "https://example.com/root/")
     monkeypatch.setenv("PADIEM_CHAT_TIMEOUT_SECONDS", "12")
+    monkeypatch.delenv("PADIEM_CHAT_LIVE_ENABLED", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_AUTH_MODE", raising=False)
@@ -33,6 +34,7 @@ def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     assert settings.runtime_mode == "mock"
     assert settings.b14_base_url is None
     assert settings.timeout_seconds == 20.0
+    assert settings.live_enabled is False
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None
     assert settings.web_timeout_seconds == 15.0
@@ -66,6 +68,7 @@ def test_worker_b14_mode_requires_valid_fixed_url():
     assert settings.runtime_mode == "b14"
     assert settings.b14_base_url == "https://b14.example"
     assert settings.timeout_seconds == 15.0
+    assert settings.live_enabled is False
     assert settings.quota_salt is None
 
 
@@ -74,6 +77,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
         "PADIEM_CHAT_RUNTIME_MODE",
         "PADIEM_CHAT_B14_BASE_URL",
         "PADIEM_CHAT_TIMEOUT_SECONDS",
+        "PADIEM_CHAT_LIVE_ENABLED",
         "PADIEM_CHAT_WEB_PROVIDER",
         "FIRECRAWL_API_KEY",
         "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
@@ -177,6 +181,7 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert 'compatibility_flags = ["python_workers"]' in wrangler
     assert 'directory = "static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
     assert "database_id" not in wrangler
     assert "settings_from_worker_bindings(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
