@@ -1,180 +1,213 @@
 # Bio / Healthcare Support-Program Radar through 2026-09
 
 - Updated: 2026-08-26
-- Purpose: use active/upcoming Korean startup, company-support and R&D programmes as **problem-demand signals** for Bio/Healthcare idea discovery.
-- Scope: Enterprise Support Portal (기업마당), K-Startup, IRIS, KHIDI/HIRA and selected Gwangju/regional programmes.
+- Purpose: use Korean startup/company/R&D programmes and public operating models as **problem-demand signals** for Bio/Healthcare idea discovery and partner discovery.
+- Scope: 기업마당, K-Startup, IRIS, KHIDI/HIRA, MFDS/NIDS and selected Gwangju/regional programmes.
 - Rule: a support programme is not itself a product idea. Extract the underlying problem, buyer, evidence requirement and implementation barrier, then map that signal to PADIEM capabilities.
 
-## 1. APPLY / PARTNER NOW — current or near-term
+# 1. APPLY / PARTNER NOW — current or near-term
 
-### A. AI Application Rapid Commercialization Support — IRIS / MOTIR / KEIT
+## A. AI Application Rapid Commercialization Support — IRIS / MOTIR / KEIT
 
 - 2026 second call.
 - Application: 2026-08-11 to 2026-09-03 18:00.
-- Signal: government is funding rapid commercialization of AI-applied products, not only foundation-model research.
-- Bio implication: bounded healthcare/bio workflow products with clear validation evidence may fit if the detailed item/RFP and applicant structure match.
+- Signal: rapid commercialization of AI-applied products, not only foundation-model research.
+- Bio implication: bounded healthcare/bio workflows with clear validation evidence may fit if detailed RFP/applicant requirements match.
 - Source: https://www.iris.go.kr/contents/retrieveBsnsAncmView.do?ancmId=023398&ancmPrg=ancmIng
 
-### B. Bio/Medical Package Support — K-Startup / Dongguk BMC incubation center
+## B. Bio/Medical Package Support — K-Startup / Dongguk BMC
 
-- Current K-Startup listing shows application through 2026-09-30.
-- Signal: bio/medical startups repeatedly need commercialization, productization, advisory, testing and market-entry packaging rather than model research alone.
+- Current listing through 2026-09-30.
+- Signal: bio/medical startups repeatedly need commercialization, testing, advisory and market-entry support beyond model research.
 
-### C. HIRA Health/Medical Big Data Startup Incubating Lab
+## C. HIRA Health/Medical Big Data Startup Incubating Lab
 
-- Rolling: 2026-04-06 to 2026-12-31.
-- Target includes prospective/existing founders, university/graduate students and startups.
-- Signal: public health-data access and commercialization remain an explicit startup pathway.
+- Rolling through 2026-12-31.
+- Signal: public health-data utilization/commercialization remains a supported startup pathway.
 
-### D. 2026 Data Quality Certification Support — MSIT / K-DATA
+## D. 2026 Data Quality Certification Support — MSIT / K-DATA
 
-- 2026 programme is open until budget exhaustion.
-- Supports certification cost and quality-diagnosis reports for SMEs/early mid-sized companies producing, distributing or using data.
-- Signal: AI/data products increasingly need **auditable data-quality evidence**, not only model accuracy.
-- Bio implication: do not create another generic data-quality platform. Use this as a verification/evidence requirement for medical/bio AI datasets and products.
+- Open until budget exhaustion.
+- Signal: data products increasingly need auditable data-quality evidence.
+- Bio implication: evidence requirement for medical/bio AI data products, not a reason to build another generic data-quality platform.
 - Source: https://bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000120097
 
-### E. Biohealth Global Export Auxiliary-Cost Support — MOHW / KHIDI
+## E. Biohealth Global Export Auxiliary-Cost Support — MOHW / KHIDI
 
 - 2026-06-22 to 2026-10-30.
-- Signal: export readiness remains a commercialization layer after product validation; regulatory/evidence portability across markets matters.
-- Portfolio implication: strengthens BIO-016/BIO-020/GEN-001 but does not justify a separate export-passport Business by itself.
+- Signal: export readiness and evidence portability remain commercialization layers.
+- Mapping: strengthens BIO-016/BIO-020/GEN-001, but does not create another export-passport Business.
 
-### F. TIPS and general startup R&D pathways
+## F. TIPS / general startup R&D
 
-- Current 2026 TIPS pathway remains a financing route for differentiated deep-tech even without a narrow medical-AI grant.
-- Rule: grant fit may accelerate a surviving product; it must not manufacture the product thesis.
+- Financing path for differentiated deep-tech.
+- Rule: grant fit may accelerate a surviving thesis; it must not manufacture one.
 
-## 2. IDEA SIGNAL — current or recently closed but useful problem evidence
+# 2. IDEA / PARTNER SIGNALS
 
-### G. Smart Electronic Drug Commercialization / medical-software validation support
+## G. Smart electronic drug / medical-software validation support
 
-- 2026 support includes H/W + S/W regulatory guidance, medical-AI guidance, cybersecurity and software validation.
-- Signal: medical AI commercialization requires **software validation, cybersecurity, regulatory evidence and lifecycle traceability**.
-- Strongest mapping: BIO-016.
-
-### H. K-Biohealth regional/strategic support
-
-- Repeated support for shared infrastructure, testing/inspection, prototypes, regulatory/certification and exhibition/global-entry activities.
-- Signal: early bio companies assemble evidence across multiple labs, test bodies, certification bodies and commercialization programmes.
-- Portfolio implication: evidence portability is real, but generic certification portals are crowded; keep the wedge narrow.
-
-### I. AI Native HIS planning — KHIDI
-
-- `AI 지능형 병원정보시스템(AI Native HIS) 기획(1차)` posted 2026-08-21; bid date 2026-09-03.
-- Procurement/policy signal, not a startup grant.
-- Signal: Korea is actively planning hospital information systems designed around AI-native workflows.
-- Screen result: generic clinical-agent sandbox was killed; preserve only BIO-015 `Korean HIS Agent Site Acceptance & Replay` as a B42+B48+B63 healthcare verification profile.
-
-### J. AI-native Advanced Bio Autonomous Laboratory — IRIS / MSIT / NRF
-
-- 2026 new-project call announced 2026-01-09 and closed for this cycle.
-- Signal: autonomous experimentation/self-driving lab is an explicit national advanced-bio direction.
-- Screen result: generic ELN/LIMS/lineage platform killed; preserve BIO-017 closed-loop AI decision provenance as partner-led R&D.
-- Source: https://www.iris.go.kr/contents/retrieveBsnsAncmView.do?ancmId=017754&ancmPrg=ancmIng
-
-### K. Bio/Medical Technology Development — AI Bio
-
-- 2026 calls include `인공지능바이오` programme areas.
-- Signal: AI-bio demand extends beyond imaging/drug discovery into infrastructure/toolchain questions.
-
-### L. Gwangju regional AI-healthcare commercialization / demonstration
-
-- 2026 regional programmes have supported joint R&D planning, product/service demonstration and exhibition for AI-healthcare startups.
-- Signal: Gwangju remains a practical partner/demonstration ecosystem.
-- Do not assume a new round until a fresh notice confirms it.
-
-### M. Digital Healthcare Medical Device Demonstration Support — post-market clinical / RWE
-
-- 2026 K-MEDIhub programme supports post-market clinical and real-world-evidence generation for innovative-medical-technology evaluation and health-insurance listing.
-- Source: https://bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000118868
-- Signal:
-
-```text
-marketed medical device
-→ real-world use / post-market clinical evidence
-→ innovative-technology evaluation / reimbursement entry
-```
-
-- Screen result: generic RWE/drift monitoring is already active in research and commercial markets. Preserve BIO-021 only as a **post-market event/evidence trigger into BIO-016**, not a standalone product.
-
-### N. HIRA controlled medical-image analytics — model/algorithm export boundary
-
-HIRA publicly describes a controlled GPU analysis environment in which source medical images are not exported while AI models/algorithms can be developed and exported; its 2026 role/functions material states that AI models/algorithms may be exported while image data cannot, and outside-expert review may be used for export review.
-
-Sources:
-
-- https://opendata.hira.or.kr/op/opb/selectHelhMedDataInfoView.do?divId=cust
-- https://www.hira.or.kr/ebooksc/2025/12/BZ202512232703963.pdf
+2026 support includes medical AI, software validation and cybersecurity.
 
 Signal:
 
 ```text
-sensitive source data remains controlled
-→ model / algorithm leaves environment
-→ export review must consider risk in the artifact itself
+medical-AI commercialization
+→ software validation
+→ cybersecurity
+→ lifecycle/change evidence
+→ qualified RA/QA work
 ```
 
-This generated BIO-022 `Health Model Egress Privacy Auditor`.
+Strongest mapping: BIO-016.
 
-Important distinction:
+## H. AI Native HIS planning — KHIDI
 
-- generic membership-inference/model-inversion attack tooling already exists;
-- the candidate survives only if there is value in a **health-data-safe-center export evidence workflow** combining exact artifact fingerprint, threat model, attacks, control experiments, uncertainty and human approval.
+- `AI 지능형 병원정보시스템(AI Native HIS) 기획(1차)` posted 2026-08-21; bid date 2026-09-03.
+- Signal: Korea is planning AI-native hospital workflows.
+- Screen result: generic agent sandbox killed; preserve BIO-015 Korean HIS Site Acceptance & Replay as B42+B48+B63 profile.
 
-### O. Manufacturing AI field application in convergence-bio sectors
+## I. AI-native Advanced Bio Autonomous Laboratory — IRIS / MSIT / NRF
 
-2026 manufacturing-AI support includes medical/bio/cosmetics/food among convergence-bio industries and funds AI applied to real process pain points with field validation.
+- 2026 new-project call closed for current cycle.
+- Signal: self-driving lab is explicit national advanced-bio R&D direction.
+- Screen result: generic ELN/LIMS/lineage killed; preserve BIO-017 closed-loop decision provenance for partner-led R&D.
+- Source: https://www.iris.go.kr/contents/retrieveBsnsAncmView.do?ancmId=017754&ancmPrg=ancmIng
+
+## J. AI Bio / 인공지능바이오
+
+2026 R&D programme areas confirm AI-bio demand extends beyond imaging/drug discovery into research infrastructure and toolchain questions.
+
+## K. Gwangju AI-healthcare commercialization / demonstration
+
+2026 regional activity has included joint R&D planning, demonstration and exhibition support.
+
+Signal: Gwangju remains a useful partner/demo ecosystem. Do not assume a new round without a fresh notice.
+
+## L. Post-market clinical / RWE support
+
+2026 K-MEDIhub support includes post-market clinical/RWE generation for innovative-medical-technology evaluation and health-insurance listing.
+
+Source: https://bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000118868
+
+Screen result:
+
+```text
+BIO-021 generic RWE/drift product
+→ ABSORB INTO BIO-016
+```
+
+Preserve post-market drift/RWE finding as a trigger that can reopen stale evidence/revalidation analysis.
+
+## M. HIRA controlled-data analysis and artifact export workflow
+
+Current public workflow signals are stronger than the first screen suggested.
+
+HIRA public material describes:
+
+- controlled analysis environments for academic/industrial users;
+- formal review before analysis;
+- separate 자료 반입/반출 steps in research workflows;
+- medical-image AI development where source image data remain controlled;
+- AI model/algorithm development/export as a distinct artifact boundary;
+- possible expert participation in export review.
+
+Public sources:
+
+- HIRA medical-image / controlled-analysis information: https://opendata.hira.or.kr/op/opb/selectHelhMedDataInfoView.do?divId=cust
+- HIRA research-data guide: https://opendata.hira.or.kr/co.apndFile.dir/download.do?fileNm=%EC%97%B0%EA%B5%AC%EA%B3%BC%EC%A0%9C_%EC%9D%B4%EC%9A%A9_%EA%B0%80%EC%9D%B4%EB%93%9C.pdf
+- HIRA public-data operations/export-request material: https://opendata.hira.or.kr/co.apndFile.dir/download.do?fileNm=%EA%B3%B5%EA%B3%B5%EB%8D%B0%EC%9D%B4%ED%84%B0+%EC%A0%9C%EA%B3%B5%EB%B0%8F%EC%9D%B4%EC%9A%A9%EC%97%85%EB%AC%B4%EC%9A%B4%EC%98%81%EC%A7%80%EC%B9%A8.pdf
+
+Signal:
+
+```text
+sensitive source data stays inside
+→ model / algorithm / artifact may leave
+→ artifact itself may require release evidence
+```
+
+This sustains BIO-022 as a research candidate, but **does not prove that model-privacy attack testing is currently required or separately purchased**.
+
+Next evidence is workflow discovery, not more synthetic attack research.
+
+## N. 2026 Medical AI Data Utilization Voucher — KHIDI / medical-data-centered hospitals
+
+Current 2026 public material identifies a concrete partner/interview cohort:
+
+```text
+10 medical-AI SMEs
++
+45 participating medical-data-centered hospitals
+```
+
+for data preparation/processing/analysis support.
+
+Source: https://www.khidi.or.kr/board/view?boardStyle=&categoryId=&continent=&country=&linkId=48945636&maxIndex=&menuId=MENU01484&minIndex=&no1=4816&pageNum=1&refMenuId=MENU01485&rowCnt=20&schText=&schType=0&upDown=0
+
+Signal: BIO-022 buyer/workflow interviews should target medical-data-center operators and medical-AI applicant companies rather than generic hospitals.
+
+## O. 2026 medical-data AX / AI-model validation direction
+
+KHIDI/MOHW public direction includes expanded data vouchers and AI-model validation through medical-data-centered hospitals.
+
+Source: https://www.khidi.or.kr/board/view?linkId=48938032&menuId=MENU01498&no1=7828&pageNum=2&refMenuId=MENU01499&rowCnt=20
+
+Signal: model validation is becoming an explicit service layer around hospital data infrastructure. It strengthens the interview/partner case for BIO-022 and related B48 profiles, but does not define the exact privacy test.
+
+## P. Manufacturing AI in convergence-bio sectors
+
+2026 manufacturing-AI support includes medical/bio/cosmetics/food sectors.
 
 Source: https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000122808
 
-Signal: regulated manufacturing has real AI-adoption demand.
+Screen result: generic deviation/CAPA copilot category is already crowded; BIO-023 = KILL standalone / possible B48 partner profile only.
 
-Screen result: BIO-023 generic deviation/CAPA copilot is killed because current market already includes multiple GxP-native AI investigation/CAPA products. Retain only a potential partner-led B48 evidence-verification profile.
+## Q. AX-Sprint 300 / AI digital-medical-device productization
 
-### P. AX-Sprint 300 / AI digital-medical-device productization
-
-2026 MFDS/NIDS `첨단 AI 기반 디지털의료기기 신속제품화 지원 사업(AX-Sprint 300)` supported AI digital-medical-device productization costs including domestic testing, GMP, usability, cybersecurity, authorization and clinical trials for sufficiently mature products.
+2026 support spans testing, GMP, usability, cybersecurity, authorization and clinical work for mature AI digital medical devices.
 
 Sources:
 
 - https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000117848
 - https://www.khidi.or.kr/board/view?boardStyle=&categoryId=&continent=&country=&linkId=48941857&menuId=MENU01488
 
-Signal: once a medical-AI product is mature, the evidence burden spans several independent validation domains. This strengthens the case for evidence/change orchestration such as BIO-016, but also makes clear that PADIEM must not pretend to replace accredited testing, clinical trials, GMP or qualified RA/QA.
+Signal: evidence burden spans multiple validation domains. This strengthens BIO-016's evidence/change orchestration hypothesis while confirming that PADIEM must not pretend to replace accredited testing, clinical trials, GMP or qualified RA/QA.
 
-## 3. What the programmes say the market/government is buying
+# 3. What current signals say the market/government is buying
 
 The recurring demand is not simply `medical AI model`.
 
 ```text
-AI product commercialization
+AI commercialization
 clinical / real-world validation
-public-health-data utilization
+health-data utilization
 software validation
 cybersecurity
-regulatory evidence
+AI lifecycle / change evidence
 post-market / RWE evidence
 hospital AI integration
-controlled-data/model export review
-cross-organization collaboration
-prototype/testing infrastructure
+controlled-data / artifact export governance
+multi-hospital AI validation
 data-quality evidence
+testing / certification
 export readiness
 AI-native experimentation
 traceability / reproducibility
 ```
 
-PADIEM should continue searching the **control / evidence / memory / workflow layer around AI-assisted healthcare and bio R&D**, rather than competing first in drug discovery, radiology diagnosis, foundation-model training, medical-device hardware, commodity translation or generic pose rehabilitation.
+PADIEM should keep searching the **control / evidence / memory / workflow layer around AI-assisted healthcare and bio R&D** instead of competing first in commodity diagnosis, translation, pose rehabilitation, generic ELN/LIMS or broad CAPA copilots.
 
-## 4. Current support-program-derived dispositions
+# 4. Current dispositions from the support-program screen
 
 ```text
+BIO-003 My Health Story
+→ INTERNAL PREP CLOSED / NEXT = 12-person synthetic participant pilot
+
 BIO-015 Clinical AI Agent Sandbox
-→ KILL GENERIC / ABSORB Korean HIS Site Acceptance & Replay profile
+→ KILL GENERIC / ABSORB Korean HIS Site Acceptance & Replay
 
 BIO-016 AI Change Impact & Revalidation Compiler
-→ NARROW / VALIDATING / strongest new standalone hypothesis
+→ NARROW / INTERNAL PREP CLOSED / NEXT = qualified Korean RA/QA review
 
 BIO-017 Autonomous Bio Lab Evidence Chain
 → NARROW / PARTNER-LED R&D
@@ -192,80 +225,90 @@ BIO-021 Clinical AI Post-Market Evidence & Drift Trace
 → ABSORB INTO BIO-016
 
 BIO-022 Health Model Egress Privacy Auditor
-→ NARROW / SCREENING / next synthetic-validation candidate
+→ NARROW / v0.2 TECHNICAL PREP CLOSED / NEXT = 3+ organization workflow/buyer discovery
 
 BIO-023 Bio Manufacturing Deviation / CAPA Copilot
-→ KILL GENERIC / possible B48 partner profile only
+→ KILL GENERIC / possible B48 partner profile
 ```
 
-## 5. Current priority after the expanded screen
+# 5. Top-three external validation pathways
 
 ```text
-P1  BIO-003 My Health Story — product-value validation underway
-P2  BIO-016 AI Change Impact & Revalidation Compiler — strongest new B2B validation candidate
-P3  BIO-022 Health Model Egress Privacy Auditor — technically testable, buyer boundary still unproven
-P4  BIO-015 Korean HIS Agent Site Acceptance & Replay — partner-dependent absorbed profile
-P5  BIO-017 Closed-Loop Decision Provenance — partner-led autonomous-lab R&D
-P6  BIO-012A Bilingual Visit Passport — B39 domain transfer
-P7  BIO-014A Recovery Story / Event Story Engine
-P8  BIO-019 Health Data Product Validation Workbench — low-priority
+BIO-003
+participant/user evidence
+→ ordinary Korean-speaking adults
+→ synthetic cases only
+
+BIO-016
+expert evidence
+→ medical-device RA/QA practitioner
+→ blinded 5-case review packet ready
+
+BIO-022
+workflow/buyer evidence
+→ controlled-data operator/export reviewer
+→ medical-AI applicant/developer
+→ medical-data-centered hospital team
+→ 3+ independent organizations minimum before standalone promotion
 ```
 
-## 6. September operating method
+The portfolio should not substitute more internal synthetic work for these external gates.
 
-Through 2026-09-30 maintain two parallel lists:
+# 6. September operating method
 
-### `APPLY / PARTNER NOW`
+Through 2026-09-30 maintain:
 
-Only programmes where actual eligibility, deadline, consortium, matching-fund and partner constraints have been checked.
+### APPLY / PARTNER NOW
+Actual eligibility, deadline, consortium, matching-fund and partner constraints checked.
 
-### `IDEA SIGNAL`
+### IDEA SIGNAL
+Open or closed programmes/RFPs revealing what regulators, hospitals, data centers and bio labs are preparing to buy, validate or govern.
 
-Open or closed programmes/RFPs that reveal what regulators, hospitals, labs and bio manufacturers are preparing to buy, validate or govern.
+Closed technical calls remain useful problem-definition evidence.
 
-Do not discard closed calls: a closed technical RFP can expose a better problem definition than an open generic subsidy.
-
-## 7. Sources to monitor through September
+# 7. Sources to monitor
 
 Primary:
 
 ```text
-기업마당 (bizinfo.go.kr)
-K-Startup (k-startup.go.kr)
-IRIS (iris.go.kr)
-KHIDI / 의료기기산업 종합정보시스템
+기업마당
+K-Startup
+IRIS
+KHIDI
 HIRA 보건의료빅데이터개방시스템
-MFDS / NIDS medical-AI productization and lifecycle guidance
+MFDS / NIDS
 ```
 
-Secondary / regional:
+Regional / implementation:
 
 ```text
 광주테크노파크
 광주창조경제혁신센터
 인공지능산업융합사업단
-지역 K-바이오헬스 센터
-서울바이오허브 / 오픈이노베이션 programmes
-K-MEDIhub / KBIOHealth / KTL / KTR
+K-바이오헬스 지역센터
+서울바이오허브
+K-MEDIhub
+KBIOHealth
+KTL / KTR
+medical-data-centered hospitals
 ```
 
 Search dimensions:
 
 ```text
-바이오 / 헬스케어 / 디지털헬스 / 의료AI / 의료기기
-AI Native HIS / 병원정보시스템 / 의료데이터
-인공지능바이오 / 자율실험실 / SDL
-실증 / PoC / 사업화 / 기술검증
-시판 후 / 실사용근거 / RWE / 보험등재
-인허가 / SW validation / cybersecurity / 인증
-데이터 품질 / 폐쇄망 / 모델 반출 / 가명정보
-수출 / 글로벌 / 오픈이노베이션 / TIPS
-GMP / 제조 AI / deviation / CAPA
+바이오 / 헬스케어 / 의료AI / 의료기기
+임상시험 / 임상연구 / 실증 / PoC
+AI Native HIS / 의료데이터 / 의료데이터중심병원
+모델 검증 / 폐쇄망 / 반출 / synthetic data / federated learning
+시판 후 / RWE / 보험등재
+인허가 / software validation / cybersecurity
+자율실험실 / 인공지능바이오
+데이터 품질 / 인증 / 수출
 ```
 
-## 8. Decision rule
+# 8. Decision rule
 
-A grant-aligned idea is promoted only if all are true:
+A grant-aligned idea is promoted only if:
 
 ```text
 REAL_PROBLEM_SIGNAL = YES
