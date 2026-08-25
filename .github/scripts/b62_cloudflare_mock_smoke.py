@@ -74,6 +74,8 @@ def main() -> int:
         assert health.get("app") == "padiem-chat"
         assert health.get("runtime") == "mock"
         assert health.get("b14_configured") is False
+        assert health.get("live_enabled") is False
+        assert health.get("deep_research_ready") is False
 
         chat_status, chat_headers, chat_raw = request_with_retry(
             base + "/api/chat",
@@ -91,6 +93,8 @@ def main() -> int:
         print("HEALTH_HTTP=200")
         print("RUNTIME=mock")
         print("B14_CONFIGURED=false")
+        print("LIVE_ENABLED=false")
+        print("DEEP_RESEARCH_READY=false")
         print("MOCK_CHAT_HTTP=200")
         print("REAL_PROVIDER_CALLS=0")
         append_summary([
@@ -98,7 +102,8 @@ def main() -> int:
             "",
             f"- URL: `{base}`",
             "- Root: PASS",
-            "- Health: PASS (`runtime=mock`, `b14_configured=false`)",
+            "- Health: PASS (`runtime=mock`, `b14_configured=false`, `live_enabled=false`)",
+            "- Deep Research readiness: `false`",
             "- Mock chat: PASS",
             "- API security headers: PASS",
             "- Real provider/model calls: `0`",
