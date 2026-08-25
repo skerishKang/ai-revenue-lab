@@ -15,10 +15,11 @@ function build() {
   });
 }
 
-test('aggregate build contains public Lab root and B60 route', () => {
+test('aggregate build contains public Lab root, real 404, and B60 route', () => {
   build();
   for (const file of [
     path.join(out, 'index.html'),
+    path.join(out, '404.html'),
     path.join(out, 'styles.css'),
     path.join(out, 'app.js'),
     path.join(out, 'public-businesses.js'),
@@ -28,6 +29,10 @@ test('aggregate build contains public Lab root and B60 route', () => {
   ]) {
     assert.equal(fs.existsSync(file), true, `missing ${path.relative(repoRoot, file)}`);
   }
+
+  const notFound = fs.readFileSync(path.join(out, '404.html'), 'utf8');
+  assert.match(notFound, /페이지를 찾을 수 없습니다/);
+  assert.match(notFound, /noindex/);
 });
 
 test('B60 aggregate artifact excludes operator and repository-only material', () => {
