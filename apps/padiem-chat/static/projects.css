@@ -1,0 +1,219 @@
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.section-heading-row h2 {
+  margin: 0;
+}
+
+.section-add-button {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #5f6368;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.section-add-button:hover,
+.section-add-button:focus-visible {
+  background: rgba(24, 24, 27, 0.06);
+  outline: none;
+}
+
+.project-item[aria-current="true"] {
+  font-weight: 650;
+  background: rgba(24, 24, 27, 0.06);
+}
+
+.project-banner {
+  width: min(780px, calc(100% - 24px));
+  margin: 0 auto 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(24, 24, 27, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-banner-copy {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.project-banner-copy span {
+  flex: 0 0 auto;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #8a8f98;
+}
+
+.project-banner-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.project-banner-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.project-banner-actions button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  border-radius: 9px;
+  background: #fff;
+  color: #4d5156;
+  cursor: pointer;
+}
+
+.project-dialog {
+  width: min(520px, calc(100% - 28px));
+  border: 0;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 24px 80px rgba(24, 24, 27, 0.2);
+}
+
+.project-dialog::backdrop {
+  background: rgba(20, 20, 24, 0.34);
+}
+
+.project-form {
+  padding: 22px;
+  display: grid;
+  gap: 10px;
+}
+
+.project-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.project-dialog-header p {
+  margin: 0 0 4px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #8a8f98;
+}
+
+.project-dialog-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.project-dialog-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.project-form label {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.project-form label span {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8a8f98;
+}
+
+.project-form input,
+.project-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(24, 24, 27, 0.14);
+  border-radius: 12px;
+  padding: 11px 12px;
+  font: inherit;
+  background: #fff;
+}
+
+.project-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.project-form input:focus,
+.project-form textarea:focus {
+  outline: 2px solid rgba(24, 24, 27, 0.16);
+  outline-offset: 1px;
+}
+
+.project-form-note,
+.project-form-error {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #777c85;
+}
+
+.project-form-error {
+  color: #b3261e;
+}
+
+.project-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.project-form-actions button {
+  min-height: 40px;
+  border-radius: 11px;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+.project-secondary {
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  background: #fff;
+}
+
+.project-primary {
+  border: 1px solid #18181b;
+  background: #18181b;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .project-banner {
+    align-items: flex-start;
+  }
+
+  .project-banner-copy {
+    display: grid;
+    gap: 2px;
+  }
+
+  .project-banner-actions button {
+    padding: 0 8px;
+  }
+
+  .project-form {
+    padding: 18px;
+  }
+}

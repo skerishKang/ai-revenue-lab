@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-from .b14_client import B14Client
+from .b14_client import B14Client, MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
 from .evidence import Evidence
 from .skills import Skill
 from .tools import ToolSpec
@@ -60,7 +60,14 @@ def _source_block(index: int, evidence: Evidence, snippet: str) -> str:
     return f"[{index}] " + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
 
-def prepare_grounding_context(evidence_items: list[Evidence]) -> PreparedGrounding:
+def prepare_grounding_context(
+    evidence_items: list[Evidence],
+    *,
+    max_context_chars: int = MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS,
+) -> PreparedGrounding:
+    hard_limit = min(max_context_chars, MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS)
+    if hard_limit < len(_GROUNDING_PREAMBLE.rstrip()) + 64:
+        raise GroundingError(422, "context_budget_exceeded", "프로젝트 지침과 웹 근거를 함께 처리하기에는 컨텍스트가 너무 큽니다.")
     usable = [item for item in evidence_items[:MAX_GROUNDED_SOURCES] if isinstance(item, Evidence)]
     if not usable:
         raise GroundingError(404, "no_evidence", "답변에 사용할 수 있는 웹 근거를 찾지 못했습니다.")
@@ -70,7 +77,7 @@ def prepare_grounding_context(evidence_items: list[Evidence]) -> PreparedGroundi
     for item in usable:
         index = len(accepted) + 1
         separator = "\n\n"
-        remaining = MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS - len(context) - len(separator)
+        remaining = hard_limit - len(context) - len(separator)
         if remaining <= 0:
             break
 
@@ -102,7 +109,7 @@ def prepare_grounding_context(evidence_items: list[Evidence]) -> PreparedGroundi
 
     if not accepted:
         raise GroundingError(404, "no_evidence", "답변에 사용할 수 있는 웹 근거를 찾지 못했습니다.")
-    if len(context) > MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS:
+    if len(context) > hard_limit:
         raise RuntimeError("grounding context exceeded hard limit")
     return PreparedGrounding(context=context, evidence=tuple(accepted))
 
@@ -123,6 +130,7 @@ class GroundedChatService:
         skill: Skill,
         tool: ToolSpec,
         tool_input: str | None,
+        additional_system_context: str | None = None,
     ) -> dict:
         if tool.id == "web_search":
             query = (tool_input or _latest_user_message(messages)).strip()
@@ -143,11 +151,24 @@ class GroundedChatService:
         if not evidence:
             raise GroundingError(404, "no_evidence", "답변에 사용할 수 있는 웹 근거를 찾지 못했습니다.")
 
-        prepared = prepare_grounding_context(evidence)
+        project_context = additional_system_context.strip() if isinstance(additional_system_context, str) else ""
+        evidence_budget = MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS
+        if project_context:
+            evidence_budget = min(
+                evidence_budget,
+                MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS - len(project_context) - 2,
+            )
+        prepared = prepare_grounding_context(evidence, max_context_chars=evidence_budget)
+        combined_context = prepared.context
+        if project_context:
+            combined_context = f"{project_context}\n\n{prepared.context}"
+        if len(combined_context) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+            raise GroundingError(422, "context_budget_exceeded", "프로젝트 지침과 웹 근거를 함께 처리하기에는 컨텍스트가 너무 큽니다.")
+
         result = await self._b14_client.complete(
             messages,
             skill=skill,
-            additional_system_context=prepared.context,
+            additional_system_context=combined_context,
         )
         return {
             **result,
