@@ -52,8 +52,7 @@
       publicStatus: "LIVE",
       routeKind: "LOCAL_STATIC",
       targetPath: "/b60/",
-      sourcePath: "reference/business-60-ai-api-v1/",
-      currentPublicUrl: "https://ai-api.pages.dev/"
+      sourcePath: "reference/business-60-ai-api-v1/"
     }),
     Object.freeze({
       number: 62,

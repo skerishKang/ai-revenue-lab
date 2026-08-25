@@ -41,24 +41,28 @@ test('public manifest exposes no operations-only keys', () => {
   }
 });
 
-test('public URLs are HTTPS and private StoryMemory preview is not exposed', () => {
+test('external public URLs are HTTPS and private StoryMemory preview is not exposed', () => {
   assert.equal(manifest.some(item => item.number === 61), false);
   for (const item of manifest) {
     if (!item.currentPublicUrl) continue;
+    assert.notEqual(item.routeKind, 'LOCAL_STATIC');
     const parsed = new URL(item.currentPublicUrl);
     assert.equal(parsed.protocol, 'https:');
     assert.equal(parsed.hostname.includes('preview.storymemory'), false);
   }
 });
 
-test('static migration candidates are repository-public and target /bXX/', () => {
+test('static Portal routes use repository-public sources and no independent public URL', () => {
   const staticItems = manifest.filter(item => item.routeKind === 'LOCAL_STATIC');
   assert.ok(staticItems.length >= 1);
   for (const item of staticItems) {
     assert.match(item.sourcePath, /^reference\/business-\d{2}-[^/]+\/$/);
     assert.equal(item.targetPath, `/b${String(item.number).padStart(2, '0')}/`);
+    assert.equal(item.currentPublicUrl, undefined);
   }
-  assert.equal(manifest.find(item => item.number === 60)?.routeKind, 'LOCAL_STATIC');
+  const b60 = manifest.find(item => item.number === 60);
+  assert.equal(b60?.routeKind, 'LOCAL_STATIC');
+  assert.equal(b60?.targetPath, '/b60/');
 });
 
 test('independent runtime boundaries are preserved for B14 and B62', () => {
@@ -75,9 +79,13 @@ test('public shell is indexable and does not load private console runtime', () =
   assert.match(html, /app\.js/);
 });
 
-test('browser renderer only reads curated manifest and uses safe outbound URLs', () => {
+test('browser renderer prefers validated same-site routes for LOCAL_STATIC and safe HTTPS for external runtime', () => {
   assert.match(app, /PADIEM_LAB_BUSINESSES/);
   assert.match(app, /parsed\.protocol === "https:"/);
+  assert.match(app, /\^\\\/b\\d\{2\}\\\/\$/);
+  assert.match(app, /item\.routeKind === "LOCAL_STATIC"/);
+  assert.match(app, /publicLink\(item\)/);
+  assert.match(app, /destination\.external/);
   assert.doesNotMatch(app, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
   assert.doesNotMatch(app, /api\/github-status|github-live-status/);
 });
