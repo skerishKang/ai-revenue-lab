@@ -116,14 +116,16 @@ class B14Client:
 
         assert self.settings.b14_base_url is not None
         url = self.settings.b14_base_url.rstrip("/") + "/api/pilot/v1/chat/completions"
+        required_capabilities = ["free"]
+        if attachment is not None:
+            required_capabilities.append("image")
         business14: dict[str, Any] = {
             "task_type": resolved_skill.task_type,
             "optimize_for": resolved_skill.optimize_for,
             "allow_external_fallback": True,
             "max_attempts": 3,
+            "required_capabilities": required_capabilities,
         }
-        if attachment is not None:
-            business14["required_capabilities"] = ["image"]
 
         payload = {
             "model": "b14/auto",
