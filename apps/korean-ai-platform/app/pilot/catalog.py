@@ -51,6 +51,7 @@ _KRW_PER_USD_CONFIGURED = 1380.0
 CATALOG_SOURCE = "openrouter_models_api"
 CATALOG_SOURCE_URL = "https://openrouter.ai/api/v1/models"
 CATALOG_SOURCE_CHECKED_AT = "2026-08-02T09:55:02Z"
+OX_ALPHA_SOURCE_CHECKED_AT = "2026-08-26"
 SNAPSHOT_STATE_CONFIGURED = "configured_snapshot"
 
 TASK_TYPE_REQUIRED_CAPABILITIES: dict[str, frozenset] = {
@@ -117,6 +118,23 @@ class CatalogModel:
 
 CATALOG_MODELS: list[CatalogModel] = [
     CatalogModel(
+        model_id="stealth/ox-alpha",
+        upstream_model="stealth/ox-alpha",
+        display_name="Ox Alpha",
+        provider="Stealth",
+        provider_type="external",
+        input_price_usd_per_1m=0.0,
+        output_price_usd_per_1m=0.0,
+        currency="usd",
+        context_window=1048576,
+        korean_score=4,
+        latency_ms=2000,
+        capabilities=frozenset({"chat", "image", "long_context", "coding", "free"}),
+        region="외부",
+        sort_order=20,
+        source_checked_at=OX_ALPHA_SOURCE_CHECKED_AT,
+    ),
+    CatalogModel(
         model_id="openrouter/free",
         upstream_model="openrouter/free",
         display_name="Free Models Router (무료 라우터)",
@@ -128,7 +146,7 @@ CATALOG_MODELS: list[CatalogModel] = [
         context_window=200000,
         korean_score=3,
         latency_ms=700,
-        capabilities=frozenset({"chat"}),
+        capabilities=frozenset({"chat", "free"}),
         region="외부",
         sort_order=50,
     ),
@@ -197,6 +215,16 @@ CATALOG_MODELS: list[CatalogModel] = [
         sort_order=5,
     ),
 ]
+
+for _catalog_model in CATALOG_MODELS:
+    if "free" in _catalog_model.capabilities and (
+        not _catalog_model.price_is_known
+        or _catalog_model.input_price_usd_per_1m != 0.0
+        or _catalog_model.output_price_usd_per_1m != 0.0
+    ):
+        raise RuntimeError(
+            f"catalog model {_catalog_model.model_id} cannot be tagged free without known zero pricing"
+        )
 
 CATALOG_BY_ID: dict[str, CatalogModel] = {m.model_id: m for m in CATALOG_MODELS}
 
