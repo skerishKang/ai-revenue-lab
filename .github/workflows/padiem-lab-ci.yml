@@ -9,6 +9,9 @@ on:
       - 'reference/business-08-family-newspaper-v1/**'
       - 'reference/business-09-personalized-childrens-story-v1/**'
       - 'reference/business-10-fan-magazine-v1/**'
+      - 'reference/business-11-language-learning-magazine-v1/**'
+      - 'reference/business-12-creator-mini-media-v1/**'
+      - 'reference/business-15-global-ai-newsroom-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
   push:
@@ -19,6 +22,9 @@ on:
       - 'reference/business-08-family-newspaper-v1/**'
       - 'reference/business-09-personalized-childrens-story-v1/**'
       - 'reference/business-10-fan-magazine-v1/**'
+      - 'reference/business-11-language-learning-magazine-v1/**'
+      - 'reference/business-12-creator-mini-media-v1/**'
+      - 'reference/business-15-global-ai-newsroom-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
 
@@ -65,7 +71,7 @@ jobs:
           node apps/padiem-lab/build-site.cjs
           test -f dist/padiem-lab/index.html
           test -f dist/padiem-lab/404.html
-          for route in b07 b08 b09 b10 b60; do
+          for route in b07 b08 b09 b10 b11 b12 b15 b60; do
             test -f "dist/padiem-lab/${route}/index.html"
           done
           test ! -e dist/padiem-lab/b60/operator
@@ -137,7 +143,7 @@ jobs:
         run: |
           set -euo pipefail
           node apps/padiem-lab/build-site.cjs
-          for route in b07 b08 b09 b10 b60; do
+          for route in b07 b08 b09 b10 b11 b12 b15 b60; do
             test -f "dist/padiem-lab/${route}/index.html"
           done
           test ! -e dist/padiem-lab/b60/operator
@@ -198,7 +204,7 @@ jobs:
         run: |
           set -euo pipefail
           base="https://${PAGES_PROJECT}.pages.dev"
-          for path in / /b07/ /b08/ /b09/ /b10/ /b60/; do
+          for path in / /b07/ /b08/ /b09/ /b10/ /b11/ /b12/ /b15/ /b60/; do
             ok=false
             for i in $(seq 1 18); do
               if curl -fsS "${base}${path}" >/dev/null; then ok=true; break; fi
