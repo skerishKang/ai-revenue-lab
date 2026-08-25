@@ -67,9 +67,9 @@ post-market drift / subgroup shift / near miss / RWE finding
 
 Hard boundary: no `APPROVED`, `EXEMPT`, `NO_SUBMISSION_REQUIRED`, or autonomous regulatory conclusion.
 
-### P3 — BIO-022 Health Model Egress Privacy Auditor — `NARROW / SCREENING`
+### P3 — BIO-022 Health Model Egress Privacy Auditor — `VALIDATING / NARROW`
 
-New support/data-governance-derived candidate.
+New support/data-governance-derived candidate. Issue #790 and Draft PR #792 now implement its first wholly synthetic technical gate under `research/bio-022/**`.
 
 HIRA operates a real boundary where source medical images stay in the controlled environment while AI models/algorithms may be exported after review. Training-data privacy can still leak through the exported model, while generic privacy-attack tooling already exists.
 
@@ -86,14 +86,29 @@ model / algorithm / embedding / synthetic artifact proposed for export
 → human export-review decision
 ```
 
-First technical gate can use public/synthetic health-like data only. Business promotion requires both technical usefulness and proof that HIRA-like centers/hospital safe havens treat this as a distinct purchasing/workflow problem rather than a generic AI-security service.
+First technical gate:
+
+- fixture `HEALTHLIKE-SYNTH-001` is wholly synthetic;
+- intentionally overfit model vs regularized model;
+- deliberate negative/control comparison where both groups are non-members but synthetic difficulty distribution differs;
+- first bounded attack = true-label-confidence membership ranking;
+- subgroup confidence separation is used only as a bias/control proxy, not as proof of attribute inference;
+- pinned implementation-level run produced overfit ROC-AUC ≈ 0.906, regularized ≈ 0.511, non-member control ≈ 0.596;
+- local implementation-level pytest = 5 passed;
+- the elevated control is intentionally surfaced as `CONTROL_EXPERIMENT_SUSPECTS_FALSE_POSITIVE`;
+- `HUMAN_EXPORT_REVIEW_REQUIRED` is mandatory;
+- `PRIVACY_SAFE`, `EXPORT_APPROVED`, `LEGAL_COMPLIANT`, `ANONYMIZED`, `NO_PRIVACY_RISK` are forbidden conclusions.
+
+This demonstrates only benchmark mechanics. Business promotion still requires proof that HIRA-like centers/hospital safe havens treat this as a distinct repeated purchasing/workflow problem rather than a generic AI-security service.
 
 Potential future disposition after validation:
 
 ```text
-STANDALONE
+CONTINUE_STANDALONE_SCREEN
 or
 ABSORB_AS_B63_MODEL_ARTIFACT_EGRESS_PROFILE
+or
+ABSORB_AS_B48_AI_SECURITY_VERIFICATION_PROFILE
 or
 KILL
 ```
