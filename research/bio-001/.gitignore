@@ -1,0 +1,11 @@
+data/
+outputs/
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.npy
+*.npz
+__pycache__/
+.pytest_cache/
+.venv/
