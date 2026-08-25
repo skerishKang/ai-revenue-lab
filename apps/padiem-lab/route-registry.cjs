@@ -38,6 +38,33 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 11,
+    route: "b11",
+    sourcePath: "reference/business-11-language-learning-magazine-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Language Field Journal",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 12,
+    route: "b12",
+    sourcePath: "reference/business-12-creator-mini-media-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Creator Release Room",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 15,
+    route: "b15",
+    sourcePath: "reference/business-15-global-ai-newsroom-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Verification Desk",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
