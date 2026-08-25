@@ -51,14 +51,15 @@ async def auth_status(request: Request) -> JSONResponse:
             if profile is not None:
                 authenticated = True
                 user = profile.public_dict()
-    return JSONResponse(
-        {
-            "ready": ready,
-            "authenticated": authenticated,
-            "history_ready": ready and store is not None,
-            "user": user,
-        }
-    )
+    payload = {
+        "ready": ready,
+        "authenticated": authenticated,
+        "history_ready": ready and store is not None,
+        "user": user,
+    }
+    if ready and getattr(request.app.state, "project_file_store", None) is not None:
+        payload["project_files_ready"] = True
+    return JSONResponse(payload)
 
 
 async def google_start(request: Request) -> Response:

@@ -1,0 +1,129 @@
+.document-attachment-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  background: rgba(26, 29, 33, 0.07);
+  color: #31343a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.reference-note {
+  display: block;
+  margin-top: 10px;
+  color: #72767d;
+  font-size: 12px;
+}
+
+.project-banner-copy small {
+  display: block;
+  margin-top: 2px;
+  color: #7a7d84;
+  font-size: 11px;
+}
+
+.project-files-panel {
+  margin-top: 4px;
+  padding: 14px;
+  border: 1px solid rgba(25, 28, 32, 0.1);
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+.project-files-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-files-heading > div {
+  min-width: 0;
+}
+
+.project-files-heading strong,
+.project-files-heading small {
+  display: block;
+}
+
+.project-files-heading small,
+.project-files-note,
+.project-files-empty,
+.project-file-row small {
+  color: #777b82;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.project-file-add {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 8px 11px;
+  border: 1px solid rgba(25, 28, 32, 0.12);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.project-files-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.project-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.project-file-row > div {
+  min-width: 0;
+}
+
+.project-file-row strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #31343a;
+  font-size: 12px;
+}
+
+.project-file-row button {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: #777b82;
+  cursor: pointer;
+  min-height: 34px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.project-files-note {
+  margin: 9px 0 0;
+}
+
+.project-files-empty {
+  margin: 10px 0 0;
+}
+
+@media (max-width: 680px) {
+  .project-files-heading {
+    align-items: flex-start;
+  }
+  .project-file-add {
+    min-height: 40px;
+  }
+}
