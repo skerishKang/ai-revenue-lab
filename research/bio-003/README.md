@@ -20,16 +20,37 @@ Each synthetic case uses the same atomic facts in three representations:
 
 The first test deliberately minimizes cinematic/physical-book effects. It tests information architecture and trust/memory, not visual preference.
 
+## Information-parity contract
+
+An audit found that the original Case B timeline omitted two canonical facts that were present in the summary/story conditions:
+
+- discomfort when gripping/twisting;
+- the plan to review the prior X-ray and symptom log together at follow-up.
+
+That would have confounded presentation-format effects with unequal information exposure, so the timeline was corrected before any participant pilot.
+
+Parity is now explicit and machine-checkable:
+
+- `fact_coverage.json` defines the canonical fact IDs for each case and a minimum visible text anchor for every fact in every condition;
+- `question_fact_map.json` maps every validation question to the minimum canonical facts required to answer it;
+- tests require each condition to expose exactly the canonical fact set;
+- tests verify each claimed fact anchor is actually present in the rendered text;
+- tests require every question's supporting facts to be available under summary, timeline and story alike.
+
+This contract prevents a condition from appearing superior merely because it contains facts that another condition omits. It does **not** prove semantic equivalence of wording, reading difficulty, salience, layout or cognitive load; those remain empirical/human-pilot concerns.
+
 ## Files
 
 - `cases.json` — three fictional source bundles plus information-equivalent A/B/C renderings;
+- `fact_coverage.json` — canonical fact-set and rendering-anchor parity contract;
+- `question_fact_map.json` — question → required canonical fact mapping;
 - `questions.json` — deterministic task/question bank and answer keys;
 - `counterbalancing.json` — three-group case/condition rotation;
 - `responses.schema.csv` — question-response capture schema;
 - `case_ratings.schema.csv` — cognitive-load/usefulness capture schema;
 - `score.py` — deterministic item scorer;
 - `analyze.py` — condition-level descriptive analysis;
-- `tests/test_score.py` — synthetic-only contract tests.
+- `tests/test_score.py` — scorer, information-parity and counterbalancing contract tests.
 
 ## Synthetic cases
 
