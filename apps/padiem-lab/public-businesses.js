@@ -99,6 +99,17 @@
       sourcePath: "reference/business-15-global-ai-newsroom-v1/"
     }),
     Object.freeze({
+      number: 16,
+      slug: "personal-sports",
+      title: "Personal Sports",
+      koreanTitle: "나의 스포츠 채널",
+      summary: "관심 경기의 시간순 흐름을 보고 내게 남은 장면만 세션 안에서 기록하는 매치데이 저널입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b16/",
+      sourcePath: "reference/business-16-personal-sports-v1/"
+    }),
+    Object.freeze({
       number: 23,
       slug: "lovebud",
       title: "LoveBud",

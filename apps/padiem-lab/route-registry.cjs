@@ -65,6 +65,16 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 16,
+    route: "b16",
+    sourcePath: "reference/business-16-personal-sports-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Matchday Live Journal",
+    includeFiles: ["index.html", "guide.html", "ux.html"],
+    includeDirs: ["assets", "styles"],
+    excludePaths: ["app.js", "docs"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
@@ -77,5 +87,6 @@ const routes = [
 module.exports = Object.freeze(routes.map(route => Object.freeze({
   ...route,
   includeFiles: route.includeFiles ? Object.freeze(route.includeFiles.slice()) : undefined,
-  includeDirs: Object.freeze(route.includeDirs.slice())
+  includeDirs: Object.freeze(route.includeDirs.slice()),
+  excludePaths: route.excludePaths ? Object.freeze(route.excludePaths.slice()) : undefined
 })));
