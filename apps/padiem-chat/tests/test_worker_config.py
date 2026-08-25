@@ -181,7 +181,9 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert "settings_from_worker_bindings(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
     assert "D1UsageCounterStore" in worker
-    assert "usage_store=usage_store" in worker
+    assert "UsageGate(settings, usage_store)" in worker
+    assert "usage_gate_enforced = True" in worker
+    assert "create_app(settings=settings, history_store=history_store)" in worker
     assert "OPENROUTER_API_KEY" not in worker
     assert "PADIEM_CHAT_B14_BASE_URL" not in worker
     assert "FIRECRAWL_API_KEY" not in worker
