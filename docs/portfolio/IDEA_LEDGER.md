@@ -67,7 +67,7 @@ Do not delete negative or absorbed findings. They prevent repeated rediscovery a
 | BIO-019 | Health Data Product Validation Workbench | LOWER-PRIORITY SCREEN | HIRA data-commercialization signal is real, but analytics/data-lab overlap risk remains high. |
 | BIO-020 | Medical AI Export & Regulatory Readiness Passport | ABSORB / VERTICALIZE | Treat as BIO-016 + GEN-001 output/vertical, not a separate Business. |
 | BIO-021 | Clinical AI Post-Market Evidence & Drift Trace | ABSORB INTO BIO-016 | Real post-market/RWE problem, but generic drift/RWE monitoring is occupied. Preserve only the post-market event → stale-evidence/revalidation trigger inside BIO-016. |
-| BIO-022 | Health Model Egress Privacy Auditor | NARROW / SCREENING | HIRA-like controlled environments may export models/algorithms while retaining source medical data. Test whether a pre-export privacy evidence gate for membership/inversion/memorization risk is a distinct workflow or should become a B63 model-artifact egress profile. No Business number. |
+| BIO-022 | Health Model Egress Privacy Auditor | VALIDATING / NARROW | Issue #790 + Draft PR #792 implement a wholly synthetic artifact-export privacy gate. Initial mechanics separate intentionally overfit vs regularized membership signal and include a deliberately biased all-nonmember control to expose false-positive susceptibility. Standalone buyer boundary remains unproven; B63/B48 absorption remains live. No Business number. |
 | BIO-023 | Bio Manufacturing Deviation / CAPA Copilot | KILL GENERIC / ABSORB PROFILE | Manufacturing pain is real, but the AI deviation/CAPA category is already heavily occupied. Do not build standalone; only retain a possible partner-led B48 evidence-verification profile. |
 
 ## Cross-domain / general ideas retained
@@ -94,7 +94,7 @@ Read together:
 ```text
 P1 = BIO-003 My Health Story — patient-facing validation already underway
 P2 = BIO-016 AI Change Impact & Revalidation Compiler — strongest new standalone validation candidate
-P3 = BIO-022 Health Model Egress Privacy Auditor — narrow technical/buyer validation candidate
+P3 = BIO-022 Health Model Egress Privacy Auditor — synthetic validation underway; buyer/standalone boundary still open
 P4 = BIO-015 Korean HIS Agent Site Acceptance & Replay — absorbed healthcare verification profile; partner-dependent
 P5 = BIO-017 Closed-Loop Decision Provenance Verifier — partner-led autonomous-lab R&D
 P6 = BIO-012A Bilingual Visit Passport — B39 domain transfer / absorb
