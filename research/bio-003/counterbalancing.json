@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Each participant sees every case and every condition exactly once; case and condition order rotate across groups.",
+  "groups": [
+    {"group":"G1","order":[{"case_id":"A","condition":"summary"},{"case_id":"B","condition":"timeline"},{"case_id":"C","condition":"story"}]},
+    {"group":"G2","order":[{"case_id":"B","condition":"story"},{"case_id":"C","condition":"summary"},{"case_id":"A","condition":"timeline"}]},
+    {"group":"G3","order":[{"case_id":"C","condition":"timeline"},{"case_id":"A","condition":"story"},{"case_id":"B","condition":"summary"}]}
+  ]
+}
