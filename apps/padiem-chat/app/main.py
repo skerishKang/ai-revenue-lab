@@ -33,6 +33,8 @@ from .history import (
 from .project_file_routes import project_file_detail, project_files_collection
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
+from .saved_output_routes import output_detail, outputs_collection
+from .saved_outputs import SavedOutputStore
 from .skills import Skill, get_skill
 from .tools import ToolSpec, get_tool
 from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
@@ -160,6 +162,8 @@ async def health(request: Request) -> JSONResponse:
         "projects_code_ready": True,
         "project_files_code_ready": True,
         "project_file_store_bound": request.app.state.project_file_store is not None,
+        "saved_outputs_code_ready": True,
+        "saved_output_store_bound": request.app.state.saved_output_store is not None,
     })
 
 
@@ -341,6 +345,7 @@ def create_app(
     auth_transport=None,
     history_store: HistoryStore | None = None,
     project_file_store: ProjectFileStore | None = None,
+    saved_output_store: SavedOutputStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -353,6 +358,8 @@ def create_app(
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
+        Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
+        Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET"]),
         Route("/api/chat", api_chat, methods=["POST"]),
@@ -362,6 +369,7 @@ def create_app(
     app.state.settings = resolved
     app.state.history_store = history_store
     app.state.project_file_store = project_file_store
+    app.state.saved_output_store = saved_output_store
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
