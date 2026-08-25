@@ -1,0 +1,264 @@
+name: B60 AI Free Radar Production
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-60-ai-api-v1/**'
+      - '.github/workflows/b60-production-deploy.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'reference/business-60-ai-api-v1/**'
+      - '.github/workflows/b60-production-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b60-ai-api-production
+  cancel-in-progress: false
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PROJECT_NAME: ai-api
+      PRODUCTION_BRANCH: production
+      SOURCE_DIR: reference/business-60-ai-api-v1
+      TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify canonical B60 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test -f "${SOURCE_DIR}/index.html"
+          test -f "${SOURCE_DIR}/product-v13-editorial-radar.js"
+          test -f "${SOURCE_DIR}/product-v14-opportunity-detail.js"
+          grep -F 'product-v13-editorial-radar.js' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'product-v14-opportunity-detail.js' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'AI 무료 레이더' "${SOURCE_DIR}/product-v13-editorial-radar.js" >/dev/null
+          echo "B60_CANONICAL_SOURCE=PASS"
+
+      - name: Run permanent B60 contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test \
+            reference/business-60-ai-api-v1/*.test.cjs \
+            reference/business-60-ai-api-v1/collector/*.test.cjs
+
+      - name: Install browser smoke runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pw"
+          npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
+          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
+          echo "PW=${RUNNER_TEMP}/pw/node_modules/playwright" >> "${GITHUB_ENV}"
+
+      - name: Write B60 browser smoke
+        shell: bash
+        run: |
+          cat > "${RUNNER_TEMP}/b60-production-smoke.cjs" <<'NODE'
+          const { chromium } = require(process.env.PW);
+
+          async function run(url, label) {
+            const browser = await chromium.launch({ headless: true });
+            for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+              const page = await browser.newPage({ viewport });
+              const errors = [];
+              const failed = [];
+              page.on('console', message => {
+                if (message.type() === 'error') errors.push(message.text());
+              });
+              page.on('requestfailed', request => {
+                failed.push(`${request.method()} ${request.url()} ${request.failure()?.errorText || ''}`);
+              });
+
+              const response = await page.goto(url, { waitUntil: 'networkidle' });
+              if (!response || response.status() !== 200) {
+                throw new Error(`${label}: HTTP ${response?.status()}`);
+              }
+
+              await page.waitForSelector('#radar');
+              const state = await page.evaluate(() => ({
+                mode: document.documentElement.dataset.b60V13,
+                wordmark: document.querySelector('.radar-wordmark')?.textContent?.trim(),
+                radar: Boolean(window.B60_EDITORIAL_RADAR),
+                detail: Boolean(window.B60_OPPORTUNITY_DETAIL),
+                opportunities: window.B60_EDITORIAL_OPPORTUNITIES?.length || 0,
+                scrollWidth: document.documentElement.scrollWidth,
+                clientWidth: document.documentElement.clientWidth,
+              }));
+
+              if (state.mode !== 'editorial' || state.wordmark !== 'AI 무료 레이더') {
+                throw new Error(`${label}: V13 editorial radar missing ${JSON.stringify(state)}`);
+              }
+              if (!state.radar || !state.detail || state.opportunities < 1) {
+                throw new Error(`${label}: V13/V14 runtime missing ${JSON.stringify(state)}`);
+              }
+              if (state.scrollWidth > state.clientWidth + 1) {
+                throw new Error(`${label}: horizontal overflow ${JSON.stringify(state)}`);
+              }
+
+              const primary = page.locator('.radar-feature [data-radar-url]').first();
+              await primary.waitFor({ state: 'visible' });
+              await primary.click();
+              await page.waitForFunction(() => document.body.classList.contains('b60-detail-open'));
+
+              const detailState = await page.evaluate(() => ({
+                activeId: window.B60_OPPORTUNITY_DETAIL?.activeId || null,
+                deal: new URL(location.href).searchParams.get('deal'),
+                hidden: document.querySelector('.b60-opportunity-detail')?.hidden,
+                finalCta: document.querySelector('.b60-detail-actions .is-primary')?.textContent?.trim(),
+                sourceCount: document.querySelectorAll('.b60-detail-source-list a').length,
+              }));
+
+              if (!detailState.activeId || detailState.deal !== detailState.activeId || detailState.hidden !== false) {
+                throw new Error(`${label}: detail handoff state mismatch ${JSON.stringify(detailState)}`);
+              }
+              if (detailState.finalCta !== '실제 사용하기 ↗' || detailState.sourceCount < 1) {
+                throw new Error(`${label}: detail truth/action content missing ${JSON.stringify(detailState)}`);
+              }
+
+              await page.locator('.b60-detail-close').click();
+              await page.waitForFunction(() => !document.body.classList.contains('b60-detail-open'));
+
+              if (errors.length) throw new Error(`${label}: console ${errors.join(' | ')}`);
+              if (failed.length) throw new Error(`${label}: request failures ${failed.join(' | ')}`);
+
+              console.log(`${label} ${viewport.width}x${viewport.height} PASS`);
+              await page.close();
+            }
+            await browser.close();
+          }
+
+          run(process.argv[2], process.argv[3]).catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+      - name: Local real-browser QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory "${SOURCE_DIR}" >"${RUNNER_TEMP}/b60-server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node "${RUNNER_TEMP}/b60-production-smoke.cjs" http://127.0.0.1:4173/ LOCAL_B60
+
+      - name: Verify Cloudflare production target
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          project="$(mktemp)"
+          trap 'rm -f "${project}"' EXIT
+          curl -fsS \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
+            -o "${project}"
+          jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}" \
+            '.success == true and .result.name == $name and .result.production_branch == $branch and .result.source == null' \
+            "${project}" >/dev/null
+          domain="$(jq -r '.result.subdomain' "${project}")"
+          test -n "${domain}" && test "${domain}" != "null"
+          echo "PUBLIC_DOMAIN=${domain}" >> "${GITHUB_ENV}"
+          echo "CLOUDFLARE_TARGET=PASS ${domain}"
+
+      - name: Deploy canonical B60 source
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          npx --yes wrangler@4 pages deploy "${SOURCE_DIR}" \
+            --project-name "${PROJECT_NAME}" \
+            --branch "${PRODUCTION_BRANCH}" \
+            --commit-hash "${TARGET_SHA}" \
+            --commit-message "B60 canonical main ${TARGET_SHA}" \
+            --commit-dirty=false
+
+      - name: Verify canonical Cloudflare deployment
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          project="$(mktemp)"
+          trap 'rm -f "${project}"' EXIT
+          for attempt in $(seq 1 18); do
+            curl -fsS \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
+              -o "${project}"
+            hash="$(jq -r '.result.canonical_deployment.deployment_trigger.metadata.commit_hash // empty' "${project}")"
+            status="$(jq -r '.result.canonical_deployment.latest_stage.status // empty' "${project}")"
+            if [ "${hash}" = "${TARGET_SHA}" ] && [ "${status}" = "success" ]; then break; fi
+            if [ "${attempt}" -eq 18 ]; then
+              echo "Canonical deployment did not converge to ${TARGET_SHA}" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+          jq -e --arg sha "${TARGET_SHA}" --arg branch "${PRODUCTION_BRANCH}" \
+            '.result.canonical_deployment.environment == "production" and .result.canonical_deployment.deployment_trigger.metadata.branch == $branch and .result.canonical_deployment.deployment_trigger.metadata.commit_hash == $sha and .result.canonical_deployment.latest_stage.status == "success"' \
+            "${project}" >/dev/null
+          echo "CANONICAL_DEPLOYMENT=$(jq -r '.result.canonical_deployment.id' "${project}")"
+          echo "CANONICAL_URL=$(jq -r '.result.canonical_deployment.url' "${project}")"
+          echo "PUBLIC_APEX=https://${PUBLIC_DOMAIN}/"
+
+      - name: Live production browser QA
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "${RUNNER_TEMP}/b60-production-smoke.cjs" "https://${PUBLIC_DOMAIN}/" LIVE_B60
+          echo "PRODUCTION_ACCEPTED=https://${PUBLIC_DOMAIN}/"
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B60 · AI Free Radar"
+            echo
+            echo "- source: \`${SOURCE_DIR}\`"
+            echo "- exact SHA: \`${TARGET_SHA}\`"
+            echo "- event: \`${{ github.event_name }}\`"
+            if [ "${{ github.event_name }}" != "pull_request" ]; then
+              echo "- project: \`${PROJECT_NAME}\`"
+              echo "- production branch: \`${PRODUCTION_BRANCH}\`"
+              echo "- public URL: \`https://${PUBLIC_DOMAIN}/\`"
+            else
+              echo "- production deploy: skipped on PR head"
+            fi
+          } >> "${GITHUB_STEP_SUMMARY}"
