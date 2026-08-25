@@ -10,10 +10,12 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+USER_AGENT = "b62-preflight/1.0"
+
 
 def request(url: str, *, method: str = "GET", payload: dict | None = None):
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8") if payload is not None else None
-    headers = {"Accept": "application/json"}
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
     if body is not None:
         headers["Content-Type"] = "application/json"
     req = Request(url, data=body, headers=headers, method=method)
