@@ -24,10 +24,11 @@ def test_settings_from_values_and_env_share_validation(monkeypatch):
     monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_AUTH_MODE", raising=False)
+    monkeypatch.delenv("PADIEM_CHAT_QUOTA_SALT", raising=False)
     assert Settings.from_env() == direct
 
 
-def test_worker_bindings_default_to_mock_web_off_auth_off():
+def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     settings = settings_from_worker_bindings({})
     assert settings.runtime_mode == "mock"
     assert settings.b14_base_url is None
@@ -40,6 +41,12 @@ def test_worker_bindings_default_to_mock_web_off_auth_off():
     assert settings.google_client_id is None
     assert settings.google_client_secret is None
     assert settings.session_secret is None
+    assert settings.quota_salt is None
+    assert settings.anonymous_burst_limit == 4
+    assert settings.anonymous_daily_limit == 20
+    assert settings.user_burst_limit == 8
+    assert settings.user_daily_limit == 100
+    assert settings.global_daily_limit == 1000
 
 
 def test_worker_b14_mode_requires_valid_fixed_url():
@@ -56,7 +63,10 @@ def test_worker_b14_mode_requires_valid_fixed_url():
         "PADIEM_CHAT_B14_BASE_URL": "https://b14.example/",
         "PADIEM_CHAT_TIMEOUT_SECONDS": "15",
     })
-    assert settings == Settings(runtime_mode="b14", b14_base_url="https://b14.example", timeout_seconds=15.0)
+    assert settings.runtime_mode == "b14"
+    assert settings.b14_base_url == "https://b14.example"
+    assert settings.timeout_seconds == 15.0
+    assert settings.quota_salt is None
 
 
 def test_server_only_worker_bindings_and_google_config_validation():
@@ -73,6 +83,12 @@ def test_server_only_worker_bindings_and_google_config_validation():
         "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
         "PADIEM_CHAT_SESSION_SECRET",
         "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS",
+        "PADIEM_CHAT_QUOTA_SALT",
+        "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+        "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+        "PADIEM_CHAT_USER_BURST_LIMIT",
+        "PADIEM_CHAT_USER_DAILY_LIMIT",
+        "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
     }
     assert D1_BINDING_NAME == "PADIEM_CHAT_DB"
     joined = " ".join(sorted(WORKER_BINDING_NAMES)).upper()
@@ -106,6 +122,39 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "phase9-session-secret" not in repr(google)
 
 
+def test_quota_config_is_server_owned_bounded_and_secret_redacted():
+    salt = "quota-salt-not-a-real-secret-01234567890123456789"
+    settings = settings_from_worker_bindings({
+        "PADIEM_CHAT_QUOTA_SALT": salt,
+        "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT": "3",
+        "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT": "17",
+        "PADIEM_CHAT_USER_BURST_LIMIT": "7",
+        "PADIEM_CHAT_USER_DAILY_LIMIT": "91",
+        "PADIEM_CHAT_GLOBAL_DAILY_LIMIT": "777",
+    })
+    assert settings.quota_salt == salt
+    assert settings.anonymous_burst_limit == 3
+    assert settings.anonymous_daily_limit == 17
+    assert settings.user_burst_limit == 7
+    assert settings.user_daily_limit == 91
+    assert settings.global_daily_limit == 777
+    assert salt not in repr(settings)
+
+    with pytest.raises(ConfigError):
+        settings_from_worker_bindings({"PADIEM_CHAT_QUOTA_SALT": "too-short"})
+    for key in (
+        "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+        "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+        "PADIEM_CHAT_USER_BURST_LIMIT",
+        "PADIEM_CHAT_USER_DAILY_LIMIT",
+        "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
+    ):
+        with pytest.raises(ConfigError):
+            settings_from_worker_bindings({key: "0"})
+        with pytest.raises(ConfigError):
+            settings_from_worker_bindings({key: "unlimited"})
+
+
 def test_security_headers_and_api_auth_no_store():
     assert BASE_SECURITY_HEADERS == {
         "X-Content-Type-Options": "nosniff",
@@ -131,6 +180,9 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert "database_id" not in wrangler
     assert "settings_from_worker_bindings(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
+    assert "D1UsageCounterStore" in worker
+    assert "UsageGate(settings, usage_store)" in worker
+    assert "usage_gate_enforced = True" in worker
     assert "create_app(settings=settings, history_store=history_store)" in worker
     assert "OPENROUTER_API_KEY" not in worker
     assert "PADIEM_CHAT_B14_BASE_URL" not in worker

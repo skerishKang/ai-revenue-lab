@@ -18,6 +18,12 @@ WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
     "PADIEM_CHAT_SESSION_SECRET",
     "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS",
+    "PADIEM_CHAT_QUOTA_SALT",
+    "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+    "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+    "PADIEM_CHAT_USER_BURST_LIMIT",
+    "PADIEM_CHAT_USER_DAILY_LIMIT",
+    "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 
@@ -48,6 +54,12 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         google_client_secret=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
         session_secret=binding_value(env, "PADIEM_CHAT_SESSION_SECRET"),
         session_max_age_seconds=binding_value(env, "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS") or str(7 * 24 * 3600),
+        quota_salt=binding_value(env, "PADIEM_CHAT_QUOTA_SALT"),
+        anonymous_burst_limit=binding_value(env, "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT") or "4",
+        anonymous_daily_limit=binding_value(env, "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT") or "20",
+        user_burst_limit=binding_value(env, "PADIEM_CHAT_USER_BURST_LIMIT") or "8",
+        user_daily_limit=binding_value(env, "PADIEM_CHAT_USER_DAILY_LIMIT") or "100",
+        global_daily_limit=binding_value(env, "PADIEM_CHAT_GLOBAL_DAILY_LIMIT") or "1000",
     )
 
 
