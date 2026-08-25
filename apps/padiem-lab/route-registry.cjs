@@ -42,7 +42,7 @@ const routes = [
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
     mode: "B60_PUBLIC_ALLOWLIST",
-    marker: "AI FREE RADAR",
+    marker: "AI",
     includeDirs: ["assets", "data"]
   }
 ];
