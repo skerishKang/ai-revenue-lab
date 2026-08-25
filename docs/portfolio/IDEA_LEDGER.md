@@ -61,11 +61,14 @@ Do not delete negative or absorbed findings. They prevent repeated rediscovery a
 | BIO-014 | Home Rehab Observer Coach | KILL GENERIC / DEPRIORITIZED | Generic camera rehab coach is crowded and overlaps B38. Do not build standalone. |
 | BIO-014A | Recovery Story / Between-Visits Recovery Layer | ABSORB INTO BIO-003 / PLAT-001 | Preserve between-visit attempts, changes, uncertainty and questions without autonomous rehab prescription. |
 | BIO-015 | Clinical AI Shadow Lab / AI Native HIS Agent Sandbox | KILL GENERIC / ABSORB | Generic medical-agent sandbox is already occupied by current research/products. Surviving `Korean HIS Agent Site Acceptance & Replay` should be a healthcare verification profile using B42+B48+B63, not a new Business now. |
-| BIO-016 | AI Change Impact & Revalidation Compiler / MFDS AI Change Delta | VALIDATING / NARROW | Strongest current support-program-derived standalone hypothesis. Given an exact medical-AI change, identify potentially stale evidence and candidate revalidation/document work with source-linked rationale and mandatory RA/QA review. Issue #782 + Draft PR #783 implement a 20-change synthetic benchmark. |
+| BIO-016 | AI Change Impact & Revalidation Compiler / MFDS AI Change Delta | VALIDATING / NARROW | Strongest current support-program-derived standalone hypothesis. Given an exact medical-AI change, identify potentially stale evidence and candidate revalidation/document work with source-linked rationale and mandatory RA/QA review. Issue #782 + Draft PR #783 now test exact evidence record/version/scope relationships rather than only change-type classes. |
 | BIO-017 | Closed-Loop Decision Provenance Verifier for Autonomous Bio Labs | PARTNER-LED R&D / NARROW | Generic ELN/LIMS/lineage platform killed. Surviving question verifies the AI decision → protocol → instrument execution → raw data → analysis → next-decision chain. Needs real lab/automation partner before serious product build. |
 | BIO-018 | Clinical AI Incident Replay / Near-Miss Story | ABSORB INTO BIO-015 | Replay/forensics is a function of the healthcare agent acceptance profile, not a separate Business. |
 | BIO-019 | Health Data Product Validation Workbench | LOWER-PRIORITY SCREEN | HIRA data-commercialization signal is real, but analytics/data-lab overlap risk remains high. |
 | BIO-020 | Medical AI Export & Regulatory Readiness Passport | ABSORB / VERTICALIZE | Treat as BIO-016 + GEN-001 output/vertical, not a separate Business. |
+| BIO-021 | Clinical AI Post-Market Evidence & Drift Trace | ABSORB INTO BIO-016 | Real post-market/RWE problem, but generic drift/RWE monitoring is occupied. Preserve only the post-market event → stale-evidence/revalidation trigger inside BIO-016. |
+| BIO-022 | Health Model Egress Privacy Auditor | NARROW / SCREENING | HIRA-like controlled environments may export models/algorithms while retaining source medical data. Test whether a pre-export privacy evidence gate for membership/inversion/memorization risk is a distinct workflow or should become a B63 model-artifact egress profile. No Business number. |
+| BIO-023 | Bio Manufacturing Deviation / CAPA Copilot | KILL GENERIC / ABSORB PROFILE | Manufacturing pain is real, but the AI deviation/CAPA category is already heavily occupied. Do not build standalone; only retain a possible partner-led B48 evidence-verification profile. |
 
 ## Cross-domain / general ideas retained
 
@@ -84,15 +87,19 @@ Read together:
 - `docs/portfolio/research/BIO_015_CLINICAL_AI_AGENT_SANDBOX_SCREEN_2026-08-26.md`
 - `docs/portfolio/research/BIO_016_MEDICAL_AI_CHANGE_REVALIDATION_SCREEN_2026-08-26.md`
 - `docs/portfolio/research/BIO_017_AUTONOMOUS_BIO_LAB_EVIDENCE_SCREEN_2026-08-26.md`
+- `docs/portfolio/research/BIO_021_POSTMARKET_EVIDENCE_DRIFT_SCREEN_2026-08-26.md`
+- `docs/portfolio/research/BIO_022_HEALTH_MODEL_EGRESS_PRIVACY_AUDITOR_SCREEN_2026-08-26.md`
+- `docs/portfolio/research/BIO_023_BIO_MANUFACTURING_CAPA_COPILOT_SCREEN_2026-08-26.md`
 
 ```text
 P1 = BIO-003 My Health Story — patient-facing validation already underway
 P2 = BIO-016 AI Change Impact & Revalidation Compiler — strongest new standalone validation candidate
-P3 = BIO-015 Korean HIS Agent Site Acceptance & Replay — absorbed healthcare verification profile; partner-dependent
-P4 = BIO-017 Closed-Loop Decision Provenance Verifier — partner-led autonomous-lab R&D
-P5 = BIO-012A Bilingual Visit Passport — B39 domain transfer / absorb
-P6 = BIO-014A Recovery Story + PLAT-001 Event Story Engine
-P7 = BIO-019 Health Data Product Validation Workbench — low-priority screen
+P3 = BIO-022 Health Model Egress Privacy Auditor — narrow technical/buyer validation candidate
+P4 = BIO-015 Korean HIS Agent Site Acceptance & Replay — absorbed healthcare verification profile; partner-dependent
+P5 = BIO-017 Closed-Loop Decision Provenance Verifier — partner-led autonomous-lab R&D
+P6 = BIO-012A Bilingual Visit Passport — B39 domain transfer / absorb
+P7 = BIO-014A Recovery Story + PLAT-001 Event Story Engine
+P8 = BIO-019 Health Data Product Validation Workbench — low-priority screen
 ```
 
 ## September support-program rule
@@ -108,7 +115,7 @@ A grant-aligned idea is promoted only if the product remains compelling without 
 
 ## Business-number caution
 
-No BIO-015~020 entry receives a Business number from this ledger. BIO-016 remains a numbered-free research candidate until synthetic validation plus qualified Korean medical-device RA/QA review support a product decision.
+No BIO-015~023 entry receives a Business number from this ledger. BIO-016 and BIO-022 remain number-free research candidates until bounded technical validation plus relevant human/domain review support a product decision.
 
 ## Session handoff rule
 
