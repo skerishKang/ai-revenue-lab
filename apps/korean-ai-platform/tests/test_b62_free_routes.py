@@ -116,7 +116,7 @@ async def test_free_catalog_route_adds_openrouter_zero_price_ceiling():
         )
 
     openrouter_config.provider_mode = "live"
-    openrouter_config.api_key = "sk-or-v1-b62-free-route-test-key"
+    openrouter_config.api_key = "sk-or-v1-b62-free-route-credential-92837465"
     await call_openrouter_chat_completions(
         messages=[{"role": "user", "content": "hi"}],
         temperature=0.2,
@@ -150,7 +150,7 @@ async def test_paid_catalog_route_does_not_receive_free_price_ceiling():
         )
 
     openrouter_config.provider_mode = "live"
-    openrouter_config.api_key = "sk-or-v1-b14-paid-route-test-key"
+    openrouter_config.api_key = "sk-or-v1-b14-paid-route-credential-57483921"
     await call_openrouter_chat_completions(
         messages=[{"role": "user", "content": "hi"}],
         temperature=0.2,
