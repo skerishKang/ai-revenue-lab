@@ -1,12 +1,12 @@
 # BIO-012 Foreign Patient Medical Coordination — 2026 Screen
 
 - Date: 2026-08-26
-- Status: NARROW / R&D TEST WORTHY
+- Status: `NARROW / ABSORB_EXISTING_CAPABILITY`
 - Business number: NONE
 
-## 1. Original product direction
+## 1. Original direction
 
-Use PADIEM multilingual speech/translation capability to help an international patient move through:
+Use PADIEM multilingual speech/translation capability to support an international patient through:
 
 ```text
 pre-visit documents
@@ -17,51 +17,76 @@ pre-visit documents
 → cross-institution / cross-country handoff
 ```
 
-The idea is attractive because it combines real PADIEM assets rather than requiring PADIEM to invent a new diagnostic model.
+## 2. External market result
 
-## 2. Market reality
+Korean international-patient demand is substantial, but the broad product space is already crowded.
 
-### Korea demand is large
+Current products/services already cover large parts of:
 
-MOHW reported 1.17 million foreign patients visiting Korea in 2024, up 93.2% from 2023 and the largest annual result since the programme began.
-
-Government policy has also emphasized:
-
-- regional distribution of international-patient demand;
-- ICT-based pre-consultation and post-care;
-- stronger quality/accreditation systems;
-- medical-tourism / global-healthcare industry development.
-
-Medical Korea / KHIDI continues to operate registration, accreditation, market information and international-patient programmes in 2026.
-
-### But generic coordination is already crowded
-
-Current products/services include:
-
-- **Imdr** — Korea-focused foreign-patient platform with search, booking, interpretation, treatment, payment and records across 7 languages, plus hospital operations tooling;
-- **The Medical Korea** and other licensed facilitators — pre-arrival consultation, provider matching, managers and aftercare;
-- **BT Medi / KoreaMedis** — multilingual medical-tourism cycle with booking, video consultation, AI-assisted interpretation and payment;
-- **Cross Border Care / CareAI** — end-to-end international-patient orchestration including records, logistics, treatment and follow-up;
-- **MaiMedic / MedDossier** — multilingual record translation and portable cross-border medical packets;
-- **MedLingo / HearWise** — multilingual clinical interpretation/documentation, summaries and EMR-oriented workflows.
+- foreign-patient search / booking / interpretation / payment / records;
+- multilingual medical-tourism coordination and aftercare;
+- real-time medical interpretation and documentation;
+- translated portable medical packets and cross-border records.
 
 Therefore:
 
 ```text
 GENERIC_MEDICAL_TOURISM_PLATFORM = KILL_AS_NEW_THESIS
-GENERIC_AI_MEDICAL_TRANSLATOR = HIGH_COMPETITION
+GENERIC_AI_MEDICAL_TRANSLATOR = KILL_AS_NEW_PADIEM_PRODUCT
 GENERIC_MULTILINGUAL_SCRIBE = HIGH_COMPETITION
 ```
 
-## 3. PADIEM-specific surviving wedge
+## 3. Internal duplicate / reuse discovery
 
-PADIEM should not compete on hotel/visa/booking/concierge breadth.
+The key finding is that PADIEM already has the core trust/evaluation grammar needed for the most interesting part of this idea.
 
-A narrower technical/product hypothesis fits PADIEM's prior emergency-interpretation research, source grounding, verification and My Health Story work:
+### Existing proposed Business 39 — 112 Real-Time Interpretation
 
-# Bilingual Visit Passport / 의료통역 안전기록
+GitHub Issue #261 defines:
 
-> Preserve the exact clinical meaning of a multilingual encounter, make uncertainty visible, and leave both patient and clinician with a source-grounded bilingual record of what was actually said and what must happen next.
+```text
+caller speech
+→ unverified transcript
+→ interpretation draft
+→ critical term / uncertainty markers
+→ operator clarification
+→ human correction
+→ bilingual relay summary
+→ HUMAN-VERIFIED BILINGUAL CALL RECORD
+```
+
+It already requires explicit handling of:
+
+- critical terms;
+- negation risk;
+- numbers;
+- locations;
+- speaker/source separation;
+- uncertainty;
+- human clarification/correction;
+- provenance between source speech, machine output and final human-confirmed wording.
+
+A full static B39 reference implementation also exists under:
+
+`reference/business-39-112-real-time-interpretation-v1/`
+
+Therefore a new healthcare interpretation engine would duplicate existing portfolio capability.
+
+### Existing 112 research evidence in Drive
+
+Current Drive evidence includes:
+
+- `2026_박사학위논문_외국인112신고대응_AI통역·멀티모달긴급도분류_HITL운영모델.pdf`;
+- 2026 Korean Association for Public Administration presentation materials on AI interpretation and multimodal urgency classification;
+- prior comparative work on AI interpretation versus human interpretation in the 112 / first-response context.
+
+The medical lane should reuse that evaluation thinking instead of restarting from BLEU-only translation research.
+
+## 4. Surviving healthcare-specific capability
+
+### Bilingual Visit Passport / 의료통역 안전기록
+
+This is **not a new translation product**. It is a healthcare-domain application of existing B39 meaning-preservation and human-verification capability, connected to My Health Story.
 
 ### Before the visit
 
@@ -78,70 +103,69 @@ foreign-language source document
 ```text
 patient speech ↔ clinician speech
 → speaker-attributed bilingual transcript
-→ critical-slot preservation
-→ numbers / dates / dosage-like strings / body side / negation checks
-→ uncertainty / repair prompt
-→ optional human-interpreter escalation
+→ B39-style critical-slot / uncertainty checks
+→ healthcare-specific slot checks
+→ repair prompt / human interpreter escalation
+→ human-confirmed wording
+```
+
+Healthcare-specific checks may add:
+
+```text
+number / date / time
+left / right / body site
+negation
+symptom duration / frequency
+allergy / medication name strings
+dose / unit strings when present
+follow-up date / instruction
 ```
 
 ### After the visit
 
 ```text
-clinician-approved source facts
-+ visit transcript
-+ documents
-→ bilingual My Health Story / visit passport
-→ instructions and follow-up kept source-linked
-→ portable handoff packet for patient / caregiver / next provider
+human-confirmed visit facts
++ source documents
++ bilingual transcript
+→ bilingual My Health Story
+→ source-linked follow-up / questions
+→ portable patient/caregiver/next-provider handoff packet
 ```
 
-The AI does not invent diagnosis or treatment and does not replace a qualified medical interpreter where one is required.
+## 5. What is genuinely new enough to test
 
-## 4. Why this is closer to PADIEM
+The technical novelty question is no longer:
 
-Reusable evidence/capability:
+> Can PADIEM translate a medical conversation?
 
-- prior real-time multilingual emergency interpretation research and evaluation design;
-- slot-level accuracy thinking for numbers, places and urgent facts;
-- speech / STT / translation / TTS experience;
-- source-grounding / evidence labels;
-- B63 privacy/egress thinking;
-- My Health Story episodic patient-memory format;
-- human-review and uncertainty workflows.
+That is too generic and overlaps B39 plus current market products.
 
-This is a more credible PADIEM R&D wedge than building another foreign-patient booking marketplace.
+The useful R&D question is:
 
-## 5. Duplicate risk remains material
+> Does the existing B39 human-verification / critical-slot architecture transfer to clinical conversation in a way that reduces medically important meaning-loss and creates a trustworthy bilingual visit memory when joined with My Health Story?
 
-MedLingo and other multilingual clinical systems already combine real-time translation, clinical documentation, patient summaries and fact-checking. Cross-border record platforms also provide multilingual portable records.
+This is a **domain-transfer validation**, not a new product build.
 
-Therefore the surviving wedge is **not yet a proven standalone product**.
+## 6. First validation design
+
+Reuse the existing 112 interpretation evaluation structure wherever possible, but add medical-domain error classes.
+
+Potential synthetic language pairs:
 
 ```text
-DUPLICATE_RISK = MEDIUM_HIGH
-PADIEM_ASSET_FIT = HIGH
-MARKET_DEMAND = HIGH
-REGULATORY_SAFETY_BURDEN = HIGH
-STANDALONE_PRODUCT = NOT_PROVEN
-R&D_TEST_VALUE = HIGH
+Korean ↔ English
+Korean ↔ Chinese
 ```
 
-## 6. First technical validation question
-
-> Can a Korean-first, source-grounded interpretation pipeline reduce critical-fact translation errors and expose uncertainty more reliably than a plain general-purpose translation workflow, without unacceptable latency?
-
-Do not test generic BLEU alone.
-
-### Synthetic benchmark dimensions
-
-At minimum:
+Primary checks:
 
 ```text
 critical-slot accuracy
-number/date/time accuracy
-left/right/body-site accuracy
+number/date/time preservation
+body-side/site preservation
 negation preservation
-medication/dose-string preservation where present
+symptom duration/frequency preservation
+medication/allergy/dose-string preservation where present
 speaker attribution
 semantic omission/addition
 uncertainty detection recall
@@ -149,48 +173,31 @@ human correction rate
 latency
 ```
 
-Potential first language pairs:
+Do not treat generic BLEU as the decision metric.
+
+Use synthetic or clearly licensed cases first. No real patient audio is necessary for the first domain-transfer gate.
+
+## 7. Portfolio disposition
 
 ```text
-Korean ↔ English
-Korean ↔ Chinese
+BIO_012_STANDALONE_FOREIGN_PATIENT_PLATFORM = KILL_GENERIC
+BIO_012_NEW_TRANSLATION_ENGINE = DUPLICATE_B39
+B39_MEANING_PRESERVATION_CAPABILITY = REUSE
+BILINGUAL_VISIT_PASSPORT = ABSORB_INTO_BIO_003 / PLAT_001
+MEDICAL_DOMAIN_TRANSFER_R&D = WORTH_TESTING
+NEW_BUSINESS_NUMBER = NO
 ```
 
-Use synthetic or properly licensed medical-dialogue cases first. No real patient audio is required for the first gate.
+If medical-domain evaluation shows a material benefit, the result should first become:
 
-## 7. Product decision after benchmark
+- a bilingual mode inside My Health Story;
+- a multilingual layer inside Event Story Engine;
+- or a hospital-facing capability using B39/B63 trust controls.
 
-### GO / NARROW
-
-Only if PADIEM can demonstrate a measurable safety/verification advantage or a meaningfully lower human-review burden in Korean hospital workflows.
-
-### ABSORB
-
-If the useful result is mostly a capability, absorb it into:
-
-- My Health Story bilingual mode;
-- B63 controlled AI/PHI workflow;
-- hospital international-patient integration;
-- future Event Story Engine multilingual layer.
-
-### KILL AS STANDALONE
-
-If performance is comparable to commodity translation/medical-scribe systems and no Korean workflow advantage emerges.
+Only a later, clearly distinct buyer/workflow could justify a standalone Business.
 
 ## 8. Legal / operational boundary
 
-PADIEM should not assume it can act as an unregistered foreign-patient attraction intermediary.
+Do not assume PADIEM may operate as an unregistered foreign-patient attraction broker.
 
-Initial positioning should be software / workflow support for appropriately registered healthcare institutions or facilitators, with legal review before any patient-attraction or brokerage activity.
-
-Clinical responsibility remains with licensed clinicians, and interpretation-risk controls must be explicit.
-
-## 9. Current disposition
-
-```text
-BIO_012 = NARROW
-FOREIGN_PATIENT_CONCIERGE_OS = KILL_GENERIC
-SURVIVING_WEDGE = BILINGUAL_VISIT_PASSPORT / CLINICAL_INTERPRETATION_SAFETY_LEDGER
-NEXT_GATE = SYNTHETIC_CRITICAL_SLOT_TRANSLATION_BENCHMARK
-BUSINESS_NUMBER = HOLD
-```
+Initial positioning should remain software/workflow support for appropriately registered healthcare institutions or facilitators, subject to legal review. Clinical responsibility stays with licensed professionals, and human interpreter escalation must remain available where required.
