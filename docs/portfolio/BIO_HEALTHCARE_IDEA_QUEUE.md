@@ -1,245 +1,228 @@
 # Bio / Healthcare AI R&D Idea Queue
 
 - Updated: 2026-08-26
-- Parent portfolio ledger: `docs/portfolio/IDEA_LEDGER.md`
+- Parent ledger: `docs/portfolio/IDEA_LEDGER.md`
+- Support-program radar: `docs/portfolio/research/BIO_SUPPORT_PROGRAM_RADAR_THROUGH_2026-09.md`
 - Recovery note: `docs/portfolio/research/BIO_HEALTHCARE_IDEA_RECOVERY_AND_PRIORITY_2026-08-26.md`
-- Project lineage: `07_BioR&D`
 - Business-number authority: `docs/portfolio/BUSINESS_REGISTRY.md`
 
 ## Operating principle
 
-This Bio/Healthcare track exists to learn an unfamiliar domain by testing **present-day product hypotheses** against PADIEM's actual capabilities. Historical IP is supporting evidence, not an automatic priority signal.
+This track uses three evidence sources together:
 
 ```text
-recover recent owner ideas + existing prototypes
-→ duplicate / absorption check
-→ current market / buyer / regulatory screen
+owner-originated problems / existing prototypes
++ PADIEM reusable technology
++ current government / hospital / industry programme signals
+→ duplicate / market / regulatory screen
 → smallest truthful validation
 → GO / NARROW / PAUSE / KILL / ABSORB
-→ product promotion only when warranted
 ```
+
+A support programme is a demand signal, not a reason to distort a product.
 
 ## Current priority queue
 
-### P1 — My Health Story / 병원 스토리북 — `DEMO → VALIDATION`
+### P1 — BIO-003 My Health Story / 병원 스토리북 — `DEMO → VALIDATION`
 
-This is the strongest current candidate because a real sample-only prototype already exists.
+A real ASTERIVE sample-only prototype already exists.
 
-Core grammar:
+Narrowed product promise:
 
-```text
-one hospital visit = one story book
-
-why I went
-→ what I told the doctor
-→ what the doctor said
-→ exams / tests
-→ medication / prescription source
-→ what I need to remember
-→ my note
-→ what happens next
-```
-
-Trust grammar:
-
-```text
-SOURCE
-AI SUMMARY
-MY NOTE
-NEEDS REVIEW
-```
-
-Existing ASTERIVE prototype includes bookshelf entry, physical book interaction, Story ON, timeline, related records, Add Visit, search and mobile behavior. It is patient/guardian-facing and does not replace diagnosis/treatment.
-
-The broad market is already occupied by national PHR, longitudinal-record, AI-summary and visit-summary products. Therefore the product thesis is **not** `another PHR or medical-record organizer`.
-
-Surviving wedge:
-
-> source-grounded episodic reconstruction of each hospital visit so the patient/guardian can accurately remember what happened, why the next step happened, what came from the doctor/document, what AI only organized, and what must be remembered for the next visit.
+> Reconstruct each hospital visit as a source-grounded episodic memory so a patient/guardian can distinguish what they said, what the clinician/document said, what AI only organized, what they personally noted, and what must happen next.
 
 Current execution:
 
 - Issue #772 — validation contract;
-- Draft PR #774 — three fully synthetic cases, information-equivalent summary/timeline/story representations, question bank, counterbalancing, response schemas and deterministic scoring/analysis.
+- Draft PR #774 — synthetic summary-vs-timeline-vs-story validation pack.
 
-Next gate: exact-head fixture validation, then a bounded participant pilot measuring source attribution, follow-up recall, factual/sequence recall, retrieval time, cognitive load and delayed recall.
+No real PHI, diagnosis or treatment recommendation in the first gate.
 
-### P2 — Bilingual Visit Passport / 의료통역 안전기록 — `DOMAIN-TRANSFER R&D / ABSORB`
+### P2 — BIO-015 Clinical AI Shadow Lab / AI Native HIS Agent Sandbox — `RESEARCHING`
 
-The initial foreign-patient medical-coordination concept has been screened.
+2026 signal:
 
-Generic medical-tourism/concierge and generic AI-medical-translation products are already crowded. More importantly, PADIEM already owns the key internal capability:
+- KHIDI posted `AI 지능형 병원정보시스템(AI Native HIS) 기획(1차)` on 2026-08-21;
+- IRIS has active AI-application rapid-commercialization support through early September.
 
-- proposed Business 39 `112 Real-Time Interpretation`;
-- B39 reference implementation under `reference/business-39-112-real-time-interpretation-v1/`;
-- existing 2026 dissertation / conference research on AI interpretation, multimodal urgency and HITL operation.
+Hypothesis:
 
-B39 already uses:
+> Before an AI agent is allowed to act in a real hospital/HIS workflow, replay synthetic/de-identified workflows in shadow mode and audit proposed actions, data access, tool calls, evidence, policy violations and human overrides.
 
-```text
-source speech
-→ unverified transcript
-→ interpretation draft
-→ critical term / negation / number / uncertainty markers
-→ human clarification
-→ human correction
-→ human-verified bilingual record
-```
-
-Therefore:
+Potential chain:
 
 ```text
-NEW_MEDICAL_TRANSLATION_ENGINE = DUPLICATE_B39
-GENERIC_FOREIGN_PATIENT_PLATFORM = DO_NOT_BUILD
+synthetic/de-identified HIS events
+→ AI agent proposal
+→ no real action
+→ expected human/policy comparison
+→ tool/data-access trace
+→ unsafe/missing-evidence flags
+→ human override
+→ replayable acceptance / incident evidence
 ```
 
-Surviving healthcare-domain question:
+Internal reuse candidates:
 
-> Does the existing B39 meaning-preservation and human-verification architecture transfer to clinical conversation in a way that reduces medically important meaning loss and creates a trustworthy bilingual visit memory when joined with My Health Story?
+- B42 AI Development Control Tower;
+- B48 Verification Engine;
+- B49/B50 connector concepts;
+- B63 clinical egress controls;
+- PLAT-001 Event Story Engine.
 
-Medical-domain checks may add:
+Next gate: competitor/internal-overlap scan, then synthetic demo only if a distinct hospital workflow wedge survives.
 
-- date/time/number preservation;
-- left/right/body-site preservation;
-- negation;
-- symptom duration/frequency;
-- medication/allergy/dose strings where present;
-- speaker attribution;
-- follow-up instructions;
-- uncertainty and human-correction burden.
+### P3 — BIO-016 Medical AI Lifecycle Evidence Passport — `RESEARCHING`
 
-This is a capability/domain-transfer study, not a new Business. If useful, absorb it into BIO-003, B39, B63 or PLAT-001.
+2026 signal:
 
-### P3 — Event Story Engine / Recovery Story — `PLATFORM SCREENING`
+- smart-electronic-drug commercialization support explicitly covers medical AI, cybersecurity and software validation;
+- K-Biohealth programmes repeatedly support testing, certification and regulatory readiness.
 
-Recovered common grammar across My Health Story and 사실로:
+Hypothesis:
+
+> Track every model/prompt/provider/software change and automatically show what must be revalidated, which evidence exists, what cybersecurity/software-validation gaps remain and who approved the release.
 
 ```text
-recordings / documents / evidence
-→ event chronology
-→ source-grounded chapters
-→ why-next transitions
-→ current state
-→ next required action
-→ longitudinal volumes
+AI/software change
+→ impact classification
+→ required validation
+→ evidence ingestion
+→ completeness / unresolved risk
+→ human approval
+→ regulator / partner handoff package
 ```
 
-The Home Rehab screen adds a healthcare continuity variant:
+Do not become a generic QMS/RA document manager. The wedge must be **AI-change-aware lifecycle evidence**.
+
+BIO-020 Medical AI Export/Regulatory Readiness Passport is a possible vertical/output of this lane, not a separate Business yet.
+
+### P4 — BIO-017 Autonomous Bio Lab Evidence Chain Guard — `SCREENING`
+
+2026 signal:
+
+- MSIT/NRF ran the `AI-네이티브 첨단바이오 자율실험실` new-project programme;
+- IRIS Bio/Medical Technology Development includes an `인공지능바이오` area.
+
+Hypothesis:
+
+> Independently verify that an AI-driven experimental loop remains traceable from hypothesis and approved protocol through instrument execution, sample/batch identity, raw data, analysis and the next experiment recommendation.
 
 ```text
-hospital visit / clinician plan
-→ home recovery attempts
-→ observable movement/session evidence
-→ patient uncertainty / adherence
-→ changes over time
-→ questions for next visit
+AI experiment proposal
+→ approved protocol version
+→ instrument command/log
+→ sample/batch identity
+→ raw-data fingerprint
+→ analysis code/model
+→ result/evidence
+→ next experiment proposal
+→ human override/approval
 ```
 
-Treat these as reusable PADIEM capabilities before treating either as a standalone Business.
+Technical demo can be synthetic; meaningful validation needs a lab / biotech / automation partner.
 
-## Screened / absorbed — Home Rehab Observer Coach
+### P5 — BIO-012A Bilingual Visit Passport — `DOMAIN-TRANSFER / ABSORB`
 
-### Generic thesis — `DEPRIORITIZED / KILL AS NEW STANDALONE`
+Do not build a new medical translation engine.
 
-Owner-originated concept: observe a person doing rehabilitation alone, identify movement problems, give correction and adapt/design the session.
+Reuse:
 
-Current screen found:
+- proposed B39 `112 Real-Time Interpretation`;
+- existing 112 dissertation/HITL evaluation assets;
+- BIO-003 source-grounded visit memory.
 
-- Business 38 already owns general movement observations, form cues, session planning and adaptive movement-plan concepts while explicitly excluding rehabilitation/physiotherapy;
-- mature external digital-PT products already provide camera/AI guidance, movement analysis, progress monitoring and clinician plan adjustment;
-- Korea's current postoperative-rehabilitation R&D also targets smartphone On-device AI, posture/joint analysis, real-time feedback and clinician-prescribed protocols.
+Medical-domain checks may extend B39 with body side/site, symptom duration/frequency, medication/allergy/dose strings and follow-up instructions.
 
-Therefore:
+If useful, absorb into BIO-003/B39/B63/PLAT-001.
 
-```text
-GENERIC_CAMERA_REHAB_COACH = DO_NOT_BUILD_NOW
-PADIEM_DIFFERENTIATION_AS_STATED = LOW
-```
+### P6 — BIO-014A Recovery Story + PLAT-001 Event Story Engine — `PLATFORM SCREENING`
 
-### Surviving angle — `Recovery Story / Between-Visits layer`
+Generic camera rehab coaching was screened out because of B38 overlap and mature digital-PT competition.
 
-Absorb into BIO-003 / PLAT-001 research rather than create another Business.
+Surviving question:
 
-Question:
+> Can the time between clinical visits be reconstructed well enough that patient and clinician know what was attempted, what changed, what was uncertain and what must be discussed next?
 
-> Can AI make the period between clinical visits observable and memorable enough that patient and clinician can reconstruct what was attempted, what changed, what was uncertain, and what should be discussed next?
+This is a continuity/story layer, not autonomous rehabilitation prescription.
 
-No autonomous rehabilitation prescription changes are authorized.
+### P7 — BIO-019 Health Data Product Validation Workbench — `LOWER-PRIORITY SCREEN`
+
+2026 signal:
+
+- HIRA Health/Medical Big Data Startup Incubating Lab runs through 2026-12-31.
+
+Hypothesis:
+
+> Convert a digital-health product hypothesis into a reproducible cohort/pathway/data-feasibility plan for approved/public health-data environments.
+
+High overlap risk with existing analytics/data-lab tools. Keep low priority unless a concrete HIRA/partner workflow gap appears.
 
 ## Existing / paused
 
-### Clinical AI Egress Control Plane — `PROMOTED / PAUSED`
+### BIO-002 / proposed B63 Clinical AI Egress Control Plane — `PAUSED`
 
-- proposed B63 under Issue #731;
-- concept demo complete;
-- next evidence requires real hospital/HIS validation.
+Concept demo complete. Next evidence requires real hospital/HIS validation.
 
-## Modules / likely absorbed directions
+## Screened / absorbed / deprioritized
 
-### Longitudinal Patient CareGraph
+- `BIO-001 NIR / vein finder` — historical, deprioritized.
+- `BIO-004 Patient Communication AI` — likely module of My Health Story / bilingual workflow.
+- `BIO-005 Health-check Trend AI` — likely longitudinal module.
+- `BIO-006 Ambient Scribe` — crowded / deprioritized.
+- `BIO-007 generic Rehab/Pose` — B38 overlap / absorb only where useful.
+- `BIO-008 AI Drug Discovery` — broad/domain-capital intensive.
+- `BIO-009 Radiology Diagnosis AI` — crowded/high-regulatory.
+- `BIO-010 Genomics AI` — specialist-data gap.
+- `BIO-011 Medical Record Intelligence Workspace` — likely overlaps ASTERIVE/My Health Story.
+- `BIO-012 generic Foreign Patient platform/translator` — generic thesis killed; B39 reuse.
+- `BIO-013 Bio Evidence Graph` — superseded for now by narrower autonomous-lab evidence-chain hypothesis.
+- `BIO-014 generic Home Rehab Observer Coach` — generic standalone killed.
+- `BIO-018 Clinical AI Incident Replay` — likely BIO-015 module.
+- `BIO-020 Medical AI Export/Regulatory Readiness Passport` — screen as BIO-016 + GEN-001 vertical.
 
-Treat as the future relation/data layer under My Health Story unless a distinct B2B product/buyer emerges.
+## September support-program operating rule
 
-### Patient Communication AI
+Through 2026-09-30 maintain two views:
 
-Likely capability inside My Health Story, discharge/follow-up or bilingual-visit workflows. Keep source boundaries explicit.
+### APPLY / PARTNER NOW
 
-### Health-check Trend AI
+Check actual eligibility, region, age/stage, consortium requirements, deadlines and required matching funds before any application decision.
 
-Likely longitudinal module; avoid creating a separate product until a unique user/buyer problem is proven.
+### IDEA SIGNAL
 
-### Medical Record Intelligence Workspace
+Keep even closed calls when they reveal precise public/industry demand such as:
 
-Likely overlaps ASTERIVE document search/source/relationship capabilities and My Health Story. New standalone workspace requires a materially different workflow/buyer.
-
-## Preserved but not current priority
-
-### NIR / vein-finder / venipuncture training — `DEPRIORITIZED HISTORICAL`
-
-- historical PADIEM technical/IP lineage preserved;
-- owner clarified this roughly decade-old idea should not lead current discovery;
-- Issue #769 closed `not_planned`;
-- PR #770 closed unmerged.
-
-### Ambient Medical AI / Scribe — `DEPRIORITIZED`
-
-Crowded clinician workflow category.
-
-### AI Drug Discovery — `DEPRIORITIZED`
-
-Too broad/domain-capital intensive for current first entry.
-
-### Radiology Diagnosis AI — `DEPRIORITIZED`
-
-Crowded/high-regulatory; weak current PADIEM differentiation.
-
-### Genomics AI — `DEPRIORITIZED`
-
-Specialized data/domain capability not yet established.
-
-### Bio Evidence Graph — `DEPRIORITIZED`
-
-Preserve as later biotech R&D-operations candidate; do not let later assistant-generated ideas displace recovered owner-originated 2026 ideas.
+```text
+AI Native HIS
+medical AI software validation / cybersecurity
+clinical real-world validation
+health-data commercialization
+autonomous bio labs / self-driving labs
+bio testing / certification / export
+AI application rapid commercialization
+```
 
 ## Screening dimensions
 
-Every standalone candidate should be assessed on:
+Every standalone candidate must be checked on:
 
 1. current market / prior art;
-2. PADIEM-specific wedge;
-3. reusable asset fit;
-4. data accessibility;
-5. regulatory/safety boundary;
-6. actual user/buyer;
-7. government R&D / demonstration fit;
-8. truthful demo/validation feasibility.
+2. internal portfolio overlap;
+3. PADIEM-specific wedge;
+4. reusable asset fit;
+5. data accessibility;
+6. regulatory/safety boundary;
+7. buyer / R&D partner;
+8. government R&D / demonstration fit;
+9. truthful synthetic/public first validation.
 
 ## Next-candidate rule
 
-When the owner asks for the next Bio/Healthcare task:
+When the owner says `다음`:
 
-1. read this queue first;
-2. continue the highest-priority existing candidate unless evidence says to stop;
-3. recover recent conversation/prototype evidence before inventing a new idea;
-4. check Business Registry, GitHub, Drive/File Library and prior sessions for overlap;
-5. record GO / NARROW / PAUSE / KILL / DUPLICATE / ABSORB before moving on.
+1. continue the highest-priority unfinished candidate;
+2. read this queue + support-program radar first;
+3. search GitHub/Drive/prior sessions before creating a new idea;
+4. research current market and programme signals;
+5. record `GO / NARROW / PAUSE / KILL / DUPLICATE / ABSORB` before moving to the next candidate.
