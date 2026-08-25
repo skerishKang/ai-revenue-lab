@@ -10,8 +10,10 @@ from app.b14_client import B14Client, ChatRuntimeError
 from app.config import ConfigError, Settings
 from app.main import create_app
 from app.skills import get_skill
+from app.usage_gate import InMemoryUsageCounterStore
 
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
+QUOTA_SALT = "b62-runtime-test-quota-salt-not-a-real-secret-0001"
 
 
 def success_payload():
@@ -215,8 +217,13 @@ async def test_api_chat_b14_adapter_with_mocked_transport():
         return httpx.Response(200, json=success_payload())
 
     app = create_app(
-        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        Settings.from_values(
+            runtime_mode="b14",
+            b14_base_url="https://b14.example",
+            quota_salt=QUOTA_SALT,
+        ),
         transport=httpx.MockTransport(handler),
+        usage_store=InMemoryUsageCounterStore(),
     )
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -225,6 +232,7 @@ async def test_api_chat_b14_adapter_with_mocked_transport():
         response = await client.post(
             "/api/chat",
             json={"messages": USER_MESSAGES, "mode": "auto", "skill": "plan"},
+            headers={"cf-connecting-ip": "203.0.113.40"},
         )
     assert response.status_code == 200
     assert response.json()["route"]["model"] == "openrouter/free"
