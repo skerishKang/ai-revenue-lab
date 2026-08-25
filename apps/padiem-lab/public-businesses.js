@@ -55,6 +55,28 @@
       sourcePath: "reference/business-10-fan-magazine-v1/"
     }),
     Object.freeze({
+      number: 11,
+      slug: "language-learning-magazine",
+      title: "Language Learning Magazine",
+      koreanTitle: "나의 언어학습 매거진",
+      summary: "짧은 읽기에서 표현을 발견하고 한 문장을 다시 쓰며 학습 포인트를 남기는 개인 언어 저널입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b11/",
+      sourcePath: "reference/business-11-language-learning-magazine-v1/"
+    }),
+    Object.freeze({
+      number: 12,
+      slug: "creator-mini-media",
+      title: "Creator Mini-Media",
+      koreanTitle: "크리에이터 미니미디어",
+      summary: "하나의 아이디어를 기사·숏폼·오디오 제작 단위로 나누고 사람 검토 후 패키지로 묶는 창작 데스크입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b12/",
+      sourcePath: "reference/business-12-creator-mini-media-v1/"
+    }),
+    Object.freeze({
       number: 14,
       slug: "korean-ai-platform",
       title: "Korean AI Platform",
@@ -64,6 +86,17 @@
       routeKind: "EXTERNAL_RUNTIME",
       targetPath: "/b14/",
       currentPublicUrl: "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/workspace"
+    }),
+    Object.freeze({
+      number: 15,
+      slug: "global-ai-newsroom",
+      title: "Global AI Newsroom",
+      koreanTitle: "글로벌 AI 뉴스룸",
+      summary: "주장·출처·불확실성을 한 화면에서 비교하고 사람 검토를 거쳐 브리핑으로 정리하는 검증 데스크입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b15/",
+      sourcePath: "reference/business-15-global-ai-newsroom-v1/"
     }),
     Object.freeze({
       number: 23,
