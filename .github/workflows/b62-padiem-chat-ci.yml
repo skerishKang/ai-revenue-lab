@@ -6,7 +6,9 @@ on:
       - "apps/padiem-chat/**"
       - "apps/korean-ai-platform/**"
       - "reference/business-62-padiem-chat-v1/**"
+      - ".github/scripts/b62_cloudflare_*.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
+      - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
 
 permissions:
