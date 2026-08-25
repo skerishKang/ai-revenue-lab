@@ -55,6 +55,8 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 
 MAX_RESPONSE_BYTES = 1024 * 1024  # 1 MB
 MAX_ERROR_BODY_CHARS = 500
+OX_ALPHA_MODEL_ID = "stealth/ox-alpha"
+OX_ALPHA_REASONING_EFFORT = "low"
 
 
 def _truncate_error_body(text: str) -> str:
@@ -205,6 +207,9 @@ async def _live_call(
                 "completion": 0,
             }
         }
+
+    if model_id == OX_ALPHA_MODEL_ID:
+        body["reasoning"] = {"effort": OX_ALPHA_REASONING_EFFORT}
 
     client_kwargs: dict[str, Any] = {
         "timeout": openrouter_config.build_http_timeout(),
