@@ -1,0 +1,85 @@
+name: B62 Cloudflare mock deploy
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-chat/**"
+      - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/workflows/b62-cloudflare-worker-deploy.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/padiem-chat/**"
+      - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/workflows/b62-cloudflare-worker-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-cloudflare-mock-deploy
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      worker_state: ${{ steps.preflight.outputs.worker_state }}
+      subdomain: ${{ steps.preflight.outputs.subdomain }}
+      b14_http: ${{ steps.preflight.outputs.b14_http }}
+      b14_status: ${{ steps.preflight.outputs.b14_status }}
+      b14_provider_mode: ${{ steps.preflight.outputs.b14_provider_mode }}
+      b14_has_key: ${{ steps.preflight.outputs.b14_has_key }}
+      b14_catalog_models: ${{ steps.preflight.outputs.b14_catalog_models }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Read-only Cloudflare and B14 preflight
+        id: preflight
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python .github/scripts/b62_cloudflare_preflight.py
+
+  deploy-mock:
+    needs: preflight
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require a new Worker identity
+        env:
+          WORKER_STATE: ${{ needs.preflight.outputs.worker_state }}
+        run: |
+          set -euo pipefail
+          if [ "$WORKER_STATE" != "absent" ]; then
+            echo "Refusing to overwrite an existing padiem-chat Worker without a separate ownership review." >&2
+            exit 1
+          fi
+
+      - name: Install uv
+        run: python -m pip install 'uv>=0.29.8'
+
+      - name: Deploy mock-only Python Worker
+        working-directory: apps/padiem-chat
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy
+
+      - name: Post-deploy mock smoke
+        env:
+          B62_BASE_URL: https://padiem-chat.${{ needs.preflight.outputs.subdomain }}.workers.dev
+        run: python .github/scripts/b62_cloudflare_mock_smoke.py
