@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "synthetic_only": true,
+  "product": {
+    "product_id": "MEDDELTA-SYNTH",
+    "name": "MedDelta Assist — fictional",
+    "version": "1.0.0",
+    "status": "FICTIONAL_RESEARCH_FIXTURE",
+    "intended_use": "Fictional clinician-review support that prioritizes synthetic study items and optionally drafts a non-authoritative explanation for clinician review.",
+    "intended_user": "fictional trained clinician",
+    "population": "fictional adults age 18+",
+    "inputs": ["synthetic imaging-derived feature package", "synthetic structured metadata"],
+    "outputs": ["priority score", "review cue", "optional clinician-review explanation"],
+    "components": {
+      "classifier_model": "classifier-1.0",
+      "decision_threshold": 0.65,
+      "training_dataset": "dataset-2026-01",
+      "llm_provider": "provider-A",
+      "llm_model": "llm-A-1",
+      "system_prompt": "prompt-1.0",
+      "runtime": "runtime-3.2",
+      "input_interface": "device-adapter-1.0",
+      "integration_api": "integration-1.0"
+    }
+  },
+  "evidence_inventory": [
+    {"evidence_id":"E-PERF-001","class":"PERFORMANCE_VALIDATION","version":"1.0","scope":["classifier-1.0","threshold-0.65","adults-18plus","device-adapter-1.0"],"status":"CURRENT"},
+    {"evidence_id":"E-DATA-001","class":"DATA_CHARACTERIZATION","version":"1.0","scope":["dataset-2026-01","adults-18plus"],"status":"CURRENT"},
+    {"evidence_id":"E-CLIN-001","class":"CLINICAL_EVALUATION","version":"1.0","scope":["intended-use-v1","adults-18plus","classifier-1.0"],"status":"CURRENT"},
+    {"evidence_id":"E-SWVAL-001","class":"SOFTWARE_VALIDATION","version":"1.0","scope":["runtime-3.2","classifier-1.0","llm-A-1","integration-1.0"],"status":"CURRENT"},
+    {"evidence_id":"E-CYBER-001","class":"CYBERSECURITY","version":"1.0","scope":["runtime-3.2","integration-1.0","provider-A"],"status":"CURRENT"},
+    {"evidence_id":"E-HF-001","class":"HUMAN_FACTORS","version":"1.0","scope":["intended-use-v1","ui-1.0","trained-clinician"],"status":"CURRENT"},
+    {"evidence_id":"E-INT-001","class":"INTEGRATION_VALIDATION","version":"1.0","scope":["device-adapter-1.0","integration-1.0"],"status":"CURRENT"},
+    {"evidence_id":"E-LABEL-001","class":"LABELING_INTENDED_USE","version":"1.0","scope":["intended-use-v1","adults-18plus","trained-clinician"],"status":"CURRENT"},
+    {"evidence_id":"E-LLM-001","class":"GENERATIVE_COMPONENT_VALIDATION","version":"1.0","scope":["provider-A","llm-A-1","prompt-1.0"],"status":"CURRENT"},
+    {"evidence_id":"E-PROMPT-001","class":"PROMPT_VALIDATION","version":"1.0","scope":["prompt-1.0","llm-A-1"],"status":"CURRENT"},
+    {"evidence_id":"E-HW-001","class":"INPUT_DEVICE_COMPATIBILITY","version":"1.0","scope":["device-adapter-1.0"],"status":"CURRENT"},
+    {"evidence_id":"E-MON-001","class":"POSTMARKET_MONITORING_PLAN","version":"1.0","scope":["classifier-1.0","threshold-0.65","adults-18plus"],"status":"CURRENT"}
+  ]
+}
