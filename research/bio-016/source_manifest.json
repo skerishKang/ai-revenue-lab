@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Authoritative public sources for high-level lifecycle/change-control concepts only; not a machine-readable regulatory rulebook.",
+  "sources": [
+    {
+      "id": "MFDS-1508-01",
+      "authority": "MFDS",
+      "title": "디지털의료기기 변경관리 계획서 허가 심사 가이드라인",
+      "date": "2026-06-26",
+      "url": "https://www.mfds.go.kr/law/board/boardDetail.do?brdId=data0011&menuKey=29&seq=15874",
+      "supported_use": ["AI-enabled digital medical-device change-management planning exists as a current Korean regulatory workflow"],
+      "unsupported_use": ["automatic determination that a particular change is approved, exempt, or submission-free"]
+    },
+    {
+      "id": "MFDS-1511-01",
+      "authority": "MFDS",
+      "title": "거대언어모델(LLM) 기반 디지털의료기기 허가·심사 가이드라인",
+      "date": "2026-06-30",
+      "url": "https://www.mfds.go.kr/brd/m_1060/list.do?board_id=data0011&data_stts_gubun=C1004&multi_itm_seq=0&srchTp=0",
+      "supported_use": ["LLM-based digital medical devices have current dedicated MFDS review guidance"],
+      "unsupported_use": ["generic LLM provider or prompt changes can be mapped to a legal outcome without qualified review"]
+    },
+    {
+      "id": "MFDS-2026-BRIEFING",
+      "authority": "MFDS",
+      "title": "2026년 디지털의료기기 허가·심사 업무설명회(1차) 발표자료",
+      "date": "2026-07-03",
+      "url": "https://www.mfds.go.kr/brd/m_220/view.do?seq=32927",
+      "supported_use": ["MFDS publicly briefed industry on the 2026 change-management-plan and LLM guidance"],
+      "unsupported_use": ["this benchmark has reproduced every presentation rule"]
+    },
+    {
+      "id": "FDA-PCCP-2025",
+      "authority": "US FDA",
+      "title": "Marketing Submission Recommendations for a Predetermined Change Control Plan for Artificial Intelligence-Enabled Device Software Functions",
+      "date": "2025-08-18",
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence",
+      "supported_use": ["PCCPs describe planned modifications, methods to develop/validate/implement them, and modification impact assessment"],
+      "unsupported_use": ["FDA guidance determines Korean regulatory outcomes"]
+    },
+    {
+      "id": "FDA-PCCP-GP",
+      "authority": "FDA / Health Canada / MHRA",
+      "title": "Predetermined Change Control Plans for Machine Learning-Enabled Medical Devices: Guiding Principles",
+      "date": "2023-10",
+      "url": "https://www.fda.gov/medical-devices/software-medical-device-samd/predetermined-change-control-plans-machine-learning-enabled-medical-devices-guiding-principles",
+      "supported_use": ["evidence should support benefits/risks before and after planned changes and use a total-product-lifecycle perspective"],
+      "unsupported_use": ["this benchmark can replace risk management or regulatory review"]
+    },
+    {
+      "id": "IMDRF-N93-2026",
+      "authority": "IMDRF",
+      "title": "Technical Framework for Artificial Intelligence Life Cycle Management",
+      "date": "2026-04-10",
+      "url": "https://www.imdrf.org/consultations/technical-framework-artificial-intelligence-life-cycle-management",
+      "supported_use": ["AI lifecycle management is an active international medical-device regulatory harmonization topic"],
+      "unsupported_use": ["consultation text is final binding regulation"]
+    }
+  ]
+}
