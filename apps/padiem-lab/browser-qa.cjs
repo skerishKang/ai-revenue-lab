@@ -18,6 +18,13 @@ function isSameOrigin(url) {
   }
 }
 
+function isExpectedB06ArtworkAbort(request, options) {
+  if (!options.b06 || request.resourceType() !== 'image') return false;
+  const failure = request.failure();
+  return /\/b06\/assets\/images\/[^/?#]+\.svg(?:[?#].*)?$/i.test(request.url())
+    && /ERR_ABORTED/i.test(failure?.errorText || '');
+}
+
 async function inspect(page, url, label, marker, options = {}) {
   const consoleErrors = [];
   const localFailures = [];
@@ -25,7 +32,9 @@ async function inspect(page, url, label, marker, options = {}) {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
   page.on('requestfailed', request => {
-    if (isSameOrigin(request.url())) localFailures.push(request.url());
+    if (!isSameOrigin(request.url()) || isExpectedB06ArtworkAbort(request, options)) return;
+    const errorText = request.failure()?.errorText || 'unknown';
+    localFailures.push(`${request.url()} (${errorText})`);
   });
 
   const response = await page.goto(url, { waitUntil: 'networkidle' });
@@ -39,6 +48,16 @@ async function inspect(page, url, label, marker, options = {}) {
 
   if (!state.title || !state.marker) throw new Error(`${label} content mismatch ${JSON.stringify(state)}`);
   if (state.overflow) throw new Error(`${label} horizontal overflow ${JSON.stringify(state)}`);
+
+  if (options.b06) {
+    const runtime = await page.evaluate(() => ({
+      artwork: document.documentElement.dataset.worldFeedArt || '',
+      photoArtwork: Number(document.documentElement.dataset.photoArtwork || '0')
+    }));
+    if (runtime.artwork !== 'real-photo-workspace-v4' || runtime.photoArtwork < 1) {
+      throw new Error(`B06 artwork runtime incomplete ${JSON.stringify(runtime)}`);
+    }
+  }
 
   if (options.b60) {
     await page.waitForFunction(() => Boolean(window.B60_EDITORIAL_RADAR && window.B60_OPPORTUNITY_DETAIL));
@@ -108,7 +127,10 @@ async function screenshot(page, label, viewportName) {
 
     for (const route of routes) {
       const page = await browser.newPage({ viewport });
-      await inspect(page, `${base}/${route.route}/`, route.route, route.marker, { b60: route.number === 60 });
+      await inspect(page, `${base}/${route.route}/`, route.route, route.marker, {
+        b06: route.number === 6,
+        b60: route.number === 60
+      });
       await screenshot(page, route.route, viewport.name);
       await page.close();
       console.log(`${route.route}/${viewport.name} PASS`);

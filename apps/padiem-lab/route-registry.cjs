@@ -2,6 +2,15 @@
 
 const routes = [
   {
+    number: 6,
+    route: "b06",
+    sourcePath: "reference/business-06-world-feed-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "World Feed",
+    includeFiles: ["index.html", "guide.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 7,
     route: "b07",
     sourcePath: "reference/business-07-personal-meaning-map-v1",

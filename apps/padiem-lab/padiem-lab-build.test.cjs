@@ -34,7 +34,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
+  assert.deepEqual(numbers, [6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
@@ -83,6 +83,17 @@ test('static reference routes publish exactly their route-specific runtime allow
       assert.equal(fs.existsSync(path.join(target, forbidden)), false, `${route.route} leaked ${forbidden}`);
     }
   }
+});
+
+test('B06 publishes its single-app World Feed shape without inventing a ux entry', () => {
+  build();
+  const b06 = path.join(out, 'b06');
+  assert.equal(fs.existsSync(path.join(b06, 'index.html')), true);
+  assert.equal(fs.existsSync(path.join(b06, 'guide.html')), true);
+  assert.equal(fs.existsSync(path.join(b06, 'assets')), true);
+  assert.equal(fs.existsSync(path.join(b06, 'scripts')), true);
+  assert.equal(fs.existsSync(path.join(b06, 'styles')), true);
+  assert.equal(fs.existsSync(path.join(b06, 'ux.html')), false, 'b06 invented a ux.html entry');
 });
 
 test('explicit current-executable routes omit legacy root app and docs surfaces', () => {

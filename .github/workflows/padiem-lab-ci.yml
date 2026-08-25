@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/padiem-lab/**'
+      - 'reference/business-06-world-feed-v1/**'
       - 'reference/business-07-personal-meaning-map-v1/**'
       - 'reference/business-08-family-newspaper-v1/**'
       - 'reference/business-09-personalized-childrens-story-v1/**'
@@ -25,6 +26,7 @@ on:
     branches: [main]
     paths:
       - 'apps/padiem-lab/**'
+      - 'reference/business-06-world-feed-v1/**'
       - 'reference/business-07-personal-meaning-map-v1/**'
       - 'reference/business-08-family-newspaper-v1/**'
       - 'reference/business-09-personalized-childrens-story-v1/**'
