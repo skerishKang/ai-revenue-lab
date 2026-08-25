@@ -17,7 +17,7 @@ dependencies = [
 dev = [
   "pytest>=8,<10",
   "pytest-asyncio>=0.23,<2",
-  "workers-py>=1.15.0",
+  "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
 ]
 
