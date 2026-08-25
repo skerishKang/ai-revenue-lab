@@ -1,0 +1,10 @@
+{
+  "dataset_name": "REPLACE_WITH_DATASET_NAME",
+  "upstream_url": "https://REPLACE_WITH_CANONICAL_SOURCE",
+  "data_license": "REPLACE_WITH_DATA_SPECIFIC_LICENSE",
+  "permitted_use": "REPLACE_WITH_DOCUMENTED_PERMISSION_SCOPE",
+  "redistribution_allowed": false,
+  "version": "REPLACE_WITH_VERSION_OR_DATE",
+  "fingerprint": "sha256:REPLACE_WITH_ARCHIVE_OR_MANIFEST_HASH",
+  "notes": "Do not mark this manifest evidence-ready until data-specific usage rights are explicit. A software-repository license is not automatically a dataset license."
+}
