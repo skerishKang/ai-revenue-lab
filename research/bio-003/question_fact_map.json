@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.1",
+  "purpose": "Maps each validation question to the minimum canonical facts required to answer it. Required facts must be present in every presentation condition for the case. delayed_recall_recommended identifies the reduced delayed set defined by PILOT_PROTOCOL_v0.1.md.",
+  "questions": {
+    "A-Q01": {"facts":["A-F06"],"delayed_recall_recommended":true},
+    "A-Q02": {"facts":["A-F08"],"delayed_recall_recommended":false},
+    "A-Q03": {"facts":["A-F07"],"delayed_recall_recommended":false},
+    "A-Q04": {"facts":["A-F06","A-F07","A-F08"],"delayed_recall_recommended":true},
+    "A-Q05": {"facts":["A-F01","A-F04","A-F05","A-F06","A-F07"],"delayed_recall_recommended":false},
+    "A-Q06": {"facts":["A-F03"],"delayed_recall_recommended":true},
+    "B-Q01": {"facts":["B-F04"],"delayed_recall_recommended":true},
+    "B-Q02": {"facts":["B-F08"],"delayed_recall_recommended":false},
+    "B-Q03": {"facts":["B-F06"],"delayed_recall_recommended":false},
+    "B-Q04": {"facts":["B-F05","B-F06","B-F07"],"delayed_recall_recommended":true},
+    "B-Q05": {"facts":["B-F01","B-F03","B-F04","B-F05","B-F06"],"delayed_recall_recommended":false},
+    "B-Q06": {"facts":["B-F01"],"delayed_recall_recommended":true},
+    "C-Q01": {"facts":["C-F01"],"delayed_recall_recommended":true},
+    "C-Q02": {"facts":["C-F08"],"delayed_recall_recommended":false},
+    "C-Q03": {"facts":["C-F02"],"delayed_recall_recommended":false},
+    "C-Q04": {"facts":["C-F06","C-F07","C-F08"],"delayed_recall_recommended":true},
+    "C-Q05": {"facts":["C-F01","C-F02","C-F04","C-F05","C-F06"],"delayed_recall_recommended":false},
+    "C-Q06": {"facts":["C-F03"],"delayed_recall_recommended":true}
+  }
+}
