@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Padiem Lab — 파디엠이 만들고 검증하는 제품, 실험, 서비스를 한곳에서 살펴보세요.">
+  <title>Padiem Lab — Products, experiments and services</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Padiem Lab 처음으로">PADIEM <span>LAB</span></a>
+    <nav class="header-nav" aria-label="주요 탐색">
+      <a href="#work">Selected work</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-kicker">PADIEM / PRODUCT LABORATORY</div>
+      <h1 id="hero-title">만들고,<br>써보고,<br><em>남깁니다.</em></h1>
+      <div class="hero-note">
+        <p>파디엠이 실제 문제에서 출발해 만들고 검증하는 제품과 실험을 모았습니다.</p>
+        <p class="hero-note-en">Products, experiments and services built around real use.</p>
+      </div>
+      <a class="hero-jump" href="#work">작업 보기 <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">SELECTED WORK</p>
+          <h2 id="work-title">지금 볼 수 있는 작업</h2>
+        </div>
+        <p class="section-copy">공개가 적절하고 실제로 확인할 수 있는 작업부터 보여줍니다. 내부 운영 상태와 검토용 정보는 이 페이지에 노출하지 않습니다.</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="작업 필터">
+        <button class="filter is-active" type="button" data-filter="ALL" aria-pressed="true">전체</button>
+        <button class="filter" type="button" data-filter="LIVE" aria-pressed="false">사용 가능</button>
+        <button class="filter" type="button" data-filter="PREVIEW" aria-pressed="false">미리보기</button>
+        <button class="filter" type="button" data-filter="BUILDING" aria-pressed="false">만드는 중</button>
+      </div>
+
+      <div class="business-list" id="business-list" aria-live="polite"></div>
+      <noscript><p class="noscript">이 목록을 보려면 JavaScript를 켜주세요.</p></noscript>
+    </section>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <p class="eyebrow">ABOUT THE LAB</p>
+      <div class="about-grid">
+        <h2 id="about-title">한 회사 안의 서로 다른 문제들.</h2>
+        <div class="about-copy">
+          <p>AI를 하나의 기능으로만 보지 않습니다. 개인의 기억, 관계, 개발, 지역 공동체, 미디어와 정보 탐색처럼 서로 다른 문제에 맞는 제품 형태를 찾습니다.</p>
+          <p>이곳은 공개 포트폴리오입니다. 개발 현황, GitHub 상태, 내부 검토 기록 같은 운영 정보는 별도의 비공개 콘솔에서 관리합니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>PADIEM LAB</span>
+    <span>Gwangju · Korea</span>
+    <span id="footer-count">Selected public work</span>
+  </footer>
+
+  <script src="./public-businesses.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+name: Padiem Lab CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/padiem-lab/**'
+      - '.github/workflows/padiem-lab-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/padiem-lab/**'
+      - '.github/workflows/padiem-lab-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-lab-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+
+      - name: Run public-boundary contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/padiem-lab/padiem-lab.test.cjs
+
+      - name: Install browser runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pw"
+          npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
+          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
+          echo "PW=${RUNNER_TEMP}/pw/node_modules/playwright" >> "${GITHUB_ENV}"
+
+      - name: Browser smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "${RUNNER_TEMP}/padiem-lab-smoke.cjs" <<'NODE'
+          const { chromium } = require(process.env.PW);
+          const fs = require('node:fs');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const viewports = [
+              { name: 'desktop', width: 1440, height: 1000 },
+              { name: 'mobile', width: 390, height: 844 }
+            ];
+
+            for (const viewport of viewports) {
+              const page = await browser.newPage({ viewport });
+              const consoleErrors = [];
+              const failures = [];
+              page.on('console', message => {
+                if (message.type() === 'error') consoleErrors.push(message.text());
+              });
+              page.on('requestfailed', request => failures.push(request.url()));
+
+              const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+              if (!response || response.status() !== 200) throw new Error(`HTTP ${response?.status()}`);
+              await page.waitForSelector('.business-card');
+
+              const state = await page.evaluate(() => ({
+                title: document.title,
+                brand: document.querySelector('.brand')?.textContent?.replace(/\s+/g, ' ').trim(),
+                cards: document.querySelectorAll('.business-card').length,
+                b60: document.body.textContent.includes('AI 무료 레이더'),
+                storyMemory: document.body.textContent.includes('StoryMemory') || document.body.textContent.includes('스토리메모리'),
+                internalOps: /프로젝트 현황|작업 중|백엔드|Pull Request|GitHub CI/.test(document.body.textContent),
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+              }));
+
+              if (!state.title.startsWith('Padiem Lab')) throw new Error(`bad title ${JSON.stringify(state)}`);
+              if (!state.brand.includes('PADIEM LAB')) throw new Error(`bad brand ${JSON.stringify(state)}`);
+              if (state.cards < 4 || !state.b60) throw new Error(`public work missing ${JSON.stringify(state)}`);
+              if (state.storyMemory || state.internalOps) throw new Error(`private data exposed ${JSON.stringify(state)}`);
+              if (state.overflow) throw new Error(`horizontal overflow ${JSON.stringify(state)}`);
+              if (consoleErrors.length) throw new Error(`console errors ${consoleErrors.join(' | ')}`);
+              if (failures.length) throw new Error(`request failures ${failures.join(' | ')}`);
+
+              const file = `${process.env.RUNNER_TEMP}/padiem-lab-${viewport.name}.png`;
+              await page.screenshot({ path: file, fullPage: true });
+              console.log(`${viewport.name} PASS cards=${state.cards}`);
+              await page.close();
+            }
+            await browser.close();
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+          python3 -m http.server 4173 --directory apps/padiem-lab >"${RUNNER_TEMP}/padiem-lab-server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" || true' EXIT
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node "${RUNNER_TEMP}/padiem-lab-smoke.cjs"
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: padiem-lab-visual-${{ env.TARGET_SHA }}
+          path: |
+            ${{ runner.temp }}/padiem-lab-desktop.png
+            ${{ runner.temp }}/padiem-lab-mobile.png
+          if-no-files-found: warn
+          retention-days: 7
