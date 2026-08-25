@@ -23,9 +23,9 @@ recover recent owner ideas + existing prototypes
 
 ### P1 — My Health Story / 병원 스토리북 — `DEMO → VALIDATION`
 
-This is the strongest current next candidate because a real sample-only prototype already exists.
+This is the strongest current candidate because a real sample-only prototype already exists.
 
-Core product grammar:
+Core grammar:
 
 ```text
 one hospital visit = one story book
@@ -49,16 +49,9 @@ MY NOTE
 NEEDS REVIEW
 ```
 
-Existing ASTERIVE prototype includes bookshelf entry, physical book interaction, Story ON, timeline, related records, Add Visit, search and mobile behavior. It is explicitly patient/guardian-facing and does not replace diagnosis/treatment.
+Existing ASTERIVE prototype includes bookshelf entry, physical book interaction, Story ON, timeline, related records, Add Visit, search and mobile behavior. It is patient/guardian-facing and does not replace diagnosis/treatment.
 
-Current market screen says the broad category is crowded:
-
-- MyHealthWay / 나의건강기록 already provides national personal medical-record access;
-- Guava Health provides records, longitudinal views and AI summaries;
-- PicnicHealth provides visit timelines, trends and patient-centered record organization;
-- Abridge provides patient visit summaries from clinical conversations.
-
-Therefore the product thesis is **not** `another PHR or medical-record organizer`.
+The broad market is already occupied by national PHR, longitudinal-record, AI-summary and visit-summary products. Therefore the product thesis is **not** `another PHR or medical-record organizer`.
 
 Surviving wedge:
 
@@ -71,20 +64,51 @@ Current execution:
 
 Next gate: exact-head fixture validation, then a bounded participant pilot measuring source attribution, follow-up recall, factual/sequence recall, retrieval time, cognitive load and delayed recall.
 
-### P2 — Foreign Patient Medical Coordination — `IDEA → NEXT SCREEN`
+### P2 — Bilingual Visit Passport / 의료통역 안전기록 — `DOMAIN-TRANSFER R&D / ABSORB`
 
-Potential separate lane leveraging PADIEM multilingual speech/translation/dubbing assets.
+The initial foreign-patient medical-coordination concept has been screened.
 
-Product boundary must be workflow coordination across:
+Generic medical-tourism/concierge and generic AI-medical-translation products are already crowded. More importantly, PADIEM already owns the key internal capability:
 
-- intake documents;
-- appointments;
-- consultation explanations;
+- proposed Business 39 `112 Real-Time Interpretation`;
+- B39 reference implementation under `reference/business-39-112-real-time-interpretation-v1/`;
+- existing 2026 dissertation / conference research on AI interpretation, multimodal urgency and HITL operation.
+
+B39 already uses:
+
+```text
+source speech
+→ unverified transcript
+→ interpretation draft
+→ critical term / negation / number / uncertainty markers
+→ human clarification
+→ human correction
+→ human-verified bilingual record
+```
+
+Therefore:
+
+```text
+NEW_MEDICAL_TRANSLATION_ENGINE = DUPLICATE_B39
+GENERIC_FOREIGN_PATIENT_PLATFORM = DO_NOT_BUILD
+```
+
+Surviving healthcare-domain question:
+
+> Does the existing B39 meaning-preservation and human-verification architecture transfer to clinical conversation in a way that reduces medically important meaning loss and creates a trustworthy bilingual visit memory when joined with My Health Story?
+
+Medical-domain checks may add:
+
+- date/time/number preservation;
+- left/right/body-site preservation;
+- negation;
+- symptom duration/frequency;
+- medication/allergy/dose strings where present;
+- speaker attribution;
 - follow-up instructions;
-- institution handoffs;
-- source-grounded multilingual records.
+- uncertainty and human-correction burden.
 
-Generic translation alone is not enough.
+This is a capability/domain-transfer study, not a new Business. If useful, absorb it into BIO-003, B39, B63 or PLAT-001.
 
 ### P3 — Event Story Engine / Recovery Story — `PLATFORM SCREENING`
 
@@ -111,7 +135,7 @@ hospital visit / clinician plan
 → questions for next visit
 ```
 
-Treat both as reusable PADIEM capabilities before treating either as a standalone Business.
+Treat these as reusable PADIEM capabilities before treating either as a standalone Business.
 
 ## Screened / absorbed — Home Rehab Observer Coach
 
@@ -122,11 +146,8 @@ Owner-originated concept: observe a person doing rehabilitation alone, identify 
 Current screen found:
 
 - Business 38 already owns general movement observations, form cues, session planning and adaptive movement-plan concepts while explicitly excluding rehabilitation/physiotherapy;
-- Sword Health already provides AI-supported at-home physiotherapy, movement guidance, progress monitoring and therapist plan adjustment;
-- Hinge Health TrueMotion provides full-body computer-vision guidance, objective movement analysis and care-team plan modification;
-- Kaia Motion Coach provides camera-based posture/movement analysis and real-time corrective feedback;
-- Kemtai already targets prescribed home-exercise protocols with camera guidance;
-- Korea's Dr.Answer 3.0 postoperative rehabilitation lane targets smartphone On-device AI, posture/joint analysis, real-time feedback, clinician-prescribed protocols and regulatory development.
+- mature external digital-PT products already provide camera/AI guidance, movement analysis, progress monitoring and clinician plan adjustment;
+- Korea's current postoperative-rehabilitation R&D also targets smartphone On-device AI, posture/joint analysis, real-time feedback and clinician-prescribed protocols.
 
 Therefore:
 
@@ -161,7 +182,7 @@ Treat as the future relation/data layer under My Health Story unless a distinct 
 
 ### Patient Communication AI
 
-Likely capability inside My Health Story, discharge/follow-up or foreign-patient coordination. Keep source boundaries explicit.
+Likely capability inside My Health Story, discharge/follow-up or bilingual-visit workflows. Keep source boundaries explicit.
 
 ### Health-check Trend AI
 
