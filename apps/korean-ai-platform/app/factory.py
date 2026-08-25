@@ -105,8 +105,15 @@ def create_app() -> Starlette:
     from app import routes as phase0_routes
     app.router.routes.extend(phase0_routes.router.routes)
 
-    # Phase 1: BYOK Gateway Pilot
-    from app.pilot.gateway import router as pilot_api_router
+    # Phase 1: BYOK Gateway Pilot. The multimodal contract is installed as a
+    # narrow wrapper around the existing deep validator so all text-only
+    # requests continue to use the original validation path unchanged.
+    from app.pilot import gateway as pilot_gateway
+    from app.pilot.multimodal_contract import install_gateway_multimodal_contract
+
+    install_gateway_multimodal_contract(pilot_gateway)
+    pilot_api_router = pilot_gateway.router
+
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
 

@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
 from .grounding import GroundedChatService, GroundingError
@@ -19,7 +20,7 @@ from .tools import ToolSpec, get_tool
 from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
-MAX_BROWSER_BODY_BYTES = 65_536
+MAX_BROWSER_BODY_BYTES = 6_000_000
 MAX_MESSAGES = 20
 MAX_MESSAGE_CHARS = 8_000
 MAX_TOTAL_MESSAGE_CHARS = 32_000
@@ -73,10 +74,17 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     raise BrowserRequestError("지원하지 않는 도구입니다.")
 
 
-def _validate_payload(raw: Any) -> tuple[list[dict[str, str]], Skill, BrowserToolRequest | None]:
+def _validate_payload(
+    raw: Any,
+) -> tuple[
+    list[dict[str, str]],
+    Skill,
+    BrowserToolRequest | None,
+    tuple[ImageAttachment, ...],
+]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input"}:
+    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
@@ -114,8 +122,16 @@ def _validate_payload(raw: Any) -> tuple[list[dict[str, str]], Skill, BrowserToo
 
     if not any(item["role"] == "user" for item in out):
         raise BrowserRequestError("사용자 질문이 필요합니다.")
+
     tool_request = _validate_tool_request(raw)
-    return out, skill, tool_request
+    try:
+        attachments = parse_attachments(raw.get("attachments"))
+    except AttachmentValidationError as exc:
+        raise BrowserRequestError(str(exc)) from exc
+    if tool_request is not None and attachments:
+        raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
+
+    return out, skill, tool_request, attachments
 
 
 async def health(request: Request) -> JSONResponse:
@@ -126,20 +142,36 @@ async def health(request: Request) -> JSONResponse:
         "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": settings.web_provider in {"mock", "firecrawl"},
+        "image_attachment_ready": True,
     })
 
 
+def _too_large_response() -> JSONResponse:
+    return JSONResponse(
+        {"error": {"code": "request_too_large", "message": "요청이 너무 큽니다."}},
+        status_code=413,
+    )
+
+
 async def api_chat(request: Request) -> JSONResponse:
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > MAX_BROWSER_BODY_BYTES:
+                return _too_large_response()
+        except ValueError:
+            return JSONResponse(
+                {"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}},
+                status_code=422,
+            )
+
     body = await request.body()
     if len(body) > MAX_BROWSER_BODY_BYTES:
-        return JSONResponse(
-            {"error": {"code": "request_too_large", "message": "요청이 너무 큽니다."}},
-            status_code=413,
-        )
+        return _too_large_response()
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages, skill, tool_request = _validate_payload(raw)
+        messages, skill, tool_request, attachments = _validate_payload(raw)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse(
@@ -150,7 +182,7 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         if tool_request is None:
             client: B14Client = request.app.state.b14_client
-            result = await client.complete(messages, skill=skill)
+            result = await client.complete(messages, skill=skill, attachments=attachments)
         else:
             grounded: GroundedChatService = request.app.state.grounded_chat
             result = await grounded.complete(

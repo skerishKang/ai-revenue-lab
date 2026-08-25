@@ -7,6 +7,7 @@
   <title>Padiem Chat</title>
   <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./attachments.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -44,7 +45,7 @@
           <div class="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서 요약</strong><small>파일 기능 · 준비 중</small></span></button>
+            <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서 요약</strong><small>PDF·문서 파일 · 다음 단계</small></span></button>
             <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
@@ -52,17 +53,25 @@
       </section>
       <section class="composer-wrap" aria-label="메시지 작성">
         <form class="composer" id="composerForm">
+          <div class="attachment-tray" id="attachmentTray" hidden>
+            <div class="attachment-preview">
+              <img id="attachmentThumb" alt="선택한 사진 미리보기" />
+              <div class="attachment-copy"><strong id="attachmentName"></strong><small id="attachmentSize"></small></div>
+              <button id="removeAttachment" class="attachment-remove" type="button" aria-label="첨부 사진 제거">×</button>
+            </div>
+          </div>
           <label for="messageInput" class="sr-only">메시지 입력</label>
           <textarea id="messageInput" rows="1" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
-              <button type="button" class="tool-button" disabled aria-disabled="true" title="파일 기능은 준비 중입니다"><span aria-hidden="true">＋</span><span>파일</span></button>
+              <input id="imageFileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" hidden />
+              <button type="button" class="tool-button" id="imageAttachButton" title="JPEG, PNG, WebP 사진 한 장을 첨부합니다"><span aria-hidden="true">＋</span><span>사진</span></button>
               <button type="button" class="tool-button" disabled aria-disabled="true" title="웹 검색은 준비 중입니다"><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
             </div>
             <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">일반 질문은 자동 추천으로 답변합니다. 파일·웹 검색·로그인은 다음 단계에서 지원합니다.</p>
+        <p class="composer-note" id="runtimeNote">일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. PDF·문서·웹 검색·로그인은 다음 단계에서 지원합니다.</p>
       </section>
     </main>
   </div>

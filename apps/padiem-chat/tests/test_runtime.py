@@ -240,7 +240,9 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert 'data-skill="explain"' in html
     assert 'data-skill="plan"' in html
     assert 'data-skill="brainstorm"' in html
-    assert "파일 기능 · 준비 중" in html
+    assert 'id="imageAttachButton"' in html
+    assert "<span>사진</span>" in html
+    assert "PDF·문서 파일 · 다음 단계" in html
     assert "웹 검색 · 준비 중" in html
     assert "모의 응답 · 실제 모델 호출 없음" in js
     assert 'fetch("/api/chat"' in js

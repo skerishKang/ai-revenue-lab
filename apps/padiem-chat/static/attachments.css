@@ -1,0 +1,74 @@
+.attachment-tray {
+  padding: 10px 12px 0;
+}
+
+.attachment-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 360px);
+  padding: 8px;
+  border: 1px solid rgba(18, 31, 51, 0.12);
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.attachment-preview img {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #eef1f5;
+}
+
+.attachment-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.attachment-copy strong,
+.attachment-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-copy strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.attachment-copy small {
+  color: #687386;
+  font-size: 11px;
+}
+
+.attachment-remove {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.attachment-remove:hover,
+.attachment-remove:focus-visible {
+  background: rgba(18, 31, 51, 0.08);
+}
+
+.message-attachment-meta {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.72;
+}
+
+.composer-note[data-state="error"] {
+  color: #a23434;
+}
