@@ -44,18 +44,6 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
-      number: 29,
-      slug: "apartment-governance",
-      title: "Apartment Governance",
-      koreanTitle: "우리단지 운영실",
-      summary: "회의·안건·의결·공개 기록을 하나의 운영 흐름으로 정리하는 공동주택 거버넌스 제품입니다.",
-      publicStatus: "PREVIEW",
-      routeKind: "LOCAL_STATIC",
-      targetPath: "/b29/",
-      sourcePath: "reference/business-29-apartment-governance-tutorial/",
-      currentPublicUrl: "https://ai-revenue-business-29-governance-tutorial.pages.dev/"
-    }),
-    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",
