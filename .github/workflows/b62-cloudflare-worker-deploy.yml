@@ -38,6 +38,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Validate repository mock-only deploy config
+        run: python .github/scripts/b62_cloudflare_mock_config_guard.py
       - name: Read-only Cloudflare and B14 preflight
         id: preflight
         env:
@@ -58,6 +60,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Revalidate mock-only config before deploy
+        run: python .github/scripts/b62_cloudflare_mock_config_guard.py
 
       - name: Guard Worker identity and existing mock ownership
         env:
