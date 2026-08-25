@@ -76,7 +76,7 @@ class MemoryProjectStore:
 
     async def list_projects(self, user_id):
         rows = [row for row in self.projects.values() if row["user_id"] == user_id]
-        rows.sort(key=lambda row: row["updated_at"], reverse=True)
+        rows.sort(key=lambda row: row["profile"].updated_at, reverse=True)
         return [row["profile"] for row in rows]
 
     async def get_project(self, user_id, project_id):
