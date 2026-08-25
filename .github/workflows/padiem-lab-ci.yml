@@ -14,7 +14,11 @@ on:
       - 'reference/business-15-global-ai-newsroom-v1/**'
       - 'reference/business-16-personal-sports-v1/**'
       - 'reference/business-17-local-shop-magazine-v1/**'
+      - 'reference/business-18-personal-audio-channel-v1/**'
+      - 'reference/business-19-personal-memory-book-v1/**'
+      - 'reference/business-20-personal-memory-novel-v1/**'
       - 'reference/business-21-founder-strategy-letter-v1/**'
+      - 'reference/business-22-personal-media-studio-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
   push:
@@ -30,7 +34,11 @@ on:
       - 'reference/business-15-global-ai-newsroom-v1/**'
       - 'reference/business-16-personal-sports-v1/**'
       - 'reference/business-17-local-shop-magazine-v1/**'
+      - 'reference/business-18-personal-audio-channel-v1/**'
+      - 'reference/business-19-personal-memory-book-v1/**'
+      - 'reference/business-20-personal-memory-novel-v1/**'
       - 'reference/business-21-founder-strategy-letter-v1/**'
+      - 'reference/business-22-personal-media-studio-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
 
@@ -77,11 +85,14 @@ jobs:
           node apps/padiem-lab/build-site.cjs
           test -f dist/padiem-lab/index.html
           test -f dist/padiem-lab/404.html
-          for route in b07 b08 b09 b10 b11 b12 b15 b16 b17 b21 b60; do
+          registered_routes="$(node -e "console.log(require('./apps/padiem-lab/route-registry.cjs').map(r => r.route).join(' '))")"
+          for route in ${registered_routes}; do
             test -f "dist/padiem-lab/${route}/index.html"
           done
-          test ! -e dist/padiem-lab/b16/app.js
-          test ! -e dist/padiem-lab/b16/docs
+          for route in b16 b18 b19 b20 b22; do
+            test ! -e "dist/padiem-lab/${route}/app.js"
+            test ! -e "dist/padiem-lab/${route}/docs"
+          done
           test ! -e dist/padiem-lab/b60/operator
           test ! -e dist/padiem-lab/b60/operations
           test ! -e dist/padiem-lab/b60/collector
@@ -151,11 +162,14 @@ jobs:
         run: |
           set -euo pipefail
           node apps/padiem-lab/build-site.cjs
-          for route in b07 b08 b09 b10 b11 b12 b15 b16 b17 b21 b60; do
+          registered_routes="$(node -e "console.log(require('./apps/padiem-lab/route-registry.cjs').map(r => r.route).join(' '))")"
+          for route in ${registered_routes}; do
             test -f "dist/padiem-lab/${route}/index.html"
           done
-          test ! -e dist/padiem-lab/b16/app.js
-          test ! -e dist/padiem-lab/b16/docs
+          for route in b16 b18 b19 b20 b22; do
+            test ! -e "dist/padiem-lab/${route}/app.js"
+            test ! -e "dist/padiem-lab/${route}/docs"
+          done
           test ! -e dist/padiem-lab/b60/operator
           test ! -e dist/padiem-lab/b60/operations
 
@@ -214,7 +228,8 @@ jobs:
         run: |
           set -euo pipefail
           base="https://${PAGES_PROJECT}.pages.dev"
-          for path in / /b07/ /b08/ /b09/ /b10/ /b11/ /b12/ /b15/ /b16/ /b17/ /b21/ /b60/; do
+          route_paths="$(node -e "console.log(require('./apps/padiem-lab/route-registry.cjs').map(r => '/' + r.route + '/').join(' '))")"
+          for path in / ${route_paths}; do
             ok=false
             for i in $(seq 1 18); do
               if curl -fsS "${base}${path}" >/dev/null; then ok=true; break; fi

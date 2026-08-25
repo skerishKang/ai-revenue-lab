@@ -121,6 +121,39 @@
       sourcePath: "reference/business-17-local-shop-magazine-v1/"
     }),
     Object.freeze({
+      number: 18,
+      slug: "personal-audio-channel",
+      title: "Personal Audio Channel",
+      koreanTitle: "나의 오디오 채널",
+      summary: "합성 장면을 듣는 순서로 엮고 다시 찾을 순간을 세션 안에서 표시하는 개인 Listening Room입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b18/",
+      sourcePath: "reference/business-18-personal-audio-channel-v1/"
+    }),
+    Object.freeze({
+      number: 19,
+      slug: "personal-memory-book",
+      title: "Personal Memory Book",
+      koreanTitle: "개인 기억책",
+      summary: "합성 기억 조각을 장으로 묶고 근거와 해석의 경계를 확인하며 한 권의 기억책 흐름으로 편집합니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b19/",
+      sourcePath: "reference/business-19-personal-memory-book-v1/"
+    }),
+    Object.freeze({
+      number: 20,
+      slug: "personal-memory-novel",
+      title: "Personal Memory Novel",
+      koreanTitle: "개인 기억소설",
+      summary: "합성 기억을 시점과 장면 단위로 엮되 사실과 서사적 표현을 구분해 검토하는 Memory Manuscript Studio입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b20/",
+      sourcePath: "reference/business-20-personal-memory-novel-v1/"
+    }),
+    Object.freeze({
       number: 21,
       slug: "founder-strategy-letter",
       title: "Founder Strategy Letter",
@@ -130,6 +163,17 @@
       routeKind: "LOCAL_STATIC",
       targetPath: "/b21/",
       sourcePath: "reference/business-21-founder-strategy-letter-v1/"
+    }),
+    Object.freeze({
+      number: 22,
+      slug: "personal-media-studio",
+      title: "Personal Media Studio",
+      koreanTitle: "개인 미디어 스튜디오",
+      summary: "하나의 합성 원자료 묶음에서 Story Spine을 고정하고 기사·오디오·영상·카드 에디션의 Source Trace를 관리합니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b22/",
+      sourcePath: "reference/business-22-personal-media-studio-v1/"
     }),
     Object.freeze({
       number: 23,
