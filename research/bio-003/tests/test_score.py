@@ -8,6 +8,18 @@ sys.path.insert(0, str(ROOT))
 import score
 
 
+def load(name):
+    return json.loads((ROOT / name).read_text(encoding="utf-8"))
+
+
+def rendering_text(rendering):
+    if not rendering:
+        return ""
+    if isinstance(rendering[0], str):
+        return "\n".join(rendering)
+    return "\n".join(item["text"] for item in rendering)
+
+
 def test_single_choice():
     question = {"type": "single_choice", "answer": "A"}
     assert score.score_item(question, "A")[0] == 1.0
@@ -32,7 +44,7 @@ def test_sequence_pairwise_partial_credit():
 
 
 def test_cases_are_synthetic_and_have_all_conditions():
-    payload = json.loads((ROOT / "cases.json").read_text(encoding="utf-8"))
+    payload = load("cases.json")
     assert payload["synthetic_only"] is True
     assert len(payload["cases"]) >= 3
     for case in payload["cases"]:
@@ -40,8 +52,51 @@ def test_cases_are_synthetic_and_have_all_conditions():
         assert case["facts"]
 
 
+def test_condition_fact_coverage_equals_canonical_fact_set():
+    cases = {case["case_id"]: case for case in load("cases.json")["cases"]}
+    contract = load("fact_coverage.json")["cases"]
+
+    assert set(contract) == set(cases)
+    for case_id, case in cases.items():
+        canonical_from_case = {fact["id"] for fact in case["facts"]}
+        canonical_from_contract = set(contract[case_id]["canonical_fact_ids"])
+        assert canonical_from_contract == canonical_from_case
+
+        conditions = contract[case_id]["conditions"]
+        assert set(conditions) == {"summary", "timeline", "story"}
+        for condition, anchors_by_fact in conditions.items():
+            assert set(anchors_by_fact) == canonical_from_case
+            text = rendering_text(case["renderings"][condition])
+            for fact_id, anchor in anchors_by_fact.items():
+                assert anchor in text, (
+                    f"{case_id}/{condition} claims {fact_id} coverage but anchor is missing: {anchor!r}"
+                )
+
+
+def test_question_fact_map_is_complete_and_supported_by_every_condition():
+    cases = {case["case_id"]: case for case in load("cases.json")["cases"]}
+    questions = load("questions.json")["questions"]
+    question_map = load("question_fact_map.json")["questions"]
+    coverage = load("fact_coverage.json")["cases"]
+
+    question_ids = {question["id"] for question in questions}
+    assert set(question_map) == question_ids
+
+    for question in questions:
+        case_id = question["case_id"]
+        required = set(question_map[question["id"]])
+        canonical = {fact["id"] for fact in cases[case_id]["facts"]}
+        assert required
+        assert required <= canonical
+        for condition, anchors_by_fact in coverage[case_id]["conditions"].items():
+            assert required <= set(anchors_by_fact), (
+                f"{question['id']} depends on facts absent from {case_id}/{condition}: "
+                f"{sorted(required - set(anchors_by_fact))}"
+            )
+
+
 def test_questions_cover_primary_categories_for_each_case():
-    payload = json.loads((ROOT / "questions.json").read_text(encoding="utf-8"))
+    payload = load("questions.json")
     by_case = {}
     for question in payload["questions"]:
         by_case.setdefault(question["case_id"], set()).add(question["category"])
@@ -54,7 +109,7 @@ def test_questions_cover_primary_categories_for_each_case():
 
 
 def test_counterbalancing_covers_each_case_and_condition_once_per_group():
-    payload = json.loads((ROOT / "counterbalancing.json").read_text(encoding="utf-8"))
+    payload = load("counterbalancing.json")
     for group in payload["groups"]:
         assert {item["case_id"] for item in group["order"]} == {"A", "B", "C"}
         assert {item["condition"] for item in group["order"]} == {"summary", "timeline", "story"}
