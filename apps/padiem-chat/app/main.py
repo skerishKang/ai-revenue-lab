@@ -37,6 +37,7 @@ from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
 from .skills import Skill, get_skill
 from .tools import ToolSpec, get_tool
+from .usage_gate import UsageCounterStore, UsageGate
 from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -151,12 +152,14 @@ def _validate_payload(
 
 async def health(request: Request) -> JSONResponse:
     settings: Settings = request.app.state.settings
+    usage_gate: UsageGate = request.app.state.usage_gate
     web_ready = settings.web_provider in {"mock", "firecrawl"}
+    abuse_ready = usage_gate.ready
     return JSONResponse({
         "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": web_ready,
-        "deep_research_ready": settings.runtime_mode == "b14" and web_ready,
+        "deep_research_ready": settings.runtime_mode == "b14" and web_ready and abuse_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode == "google",
@@ -166,6 +169,9 @@ async def health(request: Request) -> JSONResponse:
         "project_file_store_bound": request.app.state.project_file_store is not None,
         "saved_outputs_code_ready": True,
         "saved_output_store_bound": request.app.state.saved_output_store is not None,
+        "quota_store_bound": usage_gate.quota_store_bound,
+        "live_abuse_gate_ready": abuse_ready,
+        "live_enabled": settings.runtime_mode == "b14" and abuse_ready,
     })
 
 
@@ -187,6 +193,17 @@ def _conversation_not_found() -> JSONResponse:
 
 def _project_not_found() -> JSONResponse:
     return JSONResponse({"error": {"code": "project_not_found", "message": "프로젝트를 찾을 수 없습니다."}}, status_code=404)
+
+
+def _usage_denied_response(decision) -> JSONResponse:
+    headers = {}
+    if decision.retry_after_seconds is not None:
+        headers["Retry-After"] = str(decision.retry_after_seconds)
+    return JSONResponse(
+        {"error": {"code": decision.code, "message": decision.user_message}},
+        status_code=decision.status_code,
+        headers=headers,
+    )
 
 
 async def api_conversations(request: Request) -> JSONResponse:
@@ -300,6 +317,14 @@ async def api_chat(request: Request) -> JSONResponse:
     document_context = build_document_context(document_attachment) if document_attachment is not None else None
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
+    usage_gate: UsageGate = request.app.state.usage_gate
+    usage_decision = await usage_gate.authorize(
+        raw_ip=request.headers.get("cf-connecting-ip"),
+        user_id=uid,
+    )
+    if not usage_decision.allowed:
+        return _usage_denied_response(usage_decision)
+
     try:
         if tool_request is None:
             client: B14Client = request.app.state.b14_client
@@ -356,6 +381,7 @@ def create_app(
     history_store: HistoryStore | None = None,
     project_file_store: ProjectFileStore | None = None,
     saved_output_store: SavedOutputStore | None = None,
+    usage_store: UsageCounterStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -380,6 +406,7 @@ def create_app(
     app.state.history_store = history_store
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
+    app.state.usage_gate = UsageGate(resolved, usage_store)
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
