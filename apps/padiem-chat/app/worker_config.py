@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from dataclasses import replace
 from typing import Any
 
 from .config import Settings
@@ -9,6 +10,7 @@ WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
     "PADIEM_CHAT_B14_BASE_URL",
     "PADIEM_CHAT_TIMEOUT_SECONDS",
+    "PADIEM_CHAT_LIVE_ENABLED",
     "PADIEM_CHAT_WEB_PROVIDER",
     "FIRECRAWL_API_KEY",
     "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
@@ -45,6 +47,7 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         runtime_mode=binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
+        live_enabled=binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false",
         web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
@@ -61,6 +64,18 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         user_daily_limit=binding_value(env, "PADIEM_CHAT_USER_DAILY_LIMIT") or "100",
         global_daily_limit=binding_value(env, "PADIEM_CHAT_GLOBAL_DAILY_LIMIT") or "1000",
     )
+
+
+def apply_live_deadman_switch(settings: Settings) -> Settings:
+    """Keep the public Worker on mock unless live execution is explicitly armed.
+
+    B14 may be configured or independently live for owner verification without that
+    implicitly exposing public B62 live execution. The switch is deployment-owned
+    and browser input cannot influence it.
+    """
+    if settings.runtime_mode == "b14" and not settings.live_enabled:
+        return replace(settings, runtime_mode="mock")
+    return settings
 
 
 def response_headers_for_path(path: str) -> dict[str, str]:

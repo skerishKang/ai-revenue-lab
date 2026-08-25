@@ -18,7 +18,13 @@ from app.main import create_app
 from app.project_files import D1ProjectFileStore
 from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
-from app.worker_config import D1_BINDING_NAME, binding_value, response_headers_for_path, settings_from_worker_bindings
+from app.worker_config import (
+    D1_BINDING_NAME,
+    apply_live_deadman_switch,
+    binding_value,
+    response_headers_for_path,
+    settings_from_worker_bindings,
+)
 
 _worker_app = None
 
@@ -38,7 +44,7 @@ class Default(WorkerEntrypoint):
 
         if _worker_app is None:
             try:
-                settings = settings_from_worker_bindings(self.env)
+                settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 history_store = D1HistoryStore(db_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
