@@ -17,6 +17,7 @@ from urllib.request import Request, urlopen
 CF_API = "https://api.cloudflare.com/client/v4"
 B14_HEALTH = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/health"
 WORKER_NAME = "padiem-chat"
+USER_AGENT = "b62-preflight/1.0"
 
 
 def required_env(name: str) -> str:
@@ -83,7 +84,10 @@ def read_b14_health() -> dict[str, str]:
         "b14_catalog_models": "unknown",
     }
     try:
-        status, payload = get_json(B14_HEALTH)
+        status, payload = get_json(
+            B14_HEALTH,
+            {"User-Agent": USER_AGENT, "Accept": "application/json"},
+        )
         state["b14_http"] = str(status)
         if status == 200:
             state["b14_status"] = str(payload.get("status", "unknown"))
