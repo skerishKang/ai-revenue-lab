@@ -8,32 +8,32 @@
 
 ## Purpose
 
-This ledger exists so ideas are not re-invented every session and so rejected, paused, duplicate, and promoted ideas remain reusable portfolio knowledge.
+This ledger exists so ideas are not re-invented every session and so rejected, paused, duplicate, absorbed, historical and promoted ideas remain reusable portfolio knowledge.
 
-New ideas are captured before development. A title and one-line product promise are enough to enter the ledger. Investigation may then add competitors, technical evidence, FTO, government/R&D fit, prototype evidence, or customer evidence.
+New ideas are captured before development. Existing prototypes and owner-originated ideas must be recovered before a new candidate is invented.
 
 ## Status vocabulary
 
 - `IDEA` — captured but not screened.
 - `SCREENING` — duplicate / portfolio overlap / feasibility screening in progress.
 - `RESEARCHING` — market, technical, FTO, grant or buyer research in progress.
-- `DEMO` — bounded prototype or technical demo in progress.
+- `DEMO` — bounded prototype or technical demo exists / is in progress.
 - `PAUSED` — worth preserving but blocked by evidence, partner, data or timing.
 - `LEGACY_ASSET_REVALIDATION` — based on a real prior PADIEM technology/IP asset that needs current validation.
 - `DUPLICATE` — materially overlaps an existing product/project; preserve the record and do not re-propose it as new.
-- `DEPRIORITIZED` — plausible domain idea but currently weak fit or too broad relative to PADIEM assets.
+- `DEPRIORITIZED` — plausible or historically real, but not a current exploration priority.
 - `KILL` — researched and rejected; preserve the reason.
 - `PROMOTED` — promoted into a numbered/proposed Business workflow; canonical status still depends on the Business Registry.
 
 ## Capture rule
 
 ```text
-new idea
+recover existing ideas/prototypes first
 → IDEA_LEDGER entry
 → existing Business / GitHub / Drive / prior-session duplicate check
 → research / prototype as warranted
-→ GO | NARROW | PAUSE | KILL | DUPLICATE
-→ only surviving product boundaries enter Business-number promotion
+→ GO | NARROW | PAUSE | KILL | DUPLICATE | ABSORB
+→ only surviving standalone product boundaries enter Business-number promotion
 ```
 
 Do not delete `KILL`, `DUPLICATE`, `PAUSED`, or `DEPRIORITIZED` entries. They prevent repeated rediscovery and preserve decision history.
@@ -42,21 +42,36 @@ Do not delete `KILL`, `DUPLICATE`, `PAUSED`, or `DEPRIORITIZED` entries. They pr
 
 | ID | Domain | Idea / product title | Status | One-line product promise | Relationship / note |
 |---|---|---|---|---|---|
-| BIO-001 | Bio / medical training | NIR Vein Intelligence → AI Venipuncture Training & Assessment / AI 정맥주사 실습·평가 | RESEARCHING · NARROW | Use NIR vein maps as one sensing layer for objective venipuncture training, difficult-case analysis and repeatable learner feedback. | 2026 revalidation: generic clinical vein finder thesis killed; PADIEM 2015–2017 asset verified; public-data software benchmark authorized; hardware and patient-use claims held. See `research/BIO_001_NIR_VEIN_REVALIDATION_2026-08-26.md`. |
+| BIO-001 | Historical Bio / medical device | NIR Vein Intelligence / 정맥주사 실습 보조 | DEPRIORITIZED | Preserve PADIEM's 2015–2017 NIR/vein-assistance technical lineage for future reuse only if new evidence materially changes the opportunity. | Owner priority reset 2026-08-26: roughly decade-old idea; Issue #769 and PR #770 closed unmerged. Do not make this the center of current Bio discovery. |
 | BIO-002 | Healthcare AI governance | Clinical AI Egress Control Plane | PROMOTED / PAUSED | Govern what Korean clinical data may leave hospital workflows for external/internal GenAI while preserving clinical utility and audit evidence. | Proposed as B63 in Issue #731; concept demo completed; hospital/HIS validation still required. |
-| BIO-003 | Clinical longitudinal intelligence | Longitudinal Patient CareGraph | IDEA | Connect fragmented longitudinal patient events, records and care transitions into an evidence-linked patient journey graph. | Conversation-captured candidate; requires duplicate and clinical-workflow screening before any build. |
-| BIO-004 | Patient communication | Patient Communication AI | IDEA | Translate complex clinical information into patient-appropriate language, channel and comprehension level while preserving source boundaries. | Conversation-captured candidate; do not imply diagnosis/treatment authority. |
-| BIO-005 | Preventive health | Health-check Trend AI | IDEA | Track repeated health-check results over time and explain meaningful changes, missing follow-up and evidence-linked trends. | Conversation-captured candidate; medical interpretation and regulated-claim boundary must be screened. |
-| BIO-006 | Clinical workflow | Ambient Medical AI / Scribe | DEPRIORITIZED | Capture and structure clinician-patient encounters into reviewable documentation. | Crowded category and weak first-fit relative to current PADIEM differentiation; preserve for later reassessment. |
-| BIO-007 | Rehab / movement | Rehab / Pose AI | SCREENING | Use pose/motion analysis for rehabilitation or guided movement workflows with measurable feedback. | Must be screened against existing PADIEM AI Exercise Coach / Business 38 lineage to avoid duplicate packaging. |
-| BIO-008 | Biotech | AI Drug Discovery | DEPRIORITIZED | Apply AI to candidate discovery / ranking in drug R&D. | Too broad and domain-capital intensive for current first entry; preserved rather than repeatedly reproposed. |
+| BIO-003 | Patient experience / longitudinal health | My Health Story / 병원 스토리북 | DEMO | Turn one hospital visit into a source-grounded story: why I went, what I said, what the doctor said, tests, medication, what to remember and what happens next. | ASTERIVE `04_아스테리브_마이헬스스토리_병원스토리북_v1`; sample-only prototype and QA evidence already exist. Next = product validation, not more speculative UI. |
+| BIO-004 | Patient communication | Patient Communication AI | SCREENING | Translate complex clinical information into patient-appropriate language/channel while preserving exact source boundaries. | Likely module inside My Health Story, discharge/follow-up or foreign-patient workflows unless a distinct buyer/product boundary is proven. |
+| BIO-005 | Preventive / longitudinal health | Health-check Trend AI | SCREENING | Track repeated checkup/test results and explain what changed over time with source-linked context. | Likely longitudinal module of My Health Story/CareGraph first; do not create a new Business by default. |
+| BIO-006 | Clinical workflow | Ambient Medical AI / Scribe | DEPRIORITIZED | Capture and structure clinician-patient encounters into reviewable documentation. | Crowded category and weak first-fit relative to current PADIEM differentiation. |
+| BIO-007 | Rehab / movement | Rehab / Pose AI | SCREENING | Use pose/motion analysis for rehabilitation or guided movement workflows with measurable feedback. | Existing PADIEM AI Exercise Coach / Business 38 lineage means generic pose coaching is not a new product. Rehab-specific boundary still requires screening. |
+| BIO-008 | Biotech | AI Drug Discovery | DEPRIORITIZED | Apply AI to candidate discovery / ranking in drug R&D. | Too broad and domain-capital intensive for current first entry. |
 | BIO-009 | Medical imaging | Radiology Diagnosis AI | DEPRIORITIZED | Apply multimodal AI to radiology image interpretation or diagnostic support. | Crowded and high-regulatory; no current differentiated PADIEM evidence recorded. |
 | BIO-010 | Genomics | Genomics AI | DEPRIORITIZED | Apply AI to genomic interpretation and research workflows. | Requires specialized data/domain capability not yet established in current PADIEM evidence. |
-| BIO-011 | Clinical documents | Medical Record Intelligence Workspace | IDEA | Organize clinical documents, evidence, provenance, versions and review states into one grounded workspace. | Conversation-captured candidate; screen against Living Archive, Research Memory and B63 boundaries. |
-| BIO-012 | Global healthcare | Foreign Patient Medical Coordination | IDEA | Coordinate multilingual medical documents, appointments, explanations and workflow handoffs for international patients. | Strong possible reuse of PADIEM multilingual speech/translation assets; must not collapse into generic translation. |
-| BIO-013 | Biotech R&D operations | Bio Evidence Graph / R&D Reproducibility Copilot | IDEA | Trace a research claim back through experiment, sample, protocol, raw data, analysis and report while flagging evidence breaks. | Current-session candidate; screen against ELN/LIMS/scientific-data-management products and Research Memory. |
+| BIO-011 | Clinical documents | Medical Record Intelligence Workspace | SCREENING | Organize clinical documents, evidence, provenance, versions and review states into one grounded workspace. | Much of this is already represented by ASTERIVE search/source/relationship functions and My Health Story. Likely absorbed unless a new workflow/buyer is proven. |
+| BIO-012 | Global healthcare | Foreign Patient Medical Coordination | IDEA | Coordinate multilingual medical documents, appointments, explanations and workflow handoffs for international patients. | Plausible separate lane because PADIEM has multilingual speech/translation/dubbing assets; must be more than translation. |
+| BIO-013 | Biotech R&D operations | Bio Evidence Graph / R&D Reproducibility Copilot | DEPRIORITIZED | Trace a research claim back through experiment, sample, protocol, raw data, analysis and report while flagging evidence breaks. | Preserve as later candidate; it should not displace owner-originated 2026 healthcare ideas. |
+| BIO-014 | Home rehabilitation | Home Rehab Observer Coach / 혼자 재활할 때 보는 AI 코치 | SCREENING | Observe a person doing prescribed/self-guided rehabilitation alone, detect movement problems, give bounded corrective feedback and adapt the session. | Owner-originated 2026 idea. First test whether it is merely a B38 extension or has a distinct rehab workflow, progression and clinician-handoff product boundary. |
+| PLAT-001 | Cross-domain story infrastructure | Event Story Engine / 사건·병원 여정 스토리 엔진 | SCREENING | Convert recordings, documents and evidence into source-grounded event chapters, causal transitions, current state and next actions. | Common grammar observed across My Health Story and 사실로 legal-event storytelling. Treat as reusable platform capability before considering a standalone Business. |
 | GEN-001 | Export / compliance | AI Global Certification Passport | IDEA | Show a Korean company's product-specific overseas certification/regulatory gaps, missing evidence and next actions by target country. | General portfolio candidate, not part of Bio R&D; no Business number reserved. |
-| GEN-002 | Funding discovery | Support Program AI Matching / 지원사업 AI 매칭 | DUPLICATE | Match an organization to public support programs and explain eligibility, gaps and preparation tasks. | Duplicate / repackaging risk confirmed against existing `400-ai-finder` and `cwtree` support-program work. Do not propose as a new Business without a materially new boundary. |
+| GEN-002 | Funding discovery | Support Program AI Matching / 지원사업 AI 매칭 | DUPLICATE | Match an organization to public support programs and explain eligibility, gaps and preparation tasks. | Duplicate / repackaging risk confirmed against existing `400-ai-finder` and `cwtree` support-program work. |
+
+## Current Bio / Healthcare priority
+
+See `docs/portfolio/research/BIO_HEALTHCARE_IDEA_RECOVERY_AND_PRIORITY_2026-08-26.md`.
+
+```text
+P1 = BIO-003 My Health Story validation
+P2 = BIO-014 Home Rehab Observer Coach duplicate/product-boundary screen
+P3 = BIO-012 Foreign Patient Medical Coordination screen
+P4 = PLAT-001 Event Story Engine reuse model
+B63 = paused pending hospital/HIS evidence
+BIO-001 NIR = historical/deprioritized
+```
 
 ## Recent Business-number caution
 
@@ -64,10 +79,11 @@ Recent product-decision issues and implementation work may run ahead of the curr
 
 ## Source / evidence notes
 
-- `07_BioR&D_설계팀장_임명및1차통합작업지시서_v1.md` requires PADIEM Bio R&D to start from verified company technology/IP/R&D history and proceed through research problem → technical hypothesis → validation → PoC → productization candidate rather than inventing medical products arbitrarily.
-- PADIEM historical evidence includes near-infrared vein visualization / injection-training assistance as a Bio asset. BIO-001 revalidation confirmed the asset but narrowed the 2026 product thesis away from a generic clinical vein finder toward software-first venipuncture training and objective assessment.
-- B63 evidence currently supports concept-demo completion and a narrowed healthcare-specific semantic/quasi-identifier safety layer, but not a production hospital product.
+- `07_BioR&D_설계팀장_임명및1차통합작업지시서_v1.md` requires PADIEM Bio R&D to proceed from research problem → technical hypothesis → validation → PoC → productization candidate rather than inventing medical products arbitrarily.
+- `04_아스테리브_마이헬스스토리_병원스토리북_v1` proves the health-story direction already advanced beyond ideation into a bounded sample-data visual prototype.
+- B63 evidence supports concept-demo completion and a narrowed healthcare-specific semantic/quasi-identifier safety layer, but not a production hospital product.
+- PADIEM historical NIR technology remains valid portfolio history but is not a current priority merely because it has old patent evidence.
 
 ## Session handoff rule
 
-Every future BI / Bio R&D session that generates a new product-scale idea should first read this ledger and the canonical Business Registry. At session end, capture any new idea, status change, duplicate finding, or rejection reason here (or in a reviewed successor ledger) before generating another candidate.
+Every future BI / Bio R&D session must first read this ledger, the Bio/Healthcare queue and the canonical Business Registry. Recover recent owner-originated ideas and prototypes before generating a fresh candidate. At session end, capture any new idea, status change, duplicate/absorption finding, prototype evidence or rejection reason here.
