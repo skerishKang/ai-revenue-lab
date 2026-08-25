@@ -94,6 +94,7 @@ async def test_b14_request_is_fixed_auto_route_and_has_no_provider_key():
         "optimize_for": "korean",
         "allow_external_fallback": True,
         "max_attempts": 3,
+        "required_capabilities": ["free"],
     }
     assert "x-business14-provider-key" not in seen["headers"]
     assert "authorization" not in seen["headers"]

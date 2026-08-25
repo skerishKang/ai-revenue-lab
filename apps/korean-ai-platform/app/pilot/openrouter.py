@@ -37,6 +37,7 @@ from typing import Any
 
 import httpx
 
+from app.pilot.catalog import get_catalog_by_id
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.redaction import redact_sensitive
 from app.pilot.errors import (
@@ -196,6 +197,15 @@ async def _live_call(
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 
+    catalog_model = get_catalog_by_id(model_id)
+    if catalog_model is not None and "free" in catalog_model.capabilities:
+        body["provider"] = {
+            "max_price": {
+                "prompt": 0,
+                "completion": 0,
+            }
+        }
+
     client_kwargs: dict[str, Any] = {
         "timeout": openrouter_config.build_http_timeout(),
     }
@@ -348,8 +358,6 @@ def build_live_metadata(
     All arguments must describe the candidate that ACTUALLY answered
     (after any fallback), never the primary candidate.
     """
-    from app.pilot.catalog import get_catalog_by_id
-
     cm = get_catalog_by_id(model_id)
     estimated_usd = None
     estimated_krw = None

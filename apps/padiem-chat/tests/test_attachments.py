@@ -61,7 +61,7 @@ async def test_no_attachment_keeps_text_chat_contract():
         )
     assert response.status_code == 200
     assert seen["body"]["messages"][1] == {"role": "user", "content": "안녕"}
-    assert "required_capabilities" not in seen["body"]["business14"]
+    assert seen["body"]["business14"]["required_capabilities"] == ["free"]
     assert "attachments" not in response.json()
 
 
@@ -103,7 +103,7 @@ async def test_valid_image_attachment_reaches_b14_as_latest_user_multimodal(medi
     assert response.status_code == 200
     outbound = seen["body"]
     assert outbound["model"] == "b14/auto"
-    assert outbound["business14"]["required_capabilities"] == ["image"]
+    assert outbound["business14"]["required_capabilities"] == ["free", "image"]
     assert outbound["messages"][1] == history[0]
     assert outbound["messages"][2] == history[1]
     latest = outbound["messages"][3]
