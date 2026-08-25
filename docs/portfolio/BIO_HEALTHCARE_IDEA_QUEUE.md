@@ -64,20 +64,14 @@ Surviving wedge:
 
 > source-grounded episodic reconstruction of each hospital visit so the patient/guardian can accurately remember what happened, why the next step happened, what came from the doctor/document, what AI only organized, and what must be remembered for the next visit.
 
-Next gate: compare My Health Story against conventional summary/timeline using synthetic cases. Measure factual recall, source attribution, follow-up recall, retrieval time, cognitive load and delayed preference/recall.
+Current execution:
 
-### P2 — Home Rehab Observer Coach / 혼자 재활할 때 보는 AI 코치 — `SCREENING`
+- Issue #772 — validation contract;
+- Draft PR #774 — three fully synthetic cases, information-equivalent summary/timeline/story representations, question bank, counterbalancing, response schemas and deterministic scoring/analysis.
 
-Owner-originated idea:
+Next gate: exact-head fixture validation, then a bounded participant pilot measuring source attribution, follow-up recall, factual/sequence recall, retrieval time, cognitive load and delayed recall.
 
-- observe a person exercising or rehabilitating alone;
-- detect movement problems;
-- guide/correct the movement;
-- adapt/design the exercise sequence.
-
-Do not create a new Business before checking existing PADIEM AI Exercise Coach / Business 38. A distinct product would need a rehabilitation-specific boundary such as prescribed-plan adherence, recovery progression, safe abstention, or clinician handoff.
-
-### P3 — Foreign Patient Medical Coordination — `IDEA`
+### P2 — Foreign Patient Medical Coordination — `IDEA → NEXT SCREEN`
 
 Potential separate lane leveraging PADIEM multilingual speech/translation/dubbing assets.
 
@@ -92,7 +86,7 @@ Product boundary must be workflow coordination across:
 
 Generic translation alone is not enough.
 
-### P4 — Event Story Engine / 사건·병원 여정 스토리 엔진 — `PLATFORM SCREENING`
+### P3 — Event Story Engine / Recovery Story — `PLATFORM SCREENING`
 
 Recovered common grammar across My Health Story and 사실로:
 
@@ -106,7 +100,50 @@ recordings / documents / evidence
 → longitudinal volumes
 ```
 
-Treat this as a reusable PADIEM capability before treating it as a standalone Business.
+The Home Rehab screen adds a healthcare continuity variant:
+
+```text
+hospital visit / clinician plan
+→ home recovery attempts
+→ observable movement/session evidence
+→ patient uncertainty / adherence
+→ changes over time
+→ questions for next visit
+```
+
+Treat both as reusable PADIEM capabilities before treating either as a standalone Business.
+
+## Screened / absorbed — Home Rehab Observer Coach
+
+### Generic thesis — `DEPRIORITIZED / KILL AS NEW STANDALONE`
+
+Owner-originated concept: observe a person doing rehabilitation alone, identify movement problems, give correction and adapt/design the session.
+
+Current screen found:
+
+- Business 38 already owns general movement observations, form cues, session planning and adaptive movement-plan concepts while explicitly excluding rehabilitation/physiotherapy;
+- Sword Health already provides AI-supported at-home physiotherapy, movement guidance, progress monitoring and therapist plan adjustment;
+- Hinge Health TrueMotion provides full-body computer-vision guidance, objective movement analysis and care-team plan modification;
+- Kaia Motion Coach provides camera-based posture/movement analysis and real-time corrective feedback;
+- Kemtai already targets prescribed home-exercise protocols with camera guidance;
+- Korea's Dr.Answer 3.0 postoperative rehabilitation lane targets smartphone On-device AI, posture/joint analysis, real-time feedback, clinician-prescribed protocols and regulatory development.
+
+Therefore:
+
+```text
+GENERIC_CAMERA_REHAB_COACH = DO_NOT_BUILD_NOW
+PADIEM_DIFFERENTIATION_AS_STATED = LOW
+```
+
+### Surviving angle — `Recovery Story / Between-Visits layer`
+
+Absorb into BIO-003 / PLAT-001 research rather than create another Business.
+
+Question:
+
+> Can AI make the period between clinical visits observable and memorable enough that patient and clinician can reconstruct what was attempted, what changed, what was uncertain, and what should be discussed next?
+
+No autonomous rehabilitation prescription changes are authorized.
 
 ## Existing / paused
 
@@ -139,7 +176,6 @@ Likely overlaps ASTERIVE document search/source/relationship capabilities and My
 ### NIR / vein-finder / venipuncture training — `DEPRIORITIZED HISTORICAL`
 
 - historical PADIEM technical/IP lineage preserved;
-- generic vein-finder thesis already weak in 2026 market;
 - owner clarified this roughly decade-old idea should not lead current discovery;
 - Issue #769 closed `not_planned`;
 - PR #770 closed unmerged.
