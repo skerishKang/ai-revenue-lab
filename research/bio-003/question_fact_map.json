@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Maps each validation question to the minimum canonical facts required to answer it. Required facts must be present in every presentation condition for the case.",
+  "questions": {
+    "A-Q01": ["A-F06"],
+    "A-Q02": ["A-F08"],
+    "A-Q03": ["A-F07"],
+    "A-Q04": ["A-F06","A-F07","A-F08"],
+    "A-Q05": ["A-F01","A-F04","A-F05","A-F06","A-F07"],
+    "A-Q06": ["A-F03"],
+    "B-Q01": ["B-F04"],
+    "B-Q02": ["B-F08"],
+    "B-Q03": ["B-F06"],
+    "B-Q04": ["B-F05","B-F06","B-F07"],
+    "B-Q05": ["B-F01","B-F03","B-F04","B-F05","B-F06"],
+    "B-Q06": ["B-F01"],
+    "C-Q01": ["C-F01"],
+    "C-Q02": ["C-F08"],
+    "C-Q03": ["C-F02"],
+    "C-Q04": ["C-F06","C-F07","C-F08"],
+    "C-Q05": ["C-F01","C-F02","C-F04","C-F05","C-F06"],
+    "C-Q06": ["C-F03"]
+  }
+}
