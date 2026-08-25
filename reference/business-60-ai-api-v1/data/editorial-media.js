@@ -61,5 +61,12 @@ window.B60_EDITORIAL_MEDIA = Object.freeze({
     source: 'Unsplash',
     credit: 'Ritupon Baishya',
     sourcePage: 'https://unsplash.com/photos/modern-laptop-and-keyboard-on-a-home-office-desk-vR2kup7Uyds'
+  },
+  'nvidia-nim-dev-free': {
+    image: 'assets/editorial-cloudflare.webp',
+    alt: 'AI 추론과 GPU 인프라를 연상시키는 실제 서버 랙과 데이터센터 장비',
+    source: 'Unsplash · editorial context',
+    credit: 'Data Servers collection',
+    sourcePage: 'https://unsplash.com/photos/server-racks-in-data-center-klWUhr-wPJ8'
   }
 });
