@@ -8,6 +8,17 @@
   font-weight: 700;
 }
 
+.research-summary {
+  margin: 14px 0 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(31, 41, 55, 0.1);
+  border-radius: 9px;
+  background: rgba(31, 41, 55, 0.035);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(31, 41, 55, 0.66);
+}
+
 .answer-sources {
   margin-top: 18px;
   padding-top: 14px;
@@ -89,6 +100,10 @@
 }
 
 @media (max-width: 640px) {
+  .research-summary {
+    margin-top: 12px;
+  }
+
   .answer-sources {
     margin-top: 15px;
     padding-top: 12px;
