@@ -27,7 +27,7 @@ Patient/guardian-facing source-grounded episodic visit memory. Existing ASTERIVE
 
 ### P2 — BIO-016 AI Change Impact & Revalidation Compiler — `VALIDATING`
 
-This is currently the strongest support-program-derived standalone product hypothesis.
+This remains the strongest support-program-derived standalone product hypothesis.
 
 The broad `Medical AI Lifecycle Evidence Passport` was narrowed after current MFDS/FDA/IMDRF and competitor research.
 
@@ -49,12 +49,56 @@ Current execution:
 - 20 controlled change events;
 - deterministic compiler/scorer/tests;
 - official public guidance source manifest;
-- implementation-level self-check 7/7 assertions PASS;
-- exact-head pytest and qualified Korean RA/QA review remain pending.
+- compiler upgraded from change-type-only lookup to exact evidence-record/version/scope assessment;
+- gold oracle now includes exact stale evidence IDs in addition to evidence classes/support labels;
+- independent execution of the evidence-scope mechanics matched the 20-case research oracle;
+- GitHub exact-head workflow remains not configured for this research branch;
+- qualified Korean RA/QA review remains pending.
+
+Post-market RWE/drift is not a separate product thesis. BIO-021 was screened and absorbed here as a trigger:
+
+```text
+post-market drift / subgroup shift / near miss / RWE finding
+→ exact affected product/version
+→ impacted or stale evidence
+→ candidate revalidation/document review
+→ RA/QA decision
+```
 
 Hard boundary: no `APPROVED`, `EXEMPT`, `NO_SUBMISSION_REQUIRED`, or autonomous regulatory conclusion.
 
-### P3 — BIO-015 Korean HIS Agent Site Acceptance & Replay — `ABSORB / PARTNER-DEPENDENT RESEARCH PROFILE`
+### P3 — BIO-022 Health Model Egress Privacy Auditor — `NARROW / SCREENING`
+
+New support/data-governance-derived candidate.
+
+HIRA operates a real boundary where source medical images stay in the controlled environment while AI models/algorithms may be exported after review. Training-data privacy can still leak through the exported model, while generic privacy-attack tooling already exists.
+
+The possible wedge is therefore **not** a new membership-inference algorithm. It is an operational evidence gate for model/artifact export from controlled health-data environments:
+
+```text
+model / algorithm / embedding / synthetic artifact proposed for export
++ exact model/data/version fingerprint
++ approved threat model
+→ privacy attacks + control experiments
+→ memorization / membership / inversion / subgroup leakage evidence
+→ false-positive / uncertainty warning
+→ residual-risk evidence packet
+→ human export-review decision
+```
+
+First technical gate can use public/synthetic health-like data only. Business promotion requires both technical usefulness and proof that HIRA-like centers/hospital safe havens treat this as a distinct purchasing/workflow problem rather than a generic AI-security service.
+
+Potential future disposition after validation:
+
+```text
+STANDALONE
+or
+ABSORB_AS_B63_MODEL_ARTIFACT_EGRESS_PROFILE
+or
+KILL
+```
+
+### P4 — BIO-015 Korean HIS Agent Site Acceptance & Replay — `ABSORB / PARTNER-DEPENDENT RESEARCH PROFILE`
 
 Generic `Clinical AI Agent Sandbox` is **not** a strong new standalone thesis. Current research/products already cover medical-agent sandboxes, FHIR workflow simulators and pre-release healthcare AI gates.
 
@@ -74,7 +118,7 @@ Build from B42 + B48 + B63 rather than assign another Business number. Serious b
 
 BIO-018 Clinical AI Incident Replay is absorbed here as a replay/forensics function.
 
-### P4 — BIO-017 Closed-Loop Decision Provenance Verifier — `PARTNER-LED R&D / NARROW`
+### P5 — BIO-017 Closed-Loop Decision Provenance Verifier — `PARTNER-LED R&D / NARROW`
 
 Generic ELN/LIMS/SDMS/data-lineage platform is killed as a new thesis because Benchling, TetraScience, Dotmatics and others already occupy the space.
 
@@ -96,15 +140,15 @@ AI next-experiment proposal
 
 Validate broken-chain detection synthetically if useful, but real product evidence requires a university/biotech/lab-automation partner. High consortium/R&D fit; low justification for standalone build without partner.
 
-### P5 — BIO-012A Bilingual Visit Passport — `DOMAIN-TRANSFER / ABSORB`
+### P6 — BIO-012A Bilingual Visit Passport — `DOMAIN-TRANSFER / ABSORB`
 
 Reuse B39 `112 Real-Time Interpretation` and existing dissertation/HITL evaluation. Do not build another translation engine. Medical-domain checks can extend to body side/site, symptom duration/frequency, medication/allergy/dose strings and follow-up. Absorb into BIO-003/B39/B63/PLAT-001 if useful.
 
-### P6 — BIO-014A Recovery Story + PLAT-001 Event Story Engine — `PLATFORM SCREENING`
+### P7 — BIO-014A Recovery Story + PLAT-001 Event Story Engine — `PLATFORM SCREENING`
 
 Generic camera rehab coach was killed. Preserve the between-visits continuity question: what was attempted, what changed, what was uncertain, and what should be discussed next. No autonomous rehab prescription.
 
-### P7 — BIO-019 Health Data Product Validation Workbench — `LOWER-PRIORITY SCREEN`
+### P8 — BIO-019 Health Data Product Validation Workbench — `LOWER-PRIORITY SCREEN`
 
 HIRA data-commercialization signal is real, but overlap with analytics/data-lab tooling is high. Keep low priority until a concrete partner workflow gap appears.
 
@@ -128,6 +172,8 @@ HIRA data-commercialization signal is real, but overlap with analytics/data-lab 
 - BIO-014 generic Home Rehab Observer Coach — killed as standalone.
 - BIO-018 Clinical AI Incident Replay — absorbed into BIO-015 profile.
 - BIO-020 Medical AI Export/Regulatory Readiness Passport — verticalize BIO-016 + GEN-001 if warranted.
+- BIO-021 Clinical AI Post-Market Evidence & Drift Trace — generic RWE/drift monitoring is occupied; absorb post-market signal → stale-evidence/revalidation trigger into BIO-016.
+- BIO-023 Bio Manufacturing Deviation / CAPA Copilot — generic category is already crowded with GxP-native AI investigation/CAPA products; kill standalone and retain only possible partner-led B48 verification profile.
 
 ## September operating rule
 
