@@ -131,7 +131,7 @@ CATALOG_MODELS: list[CatalogModel] = [
         latency_ms=2000,
         capabilities=frozenset({"chat", "image", "long_context", "coding", "free"}),
         region="외부",
-        sort_order=20,
+        sort_order=60,
         source_checked_at=OX_ALPHA_SOURCE_CHECKED_AT,
     ),
     CatalogModel(
