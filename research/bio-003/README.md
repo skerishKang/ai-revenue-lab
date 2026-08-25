@@ -55,7 +55,8 @@ Explicit provenance labels are intentionally **not** equalized across conditions
 - `score.py` — deterministic item scorer;
 - `analyze.py` — condition-level descriptive analysis;
 - `tests/test_score.py` — scorer, parity, question dependency and counterbalancing contract tests;
-- `PARITY_AUDIT_2026-08-26.md` — defect discovery, correction and independent mechanics evidence.
+- `PARITY_AUDIT_2026-08-26.md` — defect discovery, correction and independent mechanics evidence;
+- `PILOT_PROTOCOL_v0.1.md` — bounded synthetic participant protocol and directional GO/NARROW/ABSORB/KILL gate.
 
 ## Synthetic cases
 
@@ -114,7 +115,7 @@ Preference alone is never a GO criterion. The primary signals are source-attribu
 
 ## Next gate
 
-The information-parity blocker is closed. The next valid step is a bounded participant pilot using synthetic cases only, with immediate and delayed recall separated from simple visual preference.
+The information-parity blocker is closed. The next valid step is the bounded participant pilot defined in `PILOT_PROTOCOL_v0.1.md`, using synthetic cases only and separating immediate/delayed objective recall from simple visual preference.
 
 ## Safety
 
