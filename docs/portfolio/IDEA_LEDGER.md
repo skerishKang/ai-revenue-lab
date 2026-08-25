@@ -44,32 +44,36 @@ Do not delete `KILL`, `DUPLICATE`, `PAUSED`, or `DEPRIORITIZED` entries. They pr
 |---|---|---|---|---|---|
 | BIO-001 | Historical Bio / medical device | NIR Vein Intelligence / 정맥주사 실습 보조 | DEPRIORITIZED | Preserve PADIEM's 2015–2017 NIR/vein-assistance technical lineage for future reuse only if new evidence materially changes the opportunity. | Owner priority reset 2026-08-26: roughly decade-old idea; Issue #769 and PR #770 closed unmerged. Do not make this the center of current Bio discovery. |
 | BIO-002 | Healthcare AI governance | Clinical AI Egress Control Plane | PROMOTED / PAUSED | Govern what Korean clinical data may leave hospital workflows for external/internal GenAI while preserving clinical utility and audit evidence. | Proposed as B63 in Issue #731; concept demo completed; hospital/HIS validation still required. |
-| BIO-003 | Patient experience / longitudinal health | My Health Story / 병원 스토리북 | DEMO | Turn one hospital visit into a source-grounded story: why I went, what I said, what the doctor said, tests, medication, what to remember and what happens next. | ASTERIVE `04_아스테리브_마이헬스스토리_병원스토리북_v1`; sample-only prototype and QA evidence already exist. Next = product validation, not more speculative UI. |
+| BIO-003 | Patient experience / longitudinal health | My Health Story / 병원 스토리북 | DEMO / VALIDATING | Turn one hospital visit into a source-grounded story: why I went, what I said, what the doctor said, tests, medication, what to remember and what happens next. | ASTERIVE sample-only prototype and QA evidence exist. Issue #772 + Draft PR #774 define the summary-vs-timeline-vs-story validation pack. |
 | BIO-004 | Patient communication | Patient Communication AI | SCREENING | Translate complex clinical information into patient-appropriate language/channel while preserving exact source boundaries. | Likely module inside My Health Story, discharge/follow-up or foreign-patient workflows unless a distinct buyer/product boundary is proven. |
 | BIO-005 | Preventive / longitudinal health | Health-check Trend AI | SCREENING | Track repeated checkup/test results and explain what changed over time with source-linked context. | Likely longitudinal module of My Health Story/CareGraph first; do not create a new Business by default. |
 | BIO-006 | Clinical workflow | Ambient Medical AI / Scribe | DEPRIORITIZED | Capture and structure clinician-patient encounters into reviewable documentation. | Crowded category and weak first-fit relative to current PADIEM differentiation. |
-| BIO-007 | Rehab / movement | Rehab / Pose AI | SCREENING | Use pose/motion analysis for rehabilitation or guided movement workflows with measurable feedback. | Existing PADIEM AI Exercise Coach / Business 38 lineage means generic pose coaching is not a new product. Rehab-specific boundary still requires screening. |
+| BIO-007 | Rehab / movement | Rehab / Pose AI | DEPRIORITIZED / ABSORB | Preserve movement-analysis capability only where it supports a differentiated patient-recovery workflow. | Generic camera pose/exercise coaching overlaps B38 and mature digital-PT products. Do not create standalone rehab coach from generic pose tracking. |
 | BIO-008 | Biotech | AI Drug Discovery | DEPRIORITIZED | Apply AI to candidate discovery / ranking in drug R&D. | Too broad and domain-capital intensive for current first entry. |
 | BIO-009 | Medical imaging | Radiology Diagnosis AI | DEPRIORITIZED | Apply multimodal AI to radiology image interpretation or diagnostic support. | Crowded and high-regulatory; no current differentiated PADIEM evidence recorded. |
 | BIO-010 | Genomics | Genomics AI | DEPRIORITIZED | Apply AI to genomic interpretation and research workflows. | Requires specialized data/domain capability not yet established in current PADIEM evidence. |
 | BIO-011 | Clinical documents | Medical Record Intelligence Workspace | SCREENING | Organize clinical documents, evidence, provenance, versions and review states into one grounded workspace. | Much of this is already represented by ASTERIVE search/source/relationship functions and My Health Story. Likely absorbed unless a new workflow/buyer is proven. |
 | BIO-012 | Global healthcare | Foreign Patient Medical Coordination | IDEA | Coordinate multilingual medical documents, appointments, explanations and workflow handoffs for international patients. | Plausible separate lane because PADIEM has multilingual speech/translation/dubbing assets; must be more than translation. |
 | BIO-013 | Biotech R&D operations | Bio Evidence Graph / R&D Reproducibility Copilot | DEPRIORITIZED | Trace a research claim back through experiment, sample, protocol, raw data, analysis and report while flagging evidence breaks. | Preserve as later candidate; it should not displace owner-originated 2026 healthcare ideas. |
-| BIO-014 | Home rehabilitation | Home Rehab Observer Coach / 혼자 재활할 때 보는 AI 코치 | SCREENING | Observe a person doing prescribed/self-guided rehabilitation alone, detect movement problems, give bounded corrective feedback and adapt the session. | Owner-originated 2026 idea. First test whether it is merely a B38 extension or has a distinct rehab workflow, progression and clinician-handoff product boundary. |
-| PLAT-001 | Cross-domain story infrastructure | Event Story Engine / 사건·병원 여정 스토리 엔진 | SCREENING | Convert recordings, documents and evidence into source-grounded event chapters, causal transitions, current state and next actions. | Common grammar observed across My Health Story and 사실로 legal-event storytelling. Treat as reusable platform capability before considering a standalone Business. |
+| BIO-014 | Home rehabilitation | Home Rehab Observer Coach / 혼자 재활할 때 보는 AI 코치 | DEPRIORITIZED / KILL GENERIC | Original concept: observe home rehabilitation, detect movement problems and provide correction/adaptation. | 2026 screen: generic thesis is crowded by Sword/Hinge/Kaia/Kemtai and Korean Dr.Answer 3.0 postoperative rehab; B38 already owns general movement coaching. Do not build as a new standalone product. |
+| BIO-014A | Recovery continuity | Recovery Story / Between-Visits Recovery Layer | ABSORB INTO BIO-003 / PLAT-001 | Make the period between clinic visits observable and memorable: prescribed plan → attempted sessions → movement evidence → user uncertainty → adherence/change → questions for next visit. | Surviving angle from BIO-014. Prefer source-grounded continuity and clinician handoff over competing on generic live pose correction. No autonomous clinical-plan changes. |
+| PLAT-001 | Cross-domain story infrastructure | Event Story Engine / 사건·병원 여정 스토리 엔진 | SCREENING | Convert recordings, documents and evidence into source-grounded event chapters, causal transitions, current state and next actions. | Common grammar across My Health Story and 사실로; Recovery Story is another possible vertical. Treat as reusable platform capability before considering a standalone Business. |
 | GEN-001 | Export / compliance | AI Global Certification Passport | IDEA | Show a Korean company's product-specific overseas certification/regulatory gaps, missing evidence and next actions by target country. | General portfolio candidate, not part of Bio R&D; no Business number reserved. |
 | GEN-002 | Funding discovery | Support Program AI Matching / 지원사업 AI 매칭 | DUPLICATE | Match an organization to public support programs and explain eligibility, gaps and preparation tasks. | Duplicate / repackaging risk confirmed against existing `400-ai-finder` and `cwtree` support-program work. |
 
 ## Current Bio / Healthcare priority
 
-See `docs/portfolio/research/BIO_HEALTHCARE_IDEA_RECOVERY_AND_PRIORITY_2026-08-26.md`.
+See:
+
+- `docs/portfolio/research/BIO_HEALTHCARE_IDEA_RECOVERY_AND_PRIORITY_2026-08-26.md`
+- `docs/portfolio/research/BIO_014_HOME_REHAB_OBSERVER_COACH_SCREEN_2026-08-26.md`
 
 ```text
 P1 = BIO-003 My Health Story validation
-P2 = BIO-014 Home Rehab Observer Coach duplicate/product-boundary screen
-P3 = BIO-012 Foreign Patient Medical Coordination screen
-P4 = PLAT-001 Event Story Engine reuse model
+P2 = BIO-012 Foreign Patient Medical Coordination screen
+P3 = PLAT-001 Event Story Engine + BIO-014A Recovery Story reuse model
 B63 = paused pending hospital/HIS evidence
+BIO-014 generic home rehab coach = screened/deprioritized
 BIO-001 NIR = historical/deprioritized
 ```
 
@@ -81,6 +85,7 @@ Recent product-decision issues and implementation work may run ahead of the curr
 
 - `07_BioR&D_설계팀장_임명및1차통합작업지시서_v1.md` requires PADIEM Bio R&D to proceed from research problem → technical hypothesis → validation → PoC → productization candidate rather than inventing medical products arbitrarily.
 - `04_아스테리브_마이헬스스토리_병원스토리북_v1` proves the health-story direction already advanced beyond ideation into a bounded sample-data visual prototype.
+- Proposed Business 38 explicitly excludes physical therapy/rehabilitation even though it owns general movement observation, session planning and form cues; generic home-rehab computer vision is also externally crowded.
 - B63 evidence supports concept-demo completion and a narrowed healthcare-specific semantic/quasi-identifier safety layer, but not a production hospital product.
 - PADIEM historical NIR technology remains valid portfolio history but is not a current priority merely because it has old patent evidence.
 
