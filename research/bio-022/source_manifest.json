@@ -1,14 +1,46 @@
 {
-  "schema_version": "0.1",
-  "purpose": "Public sources motivating the controlled-health-data model-export workflow and privacy-audit caution. These sources are not a machine-readable legal rulebook.",
+  "schema_version": "0.2",
+  "purpose": "Public sources motivating the controlled-health-data model-export workflow and privacy-audit caution. These sources are not a machine-readable legal rulebook and do not prove that BIO-022 is an accepted export-review method.",
   "sources": [
     {
       "id": "HIRA-OPEN-DATA-MEDICAL-IMAGE",
       "authority": "HIRA",
       "title": "보건의료빅데이터개방시스템 의료영상 데이터 분석 지원 안내",
       "url": "https://opendata.hira.or.kr/op/opb/selectHelhMedDataInfoView.do?divId=cust",
-      "supported_use": "Medical-image analysis can occur in a controlled GPU environment without exporting source image data.",
-      "unsupported_use": "Proof that BIO-022 methodology is accepted for export approval."
+      "supported_use": "Medical-image AI development can occur in a controlled GPU environment without exporting source image data; HIRA also exposes formal data-analysis application/review workflows.",
+      "unsupported_use": "Proof that BIO-022 methodology is accepted for model export approval."
+    },
+    {
+      "id": "HIRA-RESEARCH-DATA-GUIDE",
+      "authority": "HIRA",
+      "title": "맞춤형 연구자료 이용가이드",
+      "url": "https://opendata.hira.or.kr/co.apndFile.dir/download.do?fileNm=%EC%97%B0%EA%B5%AC%EA%B3%BC%EC%A0%9C_%EC%9D%B4%EC%9A%A9_%EA%B0%80%EC%9D%B4%EB%93%9C.pdf",
+      "supported_use": "HIRA research-data workflows include a separate import/export application step after analysis approval.",
+      "unsupported_use": "Evidence that trained-model privacy attacks are currently mandatory in that export step."
+    },
+    {
+      "id": "HIRA-PUBLIC-DATA-EXPORT-FORM",
+      "authority": "HIRA",
+      "title": "공공데이터 제공 및 이용 업무 운영지침 — 반출신청서",
+      "url": "https://opendata.hira.or.kr/co.apndFile.dir/download.do?fileNm=%EA%B3%B5%EA%B3%B5%EB%8D%B0%EC%9D%B4%ED%84%B0+%EC%A0%9C%EA%B3%B5%EB%B0%8F%EC%9D%B4%EC%9A%A9%EC%97%85%EB%AC%B4%EC%9A%B4%EC%98%81%EC%A7%80%EC%B9%A8.pdf",
+      "supported_use": "A formal export-approval request exists for artifacts/results leaving controlled analysis workflows.",
+      "unsupported_use": "Proof that a model-security product is separately purchased today."
+    },
+    {
+      "id": "KHIDI-2026-MEDICAL-AI-DATA-VOUCHER",
+      "authority": "KHIDI / healthcare-data program",
+      "title": "2026년 의료 AI 데이터 활용 바우처 지원사업 수요기관 2차 모집",
+      "url": "https://www.khidi.or.kr/board/view?boardStyle=&categoryId=&continent=&country=&linkId=48945636&maxIndex=&menuId=MENU01484&minIndex=&no1=4816&pageNum=1&refMenuId=MENU01485&rowCnt=20&schText=&schType=0&upDown=0",
+      "supported_use": "The 2026 program connected 10 medical-AI SMEs with 45 participating medical-data-centered hospitals for data preparation/processing/analysis support, providing a concrete buyer/interview cohort signal.",
+      "unsupported_use": "Proof that those organizations need or would pay for BIO-022."
+    },
+    {
+      "id": "KHIDI-2026-MEDICAL-DATA-AX-SIGNAL",
+      "authority": "KHIDI / MOHW",
+      "title": "AX 시대 의료데이터 활용 전략 모색",
+      "url": "https://www.khidi.or.kr/board/view?linkId=48938032&menuId=MENU01498&no1=7828&pageNum=2&refMenuId=MENU01499&rowCnt=20",
+      "supported_use": "Public 2026 direction includes expanding data vouchers and creating AI-model validation through medical-data-centered hospitals.",
+      "unsupported_use": "A conclusion about the exact technical content of model-export privacy review."
     },
     {
       "id": "HIRA-2026-ROLE-FUNCTIONS",
