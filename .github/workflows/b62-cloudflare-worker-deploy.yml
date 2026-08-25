@@ -59,15 +59,25 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Require a new Worker identity
+      - name: Guard Worker identity and existing mock ownership
         env:
           WORKER_STATE: ${{ needs.preflight.outputs.worker_state }}
+          B62_BASE_URL: https://padiem-chat.${{ needs.preflight.outputs.subdomain }}.workers.dev
         run: |
           set -euo pipefail
-          if [ "$WORKER_STATE" != "absent" ]; then
-            echo "Refusing to overwrite an existing padiem-chat Worker without a separate ownership review." >&2
-            exit 1
-          fi
+          case "$WORKER_STATE" in
+            absent)
+              echo "Padiem Chat Worker is absent; guarded initial mock creation is allowed."
+              ;;
+            existing)
+              echo "Padiem Chat Worker exists; proving owned mock runtime before any overwrite."
+              python .github/scripts/b62_cloudflare_mock_smoke.py
+              ;;
+            *)
+              echo "Refusing deployment for unexpected Worker state: $WORKER_STATE" >&2
+              exit 1
+              ;;
+          esac
 
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
