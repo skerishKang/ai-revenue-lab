@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "synthetic_only": true,
+  "cases": [
+    {
+      "case_id": "A",
+      "title": "Sleep / stress consultation",
+      "visit": {"date": "2026-08-18", "institution": "샘플마음의원", "department": "상담진료", "patient": "김하늘(가상)"},
+      "facts": [
+        {"id": "A-F01", "source": "PATIENT_SAID", "sequence": 1, "text": "최근 2주 동안 잠든 뒤 밤에 3~4번 깨는 날이 이어졌다고 말했다."},
+        {"id": "A-F02", "source": "PATIENT_SAID", "sequence": 2, "text": "업무 프로젝트 마감 이후 수면 문제가 시작됐다고 말했다."},
+        {"id": "A-F03", "source": "PATIENT_SAID", "sequence": 3, "text": "오후 2시 이후에는 카페인을 피하지만 잠들기 전 휴대전화를 보는 습관이 있다고 말했다."},
+        {"id": "A-F04", "source": "CLINICIAN_SAID", "sequence": 4, "text": "의료진은 우선 수면 패턴을 기록해 다음 방문에서 함께 확인하자고 설명했다."},
+        {"id": "A-F05", "source": "SOURCE_DOCUMENT", "sequence": 5, "text": "방문 당일 기초 수면 문진 1건이 완료되었다."},
+        {"id": "A-F06", "source": "CLINICIAN_SAID", "sequence": 6, "follow_up": true, "text": "다음 방문 전 7일 동안 취침 시각과 깬 횟수를 기록해 오라고 안내했다."},
+        {"id": "A-F07", "source": "SOURCE_DOCUMENT", "sequence": 7, "follow_up": true, "text": "다음 방문은 2026-09-01 10:30으로 예약되었다."},
+        {"id": "A-F08", "source": "MY_NOTE", "sequence": 8, "follow_up": true, "text": "환자는 '늦은 시간 운동도 수면에 영향을 주는지 다음에 물어보기'라고 개인 메모를 남겼다."}
+      ],
+      "renderings": {
+        "summary": [
+          "2026-08-18 샘플마음의원 상담진료. 최근 2주 동안 잠든 뒤 밤에 3~4번 깨는 일이 이어졌고, 업무 프로젝트 마감 이후 시작되었다고 설명했다. 오후 2시 이후 카페인은 피하지만 잠들기 전 휴대전화를 보는 습관도 이야기했다.",
+          "의료진은 우선 수면 패턴을 기록해 다음 방문에서 함께 확인하자고 설명했다. 방문 당일 기초 수면 문진 1건이 완료됐다.",
+          "다음 방문 전 7일 동안 취침 시각과 깬 횟수를 기록하고, 2026-09-01 10:30에 재방문할 예정이다. 개인 메모에는 늦은 시간 운동과 수면의 관계를 다음에 물어보겠다고 적었다."
+        ],
+        "timeline": [
+          "01 방문 이유 — 최근 2주간 밤에 3~4번 깨는 일이 이어짐. 업무 프로젝트 마감 이후 시작됨.",
+          "02 생활 관련 설명 — 오후 2시 이후 카페인은 피하지만 잠들기 전 휴대전화 사용.",
+          "03 진료 대화 — 의료진이 수면 패턴을 기록해 다음 방문에서 확인하자고 설명.",
+          "04 문서 — 기초 수면 문진 1건 완료.",
+          "05 다음 행동 — 7일 수면기록 작성.",
+          "06 예약 — 2026-09-01 10:30.",
+          "07 개인 메모 — 늦은 시간 운동과 수면 관계 질문하기."
+        ],
+        "story": [
+          {"chapter": "BEFORE THE VISIT", "source": "PATIENT SAID", "text": "최근 2주 동안 잠든 뒤 밤에 3~4번 깨는 날이 이어졌다. 업무 프로젝트 마감 이후 시작됐다고 말했다."},
+          {"chapter": "WHAT I TOLD THE DOCTOR", "source": "PATIENT SAID", "text": "오후 2시 이후 카페인은 피하지만 잠들기 전 휴대전화를 보는 습관이 있다고 말했다."},
+          {"chapter": "WHAT THE DOCTOR SAID", "source": "CLINICIAN SAID", "text": "우선 수면 패턴을 기록해 다음 방문에서 함께 확인하자고 설명했다."},
+          {"chapter": "EXAMS & TESTS", "source": "SOURCE DOCUMENT", "text": "방문 당일 기초 수면 문진 1건 완료."},
+          {"chapter": "WHAT I NEED TO REMEMBER", "source": "CLINICIAN SAID", "text": "다음 방문 전 7일 동안 취침 시각과 깬 횟수를 기록하기."},
+          {"chapter": "WHAT HAPPENED NEXT", "source": "SOURCE DOCUMENT", "text": "다음 방문은 2026-09-01 10:30으로 예약됨."},
+          {"chapter": "MY NOTE AFTER THE VISIT", "source": "MY NOTE", "text": "늦은 시간 운동도 수면에 영향을 주는지 다음에 물어보기."}
+        ]
+      }
+    },
+    {
+      "case_id": "B",
+      "title": "Hand pain / musculoskeletal visit",
+      "visit": {"date": "2026-08-20", "institution": "샘플정형외과", "department": "근골격진료", "patient": "이서윤(가상)"},
+      "facts": [
+        {"id": "B-F01", "source": "PATIENT_SAID", "sequence": 1, "text": "오른손 검지 통증이 열흘 전 정원일을 한 뒤부터 시작됐다고 말했다."},
+        {"id": "B-F02", "source": "PATIENT_SAID", "sequence": 2, "text": "물건을 집거나 비트는 동작에서 더 불편하다고 말했다."},
+        {"id": "B-F03", "source": "CLINICIAN_SAID", "sequence": 3, "text": "의료진은 진찰에서 특정 움직임 때 압통이 재현됐다고 설명했다."},
+        {"id": "B-F04", "source": "SOURCE_DOCUMENT", "sequence": 4, "text": "당일 손 X-ray 촬영 1건이 시행됐고, 샘플 판독문에는 급성 골절 소견이 보이지 않는다고 기록됐다."},
+        {"id": "B-F05", "source": "CLINICIAN_SAID", "sequence": 5, "follow_up": true, "text": "의료진은 일주일 동안 통증이 심해지는 동작과 시각을 간단히 기록해 오라고 안내했다."},
+        {"id": "B-F06", "source": "SOURCE_DOCUMENT", "sequence": 6, "follow_up": true, "text": "2주 뒤 재진 예약이 2026-09-03 14:00으로 등록됐다."},
+        {"id": "B-F07", "source": "CLINICIAN_SAID", "sequence": 7, "follow_up": true, "text": "재진 때 지난 X-ray 결과와 증상기록을 함께 확인하겠다고 설명했다."},
+        {"id": "B-F08", "source": "MY_NOTE", "sequence": 8, "follow_up": true, "text": "환자는 '병뚜껑을 열 때 어느 손가락이 아픈지 다음 주까지 적기'라는 개인 메모를 남겼다."}
+      ],
+      "renderings": {
+        "summary": [
+          "2026-08-20 샘플정형외과 근골격진료. 오른손 검지 통증은 열흘 전 정원일 뒤 시작됐고, 물건을 집거나 비트는 동작에서 더 불편하다고 설명했다.",
+          "의료진은 진찰에서 특정 움직임 때 압통이 재현됐다고 설명했다. 당일 손 X-ray 1건이 시행됐고 샘플 판독문에는 급성 골절 소견이 보이지 않는다고 기록됐다.",
+          "일주일 동안 통증이 심해지는 동작과 시각을 기록하고, 2026-09-03 14:00에 재진한다. 재진에서는 X-ray 결과와 증상기록을 함께 확인할 예정이다. 개인 메모에는 병뚜껑을 열 때 어느 손가락이 아픈지 적겠다고 남겼다."
+        ],
+        "timeline": [
+          "01 증상 설명 — 정원일 뒤 오른손 검지 통증 시작.",
+          "02 진찰 — 특정 움직임에서 압통 재현.",
+          "03 검사 — 손 X-ray 촬영.",
+          "04 문서 — 샘플 판독문에 급성 골절 소견 없음.",
+          "05 다음 행동 — 일주일 동안 통증이 심해지는 동작/시각 기록.",
+          "06 예약 — 2026-09-03 14:00 재진.",
+          "07 개인 메모 — 병뚜껑을 열 때 아픈 손가락 기록."
+        ],
+        "story": [
+          {"chapter": "BEFORE THE VISIT", "source": "PATIENT SAID", "text": "열흘 전 정원일 뒤 오른손 검지 통증이 시작됐다고 말했다."},
+          {"chapter": "WHAT I TOLD THE DOCTOR", "source": "PATIENT SAID", "text": "물건을 집거나 비트는 동작에서 더 불편하다고 설명했다."},
+          {"chapter": "WHAT THE DOCTOR SAID", "source": "CLINICIAN SAID", "text": "진찰에서 특정 움직임 때 압통이 재현됐다고 설명했다."},
+          {"chapter": "EXAMS & TESTS", "source": "SOURCE DOCUMENT", "text": "손 X-ray 1건 시행. 샘플 판독문에는 급성 골절 소견이 보이지 않는다고 기록."},
+          {"chapter": "WHAT I NEED TO REMEMBER", "source": "CLINICIAN SAID", "text": "일주일 동안 통증이 심해지는 동작과 시각을 기록하기."},
+          {"chapter": "WHAT HAPPENED NEXT", "source": "SOURCE DOCUMENT", "text": "2026-09-03 14:00 재진 예약."},
+          {"chapter": "WHAT THE DOCTOR SAID", "source": "CLINICIAN SAID", "text": "재진 때 X-ray 결과와 증상기록을 함께 확인할 예정."},
+          {"chapter": "MY NOTE AFTER THE VISIT", "source": "MY NOTE", "text": "병뚜껑을 열 때 어느 손가락이 아픈지 다음 주까지 적기."}
+        ]
+      }
+    },
+    {
+      "case_id": "C",
+      "title": "Routine health check / document-heavy follow-up",
+      "visit": {"date": "2026-08-22", "institution": "샘플건강센터", "department": "건강검진상담", "patient": "박도윤(가상)"},
+      "facts": [
+        {"id": "C-F01", "source": "SOURCE_DOCUMENT", "sequence": 1, "text": "이번 검진의 샘플 검사 항목 A는 102 U로 기록됐다."},
+        {"id": "C-F02", "source": "SOURCE_DOCUMENT", "sequence": 2, "text": "이전 2025-08 검진의 같은 샘플 검사 항목 A는 96 U로 기록돼 있다."},
+        {"id": "C-F03", "source": "SOURCE_DOCUMENT", "sequence": 3, "text": "이번 검진의 샘플 검사 항목 B는 4.8 U로 기록됐다."},
+        {"id": "C-F04", "source": "PATIENT_SAID", "sequence": 4, "text": "환자는 최근 생활패턴 변화가 검사 수치에 영향을 줬는지 궁금하다고 말했다."},
+        {"id": "C-F05", "source": "CLINICIAN_SAID", "sequence": 5, "text": "의료진은 한 번의 수치만으로 결론내리지 않고 이전 기록과 함께 다음 상담에서 다시 보자고 설명했다."},
+        {"id": "C-F06", "source": "SOURCE_DOCUMENT", "sequence": 6, "follow_up": true, "text": "추적 상담은 2026-11-20 09:00으로 예약됐다."},
+        {"id": "C-F07", "source": "CLINICIAN_SAID", "sequence": 7, "follow_up": true, "text": "다음 상담에는 2025년 검진표가 이미 시스템에 연결돼 있어 별도로 가져올 필요가 없다고 설명했다."},
+        {"id": "C-F08", "source": "MY_NOTE", "sequence": 8, "follow_up": true, "text": "환자는 '다음 상담에서 항목 A가 96에서 102로 바뀐 이유를 질문하기'라고 개인 메모를 남겼다."}
+      ],
+      "renderings": {
+        "summary": [
+          "2026-08-22 샘플건강센터 건강검진상담. 이번 샘플 검사 항목 A는 102 U, 항목 B는 4.8 U로 기록됐다. 2025-08 검진의 항목 A는 96 U였다.",
+          "환자는 최근 생활패턴 변화가 검사 수치에 영향을 줬는지 궁금하다고 말했다. 의료진은 한 번의 수치만으로 결론내리지 않고 이전 기록과 함께 다음 상담에서 다시 보자고 설명했다.",
+          "추적 상담은 2026-11-20 09:00이다. 2025년 검진표는 이미 시스템에 연결돼 있어 별도로 가져올 필요가 없다고 안내됐다. 개인 메모에는 항목 A가 96에서 102로 바뀐 이유를 다음 상담에서 질문하겠다고 적었다."
+        ],
+        "timeline": [
+          "01 문서 확인 — 항목 A 102 U, 항목 B 4.8 U.",
+          "02 과거 기록 비교 — 2025-08 항목 A 96 U.",
+          "03 환자 질문 — 생활패턴 변화가 수치에 영향을 줬는지 궁금함.",
+          "04 의료진 설명 — 한 번의 수치만으로 결론내리지 않고 다음 상담에서 과거 기록과 함께 다시 보기.",
+          "05 예약 — 2026-11-20 09:00 추적 상담.",
+          "06 안내 — 2025년 검진표는 시스템에 연결돼 있어 별도 지참 불필요.",
+          "07 개인 메모 — 항목 A 변화 이유 질문하기."
+        ],
+        "story": [
+          {"chapter": "EXAMS & TESTS", "source": "SOURCE DOCUMENT", "text": "이번 샘플 검사 항목 A 102 U, 항목 B 4.8 U. 2025-08의 항목 A는 96 U."},
+          {"chapter": "WHAT I TOLD THE DOCTOR", "source": "PATIENT SAID", "text": "최근 생활패턴 변화가 검사 수치에 영향을 줬는지 궁금하다고 말했다."},
+          {"chapter": "WHAT THE DOCTOR SAID", "source": "CLINICIAN SAID", "text": "한 번의 수치만으로 결론내리지 않고 이전 기록과 함께 다음 상담에서 다시 보자고 설명했다."},
+          {"chapter": "WHAT HAPPENED NEXT", "source": "SOURCE DOCUMENT", "text": "추적 상담 2026-11-20 09:00 예약."},
+          {"chapter": "WHAT I NEED TO REMEMBER", "source": "CLINICIAN SAID", "text": "2025년 검진표는 시스템에 연결돼 있어 별도로 가져올 필요가 없음."},
+          {"chapter": "MY NOTE AFTER THE VISIT", "source": "MY NOTE", "text": "다음 상담에서 항목 A가 96에서 102로 바뀐 이유를 질문하기."}
+        ]
+      }
+    }
+  ]
+}
