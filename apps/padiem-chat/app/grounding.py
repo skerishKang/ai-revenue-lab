@@ -159,12 +159,11 @@ def _combine_context(additional_system_context: str | None, evidence: list[Evide
             evidence_budget,
             MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS - len(project_context) - 2,
         )
-    prepared = prepare_grounding_context(
+    return prepare_grounding_context(
         evidence,
         max_context_chars=evidence_budget,
         max_sources=max_sources,
     )
-    return prepared
 
 
 def _system_context(additional_system_context: str | None, prepared: PreparedGrounding) -> str:
@@ -309,8 +308,13 @@ class GroundedChatService:
             "page_fetches_failed": page_fetches_failed,
             "source_count": len(prepared.evidence),
         }
+        public_result = {
+            "answer": result["answer"],
+            "runtime": result.get("runtime", "b14"),
+            "skill": result.get("skill", {"id": "deep_research", "title": "심층 리서치"}),
+        }
         return {
-            **result,
+            **public_result,
             "answer_status": "deep_research_answered",
             "evidence": [_research_evidence_dict(item) for item in prepared.evidence],
             "tool": {"id": tool.id, "title": tool.title},
