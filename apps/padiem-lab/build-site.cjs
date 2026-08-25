@@ -23,12 +23,13 @@ function requirePath(target) {
 }
 
 requirePath(path.join(labSource, 'index.html'));
+requirePath(path.join(labSource, '404.html'));
 requirePath(path.join(b60Source, 'index.html'));
 
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 
-for (const name of ['index.html', 'styles.css', 'app.js', 'public-businesses.js']) {
+for (const name of ['index.html', '404.html', 'styles.css', 'app.js', 'public-businesses.js']) {
   copyFile(path.join(labSource, name), path.join(out, name));
 }
 
