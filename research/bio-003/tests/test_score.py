@@ -20,6 +20,12 @@ def rendering_text(rendering):
     return "\n".join(item["text"] for item in rendering)
 
 
+def fact_dependencies(entry):
+    if isinstance(entry, list):
+        return set(entry)
+    return set(entry["facts"])
+
+
 def test_single_choice():
     question = {"type": "single_choice", "answer": "A"}
     assert score.score_item(question, "A")[0] == 1.0
@@ -84,7 +90,7 @@ def test_question_fact_map_is_complete_and_supported_by_every_condition():
 
     for question in questions:
         case_id = question["case_id"]
-        required = set(question_map[question["id"]])
+        required = fact_dependencies(question_map[question["id"]])
         canonical = {fact["id"] for fact in cases[case_id]["facts"]}
         assert required
         assert required <= canonical
@@ -93,6 +99,21 @@ def test_question_fact_map_is_complete_and_supported_by_every_condition():
                 f"{question['id']} depends on facts absent from {case_id}/{condition}: "
                 f"{sorted(required - set(anchors_by_fact))}"
             )
+
+
+def test_delayed_recall_subset_has_three_balanced_items_per_case():
+    questions = {q["id"]: q for q in load("questions.json")["questions"]}
+    question_map = load("question_fact_map.json")["questions"]
+
+    delayed = [qid for qid, meta in question_map.items() if meta.get("delayed_recall_recommended") is True]
+    assert len(delayed) == 9
+
+    for case_id in ("A", "B", "C"):
+        case_delayed = [qid for qid in delayed if questions[qid]["case_id"] == case_id]
+        assert len(case_delayed) == 3
+        assert {questions[qid]["category"] for qid in case_delayed} == {
+            "source_attribution", "follow_up", "retrieval"
+        }
 
 
 def test_questions_cover_primary_categories_for_each_case():
