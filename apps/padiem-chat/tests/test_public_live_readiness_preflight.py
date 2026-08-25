@@ -2,14 +2,17 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import sys
 
 
 def _load_module():
     repo_root = Path(__file__).resolve().parents[3]
     script = repo_root / ".github/scripts/b62_cloudflare_live_readiness.py"
-    spec = importlib.util.spec_from_file_location("b62_cloudflare_live_readiness_contract", script)
+    module_name = "b62_cloudflare_live_readiness_contract"
+    spec = importlib.util.spec_from_file_location(module_name, script)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
 
