@@ -42,7 +42,7 @@ Do not delete `KILL`, `DUPLICATE`, `PAUSED`, or `DEPRIORITIZED` entries. They pr
 
 | ID | Domain | Idea / product title | Status | One-line product promise | Relationship / note |
 |---|---|---|---|---|---|
-| BIO-001 | Bio / medical device | NIR Vein Intelligence / 근적외선 혈관 가시화·주사실습 보조 | LEGACY_ASSET_REVALIDATION | Re-evaluate PADIEM's historical near-infrared vein-visualization and injection-training technology with current sensing/AI capabilities. | Real 2015–2017 PADIEM technical/IP lineage; efficacy and present-day medical-device claims are not assumed. |
+| BIO-001 | Bio / medical training | NIR Vein Intelligence → AI Venipuncture Training & Assessment / AI 정맥주사 실습·평가 | RESEARCHING · NARROW | Use NIR vein maps as one sensing layer for objective venipuncture training, difficult-case analysis and repeatable learner feedback. | 2026 revalidation: generic clinical vein finder thesis killed; PADIEM 2015–2017 asset verified; public-data software benchmark authorized; hardware and patient-use claims held. See `research/BIO_001_NIR_VEIN_REVALIDATION_2026-08-26.md`. |
 | BIO-002 | Healthcare AI governance | Clinical AI Egress Control Plane | PROMOTED / PAUSED | Govern what Korean clinical data may leave hospital workflows for external/internal GenAI while preserving clinical utility and audit evidence. | Proposed as B63 in Issue #731; concept demo completed; hospital/HIS validation still required. |
 | BIO-003 | Clinical longitudinal intelligence | Longitudinal Patient CareGraph | IDEA | Connect fragmented longitudinal patient events, records and care transitions into an evidence-linked patient journey graph. | Conversation-captured candidate; requires duplicate and clinical-workflow screening before any build. |
 | BIO-004 | Patient communication | Patient Communication AI | IDEA | Translate complex clinical information into patient-appropriate language, channel and comprehension level while preserving source boundaries. | Conversation-captured candidate; do not imply diagnosis/treatment authority. |
@@ -65,7 +65,7 @@ Recent product-decision issues and implementation work may run ahead of the curr
 ## Source / evidence notes
 
 - `07_BioR&D_설계팀장_임명및1차통합작업지시서_v1.md` requires PADIEM Bio R&D to start from verified company technology/IP/R&D history and proceed through research problem → technical hypothesis → validation → PoC → productization candidate rather than inventing medical products arbitrarily.
-- PADIEM historical evidence includes near-infrared vein visualization / injection-training assistance as a Bio asset requiring present-day revalidation.
+- PADIEM historical evidence includes near-infrared vein visualization / injection-training assistance as a Bio asset. BIO-001 revalidation confirmed the asset but narrowed the 2026 product thesis away from a generic clinical vein finder toward software-first venipuncture training and objective assessment.
 - B63 evidence currently supports concept-demo completion and a narrowed healthcare-specific semantic/quasi-identifier safety layer, but not a production hospital product.
 
 ## Session handoff rule
