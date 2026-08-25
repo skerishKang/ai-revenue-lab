@@ -8,6 +8,7 @@
   <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./attachments.css" />
+  <link rel="stylesheet" href="./history.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -22,6 +23,11 @@
         <button class="side-item" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span><span class="mini-badge">준비 중</span></button>
         <button class="side-item" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge">준비 중</span></button>
       </nav>
+      <section class="recent-section" id="historySection" aria-labelledby="historyTitle" hidden>
+        <h2 id="historyTitle">최근 대화</h2>
+        <div id="historyList"></div>
+        <p class="history-empty" id="historyEmpty" hidden>저장된 대화가 없습니다.</p>
+      </section>
       <section class="recent-section" aria-labelledby="recentTitle">
         <h2 id="recentTitle">추천 질문</h2>
         <button class="recent-item" type="button" data-prompt="AI를 아주 쉽게 설명해줘" data-skill="explain">AI를 쉽게 설명해줘</button>
@@ -35,7 +41,10 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
         <div class="model-pill" aria-label="현재 모델 선택"><span class="status-spark" aria-hidden="true">✦</span><span>자동 추천</span></div>
-        <button class="login-button" type="button" disabled aria-disabled="true" title="로그인은 다음 단계에서 지원합니다">로그인</button>
+        <div class="account-controls">
+          <span class="account-name" id="accountName" hidden></span>
+          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="로그인 기능이 설정되지 않았습니다">로그인</button>
+        </div>
       </header>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
@@ -71,7 +80,7 @@
             <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. PDF·문서·웹 검색·로그인은 다음 단계에서 지원합니다.</p>
+        <p class="composer-note" id="runtimeNote">일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. 로그인은 설정된 환경에서 최근 대화를 저장합니다.</p>
       </section>
     </main>
   </div>

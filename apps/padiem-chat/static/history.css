@@ -1,0 +1,35 @@
+.account-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.history-empty {
+  margin: 4px 10px 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8a8f98;
+}
+
+.history-item {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+@media (max-width: 720px) {
+  .account-name {
+    max-width: 88px;
+  }
+}

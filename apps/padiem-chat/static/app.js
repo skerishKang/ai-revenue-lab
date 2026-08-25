@@ -18,13 +18,20 @@
   const attachmentSize = document.getElementById("attachmentSize");
   const removeAttachment = document.getElementById("removeAttachment");
   const runtimeNote = document.getElementById("runtimeNote");
+  const loginButton = document.getElementById("loginButton");
+  const accountName = document.getElementById("accountName");
+  const historySection = document.getElementById("historySection");
+  const historyList = document.getElementById("historyList");
+  const historyEmpty = document.getElementById("historyEmpty");
   const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
   const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-  const DEFAULT_NOTE = "일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. PDF·문서·웹 검색·로그인은 다음 단계에서 지원합니다.";
+  const DEFAULT_NOTE = "일반 질문과 JPEG·PNG·WebP 사진 1장 첨부를 지원합니다. 로그인은 설정된 환경에서 최근 대화를 저장합니다.";
   let messages = [];
   let inFlight = false;
   let conversationSkill = "auto";
   let selectedAttachment = null;
+  let conversationId = null;
+  let authState = { ready: false, authenticated: false, user: null, history_ready: false };
 
   function setNote(text, state = "normal") {
     runtimeNote.textContent = text;
@@ -64,6 +71,13 @@
     const typing = document.createElement("span"); typing.className = "typing"; typing.setAttribute("aria-label", "답변 준비 중");
     typing.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
     content.appendChild(typing);
+  }
+  function renderStoredAssistant(text) {
+    const article = addAssistantShell("저장된 대화");
+    const content = article.querySelector(".assistant-content");
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text;
+    content.appendChild(paragraph);
   }
   function renderAnswer(article, result) {
     const content = article.querySelector(".assistant-content"); content.replaceChildren();
@@ -161,12 +175,99 @@
   }
   function attachmentPayload(attachment) {
     if (!attachment) return undefined;
-    return [{
-      type: "image",
-      name: attachment.name,
-      media_type: attachment.mediaType,
-      base64: attachment.base64,
-    }];
+    return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
+  }
+  function clearHistoryUI() {
+    historyList.replaceChildren();
+    historySection.hidden = true;
+    historyEmpty.hidden = true;
+  }
+  function applyAuthState(data) {
+    authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false };
+    const ready = authState.ready === true;
+    const authenticated = ready && authState.authenticated === true;
+    loginButton.disabled = !ready;
+    loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
+    if (!ready) {
+      loginButton.textContent = "로그인";
+      loginButton.title = "로그인 기능이 설정되지 않았습니다";
+      accountName.hidden = true;
+      accountName.textContent = "";
+      clearHistoryUI();
+      return;
+    }
+    if (authenticated) {
+      loginButton.textContent = "로그아웃";
+      loginButton.title = "현재 계정에서 로그아웃합니다";
+      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name : "";
+      accountName.textContent = name;
+      accountName.hidden = !name;
+      historySection.hidden = false;
+    } else {
+      loginButton.textContent = "로그인";
+      loginButton.title = "Google 계정으로 로그인합니다";
+      accountName.hidden = true;
+      accountName.textContent = "";
+      clearHistoryUI();
+    }
+  }
+  async function loadRecentConversations() {
+    if (!authState.authenticated || !authState.history_ready) { clearHistoryUI(); return; }
+    try {
+      const response = await fetch("/api/conversations", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || !Array.isArray(data.conversations)) throw new Error("history unavailable");
+      historyList.replaceChildren();
+      historySection.hidden = false;
+      historyEmpty.hidden = data.conversations.length !== 0;
+      data.conversations.forEach((conversation) => {
+        if (!conversation || typeof conversation.id !== "string" || typeof conversation.title !== "string") return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "recent-item history-item";
+        button.textContent = conversation.title;
+        button.addEventListener("click", () => openSavedConversation(conversation.id));
+        historyList.appendChild(button);
+      });
+    } catch (_) {
+      clearHistoryUI();
+    }
+  }
+  async function loadAuthStatus() {
+    try {
+      const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data) throw new Error("auth status unavailable");
+      applyAuthState(data);
+      if (authState.authenticated) await loadRecentConversations();
+    } catch (_) {
+      applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false });
+    }
+  }
+  async function openSavedConversation(id) {
+    if (!authState.authenticated || inFlight) return;
+    try {
+      const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error("저장된 대화를 불러오지 못했습니다.");
+      clearAttachment();
+      messageList.replaceChildren();
+      messages = [];
+      conversationSkill = "auto";
+      conversationId = data.conversation.id;
+      showConversation();
+      data.conversation.messages.forEach((item) => {
+        if (!item || typeof item.content !== "string") return;
+        if (item.role === "user") addUserMessage(item.content, null);
+        if (item.role === "assistant") renderStoredAssistant(item.content);
+        if (item.role === "user" || item.role === "assistant") messages.push({ role: item.role, content: item.content });
+      });
+      messages = messages.slice(-20);
+      closeSidebar();
+      input.focus();
+    } catch (error) {
+      setNote(error instanceof Error ? error.message : "저장된 대화를 불러오지 못했습니다.", "error");
+    }
   }
   async function requestAnswer(outboundMessages, skill, attachment) {
     if (inFlight) return false; inFlight = true; updateComposer();
@@ -175,6 +276,7 @@
       const payload = { messages: outboundMessages, mode: "auto", skill };
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
+      if (conversationId) payload.conversation_id = conversationId;
       const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || typeof data.answer !== "string") {
@@ -183,6 +285,10 @@
       }
       renderAnswer(article, data);
       messages = outboundMessages.concat([{ role: "assistant", content: data.answer }]).slice(-20);
+      if (typeof data.conversation_id === "string") {
+        conversationId = data.conversation_id;
+        if (authState.authenticated) loadRecentConversations();
+      }
       article.scrollIntoView({ block: "nearest", behavior: "smooth" });
       return true;
     } catch (error) {
@@ -200,7 +306,7 @@
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
   function closeSidebar() { shell.classList.remove("sidebar-open"); mobileMenu.setAttribute("aria-expanded", "false"); sidebarScrim.hidden = true; }
-  function resetChat() { messages = []; conversationSkill = "auto"; clearAttachment(); messageList.replaceChildren(); messageList.hidden = true; emptyState.hidden = false; shell.dataset.state = "home"; input.value = ""; updateComposer(); closeSidebar(); input.focus(); }
+  function resetChat() { messages = []; conversationSkill = "auto"; conversationId = null; clearAttachment(); messageList.replaceChildren(); messageList.hidden = true; emptyState.hidden = false; shell.dataset.state = "home"; input.value = ""; updateComposer(); closeSidebar(); input.focus(); }
   function openSidebar() { shell.classList.add("sidebar-open"); mobileMenu.setAttribute("aria-expanded", "true"); sidebarScrim.hidden = false; mobileClose.focus(); }
   input.addEventListener("input", updateComposer);
   input.addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); if (!sendButton.disabled) form.requestSubmit(); } });
@@ -208,8 +314,18 @@
   imageAttachButton.addEventListener("click", () => { if (!inFlight) imageFileInput.click(); });
   imageFileInput.addEventListener("change", () => { const [file] = imageFileInput.files || []; selectImage(file); });
   removeAttachment.addEventListener("click", clearAttachment);
+  loginButton.addEventListener("click", async () => {
+    if (!authState.ready) return;
+    if (!authState.authenticated) { window.location.assign("/auth/google/start"); return; }
+    try {
+      await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
+    } finally {
+      resetChat();
+      await loadAuthStatus();
+    }
+  });
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => { submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto"); closeSidebar(); }));
   newChatButton.addEventListener("click", resetChat); mobileMenu.addEventListener("click", openSidebar); mobileClose.addEventListener("click", closeSidebar); sidebarScrim.addEventListener("click", closeSidebar);
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar(); });
-  setNote(DEFAULT_NOTE); updateComposer();
+  setNote(DEFAULT_NOTE); updateComposer(); loadAuthStatus();
 })();

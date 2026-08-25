@@ -9,18 +9,22 @@ class ConfigError(ValueError):
     pass
 
 
-def _normalize_base_url(value: str) -> str:
+def _normalize_base_url(value: str, *, https_only: bool = False, root_only: bool = False) -> str:
     raw = value.strip()
     parsed = urlsplit(raw)
-    if parsed.scheme not in {"http", "https"}:
-        raise ConfigError("PADIEM_CHAT_B14_BASE_URL must use http or https")
+    allowed = {"https"} if https_only else {"http", "https"}
+    if parsed.scheme not in allowed:
+        scheme_label = "https" if https_only else "http or https"
+        raise ConfigError(f"base URL must use {scheme_label}")
     if not parsed.hostname:
-        raise ConfigError("PADIEM_CHAT_B14_BASE_URL must include a host")
+        raise ConfigError("base URL must include a host")
     if parsed.username or parsed.password:
-        raise ConfigError("PADIEM_CHAT_B14_BASE_URL must not include credentials")
+        raise ConfigError("base URL must not include credentials")
     if parsed.query or parsed.fragment:
-        raise ConfigError("PADIEM_CHAT_B14_BASE_URL must not include query or fragment")
+        raise ConfigError("base URL must not include query or fragment")
     path = parsed.path.rstrip("/")
+    if root_only and path:
+        raise ConfigError("public base URL must not include a path")
     return urlunsplit((parsed.scheme, parsed.netloc, path, "", ""))
 
 
@@ -32,6 +36,12 @@ class Settings:
     web_provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
     web_timeout_seconds: float = 15.0
+    auth_mode: str = "off"
+    public_base_url: str | None = None
+    google_client_id: str | None = field(default=None, repr=False)
+    google_client_secret: str | None = field(default=None, repr=False)
+    session_secret: str | None = field(default=None, repr=False)
+    session_max_age_seconds: int = 7 * 24 * 3600
 
     @classmethod
     def from_values(
@@ -42,6 +52,12 @@ class Settings:
         web_provider: object = "off",
         firecrawl_api_key: object = None,
         web_timeout_seconds: object = 15.0,
+        auth_mode: object = "off",
+        public_base_url: object = None,
+        google_client_id: object = None,
+        google_client_secret: object = None,
+        session_secret: object = None,
+        session_max_age_seconds: object = 7 * 24 * 3600,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -74,6 +90,30 @@ class Settings:
         if not 1 <= web_timeout <= 30:
             raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 30")
 
+        auth = str(auth_mode or "off").strip().lower()
+        if auth not in {"off", "google"}:
+            raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off or google")
+        raw_public = "" if public_base_url is None else str(public_base_url).strip()
+        public = _normalize_base_url(raw_public, https_only=True, root_only=True) if raw_public else None
+        client_id = str(google_client_id or "").strip() or None
+        client_secret = str(google_client_secret or "").strip() or None
+        secret = str(session_secret or "").strip() or None
+        try:
+            max_age = int(session_max_age_seconds)
+        except (TypeError, ValueError) as exc:
+            raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be an integer") from exc
+        if not 300 <= max_age <= 30 * 24 * 3600:
+            raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be between 300 and 2592000")
+        if auth == "google":
+            if public is None:
+                raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL is required in google auth mode")
+            if client_id is None:
+                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_ID is required in google auth mode")
+            if client_secret is None:
+                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_SECRET is required in google auth mode")
+            if secret is None or len(secret) < 32:
+                raise ConfigError("PADIEM_CHAT_SESSION_SECRET must be at least 32 characters in google auth mode")
+
         return cls(
             runtime_mode=mode,
             b14_base_url=base,
@@ -81,6 +121,12 @@ class Settings:
             web_provider=web,
             firecrawl_api_key=key,
             web_timeout_seconds=web_timeout,
+            auth_mode=auth,
+            public_base_url=public,
+            google_client_id=client_id,
+            google_client_secret=client_secret,
+            session_secret=secret,
+            session_max_age_seconds=max_age,
         )
 
     @classmethod
@@ -92,4 +138,10 @@ class Settings:
             web_provider=os.getenv("PADIEM_CHAT_WEB_PROVIDER", "off"),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
             web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "15"),
+            auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
+            public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),
+            google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),
+            google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
+            session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),
+            session_max_age_seconds=os.getenv("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS", str(7 * 24 * 3600)),
         )
