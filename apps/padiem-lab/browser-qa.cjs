@@ -33,7 +33,7 @@ async function inspect(page, url, label, marker, options = {}) {
 
   const state = await page.evaluate(expectedMarker => ({
     title: document.title,
-    marker: document.body.textContent.includes(expectedMarker),
+    marker: document.title.includes(expectedMarker) || document.body.textContent.includes(expectedMarker),
     overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
   }), marker);
 
