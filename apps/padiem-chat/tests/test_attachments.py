@@ -152,7 +152,7 @@ async def test_invalid_attachment_contract_fails_before_b14():
 
 
 @pytest.mark.asyncio
-async def test_attachment_and_web_tool_combination_is_not_implicitly_supported():
+async def test_image_attachment_and_web_tool_combination_is_not_implicitly_supported():
     app = create_app(Settings(runtime_mode="mock", web_provider="mock"))
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
@@ -176,7 +176,7 @@ def test_decoded_image_over_4_mib_rejected_without_exposing_payload():
 
 
 @pytest.mark.asyncio
-async def test_mock_runtime_acknowledges_attachment_but_never_claims_image_analysis():
+async def test_mock_runtime_acknowledges_image_but_never_claims_image_analysis():
     app = create_app(Settings(runtime_mode="mock"))
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
@@ -194,18 +194,22 @@ async def test_mock_runtime_acknowledges_attachment_but_never_claims_image_analy
     assert encoded(PNG) not in json.dumps(body)
 
 
-def test_frontend_exposes_photo_only_attachment_not_generic_documents():
+def test_frontend_exposes_generic_file_control_without_losing_image_support():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
-    assert 'id="imageFileInput"' in html
-    assert 'accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"' in html
-    assert 'id="imageAttachButton"' in html
-    assert "<span>사진</span>" in html
-    assert "PDF·문서 파일 · 다음 단계" in html
-    assert "문서 요약" in html and "class=\"starter\" disabled" in html
+    assert 'id="attachmentFileInput"' in html
+    assert "image/jpeg,image/png,image/webp" in html
+    assert "text/plain,text/markdown,text/csv,application/json" in html
+    assert 'id="attachmentButton"' in html
+    assert "<span>파일</span>" in html
+    assert "문서와 대화" in html
+    assert "TXT·Markdown·CSV·JSON" in html
+    assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
     assert "MAX_IMAGE_BYTES = 4 * 1024 * 1024" in js
+    assert "MAX_DOCUMENT_BYTES = 96 * 1024" in js
     assert "ALLOWED_IMAGE_TYPES" in js
+    assert "ALLOWED_DOCUMENT_TYPES" in js
     assert "URL.createObjectURL" in js
     assert "URL.revokeObjectURL" in js
     assert "innerHTML" not in js
@@ -220,5 +224,7 @@ def test_phase1_styles_remain_byte_equal_and_attachment_css_is_additive():
         repo / "reference/business-62-padiem-chat-v1/styles.css"
     ).read_bytes()
     assert (root / "static/attachments.css").is_file()
+    assert (root / "static/documents.css").is_file()
     html = (root / "static/index.html").read_text(encoding="utf-8")
     assert '<link rel="stylesheet" href="./attachments.css" />' in html
+    assert '<link rel="stylesheet" href="./documents.css" />' in html

@@ -5,6 +5,8 @@ import binascii
 from dataclasses import dataclass, field
 from typing import Any
 
+from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
+
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_IMAGE_NAME_CHARS = 120
 ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
@@ -55,24 +57,9 @@ class ImageAttachment:
         }
 
 
-def parse_attachments(raw: Any) -> tuple[ImageAttachment, ...]:
-    if raw is None:
-        return ()
-    if not isinstance(raw, list):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
-    if len(raw) == 0:
-        return ()
-    if len(raw) > 1:
-        raise AttachmentValidationError("현재는 사진을 한 장만 첨부할 수 있습니다.")
-
-    item = raw[0]
-    if not isinstance(item, dict):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+def _parse_image(item: dict[str, Any]) -> ImageAttachment:
     if set(item) != {"type", "name", "media_type", "base64"}:
         raise AttachmentValidationError("지원하지 않는 첨부 파일 항목이 있습니다.")
-    if item.get("type") != "image":
-        raise AttachmentValidationError("현재는 사진 첨부만 지원합니다.")
-
     media_type = item.get("media_type")
     if media_type not in ALLOWED_IMAGE_MEDIA_TYPES:
         raise AttachmentValidationError("JPEG, PNG, WebP 사진만 첨부할 수 있습니다.")
@@ -92,12 +79,28 @@ def parse_attachments(raw: Any) -> tuple[ImageAttachment, ...]:
         raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     if not _matches_magic(media_type, decoded):
         raise AttachmentValidationError("사진 형식과 실제 파일 내용이 일치하지 않습니다.")
+    return ImageAttachment(name=name, media_type=media_type, base64_data=payload, byte_size=len(decoded))
 
-    return (
-        ImageAttachment(
-            name=name,
-            media_type=media_type,
-            base64_data=payload,
-            byte_size=len(decoded),
-        ),
-    )
+
+def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, ...]:
+    if raw is None:
+        return ()
+    if not isinstance(raw, list):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    if len(raw) == 0:
+        return ()
+    if len(raw) > 1:
+        raise AttachmentValidationError("현재는 파일을 한 번에 하나만 첨부할 수 있습니다.")
+
+    item = raw[0]
+    if not isinstance(item, dict):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    item_type = item.get("type")
+    if item_type == "image":
+        return (_parse_image(item),)
+    if item_type == "document":
+        try:
+            return (parse_document_item(item),)
+        except DocumentValidationError as exc:
+            raise AttachmentValidationError(str(exc)) from exc
+    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON 문서만 첨부할 수 있습니다.")

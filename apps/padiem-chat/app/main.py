@@ -16,6 +16,12 @@ from .auth import GoogleOAuthClient
 from .auth_routes import auth_ready, auth_status, current_user_id, google_callback, google_start, logout
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
+from .documents import (
+    DocumentAttachment,
+    build_document_context,
+    build_project_files_context,
+    combine_reference_context,
+)
 from .grounding import GroundedChatService, GroundingError
 from .history import (
     HistoryForbidden,
@@ -24,6 +30,8 @@ from .history import (
     validate_conversation_id,
     validate_project_id,
 )
+from .project_file_routes import project_file_detail, project_files_collection
+from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .skills import Skill, get_skill
 from .tools import ToolSpec, get_tool
@@ -84,7 +92,7 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
 
 def _validate_payload(
     raw: Any,
-) -> tuple[list[dict[str, str]], Skill, BrowserToolRequest | None, tuple[ImageAttachment, ...], str | None, str | None]:
+) -> tuple[list[dict[str, str]], Skill, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
     if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id"}:
@@ -129,7 +137,7 @@ def _validate_payload(
         attachments = parse_attachments(raw.get("attachments"))
     except AttachmentValidationError as exc:
         raise BrowserRequestError(str(exc)) from exc
-    if tool_request is not None and attachments:
+    if tool_request is not None and any(isinstance(item, ImageAttachment) for item in attachments):
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
     try:
         conversation_id = validate_conversation_id(raw.get("conversation_id"))
@@ -146,9 +154,12 @@ async def health(request: Request) -> JSONResponse:
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": settings.web_provider in {"mock", "firecrawl"},
         "image_attachment_ready": True,
+        "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode == "google",
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,
+        "project_files_code_ready": True,
+        "project_file_store_bound": request.app.state.project_file_store is not None,
     })
 
 
@@ -158,6 +169,10 @@ def _too_large_response() -> JSONResponse:
 
 def _history_unavailable() -> JSONResponse:
     return JSONResponse({"error": {"code": "history_unavailable", "message": "저장된 대화를 현재 사용할 수 없습니다."}}, status_code=503)
+
+
+def _project_files_unavailable() -> JSONResponse:
+    return JSONResponse({"error": {"code": "project_files_unavailable", "message": "프로젝트 파일을 현재 사용할 수 없습니다."}}, status_code=503)
 
 
 def _conversation_not_found() -> JSONResponse:
@@ -225,10 +240,10 @@ async def api_chat(request: Request) -> JSONResponse:
 
     uid = current_user_id(request) if auth_ready(request) else None
     store: HistoryStore | None = request.app.state.history_store
+    project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
         return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
 
-    existing_conversation = None
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
@@ -247,6 +262,8 @@ async def api_chat(request: Request) -> JSONResponse:
 
     project = None
     project_context = None
+    project_files_context = None
+    project_files_used = 0
     if effective_project_id is not None:
         if uid is None or store is None:
             return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
@@ -257,6 +274,17 @@ async def api_chat(request: Request) -> JSONResponse:
         if project is None:
             return _project_not_found()
         project_context = build_project_context(project)
+        if project_file_store is not None:
+            try:
+                project_files = await project_file_store.list_files(uid, effective_project_id)
+            except Exception:
+                return _project_files_unavailable()
+            project_files_context, project_files_used = build_project_files_context(project_files)
+
+    image_attachments = tuple(item for item in attachments if isinstance(item, ImageAttachment))
+    document_attachment = next((item for item in attachments if isinstance(item, DocumentAttachment)), None)
+    document_context = build_document_context(document_attachment) if document_attachment is not None else None
+    reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
     try:
         if tool_request is None:
@@ -264,8 +292,8 @@ async def api_chat(request: Request) -> JSONResponse:
             result = await client.complete(
                 messages,
                 skill=skill,
-                additional_system_context=project_context,
-                attachments=attachments,
+                additional_system_context=reference_context,
+                attachments=image_attachments,
             )
         else:
             grounded: GroundedChatService = request.app.state.grounded_chat
@@ -274,10 +302,15 @@ async def api_chat(request: Request) -> JSONResponse:
                 skill=skill,
                 tool=tool_request.tool,
                 tool_input=tool_request.tool_input,
-                additional_system_context=project_context,
+                additional_system_context=reference_context,
             )
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+
+    if document_attachment is not None:
+        result["attachments"] = [document_attachment.public_dict()]
+    if project_files_used:
+        result["project_files_used"] = project_files_used
 
     if uid is not None and store is not None:
         latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
@@ -307,6 +340,7 @@ def create_app(
     web_transport=None,
     auth_transport=None,
     history_store: HistoryStore | None = None,
+    project_file_store: ProjectFileStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -317,6 +351,8 @@ def create_app(
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH"]),
+        Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
+        Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET"]),
         Route("/api/chat", api_chat, methods=["POST"]),
@@ -325,6 +361,7 @@ def create_app(
     app = Starlette(routes=routes)
     app.state.settings = resolved
     app.state.history_store = history_store
+    app.state.project_file_store = project_file_store
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
