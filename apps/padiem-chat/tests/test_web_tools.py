@@ -22,10 +22,11 @@ from app.web_tools import (
 
 def test_tool_registry_is_small_unique_immutable_and_not_ui_enabled():
     assert isinstance(TOOL_REGISTRY, MappingProxyType)
-    assert tuple(TOOL_REGISTRY) == ("web_search", "web_fetch")
-    assert len(TOOL_REGISTRY) == 2
+    assert tuple(TOOL_REGISTRY) == ("web_search", "web_fetch", "deep_research")
+    assert len(TOOL_REGISTRY) == 3
     assert all(tool.user_visible is False for tool in TOOL_REGISTRY.values())
     assert get_tool("web_search").title == "웹 검색"
+    assert get_tool("deep_research").title == "심층 리서치"
     with pytest.raises(TypeError):
         TOOL_REGISTRY["evil"] = get_tool("web_search")  # type: ignore[index]
     with pytest.raises(ValueError):
@@ -250,6 +251,7 @@ def test_web_search_ui_remains_disabled_and_css_unchanged():
     html = (root / "static/index.html").read_text(encoding="utf-8")
     assert "웹 검색 · 준비 중" in html
     assert "웹 검색" in html
+    assert "심층 리서치" in html
     assert 'class="tool-button" disabled' in html
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"

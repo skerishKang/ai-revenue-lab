@@ -72,7 +72,7 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
         raise BrowserRequestError(str(exc)) from exc
 
     value = raw.get("tool_input")
-    if tool.id == "web_search":
+    if tool.id in {"web_search", "deep_research"}:
         if value is None:
             return BrowserToolRequest(tool=tool, tool_input=None)
         if not isinstance(value, str):
@@ -151,10 +151,12 @@ def _validate_payload(
 
 async def health(request: Request) -> JSONResponse:
     settings: Settings = request.app.state.settings
+    web_ready = settings.web_provider in {"mock", "firecrawl"}
     return JSONResponse({
         "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
-        "web_tools_ready": settings.web_provider in {"mock", "firecrawl"},
+        "web_tools_ready": web_ready,
+        "deep_research_ready": settings.runtime_mode == "b14" and web_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode == "google",
@@ -241,6 +243,14 @@ async def api_chat(request: Request) -> JSONResponse:
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+
+    settings: Settings = request.app.state.settings
+    if tool_request is not None and tool_request.tool.id == "deep_research":
+        if settings.runtime_mode != "b14" or settings.web_provider not in {"mock", "firecrawl"}:
+            return JSONResponse(
+                {"error": {"code": "deep_research_unavailable", "message": "심층 리서치를 현재 사용할 수 없습니다."}},
+                status_code=503,
+            )
 
     uid = current_user_id(request) if auth_ready(request) else None
     store: HistoryStore | None = request.app.state.history_store
