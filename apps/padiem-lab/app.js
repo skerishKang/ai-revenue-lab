@@ -24,6 +24,19 @@
     }
   }
 
+  function safeLocalPath(value) {
+    return /^\/b\d{2}\/$/.test(value || "") ? value : null;
+  }
+
+  function publicLink(item) {
+    if (item.routeKind === "LOCAL_STATIC") {
+      var local = safeLocalPath(item.targetPath);
+      return local ? { href: local, external: false } : null;
+    }
+    var external = safeUrl(item.currentPublicUrl);
+    return external ? { href: external, external: true } : null;
+  }
+
   function card(item) {
     var article = document.createElement("article");
     article.className = "business-card";
@@ -52,7 +65,7 @@
     var route = document.createElement("span");
     route.textContent = item.targetPath;
     var routeKind = document.createElement("span");
-    routeKind.textContent = item.routeKind === "LOCAL_STATIC" ? "LAB ROUTE CANDIDATE" : "INDEPENDENT RUNTIME";
+    routeKind.textContent = item.routeKind === "LOCAL_STATIC" ? "LAB ROUTE" : "INDEPENDENT RUNTIME";
     meta.append(route, routeKind);
     copy.append(summary, meta);
 
@@ -63,15 +76,20 @@
     status.textContent = labels[item.publicStatus] || item.publicStatus;
     action.appendChild(status);
 
-    var url = safeUrl(item.currentPublicUrl);
-    if (url) {
+    var destination = publicLink(item);
+    if (destination) {
       var link = document.createElement("a");
       link.className = "open-link";
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.innerHTML = "<span>열기</span><span aria-hidden=\"true\">↗</span>";
-      link.setAttribute("aria-label", item.koreanTitle + " 새 창에서 열기");
+      link.href = destination.href;
+      if (destination.external) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.innerHTML = "<span>열기</span><span aria-hidden=\"true\">↗</span>";
+        link.setAttribute("aria-label", item.koreanTitle + " 새 창에서 열기");
+      } else {
+        link.innerHTML = "<span>열기</span><span aria-hidden=\"true\">→</span>";
+        link.setAttribute("aria-label", item.koreanTitle + " 열기");
+      }
       action.appendChild(link);
     } else {
       var pending = document.createElement("span");
