@@ -29,12 +29,12 @@ function walkFiles(root) {
   return files;
 }
 
-test('route registry has unique exact /bNN/ identities for Batch A and B60', () => {
+test('route registry has unique exact /bNN/ identities for routed static Businesses and B60', () => {
   const numbers = routes.map(route => route.number);
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [7, 8, 9, 10, 60]);
+  assert.deepEqual(numbers, [7, 8, 9, 10, 11, 12, 15, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
@@ -95,7 +95,7 @@ test('aggregate runtime excludes repository-only and private paths recursively',
   }
 });
 
-test('Batch A static runtime files are safe under a /bNN/ subpath', () => {
+test('all static reference runtime files are safe under a /bNN/ subpath', () => {
   build();
   const unsafeRootReference = /(?:href|src)\s*=\s*["']\/(?!\/)|url\(\s*["']?\/(?!\/)/i;
   for (const route of routes.filter(route => route.mode === 'STATIC_REFERENCE')) {
