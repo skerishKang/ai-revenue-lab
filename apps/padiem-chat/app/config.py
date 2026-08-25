@@ -28,6 +28,16 @@ def _normalize_base_url(value: str, *, https_only: bool = False, root_only: bool
     return urlunsplit((parsed.scheme, parsed.netloc, path, "", ""))
 
 
+def _bounded_int(value: object, *, name: str, minimum: int = 1, maximum: int = 1_000_000) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError(f"{name} must be an integer") from exc
+    if not minimum <= parsed <= maximum:
+        raise ConfigError(f"{name} must be between {minimum} and {maximum}")
+    return parsed
+
+
 @dataclass(frozen=True)
 class Settings:
     runtime_mode: str = "mock"
@@ -42,6 +52,12 @@ class Settings:
     google_client_secret: str | None = field(default=None, repr=False)
     session_secret: str | None = field(default=None, repr=False)
     session_max_age_seconds: int = 7 * 24 * 3600
+    quota_salt: str | None = field(default=None, repr=False)
+    anonymous_burst_limit: int = 4
+    anonymous_daily_limit: int = 20
+    user_burst_limit: int = 8
+    user_daily_limit: int = 100
+    global_daily_limit: int = 1000
 
     @classmethod
     def from_values(
@@ -58,6 +74,12 @@ class Settings:
         google_client_secret: object = None,
         session_secret: object = None,
         session_max_age_seconds: object = 7 * 24 * 3600,
+        quota_salt: object = None,
+        anonymous_burst_limit: object = 4,
+        anonymous_daily_limit: object = 20,
+        user_burst_limit: object = 8,
+        user_daily_limit: object = 100,
+        global_daily_limit: object = 1000,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -114,6 +136,33 @@ class Settings:
             if secret is None or len(secret) < 32:
                 raise ConfigError("PADIEM_CHAT_SESSION_SECRET must be at least 32 characters in google auth mode")
 
+        raw_quota_salt = "" if quota_salt is None else str(quota_salt).strip()
+        normalized_quota_salt = raw_quota_salt or None
+        if normalized_quota_salt is not None and len(normalized_quota_salt) < 32:
+            raise ConfigError("PADIEM_CHAT_QUOTA_SALT must be at least 32 characters when configured")
+
+        anon_burst = _bounded_int(
+            anonymous_burst_limit,
+            name="PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+        )
+        anon_daily = _bounded_int(
+            anonymous_daily_limit,
+            name="PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+        )
+        signed_burst = _bounded_int(
+            user_burst_limit,
+            name="PADIEM_CHAT_USER_BURST_LIMIT",
+        )
+        signed_daily = _bounded_int(
+            user_daily_limit,
+            name="PADIEM_CHAT_USER_DAILY_LIMIT",
+        )
+        global_daily = _bounded_int(
+            global_daily_limit,
+            name="PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
+            maximum=10_000_000,
+        )
+
         return cls(
             runtime_mode=mode,
             b14_base_url=base,
@@ -127,6 +176,12 @@ class Settings:
             google_client_secret=client_secret,
             session_secret=secret,
             session_max_age_seconds=max_age,
+            quota_salt=normalized_quota_salt,
+            anonymous_burst_limit=anon_burst,
+            anonymous_daily_limit=anon_daily,
+            user_burst_limit=signed_burst,
+            user_daily_limit=signed_daily,
+            global_daily_limit=global_daily,
         )
 
     @classmethod
@@ -144,4 +199,10 @@ class Settings:
             google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
             session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),
             session_max_age_seconds=os.getenv("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS", str(7 * 24 * 3600)),
+            quota_salt=os.getenv("PADIEM_CHAT_QUOTA_SALT"),
+            anonymous_burst_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_BURST_LIMIT", "4"),
+            anonymous_daily_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT", "20"),
+            user_burst_limit=os.getenv("PADIEM_CHAT_USER_BURST_LIMIT", "8"),
+            user_daily_limit=os.getenv("PADIEM_CHAT_USER_DAILY_LIMIT", "100"),
+            global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
         )
