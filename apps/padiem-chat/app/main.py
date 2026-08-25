@@ -12,9 +12,12 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
+from .auth import GoogleOAuthClient
+from .auth_routes import auth_ready, auth_status, current_user_id, google_callback, google_start, logout
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
 from .grounding import GroundedChatService, GroundingError
+from .history import HistoryForbidden, HistoryStore, validate_conversation_id
 from .skills import Skill, get_skill
 from .tools import ToolSpec, get_tool
 from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
@@ -81,10 +84,11 @@ def _validate_payload(
     Skill,
     BrowserToolRequest | None,
     tuple[ImageAttachment, ...],
+    str | None,
 ]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments"}:
+    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments", "conversation_id"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
@@ -130,8 +134,12 @@ def _validate_payload(
         raise BrowserRequestError(str(exc)) from exc
     if tool_request is not None and attachments:
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
+    try:
+        conversation_id = validate_conversation_id(raw.get("conversation_id"))
+    except ValueError as exc:
+        raise BrowserRequestError(str(exc)) from exc
 
-    return out, skill, tool_request, attachments
+    return out, skill, tool_request, attachments, conversation_id
 
 
 async def health(request: Request) -> JSONResponse:
@@ -143,6 +151,8 @@ async def health(request: Request) -> JSONResponse:
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": settings.web_provider in {"mock", "firecrawl"},
         "image_attachment_ready": True,
+        "auth_configured": settings.auth_mode == "google",
+        "history_store_bound": request.app.state.history_store is not None,
     })
 
 
@@ -151,6 +161,49 @@ def _too_large_response() -> JSONResponse:
         {"error": {"code": "request_too_large", "message": "요청이 너무 큽니다."}},
         status_code=413,
     )
+
+
+def _history_unavailable() -> JSONResponse:
+    return JSONResponse(
+        {"error": {"code": "history_unavailable", "message": "저장된 대화를 현재 사용할 수 없습니다."}},
+        status_code=503,
+    )
+
+
+async def api_conversations(request: Request) -> JSONResponse:
+    if not auth_ready(request):
+        return _history_unavailable()
+    uid = current_user_id(request)
+    if uid is None:
+        return JSONResponse({"error": {"code": "unauthorized", "message": "로그인이 필요합니다."}}, status_code=401)
+    store: HistoryStore = request.app.state.history_store
+    try:
+        conversations = await store.list_conversations(uid)
+    except Exception:
+        return _history_unavailable()
+    return JSONResponse({"conversations": conversations})
+
+
+async def api_conversation_detail(request: Request) -> JSONResponse:
+    if not auth_ready(request):
+        return _history_unavailable()
+    uid = current_user_id(request)
+    if uid is None:
+        return JSONResponse({"error": {"code": "unauthorized", "message": "로그인이 필요합니다."}}, status_code=401)
+    try:
+        cid = validate_conversation_id(request.path_params.get("conversation_id"))
+    except ValueError:
+        cid = None
+    if cid is None:
+        return JSONResponse({"error": {"code": "not_found", "message": "대화를 찾을 수 없습니다."}}, status_code=404)
+    store: HistoryStore = request.app.state.history_store
+    try:
+        conversation = await store.get_conversation(uid, cid)
+    except Exception:
+        return _history_unavailable()
+    if conversation is None:
+        return JSONResponse({"error": {"code": "not_found", "message": "대화를 찾을 수 없습니다."}}, status_code=404)
+    return JSONResponse({"conversation": conversation})
 
 
 async def api_chat(request: Request) -> JSONResponse:
@@ -171,13 +224,25 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages, skill, tool_request, attachments = _validate_payload(raw)
+        messages, skill, tool_request, attachments, conversation_id = _validate_payload(raw)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse(
             {"error": {"code": "invalid_request", "message": message}},
             status_code=422,
         )
+
+    uid = current_user_id(request) if auth_ready(request) else None
+    store: HistoryStore | None = request.app.state.history_store
+    if uid is not None and store is not None and conversation_id is not None:
+        try:
+            if await store.get_conversation(uid, conversation_id) is None:
+                return JSONResponse(
+                    {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
+                    status_code=404,
+                )
+        except Exception:
+            return _history_unavailable()
 
     try:
         if tool_request is None:
@@ -197,6 +262,21 @@ async def api_chat(request: Request) -> JSONResponse:
             status_code=exc.status_code,
         )
 
+    if uid is not None and store is not None:
+        latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
+        if latest_user:
+            try:
+                saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"])
+            except HistoryForbidden:
+                return JSONResponse(
+                    {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
+                    status_code=404,
+                )
+            except Exception:
+                saved_id = None
+            if saved_id is not None:
+                result["conversation_id"] = saved_id
+
     return JSONResponse(result)
 
 
@@ -204,15 +284,25 @@ def create_app(
     settings: Settings | None = None,
     transport=None,
     web_transport=None,
+    auth_transport=None,
+    history_store: HistoryStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
         Route("/health", health, methods=["GET"]),
+        Route("/api/auth/status", auth_status, methods=["GET"]),
+        Route("/auth/google/start", google_start, methods=["GET"]),
+        Route("/auth/google/callback", google_callback, methods=["GET"]),
+        Route("/api/auth/logout", logout, methods=["POST"]),
+        Route("/api/conversations", api_conversations, methods=["GET"]),
+        Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
     app.state.settings = resolved
+    app.state.history_store = history_store
+    app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)

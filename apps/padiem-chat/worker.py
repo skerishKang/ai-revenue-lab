@@ -13,8 +13,9 @@ from urllib.parse import urlparse
 from workers import Response, WorkerEntrypoint
 
 from app.config import ConfigError
+from app.history import D1HistoryStore
 from app.main import create_app
-from app.worker_config import response_headers_for_path, settings_from_worker_bindings
+from app.worker_config import D1_BINDING_NAME, binding_value, response_headers_for_path, settings_from_worker_bindings
 
 _worker_app = None
 
@@ -35,7 +36,9 @@ class Default(WorkerEntrypoint):
         if _worker_app is None:
             try:
                 settings = settings_from_worker_bindings(self.env)
-                _worker_app = create_app(settings=settings)
+                db_binding = binding_value(self.env, D1_BINDING_NAME)
+                history_store = D1HistoryStore(db_binding) if db_binding is not None else None
+                _worker_app = create_app(settings=settings, history_store=history_store)
             except ConfigError:
                 response = Response(
                     "Padiem Chat runtime configuration is invalid.",
