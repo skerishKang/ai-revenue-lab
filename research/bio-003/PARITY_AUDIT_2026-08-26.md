@@ -97,6 +97,8 @@ PRODUCT_BENEFIT_CLAIM = NOT ESTABLISHED
 
 The original information-parity blocker is closed.
 
+The bounded next-step protocol is now recorded in `PILOT_PROTOCOL_v0.1.md`.
+
 Next valid step:
 
 ```text
