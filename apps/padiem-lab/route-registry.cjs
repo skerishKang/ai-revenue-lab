@@ -244,6 +244,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 36,
+    route: "b36",
+    sourcePath: "reference/business-36-ai-women-safety-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 여성안전 서비스",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",

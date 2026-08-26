@@ -275,6 +275,17 @@
       sourcePath: "reference/business-35-ai-media-education-dx-v3/"
     }),
     Object.freeze({
+      number: 36,
+      slug: "ai-women-safety",
+      title: "AI Women Safety",
+      koreanTitle: "AI 여성안전 서비스",
+      summary: "합성 개인안전 시나리오에서 사용자 보고·관찰·불확실성을 분리하고, bounded options와 trusted-contact 계획을 사람 검토 안전대응 브리프로 정리하는 정적 시각 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b36/",
+      sourcePath: "reference/business-36-ai-women-safety-v1/"
+    }),
+    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",
