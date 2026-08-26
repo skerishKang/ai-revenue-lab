@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 
 import httpx
@@ -80,12 +81,15 @@ def sse(payload: dict, *, ending: bytes = b"\n\n") -> bytes:
     return b"data: " + json.dumps(payload).encode() + ending
 
 
-async def collect(client: B14StreamingClient, req: B14ChatRequest):
+async def _collect(client: B14StreamingClient, req: B14ChatRequest):
     return [event async for event in client.stream(req)]
 
 
-@pytest.mark.asyncio
-async def test_fragmented_sse_normalizes_delta_usage_route_and_done():
+def collect(client: B14StreamingClient, req: B14ChatRequest):
+    return asyncio.run(_collect(client, req))
+
+
+def test_fragmented_sse_normalizes_delta_usage_route_and_done():
     first = sse(chunk_payload(content="안녕"))
     finish = sse(
         chunk_payload(
@@ -111,7 +115,7 @@ async def test_fragmented_sse_normalizes_delta_usage_route_and_done():
         B14ExecutionConfig(BASE_URL),
         transport=httpx.MockTransport(handler),
     )
-    events = await collect(client, request())
+    events = collect(client, request())
 
     assert seen_request["stream"] is True
     assert seen_request["model"] == MODEL
@@ -126,8 +130,7 @@ async def test_fragmented_sse_normalizes_delta_usage_route_and_done():
     assert events[-1].route.selected_route_id == f"openrouter:{MODEL}"
 
 
-@pytest.mark.asyncio
-async def test_comments_and_sse_metadata_are_ignored():
+def test_comments_and_sse_metadata_are_ignored():
     raw = (
         b": keepalive\nretry: 1000\nid: ignored\n\n"
         + sse(chunk_payload(content="A"))
@@ -141,7 +144,7 @@ async def test_comments_and_sse_metadata_are_ignored():
             stream=ChunkStream([raw]),
         )
 
-    events = await collect(
+    events = collect(
         B14StreamingClient(B14ExecutionConfig(BASE_URL), httpx.MockTransport(handler)),
         request(),
     )
@@ -149,7 +152,6 @@ async def test_comments_and_sse_metadata_are_ignored():
     assert events[-1].done is True
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "req",
     [
@@ -158,7 +160,7 @@ async def test_comments_and_sse_metadata_are_ignored():
         request(routing=B14RoutingOptions(max_attempts=2)),
     ],
 )
-async def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
+def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
     calls = 0
 
     async def handler(http_request: httpx.Request) -> httpx.Response:
@@ -171,12 +173,11 @@ async def test_unsupported_stream_policy_fails_before_network(req: B14ChatReques
         transport=httpx.MockTransport(handler),
     )
     with pytest.raises(B14ExecutionError) as exc:
-        await collect(client, req)
+        collect(client, req)
     assert exc.value.code == "streaming_request_unsupported"
     assert calls == 0
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("status", "code", "retryable"),
     [
@@ -187,7 +188,7 @@ async def test_unsupported_stream_policy_fails_before_network(req: B14ChatReques
         (500, "upstream_server_error", True),
     ],
 )
-async def test_http_status_errors_match_existing_core_contract(status, code, retryable):
+def test_http_status_errors_match_existing_core_contract(status, code, retryable):
     async def handler(req: httpx.Request) -> httpx.Response:
         return httpx.Response(status, content=b"raw body must not escape")
 
@@ -196,14 +197,13 @@ async def test_http_status_errors_match_existing_core_contract(status, code, ret
         transport=httpx.MockTransport(handler),
     )
     with pytest.raises(B14ExecutionError) as exc:
-        await collect(client, request())
+        collect(client, request())
     assert exc.value.code == code
     assert exc.value.retryable is retryable
     assert "raw body" not in exc.value.safe_message
 
 
-@pytest.mark.asyncio
-async def test_post_start_error_event_becomes_safe_non_retryable_error():
+def test_post_start_error_event_becomes_safe_non_retryable_error():
     error_payload = {
         "error": {
             "code": "upstream_rate_limited",
@@ -230,18 +230,24 @@ async def test_post_start_error_event_becomes_safe_non_retryable_error():
         B14ExecutionConfig(BASE_URL),
         transport=httpx.MockTransport(handler),
     )
-    received = []
-    with pytest.raises(B14ExecutionError) as exc:
-        async for event in client.stream(request()):
-            received.append(event)
+
+    async def exercise():
+        received = []
+        try:
+            async for event in client.stream(request()):
+                received.append(event)
+        except B14ExecutionError as exc:
+            return received, exc
+        raise AssertionError("expected B14ExecutionError")
+
+    received, exc = asyncio.run(exercise())
     assert received[0].delta_content == "먼저"
-    assert exc.value.code == "upstream_rate_limited"
-    assert exc.value.retryable is False
-    assert exc.value.upstream_status_code == 200
+    assert exc.code == "upstream_rate_limited"
+    assert exc.retryable is False
+    assert exc.upstream_status_code == 200
 
 
-@pytest.mark.asyncio
-async def test_missing_done_fails_closed():
+def test_missing_done_fails_closed():
     async def handler(req: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200,
@@ -254,12 +260,11 @@ async def test_missing_done_fails_closed():
         transport=httpx.MockTransport(handler),
     )
     with pytest.raises(B14ExecutionError) as exc:
-        await collect(client, request())
+        collect(client, request())
     assert exc.value.code == "malformed_upstream"
     assert "completion marker" in exc.value.safe_message
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "raw",
     [
@@ -269,7 +274,7 @@ async def test_missing_done_fails_closed():
         b'data: {"object":"chat.completion.chunk","choices":[]}\n\n',
     ],
 )
-async def test_malformed_stream_fails_closed(raw: bytes):
+def test_malformed_stream_fails_closed(raw: bytes):
     async def handler(req: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200,
@@ -282,12 +287,11 @@ async def test_malformed_stream_fails_closed(raw: bytes):
         transport=httpx.MockTransport(handler),
     )
     with pytest.raises(B14ExecutionError) as exc:
-        await collect(client, request())
+        collect(client, request())
     assert exc.value.code == "malformed_upstream"
 
 
-@pytest.mark.asyncio
-async def test_wrong_content_type_fails_closed():
+def test_wrong_content_type_fails_closed():
     async def handler(req: httpx.Request) -> httpx.Response:
         return httpx.Response(200, headers={"content-type": "application/json"}, content=b"{}")
 
@@ -296,12 +300,11 @@ async def test_wrong_content_type_fails_closed():
         transport=httpx.MockTransport(handler),
     )
     with pytest.raises(B14ExecutionError) as exc:
-        await collect(client, request())
+        collect(client, request())
     assert exc.value.code == "malformed_upstream"
 
 
-@pytest.mark.asyncio
-async def test_cumulative_byte_cap_aborts_stream():
+def test_cumulative_byte_cap_aborts_stream():
     raw = sse(chunk_payload(content="x" * 100)) + b"data: [DONE]\n\n"
 
     async def handler(req: httpx.Request) -> httpx.Response:
@@ -316,12 +319,11 @@ async def test_cumulative_byte_cap_aborts_stream():
         transport=httpx.MockTransport(handler),
     )
     with pytest.raises(B14ExecutionError) as exc:
-        await collect(client, request())
+        collect(client, request())
     assert exc.value.code == "upstream_response_too_large"
 
 
-@pytest.mark.asyncio
-async def test_timeout_and_transport_errors_are_normalized():
+def test_timeout_and_transport_errors_are_normalized():
     async def timeout_handler(req: httpx.Request) -> httpx.Response:
         raise httpx.ReadTimeout("secret timeout detail", request=req)
 
@@ -330,7 +332,7 @@ async def test_timeout_and_transport_errors_are_normalized():
         transport=httpx.MockTransport(timeout_handler),
     )
     with pytest.raises(B14ExecutionError) as timeout_exc:
-        await collect(timeout_client, request())
+        collect(timeout_client, request())
     assert timeout_exc.value.code == "upstream_timeout"
     assert "secret timeout detail" not in timeout_exc.value.safe_message
 
@@ -342,7 +344,7 @@ async def test_timeout_and_transport_errors_are_normalized():
         transport=httpx.MockTransport(error_handler),
     )
     with pytest.raises(B14ExecutionError) as transport_exc:
-        await collect(transport_client, request())
+        collect(transport_client, request())
     assert transport_exc.value.code == "upstream_unavailable"
     assert "secret transport detail" not in transport_exc.value.safe_message
 
