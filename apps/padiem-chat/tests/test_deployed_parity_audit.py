@@ -98,6 +98,19 @@ def test_404_stream_probe_means_deployed_route_absent_and_hold(tmp_path):
     assert result.ready is False
 
 
+def test_unexpected_stream_get_status_fails_closed(tmp_path):
+    module = _load_module()
+    base = "https://padiem-chat.example.workers.dev"
+    bodies = _write_assets(module, tmp_path)
+
+    with pytest.raises(module.AuditError, match="unexpected HTTP 200"):
+        module.audit(
+            base_url=base,
+            repo_root=tmp_path,
+            fetcher=_fetcher(module, base, bodies, stream_status=200, stream_allow=""),
+        )
+
+
 def test_fetch_get_constructs_get_only_and_never_posts():
     module = _load_module()
     observed = []
