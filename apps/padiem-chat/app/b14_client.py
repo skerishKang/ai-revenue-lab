@@ -1,21 +1,41 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from typing import Any, Protocol
 
 import httpx
 
+from padiem_ai_core import (
+    B14MultimodalChatRequest,
+    B14PostJSONTransport,
+    B14ExecutionClient,
+    B14ExecutionConfig,
+    B14ExecutionError,
+    B14RoutingOptions,
+    B14TransportResponse,
+    MAX_B14_RESPONSE_BYTES,
+)
+
 from .attachments import ImageAttachment
 from .config import Settings
 from .skills import Skill, get_skill, skill_public_metadata
 
-MAX_B14_RESPONSE_BYTES = 1_048_576
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
 
 
 class B14ServiceTransport(Protocol):
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]: ...
+
+
+class _CoreTransportAdapter:
+    """Adapt the existing B62 Service Binding transport to Core without Cloudflare types."""
+
+    def __init__(self, transport: B14ServiceTransport):
+        self._transport = transport
+
+    async def post_json(self, url: str, payload: dict[str, Any]) -> B14TransportResponse:
+        status_code, body = await self._transport.post_json(url, payload)
+        return B14TransportResponse(status_code=status_code, body=body)
 
 
 @dataclass
@@ -53,6 +73,44 @@ def _messages_with_attachment(
         ],
     }
     return out
+
+
+def _translate_core_error(exc: B14ExecutionError) -> ChatRuntimeError:
+    if exc.code == "upstream_timeout":
+        return ChatRuntimeError(
+            504,
+            "upstream_timeout",
+            "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    if exc.code == "upstream_rate_limited":
+        return ChatRuntimeError(
+            503,
+            "upstream_busy",
+            "지금 사용자가 많습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    if exc.code == "upstream_response_too_large":
+        return ChatRuntimeError(
+            502,
+            "upstream_response_too_large",
+            "답변이 너무 커서 안전하게 표시할 수 없습니다.",
+        )
+    if exc.code in {"malformed_upstream", "empty_upstream_answer"}:
+        return ChatRuntimeError(
+            502,
+            "malformed_upstream",
+            "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
+        )
+    if exc.code == "upstream_unavailable":
+        return ChatRuntimeError(
+            502,
+            "upstream_unavailable",
+            "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+        )
+    return ChatRuntimeError(
+        502,
+        "upstream_error",
+        "답변을 불러오지 못했습니다. 다시 시도해 주세요.",
+    )
 
 
 class B14Client:
@@ -117,6 +175,13 @@ class B14Client:
                 result["attachments"] = [attachment.public_dict()]
             return result
 
+        if self.require_service_binding and self.service_transport is None:
+            raise ChatRuntimeError(
+                503,
+                "upstream_binding_unavailable",
+                "AI 내부 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            )
+
         if attachment is None:
             user_messages: list[dict[str, Any]] = [dict(message) for message in messages]
         else:
@@ -128,153 +193,51 @@ class B14Client:
         ]
 
         assert self.settings.b14_base_url is not None
-        url = self.settings.b14_base_url.rstrip("/") + "/api/pilot/v1/chat/completions"
         required_capabilities = ["free"]
         if attachment is not None:
             required_capabilities.append("image")
-        business14: dict[str, Any] = {
-            "task_type": resolved_skill.task_type,
-            "optimize_for": resolved_skill.optimize_for,
-            "allow_external_fallback": True,
-            "max_attempts": 3,
-            "required_capabilities": required_capabilities,
-        }
 
-        payload = {
-            "model": "b14/auto",
-            "messages": upstream_messages,
-            "temperature": 0.2,
-            "max_tokens": resolved_skill.max_tokens,
-            "business14": business14,
-        }
-
+        request = B14MultimodalChatRequest(
+            messages=tuple(upstream_messages),
+            model="b14/auto",
+            temperature=0.2,
+            max_tokens=resolved_skill.max_tokens,
+            routing=B14RoutingOptions(
+                task_type=resolved_skill.task_type,
+                optimize_for=resolved_skill.optimize_for,
+                allow_external_fallback=True,
+                max_attempts=3,
+                required_capabilities=tuple(required_capabilities),
+            ),
+        )
+        execution_transport = self.transport
         if self.service_transport is not None:
-            try:
-                status_code, service_raw = await self.service_transport.post_json(url, payload)
-            except ChatRuntimeError:
-                raise
-            except Exception as exc:
-                raise ChatRuntimeError(
-                    502,
-                    "upstream_unavailable",
-                    "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
-                ) from exc
-            if not isinstance(service_raw, (bytes, bytearray)):
-                raise ChatRuntimeError(
-                    502,
-                    "malformed_upstream",
-                    "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
-                )
-            if len(service_raw) > MAX_B14_RESPONSE_BYTES:
-                raise ChatRuntimeError(
-                    502,
-                    "upstream_response_too_large",
-                    "답변이 너무 커서 안전하게 표시할 수 없습니다.",
-                )
-            raw = bytearray(service_raw)
-        elif self.require_service_binding:
-            raise ChatRuntimeError(
-                503,
-                "upstream_binding_unavailable",
-                "AI 내부 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            execution_transport = B14PostJSONTransport(
+                _CoreTransportAdapter(self.service_transport),
+                timeout_seconds=self.settings.timeout_seconds,
             )
-        else:
-            timeout = httpx.Timeout(
-                connect=min(self.settings.timeout_seconds, 10.0),
-                read=self.settings.timeout_seconds,
-                write=min(self.settings.timeout_seconds, 10.0),
-                pool=min(self.settings.timeout_seconds, 10.0),
-            )
-            try:
-                async with httpx.AsyncClient(
-                    transport=self.transport,
-                    timeout=timeout,
-                    follow_redirects=False,
-                ) as client:
-                    async with client.stream("POST", url, json=payload) as response:
-                        raw = bytearray()
-                        async for chunk in response.aiter_bytes():
-                            if len(raw) + len(chunk) > MAX_B14_RESPONSE_BYTES:
-                                raise ChatRuntimeError(
-                                    502,
-                                    "upstream_response_too_large",
-                                    "답변이 너무 커서 안전하게 표시할 수 없습니다.",
-                                )
-                            raw.extend(chunk)
-                        status_code = response.status_code
-            except ChatRuntimeError:
-                raise
-            except httpx.TimeoutException as exc:
-                raise ChatRuntimeError(
-                    504,
-                    "upstream_timeout",
-                    "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
-                ) from exc
-            except httpx.HTTPError as exc:
-                raise ChatRuntimeError(
-                    502,
-                    "upstream_unavailable",
-                    "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
-                ) from exc
-
-        if status_code < 200 or status_code >= 300:
-            if status_code == 429:
-                raise ChatRuntimeError(
-                    503,
-                    "upstream_busy",
-                    "지금 사용자가 많습니다. 잠시 후 다시 시도해 주세요.",
-                )
-            raise ChatRuntimeError(
-                502,
-                "upstream_error",
-                "답변을 불러오지 못했습니다. 다시 시도해 주세요.",
-            )
-
+        core_client = B14ExecutionClient(
+            B14ExecutionConfig(
+                base_url=self.settings.b14_base_url,
+                timeout_seconds=self.settings.timeout_seconds,
+                max_response_bytes=MAX_B14_RESPONSE_BYTES,
+            ),
+            transport=execution_transport,
+        )
         try:
-            data = json.loads(raw.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ChatRuntimeError(
-                502,
-                "malformed_upstream",
-                "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
-            ) from exc
+            execution = await core_client.execute(request)
+        except B14ExecutionError as exc:
+            raise _translate_core_error(exc) from exc
 
-        try:
-            answer = data["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
-            raise ChatRuntimeError(
-                502,
-                "malformed_upstream",
-                "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
-            ) from exc
-
-        if not isinstance(answer, str) or not answer.strip():
-            raise ChatRuntimeError(
-                502,
-                "empty_upstream_answer",
-                "AI가 빈 답변을 반환했습니다. 다시 시도해 주세요.",
-            )
-
-        meta = data.get("business14")
-        if not isinstance(meta, dict):
-            meta = {}
-
-        request_id = meta.get("request_id")
-        if not isinstance(request_id, str):
-            request_id = None
-
-        selected_model = meta.get("selected_model")
-        selected_provider = meta.get("selected_provider")
-        route_mode = meta.get("route_mode", "auto")
-
+        route_mode = execution.route.route_mode or "auto"
         result = {
-            "answer": answer.strip(),
-            "request_id": request_id,
+            "answer": execution.answer,
+            "request_id": execution.route.request_id,
             "runtime": "b14",
             "route": {
-                "mode": route_mode if isinstance(route_mode, str) else "auto",
-                "model": selected_model if isinstance(selected_model, str) else None,
-                "provider": selected_provider if isinstance(selected_provider, str) else None,
+                "mode": route_mode,
+                "model": execution.route.selected_model,
+                "provider": execution.route.selected_provider,
             },
             "skill": skill_public_metadata(resolved_skill),
         }
