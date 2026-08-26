@@ -45,7 +45,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 35, 36, 37, 39, 59, 60]);
+  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 35, 36, 37, 39, 48, 59, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
@@ -372,6 +372,29 @@ test('B39 publishes only the merged current-main synthetic interpretation visual
   assert.match(index, /NO URGENCY OR THREAT DECISION/);
   assert.match(index, /MACHINE TRANSCRIPT — UNVERIFIED/);
   assert.match(index, /INTERPRETATION DRAFT — UNVERIFIED/);
+  assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
+});
+
+test('B48 publishes only the current-main human-governed verification visual reference', () => {
+  build();
+  const b48 = path.join(out, 'b48');
+  for (const relative of ['index.html', 'assets', 'scripts', 'styles']) {
+    assert.equal(fs.existsSync(path.join(b48, relative)), true, `b48 missing ${relative}`);
+  }
+  for (const forbidden of ['README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md', 'evidence', 'tests', 'ux.html']) {
+    assert.equal(fs.existsSync(path.join(b48, forbidden)), false, `b48 leaked non-runtime or unmerged path ${forbidden}`);
+  }
+  const index = fs.readFileSync(path.join(b48, 'index.html'), 'utf8');
+  const review = fs.readFileSync(path.join(b48, 'scripts', 'review.js'), 'utf8');
+  assert.match(index, /AI 검증·승인 엔진/);
+  assert.match(index, /WORKER CLAIM — UNVERIFIED/);
+  assert.match(index, /SKIPPED — NOT PASSED/);
+  assert.match(index, /UNAVAILABLE EVIDENCE/);
+  assert.match(index, /STALE EVIDENCE — DO NOT USE/);
+  assert.match(index, /HUMAN APPROVAL — SEPARATE AUTHORITY/);
+  assert.match(index, /APPROVAL SCOPE LIMITED/);
+  assert.match(index, /NO UNIVERSAL CERTIFICATION/);
+  assert.match(index, /DEPLOYMENT NOT AUTHORIZED/);
   assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
 });
 
