@@ -1,15 +1,40 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from types import MappingProxyType
 
+from padiem_ai_core import (
+    ApprovalPolicy,
+    ToolSideEffect,
+    ToolSpec as CoreToolSpec,
+)
 
-@dataclass(frozen=True, slots=True)
-class ToolSpec:
-    id: str
-    title: str
-    description: str
-    user_visible: bool = False
+
+class ToolSpec(CoreToolSpec):
+    """B62 read-only tool metadata backed by the shared Core ToolSpec contract."""
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        id: str,
+        title: str,
+        description: str,
+        user_visible: bool = False,
+    ) -> None:
+        CoreToolSpec.__init__(
+            self,
+            id=id,
+            title=title,
+            description=description,
+            owner="padiem-chat",
+            side_effect=ToolSideEffect.READ,
+            approval_policy=ApprovalPolicy.NOT_REQUIRED,
+            input_schema={},
+            output_contract={},
+            auth_scope=(),
+            timeout_seconds=30.0,
+            user_visible=user_visible,
+        )
 
 
 _TOOL_SPECS = (
