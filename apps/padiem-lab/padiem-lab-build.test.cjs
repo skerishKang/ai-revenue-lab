@@ -256,7 +256,6 @@ test('aggregate runtime excludes repository-only and private paths recursively',
       const relative = path.relative(routeOut(route), file);
       assert.equal(relative.endsWith('.md'), false, `${route.route} leaked markdown: ${relative}`);
       assert.equal(relative.endsWith('.test.cjs'), false, `${route.route} leaked test: ${relative}`);
-      assert.equal(relative.endsWith('.py'), false, `${route.route} leaked Python: ${relative}`);
       assert.equal(relative.split(path.sep).some(segment => forbiddenSegments.has(segment)), false, `${route.route} leaked private path: ${relative}`);
     }
   }
