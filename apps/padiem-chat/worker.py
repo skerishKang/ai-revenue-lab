@@ -11,8 +11,6 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
-from js import Object
-from pyodide.ffi import to_js as _to_js
 from workers import Request, Response, WorkerEntrypoint
 
 from app.b14_client import B14Client
@@ -41,10 +39,6 @@ def _apply_headers(response: Any, path: str) -> Any:
     return response
 
 
-def _to_js_object(value: dict[str, Any]) -> Any:
-    return _to_js(value, dict_converter=Object.fromEntries)
-
-
 class CloudflareB14ServiceTransport:
     """HTTP-shaped adapter over a Cloudflare Worker Service Binding.
 
@@ -59,17 +53,13 @@ class CloudflareB14ServiceTransport:
         self.binding = binding
 
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]:
-        request = Request.new(
+        request = Request(
             url,
-            _to_js_object(
-                {
-                    "method": "POST",
-                    "headers": {"Content-Type": "application/json"},
-                    "body": json.dumps(payload, ensure_ascii=False),
-                }
-            ),
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            body=json.dumps(payload, ensure_ascii=False),
         )
-        response = await self.binding.fetch(request)
+        response = await self.binding.fetch(request.js_object)
         text = await response.text()
         return int(response.status), str(text).encode("utf-8")
 
