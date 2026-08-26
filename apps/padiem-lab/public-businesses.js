@@ -253,6 +253,17 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
+      number: 30,
+      slug: "civic-ai-navigator",
+      title: "Civic AI Navigator",
+      koreanTitle: "시민 AI 내비게이터",
+      summary: "광주 북구청 민원 정보를 자연어로 찾고 필요한 절차와 담당 경로를 안내하는 독립 AI Finder 제품입니다.",
+      publicStatus: "LIVE",
+      routeKind: "EXTERNAL_RUNTIME",
+      targetPath: "/b30/",
+      currentPublicUrl: "https://cgbukku.pages.dev/"
+    }),
+    Object.freeze({
       number: 32,
       slug: "ai-skill-studio",
       title: "AI Skill Studio",
