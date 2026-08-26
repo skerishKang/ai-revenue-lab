@@ -183,6 +183,17 @@ def test_b14_405_without_post_in_allow_fails_closed(tmp_path):
         )
 
 
+def test_b62_405_without_post_in_allow_fails_closed(tmp_path):
+    module = _load_module()
+    with pytest.raises(module.AuditError, match="without POST"):
+        _audit(
+            module,
+            tmp_path,
+            b62_stream_status=405,
+            b62_stream_allow="GET, HEAD",
+        )
+
+
 def test_fetch_get_constructs_get_only_and_never_posts():
     module = _load_module()
     observed = []
