@@ -409,5 +409,5 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "binding.fetch(service_request.js_object)" in streaming
     assert "getReader()" in byte_stream
     assert "reader.cancel()" not in byte_stream  # cancellation stays dynamically guarded
-    assert 'getattr(reader, "cancel", None)' in byte_stream
-    assert 'getattr(reader, "releaseLock", None)' in byte_stream
+    assert "getattr(reader, 'cancel', None)" in byte_stream
+    assert "getattr(reader, 'releaseLock', None)" in byte_stream
