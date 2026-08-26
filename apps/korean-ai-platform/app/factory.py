@@ -119,10 +119,18 @@ def create_app() -> Starlette:
     # observes the same installed validation authority as the main gateway.
     from app.pilot.stream_gateway import router as pilot_stream_router
 
+    # Slice 16: staged Router-owned b14/auto streaming preview. Keep this
+    # separate from both the manual preview and canonical endpoint promotion.
+    from app.pilot.auto_stream_gateway import router as pilot_auto_stream_router
+
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
 
-    for route in [*pilot_api_router.routes, *pilot_stream_router.routes]:
+    for route in [
+        *pilot_api_router.routes,
+        *pilot_stream_router.routes,
+        *pilot_auto_stream_router.routes,
+    ]:
         new_route = StarletteRoute(
             path="/api/pilot" + route.path,
             endpoint=route.endpoint,
