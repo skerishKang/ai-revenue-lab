@@ -138,8 +138,6 @@ def normalize_public_url(value: str) -> str:
     try:
         address = ipaddress.ip_address(ascii_host)
     except ValueError:
-        # Reject numeric-looking alternate IPv4 forms such as 2130706433 or
-        # abbreviated dotted forms such as 127.1 that URL stacks may reinterpret.
         if re.fullmatch(r"[0-9.]+", ascii_host):
             raise ValueError("ambiguous numeric host notation is not allowed")
     else:
@@ -153,15 +151,7 @@ def normalize_public_url(value: str) -> str:
         netloc = f"[{ascii_host}]"
     if port is not None:
         netloc = f"{netloc}:{port}"
-    return urlunsplit(
-        (
-            parsed.scheme.lower(),
-            netloc,
-            parsed.path or "/",
-            parsed.query,
-            "",
-        )
-    )
+    return urlunsplit((parsed.scheme.lower(), netloc, parsed.path or "/", parsed.query, ""))
 
 
 def _query(value: str) -> str:
@@ -179,14 +169,7 @@ def _limit(value: int) -> int:
     return value
 
 
-def _evidence(
-    *,
-    title: Any,
-    url: Any,
-    snippet: Any,
-    provider: str,
-    source_type: str,
-) -> Evidence | None:
+def _evidence(*, title: Any, url: Any, snippet: Any, provider: str, source_type: str) -> Evidence | None:
     if not isinstance(url, str):
         return None
     try:
@@ -246,11 +229,7 @@ class MockWebProvider:
 
 
 class FirecrawlWebProvider:
-    def __init__(
-        self,
-        config: WebRuntimeConfig,
-        transport: httpx.AsyncBaseTransport | None = None,
-    ):
+    def __init__(self, config: WebRuntimeConfig, transport: httpx.AsyncBaseTransport | None = None):
         if config.provider != "firecrawl" or not config.firecrawl_api_key:
             raise ValueError("Firecrawl provider requires firecrawl configuration")
         self._api_key = config.firecrawl_api_key
@@ -260,7 +239,6 @@ class FirecrawlWebProvider:
     async def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         if path not in _ALLOWED_FIRECRAWL_PATHS:
             raise RuntimeError("unapproved Firecrawl path")
-
         timeout = httpx.Timeout(
             connect=min(self._timeout_seconds, 8.0),
             read=self._timeout_seconds,
@@ -268,11 +246,7 @@ class FirecrawlWebProvider:
             pool=min(self._timeout_seconds, 8.0),
         )
         try:
-            async with httpx.AsyncClient(
-                transport=self._transport,
-                timeout=timeout,
-                follow_redirects=False,
-            ) as client:
+            async with httpx.AsyncClient(transport=self._transport, timeout=timeout, follow_redirects=False) as client:
                 async with client.stream(
                     "POST",
                     FIRECRAWL_ORIGIN + path,
@@ -308,7 +282,6 @@ class FirecrawlWebProvider:
             raise WebRuntimeError("web_unavailable", "web provider is unavailable", 502)
         if status < 200 or status >= 300:
             raise WebRuntimeError("web_request_failed", "web provider rejected the request", 502)
-
         try:
             data = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -320,10 +293,7 @@ class FirecrawlWebProvider:
     async def search(self, query: str, limit: int = 5) -> list[Evidence]:
         safe_query = _query(query)
         safe_limit = _limit(limit)
-        data = await self._post(
-            "/v2/search",
-            {"query": safe_query, "limit": safe_limit, "sources": ["web"]},
-        )
+        data = await self._post("/v2/search", {"query": safe_query, "limit": safe_limit, "sources": ["web"]})
         payload = data.get("data")
         if isinstance(payload, dict):
             items = payload.get("web", [])
@@ -333,7 +303,6 @@ class FirecrawlWebProvider:
             items = []
         if not isinstance(items, list):
             raise WebRuntimeError("web_malformed", "web search result shape is invalid", 502)
-
         result: list[Evidence] = []
         for item in items[:safe_limit]:
             if not isinstance(item, dict):
@@ -368,11 +337,7 @@ class FirecrawlWebProvider:
             source_type="fetch",
         )
         if evidence is None:
-            raise WebRuntimeError(
-                "unsafe_web_result",
-                "web provider returned an unsafe source URL",
-                502,
-            )
+            raise WebRuntimeError("unsafe_web_result", "web provider returned an unsafe source URL", 502)
         return evidence
 
 
