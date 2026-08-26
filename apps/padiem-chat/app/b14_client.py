@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol
 
 import httpx
 
@@ -12,6 +12,10 @@ from .skills import Skill, get_skill, skill_public_metadata
 
 MAX_B14_RESPONSE_BYTES = 1_048_576
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
+
+
+class B14ServiceTransport(Protocol):
+    async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]: ...
 
 
 @dataclass
@@ -52,9 +56,18 @@ def _messages_with_attachment(
 
 
 class B14Client:
-    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+    def __init__(
+        self,
+        settings: Settings,
+        transport: httpx.AsyncBaseTransport | None = None,
+        *,
+        service_transport: B14ServiceTransport | None = None,
+        require_service_binding: bool = False,
+    ):
         self.settings = settings
         self.transport = transport
+        self.service_transport = service_transport
+        self.require_service_binding = require_service_binding
 
     async def complete(
         self,
@@ -135,43 +148,74 @@ class B14Client:
             "business14": business14,
         }
 
-        timeout = httpx.Timeout(
-            connect=min(self.settings.timeout_seconds, 10.0),
-            read=self.settings.timeout_seconds,
-            write=min(self.settings.timeout_seconds, 10.0),
-            pool=min(self.settings.timeout_seconds, 10.0),
-        )
-        try:
-            async with httpx.AsyncClient(
-                transport=self.transport,
-                timeout=timeout,
-                follow_redirects=False,
-            ) as client:
-                async with client.stream("POST", url, json=payload) as response:
-                    raw = bytearray()
-                    async for chunk in response.aiter_bytes():
-                        if len(raw) + len(chunk) > MAX_B14_RESPONSE_BYTES:
-                            raise ChatRuntimeError(
-                                502,
-                                "upstream_response_too_large",
-                                "답변이 너무 커서 안전하게 표시할 수 없습니다.",
-                            )
-                        raw.extend(chunk)
-                    status_code = response.status_code
-        except ChatRuntimeError:
-            raise
-        except httpx.TimeoutException as exc:
+        if self.service_transport is not None:
+            try:
+                status_code, service_raw = await self.service_transport.post_json(url, payload)
+            except ChatRuntimeError:
+                raise
+            except Exception as exc:
+                raise ChatRuntimeError(
+                    502,
+                    "upstream_unavailable",
+                    "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+                ) from exc
+            if not isinstance(service_raw, (bytes, bytearray)):
+                raise ChatRuntimeError(
+                    502,
+                    "malformed_upstream",
+                    "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
+                )
+            if len(service_raw) > MAX_B14_RESPONSE_BYTES:
+                raise ChatRuntimeError(
+                    502,
+                    "upstream_response_too_large",
+                    "답변이 너무 커서 안전하게 표시할 수 없습니다.",
+                )
+            raw = bytearray(service_raw)
+        elif self.require_service_binding:
             raise ChatRuntimeError(
-                504,
-                "upstream_timeout",
-                "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
-            ) from exc
-        except httpx.HTTPError as exc:
-            raise ChatRuntimeError(
-                502,
-                "upstream_unavailable",
-                "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
-            ) from exc
+                503,
+                "upstream_binding_unavailable",
+                "AI 내부 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            )
+        else:
+            timeout = httpx.Timeout(
+                connect=min(self.settings.timeout_seconds, 10.0),
+                read=self.settings.timeout_seconds,
+                write=min(self.settings.timeout_seconds, 10.0),
+                pool=min(self.settings.timeout_seconds, 10.0),
+            )
+            try:
+                async with httpx.AsyncClient(
+                    transport=self.transport,
+                    timeout=timeout,
+                    follow_redirects=False,
+                ) as client:
+                    async with client.stream("POST", url, json=payload) as response:
+                        raw = bytearray()
+                        async for chunk in response.aiter_bytes():
+                            if len(raw) + len(chunk) > MAX_B14_RESPONSE_BYTES:
+                                raise ChatRuntimeError(
+                                    502,
+                                    "upstream_response_too_large",
+                                    "답변이 너무 커서 안전하게 표시할 수 없습니다.",
+                                )
+                            raw.extend(chunk)
+                        status_code = response.status_code
+            except ChatRuntimeError:
+                raise
+            except httpx.TimeoutException as exc:
+                raise ChatRuntimeError(
+                    504,
+                    "upstream_timeout",
+                    "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
+                ) from exc
+            except httpx.HTTPError as exc:
+                raise ChatRuntimeError(
+                    502,
+                    "upstream_unavailable",
+                    "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+                ) from exc
 
         if status_code < 200 or status_code >= 300:
             if status_code == 429:
