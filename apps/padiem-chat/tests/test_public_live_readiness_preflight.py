@@ -33,6 +33,11 @@ def _base_bindings(*, runtime="mock", live="false"):
             "text": "https://b14.example.test",
         },
         {
+            "name": "B14_SERVICE",
+            "type": "service",
+            "service": "ai-revenue-korean-ai-platform",
+        },
+        {
             "name": "PADIEM_CHAT_DB",
             "type": "d1",
             "database_id": "must-not-be-emitted",
@@ -143,8 +148,10 @@ def test_binding_inventory_never_copies_secret_or_unknown_plaintext():
     types, safe_text = module.binding_inventory(payload)
 
     assert types["PADIEM_CHAT_QUOTA_SALT"] == "secret_text"
+    assert types["B14_SERVICE"] == "service"
     assert "PADIEM_CHAT_QUOTA_SALT" not in safe_text
     assert "PADIEM_CHAT_DB" not in safe_text
+    assert "B14_SERVICE" not in safe_text
     assert "SOME_OTHER_SECRET" not in safe_text
     assert "ACCIDENTAL_PLAINTEXT_SECRET" not in safe_text
     assert "secret-sentinel" not in repr(safe_text)
@@ -166,6 +173,7 @@ def test_current_mock_shape_is_safe_hold_even_when_all_prerequisites_exist():
     readiness = _ready_evaluate(module)
 
     assert readiness.prerequisites_ready is True
+    assert readiness.b14_service_bound is True
     assert readiness.public_live_active is False
     assert readiness.safe_hold is True
 
@@ -177,6 +185,17 @@ def test_live_active_requires_b14_runtime_and_explicit_live_arm():
     assert readiness.prerequisites_ready is True
     assert readiness.public_live_active is True
     assert readiness.safe_hold is False
+
+
+def test_missing_b14_service_binding_keeps_readiness_on_hold():
+    module = _load_module()
+    bindings = [item for item in _base_bindings() if item.get("name") != "B14_SERVICE"]
+
+    readiness = _ready_evaluate(module, bindings=bindings)
+
+    assert readiness.b14_service_bound is False
+    assert readiness.prerequisites_ready is False
+    assert readiness.public_live_active is False
 
 
 def test_b14_not_live_or_keyless_keeps_readiness_on_hold():
@@ -353,3 +372,4 @@ def test_database_identifier_and_secret_values_are_never_emitted(capsys):
     assert "READY_TO_ARM" in output
     assert "QUOTA_SCHEMA_READY=true" in output
     assert "D1_SCHEMA_AUDIT=ready" in output
+    assert "B14_SERVICE_BOUND=true" in output
