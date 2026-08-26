@@ -1,0 +1,4 @@
+# Opt-in monorepo dependency for LL_PROVIDER_TYPE=padiem_core.
+# Run from apps/living-learning, e.g.:
+#   python -m pip install -r requirements-padiem-core.txt
+-e ../../packages/padiem-ai-core
