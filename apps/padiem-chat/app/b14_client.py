@@ -230,6 +230,93 @@ class B14Client:
                 # result/error with raw transport details.
                 pass
 
+    async def stream_text_auto(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        skill: Skill | None = None,
+        additional_system_context: str | None = None,
+    ) -> AsyncIterator[B14StreamEvent]:
+        """Yield private B62 auto-route stream events through B14 Router authority."""
+        resolved_skill = skill or get_skill()
+        system_content = resolved_skill.system_instruction
+        if additional_system_context is not None:
+            if not isinstance(additional_system_context, str):
+                raise ValueError("additional system context must be a string")
+            extra = additional_system_context.strip()
+            if len(extra) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+                raise ValueError("additional system context is too large")
+            if extra:
+                system_content = f"{system_content}\n\n{extra}"
+
+        if self.settings.runtime_mode == "mock":
+            prompt = next(
+                (m["content"] for m in reversed(messages) if m.get("role") == "user"),
+                "",
+            )
+            yield B14StreamEvent(
+                response_id="mock_b62_auto_stream",
+                model="b14/auto",
+                delta_content=(
+                    "모의 자동 스트리밍 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    f"입력하신 질문은 ‘{prompt[:120]}’입니다."
+                ),
+            )
+            yield B14StreamEvent(
+                response_id="mock_b62_auto_stream",
+                model="b14/auto",
+                done=True,
+            )
+            return
+
+        if self.require_service_binding and self.stream_transport is None:
+            raise ChatRuntimeError(
+                503,
+                "upstream_binding_unavailable",
+                "AI 내부 스트리밍 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            )
+
+        assert self.settings.b14_base_url is not None
+        upstream_messages = [
+            {"role": "system", "content": system_content},
+            *[dict(message) for message in messages],
+        ]
+        stream_request = B14ChatRequest(
+            messages=tuple(upstream_messages),
+            model="b14/auto",
+            temperature=0.2,
+            max_tokens=resolved_skill.max_tokens,
+            routing=B14RoutingOptions(
+                task_type=resolved_skill.task_type,
+                optimize_for=resolved_skill.optimize_for,
+                allow_external_fallback=True,
+                max_attempts=3,
+                required_capabilities=("free",),
+            ),
+        )
+        execution_transport = self.stream_transport or self.transport
+        core_client = B14StreamingClient(
+            B14ExecutionConfig(
+                base_url=self.settings.b14_base_url,
+                timeout_seconds=self.settings.timeout_seconds,
+                max_response_bytes=MAX_B14_RESPONSE_BYTES,
+            ),
+            transport=execution_transport,
+        )
+        core_stream = core_client.stream_auto(stream_request)
+        try:
+            async for event in core_stream:
+                yield event
+        except B14ExecutionError as exc:
+            raise _translate_core_error(exc) from exc
+        finally:
+            try:
+                await core_stream.aclose()
+            except Exception:
+                # Cleanup is best-effort and must not replace the bounded stream
+                # result/error with raw transport details.
+                pass
+
     async def complete(
         self,
         messages: list[dict[str, str]],
