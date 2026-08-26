@@ -5,7 +5,13 @@ import json
 import httpx
 import pytest
 
-from app.pilot.catalog import CATALOG_MODELS, get_catalog_by_id
+from app.pilot.catalog import (
+    CATALOG_MODELS,
+    CatalogModel,
+    ensure_free_tag_requires_known_zero_price,
+    filter_catalog,
+    get_catalog_by_id,
+)
 from app.pilot.errors import NoSafeRoute
 from app.pilot.openrouter import call_openrouter_chat_completions
 from app.pilot.openrouter_config import openrouter_config
@@ -99,8 +105,19 @@ def test_no_matching_free_route_fails_before_upstream():
     assert info.value.upstream_called is False
 
 
+def test_openrouter_free_router_capability_is_conservative_chat_only():
+    model = get_catalog_by_id("openrouter/free")
+    assert model is not None
+    assert model.enabled is True
+    assert "free" in model.capabilities
+    assert model.capabilities == frozenset({"chat", "free"})
+    assert "image" not in model.capabilities
+    assert "coding" not in model.capabilities
+    assert "long_context" not in model.capabilities
+
+
 @pytest.mark.asyncio
-async def test_ox_alpha_free_route_adds_zero_price_ceiling_and_low_reasoning():
+async def test_ox_alpha_free_route_adds_zero_price_ceiling_and_no_model_specific_hint():
     seen = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -131,7 +148,8 @@ async def test_ox_alpha_free_route_adds_zero_price_ceiling_and_low_reasoning():
     assert seen["body"]["provider"] == {
         "max_price": {"prompt": 0, "completion": 0}
     }
-    assert seen["body"]["reasoning"] == {"effort": "low"}
+    assert "reasoning" not in seen["body"]
+    assert "reasoning_effort" not in seen["body"]
 
 
 @pytest.mark.asyncio
@@ -198,3 +216,54 @@ async def test_paid_catalog_route_does_not_receive_free_price_ceiling_or_ox_reas
     assert seen["body"]["model"] == "google/gemini-2.5-flash"
     assert "provider" not in seen["body"]
     assert "reasoning" not in seen["body"]
+
+
+def test_unknown_price_model_is_never_implicitly_classified_free():
+    unknown_price = CatalogModel(
+        model_id="mystery/unknown-price",
+        upstream_model="mystery/unknown-price",
+        display_name="Unknown Price Model",
+        provider="Mystery",
+        provider_type="external",
+        input_price_usd_per_1m=None,
+        output_price_usd_per_1m=None,
+        capabilities=frozenset({"chat", "free"}),
+    )
+    assert unknown_price.price_is_known is False
+    with pytest.raises(RuntimeError):
+        ensure_free_tag_requires_known_zero_price(unknown_price)
+
+    nonzero = CatalogModel(
+        model_id="mystery/nonzero",
+        upstream_model="mystery/nonzero",
+        display_name="Nonzero Price Model",
+        provider="Mystery",
+        provider_type="external",
+        input_price_usd_per_1m=1.0,
+        output_price_usd_per_1m=2.0,
+        capabilities=frozenset({"chat", "free"}),
+    )
+    with pytest.raises(RuntimeError):
+        ensure_free_tag_requires_known_zero_price(nonzero)
+
+
+def test_required_capability_free_excludes_every_paid_entry():
+    candidates = filter_catalog(required_capabilities=["free"])
+    candidate_ids = {m.model_id for m in candidates}
+    assert candidate_ids == {"stealth/ox-alpha", "openrouter/free"}
+
+    paid_entries = [m for m in CATALOG_MODELS if "free" not in m.capabilities]
+    assert paid_entries
+    excluded_ids = {m.model_id for m in paid_entries}
+    assert {
+        "google/gemini-2.5-flash",
+        "deepseek/deepseek-chat",
+        "mistralai/mistral-small-3.2-24b-instruct",
+        "anthropic/claude-sonnet-4.5",
+    }.issubset(excluded_ids)
+    assert candidate_ids.isdisjoint(excluded_ids)
+    for m in candidates:
+        assert m.price_is_known is True
+        assert m.input_price_usd_per_1m == 0.0
+        assert m.output_price_usd_per_1m == 0.0
+        assert "free" in m.capabilities
