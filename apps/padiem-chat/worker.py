@@ -242,6 +242,11 @@ class Default(WorkerEntrypoint):
                     if b14_binding is not None
                     else None
                 )
+                stream_transport = (
+                    CloudflareB14StreamingServiceTransport(b14_binding)
+                    if b14_binding is not None
+                    else None
+                )
                 _worker_app = create_app(settings=settings, history_store=history_store)
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
@@ -250,6 +255,7 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.b14_client = DispatchAwareB14Client(
                     settings,
                     service_transport=service_transport,
+                    stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
                 )
                 _worker_app.state.grounded_chat = GroundedChatService(
