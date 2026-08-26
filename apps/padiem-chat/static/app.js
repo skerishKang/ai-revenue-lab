@@ -66,6 +66,8 @@
 
   let messages = [];
   let inFlight = false;
+  let activeRequestController = null;
+  let conversationEpoch = 0;
   let conversationSkill = "auto";
   let selectedAttachment = null;
   let conversationId = null;
@@ -164,10 +166,7 @@
       content.appendChild(details);
     }
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext) {
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    article.querySelector("[data-runtime-label]").textContent = "연결 오류";
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -187,7 +186,73 @@
       if (success && selectedAttachment === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
-    content.appendChild(box);
+    return box;
+  }
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext) {
+    const content = article.querySelector(".assistant-content");
+    content.replaceChildren();
+    article.querySelector("[data-runtime-label]").textContent = "연결 오류";
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+  }
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext) {
+    const content = article.querySelector(".assistant-content");
+    const typing = content.querySelector(".typing");
+    if (typing) typing.remove();
+    article.querySelector("[data-runtime-label]").textContent = "연결 오류";
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+  }
+
+  function parseSseFrame(frame) {
+    const lines = frame.replace(/\r\n/g, "\n").split("\n");
+    let event = "message";
+    const dataLines = [];
+    lines.forEach((line) => {
+      if (!line || line.startsWith(":")) return;
+      const separator = line.indexOf(":");
+      const field = separator >= 0 ? line.slice(0, separator) : line;
+      let value = separator >= 0 ? line.slice(separator + 1) : "";
+      if (value.startsWith(" ")) value = value.slice(1);
+      if (field === "event") event = value;
+      if (field === "data") dataLines.push(value);
+    });
+    if (!dataLines.length) return null;
+    return { event, data: dataLines.join("\n") };
+  }
+  async function readSseEvents(response, onEvent) {
+    if (!response.body || typeof response.body.getReader !== "function") throw new Error("스트리밍 응답을 읽을 수 없습니다.");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    let reachedEof = false;
+    let stoppedEarly = false;
+    try {
+      while (true) {
+        const item = await reader.read();
+        if (item.done) {
+          reachedEof = true;
+          break;
+        }
+        buffer += decoder.decode(item.value, { stream: true });
+        while (true) {
+          const boundary = buffer.match(/\r?\n\r?\n/);
+          if (!boundary || boundary.index === undefined) break;
+          const frameText = buffer.slice(0, boundary.index);
+          buffer = buffer.slice(boundary.index + boundary[0].length);
+          const frame = parseSseFrame(frameText);
+          if (frame && await onEvent(frame)) {
+            stoppedEarly = true;
+            return;
+          }
+        }
+      }
+      buffer += decoder.decode();
+      if (buffer.trim()) throw new Error("AI 스트리밍 응답이 완전히 끝나지 않았습니다.");
+    } finally {
+      if (!reachedEof || stoppedEarly) {
+        try { await reader.cancel(); } catch (_) { /* no-op */ }
+      }
+      reader.releaseLock();
+    }
   }
 
   function formatBytes(bytes) {
@@ -479,6 +544,12 @@
   }
 
   function resetConversation(preserveProject = true) {
+    conversationEpoch += 1;
+    if (activeRequestController) {
+      activeRequestController.abort();
+      activeRequestController = null;
+    }
+    inFlight = false;
     messages = [];
     conversationSkill = "auto";
     conversationId = null;
@@ -678,9 +749,134 @@
     }
   }
 
+  async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload),
+      signal,
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || typeof data.answer !== "string") {
+      const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.";
+      throw new Error(message);
+    }
+    renderAnswer(article, data);
+    messages = outboundMessages.concat([{ role: "assistant", content: data.answer }]).slice(-20);
+    if (typeof data.conversation_id === "string") conversationId = data.conversation_id;
+    if (typeof data.project_id === "string") {
+      const resolvedProject = projectById(data.project_id) || contextSnapshot.project;
+      if (resolvedProject) activeProject = resolvedProject;
+    }
+    renderProjectState();
+    if (authState.authenticated) {
+      loadRecentConversations();
+      if (projectsReady) loadProjects();
+    }
+    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    return true;
+  }
+
+  function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
+    messages = outboundMessages.concat([{ role: "assistant", content: answer }]).slice(-20);
+    if (typeof data.conversation_id === "string") conversationId = data.conversation_id;
+    if (typeof data.project_id === "string") {
+      const snapshotProject = contextSnapshot.project && contextSnapshot.project.id === data.project_id ? contextSnapshot.project : null;
+      const boundedProject = data.project && data.project.id === data.project_id && typeof data.project.name === "string" ? data.project : null;
+      const resolvedProject = projectById(data.project_id) || snapshotProject || boundedProject;
+      if (resolvedProject) activeProject = resolvedProject;
+    }
+    if (Number.isInteger(data.project_files_used) && data.project_files_used > 0) {
+      const used = document.createElement("small");
+      used.className = "reference-note";
+      used.textContent = `프로젝트 파일 ${data.project_files_used}개를 참고했습니다.`;
+      article.querySelector(".assistant-content").appendChild(used);
+    }
+    renderProjectState();
+    if (authState.authenticated) {
+      loadRecentConversations();
+      if (projectsReady) loadProjects();
+    }
+    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal) {
+    const response = await fetch("/api/chat/stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
+      body: JSON.stringify(payload),
+      signal,
+    });
+    const contentType = (response.headers.get("content-type") || "").toLowerCase();
+    if (!response.ok || !contentType.startsWith("text/event-stream")) {
+      const data = await response.json().catch(() => null);
+      const message = data && data.error && typeof data.error.message === "string"
+        ? data.error.message
+        : "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.";
+      throw new Error(message);
+    }
+
+    let answer = "";
+    let paragraph = null;
+    let done = false;
+    let terminalError = false;
+    try {
+      await readSseEvents(response, async (frame) => {
+        if (!["delta", "done", "error"].includes(frame.event)) return false;
+        let data;
+        try {
+          data = JSON.parse(frame.data);
+        } catch (_) {
+          throw new Error("AI 스트리밍 응답 형식을 확인할 수 없습니다.");
+        }
+        if (frame.event === "delta") {
+          if (!data || typeof data.delta !== "string") throw new Error("AI 스트리밍 응답 형식을 확인할 수 없습니다.");
+          if (!data.delta) return false;
+          if (!paragraph) {
+            const content = article.querySelector(".assistant-content");
+            content.replaceChildren();
+            paragraph = document.createElement("p");
+            content.appendChild(paragraph);
+            article.querySelector("[data-runtime-label]").textContent = "AI 응답";
+          }
+          answer += data.delta;
+          paragraph.textContent = answer;
+          return false;
+        }
+        if (frame.event === "error") {
+          const message = data && data.error && typeof data.error.message === "string"
+            ? data.error.message
+            : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.";
+          if (!paragraph) throw new Error(message);
+          terminalError = true;
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot);
+          return true;
+        }
+        if (!data || data.done !== true || !paragraph || !answer) throw new Error("AI 스트리밍 응답이 정상적으로 완료되지 않았습니다.");
+        if (done) throw new Error("AI 스트리밍 완료 신호가 중복되었습니다.");
+        done = true;
+        applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
+        return true;
+      });
+      if (done) return true;
+      if (terminalError) return false;
+      throw new Error("AI 스트리밍 응답이 완료되지 않았습니다. 다시 시도해 주세요.");
+    } catch (error) {
+      if (error && error.name === "AbortError") throw error;
+      if (paragraph) {
+        renderStreamError(article, error instanceof Error ? error.message : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.", outboundMessages, skill, contextSnapshot);
+        return false;
+      }
+      throw error;
+    }
+  }
+
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
     if (inFlight) return false;
     inFlight = true;
+    const requestEpoch = conversationEpoch;
+    const controller = new AbortController();
+    activeRequestController = controller;
     updateComposer();
     const article = addAssistantShell("답변 준비 중");
     renderTyping(article);
@@ -690,37 +886,21 @@
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || typeof data.answer !== "string") {
-        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.";
-        throw new Error(message);
+      if (attachments) {
+        return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
       }
-      renderAnswer(article, data);
-      messages = outboundMessages.concat([{ role: "assistant", content: data.answer }]).slice(-20);
-      if (typeof data.conversation_id === "string") conversationId = data.conversation_id;
-      if (typeof data.project_id === "string") {
-        const resolvedProject = projectById(data.project_id) || contextSnapshot.project;
-        if (resolvedProject) activeProject = resolvedProject;
-      }
-      renderProjectState();
-      if (authState.authenticated) {
-        loadRecentConversations();
-        if (projectsReady) loadProjects();
-      }
-      article.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      return true;
+      return await requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, controller.signal);
     } catch (error) {
+      if ((error && error.name === "AbortError") || requestEpoch !== conversationEpoch) return false;
       renderError(article, error instanceof Error ? error.message : "다시 시도해 주세요.", outboundMessages, skill, attachment, contextSnapshot);
       return false;
     } finally {
-      inFlight = false;
-      updateComposer();
-      input.focus();
+      if (activeRequestController === controller) {
+        activeRequestController = null;
+        inFlight = false;
+        updateComposer();
+        input.focus();
+      }
     }
   }
   async function submitPrompt(text, selectedSkill) {
