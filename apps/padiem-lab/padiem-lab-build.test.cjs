@@ -45,7 +45,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
+  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
@@ -58,6 +58,13 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
     } else if (route.mode === 'GENERATED_APP_PREVIEW') {
       assert.match(route.sourcePath, /^apps\/[a-z0-9-]+$/);
       assert.match(route.generatorModule, /^scripts\.[a-z0-9_]+$/);
+    } else if (route.mode === 'GENERATED_APP_PREVIEW_ALLOWLIST') {
+      assert.match(route.sourcePath, /^apps\/[a-z0-9-]+$/);
+      assert.match(route.generatorModule, /^scripts\.[a-z0-9_]+$/);
+      assert.match(route.generatorOutputOverride, /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/);
+      assert.ok(route.includeFiles?.length);
+      assert.ok(route.includeDirs?.length);
+      assert.ok(route.privateLinkSegments?.length);
     } else {
       assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
     }
@@ -106,6 +113,66 @@ test('static reference routes publish exactly their route-specific runtime allow
       assert.equal(fs.existsSync(path.join(target, forbidden)), false, `${route.route} leaked ${forbidden}`);
     }
   }
+});
+
+test('B01 is generated from pinned Personal Edition production review but publishes participant/customer surfaces only', () => {
+  build();
+  const b01 = path.join(out, 'b01');
+  for (const relative of [
+    'index.html',
+    'robots.txt',
+    'guide/index.html',
+    'static',
+    'preview/participant/index.html',
+    'preview/participant/empty/index.html',
+    'preview/participant/input-received/index.html',
+    'preview/participant/editing/index.html',
+    'preview/participant/published/index.html',
+    'preview/participant/feedback/index.html',
+    'preview/participant/input/index.html',
+    'preview/participant/editions/index.html',
+    'preview/participant/editions/modal-preview-edition/index.html',
+    'preview/participant/editions/modal-preview-edition/feedback/index.html',
+    'preview/participant/editions/modal-preview-edition/adaptation/index.html',
+    'preview/participant/history/index.html',
+    'preview/participant/transformation/index.html'
+  ]) {
+    assert.equal(fs.existsSync(path.join(b01, relative)), true, `b01 missing ${relative}`);
+  }
+  for (const forbidden of [
+    '_headers', 'admin', 'preview-states', 'app', 'scripts', 'tests',
+    'preview_fixtures', 'migrations', 'pyproject.toml', 'preview/participant/access'
+  ]) {
+    assert.equal(fs.existsSync(path.join(b01, forbidden)), false, `b01 leaked ${forbidden}`);
+  }
+  assert.equal(walkFiles(b01).some(file => file.endsWith('.py')), false, 'b01 leaked Python source');
+
+  const privateNavigation = /(?:href|src|action)\s*=\s*["'][^"']*(?:admin|preview-states)\/|href\s*:\s*["'][^"']*(?:admin|preview-states)\//i;
+  for (const file of walkFiles(b01).filter(file => /\.html$/i.test(file))) {
+    const content = fs.readFileSync(file, 'utf8');
+    assert.doesNotMatch(content, privateNavigation, `b01 retained private navigation in ${path.relative(b01, file)}`);
+    for (const match of content.matchAll(/<form\b[^>]*>/gi)) {
+      assert.match(match[0], /action=["']#["']/i, `b01 form action not neutralized in ${path.relative(b01, file)}`);
+      assert.match(match[0], /method=["']get["']/i, `b01 form method not neutralized in ${path.relative(b01, file)}`);
+      assert.doesNotMatch(match[0], /method=["']post["']/i);
+    }
+  }
+
+  const index = fs.readFileSync(path.join(b01, 'index.html'), 'utf8');
+  assert.match(index, /Personal Edition/);
+  assert.match(index, /noindex,nofollow/);
+  assert.match(index, /data-static-production-review="b1-v7-collectible-glass"/);
+  assert.match(index, /data-owner-ui-approved="false"/);
+  assert.match(index, /href="\/b01\/preview\/participant\/empty\/"/);
+  assert.match(index, /href="\/b01\/guide\/"/);
+  assert.doesNotMatch(index, /UI Preview · Synthetic data · No persistence/);
+
+  const headers = fs.readFileSync(path.join(out, '_headers'), 'utf8');
+  assert.match(headers, /^\/b01\/\*$/m);
+  assert.match(headers, /X-Robots-Tag: noindex, nofollow/);
+  assert.match(headers, /script-src 'none'/);
+  assert.match(headers, /connect-src 'none'/);
+  assert.match(headers, /form-action 'none'/);
 });
 
 test('B02 publishes only pinned Living Travel customer/demo preview surfaces', () => {
@@ -250,8 +317,9 @@ test('explicit current-executable routes omit legacy root app and docs surfaces'
 
 test('aggregate runtime excludes repository-only and private paths recursively', () => {
   build();
-  const forbiddenSegments = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence', 'staging']);
+  const globalForbidden = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence', 'staging']);
   for (const route of routes) {
+    const forbiddenSegments = new Set([...globalForbidden, ...(route.privateLinkSegments || [])]);
     for (const file of walkFiles(routeOut(route))) {
       const relative = path.relative(routeOut(route), file);
       assert.equal(relative.endsWith('.md'), false, `${route.route} leaked markdown: ${relative}`);
@@ -263,7 +331,10 @@ test('aggregate runtime excludes repository-only and private paths recursively',
 
 test('all local static runtime files stay inside their own /bNN/ subpath', () => {
   build();
-  const localModes = new Set(['STATIC_REFERENCE', 'STATIC_APP_PREVIEW', 'STATIC_APP_PREVIEW_ALLOWLIST', 'GENERATED_APP_PREVIEW']);
+  const localModes = new Set([
+    'STATIC_REFERENCE', 'STATIC_APP_PREVIEW', 'STATIC_APP_PREVIEW_ALLOWLIST',
+    'GENERATED_APP_PREVIEW', 'GENERATED_APP_PREVIEW_ALLOWLIST'
+  ]);
   for (const route of routes.filter(route => localModes.has(route.mode))) {
     const allowedPrefix = `/${route.route}/`;
     for (const file of walkFiles(routeOut(route)).filter(file => /\.(?:html|css|js)$/i.test(file))) {

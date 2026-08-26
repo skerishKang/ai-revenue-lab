@@ -11,6 +11,17 @@
 
   return Object.freeze([
     Object.freeze({
+      number: 1,
+      slug: "personal-edition",
+      title: "Personal Edition",
+      koreanTitle: "퍼스널 에디션",
+      summary: "흩어진 기록을 한 호의 개인 에디션으로 묶고, 쓰기·읽기·피드백의 흐름을 합성 데이터로 탐색하는 정적 제품 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b01/",
+      sourcePath: "apps/personal-edition/scripts/build_static_production.py"
+    }),
+    Object.freeze({
       number: 2,
       slug: "living-travel",
       title: "Living Travel",

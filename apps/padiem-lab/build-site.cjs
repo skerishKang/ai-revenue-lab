@@ -11,6 +11,7 @@ const staticAppSourceTreePins = Object.freeze({
   'apps/living-travel/pages-preview/site': 'fedd8846e3870661502ccb6947d8ed852eecc0b6'
 });
 const generatedSourceTreePins = Object.freeze({
+  'apps/personal-edition': '8044c7a0fed5c6e9256a173e7633cb47dd7ba010',
   'apps/personal-video-archive': '580be319152fdf2001d979438b345e4172a2e2d4'
 });
 
@@ -44,10 +45,17 @@ function isSafeRouteSource(route) {
     return /^apps\/[a-z0-9-]+\/pages-preview\/site$/.test(route.sourcePath)
       && Boolean(staticAppSourceTreePins[route.sourcePath]);
   }
-  if (route.mode === 'GENERATED_APP_PREVIEW') {
-    return /^apps\/[a-z0-9-]+$/.test(route.sourcePath)
+  if (route.mode === 'GENERATED_APP_PREVIEW' || route.mode === 'GENERATED_APP_PREVIEW_ALLOWLIST') {
+    const common = /^apps\/[a-z0-9-]+$/.test(route.sourcePath)
       && /^scripts\.[a-z0-9_]+$/.test(route.generatorModule || '')
       && Boolean(generatedSourceTreePins[route.sourcePath]);
+    if (!common) return false;
+    if (route.mode === 'GENERATED_APP_PREVIEW_ALLOWLIST') {
+      return /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(route.generatorOutputOverride || '')
+        && Boolean(route.includeFiles?.length)
+        && Boolean(route.includeDirs?.length);
+    }
+    return true;
   }
   return /^reference\/business-\d{2}-[^/]+$/.test(route.sourcePath);
 }
@@ -93,6 +101,7 @@ function rewriteSubpathDependencies(route, destination) {
     let content = fs.readFileSync(file, 'utf8');
     content = content.replace(/((?:href|src|action)\s*=\s*["'])\/(?!\/)/gi, `$1${prefix}`);
     content = content.replace(/(url\(\s*["']?)\/(?!\/)/gi, `$1${prefix}`);
+    content = content.replace(/(content\s*=\s*["'][^"']*url=)\/(?!\/)/gi, `$1${prefix}`);
     fs.writeFileSync(file, content, 'utf8');
   }
 }
@@ -143,10 +152,25 @@ function sanitizePrivateNavigation(route, destination) {
   }
 }
 
+function neutralizeStaticForms(route, destination) {
+  if (!route.neutralizeForms) return;
+  for (const file of walkFiles(destination).filter(file => /\.html$/i.test(file))) {
+    let content = fs.readFileSync(file, 'utf8');
+    content = content.replace(/<form\b([^>]*)>/gi, (_match, attrs) => {
+      const stripped = attrs
+        .replace(/\saction\s*=\s*(?:["'][^"']*["']|[^\s>]+)/gi, '')
+        .replace(/\smethod\s*=\s*(?:["'][^"']*["']|[^\s>]+)/gi, '');
+      return `<form${stripped} action="#" method="get">`;
+    });
+    fs.writeFileSync(file, content, 'utf8');
+  }
+}
+
 function copyStaticAppPreviewAllowlist(route, source, destination) {
   assertStaticAppSourcePin(route);
   copyStaticReference(route, source, destination);
   sanitizePrivateNavigation(route, destination);
+  neutralizeStaticForms(route, destination);
   if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
 }
 
@@ -209,6 +233,42 @@ function generateStaticAppPreview(route, source, destination) {
   if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
 }
 
+function generateStaticAppPreviewAllowlist(route, source, destination) {
+  requirePath(path.join(source, 'pyproject.toml'));
+  const sourceTree = assertGeneratedSourcePin(route);
+  const python = ensureGeneratedPreviewPython(route);
+  const tempRoot = process.env.RUNNER_TEMP || os.tmpdir();
+  const generated = path.join(tempRoot, `padiem-lab-${route.route}-${sourceTree.slice(0, 12)}-generated`);
+  fs.rmSync(generated, { recursive: true, force: true });
+  fs.mkdirSync(generated, { recursive: true });
+
+  const script = [
+    'import importlib, sys',
+    'from pathlib import Path',
+    'module = importlib.import_module(sys.argv[1])',
+    'holder = module',
+    'parts = sys.argv[3].split(".")',
+    'for name in parts[:-1]:',
+    '    holder = getattr(holder, name)',
+    'setattr(holder, parts[-1], Path(sys.argv[2]))',
+    'module.main()'
+  ].join('\n');
+
+  execFileSync(python, [
+    '-c', script, route.generatorModule, generated, route.generatorOutputOverride
+  ], {
+    cwd: source,
+    stdio: 'inherit'
+  });
+
+  requirePath(path.join(generated, 'index.html'));
+  copyStaticReference(route, generated, destination);
+  sanitizePrivateNavigation(route, destination);
+  neutralizeStaticForms(route, destination);
+  if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
+  fs.rmSync(generated, { recursive: true, force: true });
+}
+
 function copyB60Public(route, source, destination) {
   requirePath(path.join(source, 'index.html'));
   for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
@@ -235,7 +295,10 @@ function walkFiles(root) {
 }
 
 function assertPublicBoundary(route, destination) {
-  const forbiddenSegments = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence', 'staging']);
+  const forbiddenSegments = new Set([
+    'operator', 'operations', 'collector', 'reviews', 'evidence', 'staging',
+    ...(route.privateLinkSegments || [])
+  ]);
   for (const file of walkFiles(destination)) {
     const relative = path.relative(destination, file);
     const segments = relative.split(path.sep);
@@ -284,6 +347,8 @@ for (const route of routes) {
     copyStaticAppPreviewAllowlist(route, source, destination);
   } else if (route.mode === 'GENERATED_APP_PREVIEW') {
     generateStaticAppPreview(route, source, destination);
+  } else if (route.mode === 'GENERATED_APP_PREVIEW_ALLOWLIST') {
+    generateStaticAppPreviewAllowlist(route, source, destination);
   } else if (route.mode === 'B60_PUBLIC_ALLOWLIST') {
     copyB60Public(route, source, destination);
   } else {
