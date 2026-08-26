@@ -27,6 +27,17 @@ from .web_runtime import (
     create_web_provider,
     normalize_public_url,
 )
+from .b14_execution import (
+    B14_CHAT_COMPLETIONS_PATH,
+    MAX_B14_RESPONSE_BYTES,
+    B14ChatRequest,
+    B14ExecutionClient,
+    B14ExecutionConfig,
+    B14ExecutionError,
+    B14ExecutionResult,
+    B14RouteMetadata,
+    B14RoutingOptions,
+)
 
 __all__ = [
     "AgentProfile",
@@ -54,4 +65,13 @@ __all__ = [
     "WebRuntimeError",
     "create_web_provider",
     "normalize_public_url",
+    "B14_CHAT_COMPLETIONS_PATH",
+    "MAX_B14_RESPONSE_BYTES",
+    "B14ChatRequest",
+    "B14ExecutionClient",
+    "B14ExecutionConfig",
+    "B14ExecutionError",
+    "B14ExecutionResult",
+    "B14RouteMetadata",
+    "B14RoutingOptions",
 ]
