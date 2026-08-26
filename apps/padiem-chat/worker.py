@@ -7,18 +7,24 @@ Provider/model execution remains Business 14 authority.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 from urllib.parse import urlparse
 
-from workers import Response, WorkerEntrypoint
+from js import Object
+from pyodide.ffi import to_js as _to_js
+from workers import Request, Response, WorkerEntrypoint
 
+from app.b14_client import B14Client
 from app.config import ConfigError
+from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.main import create_app
 from app.project_files import D1ProjectFileStore
 from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
+    B14_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
@@ -35,6 +41,39 @@ def _apply_headers(response: Any, path: str) -> Any:
     return response
 
 
+def _to_js_object(value: dict[str, Any]) -> Any:
+    return _to_js(value, dict_converter=Object.fromEntries)
+
+
+class CloudflareB14ServiceTransport:
+    """HTTP-shaped adapter over a Cloudflare Worker Service Binding.
+
+    Routing authority is the fixed `B14_SERVICE` binding. The URL is still fully
+    qualified because the Fetcher API expects an absolute URL, but service-binding
+    configuration — not the hostname — selects the target Worker.
+    """
+
+    def __init__(self, binding: Any):
+        if binding is None:
+            raise ValueError("B14 service binding is required")
+        self.binding = binding
+
+    async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]:
+        request = Request.new(
+            url,
+            _to_js_object(
+                {
+                    "method": "POST",
+                    "headers": {"Content-Type": "application/json"},
+                    "body": json.dumps(payload, ensure_ascii=False),
+                }
+            ),
+        )
+        response = await self.binding.fetch(request)
+        text = await response.text()
+        return int(response.status), str(text).encode("utf-8")
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request: Any) -> Any:
         import asgi
@@ -46,15 +85,31 @@ class Default(WorkerEntrypoint):
             try:
                 settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
+                b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 history_store = D1HistoryStore(db_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
                 saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
                 usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
+                service_transport = (
+                    CloudflareB14ServiceTransport(b14_binding)
+                    if b14_binding is not None
+                    else None
+                )
                 _worker_app = create_app(settings=settings, history_store=history_store)
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
                 _worker_app.state.usage_gate_enforced = True
+                _worker_app.state.b14_client = B14Client(
+                    settings,
+                    service_transport=service_transport,
+                    require_service_binding=settings.runtime_mode == "b14",
+                )
+                _worker_app.state.grounded_chat = GroundedChatService(
+                    _worker_app.state.b14_client,
+                    _worker_app.state.web_provider,
+                )
+                _worker_app.state.b14_service_bound = b14_binding is not None
             except ConfigError:
                 response = Response(
                     "Padiem Chat runtime configuration is invalid.",
