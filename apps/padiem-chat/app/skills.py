@@ -1,18 +1,39 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from types import MappingProxyType
 
+from padiem_ai_core import AgentProfile
 
-@dataclass(frozen=True, slots=True)
-class Skill:
-    id: str
-    title: str
-    short_description: str
-    system_instruction: str
-    task_type: str
-    optimize_for: str
-    max_tokens: int
+
+class Skill(AgentProfile):
+    """B62 product-owned skill policy backed by the shared AgentProfile contract."""
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        id: str,
+        title: str,
+        short_description: str,
+        system_instruction: str,
+        task_type: str,
+        optimize_for: str,
+        max_tokens: int,
+    ) -> None:
+        AgentProfile.__init__(
+            self,
+            id=id,
+            title=title,
+            description=short_description,
+            system_instruction=system_instruction,
+            task_type=task_type,
+            optimize_for=optimize_for,
+            max_tokens=max_tokens,
+        )
+
+    @property
+    def short_description(self) -> str:
+        return self.description
 
 
 _SKILLS = (
