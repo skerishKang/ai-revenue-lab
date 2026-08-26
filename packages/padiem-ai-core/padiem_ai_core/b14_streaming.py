@@ -19,6 +19,7 @@ from .b14_execution import (
 from .contracts import UsageMetadata
 
 B14_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
+B14_AUTO_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
 
 
 @dataclass(frozen=True, slots=True)
@@ -248,6 +249,16 @@ def _validate_stream_request(request: B14ChatRequest) -> None:
         )
 
 
+def _validate_auto_stream_request(request: B14ChatRequest) -> None:
+    if not isinstance(request, B14ChatRequest):
+        raise ValueError("request must be B14ChatRequest")
+    if request.model != "b14/auto":
+        raise B14ExecutionError(
+            "streaming_request_unsupported",
+            "Business 14 automatic streaming requires model=b14/auto.",
+        )
+
+
 def _raise_status_error(status_code: int) -> None:
     if status_code in {401, 403}:
         raise B14ExecutionError(
@@ -302,9 +313,35 @@ class B14StreamingClient:
     def stream_preview_url(self) -> str:
         return self._config.base_url + B14_STREAM_PREVIEW_PATH
 
-    async def stream(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]:
-        _validate_stream_request(request)
+    @property
+    def auto_stream_preview_url(self) -> str:
+        return self._config.base_url + B14_AUTO_STREAM_PREVIEW_PATH
 
+    async def stream(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]:
+        """Stream one explicit manual route through the existing staged preview."""
+        _validate_stream_request(request)
+        iterator = self._stream_request(request, self.stream_preview_url)
+        try:
+            async for event in iterator:
+                yield event
+        finally:
+            await iterator.aclose()
+
+    async def stream_auto(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]:
+        """Stream Router-owned b14/auto execution through the staged auto preview."""
+        _validate_auto_stream_request(request)
+        iterator = self._stream_request(request, self.auto_stream_preview_url)
+        try:
+            async for event in iterator:
+                yield event
+        finally:
+            await iterator.aclose()
+
+    async def _stream_request(
+        self,
+        request: B14ChatRequest,
+        url: str,
+    ) -> AsyncIterator[B14StreamEvent]:
         payload = request.to_payload()
         payload["stream"] = True
         timeout = httpx.Timeout(
@@ -326,7 +363,7 @@ class B14StreamingClient:
             ) as client:
                 async with client.stream(
                     "POST",
-                    self.stream_preview_url,
+                    url,
                     json=payload,
                 ) as response:
                     status_code = response.status_code
