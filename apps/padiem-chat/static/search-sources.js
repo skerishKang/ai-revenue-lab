@@ -98,17 +98,31 @@
     return true;
   }
 
-  function chatRequest(inputValue) {
-    if (typeof inputValue === "string") return inputValue === "/api/chat" || inputValue.endsWith("/api/chat");
-    if (inputValue instanceof Request) {
+  function requestPath(inputValue) {
+    if (typeof inputValue === "string") {
       try {
-        return new URL(inputValue.url, window.location.href).pathname === "/api/chat";
+        return new URL(inputValue, window.location.href).pathname;
       } catch (_) {
-        return false;
+        return null;
       }
     }
-    if (inputValue instanceof URL) return inputValue.pathname === "/api/chat";
-    return false;
+    if (inputValue instanceof Request) {
+      try {
+        return new URL(inputValue.url, window.location.href).pathname;
+      } catch (_) {
+        return null;
+      }
+    }
+    if (inputValue instanceof URL) return inputValue.pathname;
+    return null;
+  }
+
+  function chatRequest(inputValue) {
+    return requestPath(inputValue) === "/api/chat";
+  }
+
+  function streamingChatRequest(inputValue) {
+    return requestPath(inputValue) === "/api/chat/stream";
   }
 
   function addTool(init, toolId) {
@@ -123,6 +137,41 @@
     if (payload.tool !== undefined || payload.tool_input !== undefined) return null;
     payload.tool = toolId;
     return { ...init, body: JSON.stringify(payload) };
+  }
+
+  function adaptToolRequest(inputValue, init, toolId) {
+    const augmented = addTool(init, toolId);
+    if (!augmented) return null;
+    if (!streamingChatRequest(inputValue)) {
+      return { inputValue, init: augmented, adaptedFromStream: false };
+    }
+    const headers = new Headers(augmented.headers || {});
+    headers.set("Accept", "application/json");
+    return {
+      inputValue: "/api/chat",
+      init: { ...augmented, headers },
+      adaptedFromStream: true,
+    };
+  }
+
+  function completedJsonAsPublicSse(data) {
+    if (!data || typeof data !== "object" || typeof data.answer !== "string" || !data.answer) return null;
+    const done = { done: true };
+    if (typeof data.conversation_id === "string") done.conversation_id = data.conversation_id;
+    if (typeof data.project_id === "string") done.project_id = data.project_id;
+    if (data.project && typeof data.project === "object" && !Array.isArray(data.project)) done.project = data.project;
+    if (Number.isInteger(data.project_files_used)) done.project_files_used = data.project_files_used;
+    const body = [
+      `event: delta\ndata: ${JSON.stringify({ delta: data.answer })}\n\n`,
+      `event: done\ndata: ${JSON.stringify(done)}\n\n`,
+    ].join("");
+    return new Response(body, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-store",
+      },
+    });
   }
 
   function currentAssistantArticle() {
@@ -227,11 +276,13 @@
   }
 
   window.fetch = async (inputValue, init) => {
-    const isChat = chatRequest(inputValue);
+    const isChat = chatRequest(inputValue) || streamingChatRequest(inputValue);
     const requestedTool = isChat ? activeTool : null;
     let toolRequest = null;
+    let nextInput = inputValue;
     let nextInit = init;
     let article = null;
+    let adaptedFromStream = false;
 
     if (requestedTool) {
       const blockedByImage = imageSelected() && !retryOverride;
@@ -241,10 +292,12 @@
         syncControls();
         setNote("사진 첨부와 웹 검색·심층 리서치는 한 질문에서 함께 사용할 수 없습니다.", "error");
       } else {
-        const augmented = addTool(init, requestedTool);
-        if (augmented) {
+        const adapted = adaptToolRequest(inputValue, init, requestedTool);
+        if (adapted) {
           toolRequest = requestedTool;
-          nextInit = augmented;
+          nextInput = adapted.inputValue;
+          nextInit = adapted.init;
+          adaptedFromStream = adapted.adaptedFromStream;
           article = currentAssistantArticle();
           activeTool = null;
           toolInFlight = requestedTool;
@@ -255,26 +308,29 @@
     }
 
     try {
-      const response = await nativeFetch(inputValue, nextInit);
+      const response = await nativeFetch(nextInput, nextInit);
       if (toolRequest) {
         if (!response.ok) {
           retryTool = toolRequest;
         } else {
           retryTool = null;
-          response.clone().json().then((data) => {
-            const groundedSearch = data
-              && data.answer_status === "answered_with_evidence"
-              && data.tool
-              && data.tool.id === "web_search"
-              && Array.isArray(data.evidence);
-            const deepResearch = data
-              && data.answer_status === "deep_research_answered"
-              && data.tool
-              && data.tool.id === "deep_research"
-              && Array.isArray(data.evidence);
-            if (groundedSearch) scheduleSources(article, data.evidence);
-            if (deepResearch) scheduleSources(article, data.evidence, data.research || null);
-          }).catch(() => {});
+          const data = await response.clone().json().catch(() => null);
+          const groundedSearch = data
+            && data.answer_status === "answered_with_evidence"
+            && data.tool
+            && data.tool.id === "web_search"
+            && Array.isArray(data.evidence);
+          const deepResearch = data
+            && data.answer_status === "deep_research_answered"
+            && data.tool
+            && data.tool.id === "deep_research"
+            && Array.isArray(data.evidence);
+          if (groundedSearch) scheduleSources(article, data.evidence);
+          if (deepResearch) scheduleSources(article, data.evidence, data.research || null);
+          if (adaptedFromStream) {
+            const publicSse = completedJsonAsPublicSse(data);
+            if (publicSse) return publicSse;
+          }
         }
       }
       return response;

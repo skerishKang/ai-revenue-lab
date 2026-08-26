@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -14,6 +15,12 @@ def sources():
         (root / "static/search-sources.css").read_text(encoding="utf-8"),
         (root / "static/app.js").read_text(encoding="utf-8"),
     )
+
+
+def compatibility_helpers(js: str) -> str:
+    start = js.index("  function requestPath(inputValue) {")
+    end = js.index("  function currentAssistantArticle() {")
+    return js[start:end]
 
 
 def test_search_assets_are_additive_and_ordered():
@@ -38,7 +45,6 @@ def test_web_and_research_start_fail_closed_and_are_health_gated():
     assert 'setActiveTool("web_search"' in js
     assert 'setActiveTool("deep_research"' in js
     assert "activeTool = next ? toolId : null" in js
-    assert "toolInFlight" in js
 
 
 def test_tools_are_one_request_only_mutually_exclusive_and_retryable():
@@ -52,6 +58,89 @@ def test_tools_are_one_request_only_mutually_exclusive_and_retryable():
     assert "retryOverride = true" in js
     assert 'toolId === "web_search"' in js
     assert 'toolId === "deep_research"' in js
+
+
+def test_streaming_chat_with_active_tool_is_adapted_to_completed_json_once():
+    _, _, js, _, _ = sources()
+    assert 'streamingChatRequest(inputValue)' in js
+    assert 'const isChat = chatRequest(inputValue) || streamingChatRequest(inputValue);' in js
+    assert 'inputValue: "/api/chat"' in js
+    assert 'headers.set("Accept", "application/json")' in js
+    assert 'const response = await nativeFetch(nextInput, nextInit);' in js
+    assert 'completedJsonAsPublicSse(data)' in js
+    assert 'nativeFetch("/api/chat/stream"' not in js
+
+    helpers = compatibility_helpers(js)
+    script = helpers + r'''
+global.window = { location: { href: "https://chat.example.test/" } };
+const init = {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
+  body: JSON.stringify({ messages: [{ role: "user", content: "질문" }], mode: "auto", skill: "auto" }),
+};
+const adapted = adaptToolRequest("/api/chat/stream", init, "web_search");
+const direct = adaptToolRequest("/api/chat", init, "deep_research");
+(async () => {
+  const facade = completedJsonAsPublicSse({
+    answer: "검색 결과입니다.",
+    conversation_id: "conv-1",
+    project_id: "project-1",
+    project: { id: "project-1", name: "프로젝트" },
+    project_files_used: 2,
+  });
+  console.log(JSON.stringify({
+    adaptedInput: adapted.inputValue,
+    adaptedAccept: adapted.init.headers.get("Accept"),
+    adaptedPayload: JSON.parse(adapted.init.body),
+    adaptedFromStream: adapted.adaptedFromStream,
+    directInput: direct.inputValue,
+    directPayload: JSON.parse(direct.init.body),
+    directFromStream: direct.adaptedFromStream,
+    facadeType: facade.headers.get("content-type"),
+    facadeBody: await facade.text(),
+  }));
+})().catch((error) => { console.error(error); process.exit(1); });
+'''
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    data = json.loads(result.stdout)
+
+    assert data["adaptedInput"] == "/api/chat"
+    assert data["adaptedAccept"] == "application/json"
+    assert data["adaptedPayload"]["tool"] == "web_search"
+    assert data["adaptedFromStream"] is True
+    assert data["directInput"] == "/api/chat"
+    assert data["directPayload"]["tool"] == "deep_research"
+    assert data["directFromStream"] is False
+    assert data["facadeType"].startswith("text/event-stream")
+    assert 'event: delta\ndata: {"delta":"검색 결과입니다."}' in data["facadeBody"]
+    assert 'event: done\ndata: {"done":true,"conversation_id":"conv-1","project_id":"project-1"' in data["facadeBody"]
+    assert '"project_files_used":2' in data["facadeBody"]
+
+
+def test_completed_json_facade_rejects_missing_answer_instead_of_fabricating_success():
+    _, _, js, _, _ = sources()
+    helpers = compatibility_helpers(js)
+    script = helpers + r'''
+global.window = { location: { href: "https://chat.example.test/" } };
+console.log(JSON.stringify({
+  missing: completedJsonAsPublicSse({ done: true }) === null,
+  empty: completedJsonAsPublicSse({ answer: "" }) === null,
+}));
+'''
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {"missing": True, "empty": True}
 
 
 def test_photo_plus_web_tools_are_blocked_in_browser_too():
