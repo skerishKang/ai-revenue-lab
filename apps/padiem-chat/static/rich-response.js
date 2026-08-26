@@ -306,6 +306,16 @@
   function enhanceAssistantMessage(article) {
     if (!(article instanceof Element) || article.dataset.richResponse === "true") return;
     if (article.dataset.streamState === "active" || article.dataset.streamState === "error") return;
+    if (article.dataset.streamState === "done" && article.dataset.richResponseSettled !== "true") {
+      if (article.dataset.richResponseSettled === "pending") return;
+      article.dataset.richResponseSettled = "pending";
+      window.setTimeout(() => {
+        if (!article.isConnected || article.dataset.streamState !== "done") return;
+        article.dataset.richResponseSettled = "true";
+        enhanceAssistantMessage(article);
+      }, 0);
+      return;
+    }
     const content = article.querySelector(".assistant-content");
     if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return;
     const rawParagraph = Array.from(content.children).find((node) => node.tagName === "P");
