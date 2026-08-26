@@ -76,6 +76,23 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 13,
+    route: "b13",
+    sourcePath: "apps/personal-video-archive",
+    mode: "GENERATED_APP_PREVIEW",
+    marker: "Business 13",
+    generatorModule: "scripts.build_static_preview",
+    excludeRootFiles: ["_headers"],
+    rewriteRootRelative: true,
+    aggregateHeaders: [
+      "X-Robots-Tag: noindex, nofollow",
+      "Referrer-Policy: no-referrer",
+      "X-Content-Type-Options: nosniff",
+      "X-Frame-Options: DENY",
+      "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://i.ytimg.com; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'"
+    ]
+  },
+  {
     number: 15,
     route: "b15",
     sourcePath: "reference/business-15-global-ai-newsroom-v1",
@@ -167,5 +184,6 @@ module.exports = Object.freeze(routes.map(route => Object.freeze({
   includeFiles: route.includeFiles ? Object.freeze(route.includeFiles.slice()) : undefined,
   includeDirs: route.includeDirs ? Object.freeze(route.includeDirs.slice()) : undefined,
   excludePaths: route.excludePaths ? Object.freeze(route.excludePaths.slice()) : undefined,
-  excludeRootFiles: route.excludeRootFiles ? Object.freeze(route.excludeRootFiles.slice()) : undefined
+  excludeRootFiles: route.excludeRootFiles ? Object.freeze(route.excludeRootFiles.slice()) : undefined,
+  aggregateHeaders: route.aggregateHeaders ? Object.freeze(route.aggregateHeaders.slice()) : undefined
 })));
