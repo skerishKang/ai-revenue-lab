@@ -147,6 +147,7 @@ def stream_route_probe(
         return True, result.status
     if result.status == 404:
         return False, result.status
+    # Only 404 is a truthful deployment-lag HOLD; every other non-405 status is an audit fault.
     raise AuditError(f"unexpected HTTP {result.status} while probing public stream route")
 
 
