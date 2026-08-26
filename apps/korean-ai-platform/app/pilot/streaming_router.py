@@ -1,22 +1,22 @@
 """Internal Router-level streaming execution for Business 14.
 
-This module deliberately has no public gateway integration.  It composes an
-already-resolved :class:`RouteDecision` with the bounded OpenRouter streaming
-primitive introduced by Slice 11.
+This module deliberately has no public gateway integration. It composes an
+already-resolved RouteDecision with the bounded Slice-11 OpenRouter streaming
+primitive.
 
-The safety boundary is simple:
+Safety boundary:
+- before the first non-empty content delta, only existing fallback-eligible
+  errors may advance to the next already-resolved candidate;
+- the first non-empty content delta commits the route;
+- after commitment, provider/model fallback is forbidden.
 
-* before the first non-empty content delta, an existing fallback-eligible
-  provider error may advance to the next *already resolved* candidate;
-* the first non-empty content delta commits the route;
-* after commitment, no provider/model fallback is allowed.
-
-The executor never resolves new candidates, never widens capabilities, and
-never performs speculative parallel calls.
+The executor never resolves new candidates, widens capabilities, or performs
+speculative parallel calls.
 """
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
@@ -125,8 +125,8 @@ def _decision_candidates(decision: RouteDecision) -> tuple[StreamingRouteCandida
         route_id=decision.selected_route_id,
     )
     fallbacks = tuple(_candidate_from_mapping(item) for item in decision.eligible_fallback)
-    # Do not consult the catalog here.  The executor is intentionally incapable
-    # of widening the already-resolved candidate set.
+    # No catalog lookup is allowed here: this executor cannot widen the
+    # already-resolved candidate set or escape a hard capability filter.
     return (primary, *fallbacks)
 
 
@@ -189,12 +189,7 @@ async def stream_routed_chat_completions(
     max_tokens: int | None,
     stream_call: StreamCall = stream_openrouter_chat_completions,
 ) -> AsyncIterator[RouterStreamEvent]:
-    """Execute one resolved route with bounded pre-content fallback semantics.
-
-    This function does not resolve routes and does not expose a public HTTP
-    streaming contract.  It can only use the primary and fallback candidates
-    already present in ``decision``.
-    """
+    """Execute one resolved route with bounded pre-content fallback semantics."""
     if not isinstance(decision, RouteDecision):
         raise ValueError("decision must be RouteDecision")
     if not callable(stream_call):
@@ -229,6 +224,8 @@ async def stream_routed_chat_completions(
 
                 if visible and not committed:
                     committed = True
+                    # Pre-content metadata is held until an attempt actually
+                    # commits, so discarded attempts never leak stale route data.
                     for pending in buffered:
                         yield _router_event(
                             decision=decision,
@@ -251,9 +248,8 @@ async def stream_routed_chat_completions(
                     return
 
             if committed:
-                # Slice-11 provider primitive normally raises when [DONE] is
-                # missing.  Keep a bounded terminal state if an injected
-                # compatible iterator ends unexpectedly after commitment.
+                # Slice-11 normally raises when [DONE] is absent. Preserve a
+                # bounded terminal state for an injected compatible iterator.
                 if not saw_done:
                     yield _router_event(
                         decision=decision,
@@ -265,8 +261,9 @@ async def stream_routed_chat_completions(
                     )
                 return
 
-            # A provider stream that completed without any visible content is
-            # not a successful answer and must not silently move to a new model.
+            # A completed stream with no visible content is not a successful
+            # answer and is deliberately not treated as a retryable transport
+            # failure.
             yield _router_event(
                 decision=decision,
                 candidate=candidate,
@@ -276,9 +273,14 @@ async def stream_routed_chat_completions(
                 error_code="empty_stream_answer",
             )
             return
+        except asyncio.CancelledError:
+            # Caller cancellation must remain cancellation, not become a
+            # user-visible model error. The finally block still closes the
+            # active provider iterator.
+            raise
+        except (GeneratorExit, KeyboardInterrupt, SystemExit):
+            raise
         except BaseException as exc:
-            if isinstance(exc, (GeneratorExit, KeyboardInterrupt, SystemExit)):
-                raise
             if committed:
                 yield _router_event(
                     decision=decision,
