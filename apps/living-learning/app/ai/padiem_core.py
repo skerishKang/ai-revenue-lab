@@ -1,7 +1,7 @@
 """Opt-in Padiem AI Core provider for Living Learning.
 
 The product keeps ownership of structured-output validation, retry policy and
-accounting.  Padiem AI Core owns the product-neutral model execution contract,
+accounting. Padiem AI Core owns the product-neutral model execution contract,
 while Business 14 remains the provider/model routing authority.
 """
 
@@ -113,9 +113,17 @@ class PadiemCoreProvider:
             raise ValueError("runtime must expose async run(request)")
         if not isinstance(model, str) or not model.strip():
             raise ValueError("model must be non-empty")
-        if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or not 1 <= max_tokens <= 4096:
+        if (
+            isinstance(max_tokens, bool)
+            or not isinstance(max_tokens, int)
+            or not 1 <= max_tokens <= 4096
+        ):
             raise ValueError("max_tokens must be between 1 and 4096")
-        if isinstance(temperature, bool) or not isinstance(temperature, (int, float)) or not 0 <= float(temperature) <= 2:
+        if (
+            isinstance(temperature, bool)
+            or not isinstance(temperature, (int, float))
+            or not 0 <= float(temperature) <= 2
+        ):
             raise ValueError("temperature must be between 0 and 2")
         self._runtime = runtime
         self.model = model.strip()
@@ -150,7 +158,9 @@ class PadiemCoreProvider:
     ) -> ExecutionRequest:
         if not isinstance(system_prompt, str) or not system_prompt.strip():
             raise ValueError("system_prompt must be non-empty")
-        if not isinstance(response_schema, type) or not issubclass(response_schema, BaseModel):
+        if not isinstance(response_schema, type) or not issubclass(
+            response_schema, BaseModel
+        ):
             raise ValueError("response_schema must be a Pydantic BaseModel type")
 
         agent = AgentProfile(
@@ -201,7 +211,9 @@ class PadiemCoreProvider:
                 user_payload=user_payload,
                 response_schema=response_schema,
             )
-        except (TypeError, ValueError, OverflowError):
+        except Exception:
+            # Schema construction and JSON serialization are product-side input
+            # preparation. Never leak implementation details or partial payloads.
             return _failure("invalid_request", model=self.model)
 
         try:
