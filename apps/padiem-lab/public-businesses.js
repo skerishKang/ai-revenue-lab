@@ -253,6 +253,17 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
+      number: 30,
+      slug: "civic-ai-navigator",
+      title: "Civic AI Navigator",
+      koreanTitle: "시민 AI 내비게이터",
+      summary: "광주 북구청 민원 정보를 자연어로 찾고 필요한 절차와 담당 경로를 안내하는 독립 AI Finder 제품입니다.",
+      publicStatus: "LIVE",
+      routeKind: "EXTERNAL_RUNTIME",
+      targetPath: "/b30/",
+      currentPublicUrl: "https://cgbukku.pages.dev/"
+    }),
+    Object.freeze({
       number: 32,
       slug: "ai-skill-studio",
       title: "AI Skill Studio",
@@ -335,9 +346,10 @@
       title: "Padiem Chat",
       koreanTitle: "파디엠 챗",
       summary: "누구나 설명 없이 바로 질문하고 검색하고 파일을 다룰 수 있도록 만드는 파디엠의 기본 AI입니다.",
-      publicStatus: "BUILDING",
+      publicStatus: "LIVE",
       routeKind: "EXTERNAL_RUNTIME",
-      targetPath: "/b62/"
+      targetPath: "/b62/",
+      currentPublicUrl: "https://padiem-chat.charliekant.workers.dev/"
     })
   ]);
 });
