@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import ast
+from importlib.metadata import distribution
 import json
 from pathlib import Path
 import tomllib
@@ -118,6 +120,50 @@ def test_service_binding_target_is_fixed_in_repository_config():
     ]
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"
+
+
+def test_installed_workers_request_wrapper_contract_matches_service_bridge():
+    dist = distribution("workers-runtime-sdk")
+    request_files = [
+        item
+        for item in (dist.files or ())
+        if str(item).replace("\\", "/").endswith("workers/request.py")
+    ]
+    assert len(request_files) == 1
+
+    request_source = Path(dist.locate_file(request_files[0])).read_text(encoding="utf-8")
+    tree = ast.parse(request_source)
+    request_class = next(
+        node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "Request"
+    )
+    methods = {
+        node.name: node
+        for node in request_class.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+
+    assert "__init__" in methods
+    assert "new" not in methods
+    assert "js_object" in methods
+
+    init = methods["__init__"]
+    assert [arg.arg for arg in init.args.args[:2]] == ["self", "input"]
+    assert init.args.kwarg is not None
+    assert init.args.kwarg.arg == "other_options"
+
+
+def test_worker_uses_python_request_constructor_and_js_fetch_argument():
+    root = Path(__file__).resolve().parents[1]
+    worker = (root / "worker.py").read_text(encoding="utf-8")
+
+    assert "Request.new(" not in worker
+    assert "request = Request(" in worker
+    assert 'method="POST"' in worker
+    assert 'headers={"Content-Type": "application/json"}' in worker
+    assert "body=json.dumps(payload, ensure_ascii=False)" in worker
+    assert "response = await self.binding.fetch(request.js_object)" in worker
+    assert "response = await self.binding.fetch(request)" not in worker
+    assert "_to_js_object" not in worker
 
 
 def test_worker_wires_service_binding_and_browser_cannot_choose_target():
