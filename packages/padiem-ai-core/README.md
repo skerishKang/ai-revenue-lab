@@ -6,12 +6,12 @@ Internal shared AI runtime contracts and bounded capabilities for Padiem product
 
 ```text
 Padiem product
-  -> product adapter (later)
+  -> product adapter
   -> Padiem AI Core shared contracts/runtime
-  -> Business 14 model execution foundation (existing)
+  -> Business 14 model execution foundation
 ```
 
-Business 14 remains the owner of provider access, Router Core, provider adapters and model execution. Padiem Chat remains a product/reference client.
+Business 14 remains the owner of provider access, Router Core, provider adapters and model execution. Padiem Chat remains a product/reference client until a later explicit integration slice.
 
 ## Shared contracts — Slice 1
 
@@ -23,8 +23,6 @@ Business 14 remains the owner of provider access, Router Core, provider adapters
 
 ## Read-only Web Runtime — Slice 2
 
-The first executable shared capability is intentionally narrow:
-
 ```text
 WebRuntimeConfig
 WebProvider
@@ -35,9 +33,9 @@ normalize_public_url
 create_web_provider
 ```
 
-The runtime uses the Slice 1 `Evidence` contract rather than creating a product-local evidence type.
+The runtime uses the shared `Evidence` contract rather than creating a product-local evidence type.
 
-### Security boundary
+Security boundary:
 
 - only literal public `http`/`https` URLs are accepted;
 - localhost, internal suffixes, non-global literal IPs, userinfo and ambiguous numeric host forms are rejected;
@@ -49,23 +47,59 @@ The runtime uses the Slice 1 `Evidence` contract rather than creating a product-
 - safe errors never reflect provider response bodies or API keys;
 - Off and Mock providers make zero network calls.
 
-`normalize_public_url` is a literal-host policy and does not perform DNS resolution. This Slice therefore does not claim DNS-rebinding protection. The implemented network provider calls only the fixed Firecrawl origin and sends target URLs as request data.
+`normalize_public_url` is a literal-host policy and does not perform DNS resolution. This does not claim DNS-rebinding protection.
 
-### Secret boundary
+## Business 14 execution client — Slice 3
 
-`WebRuntimeConfig.firecrawl_api_key` is server-side configuration. It is excluded from dataclass `repr` and public serialization. The package contains no provider key and tests use only `httpx.MockTransport` fixtures.
+The shared B14 client is a transport boundary, not a second router:
+
+```text
+B14ExecutionConfig
+B14RoutingOptions
+B14ChatRequest
+B14RouteMetadata
+B14ExecutionResult
+B14ExecutionError
+B14ExecutionClient
+```
+
+Responsibilities:
+
+- validate a configured B14 origin and bounded timeout/response cap;
+- serialize the current B14 chat request contract;
+- call the fixed `/api/pilot/v1/chat/completions` endpoint once;
+- disable redirects and cap the streamed response body;
+- normalize timeout, transport, authorization, rate-limit, request and server failures;
+- extract assistant text plus an allowlisted subset of B14 route metadata;
+- preserve standard token usage only when valid;
+- never reflect raw upstream error bodies.
+
+Non-responsibilities:
+
+- no provider selection or Router Core logic;
+- no client-side provider/model fallback;
+- no Provider/BYOK credential forwarding in the Slice 3 contract;
+- no Padiem Chat `Skill`, Korean UX copy, attachment type, quota/auth/history/project logic;
+- no streaming, tools or agent loop.
+
+Business 14 remains the authority that decides the route and executes provider calls. Product adapters prepare system instructions, messages, capabilities and user-facing failure copy before/after the Core transport call.
+
+## Secret boundary
+
+- `WebRuntimeConfig.firecrawl_api_key` is server-side configuration and excluded from `repr`/public serialization.
+- The B14 execution client contains no provider key or Authorization field and does not forward such headers by default.
+- Tests use only `httpx.MockTransport`; no live provider credential is required.
 
 ## Still deliberately deferred
 
 - Padiem Chat import rewiring;
-- Business 14 client extraction;
 - model-output streaming;
 - model tool/function calling;
-- Agent execution loop;
+- Tool Runtime;
+- Agent execution loop/orchestration;
 - write-capable browser actions;
-- direct arbitrary-site HTTP/browser fetching;
 - grounding/deep research orchestration;
 - memory/RAG;
-- product adapters.
+- product-specific adapters.
 
-Authorities: GitHub Issues #809 and #811.
+Authorities: GitHub Issues #809, #811 and #814.
