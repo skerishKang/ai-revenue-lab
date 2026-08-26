@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require(process.env.PW || 'playwright');
 const routes = require('./route-registry.cjs');
+const publicBusinesses = require('./public-businesses.js');
 
 const base = (process.env.BASE_URL || 'http://127.0.0.1:4173').replace(/\/$/, '');
 const screenshotDir = process.env.SCREENSHOT_DIR || '';
@@ -231,12 +232,12 @@ async function inspectRoot(page) {
   }));
   if (!state.title.startsWith('Padiem Lab')) throw new Error(`bad Lab title ${JSON.stringify(state)}`);
   if (!state.brand.includes('PADIEM LAB')) throw new Error(`bad Lab brand ${JSON.stringify(state)}`);
-  if (state.cards < routes.length) throw new Error(`public work missing ${JSON.stringify(state)}`);
+  if (state.cards < publicBusinesses.length) throw new Error(`public work missing ${JSON.stringify(state)}`);
   if (state.storyMemory || state.internalOps) throw new Error(`private data exposed ${JSON.stringify(state)}`);
   if (state.overflow) throw new Error(`root horizontal overflow ${JSON.stringify(state)}`);
 
-  for (const route of routes) {
-    const expected = `/${route.route}/`;
+  for (const business of publicBusinesses.filter(item => item.routeKind === 'LOCAL_STATIC')) {
+    const expected = business.targetPath;
     if (!state.localLinks.some(link => link.href === expected && !link.target)) {
       throw new Error(`Portal root missing same-origin ${expected} link`);
     }
