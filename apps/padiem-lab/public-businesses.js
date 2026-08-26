@@ -286,6 +286,17 @@
       sourcePath: "reference/business-36-ai-women-safety-v1/"
     }),
     Object.freeze({
+      number: 37,
+      slug: "ai-safe-route",
+      title: "AI Safe Route",
+      koreanTitle: "AI 안전경로",
+      summary: "합성 이동 맥락에서 경로 대안의 환경 근거·불확실성·접근성·fallback을 병치하고 사람이 조건부로 검토하는 안전경로 시각 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b37/",
+      sourcePath: "reference/business-37-ai-safe-route-v1/"
+    }),
+    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",
