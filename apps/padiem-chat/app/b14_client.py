@@ -216,11 +216,19 @@ class B14Client:
             ),
             transport=execution_transport,
         )
+        core_stream = core_client.stream(stream_request)
         try:
-            async for event in core_client.stream(stream_request):
+            async for event in core_stream:
                 yield event
         except B14ExecutionError as exc:
             raise _translate_core_error(exc) from exc
+        finally:
+            try:
+                await core_stream.aclose()
+            except Exception:
+                # Cleanup is best-effort and must not replace the bounded stream
+                # result/error with raw transport details.
+                pass
 
     async def complete(
         self,
