@@ -330,6 +330,17 @@
       sourcePath: "reference/business-48-ai-verification-engine-v1/"
     }),
     Object.freeze({
+      number: 52,
+      slug: "scheduled-agent-operations",
+      title: "Scheduled Agent Operations",
+      koreanTitle: "예약형 AI 운영",
+      summary: "합성 예약 운영을 timezone·cadence·조건·실행 결과·예외·재시도·중복 방지·사람 승인 경계가 분명한 runbook으로 검토하는 정적 시각 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b52/",
+      sourcePath: "reference/business-52-scheduled-agent-operations-v1/"
+    }),
+    Object.freeze({
       number: 59,
       slug: "living-archive",
       title: "Living Archive",
