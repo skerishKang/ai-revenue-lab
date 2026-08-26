@@ -111,7 +111,7 @@ class DispatchAwareB14Client(B14Client):
     Provider failures and post-start stream failures remain conservatively counted.
     """
 
-    async def stream_text_preview(self, *args, **kwargs):
+    async def _prepare_stream_dispatch(self) -> None:
         if (
             self.settings.runtime_mode != "mock"
             and self.require_service_binding
@@ -121,7 +121,14 @@ class DispatchAwareB14Client(B14Client):
         elif self.settings.runtime_mode != "mock":
             _clear_reservation()
 
+    async def stream_text_preview(self, *args, **kwargs):
+        await self._prepare_stream_dispatch()
         async for event in super().stream_text_preview(*args, **kwargs):
+            yield event
+
+    async def stream_text_auto(self, *args, **kwargs):
+        await self._prepare_stream_dispatch()
+        async for event in super().stream_text_auto(*args, **kwargs):
             yield event
 
     async def complete(self, *args, **kwargs):
