@@ -58,11 +58,14 @@ test('static Portal routes use curated repository-public sources and no independ
   for (const item of staticItems) {
     assert.match(
       item.sourcePath,
-      /^(?:reference\/business-\d{2}-[^/]+|apps\/[a-z0-9-]+\/pages-preview(?:\/site)?)\/$/
+      /^(?:reference\/business-\d{2}-[^/]+\/|apps\/[a-z0-9-]+\/pages-preview(?:\/site)?\/|apps\/[a-z0-9-]+\/scripts\/build_static_preview\.py)$/
     );
     assert.equal(item.targetPath, `/b${String(item.number).padStart(2, '0')}/`);
     assert.equal(item.currentPublicUrl, undefined);
   }
+  const b13 = manifest.find(item => item.number === 13);
+  assert.equal(b13?.sourcePath, 'apps/personal-video-archive/scripts/build_static_preview.py');
+  assert.equal(b13?.targetPath, '/b13/');
   const b60 = manifest.find(item => item.number === 60);
   assert.equal(b60?.routeKind, 'LOCAL_STATIC');
   assert.equal(b60?.targetPath, '/b60/');
