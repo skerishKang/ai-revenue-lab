@@ -308,6 +308,17 @@
       sourcePath: "reference/business-39-112-real-time-interpretation-v1/"
     }),
     Object.freeze({
+      number: 59,
+      slug: "living-archive",
+      title: "Living Archive",
+      koreanTitle: "나의 기록서재",
+      summary: "합성 로컬 기록을 3D 서가에서 찾아 2D 정밀 리더로 이어 읽고, 검색·책갈피·세션 메모를 브라우저 메모리에서 탐색하는 정적 기록서재 MVP입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b59/",
+      sourcePath: "reference/business-59-living-archive-v1/"
+    }),
+    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",

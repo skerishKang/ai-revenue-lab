@@ -26,6 +26,7 @@ on:
       - 'reference/business-36-ai-women-safety-v1/**'
       - 'reference/business-37-ai-safe-route-v1/**'
       - 'reference/business-39-112-real-time-interpretation-v1/**'
+      - 'reference/business-59-living-archive-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
   push:
@@ -53,6 +54,7 @@ on:
       - 'reference/business-36-ai-women-safety-v1/**'
       - 'reference/business-37-ai-safe-route-v1/**'
       - 'reference/business-39-112-real-time-interpretation-v1/**'
+      - 'reference/business-59-living-archive-v1/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
 
