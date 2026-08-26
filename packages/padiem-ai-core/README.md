@@ -84,22 +84,72 @@ Non-responsibilities:
 
 Business 14 remains the authority that decides the route and executes provider calls. Product adapters prepare system instructions, messages, capabilities and user-facing failure copy before/after the Core transport call.
 
+## Permission-gated Tool Runtime — Slice 4
+
+The Tool Runtime executes only server-registered handlers after a fail-closed policy sequence:
+
+```text
+ToolAuthorizationContext
+ToolInvocation
+ToolHandler
+ToolExecutionResult
+ToolRuntimeError
+ToolRuntime
+```
+
+Execution gate:
+
+```text
+registered tool
+  -> authorization agent matches AgentProfile
+  -> tool is in AgentProfile.allowed_tools
+  -> owner is core or matches app_id
+  -> every ToolSpec.auth_scope is granted
+  -> ToolSpec approval policy is satisfied
+  -> arguments pass JSON + Draft 2020-12 schema validation
+  -> async handler executes exactly once
+  -> output passes JSON + size boundary
+```
+
+The model-proposed invocation contains only `tool_id` and `arguments`. It cannot grant itself tools, auth scopes, user confirmation, external authorization, ownership or handler code. Those values come from trusted server/product-adapter state.
+
+Security and execution invariants:
+
+- denied or invalid calls execute the registered handler zero times;
+- `USER_CONFIRMATION` and `EXTERNAL_AUTHORIZATION` are exact per-tool grants, not global booleans;
+- product-owned tools cannot cross application ownership boundaries;
+- `owner=core` is the explicit shared-tool boundary;
+- invalid JSON Schema is rejected at registration;
+- arguments are copied/frozen, JSON-only, finite-number-only and capped at 64 KiB;
+- handlers receive an isolated mutable copy;
+- handlers are async and run once with `ToolSpec.timeout_seconds`;
+- no automatic retry is performed;
+- handler exception text is not reflected in safe errors;
+- output is JSON-only, finite-number-only, copy-isolated and capped at 256 KiB;
+- existing descriptive `ToolSpec.output_contract` is not incorrectly treated as JSON Schema;
+- success and failure use the existing `ToolEvent`, `RunStatus` and `ErrorClass` contracts.
+
+This slice does not connect model-native function calling to the runtime and does not register product-specific tools. Those are separate integration layers.
+
 ## Secret boundary
 
 - `WebRuntimeConfig.firecrawl_api_key` is server-side configuration and excluded from `repr`/public serialization.
 - The B14 execution client contains no provider key or Authorization field and does not forward such headers by default.
-- Tests use only `httpx.MockTransport`; no live provider credential is required.
+- Tool authorization contains identifiers/scopes/approval markers only, never credential values.
+- Tool handler exception text is normalized rather than exposed.
+- Tests use mock/in-process handlers and `httpx.MockTransport`; no live provider credential is required.
 
 ## Still deliberately deferred
 
 - Padiem Chat import rewiring;
 - model-output streaming;
-- model tool/function calling;
-- Tool Runtime;
+- B14/model-native tool/function-call protocol;
 - Agent execution loop/orchestration;
+- product-specific tool adapters;
 - write-capable browser actions;
 - grounding/deep research orchestration;
 - memory/RAG;
-- product-specific adapters.
+- user-facing approval UI;
+- remote/MCP tool registry.
 
-Authorities: GitHub Issues #809, #811 and #814.
+Authorities: GitHub Issues #809, #811, #814 and #819.
