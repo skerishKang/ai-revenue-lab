@@ -45,7 +45,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 35, 60]);
+  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 35, 36, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
@@ -315,6 +315,24 @@ test('B32 publishes only the current-main browser-only AI Skill Studio runtime',
   assert.match(index, /외부 런타임 요청 0/);
   assert.match(app, /Browser-memory state only/);
   assert.doesNotMatch(app, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
+});
+
+test('B36 publishes only the merged current-main safety visual reference', () => {
+  build();
+  const b36 = path.join(out, 'b36');
+  for (const relative of ['index.html', 'assets', 'scripts', 'styles']) {
+    assert.equal(fs.existsSync(path.join(b36, relative)), true, `b36 missing ${relative}`);
+  }
+  for (const forbidden of ['README.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md', 'evidence', 'tests', 'ux.html']) {
+    assert.equal(fs.existsSync(path.join(b36, forbidden)), false, `b36 leaked non-runtime or unmerged path ${forbidden}`);
+  }
+  const index = fs.readFileSync(path.join(b36, 'index.html'), 'utf8');
+  const review = fs.readFileSync(path.join(b36, 'scripts', 'review.js'), 'utf8');
+  assert.match(index, /AI 여성안전 서비스/);
+  assert.match(index, /VISUAL REFERENCE ONLY/);
+  assert.match(index, /NO LIVE LOCATION, SURVEILLANCE, OR EMERGENCY EXECUTION/);
+  assert.match(index, /NOT A GUARANTEE OF SAFETY/);
+  assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
 });
 
 test('explicit current-executable routes omit legacy root app and docs surfaces', () => {
