@@ -15,7 +15,13 @@ from .b14_execution import (
     B14RouteMetadata,
     B14RoutingOptions,
 )
-from .contracts import AgentProfile, ErrorClass, RunMetadata, RunStatus
+from .contracts import (
+    AgentProfile,
+    ErrorClass,
+    RunMetadata,
+    RunStatus,
+    UsageMetadata,
+)
 
 MAX_EXECUTION_MESSAGES = 99
 MAX_EXECUTION_MESSAGE_CHARS = 32_000
@@ -188,6 +194,13 @@ def _selected_model(route: B14RouteMetadata) -> str | None:
     return route.actual_response_model or route.selected_model
 
 
+def _selected_provider(route: B14RouteMetadata) -> str | None:
+    provider = route.selected_provider
+    if provider is None or not _IDENTIFIER_RE.fullmatch(provider):
+        return None
+    return provider
+
+
 @dataclass(frozen=True, slots=True)
 class ExecutionRequest:
     agent: AgentProfile
@@ -311,10 +324,10 @@ class ExecutionRuntime:
             agent_id=request.agent.id,
             session_id=request.session_id,
             status=status,
-            provider=route.selected_provider,
+            provider=_selected_provider(route),
             model=_selected_model(route),
             duration_ms=duration_ms,
-            usage=result.usage if result is not None else RunMetadata.__dataclass_fields__["usage"].default_factory(),
+            usage=result.usage if result is not None else UsageMetadata(),
             error_class=error_class,
         )
 
@@ -352,7 +365,7 @@ class ExecutionRuntime:
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
             )
-        except ValueError as exc:
+        except ValueError:
             metadata = self._metadata(
                 request=request,
                 trace_id=trace_id,
