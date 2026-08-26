@@ -204,9 +204,9 @@ def _pilot_error_from_router_code(code: str) -> PilotError:
         return MalformedUpstreamResponse()
     if code == "stream_execution_error":
         return PilotError(
-            code="internal_error",
-            message="스트리밍 응답 처리 중 내부 오류가 발생했습니다.",
-            status_code=500,
+            code="stream_execution_error",
+            message="스트리밍 실행을 완료하지 못했습니다.",
+            status_code=502,
         )
     return PilotError(
         code="stream_execution_error",
