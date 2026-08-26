@@ -226,6 +226,15 @@ const routes = [
     excludePaths: ["app.js", "docs"]
   },
   {
+    number: 32,
+    route: "b32",
+    sourcePath: "reference/business-32-ai-skill-studio-ux",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 업무 실습실",
+    includeFiles: ["index.html", "guide.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",

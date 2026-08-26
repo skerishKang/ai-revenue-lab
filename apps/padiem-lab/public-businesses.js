@@ -253,6 +253,17 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
+      number: 32,
+      slug: "ai-skill-studio",
+      title: "AI Skill Studio",
+      koreanTitle: "AI 업무 실습실",
+      summary: "합성 업무를 근거 확인·역할 인계·사람 검토까지 실행해 재사용 가능한 조직 AI 스킬 카드로 남기는 브라우저 메모리 기반 정적 실습입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b32/",
+      sourcePath: "reference/business-32-ai-skill-studio-ux/"
+    }),
+    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",

@@ -45,7 +45,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
+  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
@@ -297,6 +297,24 @@ test('B06 publishes its single-app World Feed shape without inventing a ux entry
   assert.equal(fs.existsSync(path.join(b06, 'scripts')), true);
   assert.equal(fs.existsSync(path.join(b06, 'styles')), true);
   assert.equal(fs.existsSync(path.join(b06, 'ux.html')), false, 'b06 invented a ux.html entry');
+});
+
+test('B32 publishes only the current-main browser-only AI Skill Studio runtime', () => {
+  build();
+  const b32 = path.join(out, 'b32');
+  for (const relative of ['index.html', 'guide.html', 'assets', 'scripts', 'styles']) {
+    assert.equal(fs.existsSync(path.join(b32, relative)), true, `b32 missing ${relative}`);
+  }
+  for (const forbidden of ['README.md', 'data', 'tests', 'ux.html']) {
+    assert.equal(fs.existsSync(path.join(b32, forbidden)), false, `b32 leaked non-runtime path ${forbidden}`);
+  }
+  const index = fs.readFileSync(path.join(b32, 'index.html'), 'utf8');
+  const app = fs.readFileSync(path.join(b32, 'scripts', 'app.js'), 'utf8');
+  assert.match(index, /AI 업무 실습실/);
+  assert.match(index, /DETERMINISTIC SYNTHETIC UX/);
+  assert.match(index, /외부 런타임 요청 0/);
+  assert.match(app, /Browser-memory state only/);
+  assert.doesNotMatch(app, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
 });
 
 test('explicit current-executable routes omit legacy root app and docs surfaces', () => {
