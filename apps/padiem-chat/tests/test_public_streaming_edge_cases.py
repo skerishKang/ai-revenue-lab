@@ -155,6 +155,8 @@ async def test_mock_public_stream_never_calls_injected_transport():
 
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
+    assert response.headers["cache-control"] == "no-cache, no-store"
+    assert response.headers["x-accel-buffering"] == "no"
     assert "event: delta" in response.text
     assert response.text.count("event: done") == 1
     assert calls == 0
