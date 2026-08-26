@@ -1,4 +1,5 @@
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const routes = require('./route-registry.cjs');
@@ -6,6 +7,9 @@ const routes = require('./route-registry.cjs');
 const repoRoot = path.resolve(__dirname, '..', '..');
 const labSource = path.join(repoRoot, 'apps', 'padiem-lab');
 const out = path.join(repoRoot, 'dist', 'padiem-lab');
+const generatedSourceTreePins = Object.freeze({
+  'apps/personal-video-archive': '580be319152fdf2001d979438b345e4172a2e2d4'
+});
 
 function copyFile(source, destination) {
   fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -28,7 +32,8 @@ function isSafeRouteSource(route) {
   }
   if (route.mode === 'GENERATED_APP_PREVIEW') {
     return /^apps\/[a-z0-9-]+$/.test(route.sourcePath)
-      && /^scripts\.[a-z0-9_]+$/.test(route.generatorModule || '');
+      && /^scripts\.[a-z0-9_]+$/.test(route.generatorModule || '')
+      && Boolean(generatedSourceTreePins[route.sourcePath]);
   }
   return /^reference\/business-\d{2}-[^/]+$/.test(route.sourcePath);
 }
@@ -87,9 +92,51 @@ function copyStaticAppPreview(route, source, destination) {
   if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
 }
 
+function assertGeneratedSourcePin(route) {
+  const expected = generatedSourceTreePins[route.sourcePath];
+  const actual = execFileSync('git', ['rev-parse', `HEAD:${route.sourcePath}`], {
+    cwd: repoRoot,
+    encoding: 'utf8'
+  }).trim();
+  if (actual !== expected) {
+    throw new Error(`Pinned source tree changed for ${route.route}: expected ${expected}, got ${actual}`);
+  }
+  return expected;
+}
+
+function ensureGeneratedPreviewPython(route) {
+  const sourceTree = generatedSourceTreePins[route.sourcePath];
+  const tempRoot = process.env.RUNNER_TEMP || os.tmpdir();
+  const venv = path.join(tempRoot, `padiem-lab-${route.route}-${sourceTree.slice(0, 12)}-venv`);
+  const python = process.platform === 'win32'
+    ? path.join(venv, 'Scripts', 'python.exe')
+    : path.join(venv, 'bin', 'python');
+  const ready = path.join(venv, '.padiem-preview-ready');
+
+  if (!fs.existsSync(python)) {
+    fs.rmSync(venv, { recursive: true, force: true });
+    execFileSync(process.env.PREVIEW_BOOTSTRAP_PYTHON || 'python3', ['-m', 'venv', venv], {
+      cwd: repoRoot,
+      stdio: 'inherit'
+    });
+  }
+  if (!fs.existsSync(ready) || fs.readFileSync(ready, 'utf8').trim() !== sourceTree) {
+    execFileSync(python, [
+      '-m', 'pip', 'install', '--disable-pip-version-check',
+      'pydantic>=2.10,<3', 'jinja2>=3.1,<4'
+    ], {
+      cwd: repoRoot,
+      stdio: 'inherit'
+    });
+    fs.writeFileSync(ready, sourceTree + '\n', 'utf8');
+  }
+  return python;
+}
+
 function generateStaticAppPreview(route, source, destination) {
   requirePath(path.join(source, 'pyproject.toml'));
-  const python = process.env.PREVIEW_PYTHON || 'python3';
+  assertGeneratedSourcePin(route);
+  const python = ensureGeneratedPreviewPython(route);
   const script = [
     'import importlib, sys',
     'from pathlib import Path',
