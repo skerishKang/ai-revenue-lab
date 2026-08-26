@@ -54,7 +54,14 @@ jobs:
 
   deploy-mock:
     needs: preflight
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Once an existing Worker has production-only bindings (D1/quota/service bindings),
+    # the repository's minimal mock wrangler file must never overwrite them. Existing
+    # Workers are read-only preflight targets; production updates are explicit owner/local
+    # deployments that preserve the full binding set.
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.preflight.outputs.worker_state == 'absent'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -69,32 +76,23 @@ jobs:
       - name: Revalidate mock-only config before deploy
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py
 
-      - name: Guard Worker identity and existing mock ownership
+      - name: Guard initial Worker creation only
         env:
           WORKER_STATE: ${{ needs.preflight.outputs.worker_state }}
-          B62_BASE_URL: https://padiem-chat.${{ needs.preflight.outputs.subdomain }}.workers.dev
         run: |
           set -euo pipefail
-          case "$WORKER_STATE" in
-            absent)
-              echo "Padiem Chat Worker is absent; guarded initial mock creation is allowed."
-              ;;
-            existing)
-              echo "Padiem Chat Worker exists; proving owned mock runtime before any overwrite."
-              python .github/scripts/b62_cloudflare_mock_smoke.py
-              ;;
-            *)
-              echo "Refusing deployment for unexpected Worker state: $WORKER_STATE" >&2
-              exit 1
-              ;;
-          esac
+          if [ "$WORKER_STATE" != "absent" ]; then
+            echo "Refusing repository mock deploy over an existing provisioned Worker." >&2
+            exit 1
+          fi
+          echo "Padiem Chat Worker is absent; guarded initial mock creation is allowed."
 
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.5"
 
-      - name: Deploy mock-only Python Worker
+      - name: Deploy initial mock-only Python Worker
         working-directory: apps/padiem-chat
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
