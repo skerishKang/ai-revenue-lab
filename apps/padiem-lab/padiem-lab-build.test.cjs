@@ -29,6 +29,17 @@ function walkFiles(root) {
   return files;
 }
 
+function rootReferences(content) {
+  const references = [];
+  for (const match of content.matchAll(/(?:href|src|action)\s*=\s*["'](\/(?!\/)[^"']*)["']/gi)) {
+    references.push(match[1]);
+  }
+  for (const match of content.matchAll(/url\(\s*["']?(\/(?!\/)[^"')\s]*)/gi)) {
+    references.push(match[1]);
+  }
+  return references;
+}
+
 test('route registry has unique exact /bNN/ identities for routed static Businesses and B60', () => {
   const numbers = routes.map(route => route.number);
   const names = routes.map(route => route.route);
@@ -161,13 +172,19 @@ test('aggregate runtime excludes repository-only and private paths recursively',
   }
 });
 
-test('all local static runtime files are safe under a /bNN/ subpath', () => {
+test('all local static runtime files stay inside their own /bNN/ subpath', () => {
   build();
-  const unsafeRootReference = /(?:href|src|action)\s*=\s*["']\/(?!\/)|url\(\s*["']?\/(?!\/)/i;
   for (const route of routes.filter(route => route.mode === 'STATIC_REFERENCE' || route.mode === 'STATIC_APP_PREVIEW')) {
+    const allowedPrefix = `/${route.route}/`;
     for (const file of walkFiles(routeOut(route)).filter(file => /\.(?:html|css|js)$/i.test(file))) {
       const content = fs.readFileSync(file, 'utf8');
-      assert.doesNotMatch(content, unsafeRootReference, `${route.route} has root-relative dependency in ${path.relative(routeOut(route), file)}`);
+      for (const reference of rootReferences(content)) {
+        assert.equal(
+          reference === allowedPrefix || reference.startsWith(allowedPrefix),
+          true,
+          `${route.route} escaped its route in ${path.relative(routeOut(route), file)}: ${reference}`
+        );
+      }
     }
   }
 });
