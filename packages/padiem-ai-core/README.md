@@ -1,23 +1,19 @@
 # Padiem AI Core
 
-Internal shared AI runtime contracts for Padiem products.
+Internal shared AI runtime contracts and bounded capabilities for Padiem products.
 
-## Slice 1 boundary
-
-This package is intentionally contracts-only. It does not execute models, tools, browsers, databases, authentication, or product workflows.
-
-Current ownership boundary:
+## Ownership boundary
 
 ```text
 Padiem product
   -> product adapter (later)
-  -> Padiem AI Core shared contracts/runtime (this program)
+  -> Padiem AI Core shared contracts/runtime
   -> Business 14 model execution foundation (existing)
 ```
 
-Business 14 remains the owner of provider access, Router Core, provider adapters and model execution. Padiem Chat remains a product/reference client. Slice 1 does not modify either runtime.
+Business 14 remains the owner of provider access, Router Core, provider adapters and model execution. Padiem Chat remains a product/reference client.
 
-## Public contracts
+## Shared contracts — Slice 1
 
 - `Evidence` — product-neutral provenance/evidence metadata.
 - `ToolSpec` — schema, ownership, side-effect, authorization and approval contract for a tool.
@@ -25,24 +21,51 @@ Business 14 remains the owner of provider access, Router Core, provider adapters
 - `RunMetadata`, `ToolEvent`, `UsageMetadata` — shared trace/observability metadata.
 - explicit enums for side effects, approval, run state and error classification.
 
-## Safety properties
+## Read-only Web Runtime — Slice 2
 
-- runtime dependencies: none;
-- no network or environment access at import time;
-- immutable tuples and deeply frozen mapping inputs;
-- explicit side-effect and approval values;
-- unknown provider/model/usage values remain `None`;
-- no credential/secret fields in public serialization.
+The first executable shared capability is intentionally narrow:
 
-## Deliberately deferred
+```text
+WebRuntimeConfig
+WebProvider
+OffWebProvider
+MockWebProvider
+FirecrawlWebProvider
+normalize_public_url
+create_web_provider
+```
 
-- Business 14 client extraction;
-- streaming;
-- tool execution;
-- read-only web/browser runtime;
-- grounding/deep research orchestration;
+The runtime uses the Slice 1 `Evidence` contract rather than creating a product-local evidence type.
+
+### Security boundary
+
+- only literal public `http`/`https` URLs are accepted;
+- localhost, internal suffixes, non-global literal IPs, userinfo and ambiguous numeric host forms are rejected;
+- IDNA hostnames are normalized and URL fragments removed;
+- query, result, title, snippet, URL and provider-response sizes are bounded;
+- Firecrawl uses a fixed provider origin and only `/v2/search` and `/v2/scrape`;
+- provider redirects are disabled;
+- returned evidence URLs are revalidated;
+- safe errors never reflect provider response bodies or API keys;
+- Off and Mock providers make zero network calls.
+
+`normalize_public_url` is a literal-host policy and does not perform DNS resolution. This Slice therefore does not claim DNS-rebinding protection. The implemented network provider calls only the fixed Firecrawl origin and sends target URLs as request data.
+
+### Secret boundary
+
+`WebRuntimeConfig.firecrawl_api_key` is server-side configuration. It is excluded from dataclass `repr` and public serialization. The package contains no provider key and tests use only `httpx.MockTransport` fixtures.
+
+## Still deliberately deferred
+
 - Padiem Chat import rewiring;
+- Business 14 client extraction;
+- model-output streaming;
+- model tool/function calling;
+- Agent execution loop;
+- write-capable browser actions;
+- direct arbitrary-site HTTP/browser fetching;
+- grounding/deep research orchestration;
 - memory/RAG;
 - product adapters.
 
-Authority: GitHub Issue #809.
+Authorities: GitHub Issues #809 and #811.
