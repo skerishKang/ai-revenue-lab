@@ -6,9 +6,10 @@ schema, and public B14 health only. It never mutates Cloudflare, never makes a
 model/provider request, never prints secret values, database IDs, account IDs,
 or full Cloudflare response bodies.
 
-A HOLD result is expected until owner/local provisioning is complete and exits 0
-so the current guarded mock deployment remains deployable. Inspection failures
-that make the audit itself unreliable exit non-zero.
+A HOLD result means the current audit cannot prove every prerequisite. Deployment
+state is reported independently so an already-armed Worker is never mislabeled
+inactive merely because a read-only prerequisite check is unavailable. Inspection
+failures that make the audit itself unreliable exit non-zero.
 """
 
 from __future__ import annotations
@@ -24,7 +25,7 @@ from urllib.request import Request, urlopen
 CF_API = "https://api.cloudflare.com/client/v4"
 WORKER_NAME = "padiem-chat"
 B14_HEALTH = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/health"
-USER_AGENT = "b62-live-readiness/1.2"
+USER_AGENT = "b62-live-readiness/1.3"
 B14_SERVICE_BINDING = "B14_SERVICE"
 
 QUOTA_TABLE = "live_usage_buckets"
@@ -89,16 +90,22 @@ class Readiness:
         )
 
     @property
+    def public_live_armed(self) -> bool:
+        """Report the actual deployment switches, independent of audit proof."""
+        return self.runtime_mode == "b14" and self.live_switch == "true"
+
+    @property
     def public_live_active(self) -> bool:
-        return (
-            self.prerequisites_ready
-            and self.runtime_mode == "b14"
-            and self.live_switch == "true"
-        )
+        """Backward-compatible name for the actual deployment armed state."""
+        return self.public_live_armed
+
+    @property
+    def active_with_unverified_prerequisites(self) -> bool:
+        return self.public_live_armed and not self.prerequisites_ready
 
     @property
     def safe_hold(self) -> bool:
-        return self.runtime_mode != "b14" or self.live_switch != "true"
+        return not self.public_live_armed
 
 
 def required_env(name: str) -> str:
@@ -355,8 +362,6 @@ def evaluate(
 
 def emit(readiness: Readiness) -> None:
     status = "READY_TO_ARM" if readiness.prerequisites_ready else "HOLD"
-    active = "true" if readiness.public_live_active else "false"
-    safe_hold = "true" if readiness.safe_hold else "false"
     values = {
         "B62_PUBLIC_LIVE_READINESS": status,
         "WORKER_SETTINGS_READ": readiness.worker_settings_read,
@@ -369,8 +374,10 @@ def emit(readiness: Readiness) -> None:
         "B14_SERVICE_BOUND": readiness.b14_service_bound,
         "B14_PROVIDER_LIVE": readiness.b14_live,
         "B14_HAS_KEY": readiness.b14_has_key,
-        "PUBLIC_LIVE_ACTIVE": active,
-        "SAFE_HOLD": safe_hold,
+        "PUBLIC_LIVE_ARMED": readiness.public_live_armed,
+        "PUBLIC_LIVE_ACTIVE": readiness.public_live_active,
+        "ACTIVE_WITH_UNVERIFIED_PREREQUISITES": readiness.active_with_unverified_prerequisites,
+        "SAFE_HOLD": readiness.safe_hold,
     }
     for name, value in values.items():
         rendered = str(value).lower() if isinstance(value, bool) else str(value)

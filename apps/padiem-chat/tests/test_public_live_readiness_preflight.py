@@ -174,16 +174,38 @@ def test_current_mock_shape_is_safe_hold_even_when_all_prerequisites_exist():
 
     assert readiness.prerequisites_ready is True
     assert readiness.b14_service_bound is True
+    assert readiness.public_live_armed is False
     assert readiness.public_live_active is False
+    assert readiness.active_with_unverified_prerequisites is False
     assert readiness.safe_hold is True
 
 
-def test_live_active_requires_b14_runtime_and_explicit_live_arm():
+def test_live_armed_and_active_when_switches_are_on_and_prerequisites_ready():
     module = _load_module()
     readiness = _ready_evaluate(module, runtime="b14", live="true")
 
     assert readiness.prerequisites_ready is True
+    assert readiness.public_live_armed is True
     assert readiness.public_live_active is True
+    assert readiness.active_with_unverified_prerequisites is False
+    assert readiness.safe_hold is False
+
+
+def test_armed_worker_with_missing_service_is_active_but_unverified():
+    module = _load_module()
+    bindings = [
+        item
+        for item in _base_bindings(runtime="b14", live="true")
+        if item.get("name") != "B14_SERVICE"
+    ]
+
+    readiness = _ready_evaluate(module, bindings=bindings)
+
+    assert readiness.b14_service_bound is False
+    assert readiness.prerequisites_ready is False
+    assert readiness.public_live_armed is True
+    assert readiness.public_live_active is True
+    assert readiness.active_with_unverified_prerequisites is True
     assert readiness.safe_hold is False
 
 
@@ -330,7 +352,7 @@ def test_missing_table_index_or_required_column_is_hold(payload):
     assert status == "missing"
 
 
-def test_d1_read_permission_unavailable_is_bounded_hold():
+def test_d1_read_permission_unavailable_is_bounded_hold_but_not_false_inactive():
     module = _load_module()
 
     for http_status in (401, 403):
@@ -342,13 +364,17 @@ def test_d1_read_permission_unavailable_is_bounded_hold():
         assert status == "permission_unavailable"
 
         readiness = module.evaluate(
-            _settings(_base_bindings()),
+            _settings(_base_bindings(runtime="b14", live="true")),
             200,
             _b14(),
             quota_schema_ready=ready,
             quota_schema_status=status,
         )
         assert readiness.prerequisites_ready is False
+        assert readiness.public_live_armed is True
+        assert readiness.public_live_active is True
+        assert readiness.active_with_unverified_prerequisites is True
+        assert readiness.safe_hold is False
 
 
 def test_malformed_successful_d1_schema_response_fails_audit_closed():
@@ -373,3 +399,29 @@ def test_database_identifier_and_secret_values_are_never_emitted(capsys):
     assert "QUOTA_SCHEMA_READY=true" in output
     assert "D1_SCHEMA_AUDIT=ready" in output
     assert "B14_SERVICE_BOUND=true" in output
+    assert "PUBLIC_LIVE_ARMED=false" in output
+    assert "PUBLIC_LIVE_ACTIVE=false" in output
+    assert "ACTIVE_WITH_UNVERIFIED_PREREQUISITES=false" in output
+
+
+def test_emit_armed_unverified_state_is_explicit_and_secret_free(capsys):
+    module = _load_module()
+    readiness = module.evaluate(
+        _settings(_base_bindings(runtime="b14", live="true")),
+        200,
+        _b14(),
+        quota_schema_ready=False,
+        quota_schema_status="permission_unavailable",
+    )
+
+    module.emit(readiness)
+    output = capsys.readouterr().out
+
+    assert "B62_PUBLIC_LIVE_READINESS=HOLD" in output
+    assert "PUBLIC_LIVE_ARMED=true" in output
+    assert "PUBLIC_LIVE_ACTIVE=true" in output
+    assert "ACTIVE_WITH_UNVERIFIED_PREREQUISITES=true" in output
+    assert "SAFE_HOLD=false" in output
+    assert "D1_SCHEMA_AUDIT=permission_unavailable" in output
+    assert "must-not-be-emitted" not in output
+    assert "must-never-be-copied" not in output
