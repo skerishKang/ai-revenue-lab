@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Any, Protocol
 
 import httpx
 
 from padiem_ai_core import (
+    B14ChatRequest,
     B14MultimodalChatRequest,
     B14PostJSONTransport,
     B14ExecutionClient,
     B14ExecutionConfig,
     B14ExecutionError,
     B14RoutingOptions,
+    B14StreamEvent,
+    B14StreamingClient,
     B14TransportResponse,
     MAX_B14_RESPONSE_BYTES,
 )
@@ -120,12 +124,103 @@ class B14Client:
         transport: httpx.AsyncBaseTransport | None = None,
         *,
         service_transport: B14ServiceTransport | None = None,
+        stream_transport: httpx.AsyncBaseTransport | None = None,
         require_service_binding: bool = False,
     ):
         self.settings = settings
         self.transport = transport
         self.service_transport = service_transport
+        self.stream_transport = stream_transport
         self.require_service_binding = require_service_binding
+
+    async def stream_text_preview(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        model: str,
+        skill: Skill | None = None,
+        additional_system_context: str | None = None,
+    ) -> AsyncIterator[B14StreamEvent]:
+        """Yield private text-only B14 stream events without exposing a B62 route.
+
+        The caller is trusted server-side code and must provide an explicit manual
+        B14 model. Public browser routing, persistence and quota policy remain
+        outside this capability.
+        """
+        if not isinstance(model, str) or not model.strip() or model.strip() == "b14/auto":
+            raise ValueError("private streaming requires an explicit manual model")
+        resolved_model = model.strip()
+
+        resolved_skill = skill or get_skill()
+        system_content = resolved_skill.system_instruction
+        if additional_system_context is not None:
+            if not isinstance(additional_system_context, str):
+                raise ValueError("additional system context must be a string")
+            extra = additional_system_context.strip()
+            if len(extra) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+                raise ValueError("additional system context is too large")
+            if extra:
+                system_content = f"{system_content}\n\n{extra}"
+
+        if self.settings.runtime_mode == "mock":
+            prompt = next(
+                (m["content"] for m in reversed(messages) if m.get("role") == "user"),
+                "",
+            )
+            yield B14StreamEvent(
+                response_id="mock_b62_stream",
+                model=resolved_model,
+                delta_content=(
+                    "모의 스트리밍 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    f"입력하신 질문은 ‘{prompt[:120]}’입니다."
+                ),
+            )
+            yield B14StreamEvent(
+                response_id="mock_b62_stream",
+                model=resolved_model,
+                done=True,
+            )
+            return
+
+        if self.require_service_binding and self.stream_transport is None:
+            raise ChatRuntimeError(
+                503,
+                "upstream_binding_unavailable",
+                "AI 내부 스트리밍 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            )
+
+        assert self.settings.b14_base_url is not None
+        upstream_messages = [
+            {"role": "system", "content": system_content},
+            *[dict(message) for message in messages],
+        ]
+        stream_request = B14ChatRequest(
+            messages=tuple(upstream_messages),
+            model=resolved_model,
+            temperature=0.2,
+            max_tokens=resolved_skill.max_tokens,
+            routing=B14RoutingOptions(
+                task_type=resolved_skill.task_type,
+                optimize_for=resolved_skill.optimize_for,
+                allow_external_fallback=False,
+                max_attempts=1,
+                required_capabilities=("free",),
+            ),
+        )
+        execution_transport = self.stream_transport or self.transport
+        core_client = B14StreamingClient(
+            B14ExecutionConfig(
+                base_url=self.settings.b14_base_url,
+                timeout_seconds=self.settings.timeout_seconds,
+                max_response_bytes=MAX_B14_RESPONSE_BYTES,
+            ),
+            transport=execution_transport,
+        )
+        try:
+            async for event in core_client.stream(stream_request):
+                yield event
+        except B14ExecutionError as exc:
+            raise _translate_core_error(exc) from exc
 
     async def complete(
         self,
