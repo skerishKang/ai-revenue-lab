@@ -1,0 +1,87 @@
+name: B52 Source Verification
+
+on:
+  pull_request:
+    paths:
+      - 'reference/business-52-scheduled-agent-operations-v1/**'
+      - '.github/workflows/b52-source-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-b52-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Detect B52 source
+        id: source
+        shell: bash
+        run: |
+          if [ -d reference/business-52-scheduled-agent-operations-v1 ]; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'B52 source is absent; this is a workflow-only validation run.'
+          fi
+
+      - name: Static source contracts
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python reference/business-52-scheduled-agent-operations-v1/tests/validate_reference.py
+
+      - name: Install browser harness
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+          BROWSER_PATH="$(python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          p = sync_playwright().start()
+          print(p.chromium.executable_path)
+          p.stop()
+          PY
+          )"
+          sudo ln -sf "$BROWSER_PATH" /usr/bin/chromium
+          /usr/bin/chromium --version
+
+      - name: Browser exact-head self-check
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python reference/business-52-scheduled-agent-operations-v1/tests/browser_self_check.py
+
+      - name: Evidence summary
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('reference/business-52-scheduled-agent-operations-v1/evidence')
+          static = json.loads((root / 'static-self-check.json').read_text(encoding='utf-8'))
+          browser = json.loads((root / 'browser-self-check.json').read_text(encoding='utf-8'))
+          assert static['status'] == 'PASS', static
+          assert browser['status'] == 'PASS', browser
+          assert browser['matrix_pass'] == browser['matrix_total'] == 21, browser
+          assert browser['keyboard_all'] is True, browser
+          assert browser['replay_equal'] is True, browser
+          assert browser['reduced_motion_immediate'] is True, browser
+          assert browser['tab_vis_all_pass'] is True, browser
+          assert browser['scrollY_invariant'] is True, browser
+          print('B52_EXACT_HEAD_SOURCE_VERIFICATION_PASS')
+          print('static=', static['status'])
+          print('browser=', browser['status'])
+          print('matrix=', f"{browser['matrix_pass']}/{browser['matrix_total']}")
+          PY
