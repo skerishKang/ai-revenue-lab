@@ -7,6 +7,9 @@ const routes = require('./route-registry.cjs');
 const repoRoot = path.resolve(__dirname, '..', '..');
 const labSource = path.join(repoRoot, 'apps', 'padiem-lab');
 const out = path.join(repoRoot, 'dist', 'padiem-lab');
+const staticAppSourceTreePins = Object.freeze({
+  'apps/living-travel/pages-preview/site': 'fedd8846e3870661502ccb6947d8ed852eecc0b6'
+});
 const generatedSourceTreePins = Object.freeze({
   'apps/personal-video-archive': '580be319152fdf2001d979438b345e4172a2e2d4'
 });
@@ -26,9 +29,20 @@ function requirePath(target) {
   }
 }
 
+function sourceTreeAtHead(sourcePath) {
+  return execFileSync('git', ['rev-parse', `HEAD:${sourcePath}`], {
+    cwd: repoRoot,
+    encoding: 'utf8'
+  }).trim();
+}
+
 function isSafeRouteSource(route) {
   if (route.mode === 'STATIC_APP_PREVIEW') {
     return /^apps\/[a-z0-9-]+\/pages-preview(?:\/site)?$/.test(route.sourcePath);
+  }
+  if (route.mode === 'STATIC_APP_PREVIEW_ALLOWLIST') {
+    return /^apps\/[a-z0-9-]+\/pages-preview\/site$/.test(route.sourcePath)
+      && Boolean(staticAppSourceTreePins[route.sourcePath]);
   }
   if (route.mode === 'GENERATED_APP_PREVIEW') {
     return /^apps\/[a-z0-9-]+$/.test(route.sourcePath)
@@ -51,6 +65,9 @@ function validateRegistry() {
     }
     for (const header of route.aggregateHeaders || []) {
       if (!header || /[\r\n]/.test(header)) throw new Error(`Unsafe aggregate header for ${route.route}`);
+    }
+    for (const segment of route.privateLinkSegments || []) {
+      if (!/^[a-z0-9-]+$/.test(segment)) throw new Error(`Unsafe private segment for ${route.route}: ${segment}`);
     }
     numbers.add(route.number);
     routeNames.add(route.route);
@@ -92,12 +109,50 @@ function copyStaticAppPreview(route, source, destination) {
   if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
 }
 
+function assertStaticAppSourcePin(route) {
+  const expected = staticAppSourceTreePins[route.sourcePath];
+  const actual = sourceTreeAtHead(route.sourcePath);
+  if (actual !== expected) {
+    throw new Error(`Pinned source tree changed for ${route.route}: expected ${expected}, got ${actual}`);
+  }
+}
+
+function privateSegmentPattern(segments) {
+  return segments.map(segment => segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+}
+
+function sanitizePrivateNavigation(route, destination) {
+  if (!route.privateLinkSegments?.length) return;
+  const alternation = privateSegmentPattern(route.privateLinkSegments);
+  const anchor = new RegExp(`<a\\b(?=[^>]*\\bhref=["'][^"']*(?:${alternation})\\/)[^>]*>[\\s\\S]*?<\\/a>`, 'gi');
+  const shellItem = new RegExp(`\\s*\\{\\s*key:\\s*["'](?:${alternation})["'][^}]*\\},?`, 'gi');
+
+  for (const file of walkFiles(destination).filter(file => /\.(?:html|js)$/i.test(file))) {
+    let content = fs.readFileSync(file, 'utf8');
+    if (/\.html$/i.test(file)) content = content.replace(anchor, '');
+    if (/\.js$/i.test(file)) content = content.replace(shellItem, '');
+    fs.writeFileSync(file, content, 'utf8');
+  }
+
+  const privateUrl = new RegExp(`(?:href|src|action)\\s*=\\s*["'][^"']*(?:${alternation})\\/|href\\s*:\\s*["'][^"']*(?:${alternation})\\/`, 'i');
+  for (const file of walkFiles(destination).filter(file => /\.(?:html|js)$/i.test(file))) {
+    const content = fs.readFileSync(file, 'utf8');
+    if (privateUrl.test(content)) {
+      throw new Error(`Private navigation survived ${route.route} sanitization: ${path.relative(destination, file)}`);
+    }
+  }
+}
+
+function copyStaticAppPreviewAllowlist(route, source, destination) {
+  assertStaticAppSourcePin(route);
+  copyStaticReference(route, source, destination);
+  sanitizePrivateNavigation(route, destination);
+  if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
+}
+
 function assertGeneratedSourcePin(route) {
   const expected = generatedSourceTreePins[route.sourcePath];
-  const actual = execFileSync('git', ['rev-parse', `HEAD:${route.sourcePath}`], {
-    cwd: repoRoot,
-    encoding: 'utf8'
-  }).trim();
+  const actual = sourceTreeAtHead(route.sourcePath);
   if (actual !== expected) {
     throw new Error(`Pinned source tree changed for ${route.route}: expected ${expected}, got ${actual}`);
   }
@@ -180,7 +235,7 @@ function walkFiles(root) {
 }
 
 function assertPublicBoundary(route, destination) {
-  const forbiddenSegments = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence']);
+  const forbiddenSegments = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence', 'staging']);
   for (const file of walkFiles(destination)) {
     const relative = path.relative(destination, file);
     const segments = relative.split(path.sep);
@@ -225,6 +280,8 @@ for (const route of routes) {
     copyStaticReference(route, source, destination);
   } else if (route.mode === 'STATIC_APP_PREVIEW') {
     copyStaticAppPreview(route, source, destination);
+  } else if (route.mode === 'STATIC_APP_PREVIEW_ALLOWLIST') {
+    copyStaticAppPreviewAllowlist(route, source, destination);
   } else if (route.mode === 'GENERATED_APP_PREVIEW') {
     generateStaticAppPreview(route, source, destination);
   } else if (route.mode === 'B60_PUBLIC_ALLOWLIST') {
