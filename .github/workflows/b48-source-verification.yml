@@ -1,0 +1,83 @@
+name: B48 Source Verification
+
+on:
+  pull_request:
+    paths:
+      - 'reference/business-48-ai-verification-engine-v1/**'
+      - '.github/workflows/b48-source-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-b48-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Detect B48 source
+        id: source
+        shell: bash
+        run: |
+          if [ -d reference/business-48-ai-verification-engine-v1 ]; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'B48 source is absent; this is a workflow-only validation run.'
+          fi
+
+      - name: Static source contracts
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python reference/business-48-ai-verification-engine-v1/tests/validate_reference.py
+          python reference/business-48-ai-verification-engine-v1/tests/validate_accessibility_contract.py
+
+      - name: Install browser harness
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+          BROWSER_PATH="$(python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          p = sync_playwright().start()
+          print(p.chromium.executable_path)
+          p.stop()
+          PY
+          )"
+          sudo ln -sf "$BROWSER_PATH" /usr/bin/chromium
+          /usr/bin/chromium --version
+
+      - name: Browser exact-head self-check
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python reference/business-48-ai-verification-engine-v1/tests/browser_self_check.py
+
+      - name: Evidence summary
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('reference/business-48-ai-verification-engine-v1/evidence')
+          static = json.loads((root / 'static-self-check.json').read_text(encoding='utf-8'))
+          browser = json.loads((root / 'browser-self-check.json').read_text(encoding='utf-8'))
+          assert static['status'] == 'PASS', static
+          assert browser['status'] == 'PASS', browser
+          print('B48_EXACT_HEAD_SOURCE_VERIFICATION_PASS')
+          print('static=', static['status'])
+          print('browser=', browser['status'])
+          print('combinations=', browser['combinations'])
+          print('boundary_persistence_8_of_8=', browser['boundary_persistence_8_of_8'])
+          PY
