@@ -31,29 +31,60 @@ def _write_assets(module, root: Path) -> dict[str, bytes]:
     return bodies
 
 
-def _fetcher(module, base: str, bodies: dict[str, bytes], *, stream_status=405, stream_allow="POST"):
+def _fetcher(
+    module,
+    b62_base: str,
+    b14_base: str,
+    bodies: dict[str, bytes],
+    *,
+    b62_stream_status=405,
+    b62_stream_allow="POST",
+    b14_stream_status=405,
+    b14_stream_allow="POST",
+):
     def fetch(url: str):
-        assert url.startswith(base)
-        path = url.removeprefix(base)
-        if path == "/api/chat/stream":
-            return module.HTTPResult(stream_status, {"allow": stream_allow}, b"not exposed")
-        if path in bodies:
-            return module.HTTPResult(200, {"content-type": "application/javascript"}, bodies[path])
+        if url.startswith(b62_base):
+            path = url.removeprefix(b62_base)
+            if path == module.B62_STREAM_PATH:
+                return module.HTTPResult(
+                    b62_stream_status,
+                    {"allow": b62_stream_allow},
+                    b"b62 route body must stay private",
+                )
+            if path in bodies:
+                return module.HTTPResult(
+                    200,
+                    {"content-type": "application/javascript"},
+                    bodies[path],
+                )
+        if url.startswith(b14_base):
+            path = url.removeprefix(b14_base)
+            if path == module.B14_AUTO_STREAM_PATH:
+                return module.HTTPResult(
+                    b14_stream_status,
+                    {"allow": b14_stream_allow},
+                    b"b14 route body must stay private",
+                )
         return module.HTTPResult(404, {}, b"")
 
     return fetch
 
 
-def test_exact_asset_bytes_and_post_only_stream_route_are_ready(tmp_path):
-    module = _load_module()
-    base = "https://padiem-chat.example.workers.dev"
+def _audit(module, tmp_path, **fetch_overrides):
+    b62_base = "https://padiem-chat.example.workers.dev"
+    b14_base = "https://ai-revenue-korean-ai-platform.example.workers.dev"
     bodies = _write_assets(module, tmp_path)
-
-    result = module.audit(
-        base_url=base,
+    return module.audit(
+        base_url=b62_base,
+        b14_base_url=b14_base,
         repo_root=tmp_path,
-        fetcher=_fetcher(module, base, bodies),
+        fetcher=_fetcher(module, b62_base, b14_base, bodies, **fetch_overrides),
     )
+
+
+def test_exact_assets_and_both_post_only_routes_make_chain_ready(tmp_path):
+    module = _load_module()
+    result = _audit(module, tmp_path)
 
     assert result.asset_parity == {
         "APP_JS": True,
@@ -62,52 +93,93 @@ def test_exact_asset_bytes_and_post_only_stream_route_are_ready(tmp_path):
     }
     assert result.stream_route_present is True
     assert result.stream_get_status == 405
+    assert result.b14_auto_stream_route_present is True
+    assert result.b14_auto_stream_get_status == 405
+    assert result.b62_ready is True
     assert result.ready is True
 
 
-def test_one_byte_browser_asset_drift_is_hold_not_audit_failure(tmp_path):
+def test_one_byte_browser_asset_drift_is_chain_hold_not_audit_failure(tmp_path):
     module = _load_module()
-    base = "https://padiem-chat.example.workers.dev"
+    b62_base = "https://padiem-chat.example.workers.dev"
+    b14_base = "https://ai-revenue-korean-ai-platform.example.workers.dev"
     bodies = _write_assets(module, tmp_path)
     bodies["/app.js"] += b"x"
 
     result = module.audit(
-        base_url=base,
+        base_url=b62_base,
+        b14_base_url=b14_base,
         repo_root=tmp_path,
-        fetcher=_fetcher(module, base, bodies),
+        fetcher=_fetcher(module, b62_base, b14_base, bodies),
     )
 
     assert result.asset_parity["APP_JS"] is False
     assert result.stream_route_present is True
+    assert result.b14_auto_stream_route_present is True
+    assert result.b62_ready is False
     assert result.ready is False
 
 
-def test_404_stream_probe_means_deployed_route_absent_and_hold(tmp_path):
+def test_404_b62_stream_route_is_hold(tmp_path):
     module = _load_module()
-    base = "https://padiem-chat.example.workers.dev"
-    bodies = _write_assets(module, tmp_path)
-
-    result = module.audit(
-        base_url=base,
-        repo_root=tmp_path,
-        fetcher=_fetcher(module, base, bodies, stream_status=404, stream_allow=""),
+    result = _audit(
+        module,
+        tmp_path,
+        b62_stream_status=404,
+        b62_stream_allow="",
     )
 
     assert result.stream_route_present is False
     assert result.stream_get_status == 404
+    assert result.b14_auto_stream_route_present is True
     assert result.ready is False
 
 
-def test_unexpected_stream_get_status_fails_closed(tmp_path):
+def test_404_b14_auto_stream_route_is_chain_hold(tmp_path):
     module = _load_module()
-    base = "https://padiem-chat.example.workers.dev"
-    bodies = _write_assets(module, tmp_path)
+    result = _audit(
+        module,
+        tmp_path,
+        b14_stream_status=404,
+        b14_stream_allow="",
+    )
 
+    assert result.b62_ready is True
+    assert result.b14_auto_stream_route_present is False
+    assert result.b14_auto_stream_get_status == 404
+    assert result.ready is False
+
+
+def test_unexpected_b62_stream_get_status_fails_closed(tmp_path):
+    module = _load_module()
     with pytest.raises(module.AuditError, match="unexpected HTTP 200"):
-        module.audit(
-            base_url=base,
-            repo_root=tmp_path,
-            fetcher=_fetcher(module, base, bodies, stream_status=200, stream_allow=""),
+        _audit(
+            module,
+            tmp_path,
+            b62_stream_status=200,
+            b62_stream_allow="",
+        )
+
+
+def test_unexpected_b14_stream_get_status_fails_closed(tmp_path):
+    module = _load_module()
+    with pytest.raises(module.AuditError, match="unexpected HTTP 200"):
+        _audit(
+            module,
+            tmp_path,
+            b14_stream_status=200,
+            b14_stream_allow="",
+        )
+
+
+def test_b14_405_without_post_in_allow_fails_closed(tmp_path):
+    module = _load_module()
+    with pytest.raises(module.AuditError, match="without POST"):
+        _audit(
+            module,
+            tmp_path,
+            b14_stream_status=405,
+            b14_stream_allow="GET, HEAD",
         )
 
 
@@ -156,46 +228,64 @@ def test_network_failure_fails_the_audit_closed():
         )
 
 
-def test_unexpected_public_http_status_fails_closed(tmp_path):
+def test_unexpected_public_asset_status_fails_closed(tmp_path):
     module = _load_module()
-    base = "https://padiem-chat.example.workers.dev"
+    b62_base = "https://padiem-chat.example.workers.dev"
+    b14_base = "https://ai-revenue-korean-ai-platform.example.workers.dev"
     bodies = _write_assets(module, tmp_path)
+    normal = _fetcher(module, b62_base, b14_base, bodies)
 
     def fetch(url: str):
         if url.endswith("/app.js"):
             return module.HTTPResult(503, {}, b"private upstream body")
-        return _fetcher(module, base, bodies)(url)
+        return normal(url)
 
     with pytest.raises(module.AuditError, match="unexpected HTTP 503"):
-        module.audit(base_url=base, repo_root=tmp_path, fetcher=fetch)
+        module.audit(
+            base_url=b62_base,
+            b14_base_url=b14_base,
+            repo_root=tmp_path,
+            fetcher=fetch,
+        )
 
 
-def test_emit_never_prints_public_asset_bodies(capsys):
+def test_emit_preserves_b62_surface_semantics_and_adds_chain_status(capsys):
     module = _load_module()
     result = module.ParityResult(
-        {"APP_JS": False, "SEARCH_SOURCES_JS": True, "RICH_RESPONSE_JS": True},
+        {"APP_JS": True, "SEARCH_SOURCES_JS": True, "RICH_RESPONSE_JS": True},
         True,
         405,
+        False,
+        404,
     )
 
     module.emit(result)
     output = capsys.readouterr().out
 
-    assert "DEPLOYED_PROGRESSIVE_SSE_SURFACE=HOLD" in output
-    assert "APP_JS_PARITY=false" in output
+    assert "DEPLOYED_PROGRESSIVE_SSE_SURFACE=READY" in output
+    assert "DEPLOYED_PROGRESSIVE_SSE_CHAIN=HOLD" in output
+    assert "B62_APP_JS_PARITY=true" in output
+    assert "B14_AUTO_STREAM_ROUTE_PRESENT=false" in output
     assert "CHAT_POSTS=0" in output
     assert "REAL_PROVIDER_CALLS=0" in output
     assert "private upstream body" not in output
+    assert "b14 route body must stay private" not in output
 
 
 def test_hold_result_exits_zero(monkeypatch):
     module = _load_module()
     monkeypatch.setenv("B62_BASE_URL", "https://padiem-chat.example.workers.dev")
+    monkeypatch.setenv(
+        "B14_BASE_URL",
+        "https://ai-revenue-korean-ai-platform.example.workers.dev",
+    )
     monkeypatch.setattr(
         module,
         "audit",
         lambda **kwargs: module.ParityResult(
             {"APP_JS": False, "SEARCH_SOURCES_JS": False, "RICH_RESPONSE_JS": False},
+            False,
+            404,
             False,
             404,
         ),
@@ -205,12 +295,22 @@ def test_hold_result_exits_zero(monkeypatch):
     assert module.main() == 0
 
 
-def test_base_url_is_bounded_to_bare_workers_dev_origin():
+def test_base_urls_are_bounded_to_bare_workers_dev_origins():
     module = _load_module()
 
     assert (
-        module.normalized_base_url("https://padiem-chat.example.workers.dev/")
+        module.normalized_base_url(
+            "https://padiem-chat.example.workers.dev/",
+            "B62_BASE_URL",
+        )
         == "https://padiem-chat.example.workers.dev"
+    )
+    assert (
+        module.normalized_base_url(
+            "https://ai-revenue-korean-ai-platform.example.workers.dev/",
+            "B14_BASE_URL",
+        )
+        == "https://ai-revenue-korean-ai-platform.example.workers.dev"
     )
     for invalid in (
         "http://padiem-chat.example.workers.dev",
@@ -220,7 +320,7 @@ def test_base_url_is_bounded_to_bare_workers_dev_origin():
         "https://example.com",
     ):
         with pytest.raises(module.AuditError):
-            module.normalized_base_url(invalid)
+            module.normalized_base_url(invalid, "TEST_BASE_URL")
 
 
 def test_public_parity_script_requires_no_cloudflare_or_provider_credentials():
@@ -232,3 +332,4 @@ def test_public_parity_script_requires_no_cloudflare_or_provider_credentials():
     assert "BUSINESS14_PROVIDER_KEY" not in source
     assert 'method="POST"' not in source
     assert 'method="GET"' in source
+    assert module.B14_AUTO_STREAM_PATH in source
