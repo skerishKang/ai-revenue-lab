@@ -40,6 +40,24 @@ def create_provider(settings) -> AIProvider:
     provider_model = getattr(settings, "provider_model", "mock-fixture")
     if provider_type == "mock":
         return MockProvider(model=provider_model)
+    if provider_type == "padiem_core":
+        # Keep the shared Core dependency opt-in: default/mock environments do
+        # not need to import or install it.
+        from app.ai.padiem_core import PadiemCoreProvider
+
+        base_url = getattr(settings, "padiem_core_b14_base_url", "")
+        model = getattr(settings, "padiem_core_model", "b14/auto")
+        timeout_seconds = getattr(settings, "padiem_core_timeout_seconds", 20.0)
+        if not isinstance(base_url, str) or not base_url.strip():
+            raise ValueError(
+                "LL_PADIEM_CORE_B14_BASE_URL is required when "
+                "LL_PROVIDER_TYPE=padiem_core"
+            )
+        return PadiemCoreProvider.from_b14(
+            base_url=base_url,
+            model=model,
+            timeout_seconds=timeout_seconds,
+        )
     raise ValueError(f"Unsupported provider type: {provider_type}")
 
 
