@@ -264,6 +264,17 @@
       sourcePath: "reference/business-32-ai-skill-studio-ux/"
     }),
     Object.freeze({
+      number: 35,
+      slug: "ai-media-education-dx",
+      title: "AI Media Education & DX",
+      koreanTitle: "AI 미디어 교육·DX",
+      summary: "조직의 미디어 업무 병목을 진단하고 새 업무 흐름·사람 검토 지점·6주 파일럿을 합성 데이터로 조립하는 파디엠의 정적 업무전환 스튜디오입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b35/",
+      sourcePath: "reference/business-35-ai-media-education-dx-v3/"
+    }),
+    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",

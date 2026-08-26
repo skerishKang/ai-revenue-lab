@@ -22,6 +22,7 @@ on:
       - 'reference/business-21-founder-strategy-letter-v1/**'
       - 'reference/business-22-personal-media-studio-v1/**'
       - 'reference/business-32-ai-skill-studio-ux/**'
+      - 'reference/business-35-ai-media-education-dx-v3/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
   push:
@@ -45,6 +46,7 @@ on:
       - 'reference/business-21-founder-strategy-letter-v1/**'
       - 'reference/business-22-personal-media-studio-v1/**'
       - 'reference/business-32-ai-skill-studio-ux/**'
+      - 'reference/business-35-ai-media-education-dx-v3/**'
       - 'reference/business-60-ai-api-v1/**'
       - '.github/workflows/padiem-lab-ci.yml'
 
