@@ -346,9 +346,10 @@
       title: "Padiem Chat",
       koreanTitle: "파디엠 챗",
       summary: "누구나 설명 없이 바로 질문하고 검색하고 파일을 다룰 수 있도록 만드는 파디엠의 기본 AI입니다.",
-      publicStatus: "BUILDING",
+      publicStatus: "LIVE",
       routeKind: "EXTERNAL_RUNTIME",
-      targetPath: "/b62/"
+      targetPath: "/b62/",
+      currentPublicUrl: "https://padiem-chat.charliekant.workers.dev/"
     })
   ]);
 });
