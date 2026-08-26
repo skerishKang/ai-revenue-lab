@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Read-only deployed-surface parity audit for Padiem Chat.
+"""Read-only deployed streaming-chain parity audit for Padiem Chat.
 
-The audit makes GET requests only. It compares the public browser assets against
-this checkout and probes the POST-only public SSE route with GET so no chat,
-model/provider, quota, D1, or Worker mutation can occur.
+The audit makes GET requests only. It compares the public B62 browser assets
+against this checkout and probes both POST-only streaming route surfaces with
+GET so no chat, model/provider, quota, D1, or Worker mutation can occur.
 """
 
 from __future__ import annotations
@@ -18,8 +18,10 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
-USER_AGENT = "b62-deployed-parity/1.0"
+USER_AGENT = "b62-deployed-parity/1.1"
 MAX_PUBLIC_BODY_BYTES = 2_097_152
+B62_STREAM_PATH = "/api/chat/stream"
+B14_AUTO_STREAM_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
 ASSETS = (
     ("APP_JS", "/app.js", Path("apps/padiem-chat/static/app.js")),
     ("SEARCH_SOURCES_JS", "/search-sources.js", Path("apps/padiem-chat/static/search-sources.js")),
@@ -43,13 +45,19 @@ class ParityResult:
     asset_parity: dict[str, bool]
     stream_route_present: bool
     stream_get_status: int
+    b14_auto_stream_route_present: bool
+    b14_auto_stream_get_status: int
+
+    @property
+    def b62_ready(self) -> bool:
+        return all(self.asset_parity.values()) and self.stream_route_present
 
     @property
     def ready(self) -> bool:
-        return all(self.asset_parity.values()) and self.stream_route_present
+        return self.b62_ready and self.b14_auto_stream_route_present
 
 
-def normalized_base_url(value: str) -> str:
+def normalized_base_url(value: str, env_name: str = "B62_BASE_URL") -> str:
     raw = str(value or "").strip().rstrip("/")
     parsed = urlparse(raw)
     if (
@@ -61,9 +69,9 @@ def normalized_base_url(value: str) -> str:
         or parsed.fragment
         or parsed.path not in ("", "/")
     ):
-        raise AuditError("B62_BASE_URL must be a bare https origin")
+        raise AuditError(f"{env_name} must be a bare https origin")
     if not parsed.hostname.endswith(".workers.dev"):
-        raise AuditError("B62_BASE_URL must target the deployment-owned workers.dev origin")
+        raise AuditError(f"{env_name} must target a deployment-owned workers.dev origin")
     return raw
 
 
@@ -104,11 +112,11 @@ def fetch_get(
             body,
         )
     except URLError as exc:
-        raise AuditError("network error while reading the public B62 surface") from exc
+        raise AuditError("network error while reading a public streaming surface") from exc
     except AuditError:
         raise
     except Exception as exc:
-        raise AuditError("unexpected error while reading the public B62 surface") from exc
+        raise AuditError("unexpected error while reading a public streaming surface") from exc
 
 
 def _sha256(data: bytes) -> str:
@@ -134,30 +142,59 @@ def asset_matches(
     return _sha256(result.body) == _sha256(local)
 
 
+def _post_only_route_probe(
+    *,
+    base_url: str,
+    path: str,
+    label: str,
+    fetcher: Callable[[str], HTTPResult] = fetch_get,
+) -> tuple[bool, int]:
+    result = fetcher(base_url + path)
+    if result.status == 405:
+        allow = result.headers.get("allow", "")
+        if allow and "POST" not in {item.strip().upper() for item in allow.split(",")}:
+            raise AuditError(f"{label} returned 405 without POST in Allow header")
+        return True, result.status
+    if result.status == 404:
+        return False, result.status
+    raise AuditError(f"unexpected HTTP {result.status} while probing {label}")
+
+
 def stream_route_probe(
     *,
     base_url: str,
     fetcher: Callable[[str], HTTPResult] = fetch_get,
 ) -> tuple[bool, int]:
-    result = fetcher(base_url + "/api/chat/stream")
-    if result.status == 405:
-        allow = result.headers.get("allow", "")
-        if allow and "POST" not in {item.strip().upper() for item in allow.split(",")}:
-            raise AuditError("stream route returned 405 without POST in Allow header")
-        return True, result.status
-    if result.status == 404:
-        return False, result.status
-    # Only 404 is a truthful deployment-lag HOLD; every other non-405 status is an audit fault.
-    raise AuditError(f"unexpected HTTP {result.status} while probing public stream route")
+    return _post_only_route_probe(
+        base_url=base_url,
+        path=B62_STREAM_PATH,
+        label="public B62 stream route",
+        fetcher=fetcher,
+    )
+
+
+def b14_auto_stream_route_probe(
+    *,
+    base_url: str,
+    fetcher: Callable[[str], HTTPResult] = fetch_get,
+) -> tuple[bool, int]:
+    return _post_only_route_probe(
+        base_url=base_url,
+        path=B14_AUTO_STREAM_PATH,
+        label="public B14 auto-stream route",
+        fetcher=fetcher,
+    )
 
 
 def audit(
     *,
     base_url: str,
+    b14_base_url: str,
     repo_root: Path,
     fetcher: Callable[[str], HTTPResult] = fetch_get,
 ) -> ParityResult:
-    origin = normalized_base_url(base_url)
+    origin = normalized_base_url(base_url, "B62_BASE_URL")
+    b14_origin = normalized_base_url(b14_base_url, "B14_BASE_URL")
     parity: dict[str, bool] = {}
     for name, public_path, relative_path in ASSETS:
         parity[name] = asset_matches(
@@ -167,7 +204,17 @@ def audit(
             fetcher=fetcher,
         )
     stream_present, stream_status = stream_route_probe(base_url=origin, fetcher=fetcher)
-    return ParityResult(parity, stream_present, stream_status)
+    b14_stream_present, b14_stream_status = b14_auto_stream_route_probe(
+        base_url=b14_origin,
+        fetcher=fetcher,
+    )
+    return ParityResult(
+        parity,
+        stream_present,
+        stream_status,
+        b14_stream_present,
+        b14_stream_status,
+    )
 
 
 def _render_bool(value: bool) -> str:
@@ -176,10 +223,21 @@ def _render_bool(value: bool) -> str:
 
 def emit(result: ParityResult) -> None:
     for name, value in result.asset_parity.items():
-        print(f"{name}_PARITY={_render_bool(value)}")
+        rendered = _render_bool(value)
+        print(f"{name}_PARITY={rendered}")
+        print(f"B62_{name}_PARITY={rendered}")
     print(f"STREAM_ROUTE_PRESENT={_render_bool(result.stream_route_present)}")
     print(f"STREAM_ROUTE_GET_HTTP={result.stream_get_status}")
-    print(f"DEPLOYED_PROGRESSIVE_SSE_SURFACE={'READY' if result.ready else 'HOLD'}")
+    print(f"B62_STREAM_ROUTE_PRESENT={_render_bool(result.stream_route_present)}")
+    print(f"B62_STREAM_ROUTE_GET_HTTP={result.stream_get_status}")
+    print(
+        f"B14_AUTO_STREAM_ROUTE_PRESENT={_render_bool(result.b14_auto_stream_route_present)}"
+    )
+    print(f"B14_AUTO_STREAM_ROUTE_GET_HTTP={result.b14_auto_stream_get_status}")
+    print(
+        f"DEPLOYED_PROGRESSIVE_SSE_SURFACE={'READY' if result.b62_ready else 'HOLD'}"
+    )
+    print(f"DEPLOYED_PROGRESSIVE_SSE_CHAIN={'READY' if result.ready else 'HOLD'}")
     print("HTTP_METHODS_USED=GET_ONLY")
     print("CHAT_POSTS=0")
     print("REAL_PROVIDER_CALLS=0")
@@ -187,16 +245,26 @@ def emit(result: ParityResult) -> None:
     summary = os.getenv("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a", encoding="utf-8") as handle:
-            handle.write("\n## B62 deployed progressive-SSE parity\n\n")
+            handle.write("\n## B14 → B62 deployed progressive-SSE parity\n\n")
             handle.write("| Check | Result |\n|---|---|\n")
             for name, value in result.asset_parity.items():
-                handle.write(f"| {name}_PARITY | `{_render_bool(value)}` |\n")
+                handle.write(f"| B62_{name}_PARITY | `{_render_bool(value)}` |\n")
             handle.write(
-                f"| STREAM_ROUTE_PRESENT | `{_render_bool(result.stream_route_present)}` |\n"
+                f"| B62_STREAM_ROUTE_PRESENT | `{_render_bool(result.stream_route_present)}` |\n"
             )
-            handle.write(f"| STREAM_ROUTE_GET_HTTP | `{result.stream_get_status}` |\n")
+            handle.write(f"| B62_STREAM_ROUTE_GET_HTTP | `{result.stream_get_status}` |\n")
             handle.write(
-                f"| DEPLOYED_PROGRESSIVE_SSE_SURFACE | `{'READY' if result.ready else 'HOLD'}` |\n"
+                "| B14_AUTO_STREAM_ROUTE_PRESENT | "
+                f"`{_render_bool(result.b14_auto_stream_route_present)}` |\n"
+            )
+            handle.write(
+                f"| B14_AUTO_STREAM_ROUTE_GET_HTTP | `{result.b14_auto_stream_get_status}` |\n"
+            )
+            handle.write(
+                f"| DEPLOYED_PROGRESSIVE_SSE_SURFACE | `{'READY' if result.b62_ready else 'HOLD'}` |\n"
+            )
+            handle.write(
+                f"| DEPLOYED_PROGRESSIVE_SSE_CHAIN | `{'READY' if result.ready else 'HOLD'}` |\n"
             )
             handle.write("| HTTP methods used | `GET only` |\n")
             handle.write("| Chat/provider calls | `0` |\n")
@@ -204,12 +272,17 @@ def emit(result: ParityResult) -> None:
 
 def main() -> int:
     try:
-        base_url = normalized_base_url(os.getenv("B62_BASE_URL", ""))
+        base_url = normalized_base_url(os.getenv("B62_BASE_URL", ""), "B62_BASE_URL")
+        b14_base_url = normalized_base_url(os.getenv("B14_BASE_URL", ""), "B14_BASE_URL")
         repo_root = Path(__file__).resolve().parents[2]
-        result = audit(base_url=base_url, repo_root=repo_root)
+        result = audit(
+            base_url=base_url,
+            b14_base_url=b14_base_url,
+            repo_root=repo_root,
+        )
         emit(result)
         # Deployment lag is a truthful HOLD, not an audit failure. This keeps
-        # unrelated source PRs mergeable while making live drift machine-visible.
+        # unrelated source PRs mergeable while making cross-Worker drift visible.
         return 0
     except Exception as exc:
         print(f"B62_DEPLOYED_PARITY_ERROR={exc}", file=sys.stderr)
