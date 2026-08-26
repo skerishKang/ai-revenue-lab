@@ -13,8 +13,8 @@ from urllib.parse import urlparse
 
 from workers import Request, Response, WorkerEntrypoint
 
-from app.b14_client import B14Client
 from app.config import ConfigError
+from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.main import create_app
@@ -79,7 +79,12 @@ class Default(WorkerEntrypoint):
                 history_store = D1HistoryStore(db_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
                 saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
-                usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
+                base_usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
+                usage_store = (
+                    DispatchAwareUsageCounterStore(base_usage_store)
+                    if base_usage_store is not None
+                    else None
+                )
                 service_transport = (
                     CloudflareB14ServiceTransport(b14_binding)
                     if b14_binding is not None
@@ -90,7 +95,7 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
                 _worker_app.state.usage_gate_enforced = True
-                _worker_app.state.b14_client = B14Client(
+                _worker_app.state.b14_client = DispatchAwareB14Client(
                     settings,
                     service_transport=service_transport,
                     require_service_binding=settings.runtime_mode == "b14",
