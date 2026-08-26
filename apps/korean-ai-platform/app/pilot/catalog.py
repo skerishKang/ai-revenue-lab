@@ -216,15 +216,24 @@ CATALOG_MODELS: list[CatalogModel] = [
     ),
 ]
 
-for _catalog_model in CATALOG_MODELS:
-    if "free" in _catalog_model.capabilities and (
-        not _catalog_model.price_is_known
-        or _catalog_model.input_price_usd_per_1m != 0.0
-        or _catalog_model.output_price_usd_per_1m != 0.0
+def ensure_free_tag_requires_known_zero_price(model: CatalogModel) -> None:
+    """Reject a ``free`` capability tag on any model without a known zero price.
+
+    Unknown-price models must never be implicitly classified as free:
+    only entries with an explicit 0/0 price snapshot may carry ``free``.
+    """
+    if "free" in model.capabilities and (
+        not model.price_is_known
+        or model.input_price_usd_per_1m != 0.0
+        or model.output_price_usd_per_1m != 0.0
     ):
         raise RuntimeError(
-            f"catalog model {_catalog_model.model_id} cannot be tagged free without known zero pricing"
+            f"catalog model {model.model_id} cannot be tagged free without known zero pricing"
         )
+
+
+for _catalog_model in CATALOG_MODELS:
+    ensure_free_tag_requires_known_zero_price(_catalog_model)
 
 CATALOG_BY_ID: dict[str, CatalogModel] = {m.model_id: m for m in CATALOG_MODELS}
 
