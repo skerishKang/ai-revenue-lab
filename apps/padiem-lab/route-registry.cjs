@@ -235,6 +235,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 35,
+    route: "b35",
+    sourcePath: "reference/business-35-ai-media-education-dx-v3",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 미디어 업무전환",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
