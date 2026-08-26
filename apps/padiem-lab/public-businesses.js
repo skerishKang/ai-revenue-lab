@@ -319,6 +319,17 @@
       sourcePath: "reference/business-39-112-real-time-interpretation-v1/"
     }),
     Object.freeze({
+      number: 48,
+      slug: "ai-verification-engine",
+      title: "AI Verification Engine",
+      koreanTitle: "AI 검증·승인 엔진",
+      summary: "작업자 주장·자체검사·독립검사·증거·검증자 판단·사람 승인을 분리해 정확한 버전에 한정된 검증 기록으로 검토하는 정적 시각 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b48/",
+      sourcePath: "reference/business-48-ai-verification-engine-v1/"
+    }),
+    Object.freeze({
       number: 59,
       slug: "living-archive",
       title: "Living Archive",
