@@ -291,7 +291,7 @@ def test_dispatch_aware_stream_clears_refundability_before_transport_attempt():
     asyncio.run(scenario())
 
 
-def test_worker_wires_completed_and_streaming_transports_but_public_route_stays_non_streaming():
+def test_worker_wires_completed_and_streaming_transports_with_separate_public_stream_route():
     worker = WORKER_PATH.read_text(encoding="utf-8")
     main = MAIN_PATH.read_text(encoding="utf-8")
 
@@ -299,5 +299,5 @@ def test_worker_wires_completed_and_streaming_transports_but_public_route_stays_
     assert "CloudflareB14StreamingServiceTransport(b14_binding)" in worker
     assert "stream_transport=stream_transport" in worker
     assert 'Route("/api/chat", api_chat, methods=["POST"])' in main
-    assert "/api/chat/stream" not in main
+    assert 'Route("/api/chat/stream", api_chat_stream, methods=["POST"])' in main
     assert "/api/stream" not in main
