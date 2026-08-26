@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import importlib
+
 from .contracts import (
     AgentProfile,
     ApprovalPolicy,
@@ -38,16 +42,47 @@ from .b14_execution import (
     B14RouteMetadata,
     B14RoutingOptions,
 )
-from .tool_runtime import (
-    MAX_TOOL_ARGUMENT_BYTES,
-    MAX_TOOL_OUTPUT_BYTES,
-    ToolAuthorizationContext,
-    ToolExecutionResult,
-    ToolHandler,
-    ToolInvocation,
-    ToolRuntime,
-    ToolRuntimeError,
+from .b14_multimodal import (
+    B14MultimodalChatRequest,
+    MAX_B14_IMAGE_BYTES,
+    MAX_B14_MULTIMODAL_PARTS,
 )
+from .b14_transport import (
+    B14PostJSONTransport,
+    B14Transport,
+    B14TransportResponse,
+)
+
+_TOOL_RUNTIME_EXPORTS = frozenset(
+    {
+        "MAX_TOOL_ARGUMENT_BYTES",
+        "MAX_TOOL_OUTPUT_BYTES",
+        "ToolAuthorizationContext",
+        "ToolExecutionResult",
+        "ToolHandler",
+        "ToolInvocation",
+        "ToolRuntime",
+        "ToolRuntimeError",
+    }
+)
+
+
+def __getattr__(name: str):
+    if name not in _TOOL_RUNTIME_EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    try:
+        module = importlib.import_module(".tool_runtime", __name__)
+    except ModuleNotFoundError as exc:
+        if exc.name == "jsonschema":
+            raise ImportError(
+                "Tool Runtime requires the optional 'tools' dependency: "
+                "install padiem-ai-core[tools]."
+            ) from exc
+        raise
+    value = getattr(module, name)
+    globals()[name] = value
+    return value
+
 
 __all__ = [
     "AgentProfile",
@@ -84,6 +119,12 @@ __all__ = [
     "B14ExecutionResult",
     "B14RouteMetadata",
     "B14RoutingOptions",
+    "B14MultimodalChatRequest",
+    "MAX_B14_IMAGE_BYTES",
+    "MAX_B14_MULTIMODAL_PARTS",
+    "B14PostJSONTransport",
+    "B14Transport",
+    "B14TransportResponse",
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",
     "ToolAuthorizationContext",

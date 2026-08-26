@@ -5,6 +5,7 @@ on:
     paths:
       - "apps/padiem-chat/**"
       - "apps/korean-ai-platform/**"
+      - "packages/padiem-ai-core/**"
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
@@ -29,14 +30,36 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Install B62
-        run: python -m pip install -e '.[dev]'
-      - name: Compile B62
-        run: python -m compileall -q app worker.py
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+      - name: Resolve B62 with shared Core path dependency
+        run: uv sync --extra dev
+      - name: Prove shared Core import without PYTHONPATH
+        run: uv run python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
+      - name: Compile B62 and Core
+        run: uv run python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
         run: node --check static/app.js
       - name: B62 tests
-        run: python -m pytest -q
+        run: uv run python -m pytest -q
+      - name: Core tests with Tool Runtime dev dependency
+        working-directory: packages/padiem-ai-core
+        run: uv run --extra dev python -m pytest -q
+      - name: Pywrangler dependency sync
+        run: uv run pywrangler sync --force
+      - name: Prove Core vendored for Python Worker
+        run: |
+          set -euo pipefail
+          test -f python_modules/padiem_ai_core/__init__.py
+          test -f python_modules/padiem_ai_core/b14_execution.py
+          test -f python_modules/padiem_ai_core/b14_transport.py
+          test -f python_modules/padiem_ai_core/b14_multimodal.py
+          test ! -e python_modules/jsonschema
+          echo "Padiem AI Core base runtime is vendored without Tool Runtime extras."
+      - name: Python Worker bundle dry-run
+        run: uv run pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
 
   b14-multimodal-test:
     runs-on: ubuntu-latest
