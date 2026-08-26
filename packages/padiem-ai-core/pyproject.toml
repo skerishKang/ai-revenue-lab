@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "padiem-ai-core"
-version = "0.3.0"
+version = "0.4.0"
 description = "Shared product-neutral AI runtime contracts and bounded capabilities for Padiem products"
 requires-python = ">=3.11"
 dependencies = [
   "httpx>=0.27,<1",
+  "jsonschema>=4.23,<5",
 ]
 
 [project.optional-dependencies]
