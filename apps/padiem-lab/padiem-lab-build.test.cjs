@@ -61,7 +61,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
     } else if (route.mode === 'GENERATED_APP_PREVIEW_ALLOWLIST') {
       assert.match(route.sourcePath, /^apps\/[a-z0-9-]+$/);
       assert.match(route.generatorModule, /^scripts\.[a-z0-9_]+$/);
-      assert.match(route.generatorOutputOverride, /^[a-z0-9_]+(?:\.[a-z0-9_]+)*$/);
+      assert.match(route.generatorOutputOverride, /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/);
       assert.ok(route.includeFiles?.length);
       assert.ok(route.includeDirs?.length);
       assert.ok(route.privateLinkSegments?.length);
