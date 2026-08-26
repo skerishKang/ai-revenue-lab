@@ -336,6 +336,15 @@ async def pilot_health(request: Request):
             "business14": b14_info,
         })
 
+    if openrouter_config.is_live and openrouter_config.has_key:
+        return JSONResponse({
+            "status": "ok",
+            "mode": "business14-openrouter-live",
+            "configured_providers": 1,
+            "configured_models": len(list_catalog_summaries()),
+            "business14": b14_info,
+        })
+
     return JSONResponse({
         "status": "not_configured",
         "mode": "not_configured",
