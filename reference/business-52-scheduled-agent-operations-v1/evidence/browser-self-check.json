@@ -1,0 +1,342 @@
+{
+  "status": "PASS",
+  "matrix_pass": 21,
+  "matrix_total": 21,
+  "viewports": [
+    "1440x1100",
+    "768x1024",
+    "390x844"
+  ],
+  "states": [
+    "cover",
+    "schedule",
+    "inputs",
+    "run",
+    "exceptions",
+    "decision",
+    "mobile"
+  ],
+  "keyboard_arrowright": true,
+  "keyboard_arrowleft": true,
+  "keyboard_home": true,
+  "keyboard_end": true,
+  "keyboard_all": true,
+  "replay_equal": true,
+  "reduced_motion_immediate": true,
+  "errors": [],
+  "rows": [
+    {
+      "viewport": "1440x1100",
+      "state": "cover",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 520,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "schedule",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 550.203125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "inputs",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 550.203125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "run",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 550.203125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "exceptions",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 550.203125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "decision",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 620.9375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "1440x1100",
+      "state": "mobile",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 1372,
+        "height": 689,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "cover",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 931.96875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "schedule",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 872.9375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "inputs",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 918.4061889648438,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "run",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 835.40625,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "exceptions",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 872.875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "decision",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 895.875,
+        "images": true
+      }
+    },
+    {
+      "viewport": "768x1024",
+      "state": "mobile",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 724,
+        "height": 689,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "cover",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 956.953125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "schedule",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 992.34375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "inputs",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1030.34375,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "run",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 937.3436889648438,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "exceptions",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 992.28125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "decision",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 1463.28125,
+        "images": true
+      }
+    },
+    {
+      "viewport": "390x844",
+      "state": "mobile",
+      "pass": true,
+      "metrics": {
+        "hidden": false,
+        "docOverflow": 0,
+        "panelOverflow": 0,
+        "width": 366,
+        "height": 689,
+        "images": true
+      }
+    }
+  ],
+  "nominal_completion_ms": 780,
+  "external_runtime_requests": "not_measured_page_set_content",
+  "note": "Implementation browser harness using exact local bytes in page.set_content; not independent Local Validation.",
+  "screenshots_captured": [
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-cover-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-schedule-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-inputs-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-run-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-exceptions-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-mobile-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-cover-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-schedule-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-inputs-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-run-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-exceptions-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-mobile-768x1024.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-cover-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-schedule-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-inputs-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-run-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-exceptions-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-mobile-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-arrowright-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-arrowleft-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-home-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-end-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-arrowright-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-arrowleft-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-home-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-keyboard-end-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-replay-1-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-replay-2-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-replay-1-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-replay-2-390x844.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-reduced-1440x1100.png",
+    "/mnt/g/Ddrive/BatangD/task/workdiary/ai-revenue-lab/reference/business-52-scheduled-agent-operations-v1/screenshots/business-52-decision-reduced-390x844.png"
+  ]
+}
