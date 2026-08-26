@@ -271,6 +271,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 59,
+    route: "b59",
+    sourcePath: "reference/business-59-living-archive-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "나의 기록서재",
+    includeFiles: ["index.html"],
+    includeDirs: ["scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
