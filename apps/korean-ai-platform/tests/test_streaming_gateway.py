@@ -13,6 +13,7 @@ from app.pilot.openrouter_config import openrouter_config as orcfg
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
 MODEL = "openrouter/free"
+LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"
 
 
 class _ChunkStream(httpx.AsyncByteStream):
@@ -173,7 +174,7 @@ def test_auto_or_fallback_streaming_is_rejected_before_network(payload_update):
         return httpx.Response(200, content=b"data: [DONE]\n\n")
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = "sk-or-v1-stream-preview-test-key-123456"
+    orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(**payload_update))
 
@@ -191,7 +192,7 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
         return httpx.Response(200, content=b"data: [DONE]\n\n")
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = "sk-or-v1-stream-preview-test-key-123456"
+    orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(model="legacy-provider-model"))
 
@@ -220,7 +221,7 @@ def test_pre_start_upstream_errors_keep_json_http_status(
         return httpx.Response(upstream_status, content=b"bounded error")
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = "sk-or-v1-stream-preview-test-key-123456"
+    orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -234,7 +235,7 @@ def test_malformed_first_event_fails_before_sse_200():
         return httpx.Response(200, content=b"data: not-json\n\n")
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = "sk-or-v1-stream-preview-test-key-123456"
+    orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -251,7 +252,7 @@ def test_post_start_pilot_error_emits_bounded_error_event_without_done():
         return httpx.Response(200, stream=stream)
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = "sk-or-v1-stream-preview-test-key-123456"
+    orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -273,7 +274,7 @@ def test_post_start_unexpected_error_is_generic_and_secret_free():
         return httpx.Response(200, stream=stream)
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = "sk-or-v1-stream-preview-test-key-123456"
+    orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -286,7 +287,7 @@ def test_post_start_unexpected_error_is_generic_and_secret_free():
 
 
 def test_live_preview_sends_key_upstream_but_never_returns_it():
-    secret = "sk-or-v1-stream-preview-real-secret-abcdef123456"
+    secret = "unit-live-secret-abcdef1234567890"
     seen_authorization = None
     stream = _ChunkStream(_valid_sse_chunks("안전한 청크"))
 
