@@ -99,6 +99,17 @@
       sourcePath: "reference/business-12-creator-mini-media-v1/"
     }),
     Object.freeze({
+      number: 13,
+      slug: "personal-video-archive",
+      title: "Personal Video Archive",
+      koreanTitle: "나의 영상 아카이브",
+      summary: "관심 주제별 공개 영상을 발견하고 시청 상태·메모·회고 흐름을 합성 데이터로 탐색하는 생성형 정적 UI 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b13/",
+      sourcePath: "apps/personal-video-archive/scripts/build_static_preview.py"
+    }),
+    Object.freeze({
       number: 14,
       slug: "korean-ai-platform",
       title: "Korean AI Platform",
