@@ -45,11 +45,16 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
+  assert.deepEqual(numbers, [2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
       assert.match(route.sourcePath, /^apps\/[a-z0-9-]+\/pages-preview(?:\/site)?$/);
+    } else if (route.mode === 'STATIC_APP_PREVIEW_ALLOWLIST') {
+      assert.match(route.sourcePath, /^apps\/[a-z0-9-]+\/pages-preview\/site$/);
+      assert.ok(route.includeFiles?.length);
+      assert.ok(route.includeDirs?.length);
+      assert.ok(route.privateLinkSegments?.length);
     } else if (route.mode === 'GENERATED_APP_PREVIEW') {
       assert.match(route.sourcePath, /^apps\/[a-z0-9-]+$/);
       assert.match(route.generatorModule, /^scripts\.[a-z0-9_]+$/);
@@ -101,6 +106,52 @@ test('static reference routes publish exactly their route-specific runtime allow
       assert.equal(fs.existsSync(path.join(target, forbidden)), false, `${route.route} leaked ${forbidden}`);
     }
   }
+});
+
+test('B02 publishes only pinned Living Travel customer/demo preview surfaces', () => {
+  build();
+  const b02 = path.join(out, 'b02');
+  for (const relative of [
+    'index.html',
+    'guide.html',
+    'robots.txt',
+    'assets/style.css',
+    'assets/b2-shell-20260810.js',
+    'demo/intro.html',
+    'demo/preferences.html',
+    'demo/pending.html',
+    'demo/traveler-home.html',
+    'demo/edition.html',
+    'demo/history.html',
+    'traveler/enter.html',
+    'traveler/dashboard.html',
+    'traveler/edition.html',
+    'traveler/history.html'
+  ]) {
+    assert.equal(fs.existsSync(path.join(b02, relative)), true, `b02 missing ${relative}`);
+  }
+  for (const forbidden of ['_headers', 'operator', 'staging']) {
+    assert.equal(fs.existsSync(path.join(b02, forbidden)), false, `b02 leaked ${forbidden}`);
+  }
+
+  const privateNavigation = /(?:href|src|action)\s*=\s*["'][^"']*(?:operator|staging)\/|href\s*:\s*["'][^"']*(?:operator|staging)\//i;
+  for (const file of walkFiles(b02).filter(file => /\.(?:html|js)$/i.test(file))) {
+    const content = fs.readFileSync(file, 'utf8');
+    assert.doesNotMatch(content, privateNavigation, `b02 retained private navigation in ${path.relative(b02, file)}`);
+  }
+
+  const index = fs.readFileSync(path.join(b02, 'index.html'), 'utf8');
+  assert.match(index, /Living Travel/);
+  assert.match(index, /noindex,nofollow/);
+  assert.doesNotMatch(index, /operator\/login\.html/i);
+  const shell = fs.readFileSync(path.join(b02, 'assets', 'b2-shell-20260810.js'), 'utf8');
+  assert.doesNotMatch(shell, /operator\/login\.html|key:\s*["']operator["']/i);
+
+  const headers = fs.readFileSync(path.join(out, '_headers'), 'utf8');
+  assert.match(headers, /^\/b02\/\*$/m);
+  assert.match(headers, /X-Robots-Tag: noindex, nofollow/);
+  assert.match(headers, /connect-src 'none'/);
+  assert.match(headers, /form-action 'none'/);
 });
 
 test('B04 publishes only the Living Learning static preview under its subpath', () => {
@@ -199,12 +250,13 @@ test('explicit current-executable routes omit legacy root app and docs surfaces'
 
 test('aggregate runtime excludes repository-only and private paths recursively', () => {
   build();
-  const forbiddenSegments = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence']);
+  const forbiddenSegments = new Set(['operator', 'operations', 'collector', 'reviews', 'evidence', 'staging']);
   for (const route of routes) {
     for (const file of walkFiles(routeOut(route))) {
       const relative = path.relative(routeOut(route), file);
       assert.equal(relative.endsWith('.md'), false, `${route.route} leaked markdown: ${relative}`);
       assert.equal(relative.endsWith('.test.cjs'), false, `${route.route} leaked test: ${relative}`);
+      assert.equal(relative.endsWith('.py'), false, `${route.route} leaked Python: ${relative}`);
       assert.equal(relative.split(path.sep).some(segment => forbiddenSegments.has(segment)), false, `${route.route} leaked private path: ${relative}`);
     }
   }
@@ -212,7 +264,7 @@ test('aggregate runtime excludes repository-only and private paths recursively',
 
 test('all local static runtime files stay inside their own /bNN/ subpath', () => {
   build();
-  const localModes = new Set(['STATIC_REFERENCE', 'STATIC_APP_PREVIEW', 'GENERATED_APP_PREVIEW']);
+  const localModes = new Set(['STATIC_REFERENCE', 'STATIC_APP_PREVIEW', 'STATIC_APP_PREVIEW_ALLOWLIST', 'GENERATED_APP_PREVIEW']);
   for (const route of routes.filter(route => localModes.has(route.mode))) {
     const allowedPrefix = `/${route.route}/`;
     for (const file of walkFiles(routeOut(route)).filter(file => /\.(?:html|css|js)$/i.test(file))) {
