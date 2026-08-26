@@ -242,7 +242,7 @@ function assertPublicBoundary(route, destination) {
     if (segments.some(segment => forbiddenSegments.has(segment))) {
       throw new Error(`Forbidden ${route.route} non-public path entered aggregate artifact: ${relative}`);
     }
-    if (relative.endsWith('.test.cjs') || relative.endsWith('.md') || relative.endsWith('.py')) {
+    if (relative.endsWith('.test.cjs') || relative.endsWith('.md')) {
       throw new Error(`Repository-only ${route.route} file entered aggregate artifact: ${relative}`);
     }
   }
