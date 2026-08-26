@@ -2,6 +2,26 @@
 
 const routes = [
   {
+    number: 4,
+    route: "b04",
+    sourcePath: "apps/living-learning/pages-preview",
+    mode: "STATIC_APP_PREVIEW",
+    marker: "Living Learning",
+    includeFiles: [],
+    includeDirs: [],
+    excludeRootFiles: ["_headers", "_redirects"],
+    rewriteRootRelative: true
+  },
+  {
+    number: 6,
+    route: "b06",
+    sourcePath: "reference/business-06-world-feed-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "World Feed",
+    includeFiles: ["index.html", "guide.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 7,
     route: "b07",
     sourcePath: "reference/business-07-personal-meaning-map-v1",
@@ -145,6 +165,7 @@ const routes = [
 module.exports = Object.freeze(routes.map(route => Object.freeze({
   ...route,
   includeFiles: route.includeFiles ? Object.freeze(route.includeFiles.slice()) : undefined,
-  includeDirs: Object.freeze(route.includeDirs.slice()),
-  excludePaths: route.excludePaths ? Object.freeze(route.excludePaths.slice()) : undefined
+  includeDirs: route.includeDirs ? Object.freeze(route.includeDirs.slice()) : undefined,
+  excludePaths: route.excludePaths ? Object.freeze(route.excludePaths.slice()) : undefined,
+  excludeRootFiles: route.excludeRootFiles ? Object.freeze(route.excludeRootFiles.slice()) : undefined
 })));

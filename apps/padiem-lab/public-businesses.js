@@ -11,6 +11,28 @@
 
   return Object.freeze([
     Object.freeze({
+      number: 4,
+      slug: "living-learning",
+      title: "Living Learning",
+      koreanTitle: "리빙 러닝",
+      summary: "10분 AI·Python 수업과 이해도·학습 방식 피드백이 다음 수업에 어떻게 반영되는지 합성 데이터로 탐색하는 정적 학습 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b04/",
+      sourcePath: "apps/living-learning/pages-preview/"
+    }),
+    Object.freeze({
+      number: 6,
+      slug: "world-feed",
+      title: "World Feed",
+      koreanTitle: "나의 세계 편집면",
+      summary: "전 세계 소식 중 내 관심사와 가까운 이야기를 합성 로컬 콘텐츠와 세션 상태만으로 개인 브리프처럼 탐색하는 프론트엔드 경험입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b06/",
+      sourcePath: "reference/business-06-world-feed-v1/"
+    }),
+    Object.freeze({
       number: 7,
       slug: "personal-meaning-map",
       title: "Personal Meaning Map",

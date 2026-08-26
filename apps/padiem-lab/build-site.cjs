@@ -21,6 +21,13 @@ function requirePath(target) {
   }
 }
 
+function isSafeRouteSource(route) {
+  if (route.mode === 'STATIC_APP_PREVIEW') {
+    return /^apps\/[a-z0-9-]+\/pages-preview(?:\/site)?$/.test(route.sourcePath);
+  }
+  return /^reference\/business-\d{2}-[^/]+$/.test(route.sourcePath);
+}
+
 function validateRegistry() {
   const numbers = new Set();
   const routeNames = new Set();
@@ -29,7 +36,7 @@ function validateRegistry() {
     const expected = `b${String(route.number).padStart(2, '0')}`;
     if (route.route !== expected) throw new Error(`Route mismatch for B${route.number}: ${route.route}`);
     if (numbers.has(route.number) || routeNames.has(route.route)) throw new Error(`Duplicate aggregate route: ${route.route}`);
-    if (!/^reference\/business-\d{2}-[^/]+$/.test(route.sourcePath)) {
+    if (!isSafeRouteSource(route)) {
       throw new Error(`Unsafe source path for ${route.route}: ${route.sourcePath}`);
     }
     numbers.add(route.number);
@@ -38,16 +45,38 @@ function validateRegistry() {
 }
 
 function copyStaticReference(route, source, destination) {
-  for (const name of route.includeFiles) {
+  for (const name of route.includeFiles || []) {
     const target = path.join(source, name);
     requirePath(target);
     copyFile(target, path.join(destination, name));
   }
-  for (const name of route.includeDirs) {
+  for (const name of route.includeDirs || []) {
     const target = path.join(source, name);
     requirePath(target);
     copyDirectory(target, path.join(destination, name));
   }
+}
+
+function rewriteSubpathDependencies(route, destination) {
+  const prefix = `/${route.route}/`;
+  for (const file of walkFiles(destination).filter(file => /\.(?:html|css)$/i.test(file))) {
+    let content = fs.readFileSync(file, 'utf8');
+    content = content.replace(/((?:href|src|action)\s*=\s*["'])\/(?!\/)/gi, `$1${prefix}`);
+    content = content.replace(/(url\(\s*["']?)\/(?!\/)/gi, `$1${prefix}`);
+    fs.writeFileSync(file, content, 'utf8');
+  }
+}
+
+function copyStaticAppPreview(route, source, destination) {
+  const excluded = new Set(route.excludeRootFiles || []);
+  for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
+    if (excluded.has(entry.name)) continue;
+    const sourceEntry = path.join(source, entry.name);
+    const destinationEntry = path.join(destination, entry.name);
+    if (entry.isDirectory()) copyDirectory(sourceEntry, destinationEntry);
+    if (entry.isFile()) copyFile(sourceEntry, destinationEntry);
+  }
+  if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
 }
 
 function copyB60Public(route, source, destination) {
@@ -108,6 +137,8 @@ for (const route of routes) {
 
   if (route.mode === 'STATIC_REFERENCE') {
     copyStaticReference(route, source, destination);
+  } else if (route.mode === 'STATIC_APP_PREVIEW') {
+    copyStaticAppPreview(route, source, destination);
   } else if (route.mode === 'B60_PUBLIC_ALLOWLIST') {
     copyB60Public(route, source, destination);
   } else {
