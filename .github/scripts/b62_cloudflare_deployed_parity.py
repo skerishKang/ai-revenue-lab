@@ -145,7 +145,7 @@ def stream_route_probe(
         if allow and "POST" not in {item.strip().upper() for item in allow.split(",")}:
             raise AuditError("stream route returned 405 without POST in Allow header")
         return True, result.status
-    if result.status in {404, 200}:
+    if result.status == 404:
         return False, result.status
     raise AuditError(f"unexpected HTTP {result.status} while probing public stream route")
 
