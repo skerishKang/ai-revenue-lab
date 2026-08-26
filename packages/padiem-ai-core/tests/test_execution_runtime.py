@@ -5,6 +5,7 @@ import json
 
 import pytest
 
+import padiem_ai_core
 from padiem_ai_core.b14_execution import (
     B14ExecutionError,
     B14ExecutionResult,
@@ -61,6 +62,12 @@ def request(profile=None, **overrides) -> ExecutionRequest:
     }
     values.update(overrides)
     return ExecutionRequest(**values)
+
+
+def test_package_root_exports_execution_runtime_facade() -> None:
+    assert padiem_ai_core.ExecutionRequest is ExecutionRequest
+    assert padiem_ai_core.ExecutionRuntime is ExecutionRuntime
+    assert padiem_ai_core.ExecutionRuntimeError is ExecutionRuntimeError
 
 
 def test_run_composes_exactly_one_server_owned_system_message() -> None:
@@ -235,6 +242,27 @@ def test_missing_route_and_usage_remain_unknown_not_fabricated() -> None:
     assert output.metadata.provider is None
     assert output.metadata.model is None
     assert output.metadata.usage == UsageMetadata()
+
+
+def test_invalid_executor_result_contract_fails_closed_without_retry() -> None:
+    class InvalidExecutor:
+        def __init__(self):
+            self.calls = 0
+
+        async def execute(self, request):
+            self.calls += 1
+            return {"answer": "not-a-B14ExecutionResult", "private": "SECRET"}
+
+    executor = InvalidExecutor()
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(runtime.run(request()))
+
+    assert executor.calls == 1
+    assert info.value.code == "invalid_execution_result"
+    assert info.value.metadata.error_class is ErrorClass.INTERNAL_ERROR
+    assert "SECRET" not in json.dumps(info.value.to_public_dict())
 
 
 @pytest.mark.parametrize(
