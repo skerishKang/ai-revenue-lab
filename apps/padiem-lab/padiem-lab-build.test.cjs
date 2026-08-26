@@ -45,11 +45,14 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [4, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
+  assert.deepEqual(numbers, [4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
       assert.match(route.sourcePath, /^apps\/[a-z0-9-]+\/pages-preview(?:\/site)?$/);
+    } else if (route.mode === 'GENERATED_APP_PREVIEW') {
+      assert.match(route.sourcePath, /^apps\/[a-z0-9-]+$/);
+      assert.match(route.generatorModule, /^scripts\.[a-z0-9_]+$/);
     } else {
       assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
     }
@@ -132,6 +135,41 @@ test('B04 publishes only the Living Learning static preview under its subpath', 
   assert.match(index, /No persistence/);
 });
 
+test('B13 is generated from the existing Personal Video Archive static-preview boundary only', () => {
+  build();
+  const b13 = path.join(out, 'b13');
+  for (const relative of [
+    'index.html',
+    'en/index.html',
+    'preview-states/index.html',
+    'topics/index.html',
+    'topics/pv-topic-0001/index.html',
+    'videos/pv-video-0001/index.html',
+    'records/pv-rec-0001/index.html',
+    'static/style.css',
+    'robots.txt'
+  ]) {
+    assert.equal(fs.existsSync(path.join(b13, relative)), true, `b13 missing ${relative}`);
+  }
+  for (const forbidden of ['_headers', 'app', 'scripts', 'tests', 'preview_fixtures', 'pyproject.toml']) {
+    assert.equal(fs.existsSync(path.join(b13, forbidden)), false, `b13 leaked source/runtime path ${forbidden}`);
+  }
+  assert.equal(walkFiles(b13).some(file => file.endsWith('.py')), false, 'b13 leaked Python source');
+
+  const index = fs.readFileSync(path.join(b13, 'index.html'), 'utf8');
+  assert.match(index, /Business 13/);
+  assert.match(index, /noindex,nofollow/);
+  assert.match(index, /href="\/b13\/static\/style\.css"/);
+  assert.doesNotMatch(index, /<script\b/i);
+  assert.doesNotMatch(index, /\son[a-z]+\s*=/i);
+
+  const headers = fs.readFileSync(path.join(out, '_headers'), 'utf8');
+  assert.match(headers, /^\/b13\/\*$/m);
+  assert.match(headers, /X-Robots-Tag: noindex, nofollow/);
+  assert.match(headers, /script-src 'none'/);
+  assert.match(headers, /form-action 'none'/);
+});
+
 test('B06 publishes its single-app World Feed shape without inventing a ux entry', () => {
   build();
   const b06 = path.join(out, 'b06');
@@ -174,7 +212,8 @@ test('aggregate runtime excludes repository-only and private paths recursively',
 
 test('all local static runtime files stay inside their own /bNN/ subpath', () => {
   build();
-  for (const route of routes.filter(route => route.mode === 'STATIC_REFERENCE' || route.mode === 'STATIC_APP_PREVIEW')) {
+  const localModes = new Set(['STATIC_REFERENCE', 'STATIC_APP_PREVIEW', 'GENERATED_APP_PREVIEW']);
+  for (const route of routes.filter(route => localModes.has(route.mode))) {
     const allowedPrefix = `/${route.route}/`;
     for (const file of walkFiles(routeOut(route)).filter(file => /\.(?:html|css|js)$/i.test(file))) {
       const content = fs.readFileSync(file, 'utf8');

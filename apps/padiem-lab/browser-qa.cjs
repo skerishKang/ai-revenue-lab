@@ -59,6 +59,33 @@ async function inspect(page, url, label, marker, options = {}) {
     }
   }
 
+  if (options.b13) {
+    const runtime = await page.evaluate(() => ({
+      robots: document.querySelector('meta[name="robots"]')?.getAttribute('content') || '',
+      scripts: document.scripts.length,
+      inlineHandlers: Array.from(document.querySelectorAll('*')).some(element =>
+        Array.from(element.attributes).some(attribute => /^on/i.test(attribute.name))
+      )
+    }));
+    if (!/noindex/i.test(runtime.robots) || !/nofollow/i.test(runtime.robots)) {
+      throw new Error(`B13 robots boundary incomplete ${JSON.stringify(runtime)}`);
+    }
+    if (runtime.scripts !== 0 || runtime.inlineHandlers) {
+      throw new Error(`B13 script boundary incomplete ${JSON.stringify(runtime)}`);
+    }
+    if (live) {
+      const headers = await response.allHeaders();
+      const csp = headers['content-security-policy'] || '';
+      const robots = headers['x-robots-tag'] || '';
+      if (!/script-src 'none'/.test(csp) || !/form-action 'none'/.test(csp)) {
+        throw new Error(`B13 live CSP boundary incomplete ${JSON.stringify({ csp })}`);
+      }
+      if (!/noindex/i.test(robots) || !/nofollow/i.test(robots)) {
+        throw new Error(`B13 live X-Robots boundary incomplete ${JSON.stringify({ robots })}`);
+      }
+    }
+  }
+
   if (options.b60) {
     await page.waitForFunction(() => Boolean(window.B60_EDITORIAL_RADAR && window.B60_OPPORTUNITY_DETAIL));
     const runtime = await page.evaluate(() => ({
@@ -129,6 +156,7 @@ async function screenshot(page, label, viewportName) {
       const page = await browser.newPage({ viewport });
       await inspect(page, `${base}/${route.route}/`, route.route, route.marker, {
         b06: route.number === 6,
+        b13: route.number === 13,
         b60: route.number === 60
       });
       await screenshot(page, route.route, viewport.name);
