@@ -280,6 +280,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 52,
+    route: "b52",
+    sourcePath: "reference/business-52-scheduled-agent-operations-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "예약형 AI 운영",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 59,
     route: "b59",
     sourcePath: "reference/business-59-living-archive-v1",
