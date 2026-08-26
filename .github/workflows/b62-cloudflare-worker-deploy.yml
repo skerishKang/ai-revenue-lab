@@ -51,6 +51,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: python .github/scripts/b62_cloudflare_live_readiness.py
+      - name: Read-only deployed progressive-SSE parity
+        env:
+          B62_BASE_URL: https://padiem-chat.${{ steps.preflight.outputs.subdomain }}.workers.dev
+        run: python .github/scripts/b62_cloudflare_deployed_parity.py
 
   deploy-mock:
     needs: preflight
