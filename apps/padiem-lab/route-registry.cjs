@@ -2,6 +2,44 @@
 
 const routes = [
   {
+    number: 1,
+    route: "b01",
+    sourcePath: "apps/personal-edition",
+    mode: "GENERATED_APP_PREVIEW_ALLOWLIST",
+    marker: "Personal Edition",
+    generatorModule: "scripts.build_static_production",
+    generatorOutputOverride: "preview._OUTPUT_DIR",
+    includeFiles: [
+      "index.html",
+      "robots.txt",
+      "preview/participant/index.html"
+    ],
+    includeDirs: [
+      "static",
+      "guide",
+      "preview/participant/empty",
+      "preview/participant/input-received",
+      "preview/participant/editing",
+      "preview/participant/published",
+      "preview/participant/feedback",
+      "preview/participant/input",
+      "preview/participant/editions",
+      "preview/participant/history",
+      "preview/participant/not-found",
+      "preview/participant/transformation"
+    ],
+    privateLinkSegments: ["admin", "preview-states"],
+    rewriteRootRelative: true,
+    neutralizeForms: true,
+    aggregateHeaders: [
+      "X-Robots-Tag: noindex, nofollow",
+      "Referrer-Policy: no-referrer",
+      "X-Content-Type-Options: nosniff",
+      "X-Frame-Options: DENY",
+      "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'; object-src 'none'"
+    ]
+  },
+  {
     number: 2,
     route: "b02",
     sourcePath: "apps/living-travel/pages-preview/site",
