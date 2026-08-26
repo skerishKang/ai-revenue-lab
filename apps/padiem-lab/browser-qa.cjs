@@ -57,7 +57,14 @@ async function inspect(page, url, label, marker, options = {}) {
         .filter(value => /(?:^|\/)(?:operator|staging)(?:\/|$)/i.test(value)),
       externalRuntimeRefs: Array.from(document.querySelectorAll('[href],[src]'))
         .map(element => element.getAttribute('href') || element.getAttribute('src') || '')
-        .filter(value => /^https?:\/\//i.test(value)),
+        .filter(value => {
+          try {
+            const parsed = new URL(value, window.location.href);
+            return /^https?:$/.test(parsed.protocol) && parsed.origin !== window.location.origin;
+          } catch (_) {
+            return true;
+          }
+        }),
       backendForms: Array.from(document.forms).map(form => ({
         action: form.getAttribute('action') || '',
         method: (form.getAttribute('method') || 'get').toLowerCase()
