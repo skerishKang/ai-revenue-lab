@@ -1,0 +1,60 @@
+name: Living Learning Padiem Core CI
+
+on:
+  pull_request:
+    paths:
+      - 'apps/living-learning/**'
+      - 'packages/padiem-ai-core/**'
+      - '.github/workflows/living-learning-padiem-core-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  living-learning-core-reuse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install opt-in Core dependency and Living Learning
+        working-directory: apps/living-learning
+        run: |
+          python -m pip install --disable-pip-version-check -r requirements-padiem-core.txt
+          python -m pip install --disable-pip-version-check -e '.[dev]'
+          python -m pip install --disable-pip-version-check 'jsonschema>=4.23,<5'
+          python -m pip check
+
+      - name: Compile Living Learning and Core
+        run: |
+          python -m compileall -q apps/living-learning/app
+          python -m compileall -q packages/padiem-ai-core/padiem_ai_core
+
+      - name: Living Learning full tests
+        working-directory: apps/living-learning
+        env:
+          LL_PROVIDER_TYPE: mock
+        run: pytest -q
+
+      - name: Padiem AI Core full tests
+        working-directory: packages/padiem-ai-core
+        run: pytest -q
+
+      - name: Prove default provider remains mock
+        working-directory: apps/living-learning
+        run: |
+          python - <<'PY'
+          from app.config import Settings
+          from app.factory import create_provider
+          provider = create_provider(Settings(database_url=':memory:'))
+          assert provider.provider_type == 'mock'
+          print('LIVING_LEARNING_DEFAULT_PROVIDER=mock')
+          print('REAL_PROVIDER_CALLS=0')
+          PY
