@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 const routes = require('./route-registry.cjs');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
@@ -25,6 +26,10 @@ function isSafeRouteSource(route) {
   if (route.mode === 'STATIC_APP_PREVIEW') {
     return /^apps\/[a-z0-9-]+\/pages-preview(?:\/site)?$/.test(route.sourcePath);
   }
+  if (route.mode === 'GENERATED_APP_PREVIEW') {
+    return /^apps\/[a-z0-9-]+$/.test(route.sourcePath)
+      && /^scripts\.[a-z0-9_]+$/.test(route.generatorModule || '');
+  }
   return /^reference\/business-\d{2}-[^/]+$/.test(route.sourcePath);
 }
 
@@ -38,6 +43,9 @@ function validateRegistry() {
     if (numbers.has(route.number) || routeNames.has(route.route)) throw new Error(`Duplicate aggregate route: ${route.route}`);
     if (!isSafeRouteSource(route)) {
       throw new Error(`Unsafe source path for ${route.route}: ${route.sourcePath}`);
+    }
+    for (const header of route.aggregateHeaders || []) {
+      if (!header || /[\r\n]/.test(header)) throw new Error(`Unsafe aggregate header for ${route.route}`);
     }
     numbers.add(route.number);
     routeNames.add(route.route);
@@ -75,6 +83,26 @@ function copyStaticAppPreview(route, source, destination) {
     const destinationEntry = path.join(destination, entry.name);
     if (entry.isDirectory()) copyDirectory(sourceEntry, destinationEntry);
     if (entry.isFile()) copyFile(sourceEntry, destinationEntry);
+  }
+  if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
+}
+
+function generateStaticAppPreview(route, source, destination) {
+  requirePath(path.join(source, 'pyproject.toml'));
+  const python = process.env.PREVIEW_PYTHON || 'python3';
+  const script = [
+    'import importlib, sys',
+    'from pathlib import Path',
+    'module = importlib.import_module(sys.argv[1])',
+    'module.main(Path(sys.argv[2]))'
+  ].join('; ');
+  execFileSync(python, ['-c', script, route.generatorModule, destination], {
+    cwd: source,
+    stdio: 'inherit'
+  });
+  requirePath(path.join(destination, 'index.html'));
+  for (const name of route.excludeRootFiles || []) {
+    fs.rmSync(path.join(destination, name), { recursive: true, force: true });
   }
   if (route.rewriteRootRelative) rewriteSubpathDependencies(route, destination);
 }
@@ -118,6 +146,17 @@ function assertPublicBoundary(route, destination) {
   }
 }
 
+function writeAggregateHeaders() {
+  const sections = [];
+  for (const route of routes) {
+    if (!route.aggregateHeaders?.length) continue;
+    sections.push(`/${route.route}/*\n${route.aggregateHeaders.map(header => `  ${header}`).join('\n')}`);
+  }
+  if (sections.length) {
+    fs.writeFileSync(path.join(out, '_headers'), sections.join('\n\n') + '\n', 'utf8');
+  }
+}
+
 validateRegistry();
 requirePath(path.join(labSource, 'index.html'));
 requirePath(path.join(labSource, '404.html'));
@@ -139,6 +178,8 @@ for (const route of routes) {
     copyStaticReference(route, source, destination);
   } else if (route.mode === 'STATIC_APP_PREVIEW') {
     copyStaticAppPreview(route, source, destination);
+  } else if (route.mode === 'GENERATED_APP_PREVIEW') {
+    generateStaticAppPreview(route, source, destination);
   } else if (route.mode === 'B60_PUBLIC_ALLOWLIST') {
     copyB60Public(route, source, destination);
   } else {
@@ -153,6 +194,7 @@ fs.writeFileSync(
   routes.map(route => `/${route.route} /${route.route}/ 301`).join('\n') + '\n',
   'utf8'
 );
+writeAggregateHeaders();
 
 console.log(`Padiem Lab aggregate built at ${path.relative(repoRoot, out)}`);
 console.log(`Included routes: /, ${routes.map(route => `/${route.route}/`).join(', ')}`);
