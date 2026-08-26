@@ -57,6 +57,25 @@ jobs:
           sudo ln -sf "$BROWSER_PATH" /usr/bin/chromium
           /usr/bin/chromium --version
 
+      - name: Provide ephemeral favicon for browser harness
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+
+          path = Path('reference/business-48-ai-verification-engine-v1/favicon.ico')
+          icon_dir = struct.pack('<HHH', 0, 1, 1)
+          entry = struct.pack('<BBBBHHII', 1, 1, 0, 0, 1, 32, 48, 22)
+          dib = struct.pack('<IIIHHIIIIII', 40, 1, 2, 1, 32, 0, 4, 0, 0, 0, 0)
+          pixel = b'\x00\x00\x00\x00'
+          and_mask = b'\x00\x00\x00\x00'
+          path.write_bytes(icon_dir + entry + dib + pixel + and_mask)
+          assert path.stat().st_size == 70
+          print('EPHEMERAL_FAVICON_READY', path, path.stat().st_size)
+          PY
+
       - name: Browser exact-head self-check
         if: steps.source.outputs.present == 'true'
         shell: bash
