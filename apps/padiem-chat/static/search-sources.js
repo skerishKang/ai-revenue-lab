@@ -2,6 +2,213 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
+  const newChatButton = document.getElementById("newChatButton");
+  const loginButton = document.getElementById("loginButton");
+  if (!messageList) return;
+
+  const nativeFetch = window.fetch.bind(window);
+  let activeController = null;
+
+  function chatRequest(inputValue) {
+    if (typeof inputValue === "string") return inputValue === "/api/chat" || inputValue.endsWith("/api/chat");
+    if (inputValue instanceof Request) {
+      try {
+        return new URL(inputValue.url, window.location.href).pathname === "/api/chat";
+      } catch (_) {
+        return false;
+      }
+    }
+    if (inputValue instanceof URL) return inputValue.pathname === "/api/chat";
+    return false;
+  }
+
+  function parsePayload(init) {
+    if (!init || typeof init.body !== "string") return null;
+    try {
+      const payload = JSON.parse(init.body);
+      return payload && typeof payload === "object" && !Array.isArray(payload) ? payload : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function requiresCompletedJson(payload) {
+    if (!payload) return true;
+    if (payload.mode && payload.mode !== "auto") return true;
+    if (Array.isArray(payload.attachments) && payload.attachments.length > 0) return true;
+    if (payload.tool !== undefined || payload.tool_input !== undefined) return true;
+    return false;
+  }
+
+  function currentAssistantArticle() {
+    const articles = messageList.querySelectorAll(".assistant-message");
+    return articles.length ? articles[articles.length - 1] : null;
+  }
+
+  function appendProgressiveDelta(article, state, delta) {
+    if (!article || article.isConnected === false || typeof article.querySelector !== "function") return;
+    const content = article.querySelector(".assistant-content");
+    if (!content) return;
+    if (!state.textNode) {
+      content.replaceChildren();
+      const paragraph = document.createElement("p");
+      const textNode = document.createTextNode("");
+      paragraph.appendChild(textNode);
+      content.appendChild(paragraph);
+      state.textNode = textNode;
+      const label = article.querySelector("[data-runtime-label]");
+      if (label) label.textContent = "AI 응답";
+    }
+    state.textNode.appendData(delta);
+    if (typeof article.scrollIntoView === "function") article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function parsePublicEvent(block) {
+    let eventName = null;
+    const dataLines = [];
+    for (const rawLine of block.split("\n")) {
+      if (!rawLine || rawLine.startsWith(":")) continue;
+      const separator = rawLine.indexOf(":");
+      const field = separator >= 0 ? rawLine.slice(0, separator) : rawLine;
+      let value = separator >= 0 ? rawLine.slice(separator + 1) : "";
+      if (value.startsWith(" ")) value = value.slice(1);
+      if (field === "event") eventName = value;
+      if (field === "data") dataLines.push(value);
+    }
+    if (!eventName || !["delta", "done", "error"].includes(eventName) || dataLines.length === 0) {
+      throw new Error("스트리밍 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.");
+    }
+    let payload;
+    try {
+      payload = JSON.parse(dataLines.join("\n"));
+    } catch (_) {
+      throw new Error("스트리밍 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.");
+    }
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      throw new Error("스트리밍 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.");
+    }
+    return { eventName, payload };
+  }
+
+  async function consumePublicStream(response, article) {
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.toLowerCase().includes("text/event-stream") || !response.body) {
+      throw new Error("AI 연결이 올바른 스트리밍 응답을 보내지 않았습니다. 다시 시도해 주세요.");
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    const renderState = { textNode: null };
+    let buffer = "";
+    let answer = "";
+    let donePayload = null;
+
+    const handleFrame = (block) => {
+      if (!block.trim()) return;
+      const { eventName, payload } = parsePublicEvent(block);
+      if (eventName === "delta") {
+        if (typeof payload.delta !== "string" || payload.delta.length === 0) {
+          throw new Error("스트리밍 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.");
+        }
+        answer += payload.delta;
+        appendProgressiveDelta(article, renderState, payload.delta);
+        return;
+      }
+      if (eventName === "error") {
+        const message = payload.error && typeof payload.error.message === "string" && payload.error.message.trim()
+          ? payload.error.message
+          : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.";
+        throw new Error(message);
+      }
+      if (payload.done !== true || donePayload !== null || !answer) {
+        throw new Error("스트리밍 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.");
+      }
+      donePayload = payload;
+    };
+
+    try {
+      while (donePayload === null) {
+        const result = await reader.read();
+        if (result.value) buffer += decoder.decode(result.value, { stream: true });
+        if (result.done) buffer += decoder.decode();
+        buffer = buffer.replace(/\r\n/g, "\n");
+        let boundary = buffer.indexOf("\n\n");
+        while (boundary >= 0 && donePayload === null) {
+          const block = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          handleFrame(block);
+          boundary = buffer.indexOf("\n\n");
+        }
+        if (result.done) break;
+      }
+      if (donePayload === null) {
+        throw new Error("스트리밍 답변이 완료되지 않았습니다. 다시 시도해 주세요.");
+      }
+      try {
+        await reader.cancel();
+      } catch (_) {
+      }
+      return { answer, done: donePayload };
+    } finally {
+      try {
+        reader.releaseLock();
+      } catch (_) {
+      }
+    }
+  }
+
+  function syntheticCompletedResponse(result) {
+    const done = result.done;
+    const payload = { answer: result.answer, runtime: "stream" };
+    if (typeof done.conversation_id === "string") payload.conversation_id = done.conversation_id;
+    if (typeof done.project_id === "string") payload.project_id = done.project_id;
+    if (done.project && typeof done.project === "object") payload.project = done.project;
+    if (Number.isInteger(done.project_files_used)) payload.project_files_used = done.project_files_used;
+    return new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  function abortActiveStream() {
+    if (activeController && !activeController.signal.aborted) activeController.abort();
+  }
+
+  window.fetch = async (inputValue, init) => {
+    const method = init && typeof init.method === "string" ? init.method.toUpperCase() : "GET";
+    const payload = chatRequest(inputValue) && method === "POST" ? parsePayload(init) : null;
+    if (!payload || requiresCompletedJson(payload)) return nativeFetch(inputValue, init);
+
+    abortActiveStream();
+    const controller = new AbortController();
+    const externalSignal = init && init.signal;
+    const forwardAbort = () => controller.abort();
+    if (externalSignal) {
+      if (externalSignal.aborted) controller.abort();
+      else externalSignal.addEventListener("abort", forwardAbort, { once: true });
+    }
+    activeController = controller;
+    const article = currentAssistantArticle();
+
+    try {
+      const response = await nativeFetch("/api/chat/stream", { ...init, signal: controller.signal });
+      if (!response.ok) return response;
+      const result = await consumePublicStream(response, article);
+      return syntheticCompletedResponse(result);
+    } finally {
+      if (externalSignal) externalSignal.removeEventListener("abort", forwardAbort);
+      if (activeController === controller) activeController = null;
+    }
+  };
+
+  if (newChatButton) newChatButton.addEventListener("click", abortActiveStream, true);
+  if (loginButton) loginButton.addEventListener("click", abortActiveStream, true);
+  if (typeof window.addEventListener === "function") window.addEventListener("pagehide", abortActiveStream);
+})();
+
+(() => {
+  "use strict";
+
+  const messageList = document.getElementById("messageList");
   const input = document.getElementById("messageInput");
   const runtimeNote = document.getElementById("runtimeNote");
   const attachmentThumb = document.getElementById("attachmentThumb");
