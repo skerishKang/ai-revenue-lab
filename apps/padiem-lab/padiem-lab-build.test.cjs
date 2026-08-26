@@ -29,15 +29,30 @@ function walkFiles(root) {
   return files;
 }
 
+function rootReferences(content) {
+  const references = [];
+  for (const match of content.matchAll(/(?:href|src|action)\s*=\s*["'](\/(?!\/)[^"']*)["']/gi)) {
+    references.push(match[1]);
+  }
+  for (const match of content.matchAll(/url\(\s*["']?(\/(?!\/)[^"')\s]*)/gi)) {
+    references.push(match[1]);
+  }
+  return references;
+}
+
 test('route registry has unique exact /bNN/ identities for routed static Businesses and B60', () => {
   const numbers = routes.map(route => route.number);
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
+  assert.deepEqual(numbers, [4, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
-    assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
+    if (route.mode === 'STATIC_APP_PREVIEW') {
+      assert.match(route.sourcePath, /^apps\/[a-z0-9-]+\/pages-preview(?:\/site)?$/);
+    } else {
+      assert.match(route.sourcePath, /^reference\/business-\d{2}-[^/]+$/);
+    }
     assert.ok(route.marker);
   }
 });
@@ -85,6 +100,38 @@ test('static reference routes publish exactly their route-specific runtime allow
   }
 });
 
+test('B04 publishes only the Living Learning static preview under its subpath', () => {
+  build();
+  const b04 = path.join(out, 'b04');
+  for (const relative of [
+    'index.html',
+    'guide.html',
+    'assets',
+    'goals/index.html',
+    'diagnostic/index.html',
+    'lesson-1/index.html',
+    'lesson-2/index.html',
+    'feedback/index.html',
+    'history/index.html',
+    'progress/index.html',
+    'review/index.html'
+  ]) {
+    assert.equal(fs.existsSync(path.join(b04, relative)), true, `b04 missing ${relative}`);
+  }
+  assert.equal(fs.existsSync(path.join(b04, '_headers')), false, 'b04 leaked child _headers');
+  assert.equal(fs.existsSync(path.join(b04, '_redirects')), false, 'b04 leaked child _redirects');
+  assert.equal(fs.existsSync(path.join(b04, 'app')), false, 'b04 leaked backend app');
+  assert.equal(fs.existsSync(path.join(b04, 'migrations')), false, 'b04 leaked migrations');
+
+  const index = fs.readFileSync(path.join(b04, 'index.html'), 'utf8');
+  assert.match(index, /href="\/b04\/assets\/css\/tokens\.css"/);
+  assert.match(index, /href="\/b04\/guide\.html"/);
+  assert.match(index, /href="\/b04\/goals\/"/);
+  assert.match(index, /href="\/b04\/review\/"/);
+  assert.match(index, /UI Preview/);
+  assert.match(index, /No persistence/);
+});
+
 test('B06 publishes its single-app World Feed shape without inventing a ux entry', () => {
   build();
   const b06 = path.join(out, 'b06');
@@ -125,13 +172,19 @@ test('aggregate runtime excludes repository-only and private paths recursively',
   }
 });
 
-test('all static reference runtime files are safe under a /bNN/ subpath', () => {
+test('all local static runtime files stay inside their own /bNN/ subpath', () => {
   build();
-  const unsafeRootReference = /(?:href|src)\s*=\s*["']\/(?!\/)|url\(\s*["']?\/(?!\/)/i;
-  for (const route of routes.filter(route => route.mode === 'STATIC_REFERENCE')) {
+  for (const route of routes.filter(route => route.mode === 'STATIC_REFERENCE' || route.mode === 'STATIC_APP_PREVIEW')) {
+    const allowedPrefix = `/${route.route}/`;
     for (const file of walkFiles(routeOut(route)).filter(file => /\.(?:html|css|js)$/i.test(file))) {
       const content = fs.readFileSync(file, 'utf8');
-      assert.doesNotMatch(content, unsafeRootReference, `${route.route} has root-relative dependency in ${path.relative(routeOut(route), file)}`);
+      for (const reference of rootReferences(content)) {
+        assert.equal(
+          reference === allowedPrefix || reference.startsWith(allowedPrefix),
+          true,
+          `${route.route} escaped its route in ${path.relative(routeOut(route), file)}: ${reference}`
+        );
+      }
     }
   }
 });
